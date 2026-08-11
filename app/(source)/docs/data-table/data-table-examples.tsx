@@ -33,6 +33,8 @@ const projects: Project[] = [
   { id: "PRJ-112", name: "Lumen", owner: "Noah Bell", status: "Active", budget: 56000 },
 ];
 
+const emptyProjects: Project[] = [];
+
 const statusColors: Record<Project["status"], BadgeColor> = {
   Active: "green",
   Paused: "amber",
@@ -131,6 +133,6 @@ export function ProjectsTable() {
 }
 
 export function EmptyProjectsTable() {
-  const { table } = useDataTable({ columns, data: [] as Project[] });
+  const { table } = useDataTable({ columns, data: emptyProjects });
   return <DataTable emptyMessage="No projects found." table={table} />;
 }

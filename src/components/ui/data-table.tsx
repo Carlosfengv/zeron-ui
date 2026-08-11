@@ -293,7 +293,7 @@ function DataTableColumnHeader<TData, TValue>({
         render={
           <Button
             active={open}
-            className={cn("-ml-2 px-2 text-fg-default", className)}
+            className={cn("-ml-2 px-2 text-body font-medium text-fg-default", className)}
             size="sm"
             trailingIcon={SortIcon}
             variant="ghost"
@@ -391,7 +391,7 @@ function DataTableToolbar<TData>({
             className="border-dashed"
             leadingIcon={CircleX}
             onClick={() => table.resetColumnFilters()}
-            size="sm"
+            size="md"
             variant="tertiary"
           >
             Reset
@@ -437,7 +437,7 @@ function DataTableToolbarFilter<TData>({
           inputMode="numeric"
           onChange={(event) => column.setFilterValue(event.target.value)}
           placeholder={meta?.placeholder ?? meta?.label ?? column.id}
-          size="sm"
+          size="default"
           type="number"
           value={(column.getFilterValue() as string) ?? ""}
         />
@@ -455,7 +455,7 @@ function DataTableToolbarFilter<TData>({
       className="w-40 lg:w-56"
       onChange={(event) => column.setFilterValue(event.target.value)}
       placeholder={meta?.placeholder ?? meta?.label ?? column.id}
-      size="sm"
+      size="default"
       value={(column.getFilterValue() as string) ?? ""}
     />
   );
@@ -517,7 +517,7 @@ function DataTableFacetedFilter<TData, TValue>({
             }
             className="shrink-0 border-dashed"
             leadingIcon={selectedValues.size > 0 ? CircleX : CirclePlus}
-            size="sm"
+            size="md"
             variant="tertiary"
           >
             {selectedValues.size === 0 ? (
@@ -568,7 +568,7 @@ function DataTableFacetedFilter<TData, TValue>({
               column.setFilterValue(undefined);
               setOpen(false);
             }}
-            size="sm"
+            size="md"
             variant="ghost"
           >
             Clear filters
@@ -617,8 +617,9 @@ function DataTablePagination<TData>({
           >
             <SelectTrigger
               aria-label="Rows per page"
-              className="h-control-sm min-w-18 w-18 px-2 text-label"
+              className="min-w-18 w-18 px-2 text-label"
               placeholder={`${table.getState().pagination.pageSize}`}
+              size="md"
             />
             <SelectContent>
             {pageSizeOptions.map((pageSize) => (
@@ -719,7 +720,7 @@ function DataTableViewOptions<TData>({
             aria-label="Toggle columns"
             className={cn("shrink-0", className)}
             leadingIcon={Settings}
-            size="sm"
+            size="md"
             variant="tertiary"
           >
             View

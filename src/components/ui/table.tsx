@@ -168,7 +168,7 @@ const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
           hideBorder ? "border-transparent" : "border-border",
           isBodyRow && activeIdx === index && "is-active",
           className,
-          isBodyRow ? "font-normal" : "font-semibold"
+          isBodyRow ? "font-normal" : "font-medium"
         )}
         style={style}
         {...props}
@@ -188,7 +188,7 @@ const TableHead = forwardRef<
   <th
     ref={ref}
     className={cn(
-      "px-3 py-2 text-left text-fg-default",
+      "px-3 py-2 text-left text-body font-medium text-fg-default",
       className
     )}
     {...props}
