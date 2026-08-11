@@ -484,14 +484,14 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
     const labelContent = (
       <span className="inline-grid text-body whitespace-nowrap">
         <span
-          className="col-start-1 row-start-1 invisible [text-box:trim-both_cap_alphabetic] font-semibold"
+          className="col-start-1 row-start-1 invisible font-semibold"
           aria-hidden="true"
         >
           {label}
         </span>
         <span
           className={cn(
-            "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none [text-box:trim-both_cap_alphabetic]",
+            "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",
             isSelected && variant !== "underline"
               ? "text-fg-on-brand"
               : isActive
@@ -527,8 +527,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
         data-proximity-index={_index}
         aria-label={collapseLabel && !showLabel ? label : undefined}
         className={cn(
-          // Fixed height (not py) so the text-box trim below doesn't shrink
-          // the tab — browsers without text-box support render identically.
+          // Fixed heights keep every tab variant aligned and easy to target.
           "relative z-content flex items-center cursor-pointer bg-transparent border-none outline-none",
           badge == null ? "px-3" : "pl-3 pr-1.5",
           variant === "pill" && [

@@ -528,11 +528,7 @@ CardHeader.displayName = "CardHeader";
 
 const CardTitle = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>>(
   ({ className, children, ...props }, ref) => {
-    const { emphasized, orientation } = useContext(CardContext);
-    // Inline rows trim the title to cap height so it centres tightly against
-    // the media/actions; stacked cards keep the natural line box.
-    const trim =
-      orientation === "inline" ? "[text-box:trim-both_cap_alphabetic]" : "";
+    const { emphasized } = useContext(CardContext);
     // Ghost-span pattern: an invisible semibold copy reserves the width so the
     // resting→active weight animation never reflows the row.
     return (
@@ -543,7 +539,7 @@ const CardTitle = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>>(
         {...props}
       >
         <span
-          className={cn("col-start-1 row-start-1 invisible", trim, "font-semibold")}
+          className="col-start-1 row-start-1 invisible font-semibold"
           aria-hidden="true"
         >
           {children}
@@ -551,7 +547,6 @@ const CardTitle = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>>(
         <span
           className={cn(
             "col-start-1 row-start-1 text-fg-default transition-[font-weight] duration-fast motion-reduce:transition-none",
-            trim,
             emphasized ? "font-semibold" : "font-normal"
           )}
         >
@@ -795,7 +790,7 @@ function CardFeature({ icon: Icon, title, description }: CardFeatureProps) {
       )}
       <div className="flex flex-col gap-0.5 min-w-0">
         <span
-          className="text-body text-fg-default [text-box:trim-both_cap_alphabetic] font-medium"
+          className="text-body text-fg-default font-medium"
         >
           {title}
         </span>
@@ -866,7 +861,7 @@ function CardButton({
   const inner = (
     <>
       {position === "start" && glyph}
-      <span className="[text-box:trim-both_cap_alphabetic]">{children}</span>
+      <span>{children}</span>
       {position === "end" && glyph}
       {externalGlyph}
     </>

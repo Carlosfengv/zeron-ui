@@ -295,8 +295,7 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
           }
         }}
         className={cn(
-          // Fixed height (was py-1.5 around a 19.5px line box ≈ 31.5px) so the
-          // text-box trim on the label doesn't shrink the row.
+          // Fixed height keeps every option row aligned and easy to target.
           `relative z-content flex h-control-sm items-center gap-2.5 ${shape.item} px-3 cursor-pointer outline-none`,
           className
         )}
@@ -328,19 +327,17 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
           />
         )}
 
-        {/* Label */}
-        {/* Both stacked spans carry the text-box trim so the invisible bold
-            sizer and the visible label keep identical boxes. */}
+        {/* The invisible bold copy reserves width so weight changes do not reflow. */}
         <span className="inline-grid min-w-0 flex-1 text-body">
           <span
-            className="col-start-1 row-start-1 invisible [text-box:trim-both_cap_alphabetic] font-semibold"
+            className="col-start-1 row-start-1 invisible font-semibold"
             aria-hidden="true"
           >
             {label}
           </span>
           <span
             className={cn(
-              "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none [text-box:trim-both_cap_alphabetic]",
+              "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",
               checked || isActive
                 ? "text-fg-default"
                 : "text-fg-muted",

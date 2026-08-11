@@ -46,7 +46,7 @@ const PageHeaderContent = forwardRef<HTMLDivElement, PageHeaderContentProps>(({ 
 PageHeaderContent.displayName = "PageHeaderContent";
 
 const PageTitle = forwardRef<HTMLHeadingElement, PageTitleProps>(({ className, ...props }, ref) => (
-  <h1 ref={ref} data-slot="page-title" className={cn("text-heading text-fg-default [text-box:trim-both_cap_alphabetic]", className)} {...props} />
+  <h1 ref={ref} data-slot="page-title" className={cn("text-heading text-fg-default", className)} {...props} />
 ));
 
 PageTitle.displayName = "PageTitle";

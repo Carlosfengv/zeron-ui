@@ -135,10 +135,8 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
         };
 
     const itemClassName = cn(
-      // Fixed 32px height so the
-      // text-box trim on the label doesn't shrink the row. shrink-0 because
-      // menu popups are max-height flex columns — without it a long list
-      // compresses rows to fit instead of scrolling.
+      // Keep rows at 32px and prevent max-height popup columns from
+      // compressing a long list instead of scrolling it.
       `relative z-content flex h-control-sm shrink-0 items-center gap-2 ${shape.item} px-2 cursor-pointer outline-none`,
       disabled && "opacity-50 pointer-events-none",
       className
@@ -163,18 +161,17 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
             />
           </span>
         )}
-        {/* Both stacked spans carry the text-box trim so the invisible bold
-            sizer and the visible label keep identical boxes. */}
+        {/* The invisible bold copy reserves width so weight changes do not reflow. */}
         <span className="inline-grid flex-1 text-body">
           <span
-            className="col-start-1 row-start-1 invisible [text-box:trim-both_cap_alphabetic] font-semibold"
+            className="col-start-1 row-start-1 invisible font-semibold"
             aria-hidden="true"
           >
             {label}
           </span>
           <span
             className={cn(
-              "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none [text-box:trim-both_cap_alphabetic]",
+              "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",
               isActive || checked
                 ? "text-fg-default"
                 : "text-fg-muted",

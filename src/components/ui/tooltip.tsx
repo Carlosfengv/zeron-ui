@@ -170,11 +170,7 @@ function Tooltip({
                 <motion.div
                   {...rest}
                   className={cn(
-                    // Trim recenters the label; the padding bump only applies
-                    // where text-box is supported, keeping the same overall
-                    // height (~26px) as untrimmed browsers.
                     "bg-inverse-background text-fg-on-inverse text-label px-2 py-1",
-                    "[text-box:trim-both_cap_alphabetic] supports-[text-box:trim-both]:py-2",
                     shape.bg,
                     "font-medium",
                     className
