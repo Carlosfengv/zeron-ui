@@ -20,7 +20,6 @@ dist-ssr
 .DS_Store
 *.pem
 *.tgz
-.npmrc
 
 # debug
 npm-debug.log*
