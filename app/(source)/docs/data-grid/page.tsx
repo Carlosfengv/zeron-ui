@@ -95,11 +95,11 @@ export default function DataGridDoc() {
       </DocSection>
 
       <DocSection title={t("interactionModel")}>
-        <div className="grid gap-3 text-body-sm text-muted-foreground sm:grid-cols-2">
-          <div className="border border-border/60 bg-surface-raised p-4 rounded-[var(--container-radius)]">
+        <div className="grid gap-3 text-body text-fg-muted sm:grid-cols-2">
+          <div className="border border-border-subtle bg-surface-raised p-4 rounded-[var(--container-radius)]">
             {t("moveAndEdit")}
           </div>
-          <div className="border border-border/60 bg-surface-raised p-4 rounded-[var(--container-radius)]">
+          <div className="border border-border-subtle bg-surface-raised p-4 rounded-[var(--container-radius)]">
             {t("rangeControls")}
           </div>
         </div>
@@ -108,15 +108,15 @@ export default function DataGridDoc() {
       <DocSection title={t("apiReference")}>
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">DataGrid</h3>
+            <h3 className="text-body text-fg-default">DataGrid</h3>
             <PropsTable props={getGridProps(t)} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">useDataGrid</h3>
+            <h3 className="text-body text-fg-default">useDataGrid</h3>
             <PropsTable props={getHookProps(t)} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">{t("cellMetadata")}</h3>
+            <h3 className="text-body text-fg-default">{t("cellMetadata")}</h3>
             <PropsTable props={getCellMetaProps(t)} />
           </div>
         </div>

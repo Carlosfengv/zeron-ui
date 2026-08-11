@@ -129,8 +129,8 @@ const ScrollBar = forwardRef<
         // Show immediately; on hide, wait out the 150ms thumb shrink before
         // fading so the thumb visibly narrows back first instead of the fade
         // masking it.
-        "opacity-0 transition-opacity duration-120 ease-out delay-160",
-        "data-[hovering]:duration-160 data-[scrolling]:duration-160",
+        "opacity-0 transition-opacity duration-moderate-exit ease-out delay-160",
+        "data-[hovering]:duration-moderate data-[scrolling]:duration-moderate",
         "data-[hovering]:opacity-100 data-[scrolling]:opacity-100",
         "data-[hovering]:delay-0 data-[scrolling]:delay-0",
         orientation === "vertical" && "top-0 right-0 h-full w-2.5",
@@ -142,10 +142,8 @@ const ScrollBar = forwardRef<
       <ScrollAreaPrimitive.Thumb
         data-slot="scroll-area-thumb"
         className={cn(
-          // Fixed surface-relative overlay ramp (8 → 12 → 16%) — same tint
-          // direction as the menu hover/active tokens, one notch stronger.
-          "relative bg-[rgb(var(--overlay)/0.08)] transition-[background-color,width,height] duration-160 ease-in-out",
-          "group-hover/scrollbar:bg-[rgb(var(--overlay)/0.12)] active:!bg-[rgb(var(--overlay)/0.16)]",
+          "relative bg-scrollbar-thumb transition-[background-color,width,height] duration-moderate ease-in-out",
+          "group-hover/scrollbar:bg-scrollbar-thumb-hover active:!bg-scrollbar-thumb-active",
           shape.bg,
           // -translate nudges the thumb 2px off the container edge; the track
           // (and its 10px hit target) stays flush so edge-throws still land.

@@ -30,7 +30,7 @@ const richCode = `import { Tooltip } from "./components";
   content={
     <div className="flex flex-col gap-1">
       <span className="font-medium">Keyboard shortcut</span>
-      <span className="text-muted-foreground">⌘ + S</span>
+      <span className="text-fg-muted">⌘ + S</span>
     </div>
   }
 >
@@ -129,7 +129,7 @@ export default function TooltipDoc() {
                 <span className="font-semibold">
                   Keyboard shortcut
                 </span>
-                <span className="text-muted-foreground">⌘ + S</span>
+                <span className="text-fg-muted">⌘ + S</span>
               </div>
             }
           >

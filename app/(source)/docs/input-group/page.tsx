@@ -236,7 +236,7 @@ export default function InputGroupDoc() {
                   aria-label="Invalid value"
                 />
               </InputGroup>
-              <p id="input-group-error" className="px-1 text-caption text-destructive">
+              <p id="input-group-error" className="px-1 text-label text-fg-danger">
                 Enter a valid value.
               </p>
             </div>
@@ -247,23 +247,23 @@ export default function InputGroupDoc() {
       <DocSection title={t("apiReference")}>
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">InputGroup</h3>
+            <h3 className="text-body text-fg-default">InputGroup</h3>
             <PropsTable props={localize(groupProps, "g")} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">InputGroupAddon</h3>
+            <h3 className="text-body text-fg-default">InputGroupAddon</h3>
             <PropsTable props={localize(addonProps, "a")} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">InputGroupButton</h3>
+            <h3 className="text-body text-fg-default">InputGroupButton</h3>
             <PropsTable props={localize(buttonProps, "b")} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">InputGroupInput</h3>
+            <h3 className="text-body text-fg-default">InputGroupInput</h3>
             <PropsTable props={localize(controlProps, "c")} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">InputGroupTextarea</h3>
+            <h3 className="text-body text-fg-default">InputGroupTextarea</h3>
             <PropsTable props={localize(textareaProps, "t")} />
           </div>
         </div>

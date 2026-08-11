@@ -6,11 +6,13 @@
   "navigation": {
     "main": "主导航",
     "system": "系统导航",
+    "layout": "布局导航",
     "components": "组件导航",
     "aiAgent": "AI Agent 导航",
     "showcase": "展示",
     "introduction": "介绍",
     "systemGroup": "系统",
+    "layoutGroup": "布局",
     "componentsGroup": "组件",
     "aiAgentGroup": "AI Agent",
     "open": "打开导航"
@@ -64,6 +66,8 @@
     "code": "代码",
     "inspect": "检查",
     "replayAnimation": "重新播放动画",
+    "fullscreen": "全屏展示",
+    "exitFullscreen": "退出全屏展示",
     "highlighting": "正在高亮…"
   },
   "playground": {
@@ -85,11 +89,16 @@
     "introductionDescription": "这些组件为何用起来与众不同。",
     "descriptions": {
       "surfaces": "为浅色和深色模式提供五种具有明确用途和阴影层级的语义表面。",
-      "semantic-tokens": "颜色、表面、排版、形状与层级的完整运行时契约。",
+      "semantic-tokens": "按设计对象选择颜色、表面、排版、形状与层级令牌。",
       "scrollbars": "基于 shadcn 的滚动淡出基础样式，融入形状系统；触控时保持原生滚动，始终可见但不打扰阅读。",
       "motion": "弹簧动效 Token、更快的退出动画，以及不触发布局回流的字重动画：所有组件共用的动效规则。",
+      "app-shell": "可组合的应用框架，用于容纳 Sidebar、Header 和主内容。",
+      "page-layout": "响应式页面组合，涵盖页头、内容、操作区与可选的辅助栏。",
+      "sidebar": "支持桌面折叠和移动端抽屉的响应式导航栏。",
+      "top-nav": "可组合的顶部导航，支持品牌、主链接和操作区。",
+      "nav-menu": "由 Sidebar 与 TopNav 共享的 Router 无关导航基础组件。",
       "accordion": "可折叠的内容区块，支持展开与收起动画，以及分组模式下的邻近悬停效果。",
-      "badge": "提供实心和圆点两种样式、Tailwind 色板及三种尺寸的紧凑标签。",
+      "badge": "提供分类颜色、语义状态、实心和圆点两种样式及三种尺寸的紧凑标签。",
       "badge-overflow": "自适应标签列表，会将被隐藏的项目折叠为溢出数量。",
       "breadcrumb": "可组合的路径导航，支持分隔符、当前页状态与折叠层级。",
       "button": "按钮用于触发操作并推动用户完成任务。应根据操作优先级和意图选择变体，而不是只看颜色。",

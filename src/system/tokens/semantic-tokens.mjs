@@ -12,7 +12,7 @@
 
 import { referenceColors } from "./reference-colors.mjs";
 
-const { neutral, danger } = referenceColors;
+const { neutral, danger, warning } = referenceColors;
 const { optical: neutralOptical } = neutral;
 const { optical: dangerOptical } = danger;
 
@@ -20,9 +20,9 @@ export const foregroundColorTokens = [
   { name: "fg-default", light: neutral[900], dark: neutral[100], usage: "普通承载面上的默认标题、正文、表单值和主要图标" },
   { name: "fg-muted", light: neutral[600], dark: neutralOptical[325], usage: "普通承载面上的辅助说明、标签、元数据和次要图标" },
   { name: "fg-subtle", light: neutral[500], dark: neutralOptical[375], usage: "普通承载面上的占位文字、时间戳、快捷键提示和低强调图标" },
-  { name: "fg-disabled", light: neutral[400], dark: neutral[500], usage: "不能通过组件级透明度表达时使用的独立禁用文字和图标" },
   { name: "fg-brand", light: "#0060D2", dark: "#80B0E9", usage: "普通承载面上的品牌色链接、文字和图标；不得用于品牌色填充之上" },
   { name: "fg-danger", light: dangerOptical[710], dark: danger[300], usage: "普通承载面上的错误、失败或危险文字和图标；不得用于危险操作填充之上" },
+  { name: "fg-warning", light: warning[700], dark: warning[200], usage: "普通承载面上的警告文字和图标；不得用于警告操作填充之上" },
   { name: "fg-on-brand", light: neutral[0], dark: neutral[0], usage: "品牌色默认、悬停和按下填充上的文字与图标；须与对应填充配对使用" },
   { name: "fg-on-danger", light: neutral[900], dark: neutral[900], usage: "危险操作默认、悬停和按下填充之上的文字与图标；须与对应填充配对使用" },
   { name: "fg-on-inverse", light: neutral[50], dark: neutral[900], usage: "反色背景上的文字和图标；仅与反色填充配对使用" },
@@ -33,16 +33,17 @@ export const fillColorTokens = [
   { name: "brand-hover", light: "#0055BC", dark: "#0055BC", usage: "品牌色填充的悬停状态；须与 fg-on-brand 保持可读对比度" },
   { name: "brand-active", light: "#004DAC", dark: "#004DAC", usage: "品牌色填充的按下或展开状态；须与 fg-on-brand 保持可读对比度" },
   { name: "muted", light: neutralOptical[75], dark: neutralOptical[850], usage: "弱化容器、轨道和次要区域" },
-  { name: "accent", light: neutral[200], dark: neutral[600], usage: "次要按钮和强调背景" },
-  { name: "accent-subtlest", light: neutralOptical[85], dark: neutralOptical[775], usage: "最低强调度的重点背景；用于排队消息等弱化的临时容器" },
-  { name: "accent-subtle", light: neutralOptical[150], dark: neutralOptical[725], usage: "低强调度的重点背景；用于消息气泡等静态容器" },
-  { name: "accent-hover", light: neutralOptical[250], dark: neutralOptical[575], usage: "重点填充的悬停状态" },
-  { name: "accent-active", light: neutralOptical[350], dark: neutralOptical[550], usage: "重点填充的按下或展开状态" },
-  { name: "selection-background", light: neutral[300], dark: neutral[600], usage: "持久选中状态背景" },
+  { name: "secondary-action", light: neutral[200], dark: neutral[600], usage: "次要操作的默认填充" },
+  { name: "secondary-action-hover", light: neutralOptical[250], dark: neutralOptical[575], usage: "次要操作的悬停填充" },
+  { name: "secondary-action-active", light: neutralOptical[350], dark: neutralOptical[550], usage: "次要操作的按下或展开填充" },
+  { name: "emphasis", light: neutralOptical[150], dark: neutralOptical[725], usage: "低强调度的静态强调容器" },
+  { name: "selection", light: neutral[300], dark: neutral[600], usage: "持久选中状态背景" },
   { name: "destructive", light: danger[500], dark: danger[400], usage: "错误、删除和危险操作填充" },
   { name: "destructive-hover", light: dangerOptical[450], dark: dangerOptical[375], usage: "危险操作填充的悬停状态；须与 fg-on-danger 保持可读对比度" },
   { name: "destructive-active", light: dangerOptical[425], dark: dangerOptical[350], usage: "危险操作填充的按下状态；须与 fg-on-danger 保持可读对比度" },
-  { name: "destructive-subtle", light: danger[50], dark: danger[950], usage: "低强调错误背景" },
+  { name: "danger-surface", light: danger[50], dark: danger[950], usage: "错误、失败和风险信息的低强调背景" },
+  { name: "warning-surface", light: warning[50], dark: warning[950], usage: "警告信息的低强调背景" },
+  { name: "scrim", light: "rgb(0 0 0 / 0.4)", dark: "rgb(0 0 0 / 0.8)", usage: "抽屉和对话框背后的遮罩层" },
   { name: "inverse-background", light: "var(--fg-default)", dark: "var(--fg-default)", usage: "工具提示和中性高强调操作的反色填充" },
   { name: "inverse-background-hover", light: neutral[800], dark: neutral[200], usage: "中性高强调操作的悬停状态；不跟随品牌主题色" },
   { name: "inverse-background-active", light: neutral[700], dark: neutral[300], usage: "中性高强调操作的按下或展开状态；不跟随品牌主题色" },
@@ -50,10 +51,12 @@ export const fillColorTokens = [
 
 export const boundaryColorTokens = [
   { name: "border", light: "rgb(23 23 23 / 0.12)", dark: "rgb(245 245 245 / 0.12)", usage: "普通分隔线和结构边界" },
-  { name: "input", light: neutral[200], dark: neutral[700], usage: "输入和选择控件的静止边界" },
-  { name: "input-hover", light: "rgb(23 23 23 / 0.24)", dark: "rgb(245 245 245 / 0.24)", usage: "输入和选择控件的悬停边界" },
-  { name: "ring", light: neutral[200], dark: neutral[700], usage: "非焦点装饰环" },
-  { name: "focus-ring", light: "#6B97FF", dark: "#6B97FF", usage: "全局键盘焦点指示器；与品牌色保持独立" },
+  { name: "border-subtle", light: "rgb(23 23 23 / 0.07)", dark: "rgb(245 245 245 / 0.07)", usage: "低强调分隔线和紧凑组件的弱边界" },
+  { name: "input", light: neutral[200], dark: neutral[700], usage: "输入和选择控件的静止边界；随主题保持低强调层级" },
+  { name: "input-hover", light: "rgb(23 23 23 / 0.24)", dark: "rgb(245 245 245 / 0.24)", usage: "输入和选择控件的悬停边界；在静止边界之上提供临时反馈" },
+  { name: "danger-border", light: danger[500], dark: danger[400], usage: "错误、失败和风险状态的边界；在普通与 Danger Surface 上保持 3:1 非文本对比度" },
+  { name: "warning-border", light: warning[600], dark: warning[600], usage: "警告状态的边界；在普通与 Warning Surface 上保持 3:1 非文本对比度" },
+  { name: "focus-ring", light: "#6088E8", dark: "#6088E8", usage: "全局键盘焦点指示器；与品牌色保持独立并在全部承载面上保持 3:1 非文本对比度" },
 ];
 
 export const interactionColorTokens = [
@@ -61,36 +64,20 @@ export const interactionColorTokens = [
   { name: "active", light: "rgb(0 0 0 / 0.07)", dark: "rgb(255 255 255 / 0.1)", usage: "任意承载面上的按下、拖拽或展开覆盖层" },
 ];
 
-export const compatibilityColorTokens = [
-  { name: "background", light: "var(--surface-base)", dark: "var(--surface-base)", usage: "页面画布" },
-  { name: "foreground", light: "var(--fg-default)", dark: "var(--fg-default)", usage: "默认前景" },
-  { name: "card", light: "var(--surface-raised)", dark: "var(--surface-raised)", usage: "静态容器背景" },
-  { name: "card-foreground", light: "var(--fg-default)", dark: "var(--fg-default)", usage: "卡片默认前景" },
-  { name: "muted-foreground", light: neutral[500], dark: neutral[400], usage: "旧版弱化内容；新组件应选择明确的内容强调层级" },
-  { name: "accent-foreground", light: "var(--fg-default)", dark: "var(--fg-default)", usage: "重点填充上的前景" },
-  { name: "selected", light: "var(--selection-background)", dark: "var(--selection-background)", usage: "选中背景" },
-  { name: "brand-foreground", light: "var(--fg-on-brand)", dark: "var(--fg-on-brand)", usage: "品牌色填充上的前景" },
-  { name: "destructive-light", light: "var(--destructive-subtle)", dark: "var(--destructive-subtle)", usage: "低强调错误背景" },
-  { name: "destructive-foreground", light: "var(--fg-on-danger)", dark: "var(--fg-on-danger)", usage: "危险操作填充上的前景" },
-];
-
 export const colorTokens = [
   ...foregroundColorTokens,
   ...fillColorTokens,
   ...boundaryColorTokens,
   ...interactionColorTokens,
-  ...compatibilityColorTokens,
 ];
 
 export const supportColorTokens = [
   { name: "checker-a", light: neutralOptical[350], dark: neutralOptical[840], usage: "透明色棋盘格深色块" },
   { name: "checker-b", light: neutral[0], dark: neutralOptical[770], usage: "透明色棋盘格浅色块" },
+  { name: "scrollbar-thumb", light: "rgb(0 0 0 / 0.08)", dark: "rgb(255 255 255 / 0.08)", usage: "滚动条滑块的静止状态" },
+  { name: "scrollbar-thumb-hover", light: "rgb(0 0 0 / 0.12)", dark: "rgb(255 255 255 / 0.12)", usage: "滚动条滑块的悬停状态" },
+  { name: "scrollbar-thumb-active", light: "rgb(0 0 0 / 0.16)", dark: "rgb(255 255 255 / 0.16)", usage: "滚动条滑块的拖拽或按下状态" },
 ];
-
-export const interactionOverlayRgb = {
-  light: "0 0 0",
-  dark: "255 255 255",
-};
 
 export const surfaceTokens = [
   { name: "base", light: neutral[50], dark: neutral[900], usage: "应用的最低承载面；用于页面和应用画布" },
@@ -110,12 +97,16 @@ const lightShadowParts = {
 };
 
 const lightShadowRecipes = {
+  control: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+  knob: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
   raised: [lightShadowParts.edge, lightShadowParts.close].join(", "),
   floating: [lightShadowParts.edge, lightShadowParts.close, lightShadowParts.near].join(", "),
   overlay: Object.values(lightShadowParts).join(", "),
 };
 
 const darkShadowRecipes = {
+  control: "0 1px 2px 0 rgb(0 0 0 / 0.25)",
+  knob: "0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3)",
   raised: `inset 0 1px 0 0 var(--dm-hi-base), inset 0 0 0 1px var(--dm-ring-base), 0 1px 1px -0.5px var(--dm-drop)`,
   floating: `inset 0 1px 0 0 var(--dm-hi-mid), inset 0 0 0 1px var(--dm-ring-base), 0 0 0 1px rgba(0,0,0,0.12), 0 1px 1px -0.5px var(--dm-drop), 0 3px 3px -1.5px var(--dm-drop)`,
   overlay: `inset 0 1px 0 0 var(--dm-hi-high), inset 0 0 0 1px var(--dm-ring-mid), 0 0 0 1px rgba(0,0,0,0.16), 0 1px 1px -0.5px var(--dm-drop), 0 3px 3px -1.5px var(--dm-drop), 0 6px 6px -3px var(--dm-drop), 0 12px 12px -6px var(--dm-drop)`,
@@ -132,6 +123,18 @@ export const shadowSupportTokens = {
 };
 
 export const shadowTokens = [
+  {
+    name: "control",
+    light: lightShadowRecipes.control,
+    dark: darkShadowRecipes.control,
+    usage: "输入、选择和键盘提示等描边控件的轻微边缘分离",
+  },
+  {
+    name: "knob",
+    light: lightShadowRecipes.knob,
+    dark: darkShadowRecipes.knob,
+    usage: "开关、滑块等可移动圆形控件的轻微投影",
+  },
   {
     name: "raised",
     light: lightShadowRecipes.raised,
@@ -153,19 +156,17 @@ export const shadowTokens = [
 ];
 
 export const typographyTokens = [
-  { name: "micro", size: "0.5625rem", px: 9, lineHeight: "0.75rem", linePx: 12, usage: "极小辅助标记，仅用于空间严格受限的场景" },
-  { name: "overline", size: "0.625rem", px: 10, lineHeight: "0.875rem", linePx: 14, usage: "上标、键盘提示和密集元数据" },
-  { name: "caption", size: "0.6875rem", px: 11, lineHeight: "1rem", linePx: 16, usage: "说明、时间戳和辅助标签" },
   { name: "label", size: "0.75rem", px: 12, lineHeight: "1rem", linePx: 16, usage: "紧凑控件标签和徽标" },
-  { name: "body-sm", size: "0.875rem", px: 14, lineHeight: "1.25rem", linePx: 20, usage: "默认控件文字和紧凑正文" },
   { name: "body", size: "0.875rem", px: 14, lineHeight: "1.25rem", linePx: 20, usage: "默认正文" },
-  { name: "body-md", size: "0.9375rem", px: 15, lineHeight: "1.375rem", linePx: 22, usage: "强调正文和舒适密度控件" },
-  { name: "body-lg", size: "1rem", px: 16, lineHeight: "1.5rem", linePx: 24, usage: "大号正文和小标题" },
   { name: "title", size: "1.125rem", px: 18, lineHeight: "1.625rem", linePx: 26, usage: "卡片或面板标题" },
-  { name: "title-lg", size: "1.375rem", px: 22, lineHeight: "1.75rem", linePx: 28, usage: "页面区块标题" },
   { name: "heading", size: "1.5rem", px: 24, lineHeight: "2rem", linePx: 32, usage: "页面标题" },
-  { name: "heading-lg", size: "1.75rem", px: 28, lineHeight: "2.125rem", linePx: 34, usage: "展示型页面标题" },
-  { name: "display", size: "2rem", px: 32, lineHeight: "2.5rem", linePx: 40, usage: "营销或关键展示标题" },
+];
+
+export const motionDurationTokens = [
+  { name: "fast", value: "80ms", usage: "图标、颜色和短距离状态反馈" },
+  { name: "moderate-exit", value: "120ms", usage: "中等层级的退出过渡" },
+  { name: "moderate", value: "160ms", usage: "控件状态与面板的默认过渡" },
+  { name: "slow", value: "240ms", usage: "较大内容区的进入过渡" },
 ];
 
 export const fontTokens = {
@@ -185,7 +186,6 @@ export const radiusRoles = [
   { name: "focus", usage: "位于控件外侧的焦点环" },
   { name: "selection", usage: "合并选区和动态背景" },
   { name: "container", usage: "卡片、菜单组和大容器" },
-  { name: "overlay", usage: "对话框、弹出框等浮层" },
   { name: "full", usage: "圆形头像、圆点和必须保持胶囊的元素" },
 ];
 
@@ -195,7 +195,6 @@ export const shapeModes = {
     focus: 10,
     selection: 8,
     container: 12,
-    overlay: 12,
     full: 9999,
   },
   pill: {
@@ -203,7 +202,6 @@ export const shapeModes = {
     focus: 22,
     selection: 16,
     container: 24,
-    overlay: 20,
     full: 9999,
   },
 };
@@ -221,7 +219,6 @@ export const layerTokens = [
   { name: "overlay", value: 40, usage: "遮罩和抽屉背景" },
   { name: "popover", value: 50, usage: "菜单、选择器、对话框和普通浮层" },
   { name: "tooltip", value: 60, usage: "工具提示、颜色选择器等最高优先级提示" },
-  { name: "toast", value: 70, usage: "全局通知" },
 ];
 
 export const semanticTokens = {
@@ -230,12 +227,11 @@ export const semanticTokens = {
   fills: fillColorTokens,
   boundaries: boundaryColorTokens,
   interactions: interactionColorTokens,
-  compatibilityColors: compatibilityColorTokens,
   supportColors: supportColorTokens,
-  interactionOverlayRgb,
   surfaces: surfaceTokens,
   shadows: shadowTokens,
   typography: typographyTokens,
+  motionDurations: motionDurationTokens,
   fonts: fontTokens,
   controlHeights: controlHeightTokens,
   radiusRoles,

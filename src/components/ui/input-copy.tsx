@@ -117,7 +117,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={spring.fast}
-            className="flex items-center justify-center text-fg-danger [&_svg]:stroke-[1.5] [&_svg]:transition-[stroke-width] [&_svg]:duration-80 group-hover:[&_svg]:stroke-[2]"
+            className="flex items-center justify-center text-fg-danger [&_svg]:stroke-[1.5] [&_svg]:transition-[stroke-width] [&_svg]:duration-fast group-hover:[&_svg]:stroke-[2]"
           >
             <svg
               width={14}
@@ -133,7 +133,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
                 initial={{ pathLength: 0 }}
                 animate={{
                   pathLength: 1,
-                  transition: { duration: 0.08, ease: "easeOut" },
+                  transition: { duration: spring.fast.duration, ease: "easeOut" },
                 }}
               />
             </svg>
@@ -145,7 +145,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={spring.fast}
-            className="flex items-center justify-center [&_svg]:stroke-[1.5] [&_svg]:transition-[stroke-width] [&_svg]:duration-80 group-hover:[&_svg]:stroke-[2]"
+            className="flex items-center justify-center [&_svg]:stroke-[1.5] [&_svg]:transition-[stroke-width] [&_svg]:duration-fast group-hover:[&_svg]:stroke-[2]"
           >
             <svg
               width={14}
@@ -161,7 +161,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
                 initial={{ pathLength: 0 }}
                 animate={{
                   pathLength: 1,
-                  transition: { duration: 0.08, ease: "easeOut" },
+                  transition: { duration: spring.fast.duration, ease: "easeOut" },
                 }}
               />
             </svg>
@@ -175,7 +175,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
             transition={spring.fast}
             className="flex items-center justify-center"
           >
-            <CopyIcon size={14} strokeWidth={1.5} className="transition-[stroke-width] duration-80 group-hover:stroke-[2]" />
+            <CopyIcon size={14} strokeWidth={1.5} className="transition-[stroke-width] duration-fast group-hover:stroke-[2]" />
           </motion.span>
         )}
       </AnimatePresence>
@@ -184,8 +184,8 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
     const actionElement = variant === "button" ? (
       <span
         className={cn(
-          "shrink-0 flex items-center gap-1.5 px-1.5 py-2 text-body-sm transition-colors duration-80",
-          "text-muted-foreground group-hover:text-foreground", "font-normal"
+          "shrink-0 flex items-center gap-1.5 px-1.5 py-2 text-body transition-colors duration-fast",
+          "text-fg-muted group-hover:text-fg-default", "font-normal"
         )}
       >
         <AnimatePresence mode="wait" initial={false}>
@@ -214,7 +214,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
                     initial={{ pathLength: 0 }}
                     animate={{
                       pathLength: 1,
-                      transition: { duration: 0.08, ease: "easeOut" },
+                      transition: { duration: spring.fast.duration, ease: "easeOut" },
                     }}
                   />
                 </svg>
@@ -249,7 +249,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
                     initial={{ pathLength: 0 }}
                     animate={{
                       pathLength: 1,
-                      transition: { duration: 0.08, ease: "easeOut" },
+                      transition: { duration: spring.fast.duration, ease: "easeOut" },
                     }}
                   />
                 </svg>
@@ -269,7 +269,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
               transition={spring.fast}
             >
               <span className="flex items-center justify-center">
-                <CopyIcon size={14} strokeWidth={1.5} className="transition-[stroke-width] duration-80 group-hover:stroke-[2]" />
+                <CopyIcon size={14} strokeWidth={1.5} className="transition-[stroke-width] duration-fast group-hover:stroke-[2]" />
               </span>
               <span className="select-none inline-grid text-left">
                 <span className="col-start-1 row-start-1 invisible" aria-hidden="true">Copied</span>
@@ -282,8 +282,8 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
     ) : (
       <span
         className={cn(
-          "shrink-0 px-1.5 py-2 transition-colors duration-80",
-          "text-muted-foreground group-hover:text-foreground",
+          "shrink-0 px-1.5 py-2 transition-colors duration-fast",
+          "text-fg-muted group-hover:text-fg-default",
         )}
       >
         {iconSwitch}
@@ -293,11 +293,11 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
     const valueElement = (
       <span
         className={cn(
-          "flex-1 min-w-0 text-left text-body-sm text-foreground font-mono py-2 select-none truncate",
+          "flex-1 min-w-0 text-left text-body text-fg-default font-mono py-2 select-none truncate",
           align === "left" ? "pl-1" : "pl-0", "font-normal"
         )}
       >
-        <mark className="bg-transparent text-fg-default transition-colors duration-80 group-hover:bg-brand/20 group-hover:text-fg-default">
+        <mark className="bg-transparent text-fg-default transition-colors duration-fast group-hover:bg-brand/20 group-hover:text-fg-default">
           {value}
         </mark>
       </span>
@@ -327,8 +327,8 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
         }
         aria-labelledby={label ? `${buttonId} ${labelId}` : undefined}
         className={cn(
-          "group flex items-center w-full cursor-pointer outline-none transition-all duration-80",
-          "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
+          "group flex items-center w-full cursor-pointer outline-none transition-all duration-fast",
+          "focus-visible:ring-1 focus-visible:ring-focus-ring",
           shape.input
         )}
       >
@@ -351,7 +351,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
         {label && (
           <span
             id={labelId}
-            className={cn("text-body-sm text-muted-foreground", align === "left" ? "pl-1" : "pl-0", "font-normal")}
+            className={cn("text-body text-fg-muted", align === "left" ? "pl-1" : "pl-0", "font-normal")}
           >
             {label}
           </span>

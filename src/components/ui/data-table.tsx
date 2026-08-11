@@ -174,7 +174,7 @@ function DataTable<TData>({
       {...props}
     >
       {children}
-      <div className={cn("overflow-hidden border border-border/60 bg-background", shape.container)}>
+      <div className={cn("overflow-hidden border border-border-subtle bg-surface-base", shape.container)}>
         <div className="overflow-x-auto">
           <Table>
           <TableHeader>
@@ -187,7 +187,7 @@ function DataTable<TData>({
                     key={header.id}
                     style={getCommonPinningStyles(
                       header.column,
-                      "linear-gradient(light-dark(rgb(244 244 245 / 0.25), rgb(30 30 30 / 0.25)), light-dark(rgb(244 244 245 / 0.25), rgb(30 30 30 / 0.25)))"
+                      "linear-gradient(var(--surface-raised), var(--surface-raised))"
                     )}
                   >
                     {header.isPlaceholder
@@ -233,7 +233,7 @@ function DataTable<TData>({
             ) : (
               <TableRow>
                 <TableCell
-                  className="h-24 text-center text-muted-foreground"
+                  className="h-24 text-center text-fg-muted"
                   colSpan={Math.max(table.getVisibleLeafColumns().length, 1)}
                 >
                   {emptyMessage}
@@ -293,7 +293,7 @@ function DataTableColumnHeader<TData, TValue>({
         render={
           <Button
             active={open}
-            className={cn("-ml-2 px-2 text-foreground", className)}
+            className={cn("-ml-2 px-2 text-fg-default", className)}
             size="sm"
             trailingIcon={SortIcon}
             variant="ghost"
@@ -442,7 +442,7 @@ function DataTableToolbarFilter<TData>({
           value={(column.getFilterValue() as string) ?? ""}
         />
         {meta?.unit && (
-          <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-label text-muted-foreground">
+          <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-label text-fg-muted">
             {meta.unit}
           </span>
         )}
@@ -540,10 +540,10 @@ function DataTableFacetedFilter<TData, TValue>({
         }
       />
       <PopoverContent align="start" className="w-52 p-1" sideOffset={4}>
-        <div className="px-2 py-1.5 text-caption text-muted-foreground">
+        <div className="px-2 py-1.5 text-label text-fg-muted">
           {title}
         </div>
-        <div className="-mx-1 my-1 h-px bg-border/60" />
+        <div className="-mx-1 my-1 h-px bg-border-subtle" />
         <CheckboxGroup
           aria-label={title}
           checkedIndices={checkedIndices}
@@ -563,7 +563,7 @@ function DataTableFacetedFilter<TData, TValue>({
         </CheckboxGroup>
         {selectedValues.size > 0 && (
           <Button
-            className="mt-0.5 w-full border-t border-border/60"
+            className="mt-0.5 w-full border-t border-border-subtle"
             onClick={() => {
               column.setFilterValue(undefined);
               setOpen(false);
@@ -598,19 +598,19 @@ function DataTablePagination<TData>({
   return (
     <div
       className={cn(
-        "flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 text-body-sm sm:flex-row sm:gap-8",
+        "flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 text-body sm:flex-row sm:gap-8",
         className
       )}
       data-slot="data-table-pagination"
       {...props}
     >
-      <div className="flex-1 whitespace-nowrap text-muted-foreground">
+      <div className="flex-1 whitespace-nowrap text-fg-muted">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
       <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
         <div className="flex items-center gap-2 whitespace-nowrap">
-          <span className="text-label text-foreground">Rows per page</span>
+          <span className="text-label text-fg-default">Rows per page</span>
           <Select
             onValueChange={(value) => table.setPageSize(Number(value))}
             value={`${table.getState().pagination.pageSize}`}
@@ -633,7 +633,7 @@ function DataTablePagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <div className="whitespace-nowrap text-label tabular-nums text-foreground">
+        <div className="whitespace-nowrap text-label tabular-nums text-fg-default">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {Math.max(table.getPageCount(), 1)}
         </div>
@@ -727,10 +727,10 @@ function DataTableViewOptions<TData>({
         }
       />
       <PopoverContent align="end" className="w-48 p-1" sideOffset={4}>
-        <div className="px-2 py-1.5 text-caption text-muted-foreground">
+        <div className="px-2 py-1.5 text-label text-fg-muted">
           Toggle columns
         </div>
-        <div className="-mx-1 my-1 h-px bg-border/60" />
+        <div className="-mx-1 my-1 h-px bg-border-subtle" />
         <CheckboxGroup
           aria-label="Toggle columns"
           checkedIndices={checkedIndices}
@@ -762,7 +762,7 @@ function getCommonPinningStyles<TData, TValue>(
     isPinned === "right" && column.getIsFirstColumn("right");
 
   return {
-    backgroundColor: isPinned ? "var(--background)" : undefined,
+    backgroundColor: isPinned ? "var(--surface-base)" : undefined,
     backgroundImage: isPinned ? backgroundImage : undefined,
     boxShadow: isLastLeftPinnedColumn
       ? "-4px 0 4px -4px var(--border) inset"

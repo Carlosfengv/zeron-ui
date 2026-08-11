@@ -25,7 +25,7 @@ function BreadcrumbList({ className, ...props }: BreadcrumbListProps) {
   return (
     <ol
       className={cn(
-        "flex flex-wrap items-center gap-1.5 break-words text-body-sm text-muted-foreground sm:gap-2.5",
+        "flex flex-wrap items-center gap-1.5 break-words text-body text-fg-muted sm:gap-2.5",
         className
       )}
       data-slot="breadcrumb-list"
@@ -58,7 +58,7 @@ function BreadcrumbLink({
     props: mergeProps<"a">(
       {
         className: cn(
-          "rounded-[4px] outline-none transition-colors duration-80 hover:text-foreground focus-visible:text-foreground focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
+          "rounded-[4px] outline-none transition-colors duration-fast hover:text-fg-default focus-visible:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring",
           className
         ),
       },
@@ -75,7 +75,7 @@ function BreadcrumbPage({ className, ...props }: BreadcrumbPageProps) {
   return (
     <span
       aria-current="page"
-      className={cn("min-w-0 text-foreground", className)}
+      className={cn("min-w-0 text-fg-default", className)}
       data-slot="breadcrumb-page"
       {...props}
     />

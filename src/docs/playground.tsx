@@ -40,7 +40,7 @@ export function PlayField({
         disabled && "opacity-40 pointer-events-none"
       )}
     >
-      <span className="text-[13px] text-muted-foreground">{label}</span>
+      <span className="text-[13px] text-fg-muted">{label}</span>
       {children}
     </div>
   );
@@ -75,7 +75,7 @@ export function PlaySelect({
 export function PlaySection({ label }: { label: string }) {
   return (
     <div
-      className="px-1 pb-1 pt-1 text-[12px] text-muted-foreground font-semibold"
+      className="px-1 pb-1 pt-1 text-[12px] text-fg-muted font-semibold"
     >
       {label}
     </div>
@@ -84,7 +84,7 @@ export function PlaySection({ label }: { label: string }) {
 
 /** Hairline between two control groups. */
 export function PlayDivider() {
-  return <div className="my-2 border-t border-border/60" />;
+  return <div className="my-2 border-t border-border-subtle" />;
 }
 
 /** The muted controls card: title row with a shuffle button, fields below. */
@@ -102,10 +102,10 @@ export function PlaygroundPanel({
 
   return (
     <SurfaceProvider role="raised">
-      <div className="w-full rounded-lg bg-muted p-3">
+      <div className="w-full rounded-control bg-muted p-3">
         <div className="flex items-center justify-between px-1 pt-1 pb-2">
           <h2
-            className="text-[16px] text-foreground leading-none font-semibold"
+            className="text-[16px] text-fg-default leading-none font-semibold"
           >
             {title ?? t("variant")}
           </h2>
@@ -114,7 +114,7 @@ export function PlaygroundPanel({
             onClick={onShuffle}
             aria-label={t("randomizeProperties")}
             title={t("randomize")}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/70 hover:text-foreground hover:bg-hover transition-colors duration-80 cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
+            className="flex h-7 w-7 items-center justify-center rounded-control text-fg-muted/70 hover:text-fg-default hover:bg-hover transition-colors duration-fast cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
           >
             <Shuffle size={15} strokeWidth={1.5} />
           </button>

@@ -114,7 +114,7 @@ function PopoverContent({
         <PopoverPrimitive.Popup
           {...props}
           className={cn(
-            "flex w-72 origin-[var(--transform-origin)] flex-col gap-2.5 p-2.5 text-body-sm text-foreground outline-none",
+            "flex w-72 origin-[var(--transform-origin)] flex-col gap-2.5 p-2.5 text-body text-fg-default outline-none",
             "data-open:animate-in data-closed:animate-out data-open:fade-in-0 data-closed:fade-out-0",
             surfaceClasses(surface, "floating"),
             shape.container,

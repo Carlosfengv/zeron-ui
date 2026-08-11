@@ -126,7 +126,7 @@ export function DataGridColumnHeader<TData, TValue>({
             <button
               type="button"
               className={cn(
-                "flex size-full items-center justify-between gap-2 p-2 text-body-sm font-medium hover:bg-hover data-popup-open:bg-active [&_svg]:size-4",
+                "flex size-full items-center justify-between gap-2 p-2 text-body font-medium hover:bg-hover data-popup-open:bg-active [&_svg]:size-4",
                 isAnyColumnResizing && "pointer-events-none",
                 className,
               )}
@@ -137,7 +137,7 @@ export function DataGridColumnHeader<TData, TValue>({
                 {columnVariant && (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <columnVariant.icon className="size-3.5 shrink-0 text-muted-foreground" />
+                      <columnVariant.icon className="size-3.5 shrink-0 text-fg-muted" />
                     </TooltipTrigger>
                     <TooltipContent side="top">
                       <p>{columnVariant.label}</p>
@@ -146,7 +146,7 @@ export function DataGridColumnHeader<TData, TValue>({
                 )}
                 <span className="truncate">{label}</span>
               </div>
-              <ChevronDownIcon className="shrink-0 text-muted-foreground" />
+              <ChevronDownIcon className="shrink-0 text-fg-muted" />
             </button>
           }
         />
@@ -283,9 +283,9 @@ function DataGridColumnResizerImpl<TData, TValue>({
       aria-valuemax={defaultColumnDef.maxSize}
       tabIndex={0}
       className={cn(
-        "absolute -end-px top-0 z-raised h-full w-0.5 cursor-ew-resize touch-none select-none bg-border transition-opacity after:absolute after:inset-y-0 after:start-1/2 after:h-full after:w-[18px] after:-translate-x-1/2 after:content-[''] hover:bg-foreground focus:bg-foreground focus:outline-none",
+        "absolute -end-px top-0 z-raised h-full w-0.5 cursor-ew-resize touch-none select-none bg-border transition-opacity after:absolute after:inset-y-0 after:start-1/2 after:h-full after:w-[18px] after:-translate-x-1/2 after:content-[''] hover:bg-inverse-background focus:bg-inverse-background focus:outline-none",
         header.column.getIsResizing()
-          ? "bg-foreground"
+          ? "bg-inverse-background"
           : "opacity-0 hover:opacity-100",
       )}
       onDoubleClick={onDoubleClick}

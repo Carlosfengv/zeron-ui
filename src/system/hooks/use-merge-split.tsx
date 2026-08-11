@@ -335,7 +335,7 @@ export function SelectionBackgrounds({
           <motion.div
             key={b.key}
             aria-hidden
-            className="absolute bg-selection-background pointer-events-none"
+            className="absolute bg-selection pointer-events-none"
             initial={
               b.enterFrom
                 ? {

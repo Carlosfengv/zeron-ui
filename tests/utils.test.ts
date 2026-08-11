@@ -6,27 +6,27 @@ describe("cn semantic typography merging", () => {
   it.each(typographyTokens.map(({ name }) => name))(
     "keeps text-%s alongside a semantic text color",
     (name) => {
-      expect(cn(`text-${name}`, "text-foreground")).toBe(
-        `text-${name} text-foreground`
+      expect(cn(`text-${name}`, "text-fg-default")).toBe(
+        `text-${name} text-fg-default`
       );
-      expect(cn("text-muted-foreground", `text-${name}`)).toBe(
-        `text-muted-foreground text-${name}`
+      expect(cn("text-fg-muted", `text-${name}`)).toBe(
+        `text-fg-muted text-${name}`
       );
     }
   );
 
   it("still lets a later semantic font size override an earlier one", () => {
-    expect(cn("text-body", "text-body-sm", "text-foreground")).toBe(
-      "text-body-sm text-foreground"
+    expect(cn("text-label", "text-body", "text-fg-default")).toBe(
+      "text-body text-fg-default"
     );
   });
 
   it("preserves the Button and Select class combinations", () => {
-    expect(cn("text-fg-on-brand", "text-body-sm")).toBe(
-      "text-fg-on-brand text-body-sm"
+    expect(cn("text-fg-on-brand", "text-body")).toBe(
+      "text-fg-on-brand text-body"
     );
-    expect(cn("text-body-sm", "text-fg-muted")).toBe(
-      "text-body-sm text-fg-muted"
+    expect(cn("text-body", "text-fg-muted")).toBe(
+      "text-body text-fg-muted"
     );
   });
 });

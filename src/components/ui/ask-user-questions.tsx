@@ -722,13 +722,13 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
         <div
           ref={ref}
           className={cn(
-            "w-full max-w-[520px] p-5 bg-card border border-border",
+            "w-full max-w-[520px] p-5 bg-surface-raised border border-border",
             shape.container,
             className
           )}
           {...rest}
         >
-          <p className="text-body-sm text-muted-foreground">{t("noQuestions")}</p>
+          <p className="text-body text-fg-muted">{t("noQuestions")}</p>
         </div>
       );
     }
@@ -755,7 +755,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
     // framer-motion morph block size/position when neighbours toggle.
     // The Other row gets its own input-field-style indicator (see below) and
     // is intentionally excluded here so it doesn't merge into a contiguous
-    // bg-accent block with adjacent selected options.
+    // selection block with adjacent selected options.
     // Include the Other row in selectedIndices when it has text. This lets
     // it merge into the same morphing bg block as adjacent selected options
     // (instead of looking like a disconnected input field next to them).
@@ -889,7 +889,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                 key="other-input"
                 aria-hidden
                 className={cn(
-                  "absolute pointer-events-none bg-card ring-1 ring-inset ring-border",
+                  "absolute pointer-events-none bg-surface-raised ring-1 ring-inset ring-border",
                   shape.bg
                 )}
                 initial={{
@@ -909,7 +909,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                 exit={{ opacity: 0, transition: spring.fast.exit }}
                 transition={{
                   ...spring.fast,
-                  opacity: { duration: 0.08 },
+                  opacity: { duration: spring.fast.duration },
                 }}
               />
             );
@@ -944,7 +944,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
               exit={{ opacity: 0, transition: spring.fast.exit }}
               transition={{
                 ...spring.fast,
-                opacity: { duration: 0.08 },
+                opacity: { duration: spring.fast.duration },
               }}
             />
           )}
@@ -966,7 +966,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
             <motion.div
               aria-hidden
               className={cn(
-                "absolute pointer-events-none border border-[color:var(--focus-ring,#6B97FF)] z-raised",
+                "absolute pointer-events-none border border-focus-ring z-raised",
                 shape.focusRing
               )}
               initial={{
@@ -986,7 +986,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
               exit={{ opacity: 0, transition: spring.fast.exit }}
               transition={{
                 ...spring.fast,
-                opacity: { duration: 0.08 },
+                opacity: { duration: spring.fast.duration },
               }}
             />
           )}
@@ -1081,7 +1081,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                     </span>
                     <span
                       className={cn(
-                        "col-start-1 row-start-1 text-foreground transition-[color,font-weight] duration-80 motion-reduce:transition-none",
+                        "col-start-1 row-start-1 text-fg-default transition-[color,font-weight] duration-fast motion-reduce:transition-none",
                         isSelected ? "font-semibold" : "font-medium"
                       )}
                     >
@@ -1089,7 +1089,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                     </span>
                   </span>
                   {opt.description && (
-                    <span className="text-label text-muted-foreground leading-snug">
+                    <span className="text-label text-fg-muted leading-snug">
                       {opt.description}
                     </span>
                   )}
@@ -1105,7 +1105,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                     </span>
                     <span
                       className={cn(
-                        "col-start-1 row-start-1 text-foreground transition-[color,font-weight] duration-80 motion-reduce:transition-none",
+                        "col-start-1 row-start-1 text-fg-default transition-[color,font-weight] duration-fast motion-reduce:transition-none",
                         isSelected ? "font-semibold" : "font-medium"
                       )}
                     >
@@ -1115,7 +1115,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                   {opt.description && (
                     <>
                       {" "}
-                      <span className="text-muted-foreground">
+                      <span className="text-fg-muted">
                         {opt.description}
                       </span>
                     </>
@@ -1202,7 +1202,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                   // input it replaces — no border, no padding, no
                   // resize handle, no scrollbars (height is JS-driven,
                   // see the auto-resize effect above).
-                  "col-start-1 row-start-1 block w-full bg-transparent border-0 p-0 m-0 outline-none resize-none overflow-hidden text-body-sm leading-snug text-foreground placeholder:text-muted-foreground font-medium"
+                  "col-start-1 row-start-1 block w-full bg-transparent border-0 p-0 m-0 outline-none resize-none overflow-hidden text-body leading-snug text-fg-default placeholder:text-fg-muted font-medium"
                 )}
               />
             </span>
@@ -1223,7 +1223,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
           // overflow-hidden crops the footer buttons to the card's rounded
           // bounds, so a button animating out (e.g. Continue on exit) is
           // clipped at the edge instead of visibly flying outside the card.
-          "relative w-full max-w-[520px] overflow-hidden bg-card border border-border",
+          "relative w-full max-w-[520px] overflow-hidden bg-surface-raised border border-border",
           shape.container,
           className
         )}
@@ -1235,7 +1235,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
       >
         {/* Header — static top, fixed across questions; only the number
             changes. Lives outside the morphing region so it never shifts. */}
-        <div className="flex items-center px-4 sm:px-5 pt-4 sm:pt-5 pb-2 text-label text-muted-foreground">
+        <div className="flex items-center px-4 sm:px-5 pt-4 sm:pt-5 pb-2 text-label text-fg-muted">
           <span>
             Question {safeIndex + 1} of {total}
           </span>
@@ -1275,7 +1275,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
               {/* Question title */}
               <h3
                 id={`${reactId}-${qId}-title`}
-                className="text-body-lg text-foreground leading-snug font-semibold"
+                className="text-title text-fg-default leading-snug font-semibold"
               >
                 {question.title}
               </h3>
@@ -1308,13 +1308,13 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                     shape.bg,
                     // Mirror the "Something else" field instead of a blue focus
                     // ring. Empty + at rest: no border, fully quiet. Hover
-                    // lightens with bg-hover; focus shows the bg-card + border
+                    // lightens with bg-hover; focus shows the bg-surface-raised + border
                     // hint. Once it has text it fills with the same bg-active
                     // overlay the selected option rows use (focus-within comes
                     // after hover in the cascade, so focusing wins over hovering).
                     otherText.length > 0
                       ? "bg-active"
-                      : "hover:bg-hover focus-within:bg-card focus-within:ring-1 focus-within:ring-inset focus-within:ring-border"
+                      : "hover:bg-hover focus-within:bg-surface-raised focus-within:ring-1 focus-within:ring-inset focus-within:ring-border"
                   )}
                 >
                   {/* Base UI Field.Control wires the textarea into the Field:
@@ -1348,7 +1348,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                             handleOtherSubmit();
                           }
                         }}
-                        className="block w-full bg-transparent border-0 p-0 m-0 outline-none resize-none overflow-hidden text-body-sm leading-snug text-foreground placeholder:text-muted-foreground font-medium"
+                        className="block w-full bg-transparent border-0 p-0 m-0 outline-none resize-none overflow-hidden text-body leading-snug text-fg-default placeholder:text-fg-muted font-medium"
                       />
                     }
                   />
@@ -1450,7 +1450,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                           animate={{ opacity: 1, y: 0 }}
                           transition={{
                             ...spring.fast,
-                            opacity: { duration: 0.12 },
+                            opacity: { duration: spring.moderate.exit.duration },
                           }}
                           className="min-w-0 px-2 sm:px-3 text-left text-label leading-snug text-fg-danger"
                         />
@@ -1569,7 +1569,7 @@ function ShortcutChip({
       aria-hidden
       suppressHydrationWarning
       className={cn(
-        "inline-flex items-center justify-center gap-0.5 px-1 min-w-[18px] h-[18px] text-caption leading-none font-sans tracking-wide",
+        "inline-flex items-center justify-center gap-0.5 px-1 min-w-[18px] h-[18px] text-label leading-none font-sans tracking-wide",
         tone === "inverted"
           ? "bg-fg-on-brand/15 text-fg-on-brand"
           : "bg-fg-default/10 text-fg-muted",
@@ -1682,7 +1682,7 @@ function Row({
           }}
           transition={{
             ...spring.fast,
-            opacity: { duration: 0.08 },
+            opacity: { duration: spring.fast.duration },
           }}
         >
           {arrowIcon}
@@ -1693,7 +1693,7 @@ function Row({
 
   // The chip "slot" is a fixed 28×28 cell holding the chip number/circle.
   // When topAlign is on, the slot floats up so the chip's vertical centre
-  // lines up with the centre of a `text-body-sm leading-snug` first line
+  // lines up with the centre of a `text-body leading-snug` first line
   // (line-height ≈ 19px → centre 9.5px; chip centre 14px → diff 4.5px).
   // Stacked rows pair a title with a description, so we add 4px of
   // breathing room back on top (effective shift -1px) — that lands the
@@ -1714,15 +1714,15 @@ function Row({
       <span
         aria-hidden
         className={cn(
-          "absolute inline-flex items-center justify-center w-5 h-5 text-caption transition-[opacity,font-weight] duration-80 motion-reduce:transition-none",
+          "absolute inline-flex items-center justify-center w-5 h-5 text-label transition-[opacity,font-weight] duration-fast motion-reduce:transition-none",
           isMulti && shape.bg,
           isMulti
             ? chipFilled
               ? "bg-brand text-fg-on-brand"
-              : "border border-border text-muted-foreground"
+              : "border border-border text-fg-muted"
             : chipFilled
-            ? "text-foreground"
-            : "text-muted-foreground",
+            ? "text-fg-default"
+            : "text-fg-muted",
           // Only fade the chip when it shares a slot with the arrow — for
           // chip-on-left the arrow has its own slot on the right, so the
           // chip stays in place.
@@ -1821,7 +1821,7 @@ function Row({
       {/* Body — fills row */}
       <span
         className={cn(
-          "min-w-0 flex-1 text-body-sm leading-snug",
+          "min-w-0 flex-1 text-body leading-snug",
           bodyLayout === "stacked"
             ? "flex flex-col gap-0.5"
             : "inline-flex items-center gap-0"

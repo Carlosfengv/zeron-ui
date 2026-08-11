@@ -214,21 +214,21 @@ Select.displayName = "Select";
 const triggerVariants = cva(
   [
     "group inline-flex min-w-[160px] items-center justify-between outline-none cursor-pointer",
-    "transition-all duration-80",
+    "transition-all duration-fast",
     "disabled:opacity-50 disabled:pointer-events-none",
-    "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
+    "focus-visible:ring-1 focus-visible:ring-focus-ring",
   ],
   {
     variants: {
       variant: {
         bordered:
-          "border border-input bg-transparent text-fg-default hover:border-input-hover hover:bg-hover",
+          "border border-input bg-transparent text-fg-default shadow-control hover:border-input-hover hover:bg-hover",
         borderless:
           "border border-transparent bg-transparent text-fg-default hover:bg-hover",
       },
       size: {
         sm: "h-control-xs gap-1.5 px-2.5 text-label",
-        md: "h-control-sm gap-2 px-3 text-body-sm",
+        md: "h-control-sm gap-2 px-3 text-body",
         lg: "h-control-md gap-2 px-3.5 text-body",
       },
     },
@@ -276,7 +276,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
           className={cn(
             triggerVariants({ variant, size }),
             shape.input,
-            error && "border-destructive/50 hover:border-destructive/50",
+            error && "border-danger-border hover:border-danger-border",
             className
           )}
           {...props}
@@ -286,7 +286,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
               <Icon
                 size={iconSize}
                 strokeWidth={1.5}
-                className="shrink-0 text-fg-subtle transition-[color,stroke-width] duration-80 group-hover:text-fg-default group-hover:stroke-[2]"
+                className="shrink-0 text-fg-subtle transition-[color,stroke-width] duration-fast group-hover:text-fg-default group-hover:stroke-[2]"
               />
             )}
             <SelectPrimitive.Value
@@ -308,7 +308,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="shrink-0 text-fg-subtle transition-colors duration-80 group-hover:text-fg-default"
+            className="shrink-0 text-fg-subtle transition-colors duration-fast group-hover:text-fg-default"
           >
             <path d="M6 9l6 6 6-6" />
           </svg>
@@ -559,7 +559,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                   <AnimatePresence>
                     {checkedRect && (
                       <motion.div
-                        className={`absolute ${shape.bg} bg-selection-background pointer-events-none`}
+                        className={`absolute ${shape.bg} bg-selection pointer-events-none`}
                         // Position lives in `animate` so an in-session value
                         // change springs the marker to the picked row (the
                         // selection acknowledgment). Safe against the reopen
@@ -577,7 +577,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                         exit={{ opacity: 0, transition: spring.moderate.exit }}
                         transition={{
                           ...spring.moderate,
-                          opacity: { duration: 0.08 },
+                          opacity: { duration: spring.fast.duration },
                         }}
                       />
                     )}
@@ -608,7 +608,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                         exit={{ opacity: 0, transition: spring.fast.exit }}
                         transition={{
                           ...spring.fast,
-                          opacity: { duration: 0.08 },
+                          opacity: { duration: spring.fast.duration },
                         }}
                       />
                     )}
@@ -620,7 +620,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                   <AnimatePresence>
                     {focusRect && (
                       <motion.div
-                        className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-[color:var(--focus-ring,#6B97FF)]`}
+                        className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
                         initial={false}
                         animate={{
                           left: focusRect.left - 2,
@@ -631,7 +631,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                         exit={{ opacity: 0, transition: spring.fast.exit }}
                         transition={{
                           ...spring.fast,
-                          opacity: { duration: 0.08 },
+                          opacity: { duration: spring.fast.duration },
                         }}
                       />
                     )}
@@ -655,7 +655,7 @@ SelectContent.displayName = "SelectContent";
 // ---------------------------------------------------------------------------
 
 const selectItemClassName =
-  "relative z-content flex h-control-md shrink-0 items-center gap-2 px-2 text-body-sm cursor-pointer outline-none select-none transition-[color] duration-80";
+  "relative z-content flex h-control-md shrink-0 items-center gap-2 px-2 text-body cursor-pointer outline-none select-none transition-[color] duration-fast";
 
 interface SelectItemProps extends HTMLAttributes<HTMLDivElement> {
   icon?: IconComponent;
@@ -742,7 +742,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
           <Icon
             size={16}
             strokeWidth={isActive || isChecked ? 2 : 1.5}
-            className="shrink-0 transition-[color,stroke-width] duration-80"
+            className="shrink-0 transition-[color,stroke-width] duration-fast"
           />
         )}
 
@@ -780,7 +780,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
                   initial={{ pathLength: skipAnimation ? 1 : 0 }}
                   animate={{
                     pathLength: 1,
-                    transition: { duration: 0.08, ease: "easeOut" },
+                    transition: { duration: spring.fast.duration, ease: "easeOut" },
                   }}
                   exit={{
                     pathLength: 0,
@@ -821,7 +821,7 @@ const SelectLabel = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
     <div
       ref={ref}
       className={cn(
-        "px-2 py-1.5 shrink-0 text-caption text-fg-subtle",
+        "px-2 py-1.5 shrink-0 text-label text-fg-subtle",
         className
       )}
       {...props}
@@ -838,7 +838,7 @@ const SelectSeparator = forwardRef<
   <div
     ref={ref}
     role="separator"
-    className={cn("my-1 -mx-1 h-px shrink-0 bg-border/60", className)}
+    className={cn("my-1 -mx-1 h-px shrink-0 bg-border-subtle", className)}
     {...props}
   />
 ));

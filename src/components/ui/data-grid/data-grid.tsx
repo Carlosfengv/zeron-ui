@@ -117,7 +117,7 @@ export function DataGrid<TData>({
         tabIndex={0}
         ref={dataGridRef}
         className={cn(
-          "relative grid select-none overflow-auto border border-border/70 bg-surface-raised shadow-raised focus:outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
+          "relative grid select-none overflow-auto border border-border/70 bg-surface-raised shadow-raised focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring",
           shape.container,
         )}
         style={{
@@ -177,9 +177,9 @@ export function DataGrid<TData>({
                     tabIndex={-1}
                     className={cn("relative", {
                       grow: stretchColumns && header.column.id !== "select",
-                      "border-e border-border/60":
+                      "border-e border-border-subtle":
                         showEndBorder && header.column.id !== "select",
-                      "border-s border-border/60":
+                      "border-s border-border-subtle":
                         showStartBorder && header.column.id !== "select",
                     })}
                     style={{
@@ -267,7 +267,7 @@ export function DataGrid<TData>({
               <div
                 role="gridcell"
                 tabIndex={0}
-                className="relative flex h-control-sm grow items-center bg-transparent transition-colors duration-80 hover:bg-hover focus:bg-active focus:outline-none"
+                className="relative flex h-control-sm grow items-center bg-transparent transition-colors duration-fast hover:bg-hover focus:bg-active focus:outline-none"
                 style={{
                   width: table.getTotalSize(),
                   minWidth: table.getTotalSize(),
@@ -275,9 +275,9 @@ export function DataGrid<TData>({
                 onClick={onRowAdd}
                 onKeyDown={onFooterCellKeyDown}
               >
-                <div className="sticky start-0 flex items-center gap-2 px-3 text-muted-foreground">
+                <div className="sticky start-0 flex items-center gap-2 px-3 text-fg-muted">
                   <Plus className="size-3.5" />
-                  <span className="text-body-sm">Add row</span>
+                  <span className="text-body">Add row</span>
                 </div>
               </div>
             </div>

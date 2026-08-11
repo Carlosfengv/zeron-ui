@@ -92,7 +92,7 @@ export default function InputDoc() {
                 aria-describedby="input-email-error"
                 aria-label="Invalid email"
               />
-              <p id="input-email-error" className="px-1 text-caption text-destructive">
+              <p id="input-email-error" className="px-1 text-label text-fg-danger">
                 Enter a valid email address.
               </p>
             </div>

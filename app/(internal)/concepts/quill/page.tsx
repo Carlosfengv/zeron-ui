@@ -81,7 +81,7 @@ function AddBlockMenu() {
         leadingIcon={Plus}
         active={open}
         onClick={() => setOpen((o) => !o)}
-        className="text-muted-foreground"
+        className="text-fg-muted"
       >
         Add block
       </Button>
@@ -134,8 +134,8 @@ function AIBlock() {
           key={i}
           className={cn("flex gap-2.5 rounded-xl p-3.5", surfaceClasses("raised", "raised"))}
         >
-          <Sparkle size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
-          <p className="text-[14px] leading-relaxed text-foreground">{b}</p>
+          <Sparkle size={16} className="mt-0.5 shrink-0 text-fg-muted" />
+          <p className="text-[14px] leading-relaxed text-fg-default">{b}</p>
         </div>
       ))}
 
@@ -158,7 +158,7 @@ function AIBlock() {
         minRows={1}
         maxRows={4}
         leftSlot={
-          <span className="flex items-center gap-1.5 pl-1 text-[12px] text-muted-foreground">
+          <span className="flex items-center gap-1.5 pl-1 text-[12px] text-fg-muted">
             <Sparkle size={14} />
             Quill AI
           </span>
@@ -173,7 +173,7 @@ function AIBlock() {
 function DocumentBody() {
   return (
     <div className="flex flex-col gap-5">
-      <p className="text-[15px] leading-relaxed text-muted-foreground">
+      <p className="text-[15px] leading-relaxed text-fg-muted">
         The single source of truth for what we&rsquo;re building this quarter, why,
         and who owns each bet. Edit freely — every block here is a Fluid
         Functionalism component.
@@ -182,14 +182,14 @@ function DocumentBody() {
       {/* Callout */}
       <div className={cn("flex gap-3 rounded-xl p-4", surfaceClasses("raised", "raised"))}>
         <span className="text-[18px] leading-none">💡</span>
-        <p className="text-[14px] leading-relaxed text-foreground">
+        <p className="text-[14px] leading-relaxed text-fg-default">
           Decisions are final once they land in the Initiatives table. Use
           comments for anything still in debate.
         </p>
       </div>
 
       <h2
-        className="pt-2 text-[18px] text-foreground font-bold"
+        className="pt-2 text-[18px] text-fg-default font-bold"
       >
         Goals
       </h2>
@@ -199,8 +199,8 @@ function DocumentBody() {
           "Move 60% of new accounts onto self-serve billing",
           "Close SOC 2 Type II without slipping the roadmap",
         ].map((g) => (
-          <li key={g} className="flex items-start gap-2 text-[14px] text-foreground">
-            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
+          <li key={g} className="flex items-start gap-2 text-[14px] text-fg-default">
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-fg-muted" />
             {g}
           </li>
         ))}
@@ -209,7 +209,7 @@ function DocumentBody() {
       <AddBlockMenu />
 
       <h2
-        className="pt-2 text-[18px] text-foreground font-bold"
+        className="pt-2 text-[18px] text-fg-default font-bold"
       >
         Initiatives
       </h2>
@@ -225,14 +225,14 @@ function DocumentBody() {
         <TableBody>
           {INITIATIVES.map((it, i) => (
             <TableRow key={it.name} index={i}>
-              <TableCell className="text-foreground">{it.name}</TableCell>
-              <TableCell className="text-muted-foreground">{it.owner}</TableCell>
+              <TableCell className="text-fg-default">{it.name}</TableCell>
+              <TableCell className="text-fg-muted">{it.owner}</TableCell>
               <TableCell>
                 <Badge variant="dot" size="sm" color={it.status.color}>
                   {it.status.label}
                 </Badge>
               </TableCell>
-              <TableCell className="text-muted-foreground tabular-nums">
+              <TableCell className="text-fg-muted tabular-nums">
                 {it.target}
               </TableCell>
             </TableRow>
@@ -241,7 +241,7 @@ function DocumentBody() {
       </Table>
 
       <h2
-        className="pt-2 text-[18px] text-foreground font-bold"
+        className="pt-2 text-[18px] text-fg-default font-bold"
       >
         Draft with AI
       </h2>
@@ -265,11 +265,11 @@ export default function QuillPage() {
         <div className="mx-auto max-w-[760px] px-8 py-12">
           <div className="mb-2 text-[40px]">🗓️</div>
           <h1
-            className="text-[34px] leading-tight text-foreground font-bold"
+            className="text-[34px] leading-tight text-fg-default font-bold"
           >
             Q3 Planning
           </h1>
-          <div className="mb-6 mt-2 flex items-center gap-2 text-[12px] text-muted-foreground">
+          <div className="mb-6 mt-2 flex items-center gap-2 text-[12px] text-fg-muted">
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[9px] text-white">
               DK
             </span>
@@ -299,7 +299,7 @@ export default function QuillPage() {
               </TabPanel>
 
               <TabPanel value="2">
-              <ul className="flex flex-col gap-3 text-[13px] text-muted-foreground">
+              <ul className="flex flex-col gap-3 text-[13px] text-fg-muted">
                 <li>Dana added the Initiatives table · 2h ago</li>
                 <li>Mara changed Billing v2 to “At risk” · 5h ago</li>
                 <li>Sam created this page · yesterday</li>

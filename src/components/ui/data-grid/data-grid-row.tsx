@@ -213,7 +213,7 @@ function DataGridRowImpl<TData>({
       {...props}
       ref={rowRef}
       className={cn(
-        "absolute flex w-full border-b border-border/60 bg-surface-raised",
+        "absolute flex w-full border-b border-border-subtle bg-surface-raised",
         !adjustLayout && "will-change-transform",
         className,
       )}
@@ -259,9 +259,9 @@ function DataGridRowImpl<TData>({
             tabIndex={-1}
             className={cn({
               grow: stretchColumns && columnId !== "select",
-              "border-e border-border/60":
+              "border-e border-border-subtle":
                 showEndBorder && columnId !== "select",
-              "border-s border-border/60":
+              "border-s border-border-subtle":
                 showStartBorder && columnId !== "select",
             })}
             style={{

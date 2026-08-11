@@ -88,7 +88,7 @@ const Table = forwardRef<HTMLTableElement, TableProps>(
                 exit={{ opacity: 0, transition: spring.fast.exit }}
                 transition={{
                   ...spring.fast,
-                  opacity: { duration: 0.08 },
+                  opacity: { duration: spring.fast.duration },
                 }}
               />
             )}
@@ -96,7 +96,7 @@ const Table = forwardRef<HTMLTableElement, TableProps>(
 
           <table
             ref={ref}
-            className={cn("w-full text-body-sm border-collapse", className)}
+            className={cn("w-full text-body border-collapse", className)}
             {...props}
           >
             {children}
@@ -164,8 +164,8 @@ const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
         }}
         data-proximity-index={index}
         className={cn(
-          "group/row relative z-content border-b transition-[border-color] duration-80",
-          hideBorder ? "border-transparent" : "border-accent/40",
+          "group/row relative z-content border-b transition-[border-color] duration-fast",
+          hideBorder ? "border-transparent" : "border-border",
           isBodyRow && activeIdx === index && "is-active",
           className,
           isBodyRow ? "font-normal" : "font-semibold"
@@ -188,7 +188,7 @@ const TableHead = forwardRef<
   <th
     ref={ref}
     className={cn(
-      "px-3 py-2 text-left text-foreground",
+      "px-3 py-2 text-left text-fg-default",
       className
     )}
     {...props}
@@ -206,7 +206,7 @@ const TableCell = forwardRef<
   <td
     ref={ref}
     className={cn(
-      "px-3 py-2 text-muted-foreground transition-colors duration-80 group-[.is-active]/row:text-foreground",
+      "px-3 py-2 text-fg-muted transition-colors duration-fast group-[.is-active]/row:text-fg-default",
       className
     )}
     {...props}

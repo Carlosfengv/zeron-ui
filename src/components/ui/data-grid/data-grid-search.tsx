@@ -227,7 +227,7 @@ function DataGridSearchImpl({
           </Button>
         </div>
       </div>
-      <div className="flex items-center gap-1 whitespace-nowrap text-muted-foreground text-xs">
+      <div className="flex items-center gap-1 whitespace-nowrap text-fg-muted text-label">
         {searchMatches.length > 0 ? (
           <span>
             {matchIndex + 1} of {searchMatches.length}

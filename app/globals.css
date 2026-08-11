@@ -30,9 +30,9 @@
   --fg-default: light-dark(#171717, #F5F5F5);
   --fg-muted: light-dark(#525252, #C0C0C0);
   --fg-subtle: light-dark(#737373, #ADADAD);
-  --fg-disabled: light-dark(#A3A3A3, #737373);
   --fg-brand: light-dark(#0060D2, #80B0E9);
   --fg-danger: light-dark(#B42318, #FCA5A5);
+  --fg-warning: light-dark(#B45309, #FDE68A);
   --fg-on-brand: #FFFFFF;
   --fg-on-danger: #171717;
   --fg-on-inverse: light-dark(#FAFAFA, #171717);
@@ -40,40 +40,34 @@
   --brand-hover: #0055BC;
   --brand-active: #004DAC;
   --muted: light-dark(#F4F4F5, #1E1E1E);
-  --accent: light-dark(#E5E5E5, #525252);
-  --accent-subtlest: light-dark(#F3F3F3, #292929);
-  --accent-subtle: light-dark(#EEEEEE, #363636);
-  --accent-hover: light-dark(#CDCDCD, #5E5E5E);
-  --accent-active: light-dark(#BBBBBB, #686868);
-  --selection-background: light-dark(#D4D4D4, #525252);
+  --secondary-action: light-dark(#E5E5E5, #525252);
+  --secondary-action-hover: light-dark(#CDCDCD, #5E5E5E);
+  --secondary-action-active: light-dark(#BBBBBB, #686868);
+  --emphasis: light-dark(#EEEEEE, #363636);
+  --selection: light-dark(#D4D4D4, #525252);
   --destructive: light-dark(#EF4444, #F87171);
   --destructive-hover: light-dark(#F35854, #FA7E7C);
   --destructive-active: light-dark(#F5655F, #FC8784);
-  --destructive-subtle: light-dark(#FEF2F2, #450A0A);
+  --danger-surface: light-dark(#FEF2F2, #450A0A);
+  --warning-surface: light-dark(#FFFBEB, #451A03);
+  --scrim: light-dark(rgb(0 0 0 / 0.4), rgb(0 0 0 / 0.8));
   --inverse-background: var(--fg-default);
   --inverse-background-hover: light-dark(#262626, #E5E5E5);
   --inverse-background-active: light-dark(#404040, #D4D4D4);
   --border: light-dark(rgb(23 23 23 / 0.12), rgb(245 245 245 / 0.12));
+  --border-subtle: light-dark(rgb(23 23 23 / 0.07), rgb(245 245 245 / 0.07));
   --input: light-dark(#E5E5E5, #404040);
   --input-hover: light-dark(rgb(23 23 23 / 0.24), rgb(245 245 245 / 0.24));
-  --ring: light-dark(#E5E5E5, #404040);
-  --focus-ring: #6B97FF;
+  --danger-border: light-dark(#EF4444, #F87171);
+  --warning-border: #D97706;
+  --focus-ring: #6088E8;
   --hover: light-dark(rgb(0 0 0 / 0.04), rgb(255 255 255 / 0.06));
   --active: light-dark(rgb(0 0 0 / 0.07), rgb(255 255 255 / 0.1));
-  --background: var(--surface-base);
-  --foreground: var(--fg-default);
-  --card: var(--surface-raised);
-  --card-foreground: var(--fg-default);
-  --muted-foreground: light-dark(#737373, #A3A3A3);
-  --accent-foreground: var(--fg-default);
-  --selected: var(--selection-background);
-  --brand-foreground: var(--fg-on-brand);
-  --destructive-light: var(--destructive-subtle);
-  --destructive-foreground: var(--fg-on-danger);
   --checker-a: light-dark(#BBBBBB, #1F1F1F);
   --checker-b: light-dark(#FFFFFF, #2A2A2A);
-  --interaction-overlay-rgb: 0 0 0;
-  --overlay: var(--interaction-overlay-rgb);
+  --scrollbar-thumb: light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.08));
+  --scrollbar-thumb-hover: light-dark(rgb(0 0 0 / 0.12), rgb(255 255 255 / 0.12));
+  --scrollbar-thumb-active: light-dark(rgb(0 0 0 / 0.16), rgb(255 255 255 / 0.16));
   --shadow-color: rgb(0 0 0 / 0.06);
   --dm-hi-base: rgba(255,255,255,0.01);
   --dm-hi-mid: rgba(255,255,255,0.02);
@@ -81,6 +75,12 @@
   --dm-ring-base: rgba(255,255,255,0.02);
   --dm-ring-mid: rgba(255,255,255,0.04);
   --dm-drop: rgba(0,0,0,0.18);
+  --shadow-light-control: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-dark-control: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+  --shadow-control: var(--shadow-light-control);
+  --shadow-light-knob: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-dark-knob: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-knob: var(--shadow-light-knob);
   --shadow-light-raised: 0 0 0 1px var(--shadow-color), 0 1px 1px -0.5px var(--shadow-color);
   --shadow-dark-raised: inset 0 1px 0 0 var(--dm-hi-base), inset 0 0 0 1px var(--dm-ring-base), 0 1px 1px -0.5px var(--dm-drop);
   --shadow-raised: var(--shadow-light-raised);
@@ -91,32 +91,18 @@
   --shadow-dark-overlay: inset 0 1px 0 0 var(--dm-hi-high), inset 0 0 0 1px var(--dm-ring-mid), 0 0 0 1px rgba(0,0,0,0.16), 0 1px 1px -0.5px var(--dm-drop), 0 3px 3px -1.5px var(--dm-drop), 0 6px 6px -3px var(--dm-drop), 0 12px 12px -6px var(--dm-drop);
   --shadow-overlay: var(--shadow-light-overlay);
   --font-family-sans: "Inter", system-ui, sans-serif;
-  --font-size-micro: 0.5625rem;
-  --line-height-micro: 0.75rem;
-  --font-size-overline: 0.625rem;
-  --line-height-overline: 0.875rem;
-  --font-size-caption: 0.6875rem;
-  --line-height-caption: 1rem;
   --font-size-label: 0.75rem;
   --line-height-label: 1rem;
-  --font-size-body-sm: 0.875rem;
-  --line-height-body-sm: 1.25rem;
   --font-size-body: 0.875rem;
   --line-height-body: 1.25rem;
-  --font-size-body-md: 0.9375rem;
-  --line-height-body-md: 1.375rem;
-  --font-size-body-lg: 1rem;
-  --line-height-body-lg: 1.5rem;
   --font-size-title: 1.125rem;
   --line-height-title: 1.625rem;
-  --font-size-title-lg: 1.375rem;
-  --line-height-title-lg: 1.75rem;
   --font-size-heading: 1.5rem;
   --line-height-heading: 2rem;
-  --font-size-heading-lg: 1.75rem;
-  --line-height-heading-lg: 2.125rem;
-  --font-size-display: 2rem;
-  --line-height-display: 2.5rem;
+  --motion-duration-fast: 80ms;
+  --motion-duration-moderate-exit: 120ms;
+  --motion-duration-moderate: 160ms;
+  --motion-duration-slow: 240ms;
   --control-height-xs: 1.75rem;
   --control-height-sm: 2rem;
   --control-height-md: 2.25rem;
@@ -126,7 +112,6 @@
   --focus-radius: 10px;
   --selection-radius: 8px;
   --container-radius: 12px;
-  --overlay-radius: 12px;
   --full-radius: 9999px;
   --layer-underlay: -10;
   --layer-base: 0;
@@ -140,12 +125,12 @@
   --layer-overlay: 40;
   --layer-popover: 50;
   --layer-tooltip: 60;
-  --layer-toast: 70;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --interaction-overlay-rgb: 255 255 255;
+    --shadow-control: var(--shadow-dark-control);
+    --shadow-knob: var(--shadow-dark-knob);
     --shadow-raised: var(--shadow-dark-raised);
     --shadow-floating: var(--shadow-dark-floating);
     --shadow-overlay: var(--shadow-dark-overlay);
@@ -154,7 +139,8 @@
 
 .light {
   color-scheme: light;
-  --interaction-overlay-rgb: 0 0 0;
+  --shadow-control: var(--shadow-light-control);
+  --shadow-knob: var(--shadow-light-knob);
   --shadow-raised: var(--shadow-light-raised);
   --shadow-floating: var(--shadow-light-floating);
   --shadow-overlay: var(--shadow-light-overlay);
@@ -162,7 +148,8 @@
 
 .dark {
   color-scheme: dark;
-  --interaction-overlay-rgb: 255 255 255;
+  --shadow-control: var(--shadow-dark-control);
+  --shadow-knob: var(--shadow-dark-knob);
   --shadow-raised: var(--shadow-dark-raised);
   --shadow-floating: var(--shadow-dark-floating);
   --shadow-overlay: var(--shadow-dark-overlay);
@@ -173,9 +160,9 @@
   --color-fg-default: var(--fg-default);
   --color-fg-muted: var(--fg-muted);
   --color-fg-subtle: var(--fg-subtle);
-  --color-fg-disabled: var(--fg-disabled);
   --color-fg-brand: var(--fg-brand);
   --color-fg-danger: var(--fg-danger);
+  --color-fg-warning: var(--fg-warning);
   --color-fg-on-brand: var(--fg-on-brand);
   --color-fg-on-danger: var(--fg-on-danger);
   --color-fg-on-inverse: var(--fg-on-inverse);
@@ -183,70 +170,56 @@
   --color-brand-hover: var(--brand-hover);
   --color-brand-active: var(--brand-active);
   --color-muted: var(--muted);
-  --color-accent: var(--accent);
-  --color-accent-subtlest: var(--accent-subtlest);
-  --color-accent-subtle: var(--accent-subtle);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-active: var(--accent-active);
-  --color-selection-background: var(--selection-background);
+  --color-secondary-action: var(--secondary-action);
+  --color-secondary-action-hover: var(--secondary-action-hover);
+  --color-secondary-action-active: var(--secondary-action-active);
+  --color-emphasis: var(--emphasis);
+  --color-selection: var(--selection);
   --color-destructive: var(--destructive);
   --color-destructive-hover: var(--destructive-hover);
   --color-destructive-active: var(--destructive-active);
-  --color-destructive-subtle: var(--destructive-subtle);
+  --color-danger-surface: var(--danger-surface);
+  --color-warning-surface: var(--warning-surface);
+  --color-scrim: var(--scrim);
   --color-inverse-background: var(--inverse-background);
   --color-inverse-background-hover: var(--inverse-background-hover);
   --color-inverse-background-active: var(--inverse-background-active);
   --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
   --color-input: var(--input);
   --color-input-hover: var(--input-hover);
-  --color-ring: var(--ring);
+  --color-danger-border: var(--danger-border);
+  --color-warning-border: var(--warning-border);
   --color-focus-ring: var(--focus-ring);
   --color-hover: var(--hover);
   --color-active: var(--active);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-selected: var(--selected);
-  --color-brand-foreground: var(--brand-foreground);
-  --color-destructive-light: var(--destructive-light);
-  --color-destructive-foreground: var(--destructive-foreground);
+  --color-checker-a: var(--checker-a);
+  --color-checker-b: var(--checker-b);
+  --color-scrollbar-thumb: var(--scrollbar-thumb);
+  --color-scrollbar-thumb-hover: var(--scrollbar-thumb-hover);
+  --color-scrollbar-thumb-active: var(--scrollbar-thumb-active);
   --color-surface-base: var(--surface-base);
   --color-surface-raised: var(--surface-raised);
   --color-surface-floating: var(--surface-floating);
   --color-surface-overlay: var(--surface-overlay);
   --color-surface-top: var(--surface-top);
+  --shadow-control: var(--shadow-control);
+  --shadow-knob: var(--shadow-knob);
   --shadow-raised: var(--shadow-raised);
   --shadow-floating: var(--shadow-floating);
   --shadow-overlay: var(--shadow-overlay);
-  --text-micro: var(--font-size-micro);
-  --text-micro--line-height: var(--line-height-micro);
-  --text-overline: var(--font-size-overline);
-  --text-overline--line-height: var(--line-height-overline);
-  --text-caption: var(--font-size-caption);
-  --text-caption--line-height: var(--line-height-caption);
   --text-label: var(--font-size-label);
   --text-label--line-height: var(--line-height-label);
-  --text-body-sm: var(--font-size-body-sm);
-  --text-body-sm--line-height: var(--line-height-body-sm);
   --text-body: var(--font-size-body);
   --text-body--line-height: var(--line-height-body);
-  --text-body-md: var(--font-size-body-md);
-  --text-body-md--line-height: var(--line-height-body-md);
-  --text-body-lg: var(--font-size-body-lg);
-  --text-body-lg--line-height: var(--line-height-body-lg);
   --text-title: var(--font-size-title);
   --text-title--line-height: var(--line-height-title);
-  --text-title-lg: var(--font-size-title-lg);
-  --text-title-lg--line-height: var(--line-height-title-lg);
   --text-heading: var(--font-size-heading);
   --text-heading--line-height: var(--line-height-heading);
-  --text-heading-lg: var(--font-size-heading-lg);
-  --text-heading-lg--line-height: var(--line-height-heading-lg);
-  --text-display: var(--font-size-display);
-  --text-display--line-height: var(--line-height-display);
+  --duration-fast: var(--motion-duration-fast);
+  --duration-moderate-exit: var(--motion-duration-moderate-exit);
+  --duration-moderate: var(--motion-duration-moderate);
+  --duration-slow: var(--motion-duration-slow);
   --spacing-control-xs: var(--control-height-xs);
   --spacing-control-sm: var(--control-height-sm);
   --spacing-control-md: var(--control-height-md);
@@ -256,7 +229,6 @@
   --radius-focus: var(--focus-radius);
   --radius-selection: var(--selection-radius);
   --radius-container: var(--container-radius);
-  --radius-overlay: var(--overlay-radius);
   --radius-full: var(--full-radius);
 
   /* Reserved for the canonical-shadcn comparison page only. */
@@ -281,7 +253,6 @@
   .z-overlay { z-index: var(--layer-overlay); }
   .z-popover { z-index: var(--layer-popover); }
   .z-tooltip { z-index: var(--layer-tooltip); }
-  .z-toast { z-index: var(--layer-toast); }
 }
 /* END GENERATED SEMANTIC TOKENS */
 
@@ -303,10 +274,10 @@ html, body {
   margin: 0;
   min-height: 100vh;
   overscroll-behavior-y: none;
-  background-color: var(--background);
+  background-color: var(--surface-base);
   /* Explicit text color so unstyled text follows the theme (and so the UA's
      color-scheme-driven canvastext default never shows through). */
-  color: var(--foreground);
+  color: var(--fg-default);
   font-family: var(--font-sans);
   /* Inherited by everything (portals included) — a `subpixel-antialiased`
      utility on a subtree is the only way to opt back out. */
@@ -373,8 +344,7 @@ html.transitioning *::after {
    Matches the ScrollArea thumb language (narrow, low-contrast, darkens on
    hover) so surfaces that fall back to native scrollbars (the root page,
    touch-device viewports) stay consistent with the custom scrollbar. Rides
-   the same fixed surface-relative overlay ramp as the ScrollArea thumb
-   (rest 8%, hover 12%, drag 16%) — adapts to dark mode through --overlay.
+   the same semantic scrollbar state colors as the ScrollArea thumb.
    Only on fine pointers; touch devices keep their overlay momentum bars.
    `.scrollbar-hide` still wins (higher specificity). Chromium 121+ renders
    scrollbar-color and ignores the ::-webkit-* block, so both ramps must
@@ -384,7 +354,7 @@ html.transitioning *::after {
 @media (pointer: fine) {
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgb(var(--overlay) / 0.08) transparent;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
   }
 
   ::-webkit-scrollbar {
@@ -403,7 +373,7 @@ html.transitioning *::after {
        The asymmetric edge-side border (5px outer / 1px inner, set per
        orientation below) slides the visible thumb 2px away from the edge,
        matching the ScrollArea thumb's -translate nudge. */
-    background-color: rgb(var(--overlay) / 0.08);
+    background-color: var(--scrollbar-thumb);
     border: 3px solid transparent;
     background-clip: content-box;
     border-radius: 9999px;
@@ -420,11 +390,11 @@ html.transitioning *::after {
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(var(--overlay) / 0.12);
+    background-color: var(--scrollbar-thumb-hover);
   }
 
   ::-webkit-scrollbar-thumb:active {
-    background-color: rgb(var(--overlay) / 0.16);
+    background-color: var(--scrollbar-thumb-active);
   }
 }
 

@@ -133,14 +133,14 @@ function SpringReferenceSection() {
         >
           <div className="flex flex-col gap-0.5">
             <span
-              className="text-[13px] text-foreground font-semibold"
+              className="text-[13px] text-fg-default font-semibold"
             >
               {key}
             </span>
-            <span className="text-[12px] text-muted-foreground">
+            <span className="text-[12px] text-fg-muted">
               → <code className="font-mono">{enterToken}</code> {enterMeta}
             </span>
-            <span className="text-[12px] text-muted-foreground">
+            <span className="text-[12px] text-fg-muted">
               ← <code className="font-mono">{exitToken}</code> {exitMeta}
             </span>
           </div>
@@ -159,7 +159,7 @@ function SpringReferenceSection() {
             <motion.div
               layout
               transition={transitions[i]}
-              className="h-6 w-6 rounded-full bg-foreground"
+              className="h-6 w-6 rounded-full bg-inverse-background"
             />
           </button>
 
@@ -170,12 +170,12 @@ function SpringReferenceSection() {
                 <Link
                   key={label}
                   href={slug}
-                  className="text-[13px] text-muted-foreground/50 transition-colors hover:text-foreground"
+                  className="text-[13px] text-fg-muted/50 transition-colors hover:text-fg-default"
                 >
                   {label}
                 </Link>
               ) : (
-                <span key={label} className="text-[13px] text-muted-foreground/30">
+                <span key={label} className="text-[13px] text-fg-muted/30">
                   {label}
                 </span>
               )
@@ -225,14 +225,14 @@ function SpringTokensDemo() {
           <div key={key} className="flex flex-col gap-1.5">
             <div className="flex items-baseline gap-2 text-[13px]">
               <span
-                className="text-foreground font-semibold"
+                className="text-fg-default font-semibold"
               >
                 {key}
               </span>
-              <span className="font-mono text-[11px] text-muted-foreground/70">
+              <span className="font-mono text-[11px] text-fg-muted/70">
                 {meta}
               </span>
-              <span className="ml-auto hidden text-[12px] text-muted-foreground sm:inline">
+              <span className="ml-auto hidden text-[12px] text-fg-muted sm:inline">
                 {usage}
               </span>
             </div>
@@ -247,12 +247,12 @@ function SpringTokensDemo() {
               <motion.div
                 layout
                 transition={token}
-                className="h-8 w-8 rounded-full bg-foreground"
+                className="h-8 w-8 rounded-full bg-inverse-background"
               />
             </button>
           </div>
         ))}
-        <p className="text-center text-[12px] text-muted-foreground/70">
+        <p className="text-center text-[12px] text-fg-muted/70">
           Click a track (or replay) to fire all three springs.
         </p>
       </div>
@@ -292,14 +292,14 @@ function ModalFrame({
   return (
     <div
       aria-hidden="true"
-      className="relative flex h-[200px] w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-background"
+      className="relative flex h-[200px] w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-surface-base"
     >
       <AnimatePresence>
         {open && (
           <>
             {/* subtle backdrop */}
             <motion.div
-              className="absolute inset-0 bg-foreground/5"
+              className="absolute inset-0 bg-fg-default/5"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: exitTransition }}
@@ -307,24 +307,24 @@ function ModalFrame({
             />
             {/* modal card */}
             <motion.div
-              className="relative z-10 flex w-4/5 flex-col gap-2.5 rounded-xl border border-border bg-card p-4 shadow-xl"
+              className="relative z-10 flex w-4/5 flex-col gap-2.5 rounded-xl border border-border bg-surface-raised p-4 shadow-xl"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95, transition: exitTransition }}
               transition={spring.slow}
             >
               {/* close affordance */}
-              <div className="absolute right-3 top-3 h-4 w-4 rounded-full bg-foreground/10" />
+              <div className="absolute right-3 top-3 h-4 w-4 rounded-full bg-fg-default/10" />
               {/* title */}
-              <div className="h-3 w-1/2 rounded-full bg-foreground/10" />
+              <div className="h-3 w-1/2 rounded-full bg-fg-default/10" />
               {/* body */}
-              <div className="mt-1 h-2 w-full rounded-full bg-foreground/6" />
-              <div className="h-2 w-full rounded-full bg-foreground/6" />
-              <div className="h-2 w-2/5 rounded-full bg-foreground/6" />
+              <div className="mt-1 h-2 w-full rounded-full bg-fg-default/6" />
+              <div className="h-2 w-full rounded-full bg-fg-default/6" />
+              <div className="h-2 w-2/5 rounded-full bg-fg-default/6" />
               {/* footer actions */}
               <div className="mt-3 flex justify-end gap-2">
-                <div className="h-6 w-16 rounded-md bg-foreground/10" />
-                <div className="h-6 w-16 rounded-md bg-foreground/10" />
+                <div className="h-6 w-16 rounded-control bg-fg-default/10" />
+                <div className="h-6 w-16 rounded-control bg-fg-default/10" />
               </div>
             </motion.div>
           </>
@@ -340,7 +340,7 @@ function ModalExitDemo() {
   const [openSame, setOpenSame] = useState(false);
   const [openFaster, setOpenFaster] = useState(false);
   const labelClass =
-    "flex items-center justify-center gap-2 text-[12px] text-muted-foreground";
+    "flex items-center justify-center gap-2 text-[12px] text-fg-muted";
   return (
     <ComponentPreview code={MODAL_CODE} minHeightClass="min-h-[320px]">
       <div className="flex w-full max-w-2xl flex-col items-center gap-4">
@@ -377,7 +377,7 @@ function ModalExitDemo() {
             </span>
           </div>
         </div>
-        <p className="text-center text-[12px] text-muted-foreground/70">
+        <p className="text-center text-[12px] text-fg-muted/70">
           Toggle one, then the other — both open on{" "}
           <span className="font-mono">spring.slow</span>; only the close differs.
         </p>
@@ -401,31 +401,31 @@ export default function MotionDoc() {
       description="Three spring speeds, and exits always move a little faster than entrances. Pick a speed, wire it in — every component follows the same pattern."
     >
       <DocSection title={t("threeSpeeds")}>
-        <p className="text-[13px] leading-relaxed text-muted-foreground">
+        <p className="text-[13px] leading-relaxed text-fg-muted">
           {t("threeSpeedsBody")}
         </p>
         <SpringTokensDemo />
       </DocSection>
 
       <DocSection title={t("slowInFasterOut")}>
-        <p className="text-[13px] leading-relaxed text-muted-foreground">
+        <p className="text-[13px] leading-relaxed text-fg-muted">
           {t("slowInFasterOutBody")}
         </p>
         <ModalExitDemo />
       </DocSection>
 
       <DocSection title={t("allTokens")}>
-        <p className="text-[13px] leading-relaxed text-muted-foreground">
+        <p className="text-[13px] leading-relaxed text-fg-muted">
           {t("allTokensBody")}
         </p>
         <SpringReferenceSection />
 
         <h3
-          className="mt-8 text-[15px] text-foreground font-semibold"
+          className="mt-8 text-[15px] text-fg-default font-semibold"
         >
           {t("reducedMotion")}
         </h3>
-        <p className="text-[13px] leading-relaxed text-muted-foreground">
+        <p className="text-[13px] leading-relaxed text-fg-muted">
           {t("reducedMotionBody")}
         </p>
       </DocSection>

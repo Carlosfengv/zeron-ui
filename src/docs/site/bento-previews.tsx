@@ -230,12 +230,12 @@ function CheckboxPreview() {
   const [checked, setChecked] = useState(true);
 
   return (
-    <div className="flex flex-col gap-3 text-body-sm">
+    <div className="flex flex-col gap-3 text-body">
       <label className="flex cursor-pointer items-center gap-2.5">
         <Checkbox checked={checked} onCheckedChange={setChecked} />
         <span>Product updates</span>
       </label>
-      <label className="flex cursor-pointer items-center gap-2.5 text-muted-foreground">
+      <label className="flex cursor-pointer items-center gap-2.5 text-fg-muted">
         <Checkbox checked="indeterminate" />
         <span>Selected projects</span>
       </label>
@@ -334,16 +334,16 @@ function InputGroupPreview() {
 
 function KbdPreview() {
   return (
-    <div className="flex w-full max-w-[280px] flex-col gap-3 text-body-sm">
+    <div className="flex w-full max-w-[280px] flex-col gap-3 text-body">
       <div className="flex items-center justify-between gap-4">
-        <span className="text-muted-foreground">Command palette</span>
+        <span className="text-fg-muted">Command palette</span>
         <KbdGroup aria-label="Command K">
           <Kbd aria-label="Command">⌘</Kbd>
           <Kbd>K</Kbd>
         </KbdGroup>
       </div>
       <div className="flex items-center justify-between gap-4">
-        <span className="text-muted-foreground">Quick open</span>
+        <span className="text-fg-muted">Quick open</span>
         <KbdGroup aria-label="Command P">
           <Kbd aria-label="Command">⌘</Kbd>
           <Kbd>P</Kbd>
@@ -378,7 +378,7 @@ function RadioGroupPreview() {
       <RadioGroup value={value} onValueChange={setValue}>
         {RADIO_ITEMS.map((item) => (
           <label
-            className="flex cursor-pointer items-center gap-2.5 text-body-sm"
+            className="flex cursor-pointer items-center gap-2.5 text-body"
             key={item.value}
           >
             <RadioGroupItem value={item.value} />
@@ -415,8 +415,8 @@ function SliderPreview() {
     <div className="flex flex-col gap-8 w-full max-w-[280px]">
       <div className="flex flex-col gap-1.5 w-full">
         <div className="flex items-center justify-between text-[13px]">
-          <span className="text-muted-foreground">{SLIDER_OPACITY.label}</span>
-          <span className="text-muted-foreground tabular-nums">{basic}</span>
+          <span className="text-fg-muted">{SLIDER_OPACITY.label}</span>
+          <span className="text-fg-muted tabular-nums">{basic}</span>
         </div>
         <Slider value={basic} onChange={(v) => setBasic(v as number)} showValue={false} />
       </div>

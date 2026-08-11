@@ -677,7 +677,7 @@ function StepperItem(props: StepperItemProps) {
         dir: context.dir,
         ref,
         className: cn(
-          "relative flex items-center p-2 transition-colors duration-80 data-[state=active]:bg-hover",
+          "relative flex items-center p-2 transition-colors duration-fast data-[state=active]:bg-hover",
           orientation === "horizontal"
             ? "flex-row"
             : "w-full flex-col items-start",
@@ -996,9 +996,9 @@ function StepperTrigger(props: ButtonProps) {
         tabIndex: isTabStop ? 0 : -1,
         ref: composedRef,
         className: cn(
-          "inline-flex items-center justify-center gap-3 text-left outline-none transition-[color,box-shadow] duration-80",
-          "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
-          "disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-1 aria-invalid:ring-destructive/40",
+          "inline-flex items-center justify-center gap-3 text-left outline-none transition-[color,box-shadow] duration-fast",
+          "focus-visible:ring-1 focus-visible:ring-focus-ring",
+          "disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-1 aria-invalid:ring-danger-border/40",
           "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
           shape.button,
           className,
@@ -1050,7 +1050,7 @@ function StepperIndicator(props: StepperIndicatorProps) {
         ref,
         style: { ...style },
         className: cn(
-          "flex size-6 shrink-0 items-center justify-center bg-muted text-label text-foreground transition-colors duration-80",
+          "flex size-6 shrink-0 items-center justify-center bg-muted text-label text-fg-default transition-colors duration-fast",
           "data-[state=active]:bg-brand data-[state=completed]:bg-brand",
           "data-[state=active]:text-fg-on-brand data-[state=completed]:text-fg-on-brand",
           shape.item,
@@ -1098,7 +1098,7 @@ function StepperTitle(props: StepperTitleProps) {
         dir: context.dir,
         ref,
         style,
-        className: cn("text-body-sm font-medium", className),
+        className: cn("text-body font-medium", className),
       },
       titleProps,
     ),
@@ -1128,7 +1128,7 @@ function StepperDescription(props: StepperDescriptionProps) {
         id: descriptionId,
         dir: context.dir,
         ref,
-        className: cn("text-caption text-muted-foreground", className),
+        className: cn("text-label text-fg-muted", className),
       },
       descriptionProps,
     ),

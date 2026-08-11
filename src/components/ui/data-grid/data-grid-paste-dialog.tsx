@@ -99,10 +99,10 @@ function PasteDialogImpl({
               defaultChecked
             />
             <div className="flex flex-col gap-1">
-              <span className="font-medium text-sm leading-none">
+              <span className="font-medium text-body leading-none">
                 Create new rows
               </span>
-              <span className="text-muted-foreground text-sm">
+              <span className="text-fg-muted text-body">
                 Add {pasteDialog.rowsNeeded} new row
                 {pasteDialog.rowsNeeded !== 1 ? "s" : ""} to the table and paste
                 all data
@@ -112,10 +112,10 @@ function PasteDialogImpl({
           <label className="flex cursor-pointer items-start gap-3">
             <RadioItem name="expand-option" value="no-expand" />
             <div className="flex flex-col gap-1">
-              <span className="font-medium text-sm leading-none">
+              <span className="font-medium text-body leading-none">
                 Keep current rows
               </span>
-              <span className="text-muted-foreground text-sm">
+              <span className="text-fg-muted text-body">
                 Paste only what fits in the existing rows
               </span>
             </div>
@@ -137,10 +137,10 @@ function RadioItem({ className, ...props }: React.ComponentProps<"input">) {
     <input
       type="radio"
       className={cn(
-        "relative size-4 shrink-0 appearance-none rounded-full border border-input bg-background shadow-xs outline-none transition-[color,box-shadow]",
-        "text-foreground focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
+        "relative size-4 shrink-0 appearance-none rounded-full border border-input bg-surface-base shadow-control outline-none transition-[color,box-shadow]",
+        "text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        "checked:before:absolute checked:before:start-1/2 checked:before:top-1/2 checked:before:size-2 checked:before:-translate-x-1/2 checked:before:-translate-y-1/2 checked:before:rounded-full checked:before:bg-foreground checked:before:content-['']",
+        "checked:before:absolute checked:before:start-1/2 checked:before:top-1/2 checked:before:size-2 checked:before:-translate-x-1/2 checked:before:-translate-y-1/2 checked:before:rounded-full checked:before:bg-inverse-background checked:before:content-['']",
         "dark:bg-input/30",
         className,
       )}

@@ -107,15 +107,15 @@ export default function DataTableDoc() {
       <DocSection title={t("apiReference")}>
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">DataTable</h3>
+            <h3 className="text-body text-fg-default">DataTable</h3>
             <PropsTable props={dataTableProps(t)} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">useDataTable</h3>
+            <h3 className="text-body text-fg-default">useDataTable</h3>
             <PropsTable props={hookProps(t)} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">Column meta</h3>
+            <h3 className="text-body text-fg-default">Column meta</h3>
             <PropsTable props={metaProps(t)} />
           </div>
         </div>

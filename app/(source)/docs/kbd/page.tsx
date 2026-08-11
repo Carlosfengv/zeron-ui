@@ -81,8 +81,8 @@ export default function KbdDoc() {
 
       <DocSection title={t("inContext")}>
         <ComponentPreview code={contextCode}>
-          <div className="flex w-80 max-w-full items-center justify-between gap-6 border border-border/60 bg-muted/30 px-3 py-2 rounded-xl">
-            <span className="text-body-sm text-foreground">Open command palette</span>
+          <div className="flex w-80 max-w-full items-center justify-between gap-6 border border-border-subtle bg-muted/30 px-3 py-2 rounded-xl">
+            <span className="text-body text-fg-default">Open command palette</span>
             <KbdGroup aria-label="Command K">
               <Kbd aria-label="Command">⌘</Kbd>
               <Kbd>K</Kbd>
@@ -106,11 +106,11 @@ export default function KbdDoc() {
       <DocSection title={t("apiReference")}>
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">Kbd</h3>
+            <h3 className="text-body text-fg-default">Kbd</h3>
             <PropsTable props={kbdProps} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">KbdGroup</h3>
+            <h3 className="text-body text-fg-default">KbdGroup</h3>
             <PropsTable props={groupProps} />
           </div>
         </div>

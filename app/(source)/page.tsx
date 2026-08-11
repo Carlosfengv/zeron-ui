@@ -20,10 +20,10 @@ export default function Page() {
       <div className="w-full max-w-[1200px] mx-auto px-6 pb-16">
         <BentoGrid components={allComponentList} />
         <section className="mt-14">
-          <h2 className="text-[18px] text-foreground font-semibold">{t("allComponents")}</h2>
-          <p className="mt-1 text-body-sm text-muted-foreground">{t("allComponentsDescription")}</p>
+          <h2 className="text-[18px] text-fg-default font-semibold">{t("allComponents")}</h2>
+          <p className="mt-1 text-body text-fg-muted">{t("allComponentsDescription")}</p>
           <div className="mt-5 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3 lg:grid-cols-4">
-            {remaining.map((component) => <Link key={component.slug} href={localizePathname(`/docs/${component.slug}`, localePrefix)} className="text-body-sm text-muted-foreground transition-colors hover:text-foreground">{component.name}</Link>)}
+            {remaining.map((component) => <Link key={component.slug} href={localizePathname(`/docs/${component.slug}`, localePrefix)} className="text-body text-fg-muted transition-colors hover:text-fg-default">{component.name}</Link>)}
           </div>
         </section>
       </div>

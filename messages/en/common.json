@@ -6,11 +6,13 @@
   "navigation": {
     "main": "Main navigation",
     "system": "System navigation",
+    "layout": "Layout navigation",
     "components": "Component navigation",
     "aiAgent": "AI Agent navigation",
     "showcase": "Showcase",
     "introduction": "Introduction",
     "systemGroup": "System",
+    "layoutGroup": "Layout",
     "componentsGroup": "Components",
     "aiAgentGroup": "AI Agent",
     "open": "Open navigation"
@@ -64,6 +66,8 @@
     "code": "Code",
     "inspect": "Inspect",
     "replayAnimation": "Replay animation",
+    "fullscreen": "Full screen",
+    "exitFullscreen": "Exit full screen",
     "highlighting": "Highlighting…"
   },
   "playground": {
@@ -85,11 +89,16 @@
     "introductionDescription": "Why these components feel different.",
     "descriptions": {
       "surfaces": "Five semantic surfaces with purpose-based shadows for light and dark mode.",
-      "semantic-tokens": "The complete runtime contract for color, surface, type, shape, and layering.",
+      "semantic-tokens": "Choose color, surface, type, shape, and layer tokens by the object you are designing.",
       "scrollbars": "A scrollbar that stays out of the way but never disappears, over shadcn's scroll-fade baseline — restyled to the shape system, native scroll on touch.",
       "motion": "Spring tokens, faster exits, and reflow-free weight animation — the motion rules shared by every component.",
+      "app-shell": "Composable application frame for Sidebar, header, and main content.",
+      "page-layout": "Responsive page composition for headers, content, actions, and optional asides.",
+      "sidebar": "Responsive navigation rail with desktop collapse and a mobile drawer.",
+      "top-nav": "Composable top navigation with brand, primary links, and actions.",
+      "nav-menu": "Router-agnostic navigation primitives shared by Sidebar and TopNav.",
       "accordion": "Collapsible sections with animated expand/collapse and proximity hover in grouped mode.",
-      "badge": "Compact label with solid and dot variants, Tailwind color palette, and three sizes.",
+      "badge": "Compact label with categorical colors, semantic statuses, solid and dot variants, and three sizes.",
       "badge-overflow": "Responsive badge list that collapses hidden items into an overflow count.",
       "breadcrumb": "Composable path navigation with separators, current-page state, and collapsed levels.",
       "button": "Buttons trigger actions and move people through a task. Choose a variant by priority and intent, not color alone.",

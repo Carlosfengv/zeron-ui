@@ -392,7 +392,7 @@ export function InspectOverlay({
               className="absolute flex items-center justify-center"
               style={{ left: s.left, top: s.top, width: s.width, height: s.height, background: GREEN }}
             >
-              <span className="text-[9px] font-mono font-semibold leading-none text-foreground">
+              <span className="text-[9px] font-mono font-semibold leading-none text-fg-default">
                 {s.label}
               </span>
             </div>
@@ -403,7 +403,7 @@ export function InspectOverlay({
               className="absolute flex items-center justify-center"
               style={{ left: s.left, top: s.top, width: s.width, height: s.height, background: GREEN, outline: `1px dashed ${GREEN_LINE}`, outlineOffset: -1 }}
             >
-              <span className="text-[9px] font-mono font-semibold leading-none text-foreground">
+              <span className="text-[9px] font-mono font-semibold leading-none text-fg-default">
                 {s.label}
               </span>
             </div>

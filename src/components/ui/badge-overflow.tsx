@@ -193,7 +193,7 @@ function BadgeOverflow<T = string>(props: BadgeOverflowProps<T>) {
     renderOverflow ? (
       renderOverflow(count)
     ) : (
-      <div className="inline-flex h-5 shrink-0 items-center rounded-md border border-border px-1.5 text-xs font-semibold text-foreground">
+      <div className="inline-flex h-5 shrink-0 items-center rounded-control border border-border px-1.5 text-label font-semibold text-fg-default">
         +{count}
       </div>
     );
@@ -207,7 +207,7 @@ function BadgeOverflow<T = string>(props: BadgeOverflowProps<T>) {
             aria-label={`Show all ${items.length} badges (${count} hidden)`}
             className={cn(
               "inline-flex shrink-0 cursor-pointer appearance-none border-0 bg-transparent p-0 text-inherit outline-none",
-              "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
+              "focus-visible:ring-1 focus-visible:ring-focus-ring",
               shape.item
             )}
           >
@@ -233,7 +233,7 @@ function BadgeOverflow<T = string>(props: BadgeOverflowProps<T>) {
               className={cn(
                 selectItemClassName,
                 shape.item,
-                "w-full cursor-default text-muted-foreground hover:bg-hover hover:text-foreground"
+                "w-full cursor-default text-fg-muted hover:bg-hover hover:text-fg-default"
               )}
             >
               {renderBadge(item, getBadgeLabel(item))}

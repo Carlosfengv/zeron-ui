@@ -64,14 +64,14 @@ export function TooltipContent({
       >
         <TooltipPrimitive.Popup
           className={cn(
-            "z-tooltip w-fit max-w-xs origin-[var(--transform-origin)] rounded-md bg-inverse-background px-2 py-1 text-fg-on-inverse text-label text-balance data-closed:animate-out data-open:animate-in data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95",
+            "z-tooltip w-fit max-w-xs origin-[var(--transform-origin)] rounded-control bg-inverse-background px-2 py-1 text-fg-on-inverse text-label text-balance data-closed:animate-out data-open:animate-in data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95",
             className,
           )}
           data-slot="tooltip-content"
           {...props}
         >
           {children}
-          <TooltipPrimitive.Arrow className="z-tooltip size-2 rotate-45 rounded-[1px] bg-foreground fill-foreground data-[side=bottom]:-top-1 data-[side=left]:-right-1 data-[side=right]:-left-1 data-[side=top]:-bottom-1" />
+          <TooltipPrimitive.Arrow className="z-tooltip size-2 rotate-45 rounded-[1px] bg-inverse-background fill-inverse-background data-[side=bottom]:-top-1 data-[side=left]:-right-1 data-[side=right]:-left-1 data-[side=top]:-bottom-1" />
         </TooltipPrimitive.Popup>
       </TooltipPrimitive.Positioner>
     </TooltipPrimitive.Portal>

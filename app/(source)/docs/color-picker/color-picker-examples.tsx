@@ -9,7 +9,7 @@ export function ControlledColorPickerExample() {
   return (
     <div className="flex flex-col gap-3 items-start">
       <ColorPicker value={color} onValueChange={setColor} />
-      <p className="text-[13px] text-muted-foreground">
+      <p className="text-[13px] text-fg-muted">
         Current: <span className="font-mono">{color}</span>
       </p>
     </div>
@@ -35,7 +35,7 @@ export function RemovableColorPickerExample() {
     <button
       type="button"
       onClick={() => setColor("#6B97FF")}
-      className="text-[13px] text-muted-foreground hover:text-foreground border border-dashed border-border px-3 h-9 rounded-lg cursor-pointer"
+      className="text-[13px] text-fg-muted hover:text-fg-default border border-dashed border-border px-3 h-9 rounded-control cursor-pointer"
     >
       + Add fill
     </button>

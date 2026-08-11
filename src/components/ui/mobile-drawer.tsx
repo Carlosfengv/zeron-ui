@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode, type RefObject } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -21,11 +21,14 @@ import { surfaceClasses } from "@/lib/surface-classes";
 // focus trap, focus restore timed after close, Esc + outside-click
 // dismissal — while leaving the slide animation to framer-motion.
 
-interface MobileDrawerProps {
+export interface MobileDrawerProps {
   open: boolean;
   onClose: () => void;
   children: ReactNode;
   triggerRef?: RefObject<HTMLElement | null>;
+  ariaLabel?: string;
+  panelClassName?: string;
+  panelStyle?: CSSProperties;
 }
 
 // Props framer-motion redefines with incompatible signatures; they must not
@@ -45,6 +48,9 @@ export function MobileDrawer({
   onClose,
   children,
   triggerRef,
+  ariaLabel = "Navigation",
+  panelClassName,
+  panelStyle,
 }: MobileDrawerProps) {
   const substrate = useSurface();
   const surface = resolveSurface(substrate, "overlay");
@@ -78,7 +84,7 @@ export function MobileDrawer({
     >
       <DialogPrimitive.Portal>
         {/* Overlay — same scrim as the library's dialogs: an always-on
-            bg-black/40 base that stays visible for system-dark users (the
+            bg-scrim base that stays visible for system-dark users (the
             `dark:` variant only matches the explicit .dark class), boosted
             to /80 in explicit dark mode. */}
         <DialogPrimitive.Backdrop
@@ -90,10 +96,10 @@ export function MobileDrawer({
             return (
               <motion.div
                 {...(rest as MotionSafeDivProps)}
-                className="fixed inset-0 bg-black/40 dark:bg-black/80 z-overlay"
+                className="fixed inset-0 bg-scrim z-overlay"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: open ? 1 : 0 }}
-                transition={open ? { duration: 0.16 } : spring.moderate.exit}
+                transition={open ? { duration: spring.moderate.duration } : spring.moderate.exit}
               />
             );
           }}
@@ -101,7 +107,7 @@ export function MobileDrawer({
 
         {/* Panel */}
         <DialogPrimitive.Popup
-          aria-label="Navigation"
+          aria-label={ariaLabel}
           finalFocus={triggerRef}
           render={(popupProps) => {
             const {
@@ -113,9 +119,13 @@ export function MobileDrawer({
                 {...(rest as MotionSafeDivProps)}
                 className={cn(
                   "fixed top-0 left-0 bottom-0 w-64 z-popover overflow-y-auto p-4",
+                  panelClassName,
                   surfaceClasses(surface, "overlay")
                 )}
-                style={baseStyle as React.CSSProperties | undefined}
+                style={{
+                  ...(baseStyle as React.CSSProperties | undefined),
+                  ...panelStyle,
+                }}
                 initial={{ x: "-100%" }}
                 animate={{ x: open ? 0 : "-100%" }}
                 // spring.moderate: critically damped, so the panel decelerates

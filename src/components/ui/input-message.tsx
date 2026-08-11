@@ -182,7 +182,7 @@ function FilePreviewTile({ file, onRemove, size }: FilePreviewTileProps) {
           // of theme — the close badge needs to read as a "delete affordance"
           // over arbitrary image/PDF content, so it sits at a fixed contrast
           // instead of flipping with the surrounding surface.
-          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-neutral-900 text-white opacity-0 group-hover/tile:opacity-100 transition-opacity duration-80 flex items-center justify-center cursor-pointer outline-none focus-visible:opacity-100 focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
+          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-inverse-background text-fg-on-inverse opacity-0 group-hover/tile:opacity-100 transition-opacity duration-fast flex items-center justify-center cursor-pointer outline-none focus-visible:opacity-100 focus-visible:ring-1 focus-visible:ring-focus-ring"
         >
           <XIcon size={12} strokeWidth={2.5} />
         </button>
@@ -255,14 +255,14 @@ function QueuedRow({
       className={cn(
         // Fixed height (was py-1.5 around a 19.5px line box ≈ 31.5px) so the
         // text-box trim on the label doesn't shrink the row.
-        "group/qrow flex h-control-sm items-center gap-2 rounded-lg bg-muted px-2.5",
-        "text-body-sm text-foreground/85 select-none outline-none",
+        "group/qrow flex h-control-sm items-center gap-2 rounded-control bg-muted px-2.5",
+        "text-body text-fg-default/85 select-none outline-none",
         "cursor-grab active:cursor-grabbing",
-        "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]", "font-normal"
+        "focus-visible:ring-1 focus-visible:ring-focus-ring", "font-normal"
       )}
     >
       {fileCount > 0 && (
-        <span className="flex shrink-0 items-center gap-0.5 text-muted-foreground">
+        <span className="flex shrink-0 items-center gap-0.5 text-fg-muted">
           <ImageIcon size={13} />
           {item.text && <span className="tabular-nums">{fileCount}</span>}
         </span>
@@ -283,14 +283,14 @@ function QueuedRow({
           aria-label={`Remove queued message: ${label}`}
           className={cn(
             "shrink-0 flex h-5 w-5 items-center justify-center rounded-full",
-            "text-muted-foreground hover:text-foreground hover:bg-hover",
+            "text-fg-muted hover:text-fg-default hover:bg-hover",
             // Hover devices reveal × on row-hover; touch has no hover, so keep
             // it persistently visible there.
             isTouch
               ? "opacity-100"
               : "opacity-0 group-hover/qrow:opacity-100 focus-visible:opacity-100",
-            "transition-opacity duration-80 cursor-pointer outline-none",
-            "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
+            "transition-opacity duration-fast cursor-pointer outline-none",
+            "focus-visible:ring-1 focus-visible:ring-focus-ring"
           )}
         >
           <XIcon size={13} strokeWidth={2.5} />
@@ -408,7 +408,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
     // `shadow-raised` supplies the resting edge.
     const EDGE_DROP = "0 1px 1px -0.5px var(--shadow-color)";
     const edgeShadow = dragOver
-      ? `0 0 0 1px #6B97FF, ${EDGE_DROP}`
+      ? `0 0 0 1px var(--focus-ring), ${EDGE_DROP}`
       : focusVisible
         ? `0 0 0 1px var(--input-hover), ${EDGE_DROP}`
         : hovered && clickToFocus && !disabled
@@ -749,7 +749,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
           // border. State changes recolor that same 1px ring in place rather
           // than layering a second colored border beside it — so hover / focus
           // bump *contrast* without ever appearing to thicken the stroke.
-          "flex flex-col gap-1 p-2 transition-[box-shadow,color] duration-80",
+          "flex flex-col gap-1 p-2 transition-[box-shadow,color] duration-fast",
           surfaceClasses("raised", "raised"),
           shape.container,
           clickToFocus && !disabled && "cursor-text",
@@ -883,7 +883,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
             aria-label={textareaProps?.["aria-label"] ?? "Message"}
             className={cn(
               "w-full resize-none bg-transparent outline-none",
-              "text-body leading-5 text-foreground placeholder:text-muted-foreground",
+              "text-body leading-5 text-fg-default placeholder:text-fg-muted",
               "px-2 py-2", "font-normal"
             )}
             {...restTextareaProps}

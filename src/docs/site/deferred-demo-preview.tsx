@@ -14,6 +14,6 @@ export function DeferredDemoPreview({ slug }: { slug: string }) {
     return () => { cancelled = true; };
   }, [slug]);
 
-  if (!Preview) return <div className="text-body-sm text-muted-foreground">Loading preview…</div>;
+  if (!Preview) return <div className="text-body text-fg-muted">Loading preview…</div>;
   return <Preview />;
 }

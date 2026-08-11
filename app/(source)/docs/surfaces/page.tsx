@@ -58,10 +58,10 @@ function SurfaceCard({ role }: { role: SurfaceRole }) {
       data-surface={role}
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="text-body-sm font-semibold">{example.label}</span>
-        <code className="text-caption text-muted-foreground">{role}</code>
+        <span className="text-body font-semibold">{example.label}</span>
+        <code className="text-label text-fg-muted">{role}</code>
       </div>
-      <p className="mt-6 text-caption leading-relaxed text-muted-foreground">
+      <p className="mt-6 text-label leading-relaxed text-fg-muted">
         {example.use}
       </p>
     </article>
@@ -89,25 +89,25 @@ function SemanticNestingDemo() {
           shadow="raised"
           surface="raised"
         >
-          <p className="text-caption text-muted-foreground">Raised container</p>
+          <p className="text-label text-fg-muted">Raised container</p>
           <Elevated
-            className="mt-3 rounded-overlay p-3"
+            className="mt-3 rounded-container p-3"
             shadow="floating"
             surface="floating"
           >
-            <p className="text-caption text-muted-foreground">Floating content</p>
+            <p className="text-label text-fg-muted">Floating content</p>
             <Elevated
-              className="mt-3 rounded-overlay p-3"
+              className="mt-3 rounded-container p-3"
               shadow="overlay"
               surface="overlay"
             >
-              <p className="text-caption text-muted-foreground">Overlay</p>
+              <p className="text-label text-fg-muted">Overlay</p>
               <Elevated
-                className="mt-3 rounded-overlay p-3"
+                className="mt-3 rounded-container p-3"
                 shadow="floating"
                 surface="top"
               >
-                <p className="text-caption text-muted-foreground">
+                <p className="text-label text-fg-muted">
                   Top nested surface
                 </p>
               </Elevated>
@@ -129,7 +129,7 @@ export default function SurfacesDoc() {
       title="Surfaces"
     >
       <DocSection title={t("semanticRoles")}>
-        <p className="max-w-[62ch] text-body-sm leading-relaxed text-muted-foreground">
+        <p className="max-w-[62ch] text-body leading-relaxed text-fg-muted">
           {t("semanticRolesBody")}
         </p>
         <ComponentPreview code={SURFACE_CODE} padding="responsive">
@@ -138,7 +138,7 @@ export default function SurfacesDoc() {
       </DocSection>
 
       <DocSection title={t("relativeNesting")}>
-        <p className="max-w-[62ch] text-body-sm leading-relaxed text-muted-foreground">
+        <p className="max-w-[62ch] text-body leading-relaxed text-fg-muted">
           {t("relativeNestingBody")}
         </p>
         <ComponentPreview
@@ -152,9 +152,9 @@ export default function SurfacesDoc() {
 
       <DocSection title={t("tokenContract")}>
         <div className="overflow-x-auto border-y border-border">
-          <table className="w-full min-w-[580px] border-collapse text-left text-body-sm">
+          <table className="w-full min-w-[580px] border-collapse text-left text-body">
             <thead>
-              <tr className="border-b border-border bg-muted/40 text-caption text-muted-foreground">
+              <tr className="border-b border-border bg-muted/40 text-label text-fg-muted">
                 <th className="px-3 py-2 font-normal">{t("cssToken")}</th>
                 <th className="px-3 py-2 font-normal">Tailwind</th>
                 <th className="px-3 py-2 font-normal">{t("light")}</th>
@@ -165,19 +165,19 @@ export default function SurfacesDoc() {
             <tbody className="divide-y divide-border/80">
               {surfaceTokens.map((token) => (
                 <tr key={token.name}>
-                  <td className="px-3 py-2.5 font-mono text-caption">
+                  <td className="px-3 py-2.5 font-mono text-label">
                     --surface-{token.name}
                   </td>
-                  <td className="px-3 py-2.5 font-mono text-caption">
+                  <td className="px-3 py-2.5 font-mono text-label">
                     bg-surface-{token.name}
                   </td>
-                  <td className="px-3 py-2.5 font-mono text-caption">
+                  <td className="px-3 py-2.5 font-mono text-label">
                     {token.light}
                   </td>
-                  <td className="px-3 py-2.5 font-mono text-caption">
+                  <td className="px-3 py-2.5 font-mono text-label">
                     {token.dark}
                   </td>
-                  <td className="px-3 py-2.5 text-caption text-muted-foreground">
+                  <td className="px-3 py-2.5 text-label text-fg-muted">
                     {token.usage}
                   </td>
                 </tr>
@@ -188,7 +188,7 @@ export default function SurfacesDoc() {
       </DocSection>
 
       <DocSection title={t("shadowContract")}>
-        <p className="max-w-[62ch] text-body-sm leading-relaxed text-muted-foreground">
+        <p className="max-w-[62ch] text-body leading-relaxed text-fg-muted">
           {t("shadowContractBody")}
         </p>
         <div className="grid gap-3 sm:grid-cols-3">
@@ -197,8 +197,8 @@ export default function SurfacesDoc() {
               className={`rounded-container bg-surface-raised p-4 ${shadowClasses(token.name as Exclude<ShadowRole, "none">)}`}
               key={token.name}
             >
-              <code className="text-caption">--shadow-{token.name}</code>
-              <p className="mt-2 text-caption leading-relaxed text-muted-foreground">
+              <code className="text-label">--shadow-{token.name}</code>
+              <p className="mt-2 text-label leading-relaxed text-fg-muted">
                 {token.usage}
               </p>
             </div>

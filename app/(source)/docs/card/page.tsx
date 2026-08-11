@@ -117,7 +117,7 @@ const separatedCode = `// Separated inline tiles with a full-height image; the a
 </CardGroup>`;
 
 const promoCode = `<Card dismissible onDismiss={() => {}}
-  className="border border-border/60 overflow-hidden rounded-xl">
+  className="border border-border-subtle overflow-hidden rounded-xl">
   <CardImage src={banner} />
   <CardHeader>
     <CardTitle>Meet the new Card component</CardTitle>
@@ -325,7 +325,7 @@ function PromoDemo() {
       <button
         type="button"
         onClick={() => setDismissed(false)}
-        className="text-[13px] text-muted-foreground hover:text-foreground underline underline-offset-4 cursor-pointer"
+        className="text-[13px] text-fg-muted hover:text-fg-default underline underline-offset-4 cursor-pointer"
       >
         Restore card
       </button>
@@ -336,7 +336,7 @@ function PromoDemo() {
       <Card
         dismissible
         onDismiss={() => setDismissed(true)}
-        className="border border-border/60 overflow-hidden rounded-xl"
+        className="border border-border-subtle overflow-hidden rounded-xl"
       >
         <CardImage src={BANNER} />
         <CardHeader>

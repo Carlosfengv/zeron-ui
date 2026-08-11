@@ -14,6 +14,7 @@ import type { IconComponent } from "@/lib/icon-context";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { shapeMap } from "@/lib/shape-context";
+import { spring } from "@/lib/springs";
 
 // MenuItem is only used inside Dropdown, which opts out of the global pill
 // shape — see dropdown.tsx for the rationale.
@@ -154,17 +155,17 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
               size={16}
               strokeWidth={isActive || checked ? 2 : 1.5}
               className={cn(
-                "col-start-1 row-start-1 transition-[color,stroke-width] duration-80",
+                "col-start-1 row-start-1 transition-[color,stroke-width] duration-fast",
                 isActive || checked
-                  ? "text-foreground"
-                  : "text-muted-foreground"
+                  ? "text-fg-default"
+                  : "text-fg-muted"
               )}
             />
           </span>
         )}
         {/* Both stacked spans carry the text-box trim so the invisible bold
             sizer and the visible label keep identical boxes. */}
-        <span className="inline-grid flex-1 text-body-sm">
+        <span className="inline-grid flex-1 text-body">
           <span
             className="col-start-1 row-start-1 invisible [text-box:trim-both_cap_alphabetic] font-semibold"
             aria-hidden="true"
@@ -173,10 +174,10 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
           </span>
           <span
             className={cn(
-              "col-start-1 row-start-1 transition-[color,font-weight] duration-80 motion-reduce:transition-none [text-box:trim-both_cap_alphabetic]",
+              "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none [text-box:trim-both_cap_alphabetic]",
               isActive || checked
-                ? "text-foreground"
-                : "text-muted-foreground",
+                ? "text-fg-default"
+                : "text-fg-muted",
               checked ? "font-semibold" : "font-normal"
             )}
           >
@@ -195,7 +196,7 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
               strokeWidth={2}
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-foreground shrink-0"
+              className="text-fg-default shrink-0"
               initial={{ opacity: 1 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 1 }}
@@ -205,7 +206,7 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
                 initial={{ pathLength: skipAnimation ? 1 : 0 }}
                 animate={{
                   pathLength: 1,
-                  transition: { duration: 0.08, ease: "easeOut" },
+                  transition: { duration: spring.fast.duration, ease: "easeOut" },
                 }}
                 exit={{
                   pathLength: 0,

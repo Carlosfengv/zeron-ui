@@ -8,6 +8,7 @@ import { useIcon } from "@/lib/icon-context";
 import { Tabs, TabsList, TabItem } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 
@@ -46,6 +47,8 @@ interface ComponentPreviewProps {
   /** Show the Inspect toggle (pixel rulers + box-model inspector). Defaults to
    *  true; set false for previews where an overlay would get in the way. */
   inspectable?: boolean;
+  /** Let the live preview expand to the browser's native full-screen mode. */
+  fullScreenable?: boolean;
   children: ReactNode;
 }
 
@@ -58,11 +61,13 @@ export function ComponentPreview({
   minHeightClass = "min-h-[120px]",
   align = "center",
   inspectable = true,
+  fullScreenable = false,
   children,
 }: ComponentPreviewProps) {
   const t = useTranslations("preview");
   const [tab, setTab] = useState(0);
   const [inspect, setInspect] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [highlighted, setHighlighted] = useState<{
     code: string;
     html: string;
@@ -78,6 +83,18 @@ export function ComponentPreview({
   // contrasted border. Clicking outside / Tab away hands keys back to the page.
   const handlePreviewMouseDown = (e: MouseEvent<HTMLDivElement>) =>
     routeKeyboardOnMouseDown(e, previewRef.current);
+
+  const toggleFullscreen = () => {
+    const frame = frameRef.current;
+    if (!frame) return;
+
+    if (document.fullscreenElement === frame) {
+      void document.exitFullscreen().catch(() => {});
+      return;
+    }
+
+    void frame.requestFullscreen().catch(() => {});
+  };
 
   const html = highlighted?.code === code ? highlighted.html : "";
 
@@ -107,6 +124,13 @@ export function ComponentPreview({
     };
   }, [tab, code, html]);
 
+  useEffect(() => {
+    if (!fullScreenable) return;
+    const syncFullscreenState = () => setIsFullscreen(document.fullscreenElement === frameRef.current);
+    document.addEventListener("fullscreenchange", syncFullscreenState);
+    return () => document.removeEventListener("fullscreenchange", syncFullscreenState);
+  }, [fullScreenable]);
+
   const showButton = !!playbackButton || !!onReplay;
   // Inspect only applies to the live Preview tab. When on, reserve a strip at
   // the top/left of the frame for the rulers (so they sit above the toggles and
@@ -116,7 +140,7 @@ export function ComponentPreview({
   return (
     <div
       ref={frameRef}
-      className={`relative flex flex-col gap-0 w-full border border-border/60 transition-[border-color] duration-150 ease-out focus-within:border-foreground/40 ${shape.container}`}
+      className={`relative flex flex-col gap-0 w-full border border-border-subtle transition-[border-color] duration-moderate ease-out focus-within:border-fg-default/40 ${shape.container} ${isFullscreen ? "h-svh w-screen rounded-none" : ""}`}
     >
       {/* Tab bar — min-height reserves the playback button's height (h-10 + pt-3)
           so the header doesn't shift when the button mounts/unmounts. A hairline
@@ -124,12 +148,12 @@ export function ComponentPreview({
           opaque background sits above the inspect overlay (z-40 > z-30) so the
           ruler ticks tuck cleanly under it. */}
       <div
-        className="relative z-40 flex items-center gap-0 px-3 py-3 min-h-[52px] border-b border-border/60 bg-background"
+        className="relative z-40 flex items-center gap-0 px-3 py-3 min-h-[52px] border-b border-border-subtle bg-surface-base"
         style={{ borderTopLeftRadius: "inherit", borderTopRightRadius: "inherit" }}
       >
         {title && (
           <span
-            className="px-4 py-2.5 text-foreground mr-auto font-semibold"
+            className="px-4 py-2.5 text-fg-default mr-auto font-semibold"
           >
             {title}
           </span>
@@ -146,18 +170,35 @@ export function ComponentPreview({
               label={t("inspect")}
               checked={inspect}
               onToggle={() => setInspect((v) => !v)}
-              className="h-8 px-2 rounded-md"
+              className="h-8 px-2 rounded-control"
             />
+          )}
+          {fullScreenable && tab === 0 && (
+            <Tooltip content={isFullscreen ? t("exitFullscreen") : t("fullscreen")} side="top">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                aria-label={isFullscreen ? t("exitFullscreen") : t("fullscreen")}
+                onClick={toggleFullscreen}
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5" />
+                </svg>
+              </Button>
+            </Tooltip>
           )}
           {showButton && (
             <Tooltip content={playbackButton?.tooltip ?? t("replayAnimation")} side="top">
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={playbackButton?.onClick ?? onReplay}
-                className={`w-10 h-10 flex items-center justify-center ${shape.button} text-muted-foreground/60 hover:text-foreground hover:bg-hover transition-colors duration-100 cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]`}
+                className="h-10 w-10 text-fg-muted/60"
                 aria-label={playbackButton?.tooltip ?? t("replayAnimation")}
               >
                 {playbackButton?.icon ?? <ReplayIcon size={16} strokeWidth={1.5} />}
-              </button>
+              </Button>
             </Tooltip>
           )}
         </div>
@@ -171,7 +212,7 @@ export function ComponentPreview({
           shape is active, and leaves the top corners square (the tab
           bar sits above, well below the outer's curved top edge). */}
       <div
-        className="overflow-hidden"
+        className={`overflow-hidden ${isFullscreen ? "flex flex-1 flex-col" : ""}`}
         style={{
           borderBottomLeftRadius: "inherit",
           borderBottomRightRadius: "inherit",
@@ -180,8 +221,9 @@ export function ComponentPreview({
         {tab === 0 ? (
           <div
             ref={previewRef}
+            data-fullscreen={isFullscreen || undefined}
             onMouseDown={handlePreviewMouseDown}
-            className={`relative flex ${align === "bottom" ? "items-end" : "items-center"} justify-center ${minHeightClass} bg-background ${
+            className={`group/preview-content relative flex ${isFullscreen ? "flex-1" : ""} ${align === "bottom" ? "items-end" : "items-center"} justify-center ${minHeightClass} bg-surface-base ${
               padding === "none"
                 ? ""
                 : padding === "compact"
@@ -200,7 +242,7 @@ export function ComponentPreview({
           />
         ) : highlightFailedFor === code ? (
           <pre
-            className={`m-0 overflow-auto p-4 text-[13px] text-foreground ${minHeightClass}`}
+            className={`m-0 overflow-auto p-4 text-[13px] text-fg-default ${minHeightClass}`}
           >
             <code>{code.trim()}</code>
           </pre>
@@ -208,7 +250,7 @@ export function ComponentPreview({
           <div
             role="status"
             aria-live="polite"
-            className={`flex items-center justify-center text-[13px] text-muted-foreground ${minHeightClass}`}
+            className={`flex items-center justify-center text-[13px] text-fg-muted ${minHeightClass}`}
           >
             {t("highlighting")}
           </div>

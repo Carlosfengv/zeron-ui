@@ -10,7 +10,7 @@
   "files": [
     {
       "path": "src/system/utils.ts",
-      "content": "import { clsx, type ClassValue } from \"clsx\";\nimport { extendTailwindMerge } from \"tailwind-merge\";\n\n// Tailwind v4 exposes both semantic font sizes and colors through `text-*`\n// utilities. tailwind-merge cannot discover custom @theme names at runtime,\n// so without this list it treats e.g. `text-body-sm` as a color and removes\n// either it or `text-foreground`, depending on class order.\nconst mergeTailwindClasses = extendTailwindMerge({\n  extend: {\n    theme: {\n      text: [\n        \"micro\",\n        \"overline\",\n        \"caption\",\n        \"label\",\n        \"body-sm\",\n        \"body\",\n        \"body-md\",\n        \"body-lg\",\n        \"title\",\n        \"title-lg\",\n        \"heading\",\n        \"heading-lg\",\n        \"display\",\n      ],\n    },\n  },\n});\n\nexport function cn(...inputs: ClassValue[]) {\n  return mergeTailwindClasses(clsx(inputs));\n}\n",
+      "content": "import { clsx, type ClassValue } from \"clsx\";\nimport { extendTailwindMerge } from \"tailwind-merge\";\n\n// Tailwind v4 exposes both semantic font sizes and colors through `text-*`\n// utilities. tailwind-merge cannot discover custom @theme names at runtime,\n// so without this list it treats e.g. `text-body` as a color and removes\n// either it or `text-fg-default`, depending on class order.\nconst mergeTailwindClasses = extendTailwindMerge({\n  extend: {\n    theme: {\n      text: [\n        \"label\",\n        \"body\",\n        \"title\",\n        \"heading\",\n      ],\n    },\n  },\n});\n\nexport function cn(...inputs: ClassValue[]) {\n  return mergeTailwindClasses(clsx(inputs));\n}\n",
       "type": "registry:lib",
       "target": "lib/utils.ts"
     }

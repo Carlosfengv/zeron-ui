@@ -6,13 +6,12 @@ import {
   fillColorTokens,
   boundaryColorTokens,
   interactionColorTokens,
-  compatibilityColorTokens,
   supportColorTokens,
-  interactionOverlayRgb,
   surfaceTokens,
   shadowSupportTokens,
   shadowTokens,
   typographyTokens,
+  motionDurationTokens,
   fontTokens,
   controlHeightTokens,
   radiusRoles,
@@ -50,13 +49,10 @@ export function registryCssVars() {
     dark[token.name] = token.dark;
   }
   for (const token of supportColorTokens) {
+    theme[`color-${token.name}`] = `var(--${token.name})`;
     light[token.name] = token.light;
     dark[token.name] = token.dark;
   }
-  light["interaction-overlay-rgb"] = interactionOverlayRgb.light;
-  dark["interaction-overlay-rgb"] = interactionOverlayRgb.dark;
-  light.overlay = "var(--interaction-overlay-rgb)";
-  dark.overlay = "var(--interaction-overlay-rgb)";
 
   for (const token of surfaceTokens) {
     theme[`color-surface-${token.name}`] = `var(--surface-${token.name})`;
@@ -78,6 +74,11 @@ export function registryCssVars() {
       target[`font-size-${token.name}`] = token.size;
       target[`line-height-${token.name}`] = token.lineHeight;
     }
+  }
+  for (const token of motionDurationTokens) {
+    theme[`duration-${token.name}`] = `var(--motion-duration-${token.name})`;
+    light[`motion-duration-${token.name}`] = token.value;
+    dark[`motion-duration-${token.name}`] = token.value;
   }
   for (const token of controlHeightTokens) {
     theme[`spacing-control-${token.name}`] = `var(--control-height-${token.name})`;
@@ -126,10 +127,6 @@ function renderRootDeclarations() {
       token.light === token.dark ? token.light : `light-dark(${token.light}, ${token.dark})`
     ));
   }
-  lines.push(cssDeclaration("interaction-overlay-rgb", interactionOverlayRgb.light));
-  // Deprecated internal alias for components that still use rgb(var(--overlay)).
-  lines.push(cssDeclaration("overlay", "var(--interaction-overlay-rgb)"));
-
   for (const [name, value] of Object.entries(shadowSupportTokens)) {
     lines.push(cssDeclaration(name, value));
   }
@@ -144,6 +141,7 @@ function renderRootDeclarations() {
     lines.push(cssDeclaration(`font-size-${token.name}`, token.size));
     lines.push(cssDeclaration(`line-height-${token.name}`, token.lineHeight));
   }
+  for (const token of motionDurationTokens) lines.push(cssDeclaration(`motion-duration-${token.name}`, token.value));
   for (const token of controlHeightTokens) lines.push(cssDeclaration(`control-height-${token.name}`, token.value));
   for (const role of radiusRoles) {
     lines.push(cssDeclaration(`${role.name}-radius`, `${shapeModes.rounded[role.name]}px`));
@@ -154,7 +152,6 @@ function renderRootDeclarations() {
 
 function renderModeSelection(mode) {
   return [
-    cssDeclaration("interaction-overlay-rgb", interactionOverlayRgb[mode]),
     ...shadowTokens.map((token) =>
       cssDeclaration(`shadow-${token.name}`, `var(--shadow-${mode}-${token.name})`)
     ),
@@ -245,13 +242,15 @@ export function renderDocumentation() {
   const fillRows = tokenRows(fillColorTokens);
   const boundaryRows = tokenRows(boundaryColorTokens);
   const interactionRows = tokenRows(interactionColorTokens);
-  const compatibilityRows = tokenRows(compatibilityColorTokens);
   const supportRows = tokenRows(supportColorTokens);
   const surfaceRows = surfaceTokens.map((t) => [
     `\`--surface-${t.name}\``, `\`bg-surface-${t.name}\``, `\`${t.light}\``, `\`${t.dark}\``, t.usage,
   ]);
   const typeRows = typographyTokens.map((t) => [
     `\`text-${t.name}\``, `\`--font-size-${t.name}\``, `${t.px}px / ${t.linePx}px`, t.usage,
+  ]);
+  const motionRows = motionDurationTokens.map((t) => [
+    `\`--motion-duration-${t.name}\``, `\`duration-${t.name}\``, t.value, t.usage,
   ]);
   const controlRows = controlHeightTokens.map((t) => [
     `\`--control-height-${t.name}\``, `\`h-control-${t.name}\``, `${t.px}px`, t.usage,
@@ -285,6 +284,13 @@ export function renderDocumentation() {
 5. \`surfaces\` 保留为组件注册表的主题安装名；其内容已覆盖完整的语义设计令牌，以兼容现有安装地址。
 6. 颜色设计令牌必须提供明确的浅色与深色绝对值；不要在 CSS 运行时混合语义颜色。
 
+## Reference 与 Semantic
+
+\`src/system/tokens/reference-colors.mjs\` 是内部参考调色板：它只提供中性色、Danger 和 Warning 的可复用色阶，
+不生成 CSS 变量、Tailwind 颜色或组件 API。组件只能消费本文件列出的语义角色，例如
+\`text-fg-danger\`、\`bg-danger-surface\` 和 \`border-danger-border\`，不能引用 \`neutral.500\`、
+\`danger.500\` 等参考色阶。这样可以在不改变组件含义的前提下调整具体配方。
+
 ## 修改与生成
 
 \`\`\`bash
@@ -308,7 +314,7 @@ ${table(["CSS 令牌", "浅色", "深色", "用途"], foregroundRows)}
 - \`fg-default / muted / subtle\` 表达前景的强调程度，不由字号决定。
 - \`fg-brand / fg-danger\` 用于普通承载面上的彩色文字和图标，不能直接复用填充色。
 - \`fg-on-*\` 中的 \`on\` 表示背景配对关系，只能与名称对应的高强调填充共同使用。
-- 完整控件禁用时使用组件级 \`opacity-50\`；\`fg-disabled\` 仅服务不能整体降透明度的独立前景。
+- 完整控件禁用时使用组件级 \`opacity-50\`。
 
 \`fg\` 是 Foreground（前景）的缩写，同时覆盖文字和继承 \`currentColor\` 的图标。\`fg-brand\` 表示
 “普通承载面上的品牌色前景”，\`fg-on-brand\` 表示“品牌色填充上的对比前景”；两者不能互换。
@@ -326,8 +332,12 @@ ${table(["CSS 令牌", "浅色", "深色", "用途"], fillRows)}
 \`\`\`text
 brand              + fg-on-brand
 destructive        + fg-on-danger
+secondary-action   + fg-default
 inverse-background + fg-on-inverse
 \`\`\`
+
+状态信息不使用高强调“Warning 操作”填充：错误状态组合 \`danger-surface + fg-danger + danger-border\`；
+警告状态组合 \`warning-surface + fg-warning + warning-border\`。
 
 \`brand\` 与 \`focus-ring\` 是两个独立语义。运行时修改品牌色不得同时修改焦点环。
 自定义品牌色时，必须以完整配色包的方式覆盖 \`brand / brand-hover / brand-active / fg-on-brand / fg-brand\`；
@@ -338,26 +348,20 @@ inverse-background + fg-on-inverse
 ${table(["CSS 令牌", "浅色", "深色", "用途"], boundaryRows)}
 
 - 表单和选择控件使用 \`input / input-hover\`。
-- 卡片、分隔线和普通容器使用 \`border\`。
-- 无效状态使用 \`destructive\` 覆盖控件边界；焦点环仍保持独立语义。
+- 卡片、分隔线和普通容器使用 \`border\`；更轻的紧凑边界使用 \`border-subtle\`。
+- 无效状态使用 \`danger-border\`；警告状态使用 \`warning-border\`；焦点环始终使用独立的 \`focus-ring\` 语义。
 
 ## 交互颜色
 
 ${table(["CSS 令牌", "浅色", "深色", "用途"], interactionRows)}
 
-\`hover\` 表示悬停或预高亮；\`active\` 表示按下、拖拽或展开；\`selection-background\` 表示持久选择。三者不得混用。
+\`hover\` 表示悬停或预高亮；\`active\` 表示按下、拖拽或展开；\`selection\` 表示持久选择。三者不得混用。
 
-\`--interaction-overlay-rgb\` 是内部使用的 RGB 三元组：浅色模式为 \`${interactionOverlayRgb.light}\`，深色模式为 \`${interactionOverlayRgb.dark}\`。它只服务于需要透明覆盖层的组件，不参与语义状态色计算，也不发布为 Tailwind 颜色。
+滚动条使用 \`scrollbar-thumb / hover / active\` 三个支持色，保证原生和自定义滚动条共享相同的状态配方。
 
 ## 支持颜色
 
 ${table(["CSS 令牌", "浅色", "深色", "用途"], supportRows)}
-
-## 兼容颜色别名
-
-${table(["CSS 令牌", "浅色", "深色", "用途"], compatibilityRows)}
-
-兼容别名只用于现有组件和消费项目迁移。新组件应优先使用 \`fg-*\`、\`surface-*\`、\`selection-background\`，以及成对的“填充色／填充上前景色”令牌。
 
 ## 承载面（Surface）
 
@@ -373,15 +377,6 @@ ${table(["CSS 令牌", "Tailwind", "浅色", "深色", "用途"], surfaceRows)}
 组件类型不等于视觉高度。同一个卡片可以位于页面、弹出框或对话框内；同一个下拉菜单
 也可能从页面或模态内容中打开。固定的 \`--surface-card\` 或 \`--surface-dialog\` 无法正确表达
 这些嵌套关系，暗色模式下还可能让子容器比父容器更暗，产生错误的下沉感。
-
-组件可以提供别名，但别名必须指向基础承载面角色：
-
-\`\`\`css
---card-background: var(--surface-raised);
---dialog-background: var(--surface-overlay);
-\`\`\`
-
-不要用组件别名反向定义基础承载面，也不要在业务代码中依据组件名称推导层级。
 
 #### 相对层级规则
 
@@ -411,7 +406,7 @@ ${table(["CSS 令牌", "Tailwind", "浅色", "深色", "用途"], surfaceRows)}
 
 ${table(["Tailwind", "CSS 令牌", "字号 / 行高", "用途"], typeRows)}
 
-字号和行高成对发布；组件优先使用 \`text-body-sm\` 这类语义类，不再使用 \`text-[13px]\`。字体族为 \`font-sans\`。
+字号和行高成对发布；组件优先使用 \`text-body\` 这类语义类，不再使用 \`text-[13px]\`。字体族为 \`font-sans\`。
 
 ### 字重
 
@@ -423,6 +418,12 @@ ${table(["Tailwind", "CSS 令牌", "字号 / 行高", "用途"], typeRows)}
 | \`font-bold\` | 700 | 页面主标题和少量强强调内容 |
 
 字重直接使用 Tailwind 原生类，不发布 \`typography/font-weight/*\` 设计令牌、\`--type-weight-*\` CSS 变量或运行时辅助函数。以上数值是 Zeron 默认主题；消费项目显式覆盖 Tailwind \`--font-weight-*\` 时，组件将跟随宿主主题。
+
+## 动效时长
+
+${table(["CSS 令牌", "Tailwind", "时长", "用途"], motionRows)}
+
+CSS transition 使用以上时长层级；Framer Motion 使用同名的 \`spring\` tier，或从该 tier 派生的退出时长。组件不得直接写入通用时长数值；描边路径等特殊微动效可在组件内保留独立时长。
 
 ## 间距
 
@@ -483,12 +484,13 @@ ${table(["CSS 令牌", "Tailwind", "圆角模式", "胶囊模式", "用途"], ra
 承载面与阴影有关联，但不一一绑定。承载面表达背景相对于承载环境的视觉高度；阴影
 表达元素边缘需要多强的空间分离感。嵌套会改变承载面背景，但不会自动改变组件的阴影类型。
 
-公开 API 只包含以下 3 个语义角色：
+公开 API 包含以下语义角色：
 
 ${table(["CSS 令牌", "Tailwind", "用途"], shadowRows)}
 
 \`shadow-none\` 继续用于没有空间分离需求的页面和扁平容器。不增加 \`shadow-base\` 或
-\`shadow-top\`：基础承载面默认没有阴影；顶层承载面是背景层级的上限，不代表阴影必须最强。
+\`shadow-top\`：基础承载面默认没有阴影；顶层承载面是背景层级的上限，不代表阴影必须最强。\`control\`
+与 \`knob\` 是控件内部的局部投影，不表示承载面高度。
 
 #### 承载面与阴影的组合
 
@@ -525,7 +527,7 @@ ${table(["CSS 令牌", "CSS 类", "值", "用途"], layerRows)}
 以下示例展示完成承载面与阴影语义迁移后的目标 API：
 
 \`\`\`tsx
-<button className="h-control-md px-4 text-body-sm rounded-control bg-brand text-fg-on-brand">
+<button className="h-control-md px-4 text-body rounded-control bg-brand text-fg-on-brand">
   保存更改
 </button>
 

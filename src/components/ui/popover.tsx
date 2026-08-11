@@ -243,7 +243,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
                 <motion.div
                   {...rest}
                   className={cn(
-                    "relative isolate w-max min-w-48 max-w-[min(92vw,22rem)] p-4 text-body-sm text-foreground outline-none",
+                    "relative isolate w-max min-w-48 max-w-[min(92vw,22rem)] p-4 text-body text-fg-default outline-none",
                     className
                   )}
                   data-slot="popover-content"
@@ -365,7 +365,7 @@ const PopoverTitle = forwardRef<
 >(({ className, ...props }, ref) => (
   <PopoverPrimitive.Title
     ref={ref}
-    className={cn("text-body font-medium text-foreground", className)}
+    className={cn("text-body font-medium text-fg-default", className)}
     {...props}
   />
 ));
@@ -377,7 +377,7 @@ const PopoverDescription = forwardRef<
 >(({ className, ...props }, ref) => (
   <PopoverPrimitive.Description
     ref={ref}
-    className={cn("text-body-sm text-muted-foreground", className)}
+    className={cn("text-body text-fg-muted", className)}
     {...props}
   />
 ));

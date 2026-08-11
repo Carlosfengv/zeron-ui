@@ -37,6 +37,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 // ---------------------------------------------------------------------------
 
 type ColorFormat = "hex" | "rgb" | "hsl" | "oklch";
+const DEFAULT_COLOR = "#6B97FF";
 
 // Allows consumers (e.g. the /demo carousel) to portal popups inside a
 // CSS-scaled ancestor so menu/popover layers visually scale with the picker.
@@ -528,7 +529,7 @@ function SaturationSquare({ h, s, v, onChange }: SaturationSquareProps) {
       )}
       style={{
         height: SQUARE_HEIGHT,
-        boxShadow: focused ? "0 0 0 2px var(--focus-ring, #6B97FF)" : undefined,
+        boxShadow: focused ? "0 0 0 2px var(--focus-ring)" : undefined,
       }}
     >
       <div
@@ -710,7 +711,7 @@ function FormatItem({
           ref={ref}
           data-proximity-index={index}
           className={cn(
-            `relative z-content flex items-center px-3 py-2 text-body-sm cursor-pointer outline-none`,
+            `relative z-content flex items-center px-3 py-2 text-body cursor-pointer outline-none`,
             shape.item
           )}
         />
@@ -725,8 +726,8 @@ function FormatItem({
         </span>
         <span
           className={cn(
-            "col-start-1 row-start-1 transition-[color,font-weight] duration-80 motion-reduce:transition-none",
-            isActive || checked ? "text-foreground" : "text-muted-foreground",
+            "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",
+            isActive || checked ? "text-fg-default" : "text-fg-muted",
             checked ? "font-semibold" : "font-normal"
           )}
         >
@@ -818,8 +819,8 @@ function FormatDropdown({
     >
       <Menu.Trigger
         className={cn(
-          "flex items-center justify-between gap-2 h-control-md px-3 text-body-sm bg-transparent hover:bg-hover hover:text-foreground transition-colors duration-80 outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] cursor-pointer",
-          open ? "bg-active text-foreground" : "text-muted-foreground active:bg-active",
+          "flex items-center justify-between gap-2 h-control-md px-3 text-body bg-transparent hover:bg-hover hover:text-fg-default transition-colors duration-fast outline-none focus-visible:ring-1 focus-visible:ring-focus-ring cursor-pointer",
+          open ? "bg-active text-fg-default" : "text-fg-muted active:bg-active",
           shape.input,
           "font-medium"
         )}
@@ -829,7 +830,7 @@ function FormatDropdown({
           size={14}
           strokeWidth={1.5}
           className={cn(
-            "text-muted-foreground transition-transform duration-150",
+            "text-fg-muted transition-transform duration-moderate",
             open && "rotate-180"
           )}
         />
@@ -915,7 +916,7 @@ function FormatDropdown({
                       exit={{ opacity: 0, transition: spring.moderate.exit }}
                       transition={{
                         ...spring.moderate,
-                        opacity: { duration: 0.08 },
+                        opacity: { duration: spring.fast.duration },
                       }}
                     />
                   )}
@@ -944,7 +945,7 @@ function FormatDropdown({
                       exit={{ opacity: 0, transition: spring.fast.exit }}
                       transition={{
                         ...spring.fast,
-                        opacity: { duration: 0.08 },
+                        opacity: { duration: spring.fast.duration },
                       }}
                     />
                   )}
@@ -954,7 +955,7 @@ function FormatDropdown({
                 <AnimatePresence>
                   {focusRect && (
                     <motion.div
-                      className={`absolute ${menuShape.focusRing} pointer-events-none z-raised border border-[color:var(--focus-ring,#6B97FF)]`}
+                      className={`absolute ${menuShape.focusRing} pointer-events-none z-raised border border-focus-ring`}
                       initial={false}
                       animate={{
                         left: focusRect.left - 2,
@@ -965,7 +966,7 @@ function FormatDropdown({
                       exit={{ opacity: 0, transition: spring.fast.exit }}
                       transition={{
                         ...spring.fast,
-                        opacity: { duration: 0.08 },
+                        opacity: { duration: spring.fast.duration },
                       }}
                     />
                   )}
@@ -1087,14 +1088,14 @@ const TextColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
     return (
       <div
         className={cn(
-          "flex items-center h-control-md px-2 bg-transparent hover:bg-hover active:bg-active transition-colors duration-80 focus-within:ring-1 focus-within:ring-[color:var(--focus-ring,#6B97FF)] select-none",
+          "flex items-center h-control-md px-2 bg-transparent hover:bg-hover active:bg-active transition-colors duration-fast focus-within:ring-1 focus-within:ring-focus-ring select-none",
           shape.input,
           className
         )}
         style={{ width }}
       >
         {prefix && (
-          <span className="text-label text-muted-foreground mr-1 select-none">
+          <span className="text-label text-fg-muted mr-1 select-none">
             {prefix}
           </span>
         )}
@@ -1134,7 +1135,7 @@ const TextColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
           inputMode={inputMode}
           aria-label={ariaLabel}
           className={cn(
-            "flex-1 min-w-0 bg-transparent text-foreground text-body-sm outline-none tabular-nums",
+            "flex-1 min-w-0 bg-transparent text-fg-default text-body outline-none tabular-nums",
             align === "center" && "text-center",
             align === "right" && "text-right",
             "font-medium",
@@ -1262,7 +1263,7 @@ const ScrubColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
         largeStep={nudgeShiftStep ?? 10}
         format={format}
         className={cn(
-          "flex items-center h-control-md bg-transparent hover:bg-hover active:bg-active transition-colors duration-80 focus-within:ring-1 focus-within:ring-[color:var(--focus-ring,#6B97FF)] select-none",
+          "flex items-center h-control-md bg-transparent hover:bg-hover active:bg-active transition-colors duration-fast focus-within:ring-1 focus-within:ring-focus-ring select-none",
           shape.input,
           className
         )}
@@ -1302,7 +1303,7 @@ const ScrubColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
             </svg>
           </NumberField.ScrubAreaCursor>
           {prefix && (
-            <span className="text-label text-muted-foreground mr-1 select-none">
+            <span className="text-label text-fg-muted mr-1 select-none">
               {prefix}
             </span>
           )}
@@ -1347,7 +1348,7 @@ const ScrubColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
               }
             }}
             className={cn(
-              "flex-1 min-w-0 bg-transparent text-foreground text-body-sm outline-none tabular-nums",
+              "flex-1 min-w-0 bg-transparent text-fg-default text-body outline-none tabular-nums",
               align === "center" && "text-center",
               align === "right" && "text-right",
               !editing && "pointer-events-none",
@@ -1410,7 +1411,7 @@ function EyeDropperButton({ onPick }: { onPick: (hex: string) => void }) {
       onClick={handleClick}
       aria-label="Pick color from screen"
       className={cn(
-        "flex items-center justify-center h-control-md px-3 text-muted-foreground bg-transparent hover:bg-hover hover:text-foreground active:bg-active transition-colors duration-80 outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] cursor-pointer",
+        "flex items-center justify-center h-control-md px-3 text-fg-muted bg-transparent hover:bg-hover hover:text-fg-default active:bg-active transition-colors duration-fast outline-none focus-visible:ring-1 focus-visible:ring-focus-ring cursor-pointer",
         shape.input
       )}
     >
@@ -1460,9 +1461,9 @@ const ColorSwatch = forwardRef<HTMLButtonElement, ColorSwatchProps>(
     const shape = useShape();
     const [hovered, setHovered] = useState(false);
     const ring = selected
-      ? "inset 0 0 0 1px rgba(127,127,127,0.25), 0 0 0 2px var(--background), 0 0 0 4px #6B97FF"
+      ? "inset 0 0 0 1px rgba(127,127,127,0.25), 0 0 0 2px var(--surface-base), 0 0 0 4px var(--focus-ring)"
       : hovered
-        ? "inset 0 0 0 1px rgba(127,127,127,0.25), 0 0 0 2px var(--background), 0 0 0 4px rgba(127,127,127,0.4)"
+        ? "inset 0 0 0 1px rgba(127,127,127,0.25), 0 0 0 2px var(--surface-base), 0 0 0 4px rgba(127,127,127,0.4)"
         : "inset 0 0 0 1px rgba(127,127,127,0.25)";
     return (
       <button
@@ -1558,7 +1559,7 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
   (
     {
       value,
-      defaultValue = "#6B97FF",
+      defaultValue = DEFAULT_COLOR,
       onValueChange,
       format,
       defaultFormat = "hex",
@@ -1973,7 +1974,7 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
     );
 
     const isControlled = pickerProps.value !== undefined;
-    const [internalValue, setInternalValue] = useState(pickerProps.value ?? pickerProps.defaultValue ?? "#6B97FF");
+    const [internalValue, setInternalValue] = useState(pickerProps.value ?? pickerProps.defaultValue ?? DEFAULT_COLOR);
     const currentValue = isControlled ? (pickerProps.value as string) : internalValue;
 
     const handleValueChange = useCallback(
@@ -2024,25 +2025,25 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
                 : undefined
             }
             className={cn(
-              "flex items-center gap-2 h-control-md px-2 border border-border bg-transparent hover:bg-hover transition-colors duration-80 outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] cursor-pointer",
+              "flex items-center gap-2 h-control-md px-2 border border-border bg-transparent hover:bg-hover transition-colors duration-fast outline-none focus-visible:ring-1 focus-visible:ring-focus-ring cursor-pointer",
               shape.input,
               "font-medium",
               triggerClassName
             )}
           >
             {triggerLabel && triggerLabelPosition === "left" && (
-              <span className="text-body-sm text-muted-foreground px-1 select-none">
+              <span className="text-body text-fg-muted px-1 select-none">
                 {triggerLabel}
               </span>
             )}
             <ColorTile color={swatchColor} size={20} />
             {triggerShowValue && (
-              <span className="text-body-sm text-foreground tabular-nums">
+              <span className="text-body text-fg-default tabular-nums">
                 {valueLabel}
               </span>
             )}
             {triggerLabel && triggerLabelPosition === "right" && (
-              <span className="text-body-sm text-muted-foreground px-1 select-none">
+              <span className="text-body text-fg-muted px-1 select-none">
                 {triggerLabel}
               </span>
             )}
@@ -2057,7 +2058,7 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
                 borderBottomLeftRadius: 0,
               }}
               className={cn(
-                "-ml-px flex h-control-md w-control-md items-center justify-center border border-border bg-transparent text-muted-foreground transition-colors duration-80 hover:bg-hover hover:text-foreground focus-visible:z-10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] cursor-pointer",
+                "-ml-px flex h-control-md w-control-md items-center justify-center border border-border bg-transparent text-fg-muted transition-colors duration-fast hover:bg-hover hover:text-fg-default focus-visible:z-10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring cursor-pointer",
                 shape.input
               )}
             >

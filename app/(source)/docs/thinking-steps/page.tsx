@@ -419,7 +419,7 @@ function StreamingDescription({ text, active, done }: { text: string; active: bo
   const show = done ? text : displayed;
   if (!show) return null;
   return (
-    <span className="text-[13px] text-muted-foreground leading-snug">
+    <span className="text-[13px] text-fg-muted leading-snug">
       {show}
     </span>
   );
@@ -772,7 +772,7 @@ export default function ThinkingStepsDoc() {
 
       {/* 2. Minimal — two dots, nothing else */}
       <DocSection title={t("minimal")}>
-        <p className="text-[13px] text-muted-foreground mb-3">
+        <p className="text-[13px] text-fg-muted mb-3">
           {t("minimalBody")}
         </p>
         <ComponentPreview code={minimalCode}>
@@ -788,7 +788,7 @@ export default function ThinkingStepsDoc() {
 
       {/* 3. Streaming — icons, sources, sequential animation */}
       <DocSection title={t("streaming")}>
-        <p className="text-[13px] text-muted-foreground mb-3">
+        <p className="text-[13px] text-fg-muted mb-3">
           {t("streamingBody")}
         </p>
         <AnimatedPreview code={streamingCode}>
@@ -798,7 +798,7 @@ export default function ThinkingStepsDoc() {
 
       {/* 4. Streaming Text — dots, long streaming descriptions */}
       <DocSection title={t("streamingText")}>
-        <p className="text-[13px] text-muted-foreground mb-3">
+        <p className="text-[13px] text-fg-muted mb-3">
           {t("streamingTextBody")}
         </p>
         <AnimatedPreview code={streamingTextCode}>
@@ -808,7 +808,7 @@ export default function ThinkingStepsDoc() {
 
       {/* 5. With Images — ThinkingStepImage in action */}
       <DocSection title={t("withImages")}>
-        <p className="text-[13px] text-muted-foreground mb-3">
+        <p className="text-[13px] text-fg-muted mb-3">
           {t("imagesBody")}
         </p>
         <AnimatedPreview code={withImagesCode}>
@@ -818,7 +818,7 @@ export default function ThinkingStepsDoc() {
 
       {/* 6. Full Example — kitchen sink */}
       <DocSection title={t("fullExample")}>
-        <p className="text-[13px] text-muted-foreground mb-3">
+        <p className="text-[13px] text-fg-muted mb-3">
           {t("fullBody")}
         </p>
         <AnimatedPreview code={fullCode}>
@@ -827,22 +827,22 @@ export default function ThinkingStepsDoc() {
       </DocSection>
 
       <DocSection title={t("apiReference")}>
-        <h3 className="text-[14px] font-semibold text-foreground mb-2 mt-4">ThinkingSteps</h3>
+        <h3 className="text-[14px] font-semibold text-fg-default mb-2 mt-4">ThinkingSteps</h3>
         <PropsTable props={localize(rootProps, "r")} />
 
-        <h3 className="text-[14px] font-semibold text-foreground mb-2 mt-6">ThinkingStepsHeader</h3>
+        <h3 className="text-[14px] font-semibold text-fg-default mb-2 mt-6">ThinkingStepsHeader</h3>
         <PropsTable props={localize(headerProps, "h")} />
 
-        <h3 className="text-[14px] font-semibold text-foreground mb-2 mt-6">ThinkingStep</h3>
+        <h3 className="text-[14px] font-semibold text-fg-default mb-2 mt-6">ThinkingStep</h3>
         <PropsTable props={localize(stepProps, "s")} />
 
-        <h3 className="text-[14px] font-semibold text-foreground mb-2 mt-6">ThinkingStepDetails</h3>
+        <h3 className="text-[14px] font-semibold text-fg-default mb-2 mt-6">ThinkingStepDetails</h3>
         <PropsTable props={localize(detailsProps, "e")} />
 
-        <h3 className="text-[14px] font-semibold text-foreground mb-2 mt-6">ThinkingStepSource</h3>
+        <h3 className="text-[14px] font-semibold text-fg-default mb-2 mt-6">ThinkingStepSource</h3>
         <PropsTable props={localize(sourceProps, "o")} />
 
-        <h3 className="text-[14px] font-semibold text-foreground mb-2 mt-6">ThinkingStepImage</h3>
+        <h3 className="text-[14px] font-semibold text-fg-default mb-2 mt-6">ThinkingStepImage</h3>
         <PropsTable props={localize(imageProps, "i")} />
       </DocSection>
     </DocPage>

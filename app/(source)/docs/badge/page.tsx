@@ -28,11 +28,16 @@ const sizesCode = `import { Badge } from "./components";
 <Badge size="md" color="blue">Medium</Badge>
 <Badge size="lg" color="blue">Large</Badge>`;
 
+const statusCode = `import { Badge } from "./components";
+
+<Badge status="warning">Attention needed</Badge>
+<Badge status="danger">Sync failed</Badge>`;
+
 const allColors = Object.keys(badgeColors) as BadgeColor[];
 
 const colorsCode = `import { Badge } from "./components";
 
-{/* All available Tailwind colors */}
+{/* All available categorical colors */}
 <Badge color="gray">Gray</Badge>
 <Badge color="red">Red</Badge>
 <Badge color="blue">Blue</Badge>
@@ -45,12 +50,13 @@ export default function BadgeDoc() {
     { name: "variant", type: '"solid" | "dot"', default: '"solid"', description: t("variant") },
     { name: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: t("size") },
     { name: "color", type: "BadgeColor", default: '"gray"', description: t("color") },
+    { name: "status", type: '"danger" | "warning"', description: t("statusDescription") },
   ];
   return (
     <DocPage
       title="Badge"
       slug="badge"
-      description="Compact label for status, category, or metadata. Supports solid and dot variants with Tailwind colors."
+      description={t("description")}
     >
       <DocSection title={t("solid")}>
         <ComponentPreview code={solidCode}>
@@ -103,6 +109,15 @@ export default function BadgeDoc() {
                 </Badge>
               ))}
             </div>
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("status")}>
+        <ComponentPreview code={statusCode}>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge status="warning">Attention needed</Badge>
+            <Badge status="danger">Sync failed</Badge>
           </div>
         </ComponentPreview>
       </DocSection>

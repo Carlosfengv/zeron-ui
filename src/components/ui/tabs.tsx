@@ -356,7 +356,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
               }}
               transition={{
                 ...spring.moderate,
-                opacity: { duration: 0.08 },
+                opacity: { duration: spring.fast.duration },
               }}
             />
           )}
@@ -394,14 +394,14 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
                         opacity: 0,
                         transition: {
                           ...spring.moderate,
-                          opacity: { duration: 0.06 },
+                          opacity: { duration: spring.fast.exit.duration },
                         },
                       }
                     : { opacity: 0, transition: spring.fast.exit }
                 }
                 transition={{
                   ...spring.fast,
-                  opacity: { duration: 0.08 },
+                  opacity: { duration: spring.fast.duration },
                 }}
               />
             )}
@@ -412,7 +412,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
             {focusRect && (
               <motion.div
                 className={cn(
-                  "absolute pointer-events-none z-raised border border-[color:var(--focus-ring,#6B97FF)]",
+                  "absolute pointer-events-none z-raised border border-focus-ring",
                   shape.focusRing
                 )}
                 initial={false}
@@ -425,7 +425,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
                 exit={{ opacity: 0, transition: spring.fast.exit }}
                 transition={{
                   ...spring.fast,
-                  opacity: { duration: 0.08 },
+                  opacity: { duration: spring.fast.duration },
                 }}
               />
             )}
@@ -482,7 +482,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
         : <Badge size="sm">{badge}</Badge>;
 
     const labelContent = (
-      <span className="inline-grid text-body-sm whitespace-nowrap">
+      <span className="inline-grid text-body whitespace-nowrap">
         <span
           className="col-start-1 row-start-1 invisible [text-box:trim-both_cap_alphabetic] font-semibold"
           aria-hidden="true"
@@ -491,7 +491,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
         </span>
         <span
           className={cn(
-            "col-start-1 row-start-1 transition-[color,font-weight] duration-80 motion-reduce:transition-none [text-box:trim-both_cap_alphabetic]",
+            "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none [text-box:trim-both_cap_alphabetic]",
             isSelected && variant !== "underline"
               ? "text-fg-on-brand"
               : isActive
@@ -553,7 +553,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
             size={16}
             strokeWidth={isActive ? 2 : 1.5}
             className={cn(
-              "transition-[color,stroke-width] duration-80",
+              "transition-[color,stroke-width] duration-fast",
               isSelected && variant !== "underline"
                 ? "text-fg-on-brand"
                 : isActive
@@ -571,7 +571,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
                 initial={{ width: 0, opacity: 0, marginLeft: 0 }}
                 animate={{ width: "auto", opacity: 1, marginLeft: 8 }}
                 exit={{ width: 0, opacity: 0, marginLeft: 0 }}
-                transition={{ ...spring.fast, opacity: { duration: 0.06 } }}
+                transition={{ ...spring.fast, opacity: { duration: spring.fast.exit.duration } }}
               >
                 {labelContent}
               </motion.span>

@@ -184,7 +184,7 @@ export default function StepperDoc() {
           <Stepper value={basicValue} onValueChange={setBasicValue} className="max-w-2xl">
             <StepTrack steps={STEPS} />
 
-            <div className="min-h-24 border border-border/60 bg-muted/30 p-4 rounded-xl">
+            <div className="min-h-24 border border-border-subtle bg-muted/30 p-4 rounded-xl">
               <StepperContent value="account">Create your account and choose sign-in credentials.</StepperContent>
               <StepperContent value="profile">Add the profile information teammates will see.</StepperContent>
               <StepperContent value="review">Review the details before creating your workspace.</StepperContent>
@@ -207,7 +207,7 @@ export default function StepperDoc() {
             className="w-full max-w-2xl gap-6"
           >
             <StepTrack steps={VERTICAL_STEPS} />
-            <div className="min-h-44 flex-1 border border-border/60 bg-muted/30 p-4 rounded-xl">
+            <div className="min-h-44 flex-1 border border-border-subtle bg-muted/30 p-4 rounded-xl">
               <StepperContent value="details">Set the workspace name and visibility.</StepperContent>
               <StepperContent value="members">Invite the people who should have access.</StepperContent>
               <StepperContent value="finish">Confirm the workspace configuration.</StepperContent>
@@ -238,7 +238,7 @@ export default function StepperDoc() {
                 { value: "confirm", title: "Confirm", description: "Review changes" },
               ]}
             />
-            <div className="min-h-28 border border-border/60 bg-muted/30 p-4 rounded-xl">
+            <div className="min-h-28 border border-border-subtle bg-muted/30 p-4 rounded-xl">
               <StepperContent value="project">
                 <div className="flex flex-col gap-1.5">
                   <Input
@@ -253,7 +253,7 @@ export default function StepperDoc() {
                     aria-describedby={validationError ? "stepper-project-error" : undefined}
                   />
                   {validationError && (
-                    <p id="stepper-project-error" className="px-1 text-caption text-destructive">
+                    <p id="stepper-project-error" className="px-1 text-label text-fg-danger">
                       Enter a project name before continuing.
                     </p>
                   )}
@@ -299,19 +299,19 @@ export default function StepperDoc() {
       <DocSection title={t("apiReference")}>
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">Stepper</h3>
+            <h3 className="text-body text-fg-default">Stepper</h3>
             <PropsTable props={localize(stepperProps, "s")} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">StepperItem</h3>
+            <h3 className="text-body text-fg-default">StepperItem</h3>
             <PropsTable props={localize(itemProps, "i")} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">StepperContent</h3>
+            <h3 className="text-body text-fg-default">StepperContent</h3>
             <PropsTable props={localize(contentProps, "c")} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">StepperIndicator</h3>
+            <h3 className="text-body text-fg-default">StepperIndicator</h3>
             <PropsTable props={localize(indicatorProps, "n")} />
           </div>
         </div>

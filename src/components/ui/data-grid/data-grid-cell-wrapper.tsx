@@ -175,13 +175,13 @@ export function DataGridCellWrapper<TData>({
       {...props}
       ref={composedRef}
       className={cn(
-        "size-full px-2 py-1.5 text-start text-body-sm outline-none transition-colors duration-80 has-data-[slot=checkbox]:pt-2.5",
+        "size-full px-2 py-1.5 text-start text-body outline-none transition-colors duration-fast has-data-[slot=checkbox]:pt-2.5",
         {
-          "ring-1 ring-inset ring-[color:var(--focus-ring,#6B97FF)]":
+          "ring-1 ring-inset ring-focus-ring":
             isFocused,
-          "bg-accent":
+          "bg-selection":
             isSearchMatch && !isActiveSearchMatch,
-          "bg-active ring-1 ring-inset ring-[color:var(--focus-ring,#6B97FF)]":
+          "bg-active ring-1 ring-inset ring-focus-ring":
             isActiveSearchMatch,
           "bg-active": isSelected && !isEditing,
           "cursor-default": !isEditing,

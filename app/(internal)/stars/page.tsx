@@ -222,7 +222,7 @@ export default function StarsPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center gap-10 overflow-hidden bg-background px-4 py-16 text-foreground">
+    <div className="flex min-h-screen w-full flex-col items-center justify-center gap-10 overflow-hidden bg-surface-base px-4 py-16 text-fg-default">
       <div
         ref={wrapRef}
         className="w-full max-w-[1000px]"
@@ -255,7 +255,7 @@ export default function StarsPage() {
       <button
         type="button"
         onClick={runCascade}
-        className="text-[13px] text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+        className="text-[13px] text-fg-muted transition-colors hover:text-fg-default cursor-pointer"
       >
         {text} stars. Thank you.
       </button>

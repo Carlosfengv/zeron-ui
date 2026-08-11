@@ -181,7 +181,7 @@ function ValueDisplay({
   const renderValue = (index: number) => {
     if (editingIndex === index) {
       return (
-        <span className="inline-grid text-body-sm">
+        <span className="inline-grid text-body">
           {/* Ghost for layout stability — widest possible value */}
           <span
             className="col-start-1 row-start-1 invisible font-medium"
@@ -192,7 +192,7 @@ function ValueDisplay({
           </span>
           <span className="col-start-1 row-start-1 flex items-center gap-1">
             {label && (
-              <span className="text-muted-foreground">{label}:</span>
+              <span className="text-fg-muted">{label}:</span>
             )}
             <input
               ref={inputRef}
@@ -209,7 +209,7 @@ function ValueDisplay({
               }}
               aria-label={`Edit slider value${isRange ? (index === 0 ? " (start)" : " (end)") : ""}`}
               className={cn(
-                "w-[5ch] bg-transparent text-foreground outline-none border-b border-border text-center",
+                "w-[5ch] bg-transparent text-fg-default outline-none border-b border-border text-center",
                 shape.input,
                 "font-medium"
               )}
@@ -237,7 +237,7 @@ function ValueDisplay({
   return (
     <span
       className={cn(
-        "inline-grid shrink-0 text-body-sm leading-none text-muted-foreground transition-[font-weight] duration-100 motion-reduce:transition-none",
+        "inline-grid shrink-0 text-body leading-none text-fg-muted transition-[font-weight] duration-100 motion-reduce:transition-none",
         "tabular-nums",
         isInteracting ? "font-medium" : "font-normal"
       )}
@@ -251,12 +251,12 @@ function ValueDisplay({
       </span>
       <span className="col-start-1 row-start-1 whitespace-nowrap">
         {label && editingIndex === null && (
-          <span className="text-muted-foreground">{label}: </span>
+          <span className="text-fg-muted">{label}: </span>
         )}
         {isRange ? (
           <>
             {renderValue(0)}
-            <span className="mx-1 text-muted-foreground/50">—</span>
+            <span className="mx-1 text-fg-muted/50">—</span>
             {renderValue(1)}
           </>
         ) : (
@@ -780,7 +780,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
             position: "absolute",
             top: "50%",
             left: 0,
-            zIndex: 10,
+            zIndex: "var(--layer-content)",
           }}
           initial={false}
         >
@@ -793,14 +793,14 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
             }}
             transition={spring.fast}
             style={{
-              backgroundColor: thumbColor ?? "white",
-              boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+              backgroundColor: thumbColor ?? "var(--fg-on-brand)",
+              boxShadow: "var(--shadow-raised)",
               border: thumbBorderColor ? `1px solid ${thumbBorderColor}` : undefined,
             }}
           />
           {/* Focus ring */}
           <motion.span
-            className="absolute rounded-full border border-[color:var(--focus-ring,#6B97FF)] pointer-events-none"
+            className="absolute rounded-full border border-focus-ring pointer-events-none"
             initial={false}
             animate={{
               opacity: focusedThumb === index ? 1 : 0,
@@ -1014,7 +1014,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
                   borderRadius: hoverPreview && hoverPreview.cursorX > hoverPreview.left
                     ? "0 9999px 9999px 0"
                     : "9999px 0 0 9999px",
-                  backgroundColor: "light-dark(rgb(229 229 229 / 0.4), rgb(82 82 82 / 0.4))",
+                  backgroundColor: "var(--emphasis)",
                 }}
               />
 
@@ -1051,7 +1051,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
                       }}
                       transition={spring.moderate}
                       style={{
-                        backgroundColor: "var(--muted-foreground)",
+                        backgroundColor: "var(--fg-muted)",
                         opacity: 0.3,
                       }}
                     />
@@ -1425,7 +1425,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
         )}
         initial={false}
         animate={{
-          outline: isFocused ? "1px solid var(--focus-ring, #6B97FF)" : "1px solid transparent",
+          outline: isFocused ? "1px solid var(--focus-ring)" : "1px solid transparent",
         }}
         transition={spring.fast}
         onPointerDown={handlePointerDown}
@@ -1471,7 +1471,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
           style={{
             left: hoverPreview ? hoverPreview.left : 0,
             width: hoverPreview ? hoverPreview.width : 0,
-            backgroundColor: "light-dark(rgb(229 229 229 / 0.4), rgb(82 82 82 / 0.4))",
+            backgroundColor: "var(--emphasis)",
           }}
         />
 
@@ -1493,7 +1493,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
                     className="rounded-full"
                     initial={false}
                     animate={{
-                      backgroundColor: isActivePip ? "var(--foreground)" : "var(--muted-foreground)",
+                      backgroundColor: isActivePip ? "var(--fg-default)" : "var(--fg-muted)",
                       opacity: isActivePip ? 1 : 0.3,
                     }}
                     transition={spring.fast}
@@ -1509,12 +1509,12 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
         {variant === "pips" && (
           <div className="absolute inset-0 flex items-center px-2 z-indicator pointer-events-none" aria-hidden>
             {label && (
-              <span className="text-body-sm px-2 bg-background text-transparent select-none">
+              <span className="text-body px-2 bg-surface-base text-transparent select-none">
                 {label}
               </span>
             )}
             <span
-              className="text-body-sm tabular-nums ml-auto px-2 bg-background text-transparent select-none"
+              className="text-body tabular-nums ml-auto px-2 bg-surface-base text-transparent select-none"
               style={{ minWidth: `${String(formatValue(max)).length}ch` }}
             >
               {formatValue(value)}
@@ -1542,10 +1542,10 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
               top: isActive ? 7 : 8,
               bottom: isActive ? 7 : 8,
               backgroundColor: isFocused
-                ? "var(--foreground)"
+                ? "var(--fg-default)"
                 : isHovered
-                ? "light-dark(rgb(23 23 23 / 0.5), rgb(245 245 245 / 0.5))"
-                : "light-dark(rgb(23 23 23 / 0.25), rgb(245 245 245 / 0.25))",
+                ? "var(--fg-muted)"
+                : "var(--input)",
             }}
             transition={spring.fast}
             style={{
@@ -1560,18 +1560,18 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
           <div className="absolute inset-0 flex items-center px-2 z-foreground pointer-events-none">
             {label && (
               <motion.span
-                className="text-body-sm px-2"
+                className="text-body px-2"
                 initial={false}
-                animate={{ color: isActive ? "var(--foreground)" : "var(--muted-foreground)" }}
+                animate={{ color: isActive ? "var(--fg-default)" : "var(--fg-muted)" }}
                 transition={spring.fast}
               >
                 {label}
               </motion.span>
             )}
             <motion.span
-              className="text-body-sm tabular-nums ml-auto px-2"
+              className="text-body tabular-nums ml-auto px-2"
               initial={false}
-              animate={{ color: isActive ? "var(--foreground)" : "var(--muted-foreground)" }}
+              animate={{ color: isActive ? "var(--fg-default)" : "var(--fg-muted)" }}
               transition={spring.fast}
               style={{ minWidth: `${String(formatValue(max)).length}ch`, textAlign: "right" }}
             >
@@ -1590,9 +1590,9 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
             }}
             aria-hidden
           >
-            {label && <span className="text-body-sm px-2">{label}</span>}
+            {label && <span className="text-body px-2">{label}</span>}
             <span
-              className="text-body-sm tabular-nums ml-auto px-2"
+              className="text-body tabular-nums ml-auto px-2"
               style={{ minWidth: `${String(formatValue(max)).length}ch`, textAlign: "right" }}
             >
               {formatValue(value)}
@@ -1620,10 +1620,10 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
               top: isActive ? 7 : 8,
               bottom: isActive ? 7 : 8,
               backgroundColor: isFocused
-                ? "var(--foreground)"
+                ? "var(--fg-default)"
                 : isHovered
-                ? "light-dark(rgb(23 23 23 / 0.5), rgb(245 245 245 / 0.5))"
-                : "light-dark(rgb(23 23 23 / 0.25), rgb(245 245 245 / 0.25))",
+                ? "var(--fg-muted)"
+                : "var(--input)",
             }}
             transition={spring.fast}
             style={{
@@ -1636,9 +1636,9 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
         {/* Scrubber: label */}
         {variant === "scrubber" && label && (
           <motion.span
-            className="text-body-sm shrink-0 z-content"
+            className="text-body shrink-0 z-content"
             initial={false}
-            animate={{ color: isActive ? "var(--foreground)" : "var(--muted-foreground)" }}
+            animate={{ color: isActive ? "var(--fg-default)" : "var(--fg-muted)" }}
             transition={spring.fast}
           >
             {label}
@@ -1650,9 +1650,9 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
           <>
             <div className="flex-1" />
             <motion.span
-              className="text-body-sm shrink-0 tabular-nums text-right z-content"
+              className="text-body shrink-0 tabular-nums text-right z-content"
               initial={false}
-              animate={{ color: isActive ? "var(--foreground)" : "var(--muted-foreground)" }}
+              animate={{ color: isActive ? "var(--fg-default)" : "var(--fg-muted)" }}
               transition={spring.fast}
               style={{ minWidth: `${String(formatValue(max)).length}ch` }}
             >
@@ -1671,10 +1671,10 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
             }}
             aria-hidden
           >
-            {label && <span className="text-body-sm shrink-0">{label}</span>}
+            {label && <span className="text-body shrink-0">{label}</span>}
             <div className="flex-1" />
             <span
-              className="text-body-sm shrink-0 tabular-nums text-right"
+              className="text-body shrink-0 tabular-nums text-right"
               style={{ minWidth: `${String(formatValue(max)).length}ch` }}
             >
               {formatValue(value)}

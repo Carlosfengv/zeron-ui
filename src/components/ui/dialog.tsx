@@ -92,7 +92,7 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
                 {...rest}
                 className={cn(
                   container ? "absolute" : "fixed",
-                  "inset-0 z-popover bg-black/40 dark:bg-black/80"
+                  "inset-0 z-popover bg-scrim"
                 )}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: exiting ? 0 : 1 }}
@@ -202,7 +202,7 @@ const DialogTitle = forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn("text-body-lg text-foreground leading-tight font-bold", className)}
+    className={cn("text-title text-fg-default leading-tight font-bold", className)}
     {...props}
   />
 ));
@@ -214,7 +214,7 @@ const DialogDescription = forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("text-body-sm text-muted-foreground", className)}
+    className={cn("text-body text-fg-muted", className)}
     {...props}
   />
 ));

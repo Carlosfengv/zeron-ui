@@ -144,7 +144,7 @@ const tabPanelProps: PropDef[] = [
 ];
 
 function PanelText({ children }: { children: string }) {
-  return <p className="text-[13px] text-muted-foreground pt-3">{children}</p>;
+  return <p className="text-[13px] text-fg-muted pt-3">{children}</p>;
 }
 
 type BadgeMode = "none" | "count" | "status";
@@ -448,7 +448,7 @@ export default function TabsDoc() {
               <TabPanel value="recents"><PanelText>Recents content.</PanelText></TabPanel>
               <TabPanel value="favorites"><PanelText>Favorites content.</PanelText></TabPanel>
             </Tabs>
-            <p className="text-[12px] text-muted-foreground">Active: <span className="text-foreground">{controlled}</span></p>
+            <p className="text-[12px] text-fg-muted">Active: <span className="text-fg-default">{controlled}</span></p>
           </div>
         </ComponentPreview>
       </DocSection>

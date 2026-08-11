@@ -52,8 +52,8 @@ export function BentoCard({ slug, name, isNew, gridSize = "small", animateLayout
     >
       <span
         className={cn(
-          "text-[13px] text-muted-foreground transition-colors duration-80",
-          slug && "group-hover/link:text-foreground", "font-medium"
+          "text-[13px] text-fg-muted transition-colors duration-fast",
+          slug && "group-hover/link:text-fg-default", "font-medium"
         )}
       >
         {name}
@@ -78,7 +78,7 @@ export function BentoCard({ slug, name, isNew, gridSize = "small", animateLayout
         // would fire every inner button's hover state at once whenever the
         // card itself was hovered. The footer link below uses a NAMED
         // `group/link`, which is properly scoped.
-        "relative flex flex-col rounded-xl border overflow-hidden outline-none transition-[shadow,border-color] duration-80 bento-card-border",
+        "relative flex flex-col rounded-xl border overflow-hidden outline-none transition-[shadow,border-color] duration-fast bento-card-border",
         sizeClasses[gridSize],
         extraClassName,
       )}
@@ -96,7 +96,7 @@ export function BentoCard({ slug, name, isNew, gridSize = "small", animateLayout
         <Link
           href={localizePathname(`/docs/${slug}`, localePrefix)}
           aria-label={t("viewDocumentation", { name })}
-          className="group/link shrink-0 flex items-center gap-2 px-4 py-3 border-t border-border/40 rounded-b-xl transition-colors duration-80 hover:bg-hover outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus-ring,#6B97FF)]"
+          className="group/link shrink-0 flex items-center gap-2 px-4 py-3 border-t border-border/40 rounded-b-xl transition-colors duration-fast hover:bg-hover outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus-ring,#6B97FF)]"
         >
           {footerLabel}
         </Link>

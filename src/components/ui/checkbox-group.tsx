@@ -191,7 +191,7 @@ const CheckboxGroup = forwardRef<HTMLDivElement, CheckboxGroupProps>(
                 exit={{ opacity: 0, transition: spring.fast.exit }}
                 transition={{
                   ...spring.fast,
-                  opacity: { duration: 0.08 },
+                  opacity: { duration: spring.fast.duration },
                 }}
               />
             )}
@@ -201,7 +201,7 @@ const CheckboxGroup = forwardRef<HTMLDivElement, CheckboxGroupProps>(
           <AnimatePresence>
             {focusRect && (
               <motion.div
-                className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-[color:var(--focus-ring,#6B97FF)]`}
+                className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
                 initial={false}
                 animate={{
                   left: focusRect.left - 2,
@@ -212,7 +212,7 @@ const CheckboxGroup = forwardRef<HTMLDivElement, CheckboxGroupProps>(
                 exit={{ opacity: 0, transition: spring.fast.exit }}
                 transition={{
                   ...spring.fast,
-                  opacity: { duration: 0.08 },
+                  opacity: { duration: spring.fast.duration },
                 }}
               />
             )}
@@ -318,7 +318,7 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
         {Icon && (
           <Icon
             className={cn(
-              "shrink-0 transition-[color,stroke-width] duration-80",
+              "shrink-0 transition-[color,stroke-width] duration-fast",
               checked || isActive
                 ? "text-fg-default"
                 : "text-fg-muted"
@@ -331,7 +331,7 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
         {/* Label */}
         {/* Both stacked spans carry the text-box trim so the invisible bold
             sizer and the visible label keep identical boxes. */}
-        <span className="inline-grid min-w-0 flex-1 text-body-sm">
+        <span className="inline-grid min-w-0 flex-1 text-body">
           <span
             className="col-start-1 row-start-1 invisible [text-box:trim-both_cap_alphabetic] font-semibold"
             aria-hidden="true"
@@ -340,7 +340,7 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
           </span>
           <span
             className={cn(
-              "col-start-1 row-start-1 transition-[color,font-weight] duration-80 motion-reduce:transition-none [text-box:trim-both_cap_alphabetic]",
+              "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none [text-box:trim-both_cap_alphabetic]",
               checked || isActive
                 ? "text-fg-default"
                 : "text-fg-muted",
@@ -352,7 +352,7 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
         </span>
 
         {trailing !== undefined && trailing !== null && (
-          <span className="shrink-0 text-caption tabular-nums text-fg-muted">
+          <span className="shrink-0 text-label tabular-nums text-fg-muted">
             {trailing}
           </span>
         )}

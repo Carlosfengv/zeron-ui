@@ -161,11 +161,11 @@ function DemoPageInner() {
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-2">
             <h1
-              className="text-[22px] sm:text-[28px] text-foreground leading-none font-bold"
+              className="text-[22px] sm:text-[28px] text-fg-default leading-none font-bold"
             >
               Zeron Design
             </h1>
-            <p className="text-[14px] text-muted-foreground">
+            <p className="text-[14px] text-fg-muted">
               Refined UI components with satisfying hover.
             </p>
             <div className="flex items-center gap-2 mt-2">
@@ -247,7 +247,7 @@ function DemoPageInner() {
           <button
             key={s.slug}
             onClick={() => goTo(i)}
-            className="h-1.5 rounded-full transition-all duration-150"
+            className="h-1.5 rounded-full transition-all duration-moderate"
             style={{
               width: i === currentIndex ? 24 : 6,
               backgroundColor: "light-dark(rgb(23 23 23 / 0.4), rgb(245 245 245 / 0.4))",

@@ -119,7 +119,7 @@ export function ProjectsTable() {
   return (
     <DataTable
       actionBar={
-        <div className="border border-border/60 bg-muted/40 px-3 py-2 text-body-sm">
+        <div className="border border-border-subtle bg-muted/40 px-3 py-2 text-body">
           {table.getFilteredSelectedRowModel().rows.length} projects selected
         </div>
       }

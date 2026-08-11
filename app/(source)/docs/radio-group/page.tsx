@@ -143,7 +143,7 @@ export default function RadioGroupDoc() {
               ["none", "Nothing"],
             ].map(([optionValue, label]) => (
               <label
-                className="flex cursor-pointer items-center gap-2.5 text-body-sm"
+                className="flex cursor-pointer items-center gap-2.5 text-body"
                 key={optionValue}
               >
                 <RadioGroupItem value={optionValue} />

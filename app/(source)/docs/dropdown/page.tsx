@@ -212,7 +212,7 @@ export default function DropdownDoc() {
       </DocSection>
 
       <DocSection title={t("triggeredMenu")}>
-        <p className="text-[14px] text-muted-foreground">
+        <p className="text-[14px] text-fg-muted">
           {t("triggeredBody")}
         </p>
         <ComponentPreview code={triggeredCode}>

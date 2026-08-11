@@ -383,7 +383,7 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
                   {[...openItemRects.entries()].map(([idx, rect]) => (
                     <motion.div
                       key={`expanded-${idx}`}
-                      className={`absolute ${shape.bg} bg-accent/20 dark:bg-accent/12 pointer-events-none`}
+                      className={`absolute ${shape.bg} bg-hover pointer-events-none`}
                       // Fade in from the item's current rect: with initial={false}
                       // a newly-opened item's background would pop in at full
                       // opacity mid-layout-shift while the previous item's bg is
@@ -410,7 +410,7 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
                         left: { duration: 0 },
                         width: { duration: 0 },
                         height: { duration: 0 },
-                        opacity: { duration: 0.12 },
+                        opacity: { duration: spring.moderate.exit.duration },
                       }}
                     />
                   ))}
@@ -439,7 +439,7 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
                       exit={{ opacity: 0, transition: spring.fast.exit }}
                       transition={{
                         ...spring.fast,
-                        opacity: { duration: 0.08 },
+                        opacity: { duration: spring.fast.duration },
                       }}
                     />
                   )}
@@ -449,7 +449,7 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
                 <AnimatePresence>
                   {focusRect && (
                     <motion.div
-                      className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-[color:var(--focus-ring,#6B97FF)]`}
+                      className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
                       initial={false}
                       animate={{
                         left: focusRect.left - 2,
@@ -460,7 +460,7 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
                       exit={{ opacity: 0, transition: spring.fast.exit }}
                       transition={{
                         ...spring.fast,
-                        opacity: { duration: 0.08 },
+                        opacity: { duration: spring.fast.duration },
                       }}
                     />
                   )}
@@ -661,11 +661,11 @@ const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
                   <AnimatePresence>
                     {isOpen && (
                       <motion.div
-                        className={`absolute inset-0 ${shape.bg} bg-accent/20 dark:bg-accent/12 pointer-events-none`}
+                        className={`absolute inset-0 ${shape.bg} bg-hover pointer-events-none`}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0, transition: spring.fast.exit }}
-                        transition={{ duration: 0.08 }}
+                        transition={{ duration: spring.fast.duration }}
                       />
                     )}
                   </AnimatePresence>
@@ -711,13 +711,13 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
           className={cn(
             `relative z-content flex items-center gap-2.5 ${shape.item} px-3 py-2 w-full cursor-pointer outline-none select-none`,
             !groupCtx?.grouped &&
-              "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] focus-visible:ring-offset-0",
+              "focus-visible:ring-1 focus-visible:ring-focus-ring focus-visible:ring-offset-0",
             className
           )}
           {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
         >
           {/* Label with dual-layer text */}
-          <span className="inline-grid text-body-sm flex-1 text-left">
+          <span className="inline-grid text-body flex-1 text-left">
             <span
               className="col-start-1 row-start-1 invisible font-semibold"
               aria-hidden="true"
@@ -726,10 +726,10 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
             </span>
             <span
               className={cn(
-                "col-start-1 row-start-1 transition-[color,font-weight] duration-80 motion-reduce:transition-none",
+                "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",
                 isOpen || isActive
-                  ? "text-foreground"
-                  : "text-muted-foreground",
+                  ? "text-fg-default"
+                  : "text-fg-muted",
                 isOpen ? "font-semibold" : "font-normal"
               )}
             >
@@ -747,10 +747,10 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
               size={16}
               strokeWidth={isOpen || isActive ? 2 : 1.5}
               className={cn(
-                "transition-[color,stroke-width] duration-80",
+                "transition-[color,stroke-width] duration-fast",
                 isOpen || isActive
-                  ? "text-foreground"
-                  : "text-muted-foreground"
+                  ? "text-fg-default"
+                  : "text-fg-muted"
               )}
             />
           </motion.span>
@@ -775,7 +775,7 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: spring.fast.exit }}
-              transition={{ duration: 0.08 }}
+              transition={{ duration: spring.fast.duration }}
             />
           )}
         </AnimatePresence>
@@ -903,7 +903,7 @@ const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
               >
                 <div
                   ref={measureRef}
-                  className="px-3 pb-3 pt-1 text-body-sm text-muted-foreground"
+                  className="px-3 pb-3 pt-1 text-body text-fg-muted"
                 >
                   {children}
                 </div>

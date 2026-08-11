@@ -398,13 +398,13 @@ useEffect(() => () => timers.current.forEach(clearTimeout), []);
             transition={{ type: "spring", duration: 0.16 }}
             style={{ height: CARD_H, transformOrigin: "bottom center", zIndex: 100 - i }}
             onDoubleClick={() => { setValue(item.text); setQueue((q) => q.filter((x) => x.id !== item.id)); }}
-            className="absolute bottom-0 left-7 right-7 flex items-center gap-2 rounded-[20px] bg-accent-subtle px-3.5 text-[14px] text-muted-foreground shadow-floating"
+            className="absolute bottom-0 left-7 right-7 flex items-center gap-2 rounded-[20px] bg-emphasis px-3.5 text-[14px] text-fg-muted shadow-floating"
           >
             {/* Attachments: small thumbnails (1 or many; +N past 3). */}
             {item.files.length > 0 && (
               <div className="flex shrink-0 items-center gap-1">
                 {item.files.slice(0, 3).map((f, fi) => (
-                  <FileThumbnail key={fi} file={f} size={28} className="rounded-md" />
+                  <FileThumbnail key={fi} file={f} size={28} className="rounded-control" />
                 ))}
                 {item.files.length > 3 && <span>+{item.files.length - 3}</span>}
               </div>

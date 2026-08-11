@@ -51,7 +51,7 @@ export default function CheckboxDoc() {
     >
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
-          <label className="flex cursor-pointer items-center gap-2.5 text-body-sm">
+          <label className="flex cursor-pointer items-center gap-2.5 text-body">
             <Checkbox checked={checked} onCheckedChange={setChecked} />
             <span>Remember this device</span>
           </label>

@@ -12,7 +12,7 @@ import {
   type ReactNode,
   type HTMLAttributes,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group";
 import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 import { cn } from "@/lib/utils";
@@ -24,14 +24,16 @@ export type RadioGroupItemProps = RadioPrimitive.Root.Props;
 
 /** Atomic radio control shared by simple groups and enhanced RadioItem rows. */
 function RadioGroupItem({ className, ...props }: RadioGroupItemProps) {
+  const reduceMotion = useReducedMotion() ?? false;
+
   return (
     <RadioPrimitive.Root
       className={cn(
-        "peer relative inline-flex size-[15px] shrink-0 cursor-pointer appearance-none items-center justify-center rounded-full border-[1.5px] border-input bg-transparent p-0 text-fg-brand outline-none transition-[border-color,box-shadow,opacity] duration-80",
+        "peer relative inline-flex size-5 shrink-0 cursor-pointer appearance-none items-center justify-center rounded-full border border-input bg-transparent p-0 outline-none transition-[border-color,box-shadow,opacity,transform] duration-moderate active:scale-[.92] motion-reduce:active:scale-100",
         "data-unchecked:hover:border-input-hover",
-        "data-checked:border-transparent",
-        "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        "aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/30",
+        "data-checked:border-brand",
+        "focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
+        "aria-invalid:border-danger-border aria-invalid:ring-1 aria-invalid:ring-danger-border/30",
         "data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50",
         className
       )}
@@ -39,14 +41,14 @@ function RadioGroupItem({ className, ...props }: RadioGroupItemProps) {
       {...props}
     >
       <RadioPrimitive.Indicator
-        className="pointer-events-none absolute inset-0 flex items-center justify-center transition-[opacity,transform] duration-80 data-starting-style:scale-50 data-starting-style:opacity-0 data-ending-style:scale-50 data-ending-style:opacity-0"
+        className="pointer-events-none absolute inset-0 flex items-center justify-center transition-[opacity,transform] duration-moderate data-starting-style:scale-50 data-starting-style:opacity-0 data-ending-style:scale-50 data-ending-style:opacity-0"
         data-slot="radio-group-indicator"
       >
         <motion.span
           animate={{ opacity: 1, scale: 1 }}
-          className="size-2 rounded-full bg-brand"
-          initial={{ opacity: 0, scale: 0.3 }}
-          transition={spring.fast}
+          className="size-2.5 rounded-full bg-brand"
+          initial={reduceMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.3 }}
+          transition={reduceMotion ? { duration: 0 } : spring.fast}
         />
       </RadioPrimitive.Indicator>
     </RadioPrimitive.Root>
@@ -228,7 +230,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
         {/* Selected background */}
         {selectedRect && (
           <motion.div
-            className={`absolute ${shape.bg} bg-selection-background pointer-events-none`}
+            className={`absolute ${shape.bg} bg-selection pointer-events-none`}
             initial={false}
             animate={{
               top: selectedRect.top,
@@ -239,7 +241,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
             }}
             transition={{
               ...spring.moderate,
-              opacity: { duration: 0.08 },
+              opacity: { duration: spring.fast.duration },
             }}
           />
         )}
@@ -267,7 +269,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
               exit={{ opacity: 0, transition: spring.fast.exit }}
               transition={{
                 ...spring.fast,
-                opacity: { duration: 0.08 },
+                opacity: { duration: spring.fast.duration },
               }}
             />
           )}
@@ -277,7 +279,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
         <AnimatePresence>
           {focusRect && (
             <motion.div
-              className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-[color:var(--focus-ring,#6B97FF)]`}
+              className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
               initial={false}
               animate={{
                 left: focusRect.left - 2,
@@ -288,7 +290,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
               exit={{ opacity: 0, transition: spring.fast.exit }}
               transition={{
                 ...spring.fast,
-                opacity: { duration: 0.08 },
+                opacity: { duration: spring.fast.duration },
               }}
             />
           )}
@@ -436,7 +438,7 @@ const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
         {/* Label */}
         {/* Both stacked spans carry the text-box trim so the invisible bold
             sizer and the visible label keep identical boxes. */}
-        <span className="inline-grid text-body-sm">
+        <span className="inline-grid text-body">
           <span
             className="col-start-1 row-start-1 invisible [text-box:trim-both_cap_alphabetic] font-semibold"
             aria-hidden="true"
@@ -445,7 +447,7 @@ const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
           </span>
           <span
             className={cn(
-              "col-start-1 row-start-1 transition-[color,font-weight] duration-80 motion-reduce:transition-none [text-box:trim-both_cap_alphabetic]",
+              "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none [text-box:trim-both_cap_alphabetic]",
               isSelected || isActive
                 ? "text-fg-default"
                 : "text-fg-muted",

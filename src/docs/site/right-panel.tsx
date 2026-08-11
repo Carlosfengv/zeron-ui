@@ -77,7 +77,7 @@ export function SettingsContent({
       <div className="flex flex-col gap-1.5 py-3">
         <Tooltip content={<span>{t("pressToCycle", { key: "T" })}</span>} side={tooltipSide}>
           <div className="flex items-center justify-between">
-            <span className="text-[13px] text-muted-foreground">{t("theme")}</span>
+            <span className="text-[13px] text-fg-muted">{t("theme")}</span>
             <Select value={theme} onValueChange={(v) => setTheme(v as Theme)}>
               <SelectTrigger
                 variant="borderless"
@@ -96,7 +96,7 @@ export function SettingsContent({
           </div>
         </Tooltip>
         <div className="flex items-center justify-between">
-            <span className="text-[13px] text-muted-foreground">{t("brand")}</span>
+            <span className="text-[13px] text-fg-muted">{t("brand")}</span>
           <ColorPickerPopover
             value={brandColor}
             format="hex"
@@ -109,7 +109,7 @@ export function SettingsContent({
         </div>
         <Tooltip content={<span>{t("pressToToggle", { key: "R" })}</span>} side={tooltipSide}>
           <div className="flex items-center justify-between">
-            <span className="text-[13px] text-muted-foreground">{t("radius")}</span>
+            <span className="text-[13px] text-fg-muted">{t("radius")}</span>
             <Select value={shape} onValueChange={(v) => setShape(v as ShapeVariant)}>
               <SelectTrigger
                 variant="borderless"
@@ -129,7 +129,7 @@ export function SettingsContent({
         </Tooltip>
         <Tooltip content={<span>{t("pressToCycle", { key: "I" })}</span>} side={tooltipSide}>
           <div className="flex items-center justify-between">
-            <span className="text-[13px] text-muted-foreground">{t("icons")}</span>
+            <span className="text-[13px] text-fg-muted">{t("icons")}</span>
             <Select
               value={iconVariant}
               onValueChange={(value) => setIconVariant(value as IconVariant)}
@@ -155,7 +155,7 @@ export function SettingsContent({
 
       {showLanguage && (
         <div className="flex items-center justify-between py-3">
-          <span className="text-[13px] text-muted-foreground">{t("language")}</span>
+          <span className="text-[13px] text-fg-muted">{t("language")}</span>
           <Select value={selectedLocale} onValueChange={changeLocale}>
             <SelectTrigger variant="borderless" size="md" className="min-w-0 w-auto" />
             <SelectContent>
@@ -192,11 +192,11 @@ export function RightPanel({
     // inner wrapper (else it would override `flex` and drop the gap).
     <div className="shrink-0 w-64 sticky top-4 self-start mt-4 mr-2 xl-fade-block max-xl:fixed max-xl:top-0 max-xl:right-0 max-xl:z-40 max-xl:pointer-events-none">
       <div className="flex flex-col gap-3">
-        <aside className="p-4 rounded-lg bg-muted">
+        <aside className="p-4 rounded-control bg-muted">
           <SurfaceProvider role="raised">
             <div className="pl-1 pt-2 pb-2">
               <h2
-                className="text-[16px] text-foreground leading-none font-semibold"
+                className="text-[16px] text-fg-default leading-none font-semibold"
               >
                 {t("heading")}
               </h2>

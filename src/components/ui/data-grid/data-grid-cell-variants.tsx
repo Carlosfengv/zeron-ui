@@ -391,7 +391,7 @@ export function LongTextCell<TData>({
       >
         <Textarea
           placeholder="Enter text..."
-          className="max-h-[300px] min-h-[150px] resize-none overflow-y-auto rounded-none border-0 shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="max-h-[300px] min-h-[150px] resize-none overflow-y-auto rounded-none border-0 shadow-none focus-visible:ring-1 focus-visible:ring-focus-ring"
           ref={textareaRef}
           value={value}
           onBlur={onBlur}
@@ -720,7 +720,7 @@ export function UrlCell<TData>({
             href={urlHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="truncate text-foreground underline decoration-border underline-offset-2 hover:decoration-foreground/50 data-invalid:cursor-not-allowed data-invalid:text-destructive data-invalid:decoration-destructive/50"
+            className="truncate text-fg-default underline decoration-border underline-offset-2 hover:decoration-fg-default/50 data-invalid:cursor-not-allowed data-invalid:text-fg-danger data-invalid:decoration-danger-border/50"
             onClick={onLinkClick}
           >
             {displayValue}
@@ -844,7 +844,7 @@ export function CheckboxCell<TData>({
         checked={value}
         onCheckedChange={onCheckedChange}
         disabled={readOnly}
-        className="border-foreground"
+        className="border-input-hover"
         onClick={onCheckboxClick}
         onMouseDown={onCheckboxMouseDown}
         onDoubleClick={onCheckboxDoubleClick}
@@ -1213,9 +1213,9 @@ export function MultiSelectCell<TData>({
                       >
                         <div
                           className={cn(
-                            "flex size-4 items-center justify-center rounded-sm border border-foreground",
+                            "flex size-4 items-center justify-center rounded-sm border border-input-hover",
                             isSelected
-                              ? "bg-foreground text-background"
+                              ? "bg-inverse-background text-fg-on-inverse"
                               : "opacity-50 [&_svg]:invisible",
                           )}
                         >
@@ -1232,7 +1232,7 @@ export function MultiSelectCell<TData>({
                     <CommandGroup>
                       <CommandItem
                         onSelect={clearAll}
-                        className="justify-center text-muted-foreground"
+                        className="justify-center text-fg-muted"
                       >
                         Clear all
                       </CommandItem>
@@ -1260,7 +1260,7 @@ export function MultiSelectCell<TData>({
             <Badge
               color="gray"
               size="sm"
-              className="px-1.5 text-muted-foreground"
+              className="px-1.5 text-fg-muted"
             >
               +{hiddenBadgeCount}
             </Badge>
@@ -1912,7 +1912,7 @@ export function FileCell<TData>({
       isActiveSearchMatch={isActiveSearchMatch}
       readOnly={readOnly}
       className={cn({
-        "ring-1 ring-[color:var(--focus-ring,#6B97FF)] ring-inset": isDraggingOver,
+        "ring-1 ring-focus-ring ring-inset": isDraggingOver,
       })}
       onDragEnter={onCellDragEnter}
       onDragLeave={onCellDragLeave}
@@ -1947,7 +1947,7 @@ export function FileCell<TData>({
                 data-invalid={error ? "" : undefined}
                 data-disabled={isPending ? "" : undefined}
                 tabIndex={isDragging || isPending ? -1 : 0}
-                className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed p-6 outline-none transition-colors hover:bg-accent/30 focus-visible:border-[color:var(--focus-ring,#6B97FF)] focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] data-disabled:pointer-events-none data-dragging:border-foreground/30 data-invalid:border-destructive data-dragging:bg-accent/30 data-disabled:opacity-50 data-invalid:ring-destructive/20"
+                className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-control border-2 border-dashed p-6 outline-none transition-colors hover:bg-hover focus-visible:border-focus-ring focus-visible:ring-1 focus-visible:ring-focus-ring data-disabled:pointer-events-none data-dragging:border-fg-default/30 data-invalid:border-danger-border data-dragging:bg-hover data-disabled:opacity-50 data-invalid:ring-danger-border/20"
                 ref={dropzoneRef}
                 onClick={onDropzoneClick}
                 onDragEnter={onDropzoneDragEnter}
@@ -1956,16 +1956,16 @@ export function FileCell<TData>({
                 onDrop={onDropzoneDrop}
                 onKeyDown={onDropzoneKeyDown}
               >
-                <Upload className="size-8 text-muted-foreground" />
-                <div className="text-center text-sm">
+                <Upload className="size-8 text-fg-muted" />
+                <div className="text-center text-body">
                   <p className="font-medium">
                     {isDragging ? "Drop files here" : "Drag files here"}
                   </p>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-fg-muted text-label">
                     or click to browse
                   </p>
                 </div>
-                <p id={descriptionId} className="text-muted-foreground text-xs">
+                <p id={descriptionId} className="text-fg-muted text-label">
                   {maxFileSize
                     ? `Max size: ${formatFileSize(maxFileSize)}${maxFiles ? ` • Max ${maxFiles} files` : ""}`
                     : maxFiles
@@ -1986,14 +1986,14 @@ export function FileCell<TData>({
               {files.length > 0 && (
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between">
-                    <p className="font-medium text-muted-foreground text-xs">
+                    <p className="font-medium text-fg-muted text-label">
                       {files.length} {files.length === 1 ? "file" : "files"}
                     </p>
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-6 text-muted-foreground text-xs"
+                      className="h-6 text-fg-muted text-label"
                       onClick={clearAll}
                       disabled={isPending}
                     >
@@ -2011,14 +2011,14 @@ export function FileCell<TData>({
                         <div
                           key={file.id}
                           data-pending={isFilePending ? "" : undefined}
-                          className="flex items-center gap-2 rounded-md border bg-muted px-2 py-1.5 data-pending:opacity-60"
+                          className="flex items-center gap-2 rounded-control border bg-muted px-2 py-1.5 data-pending:opacity-60"
                         >
                           {FileIcon && (
-                            <FileIcon className="size-4 shrink-0 text-muted-foreground" />
+                            <FileIcon className="size-4 shrink-0 text-fg-muted" />
                           )}
                           <div className="flex-1 overflow-hidden">
-                            <p className="truncate text-sm">{file.name}</p>
-                            <p className="text-muted-foreground text-xs">
+                            <p className="truncate text-body">{file.name}</p>
+                            <p className="text-fg-muted text-label">
                               {isFileUploading
                                 ? "Uploading..."
                                 : isFileDeleting
@@ -2047,7 +2047,7 @@ export function FileCell<TData>({
         </Popover>
       ) : null}
       {isDraggingOver ? (
-        <div className="flex items-center justify-center gap-2 text-foreground text-body-sm">
+        <div className="flex items-center justify-center gap-2 text-fg-default text-body">
           <Upload className="size-4" />
           <span>Drop files here</span>
         </div>
@@ -2086,7 +2086,7 @@ export function FileCell<TData>({
             <Badge
               color="gray"
               size="sm"
-              className="px-1.5 text-muted-foreground"
+              className="px-1.5 text-fg-muted"
             >
               +{hiddenFileCount}
             </Badge>

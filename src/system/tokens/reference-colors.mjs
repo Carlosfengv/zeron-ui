@@ -22,7 +22,6 @@ export const referenceColors = {
     optical: {
       25: "#FCFCFC",
       75: "#F4F4F5",
-      85: "#F3F3F3",
       150: "#EEEEEE",
       250: "#CDCDCD",
       325: "#C0C0C0",
@@ -34,7 +33,6 @@ export const referenceColors = {
       725: "#363636",
       750: "#333333",
       770: "#2A2A2A",
-      775: "#292929",
       805: "#252525",
       840: "#1F1F1F",
       850: "#1E1E1E",

@@ -11,7 +11,7 @@ import { FileThumbnail } from "@/components/ui/file-thumbnail";
 interface ChatMessageProps
   extends Omit<HTMLMotionProps<"div">, "children"> {
   /** Who sent the message. Drives alignment and bubble colour:
-   *  `user` → right-aligned accent bubble, `assistant` → left-aligned plain text. */
+   *  `user` → right-aligned emphasis bubble, `assistant` → left-aligned plain text. */
   from: "user" | "assistant";
   /** Optional attachments rendered as square thumbnails above the bubble. */
   files?: File[];
@@ -90,9 +90,9 @@ const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
                     // word-by-word stream visibly reflows earlier words to new
                     // lines. Default (normal) wrapping appends left-to-right and
                     // stays put as the text grows.
-                    "px-3.5 text-pretty bg-accent-subtle text-accent-foreground"
+                    "px-3.5 text-pretty bg-emphasis text-fg-default"
                   )
-                : "text-foreground"
+                : "text-fg-default"
             )}
           >
             {children}
@@ -106,9 +106,9 @@ const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
           // show their actions alone. User rows read date → icons left-to-right.
           <div
             className={cn(
-              "flex items-center gap-2 px-1 text-label leading-none text-muted-foreground select-none",
+              "flex items-center gap-2 px-1 text-label leading-none text-fg-muted select-none",
               !isTouch && [
-                "opacity-0 pointer-events-none transition-opacity duration-150",
+                "opacity-0 pointer-events-none transition-opacity duration-moderate",
                 "group-hover:opacity-100 group-hover:pointer-events-auto",
                 "group-focus-within:opacity-100 group-focus-within:pointer-events-auto",
               ]

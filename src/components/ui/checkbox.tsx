@@ -1,7 +1,7 @@
 "use client";
 
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export type CheckboxProps = Omit<
@@ -24,16 +24,17 @@ function Checkbox({
   ...props
 }: CheckboxProps) {
   const isIndeterminate = checked === "indeterminate" || indeterminate;
+  const reduceMotion = useReducedMotion() ?? false;
 
   return (
     <CheckboxPrimitive.Root
       checked={checked === "indeterminate" ? false : checked}
       className={cn(
-        "peer relative inline-flex size-[15px] shrink-0 cursor-pointer appearance-none items-center justify-center rounded-[5px] border-[1.5px] border-input bg-transparent p-0 text-fg-brand outline-none transition-[border-color,box-shadow,opacity] duration-80",
+        "peer relative inline-flex size-5 shrink-0 cursor-pointer appearance-none items-center justify-center rounded-control border border-input bg-transparent p-0 text-fg-on-brand outline-none transition-[border-color,background-color,box-shadow,opacity,transform] duration-moderate active:scale-[.92] motion-reduce:active:scale-100",
         "data-unchecked:hover:border-input-hover",
-        "data-checked:border-transparent data-indeterminate:border-transparent",
-        "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        "aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/30",
+        "data-checked:border-brand data-checked:bg-brand data-indeterminate:border-brand data-indeterminate:bg-brand",
+        "focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
+        "aria-invalid:border-danger-border aria-invalid:ring-1 aria-invalid:ring-danger-border/30",
         "data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50",
         className
       )}
@@ -42,24 +43,32 @@ function Checkbox({
       {...props}
     >
       <CheckboxPrimitive.Indicator
-        className="pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-current transition-[opacity,transform] duration-80 data-starting-style:scale-75 data-starting-style:opacity-0 data-ending-style:scale-75 data-ending-style:opacity-0"
+        className="pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-current transition-[opacity,transform,filter] duration-moderate data-starting-style:scale-50 data-starting-style:opacity-0 data-ending-style:scale-50 data-ending-style:opacity-0 data-ending-style:blur-[4px]"
         data-slot="checkbox-indicator"
       >
         <motion.svg
           aria-hidden="true"
-          className="size-[18px]"
+          className="size-3"
           fill="none"
           viewBox="0 0 24 24"
         >
           <motion.path
             animate={{ pathLength: 1 }}
-            d={isIndeterminate ? "M7 12H17" : "M6 12L10 16L18 8"}
-            initial={{ pathLength: 0 }}
+            d={isIndeterminate ? "M6 12H18" : "M5 13L9 17L19 7"}
+            initial={{ pathLength: reduceMotion ? 1 : 0 }}
             stroke="currentColor"
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
-            transition={{ duration: 0.08, ease: "easeOut" }}
+            strokeWidth={3}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : {
+                    duration: isIndeterminate ? 0.2 : 0.3,
+                    ease: "easeOut",
+                    delay: 0.04,
+                  }
+            }
           />
         </motion.svg>
       </CheckboxPrimitive.Indicator>

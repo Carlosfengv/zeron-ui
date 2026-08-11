@@ -152,7 +152,7 @@ export default function BadgeOverflowDoc() {
     >
       <DocSection title={t("singleLine")}>
         <ComponentPreview code={basicCode}>
-          <div className="w-full max-w-[360px] border border-border/60 bg-muted/20 p-3 rounded-xl">
+          <div className="w-full max-w-[360px] border border-border-subtle bg-muted/20 p-3 rounded-xl">
             <SkillBadges />
           </div>
         </ComponentPreview>
@@ -160,7 +160,7 @@ export default function BadgeOverflowDoc() {
 
       <DocSection title={t("multipleLines")}>
         <ComponentPreview code={multiLineCode}>
-          <div className="w-full max-w-[360px] border border-border/60 bg-muted/20 p-3 rounded-xl">
+          <div className="w-full max-w-[360px] border border-border-subtle bg-muted/20 p-3 rounded-xl">
             <SkillBadges lineCount={2} />
           </div>
         </ComponentPreview>
@@ -168,7 +168,7 @@ export default function BadgeOverflowDoc() {
 
       <DocSection title={t("objectsAndCustomOverflow")}>
         <ComponentPreview code={objectCode}>
-          <div className="w-full max-w-[340px] border border-border/60 bg-muted/20 p-3 rounded-xl">
+          <div className="w-full max-w-[340px] border border-border-subtle bg-muted/20 p-3 rounded-xl">
             <BadgeOverflow
               className="gap-1"
               getBadgeKey={(team) => team.id}

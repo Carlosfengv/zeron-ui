@@ -3,6 +3,7 @@
 import { forwardRef, useState, useEffect, type HTMLAttributes } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { spring } from "@/lib/springs";
 const circleA =
   "M 12 8 C 14.21 8 16 9.79 16 12 C 16 14.21 14.21 16 12 16 C 9.79 16 8 14.21 8 12 C 8 9.79 9.79 8 12 8 Z";
 
@@ -57,7 +58,7 @@ const ThinkingIndicator = forwardRef<HTMLDivElement, ThinkingIndicatorProps>(
           strokeWidth={1.5}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-muted-foreground shrink-0"
+          className="text-fg-muted shrink-0"
         >
           {reduceMotion ? (
             <path d={infinity} />
@@ -80,7 +81,7 @@ const ThinkingIndicator = forwardRef<HTMLDivElement, ThinkingIndicatorProps>(
       )}
       <span
         aria-hidden="true"
-        className="inline-grid text-body-sm overflow-hidden font-medium"
+        className="inline-grid text-body overflow-hidden font-medium"
       >
         <span className="col-start-1 row-start-1 invisible shimmer-text">
           {words.reduce((a, b) => (a.length >= b.length ? a : b))}
@@ -95,8 +96,8 @@ const ThinkingIndicator = forwardRef<HTMLDivElement, ThinkingIndicatorProps>(
               key={words[index]}
               className="col-start-1 row-start-1 shimmer-text"
               initial={{ y: "80%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1, transition: { duration: 0.24, ease: [0.4, 0, 0.2, 1] } }}
-              exit={{ y: "-80%", opacity: 0, transition: { duration: 0.16, ease: [0.4, 0, 0.2, 1] } }}
+              animate={{ y: 0, opacity: 1, transition: { duration: spring.slow.duration, ease: [0.4, 0, 0.2, 1] } }}
+              exit={{ y: "-80%", opacity: 0, transition: { duration: spring.moderate.duration, ease: [0.4, 0, 0.2, 1] } }}
             >
               {words[index]}
             </motion.span>

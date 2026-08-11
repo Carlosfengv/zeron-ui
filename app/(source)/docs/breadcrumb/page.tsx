@@ -241,15 +241,15 @@ export default function BreadcrumbDoc() {
       <DocSection title={t("apiReference")}>
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">Breadcrumb</h3>
+            <h3 className="text-body text-fg-default">Breadcrumb</h3>
             <PropsTable props={localize(breadcrumbProps, "b")} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">BreadcrumbLink</h3>
+            <h3 className="text-body text-fg-default">BreadcrumbLink</h3>
             <PropsTable props={localize(linkProps, "l")} />
           </div>
           <div className="flex flex-col gap-3">
-            <h3 className="text-body text-foreground">Composition parts</h3>
+            <h3 className="text-body text-fg-default">Composition parts</h3>
             <PropsTable props={localize(partProps, "p")} />
           </div>
         </div>

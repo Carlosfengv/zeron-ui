@@ -131,10 +131,10 @@ function IssueTable({ rows }: { rows: Issue[] }) {
                 {STATUS[issue.status].label}
               </Badge>
             </TableCell>
-            <TableCell className="font-mono text-[12px] text-muted-foreground">
+            <TableCell className="font-mono text-[12px] text-fg-muted">
               {issue.key}
             </TableCell>
-            <TableCell className="text-foreground">{issue.title}</TableCell>
+            <TableCell className="text-fg-default">{issue.title}</TableCell>
             <TableCell>
               <Badge size="sm" color={PRIORITY[issue.priority].color}>
                 {PRIORITY[issue.priority].label}
@@ -168,7 +168,7 @@ function Board({ rows }: { rows: Issue[] }) {
               <Badge variant="dot" size="sm" color={STATUS[col.key].color}>
                 {col.label}
               </Badge>
-              <span className="text-[12px] text-muted-foreground tabular-nums">
+              <span className="text-[12px] text-fg-muted tabular-nums">
                 {items.length}
               </span>
             </div>
@@ -177,9 +177,9 @@ function Board({ rows }: { rows: Issue[] }) {
                 key={issue.key}
                 className={cn("flex flex-col gap-2 rounded-xl p-3", surfaceClasses("raised", "raised"))}
               >
-                <span className="text-[13px] text-foreground">{issue.title}</span>
+                <span className="text-[13px] text-fg-default">{issue.title}</span>
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-[11px] text-muted-foreground">
+                  <span className="font-mono text-[11px] text-fg-muted">
                     {issue.key}
                   </span>
                   <div className="flex items-center gap-2">
@@ -280,9 +280,9 @@ function TriagePanel({
     <div className={cn("flex flex-col gap-3 rounded-2xl p-4", surfaceClasses("raised", "raised"))}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Sparkle size={16} className="text-foreground" />
+          <Sparkle size={16} className="text-fg-default" />
           <span
-            className="text-[14px] text-foreground font-semibold"
+            className="text-[14px] text-fg-default font-semibold"
           >
             AI triage
           </span>
@@ -330,7 +330,7 @@ function TriagePanel({
       )}
 
       {state === "done" && (
-        <div className="flex items-center gap-2 text-[13px] text-foreground">
+        <div className="flex items-center gap-2 text-[13px] text-fg-default">
           <Check size={16} className="text-emerald-500" />
           Applied 3 changes · re-ranked the Active view.
         </div>

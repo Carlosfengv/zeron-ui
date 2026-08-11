@@ -259,7 +259,7 @@ function DataGridKeyboardShortcutsImpl({
         </DialogHeader>
         <div className="px-6">
           <div className="relative">
-            <SearchIcon className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <SearchIcon className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-fg-muted" />
             <Input
               ref={inputRef}
               placeholder="Search shortcuts..."
@@ -273,14 +273,14 @@ function DataGridKeyboardShortcutsImpl({
         <div className="h-[40vh] overflow-y-auto px-6">
           {filteredGroups.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-control bg-muted text-fg-default">
                 <SearchIcon className="pointer-events-none size-6" />
               </div>
               <div className="flex flex-col gap-1">
-                <div className="font-medium text-lg tracking-tight">
+                <div className="font-medium text-title tracking-tight">
                   No shortcuts found
                 </div>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-fg-muted text-body">
                   Try searching for a different term.
                 </p>
               </div>
@@ -289,10 +289,10 @@ function DataGridKeyboardShortcutsImpl({
             <div className="flex flex-col gap-6">
               {filteredGroups.map((shortcutGroup) => (
                 <div key={shortcutGroup.title} className="flex flex-col gap-2">
-                  <h3 className="font-semibold text-foreground text-sm">
+                  <h3 className="font-semibold text-fg-default text-body">
                     {shortcutGroup.title}
                   </h3>
-                  <div className="divide-y divide-border rounded-md border">
+                  <div className="divide-y divide-border rounded-control border">
                     {shortcutGroup.shortcuts.map((shortcut, index) => (
                       <ShortcutCard
                         key={index}
@@ -317,12 +317,12 @@ function ShortcutCard({
 }: ShortcutGroup["shortcuts"][number]) {
   return (
     <div className="flex items-center gap-4 px-3 py-2">
-      <span className="flex-1 text-sm">{description}</span>
+      <span className="flex-1 text-body">{description}</span>
       <KbdGroup className="shrink-0">
         {keys.map((key, index) => (
           <React.Fragment key={key}>
             {index > 0 && (
-              <span className="text-muted-foreground text-xs">+</span>
+              <span className="text-fg-muted text-label">+</span>
             )}
             <Kbd>{key}</Kbd>
           </React.Fragment>

@@ -162,7 +162,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
                 exit={{ opacity: 0, transition: spring.moderate.exit }}
                 transition={{
                   ...spring.moderate,
-                  opacity: { duration: 0.08 },
+                  opacity: { duration: spring.fast.duration },
                 }}
               />
             )}
@@ -191,7 +191,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
                 exit={{ opacity: 0, transition: spring.fast.exit }}
                 transition={{
                   ...spring.fast,
-                  opacity: { duration: 0.08 },
+                  opacity: { duration: spring.fast.duration },
                 }}
               />
             )}
@@ -201,7 +201,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           <AnimatePresence>
             {focusRect && (
               <motion.div
-                className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-[color:var(--focus-ring,#6B97FF)]`}
+                className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
                 initial={false}
                 animate={{
                   left: focusRect.left - 2,
@@ -212,7 +212,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
                 exit={{ opacity: 0, transition: spring.fast.exit }}
                 transition={{
                   ...spring.fast,
-                  opacity: { duration: 0.08 },
+                  opacity: { duration: spring.fast.duration },
                 }}
               />
             )}
@@ -551,7 +551,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
                       exit={{ opacity: 0, transition: spring.moderate.exit }}
                       transition={{
                         ...spring.moderate,
-                        opacity: { duration: 0.08 },
+                        opacity: { duration: spring.fast.duration },
                       }}
                     />
                   )}
@@ -580,7 +580,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
                       exit={{ opacity: 0, transition: spring.fast.exit }}
                       transition={{
                         ...spring.fast,
-                        opacity: { duration: 0.08 },
+                        opacity: { duration: spring.fast.duration },
                       }}
                     />
                   )}
@@ -590,7 +590,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
                 <AnimatePresence>
                   {focusRect && (
                     <motion.div
-                      className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-[color:var(--focus-ring,#6B97FF)]`}
+                      className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
                       initial={false}
                       animate={{
                         left: focusRect.left - 2,
@@ -601,7 +601,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
                       exit={{ opacity: 0, transition: spring.fast.exit }}
                       transition={{
                         ...spring.fast,
-                        opacity: { duration: 0.08 },
+                        opacity: { duration: spring.fast.duration },
                       }}
                     />
                   )}
@@ -636,7 +636,7 @@ const DropdownLabel = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>
     <div
       ref={ref}
       className={cn(
-        "px-2 py-1.5 shrink-0 text-caption text-muted-foreground",
+        "px-2 py-1.5 shrink-0 text-label text-fg-muted",
         className
       )}
       {...props}
@@ -657,7 +657,7 @@ const DropdownSeparator = forwardRef<
   <div
     ref={ref}
     role="separator"
-    className={cn("my-1 -mx-1 h-px shrink-0 bg-border/60", className)}
+    className={cn("my-1 -mx-1 h-px shrink-0 bg-border-subtle", className)}
     {...props}
   />
 ));

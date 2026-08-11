@@ -198,7 +198,7 @@ const CardGroup = forwardRef<HTMLDivElement, CardGroupProps>(
             "relative grid",
             // A shared frame clips the highlight + dividers to its rounded
             // corners; separated tiles clip themselves.
-            outlined && !separated && `border border-border/60 overflow-hidden ${shape.container}`,
+            outlined && !separated && `border border-border-subtle overflow-hidden ${shape.container}`,
             separated ? "gap-2" : "gap-0",
             className
           )}
@@ -232,7 +232,7 @@ const CardGroup = forwardRef<HTMLDivElement, CardGroupProps>(
                   height: activeRect.height,
                 }}
                 exit={{ opacity: 0, transition: spring.fast.exit }}
-                transition={{ ...spring.fast, opacity: { duration: 0.08 } }}
+                transition={{ ...spring.fast, opacity: { duration: spring.fast.duration } }}
               />
             )}
           </AnimatePresence>
@@ -352,7 +352,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     const tileShape = !group
       ? cn(shape.container, "overflow-hidden")
       : separated && outlined
-        ? cn(shape.container, "overflow-hidden border border-border/60")
+        ? cn(shape.container, "overflow-hidden border border-border-subtle")
         : "";
 
     // Stretched overlay makes the whole card the click target while keeping
@@ -368,7 +368,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           target={external ? "_blank" : undefined}
           rel={external ? "noopener noreferrer" : undefined}
           aria-label={label}
-          className="absolute inset-0 z-raised outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] rounded-[inherit]"
+          className="absolute inset-0 z-raised outline-none focus-visible:ring-1 focus-visible:ring-focus-ring rounded-[inherit]"
         />
       ) : (
         <button
@@ -376,7 +376,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           onClick={onClick}
           aria-label={label}
           aria-pressed={selected || undefined}
-          className="absolute inset-0 z-raised outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] rounded-[inherit]"
+          className="absolute inset-0 z-raised outline-none focus-visible:ring-1 focus-visible:ring-focus-ring rounded-[inherit]"
         />
       )
     ) : null;
@@ -430,7 +430,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
                 : "flex flex-col pb-4",
             // Standalone (no group) cards can't lean on the group highlight, so
             // they carry their own hover tint when interactive.
-            !group && clickable && !disabled && "transition-colors duration-80 hover:bg-hover",
+            !group && clickable && !disabled && "transition-colors duration-fast hover:bg-hover",
             tileShape,
             disabled && "opacity-50 pointer-events-none",
             className
@@ -455,14 +455,14 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           {showBottom && (
             <span
               aria-hidden
-              className="absolute inset-x-0 bottom-0 h-px bg-border/60 pointer-events-none z-underlay"
+              className="absolute inset-x-0 bottom-0 h-px bg-border-subtle pointer-events-none z-underlay"
             />
           )}
           {showRight && (
             <span
               aria-hidden
               className={cn(
-                "absolute top-0 right-0 w-px bg-border/60 pointer-events-none z-underlay",
+                "absolute top-0 right-0 w-px bg-border-subtle pointer-events-none z-underlay",
                 showBottom ? "bottom-px" : "bottom-0"
               )}
             />
@@ -479,7 +479,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
               onClick={onDismiss}
               aria-label="Dismiss"
               className={cn(
-                "absolute right-2 top-2 z-action flex h-control-xs w-7 items-center justify-center text-muted-foreground hover:text-foreground hover:bg-hover cursor-pointer outline-none transition-colors duration-80 focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
+                "absolute right-2 top-2 z-action flex h-control-xs w-7 items-center justify-center text-fg-muted hover:text-fg-default hover:bg-hover cursor-pointer outline-none transition-colors duration-fast focus-visible:ring-1 focus-visible:ring-focus-ring",
                 shape.button
               )}
             >
@@ -550,7 +550,7 @@ const CardTitle = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>>(
         </span>
         <span
           className={cn(
-            "col-start-1 row-start-1 text-foreground transition-[font-weight] duration-80 motion-reduce:transition-none",
+            "col-start-1 row-start-1 text-fg-default transition-[font-weight] duration-fast motion-reduce:transition-none",
             trim,
             emphasized ? "font-semibold" : "font-normal"
           )}
@@ -573,7 +573,7 @@ const CardDescription = forwardRef<
   <p
     ref={ref}
     data-slot="card-description"
-    className={cn("text-body leading-normal text-muted-foreground", className)}
+    className={cn("text-body leading-normal text-fg-muted", className)}
     {...props}
   />
 ));
@@ -709,7 +709,7 @@ function CardMedia({ logo, logoAlt, icon: Icon, size = 22, className }: CardMedi
           wrap
         )}
       >
-        <Icon size={18} strokeWidth={1.5} className="text-muted-foreground" />
+        <Icon size={18} strokeWidth={1.5} className="text-fg-muted" />
       </span>
     );
   }
@@ -762,7 +762,7 @@ const CardEyebrow = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>>
       ref={ref}
       data-slot="card-eyebrow"
       className={cn(
-        "text-caption uppercase tracking-wide text-muted-foreground",
+        "text-label uppercase tracking-wide text-fg-muted",
         "font-semibold",
         className
       )}
@@ -790,17 +790,17 @@ function CardFeature({ icon: Icon, title, description }: CardFeatureProps) {
         <Icon
           size={16}
           strokeWidth={1.5}
-          className="mt-0.5 shrink-0 text-muted-foreground"
+          className="mt-0.5 shrink-0 text-fg-muted"
         />
       )}
       <div className="flex flex-col gap-0.5 min-w-0">
         <span
-          className="text-body-sm text-foreground [text-box:trim-both_cap_alphabetic] font-medium"
+          className="text-body text-fg-default [text-box:trim-both_cap_alphabetic] font-medium"
         >
           {title}
         </span>
         {description && (
-          <span className="text-label leading-relaxed text-muted-foreground">
+          <span className="text-label leading-relaxed text-fg-muted">
             {description}
           </span>
         )}
@@ -817,9 +817,9 @@ type CardButtonVariant = "primary" | "secondary" | "ghost" | "link";
 
 const CARD_BUTTON_VARIANTS: Record<CardButtonVariant, string> = {
   primary: "bg-brand text-fg-on-brand hover:bg-brand-hover active:bg-brand-active",
-  secondary: "bg-accent text-foreground hover:bg-accent/80 active:bg-accent",
-  ghost: "text-muted-foreground hover:text-foreground hover:bg-hover active:bg-active",
-  link: "text-foreground underline-offset-4 hover:underline !px-0 !h-auto",
+  secondary: "bg-secondary-action text-fg-default hover:bg-secondary-action-hover active:bg-secondary-action-active",
+  ghost: "text-fg-muted hover:text-fg-default hover:bg-hover active:bg-active",
+  link: "text-fg-default underline-offset-4 hover:underline !px-0 !h-auto",
 };
 
 interface CardButtonProps {
@@ -852,14 +852,14 @@ function CardButton({
     <Icon
       size={14}
       strokeWidth={1.5}
-      className="shrink-0 transition-[stroke-width] duration-80 group-hover/action:stroke-[2]"
+      className="shrink-0 transition-[stroke-width] duration-fast group-hover/action:stroke-[2]"
     />
   ) : null;
   const externalGlyph = external ? (
     <ArrowRight
       size={13}
       strokeWidth={1.5}
-      className="shrink-0 -rotate-45 transition-[stroke-width] duration-80 group-hover/action:stroke-[2]"
+      className="shrink-0 -rotate-45 transition-[stroke-width] duration-fast group-hover/action:stroke-[2]"
     />
   ) : null;
 
@@ -874,8 +874,8 @@ function CardButton({
 
   const classes = cn(
     "group/action relative z-action inline-flex items-center justify-center gap-1.5 h-control-xs px-2.5 text-label cursor-pointer outline-none",
-    "transition-colors duration-80",
-    "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
+    "transition-colors duration-fast",
+    "focus-visible:ring-1 focus-visible:ring-focus-ring",
     "disabled:opacity-50 disabled:pointer-events-none",
     shape.button,
     CARD_BUTTON_VARIANTS[variant]

@@ -247,7 +247,7 @@ function ContextMenuImpl<TData>({
           <>
             <DropdownSeparator />
             <MenuItem
-              className="[&_svg]:text-destructive"
+              className="[&_svg]:text-fg-danger"
               icon={Trash2Icon}
               index={3}
               label="Delete rows"

@@ -30,24 +30,24 @@ export function PropsTable({ props }: PropsTableProps) {
         <thead>
           <tr className="border-b border-border">
             <th
-              className="px-3 py-2 text-left text-foreground font-semibold"
+              className="px-3 py-2 text-left text-fg-default font-semibold"
             >
               {t("prop")}
             </th>
             <th
-              className="px-3 py-2 text-left text-foreground font-semibold"
+              className="px-3 py-2 text-left text-fg-default font-semibold"
             >
               {t("type")}
             </th>
             {showDefault && (
               <th
-                className="px-3 py-2 text-left text-foreground font-semibold"
+                className="px-3 py-2 text-left text-fg-default font-semibold"
               >
                 {t("default")}
               </th>
             )}
             <th
-              className="px-3 py-2 text-left text-foreground font-semibold"
+              className="px-3 py-2 text-left text-fg-default font-semibold"
             >
               {t("description")}
             </th>
@@ -56,18 +56,18 @@ export function PropsTable({ props }: PropsTableProps) {
         <tbody>
           {props.map((prop) => (
             <tr key={prop.name} className="border-b border-border/40">
-              <td className="px-3 py-2 text-foreground font-mono text-[12px]">
+              <td className="px-3 py-2 text-fg-default font-mono text-[12px]">
                 {prop.name}
               </td>
-              <td className="px-3 py-2 text-muted-foreground font-mono text-[12px]">
+              <td className="px-3 py-2 text-fg-muted font-mono text-[12px]">
                 {prop.type}
               </td>
               {showDefault && (
-                <td className="px-3 py-2 text-muted-foreground font-mono text-[12px]">
+                <td className="px-3 py-2 text-fg-muted font-mono text-[12px]">
                   {prop.default ?? "—"}
                 </td>
               )}
-              <td className="px-3 py-2 text-muted-foreground">
+              <td className="px-3 py-2 text-fg-muted">
                 {prop.description}
               </td>
             </tr>

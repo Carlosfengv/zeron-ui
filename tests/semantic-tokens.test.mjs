@@ -9,9 +9,11 @@ import {
   renderRuntimeTokens,
 } from "../scripts/generate-semantic-tokens.mjs";
 import {
+  colorTokens,
   foregroundColorTokens,
   fillColorTokens,
-  interactionOverlayRgb,
+  boundaryColorTokens,
+  supportColorTokens,
   semanticTokens,
   shadowTokens,
   surfaceTokens,
@@ -57,7 +59,7 @@ describe("semantic token generation", () => {
   });
 
   it("uses 14px / 20px for the default component text token", () => {
-    expect(typographyTokens.find(({ name }) => name === "body-sm")).toMatchObject({
+    expect(typographyTokens.find(({ name }) => name === "body")).toMatchObject({
       px: 14,
       linePx: 20,
     });
@@ -102,13 +104,40 @@ describe("semantic token generation", () => {
         shadowTokens.map((token) => [`shadow-${token.name}`, token.dark]),
       ),
     });
-    expect(renderGlobalsBlock()).toContain("--background: var(--surface-base);");
-    expect(renderGlobalsBlock()).toContain("--card: var(--surface-raised);");
+    expect(renderGlobalsBlock()).not.toMatch(/--(?:background|card):/);
+  });
+
+  it("does not publish retired compatibility color aliases", () => {
+    const retiredNames = [
+      "background", "foreground", "card", "card-foreground", "muted-foreground",
+      "accent", "accent-hover", "accent-active", "accent-subtlest", "accent-subtle",
+      "accent-foreground", "selected", "brand-foreground", "destructive-subtle",
+      "destructive-light", "destructive-foreground",
+    ];
+    const generated = [
+      renderGlobalsBlock(),
+      JSON.stringify(registryCssVars()),
+      renderDocumentation(),
+    ].join("\n");
+
+    expect(semanticTokens).not.toHaveProperty("compatibilityColors");
+    for (const name of retiredNames) {
+      expect(colorTokens.map((token) => token.name)).not.toContain(name);
+      expect(generated).not.toContain(`--${name}:`);
+      expect(generated).not.toContain(`color-${name}`);
+    }
   });
 
   it("keeps readable foreground levels accessible on every surface", () => {
     for (const mode of ["light", "dark"]) {
-      for (const name of ["fg-default", "fg-muted", "fg-subtle"]) {
+      for (const name of [
+        "fg-default",
+        "fg-muted",
+        "fg-subtle",
+        "fg-brand",
+        "fg-danger",
+        "fg-warning",
+      ]) {
         const foreground = tokenByName(foregroundColorTokens, name)[mode];
         for (const surface of surfaceTokens) {
           expect(
@@ -124,6 +153,7 @@ describe("semantic token generation", () => {
     const pairs = [
       ["fg-on-brand", ["brand", "brand-hover", "brand-active"]],
       ["fg-on-danger", ["destructive", "destructive-hover", "destructive-active"]],
+      ["fg-default", ["secondary-action", "secondary-action-hover", "secondary-action-active"]],
       ["fg-on-inverse", ["inverse-background"]],
     ];
 
@@ -144,6 +174,43 @@ describe("semantic token generation", () => {
     }
   });
 
+  it("keeps passive control boundaries theme-aware and low emphasis", () => {
+    expect(tokenByName(boundaryColorTokens, "input")).toMatchObject({
+      light: "#E5E5E5",
+      dark: "#404040",
+    });
+    expect(tokenByName(boundaryColorTokens, "input-hover")).toMatchObject({
+      light: "rgb(23 23 23 / 0.24)",
+      dark: "rgb(245 245 245 / 0.24)",
+    });
+  });
+
+  it("keeps focus and status boundaries distinguishable from their surfaces", () => {
+    const backgroundNames = {
+      "focus-ring": surfaceTokens,
+      "danger-border": [
+        ...surfaceTokens,
+        tokenByName(fillColorTokens, "danger-surface"),
+      ],
+      "warning-border": [
+        ...surfaceTokens,
+        tokenByName(fillColorTokens, "warning-surface"),
+      ],
+    };
+
+    for (const mode of ["light", "dark"]) {
+      for (const [boundaryName, backgrounds] of Object.entries(backgroundNames)) {
+        const boundary = tokenByName(boundaryColorTokens, boundaryName)[mode];
+        for (const background of backgrounds) {
+          expect(
+            contrastRatio(boundary, background[mode]),
+            `${boundaryName} must remain distinguishable from ${background.name} in ${mode}`
+          ).toBeGreaterThanOrEqual(3);
+        }
+      }
+    }
+  });
+
   it("publishes absolute semantic color values without CSS color mixing", () => {
     const generated = [
       renderGlobalsBlock(),
@@ -158,9 +225,9 @@ describe("semantic token generation", () => {
       "fg-default",
       "fg-muted",
       "fg-subtle",
-      "fg-disabled",
       "fg-brand",
       "fg-danger",
+      "fg-warning",
       "fg-on-brand",
       "fg-on-danger",
       "fg-on-inverse",
@@ -174,13 +241,18 @@ describe("semantic token generation", () => {
     expect(generated).not.toMatch(/content-(?:primary|secondary|tertiary|disabled|brand|danger|on-)/);
   });
 
-  it("keeps the interaction overlay RGB private and mode-aware", () => {
+  it("keeps the scrollbar state colors semantic and mode-aware", () => {
     const { theme, light, dark } = registryCssVars();
-    expect(theme).not.toHaveProperty("color-interaction-overlay-rgb");
-    expect(light["interaction-overlay-rgb"]).toBe(interactionOverlayRgb.light);
-    expect(dark["interaction-overlay-rgb"]).toBe(interactionOverlayRgb.dark);
-    expect(light.overlay).toBe("var(--interaction-overlay-rgb)");
-    expect(dark.overlay).toBe("var(--interaction-overlay-rgb)");
+    expect(supportColorTokens.map(({ name }) => name)).toEqual(expect.arrayContaining([
+      "scrollbar-thumb",
+      "scrollbar-thumb-hover",
+      "scrollbar-thumb-active",
+    ]));
+    expect(theme["color-scrollbar-thumb"]).toBe("var(--scrollbar-thumb)");
+    expect(light["scrollbar-thumb"]).toBe("rgb(0 0 0 / 0.08)");
+    expect(dark["scrollbar-thumb"]).toBe("rgb(255 255 255 / 0.08)");
+    expect(light).not.toHaveProperty("overlay");
+    expect(dark).not.toHaveProperty("overlay");
   });
 
   it("does not generate numeric surface or shadow APIs", () => {
@@ -192,6 +264,16 @@ describe("semantic token generation", () => {
 
     expect(generated).not.toMatch(/(?:surface|shadow)-(?:[1-8])\b/);
     expect(generated).not.toContain("shadow-surface-");
+  });
+
+  it("does not publish numeric reference color scales", () => {
+    const generated = [
+      renderGlobalsBlock(),
+      JSON.stringify(registryCssVars()),
+      renderDocumentation(),
+    ].join("\n");
+
+    expect(generated).not.toMatch(/(?:--|color-)(?:neutral|danger|warning)-\d/);
   });
 
   it("uses Tailwind native font weights instead of generated weight tokens", () => {

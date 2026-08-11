@@ -5,7 +5,6 @@ import {
   fillColorTokens,
   boundaryColorTokens,
   interactionColorTokens,
-  compatibilityColorTokens,
   supportColorTokens,
   surfaceTokens,
   shadowTokens,
@@ -27,12 +26,19 @@ type TokenRow = {
   description: string;
 };
 
+type ColorToken = {
+  name: string;
+  light: string;
+  dark: string;
+  usage: string;
+};
+
 const designToken = (group: string, name: string | number) =>
   `${group}/${String(name).replaceAll("-", "/")}`;
 
 function TokenCode({ children }: { children: string }) {
   return (
-    <code className="font-mono text-caption text-fg-muted whitespace-nowrap">
+    <code className="font-mono text-label text-fg-muted whitespace-nowrap">
       {children}
     </code>
   );
@@ -69,7 +75,7 @@ function TokenTable({
     <div className="overflow-x-auto border-y border-border">
       <table className="w-full min-w-[560px] border-collapse text-left">
         <thead>
-          <tr className="border-b border-border bg-muted/40 text-caption text-fg-muted">
+          <tr className="border-b border-border bg-muted/40 text-label text-fg-muted">
             <th className="px-3 py-2 font-normal">{t("designToken")}</th>
             {includeTheme ? (
               <>
@@ -94,7 +100,7 @@ function TokenTable({
               ) : (
                 <td className="px-3 py-2.5"><TokenCode>{row.value ?? "—"}</TokenCode></td>
               )}
-              <td className="max-w-[34ch] px-3 py-2.5 text-body-sm leading-relaxed text-fg-muted">
+              <td className="max-w-[34ch] px-3 py-2.5 text-body leading-relaxed text-fg-muted">
                 {row.description}
               </td>
             </tr>
@@ -103,6 +109,54 @@ function TokenTable({
       </table>
     </div>
   );
+}
+
+function ChoiceCard({
+  title,
+  body,
+  token,
+}: {
+  title: string;
+  body: string;
+  token: string;
+}) {
+  return (
+    <div className="flex min-h-32 flex-col justify-between border border-border bg-surface-raised p-4">
+      <div>
+        <p className="text-body font-semibold text-fg-default">{title}</p>
+        <p className="mt-1 text-body leading-relaxed text-fg-muted">{body}</p>
+      </div>
+      <TokenCode>{token}</TokenCode>
+    </div>
+  );
+}
+
+function RecipeTable({ rows }: { rows: Array<{ scenario: string; tokens: string }> }) {
+  const t = useTranslations("semanticTokens");
+  return (
+    <div className="overflow-x-auto border-y border-border">
+      <table className="w-full min-w-[560px] border-collapse text-left">
+        <thead>
+          <tr className="border-b border-border bg-muted/40 text-label text-fg-muted">
+            <th className="px-3 py-2 font-normal">{t("scenario")}</th>
+            <th className="px-3 py-2 font-normal">{t("use")}</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border/80">
+          {rows.map((row) => (
+            <tr key={row.scenario} className="align-top">
+              <td className="w-[34%] px-3 py-2.5 text-body text-fg-default">{row.scenario}</td>
+              <td className="px-3 py-2.5"><TokenCode>{row.tokens}</TokenCode></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function SectionDescription({ children }: { children: React.ReactNode }) {
+  return <p className="max-w-[72ch] text-body leading-relaxed text-fg-muted">{children}</p>;
 }
 
 const fontWeightRows = [
@@ -118,7 +172,7 @@ function FontWeightTable() {
     <div className="overflow-x-auto border-y border-border">
       <table className="w-full min-w-[560px] border-collapse text-left">
         <thead>
-          <tr className="border-b border-border bg-muted/40 text-caption text-fg-muted">
+          <tr className="border-b border-border bg-muted/40 text-label text-fg-muted">
             <th className="px-3 py-2 font-normal">{t("implementationUtility")}</th>
             <th className="px-3 py-2 font-normal">{t("tailwindDefault")}</th>
             <th className="px-3 py-2 font-normal">{t("role")}</th>
@@ -128,13 +182,13 @@ function FontWeightTable() {
           {fontWeightRows.map((row) => (
             <tr key={row.utility} className="border-b border-border/70 last:border-b-0">
               <td className="px-3 py-2.5"><TokenCode>{row.utility}</TokenCode></td>
-              <td className="px-3 py-2.5 text-body-sm text-fg-default">{row.value}</td>
-              <td className="px-3 py-2.5 text-body-sm text-fg-muted">{row.role}</td>
+              <td className="px-3 py-2.5 text-body text-fg-default">{row.value}</td>
+              <td className="px-3 py-2.5 text-body text-fg-muted">{row.role}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="border-t border-border px-3 py-3 text-body-sm text-fg-muted">
+      <p className="border-t border-border px-3 py-3 text-body text-fg-muted">
         字重是 Tailwind 实现能力，不是 Design Token。消费项目覆盖原生字重 Theme 时，组件跟随宿主配置。
       </p>
     </div>
@@ -159,7 +213,7 @@ function SpacingScaleTable() {
     <div className="overflow-x-auto border-y border-border">
       <table className="w-full min-w-[560px] border-collapse text-left">
         <thead>
-          <tr className="border-b border-border bg-muted/40 text-caption text-fg-muted">
+          <tr className="border-b border-border bg-muted/40 text-label text-fg-muted">
             <th className="px-3 py-2 font-normal">{t("tailwindScale")}</th>
             <th className="px-3 py-2 font-normal">{t("tailwindDefault")}</th>
             <th className="px-3 py-2 font-normal">{t("examples")}</th>
@@ -169,13 +223,13 @@ function SpacingScaleTable() {
           {spacingScaleRows.map((row) => (
             <tr key={row.scale} className="border-b border-border/70 last:border-b-0">
               <td className="px-3 py-2.5"><TokenCode>{row.scale}</TokenCode></td>
-              <td className="px-3 py-2.5 text-body-sm text-fg-default">{row.value}</td>
+              <td className="px-3 py-2.5 text-body text-fg-default">{row.value}</td>
               <td className="px-3 py-2.5"><TokenCode>{row.examples}</TokenCode></td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="border-t border-border px-3 py-3 text-body-sm text-fg-muted">
+      <p className="border-t border-border px-3 py-3 text-body text-fg-muted">
         普通布局间距使用宿主 Tailwind Theme，不发布额外的间距 Design Token 或 CSS 变量。控件高度继续使用语义 Token。
       </p>
     </div>
@@ -184,18 +238,35 @@ function SpacingScaleTable() {
 
 export default function SemanticTokensPage() {
   const t = useTranslations("semanticTokens");
-  const colorRows = (tokens: typeof foregroundColorTokens): TokenRow[] => tokens.map((token) => ({
+  const colorRows = (tokens: ColorToken[]): TokenRow[] => tokens.map((token) => ({
     token: designToken("color", token.name),
     light: token.light,
     dark: token.dark,
     description: token.usage,
   }));
+  const tokenRows = (tokens: ColorToken[], names: string[]) =>
+    colorRows(tokens.filter((token) => names.includes(token.name)));
   const foregroundRows = colorRows(foregroundColorTokens);
-  const fillRows = colorRows(fillColorTokens);
   const boundaryRows = colorRows(boundaryColorTokens);
-  const interactionRows = colorRows(interactionColorTokens);
   const supportRows = colorRows(supportColorTokens);
-  const compatibilityRows = colorRows(compatibilityColorTokens);
+  const actionFillRows = tokenRows(fillColorTokens, [
+    "brand", "brand-hover", "brand-active",
+    "secondary-action", "secondary-action-hover", "secondary-action-active",
+    "destructive", "destructive-hover", "destructive-active",
+    "inverse-background", "inverse-background-hover", "inverse-background-active",
+  ]);
+  const additionalBackgroundRows = tokenRows(fillColorTokens, [
+    "muted", "emphasis", "scrim",
+  ]);
+  const interactionRows = [
+    ...colorRows(interactionColorTokens),
+    ...tokenRows(fillColorTokens, ["selection"]),
+  ];
+  const feedbackRows = [
+    ...tokenRows(fillColorTokens, ["danger-surface", "warning-surface"]),
+    ...tokenRows(foregroundColorTokens, ["fg-danger", "fg-warning"]),
+    ...tokenRows(boundaryColorTokens, ["danger-border", "warning-border"]),
+  ];
 
   const semanticSurfaceRows: TokenRow[] = surfaceTokens.map((token) => ({
     token: designToken("surface", token.name),
@@ -249,67 +320,69 @@ export default function SemanticTokensPage() {
 
   return (
     <DocPage
-      title="Semantic Tokens"
+      title={t("pageTitle")}
       slug="semantic-tokens"
       showInstall={false}
-      description="The single vocabulary shared by Zeron Design and Figma."
+      description={t("pageDescription")}
     >
       <div className="-mt-2 flex flex-col gap-8">
         <section className="border-y border-border py-5">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(17rem,0.7fr)] lg:items-end">
-            <div className="max-w-[62ch]">
-              <p className="text-overline uppercase tracking-[0.14em] text-fg-subtle">{t("ledger")}</p>
-              <p className="mt-2 text-body-md leading-relaxed text-fg-default">
-                {t("ledgerBody")}
-              </p>
-            </div>
-            <div className="border-l-2 border-foreground pl-4">
-              <p className="text-caption text-fg-muted">{t("source")}</p>
-              <TokenCode>src/system/tokens/semantic-tokens.mjs</TokenCode>
-            </div>
+          <p className="text-label uppercase tracking-[0.14em] text-fg-subtle">{t("quickStart")}</p>
+          <p className="mt-2 max-w-[68ch] text-body leading-relaxed text-fg-default">{t("quickStartBody")}</p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <ChoiceCard title={t("backgroundsChoice")} body={t("backgroundsChoiceBody")} token="surface/*" />
+            <ChoiceCard title={t("textChoice")} body={t("textChoiceBody")} token="color/fg/*" />
+            <ChoiceCard title={t("actionsChoice")} body={t("actionsChoiceBody")} token="color/brand + selection/background" />
+            <ChoiceCard title={t("boundariesChoice")} body={t("boundariesChoiceBody")} token="color/border + focus/ring" />
+            <ChoiceCard title={t("feedbackChoice")} body={t("feedbackChoiceBody")} token="danger/* + warning/*" />
           </div>
         </section>
 
-        <DocSection title={t("naming")}>
-          <div className="border-y border-border px-3 py-3.5">
-            <TokenCode>surface/floating</TokenCode>
-            <p className="mt-2 max-w-[62ch] text-body-sm leading-relaxed text-fg-muted">
-              {t("namingBody")}
-            </p>
-          </div>
+        <DocSection title={t("commonRecipes")}>
+          <SectionDescription>{t("commonRecipesBody")}</SectionDescription>
+          <RecipeTable rows={[
+            { scenario: t("primaryAction"), tokens: "brand + fg-on-brand" },
+            { scenario: t("secondaryAction"), tokens: "secondary-action + fg-default" },
+            { scenario: t("dangerAction"), tokens: "destructive + fg-on-danger" },
+            { scenario: t("dangerAlert"), tokens: "danger-surface + fg-danger + danger-border" },
+            { scenario: t("warningAlert"), tokens: "warning-surface + fg-warning + warning-border" },
+            { scenario: t("tooltip"), tokens: "inverse-background + fg-on-inverse" },
+          ]} />
         </DocSection>
 
-        <DocSection title={t("surface")}>
-          <TokenTable rows={semanticSurfaceRows} includeTheme />
+        <DocSection title={t("actionFill")}>
+          <SectionDescription>{t("actionFillBody")}</SectionDescription>
+          <TokenTable rows={actionFillRows} includeTheme />
         </DocSection>
 
         <DocSection title={t("foreground")}>
-          <div className="border-y border-border px-3 py-3.5 text-body-sm leading-relaxed text-fg-muted">
-            <p className="max-w-[68ch]">
-              <code className="font-mono text-caption text-fg-default">fg</code> means foreground and covers text plus icons that inherit currentColor. An <code className="font-mono text-caption text-fg-default">on</code> role is a contrast pair: <code className="font-mono text-caption text-fg-default">fg-brand</code> sits on a normal surface, while <code className="font-mono text-caption text-fg-default">fg-on-brand</code> only sits on a Brand fill.
-            </p>
+          <SectionDescription>{t("foregroundBody")}</SectionDescription>
+          <div className="border-y border-border px-3 py-3.5 text-body leading-relaxed text-fg-muted">
+            <p className="max-w-[68ch]">{t("onPairBody")}</p>
           </div>
           <TokenTable rows={foregroundRows} includeTheme />
         </DocSection>
 
-        <DocSection title={t("fill")}>
-          <TokenTable rows={fillRows} includeTheme />
+        <DocSection title={t("surface")}>
+          <SectionDescription>{t("surfaceBody")}</SectionDescription>
+          <TokenTable rows={semanticSurfaceRows} includeTheme />
+          <p className="text-body font-medium text-fg-default">{t("additionalBackgrounds")}</p>
+          <TokenTable rows={additionalBackgroundRows} includeTheme />
         </DocSection>
 
         <DocSection title={t("boundaries")}>
+          <SectionDescription>{t("boundariesBody")}</SectionDescription>
           <TokenTable rows={boundaryRows} includeTheme />
         </DocSection>
 
         <DocSection title={t("interaction")}>
+          <SectionDescription>{t("interactionBody")}</SectionDescription>
           <TokenTable rows={interactionRows} includeTheme />
         </DocSection>
 
-        <DocSection title={t("support")}>
-          <TokenTable rows={supportRows} includeTheme />
-        </DocSection>
-
-        <DocSection title={t("compatibility")}>
-          <TokenTable rows={compatibilityRows} includeTheme />
+        <DocSection title={t("feedback")}>
+          <SectionDescription>{t("feedbackBody")}</SectionDescription>
+          <TokenTable rows={feedbackRows} includeTheme />
         </DocSection>
 
         <DocSection title={t("elevation")}>
@@ -336,6 +409,27 @@ export default function SemanticTokensPage() {
 
         <DocSection title={t("layers")}>
           <TokenTable rows={layerRows} />
+        </DocSection>
+
+        <details className="border-y border-border py-4">
+          <summary className="cursor-pointer text-body font-semibold text-fg-default">{t("support")}</summary>
+          <div className="mt-3 flex flex-col gap-3">
+            <SectionDescription>{t("supportBody")}</SectionDescription>
+            <TokenTable rows={supportRows} includeTheme />
+          </div>
+        </details>
+
+        <DocSection title={t("developerReference")}>
+          <SectionDescription>{t("developerReferenceBody")}</SectionDescription>
+          <div className="border-y border-border px-3 py-3.5">
+            <p className="text-label text-fg-muted">{t("source")}</p>
+            <TokenCode>src/system/tokens/semantic-tokens.mjs</TokenCode>
+          </div>
+          <div className="border-y border-border px-3 py-3.5">
+            <p className="text-body font-medium text-fg-default">{t("naming")}</p>
+            <TokenCode>surface/floating</TokenCode>
+            <p className="mt-2 max-w-[62ch] text-body leading-relaxed text-fg-muted">{t("namingBody")}</p>
+          </div>
         </DocSection>
       </div>
     </DocPage>

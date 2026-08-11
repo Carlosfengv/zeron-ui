@@ -6,7 +6,6 @@ export const shapeTokenValues = {
     "focus": 10,
     "selection": 8,
     "container": 12,
-    "overlay": 12,
     "full": 9999
   },
   "pill": {
@@ -14,7 +13,6 @@ export const shapeTokenValues = {
     "focus": 22,
     "selection": 16,
     "container": 24,
-    "overlay": 20,
     "full": 9999
   }
 } as const;
@@ -25,7 +23,6 @@ export const shapeTokenClasses = {
     "focus": "rounded-[10px]",
     "selection": "rounded-[8px]",
     "container": "rounded-[12px]",
-    "overlay": "rounded-[12px]",
     "full": "rounded-[9999px]"
   },
   "pill": {
@@ -33,7 +30,6 @@ export const shapeTokenClasses = {
     "focus": "rounded-[22px]",
     "selection": "rounded-[16px]",
     "container": "rounded-[24px]",
-    "overlay": "rounded-[20px]",
     "full": "rounded-[9999px]"
   }
 } as const;

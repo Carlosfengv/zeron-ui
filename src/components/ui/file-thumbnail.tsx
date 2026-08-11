@@ -62,7 +62,7 @@ function FileThumbnail({ file, size, className }: FileThumbnailProps) {
   // leaving the DOM with a stale, revoked `blob:` URL — broken image.
   // Putting both in the same effect means the simulated re-mount creates a
   // fresh URL and updates state. The one-frame "before URL" state is
-  // covered by the bg-accent (no fallback icon shown for images), so the
+  // covered by the muted surface (no fallback icon shown for images), so the
   // transition is visually clean.
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   useEffect(() => {
@@ -109,7 +109,7 @@ function FileThumbnail({ file, size, className }: FileThumbnailProps) {
   return (
     <div
       className={cn(
-        "relative shrink-0 overflow-hidden bg-accent border border-border",
+        "relative shrink-0 overflow-hidden bg-muted border border-border",
         shape.bg,
         className
       )}
@@ -140,7 +140,7 @@ function FileThumbnail({ file, size, className }: FileThumbnailProps) {
         // Inline SVG (not the icon system) so the thumbnail stays
         // self-contained for registry consumers.
         <div
-          className="absolute inset-0 flex items-center justify-center text-muted-foreground"
+          className="absolute inset-0 flex items-center justify-center text-fg-muted"
           role="img"
           aria-label={file.name}
         >

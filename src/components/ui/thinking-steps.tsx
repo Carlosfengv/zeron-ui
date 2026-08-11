@@ -65,7 +65,7 @@ const TriggerRow = forwardRef<HTMLButtonElement, TriggerRowProps>(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: spring.fast.exit }}
-              transition={{ duration: 0.08 }}
+              transition={{ duration: spring.fast.duration }}
             />
           )}
         </AnimatePresence>
@@ -73,13 +73,13 @@ const TriggerRow = forwardRef<HTMLButtonElement, TriggerRowProps>(
           ref={ref}
           className={cn(
             `relative z-content flex items-center gap-2.5 ${shape.item} px-3 py-2 cursor-pointer outline-none select-none`,
-            "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] focus-visible:ring-offset-0",
+            "focus-visible:ring-1 focus-visible:ring-focus-ring focus-visible:ring-offset-0",
             className
           )}
           {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
         >
           {/* Label with dual-layer text (invisible bold layer reserves width) */}
-          <span className="inline-grid text-body-sm text-left">
+          <span className="inline-grid text-body text-left">
             <span
               className="col-start-1 row-start-1 invisible font-semibold"
               aria-hidden="true"
@@ -88,8 +88,8 @@ const TriggerRow = forwardRef<HTMLButtonElement, TriggerRowProps>(
             </span>
             <span
               className={cn(
-                "col-start-1 row-start-1 transition-[color,font-weight] duration-80 motion-reduce:transition-none",
-                highlighted ? "text-foreground" : "text-muted-foreground",
+                "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",
+                highlighted ? "text-fg-default" : "text-fg-muted",
                 open ? "font-semibold" : "font-normal"
               )}
             >
@@ -107,8 +107,8 @@ const TriggerRow = forwardRef<HTMLButtonElement, TriggerRowProps>(
               size={16}
               strokeWidth={highlighted ? 2 : 1.5}
               className={cn(
-                "transition-[color,stroke-width] duration-80",
-                highlighted ? "text-foreground" : "text-muted-foreground"
+                "transition-[color,stroke-width] duration-fast",
+                highlighted ? "text-fg-default" : "text-fg-muted"
               )}
             />
           </motion.span>
@@ -216,7 +216,7 @@ function CollapsePanel({ open, children }: CollapsePanelProps) {
             >
               <div
                 ref={measureRef}
-                className="px-3 pb-3 pt-1 text-body-sm text-muted-foreground"
+                className="px-3 pb-3 pt-1 text-body text-fg-muted"
               >
                 {children}
               </div>
@@ -354,7 +354,7 @@ function ThinkingStep({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.24, delay, ease: "easeOut" }}
+          transition={{ duration: spring.slow.duration, delay, ease: "easeOut" }}
         >
           {/* Content row — this is the proximity hover target */}
           <div className={cn("flex gap-2.5 px-2 py-1.5", shape.item)}>
@@ -365,17 +365,17 @@ function ThinkingStep({
                   <Icon
                     size={14}
                     strokeWidth={1.5}
-                    className="text-muted-foreground"
+                    className="text-fg-muted"
                   />
                 ) : (
                   <div className="w-[14px] h-[14px] flex items-center justify-center">
-                    <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-fg-muted/60" />
                   </div>
                 )}
               </div>
               {/* Line stretches from icon to bottom of this step */}
               {!isLast && (
-                <div className="flex-1 w-px bg-border/60 mt-1" />
+                <div className="flex-1 w-px bg-border-subtle mt-1" />
               )}
             </div>
 
@@ -383,7 +383,7 @@ function ThinkingStep({
             <div className="flex-1 flex flex-col gap-1 min-w-0">
               <span
                 className={cn(
-                  "text-body-sm leading-tight text-foreground",
+                  "text-body leading-tight text-fg-default",
                   isActive && "shimmer-text",
                   "font-medium"
                 )}
@@ -392,7 +392,7 @@ function ThinkingStep({
                 {isActive && "…"}
               </span>
               {description && (
-                <span className="text-body-sm text-muted-foreground leading-snug">
+                <span className="text-body text-fg-muted leading-snug">
                   {description}
                 </span>
               )}
@@ -437,7 +437,7 @@ function ThinkingStepDetails({
           {details?.map((item, i) => (
             <span
               key={i}
-              className="text-label text-muted-foreground leading-snug"
+              className="text-label text-fg-muted leading-snug"
             >
               {item}
             </span>
@@ -487,7 +487,7 @@ function ThinkingStepSource({ color = "gray", delay = 0, children, className }: 
       transition={{
         ...spring.moderate,
         delay,
-        filter: { duration: 0.12, delay },
+        filter: { duration: spring.moderate.exit.duration, delay },
       }}
     >
       <Badge variant="solid" size="sm" color={color} className={className}>
@@ -531,7 +531,7 @@ function ThinkingStepImage({ src, alt = "", caption, delay = 0, className }: Thi
         )}
       />
       {caption && (
-        <span className="text-caption text-muted-foreground mt-1 block">
+        <span className="text-label text-fg-muted mt-1 block">
           {caption}
         </span>
       )}

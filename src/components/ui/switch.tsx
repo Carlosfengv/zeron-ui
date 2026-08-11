@@ -199,8 +199,8 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
           tabIndex={0}
           className={cn(
             "relative shrink-0 rounded-full outline-none cursor-pointer",
-            "transition-colors duration-80",
-            "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            "transition-colors duration-fast",
+            "focus-visible:ring-1 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
           )}
           style={{
             width: TRACK_WIDTH,
@@ -208,8 +208,8 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
             backgroundColor: checked
               ? hovered ? "var(--brand-hover)" : "var(--brand)"
               : hovered
-                ? "var(--accent-hover)"
-                : "var(--accent)",
+                ? "var(--secondary-action-hover)"
+                : "var(--secondary-action)",
           }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -228,7 +228,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
               return (
                 <motion.span
                   {...rest}
-                  className="absolute top-0 left-0 block rounded-full bg-white shadow-sm"
+                  className="absolute top-0 left-0 block rounded-full bg-fg-on-brand shadow-knob"
                   initial={false}
                   style={{
                     ...(baseStyle as React.CSSProperties | undefined),
@@ -252,8 +252,8 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
           className={cn(
             // text-box trim recenters the letterforms against the track; the
             // 20px track is taller than the label, so layout doesn't change.
-            "text-body-sm [text-box:trim-both_cap_alphabetic] transition-[color] duration-80",
-            checked ? "text-foreground" : "text-muted-foreground"
+            "text-body [text-box:trim-both_cap_alphabetic] transition-[color] duration-fast",
+            checked ? "text-fg-default" : "text-fg-muted"
           )}
         >
           {label}

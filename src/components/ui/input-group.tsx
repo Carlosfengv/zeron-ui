@@ -35,10 +35,10 @@ const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
       <div
         ref={ref}
         className={cn(
-          "group/input-group relative flex w-full min-w-0 items-center border border-input bg-transparent shadow-xs outline-none",
-          "transition-[background-color,border-color,box-shadow,color] duration-80",
-          "focus-within:ring-1 focus-within:ring-[color:var(--focus-ring,#6B97FF)]",
-          "has-aria-invalid:border-destructive has-aria-invalid:ring-1 has-aria-invalid:ring-destructive/40",
+          "group/input-group relative flex w-full min-w-0 items-center border border-input bg-transparent shadow-control outline-none hover:border-input-hover hover:bg-hover",
+          "transition-[background-color,border-color,box-shadow,color] duration-fast",
+          "focus-within:ring-1 focus-within:ring-focus-ring",
+          "has-aria-invalid:border-danger-border has-aria-invalid:hover:border-danger-border has-aria-invalid:ring-1 has-aria-invalid:ring-danger-border/40",
           "has-data-[align=block-start]:flex-col has-data-[align=block-start]:items-stretch",
           "has-data-[align=block-end]:flex-col has-data-[align=block-end]:items-stretch",
           shape.input,
@@ -55,7 +55,7 @@ const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
 InputGroup.displayName = "InputGroup";
 
 const inputGroupAddonVariants = cva(
-  "flex cursor-text select-none items-center justify-center gap-2 px-3 text-body-sm text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "flex cursor-text select-none items-center justify-center gap-2 px-3 text-body text-fg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       align: {
@@ -159,7 +159,7 @@ const InputGroupText = forwardRef<HTMLSpanElement, InputGroupTextProps>(
     <span
       ref={ref}
       className={cn(
-        "flex items-center text-body-sm text-muted-foreground [&_svg]:pointer-events-none",
+        "flex items-center text-body text-fg-muted [&_svg]:pointer-events-none",
         className
       )}
       data-slot="input-group-text"
@@ -199,8 +199,8 @@ const InputGroupTextarea = forwardRef<
   <textarea
     ref={ref}
     className={cn(
-      "field-sizing-content min-h-24 flex-1 resize-none border-0 bg-transparent px-3 py-2 text-body-sm text-foreground outline-none",
-      "placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+      "field-sizing-content min-h-24 flex-1 resize-none border-0 bg-transparent px-3 py-2 text-body text-fg-default outline-none",
+      "placeholder:text-fg-muted disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}
     data-slot="input-group-control"
@@ -334,10 +334,10 @@ const InputField = forwardRef<HTMLDivElement, InputFieldProps>(
       bgClass = "bg-transparent";
       ringClass = "ring-border";
     } else if (error) {
-      bgClass = isFocused ? "bg-card" : isActive ? "bg-destructive-light/60" : "bg-transparent";
-      ringClass = isFocused || isActive ? "ring-destructive/50" : "ring-transparent";
+      bgClass = isFocused ? "bg-surface-raised" : isActive ? "bg-danger-surface" : "bg-transparent";
+      ringClass = isFocused || isActive ? "ring-danger-border/50" : "ring-transparent";
     } else if (isFocused) {
-      bgClass = "bg-card";
+      bgClass = "bg-surface-raised";
       ringClass = "ring-border";
     } else if (isActive) {
       bgClass = "bg-muted/50";
@@ -366,7 +366,7 @@ const InputField = forwardRef<HTMLDivElement, InputFieldProps>(
         )}
       >
         {/* Label */}
-        <Field.Label className="inline-grid text-body-sm pl-3">
+        <Field.Label className="inline-grid text-body pl-3">
           <span
             className="col-start-1 row-start-1 invisible font-semibold"
             aria-hidden="true"
@@ -376,7 +376,7 @@ const InputField = forwardRef<HTMLDivElement, InputFieldProps>(
           <span
             className={cn(
               "col-start-1 row-start-1",
-              error ? "text-fg-danger" : "text-muted-foreground", "font-normal"
+              error ? "text-fg-danger" : "text-fg-muted", "font-normal"
             )}
           >
             {label}
@@ -394,7 +394,7 @@ const InputField = forwardRef<HTMLDivElement, InputFieldProps>(
             inputRef.current?.focus();
           }}
           className={cn(
-            `flex items-center gap-2 ${shape.input} px-3 py-2 ring-1 transition-all duration-80`,
+            `flex items-center gap-2 ${shape.input} px-3 py-2 ring-1 transition-all duration-fast`,
             bgClass,
             ringClass
           )}
@@ -404,10 +404,10 @@ const InputField = forwardRef<HTMLDivElement, InputFieldProps>(
               size={16}
               strokeWidth={labelActive ? 2 : 1.5}
               className={cn(
-                "shrink-0 transition-[color,stroke-width] duration-80",
+                "shrink-0 transition-[color,stroke-width] duration-fast",
                 labelActive
-                  ? "text-foreground"
-                  : "text-muted-foreground"
+                  ? "text-fg-default"
+                  : "text-fg-muted"
               )}
             />
           )}
@@ -419,7 +419,7 @@ const InputField = forwardRef<HTMLDivElement, InputFieldProps>(
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={placeholder}
-            className="w-full bg-transparent text-body-sm text-foreground placeholder:text-muted-foreground outline-none font-[inherit] font-normal"
+            className="w-full bg-transparent text-body text-fg-default placeholder:text-fg-muted outline-none font-[inherit] font-normal"
             {...props}
           />
         </div>
