@@ -1,120 +1,106 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
+import {
+  NavItem,
+  NavItemContent,
+  NavItemLabel,
+  NavItemTrigger,
+} from "@/components/ui/nav-item";
 import { NavMenu } from "@/components/ui/nav-menu";
-import { NavItem } from "@/components/ui/nav-item";
+import {
+  Sidebar as SidebarRoot,
+  SidebarContent,
+  SidebarFooter,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { aiAgentList, componentList, systemList } from "@/docs/components";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { SettingsContent } from "@/docs/site/right-panel";
 import { internalPathname, localizePathname } from "@/docs/site/locale-path";
 
-
-interface SidebarProps {
-  mobile?: boolean;
+interface DocsSidebarProps {
   localePrefix?: string;
+  showLanguage?: boolean;
 }
 
-export function Sidebar({ mobile, localePrefix = "" }: SidebarProps) {
+function SiteNavItem({
+  href,
+  label,
+  isNew,
+  isUpdated,
+  dotColor,
+}: {
+  href: string;
+  label: string;
+  isNew?: boolean;
+  isUpdated?: boolean;
+  dotColor?: string;
+}) {
+  return (
+    <NavItem value={href}>
+      <NavItemTrigger render={<Link href={href} />} tooltip={label}>
+        <NavItemContent>
+          <span className="flex min-w-0 items-center gap-2">
+            <NavItemLabel>{label}</NavItemLabel>
+            {(isNew || isUpdated) && (
+              <span
+                aria-label={isUpdated ? "Updated" : "New"}
+                className={cn("size-1.5 shrink-0 rounded-full", isUpdated ? "bg-brand" : dotColor ?? "bg-brand")}
+              />
+            )}
+          </span>
+        </NavItemContent>
+      </NavItemTrigger>
+    </NavItem>
+  );
+}
+
+function DocsSidebarContent({ localePrefix = "" }: Pick<DocsSidebarProps, "localePrefix">) {
   const t = useTranslations("navigation");
   const pathname = usePathname();
   const currentPathname = internalPathname(pathname);
-
-  const sections = (
-    <>
-      {/* Top-level navigation */}
-      <NavMenu activeSlug={currentPathname === "/" ? localizePathname("/", localePrefix) : currentPathname === "/docs" ? localizePathname("/docs", localePrefix) : null} aria-label={t("main")}>
-        <NavItem index={0} href={localizePathname("/", localePrefix)} label={t("showcase")} />
-        <NavItem index={1} href={localizePathname("/docs", localePrefix)} label={t("introduction")} />
-      </NavMenu>
-
-      {/* System section */}
-      <div>
-        <span className="text-[13px] text-muted-foreground/50 pl-1 pb-1.5 flex items-center gap-2">
-          {t("systemGroup")}
-          <span className="text-[11px]">{systemList.length}</span>
-        </span>
-        <NavMenu activeSlug={localizePathname(currentPathname, localePrefix)} aria-label={t("system")}>
-          {systemList.map((s, i) => (
-            <NavItem
-              key={s.slug}
-              index={i}
-              href={localizePathname(`/docs/${s.slug}`, localePrefix)}
-              label={s.name}
-              isNew={s.isNew}
-              isUpdated={s.isUpdated}
-            />
-          ))}
-        </NavMenu>
-      </div>
-
-      {/* Components section */}
-      <div>
-        <span className="text-[13px] text-muted-foreground/50 pl-1 pb-1.5 flex items-center gap-2">
-          {t("componentsGroup")}
-          <span className="text-[11px]">{componentList.length}</span>
-        </span>
-        <NavMenu activeSlug={localizePathname(currentPathname, localePrefix)} aria-label={t("components")}>
-          {componentList.map((c, i) => (
-            <NavItem
-              key={c.slug}
-              index={i}
-              href={localizePathname(`/docs/${c.slug}`, localePrefix)}
-              label={c.name}
-              isNew={c.isNew}
-              isUpdated={c.isUpdated}
-              dotColorClass={c.dotColor}
-            />
-          ))}
-        </NavMenu>
-      </div>
-
-      {/* AI Agent section */}
-      <div>
-        <span className="text-[13px] text-muted-foreground/50 pl-1 pb-1.5 flex items-center gap-2">
-          {t("aiAgentGroup")}
-          <span className="text-[11px]">{aiAgentList.length}</span>
-        </span>
-        <NavMenu activeSlug={localizePathname(currentPathname, localePrefix)} aria-label={t("aiAgent")}>
-          {aiAgentList.map((component, index) => (
-            <NavItem
-              key={component.slug}
-              index={index}
-              href={localizePathname(`/docs/${component.slug}`, localePrefix)}
-              label={component.name}
-              isNew={component.isNew}
-              isUpdated={component.isUpdated}
-              dotColorClass={component.dotColor}
-            />
-          ))}
-        </NavMenu>
-      </div>
-    </>
+  const activePath = localizePathname(currentPathname, localePrefix);
+  const section = (label: string, count: number, ariaLabel: string, children: ReactNode) => (
+    <section>
+      <p className="flex items-center gap-2 px-1 pb-1.5 text-label text-fg-muted">
+        {label} <span>{count}</span>
+      </p>
+      <NavMenu activeValue={activePath} keyboardNavigation="roving" aria-label={ariaLabel}>{children}</NavMenu>
+    </section>
   );
 
-  // Inside the mobile drawer, which owns the scroll (overflow-y-auto): the
-  // sidebar just flows as a plain column — a nested ScrollArea would
-  // double-scroll and needs a bounded height the drawer doesn't hand it.
-  if (mobile) {
-    return <aside className="flex w-full flex-col gap-4 p-4">{sections}</aside>;
-  }
-
-  // Desktop: the aside is the sticky, full-height rail. ScrollArea gives it the
-  // shape-system scrollbar on hover + a scroll-fade edge — the same trick the
-  // /docs/scrollbars page ships, dogfooded on our own nav.
   return (
-    <aside
-      // max-xl:fixed — same trick as the right panel: while xl-fade-flex holds
-      // display:flex through the fade-out (allow-discrete), fixed positioning
-      // takes the sidebar out of flow at the breakpoint so the content reflows
-      // once, not again when display flips to none. ml-2 mirrors the right
-      // panel's mr-2 inset so both sides land on the same 8px gap.
-      className="shrink-0 w-64 ml-2 flex-col sticky top-0 h-screen xl-fade-flex max-xl:fixed max-xl:top-0 max-xl:left-0 max-xl:z-40 max-xl:pointer-events-none"
-    >
-      <ScrollArea className="min-h-0 w-full flex-1" viewportClassName="scroll-fade">
-        <div className="flex flex-col gap-4 p-4">{sections}</div>
-      </ScrollArea>
-    </aside>
+    <>
+      <NavMenu activeValue={currentPathname === "/" ? localizePathname("/", localePrefix) : currentPathname === "/docs" ? localizePathname("/docs", localePrefix) : null} keyboardNavigation="roving" aria-label={t("main")}>
+        <SiteNavItem href={localizePathname("/", localePrefix)} label={t("showcase")} />
+        <SiteNavItem href={localizePathname("/docs", localePrefix)} label={t("introduction")} />
+      </NavMenu>
+      {section(t("systemGroup"), systemList.length, t("system"), systemList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} isNew={item.isNew} isUpdated={item.isUpdated} />))}
+      {section(t("componentsGroup"), componentList.length, t("components"), componentList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />))}
+      {section(t("aiAgentGroup"), aiAgentList.length, t("aiAgent"), aiAgentList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />))}
+    </>
   );
 }
 
-export default Sidebar;
+function DocsSidebarFooter({ localePrefix = "", showLanguage = false }: DocsSidebarProps) {
+  const { isMobile } = useSidebar();
+  if (!isMobile) return null;
+  return <SidebarFooter className="border-t border-border"><SettingsContent tooltipSide="right" localePrefix={localePrefix} showLanguage={showLanguage} /></SidebarFooter>;
+}
+
+export function DocsSidebar({ localePrefix = "", showLanguage = false }: DocsSidebarProps) {
+  return (
+    <SidebarRoot width="260px" collapsible="offcanvas" mobileLabel="Documentation navigation">
+      <SidebarContent><DocsSidebarContent localePrefix={localePrefix} /></SidebarContent>
+      <DocsSidebarFooter localePrefix={localePrefix} showLanguage={showLanguage} />
+    </SidebarRoot>
+  );
+}
+
+/** @deprecated Use DocsSidebar to make the business adapter explicit. */
+export const Sidebar = DocsSidebar;
+export default DocsSidebar;

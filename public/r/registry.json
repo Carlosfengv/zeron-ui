@@ -1581,6 +1581,140 @@
           "target": "components/ui/color-picker.tsx"
         }
       ]
+    },
+    {
+      "name": "app-shell",
+      "type": "registry:ui",
+      "title": "App Shell",
+      "description": "Composable application frame for sidebar, header, and main content.",
+      "registryDependencies": [
+        "https://www.zerondesign.com/r/surfaces.json",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/app-shell.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/app-shell.tsx"
+        }
+      ]
+    },
+    {
+      "name": "page-layout",
+      "type": "registry:ui",
+      "title": "Page Layout",
+      "description": "Responsive page header, body, action, and aside composition.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "https://www.zerondesign.com/r/surfaces.json",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/page-layout.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/page-layout.tsx"
+        }
+      ]
+    },
+    {
+      "name": "nav-menu",
+      "type": "registry:ui",
+      "title": "Nav Menu",
+      "description": "Router-agnostic navigation menu with active, hover, focus, and keyboard behavior.",
+      "dependencies": [
+        "framer-motion"
+      ],
+      "registryDependencies": [
+        "https://www.zerondesign.com/r/surfaces.json",
+        "utils",
+        "https://www.zerondesign.com/r/springs.json",
+        "https://www.zerondesign.com/r/shape-context.json",
+        "https://www.zerondesign.com/r/use-proximity-hover.json"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/nav-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/nav-menu.tsx"
+        }
+      ]
+    },
+    {
+      "name": "nav-item",
+      "type": "registry:ui",
+      "title": "Nav Item",
+      "description": "Composable navigation item that supports router links, labels, badges, actions, and sub-navigation.",
+      "dependencies": [
+        "@base-ui/react"
+      ],
+      "registryDependencies": [
+        "https://www.zerondesign.com/r/surfaces.json",
+        "utils",
+        "https://www.zerondesign.com/r/shape-context.json",
+        "https://www.zerondesign.com/r/tooltip.json",
+        "https://www.zerondesign.com/r/nav-menu.json"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/nav-item.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/nav-item.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "Responsive sidebar with desktop collapse modes, persistence, shortcut support, and mobile drawer behavior.",
+      "dependencies": [
+        "framer-motion"
+      ],
+      "registryDependencies": [
+        "https://www.zerondesign.com/r/surfaces.json",
+        "utils",
+        "https://www.zerondesign.com/r/springs.json",
+        "https://www.zerondesign.com/r/shape-context.json",
+        "https://www.zerondesign.com/r/surface-context.json",
+        "https://www.zerondesign.com/r/surface-classes.json",
+        "https://www.zerondesign.com/r/icon-context.json",
+        "https://www.zerondesign.com/r/button.json",
+        "https://www.zerondesign.com/r/scroll-area.json",
+        "https://www.zerondesign.com/r/mobile-drawer.json"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/sidebar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sidebar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "top-nav",
+      "type": "registry:ui",
+      "title": "Top Nav",
+      "description": "Composable top navigation surface for brand, primary links, and actions.",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "https://www.zerondesign.com/r/surfaces.json",
+        "utils",
+        "https://www.zerondesign.com/r/shape-context.json",
+        "https://www.zerondesign.com/r/surface-context.json",
+        "https://www.zerondesign.com/r/surface-classes.json"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/top-nav.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/top-nav.tsx"
+        }
+      ]
     }
   ]
 }

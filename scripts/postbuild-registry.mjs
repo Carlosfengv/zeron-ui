@@ -57,6 +57,12 @@ export const CUSTOM_ITEMS = new Set([
   "table",
   "thinking-indicator",
   "ask-user-questions",
+  "app-shell",
+  "page-layout",
+  "nav-menu",
+  "nav-item",
+  "sidebar",
+  "top-nav",
 ]);
 
 export function depUrl(dep) {

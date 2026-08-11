@@ -1,228 +1,275 @@
 "use client";
 
 import {
-  useRef,
-  useState,
-  useEffect,
   createContext,
-  useContext,
   forwardRef,
   useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentPropsWithoutRef,
   type ReactNode,
-  type HTMLAttributes,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { spring } from "@/lib/springs";
-import { useProximityHover } from "@/hooks/use-proximity-hover";
 import { useShape } from "@/lib/shape-context";
+import { useProximityHover } from "@/hooks/use-proximity-hover";
+
+export type NavOrientation = "vertical" | "horizontal";
+export type NavKeyboardNavigation = "native" | "roving";
+
+export interface NavMenuProps extends ComponentPropsWithoutRef<"nav"> {
+  orientation?: NavOrientation;
+  activeValue?: string | null;
+  keyboardNavigation?: NavKeyboardNavigation;
+  children: ReactNode;
+}
+
+interface NavItemRegistration {
+  id: string;
+  value: string;
+  element: HTMLElement;
+  disabled: boolean;
+}
 
 interface NavMenuContextValue {
-  registerItem: (index: number, element: HTMLElement | null) => void;
-  registerSlug: (index: number, slug: string | null) => void;
-  activeIndex: number | null;
-  activeSlug: string | null;
-  /** Index of the item matching activeSlug, or null when no item matches. */
-  activeRouteIndex: number | null;
+  activeValue: string | null;
+  activeId: string | null;
+  hoveredId: string | null;
+  focusedId: string | null;
+  keyboardNavigation: NavKeyboardNavigation;
+  rovingTabStopId: string | null;
+  registerItem: (registration: NavItemRegistration) => () => void;
 }
 
 const NavMenuContext = createContext<NavMenuContextValue | null>(null);
 
 export function useNavMenu() {
-  const ctx = useContext(NavMenuContext);
-  if (!ctx) throw new Error("useNavMenu must be used within a NavMenu");
-  return ctx;
+  const context = useContext(NavMenuContext);
+  if (!context) throw new Error("NavItem must be used within a NavMenu");
+  return context;
 }
 
-interface NavMenuProps extends HTMLAttributes<HTMLElement> {
-  children: ReactNode;
-  activeSlug: string | null;
+function itemOrder(items: Map<string, NavItemRegistration>) {
+  return [...items.values()].sort((a, b) => {
+    if (a.element === b.element) return 0;
+    const position = a.element.compareDocumentPosition(b.element);
+    return position & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+  });
 }
 
 const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
-  ({ children, activeSlug, className, ...props }, ref) => {
-    const containerRef = useRef<HTMLElement>(null);
-    const slugToIndexRef = useRef<Map<string, number>>(new Map());
+  (
+    {
+      children,
+      orientation = "vertical",
+      activeValue = null,
+      keyboardNavigation = "native",
+      className,
+      onFocusCapture,
+      onBlurCapture,
+      onKeyDown,
+      ...props
+    },
+    forwardedRef
+  ) => {
+    const containerRef = useRef<HTMLElement | null>(null);
+    const itemMapRef = useRef(new Map<string, NavItemRegistration>());
+    const [items, setItems] = useState<Map<string, NavItemRegistration>>(
+      () => new Map()
+    );
+    const [focusedId, setFocusedId] = useState<string | null>(null);
+    const reduceMotion = useReducedMotion() ?? false;
+    const shape = useShape();
+    const axis = orientation === "vertical" ? "y" : "x";
     const {
-      activeIndex,
-      setActiveIndex,
+      activeIndex: hoveredIndex,
+      setActiveIndex: setHoveredIndex,
       itemRects,
+      isMeasured,
       sessionRef,
       handlers,
-      registerItem,
-      measureItems,
-    } = useProximityHover(containerRef);
+      registerItem: registerMeasuredItem,
+      remeasure,
+    } = useProximityHover(containerRef, { axis });
+
+    const orderedItems = useMemo(() => itemOrder(items), [items]);
+    const activeId = useMemo(
+      () =>
+        activeValue === null
+          ? null
+          : orderedItems.find((item) => item.value === activeValue)?.id ?? null,
+      [activeValue, orderedItems]
+    );
+    const hoveredId =
+      hoveredIndex === null ? null : orderedItems[hoveredIndex]?.id ?? null;
+
+    const registerItem = useCallback((registration: NavItemRegistration) => {
+      itemMapRef.current.set(registration.id, registration);
+      setItems(new Map(itemMapRef.current));
+      return () => {
+        itemMapRef.current.delete(registration.id);
+        setItems(new Map(itemMapRef.current));
+      };
+    }, []);
 
     useEffect(() => {
-      measureItems();
-    }, [measureItems, children]);
+      orderedItems.forEach((item, index) => registerMeasuredItem(index, item.element));
+      return () => {
+        orderedItems.forEach((_, index) => registerMeasuredItem(index, null));
+      };
+    }, [orderedItems, registerMeasuredItem]);
 
-    const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+    useEffect(() => {
+      const container = containerRef.current;
+      if (!container || typeof ResizeObserver === "undefined") return;
+      const observer = new ResizeObserver(() => remeasure());
+      observer.observe(container);
+      orderedItems.forEach((item) => observer.observe(item.element));
+      return () => observer.disconnect();
+    }, [orderedItems, remeasure]);
 
-    const registerSlug = useCallback(
-      (index: number, slug: string | null) => {
-        if (slug === null) {
-          // Find and remove this index
-          for (const [s, i] of slugToIndexRef.current) {
-            if (i === index) {
-              slugToIndexRef.current.delete(s);
-              break;
-            }
-          }
-        } else {
-          slugToIndexRef.current.set(slug, index);
-        }
-      },
-      []
+    const rovingTabStopId = activeId ?? orderedItems.find((item) => !item.disabled)?.id ?? null;
+    const activeIndex = activeId ? orderedItems.findIndex((item) => item.id === activeId) : -1;
+    const focusIndex = focusedId ? orderedItems.findIndex((item) => item.id === focusedId) : -1;
+    const hoverRect = hoveredIndex === null ? null : itemRects[hoveredIndex] ?? null;
+    const activeRect = activeIndex >= 0 ? itemRects[activeIndex] ?? null : null;
+    const focusRect = focusIndex >= 0 ? itemRects[focusIndex] ?? null : null;
+
+    const focusByOffset = (startIndex: number, direction: 1 | -1) => {
+      const enabled = orderedItems.filter((item) => !item.disabled);
+      if (!enabled.length) return;
+      const current = enabled.findIndex((item) => item.id === orderedItems[startIndex]?.id);
+      const next = enabled[(current + direction + enabled.length) % enabled.length];
+      next?.element.querySelector<HTMLElement>("[data-slot=nav-item-trigger]")?.focus();
+    };
+
+    const context = useMemo<NavMenuContextValue>(
+      () => ({
+        activeValue,
+        activeId,
+        hoveredId,
+        focusedId,
+        keyboardNavigation,
+        rovingTabStopId,
+        registerItem,
+      }),
+      [activeValue, activeId, hoveredId, focusedId, keyboardNavigation, registerItem, rovingTabStopId]
     );
 
-    // Derive the active route index from activeSlug
-    const activeRouteIndex =
-      activeSlug !== null ? slugToIndexRef.current.get(activeSlug) ?? null : null;
-
-    const activeRect = activeIndex !== null ? itemRects[activeIndex] : null;
-    const activeRouteRect =
-      activeRouteIndex !== null ? itemRects[activeRouteIndex] : null;
-    const focusRect = focusedIndex !== null ? itemRects[focusedIndex] : null;
-    const shape = useShape();
-
     return (
-      <NavMenuContext.Provider
-        value={{ registerItem, registerSlug, activeIndex, activeSlug, activeRouteIndex }}
-      >
+      <NavMenuContext.Provider value={context}>
         <nav
           ref={(node) => {
-            (
-              containerRef as React.MutableRefObject<HTMLElement | null>
-            ).current = node;
-            if (typeof ref === "function") ref(node);
-            else if (ref)
-              (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+            containerRef.current = node;
+            if (typeof forwardedRef === "function") forwardedRef(node);
+            else if (forwardedRef) forwardedRef.current = node;
           }}
+          data-slot="nav-menu"
+          data-orientation={orientation}
           onMouseEnter={handlers.onMouseEnter}
           onMouseMove={handlers.onMouseMove}
           onMouseLeave={handlers.onMouseLeave}
-          onFocus={(e) => {
-            const indexAttr = (e.target as HTMLElement)
-              .closest("[data-nav-index]")
-              ?.getAttribute("data-nav-index");
-            if (indexAttr != null) {
-              const idx = Number(indexAttr);
-              setActiveIndex(idx);
-              setFocusedIndex(
-                (e.target as HTMLElement).matches(":focus-visible") ? idx : null
-              );
+          onFocusCapture={(event) => {
+            const id = (event.target as HTMLElement)
+              .closest<HTMLElement>("[data-nav-item-id]")
+              ?.dataset.navItemId;
+            if (id) setFocusedId(id);
+            onFocusCapture?.(event);
+          }}
+          onBlurCapture={(event) => {
+            if (!containerRef.current?.contains(event.relatedTarget as Node)) {
+              setFocusedId(null);
+              setHoveredIndex(null);
             }
+            onBlurCapture?.(event);
           }}
-          onBlur={(e) => {
-            if (containerRef.current?.contains(e.relatedTarget as Node)) return;
-            setFocusedIndex(null);
-            setActiveIndex(null);
-          }}
-          onKeyDown={(e) => {
-            const items = Array.from(
-              containerRef.current?.querySelectorAll("a[data-nav-index]") ?? []
-            ) as HTMLElement[];
-            const currentIdx = items.indexOf(e.target as HTMLElement);
-            if (currentIdx === -1) return;
+          onKeyDown={(event) => {
+            onKeyDown?.(event);
+            if (event.defaultPrevented || keyboardNavigation !== "roving") return;
+            const currentId = (event.target as HTMLElement)
+              .closest<HTMLElement>("[data-nav-item-id]")
+              ?.dataset.navItemId;
+            const currentIndex = orderedItems.findIndex((item) => item.id === currentId);
+            if (currentIndex < 0) return;
 
-            if (
-              ["ArrowDown", "ArrowUp", "ArrowRight", "ArrowLeft"].includes(
-                e.key
-              )
-            ) {
-              e.preventDefault();
-              const next = ["ArrowDown", "ArrowRight"].includes(e.key)
-                ? (currentIdx + 1) % items.length
-                : (currentIdx - 1 + items.length) % items.length;
-              items[next].focus();
-            } else if (e.key === "Home") {
-              e.preventDefault();
-              items[0]?.focus();
-            } else if (e.key === "End") {
-              e.preventDefault();
-              items[items.length - 1]?.focus();
+            const forwardKey = orientation === "vertical" ? "ArrowDown" : "ArrowRight";
+            const backwardKey = orientation === "vertical" ? "ArrowUp" : "ArrowLeft";
+            if (event.key === forwardKey || event.key === backwardKey) {
+              event.preventDefault();
+              focusByOffset(currentIndex, event.key === forwardKey ? 1 : -1);
+            } else if (event.key === "Home" || event.key === "End") {
+              event.preventDefault();
+              const enabled = orderedItems.filter((item) => !item.disabled);
+              const target = event.key === "Home" ? enabled[0] : enabled[enabled.length - 1];
+              target?.element.querySelector<HTMLElement>("[data-slot=nav-item-trigger]")?.focus();
             }
           }}
           className={cn(
-            "relative flex flex-col gap-0.5 w-full select-none",
+            "relative isolate flex select-none",
+            orientation === "vertical" ? "w-full flex-col gap-0.5" : "min-w-0 items-center gap-1",
             className
           )}
           {...props}
         >
-          {/* Active route background */}
           <AnimatePresence>
-            {activeRouteRect && (
+            {isMeasured && activeRect && (
               <motion.div
-                className={`absolute ${shape.bg} bg-active pointer-events-none`}
+                aria-hidden="true"
+                data-slot="nav-item-active-indicator"
+                className={cn("pointer-events-none absolute z-base bg-active", shape.bg)}
                 initial={false}
                 animate={{
-                  top: activeRouteRect.top,
-                  left: activeRouteRect.left,
-                  width: activeRouteRect.width,
-                  height: activeRouteRect.height,
-                  opacity: 1,
-                }}
-                exit={{ opacity: 0, transition: spring.moderate.exit }}
-                transition={{
-                  ...spring.moderate,
-                  opacity: { duration: 0.08 },
-                }}
-              />
-            )}
-          </AnimatePresence>
-
-          {/* Hover background */}
-          <AnimatePresence>
-            {activeRect && (
-              <motion.div
-                key={sessionRef.current}
-                className={`absolute ${shape.bg} bg-hover pointer-events-none`}
-                initial={{
-                  opacity: 0,
-                  top: activeRouteRect?.top ?? activeRect.top,
-                  left: activeRouteRect?.left ?? activeRect.left,
-                  width: activeRouteRect?.width ?? activeRect.width,
-                  height: activeRouteRect?.height ?? activeRect.height,
-                }}
-                animate={{
-                  opacity: 1,
                   top: activeRect.top,
                   left: activeRect.left,
                   width: activeRect.width,
                   height: activeRect.height,
+                  opacity: 1,
                 }}
                 exit={{ opacity: 0, transition: spring.fast.exit }}
-                transition={{
-                  ...spring.fast,
-                  opacity: { duration: 0.08 },
-                }}
+                transition={reduceMotion ? { duration: 0 } : spring.moderate}
               />
             )}
           </AnimatePresence>
-
-          {/* Focus ring */}
           <AnimatePresence>
-            {focusRect && (
+            {isMeasured && hoverRect && (
               <motion.div
-                className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-[color:var(--focus-ring,#6B97FF)]`}
+                key={sessionRef.current}
+                aria-hidden="true"
+                data-slot="nav-item-hover-indicator"
+                className={cn("pointer-events-none absolute z-base bg-hover", shape.bg)}
+                initial={{ opacity: 0, top: hoverRect.top, left: hoverRect.left, width: hoverRect.width, height: hoverRect.height }}
+                animate={{ top: hoverRect.top, left: hoverRect.left, width: hoverRect.width, height: hoverRect.height, opacity: 1 }}
+                exit={{ opacity: 0, transition: spring.fast.exit }}
+                transition={reduceMotion ? { duration: 0 } : spring.fast}
+              />
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {isMeasured && focusRect && (
+              <motion.div
+                aria-hidden="true"
+                data-slot="nav-item-focus-indicator"
+                className={cn("pointer-events-none absolute z-raised border border-focus-ring", shape.focusRing)}
                 initial={false}
                 animate={{
-                  left: focusRect.left - 2,
                   top: focusRect.top - 2,
+                  left: focusRect.left - 2,
                   width: focusRect.width + 4,
                   height: focusRect.height + 4,
+                  opacity: 1,
                 }}
                 exit={{ opacity: 0, transition: spring.fast.exit }}
-                transition={{
-                  ...spring.fast,
-                  opacity: { duration: 0.08 },
-                }}
+                transition={reduceMotion ? { duration: 0 } : spring.fast}
               />
             )}
           </AnimatePresence>
-
-          {children}
+          <ul data-slot="nav-list" className={cn("relative z-content flex min-w-0 list-none p-0", orientation === "vertical" ? "w-full flex-col gap-0.5" : "items-center gap-1")}>
+            {children}
+          </ul>
         </nav>
       </NavMenuContext.Provider>
     );

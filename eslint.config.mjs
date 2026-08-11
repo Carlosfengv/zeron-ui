@@ -9,14 +9,21 @@ const SHADCN_RESERVED_REGEX =
 // Focus indicators must ride the --focus-ring token so every click area
 // shows the same ring (see the @layer base :focus-visible fallback in
 // app/globals.css). This catches color-bearing ring/outline/border utilities
-// under focus variants that bypass the token: palette colors, white/black,
-// and arbitrary values that aren't var(--focus-ring) — including the raw
-// hex, which must go through the token form to stay themeable.
+// under focus variants that bypass the token.
 const FOCUS_PALETTE =
   "(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-[0-9]{2,3}";
 const FOCUS_RING_REGEX = `\\bfocus(?:-visible|-within)?:(?:ring|outline|border)-(?:${FOCUS_PALETTE}|white|black|\\[(?!color:var\\(--focus-ring|var\\(--focus-ring))`;
 const FOCUS_RING_MESSAGE =
-  "Focus indicators must use the --focus-ring token — e.g. focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)].";
+  "Focus indicators must use the focus-ring token — e.g. focus-visible:ring-1 focus-visible:ring-focus-ring.";
+
+const COMPONENT_PALETTE_REGEX =
+  "\\b(?:bg|text|border|ring|outline|fill|stroke)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-[0-9]{2,3}\\b|\\b(?:bg|text|border|ring|outline|fill|stroke)-(?:white|black)\\b";
+const RAW_COMPONENT_COLOR_REGEX =
+  "#[0-9a-fA-F]{3,8}\\b|\\b(?:rgb|rgba|hsl|hsla)\\((?!var\\(--)[^)]*";
+const COMPONENT_PALETTE_MESSAGE =
+  "Core components must use semantic color tokens. Categorical colors belong in src/system/tokens/categorical-colors.ts, not component-local palette utilities.";
+const RAW_COMPONENT_COLOR_MESSAGE =
+  "Core components must not embed raw colors. Use a semantic token or a CSS value derived from var(--...).";
 
 const shadcnRestrictedRules = {
   "no-restricted-syntax": [
@@ -24,7 +31,7 @@ const shadcnRestrictedRules = {
     {
       selector: `Literal[value=/${SHADCN_RESERVED_REGEX}/]`,
       message:
-        "Tailwind utility reserved for /compare's shadcn theme. Use FF tokens (bg-foreground, bg-card, bg-accent, bg-destructive, text-foreground, etc.) instead.",
+        "Tailwind utility reserved for /compare's shadcn theme. Use FF tokens (bg-inverse-background, bg-surface-raised, bg-secondary-action, bg-destructive, text-fg-default, etc.) instead.",
     },
     {
       selector: `TemplateElement[value.raw=/${SHADCN_RESERVED_REGEX}/]`,
@@ -38,6 +45,28 @@ const shadcnRestrictedRules = {
     {
       selector: `TemplateElement[value.raw=/${FOCUS_RING_REGEX}/]`,
       message: FOCUS_RING_MESSAGE,
+    },
+  ],
+};
+
+const componentColorRules = {
+  "no-restricted-syntax": [
+    "error",
+    {
+      selector: `Literal[value=/${COMPONENT_PALETTE_REGEX}/]`,
+      message: COMPONENT_PALETTE_MESSAGE,
+    },
+    {
+      selector: `TemplateElement[value.raw=/${COMPONENT_PALETTE_REGEX}/]`,
+      message: COMPONENT_PALETTE_MESSAGE,
+    },
+    {
+      selector: `Literal[value=/${RAW_COMPONENT_COLOR_REGEX}/]`,
+      message: RAW_COMPONENT_COLOR_MESSAGE,
+    },
+    {
+      selector: `TemplateElement[value.raw=/${RAW_COMPONENT_COLOR_REGEX}/]`,
+      message: RAW_COMPONENT_COLOR_MESSAGE,
     },
   ],
 };
@@ -113,5 +142,10 @@ export default [
   {
     files: ["**/*.{ts,tsx}"],
     rules: shadcnRestrictedRules,
+  },
+  {
+    files: ["src/components/ui/**/*.{ts,tsx}"],
+    ignores: ["src/components/ui/color-picker.tsx"],
+    rules: componentColorRules,
   },
 ];

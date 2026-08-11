@@ -2,9 +2,6 @@
 
 import { lazy, Suspense, useEffect, useState } from "react";
 
-const DesktopSidebar = lazy(() =>
-  import("@/docs/site/sidebar").then((module) => ({ default: module.Sidebar }))
-);
 const DesktopRightPanel = lazy(() =>
   import("@/docs/site/right-panel").then((module) => ({ default: module.RightPanel }))
 );
@@ -53,23 +50,8 @@ function useDesktopChromeReady() {
   return ready;
 }
 
-function SidebarPlaceholder() {
-  return <aside aria-hidden="true" className="ml-2 hidden h-screen w-64 shrink-0 xl:block" />;
-}
-
 function RightPanelPlaceholder() {
   return <aside aria-hidden="true" className="mr-2 hidden w-64 shrink-0 xl:block" />;
-}
-
-export function DeferredDesktopSidebar({ localePrefix = "" }: { localePrefix?: string }) {
-  const ready = useDesktopChromeReady();
-  if (!ready) return <SidebarPlaceholder />;
-
-  return (
-    <Suspense fallback={<SidebarPlaceholder />}>
-      <DesktopSidebar localePrefix={localePrefix} />
-    </Suspense>
-  );
 }
 
 export function DeferredDesktopRightPanel({
