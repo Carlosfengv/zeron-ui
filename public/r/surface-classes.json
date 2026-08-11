@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "surface-classes",
+  "title": "Surface Class Lookup",
+  "description": "Typed semantic Surface and Shadow class maps with role-based nesting resolution.",
+  "files": [
+    {
+      "path": "src/system/surface-classes.ts",
+      "content": "export type SurfaceRole = \"base\" | \"raised\" | \"floating\" | \"overlay\" | \"top\";\nexport type ShadowRole = \"none\" | \"raised\" | \"floating\" | \"overlay\";\n\nexport const SURFACE_ROLES: SurfaceRole[] = [\n  \"base\",\n  \"raised\",\n  \"floating\",\n  \"overlay\",\n  \"top\",\n];\n\nexport const SURFACE_ROLE_BG: Record<SurfaceRole, string> = {\n  base: \"bg-surface-base\",\n  raised: \"bg-surface-raised\",\n  floating: \"bg-surface-floating\",\n  overlay: \"bg-surface-overlay\",\n  top: \"bg-surface-top\",\n};\n\nexport const SHADOW_ROLE: Record<ShadowRole, string> = {\n  none: \"\",\n  raised: \"shadow-raised\",\n  floating: \"shadow-floating\",\n  overlay: \"shadow-overlay\",\n};\n\nexport function resolveSurface(\n  parent: SurfaceRole,\n  minimum: SurfaceRole,\n): SurfaceRole {\n  const parentIndex = SURFACE_ROLES.indexOf(parent);\n  const minimumIndex = SURFACE_ROLES.indexOf(minimum);\n  const nextIndex = Math.min(parentIndex + 1, SURFACE_ROLES.length - 1);\n  return SURFACE_ROLES[Math.max(minimumIndex, nextIndex)];\n}\n\nexport function surfaceClasses(\n  surface: SurfaceRole,\n  shadow: ShadowRole = \"none\",\n): string {\n  return [SURFACE_ROLE_BG[surface], SHADOW_ROLE[shadow]].filter(Boolean).join(\" \");\n}\n\n/**\n * Semantic shadow lookup for components whose spatial separation is stable\n * even while their background surface is calculated relative to a parent.\n */\nexport function shadowClasses(role: ShadowRole): string {\n  return SHADOW_ROLE[role];\n}\n\n/** Use for non-relative, public surface roles. */\nexport function semanticSurfaceClasses(\n  surface: SurfaceRole,\n  shadow?: ShadowRole\n): string {\n  return surfaceClasses(surface, shadow);\n}\n",
+      "type": "registry:lib",
+      "target": "lib/surface-classes.ts"
+    }
+  ],
+  "type": "registry:lib"
+}

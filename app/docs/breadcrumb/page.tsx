@@ -1,0 +1,254 @@
+import Link from "next/link";
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { ComponentPreview } from "@/docs/ComponentPreview";
+import { PropsTable, type PropDef } from "@/docs/PropsTable";
+import { DocPage, DocSection } from "@/docs/DocPage";
+
+const basicCode = `import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "./components/breadcrumb";
+
+<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/">Home</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/docs">Components</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>`;
+
+const collapsedCode = `<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/">Workspace</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbEllipsis />
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/projects/atlas">Atlas</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Settings</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>`;
+
+const customCode = `<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/docs">Docs</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator>/</BreadcrumbSeparator>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/docs/components">Components</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator>/</BreadcrumbSeparator>
+    <BreadcrumbItem>
+      <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>`;
+
+const renderCode = `import Link from "next/link";
+
+<BreadcrumbLink render={<Link href="/docs" />}>
+  Documentation
+</BreadcrumbLink>`;
+
+const breadcrumbProps: PropDef[] = [
+  {
+    name: "children",
+    type: "ReactNode",
+    description: "BreadcrumbList containing the navigation path.",
+  },
+  {
+    name: "aria-label",
+    type: "string",
+    default: '"breadcrumb"',
+    description: "Accessible name for the navigation landmark.",
+  },
+  {
+    name: "className",
+    type: "string",
+    description: "Additional classes applied to the nav element.",
+  },
+];
+
+const linkProps: PropDef[] = [
+  {
+    name: "href",
+    type: "string",
+    description: "Destination when the default anchor element is used.",
+  },
+  {
+    name: "render",
+    type: "ReactElement | ((props, state) => ReactElement)",
+    description: "Composes breadcrumb behavior onto a router link or custom anchor.",
+  },
+  {
+    name: "children",
+    type: "ReactNode",
+    description: "Visible link label.",
+  },
+];
+
+const partProps: PropDef[] = [
+  {
+    name: "BreadcrumbList",
+    type: "ol props",
+    description: "Responsive wrapping list that controls path spacing and typography.",
+  },
+  {
+    name: "BreadcrumbItem",
+    type: "li props",
+    description: "Groups one link, page label, or ellipsis item.",
+  },
+  {
+    name: "BreadcrumbPage",
+    type: "span props",
+    description: "Current page label with aria-current=page.",
+  },
+  {
+    name: "BreadcrumbSeparator",
+    type: "li props",
+    description: "Presentation-only separator; accepts custom children.",
+  },
+  {
+    name: "BreadcrumbEllipsis",
+    type: "span props",
+    description: "Presentation-only marker for collapsed path levels.",
+  },
+];
+
+export default function BreadcrumbDoc() {
+  return (
+    <DocPage
+      title="Breadcrumb"
+      slug="breadcrumb"
+      description="Composable path navigation with router-link composition, custom separators, and collapsed levels."
+    >
+      <DocSection title="Basic">
+        <ComponentPreview code={basicCode}>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#">Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#">Components</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title="Collapsed Levels">
+        <ComponentPreview code={collapsedCode}>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#">Workspace</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbEllipsis />
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#">Atlas</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Settings</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title="Custom Separator">
+        <ComponentPreview code={customCode}>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#">Docs</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator>/</BreadcrumbSeparator>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#">Components</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator>/</BreadcrumbSeparator>
+              <BreadcrumbItem>
+                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title="Router Link Composition">
+        <ComponentPreview code={renderCode}>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink render={<Link href="/docs" />}>
+                  Documentation
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title="API Reference">
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-3">
+            <h3 className="text-body text-foreground">Breadcrumb</h3>
+            <PropsTable props={breadcrumbProps} />
+          </div>
+          <div className="flex flex-col gap-3">
+            <h3 className="text-body text-foreground">BreadcrumbLink</h3>
+            <PropsTable props={linkProps} />
+          </div>
+          <div className="flex flex-col gap-3">
+            <h3 className="text-body text-foreground">Composition parts</h3>
+            <PropsTable props={partProps} />
+          </div>
+        </div>
+      </DocSection>
+    </DocPage>
+  );
+}

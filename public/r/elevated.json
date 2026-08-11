@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "elevated",
+  "title": "Elevated",
+  "description": "Semantic elevation primitive that resolves a Surface role, applies an independent Shadow role, and re-provides the substrate to descendants.",
+  "registryDependencies": [
+    "https://www.zerondesign.com/r/surfaces.json",
+    "utils",
+    "https://www.zerondesign.com/r/surface-context.json",
+    "https://www.zerondesign.com/r/surface-classes.json"
+  ],
+  "files": [
+    {
+      "path": "src/system/elevated.tsx",
+      "content": "\"use client\";\n\nimport {\n  forwardRef,\n  type ComponentPropsWithoutRef,\n  type ReactNode,\n} from \"react\";\nimport { cn } from \"@/lib/utils\";\nimport {\n  resolveSurface,\n  useSurface,\n  SurfaceProvider,\n} from \"@/lib/surface-context\";\nimport {\n  surfaceClasses,\n  type ShadowRole,\n  type SurfaceRole,\n} from \"@/lib/surface-classes\";\n\ninterface ElevatedProps extends ComponentPropsWithoutRef<\"div\"> {\n  /** Lowest semantic role for this container. Nested surfaces resolve to the\n   * next available role and stop at `top`. */\n  surface?: Exclude<SurfaceRole, \"base\">;\n  /**\n   * The component's spatial-separation role. It stays independent from the\n   * relative background level: a dropdown inside a dialog can use the top\n   * surface while retaining a floating shadow.\n   */\n  shadow?: ShadowRole;\n  children?: ReactNode;\n}\n\nconst Elevated = forwardRef<HTMLDivElement, ElevatedProps>(\n  (\n    {\n      surface = \"floating\",\n      shadow = \"floating\",\n      className,\n      children,\n      ...props\n    },\n    ref,\n  ) => {\n    const substrate = useSurface();\n    const role = resolveSurface(substrate, surface);\n    return (\n      <SurfaceProvider role={role}>\n        <div\n          ref={ref}\n          className={cn(surfaceClasses(role, shadow), className)}\n          data-surface={role}\n          {...props}\n        >\n          {children}\n        </div>\n      </SurfaceProvider>\n    );\n  }\n);\nElevated.displayName = \"Elevated\";\n\nexport { Elevated };\n",
+      "type": "registry:lib",
+      "target": "lib/elevated.tsx"
+    }
+  ],
+  "type": "registry:lib"
+}

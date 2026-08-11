@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "use-touch-primary",
+  "title": "useTouchPrimary",
+  "description": "Detects touch-primary devices (coarse pointer + touch points), updating live on pointer-mode and media-query changes. Adapted from Lina (https://lina.sameer.sh).",
+  "files": [
+    {
+      "path": "src/system/hooks/use-touch-primary.tsx",
+      "content": "\"use client\";\n\n// Adapted from Lina by SameerJS6 (https://lina.sameer.sh) — use-has-primary-touch.\n// Detects touch-primary devices (coarse pointer + touch points), updating live\n// on pointer-mode and media-query changes. Returns false on the server and the\n// first client render, so the non-touch branch is the hydration-stable default.\n\nimport { useEffect, useState } from \"react\";\n\nexport function useTouchPrimary() {\n  const [isTouchPrimary, setIsTouchPrimary] = useState(false);\n\n  useEffect(() => {\n    if (typeof window === \"undefined\") return;\n\n    const controller = new AbortController();\n    const { signal } = controller;\n\n    const handleTouch = () => {\n      const hasTouch = \"ontouchstart\" in window || navigator.maxTouchPoints > 0;\n      const prefersTouch = window.matchMedia(\"(pointer: coarse)\").matches;\n      setIsTouchPrimary(hasTouch && prefersTouch);\n    };\n\n    const mq = window.matchMedia(\"(pointer: coarse)\");\n    mq.addEventListener(\"change\", handleTouch, { signal });\n    window.addEventListener(\"pointerdown\", handleTouch, { signal });\n\n    handleTouch();\n\n    return () => controller.abort();\n  }, []);\n\n  return isTouchPrimary;\n}\n",
+      "type": "registry:hook",
+      "target": "hooks/use-touch-primary.tsx"
+    }
+  ],
+  "type": "registry:hook"
+}

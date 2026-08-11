@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "checkbox",
+  "title": "Checkbox (Base UI)",
+  "description": "Compact animated checkbox with checked, indeterminate, disabled, validation, and form states. Base UI flavor.",
+  "dependencies": [
+    "@base-ui/react",
+    "framer-motion"
+  ],
+  "registryDependencies": [
+    "https://www.zerondesign.com/r/surfaces.json",
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "src/components/ui/checkbox.tsx",
+      "content": "\"use client\";\n\nimport { Checkbox as CheckboxPrimitive } from \"@base-ui/react/checkbox\";\nimport { motion } from \"framer-motion\";\nimport { cn } from \"@/lib/utils\";\n\nexport type CheckboxProps = Omit<\n  CheckboxPrimitive.Root.Props,\n  \"checked\" | \"indeterminate\"\n> & {\n  checked?: boolean | \"indeterminate\";\n  indeterminate?: boolean;\n};\n\n/**\n * A compact Base UI checkbox aligned with the controls used throughout\n * Zeron Design. Pass `checked=\"indeterminate\"` or `indeterminate` for a\n * mixed state.\n */\nfunction Checkbox({\n  checked,\n  className,\n  indeterminate,\n  ...props\n}: CheckboxProps) {\n  const isIndeterminate = checked === \"indeterminate\" || indeterminate;\n\n  return (\n    <CheckboxPrimitive.Root\n      checked={checked === \"indeterminate\" ? false : checked}\n      className={cn(\n        \"peer relative inline-flex size-[15px] shrink-0 cursor-pointer appearance-none items-center justify-center rounded-[5px] border-[1.5px] border-input bg-transparent p-0 text-fg-brand outline-none transition-[border-color,box-shadow,opacity] duration-80\",\n        \"data-unchecked:hover:border-input-hover\",\n        \"data-checked:border-transparent data-indeterminate:border-transparent\",\n        \"focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] focus-visible:ring-offset-2 focus-visible:ring-offset-background\",\n        \"aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/30\",\n        \"data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50\",\n        className\n      )}\n      data-slot=\"checkbox\"\n      indeterminate={isIndeterminate}\n      {...props}\n    >\n      <CheckboxPrimitive.Indicator\n        className=\"pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center text-current transition-[opacity,transform] duration-80 data-starting-style:scale-75 data-starting-style:opacity-0 data-ending-style:scale-75 data-ending-style:opacity-0\"\n        data-slot=\"checkbox-indicator\"\n      >\n        <motion.svg\n          aria-hidden=\"true\"\n          className=\"size-[18px]\"\n          fill=\"none\"\n          viewBox=\"0 0 24 24\"\n        >\n          <motion.path\n            animate={{ pathLength: 1 }}\n            d={isIndeterminate ? \"M7 12H17\" : \"M6 12L10 16L18 8\"}\n            initial={{ pathLength: 0 }}\n            stroke=\"currentColor\"\n            strokeLinecap=\"round\"\n            strokeLinejoin=\"round\"\n            strokeWidth={2}\n            transition={{ duration: 0.08, ease: \"easeOut\" }}\n          />\n        </motion.svg>\n      </CheckboxPrimitive.Indicator>\n    </CheckboxPrimitive.Root>\n  );\n}\n\nexport { Checkbox };\n",
+      "type": "registry:ui",
+      "target": "components/ui/checkbox.tsx"
+    }
+  ],
+  "type": "registry:ui"
+}
