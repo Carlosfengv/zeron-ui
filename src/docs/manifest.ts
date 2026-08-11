@@ -1,4 +1,4 @@
-export type DocGroup = "root" | "system" | "components" | "ai-agent" | "legacy";
+export type DocGroup = "root" | "system" | "layout" | "components" | "ai-agent" | "legacy";
 
 export interface DocRouteManifestEntry {
   id: string;
@@ -32,8 +32,13 @@ export const docManifest = [
   page({ id: "semantic-tokens", pathname: "/docs/semantic-tokens", group: "system", name: "Semantic Tokens", description: "The complete runtime contract for color, surface, type, shape, and layering.", isNew: true }),
   page({ id: "scrollbars", pathname: "/docs/scrollbars", group: "system", name: "Scrollbars", description: "A scrollbar that stays out of the way but never disappears, over shadcn's scroll-fade baseline — restyled to the shape system, native scroll on touch.", isNew: true }),
   page({ id: "motion", pathname: "/docs/motion", group: "system", name: "Motion", description: "Spring tokens, faster exits, and reflow-free weight animation — the motion rules shared by every component." }),
+  page({ id: "app-shell", pathname: "/docs/app-shell", group: "layout", name: "AppShell", description: "Composable application frame for Sidebar, header, and main content." }),
+  page({ id: "page-layout", pathname: "/docs/page-layout", group: "layout", name: "PageLayout", description: "Responsive page composition for headers, content, actions, and optional asides." }),
+  page({ id: "sidebar", pathname: "/docs/sidebar", group: "layout", name: "Sidebar", description: "Responsive navigation rail with desktop collapse and a mobile drawer." }),
+  page({ id: "top-nav", pathname: "/docs/top-nav", group: "layout", name: "TopNav", description: "Composable top navigation with brand, primary links, and actions." }),
+  page({ id: "nav-menu", pathname: "/docs/nav-menu", group: "layout", name: "NavMenu", description: "Router-agnostic navigation primitives shared by Sidebar and TopNav." }),
   page({ id: "accordion", pathname: "/docs/accordion", group: "components", name: "Accordion", description: "Collapsible sections with animated expand/collapse and proximity hover in grouped mode.", gridSize: "large" }),
-  page({ id: "badge", pathname: "/docs/badge", group: "components", name: "Badge", description: "Compact label with solid and dot variants, Tailwind color palette, and three sizes.", gridSize: "small" }),
+  page({ id: "badge", pathname: "/docs/badge", group: "components", name: "Badge", description: "Compact label with categorical colors, semantic statuses, solid and dot variants, and three sizes.", gridSize: "small" }),
   page({ id: "badge-overflow", pathname: "/docs/badge-overflow", group: "components", name: "BadgeOverflow", description: "Responsive badge list that collapses hidden items into an overflow count.", isNew: true, gridSize: "medium" }),
   page({ id: "breadcrumb", pathname: "/docs/breadcrumb", group: "components", name: "Breadcrumb", description: "Composable path navigation with separators, current-page state, and collapsed levels.", isNew: true, gridSize: "medium" }),
   page({ id: "button", pathname: "/docs/button", group: "components", name: "Button", description: "Versatile button with variants, sizes, loading state, and icon support.", gridSize: "small" }),

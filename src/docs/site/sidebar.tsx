@@ -18,7 +18,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { aiAgentList, componentList, systemList } from "@/docs/components";
+import { aiAgentList, componentList, layoutList, systemList } from "@/docs/components";
 import { SettingsContent } from "@/docs/site/right-panel";
 import { internalPathname, localizePathname } from "@/docs/site/locale-path";
 
@@ -80,6 +80,7 @@ function DocsSidebarContent({ localePrefix = "" }: Pick<DocsSidebarProps, "local
         <SiteNavItem href={localizePathname("/docs", localePrefix)} label={t("introduction")} />
       </NavMenu>
       {section(t("systemGroup"), systemList.length, t("system"), systemList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} isNew={item.isNew} isUpdated={item.isUpdated} />))}
+      {section(t("layoutGroup"), layoutList.length, t("layout"), layoutList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} />))}
       {section(t("componentsGroup"), componentList.length, t("components"), componentList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />))}
       {section(t("aiAgentGroup"), aiAgentList.length, t("aiAgent"), aiAgentList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />))}
     </>

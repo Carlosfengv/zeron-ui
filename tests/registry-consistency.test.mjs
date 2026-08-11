@@ -89,15 +89,15 @@ describe("registry.json", () => {
 
 describe("docs pages", () => {
   it("has a docs page for every listed component and system entry", async () => {
-    const { aiAgentList, componentList, systemList } = await import("../src/docs/components.ts");
-    for (const entry of [...componentList, ...aiAgentList, ...systemList]) {
+    const { aiAgentList, componentList, layoutList, systemList } = await import("../src/docs/components.ts");
+    for (const entry of [...componentList, ...aiAgentList, ...layoutList, ...systemList]) {
       expect(existsSync(join(ROOT, "app/(source)/docs", entry.slug, "page.tsx")), entry.slug).toBe(true);
     }
   });
 
   it("does not have orphaned docs pages", async () => {
-    const { aiAgentList, componentList, legacyDocSlugs, systemList } = await import("../src/docs/components.ts");
-    const listed = new Set([...componentList, ...aiAgentList, ...systemList].map((entry) => entry.slug));
+    const { aiAgentList, componentList, layoutList, legacyDocSlugs, systemList } = await import("../src/docs/components.ts");
+    const listed = new Set([...componentList, ...aiAgentList, ...layoutList, ...systemList].map((entry) => entry.slug));
     const legacy = new Set(legacyDocSlugs);
     const pages = readdirSync(join(ROOT, "app/(source)/docs"), { withFileTypes: true })
       .filter((entry) => entry.isDirectory() && existsSync(join(ROOT, "app/(source)/docs", entry.name, "page.tsx")));

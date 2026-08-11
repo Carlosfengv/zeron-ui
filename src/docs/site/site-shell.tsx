@@ -8,13 +8,14 @@ import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sid
 import { DeferredDesktopRightPanel } from "@/docs/site/deferred-desktop-chrome";
 import { DocsSidebar } from "@/docs/site/sidebar";
 import { RightRailProvider } from "@/docs/right-rail";
-import { aiAgentList, componentList, systemList } from "@/docs/components";
+import { aiAgentList, componentList, layoutList, systemList } from "@/docs/components";
 import { internalPathname, localePrefixFromPathname, localizePathname } from "@/docs/site/locale-path";
 
 const pageOrder = [
   "/",
   "/docs",
   ...systemList.map((item) => `/docs/${item.slug}`),
+  ...layoutList.map((item) => `/docs/${item.slug}`),
   ...componentList.map((item) => `/docs/${item.slug}`),
   ...aiAgentList.map((item) => `/docs/${item.slug}`),
 ];

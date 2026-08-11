@@ -11,6 +11,7 @@ export interface ComponentEntry {
 }
 
 export type SystemEntry = Omit<ComponentEntry, "gridSize" | "dotColor">;
+export type LayoutEntry = Omit<ComponentEntry, "gridSize" | "dotColor">;
 
 function toEntry(entry: (typeof pageDocEntries)[number]): ComponentEntry {
   return {
@@ -29,6 +30,9 @@ export const systemList: SystemEntry[] = pageDocEntries
   .map(toEntry);
 export const componentList: ComponentEntry[] = pageDocEntries
   .filter((entry) => entry.group === "components")
+  .map(toEntry);
+export const layoutList: LayoutEntry[] = pageDocEntries
+  .filter((entry) => entry.group === "layout")
   .map(toEntry);
 export const aiAgentList: ComponentEntry[] = pageDocEntries
   .filter((entry) => entry.group === "ai-agent")
