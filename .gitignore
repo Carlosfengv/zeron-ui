@@ -47,6 +47,7 @@ next-env.d.ts
 /app/test/
 /output/
 /.playwright-*/
+test-results/
 /.next-*/
 
 # editor

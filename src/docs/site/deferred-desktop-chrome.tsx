@@ -61,24 +61,30 @@ function RightPanelPlaceholder() {
   return <aside aria-hidden="true" className="mr-2 hidden w-64 shrink-0 xl:block" />;
 }
 
-export function DeferredDesktopSidebar() {
+export function DeferredDesktopSidebar({ localePrefix = "" }: { localePrefix?: string }) {
   const ready = useDesktopChromeReady();
   if (!ready) return <SidebarPlaceholder />;
 
   return (
     <Suspense fallback={<SidebarPlaceholder />}>
-      <DesktopSidebar />
+      <DesktopSidebar localePrefix={localePrefix} />
     </Suspense>
   );
 }
 
-export function DeferredDesktopRightPanel() {
+export function DeferredDesktopRightPanel({
+  localePrefix = "",
+  showLanguage = false,
+}: {
+  localePrefix?: string;
+  showLanguage?: boolean;
+}) {
   const ready = useDesktopChromeReady();
   if (!ready) return <RightPanelPlaceholder />;
 
   return (
     <Suspense fallback={<RightPanelPlaceholder />}>
-      <DesktopRightPanel />
+      <DesktopRightPanel localePrefix={localePrefix} showLanguage={showLanguage} />
     </Suspense>
   );
 }

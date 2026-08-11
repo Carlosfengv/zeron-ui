@@ -1,0 +1,9 @@
+{
+  "tableDoc": {
+    "basic": "基础用法",
+    "apiReference": "API 参考",
+    "tableChildren": "TableHeader 和 TableBody 子元素。",
+    "rowIndex": "用于邻近悬停的行索引；表头行请省略。",
+    "rowChildren": "TableCell 或 TableHead 子元素。"
+  }
+}

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { docOrder } from "@/docs/components";
 import { DocPager } from "@/docs/DocPager";
 import { InstallCommand } from "@/docs/InstallCommand";
@@ -22,11 +23,14 @@ export function DocPage({
   showInstall = true,
   children,
 }: DocPageProps) {
+  const t = useTranslations("common");
+  const meta = useTranslations("docMeta");
+  const navigation = useTranslations("navigation");
   const currentIndex = slug ? docOrder.findIndex((component) => component.slug === slug) : -1;
   const prev = currentIndex > 0
     ? docOrder[currentIndex - 1]
     : currentIndex === 0
-      ? { slug: "", name: "Introduction" }
+      ? { slug: "", name: navigation("introduction") }
       : null;
   const next = currentIndex >= 0 && currentIndex < docOrder.length - 1
     ? docOrder[currentIndex + 1]
@@ -40,7 +44,9 @@ export function DocPage({
           <h1 className="text-[22px] sm:text-[28px] text-foreground leading-none mb-2 font-bold">
             {title}
           </h1>
-          <p className="text-[13px] text-muted-foreground">{description}</p>
+          <p className="text-[13px] text-muted-foreground">
+            {slug && meta.has(`descriptions.${slug}`) ? meta(`descriptions.${slug}`) : description}
+          </p>
         </div>
         {slug && <DocPager prev={prev} next={next} />}
       </div>
@@ -48,11 +54,11 @@ export function DocPage({
       {slug && registrySlug && showInstall && (
         <div className="flex flex-col gap-3">
           <h2 className="text-[16px] text-foreground leading-none font-semibold">
-            Installation
+            {t("installation")}
           </h2>
           <InstallCommand value={`npx zeron-ui add ${registrySlug}`} />
           {BASE_UI_BACKED_SLUGS.has(registrySlug) && (
-            <p className="text-[12px] text-muted-foreground">Built on Base UI primitives.</p>
+            <p className="text-[12px] text-muted-foreground">{t("builtOnBaseUi")}</p>
           )}
         </div>
       )}

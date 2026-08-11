@@ -12,6 +12,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { useTranslations } from "next-intl";
 
 // ---------------------------------------------------------------------------
 // Shared scaffolding for doc-page playgrounds (Card, Button, …): the control
@@ -88,7 +89,7 @@ export function PlayDivider() {
 
 /** The muted controls card: title row with a shuffle button, fields below. */
 export function PlaygroundPanel({
-  title = "Playground variant",
+  title,
   onShuffle,
   children,
 }: {
@@ -96,6 +97,7 @@ export function PlaygroundPanel({
   onShuffle: () => void;
   children: ReactNode;
 }) {
+  const t = useTranslations("playground");
   const Shuffle = useIcon("rotate-ccw");
 
   return (
@@ -105,13 +107,13 @@ export function PlaygroundPanel({
           <h2
             className="text-[16px] text-foreground leading-none font-semibold"
           >
-            {title}
+            {title ?? t("variant")}
           </h2>
           <button
             type="button"
             onClick={onShuffle}
-            aria-label="Randomize properties"
-            title="Randomize"
+            aria-label={t("randomizeProperties")}
+            title={t("randomize")}
             className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/70 hover:text-foreground hover:bg-hover transition-colors duration-80 cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
           >
             <Shuffle size={15} strokeWidth={1.5} />

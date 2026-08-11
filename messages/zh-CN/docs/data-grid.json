@@ -1,0 +1,27 @@
+{
+  "dataGrid": {
+    "description": "虚拟化表格风格数据网格，支持行内编辑、范围选择、搜索、复制粘贴、调整尺寸、排序和固定列。",
+    "releasePlanner": "发布计划",
+    "interactionModel": "交互模型",
+    "moveAndEdit": "点击或使用方向键移动。按 Enter、F2 或直接输入，即可编辑聚焦的单元格。",
+    "rangeControls": "按住 Shift 扩展选择范围。使用熟悉的表格控件进行复制、粘贴、删除、搜索、固定、排序和调整尺寸。",
+    "apiReference": "API 参考",
+    "cellMetadata": "列单元格元数据",
+    "tableDescription": "由 `useDataGrid` 返回的 TanStack 表格实例。",
+    "heightDescription": "滚动视口的最大高度，单位为像素。",
+    "directionDescription": "用于键盘移动和固定列的阅读方向。",
+    "stretchColumnsDescription": "允许非选择列扩展以填满可用宽度。",
+    "dataDescription": "可编辑的行数据。",
+    "columnsDescription": "列定义和单元格编辑器元数据。",
+    "dataChangeDescription": "接收编辑、清空、粘贴和行更新。",
+    "rowAddDescription": "添加一行，并可返回应该接收焦点的单元格。",
+    "pasteDescription": "启用表格风格的多单元格粘贴。",
+    "readOnlyDescription": "禁用编辑，同时保留导航、排序和选择。",
+    "rowHeightDescription": "控制虚拟行高和文本行数截断。",
+    "initialStateDescription": "初始排序、尺寸、可见性和固定状态。",
+    "cellVariantDescription": "选择列的显示方式和编辑器行为。",
+    "optionsDescription": "用于 `select` 和 `multi-select` 单元格的选项。每个选项可通过 `color` 使用 Badge 调色板。",
+    "boundsDescription": "数字单元格的可选边界。",
+    "columnReadOnlyDescription": "仅禁用这一列的编辑。"
+  }
+}

@@ -1,4 +1,6 @@
 "use client";
+import { useTranslations } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Select,
   SelectTrigger,
@@ -16,9 +18,21 @@ import { RightRailTarget } from "@/docs/right-rail";
 import { Tooltip } from "@/components/ui/tooltip";
 import { ColorPickerPopover } from "@/components/ui/color-picker";
 import { rgbToHex, useBrandColor } from "@/docs/brand-playground";
+import { internalPathname, localizePathname } from "@/docs/site/locale-path";
 
 /** The inner settings content — reused in the right column and mobile drawer. */
-export function SettingsContent({ tooltipSide = "left" }: { tooltipSide?: "left" | "right" | "top" | "bottom" }) {
+export function SettingsContent({
+  tooltipSide = "left",
+  localePrefix = "",
+  showLanguage = false,
+}: {
+  tooltipSide?: "left" | "right" | "top" | "bottom";
+  localePrefix?: string;
+  showLanguage?: boolean;
+}) {
+  const t = useTranslations("settings");
+  const pathname = usePathname();
+  const router = useRouter();
   const { theme, setTheme } = useThemeContext();
   const { shape, setShape } = useShapeContext();
   const { variant: iconVariant, availableVariants, isVariantLoading, setVariant: setIconVariant } = useIconContext();
@@ -32,14 +46,14 @@ export function SettingsContent({ tooltipSide = "left" }: { tooltipSide?: "left"
   const PaintbrushIcon = useIcon("paintbrush");
 
   const themeOptions = [
-    { label: "System", value: "system" as Theme, icon: MonitorIcon },
-    { label: "Light", value: "light" as Theme, icon: SunIcon },
-    { label: "Dark", value: "dark" as Theme, icon: MoonIcon },
+    { label: t("system"), value: "system" as Theme, icon: MonitorIcon },
+    { label: t("light"), value: "light" as Theme, icon: SunIcon },
+    { label: t("dark"), value: "dark" as Theme, icon: MoonIcon },
   ];
 
   const shapeOptions = [
-    { label: "Rounded", value: "rounded" as ShapeVariant, icon: RectHorizIcon },
-    { label: "Pill", value: "pill" as ShapeVariant, icon: CircleIcon },
+    { label: t("rounded"), value: "rounded" as ShapeVariant, icon: RectHorizIcon },
+    { label: t("pill"), value: "pill" as ShapeVariant, icon: CircleIcon },
   ];
 
   const allIconStyleOptions: { label: string; value: IconVariant }[] = [
@@ -49,14 +63,21 @@ export function SettingsContent({ tooltipSide = "left" }: { tooltipSide?: "left"
     { label: "Duotone Rounded", value: "duotone-rounded" },
   ];
   const iconStyleOptions = allIconStyleOptions.filter((option) => availableVariants.includes(option.value));
+  const selectedLocale = localePrefix ? "zh-CN" : "en";
+
+  const changeLocale = (nextLocale: string) => {
+    const target = localizePathname(internalPathname(pathname), nextLocale === "zh-CN" ? "/zh-cn" : "");
+    const query = typeof window === "undefined" ? "" : window.location.search.slice(1);
+    const hash = typeof window === "undefined" ? "" : window.location.hash;
+    router.replace(`${target}${query ? `?${query}` : ""}${hash}`);
+  };
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Theme and radius selects */}
       <div className="flex flex-col gap-1.5 py-3">
-        <Tooltip content={<span>Press &ensp;<kbd className="font-mono opacity-50">T</kbd>&ensp; to cycle</span>} side={tooltipSide}>
+        <Tooltip content={<span>{t("pressToCycle", { key: "T" })}</span>} side={tooltipSide}>
           <div className="flex items-center justify-between">
-            <span className="text-[13px] text-muted-foreground">Theme</span>
+            <span className="text-[13px] text-muted-foreground">{t("theme")}</span>
             <Select value={theme} onValueChange={(v) => setTheme(v as Theme)}>
               <SelectTrigger
                 variant="borderless"
@@ -75,7 +96,7 @@ export function SettingsContent({ tooltipSide = "left" }: { tooltipSide?: "left"
           </div>
         </Tooltip>
         <div className="flex items-center justify-between">
-          <span className="text-[13px] text-muted-foreground">Brand</span>
+            <span className="text-[13px] text-muted-foreground">{t("brand")}</span>
           <ColorPickerPopover
             value={brandColor}
             format="hex"
@@ -86,9 +107,9 @@ export function SettingsContent({ tooltipSide = "left" }: { tooltipSide?: "left"
             triggerClassName="h-control-sm min-w-0 px-1.5 border-transparent hover:bg-hover"
           />
         </div>
-        <Tooltip content={<span>Press &ensp;<kbd className="font-mono opacity-50">R</kbd>&ensp; to toggle</span>} side={tooltipSide}>
+        <Tooltip content={<span>{t("pressToToggle", { key: "R" })}</span>} side={tooltipSide}>
           <div className="flex items-center justify-between">
-            <span className="text-[13px] text-muted-foreground">Radius</span>
+            <span className="text-[13px] text-muted-foreground">{t("radius")}</span>
             <Select value={shape} onValueChange={(v) => setShape(v as ShapeVariant)}>
               <SelectTrigger
                 variant="borderless"
@@ -106,9 +127,9 @@ export function SettingsContent({ tooltipSide = "left" }: { tooltipSide?: "left"
             </Select>
           </div>
         </Tooltip>
-        <Tooltip content={<span>Press &ensp;<kbd className="font-mono opacity-50">I</kbd>&ensp; to cycle</span>} side={tooltipSide}>
+        <Tooltip content={<span>{t("pressToCycle", { key: "I" })}</span>} side={tooltipSide}>
           <div className="flex items-center justify-between">
-            <span className="text-[13px] text-muted-foreground">Icons</span>
+            <span className="text-[13px] text-muted-foreground">{t("icons")}</span>
             <Select
               value={iconVariant}
               onValueChange={(value) => setIconVariant(value as IconVariant)}
@@ -132,12 +153,32 @@ export function SettingsContent({ tooltipSide = "left" }: { tooltipSide?: "left"
         </Tooltip>
       </div>
 
+      {showLanguage && (
+        <div className="flex items-center justify-between py-3">
+          <span className="text-[13px] text-muted-foreground">{t("language")}</span>
+          <Select value={selectedLocale} onValueChange={changeLocale}>
+            <SelectTrigger variant="borderless" size="md" className="min-w-0 w-auto" />
+            <SelectContent>
+              <SelectItem value="en" index={0}>{t("english")}</SelectItem>
+              <SelectItem value="zh-CN" index={1}>{t("chinese")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
     </div>
   );
 }
 
 /** Desktop-only right column that mirrors the left sidebar styling. */
-export function RightPanel() {
+export function RightPanel({
+  localePrefix = "",
+  showLanguage = false,
+}: {
+  localePrefix?: string;
+  showLanguage?: boolean;
+}) {
+  const t = useTranslations("settings");
   return (
     // max-xl:fixed — during the xl-fade-block fade-out the panel keeps
     // display:block for the transition (allow-discrete), which would hold its
@@ -157,10 +198,10 @@ export function RightPanel() {
               <h2
                 className="text-[16px] text-foreground leading-none font-semibold"
               >
-                Make them yours
+                {t("heading")}
               </h2>
             </div>
-            <SettingsContent tooltipSide="left" />
+            <SettingsContent tooltipSide="left" localePrefix={localePrefix} showLanguage={showLanguage} />
           </SurfaceProvider>
         </aside>
 

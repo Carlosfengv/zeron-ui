@@ -1,0 +1,1 @@
+{"tooltip":{"basic":"基础用法","placement":"位置","richContent":"富内容","delay":"延迟","apiReference":"API 参考","content":"提示框中显示的内容。","children":"触发元素，必须能接收 ref。","side":"提示框相对于触发元素的首选显示方向。","sideOffset":"提示框与触发元素之间的像素距离。","delayDuration":"悬停后显示提示框前等待的毫秒数。","className":"应用到提示内容容器的附加类名。"}}

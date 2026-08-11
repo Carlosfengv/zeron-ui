@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { type ReactNode, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { spring } from "@/lib/springs";
 import { Badge } from "@/components/ui/badge";
+import { localePrefixFromPathname, localizePathname } from "@/docs/site/locale-path";
 
 const sizeClasses: Record<string, string> = {
   large: "md:col-span-2 md:row-span-2",
@@ -30,6 +33,9 @@ interface BentoCardProps {
 }
 
 export function BentoCard({ slug, name, isNew, gridSize = "small", animateLayout = false, className: extraClassName, style, children }: BentoCardProps) {
+  const pathname = usePathname();
+  const localePrefix = localePrefixFromPathname(pathname);
+  const t = useTranslations("common");
   // No click-to-focus wiring here. Previously a mousedown on empty space
   // inside the card routed focus to the preview's first interactive element
   // (so the user could keyboard-drive the demo afterwards). In practice it
@@ -54,7 +60,7 @@ export function BentoCard({ slug, name, isNew, gridSize = "small", animateLayout
       </span>
       {isNew && (
         <Badge variant="dot" color="blue" size="sm">
-          New
+          {t("new")}
         </Badge>
       )}
     </motion.div>
@@ -88,8 +94,8 @@ export function BentoCard({ slug, name, isNew, gridSize = "small", animateLayout
 
       {slug ? (
         <Link
-          href={`/docs/${slug}`}
-          aria-label={`View ${name} documentation`}
+          href={localizePathname(`/docs/${slug}`, localePrefix)}
+          aria-label={t("viewDocumentation", { name })}
           className="group/link shrink-0 flex items-center gap-2 px-4 py-3 border-t border-border/40 rounded-b-xl transition-colors duration-80 hover:bg-hover outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus-ring,#6B97FF)]"
         >
           {footerLabel}

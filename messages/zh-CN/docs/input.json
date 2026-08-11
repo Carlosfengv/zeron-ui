@@ -1,0 +1,1 @@
+{"input":{"basic":"基础用法","variants":"变体","sizes":"尺寸","states":"状态","fileInput":"文件输入","apiReference":"API 参考","variant":"输入框表面的视觉样式。","size":"输入框的高度、内边距与文字尺寸。","type":"原生 HTML 输入类型。","disabled":"禁用交互并降低输入框不透明度。","ariaInvalid":"为 true 时应用错误校验样式。"}}

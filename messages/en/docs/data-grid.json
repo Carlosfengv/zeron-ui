@@ -1,0 +1,27 @@
+{
+  "dataGrid": {
+    "description": "Virtualized spreadsheet-style data grid with inline editing, range selection, search, copy and paste, resizing, sorting, and pinned columns.",
+    "releasePlanner": "Release planner",
+    "interactionModel": "Interaction model",
+    "moveAndEdit": "Click or use arrow keys to move. Press Enter, F2, or start typing to edit the focused cell.",
+    "rangeControls": "Hold Shift to extend a range. Copy, paste, delete, search, pin, sort, and resize with familiar spreadsheet controls.",
+    "apiReference": "API Reference",
+    "cellMetadata": "Column cell metadata",
+    "tableDescription": "TanStack table instance returned by useDataGrid.",
+    "heightDescription": "Maximum scroll viewport height in pixels.",
+    "directionDescription": "Reading direction used for keyboard movement and pinned columns.",
+    "stretchColumnsDescription": "Lets non-selection columns grow to fill available width.",
+    "dataDescription": "Editable row data.",
+    "columnsDescription": "Column definitions and cell editor metadata.",
+    "dataChangeDescription": "Receives edits, clears, pastes, and row updates.",
+    "rowAddDescription": "Adds a row and may return the cell that should receive focus.",
+    "pasteDescription": "Enables spreadsheet-style multi-cell paste.",
+    "readOnlyDescription": "Keeps navigation, sorting, and selection while disabling edits.",
+    "rowHeightDescription": "Controls virtual row height and line clamping.",
+    "initialStateDescription": "Initial sorting, sizing, visibility, and pinning state.",
+    "cellVariantDescription": "Chooses the display and editor behavior for a column.",
+    "optionsDescription": "Options used by select and multi-select cells. Each option accepts the Badge color palette through color.",
+    "boundsDescription": "Optional bounds for number cells.",
+    "columnReadOnlyDescription": "Disables editing for this column only."
+  }
+}

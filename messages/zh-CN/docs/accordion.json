@@ -1,0 +1,21 @@
+{
+  "accordion": {
+    "standalone": "独立使用",
+    "standaloneDescription": "单个可折叠项，拥有独立的悬停状态。",
+    "singleExpand": "单项展开",
+    "singleExpandDescription": "带邻近悬停效果的多个项目；同一时间只能展开一个。",
+    "multiExpand": "多项展开",
+    "multiExpandDescription": "带邻近悬停效果的多个项目；可同时展开多个。",
+    "apiReference": "API 参考",
+    "rootType": "决定允许展开一个还是多个项目。",
+    "rootCollapsible": "当 type 为 single 时，允许收起全部项目。",
+    "rootDefaultValue": "初始展开的项目值。",
+    "rootValue": "受控的展开项目值。",
+    "rootOnValueChange": "展开状态变化时调用的回调。",
+    "itemValue": "此项目的唯一标识符。",
+    "itemIndex": "用于邻近悬停的位置索引。在 AccordionGroup 内必填；独立使用时省略。",
+    "itemDisabled": "是否禁用此项目。",
+    "triggerChildren": "触发器的标签内容。",
+    "contentChildren": "可折叠的内容。"
+  }
+}

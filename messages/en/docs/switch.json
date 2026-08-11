@@ -1,0 +1,11 @@
+{
+  "switch": {
+    "basic": "Basic",
+    "disabled": "Disabled",
+    "apiReference": "API Reference",
+    "label": "Text label displayed next to the switch.",
+    "checked": "Whether the switch is on.",
+    "onToggle": "Called when the switch is toggled.",
+    "disabledProp": "Disables the switch."
+  }
+}

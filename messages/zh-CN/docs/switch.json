@@ -1,0 +1,11 @@
+{
+  "switch": {
+    "basic": "基础用法",
+    "disabled": "禁用状态",
+    "apiReference": "API 参考",
+    "label": "显示在开关旁的文本标签。",
+    "checked": "开关是否处于开启状态。",
+    "onToggle": "切换开关时调用。",
+    "disabledProp": "禁用开关。"
+  }
+}

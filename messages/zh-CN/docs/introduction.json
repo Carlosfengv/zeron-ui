@@ -1,0 +1,22 @@
+{
+  "introduction": {
+    "title": "介绍",
+    "description": "这些组件为何用起来与众不同。",
+    "motionTitle": "传达信息的动效",
+    "motionBody": "这里的每段动画都有明确目的。两个列表项合并背景时，组件会告诉你它们属于同一组。悬停高亮会在点击前跟随光标，因此即将落到的行会先确认自身。动效的职责是创造意义。",
+    "hoverTitle": "将悬停作为预览",
+    "hoverBody": "交互在点击前就已开始。离光标最近的可交互元素会获得淡淡的高亮；靠近按钮时，它会略微加重。手指落下前，你已有片刻重新考虑——这正是重点所在。",
+    "springTitle": "弹簧物理，而非固定时长",
+    "springBody": "动画使用弹簧，而不是固定时长的缓动。切换开关后立即切回：弹簧会从当前状态接续并反向，而不会先完成第一段动画。`fast`、`moderate` 和 `slow` 三个预设覆盖了组件库的大多数场景。",
+    "compatibilityTitle": "开箱即用的兼容性",
+    "compatibilityBody": "基于 shadcn/ui 和 Base UI 构建。你的主题令牌（颜色、圆角、字体）无需改动即可使用。一条 CLI 命令便可安装组件及其所需内容。",
+    "customizeTitle": "通过右侧面板自定义",
+    "customizeBody": "右侧面板可让你即时调整外观。你可以切换浅色和深色模式、调整品牌色，并在圆角与胶囊之间切换。按 T 或 R 键可通过键盘切换主题和圆角。",
+    "initialize": "初始化一个尚未包含 components.json 的项目：",
+    "installAny": "安装任意组件：",
+    "registry": "或者直接使用兼容 shadcn 的 Registry：",
+    "dependencies": "依赖项和共享工具会自动解析。字体粗细动画需要 Inter 可变字体。",
+    "iconsTitle": "图标",
+    "iconsBody": "组件通过 HugeIcons 默认值渲染具名图标槽位。共享图标 Provider 仍可用于产品级覆盖，而文档站仅包含 HugeIcons 实现。"
+  }
+}

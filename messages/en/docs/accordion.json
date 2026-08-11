@@ -1,0 +1,21 @@
+{
+  "accordion": {
+    "standalone": "Standalone",
+    "standaloneDescription": "A single collapsible item with its own hover state.",
+    "singleExpand": "Single Expand",
+    "singleExpandDescription": "Multiple items with proximity hover — only one can be expanded at a time.",
+    "multiExpand": "Multi Expand",
+    "multiExpandDescription": "Multiple items with proximity hover — several can be expanded at once.",
+    "apiReference": "API Reference",
+    "rootType": "Whether one or multiple items can be expanded.",
+    "rootCollapsible": "Allow collapsing all items when type is single.",
+    "rootDefaultValue": "Initially expanded item value(s).",
+    "rootValue": "Controlled expanded value(s).",
+    "rootOnValueChange": "Callback when expanded state changes.",
+    "itemValue": "Unique identifier for this item.",
+    "itemIndex": "Position index for proximity hover. Required inside AccordionGroup, omit for standalone.",
+    "itemDisabled": "Whether this item is disabled.",
+    "triggerChildren": "Trigger label content.",
+    "contentChildren": "Collapsible content."
+  }
+}

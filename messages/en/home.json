@@ -1,0 +1,10 @@
+{
+  "home": {
+    "tagline": "Refined UI components with satisfying hover.",
+    "learnMore": "Learn more",
+    "seeDemo": "See demo",
+    "nextIntroduction": "Next: Introduction",
+    "allComponents": "All components",
+    "allComponentsDescription": "Open a focused documentation page to load its interactive preview."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "introduction": {
+    "title": "Introduction",
+    "description": "Why these components feel different.",
+    "motionTitle": "Motion that communicates",
+    "motionBody": "Every animation here points at something. When two list items merge their backgrounds, the component tells you they belong together. The hover highlight follows your cursor before you click, so the row you're about to land on confirms itself first. Motion has a job to create meaning.",
+    "hoverTitle": "Hover as preview",
+    "hoverBody": "The interaction starts before you click. The closest interactive thing to your cursor gets a faint highlight; buttons gain a little weight as you approach. By the time your finger lands, you've had a moment to reconsider, which is mostly the point.",
+    "springTitle": "Spring physics, not durations",
+    "springBody": "Animations use springs, not fixed-duration eases. Toggle a switch and immediately toggle it back: the spring picks up wherever it was and reverses, instead of finishing the first animation before starting the second. Three presets, named fast, moderate, and slow, cover most of the library.",
+    "compatibilityTitle": "Drop-in compatible",
+    "compatibilityBody": "Built on shadcn/ui and Base UI. Your theme tokens (colors, radii, fonts) work as-is. One CLI command installs a component along with whatever it needs.",
+    "customizeTitle": "Customize using the right panel",
+    "customizeBody": "The panel on the right lets you change things on the fly. Switch between light and dark mode, adjust the brand color, and toggle the corner radius from rounded to pill. Press T or R to change theme and radius from the keyboard.",
+    "initialize": "Initialize a project that does not have components.json:",
+    "installAny": "Install any component:",
+    "registry": "Or use the shadcn-compatible Registry directly:",
+    "dependencies": "Dependencies and shared utilities are resolved automatically. Font weight animations require the Inter variable font.",
+    "iconsTitle": "Icons",
+    "iconsBody": "Components render named icon slots with HugeIcons defaults. The shared icon provider remains available for product-specific overrides, while the documentation site ships only the HugeIcons implementation."
+  }
+}

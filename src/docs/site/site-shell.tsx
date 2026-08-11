@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useIcon } from "@/lib/icon-context";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import {
 } from "@/docs/site/deferred-desktop-chrome";
 import { RightRailProvider } from "@/docs/right-rail";
 import { aiAgentList, systemList, componentList } from "@/docs/components";
+import { internalPathname, localePrefixFromPathname, localizePathname } from "@/docs/site/locale-path";
 
 const loadMobileSiteDrawer = () => import("@/docs/site/mobile-site-drawer");
 const MobileSiteDrawer = lazy(() =>
@@ -33,18 +35,22 @@ const pageOrder = [
 ];
 
 export function SiteShell({ children }: { children: ReactNode }) {
+  const t = useTranslations("navigation");
   const MenuIcon = useIcon("menu");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMounted, setDrawerMounted] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const router = useRouter();
-  const expectedIndexRef = useRef(pageOrder.indexOf(pathname));
+  const localePrefix = localePrefixFromPathname(pathname);
+  const currentPathname = internalPathname(pathname);
+  const isLocalizedDocumentation = currentPathname === "/" || currentPathname === "/docs" || currentPathname.startsWith("/docs/");
+  const expectedIndexRef = useRef(pageOrder.indexOf(currentPathname));
 
   useEffect(() => {
     setDrawerOpen(false);
-    expectedIndexRef.current = pageOrder.indexOf(pathname);
-  }, [pathname]);
+    expectedIndexRef.current = pageOrder.indexOf(currentPathname);
+  }, [currentPathname]);
 
   const handleClose = useCallback(() => setDrawerOpen(false), []);
   const handleOpen = useCallback(() => {
@@ -82,17 +88,17 @@ export function SiteShell({ children }: { children: ReactNode }) {
 
       event.preventDefault();
       expectedIndexRef.current = nextIndex;
-      router.push(pageOrder[nextIndex]);
+      router.push(localizePathname(pageOrder[nextIndex], localePrefix));
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [router]);
+  }, [localePrefix, router]);
 
   return (
     <RightRailProvider>
       <div className="flex min-h-screen">
-        <DeferredDesktopSidebar />
+        <DeferredDesktopSidebar localePrefix={localePrefix} />
 
         <Button
           ref={menuButtonRef}
@@ -102,7 +108,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
           onClick={handleOpen}
           onPointerEnter={preloadMobileDrawer}
           onFocus={preloadMobileDrawer}
-          aria-label="Open navigation"
+          aria-label={t("open")}
         >
           <MenuIcon />
         </Button>
@@ -113,12 +119,14 @@ export function SiteShell({ children }: { children: ReactNode }) {
               open={drawerOpen}
               onClose={handleClose}
               triggerRef={menuButtonRef}
+              localePrefix={localePrefix}
+              showLanguage={isLocalizedDocumentation}
             />
           </Suspense>
         )}
 
         <main className="flex-1 min-w-0">{children}</main>
-        <DeferredDesktopRightPanel />
+        <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />
       </div>
     </RightRailProvider>
   );

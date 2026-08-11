@@ -29,6 +29,9 @@
       "@/docs/*": [
         "./src/docs/*"
       ],
+      "@/i18n/*": [
+        "./src/i18n/*"
+      ],
       "@/hooks/*": [
         "./src/system/hooks/*"
       ],
@@ -37,6 +40,12 @@
       ],
       "@/*": [
         "./*"
+      ],
+      "@/app-providers": [
+        "./src/app-providers.tsx"
+      ],
+      "@/messages/*": [
+        "./messages/*"
       ]
     }
   },

@@ -1,0 +1,1 @@
+{"inputCopy":{"basic":"基础用法","withLabel":"带标签","buttonVariant":"按钮变体","leftAligned":"左对齐","disabled":"禁用状态","copyCallback":"复制回调","apiReference":"API 参考","value":"要显示并复制到剪贴板的文本值。","label":"显示在输入框上方的可选标签。","variant":"仅显示带提示的图标，或显示文字标签的按钮。","align":"复制操作相对于值的位置。","onCopy":"成功复制值后触发的回调。","disabledProp":"禁用输入框和复制按钮。"}}

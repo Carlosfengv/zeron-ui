@@ -1,0 +1,1 @@
+{"checkbox":{"basic":"基础用法","states":"状态","apiReference":"API 参考","checked":"受控的选中状态；混合选择时使用 indeterminate。","defaultChecked":"非受控复选框的初始状态。","indeterminate":"用于显示混合选择状态的替代属性。","onCheckedChange":"用户改变选中状态时调用。","disabled":"阻止交互并应用禁用样式。","name":"用于表单提交的字段名称。"}}

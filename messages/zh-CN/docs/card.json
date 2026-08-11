@@ -1,0 +1,12 @@
+{
+  "card": {
+    "playground": "演练场", "basic": "基础用法", "grid": "网格 — 二维邻近效果", "outlinedGroup": "带边框分组", "separatedTiles": "分离卡片", "fullyYours": "自由组合", "selected": "选中状态", "apiReference": "API 参考",
+    "fluidMotion": "流畅动效", "fluidMotionDescription": "按三种层级调校的弹簧过渡", "accessible": "默认无障碍", "accessibleDescription": "每个部分都提供焦点可见状态和 ARIA 角色", "themeable": "随心定制", "themeableDescription": "运行时可替换圆角、图标和基础组件", "darkMode": "适配深色模式", "darkModeDescription": "令牌会自动适应浅色与深色主题", "proximityHover": "邻近悬停", "proximityHoverDescription": "磁吸式高亮会预览点击的落点", "dropInRegistry": "即插即用的注册表", "dropInRegistryDescription": "用一条 shadcn 命令安装任意组件",
+    "connect": "连接", "getStarted": "开始使用", "learnMore": "了解更多", "restoreCard": "恢复卡片", "meetCard": "认识全新的 Card 组件", "pixelPerfect": "始终像素级精确", "pixelPerfectDescription": "以令牌驱动，在任意圆角、浅色或深色主题下都清晰准确地呈现设计", "layouts": "堆叠、行内或网格", "layoutsDescription": "一套组合式 API，默认无边框，也支持分离卡片或共用外框",
+    "card": "卡片", "media": "媒体", "icon": "图标", "logo": "标志", "image": "图片", "none": "无", "description": "描述", "primaryButton": "主要按钮", "secondaryButton": "次要按钮", "ghostButton": "幽灵按钮", "cardGroup": "卡片组", "orientation": "方向", "inline": "行内", "columns": "列数", "border": "边框", "outlined": "带边框", "separated": "分离", "proximity": "邻近悬停",
+    "g0": "每张卡片的布局：堆叠（媒体/标题位于顶部）或水平行。", "g1": "网格列数。大于 1 时会跨行跨列启用二维邻近效果。", "g2": "无边框（仅分隔线）或绘制边框。", "g3": "以间距分隔成独立造型的卡片，而非一个带分隔线的整体。", "g4": "启用磁吸式邻近悬停高亮。", "g5": "Card 子元素。每个元素会自动分配邻近索引。",
+    "c0": "组合部分：CardImage、CardMedia、CardHeader、CardContent、CardFooter。", "c1": "让整张卡片成为可点击目标（拉伸按钮）。", "c2": "让整张卡片成为链接（拉伸锚点）。", "c3": "在新标签页打开 href。", "c4": "整张卡片可点击时，提供给拉伸链接/按钮的无障碍名称。", "c5": "在邻近悬停效果之上保留选中填充和标题强调。卡片组会移除选中卡片周围的细分隔线，让填充效果更干净。", "c6": "降低卡片对比度并禁用它。", "c7": "显示关闭（✕）按钮。", "c8": "按下关闭按钮时调用。",
+    "p0": "标题和描述网格；将 CardAction 固定在右上角。", "p1": "卡片选中时字重会从常规动画过渡到半粗体（邻近悬停只通过高亮预览，不改变字重）。", "p2": "弱化的辅助文字。", "p3": "标题区域右上角的插槽（例如菜单按钮）；在卡片遮罩之上仍可点击。", "p4": "标题下方的正文区域。", "p5": "操作行。行内卡片中靠右显示；带 CardImage 的行内卡片会落到文字下方并保持自然顺序；堆叠布局中会换行到内容下方。", "p6": "位于 32×32 着色方块中的前置图标，或品牌标志 / [logoA, logoB] 元组。", "p7": "全宽图片：堆叠布局时作为顶部横幅，行内布局时作为方形前置图片。只有在带框卡片（outlined 或调用方设置 overflow-hidden）内才会圆角；无边框卡片呈现为普通矩形。", "p8": "标题上方的小号大写标签。", "p9": "功能列表使用的图标、标题和描述行。",
+    "b0": "按钮标签。", "b1": "点击处理函数。", "b2": "将操作渲染为链接。", "b3": "视觉样式。", "b4": "前置（或后置）图标。", "b5": "图标位置。外部操作默认位于末尾，否则位于开头。", "b6": "追加向外箭头，并在新标签页打开 href。"
+  }
+}

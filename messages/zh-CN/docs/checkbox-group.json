@@ -1,0 +1,1 @@
+{"checkboxGroup":{"basic":"基础用法","apiReference":"API 参考","checkedIndices":"已选项目索引的集合，用于合并背景渲染。","groupChildren":"CheckboxItem 子元素。","label":"复选框的文本标签。","index":"项目在组内的位置索引。","checked":"此项目是否已选中。","icon":"显示在标签前的可选图标。","onToggle":"切换此项目时调用。","trailing":"可选的尾部元数据，例如项目数量。"}}

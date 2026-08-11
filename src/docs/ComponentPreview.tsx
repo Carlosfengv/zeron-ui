@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabItem } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Switch } from "@/components/ui/switch";
 import { AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 const InspectOverlay = dynamic(() =>
   import("./InspectOverlay").then((module) => module.InspectOverlay)
@@ -59,6 +60,7 @@ export function ComponentPreview({
   inspectable = true,
   children,
 }: ComponentPreviewProps) {
+  const t = useTranslations("preview");
   const [tab, setTab] = useState(0);
   const [inspect, setInspect] = useState(false);
   const [highlighted, setHighlighted] = useState<{
@@ -134,25 +136,25 @@ export function ComponentPreview({
         )}
         <Tabs value={String(tab)} onValueChange={(value) => setTab(Number(value))} variant="segment">
           <TabsList activationMode="manual">
-            <TabItem value="0" label="Preview" />
-            <TabItem value="1" label="Code" />
+            <TabItem value="0" label={t("preview")} />
+            <TabItem value="1" label={t("code")} />
           </TabsList>
         </Tabs>
         <div className="ml-auto flex items-center gap-1">
           {inspectable && tab === 0 && (
             <Switch
-              label="Inspect"
+              label={t("inspect")}
               checked={inspect}
               onToggle={() => setInspect((v) => !v)}
               className="h-8 px-2 rounded-md"
             />
           )}
           {showButton && (
-            <Tooltip content={playbackButton?.tooltip ?? "Replay animation"} side="top">
+            <Tooltip content={playbackButton?.tooltip ?? t("replayAnimation")} side="top">
               <button
                 onClick={playbackButton?.onClick ?? onReplay}
                 className={`w-10 h-10 flex items-center justify-center ${shape.button} text-muted-foreground/60 hover:text-foreground hover:bg-hover transition-colors duration-100 cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]`}
-                aria-label={playbackButton?.tooltip ?? "Replay animation"}
+                aria-label={playbackButton?.tooltip ?? t("replayAnimation")}
               >
                 {playbackButton?.icon ?? <ReplayIcon size={16} strokeWidth={1.5} />}
               </button>
@@ -208,7 +210,7 @@ export function ComponentPreview({
             aria-live="polite"
             className={`flex items-center justify-center text-[13px] text-muted-foreground ${minHeightClass}`}
           >
-            Highlighting…
+            {t("highlighting")}
           </div>
         )}
       </div>

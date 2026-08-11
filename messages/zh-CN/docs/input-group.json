@@ -1,0 +1,1 @@
+{"inputGroup":{"basic":"基础用法","inlineAddons":"行内附加内容","withActions":"带操作","textarea":"文本域","states":"状态","apiReference":"API 参考","g0":"InputGroupInput、InputGroupTextarea、附加内容和操作内容。","a0":"将附加内容放在控件之前、之后、上方或下方。","b0":"适合输入框组的紧凑尺寸。","b1":"继承自 Button 的视觉样式。","c0":"输入框变体；其表面在组内变为透明。","c1":"继承自 Input 的高度和排版。","t0":"原生文本域占位符。","t1":"禁用文本域交互。"}}

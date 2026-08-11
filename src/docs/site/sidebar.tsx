@@ -1,39 +1,44 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { NavMenu } from "@/components/ui/nav-menu";
 import { NavItem } from "@/components/ui/nav-item";
 import { aiAgentList, componentList, systemList } from "@/docs/components";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { internalPathname, localizePathname } from "@/docs/site/locale-path";
 
 
 interface SidebarProps {
   mobile?: boolean;
+  localePrefix?: string;
 }
 
-export function Sidebar({ mobile }: SidebarProps) {
+export function Sidebar({ mobile, localePrefix = "" }: SidebarProps) {
+  const t = useTranslations("navigation");
   const pathname = usePathname();
+  const currentPathname = internalPathname(pathname);
 
   const sections = (
     <>
       {/* Top-level navigation */}
-      <NavMenu activeSlug={pathname === "/" ? "/" : pathname === "/docs" ? "/docs" : null} aria-label="Main navigation">
-        <NavItem index={0} href="/" label="Showcase" />
-        <NavItem index={1} href="/docs" label="Introduction" />
+      <NavMenu activeSlug={currentPathname === "/" ? localizePathname("/", localePrefix) : currentPathname === "/docs" ? localizePathname("/docs", localePrefix) : null} aria-label={t("main")}>
+        <NavItem index={0} href={localizePathname("/", localePrefix)} label={t("showcase")} />
+        <NavItem index={1} href={localizePathname("/docs", localePrefix)} label={t("introduction")} />
       </NavMenu>
 
       {/* System section */}
       <div>
         <span className="text-[13px] text-muted-foreground/50 pl-1 pb-1.5 flex items-center gap-2">
-          System
+          {t("systemGroup")}
           <span className="text-[11px]">{systemList.length}</span>
         </span>
-        <NavMenu activeSlug={pathname} aria-label="System navigation">
+        <NavMenu activeSlug={localizePathname(currentPathname, localePrefix)} aria-label={t("system")}>
           {systemList.map((s, i) => (
             <NavItem
               key={s.slug}
               index={i}
-              href={`/docs/${s.slug}`}
+              href={localizePathname(`/docs/${s.slug}`, localePrefix)}
               label={s.name}
               isNew={s.isNew}
               isUpdated={s.isUpdated}
@@ -45,15 +50,15 @@ export function Sidebar({ mobile }: SidebarProps) {
       {/* Components section */}
       <div>
         <span className="text-[13px] text-muted-foreground/50 pl-1 pb-1.5 flex items-center gap-2">
-          Components
+          {t("componentsGroup")}
           <span className="text-[11px]">{componentList.length}</span>
         </span>
-        <NavMenu activeSlug={pathname} aria-label="Component navigation">
+        <NavMenu activeSlug={localizePathname(currentPathname, localePrefix)} aria-label={t("components")}>
           {componentList.map((c, i) => (
             <NavItem
               key={c.slug}
               index={i}
-              href={`/docs/${c.slug}`}
+              href={localizePathname(`/docs/${c.slug}`, localePrefix)}
               label={c.name}
               isNew={c.isNew}
               isUpdated={c.isUpdated}
@@ -66,15 +71,15 @@ export function Sidebar({ mobile }: SidebarProps) {
       {/* AI Agent section */}
       <div>
         <span className="text-[13px] text-muted-foreground/50 pl-1 pb-1.5 flex items-center gap-2">
-          AI Agent
+          {t("aiAgentGroup")}
           <span className="text-[11px]">{aiAgentList.length}</span>
         </span>
-        <NavMenu activeSlug={pathname} aria-label="AI Agent navigation">
+        <NavMenu activeSlug={localizePathname(currentPathname, localePrefix)} aria-label={t("aiAgent")}>
           {aiAgentList.map((component, index) => (
             <NavItem
               key={component.slug}
               index={index}
-              href={`/docs/${component.slug}`}
+              href={localizePathname(`/docs/${component.slug}`, localePrefix)}
               label={component.name}
               isNew={component.isNew}
               isUpdated={component.isUpdated}

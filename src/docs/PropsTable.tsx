@@ -1,4 +1,5 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTranslations } from "next-intl";
 
 export interface PropDef {
   name: string;
@@ -12,6 +13,7 @@ interface PropsTableProps {
 }
 
 export function PropsTable({ props }: PropsTableProps) {
+  const t = useTranslations("propsTable");
   // Horizontal ScrollArea gives narrow viewports the shape-system scrollbar +
   // a scroll-fade-x edge; min-w keeps columns legible before it scrolls.
   // Drop the Default column when nothing has a default (e.g. token references,
@@ -30,24 +32,24 @@ export function PropsTable({ props }: PropsTableProps) {
             <th
               className="px-3 py-2 text-left text-foreground font-semibold"
             >
-              Prop
+              {t("prop")}
             </th>
             <th
               className="px-3 py-2 text-left text-foreground font-semibold"
             >
-              Type
+              {t("type")}
             </th>
             {showDefault && (
               <th
                 className="px-3 py-2 text-left text-foreground font-semibold"
               >
-                Default
+                {t("default")}
               </th>
             )}
             <th
               className="px-3 py-2 text-left text-foreground font-semibold"
             >
-              Description
+              {t("description")}
             </th>
           </tr>
         </thead>

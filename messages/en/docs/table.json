@@ -1,0 +1,9 @@
+{
+  "tableDoc": {
+    "basic": "Basic",
+    "apiReference": "API Reference",
+    "tableChildren": "TableHeader and TableBody children.",
+    "rowIndex": "Row index for proximity hover. Omit for header rows.",
+    "rowChildren": "TableCell or TableHead children."
+  }
+}
