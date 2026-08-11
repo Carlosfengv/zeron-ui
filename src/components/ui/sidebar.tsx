@@ -15,6 +15,8 @@ import {
   type ReactNode,
 } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { Collapsible } from "@base-ui/react/collapsible";
+import { useDirection } from "@base-ui/react/direction-provider";
 import { cn } from "@/lib/utils";
 import { spring } from "@/lib/springs";
 import { useShape } from "@/lib/shape-context";
@@ -30,6 +32,7 @@ export const SIDEBAR_MOBILE_QUERY = "(max-width: 1279px)";
 export type SidebarState = "expanded" | "collapsed";
 export type SidebarVariant = "sidebar" | "floating";
 export type SidebarCollapsible = "offcanvas" | "icon" | "none";
+export type SidebarSide = "start" | "end";
 
 export interface SidebarProviderProps {
   children: ReactNode;
@@ -194,6 +197,11 @@ export interface SidebarProps extends ComponentPropsWithoutRef<"div"> {
   width?: string;
   collapsedWidth?: string;
   mobileWidth?: string;
+  /** Accessible name shared by the desktop aside and compact drawer. */
+  ariaLabel?: string;
+  /** Logical edge occupied by the sidebar. */
+  side?: SidebarSide;
+  /** @deprecated Use ariaLabel. */
   mobileLabel?: string;
 }
 
@@ -205,10 +213,13 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
       width = "16rem",
       collapsedWidth = "3rem",
       mobileWidth = "16rem",
-      mobileLabel = "Navigation",
+      ariaLabel,
+      side = "start",
+      mobileLabel,
       className,
       children,
       style,
+      dir: dirProp,
       ...props
     },
     forwardedRef
@@ -216,22 +227,43 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
     const { state, isMobile, mobileOpen, closeMobile, triggerRef } = useSidebar();
     const reduceMotion = useReducedMotion() ?? false;
     const shape = useShape();
-    const surface = resolveSurface(useSurface(), variant === "floating" ? "raised" : "base");
+    const contextDir = useDirection();
+    const dir = dirProp ?? contextDir;
+    const parentSurface = useSurface();
+    const surface = variant === "floating" ? resolveSurface(parentSurface, "raised") : parentSurface;
+    const resolvedAriaLabel = ariaLabel ?? mobileLabel ?? "Navigation";
     const visualState: SidebarState = isMobile || collapsible === "none" ? "expanded" : state;
-    const panelWidth = visualState === "collapsed" && collapsible === "icon" ? collapsedWidth : width;
+    const panelWidth = visualState === "collapsed" && collapsible === "icon"
+      ? "var(--sidebar-width-collapsed)"
+      : "var(--sidebar-width)";
     const offcanvas = visualState === "collapsed" && collapsible === "offcanvas";
-    const rootStyle = style;
-    const panel = (
+    const physicalLeft = (side === "start") === (dir !== "rtl");
+    const offcanvasX = physicalLeft ? "-100%" : "100%";
+    const rootStyle = {
+      ...style,
+      "--sidebar-width": width,
+      "--sidebar-width-collapsed": collapsedWidth,
+      "--sidebar-width-mobile": mobileWidth,
+    } as CSSProperties;
+
+    const renderPanel = (mobile: boolean) => (
       <aside
         data-slot="sidebar-panel"
-        aria-label={mobileLabel}
+        aria-label={resolvedAriaLabel}
         className={cn(
           "flex h-full min-h-0 flex-col overflow-hidden",
-          variant === "floating" && cn("m-2 h-[calc(100%-1rem)]", shape.container),
-          surfaceClasses(surface, variant === "floating" ? "raised" : "none")
+          !mobile && variant === "sidebar" && cn(
+            "border-border-subtle",
+            side === "start" ? "border-e-[0.5px]" : "border-s-[0.5px]"
+          ),
+          !mobile && variant === "floating" && cn(
+            "m-2 h-[calc(100%-1rem)] border border-border-subtle",
+            shape.container
+          ),
+          mobile ? "bg-transparent" : surfaceClasses(surface, variant === "floating" ? "raised" : "none")
         )}
       >
-        <SurfaceProvider role={surface}>{children}</SurfaceProvider>
+        {mobile ? children : <SurfaceProvider role={surface}>{children}</SurfaceProvider>}
       </aside>
     );
 
@@ -241,7 +273,9 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
           open={mobileOpen}
           onClose={closeMobile}
           triggerRef={triggerRef}
-          ariaLabel={mobileLabel}
+          ariaLabel={resolvedAriaLabel}
+          dir={dir}
+          side={side}
           panelClassName="overflow-hidden p-0"
           panelStyle={{ width: mobileWidth }}
         >
@@ -251,12 +285,14 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
             data-state="expanded"
             data-collapsible={collapsible}
             data-variant={variant}
+            data-side={side}
             data-mobile="true"
             className={cn("group/sidebar h-full", className)}
             style={rootStyle}
+            dir={dir}
             {...props}
           >
-            {panel}
+            {renderPanel(true)}
           </div>
         </MobileDrawer>
       );
@@ -269,9 +305,15 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
         data-state={visualState}
         data-collapsible={collapsible}
         data-variant={variant}
+        data-side={side}
         data-mobile="false"
-        className={cn("group/sidebar sticky top-0 h-svh shrink-0", className)}
+        className={cn(
+          "group/sidebar sticky top-0 h-svh shrink-0",
+          className,
+          "hidden xl:block"
+        )}
         style={rootStyle}
+        dir={dir}
         {...props}
       >
         <div
@@ -282,13 +324,16 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
         />
         <motion.div
           data-slot="sidebar-panel-wrapper"
-          className="absolute inset-y-0 left-0 w-[var(--sidebar-panel-width)]"
+          className={cn(
+            "absolute inset-y-0 w-[var(--sidebar-panel-width)]",
+            physicalLeft ? "left-0" : "right-0"
+          )}
           style={{ "--sidebar-panel-width": panelWidth } as CSSProperties}
           initial={false}
-          animate={{ x: offcanvas ? "-100%" : 0, opacity: offcanvas ? 0 : 1 }}
+          animate={{ x: offcanvas ? offcanvasX : 0, opacity: offcanvas ? 0 : 1 }}
           transition={reduceMotion ? { duration: 0 } : spring.moderate}
         >
-          {panel}
+          {renderPanel(false)}
         </motion.div>
       </div>
     );
@@ -342,7 +387,11 @@ const SidebarRail = forwardRef<HTMLButtonElement, SidebarRailProps>(({ className
         onClick?.(event);
         if (!event.defaultPrevented) toggle();
       }}
-      className={cn("absolute inset-y-0 -right-2 z-raised hidden w-4 cursor-pointer xl:block", className)}
+      className={cn(
+        "absolute inset-y-0 -end-2 z-raised hidden w-4 cursor-pointer xl:block",
+        "group-data-[side=end]/sidebar:end-auto group-data-[side=end]/sidebar:start-[-0.5rem]",
+        className
+      )}
       {...props}
     />
   );
@@ -352,11 +401,22 @@ SidebarRail.displayName = "SidebarRail";
 
 export type SidebarHeaderProps = ComponentPropsWithoutRef<"div">;
 export type SidebarFooterProps = ComponentPropsWithoutRef<"div">;
-export type SidebarContentProps = ComponentPropsWithoutRef<"div">;
-export type SidebarGroupProps = ComponentPropsWithoutRef<"section">;
+export interface SidebarContentProps extends ComponentPropsWithoutRef<"div"> {
+  viewportClassName?: string;
+  contentClassName?: string;
+}
+export interface SidebarGroupProps
+  extends Omit<ComponentPropsWithoutRef<typeof Collapsible.Root>, "render"> {
+  /** Enables the label trigger and collapsible group content. */
+  collapsible?: boolean;
+}
 export type SidebarGroupLabelProps = ComponentPropsWithoutRef<"div">;
+export interface SidebarGroupTriggerProps
+  extends ComponentPropsWithoutRef<typeof Collapsible.Trigger> {
+  indicator?: ReactNode;
+}
 export type SidebarGroupActionProps = Omit<ComponentPropsWithoutRef<typeof Button>, "size" | "variant">;
-export type SidebarGroupContentProps = ComponentPropsWithoutRef<"div">;
+export type SidebarGroupContentProps = ComponentPropsWithoutRef<typeof Collapsible.Panel>;
 export type SidebarSeparatorProps = ComponentPropsWithoutRef<"hr">;
 
 const SidebarHeader = forwardRef<HTMLDivElement, SidebarHeaderProps>(({ className, ...props }, ref) => (
@@ -364,9 +424,26 @@ const SidebarHeader = forwardRef<HTMLDivElement, SidebarHeaderProps>(({ classNam
 ));
 SidebarHeader.displayName = "SidebarHeader";
 
-const SidebarContent = forwardRef<HTMLDivElement, SidebarContentProps>(({ className, children, ...props }, ref) => (
-  <ScrollArea ref={ref} data-slot="sidebar-content" className={cn("min-h-0 flex-1", className)} viewportClassName="h-full">
-    <div className="flex min-h-full flex-col gap-4 p-3" {...props}>{children}</div>
+const SidebarContent = forwardRef<HTMLDivElement, SidebarContentProps>(({
+  className,
+  viewportClassName,
+  contentClassName,
+  children,
+  ...props
+}, ref) => (
+  <ScrollArea
+    ref={ref}
+    data-slot="sidebar-content"
+    className={cn("min-h-0 min-w-0 flex-1", className)}
+    viewportClassName={cn("h-full overflow-x-hidden", viewportClassName)}
+  >
+    <div
+      data-slot="sidebar-content-inner"
+      className={cn("flex min-h-full w-full min-w-0 flex-col gap-4 p-3", contentClassName)}
+      {...props}
+    >
+      {children}
+    </div>
   </ScrollArea>
 ));
 SidebarContent.displayName = "SidebarContent";
@@ -376,8 +453,25 @@ const SidebarFooter = forwardRef<HTMLDivElement, SidebarFooterProps>(({ classNam
 ));
 SidebarFooter.displayName = "SidebarFooter";
 
-const SidebarGroup = forwardRef<HTMLElement, SidebarGroupProps>(({ className, ...props }, ref) => (
-  <section ref={ref} data-slot="sidebar-group" className={cn("relative min-w-0", className)} {...props} />
+const SidebarGroup = forwardRef<HTMLElement, SidebarGroupProps>(({
+  collapsible = false,
+  open,
+  defaultOpen = true,
+  disabled,
+  className,
+  ...props
+}, ref) => (
+  <Collapsible.Root
+    ref={ref as React.Ref<HTMLDivElement>}
+    render={<section />}
+    open={collapsible ? open : true}
+    defaultOpen={collapsible && open === undefined ? defaultOpen : undefined}
+    disabled={collapsible ? disabled : true}
+    data-slot="sidebar-group"
+    data-collapsible={collapsible ? "true" : "false"}
+    className={cn("group/sidebar-group relative min-w-0", className)}
+    {...props}
+  />
 ));
 SidebarGroup.displayName = "SidebarGroup";
 
@@ -385,6 +479,44 @@ const SidebarGroupLabel = forwardRef<HTMLDivElement, SidebarGroupLabelProps>(({ 
   <div ref={ref} data-slot="sidebar-group-label" className={cn("px-2 pb-1.5 text-label text-fg-muted group-data-[state=collapsed]/sidebar:hidden", className)} {...props} />
 ));
 SidebarGroupLabel.displayName = "SidebarGroupLabel";
+
+const SidebarGroupTrigger = forwardRef<HTMLButtonElement, SidebarGroupTriggerProps>(({
+  className,
+  children,
+  indicator,
+  type = "button",
+  ...props
+}, ref) => {
+  const Chevron = useIcon("chevron-right");
+  const shape = useShape();
+
+  return (
+    <Collapsible.Trigger
+      ref={ref}
+      type={type}
+      data-slot="sidebar-group-trigger"
+      className={cn(
+        "group/sidebar-group-trigger mb-1.5 flex h-6 w-full items-center gap-1.5 px-2 text-start text-label text-fg-muted outline-none",
+        "transition-colors duration-fast hover:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring",
+        "group-data-[state=collapsed]/sidebar:hidden",
+        shape.item,
+        className
+      )}
+      {...props}
+    >
+      <span className="min-w-0 flex-1 truncate">{children}</span>
+      {indicator ?? (
+        <Chevron
+          aria-hidden="true"
+          size={14}
+          strokeWidth={1.5}
+          className="shrink-0 transition-transform duration-fast group-data-[panel-open]/sidebar-group-trigger:rotate-90 motion-reduce:transition-none"
+        />
+      )}
+    </Collapsible.Trigger>
+  );
+});
+SidebarGroupTrigger.displayName = "SidebarGroupTrigger";
 
 const SidebarGroupAction = forwardRef<HTMLButtonElement, SidebarGroupActionProps>(({ className, type = "button", ...props }, ref) => (
   <Button
@@ -399,8 +531,22 @@ const SidebarGroupAction = forwardRef<HTMLButtonElement, SidebarGroupActionProps
 ));
 SidebarGroupAction.displayName = "SidebarGroupAction";
 
-const SidebarGroupContent = forwardRef<HTMLDivElement, SidebarGroupContentProps>(({ className, ...props }, ref) => (
-  <div ref={ref} data-slot="sidebar-group-content" className={cn("min-w-0", className)} {...props} />
+const SidebarGroupContent = forwardRef<HTMLDivElement, SidebarGroupContentProps>(({ className, children, ...props }, ref) => (
+  <Collapsible.Panel
+    ref={ref}
+    keepMounted
+    data-slot="sidebar-group-content"
+    className={cn(
+      "grid w-full min-w-0 grid-rows-[1fr] transition-[grid-template-rows,opacity] duration-moderate",
+      "data-[starting-style]:grid-rows-[0fr] data-[starting-style]:opacity-0",
+      "data-[ending-style]:grid-rows-[0fr] data-[ending-style]:opacity-0",
+      "motion-reduce:transition-none",
+      className
+    )}
+    {...props}
+  >
+    <div className="min-h-0 min-w-0 w-full">{children}</div>
+  </Collapsible.Panel>
 ));
 SidebarGroupContent.displayName = "SidebarGroupContent";
 
@@ -419,6 +565,7 @@ export {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
+  SidebarGroupTrigger,
   SidebarGroupAction,
   SidebarGroupContent,
   SidebarSeparator,

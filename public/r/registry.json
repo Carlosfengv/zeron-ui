@@ -1671,6 +1671,7 @@
       "title": "Sidebar",
       "description": "Responsive sidebar with desktop collapse modes, persistence, shortcut support, and mobile drawer behavior.",
       "dependencies": [
+        "@base-ui/react",
         "framer-motion"
       ],
       "registryDependencies": [
@@ -1690,6 +1691,24 @@
           "path": "src/components/ui/sidebar.tsx",
           "type": "registry:ui",
           "target": "components/ui/sidebar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sidebar-identity-row",
+      "type": "registry:ui",
+      "title": "Sidebar Identity Row",
+      "description": "Composable sidebar identity row with avatar, primary and secondary text, and trailing content.",
+      "registryDependencies": [
+        "https://www.zerondesign.com/r/surfaces.json",
+        "utils",
+        "https://www.zerondesign.com/r/button.json"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/sidebar-identity-row.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sidebar-identity-row.tsx"
         }
       ]
     },

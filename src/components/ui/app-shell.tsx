@@ -52,8 +52,12 @@ const AppShellSidebar = forwardRef<HTMLDivElement, AppShellSidebarProps>(
       ref={ref}
       data-slot="app-shell-sidebar"
       data-side={side}
-      className={cn("col-start-1 row-span-2 min-h-0 data-[side=right]:col-start-2", className)}
-      style={{ width, ...style }}
+      className={cn(
+        "col-start-1 row-span-2 min-h-0 w-[var(--app-shell-sidebar-width)] data-[side=right]:col-start-2",
+        "max-xl:w-0 [&:has(>_[data-slot=sidebar][data-collapsible=offcanvas][data-state=collapsed])]:w-0",
+        className
+      )}
+      style={{ "--app-shell-sidebar-width": width, ...style } as CSSProperties}
       {...props}
     />
   )

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
+import { useDirection } from "@base-ui/react/direction-provider";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { spring, exitFallbackMs } from "@/lib/springs";
@@ -27,6 +28,10 @@ export interface MobileDrawerProps {
   children: ReactNode;
   triggerRef?: RefObject<HTMLElement | null>;
   ariaLabel?: string;
+  /** Explicit direction for portals rendered outside a locally directed subtree. */
+  dir?: string;
+  /** Logical edge from which the drawer enters. */
+  side?: "start" | "end";
   panelClassName?: string;
   panelStyle?: CSSProperties;
 }
@@ -49,11 +54,17 @@ export function MobileDrawer({
   children,
   triggerRef,
   ariaLabel = "Navigation",
+  dir: dirProp,
+  side = "start",
   panelClassName,
   panelStyle,
 }: MobileDrawerProps) {
+  const contextDir = useDirection();
+  const dir = dirProp ?? contextDir;
   const substrate = useSurface();
   const surface = resolveSurface(substrate, "overlay");
+  const physicalLeft = (side === "start") === (dir !== "rtl");
+  const hiddenX = physicalLeft ? "-100%" : "100%";
 
   // With `actionsRef` set, Base UI defers unmounting the portal on close
   // until `actionsRef.current.unmount()` is called, letting the
@@ -118,7 +129,8 @@ export function MobileDrawer({
               <motion.div
                 {...(rest as MotionSafeDivProps)}
                 className={cn(
-                  "fixed top-0 left-0 bottom-0 w-64 z-popover overflow-y-auto p-4",
+                  "fixed inset-y-0 w-64 z-popover overflow-y-auto p-4",
+                  physicalLeft ? "left-0" : "right-0",
                   panelClassName,
                   surfaceClasses(surface, "overlay")
                 )}
@@ -126,8 +138,8 @@ export function MobileDrawer({
                   ...(baseStyle as React.CSSProperties | undefined),
                   ...panelStyle,
                 }}
-                initial={{ x: "-100%" }}
-                animate={{ x: open ? 0 : "-100%" }}
+                initial={{ x: hiddenX }}
+                animate={{ x: open ? 0 : hiddenX }}
                 // spring.moderate: critically damped, so the panel decelerates
                 // into x: 0 without overshooting (a bounce briefly exposed the
                 // page background through the gap on the left edge).

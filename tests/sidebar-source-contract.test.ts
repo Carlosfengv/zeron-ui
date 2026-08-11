@@ -1,0 +1,89 @@
+import fs from "node:fs";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
+
+const source = (file: string) =>
+  fs.readFileSync(path.join(process.cwd(), file), "utf8");
+
+describe("sidebar implementation contract", () => {
+  const sidebar = source("src/components/ui/sidebar.tsx");
+  const drawer = source("src/components/ui/mobile-drawer.tsx");
+  const identityRow = source("src/components/ui/sidebar-identity-row.tsx");
+  const navMenu = source("src/components/ui/nav-menu.tsx");
+  const zaiopsPreview = source("src/docs/site/zaiops-sidebar-preview.tsx");
+
+  it("publishes one set of width variables and keeps the compact drawer explicit", () => {
+    expect(sidebar).toContain('"--sidebar-width": width');
+    expect(sidebar).toContain('"--sidebar-width-collapsed": collapsedWidth');
+    expect(sidebar).toContain('"--sidebar-width-mobile": mobileWidth');
+    expect(sidebar).toContain('panelStyle={{ width: mobileWidth }}');
+  });
+
+  it("removes the entire desktop branch from compact layout before hydration", () => {
+    expect(sidebar).toContain('"hidden xl:block"');
+    expect(sidebar).toContain('data-mobile="false"');
+  });
+
+  it("preserves SidebarContent prop placement while adding style outlets", () => {
+    expect(sidebar).toContain("viewportClassName?: string;");
+    expect(sidebar).toContain("contentClassName?: string;");
+    expect(sidebar).toContain('data-slot="sidebar-content-inner"');
+    expect(sidebar).toContain('"h-full overflow-x-hidden"');
+    expect(sidebar).toContain('"flex min-h-full w-full min-w-0 flex-col gap-4 p-3"');
+    expect(sidebar).toContain("{...props}");
+  });
+
+  it("keeps desktop surfaces at their parent level and lets the drawer own overlay surface", () => {
+    expect(sidebar).toContain("const surface = variant === \"floating\" ? resolveSurface(parentSurface, \"raised\") : parentSurface;");
+    expect(sidebar).toContain("{mobile ? children : <SurfaceProvider role={surface}>{children}</SurfaceProvider>}");
+    expect(sidebar).toContain('mobile ? "bg-transparent"');
+  });
+
+  it("uses logical sidebar direction for desktop and drawer exit motion", () => {
+    expect(sidebar).toContain('side?: SidebarSide;');
+    expect(sidebar).toContain('dir={dir}');
+    expect(sidebar).toContain("const offcanvasX = physicalLeft ? \"-100%\" : \"100%\";");
+    expect(drawer).toContain('dir?: string;');
+    expect(drawer).toContain('side?: "start" | "end";');
+    expect(drawer).toContain("const hiddenX = physicalLeft ? \"-100%\" : \"100%\";");
+  });
+
+  it("renders recent diagnostic sessions as static history, not missing routes", () => {
+    expect(zaiopsPreview).toContain('data-slot="recent-session-item"');
+    expect(zaiopsPreview).not.toContain('/sessions/');
+  });
+
+  it("uses the NavMenu 16px leading-icon scale in the ZAIops recipe", () => {
+    expect(zaiopsPreview).toContain('<Icon size={16} strokeWidth={1.5} />');
+    expect(zaiopsPreview).toContain('<Message size={16} strokeWidth={1.5} />');
+    expect(zaiopsPreview).not.toContain('className="size-5 group-data-[active=true]/nav-item:text-fg-brand"');
+  });
+
+  it("keeps sidebar identity presentation generic while menus remain composable", () => {
+    expect(identityRow).toContain('"auto" | "single-line" | "two-line"');
+    expect(identityRow).toContain('"inline" | "edge"');
+    expect(identityRow).toContain('as?: "button" | "div";');
+    expect(identityRow).toContain('data-slot="sidebar-identity-row"');
+    expect(identityRow).toContain('data-slot="sidebar-identity-content-row"');
+    expect(identityRow).toContain('flex min-w-0 w-full items-center gap-1.5');
+    expect(identityRow).toContain('data-slot="sidebar-identity-leading"');
+    expect(identityRow).toContain('trailingPlacement === "edge" && "ms-auto"');
+    expect(identityRow).toContain('min-h-control-md h-auto justify-start gap-1.5 px-0.5 py-2');
+    expect(identityRow).toContain('[&>span.relative>span]:w-full');
+    expect(zaiopsPreview).toContain("<SidebarIdentityRow");
+    expect(zaiopsPreview).toContain('trailingPlacement="edge"');
+    expect(zaiopsPreview).toContain("<DropdownTrigger");
+  });
+
+  it("allows exactly one active ZAIops navigation item across menu groups", () => {
+    expect(zaiopsPreview).toContain("const [activeNavigationValue, setActiveNavigationValue]");
+    expect(zaiopsPreview).not.toContain("primaryActiveValue");
+    expect(zaiopsPreview).not.toContain("governanceActiveValue");
+  });
+
+  it("keeps vertical menu focus rings inside scrollable navigation bounds", () => {
+    expect(navMenu).toContain('"min-w-0 max-w-full w-full flex-col"');
+    expect(navMenu).toContain("left: focusRect.left,");
+    expect(navMenu).toContain("width: focusRect.width,");
+  });
+});
