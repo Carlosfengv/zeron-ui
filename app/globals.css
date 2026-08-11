@@ -27,8 +27,8 @@
   --surface-floating: light-dark(#FFFFFF, #252525);
   --surface-overlay: light-dark(#FFFFFF, #333333);
   --surface-top: light-dark(#FFFFFF, #414141);
-  --fg-default: light-dark(#171717, #F5F5F5);
-  --fg-muted: light-dark(#525252, #C0C0C0);
+  --fg-default: light-dark(#00030A, #F5F5F5);
+  --fg-muted: light-dark(#00030ad8, #C0C0C0);
   --fg-subtle: light-dark(#737373, #ADADAD);
   --fg-brand: light-dark(#0060D2, #80B0E9);
   --fg-danger: light-dark(#B42318, #FCA5A5);

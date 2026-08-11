@@ -117,7 +117,7 @@ export function DataGrid<TData>({
         tabIndex={0}
         ref={dataGridRef}
         className={cn(
-          "relative grid select-none overflow-auto border border-border/70 bg-surface-raised shadow-raised focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring",
+          "relative grid select-none overflow-auto border border-border/70 bg-surface-raised focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring",
           shape.container,
         )}
         style={{

@@ -17,8 +17,8 @@ const { optical: neutralOptical } = neutral;
 const { optical: dangerOptical } = danger;
 
 export const foregroundColorTokens = [
-  { name: "fg-default", light: neutral[900], dark: neutral[100], usage: "普通承载面上的默认标题、正文、表单值和主要图标" },
-  { name: "fg-muted", light: neutral[600], dark: neutralOptical[325], usage: "普通承载面上的辅助说明、标签、元数据和次要图标" },
+  { name: "fg-default", light: '#00030A', dark: neutral[100], usage: "普通承载面上的默认标题、正文、表单值和主要图标" },
+  { name: "fg-muted", light: '#00030ad8', dark: neutralOptical[325], usage: "普通承载面上的辅助说明、标签、元数据和次要图标" },
   { name: "fg-subtle", light: neutral[500], dark: neutralOptical[375], usage: "普通承载面上的占位文字、时间戳、快捷键提示和低强调图标" },
   { name: "fg-brand", light: "#0060D2", dark: "#80B0E9", usage: "普通承载面上的品牌色链接、文字和图标；不得用于品牌色填充之上" },
   { name: "fg-danger", light: dangerOptical[710], dark: danger[300], usage: "普通承载面上的错误、失败或危险文字和图标；不得用于危险操作填充之上" },
