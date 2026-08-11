@@ -13,14 +13,17 @@ import {
 } from "react";
 import { useRender } from "@base-ui/react/use-render";
 import { cn } from "@/lib/utils";
+import { useIcon } from "@/lib/icon-context";
 import { useShape } from "@/lib/shape-context";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useNavMenu } from "@/components/ui/nav-menu";
+import { useNavMenuOptional } from "@/components/ui/nav-menu";
 
 export interface NavItemProps extends ComponentPropsWithoutRef<"li"> {
   value: string;
   disabled?: boolean;
+  /** Explicit active state, primarily for standalone use outside NavMenu. */
+  active?: boolean;
 }
 
 interface NavItemContextValue {
@@ -39,18 +42,22 @@ function useNavItem() {
   return context;
 }
 
-const NavItem = forwardRef<HTMLLIElement, NavItemProps>(
-  ({ value, disabled = false, className, children, ...props }, forwardedRef) => {
+const NavItem = forwardRef<HTMLElement, NavItemProps>(
+  ({ value, disabled = false, active: activeProp, className, children, ...props }, forwardedRef) => {
     const id = useId();
-    const itemRef = useRef<HTMLLIElement | null>(null);
-    const { activeValue, keyboardNavigation, rovingTabStopId, registerItem } = useNavMenu();
-    const active = activeValue === value;
+    const itemRef = useRef<HTMLElement | null>(null);
+    const navMenu = useNavMenuOptional();
+    const shape = useShape();
+    const registerItem = navMenu?.registerItem;
+    const active = activeProp ?? (navMenu?.activeValue === value);
     const rovingTabIndex =
-      keyboardNavigation === "roving" ? (rovingTabStopId === id ? 0 : -1) : undefined;
+      navMenu?.keyboardNavigation === "roving"
+        ? (navMenu.rovingTabStopId === id ? 0 : -1)
+        : undefined;
 
     useEffect(() => {
       const element = itemRef.current;
-      if (!element) return;
+      if (!element || !registerItem) return;
       return registerItem({ id, value, element, disabled });
     }, [disabled, id, registerItem, value]);
 
@@ -59,28 +66,45 @@ const NavItem = forwardRef<HTMLLIElement, NavItemProps>(
       [active, disabled, id, rovingTabIndex, value]
     );
 
+    const itemClassName = cn(
+      "group/nav-item relative z-content flex min-w-0 items-center",
+      "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50",
+      !navMenu && [
+        "transition-colors duration-fast hover:bg-hover",
+        active && "bg-active",
+        shape.item,
+      ],
+      className
+    );
+    const setItemRef = (node: HTMLElement | null) => {
+      itemRef.current = node;
+      if (typeof forwardedRef === "function") forwardedRef(node);
+      else if (forwardedRef) forwardedRef.current = node;
+    };
+    const sharedProps = {
+      "data-slot": "nav-item",
+      "data-standalone": navMenu ? undefined : "true",
+      "data-nav-item-id": id,
+      "data-value": value,
+      "data-active": active ? "true" : "false",
+      "data-disabled": disabled ? "true" : "false",
+      className: itemClassName,
+    };
+    const element = navMenu ? (
+      <li ref={setItemRef} {...sharedProps} {...props}>{children}</li>
+    ) : (
+      <div
+        ref={setItemRef}
+        {...sharedProps}
+        {...(props as ComponentPropsWithoutRef<"div">)}
+      >
+        {children}
+      </div>
+    );
+
     return (
       <NavItemContext.Provider value={context}>
-        <li
-          ref={(node) => {
-            itemRef.current = node;
-            if (typeof forwardedRef === "function") forwardedRef(node);
-            else if (forwardedRef) forwardedRef.current = node;
-          }}
-          data-slot="nav-item"
-          data-nav-item-id={id}
-          data-value={value}
-          data-active={active ? "true" : "false"}
-          data-disabled={disabled ? "true" : "false"}
-          className={cn(
-            "group/nav-item relative z-content flex min-w-0 items-center",
-            "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50",
-            className
-          )}
-          {...props}
-        >
-          {children}
-        </li>
+        {element}
       </NavItemContext.Provider>
     );
   }
@@ -95,6 +119,8 @@ export type NavItemTriggerProps = useRender.ComponentProps<"a"> & {
 const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
   ({ className, render, tooltip, onClick, onKeyDown, ...props }, forwardedRef) => {
     const { active, disabled, rovingTabIndex } = useNavItem();
+    const navMenu = useNavMenuOptional();
+    const variant = navMenu?.variant ?? "default";
     const shape = useShape();
     const trigger = useRender({
       defaultTagName: "a",
@@ -122,11 +148,13 @@ const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
             onKeyDown?.(event);
           },
           className: cn(
-            "relative z-content flex h-control-sm min-w-0 flex-1 items-center gap-2 px-3 text-body outline-none",
+            "relative z-content flex min-w-0 flex-1 items-center gap-2 px-3 text-body outline-none",
+            variant === "underline" ? "h-control-md" : "h-control-sm",
             "cursor-pointer text-fg-muted transition-[color] duration-fast",
             "hover:text-fg-default focus-visible:text-fg-default",
             "data-[active=true]:text-fg-default",
-            shape.item,
+            !navMenu && "focus-visible:ring-1 focus-visible:ring-focus-ring",
+            variant !== "underline" && shape.item,
             className
           ),
           ...props,
@@ -164,7 +192,15 @@ export type NavItemContentProps = ComponentPropsWithoutRef<"span">;
 
 const NavItemContent = forwardRef<HTMLSpanElement, NavItemContentProps>(
   ({ className, ...props }, ref) => (
-    <span ref={ref} data-slot="nav-item-content" className={cn("flex min-w-0 flex-1 flex-col group-data-[state=collapsed]/sidebar:hidden", className)} {...props} />
+    <span
+      ref={ref}
+      data-slot="nav-item-content"
+      className={cn(
+        "flex min-w-0 flex-1 items-center gap-2 overflow-hidden whitespace-nowrap group-data-[state=collapsed]/sidebar:hidden",
+        className
+      )}
+      {...props}
+    />
   )
 );
 
@@ -175,10 +211,10 @@ export type NavItemLabelProps = ComponentPropsWithoutRef<"span">;
 const NavItemLabel = forwardRef<HTMLSpanElement, NavItemLabelProps>(
   ({ className, children, ...props }, ref) => (
     <span ref={ref} data-slot="nav-item-label" className={cn("inline-grid min-w-0 max-w-full", className)} {...props}>
-      <span aria-hidden="true" className="col-start-1 row-start-1 invisible truncate font-semibold [text-box:trim-both_cap_alphabetic] [[lang^=zh]_&]:[text-box:normal]">
+      <span aria-hidden="true" className="col-start-1 row-start-1 invisible truncate font-semibold">
         {children}
       </span>
-      <span className="col-start-1 row-start-1 truncate font-normal text-inherit transition-[font-weight] duration-fast motion-reduce:transition-none [text-box:trim-both_cap_alphabetic] [[lang^=zh]_&]:[text-box:normal] group-data-[active=true]/nav-item:font-semibold">
+      <span className="col-start-1 row-start-1 truncate font-normal text-inherit transition-[font-weight] duration-fast motion-reduce:transition-none group-data-[active=true]/nav-item:font-semibold">
         {children}
       </span>
     </span>
@@ -191,7 +227,7 @@ export type NavItemDescriptionProps = ComponentPropsWithoutRef<"span">;
 
 const NavItemDescription = forwardRef<HTMLSpanElement, NavItemDescriptionProps>(
   ({ className, ...props }, ref) => (
-    <span ref={ref} data-slot="nav-item-description" className={cn("truncate text-label text-fg-muted", className)} {...props} />
+    <span ref={ref} data-slot="nav-item-description" className={cn("min-w-0 truncate text-label text-fg-muted", className)} {...props} />
   )
 );
 
@@ -220,23 +256,23 @@ NavItemBadge.displayName = "NavItemBadge";
 export type NavItemActionProps = Omit<ComponentPropsWithoutRef<typeof Button>, "size" | "variant">;
 
 const NavItemAction = forwardRef<HTMLButtonElement, NavItemActionProps>(
-  ({ className, type = "button", ...props }, ref) => (
-    <Button
-      ref={ref}
-      type={type}
-      variant="ghost"
-      size="icon-sm"
-      data-slot="nav-item-action"
-      className={cn(
-        "relative z-content mr-1 shrink-0 text-fg-muted",
-        "opacity-0 transition-opacity duration-fast",
-        "focus-visible:opacity-100",
-        "group-focus-within/nav-item:opacity-100 [@media(pointer:coarse)]:opacity-100",
-        className
-      )}
-      {...props}
-    />
-  )
+  ({ className, type = "button", children, ...props }, ref) => {
+    const More = useIcon("ellipsis");
+
+    return (
+      <Button
+        ref={ref}
+        type={type}
+        variant="ghost"
+        size="icon-sm"
+        data-slot="nav-item-action"
+        className={cn("relative z-content mr-1 shrink-0 text-fg-muted", className)}
+        {...props}
+      >
+        {children ?? <More aria-hidden="true" size={16} strokeWidth={1.5} />}
+      </Button>
+    );
+  }
 );
 
 NavItemAction.displayName = "NavItemAction";

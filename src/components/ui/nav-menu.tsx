@@ -20,9 +20,11 @@ import { useProximityHover } from "@/hooks/use-proximity-hover";
 
 export type NavOrientation = "vertical" | "horizontal";
 export type NavKeyboardNavigation = "native" | "roving";
+export type NavMenuVariant = "default" | "underline";
 
 export interface NavMenuProps extends ComponentPropsWithoutRef<"nav"> {
   orientation?: NavOrientation;
+  variant?: NavMenuVariant;
   activeValue?: string | null;
   keyboardNavigation?: NavKeyboardNavigation;
   children: ReactNode;
@@ -40,6 +42,7 @@ interface NavMenuContextValue {
   activeId: string | null;
   hoveredId: string | null;
   focusedId: string | null;
+  variant: NavMenuVariant;
   keyboardNavigation: NavKeyboardNavigation;
   rovingTabStopId: string | null;
   registerItem: (registration: NavItemRegistration) => () => void;
@@ -51,6 +54,10 @@ export function useNavMenu() {
   const context = useContext(NavMenuContext);
   if (!context) throw new Error("NavItem must be used within a NavMenu");
   return context;
+}
+
+export function useNavMenuOptional() {
+  return useContext(NavMenuContext);
 }
 
 function itemOrder(items: Map<string, NavItemRegistration>) {
@@ -66,6 +73,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
     {
       children,
       orientation = "vertical",
+      variant = "default",
       activeValue = null,
       keyboardNavigation = "native",
       className,
@@ -153,11 +161,12 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
         activeId,
         hoveredId,
         focusedId,
+        variant,
         keyboardNavigation,
         rovingTabStopId,
         registerItem,
       }),
-      [activeValue, activeId, hoveredId, focusedId, keyboardNavigation, registerItem, rovingTabStopId]
+      [activeValue, activeId, hoveredId, focusedId, variant, keyboardNavigation, registerItem, rovingTabStopId]
     );
 
     return (
@@ -170,6 +179,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
           }}
           data-slot="nav-menu"
           data-orientation={orientation}
+          data-variant={variant}
           onMouseEnter={handlers.onMouseEnter}
           onMouseMove={handlers.onMouseMove}
           onMouseLeave={handlers.onMouseLeave}
@@ -210,7 +220,11 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
           }}
           className={cn(
             "relative isolate flex select-none",
-            orientation === "vertical" ? "w-full flex-col gap-0.5" : "min-w-0 items-center gap-1",
+            orientation === "vertical"
+              ? "min-w-0 max-w-full w-full flex-col"
+              : ["min-w-0 items-center", variant === "underline" ? "gap-0.5" : "gap-1"],
+            orientation === "horizontal" && variant === "underline" &&
+              "max-w-[calc(100%_+_8px)] overflow-x-auto border-b border-border -mx-1 -my-1 px-1 scrollbar-hide",
             className
           )}
           {...props}
@@ -220,14 +234,23 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
               <motion.div
                 aria-hidden="true"
                 data-slot="nav-item-active-indicator"
-                className={cn("pointer-events-none absolute z-base bg-active", shape.bg)}
+                className={cn(
+                  "pointer-events-none absolute z-base",
+                  variant === "underline" ? "bg-brand" : ["bg-active", shape.bg]
+                )}
                 initial={false}
                 animate={{
-                  top: activeRect.top,
+                  top:
+                    variant === "underline"
+                      ? activeRect.top + activeRect.height - 2
+                      : activeRect.top,
                   left: activeRect.left,
                   width: activeRect.width,
-                  height: activeRect.height,
-                  opacity: 1,
+                  height: variant === "underline" ? 2 : activeRect.height,
+                  opacity:
+                    variant === "underline" && hoveredId && hoveredId !== activeId
+                      ? 0.85
+                      : 1,
                 }}
                 exit={{ opacity: 0, transition: spring.fast.exit }}
                 transition={reduceMotion ? { duration: 0 } : spring.moderate}
@@ -235,7 +258,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
             )}
           </AnimatePresence>
           <AnimatePresence>
-            {isMeasured && hoverRect && (
+            {variant !== "underline" && isMeasured && hoverRect && (
               <motion.div
                 key={sessionRef.current}
                 aria-hidden="true"
@@ -256,10 +279,10 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
                 className={cn("pointer-events-none absolute z-raised border border-focus-ring", shape.focusRing)}
                 initial={false}
                 animate={{
-                  top: focusRect.top - 2,
-                  left: focusRect.left - 2,
-                  width: focusRect.width + 4,
-                  height: focusRect.height + 4,
+                  top: focusRect.top,
+                  left: focusRect.left,
+                  width: focusRect.width,
+                  height: focusRect.height,
                   opacity: 1,
                 }}
                 exit={{ opacity: 0, transition: spring.fast.exit }}
@@ -267,7 +290,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
               />
             )}
           </AnimatePresence>
-          <ul data-slot="nav-list" className={cn("relative z-content flex min-w-0 list-none p-0", orientation === "vertical" ? "w-full flex-col gap-0.5" : "items-center gap-1")}>
+          <ul data-slot="nav-list" className={cn("relative z-content flex min-w-0 list-none p-0", orientation === "vertical" ? "w-full flex-col gap-0.5" : ["items-center", variant === "underline" ? "gap-0.5" : "gap-1"])}>
             {children}
           </ul>
         </nav>

@@ -49,7 +49,7 @@ const TopNavBrand = forwardRef<HTMLDivElement, TopNavBrandProps>(({ className, .
 TopNavBrand.displayName = "TopNavBrand";
 
 const TopNavNavigation = forwardRef<HTMLDivElement, TopNavNavigationProps>(({ className, ...props }, ref) => (
-  <div ref={ref} data-slot="top-nav-navigation" className={cn("min-w-0 flex-1", className)} {...props} />
+  <div ref={ref} data-slot="top-nav-navigation" className={cn("flex min-w-0 flex-1 self-stretch items-center", className)} {...props} />
 ));
 TopNavNavigation.displayName = "TopNavNavigation";
 
