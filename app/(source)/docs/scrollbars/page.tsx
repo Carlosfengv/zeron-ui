@@ -160,7 +160,7 @@ function ReleaseRows() {
       {RELEASES.map((release) => (
         <div
           key={release}
-          className="px-3 py-2 text-[13px] text-fg-default whitespace-nowrap"
+          className="px-3 py-2 text-label text-fg-default whitespace-nowrap"
         >
           {release}
         </div>
@@ -171,7 +171,7 @@ function ReleaseRows() {
 
 function PanelLabel({ children }: { children: React.ReactNode }) {
   return (
-    <span className="text-[12px] text-fg-muted text-center">
+    <span className="text-label text-fg-muted text-center">
       {children}
     </span>
   );
@@ -227,7 +227,7 @@ function HorizontalDemo() {
           {MONTHS.map((month) => (
             <div
               key={month}
-              className={`flex items-center justify-center h-20 w-28 shrink-0 border border-border text-[13px] text-fg-default ${shape.bg}`}
+              className={`flex items-center justify-center h-20 w-28 shrink-0 border border-border text-label text-fg-default ${shape.bg}`}
             >
               {month}
             </div>
@@ -297,7 +297,7 @@ function TableDemo() {
 function H3({ children }: { children: React.ReactNode }) {
   return (
     <h3
-      className="text-[15px] text-fg-default mt-2 font-semibold"
+      className="text-title text-fg-default mt-2 font-semibold"
     >
       {children}
     </h3>
@@ -306,7 +306,7 @@ function H3({ children }: { children: React.ReactNode }) {
 
 function P({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[13px] text-fg-muted leading-relaxed">
+    <p className="text-body text-fg-muted leading-relaxed">
       {children}
     </p>
   );
@@ -329,7 +329,7 @@ export default function ScrollbarsDoc() {
       }
     >
       <DocSection title={t("problem")}>
-        <div className="flex flex-col gap-3 text-[13px] text-fg-muted leading-relaxed">
+        <div className="flex flex-col gap-3 text-body text-fg-muted leading-relaxed">
           <p>
             {t("problemBody")}
           </p>

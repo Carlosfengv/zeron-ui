@@ -64,11 +64,11 @@ export default function SliderPage() {
     <div className="flex flex-col gap-12 px-10 py-10 w-full max-w-[720px] mx-auto">
       <div className="flex flex-col gap-1">
         <h1
-          className="text-[22px] text-fg-default font-bold"
+          className="text-heading text-fg-default font-bold"
         >
           Audio Mixer
         </h1>
-        <p className="text-[14px] text-fg-muted">
+        <p className="text-body text-fg-muted">
           Slider variants styled as a music production control surface.
         </p>
       </div>
@@ -79,7 +79,7 @@ export default function SliderPage() {
 
       <section className="flex flex-col gap-4">
         <h2
-          className="text-[15px] text-fg-default font-semibold"
+          className="text-title text-fg-default font-semibold"
         >
           Channel Strip
         </h2>
@@ -128,7 +128,7 @@ export default function SliderPage() {
 
       <section className="flex flex-col gap-4">
         <h2
-          className="text-[15px] text-fg-default font-semibold"
+          className="text-title text-fg-default font-semibold"
         >
           Parametric EQ
         </h2>
@@ -202,7 +202,7 @@ export default function SliderPage() {
 
       <section className="flex flex-col gap-4">
         <h2
-          className="text-[15px] text-fg-default font-semibold"
+          className="text-title text-fg-default font-semibold"
         >
           Range Selection
         </h2>
@@ -233,7 +233,7 @@ export default function SliderPage() {
 
       <section className="flex flex-col gap-4">
         <h2
-          className="text-[15px] text-fg-default font-semibold"
+          className="text-title text-fg-default font-semibold"
         >
           Compressor
         </h2>
@@ -296,7 +296,7 @@ export default function SliderPage() {
 
       <section className="flex flex-col gap-4">
         <h2
-          className="text-[15px] text-fg-default font-semibold"
+          className="text-title text-fg-default font-semibold"
         >
           Effects Sends
         </h2>
@@ -331,7 +331,7 @@ export default function SliderPage() {
 
       <section className="flex flex-col gap-4">
         <h2
-          className="text-[15px] text-fg-default font-semibold"
+          className="text-title text-fg-default font-semibold"
         >
           Settings
         </h2>
@@ -381,7 +381,7 @@ export default function SliderPage() {
 
       <section className="flex flex-col gap-4">
         <h2
-          className="text-[15px] text-fg-default font-semibold"
+          className="text-title text-fg-default font-semibold"
         >
           Master Controls
         </h2>

@@ -148,7 +148,7 @@ export default function ColorPickerDoc() {
       </DocSection>
 
       <DocSection title={t("eyedropperSupport")}>
-        <p className="text-[13px] text-fg-muted">
+        <p className="text-body text-fg-muted">
           {t("eyedropperBody")}
         </p>
       </DocSection>

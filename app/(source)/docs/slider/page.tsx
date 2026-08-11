@@ -454,9 +454,9 @@ export default function SliderDoc() {
       {/* ------------------------------------------------------------------ */}
 
       <DocSection title={t("apiReference")}>
-        <p className="text-[13px] text-fg-muted mb-3">Slider</p>
+        <p className="text-label text-fg-muted mb-3">Slider</p>
         <PropsTable props={localize(sliderProps, "s")} />
-        <p className="text-[13px] text-fg-muted mt-8 mb-3">SliderComfortable</p>
+        <p className="text-label text-fg-muted mt-8 mb-3">SliderComfortable</p>
         <PropsTable props={localize(comfortableProps, "c")} />
       </DocSection>
     </DocPage>

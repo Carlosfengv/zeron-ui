@@ -42,7 +42,7 @@ export function ZaiopsSidebarPreview() {
   return (
     <SidebarProvider>
       <div className="w-full p-5 group-data-[fullscreen=true]/preview-content:h-full">
-        <div className="relative flex h-[min(42rem,calc(100svh-8rem))] min-h-120 w-full overflow-hidden border border-border-subtle bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
+        <div className="relative flex h-[min(42rem,calc(100svh-8rem))] min-h-120 w-full overflow-hidden bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
           <Sidebar
             width="260px"
             mobileWidth="min(260px, calc(100vw - 24px))"

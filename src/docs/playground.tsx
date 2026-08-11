@@ -40,7 +40,7 @@ export function PlayField({
         disabled && "opacity-40 pointer-events-none"
       )}
     >
-      <span className="text-[13px] text-fg-muted">{label}</span>
+      <span className="text-label text-fg-muted">{label}</span>
       {children}
     </div>
   );
@@ -59,7 +59,7 @@ export function PlaySelect({
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
         variant="borderless"
-        className="min-w-0 w-auto h-7 px-2 text-[13px]"
+        className="min-w-0 w-auto h-7 px-2 text-label"
       />
       <SelectContent>
         {options.map((o, i) => (
@@ -75,7 +75,7 @@ export function PlaySelect({
 export function PlaySection({ label }: { label: string }) {
   return (
     <div
-      className="px-1 pb-1 pt-1 text-[12px] text-fg-muted font-semibold"
+      className="px-1 pb-1 pt-1 text-label text-fg-muted font-semibold"
     >
       {label}
     </div>
@@ -105,7 +105,7 @@ export function PlaygroundPanel({
       <div className="w-full rounded-control bg-muted p-3">
         <div className="flex items-center justify-between px-1 pt-1 pb-2">
           <h2
-            className="text-[16px] text-fg-default leading-none font-semibold"
+            className="text-title text-fg-default leading-none font-semibold"
           >
             {title ?? t("variant")}
           </h2>

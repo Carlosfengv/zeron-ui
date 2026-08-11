@@ -102,7 +102,7 @@ export default function AccordionDoc() {
       description="Collapsible sections with animated expand/collapse and proximity hover in grouped mode."
     >
       <DocSection title={t("standalone")}>
-        <p className="text-[13px] text-fg-muted">{t("standaloneDescription")}</p>
+        <p className="text-body text-fg-muted">{t("standaloneDescription")}</p>
         <ComponentPreview code={standaloneCode}>
           <div className="min-h-[120px] flex items-center">
             <Accordion type="single" collapsible defaultValue="item-1">
@@ -118,7 +118,7 @@ export default function AccordionDoc() {
       </DocSection>
 
       <DocSection title={t("singleExpand")}>
-        <p className="text-[13px] text-fg-muted">{t("singleExpandDescription")}</p>
+        <p className="text-body text-fg-muted">{t("singleExpandDescription")}</p>
         <ComponentPreview code={groupedCode}>
           <AccordionGroup type="single" collapsible defaultValue="item-1">
             <AccordionItem value="item-1" index={0}>
@@ -156,7 +156,7 @@ export default function AccordionDoc() {
       </DocSection>
 
       <DocSection title={t("multiExpand")}>
-        <p className="text-[13px] text-fg-muted">{t("multiExpandDescription")}</p>
+        <p className="text-body text-fg-muted">{t("multiExpandDescription")}</p>
         <ComponentPreview code={multipleCode}>
           <AccordionGroup type="multiple" defaultValue={["item-1", "item-3"]}>
             <AccordionItem value="item-1" index={0}>

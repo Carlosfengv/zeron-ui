@@ -26,7 +26,7 @@ export function PropsTable({ props }: PropsTableProps) {
       viewportClassName="scroll-fade-x"
       className="w-full"
     >
-      <table className="w-full min-w-[520px] text-[13px] border-collapse">
+      <table className="w-full min-w-[520px] text-label border-collapse">
         <thead>
           <tr className="border-b border-border">
             <th
@@ -56,14 +56,14 @@ export function PropsTable({ props }: PropsTableProps) {
         <tbody>
           {props.map((prop) => (
             <tr key={prop.name} className="border-b border-border/40">
-              <td className="px-3 py-2 text-fg-default font-mono text-[12px]">
+              <td className="px-3 py-2 text-fg-default font-mono text-label">
                 {prop.name}
               </td>
-              <td className="px-3 py-2 text-fg-muted font-mono text-[12px]">
+              <td className="px-3 py-2 text-fg-muted font-mono text-label">
                 {prop.type}
               </td>
               {showDefault && (
-                <td className="px-3 py-2 text-fg-muted font-mono text-[12px]">
+                <td className="px-3 py-2 text-fg-muted font-mono text-label">
                   {prop.default ?? "—"}
                 </td>
               )}

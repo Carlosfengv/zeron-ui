@@ -338,7 +338,7 @@ export default function TablePage() {
   return (
     <div className="flex flex-col gap-6 px-10 py-10 w-full">
       <h1
-        className="text-[22px] text-fg-default px-2 font-bold"
+        className="text-heading text-fg-default px-2 font-bold"
       >
         Quotes
       </h1>

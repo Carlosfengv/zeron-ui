@@ -406,7 +406,7 @@ ${table(["CSS 令牌", "Tailwind", "浅色", "深色", "用途"], surfaceRows)}
 
 ${table(["Tailwind", "CSS 令牌", "字号 / 行高", "用途"], typeRows)}
 
-字号和行高成对发布；组件优先使用 \`text-body\` 这类语义类，不再使用 \`text-[13px]\`。字体族为 \`font-sans\`。
+字号和行高成对发布；组件优先使用 \`text-body\` 这类语义类，不再使用任意像素字号工具类。字体族为 \`font-sans\`。
 
 ### 字重
 

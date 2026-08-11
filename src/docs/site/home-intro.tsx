@@ -17,8 +17,8 @@ export function HomeIntro() {
     <div className="w-full max-w-[960px] mx-auto py-20 sm:py-28 px-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="text-[22px] sm:text-[28px] text-fg-default leading-none font-bold">Zeron Design</h1>
-          <p className="text-[14px] text-fg-muted">{t("tagline")}</p>
+          <h1 className="text-heading text-fg-default leading-none font-bold">Zeron Design</h1>
+          <p className="text-body text-fg-muted">{t("tagline")}</p>
           <div className="flex items-center gap-2 mt-2">
             <Button asChild variant="primary" size="sm">
               <Link href={localizePathname("/docs", localePrefix)}>{t("learnMore")}</Link>

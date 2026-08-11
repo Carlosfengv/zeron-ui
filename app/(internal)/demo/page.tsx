@@ -161,11 +161,11 @@ function DemoPageInner() {
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-2">
             <h1
-              className="text-[22px] sm:text-[28px] text-fg-default leading-none font-bold"
+              className="text-heading text-fg-default leading-none font-bold"
             >
               Zeron Design
             </h1>
-            <p className="text-[14px] text-fg-muted">
+            <p className="text-body text-fg-muted">
               Refined UI components with satisfying hover.
             </p>
             <div className="flex items-center gap-2 mt-2">

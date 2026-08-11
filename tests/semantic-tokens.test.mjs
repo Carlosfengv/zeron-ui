@@ -332,6 +332,25 @@ describe("component token adoption", () => {
     expect(componentSource).not.toMatch(/text-\[\d+px\]/);
   });
 
+  it("does not use arbitrary typography utilities outside generated assets", () => {
+    const source = ["app", "src", "scripts"]
+      .flatMap((directory) => {
+        const files = [];
+        const visit = (current) => {
+          for (const entry of readdirSync(join(ROOT, current), { withFileTypes: true })) {
+            const path = `${current}/${entry.name}`;
+            if (entry.isDirectory()) visit(path);
+            else if (/\.(?:[cm]?[jt]sx?|md)$/.test(entry.name)) files.push(read(path));
+          }
+        };
+        visit(directory);
+        return files;
+      })
+      .join("\n");
+
+    expect(source).not.toMatch(/text-\[[^\]]+\]/);
+  });
+
   it("does not use arbitrary pixel margins, padding, or gaps", () => {
     expect(componentSource).not.toMatch(
       /(?:^|\s)-?(?:m[trblxy]?|p[trblxy]?|gap(?:-[xy])?)-\[-?\d+(?:\.\d+)?px\]/m

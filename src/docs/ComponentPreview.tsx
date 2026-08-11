@@ -237,12 +237,12 @@ export function ComponentPreview({
           </div>
         ) : html ? (
           <div
-            className={`overflow-auto text-[13px] [&_pre]:m-0 [&_pre]:p-4 ${minHeightClass.replace("min-h-", "[&_pre]:min-h-")} [&_.shiki]:!bg-transparent`}
+            className={`overflow-auto text-label [&_pre]:m-0 [&_pre]:p-4 ${minHeightClass.replace("min-h-", "[&_pre]:min-h-")} [&_.shiki]:!bg-transparent`}
             dangerouslySetInnerHTML={{ __html: html }}
           />
         ) : highlightFailedFor === code ? (
           <pre
-            className={`m-0 overflow-auto p-4 text-[13px] text-fg-default ${minHeightClass}`}
+            className={`m-0 overflow-auto p-4 text-label text-fg-default ${minHeightClass}`}
           >
             <code>{code.trim()}</code>
           </pre>
@@ -250,7 +250,7 @@ export function ComponentPreview({
           <div
             role="status"
             aria-live="polite"
-            className={`flex items-center justify-center text-[13px] text-fg-muted ${minHeightClass}`}
+            className={`flex items-center justify-center text-label text-fg-muted ${minHeightClass}`}
           >
             {t("highlighting")}
           </div>

@@ -52,7 +52,7 @@ export function BentoCard({ slug, name, isNew, gridSize = "small", animateLayout
     >
       <span
         className={cn(
-          "text-[13px] text-fg-muted transition-colors duration-fast",
+          "text-label text-fg-muted transition-colors duration-fast",
           slug && "group-hover/link:text-fg-default", "font-medium"
         )}
       >

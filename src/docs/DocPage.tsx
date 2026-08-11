@@ -41,10 +41,10 @@ export function DocPage({
     <div className="flex flex-col gap-8 px-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-[22px] sm:text-[28px] text-fg-default leading-none mb-2 font-bold">
+          <h1 className="text-heading text-fg-default leading-none mb-2 font-bold">
             {title}
           </h1>
-          <p className="text-[13px] text-fg-muted">
+          <p className="text-body text-fg-muted">
             {slug && meta.has(`descriptions.${slug}`) ? meta(`descriptions.${slug}`) : description}
           </p>
         </div>
@@ -53,12 +53,12 @@ export function DocPage({
 
       {slug && registrySlug && showInstall && (
         <div className="flex flex-col gap-3">
-          <h2 className="text-[16px] text-fg-default leading-none font-semibold">
+          <h2 className="text-title text-fg-default leading-none font-semibold">
             {t("installation")}
           </h2>
           <InstallCommand value={`npx zeron-ui add ${registrySlug}`} />
           {BASE_UI_BACKED_SLUGS.has(registrySlug) && (
-            <p className="text-[12px] text-fg-muted">{t("builtOnBaseUi")}</p>
+            <p className="text-label text-fg-muted">{t("builtOnBaseUi")}</p>
           )}
         </div>
       )}
@@ -71,7 +71,7 @@ export function DocPage({
 export function DocSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-3">
-      <h2 className="text-[16px] text-fg-default leading-none font-semibold">
+      <h2 className="text-title text-fg-default leading-none font-semibold">
         {title}
       </h2>
       {children}

@@ -422,7 +422,7 @@ export function ZaiopsSidebarPreview() {
   return (
     <SidebarProvider>
       <div className="w-full group-data-[fullscreen=true]/preview-content:h-full">
-        <div className="relative flex h-[min(42rem,calc(100svh-8rem))] min-h-120 w-full overflow-hidden border border-border-subtle bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
+        <div className="relative flex h-[min(42rem,calc(100svh-8rem))] min-h-120 w-full overflow-hidden bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
           <ZaiopsSidebar onSearchOpen={() => setSearchOpen(true)} />
           <section className="min-w-0 flex-1 p-6">
             <div className="mb-6 flex items-center gap-3 xl:hidden"><CompactOpenTrigger /><span className="text-body text-fg-muted">紧凑导航</span></div>

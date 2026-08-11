@@ -392,7 +392,7 @@ export function InspectOverlay({
               className="absolute flex items-center justify-center"
               style={{ left: s.left, top: s.top, width: s.width, height: s.height, background: GREEN }}
             >
-              <span className="text-[9px] font-mono font-semibold leading-none text-fg-default">
+              <span className="text-label font-mono font-semibold leading-none text-fg-default">
                 {s.label}
               </span>
             </div>
@@ -403,7 +403,7 @@ export function InspectOverlay({
               className="absolute flex items-center justify-center"
               style={{ left: s.left, top: s.top, width: s.width, height: s.height, background: GREEN, outline: `1px dashed ${GREEN_LINE}`, outlineOffset: -1 }}
             >
-              <span className="text-[9px] font-mono font-semibold leading-none text-fg-default">
+              <span className="text-label font-mono font-semibold leading-none text-fg-default">
                 {s.label}
               </span>
             </div>
@@ -482,7 +482,7 @@ export function InspectOverlay({
           side="top"
           sideOffset={8}
           content={
-            <div className="font-mono text-[11px] leading-[1.55] normal-case tracking-normal">
+            <div className="font-mono text-label leading-[1.55] normal-case tracking-normal">
               <div className="font-semibold" style={{ color: BLUE }}>
                 {target.anchor}
               </div>

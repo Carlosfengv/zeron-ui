@@ -98,7 +98,7 @@ function VariantGuide() {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="max-w-3xl text-[13px] leading-5 text-fg-muted">
+      <p className="max-w-3xl text-body leading-5 text-fg-muted">
         {t("choosingVariantIntro")}
       </p>
       <ScrollArea
@@ -106,7 +106,7 @@ function VariantGuide() {
         viewportClassName="scroll-fade-x"
         className="w-full"
       >
-        <table className="w-full min-w-[820px] border-collapse text-[13px]">
+        <table className="w-full min-w-[820px] border-collapse text-label">
           <thead>
             <tr className="border-b border-border">
               <th className="w-[150px] px-3 py-2 text-left font-semibold text-fg-default">
@@ -139,7 +139,7 @@ function VariantGuide() {
           </tbody>
         </table>
       </ScrollArea>
-      <p className="max-w-3xl text-[13px] leading-5 text-fg-default">
+      <p className="max-w-3xl text-body leading-5 text-fg-default">
         {t("highEmphasisRule")}
       </p>
     </div>
@@ -161,10 +161,10 @@ function ButtonGroupGuidance() {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="max-w-3xl text-[13px] leading-5 text-fg-muted">
+      <p className="max-w-3xl text-body leading-5 text-fg-muted">
         {t("compositionIntro")}
       </p>
-      <ul className="flex max-w-3xl list-disc flex-col gap-1.5 pl-5 text-[13px] leading-5 text-fg-muted marker:text-fg-subtle">
+      <ul className="flex max-w-3xl list-disc flex-col gap-1.5 pl-5 text-body leading-5 text-fg-muted marker:text-fg-subtle">
         <li>{t("compositionRule1")}</li>
         <li>{t("compositionRule2")}</li>
         <li>{t("compositionRule3")}</li>
@@ -253,7 +253,7 @@ function PlayText({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       aria-label={ariaLabel}
-      className="h-7 w-[124px] rounded-control bg-transparent px-2 text-right text-[13px] text-fg-default transition-colors duration-fast hover:bg-hover focus:bg-hover outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
+      className="h-7 w-[124px] rounded-control bg-transparent px-2 text-right text-label text-fg-default transition-colors duration-fast hover:bg-hover focus:bg-hover outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
     />
   );
 }

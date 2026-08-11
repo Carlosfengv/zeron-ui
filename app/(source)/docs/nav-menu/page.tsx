@@ -358,7 +358,7 @@ export default function NavMenuDoc() {
         </ComponentPreview>
       </DocSection>
       <DocSection title="Labels and groups">
-        <p className="text-[13px] text-fg-muted">
+        <p className="text-body text-fg-muted">
           Use SidebarGroupLabel for a static label, or SidebarGroupTrigger when the group should collapse.
         </p>
         <ComponentPreview code={groupedCode} minHeightClass="min-h-[340px]">

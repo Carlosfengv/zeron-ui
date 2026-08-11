@@ -255,7 +255,7 @@ export default function StarsPage() {
       <button
         type="button"
         onClick={runCascade}
-        className="text-[13px] text-fg-muted transition-colors hover:text-fg-default cursor-pointer"
+        className="text-label text-fg-muted transition-colors hover:text-fg-default cursor-pointer"
       >
         {text} stars. Thank you.
       </button>

@@ -133,14 +133,14 @@ function SpringReferenceSection() {
         >
           <div className="flex flex-col gap-0.5">
             <span
-              className="text-[13px] text-fg-default font-semibold"
+              className="text-label text-fg-default font-semibold"
             >
               {key}
             </span>
-            <span className="text-[12px] text-fg-muted">
+            <span className="text-label text-fg-muted">
               → <code className="font-mono">{enterToken}</code> {enterMeta}
             </span>
-            <span className="text-[12px] text-fg-muted">
+            <span className="text-label text-fg-muted">
               ← <code className="font-mono">{exitToken}</code> {exitMeta}
             </span>
           </div>
@@ -170,12 +170,12 @@ function SpringReferenceSection() {
                 <Link
                   key={label}
                   href={slug}
-                  className="text-[13px] text-fg-muted/50 transition-colors hover:text-fg-default"
+                  className="text-label text-fg-muted/50 transition-colors hover:text-fg-default"
                 >
                   {label}
                 </Link>
               ) : (
-                <span key={label} className="text-[13px] text-fg-muted/30">
+                <span key={label} className="text-label text-fg-muted/30">
                   {label}
                 </span>
               )
@@ -223,16 +223,16 @@ function SpringTokensDemo() {
       <div className="flex w-full max-w-md flex-col gap-5">
         {SPRING_TIERS.map(({ key, token, meta, usage }) => (
           <div key={key} className="flex flex-col gap-1.5">
-            <div className="flex items-baseline gap-2 text-[13px]">
+            <div className="flex items-baseline gap-2 text-label">
               <span
                 className="text-fg-default font-semibold"
               >
                 {key}
               </span>
-              <span className="font-mono text-[11px] text-fg-muted/70">
+              <span className="font-mono text-label text-fg-muted/70">
                 {meta}
               </span>
-              <span className="ml-auto hidden text-[12px] text-fg-muted sm:inline">
+              <span className="ml-auto hidden text-label text-fg-muted sm:inline">
                 {usage}
               </span>
             </div>
@@ -252,7 +252,7 @@ function SpringTokensDemo() {
             </button>
           </div>
         ))}
-        <p className="text-center text-[12px] text-fg-muted/70">
+        <p className="text-center text-label text-fg-muted/70">
           Click a track (or replay) to fire all three springs.
         </p>
       </div>
@@ -340,7 +340,7 @@ function ModalExitDemo() {
   const [openSame, setOpenSame] = useState(false);
   const [openFaster, setOpenFaster] = useState(false);
   const labelClass =
-    "flex items-center justify-center gap-2 text-[12px] text-fg-muted";
+    "flex items-center justify-center gap-2 text-label text-fg-muted";
   return (
     <ComponentPreview code={MODAL_CODE} minHeightClass="min-h-[320px]">
       <div className="flex w-full max-w-2xl flex-col items-center gap-4">
@@ -377,7 +377,7 @@ function ModalExitDemo() {
             </span>
           </div>
         </div>
-        <p className="text-center text-[12px] text-fg-muted/70">
+        <p className="text-center text-label text-fg-muted/70">
           Toggle one, then the other — both open on{" "}
           <span className="font-mono">spring.slow</span>; only the close differs.
         </p>
@@ -401,31 +401,31 @@ export default function MotionDoc() {
       description="Three spring speeds, and exits always move a little faster than entrances. Pick a speed, wire it in — every component follows the same pattern."
     >
       <DocSection title={t("threeSpeeds")}>
-        <p className="text-[13px] leading-relaxed text-fg-muted">
+        <p className="text-body leading-relaxed text-fg-muted">
           {t("threeSpeedsBody")}
         </p>
         <SpringTokensDemo />
       </DocSection>
 
       <DocSection title={t("slowInFasterOut")}>
-        <p className="text-[13px] leading-relaxed text-fg-muted">
+        <p className="text-body leading-relaxed text-fg-muted">
           {t("slowInFasterOutBody")}
         </p>
         <ModalExitDemo />
       </DocSection>
 
       <DocSection title={t("allTokens")}>
-        <p className="text-[13px] leading-relaxed text-fg-muted">
+        <p className="text-body leading-relaxed text-fg-muted">
           {t("allTokensBody")}
         </p>
         <SpringReferenceSection />
 
         <h3
-          className="mt-8 text-[15px] text-fg-default font-semibold"
+          className="mt-8 text-title text-fg-default font-semibold"
         >
           {t("reducedMotion")}
         </h3>
-        <p className="text-[13px] leading-relaxed text-fg-muted">
+        <p className="text-body leading-relaxed text-fg-muted">
           {t("reducedMotionBody")}
         </p>
       </DocSection>
