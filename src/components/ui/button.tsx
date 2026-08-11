@@ -25,6 +25,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "text-fg-on-brand",
+        neutral: "text-fg-on-inverse",
         destructive: "text-fg-on-danger",
         secondary: "text-fg-default",
         tertiary: "text-fg-default",
@@ -72,6 +73,7 @@ interface ButtonProps
 
 const bgVariants: Record<string, string> = {
   primary: "bg-brand group-hover:bg-brand-hover group-active:bg-brand-active",
+  neutral: "bg-inverse-background group-hover:bg-inverse-background-hover group-active:bg-inverse-background-active",
   destructive: "bg-destructive group-hover:bg-destructive-hover group-active:bg-destructive-active",
   secondary: "bg-accent group-hover:bg-accent-hover group-active:bg-accent-active",
   tertiary: "border border-border bg-transparent group-hover:bg-hover group-active:bg-active",
@@ -80,6 +82,7 @@ const bgVariants: Record<string, string> = {
 
 const activeBgVariants: Record<string, string> = {
   primary: "bg-brand-active",
+  neutral: "bg-inverse-background-active",
   destructive: "bg-destructive-active",
   secondary: "bg-accent-active",
   tertiary: "border border-border bg-active",

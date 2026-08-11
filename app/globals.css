@@ -51,6 +51,8 @@
   --destructive-active: light-dark(#F5655F, #FC8784);
   --destructive-subtle: light-dark(#FEF2F2, #450A0A);
   --inverse-background: var(--fg-default);
+  --inverse-background-hover: light-dark(#262626, #E5E5E5);
+  --inverse-background-active: light-dark(#404040, #D4D4D4);
   --border: light-dark(rgb(23 23 23 / 0.12), rgb(245 245 245 / 0.12));
   --input: light-dark(#E5E5E5, #404040);
   --input-hover: light-dark(rgb(23 23 23 / 0.24), rgb(245 245 245 / 0.24));
@@ -192,6 +194,8 @@
   --color-destructive-active: var(--destructive-active);
   --color-destructive-subtle: var(--destructive-subtle);
   --color-inverse-background: var(--inverse-background);
+  --color-inverse-background-hover: var(--inverse-background-hover);
+  --color-inverse-background-active: var(--inverse-background-active);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-input-hover: var(--input-hover);

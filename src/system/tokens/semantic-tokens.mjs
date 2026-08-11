@@ -1,7 +1,8 @@
 /**
  * Zeron Design semantic design tokens.
  *
- * This is the only hand-edited source for CSS/registry design tokens.
+ * This is the hand-edited semantic source for CSS/registry design tokens.
+ * Reference color primitives live in reference-colors.mjs.
  * Run `npm run tokens:build` after editing it. The generator updates:
  *   - the generated token block in app/globals.css
  *   - the `surfaces` registry:theme item in registry.json
@@ -9,41 +10,49 @@
  *   - SEMANTIC-TOKENS.md
  */
 
+import { referenceColors } from "./reference-colors.mjs";
+
+const { neutral, danger } = referenceColors;
+const { optical: neutralOptical } = neutral;
+const { optical: dangerOptical } = danger;
+
 export const foregroundColorTokens = [
-  { name: "fg-default", light: "#171717", dark: "#F5F5F5", usage: "普通承载面上的默认标题、正文、表单值和主要图标" },
-  { name: "fg-muted", light: "#525252", dark: "#C0C0C0", usage: "普通承载面上的辅助说明、标签、元数据和次要图标" },
-  { name: "fg-subtle", light: "#737373", dark: "#ADADAD", usage: "普通承载面上的占位文字、时间戳、快捷键提示和低强调图标" },
-  { name: "fg-disabled", light: "#A3A3A3", dark: "#737373", usage: "不能通过组件级透明度表达时使用的独立禁用文字和图标" },
+  { name: "fg-default", light: neutral[900], dark: neutral[100], usage: "普通承载面上的默认标题、正文、表单值和主要图标" },
+  { name: "fg-muted", light: neutral[600], dark: neutralOptical[325], usage: "普通承载面上的辅助说明、标签、元数据和次要图标" },
+  { name: "fg-subtle", light: neutral[500], dark: neutralOptical[375], usage: "普通承载面上的占位文字、时间戳、快捷键提示和低强调图标" },
+  { name: "fg-disabled", light: neutral[400], dark: neutral[500], usage: "不能通过组件级透明度表达时使用的独立禁用文字和图标" },
   { name: "fg-brand", light: "#0060D2", dark: "#80B0E9", usage: "普通承载面上的品牌色链接、文字和图标；不得用于品牌色填充之上" },
-  { name: "fg-danger", light: "#B42318", dark: "#FCA5A5", usage: "普通承载面上的错误、失败或危险文字和图标；不得用于危险操作填充之上" },
-  { name: "fg-on-brand", light: "#FFFFFF", dark: "#FFFFFF", usage: "品牌色默认、悬停和按下填充上的文字与图标；须与对应填充配对使用" },
-  { name: "fg-on-danger", light: "#171717", dark: "#171717", usage: "危险操作默认、悬停和按下填充上的文字与图标；须与对应填充配对使用" },
-  { name: "fg-on-inverse", light: "#FAFAFA", dark: "#171717", usage: "反色背景上的文字和图标；仅与反色填充配对使用" },
+  { name: "fg-danger", light: dangerOptical[710], dark: danger[300], usage: "普通承载面上的错误、失败或危险文字和图标；不得用于危险操作填充之上" },
+  { name: "fg-on-brand", light: neutral[0], dark: neutral[0], usage: "品牌色默认、悬停和按下填充上的文字与图标；须与对应填充配对使用" },
+  { name: "fg-on-danger", light: neutral[900], dark: neutral[900], usage: "危险操作默认、悬停和按下填充之上的文字与图标；须与对应填充配对使用" },
+  { name: "fg-on-inverse", light: neutral[50], dark: neutral[900], usage: "反色背景上的文字和图标；仅与反色填充配对使用" },
 ];
 
 export const fillColorTokens = [
   { name: "brand", light: "#0060D2", dark: "#0060D2", usage: "主要操作和明确的选中标记" },
   { name: "brand-hover", light: "#0055BC", dark: "#0055BC", usage: "品牌色填充的悬停状态；须与 fg-on-brand 保持可读对比度" },
   { name: "brand-active", light: "#004DAC", dark: "#004DAC", usage: "品牌色填充的按下或展开状态；须与 fg-on-brand 保持可读对比度" },
-  { name: "muted", light: "#F4F4F5", dark: "#1E1E1E", usage: "弱化容器、轨道和次要区域" },
-  { name: "accent", light: "#E5E5E5", dark: "#525252", usage: "次要按钮和强调背景" },
-  { name: "accent-subtlest", light: "#F3F3F3", dark: "#292929", usage: "最低强调度的重点背景；用于排队消息等弱化的临时容器" },
-  { name: "accent-subtle", light: "#EEEEEE", dark: "#363636", usage: "低强调度的重点背景；用于消息气泡等静态容器" },
-  { name: "accent-hover", light: "#CDCDCD", dark: "#5E5E5E", usage: "重点填充的悬停状态" },
-  { name: "accent-active", light: "#BBBBBB", dark: "#686868", usage: "重点填充的按下或展开状态" },
-  { name: "selection-background", light: "#D4D4D4", dark: "#525252", usage: "持久选中状态背景" },
-  { name: "destructive", light: "#EF4444", dark: "#F87171", usage: "错误、删除和危险操作填充" },
-  { name: "destructive-hover", light: "#F35854", dark: "#FA7E7C", usage: "危险操作填充的悬停状态；须与 fg-on-danger 保持可读对比度" },
-  { name: "destructive-active", light: "#F5655F", dark: "#FC8784", usage: "危险操作填充的按下状态；须与 fg-on-danger 保持可读对比度" },
-  { name: "destructive-subtle", light: "#FEF2F2", dark: "#450A0A", usage: "低强调错误背景" },
-  { name: "inverse-background", light: "var(--fg-default)", dark: "var(--fg-default)", usage: "工具提示等高对比度的反色填充" },
+  { name: "muted", light: neutralOptical[75], dark: neutralOptical[850], usage: "弱化容器、轨道和次要区域" },
+  { name: "accent", light: neutral[200], dark: neutral[600], usage: "次要按钮和强调背景" },
+  { name: "accent-subtlest", light: neutralOptical[85], dark: neutralOptical[775], usage: "最低强调度的重点背景；用于排队消息等弱化的临时容器" },
+  { name: "accent-subtle", light: neutralOptical[150], dark: neutralOptical[725], usage: "低强调度的重点背景；用于消息气泡等静态容器" },
+  { name: "accent-hover", light: neutralOptical[250], dark: neutralOptical[575], usage: "重点填充的悬停状态" },
+  { name: "accent-active", light: neutralOptical[350], dark: neutralOptical[550], usage: "重点填充的按下或展开状态" },
+  { name: "selection-background", light: neutral[300], dark: neutral[600], usage: "持久选中状态背景" },
+  { name: "destructive", light: danger[500], dark: danger[400], usage: "错误、删除和危险操作填充" },
+  { name: "destructive-hover", light: dangerOptical[450], dark: dangerOptical[375], usage: "危险操作填充的悬停状态；须与 fg-on-danger 保持可读对比度" },
+  { name: "destructive-active", light: dangerOptical[425], dark: dangerOptical[350], usage: "危险操作填充的按下状态；须与 fg-on-danger 保持可读对比度" },
+  { name: "destructive-subtle", light: danger[50], dark: danger[950], usage: "低强调错误背景" },
+  { name: "inverse-background", light: "var(--fg-default)", dark: "var(--fg-default)", usage: "工具提示和中性高强调操作的反色填充" },
+  { name: "inverse-background-hover", light: neutral[800], dark: neutral[200], usage: "中性高强调操作的悬停状态；不跟随品牌主题色" },
+  { name: "inverse-background-active", light: neutral[700], dark: neutral[300], usage: "中性高强调操作的按下或展开状态；不跟随品牌主题色" },
 ];
 
 export const boundaryColorTokens = [
   { name: "border", light: "rgb(23 23 23 / 0.12)", dark: "rgb(245 245 245 / 0.12)", usage: "普通分隔线和结构边界" },
-  { name: "input", light: "#E5E5E5", dark: "#404040", usage: "输入和选择控件的静止边界" },
+  { name: "input", light: neutral[200], dark: neutral[700], usage: "输入和选择控件的静止边界" },
   { name: "input-hover", light: "rgb(23 23 23 / 0.24)", dark: "rgb(245 245 245 / 0.24)", usage: "输入和选择控件的悬停边界" },
-  { name: "ring", light: "#E5E5E5", dark: "#404040", usage: "非焦点装饰环" },
+  { name: "ring", light: neutral[200], dark: neutral[700], usage: "非焦点装饰环" },
   { name: "focus-ring", light: "#6B97FF", dark: "#6B97FF", usage: "全局键盘焦点指示器；与品牌色保持独立" },
 ];
 
@@ -57,7 +66,7 @@ export const compatibilityColorTokens = [
   { name: "foreground", light: "var(--fg-default)", dark: "var(--fg-default)", usage: "默认前景" },
   { name: "card", light: "var(--surface-raised)", dark: "var(--surface-raised)", usage: "静态容器背景" },
   { name: "card-foreground", light: "var(--fg-default)", dark: "var(--fg-default)", usage: "卡片默认前景" },
-  { name: "muted-foreground", light: "#737373", dark: "#A3A3A3", usage: "旧版弱化内容；新组件应选择明确的内容强调层级" },
+  { name: "muted-foreground", light: neutral[500], dark: neutral[400], usage: "旧版弱化内容；新组件应选择明确的内容强调层级" },
   { name: "accent-foreground", light: "var(--fg-default)", dark: "var(--fg-default)", usage: "重点填充上的前景" },
   { name: "selected", light: "var(--selection-background)", dark: "var(--selection-background)", usage: "选中背景" },
   { name: "brand-foreground", light: "var(--fg-on-brand)", dark: "var(--fg-on-brand)", usage: "品牌色填充上的前景" },
@@ -74,8 +83,8 @@ export const colorTokens = [
 ];
 
 export const supportColorTokens = [
-  { name: "checker-a", light: "#BBBBBB", dark: "#1F1F1F", usage: "透明色棋盘格深色块" },
-  { name: "checker-b", light: "#FFFFFF", dark: "#2A2A2A", usage: "透明色棋盘格浅色块" },
+  { name: "checker-a", light: neutralOptical[350], dark: neutralOptical[840], usage: "透明色棋盘格深色块" },
+  { name: "checker-b", light: neutral[0], dark: neutralOptical[770], usage: "透明色棋盘格浅色块" },
 ];
 
 export const interactionOverlayRgb = {
@@ -84,11 +93,11 @@ export const interactionOverlayRgb = {
 };
 
 export const surfaceTokens = [
-  { name: "base", light: "#FAFAFA", dark: "#171717", usage: "应用的最低承载面；用于页面和应用画布" },
-  { name: "raised", light: "#FCFCFC", dark: "#1E1E1E", usage: "相对基底轻微抬升；用于工具区和低强调容器" },
-  { name: "floating", light: "#FFFFFF", dark: "#252525", usage: "脱离普通文档流；用于菜单、下拉菜单和弹出框" },
-  { name: "overlay", light: "#FFFFFF", dark: "#333333", usage: "位于遮罩或主要内容之上；用于对话框、抽屉和侧滑面板" },
-  { name: "top", light: "#FFFFFF", dark: "#414141", usage: "最高临时承载面；用于模态框内的下拉菜单和工具提示" },
+  { name: "base", light: neutral[50], dark: neutral[900], usage: "应用的最低承载面；用于页面和应用画布" },
+  { name: "raised", light: neutralOptical[25], dark: neutralOptical[850], usage: "相对基底轻微抬升；用于工具区和低强调容器" },
+  { name: "floating", light: neutral[0], dark: neutralOptical[805], usage: "脱离普通文档流；用于菜单、下拉菜单和弹出框" },
+  { name: "overlay", light: neutral[0], dark: neutralOptical[750], usage: "位于遮罩或主要内容之上；用于对话框、抽屉和侧滑面板" },
+  { name: "top", light: neutral[0], dark: neutralOptical[690], usage: "最高临时承载面；用于模态框内的下拉菜单和工具提示" },
 ];
 
 const lightShadowColor = "rgb(0 0 0 / 0.06)";
