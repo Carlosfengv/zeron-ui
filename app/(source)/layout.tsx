@@ -81,7 +81,7 @@ const messages = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.zerondesign.com"),
+  metadataBase: new URL("https://zeron-ui.vercel.app"),
   title: "Zeron Design",
   description: "Open Source UI components created by Zeron Design",
 };

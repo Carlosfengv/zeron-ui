@@ -351,7 +351,7 @@
       "title": "Surface Context",
       "description": "React context that carries the current semantic substrate role through nested and portaled content.",
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surface-classes.json"
+        "https://zeron-ui.vercel.app/r/surface-classes.json"
       ],
       "files": [
         {
@@ -393,10 +393,10 @@
       "title": "Elevated",
       "description": "Semantic elevation primitive that resolves a Surface role, applies an independent Shadow role, and re-provides the substrate to descendants.",
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/surface-context.json",
-        "https://www.zerondesign.com/r/surface-classes.json"
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/surface-classes.json"
       ],
       "files": [
         {
@@ -424,7 +424,7 @@
         }
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json"
+        "https://zeron-ui.vercel.app/r/surfaces.json"
       ]
     },
     {
@@ -466,7 +466,7 @@
         "@hugeicons-pro/core-duotone-rounded"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/icon-context.json"
+        "https://zeron-ui.vercel.app/r/icon-context.json"
       ],
       "files": [
         {
@@ -523,8 +523,8 @@
       "title": "useMergeSplitBlocks",
       "description": "React hook + renderer for the selected-background merge/split animation. When one row bridges or splits two contiguous selected runs, their inner edges glide together (or apart) and swap to a single block, instead of one block spring-growing over the union.",
       "registryDependencies": [
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json"
       ],
       "files": [
         {
@@ -544,12 +544,12 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json"
       ],
       "files": [
         {
@@ -569,14 +569,14 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json",
-        "https://www.zerondesign.com/r/use-merge-split.json",
-        "https://www.zerondesign.com/r/button.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json",
+        "https://zeron-ui.vercel.app/r/use-merge-split.json",
+        "https://zeron-ui.vercel.app/r/button.json"
       ],
       "files": [
         {
@@ -595,9 +595,9 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json"
       ],
       "files": [
         {
@@ -616,10 +616,10 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/popover.json",
-        "https://www.zerondesign.com/r/select.json"
+        "https://zeron-ui.vercel.app/r/popover.json",
+        "https://zeron-ui.vercel.app/r/select.json"
       ],
       "files": [
         {
@@ -643,9 +643,9 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/icon-context.json"
+        "https://zeron-ui.vercel.app/r/icon-context.json"
       ],
       "files": [
         {
@@ -666,10 +666,10 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json"
       ],
       "files": [
         {
@@ -703,19 +703,19 @@
         "@tanstack/react-table"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/badge.json",
-        "https://www.zerondesign.com/r/button.json",
-        "https://www.zerondesign.com/r/checkbox.json",
-        "https://www.zerondesign.com/r/checkbox-group.json",
-        "https://www.zerondesign.com/r/dropdown.json",
-        "https://www.zerondesign.com/r/input.json",
-        "https://www.zerondesign.com/r/popover.json",
-        "https://www.zerondesign.com/r/select.json",
-        "https://www.zerondesign.com/r/table.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/checkbox.json",
+        "https://zeron-ui.vercel.app/r/checkbox-group.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/popover.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/table.json"
       ],
       "files": [
         {
@@ -739,20 +739,20 @@
         "sonner"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/surface-context.json",
-        "https://www.zerondesign.com/r/surface-classes.json",
-        "https://www.zerondesign.com/r/portal-container-context.json",
-        "https://www.zerondesign.com/r/badge.json",
-        "https://www.zerondesign.com/r/button.json",
-        "https://www.zerondesign.com/r/checkbox.json",
-        "https://www.zerondesign.com/r/dialog.json",
-        "https://www.zerondesign.com/r/dropdown.json",
-        "https://www.zerondesign.com/r/input.json",
-        "https://www.zerondesign.com/r/kbd.json",
-        "https://www.zerondesign.com/r/select.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/surface-classes.json",
+        "https://zeron-ui.vercel.app/r/portal-container-context.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/checkbox.json",
+        "https://zeron-ui.vercel.app/r/dialog.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/kbd.json",
+        "https://zeron-ui.vercel.app/r/select.json"
       ],
       "files": [
         {
@@ -897,16 +897,16 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/surface-context.json",
-        "https://www.zerondesign.com/r/surface-classes.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json",
-        "https://www.zerondesign.com/r/elevated.json",
-        "https://www.zerondesign.com/r/portal-container-context.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/surface-classes.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json",
+        "https://zeron-ui.vercel.app/r/elevated.json",
+        "https://zeron-ui.vercel.app/r/portal-container-context.json"
       ],
       "files": [
         {
@@ -931,7 +931,7 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils"
       ],
       "files": [
@@ -951,14 +951,14 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/checkbox.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json",
-        "https://www.zerondesign.com/r/use-merge-split.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/checkbox.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json",
+        "https://zeron-ui.vercel.app/r/use-merge-split.json"
       ],
       "files": [
         {
@@ -978,13 +978,13 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/surface-context.json",
-        "https://www.zerondesign.com/r/surface-classes.json",
-        "https://www.zerondesign.com/r/portal-container-context.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/surface-classes.json",
+        "https://zeron-ui.vercel.app/r/portal-container-context.json"
       ],
       "files": [
         {
@@ -1004,11 +1004,11 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json"
       ],
       "files": [
         {
@@ -1028,15 +1028,15 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/surface-context.json",
-        "https://www.zerondesign.com/r/surface-classes.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/button.json",
-        "https://www.zerondesign.com/r/portal-container-context.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/surface-classes.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/portal-container-context.json"
       ],
       "files": [
         {
@@ -1056,12 +1056,12 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/surface-context.json",
-        "https://www.zerondesign.com/r/surface-classes.json",
-        "https://www.zerondesign.com/r/portal-container-context.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/surface-classes.json",
+        "https://zeron-ui.vercel.app/r/portal-container-context.json"
       ],
       "files": [
         {
@@ -1080,9 +1080,9 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json"
       ],
       "files": [
         {
@@ -1098,9 +1098,9 @@
       "title": "Kbd",
       "description": "Compact keycaps and shortcut groups for keyboard commands and interaction hints.",
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json"
       ],
       "files": [
         {
@@ -1119,11 +1119,11 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json"
       ],
       "files": [
         {
@@ -1143,13 +1143,13 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json",
-        "https://www.zerondesign.com/r/button.json",
-        "https://www.zerondesign.com/r/input.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/input.json"
       ],
       "files": [
         {
@@ -1168,16 +1168,16 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/surface-context.json",
-        "https://www.zerondesign.com/r/surface-classes.json",
-        "https://www.zerondesign.com/r/file-thumbnail.json",
-        "https://www.zerondesign.com/r/button.json",
-        "https://www.zerondesign.com/r/tooltip.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/surface-classes.json",
+        "https://zeron-ui.vercel.app/r/file-thumbnail.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json"
       ],
       "files": [
         {
@@ -1196,9 +1196,9 @@
         "pdfjs-dist"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json"
       ],
       "files": [
         {
@@ -1217,12 +1217,12 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/use-touch-primary.json",
-        "https://www.zerondesign.com/r/file-thumbnail.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/use-touch-primary.json",
+        "https://zeron-ui.vercel.app/r/file-thumbnail.json"
       ],
       "files": [
         {
@@ -1242,12 +1242,12 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
-        "https://www.zerondesign.com/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json"
       ],
       "files": [
         {
@@ -1267,9 +1267,9 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json"
+        "https://zeron-ui.vercel.app/r/springs.json"
       ],
       "files": [
         {
@@ -1288,10 +1288,10 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json"
       ],
       "files": [
         {
@@ -1310,12 +1310,12 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json"
       ],
       "files": [
         {
@@ -1335,10 +1335,10 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json"
       ],
       "files": [
         {
@@ -1357,10 +1357,10 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json"
       ],
       "files": [
         {
@@ -1400,13 +1400,13 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
-        "https://www.zerondesign.com/r/badge.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json"
       ],
       "files": [
         {
@@ -1425,7 +1425,7 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils"
       ],
       "files": [
@@ -1463,10 +1463,10 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/use-touch-primary.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/use-touch-primary.json"
       ],
       "files": [
         {
@@ -1487,16 +1487,16 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/surface-context.json",
-        "https://www.zerondesign.com/r/surface-classes.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json",
-        "https://www.zerondesign.com/r/elevated.json",
-        "https://www.zerondesign.com/r/portal-container-context.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/surface-classes.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json",
+        "https://zeron-ui.vercel.app/r/elevated.json",
+        "https://zeron-ui.vercel.app/r/portal-container-context.json"
       ],
       "files": [
         {
@@ -1516,11 +1516,11 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/portal-container-context.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/portal-container-context.json"
       ],
       "files": [
         {
@@ -1540,12 +1540,12 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/badge.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/badge.json"
       ],
       "files": [
         {
@@ -1583,17 +1583,17 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/surface-context.json",
-        "https://www.zerondesign.com/r/surface-classes.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json",
-        "https://www.zerondesign.com/r/elevated.json",
-        "https://www.zerondesign.com/r/slider.json",
-        "https://www.zerondesign.com/r/portal-container-context.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/surface-classes.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json",
+        "https://zeron-ui.vercel.app/r/elevated.json",
+        "https://zeron-ui.vercel.app/r/slider.json",
+        "https://zeron-ui.vercel.app/r/portal-container-context.json"
       ],
       "files": [
         {
@@ -1609,7 +1609,7 @@
       "title": "App Shell",
       "description": "Composable application frame for sidebar, header, and main content.",
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils"
       ],
       "files": [
@@ -1629,9 +1629,9 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
-        "https://www.zerondesign.com/r/nav-item.json",
-        "https://www.zerondesign.com/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
         "utils"
       ],
       "files": [
@@ -1651,11 +1651,11 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/use-proximity-hover.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/use-proximity-hover.json"
       ],
       "files": [
         {
@@ -1674,11 +1674,11 @@
         "@base-ui/react"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/tooltip.json",
-        "https://www.zerondesign.com/r/nav-menu.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json"
       ],
       "files": [
         {
@@ -1698,16 +1698,16 @@
         "framer-motion"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/springs.json",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/surface-context.json",
-        "https://www.zerondesign.com/r/surface-classes.json",
-        "https://www.zerondesign.com/r/icon-context.json",
-        "https://www.zerondesign.com/r/button.json",
-        "https://www.zerondesign.com/r/scroll-area.json",
-        "https://www.zerondesign.com/r/mobile-drawer.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/surface-classes.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/scroll-area.json",
+        "https://zeron-ui.vercel.app/r/mobile-drawer.json"
       ],
       "files": [
         {
@@ -1723,9 +1723,9 @@
       "title": "Sidebar Identity Row",
       "description": "Composable sidebar identity row with avatar, primary and secondary text, and trailing content.",
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/button.json"
+        "https://zeron-ui.vercel.app/r/button.json"
       ],
       "files": [
         {
@@ -1744,11 +1744,11 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "https://www.zerondesign.com/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "utils",
-        "https://www.zerondesign.com/r/shape-context.json",
-        "https://www.zerondesign.com/r/surface-context.json",
-        "https://www.zerondesign.com/r/surface-classes.json"
+        "https://zeron-ui.vercel.app/r/shape-context.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/surface-classes.json"
       ],
       "files": [
         {

@@ -7,10 +7,10 @@
     "framer-motion"
   ],
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils",
-    "https://www.zerondesign.com/r/springs.json",
-    "https://www.zerondesign.com/r/use-proximity-hover.json"
+    "https://zeron-ui.vercel.app/r/springs.json",
+    "https://zeron-ui.vercel.app/r/use-proximity-hover.json"
   ],
   "files": [
     {

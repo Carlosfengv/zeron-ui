@@ -7,9 +7,9 @@
     "pdfjs-dist"
   ],
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils",
-    "https://www.zerondesign.com/r/shape-context.json"
+    "https://zeron-ui.vercel.app/r/shape-context.json"
   ],
   "files": [
     {

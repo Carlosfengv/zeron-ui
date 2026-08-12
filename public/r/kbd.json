@@ -4,9 +4,9 @@
   "title": "Kbd",
   "description": "Compact keycaps and shortcut groups for keyboard commands and interaction hints.",
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils",
-    "https://www.zerondesign.com/r/shape-context.json"
+    "https://zeron-ui.vercel.app/r/shape-context.json"
   ],
   "files": [
     {

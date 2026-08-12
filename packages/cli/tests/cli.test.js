@@ -66,7 +66,7 @@ test("maps add to the pinned shadcn command", async () => {
   assert.equal(status, 0);
   assert.deepEqual(invocation.args, [
     "add",
-    "https://www.zerondesign.com/r/button.json",
+    "https://zeron-ui.vercel.app/r/button.json",
     "--cwd",
     cwd,
     "--yes",

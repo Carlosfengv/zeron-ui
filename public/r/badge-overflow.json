@@ -7,10 +7,10 @@
     "@base-ui/react"
   ],
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils",
-    "https://www.zerondesign.com/r/popover.json",
-    "https://www.zerondesign.com/r/select.json"
+    "https://zeron-ui.vercel.app/r/popover.json",
+    "https://zeron-ui.vercel.app/r/select.json"
   ],
   "files": [
     {

@@ -4,7 +4,7 @@
   "title": "App Shell",
   "description": "Composable application frame for sidebar, header, and main content.",
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils"
   ],
   "files": [

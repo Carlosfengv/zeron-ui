@@ -46,7 +46,7 @@ describe("i18n production smoke", () => {
       const englishHtml = await english.text();
       expect(english.status).toBe(200);
       expect(englishHtml).toContain('<html lang="en"');
-      expect(englishHtml).toContain('<link rel="canonical" href="https://www.zerondesign.com/docs/button"');
+      expect(englishHtml).toContain('<link rel="canonical" href="https://zeron-ui.vercel.app/docs/button"');
       expect(englishHtml).toContain('hrefLang="en"');
       expect(englishHtml).toContain('hrefLang="zh-CN"');
 
@@ -54,7 +54,7 @@ describe("i18n production smoke", () => {
       const chineseHtml = await chinese.text();
       expect(chinese.status).toBe(200);
       expect(chineseHtml).toContain('<html lang="zh-CN"');
-      expect(chineseHtml).toContain('<link rel="canonical" href="https://www.zerondesign.com/zh-cn/docs/button"');
+      expect(chineseHtml).toContain('<link rel="canonical" href="https://zeron-ui.vercel.app/zh-cn/docs/button"');
       expect(chineseHtml).toContain("基础用法");
       expect(chineseHtml).toContain("自定义外观");
       expect(chineseHtml).toContain("语言");
@@ -86,7 +86,7 @@ describe("i18n production smoke", () => {
 
       const robots = await fetch(`${origin}/robots.txt`);
       expect(robots.status).toBe(200);
-      expect(await robots.text()).toContain("Sitemap: https://www.zerondesign.com/sitemap.xml");
+      expect(await robots.text()).toContain("Sitemap: https://zeron-ui.vercel.app/sitemap.xml");
     } finally {
       await stop(server);
     }

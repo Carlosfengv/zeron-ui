@@ -52,7 +52,7 @@ const [copyCount, setCopyCount] = useState(0);
 
 <InputCopy
   label="Share link"
-  value="https://zerondesign.com/r/input-copy"
+  value="https://zeron-ui.vercel.app/r/input-copy"
   onCopy={() => setCopyCount((count) => count + 1)}
 />
 
@@ -139,7 +139,7 @@ export default function InputCopyDoc() {
           <div className="w-72 flex flex-col gap-2">
             <InputCopy
               label="Share link"
-              value="https://zerondesign.com/r/input-copy"
+              value="https://zeron-ui.vercel.app/r/input-copy"
               onCopy={() => setCopyCount((count) => count + 1)}
             />
             <p className="text-label text-fg-muted px-1">

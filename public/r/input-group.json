@@ -8,13 +8,13 @@
     "class-variance-authority"
   ],
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils",
-    "https://www.zerondesign.com/r/shape-context.json",
-    "https://www.zerondesign.com/r/icon-context.json",
-    "https://www.zerondesign.com/r/use-proximity-hover.json",
-    "https://www.zerondesign.com/r/button.json",
-    "https://www.zerondesign.com/r/input.json"
+    "https://zeron-ui.vercel.app/r/shape-context.json",
+    "https://zeron-ui.vercel.app/r/icon-context.json",
+    "https://zeron-ui.vercel.app/r/use-proximity-hover.json",
+    "https://zeron-ui.vercel.app/r/button.json",
+    "https://zeron-ui.vercel.app/r/input.json"
   ],
   "files": [
     {

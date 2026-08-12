@@ -108,7 +108,7 @@ export default function DocsIndex() {
         <p className="text-body text-fg-muted">
           {t("registry")}
         </p>
-        <InstallCommand value="npx shadcn@latest add https://www.zerondesign.com/r/button.json" compact />
+        <InstallCommand value="npx shadcn@latest add https://zeron-ui.vercel.app/r/button.json" compact />
         <p className="text-body text-fg-muted">
           {t("dependencies")}
         </p>

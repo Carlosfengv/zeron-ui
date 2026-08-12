@@ -7,10 +7,10 @@
     "@base-ui/react"
   ],
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils",
-    "https://www.zerondesign.com/r/shape-context.json",
-    "https://www.zerondesign.com/r/use-touch-primary.json"
+    "https://zeron-ui.vercel.app/r/shape-context.json",
+    "https://zeron-ui.vercel.app/r/use-touch-primary.json"
   ],
   "files": [
     {

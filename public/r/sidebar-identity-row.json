@@ -4,9 +4,9 @@
   "title": "Sidebar Identity Row",
   "description": "Composable sidebar identity row with avatar, primary and secondary text, and trailing content.",
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils",
-    "https://www.zerondesign.com/r/button.json"
+    "https://zeron-ui.vercel.app/r/button.json"
   ],
   "files": [
     {

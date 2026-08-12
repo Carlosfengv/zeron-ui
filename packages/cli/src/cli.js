@@ -24,7 +24,7 @@ Options:
   --yes             Skip confirmation prompts
   --path <dir>      Override the component output path
   --dry-run         Inspect resolved items without writing files
-  --registry <url>  Registry base URL. Default: https://www.zerondesign.com/r
+  --registry <url>  Registry base URL. Default: ${DEFAULT_REGISTRY_URL}
   --json            Emit JSON from list
   -h, --help        Show help
   -v, --version     Show version

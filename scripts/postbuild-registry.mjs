@@ -8,7 +8,7 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const REGISTRY_DIR = new URL("../public/r", import.meta.url).pathname;
-export const BASE_URL = "https://www.zerondesign.com/r";
+export const BASE_URL = "https://zeron-ui.vercel.app/r";
 
 // All custom items in registry.json. "utils" intentionally stays a bare
 // dependency so the shadcn CLI resolves it from its default registry.

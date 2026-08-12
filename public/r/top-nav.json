@@ -7,11 +7,11 @@
     "class-variance-authority"
   ],
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils",
-    "https://www.zerondesign.com/r/shape-context.json",
-    "https://www.zerondesign.com/r/surface-context.json",
-    "https://www.zerondesign.com/r/surface-classes.json"
+    "https://zeron-ui.vercel.app/r/shape-context.json",
+    "https://zeron-ui.vercel.app/r/surface-context.json",
+    "https://zeron-ui.vercel.app/r/surface-classes.json"
   ],
   "files": [
     {

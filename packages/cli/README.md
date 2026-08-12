@@ -41,7 +41,7 @@ shared utilities, CSS, and design tokens.
 --registry <url>  Use another Registry base URL
 ```
 
-The default Registry is `https://www.zerondesign.com/r`.
+The default Registry is `https://zeron-ui.vercel.app/r`.
 
 ## License
 

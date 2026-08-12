@@ -7,12 +7,12 @@
     "framer-motion"
   ],
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils",
-    "https://www.zerondesign.com/r/springs.json",
-    "https://www.zerondesign.com/r/shape-context.json",
-    "https://www.zerondesign.com/r/use-touch-primary.json",
-    "https://www.zerondesign.com/r/file-thumbnail.json"
+    "https://zeron-ui.vercel.app/r/springs.json",
+    "https://zeron-ui.vercel.app/r/shape-context.json",
+    "https://zeron-ui.vercel.app/r/use-touch-primary.json",
+    "https://zeron-ui.vercel.app/r/file-thumbnail.json"
   ],
   "files": [
     {

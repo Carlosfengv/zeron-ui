@@ -1,4 +1,4 @@
-export const DEFAULT_REGISTRY_URL = "https://www.zerondesign.com/r";
+export const DEFAULT_REGISTRY_URL = "https://zeron-ui.vercel.app/r";
 
 const COMPONENT_NAME_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 

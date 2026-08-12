@@ -34,7 +34,7 @@
     "cli"
   ],
   "license": "MIT",
-  "homepage": "https://www.zerondesign.com",
+  "homepage": "https://zeron-ui.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Carlosfengv/zeron-ui.git",

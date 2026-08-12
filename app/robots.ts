@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = "https://www.zerondesign.com";
+const SITE_URL = "https://zeron-ui.vercel.app";
 
 // Aggressive AI/scraper crawlers that ignore crawl-rate norms.
 // Well-behaved bots honor this; abusive ones won't — Vercel Firewall is the real enforcement.

@@ -4,7 +4,7 @@
   "title": "Shape Context",
   "description": "React context provider for runtime shape variant switching (pill or rounded). Controls border-radius across all Zeron Design components.",
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json"
+    "https://zeron-ui.vercel.app/r/surfaces.json"
   ],
   "files": [
     {

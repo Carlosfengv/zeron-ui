@@ -7,19 +7,19 @@
     "@tanstack/react-table"
   ],
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils",
-    "https://www.zerondesign.com/r/shape-context.json",
-    "https://www.zerondesign.com/r/icon-context.json",
-    "https://www.zerondesign.com/r/badge.json",
-    "https://www.zerondesign.com/r/button.json",
-    "https://www.zerondesign.com/r/checkbox.json",
-    "https://www.zerondesign.com/r/checkbox-group.json",
-    "https://www.zerondesign.com/r/dropdown.json",
-    "https://www.zerondesign.com/r/input.json",
-    "https://www.zerondesign.com/r/popover.json",
-    "https://www.zerondesign.com/r/select.json",
-    "https://www.zerondesign.com/r/table.json"
+    "https://zeron-ui.vercel.app/r/shape-context.json",
+    "https://zeron-ui.vercel.app/r/icon-context.json",
+    "https://zeron-ui.vercel.app/r/badge.json",
+    "https://zeron-ui.vercel.app/r/button.json",
+    "https://zeron-ui.vercel.app/r/checkbox.json",
+    "https://zeron-ui.vercel.app/r/checkbox-group.json",
+    "https://zeron-ui.vercel.app/r/dropdown.json",
+    "https://zeron-ui.vercel.app/r/input.json",
+    "https://zeron-ui.vercel.app/r/popover.json",
+    "https://zeron-ui.vercel.app/r/select.json",
+    "https://zeron-ui.vercel.app/r/table.json"
   ],
   "files": [
     {

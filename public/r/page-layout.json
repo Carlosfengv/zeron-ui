@@ -7,9 +7,9 @@
     "class-variance-authority"
   ],
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
-    "https://www.zerondesign.com/r/nav-item.json",
-    "https://www.zerondesign.com/r/nav-menu.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/nav-item.json",
+    "https://zeron-ui.vercel.app/r/nav-menu.json",
     "utils"
   ],
   "files": [

@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: "site" });
 
   return {
-    metadataBase: new URL("https://www.zerondesign.com"),
+    metadataBase: new URL("https://zeron-ui.vercel.app"),
     title: t("title"),
     description: t("description"),
     icons: {

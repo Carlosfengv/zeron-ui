@@ -8,9 +8,9 @@
     "@base-ui/react"
   ],
   "registryDependencies": [
-    "https://www.zerondesign.com/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surfaces.json",
     "utils",
-    "https://www.zerondesign.com/r/springs.json"
+    "https://zeron-ui.vercel.app/r/springs.json"
   ],
   "files": [
     {

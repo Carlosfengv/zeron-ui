@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { AppLocale } from "@/i18n/routing";
 
-export const SITE_URL = "https://www.zerondesign.com";
+export const SITE_URL = "https://zeron-ui.vercel.app";
 
 export function localizedPathname(pathname: string, locale: AppLocale) {
   return locale === "zh-CN" ? `/zh-cn${pathname === "/" ? "" : pathname}` : pathname;
