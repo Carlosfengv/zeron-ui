@@ -37,6 +37,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarFloatingTrigger,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -111,9 +112,11 @@ function ResponsiveSidebarTrigger() {
 function WorkspaceSwitcher({
   value,
   onChange,
+  showSidebarTrigger = true,
 }: {
   value: string;
   onChange: (id: string) => void;
+  showSidebarTrigger?: boolean;
 }) {
   const ChevronDown = useIcon("chevron-down");
   const current = organizations.find((organization) => organization.id === value) ?? organizations[0];
@@ -131,7 +134,12 @@ function WorkspaceSwitcher({
             />
           }
         />
-        <DropdownContent checkedIndex={organizations.findIndex((organization) => organization.id === value)}>
+        <DropdownContent
+          align="center"
+          alignOffset={20}
+          checkedIndex={organizations.findIndex((organization) => organization.id === value)}
+          className="!w-60 !min-w-60 !max-w-60"
+        >
           {organizations.map((organization, index) => (
             <MenuItem
               key={organization.id}
@@ -143,7 +151,7 @@ function WorkspaceSwitcher({
           ))}
         </DropdownContent>
       </DropdownMenu>
-      <ResponsiveSidebarTrigger />
+      {showSidebarTrigger && <ResponsiveSidebarTrigger />}
     </div>
   );
 }
@@ -190,9 +198,11 @@ function SidebarSearchTrigger({ onOpen }: { onOpen: () => void }) {
 function NavigationItemView({
   item,
   onSelect,
+  onNavigate,
 }: {
   item: NavigationItem;
   onSelect: (value: string) => void;
+  onNavigate?: () => void;
 }) {
   const Icon = item.icon;
   return (
@@ -200,7 +210,10 @@ function NavigationItemView({
       <NavItemTrigger
         render={<a href={item.value} />}
         className="h-control-md gap-1 px-1.5 text-body data-[active=true]:text-fg-brand max-xl:min-h-11"
-        onClick={() => onSelect(item.value)}
+        onClick={() => {
+          onSelect(item.value);
+          onNavigate?.();
+        }}
       >
         <NavItemLeading className="group-data-[active=true]/nav-item:text-fg-brand">
           <Icon size={16} strokeWidth={1.5} />
@@ -260,7 +273,10 @@ function AccountMenuTrigger({ actions }: { actions: AccountAction[] }) {
             />
         }
       />
-      <DropdownContent align="end">
+      <DropdownContent
+        align="center"
+        className="!w-60 !min-w-60 !max-w-60"
+      >
         {actions.map((action, index) => (
           <MenuItem
             key={action.id}
@@ -310,7 +326,33 @@ function RecentSessionsContent({
   );
 }
 
-function ZaiopsSidebar({ onSearchOpen }: { onSearchOpen: () => void }) {
+interface ZaiopsNavigationPanelProps {
+  activeNavigationValue: string;
+  accountActions: AccountAction[];
+  onNavigate?: () => void;
+  onOrganizationChange: (organizationId: string) => void;
+  onRetrySessions: () => void;
+  onSearchOpen: () => void;
+  onSelectNavigation: (value: string) => void;
+  organizationId: string;
+  sessions: Session[];
+  sessionsState: SessionState;
+  showSidebarTrigger?: boolean;
+}
+
+function ZaiopsNavigationPanel({
+  activeNavigationValue,
+  accountActions,
+  onNavigate,
+  onOrganizationChange,
+  onRetrySessions,
+  onSearchOpen,
+  onSelectNavigation,
+  organizationId,
+  sessions,
+  sessionsState,
+  showSidebarTrigger,
+}: ZaiopsNavigationPanelProps) {
   const Home = useIcon("home");
   const List = useIcon("list");
   const Check = useIcon("check-square");
@@ -318,10 +360,6 @@ function ZaiopsSidebar({ onSearchOpen }: { onSearchOpen: () => void }) {
   const Library = useIcon("square-library");
   const governanceLabelId = useId();
   const sessionsLabelId = useId();
-  const [organizationId, setOrganizationId] = useState(organizations[0].id);
-  const [activeNavigationValue, setActiveNavigationValue] = useState("#home");
-  const [sessionsState, setSessionsState] = useState<SessionState>("loading");
-  const [sessions, setSessions] = useState<Session[]>([]);
 
   const primaryItems = useMemo<NavigationItem[]>(() => [
     { value: "#home", label: "首页", icon: Home },
@@ -333,30 +371,14 @@ function ZaiopsSidebar({ onSearchOpen }: { onSearchOpen: () => void }) {
     { value: "#skills", label: "专家技能", icon: Brain },
     { value: "#knowledge", label: "知识库", icon: Library },
   ], [Brain, Check, Library]);
-  useEffect(() => {
-    const now = Date.now();
-    setSessions([
-      { id: "network", title: "使用 specialist-network - 新会话", updatedAt: new Date(now - 2 * 60_000).toISOString() },
-      { id: "storage", title: "在使用率最高的那台设备上，列出 / 目录下 top 20 大文件", updatedAt: new Date(now - 8 * 60_000).toISOString() },
-    ]);
-    setSessionsState("ready");
-  }, []);
-  const accountActions = useMemo<AccountAction[]>(() => [
-    { id: "profile", label: "账户设置", onSelect: () => undefined },
-    { id: "preferences", label: "偏好设置", onSelect: () => undefined },
-  ], []);
-
   return (
-    <Sidebar
-      width="260px"
-      mobileWidth="min(260px, calc(100vw - 24px))"
-      variant="sidebar"
-      collapsible="offcanvas"
-      ariaLabel="ZAIops 应用导航"
-      className="static h-full"
-    >
+    <>
       <SidebarHeader className="space-y-1 px-2 py-1.5">
-        <WorkspaceSwitcher value={organizationId} onChange={setOrganizationId} />
+        <WorkspaceSwitcher
+          value={organizationId}
+          onChange={onOrganizationChange}
+          showSidebarTrigger={showSidebarTrigger}
+        />
         <SidebarSearchTrigger onOpen={onSearchOpen} />
       </SidebarHeader>
 
@@ -372,7 +394,8 @@ function ZaiopsSidebar({ onSearchOpen }: { onSearchOpen: () => void }) {
                 <NavigationItemView
                   key={item.value}
                   item={item}
-                  onSelect={setActiveNavigationValue}
+                  onSelect={onSelectNavigation}
+                  onNavigate={onNavigate}
                 />
               ))}
             </NavMenu>
@@ -391,7 +414,8 @@ function ZaiopsSidebar({ onSearchOpen }: { onSearchOpen: () => void }) {
                 <NavigationItemView
                   key={item.value}
                   item={item}
-                  onSelect={setActiveNavigationValue}
+                  onSelect={onSelectNavigation}
+                  onNavigate={onNavigate}
                 />
               ))}
             </NavMenu>
@@ -404,7 +428,7 @@ function ZaiopsSidebar({ onSearchOpen }: { onSearchOpen: () => void }) {
             <RecentSessionsContent
               sessions={sessions}
               state={sessionsState}
-              onRetry={() => setSessionsState("ready")}
+              onRetry={onRetrySessions}
             />
           </SidebarGroupContent>
         </SidebarGroup>
@@ -413,6 +437,21 @@ function ZaiopsSidebar({ onSearchOpen }: { onSearchOpen: () => void }) {
       <SidebarFooter className="px-2 pb-[max(0.375rem,env(safe-area-inset-bottom))] pt-1.5">
         <AccountMenuTrigger actions={accountActions} />
       </SidebarFooter>
+    </>
+  );
+}
+
+function ZaiopsSidebar(props: ZaiopsNavigationPanelProps) {
+  return (
+    <Sidebar
+      width="260px"
+      mobileWidth="min(260px, calc(100vw - 24px))"
+      variant="sidebar"
+      collapsible="offcanvas"
+      ariaLabel="ZAIops 应用导航"
+      className="static h-full"
+    >
+      <ZaiopsNavigationPanel {...props} showSidebarTrigger />
       <SidebarRail />
     </Sidebar>
   );
@@ -426,18 +465,70 @@ function CompactOpenTrigger() {
 
 export function ZaiopsSidebarPreview() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [organizationId, setOrganizationId] = useState(organizations[0].id);
+  const [activeNavigationValue, setActiveNavigationValue] = useState("#home");
+  const [sessionsState, setSessionsState] = useState<SessionState>("loading");
+  const [sessions, setSessions] = useState<Session[]>([]);
   const Home = useIcon("home");
+  const accountActions = useMemo<AccountAction[]>(() => [
+    { id: "profile", label: "账户设置", onSelect: () => undefined },
+    { id: "preferences", label: "偏好设置", onSelect: () => undefined },
+  ], []);
+
+  useEffect(() => {
+    const now = Date.now();
+    setSessions([
+      { id: "network", title: "使用 specialist-network - 新会话", updatedAt: new Date(now - 2 * 60_000).toISOString() },
+      { id: "storage", title: "在使用率最高的那台设备上，列出 / 目录下 top 20 大文件", updatedAt: new Date(now - 8 * 60_000).toISOString() },
+    ]);
+    setSessionsState("ready");
+  }, []);
 
   return (
     <SidebarProvider>
       <div className="w-full group-data-[fullscreen=true]/preview-content:h-full">
         <div className="relative flex h-[min(42rem,calc(100svh-8rem))] min-h-120 w-full overflow-hidden bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
-          <ZaiopsSidebar onSearchOpen={() => setSearchOpen(true)} />
+          <ZaiopsSidebar
+            activeNavigationValue={activeNavigationValue}
+            accountActions={accountActions}
+            onOrganizationChange={setOrganizationId}
+            onRetrySessions={() => setSessionsState("ready")}
+            onSearchOpen={() => setSearchOpen(true)}
+            onSelectNavigation={setActiveNavigationValue}
+            organizationId={organizationId}
+            sessions={sessions}
+            sessionsState={sessionsState}
+          />
           <PageLayout className="h-full min-w-0 flex-1">
             <PageHeader>
-              <PageHeaderContent icon={Home}>
-                <nav aria-label="Breadcrumb" className="text-body text-fg-muted">ZAIops / 巡检</nav>
-              </PageHeaderContent>
+              <div className="flex min-w-0 items-center gap-2">
+                <SidebarFloatingTrigger
+                  collapsedBehavior="offcanvas"
+                  label="展开侧边栏"
+                  contentClassName="h-[min(42rem,calc(100svh-6rem))] w-[260px] max-w-[calc(100vw-12px)] p-0"
+                  renderContent={({ close }) => (
+                    <ZaiopsNavigationPanel
+                      activeNavigationValue={activeNavigationValue}
+                      accountActions={accountActions}
+                      onNavigate={close}
+                      onOrganizationChange={setOrganizationId}
+                      onRetrySessions={() => setSessionsState("ready")}
+                      onSearchOpen={() => {
+                        close();
+                        setSearchOpen(true);
+                      }}
+                      onSelectNavigation={setActiveNavigationValue}
+                      organizationId={organizationId}
+                      sessions={sessions}
+                      sessionsState={sessionsState}
+                      showSidebarTrigger={false}
+                    />
+                  )}
+                />
+                <PageHeaderContent icon={Home}>
+                  <nav aria-label="Breadcrumb" className="text-body text-fg-muted">ZAIops / 巡检</nav>
+                </PageHeaderContent>
+              </div>
               <div className="xl:hidden"><CompactOpenTrigger /></div>
             </PageHeader>
             <PageContent>

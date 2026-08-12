@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupTrigger, SidebarHeader, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFloatingTrigger, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupTrigger, SidebarHeader, SidebarProvider, SidebarTrigger, type SidebarCollapsible } from "@/components/ui/sidebar";
 import { NavItem, NavItemContent, NavItemLabel, NavItemTrigger } from "@/components/ui/nav-item";
 import { NavMenu } from "@/components/ui/nav-menu";
 import { PageBody, PageContent, PageHeader, PageHeaderContent, PageLayout, PageSubnav, PageSubnavItem, PageSubnavList, PageTitle } from "@/components/ui/page-layout";
 import { ComponentPreview } from "@/docs/ComponentPreview";
 import { DocPage, DocSection } from "@/docs/DocPage";
+import { PlayField, PlaySelect, PlaySection, PlaygroundLayout, PlaygroundPanel } from "@/docs/playground";
 import { PropsTable, type PropDef } from "@/docs/PropsTable";
 import { ZaiopsSidebarPreview } from "@/docs/site/zaiops-sidebar-preview";
 import { useIcon } from "@/lib/icon-context";
@@ -40,6 +41,23 @@ const sidebarPageSections = {
   members: "Collaborators and roles",
   activity: "Recent project activity",
 } as const;
+
+const collapseModes: SidebarCollapsible[] = ["icon", "offcanvas", "none"];
+
+function buildCollapsePlaygroundCode(collapsible: SidebarCollapsible) {
+  return `<SidebarProvider>
+  <Sidebar collapsible="${collapsible}">...</Sidebar>
+  <PageLayout>
+    <PageHeader>
+      <SidebarFloatingTrigger
+        collapsedBehavior="offcanvas"
+        renderContent={({ close }) => <Navigation onNavigate={close} />}
+      />
+      <PageHeaderContent icon={Home}>...</PageHeaderContent>
+    </PageHeader>
+  </PageLayout>
+</SidebarProvider>`;
+}
 
 function SidebarPageLayoutPreview() {
   const [activeSection, setActiveSection] = useState<keyof typeof sidebarPageSections>("overview");
@@ -83,13 +101,103 @@ function SidebarPageLayoutPreview() {
   );
 }
 
+function SidebarCollapsePreview({ collapsible }: { collapsible: SidebarCollapsible }) {
+  const Home = useIcon("home");
+
+  return (
+    <SidebarProvider key={collapsible} defaultOpen>
+      <div className="flex h-80 w-full min-w-0 overflow-hidden">
+        <Sidebar collapsible={collapsible} className="relative !h-full">
+          <SidebarHeader className="flex items-center justify-between">
+            <span className="px-2 text-label group-data-[state=collapsed]/sidebar:hidden">Workspace</span>
+            {collapsible !== "none" && <SidebarTrigger label="Toggle playground sidebar" />}
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <NavMenu activeValue="projects">
+                  <NavItem value="projects">
+                    <NavItemTrigger tooltip="Projects">
+                      <NavItemContent><NavItemLabel>Projects</NavItemLabel></NavItemContent>
+                    </NavItemTrigger>
+                  </NavItem>
+                </NavMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+        <PageLayout className="h-full min-w-0 flex-1">
+          <PageHeader>
+            <div className="flex min-w-0 items-center gap-2">
+              <SidebarFloatingTrigger
+                collapsedBehavior={collapsible}
+                label="Expand playground sidebar"
+                renderContent={({ close }) => (
+                  <NavMenu activeValue="projects" aria-label="Playground navigation" className="p-1">
+                    <NavItem value="projects">
+                      <NavItemTrigger render={<a href="#projects" />} onClick={close}>
+                        <NavItemContent><NavItemLabel>Projects</NavItemLabel></NavItemContent>
+                      </NavItemTrigger>
+                    </NavItem>
+                    <NavItem value="activity">
+                      <NavItemTrigger render={<a href="#activity" />} onClick={close}>
+                        <NavItemContent><NavItemLabel>Activity</NavItemLabel></NavItemContent>
+                      </NavItemTrigger>
+                    </NavItem>
+                  </NavMenu>
+                )}
+              />
+              <PageHeaderContent icon={Home}>
+                <span className="text-body text-fg-muted">Workspace / Projects</span>
+              </PageHeaderContent>
+            </div>
+          </PageHeader>
+          <PageContent>
+            <PageBody className="p-4"><PageTitle className="text-title">Collapse playground</PageTitle></PageBody>
+          </PageContent>
+        </PageLayout>
+      </div>
+    </SidebarProvider>
+  );
+}
+
+function SidebarCollapsePlayground() {
+  const [collapsible, setCollapsible] = useState<SidebarCollapsible>("icon");
+  const randomize = () => {
+    setCollapsible(collapseModes[Math.floor(Math.random() * collapseModes.length)]);
+  };
+  const controls = (
+    <PlaygroundPanel title="Sidebar" onShuffle={randomize}>
+      <PlaySection label="Behavior" />
+      <PlayField label="Collapse mode">
+        <PlaySelect
+          value={collapsible}
+          onChange={(next) => setCollapsible(next as SidebarCollapsible)}
+          options={collapseModes.map((mode) => ({ value: mode, label: mode }))}
+        />
+      </PlayField>
+    </PlaygroundPanel>
+  );
+
+  return (
+    <PlaygroundLayout
+      controls={controls}
+      preview={
+        <ComponentPreview padding="none" code={buildCollapsePlaygroundCode(collapsible)}>
+          <SidebarCollapsePreview collapsible={collapsible} />
+        </ComponentPreview>
+      }
+    />
+  );
+}
+
 const zaiopsCode = `"use client";
 
 import { useState } from "react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarGroupLabel, SidebarHeader,
-  SidebarProvider, SidebarRail,
+  SidebarFloatingTrigger, SidebarProvider, SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavMenu } from "@/components/ui/nav-menu";
 import { SidebarIdentityAvatar, SidebarIdentityRow } from "@/components/ui/sidebar-identity-row";
@@ -181,7 +289,13 @@ export function ZaiopsSidebarPreview() {
 
           <PageLayout className="h-full min-w-0 flex-1">
             <PageHeader>
-              <PageHeaderContent>...</PageHeaderContent>
+              <SidebarFloatingTrigger
+                collapsedBehavior="offcanvas"
+                renderContent={({ close }) => (
+                  <ZaiopsNavigationPanel onNavigate={close} />
+                )}
+              />
+              <PageHeaderContent icon={Home}>...</PageHeaderContent>
             </PageHeader>
             <PageContent>
               <PageBody>
@@ -212,6 +326,12 @@ const groupProps: PropDef[] = [
   { name: "open", type: "boolean", description: "Controlled expanded state." },
   { name: "defaultOpen", type: "boolean", default: "true", description: "Initial expanded state for an uncontrolled collapsible group." },
   { name: "onOpenChange", type: "(open: boolean) => void", description: "Called when the group trigger expands or collapses the content." },
+];
+const floatingTriggerProps: PropDef[] = [
+  { name: "collapsedBehavior", type: '"offcanvas" | "icon" | "none"', default: '"offcanvas"', description: "Shows the relocated header trigger after an offcanvas Sidebar is collapsed." },
+  { name: "renderContent", type: "(controls: { close: () => void }) => ReactNode", description: "Renders the complete navigation inside the hover popover. Call close after an in-place navigation action." },
+  { name: "label", type: "string", default: '"Expand sidebar"', description: "Accessible label for the sidebar expand icon button." },
+  { name: "contentClassName", type: "string", description: "Optional classes for the navigation popover." },
 ];
 
 export default function SidebarDoc() {
@@ -246,9 +366,13 @@ export default function SidebarDoc() {
         </SidebarProvider>
       </ComponentPreview>
     </DocSection>
+    <DocSection title="Collapse playground">
+      <SidebarCollapsePlayground />
+    </DocSection>
     <DocSection title="ZAIops recipe"><ComponentPreview fullScreenable padding="none" code={zaiopsCode}><ZaiopsSidebarPreview /></ComponentPreview></DocSection>
     <DocSection title="Focus behavior"><p className="max-w-3xl text-body leading-5 text-fg-muted">On compact screens, closing the drawer restores the control that opened it. SidebarTrigger records that owner automatically; controlled or programmatic opens should call setActiveTrigger(owner) immediately before opening, or pass null to avoid restoring a stale trigger.</p></DocSection>
     <DocSection title="API Reference"><PropsTable props={props} /></DocSection>
     <DocSection title="API Reference — SidebarGroup"><PropsTable props={groupProps} /></DocSection>
+    <DocSection title="API Reference — SidebarFloatingTrigger"><PropsTable props={floatingTriggerProps} /></DocSection>
   </DocPage>;
 }

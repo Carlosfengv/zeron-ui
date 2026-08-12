@@ -24,6 +24,7 @@ import { useSurface, SurfaceProvider } from "@/lib/surface-context";
 import { resolveSurface, surfaceClasses } from "@/lib/surface-classes";
 import { useIcon } from "@/lib/icon-context";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MobileDrawer } from "@/components/ui/mobile-drawer";
 
@@ -385,8 +386,11 @@ export interface SidebarTriggerProps extends Omit<ComponentPropsWithoutRef<typeo
 
 const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
   ({ label = "Toggle sidebar", onClick, ...props }, forwardedRef) => {
-    const { isMobile, mobileOpen, toggle, setActiveTrigger } = useSidebar();
+    const { isMobile, mobileOpen, state, toggle, setActiveTrigger } = useSidebar();
     const MenuIcon = useIcon("menu");
+    const CollapseIcon = useIcon("chevrons-left");
+    const ExpandIcon = useIcon("chevrons-right");
+    const Icon = isMobile ? MenuIcon : state === "collapsed" ? ExpandIcon : CollapseIcon;
     return (
       <Button
         ref={forwardedRef}
@@ -404,13 +408,86 @@ const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
         }}
         {...props}
       >
-        <MenuIcon />
+        <Icon aria-hidden="true" strokeWidth={1.5} />
       </Button>
     );
   }
 );
 
 SidebarTrigger.displayName = "SidebarTrigger";
+
+export interface SidebarFloatingTriggerProps extends Omit<ComponentPropsWithoutRef<typeof Button>, "children"> {
+  /** The Sidebar collapse mode that exposes this trigger. */
+  collapsedBehavior?: SidebarCollapsible;
+  /** Accessible label for the collapsed-navigation trigger. */
+  label?: string;
+  /** Renders the complete navigation panel; call close() after an in-place navigation action. */
+  renderContent: (controls: { close: () => void }) => ReactNode;
+  /** Classes for the anchored navigation popover. */
+  contentClassName?: string;
+}
+
+const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTriggerProps>(
+  (
+    {
+      collapsedBehavior = "offcanvas",
+      contentClassName,
+      label = "Expand sidebar",
+      renderContent,
+      className,
+      onClick,
+      ...props
+    },
+    forwardedRef
+  ) => {
+    const { isMobile, state, toggle } = useSidebar();
+    const [open, setOpen] = useState(false);
+    const ExpandIcon = useIcon("chevrons-right");
+    const visible = !isMobile && state === "collapsed" && collapsedBehavior === "offcanvas";
+
+    useEffect(() => {
+      if (!visible) setOpen(false);
+    }, [visible]);
+
+    if (!visible) return null;
+
+    return (
+      <Popover trigger="hover" open={open} onOpenChange={setOpen}>
+        <PopoverTrigger
+          render={
+            <Button
+              ref={forwardedRef}
+              variant="tertiary"
+              size="icon-sm"
+              aria-label={label}
+              active={open}
+              className={className}
+              onClick={(event) => {
+                onClick?.(event);
+                if (event.defaultPrevented) return;
+                setOpen(false);
+                toggle();
+              }}
+              {...props}
+            >
+              <ExpandIcon aria-hidden="true" strokeWidth={1.5} />
+            </Button>
+          }
+        />
+        <PopoverContent
+          align="start"
+          side="bottom"
+          sideOffset={6}
+          className={cn("flex min-h-0 flex-col overflow-hidden", contentClassName)}
+        >
+          {renderContent({ close: () => setOpen(false) })}
+        </PopoverContent>
+      </Popover>
+    );
+  }
+);
+
+SidebarFloatingTrigger.displayName = "SidebarFloatingTrigger";
 
 export type SidebarRailProps = ComponentPropsWithoutRef<"button">;
 
@@ -599,6 +676,7 @@ export {
   SidebarProvider,
   Sidebar,
   SidebarTrigger,
+  SidebarFloatingTrigger,
   SidebarRail,
   SidebarHeader,
   SidebarContent,

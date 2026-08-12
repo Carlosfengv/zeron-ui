@@ -80,4 +80,12 @@ describe("shell and page-layout composition contract", () => {
     expect(docs).toContain('className="flex h-72 w-full min-w-0 overflow-hidden');
     expect(docs).not.toContain('className="flex h-72 overflow-hidden border border-border');
   });
+
+  it("offers a Sidebar playground for every supported collapse behavior", () => {
+    const docs = source("app/(source)/docs/sidebar/page.tsx");
+    expect(docs).toContain('const collapseModes: SidebarCollapsible[] = ["icon", "offcanvas", "none"]');
+    expect(docs).toContain("function SidebarCollapsePlayground()");
+    expect(docs).toContain("<SidebarFloatingTrigger");
+    expect(docs).toContain('<DocSection title="Collapse playground">');
+  });
 });

@@ -87,12 +87,30 @@ describe("sidebar implementation contract", () => {
     expect(zaiopsPreview).toContain("<SidebarIdentityRow");
     expect(zaiopsPreview).toContain('trailingPlacement="edge"');
     expect(zaiopsPreview).toContain("<DropdownTrigger");
+    expect(zaiopsPreview).toContain('alignOffset={20}');
+    expect(zaiopsPreview).toContain('className="!w-60 !min-w-60 !max-w-60"');
+    expect(zaiopsPreview).toContain('<DropdownContent\n        align="center"\n        className="!w-60 !min-w-60 !max-w-60"');
   });
 
   it("allows exactly one active ZAIops navigation item across menu groups", () => {
     expect(zaiopsPreview).toContain("const [activeNavigationValue, setActiveNavigationValue]");
     expect(zaiopsPreview).not.toContain("primaryActiveValue");
     expect(zaiopsPreview).not.toContain("governanceActiveValue");
+  });
+
+  it("provides hover navigation and a click-to-expand trigger for an offcanvas Sidebar", () => {
+    expect(sidebar).toContain("export interface SidebarFloatingTriggerProps");
+    expect(sidebar).toContain('collapsedBehavior = "offcanvas"');
+    expect(sidebar).toContain('state === "collapsed" && collapsedBehavior === "offcanvas"');
+    expect(sidebar).toContain('<Popover trigger="hover"');
+    expect(sidebar).toContain("toggle();");
+    expect(sidebar).toContain('useIcon("chevrons-right")');
+    expect(sidebar).toContain('useIcon("chevrons-left")');
+    expect(sidebar).toContain('size="icon-sm"');
+    expect(sidebar).toContain('variant="tertiary"');
+    expect(zaiopsPreview).toContain("<SidebarFloatingTrigger");
+    expect(zaiopsPreview).toContain('collapsedBehavior="offcanvas"');
+    expect(zaiopsPreview).toContain("<ZaiopsNavigationPanel");
   });
 
   it("keeps vertical menu focus rings inside scrollable navigation bounds", () => {
