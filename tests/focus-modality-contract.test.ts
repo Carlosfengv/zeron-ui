@@ -44,7 +44,7 @@ describe("focus modality contract", () => {
   it("does not route empty preview clicks into the first control", () => {
     expect(preview).not.toContain("routeKeyboardOnMouseDown");
     expect(preview).not.toContain("onMouseDown={handlePreviewMouseDown}");
-    expect(preview).toContain("has-[:focus-visible]:border-fg-default/40");
+    expect(preview).toContain("has-[:focus-visible]:ring-fg-default/40");
     expect(fs.existsSync(path.join(process.cwd(), "src/docs/click-to-focus.ts"))).toBe(false);
   });
 

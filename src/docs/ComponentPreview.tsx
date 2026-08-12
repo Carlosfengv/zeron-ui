@@ -8,7 +8,6 @@ import {
   type ReactNode,
 } from "react";
 import dynamic from "next/dynamic";
-import { useShape } from "@/lib/shape-context";
 import { useIcon } from "@/lib/icon-context";
 import { Tabs, TabsList, TabItem } from "@/components/ui/tabs";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -79,7 +78,6 @@ export function ComponentPreview({
     html: string;
   } | null>(null);
   const [highlightFailedFor, setHighlightFailedFor] = useState<string | null>(null);
-  const shape = useShape();
   const ReplayIcon = useIcon("rotate-ccw");
   const previewRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -146,7 +144,7 @@ export function ComponentPreview({
     <PortalContainerProvider value={isFullscreen ? frameElement : null}>
       <div
         ref={setFrameRef}
-        className={`relative flex flex-col gap-0 w-full border border-border-subtle transition-[border-color] duration-moderate ease-out has-[:focus-visible]:border-fg-default/40 ${shape.container} ${isFullscreen ? "h-svh w-screen rounded-none" : ""}`}
+        className={`relative flex flex-col gap-0 w-full bg-surface-raised duration-moderate ease-out p-2 rounded-3xl has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-inset has-[:focus-visible]:ring-fg-default/40 ${isFullscreen ? "h-svh w-screen rounded-none" : ""}`}
       >
       {/* Tab bar — min-height reserves the playback button's height (h-10 + pt-3)
           so the header doesn't shift when the button mounts/unmounts. A hairline
@@ -154,7 +152,7 @@ export function ComponentPreview({
           opaque background sits above the inspect overlay (z-40 > z-30) so the
           ruler ticks tuck cleanly under it. */}
       <div
-        className="relative z-40 flex items-center gap-0 px-3 py-3 min-h-[52px] border-b border-border-subtle bg-surface-base"
+        className="relative z-40 flex items-center gap-0 p-2"
         style={{ borderTopLeftRadius: "inherit", borderTopRightRadius: "inherit" }}
       >
         {title && (
@@ -218,11 +216,7 @@ export function ComponentPreview({
           shape is active, and leaves the top corners square (the tab
           bar sits above, well below the outer's curved top edge). */}
       <div
-        className={`overflow-hidden ${isFullscreen ? "flex flex-1 flex-col" : ""}`}
-        style={{
-          borderBottomLeftRadius: "inherit",
-          borderBottomRightRadius: "inherit",
-        }}
+        className={`overflow-hidden rounded-2xl border-[0.5px] border-border ${isFullscreen ? "flex flex-1 flex-col" : ""}`}
       >
         {tab === 0 ? (
           <div
@@ -243,7 +237,7 @@ export function ComponentPreview({
           </div>
         ) : html ? (
           <div
-            className={`overflow-auto text-label [&_pre]:m-0 [&_pre]:p-4 ${minHeightClass.replace("min-h-", "[&_pre]:min-h-")} [&_.shiki]:!bg-transparent`}
+            className={`overflow-auto text-label [&_pre]:m-0 [&_pre]:p-4 bg-surface-floating ${minHeightClass.replace("min-h-", "[&_pre]:min-h-")}`}
             dangerouslySetInnerHTML={{ __html: html }}
           />
         ) : highlightFailedFor === code ? (

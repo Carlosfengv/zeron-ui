@@ -9,6 +9,8 @@ describe("shell and page-layout composition contract", () => {
   const appShell = source("src/components/ui/app-shell.tsx");
   const docsSidebar = source("src/docs/site/sidebar.tsx");
   const navMenu = source("src/components/ui/nav-menu.tsx");
+  const navItem = source("src/components/ui/nav-item.tsx");
+  const topNav = source("src/components/ui/top-nav.tsx");
   const pageLayout = source("src/components/ui/page-layout.tsx");
   const playground = source("src/docs/playground.tsx");
   const rightPanel = source("src/docs/site/right-panel.tsx");
@@ -22,7 +24,7 @@ describe("shell and page-layout composition contract", () => {
   it("owns the base background at the shell while PageContent provides the floating surface", () => {
     expect(appShell).toContain('"min-h-svh min-w-0 bg-surface-base"');
     expect(pageLayout).toContain(
-      '"flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-border bg-surface-floating rounded-container"'
+      '"flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-[0.5px] border-border bg-surface-floating rounded-container"'
     );
     expect(pageLayout).not.toContain(
       'cva("mx-auto flex h-full w-full min-h-0 min-w-0 flex-col bg-surface-'
@@ -106,6 +108,98 @@ describe("shell and page-layout composition contract", () => {
     expect(docs).toContain("event.preventDefault();");
     expect(docs).toContain("setActiveSection(value);");
     expect(docs).toContain('aria-live="polite"');
+  });
+
+  it("composes TopNav with a stacked AppShell and a body-only PageLayout", () => {
+    const docs = source("app/(source)/docs/top-nav/page.tsx");
+    expect(docs).toContain("function TopNavAppShellPlayground()");
+    expect(docs).toContain('<AppShell\n              layout="stacked"');
+    expect(docs).toContain("<AppShellHeader>");
+    expect(docs).toContain('<AppShellMain landmark={false} className="flex min-h-0 overflow-hidden">');
+    expect(docs).toContain('<PageLayout className="h-full pt-0">');
+    expect(docs).toContain("<PageContent>");
+    expect(docs).toContain("<PageBody>");
+    expect(docs).not.toContain("<PageHeader>");
+    expect(docs).toContain("<TopNavAppShellPlayground />");
+    expect(docs).toContain('<div className="h-[400px] w-full group-data-[fullscreen=true]/preview-content:h-full">');
+    expect(docs).toContain('className="h-full min-h-0 w-full overflow-hidden border-[0.5px] border-border text-body"');
+    expect(docs).not.toContain('className="h-[22rem]');
+    expect(docs).not.toContain('align="bottom"');
+    expect(docs).not.toContain('className="w-full p-4 sm:p-5 group-data-[fullscreen=true]/preview-content:h-full"');
+    expect(docs).toContain('padding="none"');
+    expect(docs).toContain("<PlaygroundLayout");
+    expect(docs).toContain('<PlaygroundPanel\n      title="TopNav"');
+    expect(docs).toContain('<PlayField label="Navigation alignment">');
+    expect(docs).toContain("<PlaySelect");
+    expect(docs).not.toContain('role="group" aria-label="Navigation alignment"');
+    expect(docs).not.toContain('className="mt-2 inline-flex gap-1 rounded-control bg-muted p-1"');
+  });
+
+  it("aligns TopNav navigation left, center, or right with center as the default", () => {
+    expect(topNav).toContain('export type TopNavNavigationAlign = "left" | "center" | "right";');
+    expect(topNav).toContain('left: "grid-cols-[auto_minmax(0,1fr)_auto] [&>[data-slot=top-nav-navigation]]:justify-start"');
+    expect(topNav).toContain('center: "grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] [&>[data-slot=top-nav-navigation]]:justify-center"');
+    expect(topNav).toContain('right: "grid-cols-[auto_minmax(0,1fr)_auto] [&>[data-slot=top-nav-navigation]]:justify-end"');
+    expect(topNav).toContain('defaultVariants: { variant: "default", navigationAlign: "center" }');
+    expect(topNav).toContain('data-navigation-align={navigationAlign ?? "center"}');
+    expect(topNav).toContain('topNavVariants({ variant, navigationAlign })');
+    expect(topNav).toContain('export type TopNavNavigationProps = ComponentPropsWithoutRef<"div">;');
+    expect(topNav).not.toContain("data-align={align}");
+
+    const docs = source("app/(source)/docs/top-nav/page.tsx");
+    expect(docs).toContain('useState<TopNavNavigationAlign>("center")');
+    expect(docs).toContain('<TopNav navigationAlign={navigationAlign} className="w-full px-3 py-1 sm:px-3">');
+    expect(docs).not.toContain("<TopNavNavigation align=");
+    expect(docs).toContain('type: \'"left" | "center" | "right"\'');
+    expect(docs).toContain('default: \'"center"\'');
+    expect(docs).toContain('name: "navigationAlign"');
+    expect(docs).not.toContain('name: "TopNavNavigation.align"');
+  });
+
+  it("keeps the default TopNav transparent with two-pixel item underlines", () => {
+    expect(topNav).toContain('default: ""');
+    expect(topNav).toContain('variant === "floating" && [');
+    expect(navMenu).toContain('"max-w-[calc(100%_+_8px)] overflow-x-auto scrollbar-hide"');
+    expect(navMenu).toContain('variant === "underline" ? "gap-3"');
+    expect(navMenu).toContain('{variant !== "underline" && isMeasured && activeRect && (');
+    expect(navItem).toContain('"h-control-md border-b-2 border-transparent data-[active=true]:border-fg-default"');
+  });
+
+  it("offers an optional TopNav dropdown item with a replaceable chevron suffix", () => {
+    expect(topNav).toContain("export type TopNavItemMenuProps = PopoverProps;");
+    expect(topNav).toContain("export interface TopNavItemMenuTriggerProps");
+    expect(topNav).toContain('suffix?: ReactNode;');
+    expect(topNav).toContain('const ChevronDown = useIcon("chevron-down");');
+    expect(topNav).toContain('render={<button type={type} />}');
+    expect(topNav).toContain('suffix !== null');
+    expect(topNav).toContain('group-data-[popup-open]/top-nav-menu-trigger:rotate-180');
+    expect(topNav).toContain('flex-none gap-1 data-[popup-open]:text-fg-default [&>[data-slot=nav-item-content]]:flex-none');
+    expect(topNav).toContain('className={cn("min-w-48 p-1", className)}');
+
+    const docs = source("app/(source)/docs/top-nav/page.tsx");
+    expect(docs).toContain('const activeMoreSection = moreSections.find(');
+    expect(docs).toContain('? demoSections[activeMoreSection].label');
+    expect(docs).toContain('<TopNavItemMenuTrigger className="px-1.5">');
+    expect(docs).not.toContain('<TopNavItemMenuTrigger className="w-24');
+    expect(docs).toContain('<NavItemLabel>{activeMoreLabel}</NavItemLabel>');
+    expect(docs).toContain('<TopNavItemMenu open={moreOpen} onOpenChange={setMoreOpen}>');
+    expect(docs).toContain('<TopNavItemMenuContent aria-label="更多导航">');
+    expect(docs).toContain('label: "API 管理"');
+    expect(docs).toContain('label: "使用文档"');
+    expect(docs).toContain('label: "更新日志"');
+  });
+
+  it("adapts the Zentrix Figma reference with existing project primitives", () => {
+    const docs = source("app/(source)/docs/top-nav/page.tsx");
+    expect(docs).toContain("function ZentrixTopNav(");
+    expect(docs).toContain(">Zentrix</strong>");
+    expect(docs).toContain(">能力中心</span>");
+    expect(docs).toContain('label: "首页"');
+    expect(docs).toContain('label: "模型服务"');
+    expect(docs).toContain('label: "MCP 广场"');
+    expect(docs).toContain('<Button type="button" size="md" variant="neutral" className="px-2">登录</Button>');
+    expect(docs).toContain('<ComponentPreview code={code} padding="none">');
+    expect(docs).not.toMatch(/#[\da-fA-F]{3,8}\b/);
   });
 
   it("uses the PageLayout composition as the Sidebar preview's main region", () => {
