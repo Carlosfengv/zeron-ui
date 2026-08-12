@@ -107,6 +107,20 @@ describe("semantic token generation", () => {
     expect(renderGlobalsBlock()).not.toMatch(/--(?:background|card):/);
   });
 
+  it("keeps the raised surface aligned with the migrated theme", () => {
+    expect(tokenByName(surfaceTokens, "raised")).toMatchObject({
+      light: "#F0F3F8",
+      dark: "#28292F",
+    });
+  });
+
+  it("uses theme-specific overlays for persistent selection", () => {
+    expect(tokenByName(fillColorTokens, "selection")).toMatchObject({
+      light: "rgb(234 238 245 / 0.4)",
+      dark: "rgb(88 91 98 / 0.16)",
+    });
+  });
+
   it("does not publish retired compatibility color aliases", () => {
     const retiredNames = [
       "background", "foreground", "card", "card-foreground", "muted-foreground",
