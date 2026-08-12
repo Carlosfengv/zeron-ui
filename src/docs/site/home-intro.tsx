@@ -20,10 +20,10 @@ export function HomeIntro() {
           <h1 className="text-heading text-fg-default leading-none font-bold">Zeron Design</h1>
           <p className="text-body text-fg-muted">{t("tagline")}</p>
           <div className="flex items-center gap-2 mt-2">
-            <Button asChild variant="primary" size="sm">
+            <Button asChild variant="primary">
               <Link href={localizePathname("/docs", localePrefix)}>{t("learnMore")}</Link>
             </Button>
-            <Button asChild variant="tertiary" size="sm">
+            <Button asChild variant="tertiary">
               <Link href="/demo">{t("seeDemo")}</Link>
             </Button>
           </div>

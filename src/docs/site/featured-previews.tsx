@@ -16,7 +16,7 @@ function BadgePreview() {
 }
 
 function ButtonPreview() {
-  return <div className="flex flex-wrap items-center gap-2">{BUTTON_ITEMS.map((item) => <Button key={item.label} variant={item.variant} size="sm">{item.label}</Button>)}</div>;
+  return <div className="flex flex-wrap items-center gap-2">{BUTTON_ITEMS.map((item) => <Button key={item.label} variant={item.variant}>{item.label}</Button>)}</div>;
 }
 
 function InputPreview() {
