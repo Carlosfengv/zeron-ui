@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 import {
   NavItem,
   NavItemContent,
+  NavItemLeading,
   NavItemLabel,
   NavItemTrigger,
 } from "@/components/ui/nav-item";
@@ -18,6 +19,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { useIcon, type IconName } from "@/lib/icon-context";
 import { aiAgentList, componentList, layoutList, systemList } from "@/docs/components";
 import { SettingsContent } from "@/docs/site/right-panel";
 import { internalPathname, localizePathname } from "@/docs/site/locale-path";
@@ -31,19 +33,24 @@ interface DocsSidebarProps {
 function SiteNavItem({
   href,
   label,
+  icon,
   isNew,
   isUpdated,
   dotColor,
 }: {
   href: string;
   label: string;
+  icon: IconName;
   isNew?: boolean;
   isUpdated?: boolean;
   dotColor?: string;
 }) {
+  const Icon = useIcon(icon);
+
   return (
     <NavItem value={href}>
       <NavItemTrigger render={<Link href={href} />} tooltip={label}>
+        <NavItemLeading><Icon aria-hidden="true" size={16} strokeWidth={1.5} /></NavItemLeading>
         <NavItemContent>
           <span className="flex min-w-0 items-center gap-2">
             <NavItemLabel>{label}</NavItemLabel>
@@ -77,13 +84,13 @@ function DocsSidebarContent({ localePrefix = "" }: Pick<DocsSidebarProps, "local
   return (
     <>
       <NavMenu activeValue={currentPathname === "/" ? localizePathname("/", localePrefix) : currentPathname === "/docs" ? localizePathname("/docs", localePrefix) : null} keyboardNavigation="roving" aria-label={t("main")}>
-        <SiteNavItem href={localizePathname("/", localePrefix)} label={t("showcase")} />
-        <SiteNavItem href={localizePathname("/docs", localePrefix)} label={t("introduction")} />
+        <SiteNavItem href={localizePathname("/", localePrefix)} label={t("showcase")} icon="doc-showcase" />
+        <SiteNavItem href={localizePathname("/docs", localePrefix)} label={t("introduction")} icon="doc-introduction" />
       </NavMenu>
-      {section(t("systemGroup"), systemList.length, t("system"), systemList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} isNew={item.isNew} isUpdated={item.isUpdated} />))}
-      {section(t("layoutGroup"), layoutList.length, t("layout"), layoutList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} />))}
-      {section(t("componentsGroup"), componentList.length, t("components"), componentList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />))}
-      {section(t("aiAgentGroup"), aiAgentList.length, t("aiAgent"), aiAgentList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />))}
+      {section(t("systemGroup"), systemList.length, t("system"), systemList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} icon={item.icon} isNew={item.isNew} isUpdated={item.isUpdated} />))}
+      {section(t("layoutGroup"), layoutList.length, t("layout"), layoutList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} icon={item.icon} />))}
+      {section(t("componentsGroup"), componentList.length, t("components"), componentList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} icon={item.icon} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />))}
+      {section(t("aiAgentGroup"), aiAgentList.length, t("aiAgent"), aiAgentList.map((item) => <SiteNavItem key={item.slug} href={localizePathname(`/docs/${item.slug}`, localePrefix)} label={item.name} icon={item.icon} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />))}
     </>
   );
 }

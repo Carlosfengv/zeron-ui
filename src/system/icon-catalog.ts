@@ -7,6 +7,45 @@ import type { IconComponent, IconName } from "@/lib/icon-context";
  * public `useIcon()` slot API.
  */
 export interface IconDefinitions {
+  DashboardSquare01Icon: unknown;
+  BookOpen01Icon: unknown;
+  Layers01Icon: unknown;
+  TokenSquareIcon: unknown;
+  ScrollVerticalIcon: unknown;
+  Motion01Icon: unknown;
+  BrowserIcon: unknown;
+  LayoutThreeColumnIcon: unknown;
+  SidebarLeftIcon: unknown;
+  SidebarTopIcon: unknown;
+  ExpandParagraphIcon: unknown;
+  BadgeIcon: unknown;
+  MoreHorizontalCircle01Icon: unknown;
+  Route01Icon: unknown;
+  MouseLeftClick01Icon: unknown;
+  Cards01Icon: unknown;
+  CheckmarkSquare02Icon: unknown;
+  ColorPickerIcon: unknown;
+  GridTableIcon: unknown;
+  LayoutTable02Icon: unknown;
+  PanelTopBottomDashedIcon: unknown;
+  DropdownFieldTypeIcon: unknown;
+  InputTextIcon: unknown;
+  InputLongTextIcon: unknown;
+  InformationCircleIcon: unknown;
+  KeyboardIcon: unknown;
+  CursorInWindowIcon: unknown;
+  RadioButtonIcon: unknown;
+  Select01Icon: unknown;
+  SlidersHorizontalIcon: unknown;
+  WorkflowCircle01Icon: unknown;
+  ToggleOnIcon: unknown;
+  Table01Icon: unknown;
+  ViewAgendaIcon: unknown;
+  BubbleChatPreviewIcon: unknown;
+  UserQuestion01Icon: unknown;
+  MessageEdit01Icon: unknown;
+  AiBrain03Icon: unknown;
+  LeftToRightListNumberIcon: unknown;
   ArrowDown01Icon: unknown;
   ArrowLeft01Icon: unknown;
   ArrowLeftDoubleIcon: unknown;
@@ -88,6 +127,49 @@ export function createIconMap(
   options?: CreateHugeIconOptions
 ): Record<IconName, IconComponent> {
   return {
+    "doc-showcase": createHugeIcon(icons.DashboardSquare01Icon, options),
+    "doc-introduction": createHugeIcon(icons.BookOpen01Icon, options),
+    "doc-surfaces": createHugeIcon(icons.Layers01Icon, options),
+    "doc-semantic-tokens": createHugeIcon(icons.TokenSquareIcon, options),
+    "doc-scrollbars": createHugeIcon(icons.ScrollVerticalIcon, options),
+    "doc-motion": createHugeIcon(icons.Motion01Icon, options),
+    "doc-app-shell": createHugeIcon(icons.BrowserIcon, options),
+    "doc-page-layout": createHugeIcon(icons.LayoutThreeColumnIcon, options),
+    "doc-sidebar": createHugeIcon(icons.SidebarLeftIcon, options),
+    "doc-top-nav": createHugeIcon(icons.SidebarTopIcon, options),
+    "doc-nav-menu": createHugeIcon(icons.Menu01Icon, options),
+    "doc-accordion": createHugeIcon(icons.ExpandParagraphIcon, options),
+    "doc-badge": createHugeIcon(icons.BadgeIcon, options),
+    "doc-badge-overflow": createHugeIcon(icons.MoreHorizontalCircle01Icon, options),
+    "doc-breadcrumb": createHugeIcon(icons.Route01Icon, options),
+    "doc-button": createHugeIcon(icons.MouseLeftClick01Icon, options),
+    "doc-card": createHugeIcon(icons.Cards01Icon, options),
+    "doc-checkbox": createHugeIcon(icons.CheckmarkSquare02Icon, options),
+    "doc-checkbox-group": createHugeIcon(icons.Task01Icon, options),
+    "doc-color-picker": createHugeIcon(icons.ColorPickerIcon, options),
+    "doc-data-grid": createHugeIcon(icons.GridTableIcon, options),
+    "doc-data-table": createHugeIcon(icons.LayoutTable02Icon, options),
+    "doc-dialog": createHugeIcon(icons.PanelTopBottomDashedIcon, options),
+    "doc-dropdown": createHugeIcon(icons.DropdownFieldTypeIcon, options),
+    "doc-input": createHugeIcon(icons.InputTextIcon, options),
+    "doc-input-copy": createHugeIcon(icons.Copy01Icon, options),
+    "doc-input-group": createHugeIcon(icons.InputLongTextIcon, options),
+    "doc-info-item": createHugeIcon(icons.InformationCircleIcon, options),
+    "doc-kbd": createHugeIcon(icons.KeyboardIcon, options),
+    "doc-popover": createHugeIcon(icons.CursorInWindowIcon, options),
+    "doc-radio-group": createHugeIcon(icons.RadioButtonIcon, options),
+    "doc-select": createHugeIcon(icons.Select01Icon, options),
+    "doc-slider": createHugeIcon(icons.SlidersHorizontalIcon, options),
+    "doc-stepper": createHugeIcon(icons.WorkflowCircle01Icon, options),
+    "doc-switch": createHugeIcon(icons.ToggleOnIcon, options),
+    "doc-table": createHugeIcon(icons.Table01Icon, options),
+    "doc-tabs": createHugeIcon(icons.ViewAgendaIcon, options),
+    "doc-tooltip": createHugeIcon(icons.BubbleChatPreviewIcon, options),
+    "doc-ask-user-questions": createHugeIcon(icons.UserQuestion01Icon, options),
+    "doc-chat-message": createHugeIcon(icons.BubbleChatIcon, options),
+    "doc-input-message": createHugeIcon(icons.MessageEdit01Icon, options),
+    "doc-thinking-indicator": createHugeIcon(icons.AiBrain03Icon, options),
+    "doc-thinking-steps": createHugeIcon(icons.LeftToRightListNumberIcon, options),
     "chevron-left": createHugeIcon(icons.ArrowLeft01Icon, options),
     "chevron-right": createHugeIcon(icons.ArrowRight01Icon, options),
     "chevron-down": createHugeIcon(icons.ArrowDown01Icon, options),

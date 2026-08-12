@@ -1,4 +1,43 @@
 import { createIconMap } from "@/lib/icon-catalog";
+import DashboardSquare01Icon from "@hugeicons-pro/core-duotone-rounded/DashboardSquare01Icon";
+import BookOpen01Icon from "@hugeicons-pro/core-duotone-rounded/BookOpen01Icon";
+import Layers01Icon from "@hugeicons-pro/core-duotone-rounded/Layers01Icon";
+import TokenSquareIcon from "@hugeicons-pro/core-duotone-rounded/TokenSquareIcon";
+import ScrollVerticalIcon from "@hugeicons-pro/core-duotone-rounded/ScrollVerticalIcon";
+import Motion01Icon from "@hugeicons-pro/core-duotone-rounded/Motion01Icon";
+import BrowserIcon from "@hugeicons-pro/core-duotone-rounded/BrowserIcon";
+import LayoutThreeColumnIcon from "@hugeicons-pro/core-duotone-rounded/LayoutThreeColumnIcon";
+import SidebarLeftIcon from "@hugeicons-pro/core-duotone-rounded/SidebarLeftIcon";
+import SidebarTopIcon from "@hugeicons-pro/core-duotone-rounded/SidebarTopIcon";
+import ExpandParagraphIcon from "@hugeicons-pro/core-duotone-rounded/ExpandParagraphIcon";
+import BadgeIcon from "@hugeicons-pro/core-duotone-rounded/BadgeIcon";
+import MoreHorizontalCircle01Icon from "@hugeicons-pro/core-duotone-rounded/MoreHorizontalCircle01Icon";
+import Route01Icon from "@hugeicons-pro/core-duotone-rounded/Route01Icon";
+import MouseLeftClick01Icon from "@hugeicons-pro/core-duotone-rounded/MouseLeftClick01Icon";
+import Cards01Icon from "@hugeicons-pro/core-duotone-rounded/Cards01Icon";
+import CheckmarkSquare02Icon from "@hugeicons-pro/core-duotone-rounded/CheckmarkSquare02Icon";
+import ColorPickerIcon from "@hugeicons-pro/core-duotone-rounded/ColorPickerIcon";
+import GridTableIcon from "@hugeicons-pro/core-duotone-rounded/GridTableIcon";
+import LayoutTable02Icon from "@hugeicons-pro/core-duotone-rounded/LayoutTable02Icon";
+import PanelTopBottomDashedIcon from "@hugeicons-pro/core-duotone-rounded/PanelTopBottomDashedIcon";
+import DropdownFieldTypeIcon from "@hugeicons-pro/core-duotone-rounded/DropdownFieldTypeIcon";
+import InputTextIcon from "@hugeicons-pro/core-duotone-rounded/InputTextIcon";
+import InputLongTextIcon from "@hugeicons-pro/core-duotone-rounded/InputLongTextIcon";
+import InformationCircleIcon from "@hugeicons-pro/core-duotone-rounded/InformationCircleIcon";
+import KeyboardIcon from "@hugeicons-pro/core-duotone-rounded/KeyboardIcon";
+import CursorInWindowIcon from "@hugeicons-pro/core-duotone-rounded/CursorInWindowIcon";
+import RadioButtonIcon from "@hugeicons-pro/core-duotone-rounded/RadioButtonIcon";
+import Select01Icon from "@hugeicons-pro/core-duotone-rounded/Select01Icon";
+import SlidersHorizontalIcon from "@hugeicons-pro/core-duotone-rounded/SlidersHorizontalIcon";
+import WorkflowCircle01Icon from "@hugeicons-pro/core-duotone-rounded/WorkflowCircle01Icon";
+import ToggleOnIcon from "@hugeicons-pro/core-duotone-rounded/ToggleOnIcon";
+import Table01Icon from "@hugeicons-pro/core-duotone-rounded/Table01Icon";
+import ViewAgendaIcon from "@hugeicons-pro/core-duotone-rounded/ViewAgendaIcon";
+import BubbleChatPreviewIcon from "@hugeicons-pro/core-duotone-rounded/BubbleChatPreviewIcon";
+import UserQuestion01Icon from "@hugeicons-pro/core-duotone-rounded/UserQuestion01Icon";
+import MessageEdit01Icon from "@hugeicons-pro/core-duotone-rounded/MessageEdit01Icon";
+import AiBrain03Icon from "@hugeicons-pro/core-duotone-rounded/AiBrain03Icon";
+import LeftToRightListNumberIcon from "@hugeicons-pro/core-duotone-rounded/LeftToRightListNumberIcon";
 import ArrowDown01Icon from "@hugeicons-pro/core-duotone-rounded/ArrowDown01Icon";
 import ArrowLeft01Icon from "@hugeicons-pro/core-duotone-rounded/ArrowLeft01Icon";
 import ArrowLeftDoubleIcon from "@hugeicons-pro/core-duotone-rounded/ArrowLeftDoubleIcon";
@@ -76,6 +115,45 @@ import Upload01Icon from "@hugeicons-pro/core-duotone-rounded/Upload01Icon";
 /** Loaded on demand so this style never contributes to the initial bundle. */
 export const duotoneRoundedIcons = createIconMap(
   {
+  DashboardSquare01Icon,
+  BookOpen01Icon,
+  Layers01Icon,
+  TokenSquareIcon,
+  ScrollVerticalIcon,
+  Motion01Icon,
+  BrowserIcon,
+  LayoutThreeColumnIcon,
+  SidebarLeftIcon,
+  SidebarTopIcon,
+  ExpandParagraphIcon,
+  BadgeIcon,
+  MoreHorizontalCircle01Icon,
+  Route01Icon,
+  MouseLeftClick01Icon,
+  Cards01Icon,
+  CheckmarkSquare02Icon,
+  ColorPickerIcon,
+  GridTableIcon,
+  LayoutTable02Icon,
+  PanelTopBottomDashedIcon,
+  DropdownFieldTypeIcon,
+  InputTextIcon,
+  InputLongTextIcon,
+  InformationCircleIcon,
+  KeyboardIcon,
+  CursorInWindowIcon,
+  RadioButtonIcon,
+  Select01Icon,
+  SlidersHorizontalIcon,
+  WorkflowCircle01Icon,
+  ToggleOnIcon,
+  Table01Icon,
+  ViewAgendaIcon,
+  BubbleChatPreviewIcon,
+  UserQuestion01Icon,
+  MessageEdit01Icon,
+  AiBrain03Icon,
+  LeftToRightListNumberIcon,
   ArrowDown01Icon,
   ArrowLeft01Icon,
   ArrowLeftDoubleIcon,

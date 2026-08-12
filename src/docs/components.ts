@@ -1,8 +1,10 @@
+import type { IconName } from "@/lib/icon-context";
 import { detailDocEntries, legacyDocEntries, pageDocEntries } from "@/docs/manifest";
 
 export interface ComponentEntry {
   slug: string;
   name: string;
+  icon: IconName;
   description: string;
   isNew?: boolean;
   isUpdated?: boolean;
@@ -17,6 +19,7 @@ function toEntry(entry: (typeof pageDocEntries)[number]): ComponentEntry {
   return {
     slug: entry.id,
     name: entry.name,
+    icon: entry.icon,
     description: entry.description ?? "",
     isNew: entry.isNew,
     isUpdated: entry.isUpdated,

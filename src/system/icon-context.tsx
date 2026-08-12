@@ -85,6 +85,45 @@ import UserIcon from "@hugeicons/core-free-icons/UserIcon";
 import ViewOffIcon from "@hugeicons/core-free-icons/ViewOffIcon";
 import { type HugeIconComponent } from "@/lib/huge-icon";
 import { createIconMap } from "@/lib/icon-catalog";
+import DashboardSquare01Icon from "@hugeicons/core-free-icons/DashboardSquare01Icon";
+import BookOpen01Icon from "@hugeicons/core-free-icons/BookOpen01Icon";
+import Layers01Icon from "@hugeicons/core-free-icons/Layers01Icon";
+import TokenSquareIcon from "@hugeicons/core-free-icons/TokenSquareIcon";
+import ScrollVerticalIcon from "@hugeicons/core-free-icons/ScrollVerticalIcon";
+import Motion01Icon from "@hugeicons/core-free-icons/Motion01Icon";
+import BrowserIcon from "@hugeicons/core-free-icons/BrowserIcon";
+import LayoutThreeColumnIcon from "@hugeicons/core-free-icons/LayoutThreeColumnIcon";
+import SidebarLeftIcon from "@hugeicons/core-free-icons/SidebarLeftIcon";
+import SidebarTopIcon from "@hugeicons/core-free-icons/SidebarTopIcon";
+import ExpandParagraphIcon from "@hugeicons/core-free-icons/ExpandParagraphIcon";
+import BadgeIcon from "@hugeicons/core-free-icons/BadgeIcon";
+import MoreHorizontalCircle01Icon from "@hugeicons/core-free-icons/MoreHorizontalCircle01Icon";
+import Route01Icon from "@hugeicons/core-free-icons/Route01Icon";
+import MouseLeftClick01Icon from "@hugeicons/core-free-icons/MouseLeftClick01Icon";
+import Cards01Icon from "@hugeicons/core-free-icons/Cards01Icon";
+import CheckmarkSquare02Icon from "@hugeicons/core-free-icons/CheckmarkSquare02Icon";
+import ColorPickerIcon from "@hugeicons/core-free-icons/ColorPickerIcon";
+import GridTableIcon from "@hugeicons/core-free-icons/GridTableIcon";
+import LayoutTable02Icon from "@hugeicons/core-free-icons/LayoutTable02Icon";
+import PanelTopBottomDashedIcon from "@hugeicons/core-free-icons/PanelTopBottomDashedIcon";
+import DropdownFieldTypeIcon from "@hugeicons/core-free-icons/DropdownFieldTypeIcon";
+import InputTextIcon from "@hugeicons/core-free-icons/InputTextIcon";
+import InputLongTextIcon from "@hugeicons/core-free-icons/InputLongTextIcon";
+import InformationCircleIcon from "@hugeicons/core-free-icons/InformationCircleIcon";
+import KeyboardIcon from "@hugeicons/core-free-icons/KeyboardIcon";
+import CursorInWindowIcon from "@hugeicons/core-free-icons/CursorInWindowIcon";
+import RadioButtonIcon from "@hugeicons/core-free-icons/RadioButtonIcon";
+import Select01Icon from "@hugeicons/core-free-icons/Select01Icon";
+import SlidersHorizontalIcon from "@hugeicons/core-free-icons/SlidersHorizontalIcon";
+import WorkflowCircle01Icon from "@hugeicons/core-free-icons/WorkflowCircle01Icon";
+import ToggleOnIcon from "@hugeicons/core-free-icons/ToggleOnIcon";
+import Table01Icon from "@hugeicons/core-free-icons/Table01Icon";
+import ViewAgendaIcon from "@hugeicons/core-free-icons/ViewAgendaIcon";
+import BubbleChatPreviewIcon from "@hugeicons/core-free-icons/BubbleChatPreviewIcon";
+import UserQuestion01Icon from "@hugeicons/core-free-icons/UserQuestion01Icon";
+import MessageEdit01Icon from "@hugeicons/core-free-icons/MessageEdit01Icon";
+import AiBrain03Icon from "@hugeicons/core-free-icons/AiBrain03Icon";
+import LeftToRightListNumberIcon from "@hugeicons/core-free-icons/LeftToRightListNumberIcon";
 
 export interface IconComponentProps {
   size?: number;
@@ -98,6 +137,49 @@ export interface IconComponentProps {
 export type IconComponent = HugeIconComponent;
 
 export type IconName =
+  | "doc-showcase"
+  | "doc-introduction"
+  | "doc-surfaces"
+  | "doc-semantic-tokens"
+  | "doc-scrollbars"
+  | "doc-motion"
+  | "doc-app-shell"
+  | "doc-page-layout"
+  | "doc-sidebar"
+  | "doc-top-nav"
+  | "doc-nav-menu"
+  | "doc-accordion"
+  | "doc-badge"
+  | "doc-badge-overflow"
+  | "doc-breadcrumb"
+  | "doc-button"
+  | "doc-card"
+  | "doc-checkbox"
+  | "doc-checkbox-group"
+  | "doc-color-picker"
+  | "doc-data-grid"
+  | "doc-data-table"
+  | "doc-dialog"
+  | "doc-dropdown"
+  | "doc-input"
+  | "doc-input-copy"
+  | "doc-input-group"
+  | "doc-info-item"
+  | "doc-kbd"
+  | "doc-popover"
+  | "doc-radio-group"
+  | "doc-select"
+  | "doc-slider"
+  | "doc-stepper"
+  | "doc-switch"
+  | "doc-table"
+  | "doc-tabs"
+  | "doc-tooltip"
+  | "doc-ask-user-questions"
+  | "doc-chat-message"
+  | "doc-input-message"
+  | "doc-thinking-indicator"
+  | "doc-thinking-steps"
   | "chevron-left" | "chevron-right" | "chevron-down" | "chevron-up"
   | "chevrons-left" | "chevrons-right" | "chevrons-up-down"
   | "circle-plus" | "circle-x" | "eye-off" | "ellipsis"
@@ -131,6 +213,45 @@ const iconVariantOrder: IconVariant[] = [
 const freeIconVariants: IconVariant[] = ["stroke-rounded"];
 
 export const defaultIcons = createIconMap({
+  DashboardSquare01Icon,
+  BookOpen01Icon,
+  Layers01Icon,
+  TokenSquareIcon,
+  ScrollVerticalIcon,
+  Motion01Icon,
+  BrowserIcon,
+  LayoutThreeColumnIcon,
+  SidebarLeftIcon,
+  SidebarTopIcon,
+  ExpandParagraphIcon,
+  BadgeIcon,
+  MoreHorizontalCircle01Icon,
+  Route01Icon,
+  MouseLeftClick01Icon,
+  Cards01Icon,
+  CheckmarkSquare02Icon,
+  ColorPickerIcon,
+  GridTableIcon,
+  LayoutTable02Icon,
+  PanelTopBottomDashedIcon,
+  DropdownFieldTypeIcon,
+  InputTextIcon,
+  InputLongTextIcon,
+  InformationCircleIcon,
+  KeyboardIcon,
+  CursorInWindowIcon,
+  RadioButtonIcon,
+  Select01Icon,
+  SlidersHorizontalIcon,
+  WorkflowCircle01Icon,
+  ToggleOnIcon,
+  Table01Icon,
+  ViewAgendaIcon,
+  BubbleChatPreviewIcon,
+  UserQuestion01Icon,
+  MessageEdit01Icon,
+  AiBrain03Icon,
+  LeftToRightListNumberIcon,
   ArrowDown01Icon,
   ArrowLeft01Icon,
   ArrowLeftDoubleIcon,
