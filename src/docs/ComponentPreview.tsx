@@ -229,7 +229,7 @@ export function ComponentPreview({
             ref={previewRef}
             data-slot="component-preview-content"
             data-fullscreen={isFullscreen || undefined}
-            className={`group/preview-content relative flex ${isFullscreen ? "flex-1" : ""} ${align === "bottom" ? "items-end" : "items-center"} justify-center ${minHeightClass} bg-surface-base ${
+            className={`group/preview-content relative flex ${isFullscreen ? "flex-1" : ""} ${align === "bottom" ? "items-end" : "items-center"} justify-center ${minHeightClass} bg-surface-floating ${
               padding === "none"
                 ? "p-0"
                 : padding === "compact"

@@ -7,12 +7,48 @@ const source = (file: string) =>
 
 describe("shell and page-layout composition contract", () => {
   const appShell = source("src/components/ui/app-shell.tsx");
+  const docsSidebar = source("src/docs/site/sidebar.tsx");
   const navMenu = source("src/components/ui/nav-menu.tsx");
   const pageLayout = source("src/components/ui/page-layout.tsx");
+  const playground = source("src/docs/playground.tsx");
+  const rightPanel = source("src/docs/site/right-panel.tsx");
 
   it("lets a sidebar main occupy both grid rows when the header slot is absent", () => {
     expect(appShell).toContain(
       '"[&:not(:has(>_[data-slot=app-shell-header]))>_[data-slot=app-shell-main]]:row-span-2"'
+    );
+  });
+
+  it("owns the base background at the shell while PageContent provides the floating surface", () => {
+    expect(appShell).toContain('"min-h-svh min-w-0 bg-surface-base"');
+    expect(pageLayout).toContain(
+      '"flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-border bg-surface-floating rounded-container"'
+    );
+    expect(pageLayout).not.toContain(
+      'cva("mx-auto flex h-full w-full min-h-0 min-w-0 flex-col bg-surface-'
+    );
+  });
+
+  it("uses floating surfaces for the documentation side rails", () => {
+    expect(docsSidebar).toContain('<SurfaceProvider role="floating">');
+    expect(docsSidebar).toContain('className="bg-surface-floating"');
+    expect(rightPanel).toContain(
+      'className="rounded-control border-[0.5px] border-border-subtle bg-surface-floating p-4"'
+    );
+    expect(rightPanel).toContain('<SurfaceProvider role="floating">');
+    expect(rightPanel).not.toContain(
+      'className="p-4 rounded-control bg-muted"'
+    );
+  });
+
+  it("matches playground controls to the documentation settings card", () => {
+    expect(playground).toContain('<SurfaceProvider role="floating">');
+    expect(playground).toContain(
+      'className="w-full rounded-control border-[0.5px] border-border-subtle bg-surface-floating p-4"'
+    );
+    expect(playground).not.toContain('<SurfaceProvider role="raised">');
+    expect(playground).not.toContain(
+      'className="w-full rounded-control bg-muted p-3"'
     );
   });
 

@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { aiAgentList, componentList, layoutList, systemList } from "@/docs/components";
 import { SettingsContent } from "@/docs/site/right-panel";
 import { internalPathname, localizePathname } from "@/docs/site/locale-path";
+import { SurfaceProvider } from "@/lib/surface-context";
 
 interface DocsSidebarProps {
   localePrefix?: string;
@@ -95,10 +96,17 @@ function DocsSidebarFooter({ localePrefix = "", showLanguage = false }: DocsSide
 
 export function DocsSidebar({ localePrefix = "", showLanguage = false }: DocsSidebarProps) {
   return (
-    <SidebarRoot width="260px" collapsible="offcanvas" mobileLabel="Documentation navigation">
-      <SidebarContent><DocsSidebarContent localePrefix={localePrefix} /></SidebarContent>
-      <DocsSidebarFooter localePrefix={localePrefix} showLanguage={showLanguage} />
-    </SidebarRoot>
+    <SurfaceProvider role="floating">
+      <SidebarRoot
+        width="260px"
+        collapsible="offcanvas"
+        mobileLabel="Documentation navigation"
+        className="bg-surface-floating"
+      >
+        <SidebarContent><DocsSidebarContent localePrefix={localePrefix} /></SidebarContent>
+        <DocsSidebarFooter localePrefix={localePrefix} showLanguage={showLanguage} />
+      </SidebarRoot>
+    </SurfaceProvider>
   );
 }
 

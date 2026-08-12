@@ -16,7 +16,7 @@ import { useTranslations } from "next-intl";
 
 // ---------------------------------------------------------------------------
 // Shared scaffolding for doc-page playgrounds (Card, Button, …): the control
-// rows, the muted panel with its shuffle header, and the layout that parks the
+// rows, the floating panel with its shuffle header, and the layout that parks the
 // controls in the desktop right rail while the preview stays in the column.
 // ---------------------------------------------------------------------------
 
@@ -87,7 +87,7 @@ export function PlayDivider() {
   return <div className="my-2 border-t border-border-subtle" />;
 }
 
-/** The muted controls card: title row with a shuffle button, fields below. */
+/** The controls card: title row with a shuffle button, fields below. */
 export function PlaygroundPanel({
   title,
   onShuffle,
@@ -101,9 +101,9 @@ export function PlaygroundPanel({
   const Shuffle = useIcon("rotate-ccw");
 
   return (
-    <SurfaceProvider role="raised">
-      <div className="w-full rounded-control bg-muted p-3">
-        <div className="flex items-center justify-between px-1 pt-1 pb-2">
+    <SurfaceProvider role="floating">
+      <div className="w-full rounded-control border-[0.5px] border-border-subtle bg-surface-floating p-4">
+        <div className="flex items-center justify-between px-1 pb-2 pt-2">
           <h2
             className="text-title text-fg-default leading-none font-semibold"
           >

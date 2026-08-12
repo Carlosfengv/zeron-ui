@@ -34,7 +34,7 @@ const AppShell = forwardRef<HTMLDivElement, AppShellProps>(
       data-slot="app-shell"
       data-layout={layout}
       className={cn(
-        "min-h-svh min-w-0",
+        "min-h-svh min-w-0 bg-surface-base",
         layout === "sidebar"
           ? [
               "grid grid-cols-[auto_minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)]",

@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import { spring } from "@/lib/springs";
 import { useShape } from "@/lib/shape-context";
 import { useSurface, SurfaceProvider } from "@/lib/surface-context";
-import { resolveSurface, surfaceClasses } from "@/lib/surface-classes";
+import { resolveSurface, shadowClasses } from "@/lib/surface-classes";
 import { useIcon } from "@/lib/icon-context";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -298,7 +298,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
             "m-2 h-[calc(100%-1rem)] border border-border-subtle",
             shape.container
           ),
-          mobile ? "bg-transparent" : surfaceClasses(surface, variant === "floating" ? "raised" : "none")
+          !mobile && variant === "floating" && shadowClasses("raised")
         )}
       >
         {mobile ? children : <SurfaceProvider role={surface}>{children}</SurfaceProvider>}

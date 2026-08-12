@@ -116,7 +116,7 @@ const PageContent = forwardRef<HTMLDivElement, PageContentProps>(({ className, .
     ref={ref}
     data-slot="page-content"
     className={cn(
-      "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-border rounded-container",
+      "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-border bg-surface-floating rounded-container",
       className
     )}
     {...props}

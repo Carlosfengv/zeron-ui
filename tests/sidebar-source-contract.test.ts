@@ -39,10 +39,12 @@ describe("sidebar implementation contract", () => {
     expect(sidebar).toContain("{...props}");
   });
 
-  it("keeps desktop surfaces at their parent level and lets the drawer own overlay surface", () => {
+  it("inherits the shell background while preserving semantic nesting and floating separation", () => {
     expect(sidebar).toContain("const surface = variant === \"floating\" ? resolveSurface(parentSurface, \"raised\") : parentSurface;");
     expect(sidebar).toContain("{mobile ? children : <SurfaceProvider role={surface}>{children}</SurfaceProvider>}");
-    expect(sidebar).toContain('mobile ? "bg-transparent"');
+    expect(sidebar).toContain('!mobile && variant === "floating" && shadowClasses("raised")');
+    expect(sidebar).not.toContain("surfaceClasses(");
+    expect(sidebar).not.toContain("bg-surface-");
   });
 
   it("uses logical sidebar direction for desktop and drawer exit motion", () => {

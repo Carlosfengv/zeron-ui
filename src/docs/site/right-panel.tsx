@@ -192,8 +192,8 @@ export function RightPanel({
     // inner wrapper (else it would override `flex` and drop the gap).
     <div className="shrink-0 w-64 sticky top-4 self-start mt-4 mr-2 xl-fade-block max-xl:fixed max-xl:top-0 max-xl:right-0 max-xl:z-40 max-xl:pointer-events-none">
       <div className="flex flex-col gap-3">
-        <aside className="p-4 rounded-control bg-muted">
-          <SurfaceProvider role="raised">
+        <aside className="rounded-control border-[0.5px] border-border-subtle bg-surface-floating p-4">
+          <SurfaceProvider role="floating">
             <div className="pl-1 pt-2 pb-2">
               <h2
                 className="text-title text-fg-default leading-none font-semibold"
