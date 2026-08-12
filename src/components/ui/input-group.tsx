@@ -37,7 +37,7 @@ const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
         className={cn(
           "group/input-group relative flex w-full min-w-0 items-center border border-input bg-transparent shadow-control outline-none hover:border-input-hover hover:bg-hover",
           "transition-[background-color,border-color,box-shadow,color] duration-fast",
-          "focus-within:ring-1 focus-within:ring-focus-ring",
+          "has-[[data-slot=input-group-control]:focus-visible]:ring-1 has-[[data-slot=input-group-control]:focus-visible]:ring-focus-ring",
           "has-aria-invalid:border-danger-border has-aria-invalid:hover:border-danger-border has-aria-invalid:ring-1 has-aria-invalid:ring-danger-border/40",
           "has-data-[align=block-start]:flex-col has-data-[align=block-start]:items-stretch",
           "has-data-[align=block-end]:flex-col has-data-[align=block-end]:items-stretch",
@@ -199,7 +199,7 @@ const InputGroupTextarea = forwardRef<
   <textarea
     ref={ref}
     className={cn(
-      "field-sizing-content min-h-24 flex-1 resize-none border-0 bg-transparent px-3 py-2 text-body text-fg-default outline-none",
+      "field-sizing-content min-h-24 flex-1 resize-none border-0 bg-transparent px-3 py-2 text-body text-fg-default outline-none focus-visible:ring-0",
       "placeholder:text-fg-muted disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}

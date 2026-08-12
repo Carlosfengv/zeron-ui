@@ -533,6 +533,12 @@ const Loader = useIcon("loader");
         </ComponentPreview>
       </DocSection>
 
+      <DocSection title="Focus behavior">
+        <p className="max-w-3xl text-body leading-5 text-fg-muted">
+          Buttons use <code>:focus-visible</code>: keyboard focus receives a ring, while pointer focus normally does not. Browser and user accessibility preferences that request visible focus are always respected.
+        </p>
+      </DocSection>
+
       <DocSection title={t("apiReference")}>
         <PropsTable props={getButtonProps(t)} />
       </DocSection>

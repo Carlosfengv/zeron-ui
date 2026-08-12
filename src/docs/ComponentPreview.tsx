@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, type MouseEvent, type ReactNode } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import dynamic from "next/dynamic";
-import { routeKeyboardOnMouseDown } from "@/docs/click-to-focus";
 import { useShape } from "@/lib/shape-context";
 import { useIcon } from "@/lib/icon-context";
 import { Tabs, TabsList, TabItem } from "@/components/ui/tabs";
@@ -78,12 +77,6 @@ export function ComponentPreview({
   const previewRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
 
-  // Clicking an empty part of the preview routes keyboard control into the demo
-  // (focuses its first interactive element); :focus-within then shows the
-  // contrasted border. Clicking outside / Tab away hands keys back to the page.
-  const handlePreviewMouseDown = (e: MouseEvent<HTMLDivElement>) =>
-    routeKeyboardOnMouseDown(e, previewRef.current);
-
   const toggleFullscreen = () => {
     const frame = frameRef.current;
     if (!frame) return;
@@ -140,7 +133,7 @@ export function ComponentPreview({
   return (
     <div
       ref={frameRef}
-      className={`relative flex flex-col gap-0 w-full border border-border-subtle transition-[border-color] duration-moderate ease-out focus-within:border-fg-default/40 ${shape.container} ${isFullscreen ? "h-svh w-screen rounded-none" : ""}`}
+      className={`relative flex flex-col gap-0 w-full border border-border-subtle transition-[border-color] duration-moderate ease-out has-[:focus-visible]:border-fg-default/40 ${shape.container} ${isFullscreen ? "h-svh w-screen rounded-none" : ""}`}
     >
       {/* Tab bar — min-height reserves the playback button's height (h-10 + pt-3)
           so the header doesn't shift when the button mounts/unmounts. A hairline
@@ -221,13 +214,13 @@ export function ComponentPreview({
         {tab === 0 ? (
           <div
             ref={previewRef}
+            data-slot="component-preview-content"
             data-fullscreen={isFullscreen || undefined}
-            onMouseDown={handlePreviewMouseDown}
             className={`group/preview-content relative flex ${isFullscreen ? "flex-1" : ""} ${align === "bottom" ? "items-end" : "items-center"} justify-center ${minHeightClass} bg-surface-base ${
               padding === "none"
-                ? ""
+                ? "p-0"
                 : padding === "compact"
-                  ? "px-4 py-4"
+                  ? "px-3 py-3"
                   : padding === "responsive"
                     ? "px-4 py-4 sm:px-8 sm:py-12"
                     : "px-8 py-12"

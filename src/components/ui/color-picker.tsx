@@ -1088,7 +1088,7 @@ const TextColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
     return (
       <div
         className={cn(
-          "flex items-center h-control-md px-2 bg-transparent hover:bg-hover active:bg-active transition-colors duration-fast focus-within:ring-1 focus-within:ring-focus-ring select-none",
+          "flex items-center h-control-md px-2 bg-transparent hover:bg-hover active:bg-active transition-colors duration-fast has-[[data-slot=color-input-control]:focus-visible]:ring-1 has-[[data-slot=color-input-control]:focus-visible]:ring-focus-ring select-none",
           shape.input,
           className
         )}
@@ -1134,6 +1134,7 @@ const TextColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
           }}
           inputMode={inputMode}
           aria-label={ariaLabel}
+          data-slot="color-input-control"
           className={cn(
             "flex-1 min-w-0 bg-transparent text-fg-default text-body outline-none tabular-nums",
             align === "center" && "text-center",
@@ -1263,7 +1264,7 @@ const ScrubColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
         largeStep={nudgeShiftStep ?? 10}
         format={format}
         className={cn(
-          "flex items-center h-control-md bg-transparent hover:bg-hover active:bg-active transition-colors duration-fast focus-within:ring-1 focus-within:ring-focus-ring select-none",
+          "flex items-center h-control-md bg-transparent hover:bg-hover active:bg-active transition-colors duration-fast has-[[data-slot=color-input-control]:focus-visible]:ring-1 has-[[data-slot=color-input-control]:focus-visible]:ring-focus-ring select-none",
           shape.input,
           className
         )}
@@ -1310,6 +1311,7 @@ const ScrubColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
           <NumberField.Input
             ref={setInputRef}
             aria-label={ariaLabel}
+            data-slot="color-input-control"
             inputMode={inputMode}
             onPointerDown={(e) => {
               // While editing, let the input handle caret placement and text

@@ -56,7 +56,7 @@ export const boundaryColorTokens = [
   { name: "input-hover", light: "rgb(23 23 23 / 0.24)", dark: "rgb(245 245 245 / 0.24)", usage: "输入和选择控件的悬停边界；在静止边界之上提供临时反馈" },
   { name: "danger-border", light: danger[500], dark: danger[400], usage: "错误、失败和风险状态的边界；在普通与 Danger Surface 上保持 3:1 非文本对比度" },
   { name: "warning-border", light: warning[600], dark: warning[600], usage: "警告状态的边界；在普通与 Warning Surface 上保持 3:1 非文本对比度" },
-  { name: "focus-ring", light: "#6088E8", dark: "#6088E8", usage: "全局键盘焦点指示器；与品牌色保持独立并在全部承载面上保持 3:1 非文本对比度" },
+  { name: "focus-ring", light: "#6088E8", dark: "#6088E8", usage: "可见焦点指示器；Action 通常在键盘焦点时显示，文本编辑控件可在指针聚焦后显示；与品牌色保持独立并在全部承载面上保持 3:1 非文本对比度" },
 ];
 
 export const interactionColorTokens = [

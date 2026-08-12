@@ -73,7 +73,7 @@ function Calendar({
           defaultClassNames.dropdowns,
         ),
         dropdown_root: cn(
-          "relative border border-input shadow-control has-focus:ring-1 has-focus:ring-focus-ring rounded-control",
+          "relative border border-input shadow-control has-[select:focus-visible]:ring-1 has-[select:focus-visible]:ring-focus-ring rounded-control",
           defaultClassNames.dropdown_root,
         ),
         dropdown: cn(
