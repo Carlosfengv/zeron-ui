@@ -152,8 +152,7 @@ export function ComponentPreview({
           opaque background sits above the inspect overlay (z-40 > z-30) so the
           ruler ticks tuck cleanly under it. */}
       <div
-        className="relative z-40 flex items-center gap-0 p-2"
-        style={{ borderTopLeftRadius: "inherit", borderTopRightRadius: "inherit" }}
+        className="relative z-40 flex items-center gap-0 px-1.5 py-1"
       >
         {title && (
           <span
