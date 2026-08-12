@@ -87,8 +87,8 @@
         },
         "light": {
           "font-family-sans": "\"Inter\", system-ui, sans-serif",
-          "fg-default": "#171717",
-          "fg-muted": "#525252",
+          "fg-default": "#00030A",
+          "fg-muted": "#00030ad8",
           "fg-subtle": "#737373",
           "fg-brand": "#0060D2",
           "fg-danger": "#B42318",
@@ -1609,6 +1609,8 @@
       ],
       "registryDependencies": [
         "https://www.zerondesign.com/r/surfaces.json",
+        "https://www.zerondesign.com/r/nav-item.json",
+        "https://www.zerondesign.com/r/nav-menu.json",
         "utils"
       ],
       "files": [
