@@ -51,8 +51,7 @@ describe("focus modality contract", () => {
   it("gates the NavMenu moving indicator to visible primary focus", () => {
     expect(navMenu).toContain('[data-slot="nav-item-trigger"]:focus-visible');
     expect(navMenu).toContain("onPointerDownCapture={(event) => {");
-    expect(navMenu).toContain('trigger?.matches(":focus-visible")');
-    expect(navMenu).toContain("if (!trigger?.matches(\":focus-visible\")) setFocusedId(null);");
+    expect(navMenu).toContain("if (trigger) setFocusedId(null);");
   });
 
   it("records compact-drawer final focus only for the next open session", () => {

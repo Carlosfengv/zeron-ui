@@ -212,13 +212,10 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
             );
 
             // A pointer press on an already keyboard-focused trigger may not
-            // emit a new focus event. Re-check after the browser updates its
-            // focus-visible heuristic, so pointer interaction clears the
-            // moving ring while an explicit "always show focus" preference
-            // remains respected.
-            requestAnimationFrame(() => {
-              if (!trigger?.matches(":focus-visible")) setFocusedId(null);
-            });
+            // emit a new focus event. The trigger can keep its own visible
+            // focus styling, but its parent row must stop presenting a
+            // keyboard-navigation indicator.
+            if (trigger) setFocusedId(null);
 
             onPointerDownCapture?.(event);
           }}
