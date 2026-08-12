@@ -244,40 +244,32 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
             "relative isolate flex select-none",
             orientation === "vertical"
               ? "min-w-0 max-w-full w-full flex-col"
-              : ["min-w-0 items-center", variant === "underline" || variant === "segment" ? "gap-0.5" : "gap-1"],
+              : "min-w-0 items-center",
             orientation === "horizontal" && variant === "segment" &&
               "max-w-[calc(100%_+_8px)] overflow-x-auto scrollbar-hide",
             orientation === "horizontal" && variant === "underline" &&
-              "max-w-[calc(100%_+_8px)] overflow-x-auto border-b border-border px-1 scrollbar-hide",
+              "max-w-[calc(100%_+_8px)] overflow-x-auto scrollbar-hide",
             className
           )}
           {...props}
         >
           <AnimatePresence>
-            {isMeasured && activeRect && (
+            {variant !== "underline" && isMeasured && activeRect && (
               <motion.div
                 aria-hidden="true"
                 data-slot="nav-item-active-indicator"
                 className={cn(
                   "pointer-events-none absolute z-base",
-                  variant === "underline" || variant === "segment"
-                    ? "bg-brand"
-                    : "bg-active",
-                  variant !== "underline" && shape.bg
+                  variant === "segment" ? "bg-brand" : "bg-active",
+                  shape.bg
                 )}
                 initial={false}
                 animate={{
-                  top:
-                    variant === "underline"
-                      ? activeRect.top + activeRect.height - 2
-                      : activeRect.top,
+                  top: activeRect.top,
                   left: activeRect.left,
                   width: activeRect.width,
-                  height: variant === "underline" ? 2 : activeRect.height,
-                  opacity:
-                    variant === "underline" && hoveredId && hoveredId !== activeId
-                      ? 0.85
-                      : 1,
+                  height: activeRect.height,
+                  opacity: 1,
                 }}
                 exit={{ opacity: 0, transition: spring.fast.exit }}
                 transition={reduceMotion ? { duration: 0 } : spring.moderate}
@@ -321,7 +313,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
               />
             )}
           </AnimatePresence>
-          <ul data-slot="nav-list" className={cn("relative z-content flex min-w-0 list-none p-0", orientation === "vertical" ? "w-full flex-col gap-0.5" : ["items-center", variant === "underline" || variant === "segment" ? "gap-0.5" : "gap-1"])}>
+          <ul data-slot="nav-list" className={cn("relative z-content flex min-w-0 list-none p-0", orientation === "vertical" ? "w-full flex-col gap-0.5" : ["items-center", variant === "underline" ? "gap-3" : variant === "segment" ? "gap-0.5" : "gap-1"])}>
             {children}
           </ul>
         </Root>

@@ -150,9 +150,11 @@ const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
           },
           className: cn(
             "relative z-content flex min-w-0 flex-1 items-center gap-2 px-3 text-body font-normal whitespace-nowrap outline-none",
-            variant === "underline" ? "h-control-md" : "h-control-sm",
+            variant === "underline"
+              ? "h-control-md border-b-2 border-transparent data-[active=true]:border-fg-default"
+              : "h-control-sm",
             "group-data-[state=collapsed]/sidebar:h-full group-data-[state=collapsed]/sidebar:w-full group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:px-0",
-            "cursor-pointer text-fg-muted transition-[color] duration-fast",
+            "cursor-pointer text-fg-muted transition-[color,border-color] duration-fast",
             "hover:text-fg-default focus-visible:text-fg-default",
             variant === "segment"
               ? "data-[active=true]:font-semibold data-[active=true]:text-fg-on-brand"
