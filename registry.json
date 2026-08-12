@@ -1786,6 +1786,9 @@
       "registryDependencies": [
         "surfaces",
         "utils",
+        "icon-context",
+        "nav-item",
+        "popover",
         "shape-context",
         "surface-context",
         "surface-classes"
