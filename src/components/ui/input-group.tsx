@@ -177,7 +177,7 @@ const InputGroupInput = forwardRef<HTMLInputElement, InputGroupInputProps>(
     <Input
       ref={ref}
       className={cn(
-        "flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0",
+        "flex-1 border-0 bg-transparent shadow-none hover:bg-transparent focus-visible:ring-0",
         "group-has-data-[align=inline-start]/input-group:pl-0",
         "group-has-data-[align=inline-end]/input-group:pr-0",
         className

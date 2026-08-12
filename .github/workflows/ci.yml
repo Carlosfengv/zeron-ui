@@ -11,35 +11,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Semantic tokens are up to date
-        run: npm run tokens:check
+        run: pnpm tokens:check
 
       - name: Lint
-        run: npm run lint
+        run: pnpm lint
 
       - name: Test
-        run: npm test
+        run: pnpm test
 
       - name: Test CLI
-        run: npm run cli:test
+        run: pnpm cli:test
 
       - name: Build
-        run: npm run build
+        run: pnpm build
 
       # Rebuild the registry and fail if the committed public/r output has
       # drifted from the sources — public/r is what users install from.
       - name: Registry output is up to date
         run: |
-          npm run registry:build
+          pnpm registry:build
           git diff --exit-code -- public/r || {
-            echo "::error::public/r is stale — run 'npm run registry:build' and commit the result"
+            echo "::error::public/r is stale — run 'pnpm registry:build' and commit the result"
             exit 1
           }

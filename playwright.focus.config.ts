@@ -20,7 +20,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start -- -p 3334",
+    command: "pnpm start -- -p 3334",
     url: "http://127.0.0.1:3334",
     reuseExistingServer: false,
     timeout: 30_000,

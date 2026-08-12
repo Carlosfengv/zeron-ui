@@ -298,13 +298,13 @@ export function renderDocumentation() {
 src/system/tokens/semantic-tokens.mjs
 
 # 2. 生成 CSS、组件注册表、运行时圆角数据和本文档
-npm run tokens:build
+pnpm tokens:build
 
 # 3. 生成可安装的 public/r 产物
-npm run registry:build
+pnpm registry:build
 
 # 4. 验证没有漂移
-npm run tokens:check
+pnpm tokens:check
 \`\`\`
 
 ## 前景颜色
@@ -629,7 +629,7 @@ async function main() {
       if (current !== content) stale.push(path.replace(`${ROOT}/`, ""));
     }
     if (stale.length) {
-      throw new Error(`Generated semantic-token artifacts are stale: ${stale.join(", ")}. Run npm run tokens:build.`);
+      throw new Error(`Generated semantic-token artifacts are stale: ${stale.join(", ")}. Run pnpm tokens:build.`);
     }
     console.log("✓ semantic-token artifacts are up to date");
     return;

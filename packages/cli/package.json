@@ -20,7 +20,7 @@
   "scripts": {
     "check": "node ./src/index.js --help",
     "test": "node --test",
-    "prepublishOnly": "npm run check && npm test"
+    "prepublishOnly": "pnpm check && pnpm test"
   },
   "dependencies": {
     "shadcn": "4.16.2"

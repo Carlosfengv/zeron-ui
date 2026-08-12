@@ -1,0 +1,11 @@
+packages:
+  - "packages/*"
+
+strictDepBuilds: true
+
+onlyBuiltDependencies:
+  - "@parcel/watcher"
+  - "@swc/core"
+  - msw
+  - sharp
+  - unrs-resolver

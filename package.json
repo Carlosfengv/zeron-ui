@@ -2,13 +2,11 @@
   "name": "zeron-design",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.12.4",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Carlosfengv/zeron-ui.git"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -16,15 +14,15 @@
     "lint": "eslint app src scripts tests types packages eslint.config.mjs vitest.config.mts next.config.ts postcss.config.mjs --max-warnings=0",
     "test": "vitest run --config vitest.config.mts",
     "test:i18n:unit": "vitest run --config vitest.config.mts tests/i18n-message-parity.test.ts tests/i18n-document-manifest.test.ts tests/i18n-routing.test.ts",
-    "test:i18n:production": "npm run build && vitest run --config vitest.config.mts tests/i18n-production-smoke.test.ts",
-    "test:i18n:e2e": "npm run build && playwright test --config playwright.config.ts",
-    "test:focus:e2e": "npm run build && playwright test --config playwright.focus.config.ts",
-    "test:i18n:payload": "npm run build && node scripts/check-i18n-client-payload.mjs",
+    "test:i18n:production": "pnpm build && vitest run --config vitest.config.mts tests/i18n-production-smoke.test.ts",
+    "test:i18n:e2e": "pnpm build && playwright test --config playwright.config.ts",
+    "test:focus:e2e": "pnpm build && playwright test --config playwright.focus.config.ts",
+    "test:i18n:payload": "pnpm build && node scripts/check-i18n-client-payload.mjs",
     "tokens:build": "node scripts/generate-semantic-tokens.mjs",
     "tokens:check": "node scripts/generate-semantic-tokens.mjs --check",
-    "registry:build": "npm run tokens:build && shadcn build && node scripts/postbuild-registry.mjs",
-    "cli:check": "npm run check --workspace zeron-ui",
-    "cli:test": "npm test --workspace zeron-ui"
+    "registry:build": "pnpm tokens:build && shadcn build && node scripts/postbuild-registry.mjs",
+    "cli:check": "pnpm --filter zeron-ui check",
+    "cli:test": "pnpm --filter zeron-ui test"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

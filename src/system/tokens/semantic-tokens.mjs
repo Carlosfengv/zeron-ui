@@ -3,7 +3,7 @@
  *
  * This is the hand-edited semantic source for CSS/registry design tokens.
  * Reference color primitives live in reference-colors.mjs.
- * Run `npm run tokens:build` after editing it. The generator updates:
+ * Run `pnpm tokens:build` after editing it. The generator updates:
  *   - the generated token block in app/globals.css
  *   - the `surfaces` registry:theme item in registry.json
  *   - src/system/design-tokens.ts (runtime shape values)
