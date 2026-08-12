@@ -165,7 +165,7 @@ const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
         data-proximity-index={index}
         className={cn(
           "group/row relative z-content border-b transition-[border-color] duration-fast",
-          hideBorder ? "border-transparent" : "border-border",
+          hideBorder ? "border-border" : "border-border",
           isBodyRow && activeIdx === index && "is-active",
           className,
           isBodyRow ? "font-normal" : "font-medium"

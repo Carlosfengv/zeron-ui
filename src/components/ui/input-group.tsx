@@ -35,7 +35,7 @@ const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
       <div
         ref={ref}
         className={cn(
-          "group/input-group relative flex w-full min-w-0 items-center border border-input bg-transparent shadow-control outline-none hover:border-input-hover hover:bg-hover",
+          "group/input-group relative flex w-full min-w-0 items-center border border-input bg-transparent outline-none hover:border-input-hover hover:bg-hover",
           "transition-[background-color,border-color,box-shadow,color] duration-fast",
           "has-[[data-slot=input-group-control]:focus-visible]:ring-1 has-[[data-slot=input-group-control]:focus-visible]:ring-focus-ring",
           "has-aria-invalid:border-danger-border has-aria-invalid:hover:border-danger-border has-aria-invalid:ring-1 has-aria-invalid:ring-danger-border/40 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-1 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-focus-ring has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-offset-2",

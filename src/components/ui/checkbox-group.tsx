@@ -327,10 +327,10 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
           />
         )}
 
-        {/* The invisible bold copy reserves width so weight changes do not reflow. */}
+        {/* The invisible weighted copy reserves width so weight changes do not reflow. */}
         <span className="inline-grid min-w-0 flex-1 text-body">
           <span
-            className="col-start-1 row-start-1 invisible font-semibold"
+            className="col-start-1 row-start-1 invisible font-medium"
             aria-hidden="true"
           >
             {label}
@@ -341,7 +341,7 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
               checked || isActive
                 ? "text-fg-default"
                 : "text-fg-muted",
-              checked ? "font-semibold" : "font-normal"
+              checked ? "font-medium" : "font-normal"
             )}
           >
             {label}

@@ -36,6 +36,12 @@ describe("semantic color consumers", () => {
     expect(source).not.toContain("bg-accent");
   });
 
+  it("uses a semantic half-pixel boundary on switches", () => {
+    const source = read(join(UI_ROOT, "switch.tsx"));
+
+    expect(source).toContain("border-[0.5px] border-border");
+  });
+
   it("does not use retired compatibility color names", () => {
     for (const path of componentFiles()) {
       const source = read(path);
@@ -77,6 +83,19 @@ describe("semantic color consumers", () => {
     expect(gridCell).not.toContain('"bg-active": isSelected && !isEditing');
   });
 
+  it("keeps pinned and unpinned data-table surfaces visually consistent", () => {
+    const dataTable = read(join(UI_ROOT, "data-table.tsx"));
+
+    expect(dataTable).toContain("border-border-subtle bg-surface-floating");
+    expect(dataTable).toContain('className="h-control-md whitespace-nowrap"');
+    expect(dataTable).not.toContain('className="h-control-md whitespace-nowrap bg-surface-raised"');
+    expect(dataTable).toContain('backgroundColor = "var(--surface-floating)"');
+    expect(dataTable).not.toContain('backgroundColor = "var(--surface-raised)"');
+    expect(dataTable).not.toContain('backgroundColor = "var(--surface-base)"');
+    expect(dataTable).not.toContain("bg-muted/25");
+    expect(dataTable).not.toContain("opacity: isPinned");
+  });
+
   it("keeps component geometry connected to the active shape theme", () => {
     const dropdown = read(join(UI_ROOT, "dropdown.tsx"));
     const menuItem = read(join(UI_ROOT, "menu-item.tsx"));
@@ -113,6 +132,30 @@ describe("semantic color consumers", () => {
     expect(inputGroup).toContain('xs: "h-control-xs');
     expect(inputGroup).toContain('"icon-xs": "size-control-xs');
     expect(shortcuts).toContain('className="h-control-sm pl-8"');
+  });
+
+  it("keeps input and input-group surfaces flat", () => {
+    const input = read(join(UI_ROOT, "input.tsx"));
+    const inputGroup = read(join(UI_ROOT, "input-group.tsx"));
+
+    expect(input).not.toContain("shadow-control");
+    expect(inputGroup).not.toContain("shadow-control");
+    expect(input).toContain("focus-visible:ring-1 focus-visible:ring-focus-ring");
+    expect(inputGroup).toContain(
+      "has-[[data-slot=input-group-control]:focus-visible]:ring-1",
+    );
+  });
+
+  it("uses medium emphasis for checked checkbox-item labels", () => {
+    const checkboxGroup = read(join(UI_ROOT, "checkbox-group.tsx"));
+
+    expect(checkboxGroup).toContain(
+      'checked ? "font-medium" : "font-normal"',
+    );
+    expect(checkboxGroup).toContain("invisible font-medium");
+    expect(checkboxGroup).not.toContain(
+      'checked ? "font-semibold" : "font-normal"',
+    );
   });
 
   it("keeps categorical and status badges separate", () => {

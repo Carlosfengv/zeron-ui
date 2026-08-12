@@ -174,7 +174,12 @@ function DataTable<TData>({
       {...props}
     >
       {children}
-      <div className={cn("overflow-hidden border border-border-subtle bg-surface-base", shape.container)}>
+      <div
+        className={cn(
+          "overflow-hidden border border-border-subtle bg-surface-floating",
+          shape.container
+        )}
+      >
         <div className="overflow-x-auto">
           <Table>
           <TableHeader>
@@ -182,13 +187,10 @@ function DataTable<TData>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead
-                    className="h-control-md whitespace-nowrap bg-muted/25"
+                    className="h-control-md whitespace-nowrap"
                     colSpan={header.colSpan}
                     key={header.id}
-                    style={getCommonPinningStyles(
-                      header.column,
-                      "linear-gradient(var(--surface-raised), var(--surface-raised))"
-                    )}
+                    style={getCommonPinningStyles(header.column)}
                   >
                     {header.isPlaceholder
                       ? null
@@ -218,12 +220,11 @@ function DataTable<TData>({
                           "group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]"
                       )}
                       key={cell.id}
-                      style={getCommonPinningStyles(
-                        cell.column,
-                        row.getIsSelected()
+                      style={getCommonPinningStyles(cell.column, {
+                        backgroundImage: row.getIsSelected()
                           ? "linear-gradient(var(--selection), var(--selection))"
-                          : undefined
-                      )}
+                          : undefined,
+                      })}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
@@ -543,7 +544,7 @@ function DataTableFacetedFilter<TData, TValue>({
         <div className="px-2 py-1.5 text-label text-fg-muted">
           {title}
         </div>
-        <div className="-mx-1 my-1 h-px bg-border-subtle" />
+        <div className="-mx-1 my-1 h-px" />
         <CheckboxGroup
           aria-label={title}
           checkedIndices={checkedIndices}
@@ -731,7 +732,7 @@ function DataTableViewOptions<TData>({
         <div className="px-2 py-1.5 text-label text-fg-muted">
           Toggle columns
         </div>
-        <div className="-mx-1 my-1 h-px bg-border-subtle" />
+        <div className="-mx-1 my-1" />
         <CheckboxGroup
           aria-label="Toggle columns"
           checkedIndices={checkedIndices}
@@ -754,7 +755,13 @@ function DataTableViewOptions<TData>({
 
 function getCommonPinningStyles<TData, TValue>(
   column: Column<TData, TValue>,
-  backgroundImage?: string
+  {
+    backgroundColor = "var(--surface-floating)",
+    backgroundImage,
+  }: {
+    backgroundColor?: string;
+    backgroundImage?: string;
+  } = {}
 ): React.CSSProperties {
   const isPinned = column.getIsPinned();
   const isLastLeftPinnedColumn =
@@ -763,7 +770,7 @@ function getCommonPinningStyles<TData, TValue>(
     isPinned === "right" && column.getIsFirstColumn("right");
 
   return {
-    backgroundColor: isPinned ? "var(--surface-base)" : undefined,
+    backgroundColor: isPinned ? backgroundColor : undefined,
     backgroundImage: isPinned ? backgroundImage : undefined,
     boxShadow: isLastLeftPinnedColumn
       ? "-4px 0 4px -4px var(--border) inset"
@@ -771,7 +778,6 @@ function getCommonPinningStyles<TData, TValue>(
         ? "4px 0 4px -4px var(--border) inset"
         : undefined,
     left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
-    opacity: isPinned ? 0.98 : 1,
     position: isPinned ? "sticky" : "relative",
     right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
     width: column.getSize(),
