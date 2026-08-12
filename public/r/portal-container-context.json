@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "portal-container-context",
+  "title": "Portal Container Context",
+  "description": "Ambient portal mount point for floating UI rendered inside native fullscreen or bounded regions.",
+  "files": [
+    {
+      "path": "src/system/portal-container-context.tsx",
+      "content": "\"use client\";\n\nimport { createContext, useContext, type ReactNode } from \"react\";\n\nconst PortalContainerContext = createContext<HTMLElement | null>(null);\n\ninterface PortalContainerProviderProps {\n  children: ReactNode;\n  value: HTMLElement | null;\n}\n\n/**\n * Supplies an ambient mount point for floating UI. Native fullscreen only\n * renders the selected element and its descendants, so body-level portals\n * need to opt into the fullscreen subtree.\n */\nfunction PortalContainerProvider({\n  children,\n  value,\n}: PortalContainerProviderProps) {\n  return (\n    <PortalContainerContext.Provider value={value}>\n      {children}\n    </PortalContainerContext.Provider>\n  );\n}\n\nfunction usePortalContainer() {\n  return useContext(PortalContainerContext);\n}\n\nexport { PortalContainerProvider, usePortalContainer };\n",
+      "type": "registry:lib",
+      "target": "lib/portal-container-context.tsx"
+    }
+  ],
+  "type": "registry:lib"
+}
