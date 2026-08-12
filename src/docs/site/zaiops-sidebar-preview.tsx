@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -463,7 +464,7 @@ function CompactOpenTrigger() {
   return <SidebarTrigger label="打开导航" className="max-xl:min-h-11 max-xl:min-w-11" />;
 }
 
-export function ZaiopsSidebarPreview() {
+export function ZaiopsSidebarPreview({ className }: { className?: string }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [organizationId, setOrganizationId] = useState(organizations[0].id);
   const [activeNavigationValue, setActiveNavigationValue] = useState("#home");
@@ -486,8 +487,11 @@ export function ZaiopsSidebarPreview() {
 
   return (
     <SidebarProvider>
-      <div className="w-full group-data-[fullscreen=true]/preview-content:h-full">
-        <div className="relative flex h-[min(42rem,calc(100svh-8rem))] min-h-120 w-full overflow-hidden bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
+      <div className="h-full min-h-0 w-full group-data-[fullscreen=true]/preview-content:h-full">
+        <div className={cn(
+          "relative flex h-[min(42rem,calc(100svh-8rem))] min-h-120 w-full overflow-hidden bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0",
+          className,
+        )}>
           <ZaiopsSidebar
             activeNavigationValue={activeNavigationValue}
             accountActions={accountActions}

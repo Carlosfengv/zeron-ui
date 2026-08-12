@@ -5,6 +5,7 @@ import type { ComponentEntry } from "@/docs/components";
 import { featuredPreviewMap } from "@/docs/site/featured-previews";
 import { BentoCard } from "@/docs/site/bento-card";
 import { cn } from "@/lib/utils";
+import { ZaiopsSidebarPreview } from "@/docs/site/zaiops-sidebar-preview";
 
 const displayOrder = [
   "thinking-indicator",
@@ -88,6 +89,14 @@ export function BentoGrid({ components }: BentoGridProps) {
           </BentoCard>
         );
       })}
+      <BentoCard
+        slug="sidebar"
+        name="ZAIops recipe"
+        animateLayout
+        className="col-span-1 min-h-[768px] md:col-span-2 md:row-span-3 md:min-h-0 xl:col-span-3 [&>div:first-child]:p-0"
+      >
+        <ZaiopsSidebarPreview className="h-full min-h-0" />
+      </BentoCard>
     </div>
   );
 }
