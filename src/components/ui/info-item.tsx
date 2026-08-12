@@ -11,7 +11,7 @@ const InfoItemGroup = forwardRef<HTMLDivElement, InfoItemGroupProps>(
       ref={ref}
       data-slot="info-item-group"
       className={cn(
-        "divide-y divide-border-subtle overflow-hidden rounded-container border border-border-subtle bg-surface-raised",
+        "divide-y divide-border-subtle overflow-hidden rounded-container border border-border-subtle bg-surface-floating",
         className
       )}
       {...props}

@@ -20,11 +20,7 @@ import { NumberField } from "@base-ui/react/number-field";
 import { cn } from "@/lib/utils";
 import { spring } from "@/lib/springs";
 import { useShape } from "@/lib/shape-context";
-import {
-  resolveSurface,
-  useSurface,
-  SurfaceProvider,
-} from "@/lib/surface-context";
+import { SurfaceProvider } from "@/lib/surface-context";
 import { surfaceClasses } from "@/lib/surface-classes";
 import { useIcon } from "@/lib/icon-context";
 import { useProximityHover } from "@/hooks/use-proximity-hover";
@@ -1695,21 +1691,23 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
     const solidB = Math.round(solidHueRgb.b);
     const solidColorString = `rgb(${solidR}, ${solidG}, ${solidB})`;
     const shape = useShape();
-    const substrate = useSurface();
-    // The inline picker is a raised card; ColorPickerPopover re-provides a
-    // floating substrate before its className override is applied. Either way,
-    // announce the panel's effective role so descendants (FormatDropdown,
-    // etc.) elevate above it instead of colliding at the same surface.
-    const pickerSurface = substrate === "base" ? "raised" : substrate;
+    // Both inline and popover pickers use the floating surface. Re-provide the
+    // effective role so descendants (FormatDropdown, etc.) elevate above it.
+    const pickerSurface = "floating";
 
     return (
       <SurfaceProvider role={pickerSurface}>
-      <div
-        ref={ref}
-        className={cn("flex flex-col gap-2 p-3", surfaceClasses(pickerSurface, "raised"), shape.container, className)}
-        style={{ width: PANEL_WIDTH }}
-        {...props}
-      >
+        <div
+          ref={ref}
+          className={cn(
+            "flex flex-col gap-2 p-3",
+            surfaceClasses(pickerSurface, "floating"),
+            shape.container,
+            className,
+          )}
+          style={{ width: PANEL_WIDTH }}
+          {...props}
+        >
         <SaturationSquare
           h={hsv.h}
           s={hsv.s}
@@ -1809,7 +1807,7 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
             onPick={handleSwatchPick}
           />
         )}
-      </div>
+        </div>
       </SurfaceProvider>
     );
   }
@@ -1965,8 +1963,7 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
     const portalContainer = useContext(ColorPickerPortalContainerContext);
     const fullscreenPortal = usePortalContainer();
     const shape = useShape();
-    const substrate = useSurface();
-    const surface = resolveSurface(substrate, "floating");
+    const surface = "floating";
 
     const handleOpenChange = useCallback(
       (next: boolean) => {
@@ -2103,10 +2100,7 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
                         {...pickerProps}
                         value={currentValue}
                         onValueChange={handleValueChange}
-                        className={cn(
-                          surfaceClasses(surface, "floating"),
-                          pickerProps.className
-                        )}
+                        className={pickerProps.className}
                       />
                     </SurfaceProvider>
                   </ColorPickerPortalContainer>

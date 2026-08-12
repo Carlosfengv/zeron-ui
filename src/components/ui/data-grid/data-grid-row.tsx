@@ -213,7 +213,7 @@ function DataGridRowImpl<TData>({
       {...props}
       ref={rowRef}
       className={cn(
-        "absolute flex w-full border-b border-border-subtle bg-surface-raised",
+        "absolute flex w-full border-b border-border-subtle bg-surface-floating",
         !adjustLayout && "will-change-transform",
         className,
       )}

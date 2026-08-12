@@ -117,7 +117,7 @@ export function DataGrid<TData>({
         tabIndex={0}
         ref={dataGridRef}
         className={cn(
-          "relative grid select-none overflow-auto border border-border/70 bg-surface-raised focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring",
+          "relative grid select-none overflow-auto border border-border/70 bg-surface-floating focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring",
           shape.container,
         )}
         style={{
@@ -130,7 +130,7 @@ export function DataGrid<TData>({
           role="rowgroup"
           data-slot="grid-header"
           ref={headerRef}
-          className="sticky top-0 z-raised grid border-b border-border/70 bg-surface-raised"
+          className="sticky top-0 z-raised grid border-b border-border/70 bg-surface-floating"
         >
           {table.getHeaderGroups().map((headerGroup, rowIndex) => (
             <div
@@ -255,7 +255,7 @@ export function DataGrid<TData>({
             role="rowgroup"
             data-slot="grid-footer"
             ref={footerRef}
-            className="sticky bottom-0 z-raised grid border-t border-border/70 bg-surface-raised"
+            className="sticky bottom-0 z-raised grid border-t border-border/70 bg-surface-floating"
           >
             <div
               role="row"

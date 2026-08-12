@@ -96,6 +96,28 @@ describe("semantic color consumers", () => {
     expect(dataTable).not.toContain("opacity: isPinned");
   });
 
+  it("uses floating surfaces for primary interactive component panels", () => {
+    const colorPicker = read(join(UI_ROOT, "color-picker.tsx"));
+    const dataGrid = read(join(UI_ROOT, "data-grid/data-grid.tsx"));
+    const dataGridRow = read(join(UI_ROOT, "data-grid/data-grid-row.tsx"));
+    const dataGridSystem = read(join(ROOT, "src/system/data-grid.ts"));
+    const infoItem = read(join(UI_ROOT, "info-item.tsx"));
+    const askUserQuestions = read(join(UI_ROOT, "ask-user-questions.tsx"));
+
+    expect(colorPicker).toContain('const pickerSurface = "floating"');
+    expect(colorPicker).toContain('const surface = "floating"');
+    expect(colorPicker).toContain('surfaceClasses(pickerSurface, "floating")');
+    expect(dataGrid).toContain("bg-surface-floating");
+    expect(dataGrid).not.toContain("bg-surface-raised");
+    expect(dataGridRow).toContain("bg-surface-floating");
+    expect(dataGridRow).not.toContain("bg-surface-raised");
+    expect(dataGridSystem).toContain('background: "var(--surface-floating)"');
+    expect(dataGridSystem).not.toContain('background: "var(--surface-raised)"');
+    expect(infoItem).toContain("bg-surface-floating");
+    expect(infoItem).not.toContain("bg-surface-raised");
+    expect(askUserQuestions).toContain("bg-surface-floating");
+  });
+
   it("keeps component geometry connected to the active shape theme", () => {
     const dropdown = read(join(UI_ROOT, "dropdown.tsx"));
     const menuItem = read(join(UI_ROOT, "menu-item.tsx"));

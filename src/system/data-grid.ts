@@ -166,7 +166,9 @@ export function getColumnPinningStyle<TData>(params: {
     right: isRtl ? leftPosition : rightPosition,
     opacity: 1,
     position: isPinned ? "sticky" : "relative",
-    background: "var(--surface-raised)",
+    // Sticky columns need an opaque surface so scrolling cells cannot show
+    // through them. Keep it aligned with the DataGrid's floating panel.
+    background: "var(--surface-floating)",
     width: column.getSize(),
     zIndex: isPinned ? "var(--layer-raised)" : undefined,
   };
