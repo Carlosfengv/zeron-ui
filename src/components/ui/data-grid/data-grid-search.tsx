@@ -176,7 +176,7 @@ function DataGridSearchImpl({
       role="search"
       data-slot="grid-search"
       className={cn(
-        "fade-in-0 slide-in-from-top-2 absolute end-4 top-4 z-popover flex animate-in flex-col gap-2 border border-border/70 bg-surface-floating p-2 shadow-floating",
+        "fade-in-0 slide-in-from-top-2 absolute end-4 top-4 z-popover flex animate-in flex-col gap-2 border border-border bg-surface-floating p-2 shadow-floating",
         shape.container,
       )}
     >

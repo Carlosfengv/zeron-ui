@@ -117,7 +117,7 @@ export function DataGrid<TData>({
         tabIndex={0}
         ref={dataGridRef}
         className={cn(
-          "relative grid select-none overflow-auto border border-border/70 bg-surface-floating focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring",
+          "relative grid select-none overflow-auto border border-border bg-surface-floating focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring",
           shape.container,
         )}
         style={{
@@ -130,7 +130,7 @@ export function DataGrid<TData>({
           role="rowgroup"
           data-slot="grid-header"
           ref={headerRef}
-          className="sticky top-0 z-raised grid border-b border-border/70 bg-surface-floating"
+          className="sticky top-0 z-raised grid border-b border-border bg-surface-floating"
         >
           {table.getHeaderGroups().map((headerGroup, rowIndex) => (
             <div
@@ -177,9 +177,9 @@ export function DataGrid<TData>({
                     tabIndex={-1}
                     className={cn("relative", {
                       grow: stretchColumns && header.column.id !== "select",
-                      "border-e border-border-subtle":
+                      "border-e border-border":
                         showEndBorder && header.column.id !== "select",
-                      "border-s border-border-subtle":
+                      "border-s border-border":
                         showStartBorder && header.column.id !== "select",
                     })}
                     style={{
@@ -255,7 +255,7 @@ export function DataGrid<TData>({
             role="rowgroup"
             data-slot="grid-footer"
             ref={footerRef}
-            className="sticky bottom-0 z-raised grid border-t border-border/70 bg-surface-floating"
+            className="sticky bottom-0 z-raised grid border-t border-border bg-surface-floating"
           >
             <div
               role="row"

@@ -176,7 +176,7 @@ function DataTable<TData>({
       {children}
       <div
         className={cn(
-          "overflow-hidden border border-border-subtle bg-surface-floating",
+          "overflow-hidden border border-border bg-surface-floating",
           shape.container
         )}
       >
@@ -564,7 +564,7 @@ function DataTableFacetedFilter<TData, TValue>({
         </CheckboxGroup>
         {selectedValues.size > 0 && (
           <Button
-            className="mt-0.5 w-full border-t border-border-subtle"
+            className="mt-0.5 w-full border-t border-border"
             onClick={() => {
               column.setFilterValue(undefined);
               setOpen(false);

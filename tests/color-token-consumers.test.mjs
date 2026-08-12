@@ -86,7 +86,7 @@ describe("semantic color consumers", () => {
   it("keeps pinned and unpinned data-table surfaces visually consistent", () => {
     const dataTable = read(join(UI_ROOT, "data-table.tsx"));
 
-    expect(dataTable).toContain("border-border-subtle bg-surface-floating");
+    expect(dataTable).toContain("border-border bg-surface-floating");
     expect(dataTable).toContain('className="h-control-md whitespace-nowrap"');
     expect(dataTable).not.toContain('className="h-control-md whitespace-nowrap bg-surface-raised"');
     expect(dataTable).toContain('backgroundColor = "var(--surface-floating)"');
@@ -94,6 +94,34 @@ describe("semantic color consumers", () => {
     expect(dataTable).not.toContain('backgroundColor = "var(--surface-base)"');
     expect(dataTable).not.toContain("bg-muted/25");
     expect(dataTable).not.toContain("opacity: isPinned");
+  });
+
+  it("uses border for input and table structure boundaries", () => {
+    const input = read(join(UI_ROOT, "input.tsx"));
+    const table = read(join(UI_ROOT, "table.tsx"));
+    const dataTable = read(join(UI_ROOT, "data-table.tsx"));
+    const dataGrid = read(join(UI_ROOT, "data-grid/data-grid.tsx"));
+    const dataGridRow = read(join(UI_ROOT, "data-grid/data-grid-row.tsx"));
+    const dataGridPrimitives = read(
+      join(UI_ROOT, "data-grid/data-grid-primitives.tsx")
+    );
+
+    expect(input).toContain("border border-border bg-transparent");
+    expect(table).toContain(
+      "group/row relative z-content border-b transition-[border-color] duration-fast"
+    );
+    expect(table).toContain('"border-border"');
+    expect(table).not.toContain("border-border-subtle");
+    expect(dataTable).toContain(
+      "overflow-hidden border border-border bg-surface-floating"
+    );
+    expect(dataGrid).toContain(
+      "overflow-auto border border-border bg-surface-floating"
+    );
+    expect(dataGrid).not.toContain("border-border/70");
+    expect(dataGrid).not.toContain("border-border-subtle");
+    expect(dataGridRow).not.toContain("border-border-subtle");
+    expect(dataGridPrimitives).toContain("shrink-0 bg-border");
   });
 
   it("uses floating surfaces for primary interactive component panels", () => {
