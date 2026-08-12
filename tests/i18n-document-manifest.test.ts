@@ -7,8 +7,8 @@ const ROOT = new URL("..", import.meta.url).pathname;
 
 describe("documentation manifest", () => {
   it("defines the complete public documentation surface exactly once", () => {
-    expect(pageDocEntries).toHaveLength(42);
-    expect(detailDocEntries).toHaveLength(40);
+    expect(pageDocEntries).toHaveLength(43);
+    expect(detailDocEntries).toHaveLength(41);
     expect(docManifest.filter((entry) => entry.kind === "redirect")).toHaveLength(1);
     expect(new Set(docManifest.map((entry) => entry.pathname)).size).toBe(docManifest.length);
   });

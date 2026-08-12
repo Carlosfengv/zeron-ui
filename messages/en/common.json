@@ -113,6 +113,7 @@
       "input": "Text input with three variants, four sizes, and accessible validation states.",
       "input-copy": "Read-only input with copy-to-clipboard button and animated feedback.",
       "input-group": "Composable input with addons, compact actions, textarea support, and validation.",
+      "info-item": "Composable information row with leading media, primary and supporting text, and a flexible trailing value or detail.",
       "kbd": "Compact keycaps and shortcut groups for keyboard commands and interaction hints.",
       "popover": "Collision-aware floating content with a liquid anchor-to-panel transition.",
       "radio-group": "Composable radio controls with form support and enhanced proximity-hover rows.",

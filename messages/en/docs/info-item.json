@@ -1,0 +1,19 @@
+{
+  "infoItem": {
+    "basic": "Basic",
+    "quota": "Quota Detail",
+    "inlineLayout": "Inline Layout",
+    "apiReference": "API Reference",
+    "parts": "Parts",
+    "layoutProp": "Places the title and description in a vertical stack or on one line.",
+    "childrenProp": "Composable leading, content, and trailing parts.",
+    "classNameProp": "Additional classes applied to the item.",
+    "groupPart": "Optional bordered group that separates adjacent items.",
+    "leadingPart": "Fixed-size leading slot for an icon, avatar, or thumbnail.",
+    "contentPart": "Flexible container for the title and supporting description.",
+    "titlePart": "Primary label for the information row.",
+    "descriptionPart": "Supporting or secondary information.",
+    "trailingPart": "Right-aligned slot for values, status, controls, or compact custom content.",
+    "valuePart": "Tabular-numeric text style for a trailing value."
+  }
+}

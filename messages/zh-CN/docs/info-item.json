@@ -1,0 +1,19 @@
+{
+  "infoItem": {
+    "basic": "基础用法",
+    "quota": "额度详情",
+    "inlineLayout": "单行布局",
+    "apiReference": "API 参考",
+    "parts": "组成部件",
+    "layoutProp": "控制标题与描述采用上下堆叠或同一行排列。",
+    "childrenProp": "可组合的前置、内容与尾部区域。",
+    "classNameProp": "应用到信息项的附加类名。",
+    "groupPart": "可选的带边框分组，为相邻信息项添加分隔线。",
+    "leadingPart": "用于图标、头像或缩略图的固定尺寸前置区域。",
+    "contentPart": "容纳标题与辅助描述的弹性内容区域。",
+    "titlePart": "信息项的主要标签。",
+    "descriptionPart": "辅助或次要信息。",
+    "trailingPart": "右对齐区域，可放置数值、状态、控件或紧凑的自定义内容。",
+    "valuePart": "用于尾部数值、采用等宽数字的文本样式。"
+  }
+}

@@ -33,6 +33,7 @@ import motionMessages from "@/messages/en/docs/motion.json";
 import semanticTokensMessages from "@/messages/en/docs/semantic-tokens.json";
 import scrollbarsMessages from "@/messages/en/docs/scrollbars.json";
 import inputGroupMessages from "@/messages/en/docs/input-group.json";
+import infoItemMessages from "@/messages/en/docs/info-item.json";
 import selectMessages from "@/messages/en/docs/select.json";
 import sliderMessages from "@/messages/en/docs/slider.json";
 import tabsMessages from "@/messages/en/docs/tabs.json";
@@ -72,6 +73,7 @@ const messages = {
   ...semanticTokensMessages,
   ...scrollbarsMessages,
   ...inputGroupMessages,
+  ...infoItemMessages,
   ...selectMessages,
   ...sliderMessages,
   ...tabsMessages,
