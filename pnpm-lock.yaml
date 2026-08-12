@@ -26,6 +26,12 @@ importers:
       '@hugeicons/react':
         specifier: ^1.1.6
         version: 1.1.6(react@19.2.4)
+      '@shikijs/langs':
+        specifier: 3.22.0
+        version: 3.22.0
+      '@shikijs/themes':
+        specifier: 3.22.0
+        version: 3.22.0
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -96,6 +102,9 @@ importers:
       '@formatjs/icu-messageformat-parser':
         specifier: ^2.11.4
         version: 2.11.4
+      '@next/eslint-plugin-next':
+        specifier: 15.5.12
+        version: 15.5.12
       '@playwright/test':
         specifier: ^1.55.1
         version: 1.55.1
@@ -111,6 +120,12 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.14)
+      '@typescript-eslint/eslint-plugin':
+        specifier: 8.56.0
+        version: 8.56.0(@typescript-eslint/parser@8.56.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: 8.56.0
+        version: 8.56.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       eslint:
         specifier: ^9.39.1
         version: 9.39.2(jiti@2.6.1)
