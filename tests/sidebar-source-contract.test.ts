@@ -24,6 +24,12 @@ describe("sidebar implementation contract", () => {
     expect(sidebar).toContain('data-mobile="false"');
   });
 
+  it("keeps compact drawer actions stable while its open state changes", () => {
+    expect(sidebar).toContain("const mobileOpenRef = useRef(mobileOpen);");
+    expect(sidebar).toContain("if (nextOpen && !mobileOpenRef.current)");
+    expect(sidebar).toContain("[mobileOpenProp, onMobileOpenChange]");
+  });
+
   it("preserves SidebarContent prop placement while adding style outlets", () => {
     expect(sidebar).toContain("viewportClassName?: string;");
     expect(sidebar).toContain("contentClassName?: string;");
@@ -57,6 +63,14 @@ describe("sidebar implementation contract", () => {
     expect(zaiopsPreview).toContain('<Icon size={16} strokeWidth={1.5} />');
     expect(zaiopsPreview).toContain('<Message size={16} strokeWidth={1.5} />');
     expect(zaiopsPreview).not.toContain('className="size-5 group-data-[active=true]/nav-item:text-fg-brand"');
+  });
+
+  it("composes the ZAIops main area from PageLayout without a PageSubnav", () => {
+    expect(zaiopsPreview).toContain('<PageLayout className="h-full min-w-0 flex-1">');
+    expect(zaiopsPreview).toContain("<PageHeader>");
+    expect(zaiopsPreview).toContain("<PageContent>");
+    expect(zaiopsPreview).toContain('<PageBody className="p-6">');
+    expect(zaiopsPreview).not.toContain("PageSubnav");
   });
 
   it("keeps sidebar identity presentation generic while menus remain composable", () => {

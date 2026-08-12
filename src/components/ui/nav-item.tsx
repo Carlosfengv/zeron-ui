@@ -148,11 +148,13 @@ const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
             onKeyDown?.(event);
           },
           className: cn(
-            "relative z-content flex min-w-0 flex-1 items-center gap-2 px-3 text-body outline-none",
+            "relative z-content flex min-w-0 flex-1 items-center gap-2 px-3 text-body font-normal whitespace-nowrap outline-none",
             variant === "underline" ? "h-control-md" : "h-control-sm",
             "cursor-pointer text-fg-muted transition-[color] duration-fast",
             "hover:text-fg-default focus-visible:text-fg-default",
-            "data-[active=true]:text-fg-default",
+            variant === "segment"
+              ? "data-[active=true]:font-semibold data-[active=true]:text-fg-on-brand"
+              : "data-[active=true]:text-fg-default",
             !navMenu && "focus-visible:ring-1 focus-visible:ring-focus-ring",
             variant !== "underline" && shape.item,
             className

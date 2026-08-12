@@ -1609,6 +1609,8 @@
       ],
       "registryDependencies": [
         "surfaces",
+        "nav-item",
+        "nav-menu",
         "utils"
       ],
       "files": [

@@ -125,7 +125,7 @@ import {
 const props: PropDef[] = [
   { name: "activeValue", type: "string | null", default: "null", description: "Strict value match used for aria-current and active styling." },
   { name: "orientation", type: '"vertical" | "horizontal"', default: '"vertical"', description: "Controls layout and roving arrow-key direction." },
-  { name: "variant", type: '"default" | "underline"', default: '"default"', description: "Default moving surface or the Tabs-compatible underline treatment used by TopNav." },
+  { name: "variant", type: '"default" | "segment" | "underline"', default: '"default"', description: "Default moving surface, Tabs-compatible Segment treatment for route navigation, or the underline treatment used by TopNav." },
   { name: "keyboardNavigation", type: '"native" | "roving"', default: '"native"', description: "Normal Tab order or optional roving focus." },
   { name: "NavItem.active", type: "boolean", description: "Explicit active styling for a NavItem used outside NavMenu." },
   { name: "NavItemTrigger.render", type: "ReactElement", description: "Composes behavior onto Next Link, React Router Link, or a custom anchor." },
@@ -221,7 +221,7 @@ function NavMenuPlayground() {
     const pick = <T,>(options: readonly T[]) => options[Math.floor(Math.random() * options.length)];
     const nextOrientation = pick(["vertical", "horizontal"] as const);
     setOrientation(nextOrientation);
-    setVariant(nextOrientation === "horizontal" ? pick(["default", "underline"] as const) : "default");
+    setVariant(nextOrientation === "horizontal" ? pick(["default", "segment", "underline"] as const) : "default");
     setKeyboardNavigation(pick(["native", "roving"] as const));
     setShowIcons(Math.random() > 0.35);
     setShowDescriptions(Math.random() > 0.35);
@@ -250,6 +250,7 @@ function NavMenuPlayground() {
             onChange={(next) => setVariant(next as NavMenuVariant)}
             options={[
               { value: "default", label: "Default" },
+              { value: "segment", label: "Segment" },
               { value: "underline", label: "Underline" },
             ]}
           />
@@ -411,6 +412,11 @@ export default function NavMenuDoc() {
             </NavItem>
           </div>
         </ComponentPreview>
+      </DocSection>
+      <DocSection title="Focus behavior">
+        <p className="max-w-3xl text-body leading-5 text-fg-muted">
+          The moving row indicator belongs only to a primary navigation trigger that matches <code>:focus-visible</code>. Row actions and nested links keep their own focus treatment so pointer focus never lights the parent row.
+        </p>
       </DocSection>
       <DocSection title="API Reference"><PropsTable props={props} /></DocSection>
     </DocPage>

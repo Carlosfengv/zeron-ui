@@ -46,6 +46,14 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  PageBody,
+  PageContent,
+  PageHeader,
+  PageHeaderContent,
+  PageLayout,
+  PageTitle,
+} from "@/components/ui/page-layout";
 import { Skeleton } from "@/components/ui/data-grid/data-grid-primitives";
 import { useIcon, type IconComponent } from "@/lib/icon-context";
 
@@ -418,18 +426,27 @@ function CompactOpenTrigger() {
 
 export function ZaiopsSidebarPreview() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const Home = useIcon("home");
 
   return (
     <SidebarProvider>
       <div className="w-full group-data-[fullscreen=true]/preview-content:h-full">
         <div className="relative flex h-[min(42rem,calc(100svh-8rem))] min-h-120 w-full overflow-hidden bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
           <ZaiopsSidebar onSearchOpen={() => setSearchOpen(true)} />
-          <section className="min-w-0 flex-1 p-6">
-            <div className="mb-6 flex items-center gap-3 xl:hidden"><CompactOpenTrigger /><span className="text-body text-fg-muted">紧凑导航</span></div>
-            <p className="text-label text-fg-muted">ZAIops</p>
-            <h3 className="mt-1 text-title font-semibold text-fg-default">巡检总览</h3>
-            <p className="mt-2 max-w-md text-body text-fg-muted">260px Desktop Sidebar、可访问的 Compact Drawer 与业务组合示例。</p>
-          </section>
+          <PageLayout className="h-full min-w-0 flex-1">
+            <PageHeader>
+              <PageHeaderContent icon={Home}>
+                <nav aria-label="Breadcrumb" className="text-body text-fg-muted">ZAIops / 巡检</nav>
+              </PageHeaderContent>
+              <div className="xl:hidden"><CompactOpenTrigger /></div>
+            </PageHeader>
+            <PageContent>
+              <PageBody className="p-6">
+                <PageTitle className="text-title">巡检总览</PageTitle>
+                <p className="mt-2 max-w-md text-body text-fg-muted">260px Desktop Sidebar、可访问的 Compact Drawer 与业务组合示例。</p>
+              </PageBody>
+            </PageContent>
+          </PageLayout>
         </div>
       </div>
 

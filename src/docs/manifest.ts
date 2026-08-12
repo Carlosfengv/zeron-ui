@@ -33,7 +33,7 @@ export const docManifest = [
   page({ id: "scrollbars", pathname: "/docs/scrollbars", group: "system", name: "Scrollbars", description: "A scrollbar that stays out of the way but never disappears, over shadcn's scroll-fade baseline — restyled to the shape system, native scroll on touch.", isNew: true }),
   page({ id: "motion", pathname: "/docs/motion", group: "system", name: "Motion", description: "Spring tokens, faster exits, and reflow-free weight animation — the motion rules shared by every component." }),
   page({ id: "app-shell", pathname: "/docs/app-shell", group: "layout", name: "AppShell", description: "Composable application frame for Sidebar, header, and main content." }),
-  page({ id: "page-layout", pathname: "/docs/page-layout", group: "layout", name: "PageLayout", description: "Responsive page composition for headers, content, actions, and optional asides." }),
+  page({ id: "page-layout", pathname: "/docs/page-layout", group: "layout", name: "PageLayout", description: "Responsive composition for optional page information, route navigation, content, and asides." }),
   page({ id: "sidebar", pathname: "/docs/sidebar", group: "layout", name: "Sidebar", description: "Responsive navigation rail with desktop collapse and a mobile drawer." }),
   page({ id: "top-nav", pathname: "/docs/top-nav", group: "layout", name: "TopNav", description: "Composable top navigation with brand, primary links, and actions." }),
   page({ id: "nav-menu", pathname: "/docs/nav-menu", group: "layout", name: "NavMenu", description: "Router-agnostic navigation primitives shared by Sidebar and TopNav." }),

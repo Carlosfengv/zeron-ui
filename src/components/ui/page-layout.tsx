@@ -1,12 +1,24 @@
 "use client";
 
-import { forwardRef, type ComponentPropsWithoutRef } from "react";
+import {
+  createContext,
+  forwardRef,
+  useContext,
+  type ComponentPropsWithoutRef,
+  type ReactNode,
+} from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { NavItem, NavItemTrigger } from "@/components/ui/nav-item";
+import { NavMenu, type NavMenuProps, useNavMenuOptional } from "@/components/ui/nav-menu";
+import { useRender } from "@base-ui/react/use-render";
+import type { IconComponent } from "@/lib/icon-context";
 
 export type PageLayoutSize = "sm" | "md" | "lg" | "full";
+export type PageLayoutGutter = "default" | "none";
+export type PageSubnavLabelVisibility = "all" | "active";
 
-const pageLayoutVariants = cva("mx-auto grid w-full min-w-0 gap-y-8 px-4 py-8 sm:px-6 lg:gap-x-10 lg:px-8 lg:[&:has(>[data-slot=page-aside])]:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)]", {
+const pageLayoutVariants = cva("mx-auto flex h-full w-full min-h-0 min-w-0 flex-col", {
   variants: {
     size: {
       sm: "max-w-[40rem]",
@@ -14,34 +26,70 @@ const pageLayoutVariants = cva("mx-auto grid w-full min-w-0 gap-y-8 px-4 py-8 sm
       lg: "max-w-[75rem]",
       full: "max-w-none",
     },
+    gutter: {
+      default: "gap-2 p-3",
+      none: "gap-2 p-0",
+    },
   },
-  defaultVariants: { size: "md" },
+  defaultVariants: { size: "full", gutter: "default" },
 });
 
 export interface PageLayoutProps extends ComponentPropsWithoutRef<"div">, VariantProps<typeof pageLayoutVariants> {}
 export type PageHeaderProps = ComponentPropsWithoutRef<"header">;
-export type PageHeaderContentProps = ComponentPropsWithoutRef<"div">;
+export interface PageHeaderContentProps extends ComponentPropsWithoutRef<"div"> {
+  /** Optional decorative icon rendered before the header content. */
+  icon?: IconComponent;
+}
 export type PageTitleProps = ComponentPropsWithoutRef<"h1">;
 export type PageDescriptionProps = ComponentPropsWithoutRef<"p">;
 export type PageActionsProps = ComponentPropsWithoutRef<"div">;
+export type PageContentProps = ComponentPropsWithoutRef<"div">;
 export type PageBodyProps = ComponentPropsWithoutRef<"div">;
-export type PageAsideProps = ComponentPropsWithoutRef<"aside">;
+export type PageSubnavProps = ComponentPropsWithoutRef<"nav">;
+export interface PageSubnavListProps extends Omit<NavMenuProps, "as" | "orientation" | "variant"> {
+  /** Shows every icon label, or only the active item's label. Requires item icons for the collapsed state. */
+  labelVisibility?: PageSubnavLabelVisibility;
+  children: ReactNode;
+}
+export interface PageSubnavItemProps extends useRender.ComponentProps<"a"> {
+  /** Stable identifier used by PageSubnavList to determine the active link. */
+  value: string;
+  active?: boolean;
+  /** Optional icon displayed before the item label. */
+  icon?: IconComponent;
+  /** Accessible label used when labelVisibility="active" hides this item's visible label. */
+  label?: string;
+}
 
-const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({ size, className, ...props }, ref) => (
-  <div ref={ref} data-slot="page-layout" className={cn(pageLayoutVariants({ size }), className)} {...props} />
+const PageSubnavListContext = createContext<{ labelVisibility: PageSubnavLabelVisibility }>({
+  labelVisibility: "all",
+});
+
+const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({ size, gutter, className, ...props }, ref) => (
+  <div ref={ref} data-slot="page-layout" className={cn(pageLayoutVariants({ size, gutter }), className)} {...props} />
 ));
 
 PageLayout.displayName = "PageLayout";
 
 const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(({ className, ...props }, ref) => (
-  <header ref={ref} data-slot="page-header" className={cn("col-span-full flex min-w-0 flex-wrap items-start justify-between gap-4 max-sm:flex-col", className)} {...props} />
+  <header ref={ref} data-slot="page-header" className={cn("flex shrink-0 min-w-0 flex-wrap items-start justify-between gap-2 py-1 px-3 max-sm:flex-col", className)} {...props} />
 ));
 
 PageHeader.displayName = "PageHeader";
 
-const PageHeaderContent = forwardRef<HTMLDivElement, PageHeaderContentProps>(({ className, ...props }, ref) => (
-  <div ref={ref} data-slot="page-header-content" className={cn("min-w-0", className)} {...props} />
-));
+const PageHeaderContent = forwardRef<HTMLDivElement, PageHeaderContentProps>(
+  ({ icon: Icon, className, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      data-slot="page-header-content"
+      className={cn("flex min-w-0 items-center gap-2", className)}
+      {...props}
+    >
+      {Icon && <Icon aria-hidden="true" size={20} strokeWidth={1.5} className="size-5 shrink-0 text-fg-muted" />}
+      {children}
+    </div>
+  )
+);
 
 PageHeaderContent.displayName = "PageHeaderContent";
 
@@ -63,17 +111,98 @@ const PageActions = forwardRef<HTMLDivElement, PageActionsProps>(({ className, .
 
 PageActions.displayName = "PageActions";
 
+const PageContent = forwardRef<HTMLDivElement, PageContentProps>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-slot="page-content"
+    className={cn(
+      "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-border rounded-xl",
+      className
+    )}
+    {...props}
+  />
+));
+
+PageContent.displayName = "PageContent";
+
 const PageBody = forwardRef<HTMLDivElement, PageBodyProps>(({ className, ...props }, ref) => (
-  <div ref={ref} data-slot="page-body" className={cn("min-w-0 lg:col-start-1", className)} {...props} />
+  <div ref={ref} data-slot="page-body" className={cn("min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain", className)} {...props} />
 ));
 
 PageBody.displayName = "PageBody";
 
-const PageAside = forwardRef<HTMLElement, PageAsideProps>(({ className, ...props }, ref) => (
-  <aside ref={ref} data-slot="page-aside" className={cn("min-w-0 lg:col-start-2 lg:row-start-2", className)} {...props} />
+const PageSubnav = forwardRef<HTMLElement, PageSubnavProps>(({ className, ...props }, ref) => (
+  <nav ref={ref} data-slot="page-subnav" className={cn("min-w-0 shrink-0 border-b border-border p-3", className)} {...props} />
 ));
 
-PageAside.displayName = "PageAside";
+PageSubnav.displayName = "PageSubnav";
+
+const PageSubnavList = forwardRef<HTMLElement, PageSubnavListProps>(
+  ({ className, labelVisibility = "all", ...props }, ref) => (
+    <PageSubnavListContext.Provider value={{ labelVisibility }}>
+      <NavMenu
+        ref={ref}
+        as="div"
+        data-slot="page-subnav-list"
+        orientation="horizontal"
+        variant="segment"
+        className={cn("w-full", className)}
+        {...props}
+      />
+    </PageSubnavListContext.Provider>
+  )
+);
+
+PageSubnavList.displayName = "PageSubnavList";
+
+const PageSubnavItem = forwardRef<HTMLElement, PageSubnavItemProps>(
+  ({ value, active, icon: Icon, label, className, children, ...props }, ref) => {
+    const { labelVisibility } = useContext(PageSubnavListContext);
+    const navMenu = useNavMenuOptional();
+    const isActive = active ?? navMenu?.activeValue === value;
+    const collapseLabel = labelVisibility === "active" && !!Icon;
+    const showLabel = !collapseLabel || isActive;
+    const accessibleLabel = label ?? (typeof children === "string" ? children : undefined);
+    const labelContent = (
+      <span className="inline-grid min-w-0 whitespace-nowrap">
+        <span aria-hidden="true" className="col-start-1 row-start-1 invisible font-semibold">
+          {children}
+        </span>
+        <span className="col-start-1 row-start-1 font-normal text-inherit group-data-[active=true]/nav-item:font-semibold">
+          {children}
+        </span>
+      </span>
+    );
+
+    return (
+      <NavItem value={value} active={active}>
+        <NavItemTrigger
+          ref={ref}
+          className={cn(collapseLabel && "gap-0", className)}
+          aria-label={collapseLabel && !showLabel ? accessibleLabel : undefined}
+          {...props}
+        >
+          {Icon && (
+            <Icon
+              aria-hidden="true"
+              size={16}
+              strokeWidth={isActive ? 2 : 1.5}
+              className={cn(
+                "shrink-0 transition-[color,stroke-width] duration-fast",
+                isActive ? "text-fg-on-brand" : "text-fg-muted"
+              )}
+            />
+          )}
+          {showLabel && (
+            <span className={cn(collapseLabel && "ml-2")}>{labelContent}</span>
+          )}
+        </NavItemTrigger>
+      </NavItem>
+    );
+  }
+);
+
+PageSubnavItem.displayName = "PageSubnavItem";
 
 export {
   PageLayout,
@@ -82,7 +211,10 @@ export {
   PageTitle,
   PageDescription,
   PageActions,
+  PageContent,
   PageBody,
-  PageAside,
+  PageSubnav,
+  PageSubnavList,
+  PageSubnavItem,
   pageLayoutVariants,
 };

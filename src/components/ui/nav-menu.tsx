@@ -20,9 +20,11 @@ import { useProximityHover } from "@/hooks/use-proximity-hover";
 
 export type NavOrientation = "vertical" | "horizontal";
 export type NavKeyboardNavigation = "native" | "roving";
-export type NavMenuVariant = "default" | "underline";
+export type NavMenuVariant = "default" | "segment" | "underline";
 
 export interface NavMenuProps extends ComponentPropsWithoutRef<"nav"> {
+  /** Renders the interactive menu structure inside a parent navigation landmark. */
+  as?: "nav" | "div";
   orientation?: NavOrientation;
   variant?: NavMenuVariant;
   activeValue?: string | null;
@@ -72,6 +74,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
   (
     {
       children,
+      as: Root = "nav",
       orientation = "vertical",
       variant = "default",
       activeValue = null,
@@ -79,6 +82,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
       className,
       onFocusCapture,
       onBlurCapture,
+      onPointerDownCapture,
       onKeyDown,
       ...props
     },
@@ -171,7 +175,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
 
     return (
       <NavMenuContext.Provider value={context}>
-        <nav
+        <Root
           ref={(node) => {
             containerRef.current = node;
             if (typeof forwardedRef === "function") forwardedRef(node);
@@ -184,10 +188,15 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
           onMouseMove={handlers.onMouseMove}
           onMouseLeave={handlers.onMouseLeave}
           onFocusCapture={(event) => {
-            const id = (event.target as HTMLElement)
+            const target = event.target as HTMLElement;
+            const id = target
               .closest<HTMLElement>("[data-nav-item-id]")
               ?.dataset.navItemId;
-            if (id) setFocusedId(id);
+
+            const isVisiblePrimaryFocus = target.matches(
+              '[data-slot="nav-item-trigger"]:focus-visible'
+            );
+            setFocusedId(isVisiblePrimaryFocus ? id ?? null : null);
             onFocusCapture?.(event);
           }}
           onBlurCapture={(event) => {
@@ -196,6 +205,22 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
               setHoveredIndex(null);
             }
             onBlurCapture?.(event);
+          }}
+          onPointerDownCapture={(event) => {
+            const trigger = (event.target as HTMLElement).closest<HTMLElement>(
+              '[data-slot="nav-item-trigger"]'
+            );
+
+            // A pointer press on an already keyboard-focused trigger may not
+            // emit a new focus event. Re-check after the browser updates its
+            // focus-visible heuristic, so pointer interaction clears the
+            // moving ring while an explicit "always show focus" preference
+            // remains respected.
+            requestAnimationFrame(() => {
+              if (!trigger?.matches(":focus-visible")) setFocusedId(null);
+            });
+
+            onPointerDownCapture?.(event);
           }}
           onKeyDown={(event) => {
             onKeyDown?.(event);
@@ -222,9 +247,11 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
             "relative isolate flex select-none",
             orientation === "vertical"
               ? "min-w-0 max-w-full w-full flex-col"
-              : ["min-w-0 items-center", variant === "underline" ? "gap-0.5" : "gap-1"],
+              : ["min-w-0 items-center", variant === "underline" || variant === "segment" ? "gap-0.5" : "gap-1"],
+            orientation === "horizontal" && variant === "segment" &&
+              "max-w-[calc(100%_+_8px)] overflow-x-auto scrollbar-hide",
             orientation === "horizontal" && variant === "underline" &&
-              "max-w-[calc(100%_+_8px)] overflow-x-auto border-b border-border -mx-1 -my-1 px-1 scrollbar-hide",
+              "max-w-[calc(100%_+_8px)] overflow-x-auto border-b border-border px-1 scrollbar-hide",
             className
           )}
           {...props}
@@ -236,7 +263,10 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
                 data-slot="nav-item-active-indicator"
                 className={cn(
                   "pointer-events-none absolute z-base",
-                  variant === "underline" ? "bg-brand" : ["bg-active", shape.bg]
+                  variant === "underline" || variant === "segment"
+                    ? "bg-brand"
+                    : "bg-active",
+                  variant !== "underline" && shape.bg
                 )}
                 initial={false}
                 animate={{
@@ -263,7 +293,11 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
                 key={sessionRef.current}
                 aria-hidden="true"
                 data-slot="nav-item-hover-indicator"
-                className={cn("pointer-events-none absolute z-base bg-hover", shape.bg)}
+                className={cn(
+                  "pointer-events-none absolute z-base",
+                  variant === "segment" ? "bg-active" : "bg-hover",
+                  shape.bg
+                )}
                 initial={{ opacity: 0, top: hoverRect.top, left: hoverRect.left, width: hoverRect.width, height: hoverRect.height }}
                 animate={{ top: hoverRect.top, left: hoverRect.left, width: hoverRect.width, height: hoverRect.height, opacity: 1 }}
                 exit={{ opacity: 0, transition: spring.fast.exit }}
@@ -290,10 +324,10 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
               />
             )}
           </AnimatePresence>
-          <ul data-slot="nav-list" className={cn("relative z-content flex min-w-0 list-none p-0", orientation === "vertical" ? "w-full flex-col gap-0.5" : ["items-center", variant === "underline" ? "gap-0.5" : "gap-1"])}>
+          <ul data-slot="nav-list" className={cn("relative z-content flex min-w-0 list-none p-0", orientation === "vertical" ? "w-full flex-col gap-0.5" : ["items-center", variant === "underline" || variant === "segment" ? "gap-0.5" : "gap-1"])}>
             {children}
           </ul>
-        </nav>
+        </Root>
       </NavMenuContext.Provider>
     );
   }
