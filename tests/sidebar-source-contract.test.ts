@@ -35,7 +35,7 @@ describe("sidebar implementation contract", () => {
     expect(sidebar).toContain("contentClassName?: string;");
     expect(sidebar).toContain('data-slot="sidebar-content-inner"');
     expect(sidebar).toContain('"h-full overflow-x-hidden"');
-    expect(sidebar).toContain('"flex min-h-full w-full min-w-0 flex-col gap-4 p-3"');
+    expect(sidebar).toContain('"flex min-h-full w-full min-w-0 flex-col gap-4 px-1 py-1.5"');
     expect(sidebar).toContain("{...props}");
   });
 

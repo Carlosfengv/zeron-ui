@@ -68,6 +68,7 @@ const NavItem = forwardRef<HTMLElement, NavItemProps>(
 
     const itemClassName = cn(
       "group/nav-item relative z-content flex min-w-0 items-center",
+      "group-data-[state=collapsed]/sidebar:size-8 group-data-[state=collapsed]/sidebar:self-center",
       "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50",
       !navMenu && [
         "transition-colors duration-fast hover:bg-hover",
@@ -150,6 +151,7 @@ const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
           className: cn(
             "relative z-content flex min-w-0 flex-1 items-center gap-2 px-3 text-body font-normal whitespace-nowrap outline-none",
             variant === "underline" ? "h-control-md" : "h-control-sm",
+            "group-data-[state=collapsed]/sidebar:h-full group-data-[state=collapsed]/sidebar:w-full group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:px-0",
             "cursor-pointer text-fg-muted transition-[color] duration-fast",
             "hover:text-fg-default focus-visible:text-fg-default",
             variant === "segment"

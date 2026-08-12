@@ -77,8 +77,8 @@ describe("shell and page-layout composition contract", () => {
     expect(docs).toContain("function SidebarPageLayoutPreview()");
     expect(docs).toContain("<SidebarPageLayoutPreview />");
     expect(docs).toContain('<PageLayout className="h-full min-w-0 flex-1">');
-    expect(docs).toContain('className="flex h-72 w-full min-w-0 overflow-hidden');
-    expect(docs).not.toContain('className="flex h-72 overflow-hidden border border-border');
+    expect(docs).toContain('className="flex h-96 w-full min-w-0 overflow-hidden');
+    expect(docs).not.toContain('className="flex h-96 overflow-hidden border border-border');
   });
 
   it("offers a Sidebar playground for every supported collapse behavior", () => {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Sidebar, SidebarContent, SidebarFloatingTrigger, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupTrigger, SidebarHeader, SidebarProvider, SidebarTrigger, type SidebarCollapsible } from "@/components/ui/sidebar";
-import { NavItem, NavItemContent, NavItemLabel, NavItemTrigger } from "@/components/ui/nav-item";
+import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@/components/ui/nav-item";
 import { NavMenu } from "@/components/ui/nav-menu";
 import { PageBody, PageContent, PageHeader, PageHeaderContent, PageLayout, PageSubnav, PageSubnavItem, PageSubnavList, PageTitle } from "@/components/ui/page-layout";
 import { ComponentPreview } from "@/docs/ComponentPreview";
@@ -13,7 +13,7 @@ import { ZaiopsSidebarPreview } from "@/docs/site/zaiops-sidebar-preview";
 import { useIcon } from "@/lib/icon-context";
 
 const code = `<SidebarProvider defaultOpen>
-  <div className="flex h-72 w-full min-w-0 overflow-hidden">
+  <div className="flex h-96 w-full min-w-0 overflow-hidden">
     <Sidebar collapsible="icon">
       <SidebarHeader>...</SidebarHeader>
       <SidebarContent>
@@ -103,6 +103,10 @@ function SidebarPageLayoutPreview() {
 
 function SidebarCollapsePreview({ collapsible }: { collapsible: SidebarCollapsible }) {
   const Home = useIcon("home");
+  const Project = useIcon("file");
+  const Team = useIcon("users");
+  const Activity = useIcon("clock");
+  const Settings = useIcon("settings");
 
   return (
     <SidebarProvider key={collapsible} defaultOpen>
@@ -113,12 +117,39 @@ function SidebarCollapsePreview({ collapsible }: { collapsible: SidebarCollapsib
             {collapsible !== "none" && <SidebarTrigger label="Toggle playground sidebar" />}
           </SidebarHeader>
           <SidebarContent>
-            <SidebarGroup>
+            <SidebarGroup collapsible defaultOpen>
+              <SidebarGroupTrigger>Workspace</SidebarGroupTrigger>
               <SidebarGroupContent>
                 <NavMenu activeValue="projects">
                   <NavItem value="projects">
                     <NavItemTrigger tooltip="Projects">
+                      <NavItemLeading><Project size={16} strokeWidth={1.5} /></NavItemLeading>
                       <NavItemContent><NavItemLabel>Projects</NavItemLabel></NavItemContent>
+                    </NavItemTrigger>
+                  </NavItem>
+                  <NavItem value="team">
+                    <NavItemTrigger tooltip="Team">
+                      <NavItemLeading><Team size={16} strokeWidth={1.5} /></NavItemLeading>
+                      <NavItemContent><NavItemLabel>Team</NavItemLabel></NavItemContent>
+                    </NavItemTrigger>
+                  </NavItem>
+                </NavMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+            <SidebarGroup collapsible defaultOpen>
+              <SidebarGroupTrigger>Manage</SidebarGroupTrigger>
+              <SidebarGroupContent>
+                <NavMenu aria-label="Manage navigation">
+                  <NavItem value="activity">
+                    <NavItemTrigger tooltip="Activity">
+                      <NavItemLeading><Activity size={16} strokeWidth={1.5} /></NavItemLeading>
+                      <NavItemContent><NavItemLabel>Activity</NavItemLabel></NavItemContent>
+                    </NavItemTrigger>
+                  </NavItem>
+                  <NavItem value="settings">
+                    <NavItemTrigger tooltip="Settings">
+                      <NavItemLeading><Settings size={16} strokeWidth={1.5} /></NavItemLeading>
+                      <NavItemContent><NavItemLabel>Settings</NavItemLabel></NavItemContent>
                     </NavItemTrigger>
                   </NavItem>
                 </NavMenu>
@@ -136,12 +167,26 @@ function SidebarCollapsePreview({ collapsible }: { collapsible: SidebarCollapsib
                   <NavMenu activeValue="projects" aria-label="Playground navigation" className="p-1">
                     <NavItem value="projects">
                       <NavItemTrigger render={<a href="#projects" />} onClick={close}>
+                        <NavItemLeading><Project size={16} strokeWidth={1.5} /></NavItemLeading>
                         <NavItemContent><NavItemLabel>Projects</NavItemLabel></NavItemContent>
+                      </NavItemTrigger>
+                    </NavItem>
+                    <NavItem value="team">
+                      <NavItemTrigger render={<a href="#team" />} onClick={close}>
+                        <NavItemLeading><Team size={16} strokeWidth={1.5} /></NavItemLeading>
+                        <NavItemContent><NavItemLabel>Team</NavItemLabel></NavItemContent>
                       </NavItemTrigger>
                     </NavItem>
                     <NavItem value="activity">
                       <NavItemTrigger render={<a href="#activity" />} onClick={close}>
+                        <NavItemLeading><Activity size={16} strokeWidth={1.5} /></NavItemLeading>
                         <NavItemContent><NavItemLabel>Activity</NavItemLabel></NavItemContent>
+                      </NavItemTrigger>
+                    </NavItem>
+                    <NavItem value="settings">
+                      <NavItemTrigger render={<a href="#settings" />} onClick={close}>
+                        <NavItemLeading><Settings size={16} strokeWidth={1.5} /></NavItemLeading>
+                        <NavItemContent><NavItemLabel>Settings</NavItemLabel></NavItemContent>
                       </NavItemTrigger>
                     </NavItem>
                   </NavMenu>
@@ -335,11 +380,16 @@ const floatingTriggerProps: PropDef[] = [
 ];
 
 export default function SidebarDoc() {
+  const Project = useIcon("file");
+  const Team = useIcon("users");
+  const Activity = useIcon("clock");
+  const Settings = useIcon("settings");
+
   return <DocPage title="Sidebar" slug="sidebar" description="A responsive navigation rail that becomes a focus-managed drawer on compact screens.">
     <DocSection title="Basic">
       <ComponentPreview fullScreenable padding="none" code={code}>
         <SidebarProvider>
-          <div className="flex h-72 w-full min-w-0 overflow-hidden group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
+          <div className="flex h-96 w-full min-w-0 overflow-hidden group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
             <Sidebar collapsible="icon" className="static">
               <SidebarHeader className="flex items-center justify-between">
                 <span className="px-2 text-label group-data-[state=collapsed]/sidebar:hidden">Zeron</span>
@@ -352,7 +402,33 @@ export default function SidebarDoc() {
                     <NavMenu activeValue="projects">
                       <NavItem value="projects">
                         <NavItemTrigger tooltip="Projects">
+                          <NavItemLeading><Project size={16} strokeWidth={1.5} /></NavItemLeading>
                           <NavItemContent><NavItemLabel>Projects</NavItemLabel></NavItemContent>
+                        </NavItemTrigger>
+                      </NavItem>
+                      <NavItem value="team">
+                        <NavItemTrigger tooltip="Team">
+                          <NavItemLeading><Team size={16} strokeWidth={1.5} /></NavItemLeading>
+                          <NavItemContent><NavItemLabel>Team</NavItemLabel></NavItemContent>
+                        </NavItemTrigger>
+                      </NavItem>
+                    </NavMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+                <SidebarGroup collapsible defaultOpen>
+                  <SidebarGroupTrigger>Manage</SidebarGroupTrigger>
+                  <SidebarGroupContent>
+                    <NavMenu aria-label="Manage navigation">
+                      <NavItem value="activity">
+                        <NavItemTrigger tooltip="Activity">
+                          <NavItemLeading><Activity size={16} strokeWidth={1.5} /></NavItemLeading>
+                          <NavItemContent><NavItemLabel>Activity</NavItemLabel></NavItemContent>
+                        </NavItemTrigger>
+                      </NavItem>
+                      <NavItem value="settings">
+                        <NavItemTrigger tooltip="Settings">
+                          <NavItemLeading><Settings size={16} strokeWidth={1.5} /></NavItemLeading>
+                          <NavItemContent><NavItemLabel>Settings</NavItemLabel></NavItemContent>
                         </NavItemTrigger>
                       </NavItem>
                     </NavMenu>
