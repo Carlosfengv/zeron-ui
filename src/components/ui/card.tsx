@@ -535,7 +535,7 @@ const CardTitle = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>>(
       <span
         ref={ref}
         data-slot="card-title"
-        className={cn("inline-grid text-body leading-snug", className)}
+        className={cn("inline-grid text-body", className)}
         {...props}
       >
         <span
@@ -568,7 +568,7 @@ const CardDescription = forwardRef<
   <p
     ref={ref}
     data-slot="card-description"
-    className={cn("text-body leading-normal text-fg-muted", className)}
+    className={cn("text-body text-fg-muted", className)}
     {...props}
   />
 ));
@@ -724,17 +724,18 @@ interface CardImageProps {
 
 function CardImage({ src, alt, className }: CardImageProps) {
   const { orientation } = useContext(CardContext);
+  const shape = useShape();
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt={alt ?? ""}
       data-slot="card-image"
-      // The image keeps a fixed 2px corner radius in every state — stacked or
-      // inline, framed or borderless — rather than inheriting a frame's larger
-      // clip. (A framed tile still clips the surrounding surface as before.)
+      // Media follows the active container shape so standalone, grouped, and
+      // portalled cards remain visually aligned when the shape theme changes.
       className={cn(
-        "object-cover rounded-[2px]",
+        "object-cover",
+        shape.container,
         orientation === "inline"
           ? "size-40 shrink-0"
           : "w-full aspect-[16/9]",
@@ -757,7 +758,7 @@ const CardEyebrow = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>>
       ref={ref}
       data-slot="card-eyebrow"
       className={cn(
-        "text-label uppercase tracking-wide text-fg-muted",
+        "text-label uppercase text-fg-muted",
         "font-semibold",
         className
       )}
@@ -795,7 +796,7 @@ function CardFeature({ icon: Icon, title, description }: CardFeatureProps) {
           {title}
         </span>
         {description && (
-          <span className="text-label leading-relaxed text-fg-muted">
+          <span className="text-label text-fg-muted">
             {description}
           </span>
         )}

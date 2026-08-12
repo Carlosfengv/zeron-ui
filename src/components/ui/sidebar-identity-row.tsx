@@ -27,13 +27,12 @@ export const SidebarIdentityAvatar = forwardRef<
     data-slot="sidebar-identity-avatar"
     data-tone={tone}
     className={cn(
-      "flex size-8 shrink-0 items-center justify-center text-label font-semibold",
+      "flex size-8 shrink-0 items-center justify-center rounded-full text-label font-semibold",
       tone === "brand"
         ? "bg-brand text-fg-on-brand"
         : "bg-muted text-fg-default",
       className
     )}
-    style={{ borderRadius: 6 }}
     {...props}
   />
 ));

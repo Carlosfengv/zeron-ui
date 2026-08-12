@@ -5,7 +5,7 @@ import {
   foregroundColorTokens,
   fillColorTokens,
   boundaryColorTokens,
-  interactionColorTokens,
+  overlayColorTokens,
   supportColorTokens,
   surfaceTokens,
   shadowSupportTokens,
@@ -236,12 +236,12 @@ const table = (headers, rows) => [
 
 export function renderDocumentation() {
   const tokenRows = (tokens) => tokens.map((t) => [
-    `\`--${t.name}\``, `\`${t.light}\``, `\`${t.dark}\``, t.usage,
+    `\`--${t.name}\``, `\`${t.light}\``, `\`${t.dark}\``, `${t.classification.channel} / ${t.classification.intent}`, t.usage,
   ]);
   const foregroundRows = tokenRows(foregroundColorTokens);
   const fillRows = tokenRows(fillColorTokens);
   const boundaryRows = tokenRows(boundaryColorTokens);
-  const interactionRows = tokenRows(interactionColorTokens);
+  const overlayRows = tokenRows(overlayColorTokens);
   const supportRows = tokenRows(supportColorTokens);
   const surfaceRows = surfaceTokens.map((t) => [
     `\`--surface-${t.name}\``, `\`bg-surface-${t.name}\``, `\`${t.light}\``, `\`${t.dark}\``, t.usage,
@@ -309,7 +309,7 @@ pnpm tokens:check
 
 ## 前景颜色
 
-${table(["CSS 令牌", "浅色", "深色", "用途"], foregroundRows)}
+${table(["CSS 令牌", "浅色", "深色", "分类", "用途"], foregroundRows)}
 
 - \`fg-default / muted / subtle\` 表达前景的强调程度，不由字号决定。
 - \`fg-brand / fg-danger\` 用于普通承载面上的彩色文字和图标，不能直接复用填充色。
@@ -325,7 +325,7 @@ ${table(["CSS 令牌", "浅色", "深色", "用途"], foregroundRows)}
 
 ## 填充颜色
 
-${table(["CSS 令牌", "浅色", "深色", "用途"], fillRows)}
+${table(["CSS 令牌", "浅色", "深色", "分类", "用途"], fillRows)}
 
 合法的高对比填充配对：
 
@@ -345,15 +345,15 @@ inverse-background + fg-on-inverse
 
 ## 边界颜色
 
-${table(["CSS 令牌", "浅色", "深色", "用途"], boundaryRows)}
+${table(["CSS 令牌", "浅色", "深色", "分类", "用途"], boundaryRows)}
 
 - 表单和选择控件使用 \`input / input-hover\`。
 - 卡片、分隔线和普通容器使用 \`border\`；更轻的紧凑边界使用 \`border-subtle\`。
 - 无效状态使用 \`danger-border\`；警告状态使用 \`warning-border\`；焦点环始终使用独立的 \`focus-ring\` 语义。
 
-## 交互颜色
+## 叠加颜色（Overlay）
 
-${table(["CSS 令牌", "浅色", "深色", "用途"], interactionRows)}
+${table(["CSS 令牌", "浅色", "深色", "分类", "用途"], overlayRows)}
 
 \`hover\` 表示悬停或预高亮；\`active\` 表示按下、拖拽或展开；\`selection\` 表示持久选择。三者不得混用。
 
@@ -361,7 +361,7 @@ ${table(["CSS 令牌", "浅色", "深色", "用途"], interactionRows)}
 
 ## 支持颜色
 
-${table(["CSS 令牌", "浅色", "深色", "用途"], supportRows)}
+${table(["CSS 令牌", "浅色", "深色", "分类", "用途"], supportRows)}
 
 ## 承载面（Surface）
 
@@ -597,6 +597,18 @@ export function updateRegistry(registry) {
       "surfaces",
       ...entry.registryDependencies.filter((dependency) => dependency !== "surfaces"),
     ];
+  }
+
+  const badge = registry.items.find((entry) => entry.name === "badge");
+  if (!badge) throw new Error('registry.json is missing the "badge" UI item');
+  badge.description = "Compact label with semantic status variants and a private categorical-color palette.";
+  const badgeColorsPath = "src/components/ui/badge-colors.ts";
+  if (!badge.files.some((file) => file.path === badgeColorsPath)) {
+    badge.files.push({
+      path: badgeColorsPath,
+      type: "registry:ui",
+      target: "components/ui/badge-colors.ts",
+    });
   }
   return registry;
 }

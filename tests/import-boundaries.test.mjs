@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const registry = JSON.parse(readFileSync(join(ROOT, "registry.json"), "utf-8"));
+const packageJson = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf-8"));
 
 function sourceFiles(relativeDir) {
   const files = [];
@@ -41,6 +42,20 @@ describe("public import boundaries", () => {
     for (const file of consumers) {
       expect(readFileSync(file, "utf-8"), file).not.toContain("@/components/flavored");
     }
+  });
+
+  it("keeps licensed HugeIcons packages behind the optional Registry item", () => {
+    const rootDependencies = Object.keys(packageJson.dependencies ?? {});
+    const appProviders = readFileSync(join(ROOT, "src/app-providers.tsx"), "utf-8");
+    const proItem = registry.items.find((item) => item.name === "pro-icon-provider");
+
+    expect(rootDependencies.some((dependency) => dependency.startsWith("@hugeicons-pro/"))).toBe(false);
+    expect(appProviders).not.toContain("ProIconProvider");
+    expect(proItem?.dependencies).toEqual([
+      "@hugeicons-pro/core-stroke-standard",
+      "@hugeicons-pro/core-bulk-rounded",
+      "@hugeicons-pro/core-duotone-rounded",
+    ]);
   });
 
   it("exposes every Registry UI item through components/ui", () => {

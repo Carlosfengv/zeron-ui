@@ -11,12 +11,14 @@ import {
 } from "react";
 import {
   DEFAULT_BRAND_COLOR,
-  deriveBrandPalette,
+  deriveBrandTheme,
   normalizeHex,
+  type BrandThemeBundle,
 } from "@/docs/brand-color";
 
 interface BrandPlaygroundValue {
   brandColor: string;
+  brandTheme: BrandThemeBundle | null;
   setBrandColor: (value: string) => void;
 }
 
@@ -32,6 +34,11 @@ function useBrandColor() {
 
 function BrandPlaygroundProvider({ children }: { children: ReactNode }) {
   const [brandColor, setBrandColorState] = useState(DEFAULT_BRAND_COLOR);
+  const brandTheme = useMemo(() => {
+    if (brandColor === DEFAULT_BRAND_COLOR) return null;
+    const result = deriveBrandTheme(brandColor);
+    return result.status === "rejected" ? null : result.bundle;
+  }, [brandColor]);
 
   const setBrandColor = useCallback((value: string) => {
     const normalized = normalizeHex(value);
@@ -50,20 +57,15 @@ function BrandPlaygroundProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const palette = deriveBrandPalette(brandColor);
-    root.style.setProperty("--brand", palette.brand);
-    root.style.setProperty("--brand-hover", palette.brandHover);
-    root.style.setProperty("--brand-active", palette.brandActive);
-    root.style.setProperty("--fg-on-brand", palette.fgOnBrand);
-    root.style.setProperty(
-      "--fg-brand",
-      `light-dark(${palette.fgBrandLight}, ${palette.fgBrandDark})`
-    );
-  }, [brandColor]);
+    if (!brandTheme) return;
+    for (const [token, value] of Object.entries(brandTheme.semantic)) {
+      root.style.setProperty(`--${token}`, `light-dark(${value.light}, ${value.dark})`);
+    }
+  }, [brandColor, brandTheme]);
 
   const value = useMemo(
-    () => ({ brandColor, setBrandColor }),
-    [brandColor, setBrandColor]
+    () => ({ brandColor, brandTheme, setBrandColor }),
+    [brandColor, brandTheme, setBrandColor]
   );
 
   return (

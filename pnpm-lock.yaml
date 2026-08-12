@@ -11,15 +11,6 @@ importers:
       '@base-ui/react':
         specifier: ^1.4.1
         version: 1.4.1(@date-fns/tz@1.5.0)(@types/react@19.2.14)(date-fns@4.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@hugeicons-pro/core-bulk-rounded':
-        specifier: ^4.2.3
-        version: 4.2.3
-      '@hugeicons-pro/core-duotone-rounded':
-        specifier: ^4.2.3
-        version: 4.2.3
-      '@hugeicons-pro/core-stroke-standard':
-        specifier: ^4.2.3
-        version: 4.2.3
       '@hugeicons/core-free-icons':
         specifier: ^4.1.1
         version: 4.1.1
@@ -425,15 +416,6 @@ packages:
     engines: {node: '>=20'}
     peerDependencies:
       hono: ^4
-
-  '@hugeicons-pro/core-bulk-rounded@4.2.3':
-    resolution: {integrity: sha512-PPW/8hWtkI75dDIZtc4kCj507rvZ7CY8cm2R4lvtN/kLUfhpn2AcTL+KO1yM+aiWavgg3sLtRvEQCeEjmffGWQ==}
-
-  '@hugeicons-pro/core-duotone-rounded@4.2.3':
-    resolution: {integrity: sha512-xO+HJA+qC+A6fvqAHz7KXmAXYltlk57O9ygwZJCDqX95dSqBsDgKSwA+x9rotKUAWfRMkTncVtAe+tXZJFRo7A==}
-
-  '@hugeicons-pro/core-stroke-standard@4.2.3':
-    resolution: {integrity: sha512-6CTmLft5TeUnIYT3srYthrba41iVgcYc1hgMhWqfYnm2sgYWO6IhsRZ91YsCo4gxDHgKjmzd1cXiMjQYwO7liQ==}
 
   '@hugeicons/core-free-icons@4.1.1':
     resolution: {integrity: sha512-teqIBvPHl90ygIwKyJwTxOH8aNp1X1PjDTcMvLkEwdPxPD+8mssrZ5kXKIAJJFYPsz69a8LYQY0UPid4PAdavg==}
@@ -4588,12 +4570,6 @@ snapshots:
   '@hono/node-server@2.1.0(hono@4.13.1)':
     dependencies:
       hono: 4.13.1
-
-  '@hugeicons-pro/core-bulk-rounded@4.2.3': {}
-
-  '@hugeicons-pro/core-duotone-rounded@4.2.3': {}
-
-  '@hugeicons-pro/core-stroke-standard@4.2.3': {}
 
   '@hugeicons/core-free-icons@4.1.1': {}
 

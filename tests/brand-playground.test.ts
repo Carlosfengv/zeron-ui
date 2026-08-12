@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   contrastRatio,
+  deriveBrandTheme,
   deriveBrandPalette,
   normalizeHex,
 } from "../src/docs/brand-color";
@@ -25,4 +26,16 @@ describe("brand playground palette derivation", () => {
       expect(contrastRatio(palette.fgBrandDark, "#414141")).toBeGreaterThanOrEqual(4.5);
     }
   );
+
+  it("derives a complete theme bundle while retaining the normalized seed at scale.500", () => {
+    const result = deriveBrandTheme("7c3aed");
+    expect(result.status).not.toBe("rejected");
+    if (result.status === "rejected") return;
+
+    expect(result.bundle.scale).toMatchObject({ 50: expect.any(String), 500: "#7C3AED", 950: expect.any(String) });
+    expect(Object.keys(result.bundle.scale)).toHaveLength(11);
+    for (const name of ["brand", "brand-hover", "brand-active", "fg-brand", "fg-on-brand"] as const) {
+      expect(result.bundle.semantic[name]).toMatchObject({ light: expect.stringMatching(/^#[0-9A-F]{6}$/), dark: expect.stringMatching(/^#[0-9A-F]{6}$/) });
+    }
+  });
 });

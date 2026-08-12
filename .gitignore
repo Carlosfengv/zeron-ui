@@ -32,6 +32,10 @@ pnpm-debug.log*
 .env*.local
 *.local
 
+# private package-registry credentials
+.npmrc
+!.npmrc.example
+
 # vercel
 .vercel
 

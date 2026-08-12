@@ -163,7 +163,7 @@ export default function SurfacesDoc() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/80">
-              {surfaceTokens.map((token) => (
+              {(surfaceTokens as Array<{ name: string; light: string; dark: string; usage: string }>).map((token) => (
                 <tr key={token.name}>
                   <td className="px-3 py-2.5 font-mono text-label">
                     --surface-{token.name}

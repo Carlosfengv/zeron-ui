@@ -19,7 +19,7 @@ import { Menu } from "@base-ui/react/menu";
 import { NumberField } from "@base-ui/react/number-field";
 import { cn } from "@/lib/utils";
 import { spring } from "@/lib/springs";
-import { useShape, shapeMap } from "@/lib/shape-context";
+import { useShape } from "@/lib/shape-context";
 import {
   resolveSurface,
   useSurface,
@@ -536,7 +536,7 @@ function SaturationSquare({ h, s, v, onChange }: SaturationSquareProps) {
       <div
         className={cn(
           "absolute inset-0 overflow-hidden",
-          shape.bg === "rounded-[20px]" ? "rounded-2xl" : shape.bg
+          shape.bg
         )}
         style={{
           background: `linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`,
@@ -667,10 +667,6 @@ const FORMAT_LABELS: Record<ColorFormat, string> = {
 };
 
 const FORMATS = ["hex", "rgb", "hsl", "oklch"] as const;
-
-// Popup surfaces opt out of the global pill/rounded shape — same rationale as
-// the Dropdown component (pill radii distort perceived padding at this scale).
-const menuShape = shapeMap.rounded;
 
 interface FormatMenuContextValue {
   registerItem: (index: number, element: HTMLElement | null) => void;
@@ -901,14 +897,14 @@ function FormatDropdown({
                   setActiveIndex(null);
                 }}
                 className={cn(
-                  `relative flex flex-col gap-0.5 min-w-[var(--anchor-width)] ${menuShape.container} p-1 select-none outline-none`
+                  `relative flex flex-col gap-0.5 min-w-[var(--anchor-width)] ${shape.container} p-1 select-none outline-none`
                 )}
               >
                 {/* Selected background */}
                 <AnimatePresence>
                   {checkedRect && (
                     <motion.div
-                      className={`absolute ${menuShape.bg} bg-active pointer-events-none`}
+                      className={`absolute ${shape.bg} bg-active pointer-events-none`}
                       initial={false}
                       animate={{
                         top: checkedRect.top,
@@ -931,7 +927,7 @@ function FormatDropdown({
                   {activeRect && (
                     <motion.div
                       key={sessionRef.current}
-                      className={`absolute ${menuShape.bg} bg-hover pointer-events-none`}
+                      className={`absolute ${shape.bg} bg-hover pointer-events-none`}
                       initial={{
                         opacity: 0,
                         top: checkedRect?.top ?? activeRect.top,
@@ -959,7 +955,7 @@ function FormatDropdown({
                 <AnimatePresence>
                   {focusRect && (
                     <motion.div
-                      className={`absolute ${menuShape.focusRing} pointer-events-none z-raised border border-focus-ring`}
+                      className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
                       initial={false}
                       animate={{
                         left: focusRect.left - 2,

@@ -998,7 +998,7 @@ function StepperTrigger(props: ButtonProps) {
         className: cn(
           "inline-flex items-center justify-center gap-3 text-left outline-none transition-[color,box-shadow] duration-fast",
           "focus-visible:ring-1 focus-visible:ring-focus-ring",
-          "disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-1 aria-invalid:ring-danger-border/40",
+          "disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-1 aria-invalid:ring-danger-border/40 aria-invalid:focus-visible:outline-1 aria-invalid:focus-visible:outline-focus-ring aria-invalid:focus-visible:outline-offset-2",
           "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
           shape.button,
           className,

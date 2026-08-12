@@ -13,12 +13,8 @@ import {
 import type { IconComponent } from "@/lib/icon-context";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { shapeMap } from "@/lib/shape-context";
+import { useShape } from "@/lib/shape-context";
 import { spring } from "@/lib/springs";
-
-// MenuItem is only used inside Dropdown, which opts out of the global pill
-// shape — see dropdown.tsx for the rationale.
-const shape = shapeMap.rounded;
 
 // ---------------------------------------------------------------------------
 // Dropdown context — the single shared context for every Dropdown build.
@@ -104,6 +100,7 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
     },
     ref
   ) => {
+    const shape = useShape();
     const internalRef = useRef<HTMLDivElement>(null);
     const hasMounted = useRef(false);
     const { registerItem, activeIndex, checkedIndex, renderMenuItem } =

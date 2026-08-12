@@ -49,9 +49,13 @@ import { CaretRight, MagnifyingGlass } from "@phosphor-icons/react";
 </IconProvider>
 ```
 
-The optional `pro-icon-provider` Registry item adds HugeIcons Stroke Standard, Bulk Rounded, and Duotone Rounded. It requires a HugeIcons Pro subscription and private npm registry configuration; install it only after configuring your own license token, then use `ProIconProvider` at the app root. Pro icon definitions are never included in this Registry.
+The site and default Registry components use only the public HugeIcons packages, so installs and builds do not require a license token. The optional `pro-icon-provider` Registry item adds HugeIcons Stroke Standard, Bulk Rounded, and Duotone Rounded. It requires a HugeIcons Pro subscription and is intentionally excluded from the site's dependency graph.
+
+To opt in, copy the local registry configuration, provide your own token, install the Registry item, and use `ProIconProvider` at the app root. Keep `.npmrc` local; it is ignored by Git. Pro icon definitions are never included in this Registry.
 
 ```bash
+cp .npmrc.example .npmrc
+export HUGEICONS_TOKEN="your-token"
 npx zeron-ui add pro-icon-provider
 ```
 

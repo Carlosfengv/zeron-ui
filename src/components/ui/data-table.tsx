@@ -208,7 +208,7 @@ function DataTable<TData>({
                   data-state={row.getIsSelected() ? "selected" : undefined}
                   index={rowIndex}
                   key={row.id}
-                  className="data-[state=selected]:bg-active"
+                  className="data-[state=selected]:bg-selection"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -221,7 +221,7 @@ function DataTable<TData>({
                       style={getCommonPinningStyles(
                         cell.column,
                         row.getIsSelected()
-                          ? "linear-gradient(var(--active), var(--active))"
+                          ? "linear-gradient(var(--selection), var(--selection))"
                           : undefined
                       )}
                     >

@@ -141,7 +141,7 @@ function CommandItem({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-body outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-selection data-[selected=true]:text-fg-default data-[disabled=true]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-fg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "relative flex cursor-default select-none items-center gap-2 rounded-control px-2 py-1.5 text-body outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-selection data-[selected=true]:text-fg-default data-[disabled=true]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-fg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className,
       )}
       {...props}
@@ -157,7 +157,7 @@ function CommandShortcut({
     <span
       data-slot="command-shortcut"
       className={cn(
-        "ml-auto text-fg-muted text-label tracking-widest",
+        "ml-auto text-fg-muted text-label",
         className,
       )}
       {...props}

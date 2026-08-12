@@ -383,7 +383,7 @@ function ThinkingStep({
             <div className="flex-1 flex flex-col gap-1 min-w-0">
               <span
                 className={cn(
-                  "text-body leading-tight text-fg-default",
+                  "text-body text-fg-default",
                   isActive && "shimmer-text",
                   "font-medium"
                 )}
@@ -392,7 +392,7 @@ function ThinkingStep({
                 {isActive && "…"}
               </span>
               {description && (
-                <span className="text-body text-fg-muted leading-snug">
+                <span className="text-body text-fg-muted">
                   {description}
                 </span>
               )}
@@ -437,7 +437,7 @@ function ThinkingStepDetails({
           {details?.map((item, i) => (
             <span
               key={i}
-              className="text-label text-fg-muted leading-snug"
+              className="text-label text-fg-muted"
             >
               {item}
             </span>

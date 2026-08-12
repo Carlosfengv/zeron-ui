@@ -263,7 +263,7 @@ function DataGridKeyboardShortcutsImpl({
             <Input
               ref={inputRef}
               placeholder="Search shortcuts..."
-              className="h-8 pl-8"
+              className="h-control-sm pl-8"
               value={input}
               onChange={onInputChange}
             />
@@ -277,7 +277,7 @@ function DataGridKeyboardShortcutsImpl({
                 <SearchIcon className="pointer-events-none size-6" />
               </div>
               <div className="flex flex-col gap-1">
-                <div className="font-medium text-title tracking-tight">
+                <div className="font-medium text-title">
                   No shortcuts found
                 </div>
                 <p className="text-fg-muted text-body">

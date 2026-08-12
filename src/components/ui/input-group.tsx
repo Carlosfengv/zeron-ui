@@ -38,7 +38,7 @@ const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
           "group/input-group relative flex w-full min-w-0 items-center border border-input bg-transparent shadow-control outline-none hover:border-input-hover hover:bg-hover",
           "transition-[background-color,border-color,box-shadow,color] duration-fast",
           "has-[[data-slot=input-group-control]:focus-visible]:ring-1 has-[[data-slot=input-group-control]:focus-visible]:ring-focus-ring",
-          "has-aria-invalid:border-danger-border has-aria-invalid:hover:border-danger-border has-aria-invalid:ring-1 has-aria-invalid:ring-danger-border/40",
+          "has-aria-invalid:border-danger-border has-aria-invalid:hover:border-danger-border has-aria-invalid:ring-1 has-aria-invalid:ring-danger-border/40 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-1 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-focus-ring has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-offset-2",
           "has-data-[align=block-start]:flex-col has-data-[align=block-start]:items-stretch",
           "has-data-[align=block-end]:flex-col has-data-[align=block-end]:items-stretch",
           shape.input,
@@ -107,9 +107,9 @@ InputGroupAddon.displayName = "InputGroupAddon";
 const inputGroupButtonVariants = cva("flex items-center shadow-none", {
   variants: {
     size: {
-      xs: "h-6 px-2 text-label",
+      xs: "h-control-xs px-2 text-label",
       sm: "h-control-xs px-2.5 text-label",
-      "icon-xs": "size-6 p-0",
+      "icon-xs": "size-control-xs p-0",
       "icon-sm": "size-control-xs p-0",
     },
   },
@@ -329,6 +329,9 @@ const InputField = forwardRef<HTMLDivElement, InputFieldProps>(
     // Input container classes
     let bgClass: string;
     let ringClass: string;
+    const focusOutlineClass = isFocused
+      ? "outline-1 outline-focus-ring outline-offset-2"
+      : undefined;
 
     if (disabled) {
       bgClass = "bg-transparent";
@@ -396,7 +399,8 @@ const InputField = forwardRef<HTMLDivElement, InputFieldProps>(
           className={cn(
             `flex items-center gap-2 ${shape.input} px-3 py-2 ring-1 transition-all duration-fast`,
             bgClass,
-            ringClass
+            ringClass,
+            focusOutlineClass
           )}
         >
           {Icon && (

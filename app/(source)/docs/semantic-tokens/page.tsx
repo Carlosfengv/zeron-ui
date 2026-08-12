@@ -4,7 +4,7 @@ import {
   foregroundColorTokens,
   fillColorTokens,
   boundaryColorTokens,
-  interactionColorTokens,
+  overlayColorTokens,
   supportColorTokens,
   surfaceTokens,
   shadowTokens,
@@ -16,6 +16,9 @@ import {
   layerTokens,
 } from "@/lib/tokens/semantic-tokens.mjs";
 import { DocPage, DocSection } from "@/docs/DocPage";
+import { useBrandColor } from "@/docs/brand-playground";
+import { deriveBrandTheme } from "@/lib/brand-theme";
+import { referenceColors } from "@/lib/tokens/reference-colors.mjs";
 import { useTranslations } from "next-intl";
 
 type TokenRow = {
@@ -33,6 +36,59 @@ type ColorToken = {
   usage: string;
 };
 
+type SurfaceToken = {
+  name: string;
+  light: string;
+  dark: string;
+  usage: string;
+};
+
+type ReferencePalette = Record<string, string>;
+
+const paletteSteps = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"];
+
+function numericScale(source: object): ReferencePalette {
+  return Object.fromEntries(
+    Object.entries(source as Record<string, unknown>)
+      .filter(([step, value]) => paletteSteps.includes(step) && typeof value === "string")
+  ) as ReferencePalette;
+}
+
+function PaletteScale({
+  name,
+  scale,
+  currentBrand = false,
+}: {
+  name: string;
+  scale: ReferencePalette;
+  currentBrand?: boolean;
+}) {
+  return (
+    <div className="grid gap-2 border-t border-border pt-3 first:border-t-0 first:pt-0 sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:items-center">
+      <div>
+        <p className="text-body font-medium text-fg-default">{name}</p>
+        <p className="mt-0.5 text-label text-fg-subtle">
+          {currentBrand ? "Current runtime seed" : "Reference source"}
+        </p>
+      </div>
+      <ol className="grid grid-cols-11 overflow-hidden rounded-control ring-1 ring-inset ring-border" aria-label={`${name} color scale`}>
+        {paletteSteps.map((step) => {
+          const value = scale[step];
+          if (!value) return null;
+          const isSeed = currentBrand && step === "500";
+          return (
+            <li key={step} className="relative min-w-0" title={`${name}.${step}: ${value}`}>
+              <span className="block aspect-square" style={{ backgroundColor: value }} />
+              <span className="sr-only">{`${name} ${step}: ${value}`}</span>
+              {isSeed && <span className="absolute inset-0 ring-2 ring-inset ring-focus-ring" aria-hidden="true" />}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
 const designToken = (group: string, name: string | number) =>
   `${group}/${String(name).replaceAll("-", "/")}`;
 
@@ -44,21 +100,55 @@ function TokenCode({ children }: { children: string }) {
   );
 }
 
-function Swatch({ value }: { value: string }) {
+function colorDisplay(value: string) {
+  const hex = /^#([0-9a-f]{3,8})$/i.exec(value.trim());
+  if (hex) {
+    const source = hex[1].length === 3
+      ? hex[1].split("").map((channel) => `${channel}${channel}`).join("")
+      : hex[1];
+    const rgb = `#${source.slice(0, 6).toUpperCase()}`;
+    const alpha = source.length === 8 ? Math.round((Number.parseInt(source.slice(6), 16) / 255) * 100) : 100;
+    return { color: value, value: rgb, opacity: `${alpha}%` };
+  }
+
+  const rgbChannels = value.match(/[\d.]+/g);
+  if (value.startsWith("rgb") && rgbChannels && rgbChannels.length >= 3) {
+    const rgb = rgbChannels.slice(0, 3).map((channel) => Math.max(0, Math.min(255, Number(channel))));
+    const hexValue = `#${rgb.map((channel) => Math.round(channel).toString(16).padStart(2, "0")).join("").toUpperCase()}`;
+    const alpha = rgbChannels[3] ? Math.round(Math.max(0, Math.min(1, Number(rgbChannels[3]))) * 100) : 100;
+    return { color: value, value: hexValue, opacity: `${alpha}%` };
+  }
+
+  return { color: value, value, opacity: "100%" };
+}
+
+function CheckerboardTile() {
   return (
     <span
       aria-hidden="true"
-      className="inline-block size-3 shrink-0 rounded-full border border-border/70"
-      style={{ background: value }}
+      className="relative inline-block size-5 shrink-0 overflow-hidden rounded-control"
+      style={{
+        backgroundImage: "conic-gradient(#e5e5e5 25%, #fff 0 50%, #e5e5e5 0 75%, #fff 0)",
+        backgroundSize: "6px 6px",
+        boxShadow: "inset 0 0 0 1px rgb(127 127 127 / 0.25)",
+      }}
     />
   );
 }
 
 function ThemeValue({ value }: { value: string }) {
+  const display = colorDisplay(value);
   return (
-    <span className="inline-flex min-w-0 items-center gap-2">
-      <Swatch value={value} />
-      <TokenCode>{value}</TokenCode>
+    <span
+      className="flex h-control-md min-w-[10.75rem] items-center gap-2 rounded-control border border-border bg-transparent px-2 font-medium"
+      title={`${display.value} · ${display.opacity}`}
+    >
+      <span className="relative size-5 shrink-0 overflow-hidden rounded-control">
+        <CheckerboardTile />
+        <span className="absolute inset-0" style={{ backgroundColor: display.color }} />
+      </span>
+      <span className="min-w-0 font-mono text-label text-fg-default tabular-nums">{display.value}</span>
+      <span className="ml-auto shrink-0 text-label text-fg-muted tabular-nums">{display.opacity}</span>
     </span>
   );
 }
@@ -238,12 +328,18 @@ function SpacingScaleTable() {
 
 export default function SemanticTokensPage() {
   const t = useTranslations("semanticTokens");
-  const colorRows = (tokens: ColorToken[]): TokenRow[] => tokens.map((token) => ({
-    token: designToken("color", token.name),
-    light: token.light,
-    dark: token.dark,
-    description: token.usage,
-  }));
+  const { brandColor, brandTheme } = useBrandColor();
+  const derivedBrand = deriveBrandTheme(brandColor);
+  const activeBrandTheme = brandTheme ?? (derivedBrand.status === "rejected" ? null : derivedBrand.bundle);
+  const colorRows = (tokens: ColorToken[]): TokenRow[] => tokens.map((token) => {
+    const override = activeBrandTheme?.semantic[token.name as keyof typeof activeBrandTheme.semantic];
+    return {
+      token: designToken("color", token.name),
+      light: override?.light ?? token.light,
+      dark: override?.dark ?? token.dark,
+      description: token.usage,
+    };
+  });
   const tokenRows = (tokens: ColorToken[], names: string[]) =>
     colorRows(tokens.filter((token) => names.includes(token.name)));
   const foregroundRows = colorRows(foregroundColorTokens);
@@ -259,16 +355,26 @@ export default function SemanticTokensPage() {
     "muted", "emphasis", "scrim",
   ]);
   const interactionRows = [
-    ...colorRows(interactionColorTokens),
+    ...colorRows(overlayColorTokens),
     ...tokenRows(fillColorTokens, ["selection"]),
   ];
   const feedbackRows = [
-    ...tokenRows(fillColorTokens, ["danger-surface", "warning-surface"]),
-    ...tokenRows(foregroundColorTokens, ["fg-danger", "fg-warning"]),
-    ...tokenRows(boundaryColorTokens, ["danger-border", "warning-border"]),
+    ...tokenRows(fillColorTokens, ["danger-surface", "warning-surface", "info-surface", "neutral-status-surface"]),
+    ...tokenRows(foregroundColorTokens, ["fg-danger", "fg-warning", "fg-info", "fg-neutral-status"]),
+    ...tokenRows(boundaryColorTokens, ["danger-border", "warning-border", "info-border", "neutral-status-border"]),
   ];
+  const runtimeBrandRows: TokenRow[] = ["brand", "brand-hover", "brand-active", "fg-brand", "fg-on-brand"].map((name) => {
+    const values = activeBrandTheme?.semantic[name as "brand" | "brand-hover" | "brand-active" | "fg-brand" | "fg-on-brand"];
+    const token = [...fillColorTokens, ...foregroundColorTokens].find((candidate) => candidate.name === name);
+    return {
+      token: `--${name}`,
+      light: values?.light ?? token?.light,
+      dark: values?.dark ?? token?.dark,
+      description: `${t("actionFillBody")} ${brandColor}`,
+    };
+  });
 
-  const semanticSurfaceRows: TokenRow[] = surfaceTokens.map((token) => ({
+  const semanticSurfaceRows: TokenRow[] = (surfaceTokens as SurfaceToken[]).map((token) => ({
     token: designToken("surface", token.name),
     light: token.light,
     dark: token.dark,
@@ -338,6 +444,22 @@ export default function SemanticTokensPage() {
           </div>
         </section>
 
+        <DocSection title="Color Palette · 色板">
+          <SectionDescription>
+            Reference Color is the source material for semantic mapping. It is shown here for review and theme tuning only; components must use semantic roles rather than numbered color steps.
+          </SectionDescription>
+          <div className="flex flex-col gap-3 border-y border-border py-4">
+            <PaletteScale name="Brand" scale={activeBrandTheme?.scale ?? {}} currentBrand />
+            <PaletteScale name="Neutral" scale={numericScale(referenceColors.neutral)} />
+            <PaletteScale name="Danger" scale={numericScale(referenceColors.danger)} />
+            <PaletteScale name="Warning" scale={numericScale(referenceColors.warning)} />
+            <PaletteScale name="Info" scale={numericScale(referenceColors.info)} />
+          </div>
+          <p className="text-label text-fg-subtle">
+            50 → 950 · lighter to darker · Brand 500 preserves the selected seed
+          </p>
+        </DocSection>
+
         <DocSection title={t("commonRecipes")}>
           <SectionDescription>{t("commonRecipesBody")}</SectionDescription>
           <RecipeTable rows={[
@@ -348,6 +470,11 @@ export default function SemanticTokensPage() {
             { scenario: t("warningAlert"), tokens: "warning-surface + fg-warning + warning-border" },
             { scenario: t("tooltip"), tokens: "inverse-background + fg-on-inverse" },
           ]} />
+        </DocSection>
+
+        <DocSection title={`${t("actionFill")} (${brandColor})`}>
+          <SectionDescription>{`${t("actionFillBody")} ${brandColor}`}</SectionDescription>
+          <TokenTable rows={runtimeBrandRows} includeTheme />
         </DocSection>
 
         <DocSection title={t("actionFill")}>

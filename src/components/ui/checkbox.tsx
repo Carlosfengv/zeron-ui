@@ -34,7 +34,7 @@ function Checkbox({
         "data-unchecked:hover:border-input-hover",
         "data-checked:border-brand data-checked:bg-brand data-indeterminate:border-brand data-indeterminate:bg-brand",
         "focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
-        "aria-invalid:border-danger-border aria-invalid:ring-1 aria-invalid:ring-danger-border/30",
+        "aria-invalid:border-danger-border aria-invalid:ring-1 aria-invalid:ring-danger-border/30 aria-invalid:focus-visible:outline-1 aria-invalid:focus-visible:outline-focus-ring aria-invalid:focus-visible:outline-offset-2",
         "data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50",
         className
       )}

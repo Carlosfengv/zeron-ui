@@ -5,29 +5,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { useShape } from "@/lib/shape-context";
 import {
-  categoricalBackgroundColors,
-  categoricalColors,
-  type CategoricalColor,
-} from "@/lib/tokens/categorical-colors";
+  badgeCategoricalTokens,
+  badgeColors,
+  badgeStatusTokens,
+  type BadgeColor,
+  type BadgeStatus,
+} from "./badge-colors";
 
-const badgeColors = categoricalColors;
-type BadgeColor = CategoricalColor;
-type BadgeStatus = "danger" | "warning";
-
-const badgeStatusColors: Record<BadgeStatus, { foreground: string; background: string; border: string; icon: string }> = {
-  danger: {
-    foreground: "var(--fg-danger)",
-    background: "var(--danger-surface)",
-    border: "var(--danger-border)",
-    icon: "var(--fg-danger)",
-  },
-  warning: {
-    foreground: "var(--fg-warning)",
-    background: "var(--warning-surface)",
-    border: "var(--warning-border)",
-    icon: "var(--fg-warning)",
-  },
-};
 
 const badgeVariants = cva(
   "inline-flex w-fit max-w-full items-center font-medium whitespace-nowrap",
@@ -73,12 +57,11 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
     ref
   ) => {
     const shape = useShape();
-    const colorValue = badgeColors[color];
     const isSolid = variant === "solid";
-    const statusColors = status ? badgeStatusColors[status] : null;
+    const statusColors = status ? badgeStatusTokens[status] : null;
+    const categoricalTokens = badgeCategoricalTokens(color);
     const dotSize = size === "sm" ? 6 : size === "lg" ? 8 : 7;
 
-    const background = categoricalBackgroundColors[color];
     const colorStyle = isSolid
       ? statusColors
         ? {
@@ -87,16 +70,15 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
             borderColor: statusColors.border,
           }
         : {
-            color: "var(--fg-default)",
-            backgroundColor: `light-dark(${background.light}, ${background.dark})`,
+            color: categoricalTokens.foreground,
+            backgroundColor: categoricalTokens.background,
+            borderColor: categoricalTokens.border,
           }
       : {};
 
     const dotColor = statusColors
       ? statusColors.icon
-      : color === "gray"
-        ? "var(--fg-muted)"
-        : colorValue;
+      : categoricalTokens.dot;
 
     return (
       <span

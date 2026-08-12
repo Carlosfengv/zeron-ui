@@ -22,7 +22,7 @@ const read = (path) => readFileSync(path, "utf8");
 describe("semantic color consumers", () => {
   it("keeps raw palettes out of core components", () => {
     for (const path of componentFiles()) {
-      if (path.endsWith("/color-picker.tsx")) continue;
+      if (path.endsWith("/color-picker.tsx") || path.endsWith("/badge-colors.ts")) continue;
       const source = read(path);
       expect(source, path).not.toMatch(PALETTE_UTILITY);
       expect(source, path).not.toMatch(RAW_COLOR);
@@ -52,11 +52,77 @@ describe("semantic color consumers", () => {
     }
   });
 
+  it("keeps keyboard focus visible when invalid controls use danger boundaries", () => {
+    for (const path of ["input.tsx", "checkbox.tsx", "radio-group.tsx", "stepper.tsx"]) {
+      const source = read(join(UI_ROOT, path));
+      expect(source, path).toContain("aria-invalid:focus-visible:outline-focus-ring");
+    }
+
+    const inputGroup = read(join(UI_ROOT, "input-group.tsx"));
+    expect(inputGroup).toContain("has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-focus-ring");
+    expect(inputGroup).toContain("outline-focus-ring outline-offset-2");
+  });
+
+  it("uses selection, rather than active, for persistent table and grid selection", () => {
+    const dataTable = read(join(UI_ROOT, "data-table.tsx"));
+    const gridRow = read(join(UI_ROOT, "data-grid/data-grid-row.tsx"));
+    const gridCell = read(join(UI_ROOT, "data-grid/data-grid-cell-wrapper.tsx"));
+
+    expect(dataTable).toContain("data-[state=selected]:bg-selection");
+    expect(dataTable).toContain("linear-gradient(var(--selection), var(--selection))");
+    expect(dataTable).not.toContain("data-[state=selected]:bg-active");
+    expect(gridRow).toContain('"bg-selection": isRowSelected');
+    expect(gridRow).not.toContain('"bg-active": isRowSelected');
+    expect(gridCell).toContain("(isSelected && !isEditing)");
+    expect(gridCell).not.toContain('"bg-active": isSelected && !isEditing');
+  });
+
+  it("keeps component geometry connected to the active shape theme", () => {
+    const dropdown = read(join(UI_ROOT, "dropdown.tsx"));
+    const menuItem = read(join(UI_ROOT, "menu-item.tsx"));
+    const colorPicker = read(join(UI_ROOT, "color-picker.tsx"));
+    const pageLayout = read(join(UI_ROOT, "page-layout.tsx"));
+    const identityRow = read(join(UI_ROOT, "sidebar-identity-row.tsx"));
+    const breadcrumb = read(join(UI_ROOT, "breadcrumb.tsx"));
+    const card = read(join(UI_ROOT, "card.tsx"));
+
+    for (const source of [dropdown, menuItem, colorPicker]) {
+      expect(source).toContain("useShape");
+      expect(source).not.toContain("shapeMap.rounded");
+    }
+    expect(colorPicker).not.toContain('shape.bg === "rounded-[20px]"');
+    expect(pageLayout).toContain("rounded-container");
+    expect(pageLayout).not.toContain("rounded-xl");
+    expect(identityRow).toContain("rounded-full");
+    expect(identityRow).not.toContain("borderRadius: 6");
+    expect(breadcrumb).toContain("rounded-control");
+    expect(breadcrumb).not.toContain("rounded-[4px]");
+    expect(card).toContain("shape.container");
+    expect(card).not.toContain("rounded-[2px]");
+  });
+
+  it("uses paired semantic typography and control-height tokens", () => {
+    const pairedTypeOverride = /\btext-(?:label|body|title|heading)\b[^"`\n]*\bleading-(?:snug|tight|normal|relaxed)\b|\bleading-(?:snug|tight|normal|relaxed)\b[^"`\n]*\btext-(?:label|body|title|heading)\b/;
+
+    for (const path of componentFiles()) {
+      expect(read(path), path).not.toMatch(pairedTypeOverride);
+    }
+
+    const inputGroup = read(join(UI_ROOT, "input-group.tsx"));
+    const shortcuts = read(join(UI_ROOT, "data-grid/data-grid-keyboard-shortcuts.tsx"));
+    expect(inputGroup).toContain('xs: "h-control-xs');
+    expect(inputGroup).toContain('"icon-xs": "size-control-xs');
+    expect(shortcuts).toContain('className="h-control-sm pl-8"');
+  });
+
   it("keeps categorical and status badges separate", () => {
     const source = read(join(UI_ROOT, "badge.tsx"));
-    expect(source).toContain("categoricalColors");
-    expect(source).toContain('type BadgeStatus = "danger" | "warning"');
-    expect(source).toContain("var(--warning-surface)");
-    expect(source).toContain("var(--danger-surface)");
+    const colors = read(join(UI_ROOT, "badge-colors.ts"));
+    expect(source).toContain("badgeCategoricalTokens");
+    expect(source).toContain("badgeStatusTokens");
+    expect(colors).toContain("var(--warning-surface)");
+    expect(colors).toContain("var(--danger-surface)");
+    expect(colors).toContain("var(--info-surface)");
+    expect(colors).toContain("var(--neutral-status-surface)");
   });
 });

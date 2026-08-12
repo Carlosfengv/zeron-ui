@@ -14,7 +14,7 @@ const inputVariants = cva(
     "placeholder:text-fg-subtle",
     "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
     "focus-visible:ring-1 focus-visible:ring-focus-ring",
-    "aria-invalid:border-danger-border aria-invalid:hover:border-danger-border aria-invalid:ring-1 aria-invalid:ring-danger-border/40",
+    "aria-invalid:border-danger-border aria-invalid:hover:border-danger-border aria-invalid:ring-1 aria-invalid:ring-danger-border/40 aria-invalid:focus-visible:outline-1 aria-invalid:focus-visible:outline-focus-ring aria-invalid:focus-visible:outline-offset-2",
   ],
   {
     variants: {

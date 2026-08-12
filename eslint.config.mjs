@@ -21,7 +21,7 @@ const COMPONENT_PALETTE_REGEX =
 const RAW_COMPONENT_COLOR_REGEX =
   "#[0-9a-fA-F]{3,8}\\b|\\b(?:rgb|rgba|hsl|hsla)\\((?!var\\(--)[^)]*";
 const COMPONENT_PALETTE_MESSAGE =
-  "Core components must use semantic color tokens. Categorical colors belong in src/system/tokens/categorical-colors.ts, not component-local palette utilities.";
+  "Core components must use semantic color tokens. Categorical colors belong in the audited Badge-private palette module, not a component implementation.";
 const RAW_COMPONENT_COLOR_MESSAGE =
   "Core components must not embed raw colors. Use a semantic token or a CSS value derived from var(--...).";
 
@@ -145,7 +145,9 @@ export default [
   },
   {
     files: ["src/components/ui/**/*.{ts,tsx}"],
-    ignores: ["src/components/ui/color-picker.tsx"],
+    // Raw colour is allowed only in these audited palette sources. All other
+    // core UI modules must consume semantic or component-private tokens.
+    ignores: ["src/components/ui/color-picker.tsx", "src/components/ui/badge-colors.ts"],
     rules: componentColorRules,
   },
 ];

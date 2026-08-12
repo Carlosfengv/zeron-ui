@@ -180,10 +180,9 @@ export function DataGridCellWrapper<TData>({
           "ring-1 ring-inset ring-focus-ring":
             isFocused,
           "bg-selection":
-            isSearchMatch && !isActiveSearchMatch,
+            (isSearchMatch && !isActiveSearchMatch) || (isSelected && !isEditing),
           "bg-active ring-1 ring-inset ring-focus-ring":
             isActiveSearchMatch,
-          "bg-active": isSelected && !isEditing,
           "cursor-default": !isEditing,
           "**:data-[slot=grid-cell-content]:line-clamp-1":
             !isEditing && rowHeight === "short",

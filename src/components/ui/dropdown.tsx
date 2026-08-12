@@ -26,15 +26,9 @@ import {
 import { cn } from "@/lib/utils";
 import { spring, exitFallbackMs } from "@/lib/springs";
 import { useProximityHover } from "@/hooks/use-proximity-hover";
-import { shapeMap } from "@/lib/shape-context";
+import { useShape } from "@/lib/shape-context";
 import { Elevated } from "@/lib/elevated";
 import { usePortalContainer } from "@/lib/portal-container-context";
-
-// Dropdown opts out of the global pill/rounded shape context — popover surfaces
-// look cleaner with the smaller "rounded" radii regardless of how the rest of
-// the UI is shaped (the heavy pill bubbling distorts perceived padding at this
-// scale and produces the corner-shadow asymmetry).
-const shape = shapeMap.rounded;
 
 // ---------------------------------------------------------------------------
 // Panel context — shared by the inline Dropdown and the popup DropdownContent.
@@ -66,6 +60,7 @@ interface DropdownProps extends HTMLAttributes<HTMLDivElement> {
 
 const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
   ({ children, checkedIndex, className, ...props }, ref) => {
+    const shape = useShape();
     const containerRef = useRef<HTMLDivElement>(null);
     const {
       activeIndex,
@@ -363,6 +358,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
     },
     ref
   ) => {
+    const shape = useShape();
     const { open, actionsRef } = useDropdownMenuContext();
     const portalContainer = usePortalContainer();
     const containerRef = useRef<HTMLDivElement>(null);

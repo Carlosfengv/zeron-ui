@@ -211,6 +211,41 @@ describe("semantic token generation", () => {
     }
   });
 
+  it("publishes complete danger, warning, info, and neutral status bundles", () => {
+    const statusBundles = [
+      ["danger-surface", "fg-danger", "danger-border"],
+      ["warning-surface", "fg-warning", "warning-border"],
+      ["info-surface", "fg-info", "info-border"],
+      ["neutral-status-surface", "fg-neutral-status", "neutral-status-border"],
+    ];
+    for (const [surface, foreground, boundary] of statusBundles) {
+      expect(fillColorTokens.map((token) => token.name)).toContain(surface);
+      expect(foregroundColorTokens.map((token) => token.name)).toContain(foreground);
+      expect(boundaryColorTokens.map((token) => token.name)).toContain(boundary);
+      for (const mode of ["light", "dark"]) {
+        expect(contrastRatio(
+          tokenByName(foregroundColorTokens, foreground)[mode],
+          tokenByName(fillColorTokens, surface)[mode],
+        )).toBeGreaterThanOrEqual(4.5);
+        expect(contrastRatio(
+          tokenByName(boundaryColorTokens, boundary)[mode],
+          tokenByName(fillColorTokens, surface)[mode],
+        )).toBeGreaterThanOrEqual(3);
+      }
+    }
+  });
+
+  it("classifies every color token by one visual channel and semantic intent", () => {
+    for (const token of [...colorTokens, ...supportColorTokens, ...surfaceTokens]) {
+      expect(token.classification).toMatchObject({
+        channel: expect.any(String),
+        intent: expect.any(String),
+      });
+    }
+    expect(semanticTokens).toHaveProperty("overlays");
+    expect(semanticTokens).not.toHaveProperty("interactions");
+  });
+
   it("publishes absolute semantic color values without CSS color mixing", () => {
     const generated = [
       renderGlobalsBlock(),
@@ -228,6 +263,8 @@ describe("semantic token generation", () => {
       "fg-brand",
       "fg-danger",
       "fg-warning",
+      "fg-info",
+      "fg-neutral-status",
       "fg-on-brand",
       "fg-on-danger",
       "fg-on-inverse",

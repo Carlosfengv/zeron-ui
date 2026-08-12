@@ -33,6 +33,8 @@
   --fg-brand: light-dark(#0060D2, #80B0E9);
   --fg-danger: light-dark(#B42318, #FCA5A5);
   --fg-warning: light-dark(#B45309, #FDE68A);
+  --fg-info: light-dark(#005EBF, #93C5FD);
+  --fg-neutral-status: light-dark(#525252, #D4D4D4);
   --fg-on-brand: #FFFFFF;
   --fg-on-danger: #171717;
   --fg-on-inverse: light-dark(#FAFAFA, #171717);
@@ -50,6 +52,8 @@
   --destructive-active: light-dark(#F5655F, #FC8784);
   --danger-surface: light-dark(#FEF2F2, #450A0A);
   --warning-surface: light-dark(#FFFBEB, #451A03);
+  --info-surface: light-dark(#EFF6FF, #0C2846);
+  --neutral-status-surface: light-dark(#F4F4F5, #262626);
   --scrim: light-dark(rgb(0 0 0 / 0.4), rgb(0 0 0 / 0.8));
   --inverse-background: var(--fg-default);
   --inverse-background-hover: light-dark(#262626, #E5E5E5);
@@ -60,6 +64,8 @@
   --input-hover: light-dark(rgb(23 23 23 / 0.24), rgb(245 245 245 / 0.24));
   --danger-border: light-dark(#EF4444, #F87171);
   --warning-border: #D97706;
+  --info-border: light-dark(#2563EB, #60A5FA);
+  --neutral-status-border: light-dark(#737373, #A3A3A3);
   --focus-ring: #6088E8;
   --hover: light-dark(rgb(0 0 0 / 0.04), rgb(255 255 255 / 0.06));
   --active: light-dark(rgb(0 0 0 / 0.07), rgb(255 255 255 / 0.1));
@@ -163,6 +169,8 @@
   --color-fg-brand: var(--fg-brand);
   --color-fg-danger: var(--fg-danger);
   --color-fg-warning: var(--fg-warning);
+  --color-fg-info: var(--fg-info);
+  --color-fg-neutral-status: var(--fg-neutral-status);
   --color-fg-on-brand: var(--fg-on-brand);
   --color-fg-on-danger: var(--fg-on-danger);
   --color-fg-on-inverse: var(--fg-on-inverse);
@@ -180,6 +188,8 @@
   --color-destructive-active: var(--destructive-active);
   --color-danger-surface: var(--danger-surface);
   --color-warning-surface: var(--warning-surface);
+  --color-info-surface: var(--info-surface);
+  --color-neutral-status-surface: var(--neutral-status-surface);
   --color-scrim: var(--scrim);
   --color-inverse-background: var(--inverse-background);
   --color-inverse-background-hover: var(--inverse-background-hover);
@@ -190,6 +200,8 @@
   --color-input-hover: var(--input-hover);
   --color-danger-border: var(--danger-border);
   --color-warning-border: var(--warning-border);
+  --color-info-border: var(--info-border);
+  --color-neutral-status-border: var(--neutral-status-border);
   --color-focus-ring: var(--focus-ring);
   --color-hover: var(--hover);
   --color-active: var(--active);

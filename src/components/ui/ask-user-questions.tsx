@@ -1089,7 +1089,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                     </span>
                   </span>
                   {opt.description && (
-                    <span className="text-label text-fg-muted leading-snug">
+                    <span className="text-label text-fg-muted">
                       {opt.description}
                     </span>
                   )}
@@ -1202,7 +1202,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                   // input it replaces — no border, no padding, no
                   // resize handle, no scrollbars (height is JS-driven,
                   // see the auto-resize effect above).
-                  "col-start-1 row-start-1 block w-full bg-transparent border-0 p-0 m-0 outline-none resize-none overflow-hidden text-body leading-snug text-fg-default placeholder:text-fg-muted font-medium"
+                  "col-start-1 row-start-1 block w-full bg-transparent border-0 p-0 m-0 outline-none resize-none overflow-hidden text-body text-fg-default placeholder:text-fg-muted font-medium"
                 )}
               />
             </span>
@@ -1275,7 +1275,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
               {/* Question title */}
               <h3
                 id={`${reactId}-${qId}-title`}
-                className="text-title text-fg-default leading-snug font-semibold"
+                className="text-title text-fg-default font-semibold"
               >
                 {question.title}
               </h3>
@@ -1348,7 +1348,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                             handleOtherSubmit();
                           }
                         }}
-                        className="block w-full bg-transparent border-0 p-0 m-0 outline-none resize-none overflow-hidden text-body leading-snug text-fg-default placeholder:text-fg-muted font-medium"
+                        className="block w-full bg-transparent border-0 p-0 m-0 outline-none resize-none overflow-hidden text-body text-fg-default placeholder:text-fg-muted font-medium"
                       />
                     }
                   />
@@ -1452,7 +1452,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                             ...spring.fast,
                             opacity: { duration: spring.moderate.exit.duration },
                           }}
-                          className="min-w-0 px-2 sm:px-3 text-left text-label leading-snug text-fg-danger"
+                          className="min-w-0 px-2 sm:px-3 text-left text-label text-fg-danger"
                         />
                       }
                     >
@@ -1693,7 +1693,7 @@ function Row({
 
   // The chip "slot" is a fixed 28×28 cell holding the chip number/circle.
   // When topAlign is on, the slot floats up so the chip's vertical centre
-  // lines up with the centre of a `text-body leading-snug` first line
+  // lines up with the centre of the first semantic body-text line
   // (line-height ≈ 19px → centre 9.5px; chip centre 14px → diff 4.5px).
   // Stacked rows pair a title with a description, so we add 4px of
   // breathing room back on top (effective shift -1px) — that lands the
@@ -1821,7 +1821,7 @@ function Row({
       {/* Body — fills row */}
       <span
         className={cn(
-          "min-w-0 flex-1 text-body leading-snug",
+          "min-w-0 flex-1 text-body",
           bodyLayout === "stacked"
             ? "flex flex-col gap-0.5"
             : "inline-flex items-center gap-0"
