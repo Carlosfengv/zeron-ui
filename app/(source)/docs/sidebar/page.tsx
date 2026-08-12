@@ -110,7 +110,7 @@ function SidebarCollapsePreview({ collapsible }: { collapsible: SidebarCollapsib
 
   return (
     <SidebarProvider key={collapsible} defaultOpen>
-      <div className="flex h-80 w-full min-w-0 overflow-hidden">
+      <div className="flex h-80 w-full min-w-0 overflow-hidden bg-surface-base">
         <Sidebar collapsible={collapsible} className="relative !h-full">
           <SidebarHeader className="flex items-center justify-between">
             <span className="px-2 text-label group-data-[state=collapsed]/sidebar:hidden">Workspace</span>
@@ -389,7 +389,7 @@ export default function SidebarDoc() {
     <DocSection title="Basic">
       <ComponentPreview fullScreenable padding="none" code={code}>
         <SidebarProvider>
-          <div className="flex h-96 w-full min-w-0 overflow-hidden group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
+          <div className="flex h-96 w-full min-w-0 overflow-hidden bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
             <Sidebar collapsible="icon" className="static">
               <SidebarHeader className="flex items-center justify-between">
                 <span className="px-2 text-label group-data-[state=collapsed]/sidebar:hidden">Zeron</span>

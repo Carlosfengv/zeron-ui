@@ -128,7 +128,7 @@ function CheckerboardTile() {
       aria-hidden="true"
       className="relative inline-block size-5 shrink-0 overflow-hidden rounded-control"
       style={{
-        backgroundImage: "conic-gradient(#e5e5e5 25%, #fff 0 50%, #e5e5e5 0 75%, #fff 0)",
+        backgroundImage: "conic-gradient(var(--checker-a) 25%, var(--checker-b) 0 50%, var(--checker-a) 0 75%, var(--checker-b) 0)",
         backgroundSize: "6px 6px",
         boxShadow: "inset 0 0 0 1px rgb(127 127 127 / 0.25)",
       }}
@@ -136,11 +136,11 @@ function CheckerboardTile() {
   );
 }
 
-function ThemeValue({ value }: { value: string }) {
+function ThemeValue({ value, theme }: { value: string; theme: "light" | "dark" }) {
   const display = colorDisplay(value);
   return (
     <span
-      className="flex h-control-md min-w-[10.75rem] items-center gap-2 rounded-control border border-border bg-transparent px-2 font-medium"
+      className={`${theme} flex h-control-md min-w-[10.75rem] items-center gap-2 rounded-control border border-border bg-surface-base px-2 font-medium`}
       title={`${display.value} · ${display.opacity}`}
     >
       <span className="relative size-5 shrink-0 overflow-hidden rounded-control">
@@ -184,8 +184,8 @@ function TokenTable({
               <td className="px-3 py-2.5"><TokenCode>{row.token}</TokenCode></td>
               {includeTheme ? (
                 <>
-                  <td className="px-3 py-2.5"><ThemeValue value={row.light ?? "transparent"} /></td>
-                  <td className="px-3 py-2.5"><ThemeValue value={row.dark ?? "transparent"} /></td>
+                  <td className="px-3 py-2.5"><ThemeValue value={row.light ?? "transparent"} theme="light" /></td>
+                  <td className="px-3 py-2.5"><ThemeValue value={row.dark ?? "transparent"} theme="dark" /></td>
                 </>
               ) : (
                 <td className="px-3 py-2.5"><TokenCode>{row.value ?? "—"}</TokenCode></td>
