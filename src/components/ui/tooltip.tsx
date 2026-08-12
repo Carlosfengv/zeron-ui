@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { spring } from "@/lib/springs";
 import { useShape } from "@/lib/shape-context";
+import { usePortalContainer } from "@/lib/portal-container-context";
 
 // ---------------------------------------------------------------------------
 // Portal container context
@@ -130,6 +131,7 @@ function Tooltip({
   const open = forceOpen !== undefined ? forceOpen : internalOpen;
   const shape = useShape();
   const portalContainer = useContext(TooltipPortalContainerContext);
+  const fullscreenPortal = usePortalContainer();
   const hasAmbientProvider = useContext(TooltipGroupContext);
 
   const slideOffset = getSlideOffset(side);
@@ -145,7 +147,9 @@ function Tooltip({
       {/* An explicit delayDuration overrides the ambient provider's delay;
           left undefined, the trigger inherits it from the provider. */}
       <TooltipPrimitive.Trigger render={children} delay={delayDuration} />
-      <TooltipPrimitive.Portal container={portalContainer ?? undefined}>
+      <TooltipPrimitive.Portal
+        container={portalContainer ?? fullscreenPortal ?? undefined}
+      >
         <TooltipPrimitive.Positioner
           side={side}
           sideOffset={sideOffset}

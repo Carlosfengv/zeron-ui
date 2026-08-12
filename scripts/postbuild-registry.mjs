@@ -15,6 +15,7 @@ export const BASE_URL = "https://www.zerondesign.com/r";
 export const CUSTOM_ITEMS = new Set([
   "shape-context",
   "surface-context",
+  "portal-container-context",
   "surface-classes",
   "icon-context",
   "pro-icon-provider",

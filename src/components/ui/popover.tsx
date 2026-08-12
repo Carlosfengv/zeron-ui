@@ -19,6 +19,7 @@ import {
   useSurface,
 } from "@/lib/surface-context";
 import { surfaceClasses } from "@/lib/surface-classes";
+import { usePortalContainer } from "@/lib/portal-container-context";
 
 type PopoverSide = "top" | "right" | "bottom" | "left";
 type PopoverAlign = "start" | "center" | "end";
@@ -201,6 +202,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
   ) => {
     const visual = useContext(PopoverVisualContext);
     const ambientPortal = useContext(PopoverPortalContainerContext);
+    const fullscreenPortal = usePortalContainer();
     const reduceMotion = useReducedMotion();
     const shape = useShape();
     const substrate = useSurface();
@@ -211,7 +213,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
 
     return (
       <PopoverPrimitive.Portal
-        container={container ?? ambientPortal ?? undefined}
+        container={container ?? ambientPortal ?? fullscreenPortal ?? undefined}
       >
         <PopoverPrimitive.Positioner
           align={align}

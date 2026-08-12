@@ -28,6 +28,7 @@ import { spring, exitFallbackMs } from "@/lib/springs";
 import { useProximityHover } from "@/hooks/use-proximity-hover";
 import { shapeMap } from "@/lib/shape-context";
 import { Elevated } from "@/lib/elevated";
+import { usePortalContainer } from "@/lib/portal-container-context";
 
 // Dropdown opts out of the global pill/rounded shape context — popover surfaces
 // look cleaner with the smaller "rounded" radii regardless of how the rest of
@@ -363,6 +364,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
     ref
   ) => {
     const { open, actionsRef } = useDropdownMenuContext();
+    const portalContainer = usePortalContainer();
     const containerRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -460,7 +462,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
     );
 
     return (
-      <Menu.Portal>
+      <Menu.Portal container={portalContainer ?? undefined}>
         <Menu.Positioner
           side={side}
           align={align}

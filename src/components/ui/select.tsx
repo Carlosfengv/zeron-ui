@@ -24,6 +24,7 @@ import { spring, exitFallbackMs } from "@/lib/springs";
 import { useProximityHover } from "@/hooks/use-proximity-hover";
 import { useShape } from "@/lib/shape-context";
 import { Elevated } from "@/lib/elevated";
+import { usePortalContainer } from "@/lib/portal-container-context";
 
 // ---------------------------------------------------------------------------
 // Select context
@@ -353,6 +354,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
     },
     ref
   ) => {
+    const portalContainer = usePortalContainer();
     const { open, value, actionsRef } = useSelectContext();
     const shape = useShape();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -456,7 +458,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
     );
 
     return (
-      <SelectPrimitive.Portal>
+      <SelectPrimitive.Portal container={portalContainer ?? undefined}>
         <SelectPrimitive.Positioner
           side={side}
           align={align}

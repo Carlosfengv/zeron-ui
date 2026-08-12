@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import dynamic from "next/dynamic";
 import { useShape } from "@/lib/shape-context";
 import { useIcon } from "@/lib/icon-context";
@@ -10,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { PortalContainerProvider } from "@/lib/portal-container-context";
 
 const InspectOverlay = dynamic(() =>
   import("./InspectOverlay").then((module) => module.InspectOverlay)
@@ -76,6 +83,11 @@ export function ComponentPreview({
   const ReplayIcon = useIcon("rotate-ccw");
   const previewRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
+  const [frameElement, setFrameElement] = useState<HTMLDivElement | null>(null);
+  const setFrameRef = useCallback((node: HTMLDivElement | null) => {
+    frameRef.current = node;
+    setFrameElement(node);
+  }, []);
 
   const toggleFullscreen = () => {
     const frame = frameRef.current;
@@ -131,10 +143,11 @@ export function ComponentPreview({
   const inspecting = inspectable && inspect && tab === 0;
 
   return (
-    <div
-      ref={frameRef}
-      className={`relative flex flex-col gap-0 w-full border border-border-subtle transition-[border-color] duration-moderate ease-out has-[:focus-visible]:border-fg-default/40 ${shape.container} ${isFullscreen ? "h-svh w-screen rounded-none" : ""}`}
-    >
+    <PortalContainerProvider value={isFullscreen ? frameElement : null}>
+      <div
+        ref={setFrameRef}
+        className={`relative flex flex-col gap-0 w-full border border-border-subtle transition-[border-color] duration-moderate ease-out has-[:focus-visible]:border-fg-default/40 ${shape.container} ${isFullscreen ? "h-svh w-screen rounded-none" : ""}`}
+      >
       {/* Tab bar — min-height reserves the playback button's height (h-10 + pt-3)
           so the header doesn't shift when the button mounts/unmounts. A hairline
           along the bottom separates it from the preview/code below. Its own
@@ -257,6 +270,7 @@ export function ComponentPreview({
           <InspectOverlay key="inspect" frameRef={frameRef} contentRef={previewRef} />
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </PortalContainerProvider>
   );
 }

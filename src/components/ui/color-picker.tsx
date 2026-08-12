@@ -31,6 +31,7 @@ import { useProximityHover } from "@/hooks/use-proximity-hover";
 import { Elevated } from "@/lib/elevated";
 import { Slider } from "@/components/ui/slider";
 import { Tooltip } from "@/components/ui/tooltip";
+import { usePortalContainer } from "@/lib/portal-container-context";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -755,6 +756,7 @@ function FormatDropdown({
   const actionsRef = useRef<{ unmount: () => void; close: () => void } | null>(null);
   const shape = useShape();
   const portalContainer = useContext(ColorPickerPortalContainerContext);
+  const fullscreenPortal = usePortalContainer();
   const containerRef = useRef<HTMLDivElement>(null);
   const ChevronDownIcon = useIcon("chevron-down");
 
@@ -835,7 +837,9 @@ function FormatDropdown({
           )}
         />
       </Menu.Trigger>
-      <Menu.Portal container={portalContainer ?? undefined}>
+      <Menu.Portal
+        container={portalContainer ?? fullscreenPortal ?? undefined}
+      >
         <Menu.Positioner
           side="bottom"
           align="start"
@@ -1963,6 +1967,7 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
     const actionsRef = useRef<{ unmount: () => void; close: () => void } | null>(null);
     const [panelEl, setPanelEl] = useState<HTMLDivElement | null>(null);
     const portalContainer = useContext(ColorPickerPortalContainerContext);
+    const fullscreenPortal = usePortalContainer();
     const shape = useShape();
     const substrate = useSurface();
     const surface = resolveSurface(substrate, "floating");
@@ -2067,7 +2072,9 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
               <XIcon size={14} strokeWidth={1.5} />
             </button>
           )}
-          <Popover.Portal container={portalContainer ?? undefined}>
+          <Popover.Portal
+            container={portalContainer ?? fullscreenPortal ?? undefined}
+          >
             <Popover.Positioner
               side="bottom"
               align="start"

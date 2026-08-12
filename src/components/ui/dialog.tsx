@@ -18,6 +18,7 @@ import {
 } from "@/lib/surface-context";
 import { surfaceClasses } from "@/lib/surface-classes";
 import { Button } from "@/components/ui/button";
+import { usePortalContainer } from "@/lib/portal-container-context";
 
 interface DialogProps {
   open?: boolean;
@@ -67,13 +68,16 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
     const shape = useShape();
     const substrate = useSurface();
     const dialogSurface = resolveSurface(substrate, "overlay");
+    const ambientPortal = usePortalContainer();
 
     // No `if (!open) return null` here — Base UI's `<DialogPrimitive.Popup>`
     // handles mount/unmount itself, and waits for the framer-motion opacity
     // tween below to finish (via `element.getAnimations()`) before unmounting.
     // Returning null early would short-circuit the closing animation.
     return (
-      <DialogPrimitive.Portal container={container ?? undefined}>
+      <DialogPrimitive.Portal
+        container={container ?? ambientPortal ?? undefined}
+      >
         <DialogPrimitive.Backdrop
           render={(backdropProps, state) => {
             const exiting = state.transitionStatus === "ending";

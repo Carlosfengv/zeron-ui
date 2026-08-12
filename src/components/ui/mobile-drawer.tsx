@@ -12,6 +12,7 @@ import {
   SurfaceProvider,
 } from "@/lib/surface-context";
 import { surfaceClasses } from "@/lib/surface-classes";
+import { usePortalContainer } from "@/lib/portal-container-context";
 
 // Built on Base UI Dialog rather than Base UI Drawer: Drawer's
 // swipe-to-dismiss writes inline `transform` + `--drawer-swipe-movement-*`
@@ -65,6 +66,7 @@ export function MobileDrawer({
   const surface = resolveSurface(substrate, "overlay");
   const physicalLeft = (side === "start") === (dir !== "rtl");
   const hiddenX = physicalLeft ? "-100%" : "100%";
+  const portalContainer = usePortalContainer();
 
   // With `actionsRef` set, Base UI defers unmounting the portal on close
   // until `actionsRef.current.unmount()` is called, letting the
@@ -93,7 +95,7 @@ export function MobileDrawer({
       }}
       actionsRef={actionsRef}
     >
-      <DialogPrimitive.Portal>
+      <DialogPrimitive.Portal container={portalContainer ?? undefined}>
         {/* Overlay — same scrim as the library's dialogs: an always-on
             bg-scrim base that stays visible for system-dark users (the
             `dark:` variant only matches the explicit .dark class), boosted

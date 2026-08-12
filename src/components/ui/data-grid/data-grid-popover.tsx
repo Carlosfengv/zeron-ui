@@ -11,6 +11,7 @@ import {
   useSurface,
 } from "@/lib/surface-context";
 import { surfaceClasses } from "@/lib/surface-classes";
+import { usePortalContainer } from "@/lib/portal-container-context";
 
 interface DataGridPopoverContextValue {
   anchorRef: React.RefObject<HTMLElement | null>;
@@ -89,6 +90,7 @@ function PopoverContent({
   ...props
 }: PopoverContentProps) {
   const context = React.useContext(DataGridPopoverContext);
+  const portalContainer = usePortalContainer();
   const shape = useShape();
   const substrate = useSurface();
   const surface = resolveSurface(substrate, "floating");
@@ -102,7 +104,7 @@ function PopoverContent({
   }, [context?.open, onOpenAutoFocus]);
 
   return (
-    <PopoverPrimitive.Portal>
+    <PopoverPrimitive.Portal container={portalContainer ?? undefined}>
       <PopoverPrimitive.Positioner
         align={align}
         alignOffset={alignOffset}
