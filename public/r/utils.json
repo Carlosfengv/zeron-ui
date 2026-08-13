@@ -1,6 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "utils",
+  "type": "registry:lib",
   "title": "Utilities",
   "description": "Utility function for merging Tailwind CSS classes with clsx and tailwind-merge.",
   "dependencies": [
@@ -9,11 +10,10 @@
   ],
   "files": [
     {
-      "path": "src/system/utils.ts",
-      "content": "import { clsx, type ClassValue } from \"clsx\";\nimport { extendTailwindMerge } from \"tailwind-merge\";\n\n// Tailwind v4 exposes both semantic font sizes and colors through `text-*`\n// utilities. tailwind-merge cannot discover custom @theme names at runtime,\n// so without this list it treats e.g. `text-body` as a color and removes\n// either it or `text-fg-default`, depending on class order.\nconst mergeTailwindClasses = extendTailwindMerge({\n  extend: {\n    theme: {\n      text: [\n        \"label\",\n        \"body\",\n        \"title\",\n        \"heading\",\n      ],\n    },\n  },\n});\n\nexport function cn(...inputs: ClassValue[]) {\n  return mergeTailwindClasses(clsx(inputs));\n}\n",
+      "path": "packages/ui/src/system/utils.ts",
+      "content": "import { clsx, type ClassValue } from \"clsx\";\nimport { extendTailwindMerge } from \"tailwind-merge\";\n// Tailwind v4 exposes both semantic font sizes and colors through `text-*`\n// utilities. tailwind-merge cannot discover custom @theme names at runtime,\n// so without this list it treats e.g. `text-body` as a color and removes\n// either it or `text-fg-default`, depending on class order.\nconst mergeTailwindClasses = extendTailwindMerge({\n    extend: {\n        theme: {\n            text: [\n                \"label\",\n                \"body\",\n                \"title\",\n                \"heading\",\n            ],\n        },\n    },\n});\nexport function cn(...inputs: ClassValue[]) {\n    return mergeTailwindClasses(clsx(inputs));\n}\n",
       "type": "registry:lib",
       "target": "lib/utils.ts"
     }
-  ],
-  "type": "registry:lib"
+  ]
 }

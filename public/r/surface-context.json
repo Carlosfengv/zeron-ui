@@ -1,6 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "surface-context",
+  "type": "registry:lib",
   "title": "Surface Context",
   "description": "React context that carries the current semantic substrate role through nested and portaled content.",
   "registryDependencies": [
@@ -8,11 +9,10 @@
   ],
   "files": [
     {
-      "path": "src/system/surface-context.tsx",
-      "content": "\"use client\";\n\nimport { createContext, useContext, type ReactNode } from \"react\";\nimport type { SurfaceRole } from \"@/lib/surface-classes\";\nexport { resolveSurface } from \"@/lib/surface-classes\";\n\nconst SurfaceContext = createContext<SurfaceRole>(\"base\");\n\nexport function useSurface(): SurfaceRole {\n  return useContext(SurfaceContext);\n}\n\nexport function SurfaceProvider({\n  role,\n  children,\n}: {\n  role: SurfaceRole;\n  children: ReactNode;\n}) {\n  return (\n    <SurfaceContext.Provider value={role}>{children}</SurfaceContext.Provider>\n  );\n}\n",
+      "path": "packages/ui/src/system/surface-context.tsx",
+      "content": "\"use client\";\nimport { createContext, useContext, type ReactNode } from \"react\";\nimport type { SurfaceRole } from \"@lib/surface-classes\";\nexport { resolveSurface } from \"@lib/surface-classes\";\nconst SurfaceContext = createContext<SurfaceRole>(\"base\");\nexport function useSurface(): SurfaceRole {\n    return useContext(SurfaceContext);\n}\nexport function SurfaceProvider({ role, children, }: {\n    role: SurfaceRole;\n    children: ReactNode;\n}) {\n    return (<SurfaceContext.Provider value={role}>{children}</SurfaceContext.Provider>);\n}\n",
       "type": "registry:lib",
       "target": "lib/surface-context.tsx"
     }
-  ],
-  "type": "registry:lib"
+  ]
 }

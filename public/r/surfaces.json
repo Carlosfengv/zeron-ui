@@ -327,5 +327,8 @@
       "z-index": "var(--layer-tooltip)"
     }
   },
-  "type": "registry:theme"
+  "type": "registry:theme",
+  "dependencies": [
+    "tw-animate-css"
+  ]
 }
