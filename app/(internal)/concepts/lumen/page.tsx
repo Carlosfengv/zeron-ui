@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useIcon } from "@/lib/icon-context";
-import { surfaceClasses } from "@/lib/surface-classes";
-import { cn } from "@/lib/utils";
+import { useIcon } from "@zeron/icons/context";
+import { surfaceClasses } from "@zeron/ui/system/surface-classes";
+import { cn } from "@zeron/ui/system/utils";
 import { ConceptFrame } from "@/app/(internal)/concepts/_components/concept-frame";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ChatMessage } from "@/components/ui/chat-message";
-import { InputMessage } from "@/components/ui/input-message";
-import { Tabs, TabsList, TabItem, TabPanel } from "@/components/ui/tabs";
+import { Button } from "@zeron/ui/button";
+import { Badge } from "@zeron/ui/badge";
+import { ChatMessage } from "@zeron/ui/chat-message";
+import { InputMessage } from "@zeron/ui/input-message";
+import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
 import {
   ThinkingSteps,
   ThinkingStepsHeader,
@@ -18,8 +18,8 @@ import {
   ThinkingStepSources,
   ThinkingStepSource,
   ThinkingStepImage,
-} from "@/components/ui/thinking-steps";
-import type { BadgeColor } from "@/components/ui/badge";
+} from "@zeron/ui/thinking-steps";
+import type { BadgeColor } from "@zeron/ui/badge";
 
 // ── Fixtures ──────────────────────────────────────────────────────────────
 

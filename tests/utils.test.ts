@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { typographyTokens } from "../src/system/tokens/semantic-tokens.mjs";
-import { cn } from "../src/system/utils";
+import { typographyTokens } from "../packages/ui/src/tokens/semantic-tokens.mjs";
+import { cn } from "../packages/ui/src/system/utils";
 
 describe("cn semantic typography merging", () => {
   it.each(typographyTokens.map(({ name }) => name))(

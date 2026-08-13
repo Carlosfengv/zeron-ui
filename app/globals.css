@@ -3,10 +3,12 @@
    project during development. */
 @import "tailwindcss" source(none);
 @source "../app";
-@source "../src";
+@source "../docs";
+@source "../packages/ui/src";
+@source "../packages/blocks/src";
 
 /* BEGIN GENERATED SEMANTIC TOKENS — DO NOT EDIT */
-/* Generated from src/system/tokens/semantic-tokens.mjs by scripts/generate-semantic-tokens.mjs. */
+/* Generated from packages/ui/src/tokens/semantic-tokens.mjs by scripts/generate-semantic-tokens.mjs. */
 
 @custom-variant dark (&:is(.dark *));
 

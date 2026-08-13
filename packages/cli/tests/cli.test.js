@@ -4,6 +4,7 @@ import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { isSupportedNodeVersion, runCli } from "../src/cli.js";
+import { resolveRegistryAliases } from "../src/resolve-registry-aliases.js";
 
 function outputBuffer() {
   let value = "";
@@ -71,6 +72,37 @@ test("maps add to the pinned shadcn command", async () => {
     cwd,
     "--yes",
   ]);
+});
+
+test("resolves Registry import placeholders against the consumer aliases", () => {
+  const source = [
+    'import { Button } from "@ui/button";',
+    'export type { Shape } from "@lib/shape-context";',
+    'type Lazy = import("@hooks/use-touch-primary").Result;',
+  ].join("\n");
+  const output = resolveRegistryAliases(source, {
+    ui: "#components/ui",
+    lib: "#lib",
+    hooks: "#hooks",
+  });
+
+  assert.match(output, /from "#components\/ui\/button"/);
+  assert.match(output, /from "#lib\/shape-context"/);
+  assert.match(output, /import\("#hooks\/use-touch-primary"\)/);
+});
+
+test("normalizes shadcn's nested hash aliases", () => {
+  const output = resolveRegistryAliases([
+    'import { cn } from "#components/lib/utils";',
+    'import { useTouchPrimary } from "#components/hooks/use-touch-primary";',
+  ].join("\n"), {
+    components: "#components",
+    lib: "#lib",
+    hooks: "#hooks",
+  });
+
+  assert.match(output, /from "#lib\/utils"/);
+  assert.match(output, /from "#hooks\/use-touch-primary"/);
 });
 
 test("requires components.json before add", async () => {

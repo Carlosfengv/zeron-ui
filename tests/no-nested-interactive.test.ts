@@ -3,7 +3,7 @@ import path from "node:path";
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
 
-const sourceRoots = ["app", "src"];
+const sourceRoots = ["app", "docs", "packages/ui/src"];
 const interactiveNames = new Set(["a", "button", "Link", "Button"]);
 
 function collectTsxFiles(directory: string): string[] {

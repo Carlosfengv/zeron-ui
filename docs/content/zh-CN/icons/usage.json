@@ -1,0 +1,6 @@
+{
+  "title": "图标使用方式",
+  "description": "通过 useIcon Hook 从当前 Provider 获取图标。",
+  "exampleTitle": "具名图标槽位",
+  "exampleDescription": "Provider 切换视觉变体时，图标名称保持稳定。"
+}

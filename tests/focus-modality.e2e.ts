@@ -11,7 +11,7 @@ async function tabTo(page: Page, target: Locator) {
 test("desktop: compounds and previews follow focus-visible semantics", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium-desktop", "Desktop-only focus checks");
 
-  await page.goto("/docs/input-group");
+  await page.goto("/docs/components/input-group");
 
   const input = page.getByRole("textbox", { name: "Search projects" });
   const clear = page.getByRole("button", { name: "Clear search" });
@@ -50,7 +50,7 @@ test("desktop: compounds and previews follow focus-visible semantics", async ({ 
 test("desktop: NavMenu gives its moving indicator only to a visible primary trigger", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium-desktop", "Desktop-only focus checks");
 
-  await page.goto("/docs/nav-menu");
+  await page.goto("/docs/components/nav-menu");
 
   const nav = page.getByRole("navigation", { name: "Preview navigation" });
   const projects = nav.getByRole("link", { name: "Projects" });
@@ -76,7 +76,7 @@ test("desktop: NavMenu gives its moving indicator only to a visible primary trig
 test("mobile: compact drawer restores the opening trigger after Escape", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium-mobile", "Compact drawer requires a mobile viewport");
 
-  await page.goto("/docs/button");
+  await page.goto("/docs/components/button");
   const openNavigation = page.getByRole("button", { name: "Open navigation" });
 
   await openNavigation.click();

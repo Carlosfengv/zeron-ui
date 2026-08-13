@@ -2,12 +2,12 @@
 
 import { usePathname } from "next/navigation";
 import { type ReactNode } from "react";
-import { NavMenu } from "@/components/ui/nav-menu";
-import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@/components/ui/nav-item";
+import { NavMenu } from "@zeron/ui/nav-menu";
+import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@zeron/ui/nav-item";
 import Link from "next/link";
-import { useIcon } from "@/lib/icon-context";
-import { RightPanel } from "@/docs/site/right-panel";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIcon } from "@zeron/icons/context";
+import { RightPanel } from "@docs/components/shell/site/right-panel";
+import { ScrollArea } from "@zeron/ui/scroll-area";
 
 interface ConceptFrameProps {
   children: ReactNode;

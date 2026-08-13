@@ -1,0 +1,48 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "zeron-blocks",
+  "items": [
+    {
+      "name": "top-nav-app-shell-01",
+      "type": "registry:block",
+      "title": "TopNav App Shell",
+      "description": "A stacked application shell with a centered TopNav and focused content area.",
+      "categories": ["application", "navigation"],
+      "dependencies": ["tw-animate-css"],
+      "registryDependencies": ["app-shell", "page-layout", "top-nav", "nav-menu", "nav-item", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/top-nav-app-shell-01/top-nav-app-shell.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/top-nav-app-shell-01/top-nav-app-shell.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/top-nav-app-shell-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/top-nav-app-shell-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "zaiops-operations-01",
+      "type": "registry:block",
+      "title": "ZAIops Operations",
+      "description": "An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation.",
+      "categories": ["application", "operations"],
+      "dependencies": ["tw-animate-css"],
+      "registryDependencies": ["button", "dropdown", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "icon-context", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/zaiops-operations-01/zaiops-operations.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/zaiops-operations-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/zaiops-operations-01/index.ts"
+        }
+      ]
+    }
+  ]
+}

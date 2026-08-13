@@ -6,14 +6,14 @@ const source = (file: string) =>
   fs.readFileSync(path.join(process.cwd(), file), "utf8");
 
 describe("shell and page-layout composition contract", () => {
-  const appShell = source("src/components/ui/app-shell.tsx");
-  const docsSidebar = source("src/docs/site/sidebar.tsx");
-  const navMenu = source("src/components/ui/nav-menu.tsx");
-  const navItem = source("src/components/ui/nav-item.tsx");
-  const topNav = source("src/components/ui/top-nav.tsx");
-  const pageLayout = source("src/components/ui/page-layout.tsx");
-  const playground = source("src/docs/playground.tsx");
-  const rightPanel = source("src/docs/site/right-panel.tsx");
+  const appShell = source("packages/ui/src/components/app-shell.tsx");
+  const docsSidebar = source("docs/components/shell/site/sidebar.tsx");
+  const navMenu = source("packages/ui/src/components/nav-menu.tsx");
+  const navItem = source("packages/ui/src/components/nav-item.tsx");
+  const topNav = source("packages/ui/src/components/top-nav.tsx");
+  const pageLayout = source("packages/ui/src/components/page-layout.tsx");
+  const playground = source("docs/components/playground/playground.tsx");
+  const rightPanel = source("docs/components/shell/site/right-panel.tsx");
 
   it("lets a sidebar main occupy both grid rows when the header slot is absent", () => {
     expect(appShell).toContain(
@@ -103,7 +103,7 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("keeps the documentation preview interactive without changing route-navigation semantics", () => {
-    const docs = source("app/(source)/docs/page-layout/page.tsx");
+    const docs = source("docs/pages/components/page-layout/page.tsx");
     expect(docs).toContain("function PageSubnavPreview()");
     expect(docs).toContain("event.preventDefault();");
     expect(docs).toContain("setActiveSection(value);");
@@ -111,7 +111,7 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("composes TopNav with a stacked AppShell and a body-only PageLayout", () => {
-    const docs = source("app/(source)/docs/top-nav/page.tsx");
+    const docs = source("docs/pages/components/top-nav/page.tsx");
     expect(docs).toContain("function TopNavAppShellPlayground()");
     expect(docs).toContain('<AppShell\n              layout="stacked"');
     expect(docs).toContain("<AppShellHeader>");
@@ -146,7 +146,7 @@ describe("shell and page-layout composition contract", () => {
     expect(topNav).toContain('export type TopNavNavigationProps = ComponentPropsWithoutRef<"div">;');
     expect(topNav).not.toContain("data-align={align}");
 
-    const docs = source("app/(source)/docs/top-nav/page.tsx");
+    const docs = source("docs/pages/components/top-nav/page.tsx");
     expect(docs).toContain('useState<TopNavNavigationAlign>("center")');
     expect(docs).toContain('<TopNav navigationAlign={navigationAlign} className="w-full px-3 py-1 sm:px-3">');
     expect(docs).not.toContain("<TopNavNavigation align=");
@@ -176,7 +176,7 @@ describe("shell and page-layout composition contract", () => {
     expect(topNav).toContain('flex-none gap-1 data-[popup-open]:text-fg-default [&>[data-slot=nav-item-content]]:flex-none');
     expect(topNav).toContain('className={cn("min-w-48 p-1", className)}');
 
-    const docs = source("app/(source)/docs/top-nav/page.tsx");
+    const docs = source("docs/pages/components/top-nav/page.tsx");
     expect(docs).toContain('const activeMoreSection = moreSections.find(');
     expect(docs).toContain('? demoSections[activeMoreSection].label');
     expect(docs).toContain('<TopNavItemMenuTrigger className="px-1.5">');
@@ -190,7 +190,7 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("adapts the Zentrix Figma reference with existing project primitives", () => {
-    const docs = source("app/(source)/docs/top-nav/page.tsx");
+    const docs = source("docs/pages/components/top-nav/page.tsx");
     expect(docs).toContain("function ZentrixTopNav(");
     expect(docs).toContain(">Zentrix</strong>");
     expect(docs).toContain(">能力中心</span>");
@@ -203,7 +203,7 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("uses the PageLayout composition as the Sidebar preview's main region", () => {
-    const docs = source("app/(source)/docs/sidebar/page.tsx");
+    const docs = source("docs/pages/components/sidebar/page.tsx");
     expect(docs).toContain("function SidebarPageLayoutPreview()");
     expect(docs).toContain("<SidebarPageLayoutPreview />");
     expect(docs).toContain('<PageLayout className="h-full min-w-0 flex-1">');
@@ -212,7 +212,7 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("offers a Sidebar playground for every supported collapse behavior", () => {
-    const docs = source("app/(source)/docs/sidebar/page.tsx");
+    const docs = source("docs/pages/components/sidebar/page.tsx");
     expect(docs).toContain('const collapseModes: SidebarCollapsible[] = ["icon", "offcanvas", "none"]');
     expect(docs).toContain("function SidebarCollapsePlayground()");
     expect(docs).toContain("<SidebarFloatingTrigger");

@@ -18,8 +18,8 @@ function expectExcludes(content, sentinel, label) {
   if (content.includes(sentinel)) throw new Error(`${label} contains a cross-locale or cross-page sentinel: ${sentinel}`);
 }
 
-const englishButton = readRoute("docs/button");
-const chineseButton = readRoute("zh-CN/docs/button");
+const englishButton = readRoute("en/docs/components/button");
+const chineseButton = readRoute("zh-CN/docs/components/button");
 const englishSentinel = "Buttons trigger actions and move people through a task.";
 const chineseSentinel = "按钮用于触发操作并推动用户完成任务。";
 const otherPageSentinel = "可折叠的内容区块，支持展开与收起动画";

@@ -1,0 +1,6 @@
+{
+  "title": "Icons Overview",
+  "description": "A small public API for named icon slots, consistent styles, and optional licensed variants.",
+  "modelTitle": "One provider, stable slots",
+  "modelDescription": "Applications ask for a semantic icon name. The provider supplies the active style without changing consumer code."
+}

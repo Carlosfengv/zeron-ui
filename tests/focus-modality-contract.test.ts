@@ -6,21 +6,21 @@ const source = (file: string) =>
   fs.readFileSync(path.join(process.cwd(), file), "utf8");
 
 describe("focus modality contract", () => {
-  const inputGroup = source("src/components/ui/input-group.tsx");
-  const calendar = source("src/components/ui/data-grid/data-grid-calendar.tsx");
-  const colorPicker = source("src/components/ui/color-picker.tsx");
-  const preview = source("src/docs/ComponentPreview.tsx");
-  const navMenu = source("src/components/ui/nav-menu.tsx");
-  const sidebar = source("src/components/ui/sidebar.tsx");
-  const tokenSource = source("src/system/tokens/semantic-tokens.mjs");
+  const inputGroup = source("packages/ui/src/components/input-group.tsx");
+  const calendar = source("packages/ui/src/components/data-grid/data-grid-calendar.tsx");
+  const colorPicker = source("packages/ui/src/components/color-picker.tsx");
+  const preview = source("docs/components/content/ComponentPreview.tsx");
+  const navMenu = source("packages/ui/src/components/nav-menu.tsx");
+  const sidebar = source("packages/ui/src/components/sidebar.tsx");
+  const tokenSource = source("packages/ui/src/tokens/semantic-tokens.mjs");
 
   it("uses focus-visible for action primitives instead of focus:ring", () => {
     for (const file of [
-      "src/components/ui/button.tsx",
-      "src/components/ui/checkbox.tsx",
-      "src/components/ui/radio-group.tsx",
-      "src/components/ui/switch.tsx",
-      "src/components/ui/select.tsx",
+      "packages/ui/src/components/button.tsx",
+      "packages/ui/src/components/checkbox.tsx",
+      "packages/ui/src/components/radio-group.tsx",
+      "packages/ui/src/components/switch.tsx",
+      "packages/ui/src/components/select.tsx",
     ]) {
       const component = source(file);
       expect(component).toContain("focus-visible:ring");
@@ -45,7 +45,7 @@ describe("focus modality contract", () => {
     expect(preview).not.toContain("routeKeyboardOnMouseDown");
     expect(preview).not.toContain("onMouseDown={handlePreviewMouseDown}");
     expect(preview).toContain("has-[:focus-visible]:ring-fg-default/40");
-    expect(fs.existsSync(path.join(process.cwd(), "src/docs/click-to-focus.ts"))).toBe(false);
+    expect(fs.existsSync(path.join(process.cwd(), "docs/components/content/click-to-focus.ts"))).toBe(false);
   });
 
   it("gates the NavMenu moving indicator to visible primary focus", () => {
@@ -62,8 +62,8 @@ describe("focus modality contract", () => {
   });
 
   it("keeps focus-ring wording aligned in its source and localized docs", () => {
-    const en = JSON.parse(source("messages/en/docs/semantic-tokens.json"));
-    const zh = JSON.parse(source("messages/zh-CN/docs/semantic-tokens.json"));
+    const en = JSON.parse(source("docs/content/en/components/semantic-tokens.json"));
+    const zh = JSON.parse(source("docs/content/zh-CN/components/semantic-tokens.json"));
 
     expect(tokenSource).toContain('usage: "可见焦点指示器');
     expect(en.semanticTokens.boundariesBody).toContain("visible focus");

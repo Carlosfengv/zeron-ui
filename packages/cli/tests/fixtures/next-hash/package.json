@@ -1,0 +1,12 @@
+{
+  "name": "zeron-ui-hash-smoke-test",
+  "version": "0.0.0",
+  "private": true,
+  "imports": {
+    "#components/*": "./src/components/*",
+    "#lib/*": "./src/lib/*",
+    "#hooks/*": "./src/hooks/*"
+  },
+  "dependencies": { "next": "15.5.9", "react": "19.2.0", "react-dom": "19.2.0" },
+  "devDependencies": { "@tailwindcss/postcss": "4.1.18", "tailwindcss": "4.1.18", "typescript": "5.9.3" }
+}

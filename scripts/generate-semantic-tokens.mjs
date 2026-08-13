@@ -17,12 +17,12 @@ import {
   radiusRoles,
   shapeModes,
   layerTokens,
-} from "../src/system/tokens/semantic-tokens.mjs";
+} from "../packages/ui/src/tokens/semantic-tokens.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const GLOBALS_PATH = `${ROOT}/app/globals.css`;
-const REGISTRY_PATH = `${ROOT}/registry.json`;
-const RUNTIME_PATH = `${ROOT}/src/system/design-tokens.ts`;
+const REGISTRY_PATH = `${ROOT}/packages/ui/registry.json`;
+const RUNTIME_PATH = `${ROOT}/packages/ui/src/system/design-tokens.ts`;
 const DOC_PATH = `${ROOT}/SEMANTIC-TOKENS.md`;
 const START = "/* BEGIN GENERATED SEMANTIC TOKENS — DO NOT EDIT */";
 const END = "/* END GENERATED SEMANTIC TOKENS */";
@@ -163,7 +163,7 @@ export function renderGlobalsBlock() {
     .map((token) => `.z-${token.name} { z-index: var(--layer-${token.name}); }`)
     .join("\n");
   return `${START}
-/* Generated from src/system/tokens/semantic-tokens.mjs by scripts/generate-semantic-tokens.mjs. */
+/* Generated from packages/ui/src/tokens/semantic-tokens.mjs by scripts/generate-semantic-tokens.mjs. */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -225,7 +225,7 @@ export function renderRuntimeTokens() {
       ),
     ])
   );
-  return `// Generated from src/system/tokens/semantic-tokens.mjs. Do not edit directly.\n\nexport const shapeTokenValues = ${JSON.stringify(shapeModes, null, 2)} as const;\n\nexport const shapeTokenClasses = ${JSON.stringify(classes, null, 2)} as const;\n\nexport type GeneratedShapeVariant = keyof typeof shapeTokenValues;\n`;
+  return `// Generated from packages/ui/src/tokens/semantic-tokens.mjs. Do not edit directly.\n\nexport const shapeTokenValues = ${JSON.stringify(shapeModes, null, 2)} as const;\n\nexport const shapeTokenClasses = ${JSON.stringify(classes, null, 2)} as const;\n\nexport type GeneratedShapeVariant = keyof typeof shapeTokenValues;\n`;
 }
 
 const table = (headers, rows) => [
@@ -267,7 +267,7 @@ export function renderDocumentation() {
 
   return `# Zeron Design 语义设计令牌（Semantic Tokens）
 
-> 本文档由 \`src/system/tokens/semantic-tokens.mjs\` 自动生成。请勿直接修改本文档、\`app/globals.css\` 的生成区块或 \`registry.json\` 的主题数据。
+> 本文档由 \`packages/ui/src/tokens/semantic-tokens.mjs\` 自动生成。请勿直接修改本文档、\`app/globals.css\` 的生成区块或 \`packages/ui/registry.json\` 的主题数据。
 
 ## 阅读约定
 
@@ -286,7 +286,7 @@ export function renderDocumentation() {
 
 ## Reference 与 Semantic
 
-\`src/system/tokens/reference-colors.mjs\` 是内部参考调色板：它只提供中性色、Danger 和 Warning 的可复用色阶，
+\`packages/ui/src/tokens/reference-colors.mjs\` 是内部参考调色板：它只提供中性色、Danger 和 Warning 的可复用色阶，
 不生成 CSS 变量、Tailwind 颜色或组件 API。组件只能消费本文件列出的语义角色，例如
 \`text-fg-danger\`、\`bg-danger-surface\` 和 \`border-danger-border\`，不能引用 \`neutral.500\`、
 \`danger.500\` 等参考色阶。这样可以在不改变组件含义的前提下调整具体配方。
@@ -295,7 +295,7 @@ export function renderDocumentation() {
 
 \`\`\`bash
 # 1. 修改唯一源
-src/system/tokens/semantic-tokens.mjs
+packages/ui/src/tokens/semantic-tokens.mjs
 
 # 2. 生成 CSS、组件注册表、运行时圆角数据和本文档
 pnpm tokens:build
@@ -540,7 +540,7 @@ ${table(["CSS 令牌", "CSS 类", "值", "用途"], layerRows)}
 ## 组件注册表合约
 
 - 每个 \`registry:ui\` 条目都依赖 \`surfaces\`，安装任意组件时都会安装完整的设计令牌。
-- \`registry.json\` 中的 \`cssVars\` 和层级 CSS 类由生成器写入。
+- \`packages/ui/registry.json\` 中的 \`cssVars\` 和层级 CSS 类由生成器写入。
 - \`public/r\` 是发布产物，不是设计令牌源。
 - 如果消费项目已有自己的主题，可在分支版本中移除 UI 条目的 \`surfaces\` 依赖，但必须实现本文档列出的同名 CSS/Tailwind 合约。
 `;
@@ -568,20 +568,21 @@ export function updateRegistry(registry) {
   }
 
   const item = registry.items.find((entry) => entry.name === "surfaces");
-  if (!item) throw new Error('registry.json is missing the "surfaces" theme item');
+  if (!item) throw new Error('packages/ui/registry.json is missing the "surfaces" theme item');
   item.title = "Semantic Design Tokens";
   item.description = "Complete semantic token system: color, typography, control sizes, radii, shadows, surfaces, and layers. Ordinary layout spacing uses Tailwind's native scale. The historical surfaces slug is retained for compatibility.";
+  item.dependencies = ["tw-animate-css"];
   item.cssVars = registryCssVars();
   item.css = registryCssRules();
 
   const shapeContext = registry.items.find((entry) => entry.name === "shape-context");
-  if (!shapeContext) throw new Error('registry.json is missing the "shape-context" item');
+  if (!shapeContext) throw new Error('packages/ui/registry.json is missing the "shape-context" item');
   shapeContext.registryDependencies ??= [];
   shapeContext.registryDependencies = [
     "surfaces",
     ...shapeContext.registryDependencies.filter((dependency) => dependency !== "surfaces"),
   ];
-  const runtimeTokenPath = "src/system/design-tokens.ts";
+  const runtimeTokenPath = "packages/ui/src/system/design-tokens.ts";
   if (!shapeContext.files.some((file) => file.path === runtimeTokenPath)) {
     shapeContext.files.push({
       path: runtimeTokenPath,
@@ -592,6 +593,7 @@ export function updateRegistry(registry) {
 
   for (const entry of registry.items) {
     if (entry.type !== "registry:ui") continue;
+    entry.dependencies = [...new Set([...(entry.dependencies ?? []), "tw-animate-css"])];
     entry.registryDependencies ??= [];
     entry.registryDependencies = [
       "surfaces",
@@ -600,9 +602,9 @@ export function updateRegistry(registry) {
   }
 
   const badge = registry.items.find((entry) => entry.name === "badge");
-  if (!badge) throw new Error('registry.json is missing the "badge" UI item');
+  if (!badge) throw new Error('packages/ui/registry.json is missing the "badge" UI item');
   badge.description = "Compact label with semantic status variants and a private categorical-color palette.";
-  const badgeColorsPath = "src/components/ui/badge-colors.ts";
+  const badgeColorsPath = "packages/ui/src/components/badge-colors.ts";
   if (!badge.files.some((file) => file.path === badgeColorsPath)) {
     badge.files.push({
       path: badgeColorsPath,
@@ -649,8 +651,8 @@ async function main() {
 
   for (const [path, content] of targets) await writeFile(path, content);
   console.log("✓ generated app/globals.css token block");
-  console.log("✓ generated registry.json semantic theme");
-  console.log("✓ generated src/system/design-tokens.ts");
+  console.log("✓ generated packages/ui/registry.json semantic theme");
+  console.log("✓ generated packages/ui/src/system/design-tokens.ts");
   console.log("✓ generated SEMANTIC-TOKENS.md");
 }
 

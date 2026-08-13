@@ -57,8 +57,8 @@ function placeholders(message: string) {
 
 describe("i18n message parity", () => {
   it("keeps English and Simplified Chinese message files and keys aligned", () => {
-    const englishRoot = join(ROOT, "messages/en");
-    const chineseRoot = join(ROOT, "messages/zh-CN");
+    const englishRoot = join(ROOT, "docs/content/en");
+    const chineseRoot = join(ROOT, "docs/content/zh-CN");
     const englishFiles = jsonFiles(englishRoot)
       .map((file) => relative(englishRoot, file))
       .sort();
@@ -86,7 +86,7 @@ describe("i18n message parity", () => {
 
   it("uses language endonyms in both interfaces", () => {
     for (const locale of ["en", "zh-CN"]) {
-      const messages = JSON.parse(readFileSync(join(ROOT, "messages", locale, "common.json"), "utf8"));
+      const messages = JSON.parse(readFileSync(join(ROOT, "docs/content", locale, "common.json"), "utf8"));
       expect(messages.settings.english).toBe("English");
       expect(messages.settings.chinese).toBe("简体中文");
     }

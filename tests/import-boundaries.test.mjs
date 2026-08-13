@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const registry = JSON.parse(readFileSync(join(ROOT, "registry.json"), "utf-8"));
+const registry = JSON.parse(readFileSync(join(ROOT, "packages/ui/registry.json"), "utf-8"));
 const packageJson = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf-8"));
 
 function sourceFiles(relativeDir) {
@@ -20,13 +20,20 @@ function sourceFiles(relativeDir) {
 }
 
 describe("public import boundaries", () => {
-  const consumers = [...sourceFiles("app"), ...sourceFiles("src/docs")];
+  const consumers = [...sourceFiles("app"), ...sourceFiles("docs")];
+  const packageSources = [
+    ...sourceFiles("packages/ui/src"),
+    ...sourceFiles("packages/blocks/src"),
+    ...sourceFiles("packages/icons/src"),
+  ];
 
   it("keeps Tailwind's explicit source scan aligned with the source layout", () => {
     const styles = readFileSync(join(ROOT, "app/globals.css"), "utf-8");
 
     expect(styles).toContain('@source "../app";');
-    expect(styles).toContain('@source "../src";');
+    expect(styles).toContain('@source "../docs";');
+    expect(styles).toContain('@source "../packages/ui/src";');
+    expect(styles).toContain('@source "../packages/blocks/src";');
     expect(styles).not.toMatch(
       /@source "\.\.\/(?:components|hooks|lib|registry)";/,
     );
@@ -44,9 +51,23 @@ describe("public import boundaries", () => {
     }
   });
 
+  it("keeps package source independent from app, docs, and root aliases", () => {
+    for (const file of packageSources) {
+      const source = readFileSync(file, "utf-8");
+      expect(source, file).not.toMatch(/from ["']@\/(?:app|docs|components|hooks|lib)/);
+      expect(source, file).not.toMatch(/from ["'](?:@docs|@\/app)/);
+    }
+  });
+
+  it("consumes UI only through public workspace exports", () => {
+    for (const file of consumers) {
+      expect(readFileSync(file, "utf-8"), file).not.toContain("packages/ui/src/");
+    }
+  });
+
   it("keeps licensed HugeIcons packages behind the optional Registry item", () => {
     const rootDependencies = Object.keys(packageJson.dependencies ?? {});
-    const appProviders = readFileSync(join(ROOT, "src/app-providers.tsx"), "utf-8");
+    const appProviders = readFileSync(join(ROOT, "app/app-providers.tsx"), "utf-8");
     const proItem = registry.items.find((item) => item.name === "pro-icon-provider");
 
     expect(rootDependencies.some((dependency) => dependency.startsWith("@hugeicons-pro/"))).toBe(false);
@@ -60,21 +81,21 @@ describe("public import boundaries", () => {
 
   it("exposes every Registry UI item through components/ui", () => {
     for (const item of registry.items.filter((entry) => entry.type === "registry:ui")) {
-      const moduleFile = join(ROOT, "src/components/ui", `${item.name}.tsx`);
-      const moduleIndex = join(ROOT, "src/components/ui", item.name, "index.ts");
+      const moduleFile = join(ROOT, "packages/ui/src/components", `${item.name}.tsx`);
+      const moduleIndex = join(ROOT, "packages/ui/src/components", item.name, "index.ts");
       expect(existsSync(moduleFile) || existsSync(moduleIndex), item.name).toBe(true);
     }
   });
 
   it("exposes every Registry lib and hook through its public namespace", () => {
     for (const item of registry.items.filter((entry) => entry.type === "registry:lib")) {
-      const ts = join(ROOT, "src/system", `${item.name}.ts`);
-      const tsx = join(ROOT, "src/system", `${item.name}.tsx`);
+      const ts = join(ROOT, "packages/ui/src/system", `${item.name}.ts`);
+      const tsx = join(ROOT, "packages/ui/src/system", `${item.name}.tsx`);
       expect(existsSync(ts) || existsSync(tsx), item.name).toBe(true);
     }
     for (const item of registry.items.filter((entry) => entry.type === "registry:hook")) {
-      const ts = join(ROOT, "src/system/hooks", `${item.name}.ts`);
-      const tsx = join(ROOT, "src/system/hooks", `${item.name}.tsx`);
+      const ts = join(ROOT, "packages/ui/src/hooks", `${item.name}.ts`);
+      const tsx = join(ROOT, "packages/ui/src/hooks", `${item.name}.tsx`);
       expect(existsSync(ts) || existsSync(tsx), item.name).toBe(true);
     }
   });

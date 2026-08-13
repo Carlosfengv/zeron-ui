@@ -1,8 +1,8 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { once } from "node:events";
 import { describe, expect, it } from "vitest";
-import { pageDocEntries } from "../src/docs/manifest";
-import { localizedUrl } from "../src/i18n/seo";
+import { pageDocEntries, pathnameOf } from "../docs/manifest";
+import { localizedUrl } from "../docs/seo/locale";
 
 const port = 3200 + Math.floor(Math.random() * 400);
 const origin = `http://127.0.0.1:${port}`;
@@ -42,28 +42,28 @@ describe("i18n production smoke", () => {
     try {
       await waitForServer(server);
 
-      const english = await fetch(`${origin}/docs/button`);
+      const english = await fetch(`${origin}/docs/components/button`);
       const englishHtml = await english.text();
       expect(english.status).toBe(200);
       expect(englishHtml).toContain('<html lang="en"');
-      expect(englishHtml).toContain('<link rel="canonical" href="https://zeron-ui.vercel.app/docs/button"');
+      expect(englishHtml).toContain('<link rel="canonical" href="https://zeron-ui.vercel.app/docs/components/button"');
       expect(englishHtml).toContain('hrefLang="en"');
       expect(englishHtml).toContain('hrefLang="zh-CN"');
 
-      const chinese = await fetch(`${origin}/zh-cn/docs/button`);
+      const chinese = await fetch(`${origin}/zh-cn/docs/components/button`);
       const chineseHtml = await chinese.text();
       expect(chinese.status).toBe(200);
       expect(chineseHtml).toContain('<html lang="zh-CN"');
-      expect(chineseHtml).toContain('<link rel="canonical" href="https://zeron-ui.vercel.app/zh-cn/docs/button"');
+      expect(chineseHtml).toContain('<link rel="canonical" href="https://zeron-ui.vercel.app/zh-cn/docs/components/button"');
       expect(chineseHtml).toContain("基础用法");
       expect(chineseHtml).toContain("自定义外观");
       expect(chineseHtml).toContain("语言");
 
-      const prefixedEnglish = await fetch(`${origin}/en/docs/button`, { redirect: "manual" });
+      const prefixedEnglish = await fetch(`${origin}/en/docs/components/button`, { redirect: "manual" });
       expect(prefixedEnglish.status).toBeGreaterThanOrEqual(300);
-      expect(prefixedEnglish.headers.get("location")).toBe("/docs/button");
+      expect(prefixedEnglish.headers.get("location")).toBe("/docs/components/button");
 
-      const unknownLocale = await fetch(`${origin}/fr/docs/button`);
+      const unknownLocale = await fetch(`${origin}/fr/docs/components/button`);
       expect(unknownLocale.status).toBe(404);
 
       const internalDemo = await fetch(`${origin}/demo`);
@@ -72,14 +72,18 @@ describe("i18n production smoke", () => {
 
       const legacy = await fetch(`${origin}/zh-cn/docs/tabs-subtle`, { redirect: "manual" });
       expect(legacy.status).toBeGreaterThanOrEqual(300);
-      expect(legacy.headers.get("location")).toBe("/zh-cn/docs/tabs");
+      expect(legacy.headers.get("location")).toBe("/zh-cn/docs/components/tabs");
+
+      const oldButton = await fetch(`${origin}/docs/button`, { redirect: "manual" });
+      expect(oldButton.status).toBe(308);
+      expect(oldButton.headers.get("location")).toBe("/docs/components/button");
 
       const sitemap = await fetch(`${origin}/sitemap.xml`);
       const sitemapXml = await sitemap.text();
       expect(sitemap.status).toBe(200);
       for (const entry of pageDocEntries) {
-        expect(sitemapXml).toContain(localizedUrl(entry.pathname, "en"));
-        expect(sitemapXml).toContain(localizedUrl(entry.pathname, "zh-CN"));
+        expect(sitemapXml).toContain(localizedUrl(pathnameOf(entry), "en"));
+        expect(sitemapXml).toContain(localizedUrl(pathnameOf(entry), "zh-CN"));
       }
       expect(sitemapXml).not.toContain("[locale]");
       expect(sitemapXml).not.toContain("/en/docs/");

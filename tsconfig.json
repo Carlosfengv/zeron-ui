@@ -23,29 +23,14 @@
       }
     ],
     "paths": {
-      "@/components/*": [
-        "./src/components/*"
-      ],
-      "@/docs/*": [
-        "./src/docs/*"
-      ],
-      "@/i18n/*": [
-        "./src/i18n/*"
-      ],
-      "@/hooks/*": [
-        "./src/system/hooks/*"
-      ],
-      "@/lib/*": [
-        "./src/system/*"
+      "@docs/*": [
+        "./docs/*"
       ],
       "@/*": [
         "./*"
       ],
-      "@/app-providers": [
-        "./src/app-providers.tsx"
-      ],
-      "@/messages/*": [
-        "./messages/*"
+      "@/app/*": [
+        "./app/*"
       ]
     }
   },
@@ -57,6 +42,7 @@
     ".next-dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "packages/cli/tests/fixtures/**"
   ]
 }

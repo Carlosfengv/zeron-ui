@@ -1,0 +1,1859 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "zeron-design",
+  "homepage": "https://github.com/zeron-design/zeron-design",
+  "items": [
+    {
+      "name": "surfaces",
+      "type": "registry:theme",
+      "title": "Semantic Design Tokens",
+      "description": "Complete semantic token system: color, typography, control sizes, radii, shadows, surfaces, and layers. Ordinary layout spacing uses Tailwind's native scale. The historical surfaces slug is retained for compatibility.",
+      "cssVars": {
+        "theme": {
+          "font-sans": "var(--font-family-sans)",
+          "color-fg-default": "var(--fg-default)",
+          "color-fg-muted": "var(--fg-muted)",
+          "color-fg-subtle": "var(--fg-subtle)",
+          "color-fg-brand": "var(--fg-brand)",
+          "color-fg-danger": "var(--fg-danger)",
+          "color-fg-warning": "var(--fg-warning)",
+          "color-fg-info": "var(--fg-info)",
+          "color-fg-neutral-status": "var(--fg-neutral-status)",
+          "color-fg-on-brand": "var(--fg-on-brand)",
+          "color-fg-on-danger": "var(--fg-on-danger)",
+          "color-fg-on-inverse": "var(--fg-on-inverse)",
+          "color-brand": "var(--brand)",
+          "color-brand-hover": "var(--brand-hover)",
+          "color-brand-active": "var(--brand-active)",
+          "color-muted": "var(--muted)",
+          "color-secondary-action": "var(--secondary-action)",
+          "color-secondary-action-hover": "var(--secondary-action-hover)",
+          "color-secondary-action-active": "var(--secondary-action-active)",
+          "color-emphasis": "var(--emphasis)",
+          "color-selection": "var(--selection)",
+          "color-destructive": "var(--destructive)",
+          "color-destructive-hover": "var(--destructive-hover)",
+          "color-destructive-active": "var(--destructive-active)",
+          "color-danger-surface": "var(--danger-surface)",
+          "color-warning-surface": "var(--warning-surface)",
+          "color-info-surface": "var(--info-surface)",
+          "color-neutral-status-surface": "var(--neutral-status-surface)",
+          "color-scrim": "var(--scrim)",
+          "color-inverse-background": "var(--inverse-background)",
+          "color-inverse-background-hover": "var(--inverse-background-hover)",
+          "color-inverse-background-active": "var(--inverse-background-active)",
+          "color-border": "var(--border)",
+          "color-border-subtle": "var(--border-subtle)",
+          "color-input": "var(--input)",
+          "color-input-hover": "var(--input-hover)",
+          "color-danger-border": "var(--danger-border)",
+          "color-warning-border": "var(--warning-border)",
+          "color-info-border": "var(--info-border)",
+          "color-neutral-status-border": "var(--neutral-status-border)",
+          "color-focus-ring": "var(--focus-ring)",
+          "color-hover": "var(--hover)",
+          "color-active": "var(--active)",
+          "color-checker-a": "var(--checker-a)",
+          "color-checker-b": "var(--checker-b)",
+          "color-scrollbar-thumb": "var(--scrollbar-thumb)",
+          "color-scrollbar-thumb-hover": "var(--scrollbar-thumb-hover)",
+          "color-scrollbar-thumb-active": "var(--scrollbar-thumb-active)",
+          "color-surface-base": "var(--surface-base)",
+          "color-surface-raised": "var(--surface-raised)",
+          "color-surface-floating": "var(--surface-floating)",
+          "color-surface-overlay": "var(--surface-overlay)",
+          "color-surface-top": "var(--surface-top)",
+          "shadow-control": "var(--shadow-control)",
+          "shadow-knob": "var(--shadow-knob)",
+          "shadow-raised": "var(--shadow-raised)",
+          "shadow-floating": "var(--shadow-floating)",
+          "shadow-overlay": "var(--shadow-overlay)",
+          "text-label": "var(--font-size-label)",
+          "text-label--line-height": "var(--line-height-label)",
+          "text-body": "var(--font-size-body)",
+          "text-body--line-height": "var(--line-height-body)",
+          "text-title": "var(--font-size-title)",
+          "text-title--line-height": "var(--line-height-title)",
+          "text-heading": "var(--font-size-heading)",
+          "text-heading--line-height": "var(--line-height-heading)",
+          "duration-fast": "var(--motion-duration-fast)",
+          "duration-moderate-exit": "var(--motion-duration-moderate-exit)",
+          "duration-moderate": "var(--motion-duration-moderate)",
+          "duration-slow": "var(--motion-duration-slow)",
+          "spacing-control-xs": "var(--control-height-xs)",
+          "spacing-control-sm": "var(--control-height-sm)",
+          "spacing-control-md": "var(--control-height-md)",
+          "spacing-control-lg": "var(--control-height-lg)",
+          "spacing-control-xl": "var(--control-height-xl)",
+          "radius-control": "var(--control-radius)",
+          "radius-focus": "var(--focus-radius)",
+          "radius-selection": "var(--selection-radius)",
+          "radius-container": "var(--container-radius)",
+          "radius-full": "var(--full-radius)"
+        },
+        "light": {
+          "font-family-sans": "\"Inter\", system-ui, sans-serif",
+          "fg-default": "#00030A",
+          "fg-muted": "#00030AD9",
+          "fg-subtle": "#00030A99",
+          "fg-brand": "#0060D2",
+          "fg-danger": "#B0140C",
+          "fg-warning": "#A74A00",
+          "fg-info": "#004DAF",
+          "fg-neutral-status": "#555B61",
+          "fg-on-brand": "#FFFFFF",
+          "fg-on-danger": "#00030A",
+          "fg-on-inverse": "#FFFFFF",
+          "brand": "#0060D2",
+          "brand-hover": "#004DAF",
+          "brand-active": "#003B8B",
+          "muted": "#F6F8FB",
+          "secondary-action": "#F6F8FB",
+          "secondary-action-hover": "#F1F4F9",
+          "secondary-action-active": "#EAEEF5",
+          "emphasis": "#F1F4F9",
+          "selection": "rgb(234 238 245 / 0.4)",
+          "destructive": "#F73920",
+          "destructive-hover": "#F9654B",
+          "destructive-active": "#FA8F78",
+          "danger-surface": "#FEF2ED",
+          "warning-surface": "#FFF8EA",
+          "info-surface": "#EAF5FE",
+          "neutral-status-surface": "#F9F9F9",
+          "scrim": "rgb(0 0 0 / 0.4)",
+          "inverse-background": "#00030A",
+          "inverse-background-hover": "#001033",
+          "inverse-background-active": "#001748",
+          "border": "rgb(52 57 71 / 0.12)",
+          "border-subtle": "rgb(52 57 71 / 0.07)",
+          "input": "#E5E5E5",
+          "input-hover": "rgb(23 23 23 / 0.24)",
+          "danger-border": "#F73920",
+          "warning-border": "#D06700",
+          "info-border": "#0060D2",
+          "neutral-status-border": "#6B7075",
+          "focus-ring": "#6088E8",
+          "hover": "rgb(220 227 239 / 0.25)",
+          "active": "rgb(220 227 239 / 0.4)",
+          "checker-a": "#BBBBBB",
+          "checker-b": "#FFFFFF",
+          "scrollbar-thumb": "rgb(0 0 0 / 0.08)",
+          "scrollbar-thumb-hover": "rgb(0 0 0 / 0.12)",
+          "scrollbar-thumb-active": "rgb(0 0 0 / 0.16)",
+          "surface-base": "#F6F8FB",
+          "surface-raised": "#F0F3F8",
+          "surface-floating": "#FFFFFF",
+          "surface-overlay": "#FFFFFF",
+          "surface-top": "#FFFFFF",
+          "shadow-color": "rgb(0 0 0 / 0.06)",
+          "dm-hi-base": "rgba(255,255,255,0.01)",
+          "dm-hi-mid": "rgba(255,255,255,0.02)",
+          "dm-hi-high": "rgba(255,255,255,0.04)",
+          "dm-ring-base": "rgba(255,255,255,0.02)",
+          "dm-ring-mid": "rgba(255,255,255,0.04)",
+          "dm-drop": "rgba(0,0,0,0.18)",
+          "shadow-control": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+          "shadow-knob": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+          "shadow-raised": "0 0 0 1px var(--shadow-color), 0 1px 1px -0.5px var(--shadow-color)",
+          "shadow-floating": "0 0 0 1px var(--shadow-color), 0 1px 1px -0.5px var(--shadow-color), 0 3px 3px -1.5px var(--shadow-color)",
+          "shadow-overlay": "0 0 0 1px var(--shadow-color), 0 1px 1px -0.5px var(--shadow-color), 0 3px 3px -1.5px var(--shadow-color), 0 6px 6px -3px var(--shadow-color), 0 12px 12px -6px var(--shadow-color)",
+          "font-size-label": "0.75rem",
+          "line-height-label": "1rem",
+          "font-size-body": "0.875rem",
+          "line-height-body": "1.25rem",
+          "font-size-title": "1.125rem",
+          "line-height-title": "1.625rem",
+          "font-size-heading": "1.5rem",
+          "line-height-heading": "2rem",
+          "motion-duration-fast": "80ms",
+          "motion-duration-moderate-exit": "120ms",
+          "motion-duration-moderate": "160ms",
+          "motion-duration-slow": "240ms",
+          "control-height-xs": "1.75rem",
+          "control-height-sm": "2rem",
+          "control-height-md": "2.25rem",
+          "control-height-lg": "2.5rem",
+          "control-height-xl": "2.75rem",
+          "control-radius": "8px",
+          "focus-radius": "10px",
+          "selection-radius": "8px",
+          "container-radius": "12px",
+          "full-radius": "9999px",
+          "layer-underlay": "-10",
+          "layer-base": "0",
+          "layer-decoration": "1",
+          "layer-indicator": "2",
+          "layer-control": "3",
+          "layer-foreground": "4",
+          "layer-content": "10",
+          "layer-raised": "20",
+          "layer-action": "30",
+          "layer-overlay": "40",
+          "layer-popover": "50",
+          "layer-tooltip": "60"
+        },
+        "dark": {
+          "font-family-sans": "\"Inter\", system-ui, sans-serif",
+          "fg-default": "#F9F9F9",
+          "fg-muted": "#C7CBCE",
+          "fg-subtle": "#B6BABC",
+          "fg-brand": "#72B9FE",
+          "fg-danger": "#FEBEAC",
+          "fg-warning": "#FFDDA1",
+          "fg-info": "#A1D2FE",
+          "fg-neutral-status": "#C7CBCE",
+          "fg-on-brand": "#00040D",
+          "fg-on-danger": "#00030A",
+          "fg-on-inverse": "#00040D",
+          "brand": "#1483FD",
+          "brand-hover": "#439FFD",
+          "brand-active": "#72B9FE",
+          "muted": "#2F3136",
+          "secondary-action": "#2F3136",
+          "secondary-action-hover": "#42444A",
+          "secondary-action-active": "#585B62",
+          "emphasis": "#42444A",
+          "selection": "rgb(88 91 98 / 0.16)",
+          "destructive": "#FC4932",
+          "destructive-hover": "#FD725B",
+          "destructive-active": "#FD9983",
+          "danger-surface": "#6D090B",
+          "warning-surface": "#531D00",
+          "info-surface": "#002D6E",
+          "neutral-status-surface": "#31353B",
+          "scrim": "rgb(0 0 0 / 0.8)",
+          "inverse-background": "#DEE5EF",
+          "inverse-background-hover": "#B6C6DF",
+          "inverse-background-active": "#7994BF",
+          "border": "rgb(255 255 255 / 0.08)",
+          "border-subtle": "rgb(255 255 255 / 0.05)",
+          "input": "#404040",
+          "input-hover": "rgb(245 245 245 / 0.24)",
+          "danger-border": "#FC4932",
+          "warning-border": "#FF9314",
+          "info-border": "#1483FD",
+          "neutral-status-border": "#8B9095",
+          "focus-ring": "#6088E8",
+          "hover": "rgb(220 227 239 / 0.08)",
+          "active": "rgb(220 227 239 / 0.18)",
+          "checker-a": "#1F1F1F",
+          "checker-b": "#2A2A2A",
+          "scrollbar-thumb": "rgb(255 255 255 / 0.08)",
+          "scrollbar-thumb-hover": "rgb(255 255 255 / 0.12)",
+          "scrollbar-thumb-active": "rgb(255 255 255 / 0.16)",
+          "surface-base": "#24252B",
+          "surface-raised": "#28292F",
+          "surface-floating": "#31353B",
+          "surface-overlay": "#373A41",
+          "surface-top": "#3D4147",
+          "shadow-color": "rgb(0 0 0 / 0.06)",
+          "dm-hi-base": "rgba(255,255,255,0.01)",
+          "dm-hi-mid": "rgba(255,255,255,0.02)",
+          "dm-hi-high": "rgba(255,255,255,0.04)",
+          "dm-ring-base": "rgba(255,255,255,0.02)",
+          "dm-ring-mid": "rgba(255,255,255,0.04)",
+          "dm-drop": "rgba(0,0,0,0.18)",
+          "shadow-control": "0 1px 2px 0 rgb(0 0 0 / 0.25)",
+          "shadow-knob": "0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3)",
+          "shadow-raised": "inset 0 1px 0 0 var(--dm-hi-base), inset 0 0 0 1px var(--dm-ring-base), 0 1px 1px -0.5px var(--dm-drop)",
+          "shadow-floating": "inset 0 1px 0 0 var(--dm-hi-mid), inset 0 0 0 1px var(--dm-ring-base), 0 0 0 1px rgba(0,0,0,0.12), 0 1px 1px -0.5px var(--dm-drop), 0 3px 3px -1.5px var(--dm-drop)",
+          "shadow-overlay": "inset 0 1px 0 0 var(--dm-hi-high), inset 0 0 0 1px var(--dm-ring-mid), 0 0 0 1px rgba(0,0,0,0.16), 0 1px 1px -0.5px var(--dm-drop), 0 3px 3px -1.5px var(--dm-drop), 0 6px 6px -3px var(--dm-drop), 0 12px 12px -6px var(--dm-drop)",
+          "font-size-label": "0.75rem",
+          "line-height-label": "1rem",
+          "font-size-body": "0.875rem",
+          "line-height-body": "1.25rem",
+          "font-size-title": "1.125rem",
+          "line-height-title": "1.625rem",
+          "font-size-heading": "1.5rem",
+          "line-height-heading": "2rem",
+          "motion-duration-fast": "80ms",
+          "motion-duration-moderate-exit": "120ms",
+          "motion-duration-moderate": "160ms",
+          "motion-duration-slow": "240ms",
+          "control-height-xs": "1.75rem",
+          "control-height-sm": "2rem",
+          "control-height-md": "2.25rem",
+          "control-height-lg": "2.5rem",
+          "control-height-xl": "2.75rem",
+          "control-radius": "8px",
+          "focus-radius": "10px",
+          "selection-radius": "8px",
+          "container-radius": "12px",
+          "full-radius": "9999px",
+          "layer-underlay": "-10",
+          "layer-base": "0",
+          "layer-decoration": "1",
+          "layer-indicator": "2",
+          "layer-control": "3",
+          "layer-foreground": "4",
+          "layer-content": "10",
+          "layer-raised": "20",
+          "layer-action": "30",
+          "layer-overlay": "40",
+          "layer-popover": "50",
+          "layer-tooltip": "60"
+        }
+      },
+      "css": {
+        ".z-underlay": {
+          "z-index": "var(--layer-underlay)"
+        },
+        ".z-base": {
+          "z-index": "var(--layer-base)"
+        },
+        ".z-decoration": {
+          "z-index": "var(--layer-decoration)"
+        },
+        ".z-indicator": {
+          "z-index": "var(--layer-indicator)"
+        },
+        ".z-control": {
+          "z-index": "var(--layer-control)"
+        },
+        ".z-foreground": {
+          "z-index": "var(--layer-foreground)"
+        },
+        ".z-content": {
+          "z-index": "var(--layer-content)"
+        },
+        ".z-raised": {
+          "z-index": "var(--layer-raised)"
+        },
+        ".z-action": {
+          "z-index": "var(--layer-action)"
+        },
+        ".z-overlay": {
+          "z-index": "var(--layer-overlay)"
+        },
+        ".z-popover": {
+          "z-index": "var(--layer-popover)"
+        },
+        ".z-tooltip": {
+          "z-index": "var(--layer-tooltip)"
+        }
+      },
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
+      "name": "utils",
+      "type": "registry:lib",
+      "title": "Utilities",
+      "description": "Utility function for merging Tailwind CSS classes with clsx and tailwind-merge.",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/system/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "springs",
+      "type": "registry:lib",
+      "title": "Spring Animations",
+      "description": "Spring animation token presets for Framer Motion (fast, moderate, slow).",
+      "files": [
+        {
+          "path": "packages/ui/src/system/springs.ts",
+          "type": "registry:lib",
+          "target": "lib/springs.ts"
+        }
+      ]
+    },
+    {
+      "name": "surface-context",
+      "type": "registry:lib",
+      "title": "Surface Context",
+      "description": "React context that carries the current semantic substrate role through nested and portaled content.",
+      "registryDependencies": [
+        "surface-classes"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/system/surface-context.tsx",
+          "type": "registry:lib",
+          "target": "lib/surface-context.tsx"
+        }
+      ]
+    },
+    {
+      "name": "portal-container-context",
+      "type": "registry:lib",
+      "title": "Portal Container Context",
+      "description": "Ambient portal mount point for floating UI rendered inside native fullscreen or bounded regions.",
+      "files": [
+        {
+          "path": "packages/ui/src/system/portal-container-context.tsx",
+          "type": "registry:lib",
+          "target": "lib/portal-container-context.tsx"
+        }
+      ]
+    },
+    {
+      "name": "surface-classes",
+      "type": "registry:lib",
+      "title": "Surface Class Lookup",
+      "description": "Typed semantic Surface and Shadow class maps with role-based nesting resolution.",
+      "files": [
+        {
+          "path": "packages/ui/src/system/surface-classes.ts",
+          "type": "registry:lib",
+          "target": "lib/surface-classes.ts"
+        }
+      ]
+    },
+    {
+      "name": "elevated",
+      "type": "registry:lib",
+      "title": "Elevated",
+      "description": "Semantic elevation primitive that resolves a Surface role, applies an independent Shadow role, and re-provides the substrate to descendants.",
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "surface-context",
+        "surface-classes"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/system/elevated.tsx",
+          "type": "registry:lib",
+          "target": "lib/elevated.tsx"
+        }
+      ]
+    },
+    {
+      "name": "shape-context",
+      "type": "registry:lib",
+      "title": "Shape Context",
+      "description": "React context provider for runtime shape variant switching (pill or rounded). Controls border-radius across all Zeron Design components.",
+      "files": [
+        {
+          "path": "packages/ui/src/system/shape-context.tsx",
+          "type": "registry:lib",
+          "target": "lib/shape-context.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/design-tokens.ts",
+          "type": "registry:lib",
+          "target": "lib/design-tokens.ts"
+        }
+      ],
+      "registryDependencies": [
+        "surfaces"
+      ]
+    },
+    {
+      "name": "icon-context",
+      "type": "registry:lib",
+      "title": "Icon Context",
+      "description": "Named icon slots with a HugeIcons default set; swap any icon via IconProvider.",
+      "dependencies": [
+        "@hugeicons/core-free-icons",
+        "@hugeicons/react"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "packages/ui/src/system/icon-context.tsx",
+          "type": "registry:lib",
+          "target": "lib/icon-context.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/huge-icon.tsx",
+          "type": "registry:lib",
+          "target": "lib/huge-icon.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/icon-catalog.ts",
+          "type": "registry:lib",
+          "target": "lib/icon-catalog.ts"
+        }
+      ]
+    },
+    {
+      "name": "pro-icon-provider",
+      "type": "registry:lib",
+      "title": "HugeIcons Pro Variants",
+      "description": "Optional HugeIcons Pro provider with Stroke Standard, Bulk Rounded, and Duotone Rounded variants. Requires a HugeIcons Pro license and private npm registry access.",
+      "dependencies": [
+        "@hugeicons-pro/core-stroke-standard",
+        "@hugeicons-pro/core-bulk-rounded",
+        "@hugeicons-pro/core-duotone-rounded"
+      ],
+      "registryDependencies": [
+        "icon-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/system/pro-icon-provider.tsx",
+          "type": "registry:lib",
+          "target": "lib/pro-icon-provider.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/icon-variants/stroke-standard.tsx",
+          "type": "registry:lib",
+          "target": "lib/icon-variants/stroke-standard.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/icon-variants/bulk-rounded.tsx",
+          "type": "registry:lib",
+          "target": "lib/icon-variants/bulk-rounded.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/icon-variants/duotone-rounded.tsx",
+          "type": "registry:lib",
+          "target": "lib/icon-variants/duotone-rounded.tsx"
+        }
+      ]
+    },
+    {
+      "name": "use-proximity-hover",
+      "type": "registry:hook",
+      "title": "useProximityHover",
+      "description": "React hook for proximity-based hover detection. Tracks the closest item to the mouse cursor within a container, enabling smooth animated background indicators.",
+      "files": [
+        {
+          "path": "packages/ui/src/hooks/use-proximity-hover.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-proximity-hover.ts"
+        }
+      ]
+    },
+    {
+      "name": "use-touch-primary",
+      "type": "registry:hook",
+      "title": "useTouchPrimary",
+      "description": "Detects touch-primary devices (coarse pointer + touch points), updating live on pointer-mode and media-query changes. Adapted from Lina (https://lina.sameer.sh).",
+      "files": [
+        {
+          "path": "packages/ui/src/hooks/use-touch-primary.tsx",
+          "type": "registry:hook",
+          "target": "hooks/use-touch-primary.tsx"
+        }
+      ]
+    },
+    {
+      "name": "use-merge-split",
+      "type": "registry:hook",
+      "title": "useMergeSplitBlocks",
+      "description": "React hook + renderer for the selected-background merge/split animation. When one row bridges or splits two contiguous selected runs, their inner edges glide together (or apart) and swap to a single block, instead of one block spring-growing over the union.",
+      "registryDependencies": [
+        "springs",
+        "use-proximity-hover"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/hooks/use-merge-split.tsx",
+          "type": "registry:hook",
+          "target": "hooks/use-merge-split.tsx"
+        }
+      ]
+    },
+    {
+      "name": "accordion",
+      "type": "registry:ui",
+      "title": "Accordion (Base UI)",
+      "description": "Collapsible accordion with animated height transitions, spring-animated chevron, and proximity hover in grouped mode. Base UI flavor.",
+      "dependencies": [
+        "framer-motion",
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "icon-context",
+        "use-proximity-hover"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/accordion.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/accordion.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ask-user-questions",
+      "type": "registry:ui",
+      "title": "Ask User Questions",
+      "description": "Stepped question flow with numbered options, keyboard shortcuts (1–9), single or multi-select, inline 'other' text input, optional skip, proximity-based hover, and multi-question navigation. Auto-advances on selection in single-select.",
+      "dependencies": [
+        "framer-motion",
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "icon-context",
+        "use-proximity-hover",
+        "use-merge-split",
+        "button"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/ask-user-questions.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/ask-user-questions.tsx"
+        }
+      ]
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "Compact label with semantic status variants and a private categorical-color palette.",
+      "dependencies": [
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "shape-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/badge.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/badge-colors.ts",
+          "type": "registry:ui",
+          "target": "components/ui/badge-colors.ts"
+        }
+      ]
+    },
+    {
+      "name": "badge-overflow",
+      "type": "registry:ui",
+      "title": "Badge Overflow",
+      "description": "Responsive badge list that measures available space, wraps to a configurable line count, and replaces hidden items with an overflow count.",
+      "dependencies": [
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "popover",
+        "select"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/badge-overflow.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/badge-overflow.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/compose-refs.ts",
+          "type": "registry:lib",
+          "target": "lib/compose-refs.ts"
+        }
+      ]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "Composable breadcrumb navigation with links, current-page state, custom separators, ellipsis, responsive wrapping, and polymorphic link rendering.",
+      "dependencies": [
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "icon-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/breadcrumb.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/breadcrumb.tsx"
+        }
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button (Base UI)",
+      "description": "Animated button with variants (primary, neutral, destructive, secondary, tertiary, ghost), icon support, and loading spinner. Base UI flavor.",
+      "dependencies": [
+        "framer-motion",
+        "@base-ui/react",
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "shape-context",
+        "icon-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/button.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/button.tsx"
+        }
+      ],
+      "css": {
+        "@keyframes spinner-move": {
+          "to": {
+            "stroke-dashoffset": "-100"
+          }
+        },
+        "@keyframes spinner-dash": {
+          "0%, 100%": {
+            "stroke-dasharray": "15 85"
+          },
+          "50%": {
+            "stroke-dasharray": "40 60"
+          }
+        }
+      }
+    },
+    {
+      "name": "data-table",
+      "type": "registry:ui",
+      "title": "Data Table",
+      "description": "Feature-rich TanStack data table with sorting, text and faceted filters, pagination, row selection, column visibility, pinning, and empty/action states.",
+      "dependencies": [
+        "@tanstack/react-table",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "shape-context",
+        "icon-context",
+        "badge",
+        "button",
+        "checkbox",
+        "checkbox-group",
+        "dropdown",
+        "input",
+        "popover",
+        "select",
+        "table"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/data-table.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-table.tsx"
+        }
+      ]
+    },
+    {
+      "name": "data-grid",
+      "type": "registry:ui",
+      "title": "Data Grid",
+      "description": "Virtualized spreadsheet-style data grid with inline editors, range selection, copy and paste, search, sorting, resizing, and pinned columns.",
+      "dependencies": [
+        "@base-ui/react",
+        "@tanstack/react-table",
+        "@tanstack/react-virtual",
+        "cmdk",
+        "react-day-picker",
+        "sonner",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "shape-context",
+        "surface-context",
+        "surface-classes",
+        "portal-container-context",
+        "badge",
+        "button",
+        "checkbox",
+        "dialog",
+        "dropdown",
+        "input",
+        "kbd",
+        "select"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/data-grid/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-row.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-row.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-cell.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-cell.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-cell-wrapper.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-cell-wrapper.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-cell-variants.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-cell-variants.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-column-header.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-column-header.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-context-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-context-menu.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-keyboard-shortcuts.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-keyboard-shortcuts.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-paste-dialog.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-paste-dialog.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-search.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-search.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-command.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-command.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-calendar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-calendar.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-tooltip.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-tooltip.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-popover.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-popover.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-primitives.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-primitives.tsx"
+        },
+        {
+          "path": "packages/ui/src/hooks/use-data-grid.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-data-grid.ts"
+        },
+        {
+          "path": "packages/ui/src/hooks/use-as-ref.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-as-ref.ts"
+        },
+        {
+          "path": "packages/ui/src/hooks/use-badge-overflow.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-badge-overflow.ts"
+        },
+        {
+          "path": "packages/ui/src/hooks/use-debounced-callback.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-debounced-callback.ts"
+        },
+        {
+          "path": "packages/ui/src/hooks/use-callback-ref.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-callback-ref.ts"
+        },
+        {
+          "path": "packages/ui/src/hooks/use-isomorphic-layout-effect.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-isomorphic-layout-effect.ts"
+        },
+        {
+          "path": "packages/ui/src/hooks/use-lazy-ref.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-lazy-ref.ts"
+        },
+        {
+          "path": "packages/ui/src/system/data-grid.ts",
+          "type": "registry:lib",
+          "target": "lib/data-grid.ts"
+        },
+        {
+          "path": "packages/ui/src/system/data-grid-types.ts",
+          "type": "registry:lib",
+          "target": "lib/data-grid-types.ts"
+        },
+        {
+          "path": "packages/ui/src/system/compose-refs.ts",
+          "type": "registry:lib",
+          "target": "lib/compose-refs.ts"
+        }
+      ]
+    },
+    {
+      "name": "dropdown",
+      "type": "registry:ui",
+      "title": "Dropdown",
+      "description": "Dropdown menu with proximity hover, animated selection indicator, inline panel or triggered popup with collision-aware positioning, typeahead, and close-on-select. Includes MenuItem. Base UI flavor.",
+      "dependencies": [
+        "@base-ui/react",
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "surface-context",
+        "surface-classes",
+        "icon-context",
+        "use-proximity-hover",
+        "elevated",
+        "portal-container-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/dropdown.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/dropdown.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/menu-item.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/menu-item.tsx"
+        }
+      ]
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox (Base UI)",
+      "description": "Compact animated checkbox with checked, indeterminate, disabled, validation, and form states. Base UI flavor.",
+      "dependencies": [
+        "@base-ui/react",
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/checkbox.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/checkbox.tsx"
+        }
+      ]
+    },
+    {
+      "name": "checkbox-group",
+      "type": "registry:ui",
+      "title": "Checkbox Group (Base UI)",
+      "description": "Animated checkbox group with proximity hover, contiguous selection merging, and spring-animated check marks. Base UI flavor.",
+      "dependencies": [
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "icon-context",
+        "checkbox",
+        "use-proximity-hover",
+        "use-merge-split"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/checkbox-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/checkbox-group.tsx"
+        }
+      ]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover (Base UI)",
+      "description": "Accessible collision-aware popover with click or hover triggers, semantic floating surfaces, and an optional liquid anchor-to-panel transition.",
+      "dependencies": [
+        "@base-ui/react",
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "surface-context",
+        "surface-classes",
+        "portal-container-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/popover.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/popover.tsx"
+        }
+      ]
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group (Base UI)",
+      "description": "Composable radio group with an atomic RadioGroupItem, form support, and enhanced proximity-hover RadioItem rows. Base UI flavor.",
+      "dependencies": [
+        "framer-motion",
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "use-proximity-hover"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/radio-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/radio-group.tsx"
+        }
+      ]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog (Base UI)",
+      "description": "Animated modal dialog with spring-based scale and opacity transitions. Base UI flavor.",
+      "dependencies": [
+        "framer-motion",
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "surface-context",
+        "surface-classes",
+        "icon-context",
+        "button",
+        "portal-container-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/dialog.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/dialog.tsx"
+        }
+      ]
+    },
+    {
+      "name": "mobile-drawer",
+      "type": "registry:ui",
+      "title": "Mobile Drawer",
+      "description": "Slide-in navigation drawer with scrim, focus trap, and scroll lock. Base UI flavor.",
+      "dependencies": [
+        "@base-ui/react",
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "surface-context",
+        "surface-classes",
+        "portal-container-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/mobile-drawer.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/mobile-drawer.tsx"
+        }
+      ]
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "Text input with outline, secondary, and ghost variants, four sizes, and accessible focus, validation, disabled, and file states.",
+      "dependencies": [
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "shape-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/input.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "title": "Kbd",
+      "description": "Compact keycaps and shortcut groups for keyboard commands and interaction hints.",
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "shape-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/kbd.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/kbd.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
+      "name": "input-copy",
+      "type": "registry:ui",
+      "title": "Input Copy",
+      "description": "Read-only input with a copy-to-clipboard button and animated check feedback. Supports optional label and shape context.",
+      "dependencies": [
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "icon-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/input-copy.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input-copy.tsx"
+        }
+      ]
+    },
+    {
+      "name": "input-group",
+      "type": "registry:ui",
+      "title": "Input Group",
+      "description": "Composable input surface with inline or stacked addons, compact actions, text inputs, textareas, and validation states. Includes the legacy InputFieldGroup for multi-field forms.",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "shape-context",
+        "icon-context",
+        "use-proximity-hover",
+        "button",
+        "input"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/input-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input-group.tsx"
+        }
+      ]
+    },
+    {
+      "name": "info-item",
+      "type": "registry:ui",
+      "title": "Info Item",
+      "description": "Composable information row with an icon, title, supporting description, and a flexible trailing value, status, control, or compact detail.",
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/info-item.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/info-item.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
+      "name": "input-message",
+      "type": "registry:ui",
+      "title": "Input Message",
+      "description": "Chat-style message composer with auto-resizing textarea, drag-and-drop file attachments (PNG / JPEG / PDF), flexible left/right action slots, and a built-in send button on a Surface-2 substrate.",
+      "dependencies": [
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "icon-context",
+        "surface-context",
+        "surface-classes",
+        "file-thumbnail",
+        "button",
+        "tooltip"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/input-message.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input-message.tsx"
+        }
+      ]
+    },
+    {
+      "name": "file-thumbnail",
+      "type": "registry:ui",
+      "title": "File Thumbnail",
+      "description": "Read-only square preview of a File. Images render via object-cover; PDFs render their first page via pdfjs; a spinner shows while either resolves. Adapts its corner radius to the global shape setting.",
+      "dependencies": [
+        "pdfjs-dist",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "shape-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/file-thumbnail.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/file-thumbnail.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chat-message",
+      "type": "registry:ui",
+      "title": "Chat Message",
+      "description": "A single chat transcript entry with baked-in entrance and layout motion. Right-aligned accent bubble for the user, left-aligned muted bubble for the assistant, with optional file attachments. Adapts to the global shape setting.",
+      "dependencies": [
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "use-touch-primary",
+        "file-thumbnail"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chat-message.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-message.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tabs-subtle",
+      "type": "registry:ui",
+      "title": "TabsSubtle (legacy)",
+      "description": "Compatibility adapter for Tabs' segment variant. New integrations should use Tabs with variant=\"segment\".",
+      "dependencies": [
+        "@base-ui/react",
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "tabs",
+        "utils",
+        "springs",
+        "icon-context",
+        "use-proximity-hover"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/tabs-subtle.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tabs-subtle.tsx"
+        }
+      ]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch (Base UI)",
+      "description": "Animated toggle switch with spring-based thumb animation. Base UI flavor.",
+      "dependencies": [
+        "framer-motion",
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/switch.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/switch.tsx"
+        }
+      ]
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "description": "Animated table with proximity-based row hover highlighting and fluid border transitions. Includes TableHeader, TableBody, TableRow, TableHead, and TableCell sub-components.",
+      "dependencies": [
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "use-proximity-hover"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/table.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/table.tsx"
+        }
+      ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "shadcn's compositional card (Card, CardHeader, CardTitle, CardDescription, CardAction, CardContent, CardFooter) with the Zeron Design layer: transparent substrate, weight-animated title, media/logo/feature/image slots, and a CardGroup that owns stacked, inline, and grid layouts plus 2-D proximity-hover highlighting.",
+      "dependencies": [
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "icon-context",
+        "use-proximity-hover"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider (Base UI)",
+      "description": "Animated slider with spring-snapped thumb, step dots, range mode, and click-to-edit value display. Base UI flavor.",
+      "dependencies": [
+        "framer-motion",
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/slider.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/slider.tsx"
+        }
+      ]
+    },
+    {
+      "name": "stepper",
+      "type": "registry:ui",
+      "title": "Stepper (Base UI)",
+      "description": "Accessible multi-step navigation with controlled and uncontrolled state, horizontal and vertical layouts, keyboard navigation, async validation, completion states, and previous/next controls.",
+      "dependencies": [
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "shape-context",
+        "icon-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/stepper.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/stepper.tsx"
+        },
+        {
+          "path": "packages/ui/src/hooks/use-as-ref.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-as-ref.ts"
+        },
+        {
+          "path": "packages/ui/src/hooks/use-isomorphic-layout-effect.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-isomorphic-layout-effect.ts"
+        },
+        {
+          "path": "packages/ui/src/hooks/use-lazy-ref.ts",
+          "type": "registry:hook",
+          "target": "hooks/use-lazy-ref.ts"
+        },
+        {
+          "path": "packages/ui/src/system/compose-refs.ts",
+          "type": "registry:lib",
+          "target": "lib/compose-refs.ts"
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs (Base UI)",
+      "description": "Pill, segment, and underline tab navigation with animated selection indicators, proximity hover, and spring animations. Base UI flavor.",
+      "dependencies": [
+        "framer-motion",
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "badge",
+        "utils",
+        "springs",
+        "shape-context",
+        "icon-context",
+        "use-proximity-hover"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/tabs.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tabs.tsx"
+        }
+      ]
+    },
+    {
+      "name": "thinking-indicator",
+      "type": "registry:ui",
+      "title": "Thinking Indicator",
+      "description": "Animated loading indicator with morphing SVG path (circle to infinity loop) and shimmer text rotation. Cycles through customizable status words.",
+      "dependencies": [
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/thinking-indicator.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/thinking-indicator.tsx"
+        }
+      ],
+      "css": {
+        "@keyframes shimmer": {
+          "0%": {
+            "background-position": "0% 0"
+          },
+          "100%": {
+            "background-position": "100% 0"
+          }
+        },
+        ".shimmer-text": {
+          "color": "transparent",
+          "background": "linear-gradient(90deg, #a3a3a3 0%, #a3a3a3 35%, #525252 50%, #a3a3a3 65%, #a3a3a3 100%)",
+          "background-size": "300% 100%",
+          "background-clip": "text",
+          "-webkit-background-clip": "text",
+          "animation": "shimmer 1.5s ease-in-out infinite"
+        }
+      }
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll Area (Base UI)",
+      "description": "Scroll container with a restyled overlay scrollbar that stays discoverable on hover and follows the shape system. Falls back to native overflow scrolling on touch-primary devices. Base UI flavor; adapted from Lina (https://lina.sameer.sh).",
+      "dependencies": [
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "shape-context",
+        "use-touch-primary"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/scroll-area.tsx",
+          "target": "components/ui/scroll-area.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "Animated select menu with collision-aware positioning, typeahead, proximity hover, spring-animated popover, and animated checkmark. Base UI flavor.",
+      "dependencies": [
+        "@base-ui/react",
+        "framer-motion",
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "surface-context",
+        "surface-classes",
+        "icon-context",
+        "use-proximity-hover",
+        "elevated",
+        "portal-container-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/select.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/select.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip (Base UI)",
+      "description": "Floating tooltip with spring-based animations, configurable placement, and rich content support. Base UI flavor.",
+      "dependencies": [
+        "framer-motion",
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "portal-container-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/tooltip.tsx",
+          "target": "components/ui/tooltip.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "thinking-steps",
+      "type": "registry:ui",
+      "title": "Thinking Steps",
+      "description": "Collapsible AI reasoning steps with animated expand/collapse, per-step icons, sources, and nested details. Base UI flavor.",
+      "dependencies": [
+        "@base-ui/react",
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "icon-context",
+        "badge"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/thinking-steps.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/thinking-steps.tsx"
+        }
+      ],
+      "css": {
+        "@keyframes shimmer": {
+          "0%": {
+            "background-position": "0% 0"
+          },
+          "100%": {
+            "background-position": "100% 0"
+          }
+        },
+        ".shimmer-text": {
+          "color": "transparent",
+          "background": "linear-gradient(90deg, #a3a3a3 0%, #a3a3a3 35%, #525252 50%, #a3a3a3 65%, #a3a3a3 100%)",
+          "background-size": "300% 100%",
+          "background-clip": "text",
+          "-webkit-background-clip": "text",
+          "animation": "shimmer 1.5s ease-in-out infinite"
+        }
+      }
+    },
+    {
+      "name": "color-picker",
+      "type": "registry:ui",
+      "title": "Color Picker",
+      "description": "Color picker with HEX, RGB, HSL, and OKLCH formats, alpha channel, optional swatches, and a popover trigger. Built on Base UI's Popover, Menu, and NumberField primitives with native EyeDropper support.",
+      "dependencies": [
+        "@base-ui/react",
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "surface-context",
+        "surface-classes",
+        "icon-context",
+        "use-proximity-hover",
+        "elevated",
+        "slider",
+        "portal-container-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/color-picker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/color-picker.tsx"
+        }
+      ]
+    },
+    {
+      "name": "app-shell",
+      "type": "registry:ui",
+      "title": "App Shell",
+      "description": "Composable application frame for sidebar, header, and main content.",
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/app-shell.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/app-shell.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
+      "name": "page-layout",
+      "type": "registry:ui",
+      "title": "Page Layout",
+      "description": "Responsive page header, body, action, and aside composition.",
+      "dependencies": [
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "nav-item",
+        "nav-menu",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/page-layout.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/page-layout.tsx"
+        }
+      ]
+    },
+    {
+      "name": "nav-menu",
+      "type": "registry:ui",
+      "title": "Nav Menu",
+      "description": "Router-agnostic navigation menu with active, hover, focus, and keyboard behavior.",
+      "dependencies": [
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "use-proximity-hover"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/nav-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/nav-menu.tsx"
+        }
+      ]
+    },
+    {
+      "name": "nav-item",
+      "type": "registry:ui",
+      "title": "Nav Item",
+      "description": "Composable navigation item that supports router links, labels, badges, actions, and sub-navigation.",
+      "dependencies": [
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "shape-context",
+        "tooltip",
+        "nav-menu"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/nav-item.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/nav-item.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "Responsive sidebar with desktop collapse modes, persistence, shortcut support, and mobile drawer behavior.",
+      "dependencies": [
+        "@base-ui/react",
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "shape-context",
+        "surface-context",
+        "surface-classes",
+        "icon-context",
+        "button",
+        "scroll-area",
+        "mobile-drawer"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/sidebar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sidebar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sidebar-identity-row",
+      "type": "registry:ui",
+      "title": "Sidebar Identity Row",
+      "description": "Composable sidebar identity row with avatar, primary and secondary text, and trailing content.",
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "button"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/sidebar-identity-row.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sidebar-identity-row.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
+      "name": "top-nav",
+      "type": "registry:ui",
+      "title": "Top Nav",
+      "description": "Composable top navigation surface for brand, primary links, and actions.",
+      "dependencies": [
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "icon-context",
+        "nav-item",
+        "popover",
+        "shape-context",
+        "surface-context",
+        "surface-classes"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/top-nav.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/top-nav.tsx"
+        }
+      ]
+    }
+  ]
+}

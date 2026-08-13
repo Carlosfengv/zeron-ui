@@ -67,3 +67,6 @@ test-results/
 localdocs
 SEMANTIC-TOKENS.md
 ZERON_UI_RELEASE_GUIDE.md
+
+# generated Registry composition
+/packages/registry/registry.composed.json

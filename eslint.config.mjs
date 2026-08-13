@@ -144,10 +144,10 @@ export default [
     rules: shadcnRestrictedRules,
   },
   {
-    files: ["src/components/ui/**/*.{ts,tsx}"],
+    files: ["packages/ui/src/components/**/*.{ts,tsx}"],
     // Raw colour is allowed only in these audited palette sources. All other
     // core UI modules must consume semantic or component-private tokens.
-    ignores: ["src/components/ui/color-picker.tsx", "src/components/ui/badge-colors.ts"],
+    ignores: ["packages/ui/src/components/color-picker.tsx", "packages/ui/src/components/badge-colors.ts"],
     rules: componentColorRules,
   },
 ];

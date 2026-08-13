@@ -1,9 +1,9 @@
 "use client";
 
 import { ConceptFrame } from "@/app/(internal)/concepts/_components/concept-frame";
-import { NavMenu } from "@/components/ui/nav-menu";
-import { NavItem } from "@/components/ui/nav-item";
-import { NavItemContent, NavItemLabel, NavItemTrigger } from "@/components/ui/nav-item";
+import { NavMenu } from "@zeron/ui/nav-menu";
+import { NavItem } from "@zeron/ui/nav-item";
+import { NavItemContent, NavItemLabel, NavItemTrigger } from "@zeron/ui/nav-item";
 import Link from "next/link";
 
 const CONCEPTS = [

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { useIcon } from "@/lib/icon-context";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Tabs, TabsList, TabItem, TabPanel } from "@/components/ui/tabs";
+import { useIcon } from "@zeron/icons/context";
+import { Checkbox } from "@zeron/ui/checkbox";
+import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
 import {
   Table,
   TableHeader,
@@ -11,7 +11,7 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from "@/components/ui/table";
+} from "@zeron/ui/table";
 // ── Data ──────────────────────────────────────────────────
 
 interface Quote {

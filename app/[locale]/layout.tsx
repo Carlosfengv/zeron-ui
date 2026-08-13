@@ -4,9 +4,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import "../globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { AppProviders } from "@/app-providers";
-import { assertLocale } from "@/i18n/locale";
-import { routing } from "@/i18n/routing";
+import { AppProviders } from "@/app/app-providers";
+import { assertLocale } from "@/app/_i18n/locale";
+import { routing } from "@/app/_i18n/routing";
 
 type Props = Readonly<{
   children: React.ReactNode;
@@ -46,8 +46,8 @@ export default async function LocaleLayout({ children, params }: Props) {
   setRequestLocale(locale);
   const messages = (await (
     locale === "en"
-      ? import("../../messages/en/common-slim.json")
-      : import("../../messages/zh-CN/common-slim.json")
+      ? import("@docs/content/en/common-slim.json")
+      : import("@docs/content/zh-CN/common-slim.json")
   )).default;
 
   return (

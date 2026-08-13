@@ -1,0 +1,6 @@
+{
+  "title": "Icon Usage",
+  "description": "Resolve icons from the active provider with the useIcon hook.",
+  "exampleTitle": "Named icon slots",
+  "exampleDescription": "The icon name stays stable when the provider changes its visual variant."
+}

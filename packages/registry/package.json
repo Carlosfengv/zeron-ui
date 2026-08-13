@@ -1,0 +1,13 @@
+{
+  "name": "@zeron/registry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/compose-registry.mjs && shadcn build packages/registry/registry.composed.json -o public/r -c ../.. && node scripts/postbuild.mjs"
+  },
+  "devDependencies": {
+    "shadcn": "3.0.0",
+    "typescript": "5.9.3"
+  }
+}

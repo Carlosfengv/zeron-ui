@@ -6,11 +6,12 @@ const source = (file: string) =>
   fs.readFileSync(path.join(process.cwd(), file), "utf8");
 
 describe("sidebar implementation contract", () => {
-  const sidebar = source("src/components/ui/sidebar.tsx");
-  const drawer = source("src/components/ui/mobile-drawer.tsx");
-  const identityRow = source("src/components/ui/sidebar-identity-row.tsx");
-  const navMenu = source("src/components/ui/nav-menu.tsx");
-  const zaiopsPreview = source("src/docs/site/zaiops-sidebar-preview.tsx");
+  const sidebar = source("packages/ui/src/components/sidebar.tsx");
+  const drawer = source("packages/ui/src/components/mobile-drawer.tsx");
+  const identityRow = source("packages/ui/src/components/sidebar-identity-row.tsx");
+  const navMenu = source("packages/ui/src/components/nav-menu.tsx");
+  const zaiopsBlock = source("packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx");
+  const zaiopsPreview = source("docs/components/shell/site/zaiops-sidebar-preview.tsx");
 
   it("publishes one set of width variables and keeps the compact drawer explicit", () => {
     expect(sidebar).toContain('"--sidebar-width": width');
@@ -113,6 +114,16 @@ describe("sidebar implementation contract", () => {
     expect(zaiopsPreview).toContain("<SidebarFloatingTrigger");
     expect(zaiopsPreview).toContain('collapsedBehavior="offcanvas"');
     expect(zaiopsPreview).toContain("<ZaiopsNavigationPanel");
+  });
+
+  it("gives the collapsed ZAIops hover navigation a bordered floating surface", () => {
+    expect(zaiopsPreview).toContain(
+      'rounded-container border-[0.5px] border-border-subtle p-0 shadow-floating',
+    );
+  });
+
+  it("keeps the embedded ZAIops Sidebar as the positioning context for its panel", () => {
+    expect(zaiopsBlock).toContain('className="relative h-full"');
   });
 
   it("keeps vertical menu focus rings inside scrollable navigation bounds", () => {

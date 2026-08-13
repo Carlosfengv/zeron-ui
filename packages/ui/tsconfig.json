@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "#components/*": ["src/components/*"],
+      "#hooks/*": ["src/hooks/*"],
+      "#system/*": ["src/system/*"],
+      "#tokens/*": ["src/tokens/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/system/icon-variants/**/*"]
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { routing } from "../src/i18n/routing";
-import { localizedPathname } from "../src/i18n/seo";
+import { routing } from "../app/_i18n/routing";
+import { localizedPathname } from "../docs/seo/locale";
 
 describe("i18n routing", () => {
   it("keeps English canonical paths unprefixed and uses the agreed Chinese prefix", () => {

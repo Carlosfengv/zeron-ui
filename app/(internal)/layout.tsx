@@ -3,8 +3,8 @@ import { NextIntlClientProvider } from "next-intl";
 import "../globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { AppProviders } from "@/app-providers";
-import messages from "@/messages/en/common.json";
+import { AppProviders } from "@/app/app-providers";
+import messages from "@docs/content/en/common.json";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://zeron-ui.vercel.app"),

@@ -11,7 +11,7 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: "pnpm start -- -p 3333",
+    command: "pnpm exec next start -p 3333",
     url: "http://127.0.0.1:3333",
     reuseExistingServer: false,
     timeout: 30_000,

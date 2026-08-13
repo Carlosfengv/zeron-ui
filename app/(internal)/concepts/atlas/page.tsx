@@ -7,13 +7,13 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import { useIcon } from "@/lib/icon-context";
+import { useIcon } from "@zeron/icons/context";
 import { ConceptFrame } from "@/app/(internal)/concepts/_components/concept-frame";
-import { Button } from "@/components/ui/button";
-import { ChatMessage } from "@/components/ui/chat-message";
-import { InputMessage } from "@/components/ui/input-message";
-import type { QueuedMessage } from "@/components/ui/input-message";
-import { ThinkingIndicator } from "@/components/ui/thinking-indicator";
+import { Button } from "@zeron/ui/button";
+import { ChatMessage } from "@zeron/ui/chat-message";
+import { InputMessage } from "@zeron/ui/input-message";
+import type { QueuedMessage } from "@zeron/ui/input-message";
+import { ThinkingIndicator } from "@zeron/ui/thinking-indicator";
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
-import { useIcon } from "@/lib/icon-context";
-import { surfaceClasses } from "@/lib/surface-classes";
-import { cn } from "@/lib/utils";
+import { useIcon } from "@zeron/icons/context";
+import { surfaceClasses } from "@zeron/ui/system/surface-classes";
+import { cn } from "@zeron/ui/system/utils";
 import { ConceptFrame } from "@/app/(internal)/concepts/_components/concept-frame";
-import { Button } from "@/components/ui/button";
-import { Badge, type BadgeColor } from "@/components/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { Badge, type BadgeColor } from "@zeron/ui/badge";
 import {
   Table,
   TableHeader,
@@ -14,20 +14,20 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from "@/components/ui/table";
-import { Tabs, TabsList, TabItem, TabPanel } from "@/components/ui/tabs";
+} from "@zeron/ui/table";
+import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
-import { InputFieldGroup, InputField } from "@/components/ui/input-group";
-import { Dropdown, DropdownLabel, DropdownSeparator } from "@/components/ui/dropdown";
-import { MenuItem } from "@/components/ui/menu-item";
-import { Switch } from "@/components/ui/switch";
-import { ThinkingIndicator } from "@/components/ui/thinking-indicator";
-import { AskUserQuestions } from "@/components/ui/ask-user-questions";
+} from "@zeron/ui/select";
+import { InputFieldGroup, InputField } from "@zeron/ui/input-group";
+import { Dropdown, DropdownLabel, DropdownSeparator } from "@zeron/ui/dropdown";
+import { MenuItem } from "@zeron/ui/menu-item";
+import { Switch } from "@zeron/ui/switch";
+import { ThinkingIndicator } from "@zeron/ui/thinking-indicator";
+import { AskUserQuestions } from "@zeron/ui/ask-user-questions";
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 

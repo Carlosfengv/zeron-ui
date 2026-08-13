@@ -1,0 +1,6 @@
+{
+  "title": "图标概览",
+  "description": "面向具名图标槽位、一致样式和可选授权变体的小型公共 API。",
+  "modelTitle": "一个 Provider，稳定的图标槽位",
+  "modelDescription": "应用只请求语义化图标名称；Provider 负责提供当前样式，无需修改业务代码。"
+}

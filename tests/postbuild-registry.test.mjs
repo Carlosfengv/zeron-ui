@@ -2,16 +2,17 @@ import { mkdtemp, readFile, writeFile, rm, access, mkdir } from "node:fs/promise
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { BASE_URL, depUrl, processRegistry } from "../scripts/postbuild-registry.mjs";
+import { BASE_URL, depUrl, processRegistry } from "../packages/registry/scripts/postbuild.mjs";
 
 describe("depUrl", () => {
   it("leaves default shadcn dependencies untouched", () => {
-    expect(depUrl("utils")).toBe("utils");
+    expect(depUrl("utils", new Set(["button"]))).toBe("utils");
   });
 
   it("rewrites custom registry dependencies to their flat URL", () => {
-    expect(depUrl("button")).toBe(`${BASE_URL}/button.json`);
-    expect(depUrl("badge")).toBe(`${BASE_URL}/badge.json`);
+    const items = new Set(["button", "badge"]);
+    expect(depUrl("button", items)).toBe(`${BASE_URL}/button.json`);
+    expect(depUrl("badge", items)).toBe(`${BASE_URL}/badge.json`);
   });
 });
 
@@ -26,7 +27,11 @@ describe("processRegistry pipeline", () => {
     dir = await mkdtemp(join(tmpdir(), "registry-test-"));
     await mkdir(join(dir, "obsolete-artifacts"));
     await write("registry.json", {
-      items: [{ name: "dialog", registryDependencies: ["button", "badge", "utils"] }],
+      items: [
+        { name: "dialog", registryDependencies: ["button", "badge", "utils"] },
+        { name: "button" },
+        { name: "badge" },
+      ],
     });
     await write("dialog.json", {
       name: "dialog",

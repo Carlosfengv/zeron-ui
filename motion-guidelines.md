@@ -7,7 +7,7 @@ does the other.
 
 ---
 
-## Spring tokens (`src/system/springs.ts`)
+## Spring tokens (`packages/ui/src/system/springs.ts`)
 
 | Token | Duration | Bounce | Use for |
 |---|---|---|---|
@@ -19,7 +19,7 @@ does the other.
 invents its own duration — always import the token from `@/lib/springs` so
 unrelated parts of the UI move at consistent magnitudes.
 
-## Exit tokens (`src/system/springs.ts`)
+## Exit tokens (`packages/ui/src/system/springs.ts`)
 
 Enters are springs (above); exits are plain **tweens** — no bounce, one tier
 quicker — so a dismissal reads as crisp and final rather than replaying the

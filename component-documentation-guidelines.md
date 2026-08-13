@@ -6,10 +6,10 @@ Checklist and conventions for documenting every new component in this project. F
 
 ## Checklist for a New Component
 
-### 1. Component Source (`src/components/ui/<component-name>.tsx`)
+### 1. Component Source (`packages/ui/src/components/<component-name>.tsx`)
 
 `@/components/ui/<component-name>` is the only public component entry and the
-file under `src/components/ui/` is the canonical implementation used by both the
+file under `packages/ui/src/components/` is the canonical implementation used by both the
 site and Registry. Registry metadata belongs in `registry.json`; do not create
 a parallel Registry source tree.
 
@@ -45,7 +45,7 @@ Add an item to the `items` array:
   "registryDependencies": ["utils"],   // other registry items this depends on
   "files": [
     {
-      "path": "src/components/ui/component-name.tsx",
+      "path": "packages/ui/src/components/component-name.tsx",
       "type": "registry:ui",
       "target": "components/ui/component-name.tsx"
     }
@@ -67,7 +67,7 @@ Run the registry build script (`pnpm registry:build`) to generate the JSON file.
 - Full source code embedded in `files[].content`
 - All metadata matching `registry.json`
 
-> **Rebuild on every source edit, not just new components.** The JSONs in `public/r/` embed a *copy* of the source, so editing any Registry source — a component **or** a shared system file like `src/system/font-weight.ts` — leaves the published Registry stale until you re-run `pnpm registry:build`. Editing a shared system file only regenerates that item's JSON (e.g. `font-weight.json`); consumers reference it by `registryDependencies`, so they don't need rebuilding, but the item does. Commit the regenerated JSONs alongside the source, and rebuild before any `vercel --prod` deploy.
+> **Rebuild on every source edit, not just new components.** The JSONs in `public/r/` embed a *copy* of the source, so editing any Registry source — a component **or** a shared system file like `packages/ui/src/system/font-weight.ts` — leaves the published Registry stale until you re-run `pnpm registry:build`. Editing a shared system file only regenerates that item's JSON (e.g. `font-weight.json`); consumers reference it by `registryDependencies`, so they don't need rebuilding, but the item does. Commit the regenerated JSONs alongside the source, and rebuild before any `vercel --prod` deploy.
 
 ### 4. Component List Entry (`src/docs/components.ts`)
 
@@ -189,8 +189,8 @@ Reference implementations: `menu-item.tsx`, `nav-item.tsx`, `tabs.tsx`, `accordi
   - Components accepting icon props: `import type { IconComponent } from "@/lib/icon-context";`
   - Doc pages: call `useIcon("icon-name")` inside the component function for each icon needed
   - Icon prop type is `IconComponent`, not `LucideIcon`
-  - **Adding a new icon name**: add it to `IconName` in `src/system/icon-context.tsx`
-    and its underlying HugeIcons definition to `src/system/icon-catalog.ts`. Every supported
+  - **Adding a new icon name**: add it to `IconName` in `packages/ui/src/system/icon-context.tsx`
+    and its underlying HugeIcons definition to `packages/ui/src/system/icon-catalog.ts`. Every supported
     style module must import that definition so the style maps remain identical.
   - **Pro variants**: `pro-icon-provider` is optional and carries only package imports, never
     copied Pro SVG data or license keys. The default `icon-context` remains usable with the
@@ -257,10 +257,10 @@ interface PropDef {
 ## Quick Reference: File Locations
 
 ```
-src/components/ui/
+packages/ui/src/components/
   component-name.tsx          ← canonical public component source/entry
 
-src/system/
+packages/ui/src/system/
   utils.ts                    ← shared utilities
   springs.ts                  ← animation tokens
   font-weight.ts              ← font weight tokens

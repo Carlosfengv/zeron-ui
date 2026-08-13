@@ -1,0 +1,8 @@
+{
+  "title": "Icon Providers",
+  "description": "Use the free provider by default; install and opt into Pro styles only when licensed.",
+  "freeTitle": "Free default",
+  "freeDescription": "Stroke Rounded is available without optional packages.",
+  "proTitle": "Optional Pro variants",
+  "proDescription": "ProIconProvider loads licensed HugeIcons variants only in projects that install them."
+}

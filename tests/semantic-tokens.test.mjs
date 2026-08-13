@@ -18,7 +18,7 @@ import {
   shadowTokens,
   surfaceTokens,
   typographyTokens,
-} from "../src/system/tokens/semantic-tokens.mjs";
+} from "../packages/ui/src/tokens/semantic-tokens.mjs";
 
 function relativeLuminance(hex) {
   const channels = [1, 3, 5].map((index) =>
@@ -46,7 +46,7 @@ function tokenByName(tokens, name) {
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const read = (path) => readFileSync(join(ROOT, path), "utf8");
-const registry = JSON.parse(read("registry.json"));
+const registry = JSON.parse(read("packages/ui/registry.json"));
 
 describe("semantic token generation", () => {
   it("sets a 14px document default without changing the rem-based type scale", () => {
@@ -362,7 +362,7 @@ describe("semantic token generation", () => {
   });
 
   it("keeps generated runtime radius values in sync", () => {
-    expect(read("src/system/design-tokens.ts")).toBe(renderRuntimeTokens());
+    expect(read("packages/ui/src/system/design-tokens.ts")).toBe(renderRuntimeTokens());
   });
 
   it("keeps the semantic token documentation in sync", () => {
@@ -371,7 +371,7 @@ describe("semantic token generation", () => {
 });
 
 describe("component token adoption", () => {
-  const componentSource = ["src/components/ui"]
+  const componentSource = ["packages/ui/src/components"]
     .flatMap((directory) => {
       return readdirSync(join(ROOT, directory), { withFileTypes: true })
         .filter((entry) => entry.isFile() && entry.name.endsWith(".tsx"))
@@ -384,7 +384,7 @@ describe("component token adoption", () => {
   });
 
   it("does not use arbitrary typography utilities outside generated assets", () => {
-    const source = ["app", "src", "scripts"]
+    const source = ["app", "docs", "packages/ui/src", "scripts"]
       .flatMap((directory) => {
         const files = [];
         const visit = (current) => {
@@ -411,7 +411,7 @@ describe("component token adoption", () => {
   it("uses standard font-weight utilities instead of the variable-font helper", () => {
     expect(componentSource).not.toContain("fontWeights");
     expect(componentSource).not.toContain("fontVariationSettings");
-    expect(componentSource).not.toContain("@/lib/font-weight");
+    expect(componentSource).not.toContain("@zeron/ui/system/font-weight");
     expect(componentSource).not.toContain("font-variation-settings");
   });
 

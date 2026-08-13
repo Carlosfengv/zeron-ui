@@ -1,9 +1,9 @@
 import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
-import SourceIntroduction from "@/app/(source)/docs/page";
-import { assertLocale } from "@/i18n/locale";
-import { PageMessages } from "@/i18n/page-messages";
-import { localeAlternates } from "@/i18n/seo";
+import IntroductionContent from "@docs/pages/introduction";
+import { assertLocale } from "@/app/_i18n/locale";
+import { PageMessages } from "@docs/i18n/page-provider";
+import { localeAlternates } from "@docs/seo/locale";
 
 export async function generateMetadata({
   params,
@@ -14,8 +14,8 @@ export async function generateMetadata({
   assertLocale(locale);
   const messages = (await (
     locale === "en"
-      ? import("../../../messages/en/common.json")
-      : import("../../../messages/zh-CN/common.json")
+      ? import("@docs/content/en/common.json")
+      : import("@docs/content/zh-CN/common.json")
   )).default;
 
   return {
@@ -29,5 +29,5 @@ export default async function DocsIndex({ params }: { params: Promise<{ locale: 
   const { locale } = await params;
   assertLocale(locale);
   setRequestLocale(locale);
-  return <PageMessages locale={locale} namespace="docs/introduction"><SourceIntroduction /></PageMessages>;
+  return <PageMessages locale={locale} namespace="docs/introduction"><IntroductionContent /></PageMessages>;
 }

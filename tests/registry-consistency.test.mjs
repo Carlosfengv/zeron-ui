@@ -2,14 +2,16 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { BASE_URL, CUSTOM_ITEMS } from "../scripts/postbuild-registry.mjs";
+import { BASE_URL } from "../packages/registry/scripts/postbuild.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const registry = JSON.parse(readFileSync(join(ROOT, "registry.json"), "utf-8"));
+const uiRegistry = JSON.parse(readFileSync(join(ROOT, "packages/ui/registry.json"), "utf-8"));
+const blocksRegistry = JSON.parse(readFileSync(join(ROOT, "packages/blocks/registry.json"), "utf-8"));
+const registry = { items: [...uiRegistry.items, ...blocksRegistry.items] };
 const itemNames = new Set(registry.items.map((item) => item.name));
 const SHADCN_DEFAULT_DEPS = new Set(["utils"]);
 
-describe("registry.json", () => {
+describe("package Registry sources", () => {
   it("ships files that exist on disk", () => {
     for (const item of registry.items) {
       for (const file of item.files ?? []) {
@@ -25,13 +27,15 @@ describe("registry.json", () => {
     expect(filePaths.some((path) => path.startsWith("registry/base/"))).toBe(false);
   });
 
-  it("uses src/components/ui as the canonical source for every UI file", () => {
-    const uiFiles = registry.items.flatMap((item) =>
+  it("uses packages/ui/src/components as the canonical source for every UI file", () => {
+    const uiFiles = uiRegistry.items.flatMap((item) =>
       (item.files ?? []).filter((file) => file.type === "registry:ui")
     );
     for (const file of uiFiles) {
-      expect(file.path.startsWith("src/components/ui/"), file.path).toBe(true);
-      expect(file.target, `${file.path}: target`).toBe(file.path.slice("src/".length));
+      expect(file.path.startsWith("packages/ui/src/components/"), file.path).toBe(true);
+      expect(file.target, `${file.path}: target`).toBe(
+        `components/ui/${file.path.slice("packages/ui/src/components/".length)}`
+      );
     }
   });
 
@@ -42,15 +46,15 @@ describe("registry.json", () => {
   it("uses public lib and hooks paths as canonical Registry sources", () => {
     const sourceRules = {
       "registry:lib": {
-        source: "src/system/",
+        source: "packages/ui/src/system/",
         target: "lib/",
       },
       "registry:hook": {
-        source: "src/system/hooks/",
+        source: "packages/ui/src/hooks/",
         target: "hooks/",
       },
     };
-    const runtimeFiles = registry.items.flatMap((item) =>
+    const runtimeFiles = uiRegistry.items.flatMap((item) =>
       (item.files ?? []).filter((file) => file.type in sourceRules)
     );
     for (const file of runtimeFiles) {
@@ -70,38 +74,50 @@ describe("registry.json", () => {
     }
   });
 
-  it("lists every custom dependency in the URL rewrite map", () => {
+  it("derives every local dependency from the catalog", () => {
     for (const item of registry.items) {
       for (const dep of item.registryDependencies ?? []) {
-        if (!SHADCN_DEFAULT_DEPS.has(dep)) expect(CUSTOM_ITEMS.has(dep), `${item.name}: ${dep}`).toBe(true);
+        if (!SHADCN_DEFAULT_DEPS.has(dep)) expect(itemNames.has(dep), `${item.name}: ${dep}`).toBe(true);
       }
     }
   });
 
   it("does not publish the removed font-weight helper", () => {
     expect(itemNames.has("font-weight")).toBe(false);
-    expect(CUSTOM_ITEMS.has("font-weight")).toBe(false);
     for (const item of registry.items) {
       expect(item.registryDependencies ?? [], item.name).not.toContain("font-weight");
+    }
+  });
+
+  it("keeps Blocks in their own source catalog and installs them through aliases", () => {
+    const blocks = blocksRegistry.items.filter((item) => item.type === "registry:block");
+    expect(blocks.map((item) => item.name)).toEqual(expect.arrayContaining([
+      "top-nav-app-shell-01",
+      "zaiops-operations-01",
+    ]));
+    for (const item of blocks) {
+      for (const file of item.files ?? []) {
+        expect(file.path.startsWith("packages/blocks/src/"), file.path).toBe(true);
+        expect(file.target.startsWith("components/blocks/"), file.target).toBe(true);
+      }
     }
   });
 });
 
 describe("docs pages", () => {
   it("has a docs page for every listed component and system entry", async () => {
-    const { aiAgentList, componentList, layoutList, systemList } = await import("../src/docs/components.ts");
+    const { aiAgentList, componentList, layoutList, systemList } = await import("../docs/lib/components.ts");
     for (const entry of [...componentList, ...aiAgentList, ...layoutList, ...systemList]) {
-      expect(existsSync(join(ROOT, "app/(source)/docs", entry.slug, "page.tsx")), entry.slug).toBe(true);
+      expect(existsSync(join(ROOT, "docs/pages/components", entry.slug, "page.tsx")), entry.slug).toBe(true);
     }
   });
 
   it("does not have orphaned docs pages", async () => {
-    const { aiAgentList, componentList, layoutList, legacyDocSlugs, systemList } = await import("../src/docs/components.ts");
+    const { aiAgentList, componentList, layoutList, systemList } = await import("../docs/lib/components.ts");
     const listed = new Set([...componentList, ...aiAgentList, ...layoutList, ...systemList].map((entry) => entry.slug));
-    const legacy = new Set(legacyDocSlugs);
-    const pages = readdirSync(join(ROOT, "app/(source)/docs"), { withFileTypes: true })
-      .filter((entry) => entry.isDirectory() && existsSync(join(ROOT, "app/(source)/docs", entry.name, "page.tsx")));
-    for (const page of pages) expect(listed.has(page.name) || legacy.has(page.name), page.name).toBe(true);
+    const pages = readdirSync(join(ROOT, "docs/pages/components"), { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && existsSync(join(ROOT, "docs/pages/components", entry.name, "page.tsx")));
+    for (const page of pages) expect(listed.has(page.name), page.name).toBe(true);
   });
 });
 
@@ -127,8 +143,24 @@ describe("committed build output", () => {
     }
   });
 
+  it("does not leak workspace-only imports into installable source", () => {
+    for (const rel of outputFiles(outDir)) {
+      const data = JSON.parse(readFileSync(join(outDir, rel), "utf-8"));
+      for (const item of Array.isArray(data.items) ? data.items : [data]) {
+        for (const file of item.files ?? []) {
+          expect(file.content ?? "", `${rel}: ${file.path}`).not.toMatch(/from ["'](?:@zeron\/|#(?:components|hooks|system|tokens)\/|@\/)/);
+        }
+      }
+    }
+  });
+
   it("does not retain the removed font-weight artifact", () => {
     expect(existsSync(join(outDir, "font-weight.json"))).toBe(false);
+  });
+
+  it("declares the Tailwind animation package injected by the theme installer", () => {
+    const theme = JSON.parse(readFileSync(join(outDir, "surfaces.json"), "utf-8"));
+    expect(theme.dependencies).toContain("tw-animate-css");
   });
 
   it("does not retain nested registry artifact directories", () => {

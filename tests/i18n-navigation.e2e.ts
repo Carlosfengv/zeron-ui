@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("desktop language switching preserves path, query, and hash", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto("/docs/button?source=e2e#basic");
+  await page.goto("/docs/components/button?source=e2e#basic");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await page.getByText("Language", { exact: true }).waitFor();
@@ -11,20 +11,20 @@ test("desktop language switching preserves path, query, and hash", async ({ page
   await expect(page.getByText("简体中文", { exact: true })).toBeVisible();
   await page.getByText("简体中文", { exact: true }).click();
 
-  await expect(page).toHaveURL(/\/zh-cn\/docs\/button\?source=e2e#basic$/);
+  await expect(page).toHaveURL(/\/zh-cn\/docs\/components\/button\?source=e2e#basic$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
   await expect(page.getByText("选择变体", { exact: true })).toBeVisible();
   await expect(page.getByText("语言", { exact: true })).toBeVisible();
 
   await page.getByRole("navigation", { name: "组件导航" }).getByRole("link", { name: "Card" }).click();
-  await expect(page).toHaveURL("/zh-cn/docs/card");
+  await expect(page).toHaveURL("/zh-cn/docs/components/card");
   await page.getByRole("link", { name: "上一页：Button" }).click();
-  await expect(page).toHaveURL("/zh-cn/docs/button");
+  await expect(page).toHaveURL("/zh-cn/docs/components/button");
 });
 
 test("mobile navigation exposes a locale-safe language switcher and keyboard pager", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/zh-cn/docs/button");
+  await page.goto("/zh-cn/docs/components/button");
 
   await page.getByRole("button", { name: "打开导航" }).click();
   await page.getByText("语言", { exact: true }).waitFor();
@@ -33,7 +33,7 @@ test("mobile navigation exposes a locale-safe language switcher and keyboard pag
   await expect(page.getByText("English", { exact: true })).toBeVisible();
   await page.getByText("English", { exact: true }).click();
 
-  await expect(page).toHaveURL("/docs/button");
+  await expect(page).toHaveURL("/docs/components/button");
   await page.keyboard.press("ArrowRight");
-  await expect(page).toHaveURL("/docs/card");
+  await expect(page).toHaveURL("/docs/components/card");
 });

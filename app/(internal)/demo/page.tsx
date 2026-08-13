@@ -3,15 +3,15 @@
 import { Suspense, useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { allComponentList } from "@/docs/components";
-import { featuredPreviewMap } from "@/docs/site/featured-previews";
-import { DeferredDemoPreview } from "@/docs/site/deferred-demo-preview";
-import { BentoCard } from "@/docs/site/bento-card";
-import { SettingsContent } from "@/docs/site/right-panel";
-import { Button } from "@/components/ui/button";
-import { useIcon } from "@/lib/icon-context";
-import { Tooltip, TooltipPortalContainer } from "@/components/ui/tooltip";
-import { ColorPickerPortalContainer } from "@/components/ui/color-picker";
+import { allComponentList } from "@docs/lib/components";
+import { featuredPreviewMap } from "@docs/components/shell/site/featured-previews";
+import { DeferredDemoPreview } from "@docs/components/shell/site/deferred-demo-preview";
+import { BentoCard } from "@docs/components/shell/site/bento-card";
+import { SettingsContent } from "@docs/components/shell/site/right-panel";
+import { Button } from "@zeron/ui/button";
+import { useIcon } from "@zeron/icons/context";
+import { Tooltip, TooltipPortalContainer } from "@zeron/ui/tooltip";
+import { ColorPickerPortalContainer } from "@zeron/ui/color-picker";
 
 const SETTINGS_SLUG = "settings";
 const BASE_WIDTH = 680;

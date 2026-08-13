@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const UI_ROOT = join(ROOT, "src/components/ui");
+const UI_ROOT = join(ROOT, "packages/ui/src/components");
 const PALETTE_UTILITY = /\b(?:bg|text|border|ring|outline|fill|stroke)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-[0-9]{2,3}\b|\b(?:bg|text|border|ring|outline|fill|stroke)-(?:white|black)\b/;
 const RAW_COLOR = /#[0-9a-fA-F]{3,8}\b|\b(?:rgb|rgba|hsl|hsla)\((?!var\(--)/;
 const LEGACY_COLOR_UTILITY = /\b(?:bg|text|border|fill|stroke|ring|outline|decoration|ring-offset|from|to|via)-(?:background|foreground|card|card-foreground|muted-foreground|accent|accent-hover|accent-active|accent-subtlest|accent-subtle|accent-foreground|selected|brand-foreground|destructive-subtle|destructive-light|destructive-foreground)(?:\/|\b)/;
@@ -128,7 +128,7 @@ describe("semantic color consumers", () => {
     const colorPicker = read(join(UI_ROOT, "color-picker.tsx"));
     const dataGrid = read(join(UI_ROOT, "data-grid/data-grid.tsx"));
     const dataGridRow = read(join(UI_ROOT, "data-grid/data-grid-row.tsx"));
-    const dataGridSystem = read(join(ROOT, "src/system/data-grid.ts"));
+    const dataGridSystem = read(join(ROOT, "packages/ui/src/system/data-grid.ts"));
     const infoItem = read(join(UI_ROOT, "info-item.tsx"));
     const askUserQuestions = read(join(UI_ROOT, "ask-user-questions.tsx"));
 

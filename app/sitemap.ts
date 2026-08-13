@@ -1,20 +1,22 @@
 import type { MetadataRoute } from "next";
-import { pageDocEntries } from "@/docs/manifest";
-import { localizedUrl } from "@/i18n/seo";
+import { pageDocEntries, pathnameOf } from "@docs/manifest";
+import { localizedUrl } from "@docs/seo/locale";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
 
-  return pageDocEntries.flatMap((entry) =>
+  const paths = ["/", "/docs", ...pageDocEntries.map(pathnameOf)];
+
+  return paths.flatMap((pathname) =>
     (["en", "zh-CN"] as const).map((locale) => ({
-      url: localizedUrl(entry.pathname, locale),
+      url: localizedUrl(pathname, locale),
       lastModified,
-      changeFrequency: entry.pathname.startsWith("/docs") ? "weekly" : "monthly",
-      priority: entry.pathname === "/" ? 1 : entry.pathname.startsWith("/docs") ? 0.8 : 0.5,
+      changeFrequency: pathname.startsWith("/docs") ? "weekly" : "monthly",
+      priority: pathname === "/" ? 1 : pathname.startsWith("/docs") ? 0.8 : 0.5,
       alternates: {
         languages: {
-          en: localizedUrl(entry.pathname, "en"),
-          "zh-CN": localizedUrl(entry.pathname, "zh-CN"),
+          en: localizedUrl(pathname, "en"),
+          "zh-CN": localizedUrl(pathname, "zh-CN"),
         },
       },
     })),

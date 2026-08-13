@@ -1,0 +1,1 @@
+{"zaiopsOperationsBlock":{"title":"ZAIops 运维工作区","description":"带响应式 Sidebar、组织切换和分组导航的运维工作区 recipe。","preview":"预览","workspaceTitle":"巡检总览","workspaceDescription":"在一个自适应应用外壳中查看集群健康、巡检治理任务与当前运维上下文。","guidance":"集成边界","guidanceBody":"将导航值、组织列表、搜索、权限和实时运维数据接入你的应用；该 Block 负责响应式应用框架和无障碍菜单组合。"}}

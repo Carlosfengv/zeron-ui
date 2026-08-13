@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   resolveSurface,
   surfaceClasses,
-} from "../src/system/surface-classes";
+} from "../packages/ui/src/system/surface-classes";
 
 describe("semantic surface resolution", () => {
   it("uses the requested role as the minimum elevation", () => {

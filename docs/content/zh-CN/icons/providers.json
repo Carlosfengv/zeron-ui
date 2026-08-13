@@ -1,0 +1,8 @@
+{
+  "title": "图标 Provider",
+  "description": "默认使用免费 Provider；仅在拥有授权时安装并启用 Pro 样式。",
+  "freeTitle": "免费默认样式",
+  "freeDescription": "Stroke Rounded 无需安装可选包即可使用。",
+  "proTitle": "可选 Pro 变体",
+  "proDescription": "ProIconProvider 仅在项目安装了相应包时加载授权的 HugeIcons 变体。"
+}

@@ -3,7 +3,7 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { STAGE_W, STAGE_H } from "./glyphs";
 import { SWITCH_FIELD } from "./glyph-config";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@zeron/ui/switch";
 
 const FALLBACK = "500";
 

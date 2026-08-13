@@ -4,7 +4,7 @@ import {
   deriveBrandTheme,
   deriveBrandPalette,
   normalizeHex,
-} from "../src/docs/brand-color";
+} from "../docs/lib/brand-color";
 
 describe("brand playground palette derivation", () => {
   it("normalizes opaque six-digit colors", () => {

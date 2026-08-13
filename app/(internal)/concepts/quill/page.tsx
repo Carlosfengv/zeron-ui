@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useIcon } from "@/lib/icon-context";
-import { surfaceClasses } from "@/lib/surface-classes";
-import { cn } from "@/lib/utils";
+import { useIcon } from "@zeron/icons/context";
+import { surfaceClasses } from "@zeron/ui/system/surface-classes";
+import { cn } from "@zeron/ui/system/utils";
 import { ConceptFrame } from "@/app/(internal)/concepts/_components/concept-frame";
-import { Button } from "@/components/ui/button";
-import { Badge, type BadgeColor } from "@/components/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { Badge, type BadgeColor } from "@zeron/ui/badge";
 import {
   Table,
   TableHeader,
@@ -14,18 +14,18 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from "@/components/ui/table";
-import { Tabs, TabsList, TabItem, TabPanel } from "@/components/ui/tabs";
-import { Dropdown, DropdownLabel } from "@/components/ui/dropdown";
-import { MenuItem } from "@/components/ui/menu-item";
-import { ChatMessage } from "@/components/ui/chat-message";
-import { InputMessage } from "@/components/ui/input-message";
+} from "@zeron/ui/table";
+import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
+import { Dropdown, DropdownLabel } from "@zeron/ui/dropdown";
+import { MenuItem } from "@zeron/ui/menu-item";
+import { ChatMessage } from "@zeron/ui/chat-message";
+import { InputMessage } from "@zeron/ui/input-message";
 import {
   ThinkingSteps,
   ThinkingStepsHeader,
   ThinkingStepsContent,
   ThinkingStep,
-} from "@/components/ui/thinking-steps";
+} from "@zeron/ui/thinking-steps";
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 

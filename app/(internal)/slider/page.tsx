@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Slider, SliderComfortable } from "@/components/ui/slider";
+import { Slider, SliderComfortable } from "@zeron/ui/slider";
 // ---------------------------------------------------------------------------
 // Data
 // ---------------------------------------------------------------------------

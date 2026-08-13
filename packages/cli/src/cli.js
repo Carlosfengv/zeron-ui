@@ -8,6 +8,7 @@ import {
   normalizeRegistryUrl,
 } from "./registry.js";
 import { runShadcn } from "./run-shadcn.js";
+import { resolveInstalledRegistryAliases } from "./resolve-registry-aliases.js";
 
 const HELP = `zeron-ui
 
@@ -146,10 +147,12 @@ export async function runCli(
       return runShadcnImpl(["view", ...urls, "--cwd", cwd], { cwd });
     }
 
-    return runShadcnImpl(
+    const status = runShadcnImpl(
       ["add", ...urls, "--cwd", cwd, ...forwardSharedOptions(values, { includePath: true })],
       { cwd },
     );
+    if (status === 0) await resolveInstalledRegistryAliases(cwd);
+    return status;
   }
 
   if (command === "view") {

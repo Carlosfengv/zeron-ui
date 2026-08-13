@@ -1,24 +1,31 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { detailDocEntries, docManifest, pageDocEntries } from "../src/docs/manifest";
+import {
+  collectionDefinitions,
+  detailDocEntries,
+  legacyDocRedirects,
+  pageDocEntries,
+  pathnameOf,
+} from "../docs/manifest";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 
 describe("documentation manifest", () => {
   it("defines the complete public documentation surface exactly once", () => {
-    expect(pageDocEntries).toHaveLength(43);
-    expect(detailDocEntries).toHaveLength(41);
-    expect(docManifest.filter((entry) => entry.kind === "redirect")).toHaveLength(1);
-    expect(new Set(docManifest.map((entry) => entry.pathname)).size).toBe(docManifest.length);
+    expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "icons"]);
+    expect(pageDocEntries).toHaveLength(47);
+    expect(detailDocEntries).toHaveLength(47);
+    expect(legacyDocRedirects).toHaveLength(42);
+    expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });
 
-  it("has a localized route wrapper for every formal detail page", () => {
-    for (const entry of detailDocEntries.filter((entry) => entry.id !== "introduction")) {
-      expect(
-        existsSync(join(ROOT, "app/[locale]/docs", entry.id, "page.tsx")),
-        entry.id,
-      ).toBe(true);
+  it("uses one generic route and a generated page-loader map for every formal detail page", () => {
+    expect(existsSync(join(ROOT, "app/[locale]/docs/[collection]/[slug]/page.tsx"))).toBe(true);
+    const loaders = readFileSync(join(ROOT, "docs/generated/page-loaders.generated.ts"), "utf8");
+    for (const entry of detailDocEntries) {
+      expect(loaders).toContain(`\"${entry.collection}/${entry.slug}\"`);
+      expect(existsSync(join(ROOT, "docs/pages", entry.collection, entry.slug, "page.tsx")), entry.slug).toBe(true);
     }
   });
 
@@ -27,11 +34,15 @@ describe("documentation manifest", () => {
       readFileSync(join(ROOT, "localdocs/i18n-translation-progress.json"), "utf8"),
     ) as { pages: Record<string, string> };
 
+    expect(progress.pages.home).toBe("verified");
+    expect(progress.pages.introduction).toBe("verified");
+    expect(existsSync(join(ROOT, "docs/content/en/home.json"))).toBe(true);
+    expect(existsSync(join(ROOT, "docs/content/zh-CN/home.json"))).toBe(true);
     for (const entry of pageDocEntries) {
-      expect(progress.pages[entry.id], entry.id).toBe("verified");
-      const filename = entry.id === "home" ? "home.json" : `docs/${entry.id}.json`;
-      expect(existsSync(join(ROOT, "messages/en", filename)), `en:${entry.id}`).toBe(true);
-      expect(existsSync(join(ROOT, "messages/zh-CN", filename)), `zh-CN:${entry.id}`).toBe(true);
+      expect(progress.pages[`${entry.collection}/${entry.slug}`] ?? progress.pages[entry.slug], entry.slug).toBe("verified");
+      const filename = `${entry.collection}/${entry.slug}.json`;
+      expect(existsSync(join(ROOT, "docs/content/en", filename)), `en:${entry.slug}`).toBe(true);
+      expect(existsSync(join(ROOT, "docs/content/zh-CN", filename)), `zh-CN:${entry.slug}`).toBe(true);
     }
   });
 });

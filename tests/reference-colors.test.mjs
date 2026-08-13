@@ -1,15 +1,15 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { referenceColors } from "../src/system/tokens/reference-colors.mjs";
+import { referenceColors } from "../packages/ui/src/tokens/reference-colors.mjs";
 import {
   colorTokens,
   supportColorTokens,
   surfaceTokens,
-} from "../src/system/tokens/semantic-tokens.mjs";
+} from "../packages/ui/src/tokens/semantic-tokens.mjs";
 
 const HEX_COLOR = /^#[0-9A-F]{6}$/;
 const semanticTokenSource = readFileSync(
-  new URL("../src/system/tokens/semantic-tokens.mjs", import.meta.url),
+  new URL("../packages/ui/src/tokens/semantic-tokens.mjs", import.meta.url),
   "utf8"
 );
 
