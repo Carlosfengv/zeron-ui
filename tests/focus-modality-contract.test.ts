@@ -57,7 +57,7 @@ describe("focus modality contract", () => {
   it("records compact-drawer final focus only for the next open session", () => {
     expect(sidebar).toContain("const finalFocusPreparedRef = useRef(false);");
     expect(sidebar).toContain("if (!finalFocusPreparedRef.current) triggerRef.current = null;");
-    expect(sidebar).toContain("if (isMobile && !mobileOpen) setActiveTrigger(event.currentTarget);");
+    expect(sidebar).toContain("if (compactDrawer && !mobileOpen) setActiveTrigger(event.currentTarget);");
     expect(sidebar).toContain("activeElement !== document.body");
   });
 

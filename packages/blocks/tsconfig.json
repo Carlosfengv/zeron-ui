@@ -3,6 +3,7 @@
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "strict": true,
+    "skipLibCheck": true,
     "noImplicitAny": false,
     "noEmit": true,
     "module": "esnext",

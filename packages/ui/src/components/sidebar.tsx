@@ -34,6 +34,7 @@ export type SidebarState = "expanded" | "collapsed";
 export type SidebarVariant = "sidebar" | "floating";
 export type SidebarCollapsible = "offcanvas" | "icon" | "none";
 export type SidebarSide = "start" | "end";
+export type SidebarBreakpointBehavior = "drawer" | "collapse";
 
 export interface SidebarProviderProps {
   children: ReactNode;
@@ -45,6 +46,8 @@ export interface SidebarProviderProps {
   onMobileOpenChange?: (open: boolean) => void;
   persistenceKey?: string;
   keyboardShortcut?: string;
+  /** How the sidebar adapts below SIDEBAR_MOBILE_QUERY. */
+  breakpointBehavior?: SidebarBreakpointBehavior;
 }
 
 export interface SidebarContextValue {
@@ -54,6 +57,7 @@ export interface SidebarContextValue {
   mobileOpen: boolean;
   setMobileOpen: (open: boolean) => void;
   isMobile: boolean;
+  breakpointBehavior: SidebarBreakpointBehavior;
   triggerRef: React.RefObject<HTMLElement | null>;
   /** Set the element that should regain focus after the next compact-drawer close. */
   setActiveTrigger: (trigger: HTMLElement | null) => void;
@@ -99,6 +103,7 @@ const SidebarProvider = ({
   onMobileOpenChange,
   persistenceKey,
   keyboardShortcut,
+  breakpointBehavior = "drawer",
 }: SidebarProviderProps) => {
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const [internalMobileOpen, setInternalMobileOpen] = useState(defaultMobileOpen);
@@ -106,9 +111,11 @@ const SidebarProvider = ({
   const finalFocusPreparedRef = useRef(false);
   const previousMobileOpenRef = useRef(defaultMobileOpen);
   const isMobile = useSidebarMobile();
-  const open = openProp ?? internalOpen;
+  const preferredOpen = openProp ?? internalOpen;
+  const open = preferredOpen && !(breakpointBehavior === "collapse" && isMobile);
   const mobileOpen = mobileOpenProp ?? internalMobileOpen;
   const mobileOpenRef = useRef(mobileOpen);
+  const state: SidebarState = open ? "expanded" : "collapsed";
 
   useEffect(() => {
     mobileOpenRef.current = mobileOpen;
@@ -140,9 +147,9 @@ const SidebarProvider = ({
   }, []);
   const closeMobile = useCallback(() => setMobileOpen(false), [setMobileOpen]);
   const toggle = useCallback(() => {
-    if (isMobile) setMobileOpen(!mobileOpen);
+    if (isMobile && breakpointBehavior === "drawer") setMobileOpen(!mobileOpen);
     else setOpen(!open);
-  }, [isMobile, mobileOpen, open, setMobileOpen, setOpen]);
+  }, [breakpointBehavior, isMobile, mobileOpen, open, setMobileOpen, setOpen]);
 
   useEffect(() => {
     const wasMobileOpen = previousMobileOpenRef.current;
@@ -169,18 +176,18 @@ const SidebarProvider = ({
   useEffect(() => {
     if (!persistenceKey || openProp !== undefined) return;
     try {
-      window.localStorage.setItem(persistenceKey, open ? "open" : "closed");
+      window.localStorage.setItem(persistenceKey, preferredOpen ? "open" : "closed");
     } catch {
       // Best-effort persistence only.
     }
-  }, [open, openProp, persistenceKey]);
+  }, [openProp, persistenceKey, preferredOpen]);
 
   useEffect(() => {
-    if (isMobile || !mobileOpen) return;
+    if (!mobileOpen || (breakpointBehavior === "drawer" && isMobile)) return;
     setMobileOpen(false);
     const trigger = triggerRef.current;
     if (trigger?.isConnected) trigger.focus();
-  }, [isMobile, mobileOpen, setMobileOpen]);
+  }, [breakpointBehavior, isMobile, mobileOpen, setMobileOpen]);
 
   useEffect(() => {
     if (!keyboardShortcut) return;
@@ -192,7 +199,7 @@ const SidebarProvider = ({
       if (isEditableTarget(event.target)) return;
       if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== key) return;
       event.preventDefault();
-      if (isMobile && !mobileOpen) {
+      if (breakpointBehavior === "drawer" && isMobile && !mobileOpen) {
         const activeElement = document.activeElement;
         setActiveTrigger(
           activeElement instanceof HTMLElement &&
@@ -206,22 +213,23 @@ const SidebarProvider = ({
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isMobile, keyboardShortcut, mobileOpen, setActiveTrigger, toggle]);
+  }, [breakpointBehavior, isMobile, keyboardShortcut, mobileOpen, setActiveTrigger, toggle]);
 
   const value = useMemo<SidebarContextValue>(
     () => ({
-      state: open ? "expanded" : "collapsed",
+      state,
       open,
       setOpen,
       mobileOpen,
       setMobileOpen,
       isMobile,
+      breakpointBehavior,
       triggerRef,
       setActiveTrigger,
       toggle,
       closeMobile,
     }),
-    [closeMobile, isMobile, mobileOpen, open, setActiveTrigger, setMobileOpen, setOpen, toggle]
+    [breakpointBehavior, closeMobile, isMobile, mobileOpen, open, setActiveTrigger, setMobileOpen, setOpen, state, toggle]
   );
 
   return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
@@ -262,7 +270,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
     },
     forwardedRef
   ) => {
-    const { state, isMobile, mobileOpen, closeMobile, triggerRef } = useSidebar();
+    const { state, isMobile, mobileOpen, closeMobile, triggerRef, breakpointBehavior } = useSidebar();
     const reduceMotion = useReducedMotion() ?? false;
     const shape = useShape();
     const contextDir = useDirection();
@@ -270,7 +278,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
     const parentSurface = useSurface();
     const surface = variant === "floating" ? resolveSurface(parentSurface, "raised") : parentSurface;
     const resolvedAriaLabel = ariaLabel ?? mobileLabel ?? "Navigation";
-    const visualState: SidebarState = isMobile || collapsible === "none" ? "expanded" : state;
+    const visualState: SidebarState = collapsible === "none" ? "expanded" : state;
     const panelWidth = visualState === "collapsed" && collapsible === "icon"
       ? "var(--sidebar-width-collapsed)"
       : "var(--sidebar-width)";
@@ -305,7 +313,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
       </aside>
     );
 
-    if (isMobile) {
+    if (isMobile && breakpointBehavior === "drawer") {
       return (
         <MobileDrawer
           open={mobileOpen}
@@ -344,11 +352,12 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
         data-collapsible={collapsible}
         data-variant={variant}
         data-side={side}
+        data-breakpoint-behavior={breakpointBehavior}
         data-mobile="false"
         className={cn(
           "group/sidebar sticky top-0 h-svh shrink-0",
           className,
-          "hidden xl:block"
+          breakpointBehavior === "drawer" ? "hidden xl:block" : "block max-xl:hidden"
         )}
         style={rootStyle}
         dir={dir}
@@ -386,11 +395,12 @@ export interface SidebarTriggerProps extends Omit<ComponentPropsWithoutRef<typeo
 
 const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
   ({ label = "Toggle sidebar", onClick, ...props }, forwardedRef) => {
-    const { isMobile, mobileOpen, state, toggle, setActiveTrigger } = useSidebar();
+    const { breakpointBehavior, isMobile, mobileOpen, state, toggle, setActiveTrigger } = useSidebar();
     const MenuIcon = useIcon("menu");
     const CollapseIcon = useIcon("chevrons-left");
     const ExpandIcon = useIcon("chevrons-right");
-    const Icon = isMobile ? MenuIcon : state === "collapsed" ? ExpandIcon : CollapseIcon;
+    const compactDrawer = breakpointBehavior === "drawer" && isMobile;
+    const Icon = compactDrawer ? MenuIcon : state === "collapsed" ? ExpandIcon : CollapseIcon;
     return (
       <Button
         ref={forwardedRef}
@@ -403,7 +413,7 @@ const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
           // Only an external closed → open trigger owns final focus. The
           // matching close button rendered inside the drawer must not replace
           // the owner with an element that is about to unmount.
-          if (isMobile && !mobileOpen) setActiveTrigger(event.currentTarget);
+          if (compactDrawer && !mobileOpen) setActiveTrigger(event.currentTarget);
           toggle();
         }}
         {...props}
@@ -425,12 +435,15 @@ export interface SidebarFloatingTriggerProps extends Omit<ComponentPropsWithoutR
   renderContent: (controls: { close: () => void }) => ReactNode;
   /** Classes for the anchored navigation popover. */
   contentClassName?: string;
+  /** Whether clicking expands the persistent sidebar or opens the floating menu. */
+  clickBehavior?: "expand" | "menu";
 }
 
 const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTriggerProps>(
   (
     {
       collapsedBehavior = "offcanvas",
+      clickBehavior = "expand",
       contentClassName,
       label = "Expand sidebar",
       renderContent,
@@ -440,16 +453,17 @@ const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTrig
     },
     forwardedRef
   ) => {
-    const { isMobile, state, toggle } = useSidebar();
+    const { breakpointBehavior, isMobile, state, toggle } = useSidebar();
     const [open, setOpen] = useState(false);
     const ExpandIcon = useIcon("chevrons-right");
-    const visible = !isMobile && state === "collapsed" && collapsedBehavior === "offcanvas";
+    const supportsBreakpointCollapse = breakpointBehavior === "collapse" && collapsedBehavior === "offcanvas";
+    const visible = state === "collapsed" && collapsedBehavior === "offcanvas" && (!isMobile || supportsBreakpointCollapse);
 
     useEffect(() => {
       if (!visible) setOpen(false);
     }, [visible]);
 
-    if (!visible) return null;
+    if (!visible && !supportsBreakpointCollapse) return null;
 
     return (
       <Popover trigger="hover" open={open} onOpenChange={setOpen}>
@@ -461,12 +475,18 @@ const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTrig
               size="icon-sm"
               aria-label={label}
               active={open}
-              className={className}
+              className={cn(
+                !visible && "hidden",
+                supportsBreakpointCollapse && state !== "collapsed" && "max-xl:inline-flex",
+                className
+              )}
               onClick={(event) => {
                 onClick?.(event);
                 if (event.defaultPrevented) return;
-                setOpen(false);
-                toggle();
+                if (clickBehavior === "expand") {
+                  setOpen(false);
+                  toggle();
+                }
               }}
               {...props}
             >

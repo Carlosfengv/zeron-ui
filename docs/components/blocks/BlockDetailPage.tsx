@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Badge } from "@zeron/ui/badge";
+import { cn } from "@zeron/ui/system/utils";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -78,7 +79,10 @@ export function BlockDetailPage({
         <div className="flex flex-col gap-3 rounded-container bg-surface-raised p-3">
           <section
             aria-label={previewText("preview")}
-            className="min-h-[32rem] min-w-0 overflow-hidden rounded-container lg:h-[clamp(36rem,70svh,52rem)]"
+            className={cn(
+              "h-[clamp(32rem,70svh,52rem)] min-w-0 overflow-hidden rounded-container",
+              previewMinHeightClass
+            )}
           >
             <ComponentPreview
               className="rounded-container"
@@ -87,7 +91,6 @@ export function BlockDetailPage({
               fill
               fullScreenable
               inspectable={false}
-              minHeightClass={previewMinHeightClass}
               padding="none"
               title={`${slug}.tsx`}
             >

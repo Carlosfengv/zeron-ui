@@ -20,7 +20,6 @@ export default function ZaiopsOperationsBlockDoc() {
       title={t("title")}
       preview={
         <ZaiopsOperations
-          className="h-full min-h-0"
           title={t("workspaceTitle")}
           description={t("workspaceDescription")}
         />

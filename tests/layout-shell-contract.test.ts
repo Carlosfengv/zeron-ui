@@ -14,6 +14,10 @@ describe("shell and page-layout composition contract", () => {
   const pageLayout = source("packages/ui/src/components/page-layout.tsx");
   const playground = source("docs/components/playground/playground.tsx");
   const rightPanel = source("docs/components/shell/site/right-panel.tsx");
+  const componentPreview = source("docs/components/content/ComponentPreview.tsx");
+  const blockDetail = source("docs/components/blocks/BlockDetailPage.tsx");
+  const topNavBlock = source("packages/blocks/src/application/top-nav-app-shell-01/top-nav-app-shell.tsx");
+  const zaiopsBlock = source("packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx");
 
   it("lets a sidebar main occupy both grid rows when the header slot is absent", () => {
     expect(appShell).toContain(
@@ -58,6 +62,30 @@ describe("shell and page-layout composition contract", () => {
     expect(appShell).toContain("landmark?: boolean;");
     expect(appShell).toContain("({ landmark = true, className, ...props }, ref) => {");
     expect(appShell).toContain('const Main = landmark ? "main" : "div";');
+  });
+
+  it("gives fill previews a definite responsive height at every breakpoint", () => {
+    expect(blockDetail).toContain('"h-[clamp(32rem,70svh,52rem)] min-w-0 overflow-hidden rounded-container"');
+    expect(blockDetail).toContain("previewMinHeightClass");
+    expect(blockDetail).not.toContain('lg:h-[clamp(36rem,70svh,52rem)]');
+    expect(componentPreview).toContain(
+      '"min-h-0 flex-1 [&>*]:h-full [&>*]:min-h-0 [&>*]:w-full [&>*]:min-w-0"'
+    );
+  });
+
+  it("makes both application blocks fill sized and flex/grid parents by default", () => {
+    expect(topNavBlock).toContain(
+      '"@container h-full w-full min-h-0 min-w-0 flex-1 self-stretch overflow-hidden'
+    );
+    expect(zaiopsBlock).toContain(
+      '"flex h-full min-h-0 w-full min-w-0 flex-1 self-stretch overflow-hidden'
+    );
+
+    const topNavDoc = source("docs/pages/blocks/top-nav-app-shell-01/page.tsx");
+    const zaiopsDoc = source("docs/pages/blocks/zaiops-operations-01/page.tsx");
+    expect(topNavDoc).toContain('<TopNavAppShell\n          className="border-0"');
+    expect(topNavDoc).not.toContain('<div className="h-full w-full">');
+    expect(zaiopsDoc).not.toContain('className="h-full min-h-0"');
   });
 
   it("keeps PageBody as a transparent content boundary", () => {

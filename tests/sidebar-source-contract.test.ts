@@ -25,6 +25,14 @@ describe("sidebar implementation contract", () => {
     expect(sidebar).toContain('data-mobile="false"');
   });
 
+  it("can derive compact offcanvas navigation from the desktop collapsed state", () => {
+    expect(sidebar).toContain('export type SidebarBreakpointBehavior = "drawer" | "collapse";');
+    expect(sidebar).toContain('breakpointBehavior = "drawer"');
+    expect(sidebar).toContain('const open = preferredOpen && !(breakpointBehavior === "collapse" && isMobile);');
+    expect(sidebar).toContain('breakpointBehavior === "drawer" ? "hidden xl:block" : "block max-xl:hidden"');
+    expect(sidebar).toContain('supportsBreakpointCollapse && state !== "collapsed" && "max-xl:inline-flex"');
+  });
+
   it("keeps compact drawer actions stable while its open state changes", () => {
     expect(sidebar).toContain("const mobileOpenRef = useRef(mobileOpen);");
     expect(sidebar).toContain("if (nextOpen && !mobileOpenRef.current)");
@@ -114,6 +122,39 @@ describe("sidebar implementation contract", () => {
     expect(zaiopsPreview).toContain("<SidebarFloatingTrigger");
     expect(zaiopsPreview).toContain('collapsedBehavior="offcanvas"');
     expect(zaiopsPreview).toContain("<ZaiopsNavigationPanel");
+  });
+
+  it("lets one floating-navigation interaction serve user and breakpoint collapse", () => {
+    expect(sidebar).toContain('clickBehavior?: "expand" | "menu";');
+    expect(sidebar).toContain('if (clickBehavior === "expand")');
+    expect(zaiopsBlock).toContain('<SidebarProvider breakpointBehavior="collapse">');
+    expect(zaiopsBlock).toContain('clickBehavior="menu"');
+    expect(zaiopsBlock).not.toContain('<div className="xl:hidden"><SidebarTrigger');
+  });
+
+  it("hydrates the platform shortcut from an invisible size-preserving placeholder", () => {
+    expect(zaiopsBlock).toContain("useSyncExternalStore(");
+    expect(zaiopsBlock).toContain("getServerPlatformShortcut");
+    expect(zaiopsBlock).toContain('className="invisible ms-auto min-w-13 justify-end"');
+    expect(zaiopsBlock).not.toContain('useState("Ctrl/⌘ K")');
+    expect(zaiopsBlock).toContain('aria-keyshortcuts="Meta+K Control+K"');
+  });
+
+  it("uses the App Router paths and one shared navigation panel", () => {
+    for (const href of [
+      "/",
+      "/clusters",
+      "/reports",
+      "/inspection-plans",
+      "/expert-skills",
+      "/knowledge-base",
+    ]) {
+      expect(zaiopsBlock).toContain(`value: "${href}"`);
+    }
+    expect(zaiopsBlock).toContain('render={<Link href={item.value} />}');
+    expect(zaiopsBlock).toContain("function OperationsNavigationPanel(");
+    expect(zaiopsBlock.match(/<OperationsNavigationPanel/g)).toHaveLength(2);
+    expect(zaiopsBlock).not.toContain("event.preventDefault();\n            setActive");
   });
 
   it("gives the collapsed ZAIops hover navigation a bordered floating surface", () => {

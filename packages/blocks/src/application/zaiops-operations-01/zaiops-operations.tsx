@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useSyncExternalStore, useState, type ReactNode } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@zeron/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
 import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
@@ -26,12 +28,26 @@ import { useIcon, type IconComponent } from "@zeron/ui/system/icon-context";
 
 type NavigationItem = { value: string; label: string; icon: IconComponent };
 
-function PlatformShortcutHint() {
-  const [label, setLabel] = useState("Ctrl/⌘ K");
+const subscribeToPlatform = () => () => undefined;
+const getServerPlatformShortcut = () => null;
+const getPlatformShortcut = () =>
+  /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ K" : "Ctrl K";
 
-  useEffect(() => {
-    setLabel(/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ K" : "Ctrl K");
-  }, []);
+function PlatformShortcutHint() {
+  const label = useSyncExternalStore(
+    subscribeToPlatform,
+    getPlatformShortcut,
+    getServerPlatformShortcut
+  );
+
+  if (!label) {
+    return (
+      <KbdGroup className="invisible ms-auto min-w-13 justify-end" aria-hidden="true">
+        <Kbd>Ctrl</Kbd>
+        <Kbd>K</Kbd>
+      </KbdGroup>
+    );
+  }
 
   return (
     <KbdGroup className="ms-auto min-w-13 justify-end" aria-label={label}>
@@ -42,24 +58,6 @@ function PlatformShortcutHint() {
 
 function OperationsSearchTrigger({ onOpen }: { onOpen: () => void }) {
   const Search = useIcon("search");
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (
-        event.defaultPrevented ||
-        event.isComposing ||
-        event.repeat ||
-        !(event.metaKey || event.ctrlKey) ||
-        event.key.toLowerCase() !== "k" ||
-        target?.closest("input, textarea, select, [contenteditable], [role=textbox]")
-      ) return;
-      event.preventDefault();
-      onOpen();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onOpen]);
 
   return (
     <Button
@@ -79,6 +77,119 @@ function OperationsSearchTrigger({ onOpen }: { onOpen: () => void }) {
   );
 }
 
+interface OperationsNavigationPanelProps {
+  activeValue: string | null;
+  organization: string;
+  onOrganizationChange: (organization: string) => void;
+  onSearchOpen: () => void;
+  onNavigate?: () => void;
+  showSidebarTrigger?: boolean;
+}
+
+function OperationsNavigationPanel({
+  activeValue,
+  organization,
+  onOrganizationChange,
+  onSearchOpen,
+  onNavigate,
+  showSidebarTrigger = false,
+}: OperationsNavigationPanelProps) {
+  const ChevronDown = useIcon("chevron-down");
+  const Home = useIcon("home");
+  const List = useIcon("list");
+  const Check = useIcon("check-square");
+  const Brain = useIcon("brain");
+  const Library = useIcon("square-library");
+  const primary: NavigationItem[] = [
+    { value: "/", label: "Overview", icon: Home },
+    { value: "/clusters", label: "Clusters", icon: List },
+    { value: "/reports", label: "Reports", icon: Check },
+  ];
+  const governance: NavigationItem[] = [
+    { value: "/inspection-plans", label: "Inspection plans", icon: Check },
+    { value: "/expert-skills", label: "Expert skills", icon: Brain },
+    { value: "/knowledge-base", label: "Knowledge base", icon: Library },
+  ];
+  const renderItem = (item: NavigationItem) => {
+    const Icon = item.icon;
+    return (
+      <NavItem key={item.value} value={item.value}>
+        <NavItemTrigger
+          render={<Link href={item.value} />}
+          className="h-control-md px-1.5 text-body data-[active=true]:text-fg-brand max-xl:min-h-11"
+          onClick={onNavigate}
+        >
+          <NavItemLeading className="group-data-[active=true]/nav-item:text-fg-brand">
+            <Icon size={16} strokeWidth={1.5} />
+          </NavItemLeading>
+          <NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent>
+        </NavItemTrigger>
+      </NavItem>
+    );
+  };
+
+  return (
+    <>
+      <SidebarHeader className="space-y-1 px-2 py-1.5">
+        <div className="flex min-w-0 items-center gap-1">
+          <DropdownMenu>
+            <DropdownTrigger
+              render={
+                <SidebarIdentityRow
+                  as="button"
+                  primary={organization}
+                  leading={<SidebarIdentityAvatar tone="brand">Z</SidebarIdentityAvatar>}
+                  trailing={<ChevronDown className="size-4" />}
+                />
+              }
+            />
+            <DropdownContent align="center" alignOffset={20} className="!w-60 !min-w-60 !max-w-60">
+              {["ZAIops Production", "Platform Engineering"].map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  className="flex h-control-md w-full items-center rounded-control px-2 text-left text-body text-fg-default transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
+                  aria-pressed={organization === name}
+                  onClick={() => onOrganizationChange(name)}
+                >
+                  {name}
+                </button>
+              ))}
+            </DropdownContent>
+          </DropdownMenu>
+          {showSidebarTrigger && <SidebarTrigger label="Collapse operations navigation" />}
+        </div>
+        <OperationsSearchTrigger onOpen={onSearchOpen} />
+      </SidebarHeader>
+      <SidebarContent contentClassName="gap-4 px-2 py-1">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <NavMenu activeValue={activeValue} keyboardNavigation="roving" aria-label="Primary navigation">
+              {primary.map(renderItem)}
+            </NavMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Inspection governance</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <NavMenu activeValue={activeValue} keyboardNavigation="roving" aria-label="Inspection governance">
+              {governance.map(renderItem)}
+            </NavMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter className="px-2 py-1.5">
+        <SidebarIdentityRow
+          primary="Carlos Feng"
+          description="Operations lead"
+          layout="two-line"
+          leading={<SidebarIdentityAvatar>CF</SidebarIdentityAvatar>}
+        />
+      </SidebarFooter>
+    </>
+  );
+}
+
 export interface ZaiopsOperationsProps {
   title?: string;
   description?: string;
@@ -94,67 +205,39 @@ export function ZaiopsOperations({
   className,
 }: ZaiopsOperationsProps) {
   const [organization, setOrganization] = useState("ZAIops Production");
-  const [active, setActive] = useState("overview");
   const [searchOpen, setSearchOpen] = useState(false);
-  const ChevronDown = useIcon("chevron-down");
+  const pathname = usePathname();
   const Home = useIcon("home");
-  const List = useIcon("list");
-  const Check = useIcon("check-square");
-  const Brain = useIcon("brain");
-  const Library = useIcon("square-library");
+  const navigationPaths = ["/", "/clusters", "/reports", "/inspection-plans", "/expert-skills", "/knowledge-base"];
+  const activeValue = navigationPaths.includes(pathname) ? pathname : null;
 
-  const primary: NavigationItem[] = [
-    { value: "overview", label: "Overview", icon: Home },
-    { value: "clusters", label: "Clusters", icon: List },
-    { value: "reports", label: "Reports", icon: Check },
-  ];
-  const governance: NavigationItem[] = [
-    { value: "plans", label: "Inspection plans", icon: Check },
-    { value: "skills", label: "Expert skills", icon: Brain },
-    { value: "knowledge", label: "Knowledge base", icon: Library },
-  ];
-  const renderItem = (item: NavigationItem) => {
-    const Icon = item.icon;
-    return (
-      <NavItem key={item.value} value={item.value}>
-        <NavItemTrigger
-          href={`#${item.value}`}
-          className="h-control-md px-1.5 text-body data-[active=true]:text-fg-brand max-xl:min-h-11"
-          onClick={(event) => {
-            event.preventDefault();
-            setActive(item.value);
-          }}
-        >
-          <NavItemLeading className="group-data-[active=true]/nav-item:text-fg-brand"><Icon size={16} strokeWidth={1.5} /></NavItemLeading>
-          <NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent>
-        </NavItemTrigger>
-      </NavItem>
-    );
-  };
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (
+        event.defaultPrevented ||
+        event.isComposing ||
+        event.repeat ||
+        !(event.metaKey || event.ctrlKey) ||
+        event.key.toLowerCase() !== "k" ||
+        target?.closest("input, textarea, select, [contenteditable], [role=textbox]")
+      ) return;
+      event.preventDefault();
+      setSearchOpen(true);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
-  const renderFloatingItem = (item: NavigationItem, close: () => void) => {
-    const Icon = item.icon;
-    return (
-      <NavItem key={item.value} value={item.value}>
-        <NavItemTrigger
-          href={`#${item.value}`}
-          className="h-control-md px-1.5 text-body data-[active=true]:text-fg-brand"
-          onClick={(event) => {
-            event.preventDefault();
-            setActive(item.value);
-            close();
-          }}
-        >
-          <NavItemLeading className="group-data-[active=true]/nav-item:text-fg-brand"><Icon size={16} strokeWidth={1.5} /></NavItemLeading>
-          <NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent>
-        </NavItemTrigger>
-      </NavItem>
-    );
+  const navigationPanelProps = {
+    activeValue,
+    organization,
+    onOrganizationChange: setOrganization,
   };
 
   return (
-    <SidebarProvider>
-      <div className={cn("flex h-full min-h-0 w-full min-w-0 overflow-hidden bg-surface-base", className)}>
+    <SidebarProvider breakpointBehavior="collapse">
+      <div className={cn("flex h-full min-h-0 w-full min-w-0 flex-1 self-stretch overflow-hidden bg-surface-base", className)}>
         <Sidebar
           width="260px"
           mobileWidth="min(260px, calc(100vw - 24px))"
@@ -162,80 +245,35 @@ export function ZaiopsOperations({
           ariaLabel="Operations navigation"
           className="relative h-full"
         >
-          <SidebarHeader className="space-y-1 px-2 py-1.5">
-            <div className="flex min-w-0 items-center gap-1">
-              <DropdownMenu>
-                <DropdownTrigger
-                  render={
-                    <SidebarIdentityRow
-                      as="button"
-                      primary={organization}
-                      leading={<SidebarIdentityAvatar tone="brand">Z</SidebarIdentityAvatar>}
-                      trailing={<ChevronDown className="size-4" />}
-                    />
-                  }
-                />
-                <DropdownContent align="center" alignOffset={20} className="!w-60 !min-w-60 !max-w-60">
-                  {["ZAIops Production", "Platform Engineering"].map((name) => (
-                    <button
-                      key={name}
-                      type="button"
-                      className="flex h-control-md w-full items-center rounded-control px-2 text-left text-body text-fg-default transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
-                      aria-pressed={organization === name}
-                      onClick={() => setOrganization(name)}
-                    >
-                      {name}
-                    </button>
-                  ))}
-                </DropdownContent>
-              </DropdownMenu>
-              <SidebarTrigger label="Toggle navigation" />
-            </div>
-            <OperationsSearchTrigger onOpen={() => setSearchOpen(true)} />
-          </SidebarHeader>
-          <SidebarContent contentClassName="gap-4 px-2 py-1">
-            <SidebarGroup>
-              <SidebarGroupContent><NavMenu activeValue={active} keyboardNavigation="roving" aria-label="Primary navigation">{primary.map(renderItem)}</NavMenu></SidebarGroupContent>
-            </SidebarGroup>
-            <SidebarGroup>
-              <SidebarGroupLabel>Inspection governance</SidebarGroupLabel>
-              <SidebarGroupContent><NavMenu activeValue={active} keyboardNavigation="roving" aria-label="Inspection governance">{governance.map(renderItem)}</NavMenu></SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-          <SidebarFooter className="px-2 py-1.5">
-            <SidebarIdentityRow primary="Carlos Feng" description="Operations lead" layout="two-line" leading={<SidebarIdentityAvatar>CF</SidebarIdentityAvatar>} />
-          </SidebarFooter>
+          <OperationsNavigationPanel
+            {...navigationPanelProps}
+            onSearchOpen={() => setSearchOpen(true)}
+            showSidebarTrigger
+          />
         </Sidebar>
         <PageLayout className="h-full min-w-0 flex-1">
           <PageHeader>
             <div className="flex min-w-0 items-center gap-2">
               <SidebarFloatingTrigger
                 collapsedBehavior="offcanvas"
-                label="Expand operations navigation"
-                contentClassName="w-60 p-1"
+                clickBehavior="menu"
+                label="Open operations navigation"
+                contentClassName="h-[min(36rem,calc(100svh-4rem))] w-[260px] max-w-[calc(100vw-12px)] p-0"
                 renderContent={({ close }) => (
-                  <div className="flex min-w-0 flex-col gap-3 py-1">
-                    <div className="px-1">
-                      <OperationsSearchTrigger onOpen={() => {
-                        close();
-                        setSearchOpen(true);
-                      }} />
-                    </div>
-                    <NavMenu activeValue={active} keyboardNavigation="roving" aria-label="Operations navigation">
-                      {primary.map((item) => renderFloatingItem(item, close))}
-                    </NavMenu>
-                    <div>
-                      <p className="px-2 pb-1.5 text-label text-fg-muted">Inspection governance</p>
-                      <NavMenu activeValue={active} keyboardNavigation="roving" aria-label="Inspection governance">
-                        {governance.map((item) => renderFloatingItem(item, close))}
-                      </NavMenu>
-                    </div>
-                  </div>
+                  <OperationsNavigationPanel
+                    {...navigationPanelProps}
+                    onNavigate={close}
+                    onSearchOpen={() => {
+                      close();
+                      setSearchOpen(true);
+                    }}
+                  />
                 )}
               />
-              <PageHeaderContent icon={Home}><nav aria-label="Breadcrumb" className="text-body text-fg-muted">ZAIops / Operations</nav></PageHeaderContent>
+              <PageHeaderContent icon={Home}>
+                <nav aria-label="Breadcrumb" className="text-body text-fg-muted">ZAIops / Operations</nav>
+              </PageHeaderContent>
             </div>
-            <div className="xl:hidden"><SidebarTrigger label="Open navigation" className="min-h-11 min-w-11" /></div>
           </PageHeader>
           <PageContent>
             <PageBody className="p-6">

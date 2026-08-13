@@ -38,7 +38,13 @@ export function TopNavAppShell({
   className,
 }: TopNavAppShellProps) {
   return (
-    <AppShell layout="stacked" className={cn("@container min-h-0 overflow-hidden border-[0.5px] border-border bg-surface-base", className)}>
+    <AppShell
+      layout="stacked"
+      className={cn(
+        "@container h-full w-full min-h-0 min-w-0 flex-1 self-stretch overflow-hidden border-[0.5px] border-border bg-surface-base",
+        className
+      )}
+    >
       <AppShellHeader>
         <TopNav navigationAlign="center" className="w-full px-3 py-1 sm:px-3">
           <TopNavBrand className="min-w-0 gap-3 text-fg-default">

@@ -364,6 +364,7 @@ const props: PropDef[] = [
   { name: "ariaLabel", type: "string", default: '"Navigation"', description: "Accessible name for the desktop aside and compact drawer." },
   { name: "side", type: '"start" | "end"', default: '"start"', description: "Logical edge used by the panel, rail, border, and drawer motion." },
   { name: "persistenceKey", type: "string", description: "Optional localStorage key for the desktop open state." },
+  { name: "breakpointBehavior", type: '"drawer" | "collapse"', default: '"drawer"', description: "Uses either the compact drawer or the same effective collapsed state below 1280px." },
   { name: "setActiveTrigger", type: "(owner: HTMLElement | null) => void", description: "For a controlled or programmatic compact-drawer open, set the final-focus owner immediately before opening. Pass null when there is no valid owner." },
 ];
 const groupProps: PropDef[] = [
@@ -377,6 +378,7 @@ const floatingTriggerProps: PropDef[] = [
   { name: "renderContent", type: "(controls: { close: () => void }) => ReactNode", description: "Renders the complete navigation inside the hover popover. Call close after an in-place navigation action." },
   { name: "label", type: "string", default: '"Expand sidebar"', description: "Accessible label for the sidebar expand icon button." },
   { name: "contentClassName", type: "string", description: "Optional classes for the navigation popover." },
+  { name: "clickBehavior", type: '"expand" | "menu"', default: '"expand"', description: "Expands the persistent sidebar or opens the same floating menu on click." },
 ];
 
 export default function SidebarDoc() {

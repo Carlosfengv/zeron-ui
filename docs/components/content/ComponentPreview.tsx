@@ -262,7 +262,12 @@ export function ComponentPreview({
             ref={previewRef}
             data-slot="component-preview-content"
             data-fullscreen={isFullscreen || undefined}
-            className={`group/preview-content relative flex ${isFullscreen || fill ? "min-h-0 flex-1" : ""} ${align === "bottom" ? "items-end" : "items-center"} justify-center ${minHeightClass} bg-surface-floating ${
+            className={cn(
+              "group/preview-content relative flex justify-center bg-surface-floating",
+              isFullscreen || fill
+                ? "min-h-0 flex-1 [&>*]:h-full [&>*]:min-h-0 [&>*]:w-full [&>*]:min-w-0"
+                : minHeightClass,
+              align === "bottom" ? "items-end" : "items-center",
               padding === "none"
                 ? "p-0"
                 : padding === "compact"
@@ -270,7 +275,7 @@ export function ComponentPreview({
                   : padding === "responsive"
                     ? "px-4 py-4 sm:px-8 sm:py-12"
                     : "px-8 py-12"
-            }`}
+            )}
           >
             {children}
           </div>
