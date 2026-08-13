@@ -154,7 +154,7 @@ export function ZaiopsOperations({
 
   return (
     <SidebarProvider>
-      <div className={cn("flex h-[min(42rem,calc(100svh-8rem))] min-h-120 w-full min-w-0 overflow-hidden bg-surface-base", className)}>
+      <div className={cn("flex h-full min-h-0 w-full min-w-0 overflow-hidden bg-surface-base", className)}>
         <Sidebar
           width="260px"
           mobileWidth="min(260px, calc(100vw - 24px))"
