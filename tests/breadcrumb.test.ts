@@ -8,11 +8,14 @@ const source = readFileSync(
 );
 
 describe("BreadcrumbPage rendering contract", () => {
-  it("renders its child label in the standard current-page branch", () => {
-    expect(source).toContain("{children}\n    </span>");
+  it("renders an optional icon before its child label in the standard current-page branch", () => {
+    expect(source).toContain("{iconSlot}\n      <span className=\"truncate\">{children}</span>");
   });
 
-  it("renders the selected resource label in the resource-switcher branch", () => {
-    expect(source).toContain('<span className="truncate">{label}</span>');
+  it("renders an optional 20px rounded icon before the resource-switcher label", () => {
+    expect(source).toContain('data-slot="breadcrumb-page-icon"');
+    expect(source).toContain("size-5");
+    expect(source).toContain("rounded");
+    expect(source).toContain("{iconSlot}\n              <span className=\"truncate\">{label}</span>");
   });
 });

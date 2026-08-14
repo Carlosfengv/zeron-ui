@@ -83,6 +83,8 @@ interface BreadcrumbResource {
 }
 
 interface BreadcrumbPageProps extends Omit<React.ComponentProps<"span">, "ref"> {
+  /** Optional 20px visual marker displayed before the current page label. */
+  icon?: React.ReactNode;
   /** Resources available at the current breadcrumb level. When supplied, the
    * current page becomes a menu trigger for switching between them. */
   resources?: readonly BreadcrumbResource[];
@@ -97,6 +99,7 @@ interface BreadcrumbPageProps extends Omit<React.ComponentProps<"span">, "ref"> 
 function BreadcrumbPage({
   children,
   className,
+  icon,
   resources,
   value,
   defaultValue,
@@ -119,6 +122,15 @@ function BreadcrumbPage({
     ? resources?.indexOf(selectedResource)
     : undefined;
   const label = selectedResource?.label ?? children;
+  const iconSlot = icon ? (
+    <span
+      aria-hidden="true"
+      className="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded [&>img]:size-full [&>img]:object-cover [&>svg]:size-full"
+      data-slot="breadcrumb-page-icon"
+    >
+      {icon}
+    </span>
+  ) : null;
 
   const cancelClose = () => {
     if (closeTimerRef.current !== null) {
@@ -163,6 +175,7 @@ function BreadcrumbPage({
               data-slot="breadcrumb-page"
               {...props}
             >
+              {iconSlot}
               <span className="truncate">{label}</span>
               <span
                 aria-hidden="true"
@@ -199,13 +212,17 @@ function BreadcrumbPage({
   return (
     <span
       aria-current="page"
-      className={cn("min-w-0 font-medium text-fg-default", className)}
+      className={cn(
+        "inline-flex min-w-0 items-center gap-1.5 font-medium text-fg-default",
+        className
+      )}
       data-slot="breadcrumb-page"
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
       {...props}
     >
-      {children}
+      {iconSlot}
+      <span className="truncate">{children}</span>
     </span>
   );
 }

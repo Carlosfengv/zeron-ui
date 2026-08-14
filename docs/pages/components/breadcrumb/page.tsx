@@ -14,6 +14,7 @@ import {
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { useIcon } from "@zeron/icons/context";
 import { useTranslations } from "next-intl";
 
 const basicCode = `import {
@@ -98,6 +99,18 @@ const [resource, setResource] = useState("atlas");
   onValueChange={setResource}
 />`;
 
+const pageIconCode = `const FileIcon = useIcon("file");
+
+<BreadcrumbPage
+  icon={
+    <span className="flex size-full items-center justify-center border-[0.5px] border-border bg-surface-raised text-fg-default">
+      <FileIcon size={14} strokeWidth={1.5} />
+    </span>
+  }
+>
+  Project settings
+</BreadcrumbPage>`;
+
 const breadcrumbProps: PropDef[] = [
   {
     name: "children",
@@ -149,7 +162,7 @@ const partProps: PropDef[] = [
   {
     name: "BreadcrumbPage",
     type: "span props + resource switcher props",
-    description: "Current page label with aria-current=page. Pass resources to switch between same-level resources.",
+    description: "Current page label with an optional 20px icon. Pass resources to switch between same-level resources.",
   },
   {
     name: "BreadcrumbSeparator",
@@ -165,6 +178,7 @@ const partProps: PropDef[] = [
 
 export default function BreadcrumbDoc() {
   const t = useTranslations("breadcrumb");
+  const FileIcon = useIcon("file");
   const [resource, setResource] = useState("atlas");
   const resources = [
     { value: "atlas", label: "Atlas" },
@@ -275,6 +289,30 @@ export default function BreadcrumbDoc() {
                   value={resource}
                   onValueChange={setResource}
                 />
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("pageIcon")}>
+        <ComponentPreview code={pageIconCode}>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#">Projects</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage
+                  icon={
+                    <span className="flex size-full items-center justify-center border-[0.5px] border-border bg-surface-raised text-fg-default">
+                      <FileIcon size={14} strokeWidth={1.5} />
+                    </span>
+                  }
+                >
+                  Project settings
+                </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
