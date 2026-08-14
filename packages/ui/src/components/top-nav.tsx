@@ -23,7 +23,7 @@ import {
   type PopoverProps,
 } from "#components/popover";
 
-const topNavVariants = cva("grid min-h-control-md min-w-0 items-center gap-3 px-4 sm:px-6", {
+const topNavVariants = cva("grid min-h-control-md min-w-0 items-center gap-3 px-3", {
   variants: {
     variant: {
       default: "",
@@ -76,7 +76,7 @@ const TopNav = forwardRef<HTMLDivElement, TopNavProps>(({ variant, navigationAli
 TopNav.displayName = "TopNav";
 
 const TopNavBrand = forwardRef<HTMLDivElement, TopNavBrandProps>(({ className, ...props }, ref) => (
-  <div ref={ref} data-slot="top-nav-brand" className={cn("flex shrink-0 items-center gap-2", className)} {...props} />
+  <div ref={ref} data-slot="top-nav-brand" className={cn("flex shrink-0 items-center gap-2 px-3", className)} {...props} />
 ));
 TopNavBrand.displayName = "TopNavBrand";
 
@@ -86,7 +86,7 @@ const TopNavNavigation = forwardRef<HTMLDivElement, TopNavNavigationProps>(({ cl
 TopNavNavigation.displayName = "TopNavNavigation";
 
 const TopNavActions = forwardRef<HTMLDivElement, TopNavActionsProps>(({ className, ...props }, ref) => (
-  <div ref={ref} data-slot="top-nav-actions" className={cn("ml-auto flex shrink-0 items-center gap-1", className)} {...props} />
+  <div ref={ref} data-slot="top-nav-actions" className={cn("ml-auto flex shrink-0 items-center gap-1 px-3", className)} {...props} />
 ));
 TopNavActions.displayName = "TopNavActions";
 

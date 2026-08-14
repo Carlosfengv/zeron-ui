@@ -174,6 +174,9 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("aligns TopNav navigation left, center, or right with center as the default", () => {
+    expect(topNav).toContain('cva("grid min-h-control-md min-w-0 items-center gap-3 px-3"');
+    expect(topNav).toContain('data-slot="top-nav-brand" className={cn("flex shrink-0 items-center gap-2 px-3"');
+    expect(topNav).toContain('data-slot="top-nav-actions" className={cn("ml-auto flex shrink-0 items-center gap-1 px-3"');
     expect(topNav).toContain('export type TopNavNavigationAlign = "left" | "center" | "right";');
     expect(topNav).toContain('left: "grid-cols-[auto_minmax(0,1fr)_auto] [&>[data-slot=top-nav-navigation]]:justify-start"');
     expect(topNav).toContain('center: "grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] [&>[data-slot=top-nav-navigation]]:justify-center"');
