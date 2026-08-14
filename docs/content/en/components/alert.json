@@ -1,5 +1,10 @@
 {
   "alert": {
+    "playground": "Playground",
+    "playAlert": "Alert",
+    "status": "Status",
+    "icon": "Icon",
+    "description": "Description",
     "basic": "Basic",
     "statuses": "Statuses",
     "action": "Action",

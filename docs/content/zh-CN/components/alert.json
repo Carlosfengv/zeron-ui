@@ -1,5 +1,10 @@
 {
   "alert": {
+    "playground": "交互预览",
+    "playAlert": "Alert",
+    "status": "状态",
+    "icon": "图标",
+    "description": "描述",
     "basic": "基础用法",
     "statuses": "状态",
     "action": "操作",

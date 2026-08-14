@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   Alert,
   AlertAction,
@@ -12,8 +14,17 @@ import { Button } from "@zeron/ui/button";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
+import { Switch } from "@zeron/ui/switch";
 import { useIcon } from "@zeron/icons/context";
 import { useTranslations } from "next-intl";
+import {
+  PLAY_SWITCH,
+  PlayField,
+  PlaySelect,
+  PlaySection,
+  PlaygroundLayout,
+  PlaygroundPanel,
+} from "@docs/components/playground/playground";
 
 const basicCode = `import {
   Alert, AlertDescription, AlertIcon, AlertTitle,
@@ -78,6 +89,145 @@ const statuses: Array<{
   },
 ];
 
+function buildAlertCode({
+  status,
+  withIcon,
+  withDescription,
+  withAction,
+}: {
+  status: AlertStatus;
+  withIcon: boolean;
+  withDescription: boolean;
+  withAction: boolean;
+}) {
+  const parts = [
+    "Alert",
+    ...(withIcon ? ["AlertIcon"] : []),
+    "AlertTitle",
+    ...(withDescription ? ["AlertDescription"] : []),
+    ...(withAction ? ["AlertAction"] : []),
+  ];
+  const imports = [`import { ${parts.join(", ")} } from "./components/alert";`];
+  if (withAction) imports.push('import { Button } from "./components/button";');
+
+  const children = [
+    ...(withIcon ? ["  <AlertIcon><InformationCircle /></AlertIcon>"] : []),
+    "  <AlertTitle>Workspace settings need review</AlertTitle>",
+    ...(withDescription
+      ? [
+          "  <AlertDescription>",
+          "    Check the latest defaults before you publish.",
+          "  </AlertDescription>",
+        ]
+      : []),
+    ...(withAction
+      ? [
+          "  <AlertAction>",
+          "    <Button size=\"sm\" variant=\"tertiary\">View details</Button>",
+          "  </AlertAction>",
+        ]
+      : []),
+  ];
+  const statusProp = status === "default" ? "" : ` status="${status}"`;
+
+  return `${imports.join("\n")}\n\n<Alert${statusProp}>\n${children.join("\n")}\n</Alert>`;
+}
+
+function AlertPlayground() {
+  const t = useTranslations("alert");
+  const InformationCircle = useIcon("doc-info-item");
+  const [status, setStatus] = useState<AlertStatus>("default");
+  const [withIcon, setWithIcon] = useState(true);
+  const [withDescription, setWithDescription] = useState(true);
+  const [withAction, setWithAction] = useState(false);
+
+  const code = buildAlertCode({
+    status,
+    withIcon,
+    withDescription,
+    withAction,
+  });
+
+  const randomize = () => {
+    const pick = <T,>(values: readonly T[]) =>
+      values[Math.floor(Math.random() * values.length)];
+
+    setStatus(pick(["default", "neutral", "info", "warning", "danger"] as const));
+    setWithIcon(Math.random() > 0.25);
+    setWithDescription(Math.random() > 0.2);
+    setWithAction(Math.random() > 0.5);
+  };
+
+  const controls = (
+    <PlaygroundPanel title={t("playground")} onShuffle={randomize}>
+      <PlaySection label={t("playAlert")} />
+      <div>
+        <PlayField label={t("status")}>
+          <PlaySelect
+            value={status}
+            onChange={(value) => setStatus(value as AlertStatus)}
+            options={[
+              { value: "default", label: "Default" },
+              { value: "neutral", label: "Neutral" },
+              { value: "info", label: "Info" },
+              { value: "warning", label: "Warning" },
+              { value: "danger", label: "Danger" },
+            ]}
+          />
+        </PlayField>
+        <Switch
+          label={t("icon")}
+          checked={withIcon}
+          onToggle={() => setWithIcon((value) => !value)}
+          className={PLAY_SWITCH}
+        />
+        <Switch
+          label={t("description")}
+          checked={withDescription}
+          onToggle={() => setWithDescription((value) => !value)}
+          className={PLAY_SWITCH}
+        />
+        <Switch
+          label={t("action")}
+          checked={withAction}
+          onToggle={() => setWithAction((value) => !value)}
+          className={PLAY_SWITCH}
+        />
+      </div>
+    </PlaygroundPanel>
+  );
+
+  return (
+    <PlaygroundLayout
+      controls={controls}
+      preview={
+        <ComponentPreview code={code} minHeightClass="min-h-[240px]">
+          <Alert status={status} className="w-full max-w-xl">
+            {withIcon && (
+              <AlertIcon>
+                <InformationCircle size={16} strokeWidth={1.75} />
+              </AlertIcon>
+            )}
+            <AlertTitle>Workspace settings need review</AlertTitle>
+            {withDescription && (
+              <AlertDescription>
+                Check the latest defaults before you publish.
+              </AlertDescription>
+            )}
+            {withAction && (
+              <AlertAction>
+                <Button size="sm" variant="tertiary">
+                  View details
+                </Button>
+              </AlertAction>
+            )}
+          </Alert>
+        </ComponentPreview>
+      }
+    />
+  );
+}
+
 export default function AlertDoc() {
   const t = useTranslations("alert");
   const InformationCircle = useIcon("doc-info-item");
@@ -121,6 +271,10 @@ export default function AlertDoc() {
       slug="alert"
       description="A composable in-context callout for default and semantic status states."
     >
+      <DocSection title={t("playground")}>
+        <AlertPlayground />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <Alert status="info" className="w-full max-w-xl">
