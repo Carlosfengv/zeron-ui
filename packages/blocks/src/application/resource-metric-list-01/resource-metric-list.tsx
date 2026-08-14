@@ -105,9 +105,9 @@ const defaultResourceMetrics = [
 
 const segmentToneClasses: Record<ResourceMetricTone, string> = {
   brand: "bg-brand",
-  warning: "bg-warning-border",
+  warning: "bg-warning",
   danger: "bg-destructive",
-  neutral: "bg-neutral-status-border",
+  neutral: "bg-neutral",
 };
 
 function ResourceIcon({ src }: { src: string }) {

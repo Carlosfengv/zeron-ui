@@ -48,9 +48,9 @@ describe("Resource Metric List 1 block contract", () => {
     expect(source).toContain("<DetailListValue");
     expect(source).toContain('className={cn(\n        "w-full max-w-[700px] gap-0 p-0 py-[3.5px]"');
     expect(source).toContain('brand: "bg-brand"');
-    expect(source).toContain('warning: "bg-warning-border"');
+    expect(source).toContain('warning: "bg-warning"');
     expect(source).toContain('danger: "bg-destructive"');
-    expect(source).toContain('neutral: "bg-neutral-status-border"');
+    expect(source).toContain('neutral: "bg-neutral"');
   });
 
   it("keeps the six designed resources while allowing inventory data replacement", () => {
