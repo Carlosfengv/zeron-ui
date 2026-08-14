@@ -7,6 +7,7 @@
     "./catalog": "./src/catalog.ts",
     "./resource-details-01": "./src/application/resource-details-01/index.ts",
     "./resource-metric-list-01": "./src/application/resource-metric-list-01/index.ts",
+    "./resource-status-all-01": "./src/application/resource-status-all-01/index.ts",
     "./top-nav-app-shell-01": "./src/application/top-nav-app-shell-01/index.ts",
     "./zaiops-operations-01": "./src/application/zaiops-operations-01/index.ts"
   },
@@ -19,7 +20,8 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "@zeron/ui": "workspace:*"
+    "@zeron/ui": "workspace:*",
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",

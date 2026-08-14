@@ -75,6 +75,27 @@
       ]
     },
     {
+      "name": "resource-status-all-01",
+      "type": "registry:block",
+      "title": "Resource Status All 1",
+      "description": "A resource-status summary with a circular distribution, detailed counts, and determinate-state coverage.",
+      "categories": ["application", "metrics"],
+      "dependencies": ["tw-animate-css", "recharts"],
+      "registryDependencies": ["card", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-status-all-01/resource-status-all.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-status-all-01/resource-status-all.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-status-all-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-status-all-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "top-nav-app-shell-01",
       "type": "registry:block",
       "title": "TopNav App Shell",

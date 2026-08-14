@@ -42,6 +42,8 @@
   --fg-on-danger: #00030A;
   --fg-on-inverse: light-dark(#FFFFFF, #00040D);
   --brand: light-dark(#0060D2, #1483FD);
+  --warning: light-dark(#FA8801, #FF9314);
+  --neutral: light-dark(#6B7075, #8B9095);
   --brand-hover: light-dark(#004DAF, #439FFD);
   --brand-active: light-dark(#003B8B, #72B9FE);
   --muted: light-dark(#F6F8FB, #2F3136);
@@ -182,6 +184,8 @@
   --color-fg-on-danger: var(--fg-on-danger);
   --color-fg-on-inverse: var(--fg-on-inverse);
   --color-brand: var(--brand);
+  --color-warning: var(--warning);
+  --color-neutral: var(--neutral);
   --color-brand-hover: var(--brand-hover);
   --color-brand-active: var(--brand-active);
   --color-muted: var(--muted);

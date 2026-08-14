@@ -1,0 +1,8 @@
+{
+  "resourceStatusAllBlock": {
+    "title": "Resource Status All 1",
+    "description": "Summarize the total resource inventory with a circular status distribution, detailed counts, and determinate-state coverage.",
+    "guidance": "Data integration",
+    "guidanceBody": "Replace defaultResourceStatuses or provide statuses and total from your inventory model. The donut, four-state summary, and coverage line are calculated from the same values; mark a status countsTowardCoverage: false when it is not determinable."
+  }
+}

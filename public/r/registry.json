@@ -24,6 +24,8 @@
           "color-fg-on-danger": "var(--fg-on-danger)",
           "color-fg-on-inverse": "var(--fg-on-inverse)",
           "color-brand": "var(--brand)",
+          "color-warning": "var(--warning)",
+          "color-neutral": "var(--neutral)",
           "color-brand-hover": "var(--brand-hover)",
           "color-brand-active": "var(--brand-active)",
           "color-muted": "var(--muted)",
@@ -105,6 +107,8 @@
           "fg-on-danger": "#00030A",
           "fg-on-inverse": "#FFFFFF",
           "brand": "#0060D2",
+          "warning": "#FA8801",
+          "neutral": "#6B7075",
           "brand-hover": "#004DAF",
           "brand-active": "#003B8B",
           "muted": "#F6F8FB",
@@ -205,6 +209,8 @@
           "fg-on-danger": "#00030A",
           "fg-on-inverse": "#00040D",
           "brand": "#1483FD",
+          "warning": "#FF9314",
+          "neutral": "#8B9095",
           "brand-hover": "#439FFD",
           "brand-active": "#72B9FE",
           "muted": "#2F3136",
@@ -1996,6 +2002,36 @@
           "path": "packages/blocks/src/application/resource-metric-list-01/assets/storage.svg",
           "type": "registry:file",
           "target": "components/blocks/resource-metric-list-01/assets/storage.svg"
+        }
+      ]
+    },
+    {
+      "name": "resource-status-all-01",
+      "type": "registry:block",
+      "title": "Resource Status All 1",
+      "description": "A resource-status summary with a circular distribution, detailed counts, and determinate-state coverage.",
+      "categories": [
+        "application",
+        "metrics"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "recharts"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-status-all-01/resource-status-all.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-status-all-01/resource-status-all.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-status-all-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-status-all-01/index.ts"
         }
       ]
     },

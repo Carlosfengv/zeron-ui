@@ -14,6 +14,13 @@ export const blockCatalog = [
     dependencies: ["detail-list"],
   },
   {
+    name: "resource-status-all-01",
+    title: "Resource Status All 1",
+    description: "A resource-status summary with a circular distribution, detailed counts, and determinate-state coverage.",
+    categories: ["application", "metrics"],
+    dependencies: ["card"],
+  },
+  {
     name: "top-nav-app-shell-01",
     title: "TopNav App Shell",
     description: "A stacked application shell with a centered TopNav and focused content area.",

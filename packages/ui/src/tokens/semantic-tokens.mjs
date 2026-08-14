@@ -59,6 +59,8 @@ export const foregroundColorTokens = classify([
 
 export const fillColorTokens = classify([
   { name: "brand", light: "#0060D2", dark: "#1483FD", usage: "主要操作和明确的选中标记" },
+  { name: "warning", light: "#FA8801", dark: "#FF9314", usage: "告警、警告和需突出可视化状态的高强调填充" },
+  { name: "neutral", light: "#6B7075", dark: "#8B9095", usage: "未知、一般状态和低强调可视化状态的填充" },
   { name: "brand-hover", light: "#004DAF", dark: "#439FFD", usage: "品牌色填充的悬停状态；须与 fg-on-brand 保持可读对比度" },
   { name: "brand-active", light: "#003B8B", dark: "#72B9FE", usage: "品牌色填充的按下或展开状态；须与 fg-on-brand 保持可读对比度" },
   { name: "muted", light: "#F6F8FB", dark: "#2F3136", usage: "弱化容器、轨道和次要区域" },

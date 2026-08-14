@@ -1,0 +1,8 @@
+{
+  "resourceStatusAllBlock": {
+    "title": "资源状态总览 1",
+    "description": "通过环形状态分布、详细数量和可判断覆盖率汇总资源总量。",
+    "guidance": "数据接入",
+    "guidanceBody": "可替换 defaultResourceStatuses，或通过 statuses 与 total 接入资源清单模型。环图、四项状态摘要和覆盖率由同一组数据计算；无法判断的状态请设置 countsTowardCoverage: false。"
+  }
+}
