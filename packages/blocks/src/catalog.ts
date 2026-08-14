@@ -1,5 +1,12 @@
 export const blockCatalog = [
   {
+    name: "resource-details-01",
+    title: "Resource Details",
+    description: "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",
+    categories: ["application", "details"],
+    dependencies: ["detail-list", "switch", "badge"],
+  },
+  {
     name: "top-nav-app-shell-01",
     title: "TopNav App Shell",
     description: "A stacked application shell with a centered TopNav and focused content area.",

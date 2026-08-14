@@ -1187,6 +1187,26 @@
       ]
     },
     {
+      "name": "detail-list",
+      "type": "registry:ui",
+      "title": "Detail List",
+      "description": "A framed, composable label-value list with grouped sections and separators for compact resource and entity details.",
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/detail-list.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/detail-list.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "input-message",
       "type": "registry:ui",
       "title": "Input Message",
@@ -1844,6 +1864,37 @@
           "path": "packages/ui/src/components/top-nav.tsx",
           "type": "registry:ui",
           "target": "components/ui/top-nav.tsx"
+        }
+      ]
+    },
+    {
+      "name": "resource-details-01",
+      "type": "registry:block",
+      "title": "Resource Details",
+      "description": "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",
+      "categories": [
+        "application",
+        "details"
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/detail-list.json",
+        "https://zeron-ui.vercel.app/r/switch.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-details-01/resource-details.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-details-01/resource-details.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-details-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-details-01/index.ts"
         }
       ]
     },

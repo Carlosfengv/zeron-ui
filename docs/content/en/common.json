@@ -110,6 +110,7 @@
       "color-picker": "Color picker with HEX/RGB/HSL/OKLCH formats, alpha, swatches, and popover trigger.",
       "data-grid": "Virtualized spreadsheet grid with inline editing, range selection, search, copy and paste, and pinned columns.",
       "data-table": "TanStack data table with sorting, filters, pagination, selection, visibility, and pinning.",
+      "detail-list": "Framed label-value list with grouped sections and separators for compact resource and entity details.",
       "dialog": "Modal dialog with smooth enter/exit animations and overlay.",
       "dropdown": "Menu-style dropdown with proximity hover and animated backgrounds.",
       "input": "Text input with three variants, four sizes, and accessible validation states.",
@@ -136,6 +137,7 @@
       "usage": "Use named icon slots without coupling application code to a source icon library.",
       "catalog": "Searchable names generated from the free icon provider's actual exports.",
       "providers": "Free and licensed icon styles, plus the boundary for optional Pro packages.",
+      "resource-details-01": "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",
       "top-nav-app-shell-01": "A stacked application shell with a centered TopNav and focused content area.",
       "zaiops-operations-01": "An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation."
     }

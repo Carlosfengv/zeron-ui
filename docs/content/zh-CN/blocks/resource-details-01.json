@@ -1,0 +1,1 @@
+{"resourceDetailsBlock":{"title":"资源详情","description":"按健康状态、配置、使用情况和 API 兼容性分组展示的资源元数据面板。","guidance":"集成边界","guidanceBody":"将供应商健康状态、配置、配额和支持的 API 路由接入资源模型。Block 负责完整场景组合，DetailList 可继续复用于其他实体详情页。"}}

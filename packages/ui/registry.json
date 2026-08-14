@@ -1187,6 +1187,26 @@
       ]
     },
     {
+      "name": "detail-list",
+      "type": "registry:ui",
+      "title": "Detail List",
+      "description": "A framed, composable label-value list with grouped sections and separators for compact resource and entity details.",
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/detail-list.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/detail-list.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "input-message",
       "type": "registry:ui",
       "title": "Input Message",

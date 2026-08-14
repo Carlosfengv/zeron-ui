@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./catalog": "./src/catalog.ts",
+    "./resource-details-01": "./src/application/resource-details-01/index.ts",
     "./top-nav-app-shell-01": "./src/application/top-nav-app-shell-01/index.ts",
     "./zaiops-operations-01": "./src/application/zaiops-operations-01/index.ts"
   },

@@ -6,6 +6,7 @@ export type DocPageModule = { default: ComponentType };
 export type DocPageLoader = () => Promise<DocPageModule>;
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "blocks/resource-details-01": () => import("@docs/pages/blocks/resource-details-01/page"),
   "blocks/top-nav-app-shell-01": () => import("@docs/pages/blocks/top-nav-app-shell-01/page"),
   "blocks/zaiops-operations-01": () => import("@docs/pages/blocks/zaiops-operations-01/page"),
   "icons/catalog": () => import("@docs/pages/icons/catalog/page"),
@@ -27,6 +28,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/container": () => import("@docs/pages/components/container/page"),
   "components/data-grid": () => import("@docs/pages/components/data-grid/page"),
   "components/data-table": () => import("@docs/pages/components/data-table/page"),
+  "components/detail-list": () => import("@docs/pages/components/detail-list/page"),
   "components/dialog": () => import("@docs/pages/components/dialog/page"),
   "components/dropdown": () => import("@docs/pages/components/dropdown/page"),
   "components/info-item": () => import("@docs/pages/components/info-item/page"),

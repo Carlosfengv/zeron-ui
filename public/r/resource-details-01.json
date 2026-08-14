@@ -1,0 +1,34 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "resource-details-01",
+  "type": "registry:block",
+  "title": "Resource Details",
+  "description": "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",
+  "dependencies": [
+    "tw-animate-css"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/badge.json",
+    "https://zeron-ui.vercel.app/r/detail-list.json",
+    "https://zeron-ui.vercel.app/r/switch.json",
+    "https://zeron-ui.vercel.app/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "packages/blocks/src/application/resource-details-01/resource-details.tsx",
+      "content": "\"use client\";\nimport { useState } from \"react\";\nimport { Badge } from \"@ui/badge\";\nimport { DetailList, DetailListItem, DetailListLabel, DetailListSection, DetailListSectionLabel, DetailListSeparator, DetailListValue, } from \"@ui/detail-list\";\nimport { Switch } from \"@ui/switch\";\nimport { cn } from \"@lib/utils\";\nexport interface ResourceDetailsProps {\n    className?: string;\n    defaultEnabled?: boolean;\n}\nfunction HealthHistory() {\n    return (<div className=\"flex shrink-0 items-center gap-1 py-0.5\" role=\"img\" aria-label=\"11 successful health checks in the last hour\">\n      {Array.from({ length: 11 }, (_, index) => (<span key={index} aria-hidden=\"true\" className=\"size-2.5 rounded-full border border-success-border bg-success-surface\"/>))}\n    </div>);\n}\n/** Complete resource-detail recipe based on the Zentirx gateway provider panel. */\nexport function ResourceDetails({ className, defaultEnabled = true }: ResourceDetailsProps) {\n    const [enabled, setEnabled] = useState(defaultEnabled);\n    return (<DetailList className={cn(\"w-full max-w-[400px]\", className)}>\n      <DetailListItem>\n        <DetailListLabel>健康状态 (最近1小时)</DetailListLabel>\n        <DetailListValue className=\"max-w-none\">\n          <HealthHistory />\n        </DetailListValue>\n      </DetailListItem>\n\n      <DetailListSeparator />\n\n      <DetailListItem>\n        <DetailListLabel>开启</DetailListLabel>\n        <DetailListValue className=\"max-w-none\">\n          <Switch label=\"开启资源供应商\" checked={enabled} onToggle={() => setEnabled((current) => !current)} className=\"p-0 [&>span:last-child]:sr-only\"/>\n        </DetailListValue>\n      </DetailListItem>\n      <DetailListItem>\n        <DetailListLabel>模型供应商</DetailListLabel>\n        <DetailListValue>DeepSeek</DetailListValue>\n      </DetailListItem>\n      <DetailListItem>\n        <DetailListLabel>API 端点</DetailListLabel>\n        <DetailListValue className=\"font-mono text-label break-all\">\n          https://api.deepseek.com\n        </DetailListValue>\n      </DetailListItem>\n      <DetailListItem>\n        <DetailListLabel>Provider 版本</DetailListLabel>\n        <DetailListValue className=\"font-mono text-label\">anthropic:v1</DetailListValue>\n      </DetailListItem>\n      <DetailListItem>\n        <DetailListLabel>可用性探查方式</DetailListLabel>\n        <DetailListValue>探活端点</DetailListValue>\n      </DetailListItem>\n      <DetailListItem>\n        <DetailListLabel>最近探查</DetailListLabel>\n        <DetailListValue>3 分钟前</DetailListValue>\n      </DetailListItem>\n      <DetailListItem>\n        <DetailListLabel>连通性延迟</DetailListLabel>\n        <DetailListValue className=\"max-w-none\">\n          <Badge color=\"lime\" size=\"sm\" className=\"px-1.5\">\n            <span className=\"flex items-center gap-1\">\n              <span aria-hidden=\"true\" className=\"size-1.5 rounded-full bg-fg-success\"/>\n              11 ms\n            </span>\n          </Badge>\n        </DetailListValue>\n      </DetailListItem>\n      <DetailListItem>\n        <DetailListLabel>更新时间</DetailListLabel>\n        <DetailListValue className=\"tabular-nums\">2026 06-21 12:32:12</DetailListValue>\n      </DetailListItem>\n\n      <DetailListSeparator />\n\n      <DetailListSection aria-labelledby=\"resource-usage-label\">\n        <DetailListSectionLabel id=\"resource-usage-label\">使用情况</DetailListSectionLabel>\n        <DetailListItem>\n          <DetailListLabel>当前已用</DetailListLabel>\n          <DetailListValue className=\"tabular-nums\">12.1 M</DetailListValue>\n        </DetailListItem>\n      </DetailListSection>\n\n      <DetailListSeparator />\n\n      <DetailListSection aria-labelledby=\"resource-api-format-label\">\n        <DetailListSectionLabel id=\"resource-api-format-label\">API 格式</DetailListSectionLabel>\n        <DetailListItem>\n          <DetailListLabel>兼容性</DetailListLabel>\n          <DetailListValue className=\"text-fg-default\">标准兼容（推荐）</DetailListValue>\n        </DetailListItem>\n        <DetailListItem>\n          <DetailListLabel>OpenAI Chat</DetailListLabel>\n          <DetailListValue className=\"font-mono text-label\">/v1/chat/completions</DetailListValue>\n        </DetailListItem>\n        <DetailListItem>\n          <DetailListLabel>OpenAI Responses</DetailListLabel>\n          <DetailListValue className=\"font-mono text-label\">/v1/responses</DetailListValue>\n        </DetailListItem>\n        <DetailListItem>\n          <DetailListLabel>Anthropic Messages</DetailListLabel>\n          <DetailListValue className=\"font-mono text-label\">/v1/messages</DetailListValue>\n        </DetailListItem>\n      </DetailListSection>\n    </DetailList>);\n}\n",
+      "type": "registry:component",
+      "target": "components/blocks/resource-details-01/resource-details.tsx"
+    },
+    {
+      "path": "packages/blocks/src/application/resource-details-01/index.ts",
+      "content": "export { ResourceDetails } from \"./resource-details\";\nexport type { ResourceDetailsProps } from \"./resource-details\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/resource-details-01/index.ts"
+    }
+  ],
+  "categories": [
+    "application",
+    "details"
+  ]
+}

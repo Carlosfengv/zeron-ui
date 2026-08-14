@@ -3,6 +3,27 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "resource-details-01",
+      "type": "registry:block",
+      "title": "Resource Details",
+      "description": "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",
+      "categories": ["application", "details"],
+      "dependencies": ["tw-animate-css"],
+      "registryDependencies": ["badge", "detail-list", "switch", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-details-01/resource-details.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-details-01/resource-details.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-details-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-details-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "top-nav-app-shell-01",
       "type": "registry:block",
       "title": "TopNav App Shell",
