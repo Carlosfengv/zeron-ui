@@ -204,7 +204,9 @@ function BreadcrumbPage({
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
       {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
