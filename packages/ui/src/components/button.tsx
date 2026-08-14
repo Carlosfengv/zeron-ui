@@ -34,6 +34,7 @@ const buttonVariants = cva(
         sm: "h-control-xs px-3 text-label gap-1",
         md: "h-control-sm px-4 text-body gap-1.5",
         lg: "h-control-md px-5 text-body gap-1.5",
+        "icon-xs": "size-control-xs p-0 [&_svg]:size-3.5",
         "icon-sm": "h-control-sm w-8 p-0 [&_svg]:h-3.5 [&_svg]:w-3.5",
         icon: "h-control-md w-9 p-0 [&_svg]:h-4 [&_svg]:w-4",
         "icon-lg": "h-control-lg w-10 p-0 [&_svg]:h-5 [&_svg]:w-5",
@@ -122,12 +123,16 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           }>)
         : null;
     const label = asChildElement ? asChildElement.props.children : children;
-    const isIconOnly = size === "icon" || size === "icon-sm" || size === "icon-lg";
+    const isIconOnly =
+      size === "icon" ||
+      size === "icon-xs" ||
+      size === "icon-sm" ||
+      size === "icon-lg";
     const iconSize = size === "sm" ? 14 : size === "lg" ? 20 : 16;
     // Spinner box tracks the button height (sm is h-control-xs, lg/icon are h-control-md, …) so
     // the loading glyph stays proportionate across sizes.
     const spinnerSizeClass =
-      size === "sm"
+      size === "sm" || size === "icon-xs"
         ? "h-control-xs w-7"
         : size === "lg" || size === "icon"
           ? "h-control-md w-9"

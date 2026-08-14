@@ -18,6 +18,7 @@ function intentFor(name) {
   if (name.includes("brand")) return "brand";
   if (name.includes("danger") || name.includes("destructive")) return "danger";
   if (name.includes("warning")) return "warning";
+  if (name.includes("success")) return "success";
   if (name.includes("info")) return "info";
   if (name.includes("neutral-status")) return "neutral-status";
   if (name.includes("selection")) return "selection";
@@ -48,6 +49,7 @@ export const foregroundColorTokens = classify([
   { name: "fg-brand", light: "#0060D2", dark: "#72B9FE", usage: "普通承载面上的品牌色链接、文字和图标；不得用于品牌色填充之上" },
   { name: "fg-danger", light: "#B0140C", dark: "#FEBEAC", usage: "普通承载面上的错误、失败或危险文字和图标；不得用于危险操作填充之上" },
   { name: "fg-warning", light: "#A74A00", dark: "#FFDDA1", usage: "普通承载面上的警告文字和图标；不得用于警告操作填充之上" },
+  { name: "fg-success", light: "#176B3A", dark: "#9DE7B4", usage: "普通承载面上的成功、完成或正向结果文字和图标；不得用于高强调操作填充之上" },
   { name: "fg-info", light: "#004DAF", dark: "#A1D2FE", usage: "普通承载面上的说明、提示和信息文字与图标；不得用于信息填充之上" },
   { name: "fg-neutral-status", light: "#555B61", dark: "#C7CBCE", usage: "普通承载面上的中性状态文字和图标；不得用于高强调操作填充之上" },
   { name: "fg-on-brand", light: neutral[0], dark: "#00040D", usage: "品牌色默认、悬停和按下填充上的文字与图标；须与对应填充配对使用" },
@@ -70,6 +72,7 @@ export const fillColorTokens = classify([
   { name: "destructive-active", light: "#FA8F78", dark: "#FD9983", usage: "危险操作填充的按下状态；须与 fg-on-danger 保持可读对比度" },
   { name: "danger-surface", light: "#FEF2ED", dark: "#6D090B", usage: "错误、失败和风险信息的低强调背景" },
   { name: "warning-surface", light: "#FFF8EA", dark: "#531D00", usage: "警告信息的低强调背景" },
+  { name: "success-surface", light: "#EAF8EF", dark: "#123B25", usage: "成功、完成和正向结果信息的低强调背景" },
   { name: "info-surface", light: "#EAF5FE", dark: "#002D6E", usage: "说明、提示和信息反馈的低强调背景" },
   { name: "neutral-status-surface", light: "#F9F9F9", dark: "#31353B", usage: "一般状态信息的低强调背景" },
   { name: "scrim", light: "rgb(0 0 0 / 0.4)", dark: "rgb(0 0 0 / 0.8)", usage: "抽屉和对话框背后的遮罩层" },
@@ -85,6 +88,7 @@ export const boundaryColorTokens = classify([
   { name: "input-hover", light: "rgb(23 23 23 / 0.24)", dark: "rgb(245 245 245 / 0.24)", usage: "输入和选择控件的悬停边界；在静止边界之上提供临时反馈" },
   { name: "danger-border", light: "#F73920", dark: "#FC4932", usage: "错误、失败和风险状态的边界；在普通与 Danger Surface 上保持 3:1 非文本对比度" },
   { name: "warning-border", light: "#D06700", dark: "#FF9314", usage: "警告状态的边界；在普通与 Warning Surface 上保持 3:1 非文本对比度" },
+  { name: "success-border", light: "#23864B", dark: "#55C779", usage: "成功、完成和正向结果状态的边界；在普通与 Success Surface 上保持 3:1 非文本对比度" },
   { name: "info-border", light: "#0060D2", dark: "#1483FD", usage: "说明、提示和信息状态的边界；在普通与 Info Surface 上保持 3:1 非文本对比度" },
   { name: "neutral-status-border", light: "#6B7075", dark: "#8B9095", usage: "一般状态信息的边界；在普通与 Neutral Status Surface 上保持 3:1 非文本对比度" },
   { name: "focus-ring", light: "#6088E8", dark: "#6088E8", usage: "可见焦点指示器；Action 通常在键盘焦点时显示，文本编辑控件可在指针聚焦后显示；与品牌色保持独立并在全部承载面上保持 3:1 非文本对比度" },

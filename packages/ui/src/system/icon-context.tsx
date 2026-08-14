@@ -175,6 +175,7 @@ export type IconName =
   | "doc-table"
   | "doc-tabs"
   | "doc-tooltip"
+  | "doc-toast"
   | "doc-ask-user-questions"
   | "doc-chat-message"
   | "doc-input-message"

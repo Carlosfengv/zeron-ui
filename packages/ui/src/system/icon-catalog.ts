@@ -165,6 +165,7 @@ export function createIconMap(
     "doc-table": createHugeIcon(icons.Table01Icon, options),
     "doc-tabs": createHugeIcon(icons.ViewAgendaIcon, options),
     "doc-tooltip": createHugeIcon(icons.BubbleChatPreviewIcon, options),
+    "doc-toast": createHugeIcon(icons.Notification01Icon, options),
     "doc-ask-user-questions": createHugeIcon(icons.UserQuestion01Icon, options),
     "doc-chat-message": createHugeIcon(icons.BubbleChatIcon, options),
     "doc-input-message": createHugeIcon(icons.MessageEdit01Icon, options),

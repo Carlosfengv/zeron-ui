@@ -357,9 +357,9 @@ export default function SemanticTokensPage() {
     ...tokenRows(fillColorTokens, ["selection"]),
   ];
   const feedbackRows = [
-    ...tokenRows(fillColorTokens, ["danger-surface", "warning-surface", "info-surface", "neutral-status-surface"]),
-    ...tokenRows(foregroundColorTokens, ["fg-danger", "fg-warning", "fg-info", "fg-neutral-status"]),
-    ...tokenRows(boundaryColorTokens, ["danger-border", "warning-border", "info-border", "neutral-status-border"]),
+    ...tokenRows(fillColorTokens, ["danger-surface", "warning-surface", "success-surface", "info-surface", "neutral-status-surface"]),
+    ...tokenRows(foregroundColorTokens, ["fg-danger", "fg-warning", "fg-success", "fg-info", "fg-neutral-status"]),
+    ...tokenRows(boundaryColorTokens, ["danger-border", "warning-border", "success-border", "info-border", "neutral-status-border"]),
   ];
   const runtimeBrandRows: TokenRow[] = ["brand", "brand-hover", "brand-active", "fg-brand", "fg-on-brand"].map((name) => {
     const values = activeBrandTheme?.semantic[name as "brand" | "brand-hover" | "brand-active" | "fg-brand" | "fg-on-brand"];
@@ -445,7 +445,7 @@ export default function SemanticTokensPage() {
             <ChoiceCard title={t("textChoice")} body={t("textChoiceBody")} token="color/fg/*" />
             <ChoiceCard title={t("actionsChoice")} body={t("actionsChoiceBody")} token="color/brand + selection/background" />
             <ChoiceCard title={t("boundariesChoice")} body={t("boundariesChoiceBody")} token="color/border + focus/ring" />
-            <ChoiceCard title={t("feedbackChoice")} body={t("feedbackChoiceBody")} token="danger/* + warning/*" />
+            <ChoiceCard title={t("feedbackChoice")} body={t("feedbackChoiceBody")} token="success/* + danger/* + warning/*" />
           </div>
         </section>
 
@@ -473,6 +473,7 @@ export default function SemanticTokensPage() {
             { scenario: t("dangerAction"), tokens: "destructive + fg-on-danger" },
             { scenario: t("dangerAlert"), tokens: "danger-surface + fg-danger + danger-border" },
             { scenario: t("warningAlert"), tokens: "warning-surface + fg-warning + warning-border" },
+            { scenario: t("successAlert"), tokens: "success-surface + fg-success + success-border" },
             { scenario: t("tooltip"), tokens: "inverse-background + fg-on-inverse" },
           ]} />
         </DocSection>

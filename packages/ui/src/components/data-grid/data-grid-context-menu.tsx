@@ -2,7 +2,7 @@
 
 import type { ColumnDef, TableMeta } from "@tanstack/react-table";
 import * as React from "react";
-import { toast } from "sonner";
+import { toast } from "#components/toast";
 import { useAsRef } from "#hooks/use-as-ref";
 import { parseCellKey } from "#system/data-grid";
 import { createIconSlot } from "#system/icon-context";

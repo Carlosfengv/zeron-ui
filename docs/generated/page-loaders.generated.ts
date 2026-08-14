@@ -51,6 +51,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/tabs": () => import("@docs/pages/components/tabs/page"),
   "components/thinking-indicator": () => import("@docs/pages/components/thinking-indicator/page"),
   "components/thinking-steps": () => import("@docs/pages/components/thinking-steps/page"),
+  "components/toast": () => import("@docs/pages/components/toast/page"),
   "components/tooltip": () => import("@docs/pages/components/tooltip/page"),
   "components/top-nav": () => import("@docs/pages/components/top-nav/page"),
 };

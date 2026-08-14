@@ -124,6 +124,7 @@
       "switch": "Toggle switch with animated thumb and label.",
       "table": "Data table with row hover effects and semantic markup.",
       "tabs": "Pill, segment, and underline tabs with a sliding active indicator.",
+      "toast": "Animated notification stack with statuses, automatic dismissal, actions, and drag gestures.",
       "tooltip": "Floating tooltip with spring-based animations and configurable placement.",
       "ask-user-questions": "Stepped question flow with single/multi-select, optional 'other' input, and skip.",
       "chat-message": "Chat transcript bubble with baked-in motion, user/assistant alignment, and file attachments.",

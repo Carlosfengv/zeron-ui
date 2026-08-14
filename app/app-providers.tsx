@@ -3,6 +3,7 @@ import { BrandPlaygroundProvider } from "@docs/components/playground/brand-playg
 import { SidebarLayout } from "@docs/components/shell/site/sidebar-layout";
 import { IconProvider } from "@zeron/icons/context";
 import { ThemeProvider } from "@zeron/ui/system/theme-context";
+import { Toaster } from "@zeron/ui/toast";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -11,6 +12,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         <ThemeProvider>
           <BrandPlaygroundProvider>
             <SidebarLayout>{children}</SidebarLayout>
+            <Toaster />
           </BrandPlaygroundProvider>
         </ThemeProvider>
       </IconProvider>

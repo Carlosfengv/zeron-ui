@@ -150,6 +150,7 @@ describe("semantic token generation", () => {
         "fg-brand",
         "fg-danger",
         "fg-warning",
+        "fg-success",
       ]) {
         const foreground = tokenByName(foregroundColorTokens, name)[mode];
         for (const surface of surfaceTokens) {
@@ -209,6 +210,10 @@ describe("semantic token generation", () => {
         ...surfaceTokens,
         tokenByName(fillColorTokens, "warning-surface"),
       ],
+      "success-border": [
+        ...surfaceTokens,
+        tokenByName(fillColorTokens, "success-surface"),
+      ],
     };
 
     for (const mode of ["light", "dark"]) {
@@ -224,10 +229,11 @@ describe("semantic token generation", () => {
     }
   });
 
-  it("publishes complete danger, warning, info, and neutral status bundles", () => {
+  it("publishes complete danger, warning, success, info, and neutral status bundles", () => {
     const statusBundles = [
       ["danger-surface", "fg-danger", "danger-border"],
       ["warning-surface", "fg-warning", "warning-border"],
+      ["success-surface", "fg-success", "success-border"],
       ["info-surface", "fg-info", "info-border"],
       ["neutral-status-surface", "fg-neutral-status", "neutral-status-border"],
     ];
@@ -276,6 +282,7 @@ describe("semantic token generation", () => {
       "fg-brand",
       "fg-danger",
       "fg-warning",
+      "fg-success",
       "fg-info",
       "fg-neutral-status",
       "fg-on-brand",

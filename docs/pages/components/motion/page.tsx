@@ -71,6 +71,7 @@ const REFERENCE_TIERS = [
       { label: "Switch thumb",            slug: "/docs/components/switch" },
       { label: "Accordion",               slug: "/docs/components/accordion" },
       { label: "Chat bubbles",            slug: "/docs/components/chat-message" },
+      { label: "Toast",                   slug: "/docs/components/toast" },
       { label: "Mobile drawer",           slug: null },
       { label: "Selection merge / split", slug: "/docs/components/checkbox-group" },
     ],

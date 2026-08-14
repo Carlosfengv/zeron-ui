@@ -35,6 +35,7 @@
   --fg-brand: light-dark(#0060D2, #72B9FE);
   --fg-danger: light-dark(#B0140C, #FEBEAC);
   --fg-warning: light-dark(#A74A00, #FFDDA1);
+  --fg-success: light-dark(#176B3A, #9DE7B4);
   --fg-info: light-dark(#004DAF, #A1D2FE);
   --fg-neutral-status: light-dark(#555B61, #C7CBCE);
   --fg-on-brand: light-dark(#FFFFFF, #00040D);
@@ -54,6 +55,7 @@
   --destructive-active: light-dark(#FA8F78, #FD9983);
   --danger-surface: light-dark(#FEF2ED, #6D090B);
   --warning-surface: light-dark(#FFF8EA, #531D00);
+  --success-surface: light-dark(#EAF8EF, #123B25);
   --info-surface: light-dark(#EAF5FE, #002D6E);
   --neutral-status-surface: light-dark(#F9F9F9, #31353B);
   --scrim: light-dark(rgb(0 0 0 / 0.4), rgb(0 0 0 / 0.8));
@@ -66,6 +68,7 @@
   --input-hover: light-dark(rgb(23 23 23 / 0.24), rgb(245 245 245 / 0.24));
   --danger-border: light-dark(#F73920, #FC4932);
   --warning-border: light-dark(#D06700, #FF9314);
+  --success-border: light-dark(#23864B, #55C779);
   --info-border: light-dark(#0060D2, #1483FD);
   --neutral-status-border: light-dark(#6B7075, #8B9095);
   --focus-ring: #6088E8;
@@ -166,6 +169,7 @@
   --color-fg-brand: var(--fg-brand);
   --color-fg-danger: var(--fg-danger);
   --color-fg-warning: var(--fg-warning);
+  --color-fg-success: var(--fg-success);
   --color-fg-info: var(--fg-info);
   --color-fg-neutral-status: var(--fg-neutral-status);
   --color-fg-on-brand: var(--fg-on-brand);
@@ -185,6 +189,7 @@
   --color-destructive-active: var(--destructive-active);
   --color-danger-surface: var(--danger-surface);
   --color-warning-surface: var(--warning-surface);
+  --color-success-surface: var(--success-surface);
   --color-info-surface: var(--info-surface);
   --color-neutral-status-surface: var(--neutral-status-surface);
   --color-scrim: var(--scrim);
@@ -197,6 +202,7 @@
   --color-input-hover: var(--input-hover);
   --color-danger-border: var(--danger-border);
   --color-warning-border: var(--warning-border);
+  --color-success-border: var(--success-border);
   --color-info-border: var(--info-border);
   --color-neutral-status-border: var(--neutral-status-border);
   --color-focus-ring: var(--focus-ring);

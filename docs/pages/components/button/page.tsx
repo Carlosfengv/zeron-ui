@@ -22,7 +22,7 @@ import {
 function getButtonProps(t: ReturnType<typeof useTranslations>): PropDef[] {
   return [
     { name: "variant", type: '"primary" | "neutral" | "destructive" | "secondary" | "tertiary" | "ghost"', default: '"primary"', description: t("visualStyle") },
-    { name: "size", type: '"sm" | "md" | "lg" | "icon-sm" | "icon" | "icon-lg"', default: '"md"', description: t("buttonSize") },
+    { name: "size", type: '"sm" | "md" | "lg" | "icon-xs" | "icon-sm" | "icon" | "icon-lg"', default: '"md"', description: t("buttonSize") },
     { name: "loading", type: "boolean", default: "false", description: t("loadingDescription") },
     { name: "active", type: "boolean", default: "false", description: t("activeDescription") },
     { name: "leadingIcon", type: "IconComponent", description: t("leadingIconDescription") },
@@ -427,6 +427,7 @@ const Plus = useIcon("plus");
 <Button size="lg">Large</Button>
 
 // ${t("iconButtonSizes")}
+<Button size="icon-xs"><Plus /></Button>
 <Button size="icon-sm"><Plus /></Button>
 <Button size="icon"><Plus /></Button>
 <Button size="icon-lg"><Plus /></Button>`;
@@ -487,6 +488,7 @@ const Loader = useIcon("loader");
             </DemoGroup>
             <DemoGroup label={t("iconButtonSizes")}>
               <div className="flex flex-wrap items-center gap-2">
+                <Button size="icon-xs"><Plus /></Button>
                 <Button size="icon-sm"><Plus /></Button>
                 <Button size="icon"><Plus /></Button>
                 <Button size="icon-lg"><Plus /></Button>

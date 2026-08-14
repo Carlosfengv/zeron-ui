@@ -310,8 +310,9 @@ secondary-action   + fg-default
 inverse-background + fg-on-inverse
 \`\`\`
 
-状态信息不使用高强调“Warning 操作”填充：错误状态组合 \`danger-surface + fg-danger + danger-border\`；
-警告状态组合 \`warning-surface + fg-warning + warning-border\`。
+状态信息不使用高强调操作填充：错误状态组合 \`danger-surface + fg-danger + danger-border\`；
+警告状态组合 \`warning-surface + fg-warning + warning-border\`；成功状态组合
+\`success-surface + fg-success + success-border\`。
 
 \`brand\` 与 \`focus-ring\` 是两个独立语义。运行时修改品牌色不得同时修改焦点环。
 自定义品牌色时，必须以完整配色包的方式覆盖 \`brand / brand-hover / brand-active / fg-on-brand / fg-brand\`；
@@ -323,7 +324,7 @@ ${table(["CSS 令牌", "浅色", "深色", "分类", "用途"], boundaryRows)}
 
 - 表单和选择控件使用 \`input / input-hover\`。
 - 卡片、分隔线和普通容器使用 \`border\`；更轻的紧凑边界使用 \`border-subtle\`。
-- 无效状态使用 \`danger-border\`；警告状态使用 \`warning-border\`；焦点环始终使用独立的 \`focus-ring\` 语义。
+- 无效状态使用 \`danger-border\`；警告状态使用 \`warning-border\`；成功状态使用 \`success-border\`；焦点环始终使用独立的 \`focus-ring\` 语义。
 
 ## 叠加颜色（Overlay）
 

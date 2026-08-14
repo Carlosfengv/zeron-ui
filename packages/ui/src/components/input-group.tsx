@@ -131,7 +131,12 @@ const InputGroupButton = forwardRef<HTMLButtonElement, InputGroupButtonProps>(
     },
     ref
   ) => {
-    const buttonSize = size === "icon-xs" || size === "icon-sm" ? "icon-sm" : "sm";
+    const buttonSize =
+      size === "icon-xs"
+        ? "icon-xs"
+        : size === "icon-sm"
+          ? "icon-sm"
+          : "sm";
 
     return (
       <Button

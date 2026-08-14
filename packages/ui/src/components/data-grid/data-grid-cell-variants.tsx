@@ -3,7 +3,7 @@
 "use client";
 
 import * as React from "react";
-import { toast } from "sonner";
+import { toast } from "#components/toast";
 import { useBadgeOverflow } from "#hooks/use-badge-overflow";
 import { useDebouncedCallback } from "#hooks/use-debounced-callback";
 import {

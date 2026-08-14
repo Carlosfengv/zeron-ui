@@ -176,7 +176,9 @@ describe("semantic color consumers", () => {
     }
 
     const inputGroup = read(join(UI_ROOT, "input-group.tsx"));
+    const button = read(join(UI_ROOT, "button.tsx"));
     const shortcuts = read(join(UI_ROOT, "data-grid/data-grid-keyboard-shortcuts.tsx"));
+    expect(button).toContain('"icon-xs": "size-control-xs');
     expect(inputGroup).toContain('xs: "h-control-xs');
     expect(inputGroup).toContain('"icon-xs": "size-control-xs');
     expect(shortcuts).toContain('className="h-control-sm pl-8"');
@@ -215,5 +217,15 @@ describe("semantic color consumers", () => {
     expect(colors).toContain("var(--danger-surface)");
     expect(colors).toContain("var(--info-surface)");
     expect(colors).toContain("var(--neutral-status-surface)");
+  });
+
+  it("keeps toast actions and success feedback on shared system APIs", () => {
+    const toast = read(join(UI_ROOT, "toast.tsx"));
+
+    expect(toast).toContain('import { Button } from "#components/button"');
+    expect(toast).toContain('size="icon-xs"');
+    expect(toast).not.toContain("<button");
+    expect(toast).toContain("bg-success-surface text-fg-success");
+    expect(toast).not.toContain("color-mix(");
   });
 });
