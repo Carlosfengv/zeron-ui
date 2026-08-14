@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "button-group",
+  "type": "registry:ui",
+  "title": "Button Group",
+  "description": "Composable horizontal and vertical groups for connected actions, split buttons, icon toolbars, and contextual addons.",
+  "dependencies": [
+    "class-variance-authority",
+    "tw-animate-css"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/utils.json",
+    "https://zeron-ui.vercel.app/r/button.json"
+  ],
+  "files": [
+    {
+      "path": "packages/ui/src/components/button-group.tsx",
+      "content": "\"use client\";\nimport { forwardRef, type HTMLAttributes, } from \"react\";\nimport { cva, type VariantProps } from \"class-variance-authority\";\nimport { cn } from \"@lib/utils\";\nconst buttonGroupVariants = cva([\n    \"flex w-fit max-w-full items-stretch\",\n    \"[&>*]:relative [&>*:focus-visible]:z-control\",\n], {\n    variants: {\n        orientation: {\n            horizontal: [\n                \"flex-row\",\n                \"[&>*:not(:first-child)]:rounded-l-none\",\n                \"[&>*:not(:first-child)]:border-l-0\",\n                \"[&>*:not(:first-child)>[data-slot=button-background]]:border-l-0\",\n                \"[&>*:not(:last-child)]:rounded-r-none\",\n            ],\n            vertical: [\n                \"flex-col\",\n                \"[&>*:not(:first-child)]:rounded-t-none\",\n                \"[&>*:not(:first-child)]:border-t-0\",\n                \"[&>*:not(:first-child)>[data-slot=button-background]]:border-t-0\",\n                \"[&>*:not(:last-child)]:rounded-b-none\",\n            ],\n        },\n    },\n    defaultVariants: {\n        orientation: \"horizontal\",\n    },\n});\ninterface ButtonGroupProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof buttonGroupVariants> {\n}\nconst ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({ className, orientation = \"horizontal\", role = \"group\", ...props }, ref) => (<div ref={ref} role={role} data-orientation={orientation} data-slot=\"button-group\" className={cn(buttonGroupVariants({ orientation }), className)} {...props}/>));\nButtonGroup.displayName = \"ButtonGroup\";\ntype ButtonGroupTextProps = HTMLAttributes<HTMLDivElement>;\nconst ButtonGroupText = forwardRef<HTMLDivElement, ButtonGroupTextProps>(({ className, ...props }, ref) => (<div ref={ref} data-slot=\"button-group-text\" className={cn(\"inline-flex items-center justify-center gap-1.5 rounded-lg border border-border bg-muted px-3 text-body text-fg-muted shadow-control\", className)} {...props}/>));\nButtonGroupText.displayName = \"ButtonGroupText\";\ninterface ButtonGroupSeparatorProps extends HTMLAttributes<HTMLDivElement> {\n    orientation?: \"horizontal\" | \"vertical\";\n}\nconst ButtonGroupSeparator = forwardRef<HTMLDivElement, ButtonGroupSeparatorProps>(({ className, orientation = \"vertical\", ...props }, ref) => (<div ref={ref} role=\"separator\" aria-orientation={orientation} data-orientation={orientation} data-slot=\"button-group-separator\" className={cn(\"pointer-events-none self-stretch bg-border\", orientation === \"vertical\" ? \"w-px\" : \"h-px\", className)} {...props}/>));\nButtonGroupSeparator.displayName = \"ButtonGroupSeparator\";\nexport { ButtonGroup, ButtonGroupSeparator, ButtonGroupText, buttonGroupVariants, };\nexport type { ButtonGroupProps, ButtonGroupSeparatorProps, ButtonGroupTextProps, };\n",
+      "type": "registry:ui",
+      "target": "components/ui/button-group.tsx"
+    }
+  ]
+}

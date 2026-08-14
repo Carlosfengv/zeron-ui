@@ -43,6 +43,7 @@ import {
   BreadcrumbSeparator,
 } from "@zeron/ui/breadcrumb";
 import { Button } from "@zeron/ui/button";
+import { ButtonGroup } from "@zeron/ui/button-group";
 import { Checkbox } from "@zeron/ui/checkbox";
 import {
   CheckboxGroup,
@@ -148,6 +149,24 @@ function BadgePreview() {
         </Badge>
       ))}
     </div>
+  );
+}
+
+function ButtonGroupPreview() {
+  const { pencil: Pencil, copy: Copy, "file-archive": Archive } = useIcons();
+
+  return (
+    <ButtonGroup aria-label="Document actions">
+      <Button variant="tertiary" size="icon-sm" aria-label="Edit">
+        <Pencil />
+      </Button>
+      <Button variant="tertiary" size="icon-sm" aria-label="Duplicate">
+        <Copy />
+      </Button>
+      <Button variant="tertiary" size="icon-sm" aria-label="Archive">
+        <Archive />
+      </Button>
+    </ButtonGroup>
   );
 }
 
@@ -765,6 +784,7 @@ export const previewMap: Record<string, React.FC> = {
   "badge-overflow": BadgeOverflowPreview,
   breadcrumb: BreadcrumbPreview,
   button: ButtonPreview,
+  "button-group": ButtonGroupPreview,
   checkbox: CheckboxPreview,
   "checkbox-group": CheckboxGroupPreview,
   "color-picker": ColorPickerPreview,

@@ -147,6 +147,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <>
         <span
           aria-hidden
+          data-slot="button-background"
           className={cn(
             "absolute inset-0 rounded-[inherit] transition-[background-color,transform] duration-fast group-active:scale-[0.98]",
             bgClass

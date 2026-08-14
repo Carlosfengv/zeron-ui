@@ -718,6 +718,28 @@
       }
     },
     {
+      "name": "button-group",
+      "type": "registry:ui",
+      "title": "Button Group",
+      "description": "Composable horizontal and vertical groups for connected actions, split buttons, icon toolbars, and contextual addons.",
+      "dependencies": [
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "button"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/button-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/button-group.tsx"
+        }
+      ]
+    },
+    {
       "name": "data-table",
       "type": "registry:ui",
       "title": "Data Table",

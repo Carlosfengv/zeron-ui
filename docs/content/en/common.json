@@ -104,6 +104,7 @@
       "badge-overflow": "Responsive badge list that collapses hidden items into an overflow count.",
       "breadcrumb": "Composable path navigation with separators, current-page state, and collapsed levels.",
       "button": "Buttons trigger actions and move people through a task. Choose a variant by priority and intent, not color alone.",
+      "button-group": "Connect related actions into a compact horizontal or vertical control without changing their button semantics.",
       "card": "shadcn's compositional card, dressed in Zeron Design — stacked, inline, and grid layouts, borderless dividers, and 2-D proximity hover.",
       "container": "Composable raised container with an optional header and footer around a floating content body.",
       "checkbox": "Compact checkbox with checked, mixed, disabled, validation, and form states.",

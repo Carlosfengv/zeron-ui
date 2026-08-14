@@ -21,6 +21,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/badge-overflow": () => import("@docs/pages/components/badge-overflow/page"),
   "components/breadcrumb": () => import("@docs/pages/components/breadcrumb/page"),
   "components/button": () => import("@docs/pages/components/button/page"),
+  "components/button-group": () => import("@docs/pages/components/button-group/page"),
   "components/card": () => import("@docs/pages/components/card/page"),
   "components/chat-message": () => import("@docs/pages/components/chat-message/page"),
   "components/checkbox": () => import("@docs/pages/components/checkbox/page"),
