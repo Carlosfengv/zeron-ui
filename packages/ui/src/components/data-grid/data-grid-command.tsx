@@ -22,7 +22,7 @@ function Command({
     <CommandPrimitive
       data-slot="command"
       className={cn(
-        "flex h-full w-full flex-col overflow-hidden rounded-control bg-surface-floating text-fg-default",
+        "flex h-full w-full flex-col overflow-hidden rounded-lg bg-surface-floating text-fg-default",
         className,
       )}
       {...props}
@@ -67,7 +67,7 @@ function CommandInput({
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
-          "flex h-10 w-full rounded-control bg-transparent py-3 text-body outline-hidden placeholder:text-fg-muted disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-10 w-full rounded-lg bg-transparent py-3 text-body outline-hidden placeholder:text-fg-muted disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
         {...props}
@@ -141,7 +141,7 @@ function CommandItem({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "relative flex cursor-default select-none items-center gap-2 rounded-control px-2 py-1.5 text-body outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-selection data-[selected=true]:text-fg-default data-[disabled=true]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-fg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "relative flex cursor-default select-none items-center gap-2 rounded-lg px-2 py-1.5 text-body outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-selection data-[selected=true]:text-fg-default data-[disabled=true]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-fg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className,
       )}
       {...props}

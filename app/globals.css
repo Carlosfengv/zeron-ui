@@ -116,11 +116,6 @@
   --control-height-md: 2.25rem;
   --control-height-lg: 2.5rem;
   --control-height-xl: 2.75rem;
-  --control-radius: 8px;
-  --focus-radius: 10px;
-  --selection-radius: 8px;
-  --container-radius: 12px;
-  --full-radius: 9999px;
   --layer-underlay: -10;
   --layer-base: 0;
   --layer-decoration: 1;
@@ -239,11 +234,6 @@
   --spacing-control-md: var(--control-height-md);
   --spacing-control-lg: var(--control-height-lg);
   --spacing-control-xl: var(--control-height-xl);
-  --radius-control: var(--control-radius);
-  --radius-focus: var(--focus-radius);
-  --radius-selection: var(--selection-radius);
-  --radius-container: var(--container-radius);
-  --radius-full: var(--full-radius);
 
   /* Reserved for the canonical-shadcn comparison page only. */
   --color-primary: var(--primary);
@@ -318,8 +308,7 @@ p {
 html.transitioning *,
 html.transitioning *::before,
 html.transitioning *::after {
-  transition: border-radius 180ms ease-in-out,
-              background-color 180ms ease-in-out,
+  transition: background-color 180ms ease-in-out,
               color 180ms ease-in-out,
               border-color 180ms ease-in-out,
               fill 180ms ease-in-out,
@@ -331,24 +320,22 @@ html.transitioning *::after {
    token ring as the components instead of the UA default, which follows the
    OS accent color. Lives in @layer base so `outline-none` (utilities layer)
    still wins — components that draw their own ring aren't double-ringed,
-   and elements with their own radius utility keep it. The radius rides
-   --shape-input-radius (published by ShapeProvider) so the ring corners
-   match the borderless select in both shape modes; 8px = the rounded-mode
-   default for pre-hydration paint. Enforced by the focus-ring lint rule in
-   eslint.config.mjs. */
+   and elements with their own radius utility keep it. The fallback uses
+   Tailwind's native large radius, matching controls without a separate shape
+   token. Enforced by the focus-ring lint rule in eslint.config.mjs. */
 @layer base {
   :focus-visible {
     outline: 1px solid var(--focus-ring, #6B97FF);
     outline-offset: 2px;
-    border-radius: var(--shape-input-radius, 8px);
+    border-radius: var(--radius-lg);
   }
 
-  /* Prose links are inline text boxes — the shape-system radius reads
-     pill-ish at text height, so their ring takes a tight 2px corner
+  /* Prose links are inline text boxes, so their ring takes a tight native
+     extra-small corner
      instead. Component links (NavItem, Button asChild) carry their own
      radius utilities, which win over this base-layer rule. */
   a:focus-visible {
-    border-radius: 2px;
+    border-radius: var(--radius-xs);
   }
 }
 

@@ -30,7 +30,7 @@ function Checkbox({
     <CheckboxPrimitive.Root
       checked={checked === "indeterminate" ? false : checked}
       className={cn(
-        "peer relative inline-flex size-5 shrink-0 cursor-pointer appearance-none items-center justify-center rounded-control border border-input bg-transparent p-0 text-fg-on-brand outline-none transition-[border-color,background-color,box-shadow,opacity,transform] duration-moderate active:scale-[.92] motion-reduce:active:scale-100",
+        "peer relative inline-flex size-5 shrink-0 cursor-pointer appearance-none items-center justify-center rounded-lg border border-input bg-transparent p-0 text-fg-on-brand outline-none transition-[border-color,background-color,box-shadow,opacity,transform] duration-moderate active:scale-[.92] motion-reduce:active:scale-100",
         "data-unchecked:hover:border-input-hover",
         "data-checked:border-brand data-checked:bg-brand data-indeterminate:border-brand data-indeterminate:bg-brand",
         "focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",

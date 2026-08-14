@@ -35,7 +35,7 @@ export function RemovableColorPickerExample() {
     <button
       type="button"
       onClick={() => setColor("#6B97FF")}
-      className="text-label text-fg-muted hover:text-fg-default border border-dashed border-border px-3 h-9 rounded-control cursor-pointer"
+      className="text-label text-fg-muted hover:text-fg-default border border-dashed border-border px-3 h-9 rounded-lg cursor-pointer"
     >
       + Add fill
     </button>

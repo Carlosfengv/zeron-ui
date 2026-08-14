@@ -253,7 +253,7 @@ function PlayText({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       aria-label={ariaLabel}
-      className="h-7 w-[124px] rounded-control bg-transparent px-2 text-right text-label text-fg-default transition-colors duration-fast hover:bg-hover focus:bg-hover outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
+      className="h-7 w-[124px] rounded-lg bg-transparent px-2 text-right text-label text-fg-default transition-colors duration-fast hover:bg-hover focus:bg-hover outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
     />
   );
 }

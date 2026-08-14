@@ -19,7 +19,6 @@ import { Menu } from "@base-ui/react/menu";
 import { NumberField } from "@base-ui/react/number-field";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import { SurfaceProvider } from "#system/surface-context";
 import { surfaceClasses } from "#system/surface-classes";
 import { useIcon } from "#system/icon-context";
@@ -434,7 +433,6 @@ function SaturationSquare({ h, s, v, onChange }: SaturationSquareProps) {
   const [focused, setFocused] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(null);
-  const shape = useShape();
 
   const updateFromPointer = useCallback(
     (clientX: number, clientY: number) => {
@@ -522,7 +520,7 @@ function SaturationSquare({ h, s, v, onChange }: SaturationSquareProps) {
       onKeyDown={onKeyDown}
       className={cn(
         "relative w-full select-none touch-none cursor-none outline-none",
-        shape.bg
+        "rounded-lg"
       )}
       style={{
         height: SQUARE_HEIGHT,
@@ -532,7 +530,7 @@ function SaturationSquare({ h, s, v, onChange }: SaturationSquareProps) {
       <div
         className={cn(
           "absolute inset-0 overflow-hidden",
-          shape.bg
+          "rounded-lg"
         )}
         style={{
           background: `linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${h}, 100%, 50%))`,
@@ -685,7 +683,6 @@ function FormatItem({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const menuCtx = useContext(FormatMenuContext);
-  const shape = useShape();
 
   useEffect(() => {
     menuCtx?.registerItem(index, ref.current);
@@ -705,7 +702,7 @@ function FormatItem({
           data-proximity-index={index}
           className={cn(
             `relative z-content flex items-center px-3 py-2 text-body cursor-pointer outline-none`,
-            shape.item
+            "rounded-lg"
           )}
         />
       }
@@ -746,7 +743,6 @@ function FormatDropdown({
   const isControlled = openProp !== undefined;
   const open = isControlled ? openProp : internalOpen;
   const actionsRef = useRef<{ unmount: () => void; close: () => void } | null>(null);
-  const shape = useShape();
   const portalContainer = useContext(ColorPickerPortalContainerContext);
   const fullscreenPortal = usePortalContainer();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -815,7 +811,7 @@ function FormatDropdown({
         className={cn(
           "flex items-center justify-between gap-2 h-control-md px-3 text-body bg-transparent hover:bg-hover hover:text-fg-default transition-colors duration-fast outline-none focus-visible:ring-1 focus-visible:ring-focus-ring cursor-pointer",
           open ? "bg-active text-fg-default" : "text-fg-muted active:bg-active",
-          shape.input,
+          "rounded-lg",
           "font-medium"
         )}
       >
@@ -893,14 +889,14 @@ function FormatDropdown({
                   setActiveIndex(null);
                 }}
                 className={cn(
-                  `relative flex flex-col gap-0.5 min-w-[var(--anchor-width)] ${shape.container} p-1 select-none outline-none`
+                  `relative flex flex-col gap-0.5 min-w-[var(--anchor-width)] rounded-xl p-1 select-none outline-none`
                 )}
               >
                 {/* Selected background */}
                 <AnimatePresence>
                   {checkedRect && (
                     <motion.div
-                      className={`absolute ${shape.bg} bg-active pointer-events-none`}
+                      className={`absolute rounded-lg bg-active pointer-events-none`}
                       initial={false}
                       animate={{
                         top: checkedRect.top,
@@ -923,7 +919,7 @@ function FormatDropdown({
                   {activeRect && (
                     <motion.div
                       key={sessionRef.current}
-                      className={`absolute ${shape.bg} bg-hover pointer-events-none`}
+                      className={`absolute rounded-lg bg-hover pointer-events-none`}
                       initial={{
                         opacity: 0,
                         top: checkedRect?.top ?? activeRect.top,
@@ -951,13 +947,13 @@ function FormatDropdown({
                 <AnimatePresence>
                   {focusRect && (
                     <motion.div
-                      className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
+                      className={`absolute rounded-lg pointer-events-none z-raised outline outline-1 outline-focus-ring outline-offset-2`}
                       initial={false}
                       animate={{
-                        left: focusRect.left - 2,
-                        top: focusRect.top - 2,
-                        width: focusRect.width + 4,
-                        height: focusRect.height + 4,
+                        left: focusRect.left,
+                        top: focusRect.top,
+                        width: focusRect.width,
+                        height: focusRect.height,
                       }}
                       exit={{ opacity: 0, transition: spring.fast.exit }}
                       transition={{
@@ -1050,7 +1046,6 @@ const TextColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
   ) => {
     const [draft, setDraft] = useState(value);
     const interactingRef = useRef(false);
-    const shape = useShape();
 
     useEffect(() => {
       if (!interactingRef.current) setDraft(value);
@@ -1085,7 +1080,7 @@ const TextColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
       <div
         className={cn(
           "flex items-center h-control-md px-2 bg-transparent hover:bg-hover active:bg-active transition-colors duration-fast has-[[data-slot=color-input-control]:focus-visible]:ring-1 has-[[data-slot=color-input-control]:focus-visible]:ring-focus-ring select-none",
-          shape.input,
+          "rounded-lg",
           className
         )}
         style={{ width }}
@@ -1168,7 +1163,6 @@ const ScrubColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
     },
     ref
   ) => {
-    const shape = useShape();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [editing, setEditing] = useState(false);
     // Set on pointerdown inside the scrub area (capture phase, before Base UI
@@ -1261,7 +1255,7 @@ const ScrubColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
         format={format}
         className={cn(
           "flex items-center h-control-md bg-transparent hover:bg-hover active:bg-active transition-colors duration-fast has-[[data-slot=color-input-control]:focus-visible]:ring-1 has-[[data-slot=color-input-control]:focus-visible]:ring-focus-ring select-none",
-          shape.input,
+          "rounded-lg",
           className
         )}
         style={{ width }}
@@ -1383,7 +1377,6 @@ interface EyeDropperGlobal {
 
 function EyeDropperButton({ onPick }: { onPick: (hex: string) => void }) {
   const [supported, setSupported] = useState(false);
-  const shape = useShape();
   const PipetteIcon = useIcon("pipette");
 
   useEffect(() => {
@@ -1410,7 +1403,7 @@ function EyeDropperButton({ onPick }: { onPick: (hex: string) => void }) {
       aria-label="Pick color from screen"
       className={cn(
         "flex items-center justify-center h-control-md px-3 text-fg-muted bg-transparent hover:bg-hover hover:text-fg-default active:bg-active transition-colors duration-fast outline-none focus-visible:ring-1 focus-visible:ring-focus-ring cursor-pointer",
-        shape.input
+        "rounded-lg"
       )}
     >
       <PipetteIcon size={16} strokeWidth={1.5} />
@@ -1430,10 +1423,9 @@ interface ColorTileProps {
 }
 
 function ColorTile({ color, size = 24, className, style }: ColorTileProps) {
-  const shape = useShape();
   return (
     <span
-      className={cn("inline-block relative shrink-0 overflow-hidden", shape.bg, className)}
+      className={cn("inline-block relative shrink-0 overflow-hidden", "rounded-lg", className)}
       style={{
         width: size,
         height: size,
@@ -1456,7 +1448,6 @@ function ColorTile({ color, size = 24, className, style }: ColorTileProps) {
 
 const ColorSwatch = forwardRef<HTMLButtonElement, ColorSwatchProps>(
   ({ color, size = 28, selected, className, onMouseEnter, onMouseLeave, ...props }, ref) => {
-    const shape = useShape();
     const [hovered, setHovered] = useState(false);
     const ring = selected
       ? "inset 0 0 0 1px rgba(127,127,127,0.25), 0 0 0 2px var(--surface-base), 0 0 0 4px var(--focus-ring)"
@@ -1470,7 +1461,7 @@ const ColorSwatch = forwardRef<HTMLButtonElement, ColorSwatchProps>(
         aria-label={`Select color ${color}`}
         className={cn(
           "relative shrink-0 overflow-hidden cursor-pointer outline-none transition-shadow duration-100",
-          shape.bg,
+          "rounded-lg",
           className
         )}
         style={{
@@ -1690,7 +1681,6 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
     const solidG = Math.round(solidHueRgb.g);
     const solidB = Math.round(solidHueRgb.b);
     const solidColorString = `rgb(${solidR}, ${solidG}, ${solidB})`;
-    const shape = useShape();
     // Both inline and popover pickers use the floating surface. Re-provide the
     // effective role so descendants (FormatDropdown, etc.) elevate above it.
     const pickerSurface = "floating";
@@ -1702,7 +1692,7 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
           className={cn(
             "flex flex-col gap-2 p-3",
             surfaceClasses(pickerSurface, "floating"),
-            shape.container,
+            "rounded-xl",
             className,
           )}
           style={{ width: PANEL_WIDTH }}
@@ -1962,7 +1952,6 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
     const [panelEl, setPanelEl] = useState<HTMLDivElement | null>(null);
     const portalContainer = useContext(ColorPickerPortalContainerContext);
     const fullscreenPortal = usePortalContainer();
-    const shape = useShape();
     const surface = "floating";
 
     const handleOpenChange = useCallback(
@@ -2026,7 +2015,7 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
             }
             className={cn(
               "flex items-center gap-2 h-control-md px-2 border border-border bg-transparent hover:bg-hover transition-colors duration-fast outline-none focus-visible:ring-1 focus-visible:ring-focus-ring cursor-pointer",
-              shape.input,
+              "rounded-lg",
               "font-medium",
               triggerClassName
             )}
@@ -2059,7 +2048,7 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
               }}
               className={cn(
                 "-ml-px flex h-control-md w-control-md items-center justify-center border border-border bg-transparent text-fg-muted transition-colors duration-fast hover:bg-hover hover:text-fg-default focus-visible:z-10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring cursor-pointer",
-                shape.input
+                "rounded-lg"
               )}
             >
               <XIcon size={14} strokeWidth={1.5} />

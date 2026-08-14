@@ -6,7 +6,6 @@ import {
   registryCssVars,
   renderDocumentation,
   renderGlobalsBlock,
-  renderRuntimeTokens,
 } from "../scripts/generate-semantic-tokens.mjs";
 import {
   colorTokens,
@@ -361,8 +360,21 @@ describe("semantic token generation", () => {
     }
   });
 
-  it("keeps generated runtime radius values in sync", () => {
-    expect(read("packages/ui/src/system/design-tokens.ts")).toBe(renderRuntimeTokens());
+  it("uses Tailwind's native radius scale instead of generated shape tokens", () => {
+    const globals = renderGlobalsBlock();
+    const cssVars = JSON.stringify(registryCssVars());
+    const documentation = renderDocumentation();
+
+    expect(semanticTokens).not.toHaveProperty("radiusRoles");
+    expect(semanticTokens).not.toHaveProperty("shapeModes");
+    expect(globals).not.toMatch(/--(?:control|focus|selection|container|full)-radius/);
+    expect(cssVars).not.toMatch(/radius-(?:control|focus|selection|container|full)/);
+    expect(documentation).toContain("`rounded-lg`");
+    expect(documentation).toContain("`rounded-xl`");
+    expect(read("packages/ui/package.json")).not.toContain("shape-context");
+    expect(read("packages/ui/package.json")).not.toContain("design-tokens");
+    expect(JSON.stringify(registry)).not.toContain("shape-context");
+    expect(read("app/app-providers.tsx")).not.toContain("ShapeProvider");
   });
 
   it("keeps the semantic token documentation in sync", () => {

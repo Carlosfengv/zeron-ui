@@ -159,7 +159,7 @@ describe("sidebar implementation contract", () => {
 
   it("gives the collapsed ZAIops hover navigation a bordered floating surface", () => {
     expect(zaiopsPreview).toContain(
-      'rounded-container border-[0.5px] border-border-subtle p-0 shadow-floating',
+      'rounded-xl border-[0.5px] border-border-subtle p-0 shadow-floating',
     );
   });
 

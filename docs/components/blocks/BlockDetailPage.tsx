@@ -76,16 +76,16 @@ export function BlockDetailPage({
           <DocPager prev={prev} next={next} />
         </header>
 
-        <div className="flex flex-col gap-3 rounded-container bg-surface-raised p-3">
+        <div className="flex flex-col gap-3 rounded-xl bg-surface-raised p-3">
           <section
             aria-label={previewText("preview")}
             className={cn(
-              "h-[clamp(32rem,70svh,52rem)] min-w-0 overflow-hidden rounded-container",
+              "h-[clamp(32rem,70svh,52rem)] min-w-0 overflow-hidden rounded-xl",
               previewMinHeightClass
             )}
           >
             <ComponentPreview
-              className="rounded-container"
+              className="rounded-xl"
               code={code}
               browserFrame
               fill
@@ -98,7 +98,7 @@ export function BlockDetailPage({
             </ComponentPreview>
           </section>
 
-          <aside className="rounded-container bg-surface-floating px-5 py-6 sm:px-6 lg:px-8 lg:py-8">
+          <aside className="rounded-xl bg-surface-floating px-5 py-6 sm:px-6 lg:px-8 lg:py-8">
             <header className="border-b border-border pb-6">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge color="blue">{blockCatalog.length} blocks</Badge>

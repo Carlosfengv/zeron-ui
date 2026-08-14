@@ -32,12 +32,8 @@
     "light": "Light",
     "dark": "Dark",
     "brand": "Brand",
-    "radius": "Radius",
-    "rounded": "Rounded",
-    "pill": "Pill",
     "icons": "Icons",
-    "pressToCycle": "Press {key} to cycle",
-    "pressToToggle": "Press {key} to toggle"
+    "pressToCycle": "Press {key} to cycle"
   },
   "askUser": {
     "skip": "Skip",

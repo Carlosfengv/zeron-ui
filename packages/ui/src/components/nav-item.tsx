@@ -15,7 +15,6 @@ import {
 import { useRender } from "@base-ui/react/use-render";
 import { cn } from "#system/utils";
 import { useIcon } from "#system/icon-context";
-import { useShape } from "#system/shape-context";
 import { Button } from "#components/button";
 import { Tooltip } from "#components/tooltip";
 import { useNavMenuOptional } from "#components/nav-menu";
@@ -48,7 +47,6 @@ const NavItem = forwardRef<HTMLElement, NavItemProps>(
     const id = useId();
     const itemRef = useRef<HTMLElement | null>(null);
     const navMenu = useNavMenuOptional();
-    const shape = useShape();
     const registerItem = navMenu?.registerItem;
     const active = activeProp ?? (navMenu?.activeValue === value);
     const rovingTabIndex =
@@ -74,7 +72,7 @@ const NavItem = forwardRef<HTMLElement, NavItemProps>(
       !navMenu && [
         "transition-colors duration-fast hover:bg-hover",
         active && "bg-active",
-        shape.item,
+        "rounded-lg",
       ],
       className
     );
@@ -123,7 +121,6 @@ const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
     const { active, disabled, rovingTabIndex } = useNavItem();
     const navMenu = useNavMenuOptional();
     const variant = navMenu?.variant ?? "default";
-    const shape = useShape();
     const trigger = useRender({
       defaultTagName: "a",
       props: {
@@ -161,7 +158,7 @@ const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
               ? "data-[active=true]:font-semibold data-[active=true]:text-fg-on-brand"
               : "data-[active=true]:text-fg-default",
             !navMenu && "focus-visible:ring-1 focus-visible:ring-focus-ring",
-            variant !== "underline" && shape.item,
+            variant !== "underline" && "rounded-lg",
             className
           ),
           ...props,

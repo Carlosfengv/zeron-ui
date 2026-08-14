@@ -18,7 +18,6 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import { useIcon, type IconComponent } from "#system/icon-context";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 
@@ -119,7 +118,6 @@ const CardGroup = forwardRef<HTMLDivElement, CardGroupProps>(
     ref
   ) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const shape = useShape();
 
     // >1 column wraps into a grid, where nearest-item must be resolved in two
     // dimensions; a single column is a plain vertical list.
@@ -198,7 +196,7 @@ const CardGroup = forwardRef<HTMLDivElement, CardGroupProps>(
             "relative grid",
             // A shared frame clips the highlight + dividers to its rounded
             // corners; separated tiles clip themselves.
-            outlined && !separated && `border border-border-subtle overflow-hidden ${shape.container}`,
+            outlined && !separated && `border border-border-subtle overflow-hidden rounded-xl`,
             separated ? "gap-2" : "gap-0",
             className
           )}
@@ -216,7 +214,7 @@ const CardGroup = forwardRef<HTMLDivElement, CardGroupProps>(
               <motion.div
                 key={sessionRef.current}
                 aria-hidden
-                className={cn("absolute bg-hover pointer-events-none z-base", shape.container)}
+                className={cn("absolute bg-hover pointer-events-none z-base", "rounded-xl")}
                 initial={{
                   opacity: 0,
                   top: activeRect.top,
@@ -286,7 +284,6 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     ref
   ) => {
     const internalRef = useRef<HTMLDivElement>(null);
-    const shape = useShape();
     const group = useContext(CardGroupContext);
     const XIcon = useIcon("x");
 
@@ -350,9 +347,9 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     // hug, so it stays unclipped and its media reads as a plain square, and a
     // card in a continuous block leans on the shared group frame for both.
     const tileShape = !group
-      ? cn(shape.container, "overflow-hidden")
+      ? cn("rounded-xl", "overflow-hidden")
       : separated && outlined
-        ? cn(shape.container, "overflow-hidden border border-border-subtle")
+        ? cn("rounded-xl", "overflow-hidden border border-border-subtle")
         : "";
 
     // Stretched overlay makes the whole card the click target while keeping
@@ -444,7 +441,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           {selected && (
             <span
               aria-hidden
-              className={cn("absolute inset-0 z-underlay bg-active pointer-events-none", shape.container)}
+              className={cn("absolute inset-0 z-underlay bg-active pointer-events-none", "rounded-xl")}
             />
           )}
 
@@ -480,7 +477,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
               aria-label="Dismiss"
               className={cn(
                 "absolute right-2 top-2 z-action flex h-control-xs w-7 items-center justify-center text-fg-muted hover:text-fg-default hover:bg-hover cursor-pointer outline-none transition-colors duration-fast focus-visible:ring-1 focus-visible:ring-focus-ring",
-                shape.button
+                "rounded-lg"
               )}
             >
               <XIcon size={15} strokeWidth={1.5} />
@@ -661,7 +658,6 @@ interface CardMediaProps {
 
 function CardMedia({ logo, logoAlt, icon: Icon, size = 22, className }: CardMediaProps) {
   const { orientation } = useContext(CardContext);
-  const shape = useShape();
   // Stacked: sits in the header grid; add an extra 8px so the gap below the
   // icon reads 12px (header gap-1 + mb-2). Inline: leading slot — the card owns
   // the left inset, so no extra padding here.
@@ -683,7 +679,7 @@ function CardMedia({ logo, logoAlt, icon: Icon, size = 22, className }: CardMedi
               alt={logoAlt ?? ""}
               width={size}
               height={size}
-              className={cn("object-contain", shape.bg)}
+              className={cn("object-contain", "rounded-lg")}
               style={{ width: size, height: size }}
             />
           </span>
@@ -700,7 +696,7 @@ function CardMedia({ logo, logoAlt, icon: Icon, size = 22, className }: CardMedi
         data-slot="card-media"
         className={cn(
           "inline-flex items-center justify-center shrink-0 size-8 bg-hover",
-          shape.bg,
+          "rounded-lg",
           wrap
         )}
       >
@@ -724,7 +720,6 @@ interface CardImageProps {
 
 function CardImage({ src, alt, className }: CardImageProps) {
   const { orientation } = useContext(CardContext);
-  const shape = useShape();
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -735,7 +730,7 @@ function CardImage({ src, alt, className }: CardImageProps) {
       // portalled cards remain visually aligned when the shape theme changes.
       className={cn(
         "object-cover",
-        shape.container,
+        "rounded-xl",
         orientation === "inline"
           ? "size-40 shrink-0"
           : "w-full aspect-[16/9]",
@@ -840,7 +835,6 @@ function CardButton({
   external = false,
   disabled = false,
 }: CardButtonProps) {
-  const shape = useShape();
   const ArrowRight = useIcon("arrow-right");
   const position = iconPosition ?? (external ? "end" : "start");
 
@@ -873,7 +867,7 @@ function CardButton({
     "transition-colors duration-fast",
     "focus-visible:ring-1 focus-visible:ring-focus-ring",
     "disabled:opacity-50 disabled:pointer-events-none",
-    shape.button,
+    "rounded-lg",
     CARD_BUTTON_VARIANTS[variant]
   );
 

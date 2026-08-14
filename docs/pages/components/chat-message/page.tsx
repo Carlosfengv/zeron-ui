@@ -6,7 +6,6 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useIcon } from "@zeron/icons/context";
-import { useShape } from "@zeron/ui/system/shape-context";
 import { cn } from "@zeron/ui/system/utils";
 import { useTranslations } from "next-intl";
 
@@ -15,12 +14,11 @@ import { useTranslations } from "next-intl";
 // the buttons carry no behaviour in the docs demo.
 function MessageActions({ from }: { from: "user" | "assistant" }) {
   const t = useTranslations("chatMessage");
-  const shape = useShape();
   const CopyIcon = useIcon("copy");
   const SecondIcon = useIcon(from === "user" ? "pencil" : "rotate-ccw");
   const btn = cn(
     "inline-flex size-6 items-center justify-center text-fg-muted/60 hover:text-fg-default hover:bg-hover transition-colors duration-100 cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
-    shape.button
+    "rounded-lg"
   );
   return (
     <>

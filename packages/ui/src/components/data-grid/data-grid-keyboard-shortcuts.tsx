@@ -273,7 +273,7 @@ function DataGridKeyboardShortcutsImpl({
         <div className="h-[40vh] overflow-y-auto px-6">
           {filteredGroups.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-control bg-muted text-fg-default">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-fg-default">
                 <SearchIcon className="pointer-events-none size-6" />
               </div>
               <div className="flex flex-col gap-1">
@@ -292,7 +292,7 @@ function DataGridKeyboardShortcutsImpl({
                   <h3 className="font-semibold text-fg-default text-body">
                     {shortcutGroup.title}
                   </h3>
-                  <div className="divide-y divide-border rounded-control border">
+                  <div className="divide-y divide-border rounded-lg border">
                     {shortcutGroup.shortcuts.map((shortcut, index) => (
                       <ShortcutCard
                         key={index}

@@ -23,7 +23,6 @@ import { cn } from "#system/utils";
 import { useIcon } from "#system/icon-context";
 import { spring } from "#system/springs";
 import { useProximityHover } from "#hooks/use-proximity-hover";
-import { useShape } from "#system/shape-context";
 
 // ─── Contexts ────────────────────────────────────────────────────────────────
 
@@ -240,7 +239,6 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
     const focusRect = focusedIndex !== null ? itemRects[focusedIndex] : null;
     const isHoveringNonOpen =
       activeIndex !== null && !openItemRects.has(activeIndex);
-    const shape = useShape();
 
     const {
       value: _value,
@@ -383,7 +381,7 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
                   {[...openItemRects.entries()].map(([idx, rect]) => (
                     <motion.div
                       key={`expanded-${idx}`}
-                      className={`absolute ${shape.bg} bg-hover pointer-events-none`}
+                      className={`absolute rounded-lg bg-hover pointer-events-none`}
                       // Fade in from the item's current rect: with initial={false}
                       // a newly-opened item's background would pop in at full
                       // opacity mid-layout-shift while the previous item's bg is
@@ -421,7 +419,7 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
                   {activeRect && (
                     <motion.div
                       key={sessionRef.current}
-                      className={`absolute ${shape.bg} bg-hover pointer-events-none`}
+                      className={`absolute rounded-lg bg-hover pointer-events-none`}
                       initial={{
                         opacity: 0,
                         top: activeRect.top,
@@ -449,13 +447,13 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
                 <AnimatePresence>
                   {focusRect && (
                     <motion.div
-                      className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
+                      className={`absolute rounded-lg pointer-events-none z-raised outline outline-1 outline-focus-ring outline-offset-2`}
                       initial={false}
                       animate={{
-                        left: focusRect.left - 2,
-                        top: focusRect.top - 2,
-                        width: focusRect.width + 4,
-                        height: focusRect.height + 4,
+                        left: focusRect.left,
+                        top: focusRect.top,
+                        width: focusRect.width,
+                        height: focusRect.height,
                       }}
                       exit={{ opacity: 0, transition: spring.fast.exit }}
                       transition={{
@@ -606,7 +604,6 @@ const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
     const internalRef = useRef<HTMLDivElement>(null);
     const groupCtx = useAccordionGroup();
     const standaloneOpen = useContext(StandaloneOpenContext);
-    const shape = useShape();
 
     const isOpen = groupCtx?.grouped
       ? groupCtx.openValues.has(value)
@@ -661,7 +658,7 @@ const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
                   <AnimatePresence>
                     {isOpen && (
                       <motion.div
-                        className={`absolute inset-0 ${shape.bg} bg-hover pointer-events-none`}
+                        className={`absolute inset-0 rounded-lg bg-hover pointer-events-none`}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0, transition: spring.fast.exit }}
@@ -694,7 +691,6 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
     const ChevronRight = useIcon("chevron-right");
     const groupCtx = useAccordionGroup();
     const { index, isOpen, triggerRef } = useAccordionItemContext();
-    const shape = useShape();
     const [isHovered, setIsHovered] = useState(false);
 
     const isActive = groupCtx?.grouped
@@ -709,7 +705,7 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
         <AccordionPrimitive.Trigger
           ref={ref as React.Ref<HTMLElement>}
           className={cn(
-            `relative z-content flex items-center gap-2.5 ${shape.item} px-3 py-2 w-full cursor-pointer outline-none select-none`,
+            `relative z-content flex items-center gap-2.5 rounded-lg px-3 py-2 w-full cursor-pointer outline-none select-none`,
             !groupCtx?.grouped &&
               "focus-visible:ring-1 focus-visible:ring-focus-ring focus-visible:ring-offset-0",
             className
@@ -771,7 +767,7 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
         <AnimatePresence>
           {isHovered && (
             <motion.div
-              className={`absolute inset-0 ${shape.bg} bg-hover pointer-events-none`}
+              className={`absolute inset-0 rounded-lg bg-hover pointer-events-none`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: spring.fast.exit }}

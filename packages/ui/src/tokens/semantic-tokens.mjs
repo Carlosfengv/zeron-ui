@@ -6,7 +6,6 @@
  * Run `pnpm tokens:build` after editing it. The generator updates:
  *   - the generated token block in app/globals.css
  *   - the `surfaces` registry:theme item in packages/ui/registry.json
- *   - packages/ui/src/system/design-tokens.ts (runtime shape values)
  *   - SEMANTIC-TOKENS.md
  */
 
@@ -216,31 +215,6 @@ export const controlHeightTokens = [
   { name: "xl", value: "2.75rem", px: 44, usage: "主要触控控件" },
 ];
 
-export const radiusRoles = [
-  { name: "control", usage: "按钮、输入框和独立交互项" },
-  { name: "focus", usage: "位于控件外侧的焦点环" },
-  { name: "selection", usage: "合并选区和动态背景" },
-  { name: "container", usage: "卡片、菜单组和大容器" },
-  { name: "full", usage: "圆形头像、圆点和必须保持胶囊的元素" },
-];
-
-export const shapeModes = {
-  rounded: {
-    control: 8,
-    focus: 10,
-    selection: 8,
-    container: 12,
-    full: 9999,
-  },
-  pill: {
-    control: 20,
-    focus: 22,
-    selection: 16,
-    container: 24,
-    full: 9999,
-  },
-};
-
 export const layerTokens = [
   { name: "underlay", value: -10, usage: "组件内部背景和分隔线" },
   { name: "base", value: 0, usage: "普通文档流" },
@@ -269,7 +243,5 @@ export const semanticTokens = {
   motionDurations: motionDurationTokens,
   fonts: fontTokens,
   controlHeights: controlHeightTokens,
-  radiusRoles,
-  shapeModes,
   layers: layerTokens,
 };

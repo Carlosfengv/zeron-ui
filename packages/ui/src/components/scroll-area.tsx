@@ -16,7 +16,6 @@ import {
 } from "react";
 import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area";
 import { cn } from "#system/utils";
-import { useShape } from "#system/shape-context";
 import { useTouchPrimary } from "#hooks/use-touch-primary";
 
 // On touch-primary devices the Base UI machinery is skipped entirely in
@@ -107,7 +106,6 @@ const ScrollBar = forwardRef<
   ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Scrollbar>
 >(({ className, orientation = "vertical", ...props }, ref) => {
   const isTouch = useContext(ScrollAreaContext);
-  const shape = useShape();
 
   if (isTouch) return null;
 
@@ -144,7 +142,7 @@ const ScrollBar = forwardRef<
         className={cn(
           "relative bg-scrollbar-thumb transition-[background-color,width,height] duration-moderate ease-in-out",
           "group-hover/scrollbar:bg-scrollbar-thumb-hover active:!bg-scrollbar-thumb-active",
-          shape.bg,
+          "rounded-lg",
           // -translate nudges the thumb 2px off the container edge; the track
           // (and its 10px hit target) stays flush so edge-throws still land.
           orientation === "vertical" &&

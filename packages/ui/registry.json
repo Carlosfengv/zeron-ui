@@ -7,7 +7,7 @@
       "name": "surfaces",
       "type": "registry:theme",
       "title": "Semantic Design Tokens",
-      "description": "Complete semantic token system: color, typography, control sizes, radii, shadows, surfaces, and layers. Ordinary layout spacing uses Tailwind's native scale. The historical surfaces slug is retained for compatibility.",
+      "description": "Complete semantic token system: color, typography, control sizes, shadows, surfaces, and layers. Layout spacing and border radii use Tailwind's native scale. The historical surfaces slug is retained for compatibility.",
       "cssVars": {
         "theme": {
           "font-sans": "var(--font-family-sans)",
@@ -84,12 +84,7 @@
           "spacing-control-sm": "var(--control-height-sm)",
           "spacing-control-md": "var(--control-height-md)",
           "spacing-control-lg": "var(--control-height-lg)",
-          "spacing-control-xl": "var(--control-height-xl)",
-          "radius-control": "var(--control-radius)",
-          "radius-focus": "var(--focus-radius)",
-          "radius-selection": "var(--selection-radius)",
-          "radius-container": "var(--container-radius)",
-          "radius-full": "var(--full-radius)"
+          "spacing-control-xl": "var(--control-height-xl)"
         },
         "light": {
           "font-family-sans": "\"Inter\", system-ui, sans-serif",
@@ -174,11 +169,6 @@
           "control-height-md": "2.25rem",
           "control-height-lg": "2.5rem",
           "control-height-xl": "2.75rem",
-          "control-radius": "8px",
-          "focus-radius": "10px",
-          "selection-radius": "8px",
-          "container-radius": "12px",
-          "full-radius": "9999px",
           "layer-underlay": "-10",
           "layer-base": "0",
           "layer-decoration": "1",
@@ -275,11 +265,6 @@
           "control-height-md": "2.25rem",
           "control-height-lg": "2.5rem",
           "control-height-xl": "2.75rem",
-          "control-radius": "8px",
-          "focus-radius": "10px",
-          "selection-radius": "8px",
-          "container-radius": "12px",
-          "full-radius": "9999px",
           "layer-underlay": "-10",
           "layer-base": "0",
           "layer-decoration": "1",
@@ -428,27 +413,6 @@
       ]
     },
     {
-      "name": "shape-context",
-      "type": "registry:lib",
-      "title": "Shape Context",
-      "description": "React context provider for runtime shape variant switching (pill or rounded). Controls border-radius across all Zeron Design components.",
-      "files": [
-        {
-          "path": "packages/ui/src/system/shape-context.tsx",
-          "type": "registry:lib",
-          "target": "lib/shape-context.tsx"
-        },
-        {
-          "path": "packages/ui/src/system/design-tokens.ts",
-          "type": "registry:lib",
-          "target": "lib/design-tokens.ts"
-        }
-      ],
-      "registryDependencies": [
-        "surfaces"
-      ]
-    },
-    {
       "name": "icon-context",
       "type": "registry:lib",
       "title": "Icon Context",
@@ -569,7 +533,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "icon-context",
         "use-proximity-hover"
       ],
@@ -595,7 +558,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "icon-context",
         "use-proximity-hover",
         "use-merge-split",
@@ -620,8 +582,7 @@
       ],
       "registryDependencies": [
         "surfaces",
-        "utils",
-        "shape-context"
+        "utils"
       ],
       "files": [
         {
@@ -700,7 +661,6 @@
       "registryDependencies": [
         "surfaces",
         "utils",
-        "shape-context",
         "icon-context"
       ],
       "files": [
@@ -738,7 +698,6 @@
       "registryDependencies": [
         "surfaces",
         "utils",
-        "shape-context",
         "icon-context",
         "badge",
         "button",
@@ -775,7 +734,6 @@
       "registryDependencies": [
         "surfaces",
         "utils",
-        "shape-context",
         "surface-context",
         "surface-classes",
         "portal-container-context",
@@ -935,7 +893,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "surface-context",
         "surface-classes",
         "icon-context",
@@ -991,7 +948,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "icon-context",
         "checkbox",
         "use-proximity-hover",
@@ -1019,7 +975,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "surface-context",
         "surface-classes",
         "portal-container-context"
@@ -1046,7 +1001,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "use-proximity-hover"
       ],
       "files": [
@@ -1071,7 +1025,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "surface-context",
         "surface-classes",
         "icon-context",
@@ -1123,8 +1076,7 @@
       ],
       "registryDependencies": [
         "surfaces",
-        "utils",
-        "shape-context"
+        "utils"
       ],
       "files": [
         {
@@ -1141,8 +1093,7 @@
       "description": "Compact keycaps and shortcut groups for keyboard commands and interaction hints.",
       "registryDependencies": [
         "surfaces",
-        "utils",
-        "shape-context"
+        "utils"
       ],
       "files": [
         {
@@ -1168,7 +1119,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "icon-context"
       ],
       "files": [
@@ -1192,7 +1142,6 @@
       "registryDependencies": [
         "surfaces",
         "utils",
-        "shape-context",
         "icon-context",
         "use-proximity-hover",
         "button",
@@ -1239,7 +1188,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "icon-context",
         "surface-context",
         "surface-classes",
@@ -1266,8 +1214,7 @@
       ],
       "registryDependencies": [
         "surfaces",
-        "utils",
-        "shape-context"
+        "utils"
       ],
       "files": [
         {
@@ -1290,7 +1237,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "use-touch-primary",
         "file-thumbnail"
       ],
@@ -1387,7 +1333,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "icon-context",
         "use-proximity-hover"
       ],
@@ -1412,8 +1357,7 @@
       "registryDependencies": [
         "surfaces",
         "utils",
-        "springs",
-        "shape-context"
+        "springs"
       ],
       "files": [
         {
@@ -1435,7 +1379,6 @@
       "registryDependencies": [
         "surfaces",
         "utils",
-        "shape-context",
         "icon-context"
       ],
       "files": [
@@ -1481,7 +1424,6 @@
         "badge",
         "utils",
         "springs",
-        "shape-context",
         "icon-context",
         "use-proximity-hover"
       ],
@@ -1544,7 +1486,6 @@
       "registryDependencies": [
         "surfaces",
         "utils",
-        "shape-context",
         "use-touch-primary"
       ],
       "files": [
@@ -1570,7 +1511,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "surface-context",
         "surface-classes",
         "icon-context",
@@ -1600,7 +1540,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "portal-container-context"
       ],
       "files": [
@@ -1625,7 +1564,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "icon-context",
         "badge"
       ],
@@ -1669,7 +1607,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "surface-context",
         "surface-classes",
         "icon-context",
@@ -1742,7 +1679,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "use-proximity-hover"
       ],
       "files": [
@@ -1765,7 +1701,6 @@
       "registryDependencies": [
         "surfaces",
         "utils",
-        "shape-context",
         "tooltip",
         "nav-menu"
       ],
@@ -1791,7 +1726,6 @@
         "surfaces",
         "utils",
         "springs",
-        "shape-context",
         "surface-context",
         "surface-classes",
         "icon-context",
@@ -1843,7 +1777,6 @@
         "icon-context",
         "nav-item",
         "popover",
-        "shape-context",
         "surface-context",
         "surface-classes"
       ],

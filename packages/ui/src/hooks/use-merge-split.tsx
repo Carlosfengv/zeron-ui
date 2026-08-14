@@ -25,7 +25,7 @@ const splitMs = mergeSpring.duration * 1000 + 80;
 
 // A selected-background block for one render. A run is normally one block; mid
 // merge/split it is drawn as two abutting halves with sharp inner corners.
-type Rect = { top: number; left: number; width: number; height: number };
+type Rect = { top: number; left: number; width: number; height: number; radius: number };
 export interface SelBlock extends Rect {
   key: string;
   radii: [number, number, number, number]; // tl, tr, br, bl
@@ -74,13 +74,12 @@ function bridgePair(outer: Run, runs: Run[]) {
 // inverse: snap into two abutting halves, then glide apart.
 //
 // Given the contiguous selection `runs` (with stable ids), the measured
-// `itemRects`, and the corner radius `R` to round to, this returns the list of
+// `itemRects` (including each item's computed Tailwind radius), this returns the list of
 // background blocks to paint — one per run, or two abutting halves for any run
 // currently mid merge/split. Render them with <SelectionBackgrounds>.
 export function useMergeSplitBlocks(
   runs: Run[],
-  itemRects: ItemRect[],
-  R: number
+  itemRects: ItemRect[]
 ): SelBlock[] {
   const [boundaries, setBoundaries] = useState<Boundary[]>([]);
   const prevRunsRef = useRef<Run[]>([]);
@@ -198,6 +197,7 @@ export function useMergeSplitBlocks(
       left: Math.min(s.left, e.left),
       width: Math.max(s.width, e.width),
       height: e.top + e.height - s.top,
+      radius: s.radius,
     };
   };
   const blocks: SelBlock[] = [];
@@ -207,7 +207,7 @@ export function useMergeSplitBlocks(
       blocks.push({
         key: `sel-${run.id}`,
         ...r,
-        radii: [R, R, R, R],
+        radii: [r.radius, r.radius, r.radius, r.radius],
         instant: false,
         exitInstant: false,
         delayCorners: false,
@@ -232,7 +232,8 @@ export function useMergeSplitBlocks(
           left: sv.left,
           width: sv.width,
           height: sv.top + sv.height - midY,
-          radii: [0, 0, R, R],
+          radius: sv.radius,
+          radii: [0, 0, sv.radius, sv.radius],
           instant: true,
           exitInstant: true,
           delayCorners: false,
@@ -249,7 +250,7 @@ export function useMergeSplitBlocks(
       );
       const bottom = sv.top + sv.height;
       sv.height = midY - sv.top;
-      sv.radii = [R, R, 0, 0];
+      sv.radii = [sv.radius, sv.radius, 0, 0];
       sv.delayCorners = true;
       sv.cornerDelay = mergeCornerDelay;
       blocks.push({
@@ -258,10 +259,11 @@ export function useMergeSplitBlocks(
         left: sv.left,
         width: sv.width,
         height: bottom - midY,
-        radii: [0, 0, R, R],
+        radius: sv.radius,
+        radii: [0, 0, sv.radius, sv.radius],
         // Mount at full corners so a fresh ghost still animates the
         // straightening with the same delay as the survivor.
-        enterFrom: { top: midY, height: bottom - midY, radii: [R, R, R, R] },
+        enterFrom: { top: midY, height: bottom - midY, radii: [sv.radius, sv.radius, sv.radius, sv.radius] },
         instant: false,
         exitInstant: true,
         delayCorners: true,
@@ -274,13 +276,13 @@ export function useMergeSplitBlocks(
       // diverge render then springs them to their real rects.
       const bottom = lo.top + lo.height;
       sv.height = midY - sv.top;
-      sv.radii = [R, R, 0, 0];
+      sv.radii = [sv.radius, sv.radius, 0, 0];
       sv.instant = true;
       lo.top = midY;
       lo.height = bottom - midY;
-      lo.radii = [0, 0, R, R];
+      lo.radii = [0, 0, lo.radius, lo.radius];
       lo.instant = true;
-      lo.enterFrom = { top: midY, height: bottom - midY, radii: [0, 0, R, R] };
+      lo.enterFrom = { top: midY, height: bottom - midY, radii: [0, 0, lo.radius, lo.radius] };
     }
     // diverge: nothing to override — the steady blocks spring to their real
     // rects from the seam; the timer drops the boundary.
@@ -302,13 +304,13 @@ export function useMergeSplitBlocks(
     if (!up || !lo) continue;
     const bottom = lo.top + lo.height;
     up.height = midY - up.top;
-    up.radii = [R, R, 0, 0];
+    up.radii = [up.radius, up.radius, 0, 0];
     up.instant = true;
     lo.top = midY;
     lo.height = bottom - midY;
-    lo.radii = [0, 0, R, R];
+    lo.radii = [0, 0, lo.radius, lo.radius];
     lo.instant = true;
-    lo.enterFrom = { top: midY, height: bottom - midY, radii: [0, 0, R, R] };
+    lo.enterFrom = { top: midY, height: bottom - midY, radii: [0, 0, lo.radius, lo.radius] };
   }
 
   return blocks;

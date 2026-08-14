@@ -3,7 +3,6 @@
 import { forwardRef, type HTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "#system/utils";
-import { useShape } from "#system/shape-context";
 import {
   badgeCategoricalTokens,
   badgeColors,
@@ -56,7 +55,6 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
     },
     ref
   ) => {
-    const shape = useShape();
     const isSolid = variant === "solid";
     const statusColors = status ? badgeStatusTokens[status] : null;
     const categoricalTokens = badgeCategoricalTokens(color);
@@ -86,7 +84,7 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
         className={cn(
           badgeVariants({ variant, size }),
           statusColors && isSolid && "border",
-          shape.item,
+          "rounded-lg",
           className
         )}
         style={{ ...colorStyle, ...style }}

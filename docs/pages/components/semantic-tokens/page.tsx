@@ -11,8 +11,6 @@ import {
   typographyTokens,
   fontTokens,
   controlHeightTokens,
-  radiusRoles,
-  shapeModes,
   layerTokens,
 } from "@zeron/ui/tokens/semantic-tokens.mjs";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
@@ -71,7 +69,7 @@ function PaletteScale({
           {currentBrand ? "Current runtime seed" : "Reference source"}
         </p>
       </div>
-      <ol className="grid grid-cols-11 overflow-hidden rounded-control ring-1 ring-inset ring-border" aria-label={`${name} color scale`}>
+      <ol className="grid grid-cols-11 overflow-hidden rounded-lg ring-1 ring-inset ring-border" aria-label={`${name} color scale`}>
         {paletteSteps.map((step) => {
           const value = scale[step];
           if (!value) return null;
@@ -126,7 +124,7 @@ function CheckerboardTile() {
   return (
     <span
       aria-hidden="true"
-      className="relative inline-block size-5 shrink-0 overflow-hidden rounded-control"
+      className="relative inline-block size-5 shrink-0 overflow-hidden rounded-lg"
       style={{
         backgroundImage: "conic-gradient(var(--checker-a) 25%, var(--checker-b) 0 50%, var(--checker-a) 0 75%, var(--checker-b) 0)",
         backgroundSize: "6px 6px",
@@ -140,10 +138,10 @@ function ThemeValue({ value, theme }: { value: string; theme: "light" | "dark" }
   const display = colorDisplay(value);
   return (
     <span
-      className={`${theme} flex h-control-md min-w-[10.75rem] items-center gap-2 rounded-control border border-border bg-surface-base px-2 font-medium`}
+      className={`${theme} flex h-control-md min-w-[10.75rem] items-center gap-2 rounded-lg border border-border bg-surface-base px-2 font-medium`}
       title={`${display.value} · ${display.opacity}`}
     >
-      <span className="relative size-5 shrink-0 overflow-hidden rounded-control">
+      <span className="relative size-5 shrink-0 overflow-hidden rounded-lg">
         <CheckerboardTile />
         <span className="absolute inset-0" style={{ backgroundColor: display.color }} />
       </span>
@@ -393,16 +391,23 @@ export default function SemanticTokensPage() {
     description: token.usage,
   }));
 
-  const radiusRows: TokenRow[] = radiusRoles.map((role) => {
-    // The token source is JavaScript, so retain the generated shape object's
-    // literal keys when indexing it from a documented role.
-    const name = role.name as keyof typeof shapeModes.rounded;
-    return {
-      token: designToken("shape/radius", role.name),
-      value: `${shapeModes.rounded[name]}px → ${shapeModes.pill[name]}px`,
-      description: role.usage,
-    };
-  });
+  const radiusRows: TokenRow[] = [
+    {
+      token: "rounded-lg",
+      value: "8px",
+      description: "按钮、输入框、独立交互项与局部状态背景。",
+    },
+    {
+      token: "rounded-xl",
+      value: "12px",
+      description: "卡片、菜单组、对话框和大容器。",
+    },
+    {
+      token: "rounded-full",
+      value: "完全圆角",
+      description: "Avatar、圆点、旋钮和有意的局部胶囊结构。",
+    },
+  ];
 
   const layerRows: TokenRow[] = layerTokens.map((token) => ({
     token: designToken("layer", token.name),

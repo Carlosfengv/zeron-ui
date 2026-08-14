@@ -509,7 +509,7 @@ export function ZaiopsSidebarPreview({ className }: { className?: string }) {
                 <SidebarFloatingTrigger
                   collapsedBehavior="offcanvas"
                   label="展开侧边栏"
-                  contentClassName="h-[min(42rem,calc(100svh-6rem))] w-[260px] max-w-[calc(100vw-12px)] rounded-container border-[0.5px] border-border-subtle p-0 shadow-floating"
+                  contentClassName="h-[min(42rem,calc(100svh-6rem))] w-[260px] max-w-[calc(100vw-12px)] rounded-xl border-[0.5px] border-border-subtle p-0 shadow-floating"
                   renderContent={({ close }) => (
                     <ZaiopsNavigationPanel
                       activeNavigationValue={activeNavigationValue}
@@ -551,7 +551,7 @@ export function ZaiopsSidebarPreview({ className }: { className?: string }) {
             <DialogTitle>搜索 ZAIops</DialogTitle>
             <DialogDescription>搜索会话、集群、巡检方案和知识库。</DialogDescription>
           </DialogHeader>
-          <div className="rounded-control border border-border-subtle px-3 py-2 text-body text-fg-subtle">输入关键词开始搜索…</div>
+          <div className="rounded-lg border border-border-subtle px-3 py-2 text-body text-fg-subtle">输入关键词开始搜索…</div>
         </DialogContent>
       </Dialog>
     </SidebarProvider>

@@ -27,7 +27,7 @@ function measureBadgeWidth({
   }
 
   const measureEl = document.createElement("div");
-  measureEl.className = `inline-flex items-center rounded-control border px-1.5 text-label font-semibold h-5 gap-1 shrink-0 absolute invisible pointer-events-none ${
+  measureEl.className = `inline-flex items-center rounded-lg border px-1.5 text-label font-semibold h-5 gap-1 shrink-0 absolute invisible pointer-events-none ${
     className ?? ""
   }`;
   measureEl.style.whiteSpace = "nowrap";

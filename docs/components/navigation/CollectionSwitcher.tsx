@@ -28,7 +28,7 @@ export function CollectionSwitcher({ localePrefix = "" }: { localePrefix?: strin
           href={localizePathname(`/docs/${id}`, localePrefix)}
           aria-current={active === id ? "page" : undefined}
           className={cn(
-            "rounded-control px-2 py-1.5 text-center text-label capitalize transition-colors",
+            "rounded-lg px-2 py-1.5 text-center text-label capitalize transition-colors",
             active === id ? "bg-emphasis text-fg-default" : "text-fg-muted hover:bg-hover hover:text-fg-default",
           )}
         >

@@ -10,7 +10,6 @@ import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { motion } from "framer-motion";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import { usePortalContainer } from "#system/portal-container-context";
 
 // ---------------------------------------------------------------------------
@@ -129,7 +128,6 @@ function Tooltip({
 }: TooltipProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const open = forceOpen !== undefined ? forceOpen : internalOpen;
-  const shape = useShape();
   const portalContainer = useContext(TooltipPortalContainerContext);
   const fullscreenPortal = usePortalContainer();
   const hasAmbientProvider = useContext(TooltipGroupContext);
@@ -175,7 +173,7 @@ function Tooltip({
                   {...rest}
                   className={cn(
                     "bg-inverse-background text-fg-on-inverse text-label px-2 py-1",
-                    shape.bg,
+                    "rounded-lg",
                     "font-medium",
                     className
                   )}

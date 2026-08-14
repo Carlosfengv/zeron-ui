@@ -77,7 +77,6 @@ test("maps add to the pinned shadcn command", async () => {
 test("resolves Registry import placeholders against the consumer aliases", () => {
   const source = [
     'import { Button } from "@ui/button";',
-    'export type { Shape } from "@lib/shape-context";',
     'type Lazy = import("@hooks/use-touch-primary").Result;',
   ].join("\n");
   const output = resolveRegistryAliases(source, {
@@ -87,7 +86,6 @@ test("resolves Registry import placeholders against the consumer aliases", () =>
   });
 
   assert.match(output, /from "#components\/ui\/button"/);
-  assert.match(output, /from "#lib\/shape-context"/);
   assert.match(output, /import\("#hooks\/use-touch-primary"\)/);
 });
 

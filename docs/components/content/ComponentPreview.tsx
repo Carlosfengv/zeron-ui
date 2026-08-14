@@ -157,7 +157,7 @@ export function ComponentPreview({
         className={cn(
           "relative flex w-full flex-col gap-0 duration-moderate ease-out has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-inset has-[:focus-visible]:ring-fg-default/40",
           browserFrame
-            ? "overflow-hidden rounded-container border-[0.5px] border-border bg-surface-floating shadow-control"
+            ? "overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-floating shadow-control"
             : "rounded-3xl bg-surface-raised p-2",
           fill && "h-full min-h-0",
           isFullscreen && "h-svh w-screen rounded-none",
@@ -171,45 +171,55 @@ export function ComponentPreview({
           ruler ticks tuck cleanly under it. */}
       <div
         className={cn(
-          "relative z-40 flex shrink-0 items-center gap-0",
+          "relative z-40 flex shrink-0 items-center justify-between gap-1",
           browserFrame
             ? "h-11 border-b border-border-subtle bg-surface-floating px-3 sm:grid sm:grid-cols-[minmax(6rem,1fr)_auto_minmax(6rem,1fr)] sm:px-4"
             : "px-1.5 py-1",
         )}
       >
-        {browserFrame && (
-          <div aria-hidden="true" className="mr-auto flex items-center gap-2">
-            <span className="size-2.5 rounded-full bg-[#ff5f57]" />
-            <span className="size-2.5 rounded-full bg-[#ffbd2e]" />
-            <span className="size-2.5 rounded-full bg-[#28c840]" />
-          </div>
-        )}
-        {title && !browserFrame && (
-          <span
-            className="px-4 py-2.5 text-fg-default mr-auto font-semibold"
-          >
-            {title}
-          </span>
-        )}
+        <div className={cn("flex min-w-0 items-center gap-1", browserFrame && "sm:justify-self-start")}>
+          {browserFrame && (
+            <div aria-hidden="true" className="flex shrink-0 items-center gap-2">
+              <span className="size-2.5 rounded-full bg-[#ff5f57]" />
+              <span className="size-2.5 rounded-full bg-[#ffbd2e]" />
+              <span className="size-2.5 rounded-full bg-[#28c840]" />
+            </div>
+          )}
+          {title && !browserFrame && (
+            <span className="truncate px-4 py-2.5 text-fg-default font-semibold">
+              {title}
+            </span>
+          )}
+          {!browserFrame && (
+            <Tabs value={String(tab)} onValueChange={(value) => setTab(Number(value))} variant="segment">
+              <TabsList activationMode="manual">
+                <TabItem value="0" label={t("preview")} />
+                <TabItem value="1" label={t("code")} />
+              </TabsList>
+            </Tabs>
+          )}
+        </div>
         {browserFrame && title && (
           <div className="hidden max-w-[24rem] items-center gap-2 truncate rounded-full bg-surface-raised px-3 py-1.5 text-label text-fg-muted sm:flex">
             <SearchIcon aria-hidden="true" className="size-3.5 shrink-0" strokeWidth={1.5} />
             <span className="truncate">block preview / {title.replace(/\.tsx$/, "")}</span>
           </div>
         )}
-        <div className={cn("ml-auto flex items-center gap-1", browserFrame && "sm:ml-0 sm:justify-self-end")}>
-          <Tabs value={String(tab)} onValueChange={(value) => setTab(Number(value))} variant="segment">
-            <TabsList activationMode="manual">
-              <TabItem value="0" label={t("preview")} />
-              <TabItem value="1" label={t("code")} />
-            </TabsList>
-          </Tabs>
+        <div className={cn("ml-auto flex shrink-0 items-center gap-1", browserFrame && "sm:ml-0 sm:justify-self-end")}>
+          {browserFrame && (
+            <Tabs value={String(tab)} onValueChange={(value) => setTab(Number(value))} variant="segment">
+              <TabsList activationMode="manual">
+                <TabItem value="0" label={t("preview")} />
+                <TabItem value="1" label={t("code")} />
+              </TabsList>
+            </Tabs>
+          )}
           {inspectable && tab === 0 && (
             <Switch
               label={t("inspect")}
               checked={inspect}
               onToggle={() => setInspect((v) => !v)}
-              className="h-8 px-2 rounded-control"
+              className="h-8 px-2 rounded-lg"
             />
           )}
           {fullScreenable && tab === 0 && (

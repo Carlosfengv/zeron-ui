@@ -12,7 +12,6 @@ import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { IconComponent } from "#system/icon-context";
 import { cn } from "#system/utils";
-import { useShape } from "#system/shape-context";
 
 const buttonVariants = cva(
   [
@@ -135,7 +134,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           : size === "icon-lg"
             ? "h-control-lg w-10"
             : "h-control-sm w-8";
-    const shape = useShape();
     const bgClass = active
       ? activeBgVariants[variant ?? "primary"]
       : bgVariants[variant ?? "primary"];
@@ -215,7 +213,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         iconLeft: !isIconOnly && !!LeadingIcon,
         iconRight: !isIconOnly && !!TrailingIcon,
       }),
-      shape.button,
+      "rounded-lg",
       className
     );
 

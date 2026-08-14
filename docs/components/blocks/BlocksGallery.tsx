@@ -58,8 +58,8 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
           {text.eyebrow}
         </header>
 
-        <section className="rounded-container bg-surface-raised p-3">
-          <div className="rounded-container bg-surface-floating px-5 py-7 sm:px-8 sm:py-9">
+        <section className="rounded-xl bg-surface-raised p-3">
+          <div className="rounded-xl bg-surface-floating px-5 py-7 sm:px-8 sm:py-9">
             <header className="grid gap-6 border-b border-border pb-8 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,26rem)] lg:items-end">
               <div>
                 <Badge color="blue">{blockCatalog.length} blocks</Badge>
@@ -91,8 +91,8 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
             <div className="divide-y divide-border">
               {blocks.map((block) => (
                 <article className="grid gap-5 py-5 lg:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.05fr)] lg:items-center" key={block.name}>
-                  <div className="overflow-hidden rounded-container border-[0.5px] border-border bg-surface-raised p-2">
-                    <div className="overflow-hidden rounded-control border-[0.5px] border-border bg-surface-base">
+                  <div className="overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-raised p-2">
+                    <div className="overflow-hidden rounded-lg border-[0.5px] border-border bg-surface-base">
                       <BlockPreview name={block.name} />
                     </div>
                   </div>
@@ -102,7 +102,7 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
                       {block.categories.map((item) => <Badge key={item} variant="dot" size="sm">{item}</Badge>)}
                     </div>
                     <h3 className="mt-4 text-heading font-semibold leading-tight text-fg-default">
-                      <Link className="rounded-control outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring" href={`${localePrefix}/docs/blocks/${block.name}`}>
+                      <Link className="rounded-lg outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring" href={`${localePrefix}/docs/blocks/${block.name}`}>
                         {block.title}
                       </Link>
                     </h3>

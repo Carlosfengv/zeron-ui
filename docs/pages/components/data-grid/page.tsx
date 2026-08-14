@@ -96,10 +96,10 @@ export default function DataGridDoc() {
 
       <DocSection title={t("interactionModel")}>
         <div className="grid gap-3 text-body text-fg-muted sm:grid-cols-2">
-          <div className="border border-border-subtle bg-surface-raised p-4 rounded-[var(--container-radius)]">
+          <div className="border border-border-subtle bg-surface-raised p-4 rounded-xl">
             {t("moveAndEdit")}
           </div>
-          <div className="border border-border-subtle bg-surface-raised p-4 rounded-[var(--container-radius)]">
+          <div className="border border-border-subtle bg-surface-raised p-4 rounded-xl">
             {t("rangeControls")}
           </div>
         </div>

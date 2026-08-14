@@ -1,8 +1,7 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "surfaces",
   "title": "Semantic Design Tokens",
-  "description": "Complete semantic token system: color, typography, control sizes, radii, shadows, surfaces, and layers. Ordinary layout spacing uses Tailwind's native scale. The historical surfaces slug is retained for compatibility.",
+  "description": "Complete semantic token system: color, typography, control sizes, shadows, surfaces, and layers. Layout spacing and border radii use Tailwind's native scale. The historical surfaces slug is retained for compatibility.",
   "cssVars": {
     "theme": {
       "font-sans": "var(--font-family-sans)",
@@ -79,12 +78,7 @@
       "spacing-control-sm": "var(--control-height-sm)",
       "spacing-control-md": "var(--control-height-md)",
       "spacing-control-lg": "var(--control-height-lg)",
-      "spacing-control-xl": "var(--control-height-xl)",
-      "radius-control": "var(--control-radius)",
-      "radius-focus": "var(--focus-radius)",
-      "radius-selection": "var(--selection-radius)",
-      "radius-container": "var(--container-radius)",
-      "radius-full": "var(--full-radius)"
+      "spacing-control-xl": "var(--control-height-xl)"
     },
     "light": {
       "font-family-sans": "\"Inter\", system-ui, sans-serif",
@@ -169,11 +163,6 @@
       "control-height-md": "2.25rem",
       "control-height-lg": "2.5rem",
       "control-height-xl": "2.75rem",
-      "control-radius": "8px",
-      "focus-radius": "10px",
-      "selection-radius": "8px",
-      "container-radius": "12px",
-      "full-radius": "9999px",
       "layer-underlay": "-10",
       "layer-base": "0",
       "layer-decoration": "1",
@@ -270,11 +259,6 @@
       "control-height-md": "2.25rem",
       "control-height-lg": "2.5rem",
       "control-height-xl": "2.75rem",
-      "control-radius": "8px",
-      "focus-radius": "10px",
-      "selection-radius": "8px",
-      "container-radius": "12px",
-      "full-radius": "9999px",
       "layer-underlay": "-10",
       "layer-base": "0",
       "layer-decoration": "1",
@@ -327,8 +311,8 @@
       "z-index": "var(--layer-tooltip)"
     }
   },
-  "type": "registry:theme",
   "dependencies": [
     "tw-animate-css"
-  ]
+  ],
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json"
 }

@@ -7,10 +7,6 @@ import {
   SelectContent,
   SelectItem,
 } from "@zeron/ui/select";
-import {
-  useShapeContext,
-  type ShapeVariant,
-} from "@zeron/ui/system/shape-context";
 import { useThemeContext, type Theme } from "@zeron/ui/system/theme-context";
 import { useIcon, useIconContext, type IconVariant } from "@zeron/icons/context";
 import { SurfaceProvider } from "@zeron/ui/system/surface-context";
@@ -34,26 +30,18 @@ export function SettingsContent({
   const pathname = usePathname();
   const router = useRouter();
   const { theme, setTheme } = useThemeContext();
-  const { shape, setShape } = useShapeContext();
   const { variant: iconVariant, availableVariants, isVariantLoading, setVariant: setIconVariant } = useIconContext();
   const { brandColor, setBrandColor } = useBrandColor();
 
   const MonitorIcon = useIcon("monitor");
   const SunIcon = useIcon("sun");
   const MoonIcon = useIcon("moon");
-  const RectHorizIcon = useIcon("rectangle-horizontal");
-  const CircleIcon = useIcon("circle");
   const PaintbrushIcon = useIcon("paintbrush");
 
   const themeOptions = [
     { label: t("system"), value: "system" as Theme, icon: MonitorIcon },
     { label: t("light"), value: "light" as Theme, icon: SunIcon },
     { label: t("dark"), value: "dark" as Theme, icon: MoonIcon },
-  ];
-
-  const shapeOptions = [
-    { label: t("rounded"), value: "rounded" as ShapeVariant, icon: RectHorizIcon },
-    { label: t("pill"), value: "pill" as ShapeVariant, icon: CircleIcon },
   ];
 
   const allIconStyleOptions: { label: string; value: IconVariant }[] = [
@@ -107,26 +95,6 @@ export function SettingsContent({
             triggerClassName="h-control-sm min-w-0 px-1.5 border-transparent hover:bg-hover"
           />
         </div>
-        <Tooltip content={<span>{t("pressToToggle", { key: "R" })}</span>} side={tooltipSide}>
-          <div className="flex items-center justify-between">
-            <span className="text-label text-fg-muted">{t("radius")}</span>
-            <Select value={shape} onValueChange={(v) => setShape(v as ShapeVariant)}>
-              <SelectTrigger
-                variant="borderless"
-                size="md"
-                className="min-w-0 w-auto"
-                icon={shapeOptions.find((o) => o.value === shape)?.icon}
-              />
-              <SelectContent>
-                {shapeOptions.map((o, i) => (
-                  <SelectItem key={o.value} value={o.value} index={i} icon={o.icon}>
-                    {o.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </Tooltip>
         <Tooltip content={<span>{t("pressToCycle", { key: "I" })}</span>} side={tooltipSide}>
           <div className="flex items-center justify-between">
             <span className="text-label text-fg-muted">{t("icons")}</span>
@@ -192,7 +160,7 @@ export function RightPanel({
     // inner wrapper (else it would override `flex` and drop the gap).
     <div className="shrink-0 w-64 sticky top-4 self-start mt-4 mr-2 xl-fade-block max-xl:fixed max-xl:top-0 max-xl:right-0 max-xl:z-40 max-xl:pointer-events-none">
       <div className="flex flex-col gap-3">
-        <aside className="rounded-control border-[0.5px] border-border-subtle bg-surface-floating p-4">
+        <aside className="rounded-lg border-[0.5px] border-border-subtle bg-surface-floating p-4">
           <SurfaceProvider role="floating">
             <div className="pl-1 pt-2 pb-2">
               <h2

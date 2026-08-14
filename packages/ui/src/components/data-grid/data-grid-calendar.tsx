@@ -73,7 +73,7 @@ function Calendar({
           defaultClassNames.dropdowns,
         ),
         dropdown_root: cn(
-          "relative border border-input shadow-control has-[select:focus-visible]:ring-1 has-[select:focus-visible]:ring-focus-ring rounded-control",
+          "relative border border-input shadow-control has-[select:focus-visible]:ring-1 has-[select:focus-visible]:ring-focus-ring rounded-lg",
           defaultClassNames.dropdown_root,
         ),
         dropdown: cn(
@@ -84,13 +84,13 @@ function Calendar({
           "select-none font-medium",
           captionLayout === "label"
             ? "text-body"
-            : "rounded-control pl-2 pr-1 flex items-center gap-1 text-body h-8 [&>svg]:text-fg-muted [&>svg]:size-3.5",
+            : "rounded-lg pl-2 pr-1 flex items-center gap-1 text-body h-8 [&>svg]:text-fg-muted [&>svg]:size-3.5",
           defaultClassNames.caption_label,
         ),
         table: "w-full border-collapse",
         weekdays: cn("flex", defaultClassNames.weekdays),
         weekday: cn(
-          "text-fg-muted rounded-control flex-1 font-normal text-label select-none",
+          "text-fg-muted rounded-lg flex-1 font-normal text-label select-none",
           defaultClassNames.weekday,
         ),
         week: cn("flex w-full mt-2", defaultClassNames.week),
@@ -103,17 +103,17 @@ function Calendar({
           defaultClassNames.week_number,
         ),
         day: cn(
-          "relative w-full h-full p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-control [&:last-child[data-selected=true]_button]:rounded-r-control group/day aspect-square select-none",
+          "relative w-full h-full p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-lg [&:last-child[data-selected=true]_button]:rounded-r-lg group/day aspect-square select-none",
           defaultClassNames.day,
         ),
         range_start: cn(
-          "rounded-l-control bg-selection",
+          "rounded-l-lg bg-selection",
           defaultClassNames.range_start,
         ),
         range_middle: cn("rounded-none", defaultClassNames.range_middle),
-        range_end: cn("rounded-r-control bg-selection", defaultClassNames.range_end),
+        range_end: cn("rounded-r-lg bg-selection", defaultClassNames.range_end),
         today: cn(
-          "bg-emphasis text-fg-default rounded-control data-[selected=true]:rounded-none",
+          "bg-emphasis text-fg-default rounded-lg data-[selected=true]:rounded-none",
           defaultClassNames.today,
         ),
         outside: cn(
@@ -204,7 +204,7 @@ function CalendarDayButton({
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       className={cn(
-        "flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 font-normal leading-none data-[range-end=true]:rounded-control data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-control data-[range-end=true]:rounded-r-control data-[range-start=true]:rounded-l-control data-[range-end=true]:bg-inverse-background data-[range-middle=true]:bg-selection data-[range-start=true]:bg-inverse-background data-[selected-single=true]:bg-inverse-background data-[range-end=true]:text-fg-on-inverse data-[range-middle=true]:text-fg-default data-[range-start=true]:text-fg-on-inverse data-[selected-single=true]:text-fg-on-inverse group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-raised group-data-[focused=true]/day:ring-1 group-data-[focused=true]/day:ring-focus-ring [&>span]:text-label [&>span]:opacity-70",
+        "flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 font-normal leading-none data-[range-end=true]:rounded-lg data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-lg data-[range-end=true]:rounded-r-lg data-[range-start=true]:rounded-l-lg data-[range-end=true]:bg-inverse-background data-[range-middle=true]:bg-selection data-[range-start=true]:bg-inverse-background data-[selected-single=true]:bg-inverse-background data-[range-end=true]:text-fg-on-inverse data-[range-middle=true]:text-fg-default data-[range-start=true]:text-fg-on-inverse data-[selected-single=true]:text-fg-on-inverse group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-raised group-data-[focused=true]/day:ring-1 group-data-[focused=true]/day:ring-focus-ring [&>span]:text-label [&>span]:opacity-70",
         defaultClassNames.day,
         className,
       )}

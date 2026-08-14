@@ -20,7 +20,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { IconComponent } from "#system/icon-context";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 import { Badge, type BadgeProps } from "#components/badge";
 
@@ -187,7 +186,6 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
   ({ children, className, labelVisibility, activeLabel, activationMode, activateOnFocus, ...props }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const isMouseInside = useRef(false);
-    const shape = useShape();
     const valueOrderCtx = useContext(TabsValueOrderContext);
     const variant = valueOrderCtx?.variant ?? "pill";
     const resolvedLabelVisibility = labelVisibility ?? (activeLabel ? "active" : "all");
@@ -325,7 +323,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
           className={cn(
             variant === "pill" && [
               "relative inline-flex items-center gap-0.5 p-1 select-none bg-muted",
-              shape.container,
+              "rounded-xl",
             ],
             variant === "segment" &&
               "relative flex items-center gap-0.5 select-none overflow-x-auto max-w-[calc(100%_+_8px)] scrollbar-hide -mx-1 px-1 -my-1 py-1",
@@ -341,7 +339,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
               className={cn(
                 "absolute pointer-events-none",
                 "bg-brand",
-                variant !== "underline" && shape.bg
+                variant !== "underline" && "rounded-lg"
               )}
               initial={false}
               animate={{
@@ -368,7 +366,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
                 className={cn(
                   "absolute pointer-events-none",
                   variant === "pill" ? "bg-hover" : "bg-active",
-                  shape.bg
+                  "rounded-lg"
                 )}
                 initial={{
                   left: selectedRect.left,
@@ -412,15 +410,15 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
             {focusRect && (
               <motion.div
                 className={cn(
-                  "absolute pointer-events-none z-raised border border-focus-ring",
-                  shape.focusRing
+                  "absolute pointer-events-none z-raised outline outline-1 outline-focus-ring outline-offset-2",
+                  "rounded-lg"
                 )}
                 initial={false}
                 animate={{
-                  left: focusRect.left - 2,
-                  top: focusRect.top - 2,
-                  width: focusRect.width + 4,
-                  height: focusRect.height + 4,
+                  left: focusRect.left,
+                  top: focusRect.top,
+                  width: focusRect.width,
+                  height: focusRect.height,
                 }}
                 exit={{ opacity: 0, transition: spring.fast.exit }}
                 transition={{
@@ -456,7 +454,6 @@ interface TabItemProps
 const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
   ({ value, icon: Icon, label, badge, _index = 0, className, onClick, ...props }, ref) => {
     const internalRef = useRef<HTMLButtonElement>(null);
-    const shape = useShape();
     const {
       registerTab,
       hoveredIndex,
@@ -537,7 +534,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
           variant === "segment" && [
             "h-control-sm",
             collapseLabel ? "gap-0" : "gap-2",
-            shape.bg,
+            "rounded-lg",
           ],
           variant === "underline" && [
             "h-control-md",

@@ -14,15 +14,12 @@ import {
   motionDurationTokens,
   fontTokens,
   controlHeightTokens,
-  radiusRoles,
-  shapeModes,
   layerTokens,
 } from "../packages/ui/src/tokens/semantic-tokens.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const GLOBALS_PATH = `${ROOT}/app/globals.css`;
 const REGISTRY_PATH = `${ROOT}/packages/ui/registry.json`;
-const RUNTIME_PATH = `${ROOT}/packages/ui/src/system/design-tokens.ts`;
 const DOC_PATH = `${ROOT}/SEMANTIC-TOKENS.md`;
 const START = "/* BEGIN GENERATED SEMANTIC TOKENS — DO NOT EDIT */";
 const END = "/* END GENERATED SEMANTIC TOKENS */";
@@ -86,11 +83,6 @@ export function registryCssVars() {
     dark[`control-height-${token.name}`] = token.value;
   }
 
-  for (const role of radiusRoles) {
-    theme[`radius-${role.name}`] = `var(--${role.name}-radius)`;
-    light[`${role.name}-radius`] = `${shapeModes.rounded[role.name]}px`;
-    dark[`${role.name}-radius`] = `${shapeModes.rounded[role.name]}px`;
-  }
   for (const token of layerTokens) {
     light[`layer-${token.name}`] = String(token.value);
     dark[`layer-${token.name}`] = String(token.value);
@@ -143,9 +135,6 @@ function renderRootDeclarations() {
   }
   for (const token of motionDurationTokens) lines.push(cssDeclaration(`motion-duration-${token.name}`, token.value));
   for (const token of controlHeightTokens) lines.push(cssDeclaration(`control-height-${token.name}`, token.value));
-  for (const role of radiusRoles) {
-    lines.push(cssDeclaration(`${role.name}-radius`, `${shapeModes.rounded[role.name]}px`));
-  }
   for (const token of layerTokens) lines.push(cssDeclaration(`layer-${token.name}`, token.value));
   return lines.join("\n");
 }
@@ -216,18 +205,6 @@ ${indentLines(layerClasses)}
 ${END}`;
 }
 
-export function renderRuntimeTokens() {
-  const classes = Object.fromEntries(
-    Object.entries(shapeModes).map(([mode, values]) => [
-      mode,
-      Object.fromEntries(
-        Object.entries(values).map(([role, value]) => [role, `rounded-[${value}px]`])
-      ),
-    ])
-  );
-  return `// Generated from packages/ui/src/tokens/semantic-tokens.mjs. Do not edit directly.\n\nexport const shapeTokenValues = ${JSON.stringify(shapeModes, null, 2)} as const;\n\nexport const shapeTokenClasses = ${JSON.stringify(classes, null, 2)} as const;\n\nexport type GeneratedShapeVariant = keyof typeof shapeTokenValues;\n`;
-}
-
 const table = (headers, rows) => [
   `| ${headers.join(" | ")} |`,
   `| ${headers.map(() => "---").join(" | ")} |`,
@@ -254,9 +231,6 @@ export function renderDocumentation() {
   ]);
   const controlRows = controlHeightTokens.map((t) => [
     `\`--control-height-${t.name}\``, `\`h-control-${t.name}\``, `${t.px}px`, t.usage,
-  ]);
-  const radiusRows = radiusRoles.map((t) => [
-    `\`--${t.name}-radius\``, `\`rounded-${t.name}\``, `${shapeModes.rounded[t.name]}px`, `${shapeModes.pill[t.name]}px`, t.usage,
   ]);
   const shadowRows = shadowTokens.map((t) => [
     `\`--shadow-${t.name}\``, `\`shadow-${t.name}\``, t.usage,
@@ -455,7 +429,7 @@ CSS transition 使用以上时长层级；Framer Motion 使用同名的 \`spring
 - 页面边距使用响应式组合，例如 \`px-4 md:px-6 lg:px-8\`，而不是专用的页面边距令牌。
 - \`space-x-*\` / \`space-y-*\` 只用于简单、不会换行的线性文档流；复杂布局优先使用 \`gap-*\`。
 - 避免任意值，例如可以使用 \`gap-3\` 时不要使用 \`gap-[12px]\`。
-- 控件高度、圆角、字号、承载面和层级仍属于跨组件设计契约，应继续使用语义设计令牌。
+- 控件高度、字号、承载面和层级仍属于跨组件设计契约，应继续使用语义设计令牌。
 
 推荐示例：
 
@@ -473,9 +447,15 @@ ${table(["CSS 令牌", "Tailwind", "值", "用途"], controlRows)}
 
 ## 圆角
 
-${table(["CSS 令牌", "Tailwind", "圆角模式", "胶囊模式", "用途"], radiusRows)}
+组件直接使用 Tailwind 原生圆角刻度，不发布自定义 Radius Token 或运行时 Shape Provider。
 
-\`ShapeProvider\` 会在运行时更新这些 CSS 变量，因此通过 Portal 渲染的内容与普通 DOM 内容能够保持相同形态。必须保持圆形的元素应使用 \`rounded-full\` / \`--full-radius\`，不跟随形态模式切换。
+| Tailwind | 默认值 | 用途 |
+| --- | --- | --- |
+| \`rounded-lg\` | 8px | 按钮、输入框、独立交互项与局部状态背景 |
+| \`rounded-xl\` | 12px | 卡片、菜单组、对话框和大容器 |
+| \`rounded-full\` | 完全圆角 | Avatar、圆点、旋钮和有意的局部胶囊结构 |
+
+组件会跟随宿主 Tailwind Theme 对 \`--radius-lg\` 和 \`--radius-xl\` 的配置。需要按四个角动画选区的组件从实际元素的 computed \`border-radius\` 读取数值，不能在 JavaScript 中重复写死圆角。
 
 ## 阴影
 
@@ -527,11 +507,11 @@ ${table(["CSS 令牌", "CSS 类", "值", "用途"], layerRows)}
 以下示例展示完成承载面与阴影语义迁移后的目标 API：
 
 \`\`\`tsx
-<button className="h-control-md px-4 text-body rounded-control bg-brand text-fg-on-brand">
+<button className="h-control-md rounded-lg px-4 text-body bg-brand text-fg-on-brand">
   保存更改
 </button>
 
-<section className="flex flex-col gap-4 rounded-container bg-surface-raised p-4 shadow-raised">
+<section className="flex flex-col gap-4 rounded-xl bg-surface-raised p-4 shadow-raised">
   <h2 className="text-title text-fg-default">账户</h2>
   <p className="text-body text-fg-muted">管理你的账户设置。</p>
 </section>
@@ -570,26 +550,10 @@ export function updateRegistry(registry) {
   const item = registry.items.find((entry) => entry.name === "surfaces");
   if (!item) throw new Error('packages/ui/registry.json is missing the "surfaces" theme item');
   item.title = "Semantic Design Tokens";
-  item.description = "Complete semantic token system: color, typography, control sizes, radii, shadows, surfaces, and layers. Ordinary layout spacing uses Tailwind's native scale. The historical surfaces slug is retained for compatibility.";
+  item.description = "Complete semantic token system: color, typography, control sizes, shadows, surfaces, and layers. Layout spacing and border radii use Tailwind's native scale. The historical surfaces slug is retained for compatibility.";
   item.dependencies = ["tw-animate-css"];
   item.cssVars = registryCssVars();
   item.css = registryCssRules();
-
-  const shapeContext = registry.items.find((entry) => entry.name === "shape-context");
-  if (!shapeContext) throw new Error('packages/ui/registry.json is missing the "shape-context" item');
-  shapeContext.registryDependencies ??= [];
-  shapeContext.registryDependencies = [
-    "surfaces",
-    ...shapeContext.registryDependencies.filter((dependency) => dependency !== "surfaces"),
-  ];
-  const runtimeTokenPath = "packages/ui/src/system/design-tokens.ts";
-  if (!shapeContext.files.some((file) => file.path === runtimeTokenPath)) {
-    shapeContext.files.push({
-      path: runtimeTokenPath,
-      type: "registry:lib",
-      target: "lib/design-tokens.ts",
-    });
-  }
 
   for (const entry of registry.items) {
     if (entry.type !== "registry:ui") continue;
@@ -621,7 +585,6 @@ async function expectedArtifacts() {
   return {
     globals: replaceBlock(globals, renderGlobalsBlock()),
     registry: `${JSON.stringify(updateRegistry(registry), null, 2)}\n`,
-    runtime: renderRuntimeTokens(),
     documentation: renderDocumentation(),
   };
 }
@@ -632,7 +595,6 @@ async function main() {
   const targets = [
     [GLOBALS_PATH, expected.globals],
     [REGISTRY_PATH, expected.registry],
-    [RUNTIME_PATH, expected.runtime],
     [DOC_PATH, expected.documentation],
   ];
 
@@ -652,7 +614,6 @@ async function main() {
   for (const [path, content] of targets) await writeFile(path, content);
   console.log("✓ generated app/globals.css token block");
   console.log("✓ generated packages/ui/registry.json semantic theme");
-  console.log("✓ generated packages/ui/src/system/design-tokens.ts");
   console.log("✓ generated SEMANTIC-TOKENS.md");
 }
 

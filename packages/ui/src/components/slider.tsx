@@ -22,7 +22,6 @@ import {
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -151,7 +150,6 @@ function ValueDisplay({
   isRange,
   isInteracting,
 }: ValueDisplayProps) {
-  const shape = useShape();
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -210,7 +208,7 @@ function ValueDisplay({
               aria-label={`Edit slider value${isRange ? (index === 0 ? " (start)" : " (end)") : ""}`}
               className={cn(
                 "w-[5ch] bg-transparent text-fg-default outline-none border-b border-border text-center",
-                shape.input,
+                "rounded-lg",
                 "font-medium"
               )}
             />
@@ -278,7 +276,6 @@ interface TooltipValueProps {
 }
 
 function TooltipValue({ value, formatValue, motionX }: TooltipValueProps) {
-  const shape = useShape();
   const tooltipX = useTransform(motionX, (x) => x + THUMB_SIZE / 2);
   return (
     <motion.div
@@ -293,7 +290,7 @@ function TooltipValue({ value, formatValue, motionX }: TooltipValueProps) {
       transition={spring.fast}
     >
       <span
-        className={cn("text-label text-fg-on-inverse tabular-nums whitespace-nowrap bg-inverse-background px-2 py-1", shape.bg, "font-medium")}
+        className={cn("text-label text-fg-on-inverse tabular-nums whitespace-nowrap bg-inverse-background px-2 py-1", "rounded-lg", "font-medium")}
       >
         {formatValue(value)}
       </span>
@@ -334,7 +331,6 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
   ) => {
     const isRange = Array.isArray(value);
     const values = toPrimitiveValue(value);
-    const shape = useShape();
 
     // Non-uniform step mode: sorted, deduped list of allowed values. Keyed on
     // the joined string so inline array literals don't recompute every render.
@@ -962,7 +958,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
                   }}
                 >
                   <span
-                    className={cn("text-label text-fg-on-inverse tabular-nums whitespace-nowrap bg-inverse-background px-2 py-1", shape.bg, "font-medium")}
+                    className={cn("text-label text-fg-on-inverse tabular-nums whitespace-nowrap bg-inverse-background px-2 py-1", "rounded-lg", "font-medium")}
                   >
                     {formatValue(hoverPreview.snappedValue)}
                   </span>
@@ -1124,7 +1120,6 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
     } | null>(null);
     const [showHoverTooltip, setShowHoverTooltip] = useState(false);
     const hoverDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const shape = useShape();
 
     // Show hover tooltip after 100ms delay
     useEffect(() => {
@@ -1404,7 +1399,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
               }}
             >
               <span
-                className={cn("text-label text-fg-on-inverse tabular-nums whitespace-nowrap bg-inverse-background px-2 py-1", shape.bg, "font-medium")}
+                className={cn("text-label text-fg-on-inverse tabular-nums whitespace-nowrap bg-inverse-background px-2 py-1", "rounded-lg", "font-medium")}
               >
                 {formatValue(hoverPreview.snappedValue)}
               </span>
@@ -1419,7 +1414,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
           variant === "scrubber"
             ? "flex items-center gap-3 px-4 cursor-ew-resize"
             : "cursor-ew-resize",
-          shape.bg,
+          "rounded-lg",
           disabled && "opacity-50 pointer-events-none",
           className
         )}

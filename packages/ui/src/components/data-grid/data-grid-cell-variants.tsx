@@ -1947,7 +1947,7 @@ export function FileCell<TData>({
                 data-invalid={error ? "" : undefined}
                 data-disabled={isPending ? "" : undefined}
                 tabIndex={isDragging || isPending ? -1 : 0}
-                className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-control border-2 border-dashed p-6 outline-none transition-colors hover:bg-hover focus-visible:border-focus-ring focus-visible:ring-1 focus-visible:ring-focus-ring data-disabled:pointer-events-none data-dragging:border-fg-default/30 data-invalid:border-danger-border data-dragging:bg-hover data-disabled:opacity-50 data-invalid:ring-danger-border/20 data-invalid:focus-visible:outline-1 data-invalid:focus-visible:outline-focus-ring data-invalid:focus-visible:outline-offset-2"
+                className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-6 outline-none transition-colors hover:bg-hover focus-visible:border-focus-ring focus-visible:ring-1 focus-visible:ring-focus-ring data-disabled:pointer-events-none data-dragging:border-fg-default/30 data-invalid:border-danger-border data-dragging:bg-hover data-disabled:opacity-50 data-invalid:ring-danger-border/20 data-invalid:focus-visible:outline-1 data-invalid:focus-visible:outline-focus-ring data-invalid:focus-visible:outline-offset-2"
                 ref={dropzoneRef}
                 onClick={onDropzoneClick}
                 onDragEnter={onDropzoneDragEnter}
@@ -2011,7 +2011,7 @@ export function FileCell<TData>({
                         <div
                           key={file.id}
                           data-pending={isFilePending ? "" : undefined}
-                          className="flex items-center gap-2 rounded-control border bg-muted px-2 py-1.5 data-pending:opacity-60"
+                          className="flex items-center gap-2 rounded-lg border bg-muted px-2 py-1.5 data-pending:opacity-60"
                         >
                           {FileIcon && (
                             <FileIcon className="size-4 shrink-0 text-fg-muted" />

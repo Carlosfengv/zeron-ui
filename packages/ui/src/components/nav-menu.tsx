@@ -15,7 +15,6 @@ import {
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 
 export type NavOrientation = "vertical" | "horizontal";
@@ -95,7 +94,6 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
     );
     const [focusedId, setFocusedId] = useState<string | null>(null);
     const reduceMotion = useReducedMotion() ?? false;
-    const shape = useShape();
     const axis = orientation === "vertical" ? "y" : "x";
     const {
       activeIndex: hoveredIndex,
@@ -261,7 +259,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
                 className={cn(
                   "pointer-events-none absolute z-base",
                   variant === "segment" ? "bg-brand" : "bg-active",
-                  shape.bg
+                  "rounded-lg"
                 )}
                 initial={false}
                 animate={{
@@ -285,7 +283,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
                 className={cn(
                   "pointer-events-none absolute z-base",
                   variant === "segment" ? "bg-active" : "bg-hover",
-                  shape.bg
+                  "rounded-lg"
                 )}
                 initial={{ opacity: 0, top: hoverRect.top, left: hoverRect.left, width: hoverRect.width, height: hoverRect.height }}
                 animate={{ top: hoverRect.top, left: hoverRect.left, width: hoverRect.width, height: hoverRect.height, opacity: 1 }}
@@ -299,7 +297,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
               <motion.div
                 aria-hidden="true"
                 data-slot="nav-item-focus-indicator"
-                className={cn("pointer-events-none absolute z-raised border border-focus-ring", shape.focusRing)}
+                className={cn("pointer-events-none absolute z-raised outline outline-1 outline-focus-ring outline-offset-2", "rounded-lg")}
                 initial={false}
                 animate={{
                   top: focusRect.top,

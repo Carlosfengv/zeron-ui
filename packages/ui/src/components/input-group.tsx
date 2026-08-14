@@ -18,7 +18,6 @@ import { Field } from "@base-ui/react/field";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { IconComponent } from "#system/icon-context";
 import { cn } from "#system/utils";
-import { useShape } from "#system/shape-context";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 import { Button, type ButtonProps } from "#components/button";
 import { Input, type InputProps } from "#components/input";
@@ -29,7 +28,6 @@ type InputGroupProps = HTMLAttributes<HTMLDivElement>;
 
 const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
   ({ className, ...props }, ref) => {
-    const shape = useShape();
 
     return (
       <div
@@ -41,7 +39,7 @@ const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
           "has-aria-invalid:border-danger-border has-aria-invalid:hover:border-danger-border has-aria-invalid:ring-1 has-aria-invalid:ring-danger-border/40 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-1 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-focus-ring has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-offset-2",
           "has-data-[align=block-start]:flex-col has-data-[align=block-start]:items-stretch",
           "has-data-[align=block-end]:flex-col has-data-[align=block-end]:items-stretch",
-          shape.input,
+          "rounded-lg",
           className
         )}
         data-slot="input-group"
@@ -308,7 +306,6 @@ const InputField = forwardRef<HTMLDivElement, InputFieldProps>(
     const inputRef = useRef<HTMLElement | null>(null);
     const { registerItem, activeIndex } = useInputGroup();
     const [isFocused, setIsFocused] = useState(false);
-    const shape = useShape();
 
     useEffect(() => {
       registerItem(index, internalRef.current);
@@ -397,7 +394,7 @@ const InputField = forwardRef<HTMLDivElement, InputFieldProps>(
             inputRef.current?.focus();
           }}
           className={cn(
-            `flex items-center gap-2 ${shape.input} px-3 py-2 ring-1 transition-all duration-fast`,
+            `flex items-center gap-2 rounded-lg px-3 py-2 ring-1 transition-all duration-fast`,
             bgClass,
             ringClass,
             focusOutlineClass

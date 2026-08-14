@@ -6,20 +6,18 @@ import {
   type HTMLAttributes,
 } from "react";
 import { cn } from "#system/utils";
-import { useShape } from "#system/shape-context";
 
 type KbdProps = ComponentPropsWithoutRef<"kbd">;
 
 const Kbd = forwardRef<HTMLElement, KbdProps>(
   ({ className, style, ...props }, ref) => {
-    const shape = useShape();
 
     return (
       <kbd
         ref={ref}
         className={cn(
           "pointer-events-none inline-flex h-5 min-w-5 select-none items-center justify-center gap-1 border border-border-subtle bg-muted px-1 font-mono text-label text-fg-muted shadow-control",
-          shape.item,
+          "rounded-lg",
           "font-medium",
           className
         )}

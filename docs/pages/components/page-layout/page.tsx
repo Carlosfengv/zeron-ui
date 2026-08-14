@@ -85,7 +85,7 @@ function PageSubnavPreview() {
         </PageSubnavList>
       </PageSubnav>
       <PageBody className="grid gap-3">
-        <section aria-live="polite" className="rounded-control bg-muted p-4">
+        <section aria-live="polite" className="rounded-lg bg-muted p-4">
           <PageTitle className="text-title">{section.label}</PageTitle>
           <PageDescription>{section.description}</PageDescription>
         </section>
@@ -169,7 +169,7 @@ export default function PageLayoutDoc() {
         <ComponentPreview code={bodyOnlyCode} padding="compact">
           <PageLayout gutter="none" className="h-[18rem] bg-surface-raised">
             <PageContent>
-              <PageBody className="rounded-control bg-muted p-4">A page can omit its separate title area.</PageBody>
+              <PageBody className="rounded-lg bg-muted p-4">A page can omit its separate title area.</PageBody>
             </PageContent>
           </PageLayout>
         </ComponentPreview>

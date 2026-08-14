@@ -6,7 +6,6 @@ import * as React from "react";
 import { useAsRef } from "#hooks/use-as-ref";
 import { useDebouncedCallback } from "#hooks/use-debounced-callback";
 import type { SearchState } from "#system/data-grid-types";
-import { useShape } from "#system/shape-context";
 import { cn } from "#system/utils";
 import { createIconSlot } from "#system/icon-context";
 import { Button } from "../button";
@@ -60,7 +59,6 @@ function DataGridSearchImpl({
   onNavigateToNextMatch,
   onNavigateToPrevMatch,
 }: DataGridSearchProps) {
-  const shape = useShape();
   const propsRef = useAsRef({
     onSearchOpenChange,
     onSearchQueryChange,
@@ -177,7 +175,7 @@ function DataGridSearchImpl({
       data-slot="grid-search"
       className={cn(
         "fade-in-0 slide-in-from-top-2 absolute end-4 top-4 z-popover flex animate-in flex-col gap-2 border border-border bg-surface-floating p-2 shadow-floating",
-        shape.container,
+        "rounded-xl",
       )}
     >
       <div className="flex items-center gap-2">

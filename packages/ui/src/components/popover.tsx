@@ -12,7 +12,6 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import {
   resolveSurface,
   SurfaceProvider,
@@ -204,7 +203,6 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
     const ambientPortal = useContext(PopoverPortalContainerContext);
     const fullscreenPortal = usePortalContainer();
     const reduceMotion = useReducedMotion();
-    const shape = useShape();
     const substrate = useSurface();
     const surface = resolveSurface(substrate, "floating");
     const showLiquid = liquid ?? visual?.liquid ?? false;
@@ -302,7 +300,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
                     className={cn(
                       "pointer-events-none absolute inset-0 z-underlay",
                       surfaceClasses(surface, "floating"),
-                      shape.container
+                      "rounded-xl"
                     )}
                   />
 
@@ -316,7 +314,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
                         className={cn(
                           "absolute inset-0",
                           surfaceClasses(surface),
-                          shape.container
+                          "rounded-xl"
                         )}
                       />
                       <motion.span

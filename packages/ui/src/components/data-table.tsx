@@ -57,7 +57,6 @@ import {
 } from "#components/table";
 import { cn } from "#system/utils";
 import { useIcon, type IconComponent } from "#system/icon-context";
-import { useShape } from "#system/shape-context";
 
 export type DataTableColumnMeta = {
   label?: string;
@@ -165,7 +164,6 @@ function DataTable<TData>({
   table,
   ...props
 }: DataTableProps<TData>) {
-  const shape = useShape();
 
   return (
     <div
@@ -177,7 +175,7 @@ function DataTable<TData>({
       <div
         className={cn(
           "overflow-hidden border border-border bg-surface-floating",
-          shape.container
+          "rounded-xl"
         )}
       >
         <div className="overflow-x-auto">

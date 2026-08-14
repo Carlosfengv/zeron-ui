@@ -18,7 +18,6 @@ import {
 import { AnimatePresence, motion, Reorder, useReducedMotion } from "framer-motion";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import { useIcon } from "#system/icon-context";
 import { surfaceClasses } from "#system/surface-classes";
 import { SurfaceProvider } from "#system/surface-context";
@@ -254,7 +253,7 @@ function QueuedRow({
       }}
       className={cn(
         // Fixed height keeps queued rows aligned during reorder animations.
-        "group/qrow flex h-control-sm items-center gap-2 rounded-control bg-muted px-2.5",
+        "group/qrow flex h-control-sm items-center gap-2 rounded-lg bg-muted px-2.5",
         "text-body text-fg-default/85 select-none outline-none",
         "cursor-grab active:cursor-grabbing",
         "focus-visible:ring-1 focus-visible:ring-focus-ring", "font-normal"
@@ -331,7 +330,6 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
     },
     ref
   ) => {
-    const shape = useShape();
     const ArrowUpIcon = useIcon("arrow-up");
     const reduceMotion = useReducedMotion() ?? false;
     const isTouch = useIsTouch();
@@ -748,7 +746,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
           // bump *contrast* without ever appearing to thicken the stroke.
           "flex flex-col gap-1 p-2 transition-[box-shadow,color] duration-fast",
           surfaceClasses("raised", "raised"),
-          shape.container,
+          "rounded-xl",
           clickToFocus && !disabled && "cursor-text",
           disabled && "opacity-50 pointer-events-none",
           className
@@ -915,7 +913,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
                     className="flex items-center justify-center leading-none"
                   >
                     {buttonMode === "stop" ? (
-                      <span className="h-3 w-3 rounded-[3px] bg-current" />
+                      <span className="h-3 w-3 rounded-sm bg-current" />
                     ) : (
                       // Override icon-sm's small 14px svg — the send glyph reads
                       // better a touch larger. `size` matches the attribute to

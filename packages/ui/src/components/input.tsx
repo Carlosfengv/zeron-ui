@@ -3,7 +3,6 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "#system/utils";
-import { useShape } from "#system/shape-context";
 
 const inputVariants = cva(
   [
@@ -52,12 +51,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const shape = useShape();
 
     return (
       <input
         ref={ref}
-        className={cn(inputVariants({ size, variant }), shape.input, className)}
+        className={cn(inputVariants({ size, variant }), "rounded-lg", className)}
         data-size={size}
         data-slot="input"
         data-variant={variant}

@@ -50,7 +50,7 @@ async function writeJson(path, data) {
 }
 
 export async function processRegistry(registryDir = REGISTRY_DIR) {
-  const staleFiles = new Set(["font-weight.json"]);
+  const staleFiles = new Set(["font-weight.json", "shape-context.json"]);
   const initialFiles = await readdir(registryDir);
   await Promise.all(
     initialFiles
@@ -87,6 +87,19 @@ export async function processRegistry(registryDir = REGISTRY_DIR) {
 
     await writeJson(filePath, data);
     console.log(`  ✓ ${file}`);
+  }
+
+  // shadcn applies a registry:theme item to the generated catalog but does not
+  // emit its standalone file. Components reference this compatibility URL, so
+  // publish it directly from the composed catalog.
+  const surfaces = catalog.items?.find((item) => item.name === "surfaces");
+  if (surfaces) {
+    const { type: _type, ...theme } = structuredClone(surfaces);
+    theme.$schema = "https://ui.shadcn.com/schema/registry-item.json";
+    rewriteDeps(theme, itemNames);
+    addRuntimeDependencies(theme);
+    await writeJson(join(registryDir, "surfaces.json"), theme);
+    console.log("  ✓ surfaces.json");
   }
 }
 

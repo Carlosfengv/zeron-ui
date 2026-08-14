@@ -32,12 +32,8 @@
     "light": "浅色",
     "dark": "深色",
     "brand": "品牌色",
-    "radius": "圆角",
-    "rounded": "圆角",
-    "pill": "胶囊",
     "icons": "图标",
-    "pressToCycle": "按 {key} 键循环切换",
-    "pressToToggle": "按 {key} 键切换"
+    "pressToCycle": "按 {key} 键循环切换"
   },
   "askUser": {
     "skip": "跳过",

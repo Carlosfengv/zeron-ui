@@ -16,7 +16,6 @@ import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 import { useMergeSplitBlocks, SelectionBackgrounds } from "#hooks/use-merge-split";
-import { useShape } from "#system/shape-context";
 import { Checkbox } from "#components/checkbox";
 
 interface CheckboxGroupContextValue {
@@ -97,11 +96,10 @@ const CheckboxGroup = forwardRef<HTMLDivElement, CheckboxGroupProps>(
 
     const activeRect = activeIndex !== null ? itemRects[activeIndex] : null;
     const focusRect = focusedIndex !== null ? itemRects[focusedIndex] : null;
-    const shape = useShape();
 
     // Selected backgrounds, with the merge/split boundary animation when one
     // unchecked row bridges or splits two checked runs.
-    const blocks = useMergeSplitBlocks(checkedGroups, itemRects, shape.mergedRadius);
+    const blocks = useMergeSplitBlocks(checkedGroups, itemRects);
 
     return (
       <CheckboxGroupContext.Provider value={{ registerItem, activeIndex }}>
@@ -173,7 +171,7 @@ const CheckboxGroup = forwardRef<HTMLDivElement, CheckboxGroupProps>(
             {activeRect && (
               <motion.div
                 key={sessionRef.current}
-                className={`absolute ${shape.bg} bg-hover pointer-events-none`}
+                className={`absolute rounded-lg bg-hover pointer-events-none`}
                 initial={{
                   opacity: 0,
                   top: activeRect.top,
@@ -201,13 +199,13 @@ const CheckboxGroup = forwardRef<HTMLDivElement, CheckboxGroupProps>(
           <AnimatePresence>
             {focusRect && (
               <motion.div
-                className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
+                className={`absolute rounded-lg pointer-events-none z-raised outline outline-1 outline-focus-ring outline-offset-2`}
                 initial={false}
                 animate={{
-                  left: focusRect.left - 2,
-                  top: focusRect.top - 2,
-                  width: focusRect.width + 4,
-                  height: focusRect.height + 4,
+                  left: focusRect.left,
+                  top: focusRect.top,
+                  width: focusRect.width,
+                  height: focusRect.height,
                 }}
                 exit={{ opacity: 0, transition: spring.fast.exit }}
                 transition={{
@@ -259,7 +257,6 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
     }, [index, registerItem]);
 
     const isActive = activeIndex === index;
-    const shape = useShape();
 
     return (
       <div
@@ -296,7 +293,7 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
         }}
         className={cn(
           // Fixed height keeps every option row aligned and easy to target.
-          `relative z-content flex h-control-sm items-center gap-2.5 ${shape.item} px-3 cursor-pointer outline-none`,
+          `relative z-content flex h-control-sm items-center gap-2.5 rounded-lg px-3 cursor-pointer outline-none`,
           className
         )}
         {...props}

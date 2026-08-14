@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "#system/utils";
-import { useShape } from "#system/shape-context";
 
 // ─── Lazy pdfjs loader ────────────────────────────────────────────────────
 // Imports pdfjs-dist on first PDF, caches the module, and points the worker
@@ -51,7 +50,6 @@ interface FileThumbnailProps {
 }
 
 function FileThumbnail({ file, size, className }: FileThumbnailProps) {
-  const shape = useShape();
   const isImage = file.type.startsWith("image/");
   const isPdf = file.type === "application/pdf";
 
@@ -110,7 +108,7 @@ function FileThumbnail({ file, size, className }: FileThumbnailProps) {
     <div
       className={cn(
         "relative shrink-0 overflow-hidden bg-muted border border-border",
-        shape.bg,
+        "rounded-lg",
         className
       )}
       style={{ width: size, height: size }}

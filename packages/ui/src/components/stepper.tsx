@@ -10,7 +10,6 @@ import { useLazyRef } from "#hooks/use-lazy-ref";
 import { useComposedRefs } from "#system/compose-refs";
 import { cn } from "#system/utils";
 import { useIcon } from "#system/icon-context";
-import { useShape } from "#system/shape-context";
 
 const ROOT_NAME = "Stepper";
 const LIST_NAME = "StepperList";
@@ -641,7 +640,6 @@ function StepperItem(props: StepperItemProps) {
   } = props;
 
   const context = useStepperContext(ITEM_NAME);
-  const shape = useShape();
   const store = useStoreContext(ITEM_NAME);
   const orientation = context.orientation;
   const value = useStore((state) => state.value);
@@ -681,7 +679,7 @@ function StepperItem(props: StepperItemProps) {
           orientation === "horizontal"
             ? "flex-row"
             : "w-full flex-col items-start",
-          shape.item,
+          "rounded-lg",
           className,
         ),
         children,
@@ -718,7 +716,6 @@ function StepperTrigger(props: ButtonProps) {
   } = props;
 
   const context = useStepperContext(TRIGGER_NAME);
-  const shape = useShape();
   const itemContext = useStepperItemContext(TRIGGER_NAME);
   const itemValue = itemContext.value;
 
@@ -1000,7 +997,7 @@ function StepperTrigger(props: ButtonProps) {
           "focus-visible:ring-1 focus-visible:ring-focus-ring",
           "disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-1 aria-invalid:ring-danger-border/40 aria-invalid:focus-visible:outline-1 aria-invalid:focus-visible:outline-focus-ring aria-invalid:focus-visible:outline-offset-2",
           "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-          shape.button,
+          "rounded-lg",
           className,
         ),
         onClick,
@@ -1029,7 +1026,6 @@ function StepperIndicator(props: StepperIndicatorProps) {
   const { className, children, render, ref, style, ...indicatorProps } = props;
 
   const context = useStepperContext(INDICATOR_NAME);
-  const shape = useShape();
   const Check = useIcon("check");
   const itemContext = useStepperItemContext(INDICATOR_NAME);
 
@@ -1053,7 +1049,7 @@ function StepperIndicator(props: StepperIndicatorProps) {
           "flex size-6 shrink-0 items-center justify-center bg-muted text-label text-fg-default transition-colors duration-fast",
           "data-[state=active]:bg-brand data-[state=completed]:bg-brand",
           "data-[state=active]:text-fg-on-brand data-[state=completed]:text-fg-on-brand",
-          shape.item,
+          "rounded-lg",
           "font-medium",
           className
         ),

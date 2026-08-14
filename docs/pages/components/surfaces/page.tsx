@@ -54,7 +54,7 @@ function SurfaceCard({ role }: { role: SurfaceRole }) {
 
   return (
     <article
-      className={`${surfaceClasses(role, example.shadow)} flex min-h-28 flex-col justify-between rounded-container border border-border/70 p-4`}
+      className={`${surfaceClasses(role, example.shadow)} flex min-h-28 flex-col justify-between rounded-xl border border-border/70 p-4`}
       data-surface={role}
     >
       <div className="flex items-center justify-between gap-3">
@@ -83,27 +83,27 @@ function SemanticSurfaceGrid() {
 function SemanticNestingDemo() {
   return (
     <SurfaceProvider role="base">
-      <div className="w-full max-w-md rounded-container bg-surface-base p-3">
+      <div className="w-full max-w-md rounded-xl bg-surface-base p-3">
         <Elevated
-          className="rounded-container p-3"
+          className="rounded-xl p-3"
           shadow="raised"
           surface="raised"
         >
           <p className="text-label text-fg-muted">Raised container</p>
           <Elevated
-            className="mt-3 rounded-container p-3"
+            className="mt-3 rounded-xl p-3"
             shadow="floating"
             surface="floating"
           >
             <p className="text-label text-fg-muted">Floating content</p>
             <Elevated
-              className="mt-3 rounded-container p-3"
+              className="mt-3 rounded-xl p-3"
               shadow="overlay"
               surface="overlay"
             >
               <p className="text-label text-fg-muted">Overlay</p>
               <Elevated
-                className="mt-3 rounded-container p-3"
+                className="mt-3 rounded-xl p-3"
                 shadow="floating"
                 surface="top"
               >
@@ -194,7 +194,7 @@ export default function SurfacesDoc() {
         <div className="grid gap-3 sm:grid-cols-3">
           {shadowTokens.map((token) => (
             <div
-              className={`rounded-container bg-surface-raised p-4 ${shadowClasses(token.name as Exclude<ShadowRole, "none">)}`}
+              className={`rounded-xl bg-surface-raised p-4 ${shadowClasses(token.name as Exclude<ShadowRole, "none">)}`}
               key={token.name}
             >
               <code className="text-label">--shadow-{token.name}</code>

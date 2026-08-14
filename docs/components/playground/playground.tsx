@@ -102,7 +102,7 @@ export function PlaygroundPanel({
 
   return (
     <SurfaceProvider role="floating">
-      <div className="w-full rounded-control border-[0.5px] border-border-subtle bg-surface-floating p-4">
+      <div className="w-full rounded-lg border-[0.5px] border-border-subtle bg-surface-floating p-4">
         <div className="flex items-center justify-between px-1 pb-2 pt-2">
           <h2
             className="text-title text-fg-default leading-none font-semibold"
@@ -114,7 +114,7 @@ export function PlaygroundPanel({
             onClick={onShuffle}
             aria-label={t("randomizeProperties")}
             title={t("randomize")}
-            className="flex h-7 w-7 items-center justify-center rounded-control text-fg-muted/70 hover:text-fg-default hover:bg-hover transition-colors duration-fast cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-fg-muted/70 hover:text-fg-default hover:bg-hover transition-colors duration-fast cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]"
           >
             <Shuffle size={15} strokeWidth={1.5} />
           </button>

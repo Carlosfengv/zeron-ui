@@ -4,7 +4,6 @@ import * as React from "react";
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import { cn } from "#system/utils";
 import { useComposedRefs } from "#system/compose-refs";
-import { useShape } from "#system/shape-context";
 import {
   resolveSurface,
   SurfaceProvider,
@@ -91,7 +90,6 @@ function PopoverContent({
 }: PopoverContentProps) {
   const context = React.useContext(DataGridPopoverContext);
   const portalContainer = usePortalContainer();
-  const shape = useShape();
   const substrate = useSurface();
   const surface = resolveSurface(substrate, "floating");
 
@@ -119,7 +117,7 @@ function PopoverContent({
             "flex w-72 origin-[var(--transform-origin)] flex-col gap-2.5 p-2.5 text-body text-fg-default outline-none",
             "data-open:animate-in data-closed:animate-out data-open:fade-in-0 data-closed:fade-out-0",
             surfaceClasses(surface, "floating"),
-            shape.container,
+            "rounded-xl",
             className
           )}
           data-grid-popover=""

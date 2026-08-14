@@ -22,7 +22,6 @@ import type { IconComponent } from "#system/icon-context";
 import { cn } from "#system/utils";
 import { spring, exitFallbackMs } from "#system/springs";
 import { useProximityHover } from "#hooks/use-proximity-hover";
-import { useShape } from "#system/shape-context";
 import { Elevated } from "#system/elevated";
 import { usePortalContainer } from "#system/portal-container-context";
 
@@ -263,7 +262,6 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
     },
     ref
   ) => {
-    const shape = useShape();
     const iconSize = size === "sm" ? 14 : size === "lg" ? 20 : 16;
 
     return (
@@ -276,7 +274,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
           data-variant={variant ?? "bordered"}
           className={cn(
             triggerVariants({ variant, size }),
-            shape.input,
+            "rounded-lg",
             error && "border-danger-border hover:border-danger-border",
             className
           )}
@@ -356,7 +354,6 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
   ) => {
     const portalContainer = usePortalContainer();
     const { open, value, actionsRef } = useSelectContext();
-    const shape = useShape();
     const containerRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -542,7 +539,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                 className={cn(
                   // min-w tracks the trigger via the Positioner's --anchor-width
                   // var, matching the pre-migration minWidth: triggerRect.width.
-                  `relative flex flex-col gap-0.5 min-w-[var(--anchor-width)] max-h-[min(300px,var(--available-height))] overflow-y-auto ${shape.container} p-1 select-none outline-none`,
+                  `relative flex flex-col gap-0.5 min-w-[var(--anchor-width)] max-h-[min(300px,var(--available-height))] overflow-y-auto rounded-xl p-1 select-none outline-none`,
                   className
                 )}
               >
@@ -557,7 +554,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                   <AnimatePresence>
                     {checkedRect && (
                       <motion.div
-                        className={`absolute ${shape.bg} bg-selection pointer-events-none`}
+                        className={`absolute rounded-lg bg-selection pointer-events-none`}
                         // Position lives in `animate` so an in-session value
                         // change springs the marker to the picked row (the
                         // selection acknowledgment). Safe against the reopen
@@ -588,7 +585,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                     {activeRect && (
                       <motion.div
                         key={sessionRef.current}
-                        className={`absolute ${shape.bg} bg-hover pointer-events-none`}
+                        className={`absolute rounded-lg bg-hover pointer-events-none`}
                         initial={{
                           opacity: 0,
                           top: activeRect.top,
@@ -618,13 +615,13 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                   <AnimatePresence>
                     {focusRect && (
                       <motion.div
-                        className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
+                        className={`absolute rounded-lg pointer-events-none z-raised outline outline-1 outline-focus-ring outline-offset-2`}
                         initial={false}
                         animate={{
-                          left: focusRect.left - 2,
-                          top: focusRect.top - 2,
-                          width: focusRect.width + 4,
-                          height: focusRect.height + 4,
+                          left: focusRect.left,
+                          top: focusRect.top,
+                          width: focusRect.width,
+                          height: focusRect.height,
                         }}
                         exit={{ opacity: 0, transition: spring.fast.exit }}
                         transition={{
@@ -678,7 +675,6 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
     const selectCtx = useSelectContext();
     const contentCtx = useContext(SelectContentContext);
     const internalRef = useRef<HTMLDivElement>(null);
-    const shape = useShape();
     const hasMounted = useRef(false);
 
     useEffect(() => {
@@ -725,7 +721,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
               // shrink-0: the popup is a max-height flex column, so without it
               // a long list compresses rows to fit instead of scrolling.
               selectItemClassName,
-              shape.item,
+              "rounded-lg",
               isActive || isChecked
                 ? "text-fg-default"
                 : "text-fg-muted",

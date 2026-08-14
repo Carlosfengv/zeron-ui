@@ -11,7 +11,7 @@ const InfoItemGroup = forwardRef<HTMLDivElement, InfoItemGroupProps>(
       ref={ref}
       data-slot="info-item-group"
       className={cn(
-        "divide-y divide-border-subtle overflow-hidden rounded-container border border-border-subtle bg-surface-floating",
+        "divide-y divide-border-subtle overflow-hidden rounded-xl border border-border-subtle bg-surface-floating",
         className
       )}
       {...props}
@@ -51,7 +51,7 @@ const InfoItemLeading = forwardRef<HTMLDivElement, InfoItemLeadingProps>(
       ref={ref}
       data-slot="info-item-leading"
       className={cn(
-        "flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-control bg-muted text-fg-muted",
+        "flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-fg-muted",
         "[&_svg]:size-4 [&_svg]:shrink-0",
         className
       )}

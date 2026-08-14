@@ -4,7 +4,6 @@ import { forwardRef, useState, useCallback, useRef, useEffect, useId, type HTMLA
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "#system/utils";
 import { useIcon } from "#system/icon-context";
-import { useShape } from "#system/shape-context";
 import { spring } from "#system/springs";
 import { Tooltip } from "#components/tooltip";
 
@@ -37,7 +36,6 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
     const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
     const tooltipVisibleRef = useRef(false);
     const tooltipWasVisibleRef = useRef(false);
-    const shape = useShape();
 
     // Associate the visible label with the button: the button's accessible
     // name reads "Copy <label>" (its own state label + the field label).
@@ -329,7 +327,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
         className={cn(
           "group flex items-center w-full cursor-pointer outline-none transition-all duration-fast",
           "focus-visible:ring-1 focus-visible:ring-focus-ring",
-          shape.input
+          "rounded-lg"
         )}
       >
         {buttonContent}

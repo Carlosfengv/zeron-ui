@@ -28,7 +28,7 @@ describe("shell and page-layout composition contract", () => {
   it("owns the base background at the shell while PageContent provides the floating surface", () => {
     expect(appShell).toContain('"min-h-svh min-w-0 bg-surface-base"');
     expect(pageLayout).toContain(
-      '"flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-[0.5px] border-border bg-surface-floating rounded-container"'
+      '"flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-[0.5px] border-border bg-surface-floating rounded-xl"'
     );
     expect(pageLayout).not.toContain(
       'cva("mx-auto flex h-full w-full min-h-0 min-w-0 flex-col bg-surface-'
@@ -39,22 +39,22 @@ describe("shell and page-layout composition contract", () => {
     expect(docsSidebar).toContain('<SurfaceProvider role="floating">');
     expect(docsSidebar).toContain('className="bg-surface-floating"');
     expect(rightPanel).toContain(
-      'className="rounded-control border-[0.5px] border-border-subtle bg-surface-floating p-4"'
+      'className="rounded-lg border-[0.5px] border-border-subtle bg-surface-floating p-4"'
     );
     expect(rightPanel).toContain('<SurfaceProvider role="floating">');
     expect(rightPanel).not.toContain(
-      'className="p-4 rounded-control bg-muted"'
+      'className="p-4 rounded-lg bg-muted"'
     );
   });
 
   it("matches playground controls to the documentation settings card", () => {
     expect(playground).toContain('<SurfaceProvider role="floating">');
     expect(playground).toContain(
-      'className="w-full rounded-control border-[0.5px] border-border-subtle bg-surface-floating p-4"'
+      'className="w-full rounded-lg border-[0.5px] border-border-subtle bg-surface-floating p-4"'
     );
     expect(playground).not.toContain('<SurfaceProvider role="raised">');
     expect(playground).not.toContain(
-      'className="w-full rounded-control bg-muted p-3"'
+      'className="w-full rounded-lg bg-muted p-3"'
     );
   });
 
@@ -65,11 +65,21 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("gives fill previews a definite responsive height at every breakpoint", () => {
-    expect(blockDetail).toContain('"h-[clamp(32rem,70svh,52rem)] min-w-0 overflow-hidden rounded-container"');
+    expect(blockDetail).toContain('"h-[clamp(32rem,70svh,52rem)] min-w-0 overflow-hidden rounded-xl"');
     expect(blockDetail).toContain("previewMinHeightClass");
     expect(blockDetail).not.toContain('lg:h-[clamp(36rem,70svh,52rem)]');
     expect(componentPreview).toContain(
       '"min-h-0 flex-1 [&>*]:h-full [&>*]:min-h-0 [&>*]:w-full [&>*]:min-w-0"'
+    );
+  });
+
+  it("keeps preview/code tabs on the leading edge and inspection actions on the trailing edge", () => {
+    expect(componentPreview).toContain('"relative z-40 flex shrink-0 items-center justify-between gap-1"');
+    expect(componentPreview).toContain('className={cn("ml-auto flex shrink-0 items-center gap-1"');
+    expect(componentPreview).toContain("{!browserFrame && (");
+    expect(componentPreview).toContain("{browserFrame && (");
+    expect(componentPreview.lastIndexOf('<Tabs value={String(tab)}')).toBeLessThan(
+      componentPreview.indexOf('label={t("inspect")}')
     );
   });
 
@@ -160,7 +170,7 @@ describe("shell and page-layout composition contract", () => {
     expect(docs).toContain('<PlayField label="Navigation alignment">');
     expect(docs).toContain("<PlaySelect");
     expect(docs).not.toContain('role="group" aria-label="Navigation alignment"');
-    expect(docs).not.toContain('className="mt-2 inline-flex gap-1 rounded-control bg-muted p-1"');
+    expect(docs).not.toContain('className="mt-2 inline-flex gap-1 rounded-lg bg-muted p-1"');
   });
 
   it("aligns TopNav navigation left, center, or right with center as the default", () => {

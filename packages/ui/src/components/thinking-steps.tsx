@@ -22,7 +22,6 @@ import { cn } from "#system/utils";
 import { useIcon } from "#system/icon-context";
 import type { IconName } from "#system/icon-context";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import { Badge } from "#components/badge";
 import type { BadgeColor } from "#components/badge";
 
@@ -48,7 +47,6 @@ interface TriggerRowProps extends HTMLAttributes<HTMLButtonElement> {
 const TriggerRow = forwardRef<HTMLButtonElement, TriggerRowProps>(
   ({ open, children, className, ...props }, ref) => {
     const ChevronRight = useIcon("chevron-right");
-    const shape = useShape();
     const [isHovered, setIsHovered] = useState(false);
     const highlighted = open || isHovered;
 
@@ -61,7 +59,7 @@ const TriggerRow = forwardRef<HTMLButtonElement, TriggerRowProps>(
         <AnimatePresence>
           {isHovered && (
             <motion.div
-              className={`absolute inset-0 ${shape.bg} bg-hover pointer-events-none`}
+              className={`absolute inset-0 rounded-lg bg-hover pointer-events-none`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: spring.fast.exit }}
@@ -72,7 +70,7 @@ const TriggerRow = forwardRef<HTMLButtonElement, TriggerRowProps>(
         <Collapsible.Trigger
           ref={ref}
           className={cn(
-            `relative z-content flex items-center gap-2.5 ${shape.item} px-3 py-2 cursor-pointer outline-none select-none`,
+            `relative z-content flex items-center gap-2.5 rounded-lg px-3 py-2 cursor-pointer outline-none select-none`,
             "focus-visible:ring-1 focus-visible:ring-focus-ring focus-visible:ring-offset-0",
             className
           )}
@@ -336,7 +334,6 @@ function ThinkingStep({
   className,
 }: ThinkingStepProps) {
     const Icon = useIcon(icon);
-    const shape = useShape();
 
     if (status === "pending") return null;
 
@@ -357,7 +354,7 @@ function ThinkingStep({
           transition={{ duration: spring.slow.duration, delay, ease: "easeOut" }}
         >
           {/* Content row — this is the proximity hover target */}
-          <div className={cn("flex gap-2.5 px-2 py-1.5", shape.item)}>
+          <div className={cn("flex gap-2.5 px-2 py-1.5", "rounded-lg")}>
             {/* Icon column with continuous connector line */}
             <div className="flex flex-col items-center shrink-0 w-[14px]">
               <div className="pt-0.5">
@@ -509,7 +506,6 @@ interface ThinkingStepImageProps {
 }
 
 function ThinkingStepImage({ src, alt = "", caption, delay = 0, className }: ThinkingStepImageProps) {
-  const shape = useShape();
   return (
     <motion.div
       className={cn("mt-1.5", className)}
@@ -527,7 +523,7 @@ function ThinkingStepImage({ src, alt = "", caption, delay = 0, className }: Thi
         alt={alt}
         className={cn(
           "w-full max-w-[200px] object-cover",
-          shape.container
+          "rounded-xl"
         )}
       />
       {caption && (

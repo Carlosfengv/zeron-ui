@@ -15,6 +15,7 @@ export interface ItemRect {
   height: number;
   left: number;
   width: number;
+  radius: number;
 }
 
 interface UseProximityHoverOptions {
@@ -66,6 +67,12 @@ interface UseProximityHoverReturn {
  */
 const measurementAttempts = 3;
 
+function readRadius(element: HTMLElement): number {
+  const value = getComputedStyle(element).borderTopLeftRadius.trim();
+  const match = /^(\d*\.?\d+)px$/.exec(value);
+  return match ? Number(match[1]) : 0;
+}
+
 export function useProximityHover<T extends HTMLElement>(
   containerRef: RefObject<T | null>,
   options: UseProximityHoverOptions = {}
@@ -115,6 +122,7 @@ export function useProximityHover<T extends HTMLElement>(
         height: element.offsetHeight,
         left: element.offsetLeft,
         width: element.offsetWidth,
+        radius: readRadius(element),
       };
     });
     if (!everyItemHasLayout) return false;
@@ -132,7 +140,8 @@ export function useProximityHover<T extends HTMLElement>(
         p.top !== r.top ||
         p.left !== r.left ||
         p.width !== r.width ||
-        p.height !== r.height;
+        p.height !== r.height ||
+        p.radius !== r.radius;
     }
     if (changed) {
       itemRectsRef.current = rects;
@@ -338,6 +347,15 @@ export function useProximityHover<T extends HTMLElement>(
     ro.observe(container);
     return () => ro.disconnect();
   }, [containerRef, scheduleMeasurement]);
+
+  // Radius changes do not change box dimensions, so ResizeObserver cannot
+  // notice a host application's runtime Tailwind theme update. Dispatch this
+  // event after updating --radius-* to invalidate the geometry measurement.
+  useEffect(() => {
+    const handleRadiusChange = () => remeasure();
+    window.addEventListener("zeron:radius-change", handleRadiusChange);
+    return () => window.removeEventListener("zeron:radius-change", handleRadiusChange);
+  }, [remeasure]);
 
   // Clean up rAF on unmount
   useEffect(() => {

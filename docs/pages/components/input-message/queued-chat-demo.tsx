@@ -14,7 +14,6 @@ import { Dropdown } from "@zeron/ui/dropdown";
 import { MenuItem } from "@zeron/ui/menu-item";
 import { Tooltip } from "@zeron/ui/tooltip";
 import { useIcon } from "@zeron/icons/context";
-import { useShape } from "@zeron/ui/system/shape-context";
 import { spring } from "@zeron/ui/system/springs";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 
@@ -60,7 +59,6 @@ export function QueuedChatDemo({
   minHeightClass?: string;
   placeholder?: string;
 }) {
-  const shape = useShape();
   const ResetIcon = useIcon("rotate-ccw");
   const PlayIcon = useIcon("play");
   const PauseIcon = useIcon("pause");
@@ -544,7 +542,7 @@ export function QueuedChatDemo({
                       setTapExpanded(false);
                     }}
                     aria-label="Collapse queued messages"
-                    className={`absolute bottom-0 left-0 flex items-center justify-center text-fg-muted outline-none hover:text-fg-default focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] ${shape.button}`}
+                    className={`absolute bottom-0 left-0 flex items-center justify-center text-fg-muted outline-none hover:text-fg-default focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] rounded-lg`}
                     style={{ height: CARD_H, width: 40 }}
                   >
                     <ChevronDownIcon size={18} strokeWidth={2} />
@@ -651,7 +649,7 @@ export function QueuedChatDemo({
                       // With attachments, use 8px side padding to match the ~8px
                       // above/below the 28px thumbnail in the 44px card (square
                       // inset); otherwise the roomier 14px for text-only cards.
-                      className={`group/qm absolute bottom-0 left-10 right-10 flex select-none items-center gap-2 bg-emphasis ${item.files.length > 0 ? "pl-2" : "pl-3.5"} pr-1.5 text-body text-fg-muted shadow-floating active:cursor-grabbing ${shape.bg}`}
+                      className={`group/qm absolute bottom-0 left-10 right-10 flex select-none items-center gap-2 bg-emphasis ${item.files.length > 0 ? "pl-2" : "pl-3.5"} pr-1.5 text-body text-fg-muted shadow-floating active:cursor-grabbing rounded-lg`}
                     >
                       {item.files.length > 0 && (
                         <div className="pointer-events-none flex shrink-0 items-center gap-1">
@@ -660,11 +658,11 @@ export function QueuedChatDemo({
                               key={`${f.name}-${f.size}-${fi}`}
                               file={f}
                               size={28}
-                              className="rounded-control"
+                              className="rounded-lg"
                             />
                           ))}
                           {item.files.length > 3 && (
-                            <span className="flex h-7 w-7 items-center justify-center rounded-control bg-surface-base/40 text-label font-medium tabular-nums text-fg-default/80">
+                            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface-base/40 text-label font-medium tabular-nums text-fg-default/80">
                               +{item.files.length - 3}
                             </span>
                           )}
@@ -694,7 +692,7 @@ export function QueuedChatDemo({
                               editQueuedMsg(item);
                             }}
                             aria-label={`Edit queued message: ${item.text}`}
-                            className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center ${shape.button} text-fg-muted outline-none hover:bg-hover hover:text-fg-default focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]`}
+                            className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-fg-muted outline-none hover:bg-hover hover:text-fg-default focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]`}
                           >
                             <PencilIcon size={14} strokeWidth={2} />
                           </button>
@@ -708,7 +706,7 @@ export function QueuedChatDemo({
                               removeQueuedMsg(item);
                             }}
                             aria-label={`Remove queued message: ${item.text}`}
-                            className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center ${shape.button} text-fg-muted outline-none hover:bg-hover hover:text-fg-default focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]`}
+                            className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-fg-muted outline-none hover:bg-hover hover:text-fg-default focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]`}
                           >
                             <XIcon size={14} strokeWidth={2.5} />
                           </button>

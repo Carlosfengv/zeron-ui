@@ -1,6 +1,5 @@
 "use client";
 
-import { useShape } from "@zeron/ui/system/shape-context";
 import { ScrollArea } from "@zeron/ui/scroll-area";
 import {
   Table,
@@ -178,13 +177,12 @@ function PanelLabel({ children }: { children: React.ReactNode }) {
 }
 
 function ProblemDemo() {
-  const shape = useShape();
   return (
     <ComponentPreview code={PROBLEM_CODE} padding="responsive">
       <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
         <div className="flex flex-col gap-2">
           <div
-            className={`h-56 w-64 overflow-y-auto border border-border ${shape.container}`}
+            className={`h-56 w-64 overflow-y-auto border border-border rounded-xl`}
           >
             <ReleaseRows />
           </div>
@@ -196,7 +194,7 @@ function ProblemDemo() {
         <div className="flex flex-col gap-2">
           <ScrollArea
             viewportClassName="scroll-fade"
-            className={`h-56 w-64 border border-border ${shape.container}`}
+            className={`h-56 w-64 border border-border rounded-xl`}
           >
             <ReleaseRows />
           </ScrollArea>
@@ -211,7 +209,6 @@ function ProblemDemo() {
 }
 
 function HorizontalDemo() {
-  const shape = useShape();
   return (
     <ComponentPreview
       code={HORIZONTAL_CODE}
@@ -227,7 +224,7 @@ function HorizontalDemo() {
           {MONTHS.map((month) => (
             <div
               key={month}
-              className={`flex items-center justify-center h-20 w-28 shrink-0 border border-border text-label text-fg-default ${shape.bg}`}
+              className={`flex items-center justify-center h-20 w-28 shrink-0 border border-border text-label text-fg-default rounded-lg`}
             >
               {month}
             </div>
@@ -239,12 +236,11 @@ function HorizontalDemo() {
 }
 
 function FadeDemo() {
-  const shape = useShape();
   return (
     <ComponentPreview code={FADE_CODE} padding="responsive">
       <ScrollArea
         viewportClassName="scroll-fade"
-        className={`h-64 w-72 border border-border ${shape.container}`}
+        className={`h-64 w-72 border border-border rounded-xl`}
       >
         <ReleaseRows />
       </ScrollArea>

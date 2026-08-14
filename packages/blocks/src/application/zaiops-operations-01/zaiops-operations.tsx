@@ -148,7 +148,7 @@ function OperationsNavigationPanel({
                 <button
                   key={name}
                   type="button"
-                  className="flex h-control-md w-full items-center rounded-control px-2 text-left text-body text-fg-default transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
+                  className="flex h-control-md w-full items-center rounded-lg px-2 text-left text-body text-fg-default transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
                   aria-pressed={organization === name}
                   onClick={() => onOrganizationChange(name)}
                 >
@@ -290,7 +290,7 @@ export function ZaiopsOperations({
             <DialogTitle>Search ZAIops</DialogTitle>
             <DialogDescription>Search sessions, clusters, inspection plans, and the knowledge base.</DialogDescription>
           </DialogHeader>
-          <div className="rounded-control border border-border-subtle px-3 py-2 text-body text-fg-subtle">Enter a keyword to begin searching…</div>
+          <div className="rounded-lg border border-border-subtle px-3 py-2 text-body text-fg-subtle">Enter a keyword to begin searching…</div>
         </DialogContent>
       </Dialog>
     </SidebarProvider>

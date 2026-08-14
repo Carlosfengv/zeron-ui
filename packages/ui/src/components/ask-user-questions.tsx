@@ -19,7 +19,6 @@ import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
 import { Field } from "@base-ui/react/field";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import { useIcon } from "#system/icon-context";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 import { useMergeSplitBlocks, SelectionBackgrounds } from "#hooks/use-merge-split";
@@ -180,8 +179,6 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
       },
       [isAnswersControlled, onAnswersChange]
     );
-
-    const shape = useShape();
     const ArrowLeft = useIcon("arrow-left");
     const ArrowRight = useIcon("arrow-right");
 
@@ -283,10 +280,10 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
       measureItems,
     } = useProximityHover(rowsContainerRef);
 
-    // Remeasure on row count change, question change, shape change
+    // Remeasure on row count and question changes.
     useEffect(() => {
       measureItems();
-    }, [measureItems, qId, rowCount, shape]);
+    }, [measureItems, qId, rowCount]);
 
     // ── Other-row textarea auto-resize ──────────────────────────
     // The Other field is a textarea so users can write a multi-line answer.
@@ -723,7 +720,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
           ref={ref}
           className={cn(
             "w-full max-w-[520px] p-5 bg-surface-floating border border-border",
-            shape.container,
+            "rounded-xl",
             className
           )}
           {...rest}
@@ -801,8 +798,9 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
 
     // Selected backgrounds, with the merge/split boundary animation when one
     // unselected row bridges or splits two selected runs. Selected backgrounds
-    // use shape.bg, so corners animate around its radius.
-    const blocks = useMergeSplitBlocks(selectedGroups, itemRects, shape.bgRadius);
+    // use the rows' computed rounded-lg value, so corners animate around the
+    // actual Tailwind theme radius.
+    const blocks = useMergeSplitBlocks(selectedGroups, itemRects);
 
     const showBack = total > 1 && safeIndex > 0;
     const showSkip = total > 1 && isSkippable;
@@ -890,7 +888,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                 aria-hidden
                 className={cn(
                   "absolute pointer-events-none bg-surface-raised ring-1 ring-inset ring-border",
-                  shape.bg
+                  "rounded-lg"
                 )}
                 initial={{
                   opacity: 0,
@@ -925,7 +923,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
               aria-hidden
               className={cn(
                 "absolute pointer-events-none bg-hover",
-                shape.bg
+                "rounded-lg"
               )}
               initial={{
                 opacity: 0,
@@ -955,7 +953,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
             abutting halves — see useMergeSplitBlocks. Uses the persistent
             selection background and renders ABOVE the hover indicator so the
             selected state stays readable when mousing over a row. Corners
-            are driven numerically (around shape.bg's radius) so a single
+            are driven numerically from each row's computed radius so a single
             selected row matches its hover. */}
         <SelectionBackgrounds blocks={blocks} />
 
@@ -966,22 +964,22 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
             <motion.div
               aria-hidden
               className={cn(
-                "absolute pointer-events-none border border-focus-ring z-raised",
-                shape.focusRing
+                "absolute pointer-events-none z-raised outline outline-1 outline-focus-ring outline-offset-2",
+                "rounded-lg"
               )}
               initial={{
                 opacity: 0,
-                top: focusRect.top - 2,
-                left: focusRect.left - 2,
-                width: focusRect.width + 4,
-                height: focusRect.height + 4,
+                top: focusRect.top,
+                left: focusRect.left,
+                width: focusRect.width,
+                height: focusRect.height,
               }}
               animate={{
                 opacity: 1,
-                top: focusRect.top - 2,
-                left: focusRect.left - 2,
-                width: focusRect.width + 4,
-                height: focusRect.height + 4,
+                top: focusRect.top,
+                left: focusRect.left,
+                width: focusRect.width,
+                height: focusRect.height,
               }}
               exit={{ opacity: 0, transition: spring.fast.exit }}
               transition={{
@@ -1028,7 +1026,6 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                   else handleSingleSelect(oid);
                 }
               }}
-              shape={shape}
               aria-checked={isSelected}
               chipContent={i + 1}
               chipFilled={isSelected}
@@ -1134,7 +1131,6 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
             isSelected={otherText.length > 0}
             tabIndex={-1}
             onClick={() => otherInputRef.current?.focus()}
-            shape={shape}
             chipContent={otherIndex + 1}
             chipFilled={otherText.length > 0}
             isMulti={isMulti}
@@ -1224,7 +1220,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
           // bounds, so a button animating out (e.g. Continue on exit) is
           // clipped at the edge instead of visibly flying outside the card.
           "relative w-full max-w-[520px] overflow-hidden bg-surface-floating border border-border",
-          shape.container,
+          "rounded-xl",
           className
         )}
         {...rest}
@@ -1305,7 +1301,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                     // single-line. The textarea still auto-resizes above this
                     // floor as content wraps.
                     isFreeTextMultiline ? "min-h-[76px]" : "min-h-control-lg",
-                    shape.bg,
+                    "rounded-lg",
                     // Mirror the "Something else" field instead of a blue focus
                     // ring. Empty + at rest: no border, fully quiet. Hover
                     // lightens with bg-hover; focus shows the bg-surface-raised + border
@@ -1526,7 +1522,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                                 state. ⌘↵ on macOS, ⌃↵ elsewhere. Desktop-only:
                                 mobile has no physical keyboard to trigger it. */}
                             <span className="hidden sm:contents">
-                              <ShortcutChip shape={shape} tone="inverted">
+                              <ShortcutChip tone="inverted">
                                 {isMac ? "⌘" : "⌃"}
                                 {"↵"}
                               </ShortcutChip>
@@ -1558,11 +1554,9 @@ AskUserQuestions.displayName = "AskUserQuestions";
 function ShortcutChip({
   children,
   tone = "muted",
-  shape,
 }: {
   children: React.ReactNode;
   tone?: "muted" | "inverted";
-  shape: ReturnType<typeof useShape>;
 }) {
   return (
     <kbd
@@ -1573,7 +1567,7 @@ function ShortcutChip({
         tone === "inverted"
           ? "bg-fg-on-brand/15 text-fg-on-brand"
           : "bg-fg-default/10 text-fg-muted",
-        shape.bg
+        "rounded-lg"
       )}
     >
       {children}
@@ -1591,7 +1585,6 @@ interface RowProps {
   tabIndex: number;
   onClick: () => void;
   onKeyDown?: (e: ReactKeyboardEvent<HTMLDivElement>) => void;
-  shape: ReturnType<typeof useShape>;
   chipContent: React.ReactNode;
   chipFilled: boolean;
   isMulti: boolean;
@@ -1629,7 +1622,6 @@ function Row({
   tabIndex,
   onClick,
   onKeyDown,
-  shape,
   chipContent,
   chipFilled,
   isMulti,
@@ -1670,7 +1662,7 @@ function Row({
           }
           className={cn(
             "absolute inset-0 inline-flex items-center justify-center bg-brand text-fg-on-brand",
-            shape.bg,
+            "rounded-lg",
             onArrowClick && "cursor-pointer"
           )}
           initial={{ opacity: 0, scale: 0.6 }}
@@ -1715,7 +1707,7 @@ function Row({
         aria-hidden
         className={cn(
           "absolute inline-flex items-center justify-center w-5 h-5 text-label transition-[opacity,font-weight] duration-fast motion-reduce:transition-none",
-          isMulti && shape.bg,
+          isMulti && "rounded-lg",
           isMulti
             ? chipFilled
               ? "bg-brand text-fg-on-brand"
@@ -1809,7 +1801,7 @@ function Row({
             ? "pl-1.5 pr-3"
             : "pl-1.5 pr-1.5"
           : "pl-3 pr-1.5",
-        shape.item
+        "rounded-lg"
       )}
     >
       {/* Selected background is drawn at the container level so contiguous

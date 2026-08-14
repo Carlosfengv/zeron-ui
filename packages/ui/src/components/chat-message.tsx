@@ -4,7 +4,6 @@ import { forwardRef, type ReactNode } from "react";
 import { motion, type HTMLMotionProps } from "framer-motion";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import { useTouchPrimary } from "#hooks/use-touch-primary";
 import { FileThumbnail } from "#components/file-thumbnail";
 
@@ -37,7 +36,6 @@ const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
     { from, files, thumbnailSize = 64, time, actions, children, className, ...props },
     ref
   ) => {
-    const shape = useShape();
     const isUser = from === "user";
     // Hover-reveal is unreachable on touch — keep the meta row visible there.
     const isTouch = useTouchPrimary();
@@ -83,7 +81,7 @@ const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
               // the assistant reply is flush-left plain text with no background.
               isUser
                 ? cn(
-                    shape.bg,
+                    "rounded-lg",
                     // `text-pretty` is reserved for settled user bubbles. On the
                     // assistant reply it's left off on purpose: `text-wrap: pretty`
                     // re-balances the last lines on every content change, so a

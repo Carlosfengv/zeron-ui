@@ -323,8 +323,8 @@ function ModalFrame({
               <div className="h-2 w-2/5 rounded-full bg-fg-default/6" />
               {/* footer actions */}
               <div className="mt-3 flex justify-end gap-2">
-                <div className="h-6 w-16 rounded-control bg-fg-default/10" />
-                <div className="h-6 w-16 rounded-control bg-fg-default/10" />
+                <div className="h-6 w-16 rounded-lg bg-fg-default/10" />
+                <div className="h-6 w-16 rounded-lg bg-fg-default/10" />
               </div>
             </motion.div>
           </>

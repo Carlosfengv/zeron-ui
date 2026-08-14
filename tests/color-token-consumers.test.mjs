@@ -146,7 +146,7 @@ describe("semantic color consumers", () => {
     expect(askUserQuestions).toContain("bg-surface-floating");
   });
 
-  it("keeps component geometry connected to the active shape theme", () => {
+  it("uses Tailwind's native rounded scale for component geometry", () => {
     const dropdown = read(join(UI_ROOT, "dropdown.tsx"));
     const menuItem = read(join(UI_ROOT, "menu-item.tsx"));
     const colorPicker = read(join(UI_ROOT, "color-picker.tsx"));
@@ -155,18 +155,16 @@ describe("semantic color consumers", () => {
     const breadcrumb = read(join(UI_ROOT, "breadcrumb.tsx"));
     const card = read(join(UI_ROOT, "card.tsx"));
 
-    for (const source of [dropdown, menuItem, colorPicker]) {
-      expect(source).toContain("useShape");
-      expect(source).not.toContain("shapeMap.rounded");
+    for (const source of [dropdown, menuItem, colorPicker, card]) {
+      expect(source).not.toContain("useShape");
+      expect(source).not.toContain("shape.");
     }
-    expect(colorPicker).not.toContain('shape.bg === "rounded-[20px]"');
-    expect(pageLayout).toContain("rounded-container");
-    expect(pageLayout).not.toContain("rounded-xl");
+    expect(pageLayout).toContain("rounded-xl");
     expect(identityRow).toContain("rounded-full");
     expect(identityRow).not.toContain("borderRadius: 6");
-    expect(breadcrumb).toContain("rounded-control");
+    expect(breadcrumb).toContain("rounded-lg");
     expect(breadcrumb).not.toContain("rounded-[4px]");
-    expect(card).toContain("shape.container");
+    expect(card).toContain("rounded-xl");
     expect(card).not.toContain("rounded-[2px]");
   });
 

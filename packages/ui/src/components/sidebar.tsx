@@ -19,7 +19,6 @@ import { Collapsible } from "@base-ui/react/collapsible";
 import { useDirection } from "@base-ui/react/direction-provider";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import { useSurface, SurfaceProvider } from "#system/surface-context";
 import { resolveSurface, shadowClasses } from "#system/surface-classes";
 import { useIcon } from "#system/icon-context";
@@ -272,7 +271,6 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
   ) => {
     const { state, isMobile, mobileOpen, closeMobile, triggerRef, breakpointBehavior } = useSidebar();
     const reduceMotion = useReducedMotion() ?? false;
-    const shape = useShape();
     const contextDir = useDirection();
     const dir = dirProp ?? contextDir;
     const parentSurface = useSurface();
@@ -304,7 +302,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
           ),
           !mobile && variant === "floating" && cn(
             "m-2 h-[calc(100%-1rem)] border border-border-subtle",
-            shape.container
+            "rounded-xl"
           ),
           !mobile && variant === "floating" && shadowClasses("raised")
         )}
@@ -625,7 +623,6 @@ const SidebarGroupTrigger = forwardRef<HTMLButtonElement, SidebarGroupTriggerPro
   ...props
 }, ref) => {
   const Chevron = useIcon("chevron-right");
-  const shape = useShape();
 
   return (
     <Collapsible.Trigger
@@ -636,7 +633,7 @@ const SidebarGroupTrigger = forwardRef<HTMLButtonElement, SidebarGroupTriggerPro
         "group/sidebar-group-trigger mb-1.5 flex h-6 w-full items-center gap-1.5 px-2 text-start text-label text-fg-muted outline-none",
         "transition-colors duration-fast hover:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring",
         "group-data-[state=collapsed]/sidebar:hidden",
-        shape.item,
+        "rounded-lg",
         className
       )}
       {...props}

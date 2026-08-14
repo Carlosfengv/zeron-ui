@@ -10,7 +10,6 @@ import { motion } from "framer-motion";
 import { cn } from "#system/utils";
 import { useIcon } from "#system/icon-context";
 import { spring } from "#system/springs";
-import { useShape } from "#system/shape-context";
 import {
   resolveSurface,
   SurfaceProvider,
@@ -65,7 +64,6 @@ interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
 const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
   ({ className, children, size = "sm", container, ...props }, ref) => {
     const XIcon = useIcon("x");
-    const shape = useShape();
     const substrate = useSurface();
     const dialogSurface = resolveSurface(substrate, "overlay");
     const ambientPortal = usePortalContainer();
@@ -141,7 +139,7 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
                   "p-6 focus:outline-none",
                   size === "sm" && "max-w-[400px]",
                   size === "lg" && "max-w-[540px]",
-                  shape.container,
+                  "rounded-xl",
                   className
                 )}
                 style={{

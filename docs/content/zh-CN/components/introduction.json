@@ -11,7 +11,7 @@
     "compatibilityTitle": "开箱即用的兼容性",
     "compatibilityBody": "基于 shadcn/ui 和 Base UI 构建。你的主题令牌（颜色、圆角、字体）无需改动即可使用。一条 CLI 命令便可安装组件及其所需内容。",
     "customizeTitle": "通过右侧面板自定义",
-    "customizeBody": "右侧面板可让你即时调整外观。你可以切换浅色和深色模式、调整品牌色，并在圆角与胶囊之间切换。按 T 或 R 键可通过键盘切换主题和圆角。",
+    "customizeBody": "右侧面板可让你即时调整外观。你可以切换浅色和深色模式、调整品牌色，并选择图标风格。按 T 或 I 键可通过键盘切换主题和图标。",
     "initialize": "初始化一个尚未包含 components.json 的项目：",
     "installAny": "安装任意组件：",
     "registry": "或者直接使用兼容 shadcn 的 Registry：",

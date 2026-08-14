@@ -8,7 +8,6 @@ import {
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "#system/utils";
 import { useIcon } from "#system/icon-context";
-import { useShape } from "#system/shape-context";
 import { useSurface } from "#system/surface-context";
 import { resolveSurface, surfaceClasses } from "#system/surface-classes";
 import {
@@ -54,7 +53,6 @@ export interface TopNavItemMenuTriggerProps
 }
 
 const TopNav = forwardRef<HTMLDivElement, TopNavProps>(({ variant, navigationAlign, className, ...props }, ref) => {
-  const shape = useShape();
   const floatingSurface = resolveSurface(useSurface(), "raised");
   return (
     <div
@@ -65,7 +63,7 @@ const TopNav = forwardRef<HTMLDivElement, TopNavProps>(({ variant, navigationAli
       className={cn(
         topNavVariants({ variant, navigationAlign }),
         variant === "floating" && [
-          shape.container,
+          "rounded-xl",
           surfaceClasses(floatingSurface, "raised"),
         ],
         className

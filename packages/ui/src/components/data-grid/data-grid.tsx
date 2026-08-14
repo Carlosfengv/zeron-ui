@@ -11,7 +11,6 @@ import {
   getColumnPinningStyle,
 } from "#system/data-grid";
 import type { Direction } from "#system/data-grid-types";
-import { useShape } from "#system/shape-context";
 import { cn } from "#system/utils";
 import { createIconSlot } from "#system/icon-context";
 import { DataGridColumnHeader } from "./data-grid-column-header";
@@ -60,7 +59,6 @@ export function DataGrid<TData>({
   className,
   ...props
 }: DataGridProps<TData>) {
-  const shape = useShape();
   const rows = table.getRowModel().rows;
   const readOnly = tableMeta?.readOnly ?? false;
   const columnVisibility = table.getState().columnVisibility;
@@ -118,7 +116,7 @@ export function DataGrid<TData>({
         ref={dataGridRef}
         className={cn(
           "relative grid select-none overflow-auto border border-border bg-surface-floating focus:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring",
-          shape.container,
+          "rounded-xl",
         )}
         style={{
           ...columnSizeVars,

@@ -13,7 +13,6 @@ import {
 import type { IconComponent } from "#system/icon-context";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "#system/utils";
-import { useShape } from "#system/shape-context";
 import { spring } from "#system/springs";
 
 // ---------------------------------------------------------------------------
@@ -100,7 +99,6 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
     },
     ref
   ) => {
-    const shape = useShape();
     const internalRef = useRef<HTMLDivElement>(null);
     const hasMounted = useRef(false);
     const { registerItem, activeIndex, checkedIndex, renderMenuItem } =
@@ -134,7 +132,7 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
     const itemClassName = cn(
       // Keep rows at 32px and prevent max-height popup columns from
       // compressing a long list instead of scrolling it.
-      `relative z-content flex h-control-sm shrink-0 items-center gap-2 ${shape.item} px-2 cursor-pointer outline-none`,
+      `relative z-content flex h-control-sm shrink-0 items-center gap-2 rounded-lg px-2 cursor-pointer outline-none`,
       disabled && "opacity-50 pointer-events-none",
       className
     );

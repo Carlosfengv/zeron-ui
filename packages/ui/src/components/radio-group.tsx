@@ -18,7 +18,6 @@ import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 import { useProximityHover } from "#hooks/use-proximity-hover";
-import { useShape } from "#system/shape-context";
 
 export type RadioGroupItemProps = RadioPrimitive.Root.Props;
 
@@ -152,7 +151,6 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
     const focusRect = focusedIndex !== null ? itemRects[focusedIndex] : null;
     const selectedRect =
       resolvedSelectedIndex >= 0 ? itemRects[resolvedSelectedIndex] : null;
-    const shape = useShape();
 
     const content = (
       <div
@@ -230,7 +228,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
         {/* Selected background */}
         {selectedRect && (
           <motion.div
-            className={`absolute ${shape.bg} bg-selection pointer-events-none`}
+            className={`absolute rounded-lg bg-selection pointer-events-none`}
             initial={false}
             animate={{
               top: selectedRect.top,
@@ -251,7 +249,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
           {activeRect && (
             <motion.div
               key={sessionRef.current}
-              className={`absolute ${shape.bg} bg-hover pointer-events-none`}
+              className={`absolute rounded-lg bg-hover pointer-events-none`}
               initial={{
                 opacity: 0,
                 top: activeRect.top,
@@ -279,13 +277,13 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
         <AnimatePresence>
           {focusRect && (
             <motion.div
-              className={`absolute ${shape.focusRing} pointer-events-none z-raised border border-focus-ring`}
+              className={`absolute rounded-lg pointer-events-none z-raised outline outline-1 outline-focus-ring outline-offset-2`}
               initial={false}
               animate={{
-                left: focusRect.left - 2,
-                top: focusRect.top - 2,
-                width: focusRect.width + 4,
-                height: focusRect.height + 4,
+                left: focusRect.left,
+                top: focusRect.top,
+                width: focusRect.width,
+                height: focusRect.height,
               }}
               exit={{ opacity: 0, transition: spring.fast.exit }}
               transition={{
@@ -361,7 +359,6 @@ const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
     }, [index, registerItem]);
 
     const isActive = activeIndex === index;
-    const shape = useShape();
     const isSelected =
       value !== undefined && selectedValue !== undefined
         ? selectedValue === value
@@ -415,7 +412,7 @@ const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
         }}
         className={cn(
           // Fixed height keeps every option row aligned and easy to target.
-          `relative z-content flex h-control-sm items-center gap-2.5 ${shape.item} px-3 cursor-pointer outline-none`,
+          `relative z-content flex h-control-sm items-center gap-2.5 rounded-lg px-3 cursor-pointer outline-none`,
           disabled && "pointer-events-none opacity-50",
           readOnly && "cursor-default",
           className
