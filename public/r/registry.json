@@ -1702,6 +1702,27 @@
       ]
     },
     {
+      "name": "container",
+      "type": "registry:ui",
+      "title": "Container",
+      "description": "Composable raised container with optional header and footer around a floating content body.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/container.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/container.tsx"
+        }
+      ]
+    },
+    {
       "name": "nav-menu",
       "type": "registry:ui",
       "title": "Nav Menu",

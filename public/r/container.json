@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "container",
+  "type": "registry:ui",
+  "title": "Container",
+  "description": "Composable raised container with optional header and footer around a floating content body.",
+  "dependencies": [
+    "tw-animate-css"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/surface-context.json",
+    "https://zeron-ui.vercel.app/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "packages/ui/src/components/container.tsx",
+      "content": "\"use client\";\nimport { forwardRef, type ComponentPropsWithoutRef, type CSSProperties, } from \"react\";\nimport { SurfaceProvider } from \"@lib/surface-context\";\nimport { cn } from \"@lib/utils\";\n/**\n * A composable, raised container for one cohesive area of work. It is a\n * surface component — like Card — rather than a page-layout primitive. Its\n * optional header and footer stay on the raised frame while the body becomes\n * the floating content surface.\n */\nexport type ContainerProps = ComponentPropsWithoutRef<\"div\">;\nexport type ContainerHeaderProps = ComponentPropsWithoutRef<\"header\">;\nexport interface ContainerBodyProps extends ComponentPropsWithoutRef<\"div\"> {\n    /**\n     * Caps a content-driven body and lets its overflowing content scroll\n     * vertically. Leave unset when the body should grow with its content.\n     */\n    maxHeight?: CSSProperties[\"maxHeight\"];\n}\nexport type ContainerFooterProps = ComponentPropsWithoutRef<\"footer\">;\nconst Container = forwardRef<HTMLDivElement, ContainerProps>(({ className, ...props }, ref) => (<SurfaceProvider role=\"raised\">\n      <div ref={ref} data-slot=\"container\" className={cn(\"flex min-h-0 min-w-0 flex-col rounded-3xl bg-surface-raised p-2\", className)} {...props}/>\n    </SurfaceProvider>));\nContainer.displayName = \"Container\";\nconst ContainerHeader = forwardRef<HTMLElement, ContainerHeaderProps>(({ className, ...props }, ref) => (<header ref={ref} data-slot=\"container-header\" className={cn(\"flex shrink-0 min-w-0 flex-wrap items-center justify-between gap-2 px-3 py-2\", className)} {...props}/>));\nContainerHeader.displayName = \"ContainerHeader\";\nconst ContainerBody = forwardRef<HTMLDivElement, ContainerBodyProps>(({ className, maxHeight, style, ...props }, ref) => (<SurfaceProvider role=\"floating\">\n      <div ref={ref} data-slot=\"container-body\" className={cn(\"min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain rounded-2xl border-[0.5px] border-border bg-surface-floating p-4\", className)} style={maxHeight === undefined ? style : { ...style, maxHeight }} {...props}/>\n    </SurfaceProvider>));\nContainerBody.displayName = \"ContainerBody\";\nconst ContainerFooter = forwardRef<HTMLElement, ContainerFooterProps>(({ className, ...props }, ref) => (<footer ref={ref} data-slot=\"container-footer\" className={cn(\"flex shrink-0 min-w-0 flex-wrap items-center justify-end gap-2 px-3 py-2\", className)} {...props}/>));\nContainerFooter.displayName = \"ContainerFooter\";\nexport { Container, ContainerHeader, ContainerBody, ContainerFooter, };\n",
+      "type": "registry:ui",
+      "target": "components/ui/container.tsx"
+    }
+  ]
+}
