@@ -132,7 +132,12 @@ describe("shell and page-layout composition contract", () => {
     expect(pageLayout).toContain('export type PageSubnavLabelVisibility = "all" | "active";');
     expect(pageLayout).toContain('labelVisibility = "all"');
     expect(pageLayout).toContain('icon: Icon');
-    expect(pageLayout).toContain("<NavItem value={value} active={active}>");
+    expect(pageLayout).toContain('<NavItem value={value} active={active} className="py-0">');
+  });
+
+  it("keeps collapsed Sidebar navigation items at the 36px control size", () => {
+    expect(navItem).toContain("group-data-[state=collapsed]/sidebar:size-control-md");
+    expect(navItem).not.toContain("group-data-[state=collapsed]/sidebar:size-8");
   });
 
   it("offers an explicit no-gutter mode for immersive pages", () => {

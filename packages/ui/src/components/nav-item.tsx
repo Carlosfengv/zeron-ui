@@ -67,7 +67,7 @@ const NavItem = forwardRef<HTMLElement, NavItemProps>(
 
     const itemClassName = cn(
       "group/nav-item relative z-content flex min-w-0 items-center",
-      "group-data-[state=collapsed]/sidebar:size-8 group-data-[state=collapsed]/sidebar:self-center",
+      "group-data-[state=collapsed]/sidebar:size-control-md group-data-[state=collapsed]/sidebar:self-center",
       "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50",
       navMenu && "py-0.5",
       !navMenu && [

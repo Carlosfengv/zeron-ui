@@ -175,7 +175,7 @@ const PageSubnavItem = forwardRef<HTMLElement, PageSubnavItemProps>(
     );
 
     return (
-      <NavItem value={value} active={active}>
+      <NavItem value={value} active={active} className="py-0">
         <NavItemTrigger
           ref={ref}
           className={cn(collapseLabel && "gap-0", className)}
