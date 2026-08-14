@@ -43,6 +43,12 @@ function tokenByName(tokens, name) {
   return token;
 }
 
+function resolveColorValue(value, mode) {
+  const alias = value.match(/^var\(--(?<name>[^)]+)\)$/)?.groups?.name;
+  if (!alias) return value;
+  return resolveColorValue(tokenByName(colorTokens, alias)[mode], mode);
+}
+
 const ROOT = new URL("..", import.meta.url).pathname;
 const read = (path) => readFileSync(join(ROOT, path), "utf8");
 const registry = JSON.parse(read("packages/ui/registry.json"));
@@ -166,7 +172,6 @@ describe("semantic token generation", () => {
   it("keeps filled actions paired with accessible on-colors", () => {
     const pairs = [
       ["fg-on-brand", ["brand", "brand-hover", "brand-active"]],
-      ["fg-on-danger", ["destructive", "destructive-hover", "destructive-active"]],
       ["fg-default", ["secondary-action", "secondary-action-hover", "secondary-action-active"]],
       ["fg-on-inverse", ["inverse-background"]],
     ];
@@ -174,11 +179,12 @@ describe("semantic token generation", () => {
     for (const mode of ["light", "dark"]) {
       for (const [foregroundName, fillNames] of pairs) {
         for (const fillName of fillNames) {
-          const foreground = tokenByName(foregroundColorTokens, foregroundName)[mode];
+          const foreground = resolveColorValue(
+            tokenByName(foregroundColorTokens, foregroundName)[mode],
+            mode
+          );
           const rawBackground = tokenByName(fillColorTokens, fillName)[mode];
-          const background = rawBackground === "var(--fg-default)"
-            ? tokenByName(foregroundColorTokens, "fg-default")[mode]
-            : rawBackground;
+          const background = resolveColorValue(rawBackground, mode);
           expect(
             contrastRatio(foreground, background),
             `${foregroundName} must remain readable on ${fillName} in ${mode}`
@@ -186,6 +192,13 @@ describe("semantic token generation", () => {
         }
       }
     }
+  });
+
+  it("aliases danger action foreground to the brand action foreground", () => {
+    expect(tokenByName(foregroundColorTokens, "fg-on-danger")).toMatchObject({
+      light: "var(--fg-on-brand)",
+      dark: "var(--fg-on-brand)",
+    });
   });
 
   it("keeps passive control boundaries theme-aware and low emphasis", () => {

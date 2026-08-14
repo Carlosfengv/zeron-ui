@@ -53,7 +53,7 @@ export const foregroundColorTokens = classify([
   { name: "fg-info", light: "#004DAF", dark: "#A1D2FE", usage: "普通承载面上的说明、提示和信息文字与图标；不得用于信息填充之上" },
   { name: "fg-neutral-status", light: "#555B61", dark: "#C7CBCE", usage: "普通承载面上的中性状态文字和图标；不得用于高强调操作填充之上" },
   { name: "fg-on-brand", light: neutral[0], dark: "#00040D", usage: "品牌色默认、悬停和按下填充上的文字与图标；须与对应填充配对使用" },
-  { name: "fg-on-danger", light: "#00030A", dark: "#00030A", usage: "危险操作默认、悬停和按下填充之上的文字与图标；须与对应填充配对使用" },
+  { name: "fg-on-danger", light: "var(--fg-on-brand)", dark: "var(--fg-on-brand)", usage: "危险操作默认、悬停和按下填充之上的文字与图标；复用 fg-on-brand 并须与对应填充配对使用" },
   { name: "fg-on-inverse", light: neutral[0], dark: "#00040D", usage: "反色背景上的文字和图标；仅与反色填充配对使用" },
 ], "foreground");
 

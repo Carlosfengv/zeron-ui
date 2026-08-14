@@ -39,7 +39,7 @@
   --fg-info: light-dark(#004DAF, #A1D2FE);
   --fg-neutral-status: light-dark(#555B61, #C7CBCE);
   --fg-on-brand: light-dark(#FFFFFF, #00040D);
-  --fg-on-danger: #00030A;
+  --fg-on-danger: var(--fg-on-brand);
   --fg-on-inverse: light-dark(#FFFFFF, #00040D);
   --brand: light-dark(#0060D2, #1483FD);
   --warning: light-dark(#FA8801, #FF9314);
