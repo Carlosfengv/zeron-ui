@@ -557,6 +557,26 @@
       ]
     },
     {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "Composable in-context callout with default, neutral, info, warning, and danger statuses; optional icon, supporting description, and action.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/alert.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/alert.tsx"
+        }
+      ]
+    },
+    {
       "name": "ask-user-questions",
       "type": "registry:ui",
       "title": "Ask User Questions",

@@ -14,6 +14,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "icons/providers": () => import("@docs/pages/icons/providers/page"),
   "icons/usage": () => import("@docs/pages/icons/usage/page"),
   "components/accordion": () => import("@docs/pages/components/accordion/page"),
+  "components/alert": () => import("@docs/pages/components/alert/page"),
   "components/app-shell": () => import("@docs/pages/components/app-shell/page"),
   "components/ask-user-questions": () => import("@docs/pages/components/ask-user-questions/page"),
   "components/badge": () => import("@docs/pages/components/badge/page"),

@@ -99,6 +99,7 @@
       "top-nav": "Composable top navigation with brand, primary links, and actions.",
       "nav-menu": "Router-agnostic navigation primitives shared by Sidebar and TopNav.",
       "accordion": "Collapsible sections with animated expand/collapse and proximity hover in grouped mode.",
+      "alert": "Composable in-context callout with semantic statuses, optional icon, supporting detail, and action.",
       "badge": "Compact label with categorical colors, semantic statuses, solid and dot variants, and three sizes.",
       "badge-overflow": "Responsive badge list that collapses hidden items into an overflow count.",
       "breadcrumb": "Composable path navigation with separators, current-page state, and collapsed levels.",

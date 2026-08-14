@@ -1,0 +1,21 @@
+{
+  "alert": {
+    "basic": "基础用法",
+    "statuses": "状态",
+    "action": "操作",
+    "apiReference": "API 参考",
+    "parts": "组成部件",
+    "basicTitle": "新的工作区设置已可用",
+    "basicDescription": "在发布下一个项目之前，请查看更新后的默认设置。",
+    "actionTitle": "尚未启用双重身份验证",
+    "actionDescription": "启用后可进一步保护你的工作区。",
+    "actionLabel": "启用",
+    "statusProp": "default 使用 Floating 表面、普通边框、默认标题色和描述文本色；其余语义状态控制 Alert 的背景、边框和前景色。",
+    "childrenProp": "可组合的 AlertIcon、AlertTitle、AlertDescription 和 AlertAction。",
+    "classNameProp": "应用到 Alert 容器的附加类名。",
+    "iconPart": "可选的展示性前置图标，会继承状态颜色。",
+    "titlePart": "主要提示信息。单独使用时形成紧凑的单行 Alert。",
+    "descriptionPart": "可选的辅助说明。添加后形成标准的双行 Alert。",
+    "actionPart": "用于按钮、链接或其他紧凑控件的可选操作区域；窄屏时会移至正文下方。"
+  }
+}

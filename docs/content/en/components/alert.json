@@ -1,0 +1,21 @@
+{
+  "alert": {
+    "basic": "Basic",
+    "statuses": "Statuses",
+    "action": "Action",
+    "apiReference": "API Reference",
+    "parts": "Parts",
+    "basicTitle": "New workspace settings are available",
+    "basicDescription": "Review the updated defaults before publishing your next project.",
+    "actionTitle": "Two-factor authentication is not enabled",
+    "actionDescription": "Enable it to help keep your workspace secure.",
+    "actionLabel": "Enable",
+    "statusProp": "Default uses the floating surface, standard border, and default title and description colours. Semantic statuses control the alert's surface, border, and foreground colour.",
+    "childrenProp": "AlertIcon, AlertTitle, AlertDescription, and AlertAction parts.",
+    "classNameProp": "Additional classes applied to the alert container.",
+    "iconPart": "Optional presentational leading icon. It inherits the status colour.",
+    "titlePart": "Primary message. Use it alone for a compact one-line alert.",
+    "descriptionPart": "Optional supporting detail. Adding it creates the standard two-line alert.",
+    "actionPart": "Optional action slot for a button, link, or other compact control. It moves below the content on narrow screens."
+  }
+}
