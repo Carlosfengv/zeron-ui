@@ -1,5 +1,5 @@
 export type SurfaceRole = "base" | "raised" | "floating" | "overlay" | "top";
-export type ShadowRole = "none" | "raised" | "floating" | "overlay";
+export type ShadowRole = "none" | "raised" | "floating-drop" | "floating" | "overlay";
 
 export const SURFACE_ROLES: SurfaceRole[] = [
   "base",
@@ -20,6 +20,7 @@ export const SURFACE_ROLE_BG: Record<SurfaceRole, string> = {
 export const SHADOW_ROLE: Record<ShadowRole, string> = {
   none: "",
   raised: "shadow-raised",
+  "floating-drop": "shadow-floating-drop",
   floating: "shadow-floating",
   overlay: "shadow-overlay",
 };

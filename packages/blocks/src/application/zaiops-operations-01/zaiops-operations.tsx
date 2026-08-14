@@ -258,7 +258,9 @@ export function ZaiopsOperations({
                 collapsedBehavior="offcanvas"
                 clickBehavior="menu"
                 label="Open operations navigation"
-                contentClassName="h-[min(36rem,calc(100svh-4rem))] w-[260px] max-w-[calc(100vw-12px)] p-0"
+                contentClassName="h-[min(36rem,calc(100svh-4rem))] w-[260px] max-w-[calc(100vw-12px)] rounded-xl p-0"
+                surfaceClassName="border-[0.5px] border-border-subtle"
+                surfaceShadow="floating-drop"
                 renderContent={({ close }) => (
                   <OperationsNavigationPanel
                     {...navigationPanelProps}

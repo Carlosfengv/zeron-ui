@@ -17,7 +17,7 @@ import {
   SurfaceProvider,
   useSurface,
 } from "#system/surface-context";
-import { surfaceClasses } from "#system/surface-classes";
+import { surfaceClasses, type ShadowRole } from "#system/surface-classes";
 import { usePortalContainer } from "#system/portal-container-context";
 
 type PopoverSide = "top" | "right" | "bottom" | "left";
@@ -175,6 +175,10 @@ export interface PopoverContentProps
   align?: PopoverAlign;
   alignOffset?: number;
   className?: string;
+  /** Classes applied to the managed background surface, which owns the rounded outline and shadow. */
+  surfaceClassName?: string;
+  /** Spatial separation for the managed background surface. */
+  surfaceShadow?: ShadowRole;
   /** Portal target for bounded previews or embedded canvases. */
   container?: HTMLElement | null;
   collisionPadding?: number;
@@ -190,6 +194,8 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
       alignOffset = 0,
       children,
       className,
+      surfaceClassName,
+      surfaceShadow = "floating",
       collisionPadding = 12,
       container,
       liquid,
@@ -299,8 +305,9 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
                     aria-hidden="true"
                     className={cn(
                       "pointer-events-none absolute inset-0 z-underlay",
-                      surfaceClasses(surface, "floating"),
-                      "rounded-xl"
+                      surfaceClasses(surface, surfaceShadow),
+                      "rounded-xl",
+                      surfaceClassName
                     )}
                   />
 

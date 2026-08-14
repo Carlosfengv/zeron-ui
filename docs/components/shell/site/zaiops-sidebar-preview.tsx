@@ -509,7 +509,9 @@ export function ZaiopsSidebarPreview({ className }: { className?: string }) {
                 <SidebarFloatingTrigger
                   collapsedBehavior="offcanvas"
                   label="展开侧边栏"
-                  contentClassName="h-[min(42rem,calc(100svh-6rem))] w-[260px] max-w-[calc(100vw-12px)] rounded-xl border-[0.5px] border-border-subtle p-0 shadow-floating"
+                  contentClassName="h-[min(42rem,calc(100svh-6rem))] w-[260px] max-w-[calc(100vw-12px)] rounded-xl p-0"
+                  surfaceClassName="border-[0.5px] border-border-subtle"
+                  surfaceShadow="floating-drop"
                   renderContent={({ close }) => (
                     <ZaiopsNavigationPanel
                       activeNavigationValue={activeNavigationValue}

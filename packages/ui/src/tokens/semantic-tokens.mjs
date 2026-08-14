@@ -138,6 +138,7 @@ const lightShadowRecipes = {
   control: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
   knob: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
   raised: [lightShadowParts.edge, lightShadowParts.close].join(", "),
+  "floating-drop": [lightShadowParts.close, lightShadowParts.near].join(", "),
   floating: [lightShadowParts.edge, lightShadowParts.close, lightShadowParts.near].join(", "),
   overlay: Object.values(lightShadowParts).join(", "),
 };
@@ -146,6 +147,7 @@ const darkShadowRecipes = {
   control: "0 1px 2px 0 rgb(0 0 0 / 0.25)",
   knob: "0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3)",
   raised: `inset 0 1px 0 0 var(--dm-hi-base), inset 0 0 0 1px var(--dm-ring-base), 0 1px 1px -0.5px var(--dm-drop)`,
+  "floating-drop": "0 1px 1px -0.5px var(--dm-drop), 0 3px 3px -1.5px var(--dm-drop)",
   floating: `inset 0 1px 0 0 var(--dm-hi-mid), inset 0 0 0 1px var(--dm-ring-base), 0 0 0 1px rgba(0,0,0,0.12), 0 1px 1px -0.5px var(--dm-drop), 0 3px 3px -1.5px var(--dm-drop)`,
   overlay: `inset 0 1px 0 0 var(--dm-hi-high), inset 0 0 0 1px var(--dm-ring-mid), 0 0 0 1px rgba(0,0,0,0.16), 0 1px 1px -0.5px var(--dm-drop), 0 3px 3px -1.5px var(--dm-drop), 0 6px 6px -3px var(--dm-drop), 0 12px 12px -6px var(--dm-drop)`,
 };
@@ -178,6 +180,12 @@ export const shadowTokens = [
     light: lightShadowRecipes.raised,
     dark: darkShadowRecipes.raised,
     usage: "低高度容器的轻微边缘分离",
+  },
+  {
+    name: "floating-drop",
+    light: lightShadowRecipes["floating-drop"],
+    dark: darkShadowRecipes["floating-drop"],
+    usage: "已使用明确边框的菜单、下拉菜单和弹出框的纯投影",
   },
   {
     name: "floating",

@@ -158,9 +158,11 @@ describe("sidebar implementation contract", () => {
   });
 
   it("gives the collapsed ZAIops hover navigation a bordered floating surface", () => {
-    expect(zaiopsPreview).toContain(
-      'rounded-xl border-[0.5px] border-border-subtle p-0 shadow-floating',
-    );
+    for (const sourceFile of [zaiopsPreview, zaiopsBlock]) {
+      expect(sourceFile).toContain('rounded-xl p-0');
+      expect(sourceFile).toContain('surfaceClassName="border-[0.5px] border-border-subtle"');
+      expect(sourceFile).toContain('surfaceShadow="floating-drop"');
+    }
   });
 
   it("keeps the embedded ZAIops Sidebar as the positioning context for its panel", () => {

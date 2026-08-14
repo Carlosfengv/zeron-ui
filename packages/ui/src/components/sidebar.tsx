@@ -20,7 +20,7 @@ import { useDirection } from "@base-ui/react/direction-provider";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 import { useSurface, SurfaceProvider } from "#system/surface-context";
-import { resolveSurface, shadowClasses } from "#system/surface-classes";
+import { resolveSurface, shadowClasses, type ShadowRole } from "#system/surface-classes";
 import { useIcon } from "#system/icon-context";
 import { Button } from "#components/button";
 import { Popover, PopoverContent, PopoverTrigger } from "#components/popover";
@@ -433,6 +433,10 @@ export interface SidebarFloatingTriggerProps extends Omit<ComponentPropsWithoutR
   renderContent: (controls: { close: () => void }) => ReactNode;
   /** Classes for the anchored navigation popover. */
   contentClassName?: string;
+  /** Classes for the popover's managed background surface. */
+  surfaceClassName?: string;
+  /** Spatial separation for the popover's managed background surface. */
+  surfaceShadow?: ShadowRole;
   /** Whether clicking expands the persistent sidebar or opens the floating menu. */
   clickBehavior?: "expand" | "menu";
 }
@@ -443,6 +447,8 @@ const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTrig
       collapsedBehavior = "offcanvas",
       clickBehavior = "expand",
       contentClassName,
+      surfaceClassName,
+      surfaceShadow,
       label = "Expand sidebar",
       renderContent,
       className,
@@ -497,6 +503,8 @@ const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTrig
           side="bottom"
           sideOffset={6}
           className={cn("flex min-h-0 flex-col overflow-hidden", contentClassName)}
+          surfaceClassName={surfaceClassName}
+          surfaceShadow={surfaceShadow}
         >
           {renderContent({ close: () => setOpen(false) })}
         </PopoverContent>
