@@ -69,6 +69,7 @@ const NavItem = forwardRef<HTMLElement, NavItemProps>(
       "group/nav-item relative z-content flex min-w-0 items-center",
       "group-data-[state=collapsed]/sidebar:size-8 group-data-[state=collapsed]/sidebar:self-center",
       "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50",
+      navMenu && "py-0.5",
       !navMenu && [
         "transition-colors duration-fast hover:bg-hover",
         active && "bg-active",
