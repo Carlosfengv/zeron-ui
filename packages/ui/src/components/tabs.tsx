@@ -30,6 +30,7 @@ interface TabsValueOrderContextValue {
   setValueOrder: (order: string[]) => void;
   selectedValue: string | undefined;
   variant: TabsVariant;
+  color: TabsColor;
 }
 
 const TabsValueOrderContext = createContext<TabsValueOrderContextValue | null>(null);
@@ -40,6 +41,7 @@ interface TabsListContextValue {
   selectedValue: string | undefined;
   setOptimisticIdx: (index: number) => void;
   variant: TabsVariant;
+  color: TabsColor;
   labelVisibility: TabLabelVisibility;
 }
 
@@ -52,6 +54,7 @@ function useTabsList() {
 }
 
 export type TabsVariant = "pill" | "segment" | "underline";
+export type TabsColor = "brand" | "neutral";
 export type TabLabelVisibility = "all" | "active";
 
 /**
@@ -82,6 +85,8 @@ interface TabsProps
   defaultValue?: string;
   /** Visual treatment. Pill preserves the original Tabs appearance. */
   variant?: TabsVariant;
+  /** Color treatment for the selected tab. Defaults to the current brand color. */
+  color?: TabsColor;
 }
 
 const Tabs = forwardRef<HTMLDivElement, TabsProps>(
@@ -93,6 +98,7 @@ const Tabs = forwardRef<HTMLDivElement, TabsProps>(
       onSelect,
       defaultValue,
       variant = "pill",
+      color = "brand",
       children,
       ...props
     },
@@ -146,6 +152,7 @@ const Tabs = forwardRef<HTMLDivElement, TabsProps>(
           setValueOrder: updateValueOrder,
           selectedValue: resolvedValue,
           variant,
+          color,
         }}
       >
         {/*
@@ -188,6 +195,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
     const isMouseInside = useRef(false);
     const valueOrderCtx = useContext(TabsValueOrderContext);
     const variant = valueOrderCtx?.variant ?? "pill";
+    const color = valueOrderCtx?.color ?? "brand";
     const resolvedLabelVisibility = labelVisibility ?? (activeLabel ? "active" : "all");
     const [optimisticIdx, setOptimisticIdx] = useState<number | null>(null);
 
@@ -281,6 +289,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
           selectedValue,
           setOptimisticIdx,
           variant,
+          color,
           labelVisibility: resolvedLabelVisibility,
         }}
       >
@@ -338,7 +347,7 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
             <motion.div
               className={cn(
                 "absolute pointer-events-none",
-                "bg-brand",
+                color === "neutral" ? "bg-inverse-background" : "bg-brand",
                 variant !== "underline" && "rounded-lg"
               )}
               initial={false}
@@ -460,6 +469,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
       selectedValue,
       setOptimisticIdx,
       variant,
+      color,
       labelVisibility,
     } = useTabsList();
 
@@ -490,7 +500,9 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
           className={cn(
             "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",
             isSelected && variant !== "underline"
-              ? "text-fg-on-brand"
+              ? color === "neutral"
+                ? "text-fg-on-inverse"
+                : "text-fg-on-brand"
               : isActive
                 ? "text-fg-default"
                 : "text-fg-muted",
@@ -551,7 +563,9 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
             className={cn(
               "transition-[color,stroke-width] duration-fast",
               isSelected && variant !== "underline"
-                ? "text-fg-on-brand"
+                ? color === "neutral"
+                  ? "text-fg-on-inverse"
+                  : "text-fg-on-brand"
                 : isActive
                   ? "text-fg-default"
                   : "text-fg-muted"

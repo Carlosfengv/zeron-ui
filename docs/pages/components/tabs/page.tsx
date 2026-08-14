@@ -8,6 +8,7 @@ import {
   TabItem,
   TabPanel,
   type TabLabelVisibility,
+  type TabsColor,
   type TabsVariant,
 } from "@zeron/ui/tabs";
 import { Switch } from "@zeron/ui/switch";
@@ -118,6 +119,7 @@ const [value, setValue] = useState("library");
 
 const tabsProps: PropDef[] = [
   { name: "variant", type: '"pill" | "segment" | "underline"', default: '"pill"', description: "Visual treatment for the tab list." },
+  { name: "color", type: '"brand" | "neutral"', default: '"brand"', description: "Color treatment for the selected tab." },
   { name: "value", type: "string", description: "Controlled active tab value. Takes precedence over selectedIndex." },
   { name: "onValueChange", type: "(value: string) => void", description: "Called when the active tab changes." },
   { name: "selectedIndex", type: "number", description: "Index-based controlled alternative." },
@@ -151,12 +153,14 @@ type BadgeMode = "none" | "count" | "status";
 
 function buildPlaygroundCode({
   variant,
+  color,
   labelVisibility,
   activationMode,
   showIcons,
   badgeMode,
 }: {
   variant: TabsVariant;
+  color: TabsColor;
   labelVisibility: TabLabelVisibility;
   activationMode: "automatic" | "manual";
   showIcons: boolean;
@@ -176,7 +180,7 @@ function buildPlaygroundCode({
 
   return `import { Tabs, TabsList, TabItem, TabPanel } from "./components";${iconImport}
 
-<Tabs defaultValue="library" variant="${variant}">
+<Tabs defaultValue="library" variant="${variant}" color="${color}">
   <TabsList activationMode="${activationMode}" labelVisibility="${labelVisibility}">
     <TabItem value="library"${iconProps[0]} label="Library"${badges[0]} />
     <TabItem value="recents"${iconProps[1]} label="Recents"${badges[1]} />
@@ -194,6 +198,7 @@ function TabsPlayground() {
   const Clock = useIcon("clock");
   const Star = useIcon("star");
   const [variant, setVariant] = useState<TabsVariant>("pill");
+  const [color, setColor] = useState<TabsColor>("brand");
   const [labelVisibility, setLabelVisibility] = useState<TabLabelVisibility>("all");
   const [activationMode, setActivationMode] = useState<"automatic" | "manual">("automatic");
   const [showIcons, setShowIcons] = useState(true);
@@ -202,6 +207,7 @@ function TabsPlayground() {
   const effectiveLabelVisibility = showIcons ? labelVisibility : "all";
   const code = buildPlaygroundCode({
     variant,
+    color,
     labelVisibility: effectiveLabelVisibility,
     activationMode,
     showIcons,
@@ -216,6 +222,7 @@ function TabsPlayground() {
   const randomize = () => {
     const pick = <T,>(options: readonly T[]) => options[Math.floor(Math.random() * options.length)];
     setVariant(pick(["pill", "segment", "underline"] as const));
+    setColor(pick(["brand", "neutral"] as const));
     setLabelVisibility(pick(["all", "active"] as const));
     setActivationMode(pick(["automatic", "manual"] as const));
     setShowIcons(Math.random() > 0.2);
@@ -235,6 +242,16 @@ function TabsPlayground() {
               { value: "pill", label: t("pill") },
               { value: "segment", label: t("segment") },
               { value: "underline", label: t("underline") },
+            ]}
+          />
+        </PlayField>
+        <PlayField label={t("color")}>
+          <PlaySelect
+            value={color}
+            onChange={(next) => setColor(next as TabsColor)}
+            options={[
+              { value: "brand", label: t("brand") },
+              { value: "neutral", label: t("neutral") },
             ]}
           />
         </PlayField>
@@ -285,7 +302,7 @@ function TabsPlayground() {
       preview={
         <ComponentPreview code={code} minHeightClass="min-h-[230px]">
           <div className="flex w-full max-w-md flex-col gap-4">
-            <Tabs value={value} onValueChange={setValue} variant={variant}>
+            <Tabs value={value} onValueChange={setValue} variant={variant} color={color}>
               <TabsList activationMode={activationMode} labelVisibility={effectiveLabelVisibility}>
                 {items.map((item) => (
                   <TabItem
