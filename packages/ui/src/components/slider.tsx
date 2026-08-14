@@ -29,6 +29,7 @@ import { spring } from "#system/springs";
 
 type SliderValue = number | [number, number];
 type ValuePosition = "left" | "right" | "top" | "bottom" | "tooltip";
+type SliderColor = "brand" | "nature" | "danger" | "warning";
 
 interface SliderProps
   extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> {
@@ -50,6 +51,8 @@ interface SliderProps
   valuePosition?: ValuePosition;
   formatValue?: (v: number) => string;
   label?: string;
+  /** Semantic color applied to the filled track and thumb. */
+  color?: SliderColor;
   disabled?: boolean;
   trackClassName?: string;
   trackStyle?: CSSProperties;
@@ -71,6 +74,32 @@ const DOT_SIZE = 4;
 const PIP_SIZE = 5;
 // Inset track BG so its rounded-end centers align with thumb centers at min/max
 const TRACK_INSET = (THUMB_SIZE - TRACK_BG_HEIGHT) / 2;
+
+const sliderColors: Record<
+  SliderColor,
+  { fillClassName: string; fill: string; onFill: string }
+> = {
+  brand: {
+    fillClassName: "bg-brand",
+    fill: "var(--brand)",
+    onFill: "var(--fg-on-brand)",
+  },
+  nature: {
+    fillClassName: "bg-neutral-status-border",
+    fill: "var(--neutral-status-border)",
+    onFill: "var(--fg-on-inverse)",
+  },
+  danger: {
+    fillClassName: "bg-destructive",
+    fill: "var(--destructive)",
+    onFill: "var(--fg-on-danger)",
+  },
+  warning: {
+    fillClassName: "bg-warning-border",
+    fill: "var(--warning-border)",
+    onFill: "var(--fg-on-danger)",
+  },
+};
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -316,6 +345,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
       valuePosition = "left",
       formatValue = String,
       label,
+      color = "brand",
       disabled = false,
       trackClassName,
       trackStyle,
@@ -331,6 +361,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
   ) => {
     const isRange = Array.isArray(value);
     const values = toPrimitiveValue(value);
+    const colorStyle = sliderColors[color];
 
     // Non-uniform step mode: sorted, deduped list of allowed values. Keyed on
     // the joined string so inline array literals don't recompute every render.
@@ -789,7 +820,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
             }}
             transition={spring.fast}
             style={{
-              backgroundColor: thumbColor ?? "var(--fg-on-brand)",
+              backgroundColor: thumbColor ?? colorStyle.onFill,
               boxShadow: "var(--shadow-raised)",
               border: thumbBorderColor ? `1px solid ${thumbBorderColor}` : undefined,
             }}
@@ -985,7 +1016,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
               {/* Filled range */}
               {!hideFill && (
               <motion.div
-                className={cn("absolute h-full bg-brand", fillClassName)}
+                className={cn("absolute h-full", colorStyle.fillClassName, fillClassName)}
                 style={{
                   left: fillLeft,
                   width: fillWidth,
@@ -1086,6 +1117,8 @@ interface SliderComfortableProps
   variant?: "pips" | "scrubber";
   label?: string;
   formatValue?: (v: number) => string;
+  /** Semantic color applied to the filled region. */
+  color?: SliderColor;
   disabled?: boolean;
 }
 
@@ -1100,6 +1133,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
       variant = "pips",
       label,
       formatValue = String,
+      color = "brand",
       disabled = false,
       className,
       ...props
@@ -1107,6 +1141,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
     ref
   ) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const colorStyle = sliderColors[color];
     const dragging = useRef(false);
     const handleDragging = useRef(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -1183,7 +1218,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
         return `linear-gradient(to right, transparent calc(${(p as number) * 100}% + ${offset}px), black calc(${(p as number) * 100}% + ${offset + 2}px))`;
       }
     );
-    const pipsOnBrandTextMaskStyle = useTransform(
+    const pipsOnFillTextMaskStyle = useTransform(
       [fillPercent, zeroOffset] as MotionValue<number>[],
       ([p, zo]) => {
         const offset = 20 - 20 * (p as number) - (zo as number) * 2.5;
@@ -1191,7 +1226,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
         return `linear-gradient(to right, black ${edge}, transparent ${edge})`;
       }
     );
-    const scrubberOnBrandTextMaskStyle = useTransform(
+    const scrubberOnFillTextMaskStyle = useTransform(
       fillPercent,
       (p) => `linear-gradient(to right, black ${p * 100}%, transparent ${p * 100}%)`
     );
@@ -1523,7 +1558,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
             className="absolute left-0 top-0 bottom-0 pointer-events-none z-control"
             style={{
               width: pipsFillWidthStyle,
-              backgroundColor: "var(--brand)",
+              backgroundColor: colorStyle.fill,
             }}
           />
         )}
@@ -1575,13 +1610,14 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
           </div>
         )}
 
-        {/* Pips: on-brand text, clipped to the filled region */}
+        {/* Pips: contrasting text, clipped to the filled region */}
         {variant === "pips" && (
           <motion.div
-            className="absolute inset-0 flex items-center px-2 z-foreground pointer-events-none text-fg-on-brand"
+            className="absolute inset-0 flex items-center px-2 z-foreground pointer-events-none"
             style={{
-              WebkitMaskImage: pipsOnBrandTextMaskStyle,
-              maskImage: pipsOnBrandTextMaskStyle,
+              WebkitMaskImage: pipsOnFillTextMaskStyle,
+              maskImage: pipsOnFillTextMaskStyle,
+              color: colorStyle.onFill,
             }}
             aria-hidden
           >
@@ -1601,7 +1637,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
             className="absolute left-0 top-0 bottom-0 pointer-events-none"
             style={{
               width: fillWidthStyle,
-              backgroundColor: "var(--brand)",
+              backgroundColor: colorStyle.fill,
             }}
           />
         )}
@@ -1656,13 +1692,14 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
           </>
         )}
 
-        {/* Scrubber: on-brand text, clipped to the filled region */}
+        {/* Scrubber: contrasting text, clipped to the filled region */}
         {variant === "scrubber" && (
           <motion.div
-            className="absolute inset-0 flex items-center gap-3 px-4 pointer-events-none z-content text-fg-on-brand"
+            className="absolute inset-0 flex items-center gap-3 px-4 pointer-events-none z-content"
             style={{
-              WebkitMaskImage: scrubberOnBrandTextMaskStyle,
-              maskImage: scrubberOnBrandTextMaskStyle,
+              WebkitMaskImage: scrubberOnFillTextMaskStyle,
+              maskImage: scrubberOnFillTextMaskStyle,
+              color: colorStyle.onFill,
             }}
             aria-hidden
           >
@@ -1697,4 +1734,10 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
 SliderComfortable.displayName = "SliderComfortable";
 
 export { Slider, SliderComfortable };
-export type { SliderProps, SliderValue, ValuePosition, SliderComfortableProps };
+export type {
+  SliderColor,
+  SliderProps,
+  SliderValue,
+  ValuePosition,
+  SliderComfortableProps,
+};

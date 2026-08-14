@@ -55,6 +55,18 @@ const disabledCode = `import { Slider } from "./components";
 
 <Slider value={50} onChange={() => {}} disabled />`;
 
+const colorsCode = `import { Slider } from "./components";
+
+const [brand, setBrand] = useState(60);
+const [nature, setNature] = useState(60);
+const [danger, setDanger] = useState(60);
+const [warning, setWarning] = useState(60);
+
+<Slider value={brand} onChange={setBrand} />
+<Slider value={nature} onChange={setNature} color="nature" />
+<Slider value={danger} onChange={setDanger} color="danger" />
+<Slider value={warning} onChange={setWarning} color="warning" />`;
+
 const formatCode = `import { Slider } from "./components";
 
 <Slider
@@ -191,6 +203,12 @@ const sliderProps: PropDef[] = [
       "Accessible label for the slider, also shown as prefix in the value display.",
   },
   {
+    name: "color",
+    type: '"brand" | "nature" | "danger" | "warning"',
+    default: '"brand"',
+    description: "Semantic color applied to the filled track and thumb.",
+  },
+  {
     name: "disabled",
     type: "boolean",
     default: "false",
@@ -247,6 +265,12 @@ const comfortableProps: PropDef[] = [
     description: "Custom formatter for the value shown on the right.",
   },
   {
+    name: "color",
+    type: '"brand" | "nature" | "danger" | "warning"',
+    default: '"brand"',
+    description: "Semantic color applied to the filled region.",
+  },
+  {
     name: "disabled",
     type: "boolean",
     default: "false",
@@ -272,6 +296,10 @@ export default function SliderDoc() {
   const [right, setRight] = useState(60);
   const [tooltip, setTooltip] = useState(50);
   const [formatted, setFormatted] = useState(75);
+  const [brandColor, setBrandColor] = useState(60);
+  const [natureColor, setNatureColor] = useState(60);
+  const [dangerColor, setDangerColor] = useState(60);
+  const [warningColor, setWarningColor] = useState(60);
 
   const [roundness, setRoundness] = useState(2);
   const [volume, setVolume] = useState(50);
@@ -372,6 +400,36 @@ export default function SliderDoc() {
               onChange={(v) => setFormatted(v as number)}
               formatValue={(v) => `${v}%`}
               label="Opacity"
+            />
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("colors")}>
+        <ComponentPreview code={colorsCode}>
+          <div className="flex w-72 flex-col gap-3">
+            <Slider
+              value={brandColor}
+              onChange={(v) => setBrandColor(v as number)}
+              label="Brand"
+            />
+            <Slider
+              value={natureColor}
+              onChange={(v) => setNatureColor(v as number)}
+              color="nature"
+              label="Nature"
+            />
+            <Slider
+              value={dangerColor}
+              onChange={(v) => setDangerColor(v as number)}
+              color="danger"
+              label="Danger"
+            />
+            <Slider
+              value={warningColor}
+              onChange={(v) => setWarningColor(v as number)}
+              color="warning"
+              label="Warning"
             />
           </div>
         </ComponentPreview>

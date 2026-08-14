@@ -6,6 +6,7 @@
     "nonUniformSteps": "Non-uniform Steps",
     "valueDisplay": "Value Display",
     "format": "Format",
+    "colors": "Colors",
     "disabled": "Disabled",
     "comfortable": "Comfortable",
     "comfortableScrubber": "Comfortable — Scrubber",
@@ -33,7 +34,8 @@
     "s8": "Position of the value label. \"tooltip\" shows above the thumb during interaction.",
     "s9": "Custom formatter for the value label.",
     "s10": "Accessible label for the slider, also shown as prefix in the value display.",
-    "s11": "Disables all interaction.",
+    "s11": "Semantic color applied to the filled track and thumb. Defaults to brand.",
+    "s12": "Disables all interaction.",
     "c0": "Current selected value.",
     "c1": "Called when the value changes via click, drag, or keyboard.",
     "c2": "Minimum value.",
@@ -42,6 +44,7 @@
     "c5": "Step increment for snapping. In pips mode, also determines the number of dots rendered.",
     "c6": "Label shown on the left side. Transitions from muted to foreground on hover.",
     "c7": "Custom formatter for the value shown on the right.",
-    "c8": "Disables all interaction."
+    "c8": "Semantic color applied to the filled region. Defaults to brand.",
+    "c9": "Disables all interaction."
   }
 }
