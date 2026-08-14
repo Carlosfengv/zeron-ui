@@ -107,7 +107,13 @@ function PlatformShortcutHint() {
 
 function ResponsiveSidebarTrigger() {
   const { isMobile } = useSidebar();
-  return <SidebarTrigger label={isMobile ? "关闭导航" : "收起侧边栏"} />;
+  return (
+    <SidebarTrigger
+      size="icon-xs"
+      label={isMobile ? "关闭导航" : "收起侧边栏"}
+      className="shrink-0"
+    />
+  );
 }
 
 function WorkspaceSwitcher({
@@ -210,7 +216,7 @@ function NavigationItemView({
     <NavItem value={item.value}>
       <NavItemTrigger
         render={<a href={item.value} />}
-        className="h-control-md gap-1 px-1.5 text-body data-[active=true]:text-fg-brand max-xl:min-h-11"
+        className="gap-1 px-1.5 text-body data-[active=true]:text-fg-brand"
         onClick={() => {
           onSelect(item.value);
           onNavigate?.();
@@ -458,12 +464,6 @@ function ZaiopsSidebar(props: ZaiopsNavigationPanelProps) {
   );
 }
 
-function CompactOpenTrigger() {
-  const { isMobile } = useSidebar();
-  if (!isMobile) return null;
-  return <SidebarTrigger label="打开导航" className="max-xl:min-h-11 max-xl:min-w-11" />;
-}
-
 export function ZaiopsSidebarPreview({ className }: { className?: string }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [organizationId, setOrganizationId] = useState(organizations[0].id);
@@ -486,7 +486,7 @@ export function ZaiopsSidebarPreview({ className }: { className?: string }) {
   }, []);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider breakpointBehavior="collapse">
       <div className="h-full min-h-0 w-full group-data-[fullscreen=true]/preview-content:h-full">
         <div className={cn(
           "relative flex h-[min(42rem,calc(100svh-8rem))] min-h-120 w-full overflow-hidden bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0",
@@ -504,11 +504,14 @@ export function ZaiopsSidebarPreview({ className }: { className?: string }) {
             sessionsState={sessionsState}
           />
           <PageLayout className="h-full min-w-0 flex-1">
-            <PageHeader>
-              <div className="flex min-w-0 items-center gap-2">
+            <PageHeader className="h-control-xs py-0 max-sm:flex-row">
+              <div className="flex h-full min-w-0 items-center gap-2">
                 <SidebarFloatingTrigger
                   collapsedBehavior="offcanvas"
+                  size="icon-xs"
                   label="展开侧边栏"
+                  menuLabel="打开侧边栏菜单"
+                  className="shrink-0"
                   contentClassName="h-[min(42rem,calc(100svh-6rem))] w-[260px] max-w-[calc(100vw-12px)] rounded-xl p-0"
                   surfaceClassName="border-[0.5px] border-border-subtle"
                   surfaceShadow="floating-drop"
@@ -531,16 +534,15 @@ export function ZaiopsSidebarPreview({ className }: { className?: string }) {
                     />
                   )}
                 />
-                <PageHeaderContent icon={Home}>
+                <PageHeaderContent icon={Home} className="h-full">
                   <nav aria-label="Breadcrumb" className="text-body text-fg-muted">ZAIops / 巡检</nav>
                 </PageHeaderContent>
               </div>
-              <div className="xl:hidden"><CompactOpenTrigger /></div>
             </PageHeader>
             <PageContent>
               <PageBody className="p-6">
                 <PageTitle className="text-title">巡检总览</PageTitle>
-                <p className="mt-2 max-w-md text-body text-fg-muted">260px Desktop Sidebar、可访问的 Compact Drawer 与业务组合示例。</p>
+                <p className="mt-2 max-w-md text-body text-fg-muted">260px Desktop Sidebar、可访问的断点 Dropdown 与业务组合示例。</p>
               </PageBody>
             </PageContent>
           </PageLayout>

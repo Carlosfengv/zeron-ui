@@ -10,6 +10,7 @@ describe("sidebar implementation contract", () => {
   const drawer = source("packages/ui/src/components/mobile-drawer.tsx");
   const identityRow = source("packages/ui/src/components/sidebar-identity-row.tsx");
   const navMenu = source("packages/ui/src/components/nav-menu.tsx");
+  const sidebarDocs = source("docs/pages/components/sidebar/page.tsx");
   const zaiopsBlock = source("packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx");
   const zaiopsPreview = source("docs/components/shell/site/zaiops-sidebar-preview.tsx");
 
@@ -28,9 +29,20 @@ describe("sidebar implementation contract", () => {
   it("can derive compact offcanvas navigation from the desktop collapsed state", () => {
     expect(sidebar).toContain('export type SidebarBreakpointBehavior = "drawer" | "collapse";');
     expect(sidebar).toContain('breakpointBehavior = "drawer"');
-    expect(sidebar).toContain('const open = preferredOpen && !(breakpointBehavior === "collapse" && isMobile);');
-    expect(sidebar).toContain('breakpointBehavior === "drawer" ? "hidden xl:block" : "block max-xl:hidden"');
+    expect(sidebar).toContain('const isBreakpointCollapsed = breakpointBehavior === "collapse" && isMobile;');
+    expect(sidebar).toContain('const open = preferredOpen && !isBreakpointCollapsed;');
+    expect(sidebar).toContain('breakpointBehavior === "drawer"');
+    expect(sidebar).toContain('? "hidden xl:block"');
+    expect(sidebar).toContain(': isMobile');
+    expect(sidebar).toContain('? "block"');
+    expect(sidebar).toContain(': "block max-xl:hidden"');
     expect(sidebar).toContain('supportsBreakpointCollapse && state !== "collapsed" && "max-xl:inline-flex"');
+  });
+
+  it("keeps the icon Sidebar visible after compact-breakpoint hydration in both demos", () => {
+    expect(sidebarDocs).toContain('<SidebarProvider defaultOpen breakpointBehavior="collapse">');
+    expect(sidebarDocs).toContain('<SidebarProvider key={collapsible} defaultOpen breakpointBehavior="collapse">');
+    expect(sidebarDocs).toContain('<Sidebar collapsible="icon" className="relative !h-full">');
   });
 
   it("keeps compact drawer actions stable while its open state changes", () => {
@@ -78,7 +90,7 @@ describe("sidebar implementation contract", () => {
 
   it("composes the ZAIops main area from PageLayout without a PageSubnav", () => {
     expect(zaiopsPreview).toContain('<PageLayout className="h-full min-w-0 flex-1">');
-    expect(zaiopsPreview).toContain("<PageHeader>");
+    expect(zaiopsPreview).toContain('<PageHeader className="h-control-xs py-0 max-sm:flex-row">');
     expect(zaiopsPreview).toContain("<PageContent>");
     expect(zaiopsPreview).toContain('<PageBody className="p-6">');
     expect(zaiopsPreview).not.toContain("PageSubnav");
@@ -126,9 +138,21 @@ describe("sidebar implementation contract", () => {
 
   it("lets one floating-navigation interaction serve user and breakpoint collapse", () => {
     expect(sidebar).toContain('clickBehavior?: "expand" | "menu";');
-    expect(sidebar).toContain('if (clickBehavior === "expand")');
+    expect(sidebar).toContain('const opensMenuOnClick = isBreakpointCollapsed || clickBehavior === "menu";');
+    expect(sidebar).toContain('const Icon = opensMenuOnClick ? MenuIcon : ExpandIcon;');
+    expect(sidebar).toContain('aria-label={opensMenuOnClick ? menuLabel : label}');
+    expect(sidebar).toContain('if (!opensMenuOnClick)');
     expect(zaiopsBlock).toContain('<SidebarProvider breakpointBehavior="collapse">');
-    expect(zaiopsBlock).toContain('clickBehavior="menu"');
+    expect(zaiopsBlock).not.toContain('clickBehavior="menu"');
+    expect(zaiopsBlock).toContain('size="icon-xs"\n              label="Collapse operations navigation"\n              className="shrink-0"');
+    expect(zaiopsBlock).toContain('collapsedBehavior="offcanvas"\n                size="icon-xs"');
+    expect(zaiopsBlock).toContain('label="Expand operations navigation"');
+    expect(zaiopsBlock).toContain('menuLabel="Open operations navigation menu"');
+    expect(zaiopsPreview).toContain('size="icon-xs"\n      label={isMobile ? "关闭导航" : "收起侧边栏"}\n      className="shrink-0"');
+    expect(zaiopsPreview).toContain('collapsedBehavior="offcanvas"\n                  size="icon-xs"');
+    expect(zaiopsPreview).toContain('<SidebarProvider breakpointBehavior="collapse">');
+    expect(zaiopsPreview).not.toContain("CompactOpenTrigger");
+    expect(zaiopsPreview).not.toContain('className="flex h-full items-center xl:hidden"');
     expect(zaiopsBlock).not.toContain('<div className="xl:hidden"><SidebarTrigger');
   });
 
@@ -157,11 +181,31 @@ describe("sidebar implementation contract", () => {
     expect(zaiopsBlock).not.toContain("event.preventDefault();\n            setActive");
   });
 
+  it("keeps ZAIops navigation density independent of the viewport breakpoint", () => {
+    expect(zaiopsBlock).toContain('className="px-1.5 text-body data-[active=true]:text-fg-brand"');
+    expect(zaiopsPreview).toContain('className="gap-1 px-1.5 text-body data-[active=true]:text-fg-brand"');
+    for (const sourceFile of [zaiopsPreview, zaiopsBlock]) {
+      const navigationTriggerClass = sourceFile.match(
+        /<NavItemTrigger[\s\S]*?className="([^"]+)"[\s\S]*?<\/NavItemTrigger>/
+      )?.[1];
+      expect(navigationTriggerClass).not.toContain("h-control-md");
+      expect(navigationTriggerClass).not.toContain("max-xl:min-h-11");
+    }
+  });
+
   it("gives the collapsed ZAIops hover navigation a bordered floating surface", () => {
     for (const sourceFile of [zaiopsPreview, zaiopsBlock]) {
       expect(sourceFile).toContain('rounded-xl p-0');
       expect(sourceFile).toContain('surfaceClassName="border-[0.5px] border-border-subtle"');
       expect(sourceFile).toContain('surfaceShadow="floating-drop"');
+    }
+  });
+
+  it("keeps the ZAIops page-header controls and breadcrumb on one 28px row", () => {
+    for (const sourceFile of [zaiopsPreview, zaiopsBlock]) {
+      expect(sourceFile).toContain('<PageHeader className="h-control-xs py-0 max-sm:flex-row">');
+      expect(sourceFile).toContain('<div className="flex h-full min-w-0 items-center gap-2">');
+      expect(sourceFile).toContain('<PageHeaderContent icon={Home} className="h-full">');
     }
   });
 

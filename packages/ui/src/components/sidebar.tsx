@@ -57,6 +57,8 @@ export interface SidebarContextValue {
   setMobileOpen: (open: boolean) => void;
   isMobile: boolean;
   breakpointBehavior: SidebarBreakpointBehavior;
+  /** True when the compact breakpoint, rather than the stored user preference, hides the persistent Sidebar. */
+  isBreakpointCollapsed: boolean;
   triggerRef: React.RefObject<HTMLElement | null>;
   /** Set the element that should regain focus after the next compact-drawer close. */
   setActiveTrigger: (trigger: HTMLElement | null) => void;
@@ -111,7 +113,8 @@ const SidebarProvider = ({
   const previousMobileOpenRef = useRef(defaultMobileOpen);
   const isMobile = useSidebarMobile();
   const preferredOpen = openProp ?? internalOpen;
-  const open = preferredOpen && !(breakpointBehavior === "collapse" && isMobile);
+  const isBreakpointCollapsed = breakpointBehavior === "collapse" && isMobile;
+  const open = preferredOpen && !isBreakpointCollapsed;
   const mobileOpen = mobileOpenProp ?? internalMobileOpen;
   const mobileOpenRef = useRef(mobileOpen);
   const state: SidebarState = open ? "expanded" : "collapsed";
@@ -223,12 +226,13 @@ const SidebarProvider = ({
       setMobileOpen,
       isMobile,
       breakpointBehavior,
+      isBreakpointCollapsed,
       triggerRef,
       setActiveTrigger,
       toggle,
       closeMobile,
     }),
-    [breakpointBehavior, closeMobile, isMobile, mobileOpen, open, setActiveTrigger, setMobileOpen, setOpen, state, toggle]
+    [breakpointBehavior, closeMobile, isBreakpointCollapsed, isMobile, mobileOpen, open, setActiveTrigger, setMobileOpen, setOpen, state, toggle]
   );
 
   return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
@@ -355,7 +359,11 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
         className={cn(
           "group/sidebar sticky top-0 h-svh shrink-0",
           className,
-          breakpointBehavior === "drawer" ? "hidden xl:block" : "block max-xl:hidden"
+          breakpointBehavior === "drawer"
+            ? "hidden xl:block"
+            : isMobile
+              ? "block"
+              : "block max-xl:hidden"
         )}
         style={rootStyle}
         dir={dir}
@@ -429,6 +437,8 @@ export interface SidebarFloatingTriggerProps extends Omit<ComponentPropsWithoutR
   collapsedBehavior?: SidebarCollapsible;
   /** Accessible label for the collapsed-navigation trigger. */
   label?: string;
+  /** Accessible label used when a breakpoint-forced collapse changes the trigger into a menu button. */
+  menuLabel?: string;
   /** Renders the complete navigation panel; call close() after an in-place navigation action. */
   renderContent: (controls: { close: () => void }) => ReactNode;
   /** Classes for the anchored navigation popover. */
@@ -437,7 +447,7 @@ export interface SidebarFloatingTriggerProps extends Omit<ComponentPropsWithoutR
   surfaceClassName?: string;
   /** Spatial separation for the popover's managed background surface. */
   surfaceShadow?: ShadowRole;
-  /** Whether clicking expands the persistent sidebar or opens the floating menu. */
+  /** Click behavior after a user collapse. Breakpoint-forced collapse always opens the floating menu. */
   clickBehavior?: "expand" | "menu";
 }
 
@@ -450,6 +460,7 @@ const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTrig
       surfaceClassName,
       surfaceShadow,
       label = "Expand sidebar",
+      menuLabel = "Open sidebar menu",
       renderContent,
       className,
       onClick,
@@ -457,11 +468,14 @@ const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTrig
     },
     forwardedRef
   ) => {
-    const { breakpointBehavior, isMobile, state, toggle } = useSidebar();
+    const { breakpointBehavior, isBreakpointCollapsed, isMobile, state, toggle } = useSidebar();
     const [open, setOpen] = useState(false);
+    const MenuIcon = useIcon("menu");
     const ExpandIcon = useIcon("chevrons-right");
     const supportsBreakpointCollapse = breakpointBehavior === "collapse" && collapsedBehavior === "offcanvas";
     const visible = state === "collapsed" && collapsedBehavior === "offcanvas" && (!isMobile || supportsBreakpointCollapse);
+    const opensMenuOnClick = isBreakpointCollapsed || clickBehavior === "menu";
+    const Icon = opensMenuOnClick ? MenuIcon : ExpandIcon;
 
     useEffect(() => {
       if (!visible) setOpen(false);
@@ -477,7 +491,7 @@ const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTrig
               ref={forwardedRef}
               variant="tertiary"
               size="icon-sm"
-              aria-label={label}
+              aria-label={opensMenuOnClick ? menuLabel : label}
               active={open}
               className={cn(
                 !visible && "hidden",
@@ -487,14 +501,14 @@ const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTrig
               onClick={(event) => {
                 onClick?.(event);
                 if (event.defaultPrevented) return;
-                if (clickBehavior === "expand") {
+                if (!opensMenuOnClick) {
                   setOpen(false);
                   toggle();
                 }
               }}
               {...props}
             >
-              <ExpandIcon aria-hidden="true" strokeWidth={1.5} />
+              <Icon aria-hidden="true" strokeWidth={1.5} />
             </Button>
           }
         />

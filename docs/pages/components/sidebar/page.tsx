@@ -12,7 +12,7 @@ import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { ZaiopsSidebarPreview } from "@docs/components/shell/site/zaiops-sidebar-preview";
 import { useIcon } from "@zeron/icons/context";
 
-const code = `<SidebarProvider defaultOpen>
+const code = `<SidebarProvider defaultOpen breakpointBehavior="collapse">
   <div className="flex h-96 w-full min-w-0 overflow-hidden">
     <Sidebar collapsible="icon">
       <SidebarHeader>...</SidebarHeader>
@@ -45,7 +45,7 @@ const sidebarPageSections = {
 const collapseModes: SidebarCollapsible[] = ["icon", "offcanvas", "none"];
 
 function buildCollapsePlaygroundCode(collapsible: SidebarCollapsible) {
-  return `<SidebarProvider>
+  return `<SidebarProvider breakpointBehavior="collapse">
   <Sidebar collapsible="${collapsible}">...</Sidebar>
   <PageLayout>
     <PageHeader>
@@ -109,7 +109,7 @@ function SidebarCollapsePreview({ collapsible }: { collapsible: SidebarCollapsib
   const Settings = useIcon("settings");
 
   return (
-    <SidebarProvider key={collapsible} defaultOpen>
+    <SidebarProvider key={collapsible} defaultOpen breakpointBehavior="collapse">
       <div className="flex h-80 w-full min-w-0 overflow-hidden bg-surface-base">
         <Sidebar collapsible={collapsible} className="relative !h-full">
           <SidebarHeader className="flex items-center justify-between">
@@ -377,8 +377,9 @@ const floatingTriggerProps: PropDef[] = [
   { name: "collapsedBehavior", type: '"offcanvas" | "icon" | "none"', default: '"offcanvas"', description: "Shows the relocated header trigger after an offcanvas Sidebar is collapsed." },
   { name: "renderContent", type: "(controls: { close: () => void }) => ReactNode", description: "Renders the complete navigation inside the hover popover. Call close after an in-place navigation action." },
   { name: "label", type: "string", default: '"Expand sidebar"', description: "Accessible label for the sidebar expand icon button." },
+  { name: "menuLabel", type: "string", default: '"Open sidebar menu"', description: "Accessible label used when breakpoint collapse changes the trigger into a menu button." },
   { name: "contentClassName", type: "string", description: "Optional classes for the navigation popover." },
-  { name: "clickBehavior", type: '"expand" | "menu"', default: '"expand"', description: "Expands the persistent sidebar or opens the same floating menu on click." },
+  { name: "clickBehavior", type: '"expand" | "menu"', default: '"expand"', description: "Controls clicks after a user collapse. A breakpoint-forced collapse always opens the floating menu." },
 ];
 
 export default function SidebarDoc() {
@@ -390,9 +391,9 @@ export default function SidebarDoc() {
   return <DocPage title="Sidebar" slug="sidebar" description="A responsive navigation rail that becomes a focus-managed drawer on compact screens.">
     <DocSection title="Basic">
       <ComponentPreview fullScreenable padding="none" code={code}>
-        <SidebarProvider>
+        <SidebarProvider defaultOpen breakpointBehavior="collapse">
           <div className="flex h-96 w-full min-w-0 overflow-hidden bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
-            <Sidebar collapsible="icon" className="static">
+            <Sidebar collapsible="icon" className="relative !h-full">
               <SidebarHeader className="flex items-center justify-between">
                 <span className="px-2 text-label group-data-[state=collapsed]/sidebar:hidden">Zeron</span>
                 <SidebarTrigger label="Toggle preview sidebar" />

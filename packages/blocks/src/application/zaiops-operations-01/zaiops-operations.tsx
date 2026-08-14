@@ -116,7 +116,7 @@ function OperationsNavigationPanel({
       <NavItem key={item.value} value={item.value}>
         <NavItemTrigger
           render={<Link href={item.value} />}
-          className="h-control-md px-1.5 text-body data-[active=true]:text-fg-brand max-xl:min-h-11"
+          className="px-1.5 text-body data-[active=true]:text-fg-brand"
           onClick={onNavigate}
         >
           <NavItemLeading className="group-data-[active=true]/nav-item:text-fg-brand">
@@ -157,7 +157,13 @@ function OperationsNavigationPanel({
               ))}
             </DropdownContent>
           </DropdownMenu>
-          {showSidebarTrigger && <SidebarTrigger label="Collapse operations navigation" />}
+          {showSidebarTrigger && (
+            <SidebarTrigger
+              size="icon-xs"
+              label="Collapse operations navigation"
+              className="shrink-0"
+            />
+          )}
         </div>
         <OperationsSearchTrigger onOpen={onSearchOpen} />
       </SidebarHeader>
@@ -252,12 +258,14 @@ export function ZaiopsOperations({
           />
         </Sidebar>
         <PageLayout className="h-full min-w-0 flex-1">
-          <PageHeader>
-            <div className="flex min-w-0 items-center gap-2">
+          <PageHeader className="h-control-xs py-0 max-sm:flex-row">
+            <div className="flex h-full min-w-0 items-center gap-2">
               <SidebarFloatingTrigger
                 collapsedBehavior="offcanvas"
-                clickBehavior="menu"
-                label="Open operations navigation"
+                size="icon-xs"
+                label="Expand operations navigation"
+                menuLabel="Open operations navigation menu"
+                className="shrink-0"
                 contentClassName="h-[min(36rem,calc(100svh-4rem))] w-[260px] max-w-[calc(100vw-12px)] rounded-xl p-0"
                 surfaceClassName="border-[0.5px] border-border-subtle"
                 surfaceShadow="floating-drop"
@@ -272,7 +280,7 @@ export function ZaiopsOperations({
                   />
                 )}
               />
-              <PageHeaderContent icon={Home}>
+              <PageHeaderContent icon={Home} className="h-full">
                 <nav aria-label="Breadcrumb" className="text-body text-fg-muted">ZAIops / Operations</nav>
               </PageHeaderContent>
             </div>
