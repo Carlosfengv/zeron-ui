@@ -110,6 +110,7 @@ describe("semantic color consumers", () => {
     expect(table).toContain(
       "group/row relative z-content border-b transition-[border-color] duration-fast"
     );
+    expect(table).toContain('"[&>tr:last-child]:border-b-0"');
     expect(table).toContain('"border-border"');
     expect(table).not.toContain("border-border-subtle");
     expect(dataTable).toContain(
