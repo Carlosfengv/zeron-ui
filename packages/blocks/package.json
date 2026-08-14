@@ -6,6 +6,7 @@
   "exports": {
     "./catalog": "./src/catalog.ts",
     "./resource-details-01": "./src/application/resource-details-01/index.ts",
+    "./resource-list-table-01": "./src/application/resource-list-table-01/index.ts",
     "./resource-metric-list-01": "./src/application/resource-metric-list-01/index.ts",
     "./resource-status-all-01": "./src/application/resource-status-all-01/index.ts",
     "./top-nav-app-shell-01": "./src/application/top-nav-app-shell-01/index.ts",

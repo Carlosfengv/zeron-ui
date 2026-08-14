@@ -1,0 +1,10 @@
+{
+  "resourceListTableBlock": {
+    "title": "Resource List Table 1",
+    "description": "Search, filter, select, and manage reusable resource rows in a responsive data table.",
+    "guidance": "Data integration",
+    "guidanceBody": "Pass resources to replace the sample inventory, labels to localize the block-specific copy, and onRefresh, onCreate, or onEdit to connect the toolbar and row actions. renderBulkActions can compose custom actions from the selected resources. Each item can select any icon already registered in Zeron through iconName.",
+    "bulkDraft": "Mark as draft",
+    "bulkDelete": "Delete selected"
+  }
+}

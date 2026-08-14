@@ -1947,6 +1947,42 @@
       ]
     },
     {
+      "name": "resource-list-table-01",
+      "type": "registry:block",
+      "title": "Resource List Table 1",
+      "description": "A searchable, selectable resource inventory with status filtering and reusable row actions.",
+      "categories": [
+        "application",
+        "tables"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@tanstack/react-table"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/checkbox.json",
+        "https://zeron-ui.vercel.app/r/data-table.json",
+        "https://zeron-ui.vercel.app/r/info-item.json",
+        "https://zeron-ui.vercel.app/r/input-group.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-list-table-01/resource-list-table.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-list-table-01/resource-list-table.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-list-table-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-list-table-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "resource-metric-list-01",
       "type": "registry:block",
       "title": "Resource Metric List 1",

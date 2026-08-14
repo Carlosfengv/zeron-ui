@@ -140,6 +140,7 @@
       "catalog": "Searchable names generated from the free icon provider's actual exports.",
       "providers": "Free and licensed icon styles, plus the boundary for optional Pro packages.",
       "resource-details-01": "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",
+      "resource-list-table-01": "A searchable, selectable resource inventory with status filtering and reusable row actions.",
       "resource-metric-list-01": "A compact resource inventory with status distribution bars for infrastructure health at a glance.",
       "resource-status-all-01": "A resource-status summary with a circular distribution, detailed counts, and determinate-state coverage.",
       "top-nav-app-shell-01": "A stacked application shell with a centered TopNav and focused content area.",

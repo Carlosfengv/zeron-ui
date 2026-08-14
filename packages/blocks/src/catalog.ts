@@ -7,6 +7,13 @@ export const blockCatalog = [
     dependencies: ["detail-list", "switch", "badge"],
   },
   {
+    name: "resource-list-table-01",
+    title: "Resource List Table 1",
+    description: "A searchable, selectable resource inventory with status filtering and reusable row actions.",
+    categories: ["application", "tables"],
+    dependencies: ["data-table", "info-item", "badge", "checkbox", "button", "input-group"],
+  },
+  {
     name: "resource-metric-list-01",
     title: "Resource Metric List 1",
     description: "A compact resource inventory with status distribution bars for infrastructure health at a glance.",
