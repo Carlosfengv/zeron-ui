@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -82,6 +83,21 @@ const renderCode = `import Link from "next/link";
   Documentation
 </BreadcrumbLink>`;
 
+const resourceSwitcherCode = `import { useState } from "react";
+
+const resources = [
+  { value: "atlas", label: "Atlas" },
+  { value: "orion", label: "Orion" },
+  { value: "nova", label: "Nova" },
+];
+const [resource, setResource] = useState("atlas");
+
+<BreadcrumbPage
+  resources={resources}
+  value={resource}
+  onValueChange={setResource}
+/>`;
+
 const breadcrumbProps: PropDef[] = [
   {
     name: "children",
@@ -132,8 +148,8 @@ const partProps: PropDef[] = [
   },
   {
     name: "BreadcrumbPage",
-    type: "span props",
-    description: "Current page label with aria-current=page.",
+    type: "span props + resource switcher props",
+    description: "Current page label with aria-current=page. Pass resources to switch between same-level resources.",
   },
   {
     name: "BreadcrumbSeparator",
@@ -149,6 +165,12 @@ const partProps: PropDef[] = [
 
 export default function BreadcrumbDoc() {
   const t = useTranslations("breadcrumb");
+  const [resource, setResource] = useState("atlas");
+  const resources = [
+    { value: "atlas", label: "Atlas" },
+    { value: "orion", label: "Orion" },
+    { value: "nova", label: "Nova" },
+  ];
   const localize = (props: PropDef[], prefix: string) => props.map((prop, index) => ({ ...prop, description: t(`${prefix}${index}`) }));
   return (
     <DocPage
@@ -232,6 +254,27 @@ export default function BreadcrumbDoc() {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("resourceSwitcher")}>
+        <p className="text-body text-fg-muted">{t("resourceSwitcherBody")}</p>
+        <ComponentPreview code={resourceSwitcherCode}>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#">Projects</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem className="min-w-0">
+                <BreadcrumbPage
+                  resources={resources}
+                  value={resource}
+                  onValueChange={setResource}
+                />
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
