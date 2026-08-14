@@ -3,6 +3,7 @@
 import { TopNavAppShell } from "@zeron/blocks/top-nav-app-shell-01";
 import { ZaiopsOperations } from "@zeron/blocks/zaiops-operations-01";
 import { ResourceDetails } from "@zeron/blocks/resource-details-01";
+import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
 
 export function BlockPreview({ name }: { name: string }) {
   if (name === "resource-details-01") {
@@ -10,6 +11,16 @@ export function BlockPreview({ name }: { name: string }) {
       <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-3">
         <div className="w-[400px] origin-top scale-[0.48]">
           <ResourceDetails />
+        </div>
+      </div>
+    );
+  }
+
+  if (name === "resource-metric-list-01") {
+    return (
+      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-3">
+        <div className="w-[700px] origin-top scale-[0.44]">
+          <ResourceMetricList />
         </div>
       </div>
     );

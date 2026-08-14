@@ -1,0 +1,1 @@
+{"resourceMetricListBlock":{"title":"资源指标列表 1","description":"通过状态分段条紧凑展示基础设施资源数量和健康分布。","guidance":"数据接入","guidanceBody":"可替换 defaultResourceMetrics，或通过 items 接入资源清单模型。每个分段值需与该行总数使用相同单位；Block 会负责比例布局、语义化状态色、文本截断和无障碍摘要。"}}

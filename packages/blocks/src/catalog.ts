@@ -7,6 +7,13 @@ export const blockCatalog = [
     dependencies: ["detail-list", "switch", "badge"],
   },
   {
+    name: "resource-metric-list-01",
+    title: "Resource Metric List 1",
+    description: "A compact resource inventory with status distribution bars for infrastructure health at a glance.",
+    categories: ["application", "metrics"],
+    dependencies: ["detail-list"],
+  },
+  {
     name: "top-nav-app-shell-01",
     title: "TopNav App Shell",
     description: "A stacked application shell with a centered TopNav and focused content area.",

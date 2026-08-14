@@ -24,6 +24,57 @@
       ]
     },
     {
+      "name": "resource-metric-list-01",
+      "type": "registry:block",
+      "title": "Resource Metric List 1",
+      "description": "A compact resource inventory with status distribution bars for infrastructure health at a glance.",
+      "categories": ["application", "metrics"],
+      "dependencies": ["tw-animate-css"],
+      "registryDependencies": ["detail-list", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-metric-list-01/resource-metric-list.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-metric-list-01/resource-metric-list.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-metric-list-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-metric-list-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-metric-list-01/assets/platform.svg",
+          "type": "registry:file",
+          "target": "components/blocks/resource-metric-list-01/assets/platform.svg"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-metric-list-01/assets/cluster.svg",
+          "type": "registry:file",
+          "target": "components/blocks/resource-metric-list-01/assets/cluster.svg"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-metric-list-01/assets/host.svg",
+          "type": "registry:file",
+          "target": "components/blocks/resource-metric-list-01/assets/host.svg"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-metric-list-01/assets/vm.svg",
+          "type": "registry:file",
+          "target": "components/blocks/resource-metric-list-01/assets/vm.svg"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-metric-list-01/assets/network.svg",
+          "type": "registry:file",
+          "target": "components/blocks/resource-metric-list-01/assets/network.svg"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-metric-list-01/assets/storage.svg",
+          "type": "registry:file",
+          "target": "components/blocks/resource-metric-list-01/assets/storage.svg"
+        }
+      ]
+    },
+    {
       "name": "top-nav-app-shell-01",
       "type": "registry:block",
       "title": "TopNav App Shell",

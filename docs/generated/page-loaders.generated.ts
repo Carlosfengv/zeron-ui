@@ -7,6 +7,7 @@ export type DocPageLoader = () => Promise<DocPageModule>;
 
 export const pageLoaders: Record<string, DocPageLoader> = {
   "blocks/resource-details-01": () => import("@docs/pages/blocks/resource-details-01/page"),
+  "blocks/resource-metric-list-01": () => import("@docs/pages/blocks/resource-metric-list-01/page"),
   "blocks/top-nav-app-shell-01": () => import("@docs/pages/blocks/top-nav-app-shell-01/page"),
   "blocks/zaiops-operations-01": () => import("@docs/pages/blocks/zaiops-operations-01/page"),
   "icons/catalog": () => import("@docs/pages/icons/catalog/page"),
