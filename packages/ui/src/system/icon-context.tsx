@@ -444,11 +444,18 @@ function IconProvider({
     hasRestoredPreference.current = true;
     try {
       const savedVariant = window.localStorage.getItem(iconVariantStorageKey);
-      if (isIconVariant(savedVariant)) setVariant(savedVariant);
+      if (isIconVariant(savedVariant) && availableVariants.includes(savedVariant)) {
+        setVariant(savedVariant);
+      } else if (savedVariant) {
+        // A preference selected through ProIconProvider can outlive that
+        // provider (for example, when a project returns to the free setup).
+        // Discard it rather than attempting an unavailable dynamic import.
+        window.localStorage.removeItem(iconVariantStorageKey);
+      }
     } catch {
       // A restricted browser can still use the default style and switch manually.
     }
-  }, [setVariant]);
+  }, [availableVariants, setVariant]);
 
   const cycleVariant = useCallback(() => {
     const enabledVariants = iconVariantOrder.filter((candidate) => availableVariants.includes(candidate));
