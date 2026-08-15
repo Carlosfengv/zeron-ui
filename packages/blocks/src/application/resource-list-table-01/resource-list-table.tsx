@@ -161,6 +161,86 @@ export const defaultResourceListItems = [
     failurePolicy: "失败后继续并记录异常",
     iconName: "brain",
   },
+  {
+    id: "platform.mn.database",
+    name: "数据库连接检查",
+    description: "验证生产环境数据库的连接与权限状态",
+    status: "enabled",
+    version: "0.3.1",
+    type: "检查",
+    failurePolicy: "失败后重试并记录异常",
+    iconName: "shield",
+  },
+  {
+    id: "platform.mn.cache",
+    name: "缓存命中率统计",
+    description: "采集核心缓存的命中率与容量数据",
+    status: "draft",
+    version: "0.3.0",
+    type: "计算",
+    failurePolicy: "失败后继续并记录异常",
+    iconName: "star",
+  },
+  {
+    id: "platform.mn.audit",
+    name: "访问审计汇总",
+    description: "按日汇总管理后台的访问审计记录",
+    status: "enabled",
+    version: "1.1.0",
+    type: "同步",
+    failurePolicy: "失败后中止任务",
+    iconName: "file-text",
+  },
+  {
+    id: "platform.mn.backup",
+    name: "备份完整性验证",
+    description: "检查最近一次备份是否可用且数据完整",
+    status: "draft",
+    version: "0.4.2",
+    type: "检查",
+    failurePolicy: "失败后通知负责人",
+    iconName: "check-square",
+  },
+  {
+    id: "platform.mn.queue",
+    name: "异步队列积压监控",
+    description: "监控任务队列深度与最长等待时间",
+    status: "enabled",
+    version: "1.0.4",
+    type: "监控",
+    failurePolicy: "失败后继续并记录异常",
+    iconName: "list-checks",
+  },
+  {
+    id: "platform.mn.schedule",
+    name: "定时任务巡检",
+    description: "核验关键定时任务的执行结果与延迟",
+    status: "enabled",
+    version: "0.8.6",
+    type: "检查",
+    failurePolicy: "失败后重试并记录异常",
+    iconName: "calendar",
+  },
+  {
+    id: "platform.mn.notification",
+    name: "通知通道健康度",
+    description: "确认邮件与站内通知通道可正常投递",
+    status: "draft",
+    version: "0.6.0",
+    type: "监控",
+    failurePolicy: "失败后通知负责人",
+    iconName: "bell",
+  },
+  {
+    id: "platform.mn.members",
+    name: "成员目录同步",
+    description: "同步组织成员、角色与目录归属信息",
+    status: "enabled",
+    version: "1.2.0",
+    type: "同步",
+    failurePolicy: "失败后中止任务",
+    iconName: "users",
+  },
 ] as const satisfies readonly ResourceListItem[];
 
 const statusPresentation: Record<
@@ -240,6 +320,7 @@ export function ResourceListTable({
   const SearchIcon = useIcon("search");
   const RefreshIcon = useIcon("rotate-ccw");
   const PlusIcon = useIcon("plus");
+  const StatusIcon = useIcon("dot");
   const XIcon = useIcon("x");
   const labels = useMemo(
     () => ({ ...defaultLabels, ...providedLabels }),
@@ -313,11 +394,13 @@ export function ResourceListTable({
         },
         filterFn: statusFilter,
         meta: {
+          filterIcon: StatusIcon,
           label: labels.statusFilter,
           options: [
             { label: labels.enabled, value: "enabled" },
             { label: labels.draft, value: "draft" },
           ],
+          variant: "multiSelect",
         },
         size: 120,
       },
@@ -360,7 +443,7 @@ export function ResourceListTable({
         size: 120,
       },
     ],
-    [labels, onEdit]
+    [StatusIcon, labels, onEdit]
   );
   const data = useMemo(() => [...resources], [resources]);
 
@@ -387,7 +470,7 @@ export function ResourceListTable({
     <section
       aria-label={ariaLabel ?? labels.ariaLabel}
       className={cn(
-        "w-full max-w-[1620px] rounded-xl border-[0.5px] border-border bg-surface-floating p-3",
+        "mx-auto w-full max-w-[1620px] rounded-xl border-[0.5px] border-border bg-surface-floating p-3",
         className
       )}
       {...props}
@@ -456,6 +539,8 @@ export function ResourceListTable({
                 {statusColumn && (
                   <DataTableFacetedFilter
                     column={statusColumn}
+                    icon={statusColumn.columnDef.meta?.filterIcon}
+                    multiple
                     options={statusColumn.columnDef.meta?.options ?? []}
                     title={labels.statusFilter}
                   />

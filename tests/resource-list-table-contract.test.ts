@@ -54,6 +54,7 @@ describe("Resource List Table 1 block contract", () => {
     expect(source).not.toContain("shadow-raised");
     expect(source).toContain("border-border");
     expect(source).toContain("text-fg-brand");
+    expect(source).toContain("mx-auto w-full max-w-[1620px]");
     expect(source).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
   });
 
@@ -70,6 +71,7 @@ describe("Resource List Table 1 block contract", () => {
     expect(source).toContain('name: "平台基础信息"');
     expect(source).toContain('id: "platform.mn.basic"');
     expect(source).toContain('failurePolicy: "失败后继续并记录异常"');
+    expect(source).toContain('id: "platform.mn.members"');
   });
 
   it("supports search, status filtering, selection, pagination, and accessible actions", () => {
@@ -78,6 +80,9 @@ describe("Resource List Table 1 block contract", () => {
     expect(source).toContain("enableRowSelection: true");
     expect(source).toContain("toggleAllPageRowsSelected");
     expect(source).toContain("DataTableFacetedFilter");
+    expect(source).toContain('variant: "multiSelect"');
+    expect(source).toContain("multiple");
+    expect(source).toContain("filterIcon: StatusIcon");
     expect(source).toMatch(/table\s*\.getSelectedRowModel\(\)/);
     expect(source).toContain("table.resetRowSelection()");
     expect(source).toContain('data-slot="resource-list-bulk-actions"');

@@ -3,7 +3,7 @@
     "title": "资源列表表格 1",
     "description": "在响应式数据表格中搜索、筛选、选择和管理可复用的资源行。",
     "guidance": "数据接入",
-    "guidanceBody": "通过 resources 替换示例清单，通过 labels 覆盖 Block 自身文案，并用 onRefresh、onCreate、onEdit 接入工具栏和行操作。renderBulkActions 可以根据选中资源自由组合批量操作。每条资源可通过 iconName 选择 Zeron 已注册的图标。",
+    "guidanceBody": "通过 resources 替换示例清单，通过 labels 覆盖 Block 自身文案，并用 onRefresh、onCreate、onEdit 接入工具栏和行操作。状态筛选支持多选；renderBulkActions 可以根据选中资源自由组合批量操作。每条资源可通过 iconName 选择 Zeron 已注册的图标。",
     "bulkDraft": "批量标为草稿",
     "bulkDelete": "批量删除"
   }
