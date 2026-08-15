@@ -1125,11 +1125,33 @@
       ]
     },
     {
+      "name": "field",
+      "type": "registry:ui",
+      "title": "Field",
+      "description": "Accessible field and fieldset composition for labels, descriptions, errors, controls, and grouped options.",
+      "dependencies": [
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/field.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/field.tsx"
+        }
+      ]
+    },
+    {
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
       "description": "Text input with outline, secondary, and ghost variants, four sizes, and accessible focus, validation, disabled, and file states.",
       "dependencies": [
+        "@base-ui/react",
         "class-variance-authority",
         "tw-animate-css"
       ],
@@ -1142,6 +1164,28 @@
           "path": "packages/ui/src/components/input.tsx",
           "type": "registry:ui",
           "target": "components/ui/input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "Field-aware multiline text input with semantic variants, accessible validation, and resizable sizing.",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/textarea.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/textarea.tsx"
         }
       ]
     },
@@ -1932,6 +1976,49 @@
           "path": "packages/ui/src/components/top-nav.tsx",
           "type": "registry:ui",
           "target": "components/ui/top-nav.tsx"
+        }
+      ]
+    },
+    {
+      "name": "provider-create-form-01",
+      "type": "registry:block",
+      "title": "Provider Create Form 1",
+      "description": "A three-step workflow for provider details, credential verification, model discovery, and per-model availability.",
+      "categories": [
+        "application",
+        "forms"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/detail-list.json",
+        "https://zeron-ui.vercel.app/r/field.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/input-group.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/stepper.json",
+        "https://zeron-ui.vercel.app/r/switch.json",
+        "https://zeron-ui.vercel.app/r/textarea.json",
+        "https://zeron-ui.vercel.app/r/toast.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/provider-create-form-01/provider-create-form.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/provider-create-form-01/provider-create-form.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/provider-create-form-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/provider-create-form-01/index.ts"
         }
       ]
     },

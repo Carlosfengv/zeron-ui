@@ -69,7 +69,7 @@ describe("shell and page-layout composition contract", () => {
     expect(blockDetail).toContain("previewMinHeightClass");
     expect(blockDetail).not.toContain('lg:h-[clamp(36rem,70svh,52rem)]');
     expect(componentPreview).toContain(
-      '"min-h-0 flex-1 [&>*]:h-full [&>*]:min-h-0 [&>*]:w-full [&>*]:min-w-0"'
+      '"min-h-0 flex-1 overflow-y-auto overscroll-contain [&>*]:min-h-full [&>*]:w-full [&>*]:min-w-0"'
     );
   });
 

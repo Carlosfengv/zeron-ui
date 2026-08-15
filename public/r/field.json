@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "field",
+  "type": "registry:ui",
+  "title": "Field",
+  "description": "Accessible field and fieldset composition for labels, descriptions, errors, controls, and grouped options.",
+  "dependencies": [
+    "@base-ui/react",
+    "tw-animate-css"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "packages/ui/src/components/field.tsx",
+      "content": "\"use client\";\nimport { forwardRef, type ComponentPropsWithoutRef, type HTMLAttributes, } from \"react\";\nimport { Field as FieldPrimitive } from \"@base-ui/react/field\";\nimport { Fieldset as FieldsetPrimitive } from \"@base-ui/react/fieldset\";\nimport { cn } from \"@lib/utils\";\nexport type FieldProps = ComponentPropsWithoutRef<typeof FieldPrimitive.Root>;\nexport type FieldLabelProps = ComponentPropsWithoutRef<typeof FieldPrimitive.Label>;\nexport type FieldDescriptionProps = ComponentPropsWithoutRef<typeof FieldPrimitive.Description>;\nexport type FieldErrorProps = ComponentPropsWithoutRef<typeof FieldPrimitive.Error>;\nexport type FieldItemProps = ComponentPropsWithoutRef<typeof FieldPrimitive.Item>;\nexport type FieldsetProps = ComponentPropsWithoutRef<typeof FieldsetPrimitive.Root>;\nexport type FieldsetLegendProps = ComponentPropsWithoutRef<typeof FieldsetPrimitive.Legend>;\nexport type FieldGroupProps = HTMLAttributes<HTMLDivElement>;\n/** Accessible field composition shared by text, selection, and toggle controls. */\nconst Field = forwardRef<HTMLDivElement, FieldProps>(({ className, ...props }, ref) => (<FieldPrimitive.Root ref={ref} className={cn(\"flex min-w-0 flex-col gap-1.5 data-disabled:pointer-events-none data-disabled:opacity-50\", className)} data-slot=\"field\" {...props}/>));\nField.displayName = \"Field\";\nconst FieldLabel = forwardRef<HTMLLabelElement, FieldLabelProps>(({ className, ...props }, ref) => (<FieldPrimitive.Label ref={ref} className={cn(\"px-1.5 text-body font-medium text-fg-muted data-disabled:cursor-not-allowed\", className)} data-slot=\"field-label\" {...props}/>));\nFieldLabel.displayName = \"FieldLabel\";\nconst FieldDescription = forwardRef<HTMLDivElement, FieldDescriptionProps>(({ className, ...props }, ref) => (<FieldPrimitive.Description ref={ref} className={cn(\"px-1.5 text-label text-fg-subtle\", className)} data-slot=\"field-description\" {...props}/>));\nFieldDescription.displayName = \"FieldDescription\";\nconst FieldError = forwardRef<HTMLDivElement, FieldErrorProps>(({ className, ...props }, ref) => (<FieldPrimitive.Error ref={ref} className={cn(\"px-3 text-label font-medium text-fg-danger transition-[opacity,transform] duration-moderate data-starting-style:-translate-y-0.5 data-starting-style:opacity-0 data-ending-style:-translate-y-0.5 data-ending-style:opacity-0\", className)} data-slot=\"field-error\" {...props}/>));\nFieldError.displayName = \"FieldError\";\nconst FieldItem = forwardRef<HTMLDivElement, FieldItemProps>(({ className, ...props }, ref) => (<FieldPrimitive.Item ref={ref} className={cn(\"flex min-w-0 items-start gap-2.5\", className)} data-slot=\"field-item\" {...props}/>));\nFieldItem.displayName = \"FieldItem\";\nconst FieldGroup = forwardRef<HTMLDivElement, FieldGroupProps>(({ className, ...props }, ref) => (<div ref={ref} className={cn(\"grid min-w-0 gap-4\", className)} data-slot=\"field-group\" {...props}/>));\nFieldGroup.displayName = \"FieldGroup\";\nconst Fieldset = forwardRef<HTMLElement, FieldsetProps>(({ className, ...props }, ref) => (<FieldsetPrimitive.Root ref={ref} className={cn(\"m-0 flex min-w-0 flex-col gap-3 border-0 p-0 data-disabled:pointer-events-none data-disabled:opacity-50\", className)} data-slot=\"fieldset\" {...props}/>));\nFieldset.displayName = \"Fieldset\";\nconst FieldsetLegend = forwardRef<HTMLDivElement, FieldsetLegendProps>(({ className, ...props }, ref) => (<FieldsetPrimitive.Legend ref={ref} className={cn(\"px-1.5 text-body font-medium text-fg-muted\", className)} data-slot=\"fieldset-legend\" {...props}/>));\nFieldsetLegend.displayName = \"FieldsetLegend\";\nexport { Field, FieldDescription, FieldError, FieldGroup, FieldItem, FieldLabel, Fieldset, FieldsetLegend, };\n",
+      "type": "registry:ui",
+      "target": "components/ui/field.tsx"
+    }
+  ]
+}
