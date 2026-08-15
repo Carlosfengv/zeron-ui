@@ -34,6 +34,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/data-grid": () => import("@docs/pages/components/data-grid/page"),
   "components/data-table": () => import("@docs/pages/components/data-table/page"),
   "components/detail-list": () => import("@docs/pages/components/detail-list/page"),
+  "components/metric-card": () => import("@docs/pages/components/metric-card/page"),
   "components/dialog": () => import("@docs/pages/components/dialog/page"),
   "components/dropdown": () => import("@docs/pages/components/dropdown/page"),
   "components/info-item": () => import("@docs/pages/components/info-item/page"),

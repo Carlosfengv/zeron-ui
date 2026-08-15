@@ -1,0 +1,174 @@
+"use client";
+
+import { MetricCard } from "@zeron/ui/metric-card";
+import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
+import { useTranslations } from "next-intl";
+
+const basicCode = `import { MetricCard } from "@zeron/ui/metric-card";
+
+<MetricCard
+  label="Gateway calls"
+  value={12482}
+  meta="Last 24 hours"
+/>`;
+
+const breakdownCode = `<MetricCard
+  label="Completion rate"
+  value={99.1}
+  unit="%"
+  tone="positive"
+  content={{
+    type: "breakdown",
+    layout: "grid",
+    items: [
+      { label: "Succeeded", value: 12370, tone: "positive" },
+      { label: "Failed", value: 112, tone: "critical" },
+    ],
+  }}
+/>`;
+
+const visualizationCode = `<MetricCard
+  label="Model TTFT p95"
+  value={1.28}
+  unit="s"
+  meta="7,814 samples"
+  content={{
+    type: "visualization",
+    chart: "line",
+    data: Array.from({ length: 24 }, (_, hour) => ({
+      label: String(hour).padStart(2, "0") + ":00",
+      value: 0.96 + (hour % 6) * 0.06,
+    })),
+    accessibleLabel: "TTFT p95 trend over the selected period",
+  }}
+/>`;
+
+const barCode = `<MetricCard
+  label="Model cost"
+  value={126.43}
+  unit="USD"
+  content={{
+    type: "visualization",
+    chart: "bar",
+    data: Array.from({ length: 24 }, (_, hour) => ({
+      label: String(hour).padStart(2, "0") + ":00",
+      value: 12 + ((hour * 7) % 19),
+    })),
+    accessibleLabel: "Daily model cost",
+  }}
+/>`;
+
+const props: PropDef[] = [
+  { name: "label", type: "string", description: "The metric being measured." },
+  { name: "value", type: "string | number", description: "The primary metric result." },
+  { name: "unit", type: "string", description: "A separately formatted unit displayed with the primary value." },
+  { name: "meta", type: "string", description: "Optional context such as sample size, token count, or update time." },
+  { name: "tone", type: '"default" | "positive" | "warning" | "critical"', default: '"default"', description: "Semantic emphasis for the primary value." },
+  { name: "content", type: "MetricCardContent", default: '{ type: "none" }', description: "Optional breakdown or micro chart; charts require at least 24 finite data points." },
+  { name: "state", type: '"ready" | "loading" | "unavailable" | "stale" | "error"', default: '"ready"', description: "Controls data availability and loading presentation." },
+  { name: "statusMessage", type: "ReactNode", description: "Optional explanation for stale, unavailable, or failed data." },
+  { name: "action", type: "ReactNode", description: "Optional action rendered above the whole-card action layer." },
+  { name: "interactive", type: "boolean", description: "Enables the supplied whole-card action; inferred from onClick by default." },
+  { name: "onClick", type: "() => void", description: "Makes the whole card an accessible button." },
+  { name: "actionLabel", type: "string", description: "Accessible label for the whole-card action." },
+];
+
+export default function MetricCardDoc() {
+  const t = useTranslations("metricCard");
+  const hourlyTTFT = Array.from({ length: 24 }, (_, hour) => ({
+    label: `${String(hour).padStart(2, "0")}:00`,
+    value: 0.96 + ((hour * 5) % 11) * 0.035,
+  }));
+  const hourlyCost = Array.from({ length: 24 }, (_, hour) => ({
+    label: `${String(hour).padStart(2, "0")}:00`,
+    value: 12 + ((hour * 7) % 19),
+  }));
+
+  return (
+    <DocPage
+      title="MetricCard"
+      slug="metric-card"
+      description="A self-sizing card for one key metric, with optional breakdowns, trends, semantic states, and whole-card interaction."
+    >
+      <DocSection title={t("basic")}>
+        <ComponentPreview code={basicCode}>
+          <MetricCard className="w-full max-w-sm" label="Gateway calls" value={12482} meta="Last 24 hours" />
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("breakdown")}>
+        <ComponentPreview code={breakdownCode}>
+          <MetricCard
+            className="w-full max-w-sm"
+            label="Completion rate"
+            value={99.1}
+            unit="%"
+            tone="positive"
+            content={{
+              type: "breakdown",
+              layout: "grid",
+              items: [
+                { label: "Succeeded", value: 12370, tone: "positive" },
+                { label: "Failed", value: 112, tone: "critical" },
+                { label: "Retried", value: 482 },
+                { label: "Rerouted", value: 182 },
+              ],
+            }}
+          />
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("visualization")}>
+        <ComponentPreview code={visualizationCode}>
+          <MetricCard
+            className="w-full max-w-sm"
+            label="Model TTFT p95"
+            value={1.28}
+            unit="s"
+            meta="7,814 samples"
+            content={{
+              type: "visualization",
+              chart: "line",
+              data: hourlyTTFT,
+              accessibleLabel: "TTFT p95 trend over the selected period",
+            }}
+          />
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("barChart")}>
+        <ComponentPreview code={barCode}>
+          <MetricCard
+            className="w-full max-w-sm"
+            label="Model cost"
+            value={126.43}
+            unit="USD"
+            content={{
+              type: "visualization",
+              chart: "bar",
+              data: hourlyCost,
+              accessibleLabel: "Daily model cost",
+            }}
+          />
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("states")}>
+        <ComponentPreview code={'<MetricCard label="Model cost" value={126.43} unit="USD" state="stale" statusMessage="Updated 8 min ago" />'}>
+          <div className="grid w-full gap-3 sm:grid-cols-2">
+            <MetricCard label="Gateway calls" value={12482} state="loading" />
+            <MetricCard label="Model cost" value={126.43} unit="USD" state="stale" statusMessage="Updated 8 min ago" />
+            <MetricCard label="Exception calls" value={0} state="unavailable" statusMessage="No data source connected" />
+            <MetricCard label="Completion rate" value={0} state="error" statusMessage="Metric could not be loaded" />
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("apiReference")}>
+        <PropsTable props={props} />
+      </DocSection>
+    </DocPage>
+  );
+}

@@ -113,6 +113,7 @@
       "data-grid": "Virtualized spreadsheet grid with inline editing, range selection, search, copy and paste, and pinned columns.",
       "data-table": "TanStack data table with sorting, filters, pagination, selection, visibility, and pinning.",
       "detail-list": "Framed label-value list with grouped sections and separators for compact resource and entity details.",
+      "metric-card": "Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction.",
       "dialog": "Modal dialog with smooth enter/exit animations and overlay.",
       "dropdown": "Menu-style dropdown with proximity hover and animated backgrounds.",
       "input": "Text input with three variants, four sizes, and accessible validation states.",
