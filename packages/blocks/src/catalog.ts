@@ -1,5 +1,12 @@
 export const blockCatalog = [
   {
+    name: "provider-create-form-01",
+    title: "Provider Create Form 1",
+    description: "A three-step workflow for provider details, credential verification, model discovery, and per-model availability.",
+    categories: ["application", "forms"],
+    dependencies: ["field", "input", "textarea", "select", "switch", "stepper", "container", "alert", "badge", "detail-list", "button", "toast", "@lobehub/icons"],
+  },
+  {
     name: "resource-details-01",
     title: "Resource Details",
     description: "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",

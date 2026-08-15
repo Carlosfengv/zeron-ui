@@ -142,6 +142,7 @@
       "usage": "Use named icon slots without coupling application code to a source icon library.",
       "catalog": "Searchable names generated from the free icon provider's actual exports.",
       "providers": "Free and licensed icon styles, plus the boundary for optional Pro packages.",
+      "provider-create-form-01": "A three-step provider setup workflow with credential verification, model discovery, per-model availability, and final review.",
       "resource-details-01": "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",
       "resource-list-table-01": "A searchable, selectable resource inventory with status filtering and reusable row actions.",
       "resource-metric-list-01": "A compact resource inventory with status distribution bars for infrastructure health at a glance.",

@@ -6,6 +6,7 @@ export type DocPageModule = { default: ComponentType };
 export type DocPageLoader = () => Promise<DocPageModule>;
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "blocks/provider-create-form-01": () => import("@docs/pages/blocks/provider-create-form-01/page"),
   "blocks/resource-details-01": () => import("@docs/pages/blocks/resource-details-01/page"),
   "blocks/resource-list-table-01": () => import("@docs/pages/blocks/resource-list-table-01/page"),
   "blocks/resource-metric-list-01": () => import("@docs/pages/blocks/resource-metric-list-01/page"),

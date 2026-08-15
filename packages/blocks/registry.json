@@ -3,6 +3,43 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "provider-create-form-01",
+      "type": "registry:block",
+      "title": "Provider Create Form 1",
+      "description": "A three-step workflow for provider details, credential verification, model discovery, and per-model availability.",
+      "categories": ["application", "forms"],
+      "dependencies": ["tw-animate-css", "@lobehub/icons"],
+      "registryDependencies": [
+        "alert",
+        "badge",
+        "button",
+        "container",
+        "detail-list",
+        "field",
+        "icon-context",
+        "input",
+        "input-group",
+        "select",
+        "stepper",
+        "switch",
+        "textarea",
+        "toast",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/provider-create-form-01/provider-create-form.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/provider-create-form-01/provider-create-form.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/provider-create-form-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/provider-create-form-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "resource-details-01",
       "type": "registry:block",
       "title": "Resource Details",

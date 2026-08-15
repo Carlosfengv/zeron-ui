@@ -275,7 +275,7 @@ export function ComponentPreview({
             className={cn(
               "group/preview-content relative flex justify-center bg-surface-floating",
               isFullscreen || fill
-                ? "min-h-0 flex-1 [&>*]:h-full [&>*]:min-h-0 [&>*]:w-full [&>*]:min-w-0"
+                ? "min-h-0 flex-1 overflow-y-auto overscroll-contain [&>*]:min-h-full [&>*]:w-full [&>*]:min-w-0"
                 : minHeightClass,
               align === "bottom" ? "items-end" : "items-center",
               padding === "none"

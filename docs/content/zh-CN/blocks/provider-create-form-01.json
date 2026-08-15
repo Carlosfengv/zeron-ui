@@ -1,0 +1,10 @@
+{
+  "providerCreateFormBlock": {
+    "title": "供应商创建表单 1",
+    "description": "包含凭证验证、模型发现、逐模型启停与最终确认的三步模型服务商配置流程。",
+    "guidance": "接入方式",
+    "guidanceBody": "使用 defaultValues 注入服务商默认值，使用 providerOptions 配置支持的模型厂商，并通过 labels 替换产品文案。将 onVerifyAndFetchModels 接入服务端凭证验证并返回可用模型；模型的 tags 可用于描述多模态、工具调用、推理和上下文大小。再将 onSubmit 接入数据持久层，每个模型的 enabled 状态会随表单一起提交。",
+    "tokenStrategy": "样式变量方案",
+    "tokenStrategyBody": "Block 直接消费现有的语义化表面、前景色、边界、状态、焦点、阴影、排版与动效变量。三个局部布局属性只负责页面最大宽度、正文可读宽度和滚动区高度，不新增全局设计 Token。"
+  }
+}

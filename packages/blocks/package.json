@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./catalog": "./src/catalog.ts",
+    "./provider-create-form-01": "./src/application/provider-create-form-01/index.ts",
     "./resource-details-01": "./src/application/resource-details-01/index.ts",
     "./resource-list-table-01": "./src/application/resource-list-table-01/index.ts",
     "./resource-metric-list-01": "./src/application/resource-metric-list-01/index.ts",
@@ -21,6 +22,7 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
+    "@lobehub/icons": "^5.16.0",
     "@zeron/ui": "workspace:*",
     "recharts": "^3.10.1"
   },

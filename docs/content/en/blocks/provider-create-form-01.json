@@ -1,0 +1,10 @@
+{
+  "providerCreateFormBlock": {
+    "title": "Provider Create Form 1",
+    "description": "A three-step provider setup workflow with credential verification, model discovery, per-model availability, and final review.",
+    "guidance": "Integration",
+    "guidanceBody": "Use defaultValues for provider defaults, providerOptions for supported vendors, and labels for product copy. Connect onVerifyAndFetchModels to a server-side credential check that returns the available models; model tags can describe multimodal input, tool calling, reasoning, and context size. Then connect onSubmit to your persistence layer. Each returned model includes an enabled flag in the submitted values.",
+    "tokenStrategy": "Styling variables",
+    "tokenStrategyBody": "The block consumes the existing semantic surface, foreground, boundary, status, focus, shadow, typography, and motion tokens. Its three local layout properties control the page width, readable content width, and scrollable body height without creating new global design tokens."
+  }
+}
