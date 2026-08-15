@@ -74,6 +74,7 @@ const hookProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
 
 const metaProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "label", type: "string", description: t("label") },
+  { name: "filterIcon", type: "IconComponent", description: "Optional semantic icon for a faceted-filter button." },
   { name: "variant", type: '"text" | "number" | "select" | "multiSelect"', description: t("variant") },
   { name: "options", type: "DataTableFilterOption[]", description: t("filterOptions") },
   { name: "placeholder", type: "string", description: t("placeholder") },

@@ -59,6 +59,8 @@ import { cn } from "#system/utils";
 import { useIcon, type IconComponent } from "#system/icon-context";
 
 export type DataTableColumnMeta = {
+  /** Icon shown before the faceted-filter label and selected values. */
+  filterIcon?: IconComponent;
   label?: string;
   options?: DataTableFilterOption[];
   placeholder?: string;
@@ -421,6 +423,7 @@ function DataTableToolbarFilter<TData>({
     return (
       <DataTableFacetedFilter
         column={column}
+        icon={meta?.filterIcon}
         multiple={variant === "multiSelect"}
         options={meta?.options ?? []}
         title={meta?.label ?? column.id}
@@ -462,6 +465,7 @@ function DataTableToolbarFilter<TData>({
 
 export type DataTableFacetedFilterProps<TData, TValue> = {
   column: Column<TData, TValue>;
+  icon?: IconComponent;
   multiple?: boolean;
   options: DataTableFilterOption[];
   title: string;
@@ -469,6 +473,7 @@ export type DataTableFacetedFilterProps<TData, TValue> = {
 
 function DataTableFacetedFilter<TData, TValue>({
   column,
+  icon: FilterIcon,
   multiple = false,
   options,
   title,
@@ -488,6 +493,11 @@ function DataTableFacetedFilter<TData, TValue>({
   const selectedOptions = options.filter((option) =>
     selectedValues.has(option.value)
   );
+  const hasSelectedOptions = selectedValues.size > 0;
+  // A column can provide a semantic icon (for example, a status dot). Keep it
+  // fixed as filters are selected so the control does not imply a rotation or
+  // mode change. Existing filters retain the add/clear icon fallback.
+  const LeadingIcon = FilterIcon ?? (hasSelectedOptions ? CircleX : CirclePlus);
 
   const toggleOption = (option: DataTableFilterOption) => {
     const isSelected = selectedValues.has(option.value);
@@ -514,12 +524,13 @@ function DataTableFacetedFilter<TData, TValue>({
                 ? `${title}: ${selectedOptions.map((option) => option.label).join(", ")}`
                 : title
             }
-            className="shrink-0 border-dashed"
-            leadingIcon={selectedValues.size > 0 ? CircleX : CirclePlus}
+            className="shrink-0"
+            dashed={!hasSelectedOptions}
+            leadingIcon={LeadingIcon}
             size="md"
             variant="tertiary"
           >
-            {selectedValues.size === 0 ? (
+            {!hasSelectedOptions ? (
               title
             ) : (
               <>

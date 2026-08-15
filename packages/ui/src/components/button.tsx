@@ -65,6 +65,9 @@ interface ButtonProps
   loading?: boolean;
   leadingIcon?: IconComponent;
   trailingIcon?: IconComponent;
+  /** Draw the button's border as a dashed outline. This is most useful for
+   *  additive controls, such as an inactive filter. */
+  dashed?: boolean;
   /** Force the visual pressed/held state. Useful when the button drives an
    *  external open piece of UI (a popover, dropdown, etc.) so it reads as
    *  engaged while the menu is showing. */
@@ -99,6 +102,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       loading = false,
       leadingIcon: LeadingIcon,
       trailingIcon: TrailingIcon,
+      dashed = false,
       active = false,
       disabled,
       children,
@@ -150,7 +154,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           data-slot="button-background"
           className={cn(
             "absolute inset-0 rounded-[inherit] transition-[background-color,transform] duration-fast group-active:scale-[0.98]",
-            bgClass
+            bgClass,
+            dashed && "border-dashed"
           )}
         />
         <span className="relative inline-flex items-center justify-center gap-[inherit]">

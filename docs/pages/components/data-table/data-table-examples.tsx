@@ -1,6 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import { useMemo } from "react";
 import { Badge, type BadgeColor } from "@zeron/ui/badge";
 import { Checkbox } from "@zeron/ui/checkbox";
 import {
@@ -9,6 +10,7 @@ import {
   DataTableToolbar,
   useDataTable,
 } from "@zeron/ui/data-table";
+import { type IconComponent, useIcon } from "@zeron/ui/system/icon-context";
 
 type Project = {
   id: string;
@@ -41,7 +43,8 @@ const statusColors: Record<Project["status"], BadgeColor> = {
   Draft: "gray",
 };
 
-const columns: ColumnDef<Project, unknown>[] = [
+function getColumns(StatusIcon: IconComponent): ColumnDef<Project, unknown>[] {
+  return [
   {
     id: "select",
     header: ({ table }) => (
@@ -82,6 +85,7 @@ const columns: ColumnDef<Project, unknown>[] = [
     ),
     filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
     meta: {
+      filterIcon: StatusIcon,
       label: "Status",
       options: [
         { label: "Active", value: "Active" },
@@ -105,9 +109,12 @@ const columns: ColumnDef<Project, unknown>[] = [
     ),
     meta: { label: "Budget" },
   },
-];
+  ];
+}
 
 export function ProjectsTable() {
+  const StatusIcon = useIcon("dot");
+  const columns = useMemo(() => getColumns(StatusIcon), [StatusIcon]);
   const { table } = useDataTable({
     columns,
     data: projects,
@@ -133,6 +140,8 @@ export function ProjectsTable() {
 }
 
 export function EmptyProjectsTable() {
+  const StatusIcon = useIcon("dot");
+  const columns = useMemo(() => getColumns(StatusIcon), [StatusIcon]);
   const { table } = useDataTable({ columns, data: emptyProjects });
   return <DataTable emptyMessage="No projects found." table={table} />;
 }
