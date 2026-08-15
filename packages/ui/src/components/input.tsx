@@ -1,6 +1,11 @@
 "use client";
 
-import { forwardRef, type InputHTMLAttributes } from "react";
+import {
+  forwardRef,
+  type ComponentPropsWithoutRef,
+  type Ref,
+} from "react";
+import { Input as InputPrimitive } from "@base-ui/react/input";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "#system/utils";
 
@@ -37,7 +42,7 @@ const inputVariants = cva(
 );
 
 interface InputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">,
+  extends Omit<ComponentPropsWithoutRef<typeof InputPrimitive>, "size">,
     VariantProps<typeof inputVariants> {}
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -53,8 +58,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   ) => {
 
     return (
-      <input
-        ref={ref}
+      <InputPrimitive
+        ref={ref as Ref<HTMLElement>}
         className={cn(inputVariants({ size, variant }), "rounded-lg", className)}
         data-size={size}
         data-slot="input"

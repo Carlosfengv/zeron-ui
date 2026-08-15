@@ -5,7 +5,9 @@
     "apiReference": "API Reference",
     "label": "Text label displayed next to the switch.",
     "checked": "Whether the switch is on.",
-    "onToggle": "Called when the switch is toggled.",
+    "defaultChecked": "Initial state when the switch is uncontrolled.",
+    "onCheckedChange": "Called with the next checked state.",
+    "name": "Name included with the switch value in native form data.",
     "disabledProp": "Disables the switch."
   }
 }

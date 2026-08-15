@@ -1,0 +1,20 @@
+{
+  "field": {
+    "basic": "基础用法",
+    "validation": "校验状态",
+    "groups": "字段组与字段集",
+    "apiReference": "API 参考",
+    "workspaceName": "工作空间名称",
+    "workspacePlaceholder": "生产环境",
+    "workspaceDescription": "团队中的所有成员都可以看到此名称。",
+    "endpoint": "API Endpoint",
+    "endpointError": "请输入完整的 HTTP 或 HTTPS 地址。",
+    "profile": "供应商资料",
+    "displayName": "显示名称",
+    "descriptionLabel": "描述",
+    "descriptionPlaceholder": "说明这个供应商的使用场景",
+    "nameProp": "将字段与控件关联到原生表单数据。",
+    "invalidProp": "在控件、标签与错误信息之间共享无效状态。",
+    "disabledProp": "禁用整个字段组合。"
+  }
+}

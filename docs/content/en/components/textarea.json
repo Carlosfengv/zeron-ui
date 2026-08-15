@@ -1,0 +1,20 @@
+{
+  "textarea": {
+    "basic": "Basic",
+    "variants": "Variants",
+    "sizes": "Sizes",
+    "apiReference": "API Reference",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Describe where this provider is used",
+    "descriptionHelp": "Up to 240 characters.",
+    "outline": "Outline",
+    "secondary": "Secondary",
+    "ghost": "Ghost",
+    "defaultSize": "Default",
+    "largeSize": "Large",
+    "variantProp": "Visual treatment of the textarea surface.",
+    "sizeProp": "Minimum height and inner spacing of the textarea.",
+    "disabledProp": "Disables editing and reduces opacity.",
+    "ariaInvalidProp": "Applies the destructive validation treatment when true."
+  }
+}

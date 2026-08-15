@@ -50,7 +50,7 @@
     "p7": "Name for form submission.",
     "p8": "Marks the select as required in forms.",
     "t0": "Visual style of the trigger.",
-    "t1": "Height, padding, text size, and icon size of the trigger.",
+    "t1": "Height, padding, text size, and icon size of the trigger. Large triggers also use 36px menu rows; other sizes use 32px rows.",
     "t2": "Optional icon displayed before the value.",
     "t3": "Text shown when no value is selected.",
     "t4": "Error message shown below the trigger.",

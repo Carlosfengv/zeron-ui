@@ -33,12 +33,12 @@ const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
       <div
         ref={ref}
         className={cn(
-          "group/input-group relative flex w-full min-w-0 items-center border border-input bg-transparent outline-none hover:border-input-hover hover:bg-hover",
+          "group/input-group relative flex h-control-sm w-full min-w-0 items-center border border-input bg-transparent outline-none hover:border-input-hover hover:bg-hover",
           "transition-[background-color,border-color,box-shadow,color] duration-fast",
           "has-[[data-slot=input-group-control]:focus-visible]:ring-1 has-[[data-slot=input-group-control]:focus-visible]:ring-focus-ring",
           "has-aria-invalid:border-danger-border has-aria-invalid:hover:border-danger-border has-aria-invalid:ring-1 has-aria-invalid:ring-danger-border/40 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-1 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-focus-ring has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-offset-2",
-          "has-data-[align=block-start]:flex-col has-data-[align=block-start]:items-stretch",
-          "has-data-[align=block-end]:flex-col has-data-[align=block-end]:items-stretch",
+          "has-[textarea]:h-auto has-data-[align=block-start]:h-auto has-data-[align=block-start]:flex-col has-data-[align=block-start]:items-stretch",
+          "has-data-[align=block-end]:h-auto has-data-[align=block-end]:flex-col has-data-[align=block-end]:items-stretch",
           "rounded-lg",
           className
         )}
@@ -53,7 +53,7 @@ const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
 InputGroup.displayName = "InputGroup";
 
 const inputGroupAddonVariants = cva(
-  "flex cursor-text select-none items-center justify-center gap-2 px-3 text-body text-fg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "flex cursor-text select-none items-center justify-center gap-2 px-1.5 text-body text-fg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       align: {
@@ -180,7 +180,7 @@ const InputGroupInput = forwardRef<HTMLInputElement, InputGroupInputProps>(
     <Input
       ref={ref}
       className={cn(
-        "flex-1 border-0 bg-transparent shadow-none hover:bg-transparent focus-visible:ring-0",
+        "h-full !min-h-0 flex-1 rounded-none border-0 bg-transparent py-0 shadow-none hover:bg-transparent focus-visible:ring-0",
         "group-has-data-[align=inline-start]/input-group:pl-0",
         "group-has-data-[align=inline-end]/input-group:pr-0",
         className

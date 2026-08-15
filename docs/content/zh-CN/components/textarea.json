@@ -1,0 +1,20 @@
+{
+  "textarea": {
+    "basic": "基础用法",
+    "variants": "变体",
+    "sizes": "尺寸",
+    "apiReference": "API 参考",
+    "descriptionLabel": "描述",
+    "descriptionPlaceholder": "说明这个供应商的使用场景",
+    "descriptionHelp": "最多 240 个字符。",
+    "outline": "描边",
+    "secondary": "次级",
+    "ghost": "透明",
+    "defaultSize": "默认",
+    "largeSize": "大尺寸",
+    "variantProp": "文本域表面的视觉样式。",
+    "sizeProp": "文本域的最小高度与内部间距。",
+    "disabledProp": "禁用编辑并降低不透明度。",
+    "ariaInvalidProp": "为 true 时应用错误校验样式。"
+  }
+}

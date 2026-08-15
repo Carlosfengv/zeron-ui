@@ -7,6 +7,8 @@ import {
   useEffect,
   useCallback,
   useId,
+  type ReactNode,
+  type Ref,
   type HTMLAttributes,
 } from "react";
 import { motion, useMotionValue, animate, type Transition } from "framer-motion";
@@ -14,11 +16,22 @@ import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 
-interface SwitchProps extends HTMLAttributes<HTMLDivElement> {
-  label: string;
-  checked: boolean;
-  onToggle: () => void;
+interface SwitchProps extends Omit<HTMLAttributes<HTMLDivElement>, "defaultChecked" | "onChange"> {
+  label: ReactNode;
+  checked?: boolean;
+  defaultChecked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  /** @deprecated Prefer onCheckedChange for new form integrations. */
+  onToggle?: () => void;
   disabled?: boolean;
+  readOnly?: boolean;
+  id?: string;
+  inputRef?: Ref<HTMLInputElement>;
+  name?: string;
+  form?: string;
+  required?: boolean;
+  value?: string;
+  uncheckedValue?: string;
   thumbTransition?: Transition;
 }
 
@@ -33,11 +46,44 @@ const PRESS_SHRINK = 4;
 const DRAG_DEAD_ZONE = 2;
 
 const Switch = forwardRef<HTMLDivElement, SwitchProps>(
-  ({ label, checked, onToggle, disabled = false, thumbTransition, className, ...props }, ref) => {
+  (
+    {
+      label,
+      checked: checkedProp,
+      defaultChecked = false,
+      onCheckedChange,
+      onToggle,
+      disabled = false,
+      readOnly = false,
+      id,
+      inputRef,
+      name,
+      form,
+      required,
+      value,
+      uncheckedValue,
+      thumbTransition,
+      className,
+      ...props
+    },
+    ref
+  ) => {
     const labelId = useId();
     const hasMounted = useRef(false);
+    const [internalChecked, setInternalChecked] = useState(defaultChecked);
     const [hovered, setHovered] = useState(false);
     const [pressed, setPressed] = useState(false);
+    const checked = checkedProp ?? internalChecked;
+
+    const commitChecked = useCallback(
+      (nextChecked: boolean) => {
+        if (disabled || readOnly || nextChecked === checked) return;
+        if (checkedProp === undefined) setInternalChecked(nextChecked);
+        onCheckedChange?.(nextChecked);
+        onToggle?.();
+      },
+      [checked, checkedProp, disabled, onCheckedChange, onToggle, readOnly]
+    );
 
     const dragging = useRef(false);
     const didDrag = useRef(false);
@@ -77,7 +123,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
 
     const handlePointerDown = useCallback(
       (e: React.PointerEvent<HTMLDivElement>) => {
-        if (disabled) return;
+        if (disabled || readOnly) return;
         if (e.pointerType === "mouse" && e.button !== 0) return;
         setPressed(true);
         dragging.current = false;
@@ -88,7 +134,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
         };
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
       },
-      [disabled, motionX]
+      [disabled, motionX, readOnly]
     );
 
     const handlePointerMove = useCallback(
@@ -128,7 +174,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
           const shouldBeOn = currentX > midpoint;
 
           if (shouldBeOn !== checked) {
-            onToggle();
+            commitChecked(shouldBeOn);
           } else {
             const snapTarget = checked
               ? THUMB_OFFSET + THUMB_TRAVEL
@@ -143,7 +189,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
 
         pointerStart.current = null;
       },
-      [checked, onToggle, motionX, thumbTransition]
+      [checked, commitChecked, motionX, thumbTransition]
     );
 
     const handlePointerCancel = useCallback(
@@ -170,6 +216,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
         className={cn(
           "relative z-content flex items-center gap-2.5 px-3 py-2 cursor-pointer select-none touch-none",
           disabled && "opacity-50 pointer-events-none",
+          readOnly && "cursor-default",
           className
         )}
         onPointerEnter={(e) => {
@@ -181,8 +228,8 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
         onClick={() => {
-          if (disabled || didDrag.current) return;
-          onToggle();
+          if (disabled || readOnly || didDrag.current) return;
+          commitChecked(!checked);
         }}
         {...props}
       >
@@ -190,12 +237,19 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
         <SwitchPrimitive.Root
           checked={checked}
           aria-labelledby={labelId}
-          // Base UI passes (checked, eventDetails); narrow to () => void for our onToggle.
-          onCheckedChange={() => {
+          onCheckedChange={(nextChecked) => {
             if (didDrag.current) return;
-            onToggle();
+            commitChecked(nextChecked);
           }}
           disabled={disabled}
+          readOnly={readOnly}
+          id={id}
+          inputRef={inputRef}
+          name={name}
+          form={form}
+          required={required}
+          value={value}
+          uncheckedValue={uncheckedValue}
           tabIndex={0}
           className={cn(
             "relative shrink-0 rounded-full border-[0.5px] border-border outline-none cursor-pointer",

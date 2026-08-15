@@ -1,0 +1,20 @@
+{
+  "field": {
+    "basic": "Basic",
+    "validation": "Validation",
+    "groups": "Groups and fieldsets",
+    "apiReference": "API Reference",
+    "workspaceName": "Workspace name",
+    "workspacePlaceholder": "Production",
+    "workspaceDescription": "Shown to every member of your team.",
+    "endpoint": "API endpoint",
+    "endpointError": "Enter a complete HTTP or HTTPS URL.",
+    "profile": "Provider profile",
+    "displayName": "Display name",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Describe where this provider is used",
+    "nameProp": "Connects the field and its control to native form data.",
+    "invalidProp": "Shares an invalid state with the control, label, and error message.",
+    "disabledProp": "Disables the complete field composition."
+  }
+}

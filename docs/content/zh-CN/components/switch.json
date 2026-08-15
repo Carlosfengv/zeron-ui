@@ -5,7 +5,9 @@
     "apiReference": "API 参考",
     "label": "显示在开关旁的文本标签。",
     "checked": "开关是否处于开启状态。",
-    "onToggle": "切换开关时调用。",
+    "defaultChecked": "非受控模式下的初始开关状态。",
+    "onCheckedChange": "状态变化时携带最新选中值调用。",
+    "name": "开关值在原生表单数据中的字段名。",
     "disabledProp": "禁用开关。"
   }
 }

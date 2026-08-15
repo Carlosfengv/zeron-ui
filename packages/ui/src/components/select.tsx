@@ -45,6 +45,7 @@ const selectionAckMs = 300;
 interface SelectContextValue {
   value: string;
   open: boolean;
+  itemSize: "default" | "large";
   actionsRef: React.RefObject<{ unmount: () => void } | null>;
 }
 
@@ -129,6 +130,7 @@ function Select({
   const currentValue = value !== undefined ? value : internalValue;
 
   const items = useMemo(() => collectSelectItems(children), [children]);
+  const itemSize = getSelectItemSize(children);
 
   const handleValueChange = useCallback(
     (next: string | null) => {
@@ -178,8 +180,8 @@ function Select({
   );
 
   const ctx = useMemo(
-    () => ({ value: currentValue, open, actionsRef }),
-    [currentValue, open]
+    () => ({ value: currentValue, open, itemSize, actionsRef }),
+    [currentValue, open, itemSize]
   );
 
   return (
@@ -317,6 +319,32 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
 );
 
 SelectTrigger.displayName = "SelectTrigger";
+
+/**
+ * Menu rows deliberately have two density levels: the default 32px row and
+ * the 36px row paired with a large trigger. Reading the trigger here keeps
+ * the compound API ergonomic and prevents every SelectItem from having to
+ * repeat the same size prop.
+ */
+function getSelectItemSize(children: ReactNode): "default" | "large" {
+  let result: "default" | "large" = "default";
+
+  Children.forEach(children, (child) => {
+    if (!isValidElement(child) || result === "large") return;
+
+    const props = child.props as { children?: ReactNode; size?: string };
+    if (child.type === SelectTrigger) {
+      result = props.size === "lg" ? "large" : "default";
+      return;
+    }
+
+    if (props.children && getSelectItemSize(props.children) === "large") {
+      result = "large";
+    }
+  });
+
+  return result;
+}
 
 // ---------------------------------------------------------------------------
 // SelectContent
@@ -649,8 +677,26 @@ SelectContent.displayName = "SelectContent";
 // SelectItem
 // ---------------------------------------------------------------------------
 
-const selectItemClassName =
-  "relative z-content flex h-control-md shrink-0 items-center gap-2 px-2 text-body cursor-pointer outline-none select-none transition-[color] duration-fast";
+const selectItemVariants = cva(
+  "relative z-content flex shrink-0 items-center gap-2 px-2 text-body cursor-pointer outline-none select-none transition-[color] duration-fast",
+  {
+    variants: {
+      size: {
+        // Default rows share the 32px control token used by the medium
+        // trigger. Large selects opt into the 36px control token below.
+        default: "h-control-sm",
+        large: "h-control-md",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+);
+
+// Shared by BadgeOverflow's option-style popup. It intentionally uses the
+// Select default density (32px).
+const selectItemClassName = selectItemVariants();
 
 interface SelectItemProps extends HTMLAttributes<HTMLDivElement> {
   icon?: IconComponent;
@@ -716,11 +762,11 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
             data-proximity-index={index}
             data-value={value}
             className={cn(
-              // Fixed height (was py-2 around a 19.5px line box ≈ 35.5px) so
-              // Keep rows consistent while long popups scroll.
+              // Fixed token height keeps rows consistent while long popups
+              // scroll. Large triggers use the corresponding large row.
               // shrink-0: the popup is a max-height flex column, so without it
               // a long list compresses rows to fit instead of scrolling.
-              selectItemClassName,
+              selectItemVariants({ size: selectCtx.itemSize }),
               "rounded-lg",
               isActive || isChecked
                 ? "text-fg-default"

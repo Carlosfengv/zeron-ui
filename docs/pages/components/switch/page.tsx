@@ -15,13 +15,12 @@ const [checked, setChecked] = useState(false);
 <Switch
   label="Notifications"
   checked={checked}
-  onToggle={() => setChecked((prev) => !prev)}
+  onCheckedChange={setChecked}
 />`;
 
 const disabledCode = `<Switch
   label="Disabled option"
-  checked={false}
-  onToggle={() => {}}
+  defaultChecked={false}
   disabled
 />`;
 
@@ -29,9 +28,11 @@ export default function SwitchDoc() {
   const [checked, setChecked] = useState(false);
   const t = useTranslations("switch");
   const switchProps: PropDef[] = [
-    { name: "label", type: "string", description: t("label") },
+    { name: "label", type: "React.ReactNode", description: t("label") },
     { name: "checked", type: "boolean", description: t("checked") },
-    { name: "onToggle", type: "() => void", description: t("onToggle") },
+    { name: "defaultChecked", type: "boolean", default: "false", description: t("defaultChecked") },
+    { name: "onCheckedChange", type: "(checked: boolean) => void", description: t("onCheckedChange") },
+    { name: "name", type: "string", description: t("name") },
     { name: "disabled", type: "boolean", default: "false", description: t("disabledProp") },
   ];
 
@@ -46,7 +47,7 @@ export default function SwitchDoc() {
           <Switch
             label="Notifications"
             checked={checked}
-            onToggle={() => setChecked((prev) => !prev)}
+            onCheckedChange={setChecked}
           />
         </ComponentPreview>
       </DocSection>
@@ -55,8 +56,7 @@ export default function SwitchDoc() {
         <ComponentPreview code={disabledCode}>
           <Switch
             label="Disabled option"
-            checked={false}
-            onToggle={() => {}}
+            defaultChecked={false}
             disabled
           />
         </ComponentPreview>
