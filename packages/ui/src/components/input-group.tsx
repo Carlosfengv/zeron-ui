@@ -181,6 +181,10 @@ const InputGroupInput = forwardRef<HTMLInputElement, InputGroupInputProps>(
       ref={ref}
       className={cn(
         "h-full !min-h-0 flex-1 rounded-none border-0 bg-transparent py-0 shadow-none hover:bg-transparent focus-visible:ring-0",
+        // The composite group owns the visible frame. Keep aria-invalid on the
+        // actual input for Field/assistive-technology semantics, but prevent the
+        // Input primitive from drawing a second, square validation boundary.
+        "aria-invalid:border-0 aria-invalid:hover:border-0 aria-invalid:ring-0 aria-invalid:focus-visible:outline-0",
         "group-has-data-[align=inline-start]/input-group:pl-0",
         "group-has-data-[align=inline-end]/input-group:pr-0",
         className

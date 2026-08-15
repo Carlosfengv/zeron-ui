@@ -47,6 +47,13 @@ describe("form field primitives contract", () => {
     expect(inputGroupSource).toContain("has-[textarea]:h-auto");
   });
 
+  it("keeps validation semantics on the control while the InputGroup owns the frame", () => {
+    expect(inputGroupSource).toContain("has-aria-invalid:border-danger-border");
+    expect(inputGroupSource).toContain("aria-invalid:border-0");
+    expect(inputGroupSource).toContain("aria-invalid:ring-0");
+    expect(inputGroupSource).toContain("aria-invalid:focus-visible:outline-0");
+  });
+
   it("gives Switch controlled, uncontrolled, and native form APIs", () => {
     expect(switchSource).toContain("defaultChecked?: boolean");
     expect(switchSource).toContain("onCheckedChange?: (checked: boolean) => void");
