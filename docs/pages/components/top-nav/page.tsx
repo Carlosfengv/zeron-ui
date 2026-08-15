@@ -267,7 +267,7 @@ function TopNavAppShellPlayground() {
           <div className="h-[400px] w-full group-data-[fullscreen=true]/preview-content:h-full">
             <AppShell
               layout="stacked"
-              className="h-full min-h-0 w-full overflow-hidden border-[0.5px] border-border text-body"
+              className="h-full min-h-0 w-full overflow-hidden text-body"
             >
               <AppShellHeader>
                 <ZentrixTopNav
