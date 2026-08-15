@@ -158,6 +158,16 @@ export type DataTableProps<TData> = React.ComponentProps<"div"> & {
   table: TanstackTable<TData>;
 };
 
+type HorizontalScrollEdges = {
+  canScrollLeft: boolean;
+  canScrollRight: boolean;
+};
+
+const initialHorizontalScrollEdges: HorizontalScrollEdges = {
+  canScrollLeft: false,
+  canScrollRight: false,
+};
+
 function DataTable<TData>({
   actionBar,
   children,
@@ -166,6 +176,51 @@ function DataTable<TData>({
   table,
   ...props
 }: DataTableProps<TData>) {
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const tableElementRef = React.useRef<HTMLTableElement>(null);
+  const [scrollEdges, setScrollEdges] =
+    React.useState<HorizontalScrollEdges>(initialHorizontalScrollEdges);
+
+  const updateScrollEdges = React.useCallback(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    const maxScrollLeft = Math.max(
+      scrollContainer.scrollWidth - scrollContainer.clientWidth,
+      0
+    );
+    const hasOverflow = maxScrollLeft > 1;
+    const nextScrollEdges = {
+      canScrollLeft: hasOverflow && scrollContainer.scrollLeft > 1,
+      canScrollRight:
+        hasOverflow && scrollContainer.scrollLeft < maxScrollLeft - 1,
+    };
+
+    setScrollEdges((currentScrollEdges) =>
+      currentScrollEdges.canScrollLeft === nextScrollEdges.canScrollLeft &&
+      currentScrollEdges.canScrollRight === nextScrollEdges.canScrollRight
+        ? currentScrollEdges
+        : nextScrollEdges
+    );
+  }, []);
+
+  React.useEffect(() => {
+    updateScrollEdges();
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", updateScrollEdges);
+      return () => window.removeEventListener("resize", updateScrollEdges);
+    }
+
+    const resizeObserver = new ResizeObserver(updateScrollEdges);
+    const scrollContainer = scrollContainerRef.current;
+    const tableElement = tableElementRef.current;
+
+    if (scrollContainer) resizeObserver.observe(scrollContainer);
+    if (tableElement) resizeObserver.observe(tableElement);
+
+    return () => resizeObserver.disconnect();
+  }, [updateScrollEdges]);
 
   return (
     <div
@@ -180,68 +235,77 @@ function DataTable<TData>({
           "rounded-xl"
         )}
       >
-        <div className="overflow-x-auto">
-          <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    className="h-control-md whitespace-nowrap"
-                    colSpan={header.colSpan}
-                    key={header.id}
-                    style={getCommonPinningStyles(header.column)}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row, rowIndex) => (
-                <TableRow
-                  data-state={row.getIsSelected() ? "selected" : undefined}
-                  index={rowIndex}
-                  key={row.id}
-                  className="data-[state=selected]:bg-selection"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      className={cn(
-                        "whitespace-nowrap",
-                        cell.column.getIsPinned() &&
-                          "group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]"
-                      )}
-                      key={cell.id}
-                      style={getCommonPinningStyles(cell.column, {
-                        backgroundImage: row.getIsSelected()
-                          ? "linear-gradient(var(--selection), var(--selection))"
-                          : undefined,
+        <div
+          className="overflow-x-auto"
+          onScroll={updateScrollEdges}
+          ref={scrollContainerRef}
+        >
+          <Table ref={tableElementRef}>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      className="h-control-md align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block"
+                      colSpan={header.colSpan}
+                      key={header.id}
+                      style={getCommonPinningStyles(header.column, {
+                        showLeftShadow: scrollEdges.canScrollLeft,
+                        showRightShadow: scrollEdges.canScrollRight,
                       })}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  className="h-24 text-center text-fg-muted"
-                  colSpan={Math.max(table.getVisibleLeafColumns().length, 1)}
-                >
-                  {emptyMessage}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row, rowIndex) => (
+                  <TableRow
+                    data-state={row.getIsSelected() ? "selected" : undefined}
+                    index={rowIndex}
+                    key={row.id}
+                    className="data-[state=selected]:bg-selection"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        className={cn(
+                          "align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block",
+                          cell.column.getIsPinned() &&
+                            "group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]"
+                        )}
+                        key={cell.id}
+                        style={getCommonPinningStyles(cell.column, {
+                          backgroundImage: row.getIsSelected()
+                            ? "linear-gradient(var(--selection), var(--selection))"
+                            : undefined,
+                          showLeftShadow: scrollEdges.canScrollLeft,
+                          showRightShadow: scrollEdges.canScrollRight,
+                        })}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    className="h-24 align-middle text-center text-fg-muted"
+                    colSpan={Math.max(table.getVisibleLeafColumns().length, 1)}
+                  >
+                    {emptyMessage}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
           </Table>
         </div>
       </div>
@@ -767,9 +831,13 @@ function getCommonPinningStyles<TData, TValue>(
   {
     backgroundColor = "var(--surface-floating)",
     backgroundImage,
+    showLeftShadow = false,
+    showRightShadow = false,
   }: {
     backgroundColor?: string;
     backgroundImage?: string;
+    showLeftShadow?: boolean;
+    showRightShadow?: boolean;
   } = {}
 ): React.CSSProperties {
   const isPinned = column.getIsPinned();
@@ -781,9 +849,9 @@ function getCommonPinningStyles<TData, TValue>(
   return {
     backgroundColor: isPinned ? backgroundColor : undefined,
     backgroundImage: isPinned ? backgroundImage : undefined,
-    boxShadow: isLastLeftPinnedColumn
+    boxShadow: isLastLeftPinnedColumn && showLeftShadow
       ? "-4px 0 4px -4px var(--border) inset"
-      : isFirstRightPinnedColumn
+      : isFirstRightPinnedColumn && showRightShadow
         ? "4px 0 4px -4px var(--border) inset"
         : undefined,
     left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,

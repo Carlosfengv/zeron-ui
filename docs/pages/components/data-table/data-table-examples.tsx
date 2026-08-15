@@ -112,7 +112,11 @@ function getColumns(StatusIcon: IconComponent): ColumnDef<Project, unknown>[] {
   ];
 }
 
-export function ProjectsTable() {
+function ProjectsTableDemo({
+  forceHorizontalScroll = false,
+}: {
+  forceHorizontalScroll?: boolean;
+}) {
   const StatusIcon = useIcon("dot");
   const columns = useMemo(() => getColumns(StatusIcon), [StatusIcon]);
   const { table } = useDataTable({
@@ -120,7 +124,7 @@ export function ProjectsTable() {
     data: projects,
     enableRowSelection: true,
     initialState: {
-      columnPinning: { left: ["select", "name"] },
+      columnPinning: { left: ["select", "name"], right: ["budget"] },
       pagination: { pageIndex: 0, pageSize: 5 },
     },
   });
@@ -132,11 +136,20 @@ export function ProjectsTable() {
           {table.getFilteredSelectedRowModel().rows.length} projects selected
         </div>
       }
+      className={forceHorizontalScroll ? "[&_table]:min-w-[960px]" : undefined}
       table={table}
     >
       <DataTableToolbar table={table} />
     </DataTable>
   );
+}
+
+export function ProjectsTable() {
+  return <ProjectsTableDemo />;
+}
+
+export function PinnedProjectsTable() {
+  return <ProjectsTableDemo forceHorizontalScroll />;
 }
 
 export function EmptyProjectsTable() {

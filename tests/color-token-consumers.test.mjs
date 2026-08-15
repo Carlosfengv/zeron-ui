@@ -87,8 +87,12 @@ describe("semantic color consumers", () => {
     const dataTable = read(join(UI_ROOT, "data-table.tsx"));
 
     expect(dataTable).toContain("border-border bg-surface-floating");
-    expect(dataTable).toContain('className="h-control-md whitespace-nowrap"');
-    expect(dataTable).not.toContain('className="h-control-md whitespace-nowrap bg-surface-raised"');
+    expect(dataTable).toContain(
+      'className="h-control-md align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block"'
+    );
+    expect(dataTable).not.toContain(
+      'className="h-control-md align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block bg-surface-raised"'
+    );
     expect(dataTable).toContain('backgroundColor = "var(--surface-floating)"');
     expect(dataTable).not.toContain('backgroundColor = "var(--surface-raised)"');
     expect(dataTable).not.toContain('backgroundColor = "var(--surface-base)"');
