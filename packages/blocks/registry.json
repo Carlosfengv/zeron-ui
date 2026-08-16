@@ -3,6 +3,27 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "personal-settings-01",
+      "type": "registry:block",
+      "title": "个人设置",
+      "description": "A personal settings workspace for model services, API keys, credentials, profile details, and usage.",
+      "categories": ["application", "settings"],
+      "dependencies": ["tw-animate-css", "@lobehub/icons"],
+      "registryDependencies": ["app-shell", "badge", "button", "field", "icon-context", "input-group", "nav-item", "nav-menu", "page-layout", "table", "top-nav", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/personal-settings-01/personal-settings.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/personal-settings-01/personal-settings.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/personal-settings-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/personal-settings-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "model-mcp-marketplace-01",
       "type": "registry:block",
       "title": "模型和 MCP 广场",

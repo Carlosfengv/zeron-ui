@@ -1,0 +1,1 @@
+{"personalSettingsBlock":{"title":"个人设置","description":"用于管理模型服务、API keys、凭证、个人资料与使用情况的完整个人设置工作区。","interactionTitle":"交互视图","interactionBody":"侧栏用于切换当前设置页面；列表类页面支持搜索，模型列表可展开查看所有可用模型。","guidanceTitle":"适用场景","guidanceBody":"适用于已登录用户集中管理模型访问权限与个人配置的账户页面。","dataBoundaryTitle":"数据边界","dataBoundaryBody":"Block 仅提供 mock 数据与本地状态。使用时请替换数据，并将增删改、搜索和分页连接到产品服务。"}}

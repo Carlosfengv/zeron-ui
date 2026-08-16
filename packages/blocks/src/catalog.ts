@@ -1,5 +1,12 @@
 export const blockCatalog = [
   {
+    name: "personal-settings-01",
+    title: "个人设置",
+    description: "A personal settings workspace for model services, API keys, credentials, profile details, and usage.",
+    categories: ["application", "settings"],
+    dependencies: ["app-shell", "top-nav", "page-layout", "nav-menu", "nav-item", "input-group", "table", "field", "badge", "button", "@lobehub/icons"],
+  },
+  {
     name: "model-mcp-marketplace-01",
     slug: "resource-catalog-01",
     title: "模型和 MCP 广场",
