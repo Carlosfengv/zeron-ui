@@ -6,6 +6,7 @@
   "exports": {
     "./catalog": "./src/catalog.ts",
     "./provider-create-form-01": "./src/application/provider-create-form-01/index.ts",
+    "./resource-catalog-01": "./src/application/resource-catalog-01/index.ts",
     "./resource-details-01": "./src/application/resource-details-01/index.ts",
     "./resource-list-table-01": "./src/application/resource-list-table-01/index.ts",
     "./resource-metric-list-01": "./src/application/resource-metric-list-01/index.ts",

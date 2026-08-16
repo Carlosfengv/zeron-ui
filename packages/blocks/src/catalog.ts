@@ -1,5 +1,12 @@
 export const blockCatalog = [
   {
+    name: "resource-catalog-01",
+    title: "Resource Catalog 1",
+    description: "A filterable model-service and MCP marketplace with page-local navigation, search, and responsive resource cards.",
+    categories: ["application", "catalog"],
+    dependencies: ["app-shell", "top-nav", "page-layout", "nav-menu", "nav-item", "input", "kbd", "card", "badge", "button", "@lobehub/icons"],
+  },
+  {
     name: "provider-create-form-01",
     title: "Provider Create Form 1",
     description: "A three-step workflow for provider details, credential verification, model discovery, and per-model availability.",

@@ -3,6 +3,32 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "resource-catalog-01",
+      "type": "registry:block",
+      "title": "Resource Catalog 1",
+      "description": "A filterable model-service and MCP marketplace with page-local navigation, search, and responsive resource cards.",
+      "categories": ["application", "catalog"],
+      "dependencies": ["tw-animate-css", "@lobehub/icons"],
+      "registryDependencies": ["app-shell", "badge", "button", "card", "icon-context", "input", "kbd", "nav-item", "nav-menu", "page-layout", "top-nav", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-catalog-01/catalog-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-catalog-01/catalog-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-catalog-01/resource-catalog.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-catalog-01/resource-catalog.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-catalog-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-catalog-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "provider-create-form-01",
       "type": "registry:block",
       "title": "Provider Create Form 1",
