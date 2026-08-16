@@ -7,6 +7,7 @@ import { ResourceListTable } from "@zeron/blocks/resource-list-table-01";
 import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
 import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
 import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
+import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
 
 export function BlockPreview({ name }: { name: string }) {
   if (name === "provider-create-form-01") {
@@ -14,6 +15,16 @@ export function BlockPreview({ name }: { name: string }) {
       <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
         <div className="w-[960px] origin-top scale-[0.3]">
           <ProviderCreateForm />
+        </div>
+      </div>
+    );
+  }
+
+  if (name === "resource-catalog-01") {
+    return (
+      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-3">
+        <div className="w-[1560px] origin-top scale-[0.32]">
+          <ResourceCatalog />
         </div>
       </div>
     );

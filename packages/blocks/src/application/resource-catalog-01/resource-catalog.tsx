@@ -81,12 +81,17 @@ const mcpBrandIcons = {
 } satisfies Record<McpBrandIcon, { svg: string }>;
 
 function subscribeToViewport(onStoreChange: () => void) {
-  const mediaQueries = [window.matchMedia("(min-width: 768px)"), window.matchMedia("(min-width: 1280px)")];
+  const mediaQueries = [
+    window.matchMedia("(min-width: 768px)"),
+    window.matchMedia("(min-width: 1280px)"),
+    window.matchMedia("(min-width: 1536px)"),
+  ];
   mediaQueries.forEach((query) => query.addEventListener("change", onStoreChange));
   return () => mediaQueries.forEach((query) => query.removeEventListener("change", onStoreChange));
 }
 
 function readCatalogColumns() {
+  if (window.matchMedia("(min-width: 1536px)").matches) return 4;
   if (window.matchMedia("(min-width: 1280px)").matches) return 3;
   if (window.matchMedia("(min-width: 768px)").matches) return 2;
   return 1;
@@ -321,7 +326,7 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, className
           </PageSidebar>
 
           <PageContent>
-            <PageBody className="p-4 sm:p-5">
+            <PageBody className="max-w-[1620px] p-4 sm:px-[18px] sm:py-5">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-label text-fg-muted">{activeFilterLabel}</p>
@@ -330,7 +335,12 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, className
               </div>
 
               {visibleItems.length ? (
-                <CardGroup columns={columns} border="outlined" separated>
+                <CardGroup
+                  columns={columns}
+                  border="outlined"
+                  separated
+                  style={{ gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))" }}
+                >
                   {visibleItems.map((item) => (
                     <ResourceCard key={item.id} item={item} selected={selectedId === item.id} onSelect={() => setSelectedId(item.id)} />
                   ))}

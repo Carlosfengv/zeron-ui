@@ -112,6 +112,7 @@ const CardGroup = forwardRef<HTMLDivElement, CardGroupProps>(
       separated = false,
       proximityHover = true,
       className,
+      style,
       children,
       ...props
     },
@@ -202,6 +203,7 @@ const CardGroup = forwardRef<HTMLDivElement, CardGroupProps>(
           )}
           style={{
             gridTemplateColumns: `repeat(${Math.max(1, columns)}, minmax(0, 1fr))`,
+            ...style,
           }}
           onMouseEnter={proximityHover ? handlers.onMouseEnter : undefined}
           onMouseMove={proximityHover ? handlers.onMouseMove : undefined}
