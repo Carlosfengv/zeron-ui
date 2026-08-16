@@ -63,7 +63,7 @@ export function SettingsContent({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-1.5 py-3">
-        <Tooltip content={<span>{t("pressToCycle", { key: "T" })}</span>} side={tooltipSide}>
+        <Tooltip content={<span>{t("pressToToggle", { key: "D" })}</span>} side={tooltipSide}>
           <div className="flex items-center justify-between">
             <span className="text-label text-fg-muted">{t("theme")}</span>
             <Select size="sm" value={theme} onValueChange={(v) => setTheme(v as Theme)}>

@@ -12,8 +12,6 @@ import {
 } from "react";
 
 type Theme = "system" | "light" | "dark";
-
-const themeOrder: Theme[] = ["system", "light", "dark"];
 const themeStorageKey = "zeron-design.theme";
 
 function isTheme(value: string | null): value is Theme {
@@ -103,16 +101,18 @@ function ThemeProvider({
     }
   }, [isThemeReady, theme]);
 
-  // Global keyboard shortcut: T to cycle theme
+  // Global keyboard shortcut: D toggles explicitly between light and dark.
+  // The system preference remains available from the settings control, but a
+  // shortcut must always result in a visible light/dark change.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "t" && e.key !== "T") return;
+      if (e.key.toLowerCase() !== "d") return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable) return;
       e.preventDefault();
-      // Just advance the state — the [theme] effect above applies the DOM.
-      setThemeState((prev) => themeOrder[(themeOrder.indexOf(prev) + 1) % themeOrder.length]);
+      // Just update state — the [theme] effect above applies the DOM.
+      setThemeState((prev) => (prev === "dark" ? "light" : "dark"));
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);

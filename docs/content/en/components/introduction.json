@@ -11,7 +11,7 @@
     "compatibilityTitle": "Drop-in compatible",
     "compatibilityBody": "Built on shadcn/ui and Base UI. Your theme tokens (colors, radii, fonts) work as-is. One CLI command installs a component along with whatever it needs.",
     "customizeTitle": "Customize using the right panel",
-    "customizeBody": "The panel on the right lets you change things on the fly. Switch between light and dark mode, adjust the brand color, and choose an icon style. Press T or I to cycle theme and icons from the keyboard.",
+    "customizeBody": "The panel on the right lets you change things on the fly. Switch between light and dark mode, adjust the brand color, and choose an icon style. Press D to switch between light and dark mode, or I to cycle icon styles from the keyboard.",
     "initialize": "Initialize a project that does not have components.json:",
     "installAny": "Install any component:",
     "registry": "Or use the shadcn-compatible Registry directly:",

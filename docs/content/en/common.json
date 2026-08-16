@@ -33,7 +33,8 @@
     "dark": "Dark",
     "brand": "Brand",
     "icons": "Icons",
-    "pressToCycle": "Press {key} to cycle"
+    "pressToCycle": "Press {key} to cycle",
+    "pressToToggle": "Press {key} to switch light and dark mode"
   },
   "askUser": {
     "skip": "Skip",
