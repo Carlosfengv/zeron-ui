@@ -521,7 +521,10 @@ export function ResourceListTable({
           ) : (
             <>
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
-                <InputGroup size="sm" className="w-full max-w-[450px] border-border hover:border-border">
+                <InputGroup
+                  className="w-full max-w-[450px] border-border hover:border-border"
+                  size="md"
+                >
                   <InputGroupAddon className="pr-2">
                     <SearchIcon aria-hidden="true" size={16} strokeWidth={1.5} />
                   </InputGroupAddon>
@@ -551,7 +554,7 @@ export function ResourceListTable({
                   aria-label={labels.refresh}
                   onClick={onRefresh}
                   iconOnly
-                  size="sm"
+                  size="md"
                   variant="tertiary"
                 >
                   <RefreshIcon />

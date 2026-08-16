@@ -503,7 +503,7 @@ function DataTableToolbarFilter<TData>({
           inputMode="numeric"
           onChange={(event) => column.setFilterValue(event.target.value)}
           placeholder={meta?.placeholder ?? meta?.label ?? column.id}
-          size="sm"
+          size="md"
           type="number"
           value={(column.getFilterValue() as string) ?? ""}
         />
@@ -521,7 +521,7 @@ function DataTableToolbarFilter<TData>({
       className="w-40 lg:w-56"
       onChange={(event) => column.setFilterValue(event.target.value)}
       placeholder={meta?.placeholder ?? meta?.label ?? column.id}
-      size="sm"
+      size="md"
       value={(column.getFilterValue() as string) ?? ""}
     />
   );

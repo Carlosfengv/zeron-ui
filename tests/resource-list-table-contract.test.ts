@@ -47,7 +47,9 @@ describe("Resource List Table 1 block contract", () => {
     expect(source).toContain("<Badge");
     expect(source).toContain("<Checkbox");
     expect(source).toContain("<InputGroup");
-    expect(source).toContain('<InputGroup size="sm" className="w-full max-w-[450px] border-border hover:border-border">');
+    expect(source).toMatch(
+      /<InputGroup\s+className="w-full max-w-\[450px\] border-border hover:border-border"\s+size="md"\s*>/
+    );
     expect(source).toContain('className="h-full min-h-0"');
     expect(source).toContain("<Button");
     expect(source).toContain("bg-surface-floating");
@@ -91,7 +93,7 @@ describe("Resource List Table 1 block contract", () => {
       "showBulkToolbar = selectedCount > 0 && Boolean(renderBulkActions)"
     );
     expect(source).toMatch(
-      /aria-label=\{labels\.refresh\}[\s\S]*?onClick=\{onRefresh\}[\s\S]*?iconOnly[\s\S]*?size="sm"[\s\S]*?variant="tertiary"/
+      /aria-label=\{labels\.refresh\}[\s\S]*?onClick=\{onRefresh\}[\s\S]*?iconOnly[\s\S]*?size="md"[\s\S]*?variant="tertiary"/
     );
     expect(source).toMatch(/onClick=\{onCreate\}[\s\S]*?size="md"/);
     expect(source).toContain("aria-label={ariaLabel ?? labels.ariaLabel}");

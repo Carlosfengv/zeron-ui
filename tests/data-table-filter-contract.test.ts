@@ -32,4 +32,13 @@ describe("DataTable faceted-filter contract", () => {
     expect(exampleSource).toContain('const StatusIcon = useIcon("dot")');
     expect(exampleSource).toContain("filterIcon: StatusIcon");
   });
+
+  it("uses the default 32px control size for text and number toolbar filters", () => {
+    expect(dataTableSource).toMatch(
+      /inputMode="numeric"[\s\S]*?size="md"[\s\S]*?type="number"/
+    );
+    expect(dataTableSource).toMatch(
+      /className="w-40 lg:w-56"[\s\S]*?size="md"/
+    );
+  });
 });
