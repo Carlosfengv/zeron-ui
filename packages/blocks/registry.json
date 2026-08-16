@@ -3,6 +3,19 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "cluster-environment-list-01",
+      "type": "registry:block",
+      "title": "集群环境列表",
+      "description": "A filterable cluster-environment overview with health and data-freshness states.",
+      "categories": ["application", "operations"],
+      "dependencies": ["tw-animate-css"],
+      "registryDependencies": ["badge", "button", "card", "icon-context", "input", "page-layout", "tabs", "utils"],
+      "files": [
+        { "path": "packages/blocks/src/application/cluster-environment-list-01/cluster-environment-list.tsx", "type": "registry:component", "target": "components/blocks/cluster-environment-list-01/cluster-environment-list.tsx" },
+        { "path": "packages/blocks/src/application/cluster-environment-list-01/index.ts", "type": "registry:component", "target": "components/blocks/cluster-environment-list-01/index.ts" }
+      ]
+    },
+    {
       "name": "personal-settings-01",
       "type": "registry:block",
       "title": "个人设置",

@@ -11,7 +11,7 @@
 
 import { referenceColors } from "./reference-colors.mjs";
 
-const { neutral } = referenceColors;
+const { neutral, danger, warning, info } = referenceColors;
 const { optical: neutralOptical } = neutral;
 
 function intentFor(name) {
@@ -72,11 +72,15 @@ export const fillColorTokens = classify([
   { name: "destructive", light: "#F73920", dark: "#FC4932", usage: "错误、删除和危险操作填充" },
   { name: "destructive-hover", light: "#F9654B", dark: "#FD725B", usage: "危险操作填充的悬停状态；须与 fg-on-danger 保持可读对比度" },
   { name: "destructive-active", light: "#FA8F78", dark: "#FD9983", usage: "危险操作填充的按下状态；须与 fg-on-danger 保持可读对比度" },
-  { name: "danger-surface", light: "#FEF2ED", dark: "#6D090B", usage: "错误、失败和风险信息的低强调背景" },
-  { name: "warning-surface", light: "#FFF8EA", dark: "#531D00", usage: "警告信息的低强调背景" },
+  { name: "danger-surface", light: danger[100], dark: danger[800], usage: "错误、失败和风险信息的低强调背景" },
+  { name: "danger-surface-raised", light: danger[200], dark: danger[700], usage: "错误、失败和风险信息内的次级强调背景；用于嵌套告警内容" },
+  { name: "warning-surface", light: warning[100], dark: warning[800], usage: "警告信息的低强调背景" },
+  { name: "warning-surface-raised", light: warning[200], dark: warning[700], usage: "警告信息内的次级强调背景；用于嵌套告警内容" },
   { name: "success-surface", light: "#EAF8EF", dark: "#123B25", usage: "成功、完成和正向结果信息的低强调背景" },
-  { name: "info-surface", light: "#EAF5FE", dark: "#002D6E", usage: "说明、提示和信息反馈的低强调背景" },
-  { name: "neutral-status-surface", light: "#F9F9F9", dark: "#31353B", usage: "一般状态信息的低强调背景" },
+  { name: "info-surface", light: info[100], dark: info[800], usage: "说明、提示和信息反馈的低强调背景" },
+  { name: "info-surface-raised", light: info[200], dark: info[700], usage: "说明、提示和信息反馈内的次级强调背景；用于嵌套状态内容" },
+  { name: "neutral-status-surface", light: neutral[100], dark: neutral[800], usage: "一般状态信息的低强调背景" },
+  { name: "neutral-status-surface-raised", light: neutral[200], dark: neutral[700], usage: "一般状态信息内的次级强调背景；用于嵌套状态内容" },
   { name: "scrim", light: "rgb(0 0 0 / 0.4)", dark: "rgb(0 0 0 / 0.8)", usage: "抽屉和对话框背后的遮罩层" },
   { name: "inverse-background", light: "#00030A", dark: "#DEE5EF", usage: "工具提示和中性高强调操作的反色填充" },
   { name: "inverse-background-hover", light: "#001033", dark: "#B6C6DF", usage: "中性高强调操作的悬停状态；不跟随品牌主题色" },

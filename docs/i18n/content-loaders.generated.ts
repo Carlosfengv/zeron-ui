@@ -13,6 +13,7 @@ const commonLoaders: Record<AppLocale, Loader> = {
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
     home: () => import("@docs/content/en/home.json"),
+    "blocks/cluster-environment-list-01": () => import("@docs/content/en/blocks/cluster-environment-list-01.json"),
     "docs/introduction": () => import("@docs/content/en/components/introduction.json"),
     "components/button": () => import("@docs/content/en/components/button.json"),
     "components/button-group": () => import("@docs/content/en/components/button-group.json"),
@@ -74,6 +75,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   },
   "zh-CN": {
     home: () => import("@docs/content/zh-CN/home.json"),
+    "blocks/cluster-environment-list-01": () => import("@docs/content/zh-CN/blocks/cluster-environment-list-01.json"),
     "docs/introduction": () => import("@docs/content/zh-CN/components/introduction.json"),
     "components/button": () => import("@docs/content/zh-CN/components/button.json"),
     "components/button-group": () => import("@docs/content/zh-CN/components/button-group.json"),

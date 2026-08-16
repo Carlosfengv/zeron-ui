@@ -1,5 +1,12 @@
 export const blockCatalog = [
   {
+    name: "cluster-environment-list-01",
+    title: "集群环境列表",
+    description: "A filterable cluster-environment overview with critical, warning, normal, offline, and data-freshness states.",
+    categories: ["application", "operations"],
+    dependencies: ["page-layout", "tabs", "input", "button", "card", "badge"],
+  },
+  {
     name: "personal-settings-01",
     title: "个人设置",
     description: "A personal settings workspace for model services, API keys, credentials, profile details, and usage.",

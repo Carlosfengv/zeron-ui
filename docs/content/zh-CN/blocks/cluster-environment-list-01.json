@@ -1,0 +1,8 @@
+{
+  "clusterEnvironmentListBlock": {
+    "title": "集群环境列表 1",
+    "description": "可筛选的集群环境总览，在同一张响应式卡片列表中整合严重、告警、正常、离线与数据新鲜度状态。",
+    "guidance": "数据接入",
+    "guidanceBody": "从监控模型提供 environments。health 决定卡片状态呈现，freshness 保持为独立状态，因此上次巡检正常的环境也可以被标记为数据过期。"
+  }
+}

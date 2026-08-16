@@ -1,0 +1,8 @@
+{
+  "clusterEnvironmentListBlock": {
+    "title": "Cluster Environment List 1",
+    "description": "A filterable cluster-environment overview that combines critical, warning, normal, offline, and data-freshness states in one responsive card list.",
+    "guidance": "Data integration",
+    "guidanceBody": "Provide environments from your monitoring model. Health drives the card state treatment, while freshness remains an independent state so a previously normal environment can still be marked as expired."
+  }
+}
