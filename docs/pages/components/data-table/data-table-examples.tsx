@@ -125,7 +125,7 @@ function ProjectsTableDemo({
     enableRowSelection: true,
     initialState: {
       columnPinning: { left: ["select", "name"], right: ["budget"] },
-      pagination: { pageIndex: 0, pageSize: 5 },
+      pagination: { pageIndex: 0, pageSize: 10 },
     },
   });
 

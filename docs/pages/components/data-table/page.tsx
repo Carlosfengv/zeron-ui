@@ -50,7 +50,7 @@ function ProjectsTable() {
     columns,
     data: projects,
     enableRowSelection: true,
-    initialState: { pagination: { pageIndex: 0, pageSize: 5 } },
+    initialState: { pagination: { pageIndex: 0, pageSize: 10 } },
   });
 
   return (
@@ -196,7 +196,7 @@ export function PinnedProjectsTable() {
         left: ["select", "name"],
         right: ["budget"],
       },
-      pagination: { pageIndex: 0, pageSize: 5 },
+      pagination: { pageIndex: 0, pageSize: 10 },
     },
   });
 

@@ -66,6 +66,7 @@ const props: PropDef[] = [
   { name: "value", type: "string | number", description: "The primary metric result." },
   { name: "unit", type: "string", description: "A separately formatted unit displayed with the primary value." },
   { name: "meta", type: "string", description: "Optional context such as sample size, token count, or update time." },
+  { name: "footer", type: "ReactNode", description: "Optional supporting content below the metric value, such as a period-over-period comparison." },
   { name: "tone", type: '"default" | "positive" | "warning" | "critical"', default: '"default"', description: "Semantic emphasis for the primary value." },
   { name: "content", type: "MetricCardContent", default: '{ type: "none" }', description: "Optional breakdown or micro chart; charts require at least 24 finite data points." },
   { name: "state", type: '"ready" | "loading" | "unavailable" | "stale" | "error"', default: '"ready"', description: "Controls data availability and loading presentation." },

@@ -569,7 +569,7 @@ function DataTablePreview() {
   const { table } = useDataTable({
     columns: dataTablePreviewColumns,
     data: dataTablePreviewRows,
-    initialState: { pagination: { pageIndex: 0, pageSize: 3 } },
+    initialState: { pagination: { pageIndex: 0, pageSize: 10 } },
   });
 
   return (

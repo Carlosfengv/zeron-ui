@@ -668,6 +668,10 @@ function DataTablePagination<TData>({
   const ChevronRight = useIcon("chevron-right");
   const ChevronsLeft = useIcon("chevrons-left");
   const ChevronsRight = useIcon("chevrons-right");
+  const pageSize = table.getState().pagination.pageSize;
+  const resolvedPageSizeOptions = pageSizeOptions.includes(pageSize)
+    ? pageSizeOptions
+    : [...pageSizeOptions, pageSize].sort((left, right) => left - right);
 
   return (
     <div
@@ -689,21 +693,21 @@ function DataTablePagination<TData>({
             itemDensity="compact"
             onValueChange={(value) => table.setPageSize(Number(value))}
             size="sm"
-            value={`${table.getState().pagination.pageSize}`}
+            value={`${pageSize}`}
           >
             <SelectTrigger
               aria-label="Rows per page"
               className="min-w-18 w-18 px-2 text-label"
-              placeholder={`${table.getState().pagination.pageSize}`}
+              placeholder={`${pageSize}`}
             />
             <SelectContent>
-            {pageSizeOptions.map((pageSize) => (
+            {resolvedPageSizeOptions.map((option) => (
               <SelectItem
-                index={pageSizeOptions.indexOf(pageSize)}
-                key={pageSize}
-                value={`${pageSize}`}
+                index={resolvedPageSizeOptions.indexOf(option)}
+                key={option}
+                value={`${option}`}
               >
-                {pageSize}
+                {option}
               </SelectItem>
             ))}
             </SelectContent>

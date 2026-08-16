@@ -55,6 +55,8 @@ export interface MetricCardProps
   unit?: string;
   /** Supporting context such as sample size, token count, or update time. */
   meta?: string;
+  /** Optional supporting content rendered below the metric value, such as a period-over-period comparison. */
+  footer?: ReactNode;
   tone?: MetricTone;
   content?: MetricCardContent;
   state?: MetricCardState;
@@ -303,6 +305,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
       value,
       unit,
       meta,
+      footer,
       tone = "default",
       content = { type: "none" },
       state = "ready",
@@ -381,6 +384,12 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
               )}
             >
               {statusMessage}
+            </div>
+          )}
+
+          {footer && !loading && !unavailable && (
+            <div data-slot="metric-card-footer" className="mt-1 text-label text-fg-subtle">
+              {footer}
             </div>
           )}
 
