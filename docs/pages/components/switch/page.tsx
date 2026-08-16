@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Switch } from "@zeron/ui/switch";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -42,6 +43,31 @@ export default function SwitchDoc() {
       slug="switch"
       description="Toggle switch with animated thumb and label."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "notifications",
+              label: "Notifications",
+              code: basicCode,
+              preview: <Switch label="Notifications" defaultChecked />,
+            },
+            {
+              value: "read-only",
+              label: "Read-only",
+              code: `<Switch label="Automatic updates" defaultChecked readOnly />`,
+              preview: <Switch label="Automatic updates" defaultChecked readOnly />,
+            },
+            {
+              value: "disabled",
+              label: "Disabled",
+              code: disabledCode,
+              preview: <Switch label="Disabled option" defaultChecked disabled />,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <Switch

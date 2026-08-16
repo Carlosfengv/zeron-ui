@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Checkbox } from "@zeron/ui/checkbox";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -49,6 +50,36 @@ export default function CheckboxDoc() {
       slug="checkbox"
       title="Checkbox"
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "checked",
+              label: "Checked",
+              code: basicCode,
+              preview: (
+                <label className="flex cursor-pointer items-center gap-2.5 text-body">
+                  <Checkbox defaultChecked />
+                  <span>Remember this device</span>
+                </label>
+              ),
+            },
+            {
+              value: "mixed",
+              label: "Indeterminate",
+              code: `<Checkbox checked="indeterminate" aria-label="Partially selected" />`,
+              preview: <Checkbox checked="indeterminate" aria-label="Partially selected" />,
+            },
+            {
+              value: "disabled",
+              label: "Disabled",
+              code: `<Checkbox defaultChecked disabled aria-label="Disabled" />`,
+              preview: <Checkbox defaultChecked disabled aria-label="Disabled" />,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <label className="flex cursor-pointer items-center gap-2.5 text-body">

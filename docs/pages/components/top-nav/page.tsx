@@ -234,7 +234,6 @@ function TopNavAppShellPlayground() {
   const section = demoSections[activeSection];
   const controls = (
     <PlaygroundPanel
-      title="TopNav"
       onShuffle={() => {
         const next = navigationAlignments[Math.floor(Math.random() * navigationAlignments.length)];
         setNavigationAlign(next);
@@ -310,13 +309,13 @@ const menuTriggerProps: PropDef[] = [
 export default function TopNavDoc() {
   const [active, setActive] = useState<DemoSection>("mcp");
   return <DocPage title="TopNav" slug="top-nav" description="A compact horizontal navigation container that shares NavMenu and NavItem behavior with Sidebar.">
+    <DocSection title="Playground">
+      <TopNavAppShellPlayground />
+    </DocSection>
     <DocSection title="Basic">
       <ComponentPreview code={code} padding="none">
         <ZentrixTopNav activeSection={active} onActiveSectionChange={setActive} />
       </ComponentPreview>
-    </DocSection>
-    <DocSection title="Stacked AppShell">
-      <TopNavAppShellPlayground />
     </DocSection>
     <DocSection title="API Reference"><PropsTable props={props} /></DocSection>
     <DocSection title="API Reference — TopNavItemMenuTrigger"><PropsTable props={menuTriggerProps} /></DocSection>

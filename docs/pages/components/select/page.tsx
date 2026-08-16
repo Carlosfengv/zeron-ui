@@ -12,6 +12,7 @@ import {
   SelectSeparator,
 } from "@zeron/ui/select";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -368,6 +369,17 @@ export default function SelectDoc() {
       slug="select"
       description="Animated select menu with three sizes, proximity hover, bordered/borderless variants, optional leading icons, and a spring-animated popover."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          minHeightClass="min-h-[220px]"
+          variants={[
+            { value: "bordered", label: "Bordered", code: basicCode, preview: <Select value={basic} onValueChange={setBasic}><SelectTrigger placeholder="Select a fruit…" /><SelectContent><SelectItem index={0} value="apple">Apple</SelectItem><SelectItem index={1} value="banana">Banana</SelectItem><SelectItem index={2} value="cherry">Cherry</SelectItem></SelectContent></Select> },
+            { value: "borderless", label: "Borderless", code: `<Select><SelectTrigger variant="borderless" placeholder="Borderless" /><SelectContent>...</SelectContent></Select>`, preview: <Select value={borderless} onValueChange={setBorderless}><SelectTrigger variant="borderless" placeholder="Borderless" /><SelectContent><SelectItem index={0} value="apple">Apple</SelectItem><SelectItem index={1} value="banana">Banana</SelectItem></SelectContent></Select> },
+            { value: "with-icon", label: "With icon", code: iconsCode, preview: <Select value={theme} onValueChange={setTheme}><SelectTrigger icon={ThemeIcon} placeholder="Theme" /><SelectContent><SelectItem index={0} value="system" icon={Monitor}>System</SelectItem><SelectItem index={1} value="light" icon={Sun}>Light</SelectItem><SelectItem index={2} value="dark" icon={Moon}>Dark</SelectItem></SelectContent></Select> },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <Select value={basic} onValueChange={setBasic}>

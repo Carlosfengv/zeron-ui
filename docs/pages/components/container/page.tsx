@@ -18,6 +18,7 @@ import {
   InfoItemValue,
 } from "@zeron/ui/info-item";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useIcon } from "@zeron/icons/context";
@@ -152,6 +153,17 @@ export default function ContainerDoc() {
       slug="container"
       description="A composable raised container with optional header and footer regions around one floating content body."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          padding="compact"
+          variants={[
+            { value: "body", label: "Body only", code: bodyOnlyCode, preview: <Container className="h-[18rem] w-full max-w-xl"><ContainerBody>A body can stand alone when the content needs no context or actions.</ContainerBody></Container> },
+            { value: "header", label: "Header and body", code: `<Container><ContainerHeader><h2>Workspace usage</h2></ContainerHeader><ContainerBody>Usage details</ContainerBody></Container>`, preview: <Container className="w-full max-w-xl"><ContainerHeader><h2 className="text-title text-fg-default">Workspace usage</h2><Button size="sm">Manage</Button></ContainerHeader><ContainerBody>Usage details and resource limits.</ContainerBody></Container> },
+            { value: "footer", label: "With footer", code: `<Container><ContainerBody>...</ContainerBody><ContainerFooter><Button>Save</Button></ContainerFooter></Container>`, preview: <Container className="w-full max-w-xl"><ContainerBody>Save your workspace configuration when you are ready.</ContainerBody><ContainerFooter><span className="mr-auto text-label text-fg-muted">Unsaved changes</span><Button>Save</Button></ContainerFooter></Container> },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title="Composition">
         <ComponentPreview code={basicCode} padding="compact">
           <Container className="h-[28rem] w-full max-w-xl">

@@ -7,6 +7,7 @@ import {
   RadioItem,
 } from "@zeron/ui/radio-group";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -130,6 +131,25 @@ export default function RadioGroupDoc() {
       slug="radio-group"
       title="RadioGroup"
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "form",
+              label: "Form controls",
+              code: basicCode,
+              preview: <RadioGroup defaultValue="email" name="playground-notifications"><label className="flex cursor-pointer items-center gap-2.5 text-body"><RadioGroupItem value="email" /><span>Email</span></label><label className="flex cursor-pointer items-center gap-2.5 text-body"><RadioGroupItem value="push" /><span>Push notification</span></label></RadioGroup>,
+            },
+            {
+              value: "enhanced",
+              label: "Enhanced rows",
+              code: enhancedCode,
+              preview: <RadioGroup selectedIndex={0}><RadioItem index={0} label="Option A" selected onSelect={() => {}} /><RadioItem index={1} label="Option B" selected={false} onSelect={() => {}} /></RadioGroup>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <RadioGroup

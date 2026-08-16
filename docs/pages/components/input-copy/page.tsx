@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { InputCopy } from "@zeron/ui/input-copy";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -76,6 +77,31 @@ export default function InputCopyDoc() {
       slug="input-copy"
       description="Read-only input with a copy-to-clipboard button and animated check feedback."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "icon-right",
+              label: "Icon, right",
+              code: basicCode,
+              preview: <div className="w-72"><InputCopy value="npx zeron-ui add input-copy" /></div>,
+            },
+            {
+              value: "button-left",
+              label: "Button, left",
+              code: `<InputCopy variant="button" align="left" value="npx zeron-ui add input-copy" />`,
+              preview: <div className="w-72"><InputCopy variant="button" align="left" value="npx zeron-ui add input-copy" /></div>,
+            },
+            {
+              value: "labeled",
+              label: "With label",
+              code: labelCode,
+              preview: <div className="w-72"><InputCopy label="Install command" value="npx zeron-ui add input-copy" /></div>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <div className="w-72">

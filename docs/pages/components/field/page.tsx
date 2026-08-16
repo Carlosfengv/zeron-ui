@@ -12,6 +12,7 @@ import {
 import { Input } from "@zeron/ui/input";
 import { Textarea } from "@zeron/ui/textarea";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useTranslations } from "next-intl";
@@ -70,6 +71,31 @@ export default function FieldDoc() {
       slug="field"
       description="Accessible form composition for labels, descriptions, validation messages, groups, and fieldsets."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "description",
+              label: "Description",
+              code: basicCode,
+              preview: <div className="w-96 max-w-full"><Field name="workspace"><FieldLabel>{t("workspaceName")}</FieldLabel><Input placeholder={t("workspacePlaceholder")} /><FieldDescription>{t("workspaceDescription")}</FieldDescription></Field></div>,
+            },
+            {
+              value: "validation",
+              label: "Validation",
+              code: validationCode,
+              preview: <div className="w-96 max-w-full"><Field name="endpoint" invalid><FieldLabel>{t("endpoint")}</FieldLabel><Input defaultValue="api.example.com" /><FieldError>{t("endpointError")}</FieldError></Field></div>,
+            },
+            {
+              value: "disabled",
+              label: "Disabled",
+              code: `<Field name="workspace" disabled><FieldLabel>Workspace name</FieldLabel><Input defaultValue="Production" /></Field>`,
+              preview: <div className="w-96 max-w-full"><Field name="workspace" disabled><FieldLabel>{t("workspaceName")}</FieldLabel><Input defaultValue="Production" /></Field></div>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <div className="w-96 max-w-full">

@@ -12,6 +12,7 @@ import {
   DialogClose,
 } from "@zeron/ui/dialog";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -66,6 +67,26 @@ export default function DialogDoc() {
       slug="dialog"
       description="Modal dialog with smooth enter/exit animations and overlay."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          minHeightClass="min-h-[180px]"
+          variants={[
+            {
+              value: "small",
+              label: "Small",
+              code: basicCode,
+              preview: <Dialog><DialogTrigger render={<Button variant="tertiary">Open small dialog</Button>} /><DialogContent size="sm"><DialogHeader><DialogTitle>Create teamspace</DialogTitle><DialogDescription>Add a new teamspace to organize your projects.</DialogDescription></DialogHeader><DialogFooter><DialogClose render={<Button variant="ghost">Cancel</Button>} /><Button>Create</Button></DialogFooter></DialogContent></Dialog>,
+            },
+            {
+              value: "large",
+              label: "Large",
+              code: largeCode,
+              preview: <Dialog><DialogTrigger render={<Button variant="ghost">Open large dialog</Button>} /><DialogContent size="lg"><DialogHeader><DialogTitle>Confirm action</DialogTitle><DialogDescription>This action cannot be undone.</DialogDescription></DialogHeader><DialogFooter><DialogClose render={<Button variant="ghost">Cancel</Button>} /><Button>Confirm</Button></DialogFooter></DialogContent></Dialog>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("small")}>
         <ComponentPreview code={basicCode}>
           <Dialog>

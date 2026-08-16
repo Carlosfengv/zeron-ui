@@ -2,6 +2,7 @@
 
 import { MetricCard } from "@zeron/ui/metric-card";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useTranslations } from "next-intl";
@@ -92,6 +93,31 @@ export default function MetricCardDoc() {
       slug="metric-card"
       description="A self-sizing card for one key metric, with optional breakdowns, trends, semantic states, and whole-card interaction."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "metric",
+              label: "Metric",
+              code: basicCode,
+              preview: <MetricCard className="w-full max-w-sm" label="Gateway calls" value={12482} meta="Last 24 hours" />,
+            },
+            {
+              value: "breakdown",
+              label: "Breakdown",
+              code: breakdownCode,
+              preview: <MetricCard className="w-full max-w-sm" label="Completion rate" value={99.1} unit="%" tone="positive" content={{ type: "breakdown", layout: "grid", items: [{ label: "Succeeded", value: 12370, tone: "positive" }, { label: "Failed", value: 112, tone: "critical" }] }} />,
+            },
+            {
+              value: "stale",
+              label: "Stale",
+              code: `<MetricCard label="Model cost" value={126.43} unit="USD" state="stale" statusMessage="Updated 8 min ago" />`,
+              preview: <MetricCard className="w-full max-w-sm" label="Model cost" value={126.43} unit="USD" state="stale" statusMessage="Updated 8 min ago" />,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <MetricCard className="w-full max-w-sm" label="Gateway calls" value={12482} meta="Last 24 hours" />

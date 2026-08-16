@@ -10,6 +10,7 @@ import {
   InputGroupTextarea,
 } from "@zeron/ui/input-group";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -150,6 +151,16 @@ export default function InputGroupDoc() {
       slug="input-group"
       description="Composable input surface with inline or stacked addons, compact actions, text inputs, textareas, and validation states."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            { value: "username", label: "Username", code: basicCode, preview: <div className="w-80 max-w-full"><InputGroup><InputGroupAddon><InputGroupText>@</InputGroupText></InputGroupAddon><InputGroupInput placeholder="username" aria-label="Username" /></InputGroup></div> },
+            { value: "domain", label: "Domain", code: addonsCode, preview: <div className="w-80 max-w-full"><InputGroup><InputGroupAddon><InputGroupText>https://</InputGroupText></InputGroupAddon><InputGroupInput placeholder="example" aria-label="Domain" /><InputGroupAddon align="inline-end"><InputGroupText>.com</InputGroupText></InputGroupAddon></InputGroup></div> },
+            { value: "search", label: "Search", code: actionsCode, preview: <div className="w-80 max-w-full"><InputGroup><InputGroupAddon><Search size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput placeholder="Search projects..." aria-label="Search projects" /><InputGroupAddon align="inline-end"><InputGroupButton iconOnly aria-label="Clear search"><X /></InputGroupButton></InputGroupAddon></InputGroup></div> },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <div className="w-80 max-w-full">

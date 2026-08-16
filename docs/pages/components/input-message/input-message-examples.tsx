@@ -6,6 +6,7 @@ import { ChatMessage } from "@zeron/ui/chat-message";
 import { Button } from "@zeron/ui/button";
 import { useIcon } from "@zeron/icons/context";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocSection } from "@docs/components/content/DocPage";
 import { QueuedChatDemo } from "./queued-chat-demo";
@@ -551,6 +552,17 @@ export function InputMessageExamples() {
 
   return (
     <>
+      <DocSection title="Playground">
+        <VariantPlayground
+          minHeightClass="min-h-[280px]"
+          variants={[
+            { value: "basic", label: "Basic", code: basicCode, preview: <div className="w-full max-w-xl"><InputMessage value={basicValue} onValueChange={setBasicValue} onSend={() => setBasicValue("")} /></div> },
+            { value: "left-slot", label: "Left slot", code: leftOnlyCode, preview: <div className="w-full max-w-xl"><InputMessage value={leftValue} onValueChange={setLeftValue} onSend={() => setLeftValue("")} leftSlot={<Button iconOnly variant="ghost" size="sm" aria-label="Attach"><PlusIcon /></Button>} /></div> },
+            { value: "disabled", label: "Disabled", code: disabledCode, preview: <div className="w-full max-w-xl"><InputMessage value="This composer is disabled" onValueChange={() => {}} disabled /></div> },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title="Example">
         <QueuedChatDemo
           code={actionsCode}

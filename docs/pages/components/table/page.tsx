@@ -7,6 +7,7 @@ import {
   TableCell,
 } from "@zeron/ui/table";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -58,6 +59,25 @@ export default function TableDoc() {
       slug="table"
       description="Data table with row hover effects and semantic markup."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "directory",
+              label: "Directory",
+              code: basicCode,
+              preview: <div className="w-full"><Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Role</TableHead><TableHead>Status</TableHead></TableRow></TableHeader><TableBody><TableRow index={0}><TableCell>Alice</TableCell><TableCell>Engineer</TableCell><TableCell>Active</TableCell></TableRow><TableRow index={1}><TableCell>Bob</TableCell><TableCell>Designer</TableCell><TableCell>Away</TableCell></TableRow></TableBody></Table></div>,
+            },
+            {
+              value: "compact",
+              label: "Compact",
+              code: `<Table><TableHeader><TableRow><TableHead>Environment</TableHead><TableHead>State</TableHead></TableRow></TableHeader><TableBody><TableRow index={0}><TableCell>Production</TableCell><TableCell>Healthy</TableCell></TableRow></TableBody></Table>`,
+              preview: <div className="w-full max-w-md"><Table><TableHeader><TableRow><TableHead>Environment</TableHead><TableHead>State</TableHead></TableRow></TableHeader><TableBody><TableRow index={0}><TableCell>Production</TableCell><TableCell>Healthy</TableCell></TableRow></TableBody></Table></div>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <div className="w-full">

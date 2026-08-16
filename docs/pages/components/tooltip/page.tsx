@@ -3,6 +3,7 @@
 import { Tooltip } from "@zeron/ui/tooltip";
 import { Button } from "@zeron/ui/button";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -94,6 +95,32 @@ export default function TooltipDoc() {
       slug="tooltip"
       description="Floating tooltip with spring-based animations, configurable placement, and rich content support."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          minHeightClass="min-h-[180px]"
+          variants={[
+            {
+              value: "top",
+              label: "Top",
+              code: `<Tooltip content="Save your changes" side="top"><Button>Save</Button></Tooltip>`,
+              preview: <Tooltip content="Save your changes" side="top"><Button>Save</Button></Tooltip>,
+            },
+            {
+              value: "right",
+              label: "Right",
+              code: `<Tooltip content="Save your changes" side="right"><Button>Save</Button></Tooltip>`,
+              preview: <Tooltip content="Save your changes" side="right"><Button>Save</Button></Tooltip>,
+            },
+            {
+              value: "instant",
+              label: "Instant",
+              code: `<Tooltip content="Save your changes" delayDuration={0}><Button>Save</Button></Tooltip>`,
+              preview: <Tooltip content="Save your changes" delayDuration={0}><Button>Save</Button></Tooltip>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <Tooltip content="Save your changes">

@@ -16,6 +16,7 @@ import {
   StepperTrigger,
 } from "@zeron/ui/stepper";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -179,6 +180,30 @@ export default function StepperDoc() {
       slug="stepper"
       description="Accessible multi-step navigation with horizontal and vertical layouts, keyboard controls, completion states, and async validation."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          minHeightClass="min-h-[260px]"
+          variants={[
+            {
+              value: "horizontal",
+              label: "Horizontal",
+              code: basicCode,
+              preview: <Stepper value={basicValue} onValueChange={setBasicValue} className="max-w-2xl"><StepTrack steps={STEPS} /><div className="min-h-24 border border-border-subtle bg-muted/30 p-4 rounded-xl"><StepperContent value="account">Create your account and choose sign-in credentials.</StepperContent><StepperContent value="profile">Add profile information.</StepperContent><StepperContent value="review">Review before submitting.</StepperContent></div><div className="flex items-center justify-between"><StepperPrev render={<Button variant="tertiary" size="sm" />}>Previous</StepperPrev><StepperNext render={<Button size="sm" />}>Next</StepperNext></div></Stepper>,
+            },
+            {
+              value: "vertical",
+              label: "Vertical",
+              code: verticalCode,
+              preview: <Stepper value={verticalValue} onValueChange={setVerticalValue} orientation="vertical" className="w-full max-w-2xl gap-6"><StepTrack steps={VERTICAL_STEPS} /><div className="min-h-32 flex-1 border border-border-subtle bg-muted/30 p-4 rounded-xl"><StepperContent value="details">Set the workspace name and visibility.</StepperContent><StepperContent value="members">Invite collaborators.</StepperContent><StepperContent value="finish">Confirm the workspace configuration.</StepperContent></div></Stepper>,
+            },
+            {
+              value: "progress", label: "Progress", code: statesCode,
+              preview: <Stepper defaultValue="shipping" nonInteractive className="max-w-2xl"><StepperList><StepperItem value="account" completed><StepperTrigger><StepperIndicator /><StepperTitle>Account</StepperTitle></StepperTrigger></StepperItem><StepperItem value="shipping"><StepperTrigger><StepperIndicator /><StepperTitle>Shipping</StepperTitle></StepperTrigger></StepperItem><StepperItem value="payment" disabled><StepperTrigger><StepperIndicator /><StepperTitle>Payment</StepperTitle></StepperTrigger></StepperItem></StepperList></Stepper>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <Stepper value={basicValue} onValueChange={setBasicValue} className="max-w-2xl">

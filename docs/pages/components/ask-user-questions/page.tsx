@@ -7,6 +7,7 @@ import {
   type AskUserQuestion,
 } from "@zeron/ui/ask-user-questions";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useIcon } from "@zeron/icons/context";
@@ -1352,6 +1353,18 @@ export default function AskUserQuestionsDoc() {
       slug="ask-user-questions"
       description="Stepped question flow with 2–5 options, single or multi-select, inline 'other' input, optional skip, and multi-question navigation."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          align="bottom"
+          minHeightClass="min-h-[560px]"
+          variants={[
+            { value: "guided", label: "Guided flow", code: exampleCode, preview: <AskUserQuestions questions={exampleQuestions} /> },
+            { value: "multiple", label: "Multiple questions", code: multipleCode, preview: <AskUserQuestions questions={multipleQuestions} /> },
+            { value: "multi-select", label: "Multi-select", code: multiSelectCode, preview: <AskUserQuestions questions={multiSelectQuestions} /> },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("example")}>
         <ReplayableExample
           code={exampleCode}

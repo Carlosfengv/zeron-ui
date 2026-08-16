@@ -12,6 +12,7 @@ import {
 } from "@zeron/ui/info-item";
 import { Badge } from "@zeron/ui/badge";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useIcon } from "@zeron/icons/context";
@@ -96,6 +97,31 @@ export default function InfoItemDoc() {
       slug="info-item"
       description="A composable information row with leading media, primary and supporting text, and a flexible trailing value or detail."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "stacked",
+              label: "Stacked",
+              code: basicCode,
+              preview: <InfoItemGroup className="w-full max-w-md"><InfoItem><InfoItemLeading><FileArchive size={16} strokeWidth={1.5} /></InfoItemLeading><InfoItemContent><InfoItemTitle>Storage</InfoItemTitle><InfoItemDescription>72 GB of 100 GB used</InfoItemDescription></InfoItemContent><InfoItemTrailing><InfoItemValue>72%</InfoItemValue></InfoItemTrailing></InfoItem></InfoItemGroup>,
+            },
+            {
+              value: "inline",
+              label: "Inline",
+              code: inlineCode,
+              preview: <InfoItemGroup className="w-full max-w-md"><InfoItem layout="inline"><InfoItemLeading><Rocket size={16} strokeWidth={1.5} /></InfoItemLeading><InfoItemContent><InfoItemTitle>Plan</InfoItemTitle><InfoItemDescription>Pro workspace</InfoItemDescription></InfoItemContent><InfoItemTrailing><Badge variant="dot" color="green">Active</Badge></InfoItemTrailing></InfoItem></InfoItemGroup>,
+            },
+            {
+              value: "quota",
+              label: "Quota",
+              code: quotaCode,
+              preview: <InfoItemGroup className="w-full max-w-md"><InfoItem><InfoItemLeading><Globe size={16} strokeWidth={1.5} /></InfoItemLeading><InfoItemContent><InfoItemTitle>Bandwidth</InfoItemTitle><InfoItemDescription>Resets in 12 days</InfoItemDescription></InfoItemContent><InfoItemTrailing><InfoItemValue>384 / 500 GB</InfoItemValue></InfoItemTrailing></InfoItem></InfoItemGroup>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <InfoItemGroup className="w-full max-w-md">

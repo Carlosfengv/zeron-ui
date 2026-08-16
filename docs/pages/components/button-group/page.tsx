@@ -17,6 +17,7 @@ import {
 import { MenuItem } from "@zeron/ui/menu-item";
 import { Tooltip, TooltipProvider } from "@zeron/ui/tooltip";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 
@@ -159,6 +160,16 @@ export default function ButtonGroupDoc() {
       slug="button-group"
       description={t("description")}
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            { value: "actions", label: "Actions", code: basicCode, preview: <ButtonGroup aria-label={t("documentActions")}><Button variant="tertiary" leadingIcon={Pencil}>{t("edit")}</Button><Button variant="tertiary" leadingIcon={Copy}>{t("duplicate")}</Button><Button variant="tertiary" leadingIcon={Archive}>{t("archive")}</Button></ButtonGroup> },
+            { value: "vertical", label: "Vertical", code: verticalCode, preview: <ButtonGroup orientation="vertical" aria-label={t("reviewActions")}><Button variant="tertiary" leadingIcon={Check}>{t("approve")}</Button><Button variant="tertiary" leadingIcon={Message}>{t("requestChanges")}</Button><Button variant="tertiary" leadingIcon={Archive}>{t("archive")}</Button></ButtonGroup> },
+            { value: "selection", label: "With addon", code: addonCode, preview: <ButtonGroup aria-label={t("selectionActions")}><ButtonGroupText>{t("threeSelected")}</ButtonGroupText><Button variant="tertiary" leadingIcon={Upload}>{t("export")}</Button></ButtonGroup> },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <p className="mb-4 max-w-3xl text-body leading-5 text-fg-muted">
           {t("basicDescription")}

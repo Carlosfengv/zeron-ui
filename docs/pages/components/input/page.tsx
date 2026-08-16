@@ -2,6 +2,7 @@
 
 import { Input } from "@zeron/ui/input";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -52,6 +53,16 @@ export default function InputDoc() {
       slug="input"
       description="Text input with outline, secondary, and ghost variants, five sizes, and accessible validation states."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            { value: "outline", label: "Outline", code: basicCode, preview: <div className="w-72 max-w-full"><Input type="email" placeholder="you@example.com" aria-label="Email address" /></div> },
+            { value: "secondary", label: "Secondary", code: `<Input variant="secondary" placeholder="Secondary" />`, preview: <div className="w-72 max-w-full"><Input variant="secondary" placeholder="Secondary" aria-label="Secondary input" /></div> },
+            { value: "invalid", label: "Invalid", code: `<Input defaultValue="not-an-email" aria-invalid="true" />`, preview: <div className="w-72 max-w-full"><Input defaultValue="not-an-email" aria-invalid="true" aria-label="Invalid email" /></div> },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <div className="w-72 max-w-full">

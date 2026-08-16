@@ -14,6 +14,7 @@ import {
   PageTitle,
 } from "@zeron/ui/page-layout";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useIcon } from "@zeron/icons/context";
@@ -153,6 +154,26 @@ export default function PageLayoutDoc() {
       slug="page-layout"
       description="Responsive composition with a breadcrumb context header and one unified content container."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          padding="compact"
+          variants={[
+            {
+              value: "subnav",
+              label: "With subnavigation",
+              code: compositionCode,
+              preview: <PageLayout gutter="none" className="h-[28rem]"><PageHeader><PageHeaderContent icon={WorkspaceIcon}><nav aria-label="Breadcrumb" className="text-body text-fg-muted">Workspace / Projects</nav></PageHeaderContent></PageHeader><PageSubnavPreview /></PageLayout>,
+            },
+            {
+              value: "body-only",
+              label: "Body only",
+              code: bodyOnlyCode,
+              preview: <PageLayout gutter="none" className="h-[18rem] bg-surface-raised"><PageContent><PageBody className="rounded-lg bg-muted p-4">A page can omit its separate title area.</PageBody></PageContent></PageLayout>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title="Composition">
         <ComponentPreview code={compositionCode} padding="compact">
           <PageLayout gutter="none" className="h-[28rem]">

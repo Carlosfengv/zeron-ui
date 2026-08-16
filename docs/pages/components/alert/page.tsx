@@ -159,7 +159,7 @@ function AlertPlayground() {
   };
 
   const controls = (
-    <PlaygroundPanel title={t("playground")} onShuffle={randomize}>
+    <PlaygroundPanel onShuffle={randomize}>
       <PlaySection label={t("playAlert")} />
       <div>
         <PlayField label={t("status")}>

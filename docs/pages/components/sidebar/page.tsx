@@ -212,7 +212,7 @@ function SidebarCollapsePlayground() {
     setCollapsible(collapseModes[Math.floor(Math.random() * collapseModes.length)]);
   };
   const controls = (
-    <PlaygroundPanel title="Sidebar" onShuffle={randomize}>
+    <PlaygroundPanel onShuffle={randomize}>
       <PlaySection label="Behavior" />
       <PlayField label="Collapse mode">
         <PlaySelect
@@ -389,6 +389,9 @@ export default function SidebarDoc() {
   const Settings = useIcon("settings");
 
   return <DocPage title="Sidebar" slug="sidebar" description="A responsive navigation rail that becomes a focus-managed drawer on compact screens.">
+    <DocSection title="Playground">
+      <SidebarCollapsePlayground />
+    </DocSection>
     <DocSection title="Basic">
       <ComponentPreview fullScreenable padding="none" code={code}>
         <SidebarProvider defaultOpen breakpointBehavior="collapse">
@@ -444,9 +447,6 @@ export default function SidebarDoc() {
           </div>
         </SidebarProvider>
       </ComponentPreview>
-    </DocSection>
-    <DocSection title="Collapse playground">
-      <SidebarCollapsePlayground />
     </DocSection>
     <DocSection title="ZAIops recipe"><ComponentPreview fullScreenable padding="none" code={zaiopsCode}><ZaiopsSidebarPreview /></ComponentPreview></DocSection>
     <DocSection title="Focus behavior"><p className="max-w-3xl text-body leading-5 text-fg-muted">On compact screens, closing the drawer restores the control that opened it. SidebarTrigger records that owner automatically; controlled or programmatic opens should call setActiveTrigger(owner) immediately before opening, or pass null to avoid restoring a stale trigger.</p></DocSection>

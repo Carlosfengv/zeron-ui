@@ -3,6 +3,7 @@
 import { Badge, type BadgeColor } from "@zeron/ui/badge";
 import { BadgeOverflow } from "@zeron/ui/badge-overflow";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -150,6 +151,31 @@ export default function BadgeOverflowDoc() {
       slug="badge-overflow"
       description="Responsive badge list that reveals every item in a centered, hover-triggered popover with Select-style rows and five-item scrolling."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "single-line",
+              label: "Single line",
+              code: basicCode,
+              preview: <div className="w-full max-w-[360px] border border-border-subtle bg-muted/20 p-3 rounded-xl"><SkillBadges /></div>,
+            },
+            {
+              value: "two-lines",
+              label: "Two lines",
+              code: multiLineCode,
+              preview: <div className="w-full max-w-[360px] border border-border-subtle bg-muted/20 p-3 rounded-xl"><SkillBadges lineCount={2} /></div>,
+            },
+            {
+              value: "teams",
+              label: "Object items",
+              code: objectCode,
+              preview: <div className="w-full max-w-[340px] border border-border-subtle bg-muted/20 p-3 rounded-xl"><BadgeOverflow className="gap-1" getBadgeKey={(team) => team.id} getBadgeLabel={(team) => team.name} items={teams} renderBadge={(team, label) => <Badge color={team.color} size="sm" variant="dot">{label}</Badge>} /></div>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("singleLine")}>
         <ComponentPreview code={basicCode}>
           <div className="w-full max-w-[360px] border border-border-subtle bg-muted/20 p-3 rounded-xl">

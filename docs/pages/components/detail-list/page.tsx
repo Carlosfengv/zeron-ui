@@ -11,6 +11,7 @@ import {
   DetailListValue,
 } from "@zeron/ui/detail-list";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useTranslations } from "next-intl";
@@ -71,6 +72,25 @@ export default function DetailListDoc() {
       slug="detail-list"
       description="A framed, composable label-value list with grouped sections and separators for compact resource and entity details."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "basic",
+              label: "Basic",
+              code: basicCode,
+              preview: <DetailList className="w-full max-w-md"><DetailListItem><DetailListLabel>Provider</DetailListLabel><DetailListValue>DeepSeek</DetailListValue></DetailListItem><DetailListItem><DetailListLabel>Latency</DetailListLabel><DetailListValue><Badge color="lime" size="sm">11 ms</Badge></DetailListValue></DetailListItem></DetailList>,
+            },
+            {
+              value: "grouped",
+              label: "Grouped",
+              code: groupedCode,
+              preview: <DetailList className="w-full max-w-md"><DetailListSection aria-labelledby="playground-usage"><DetailListSectionLabel id="playground-usage">Usage</DetailListSectionLabel><DetailListItem><DetailListLabel>Current</DetailListLabel><DetailListValue>12.1 M</DetailListValue></DetailListItem></DetailListSection><DetailListSeparator /><DetailListSection aria-labelledby="playground-api"><DetailListSectionLabel id="playground-api">API format</DetailListSectionLabel><DetailListItem><DetailListLabel>Endpoint</DetailListLabel><DetailListValue>/v1/chat/completions</DetailListValue></DetailListItem></DetailListSection></DetailList>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <DetailList className="w-full max-w-md">

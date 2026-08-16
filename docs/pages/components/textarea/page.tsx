@@ -3,6 +3,7 @@
 import { Field, FieldDescription, FieldLabel } from "@zeron/ui/field";
 import { Textarea } from "@zeron/ui/textarea";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useTranslations } from "next-intl";
@@ -43,6 +44,16 @@ export default function TextareaDoc() {
       slug="textarea"
       description="Multi-line text input with semantic variants, density options, native rows, resizing, and field validation support."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            { value: "field", label: "With field", code: basicCode, preview: <div className="w-96 max-w-full"><Field name="description"><FieldLabel>{t("descriptionLabel")}</FieldLabel><Textarea placeholder={t("descriptionPlaceholder")} /><FieldDescription>{t("descriptionHelp")}</FieldDescription></Field></div> },
+            { value: "secondary", label: "Secondary", code: `<Textarea variant="secondary" rows={3} placeholder="Secondary" />`, preview: <div className="w-96 max-w-full"><Textarea variant="secondary" rows={3} placeholder="Secondary" aria-label="Secondary textarea" /></div> },
+            { value: "comfortable", label: "Comfortable", code: `<Textarea density="comfortable" rows={4} placeholder="Comfortable" />`, preview: <div className="w-96 max-w-full"><Textarea density="comfortable" rows={4} placeholder="Comfortable" aria-label="Comfortable textarea" /></div> },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <div className="w-96 max-w-full">

@@ -13,6 +13,7 @@ import {
 import { MenuItem } from "@zeron/ui/menu-item";
 import { Button } from "@zeron/ui/button";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -178,6 +179,26 @@ export default function DropdownDoc() {
       slug="dropdown"
       description="Menu-style dropdown with proximity hover and animated backgrounds — as an always-visible inline panel or a triggered popup built on Base UI Menu."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          minHeightClass="min-h-[280px]"
+          variants={[
+            {
+              value: "inline",
+              label: "Inline panel",
+              code: basicCode,
+              preview: <Dropdown checkedIndex={selected ?? undefined}>{items.map((item, index) => <MenuItem key={item.label} index={index} icon={item.icon} label={item.label} checked={selected === index} onSelect={() => setSelected(selected === index ? null : index)} />)}</Dropdown>,
+            },
+            {
+              value: "triggered",
+              label: "Triggered menu",
+              code: triggeredCode,
+              preview: <DropdownMenu><DropdownTrigger render={<Button variant="secondary">Open menu</Button>} /><DropdownContent checkedIndex={view}>{items.map((item, index) => <MenuItem key={item.label} index={index} icon={item.icon} label={item.label} checked={view === index} onSelect={() => setView(index)} />)}</DropdownContent></DropdownMenu>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <Dropdown checkedIndex={selected ?? undefined}>

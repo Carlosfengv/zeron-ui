@@ -12,6 +12,7 @@ import {
   PopoverTrigger,
 } from "@zeron/ui/popover";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useTranslations } from "next-intl";
@@ -137,6 +138,32 @@ export default function PopoverDoc() {
       slug="popover"
       description="Accessible floating content with collision-aware positioning and an optional liquid anchor-to-panel transition."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          minHeightClass="min-h-[260px]"
+          variants={[
+            {
+              value: "click",
+              label: "Click trigger",
+              code: basicCode,
+              preview: <Popover><PopoverTrigger render={<Button variant="secondary">Share workspace</Button>} /><PopoverContent align="start" className="w-72"><PopoverHeader><PopoverTitle>Workspace access</PopoverTitle><PopoverDescription>Anyone with the link can view this workspace.</PopoverDescription></PopoverHeader><PopoverFooter><PopoverClose render={<Button size="sm" variant="ghost">Done</Button>} /></PopoverFooter></PopoverContent></Popover>,
+            },
+            {
+              value: "hover",
+              label: "Hover trigger",
+              code: hoverCode,
+              preview: <Popover trigger="hover" hoverDelay={120}><PopoverTrigger render={<Button variant="secondary">Service status</Button>} /><PopoverContent side="top" className="w-64"><PopoverHeader><PopoverTitle>All systems operational</PopoverTitle><PopoverDescription>Updated a few seconds ago.</PopoverDescription></PopoverHeader></PopoverContent></Popover>,
+            },
+            {
+              value: "liquid",
+              label: "Liquid connector",
+              code: liquidCode,
+              preview: <Popover liquid><PopoverTrigger render={<Button variant="secondary">Details</Button>} /><PopoverContent side="right" className="w-60">A compact panel with an optional liquid connector.</PopoverContent></Popover>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode} minHeightClass="min-h-[260px]">
           <Popover>

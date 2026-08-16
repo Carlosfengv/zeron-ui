@@ -2,6 +2,7 @@
 
 import { Kbd, KbdGroup } from "@zeron/ui/kbd";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -53,6 +54,31 @@ export default function KbdDoc() {
       slug="kbd"
       description="Compact keycaps for keyboard shortcuts, commands, and interaction hints."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "single-key",
+              label: "Single key",
+              code: basicCode,
+              preview: <Kbd>K</Kbd>,
+            },
+            {
+              value: "shortcut",
+              label: "Shortcut",
+              code: `<KbdGroup aria-label="Command K"><Kbd aria-label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup>`,
+              preview: <KbdGroup aria-label="Command K"><Kbd aria-label="Command">⌘</Kbd><Kbd>K</Kbd></KbdGroup>,
+            },
+            {
+              value: "symbol",
+              label: "Symbol",
+              code: `<Kbd aria-label="Enter">↵</Kbd>`,
+              preview: <Kbd aria-label="Enter">↵</Kbd>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <Kbd>K</Kbd>

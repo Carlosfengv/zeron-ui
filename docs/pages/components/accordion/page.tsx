@@ -8,6 +8,7 @@ import {
   AccordionContent,
 } from "@zeron/ui/accordion";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -101,6 +102,26 @@ export default function AccordionDoc() {
       slug="accordion"
       description="Collapsible sections with animated expand/collapse and proximity hover in grouped mode."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          minHeightClass="min-h-[190px]"
+          variants={[
+            {
+              value: "single",
+              label: "Single expand",
+              code: standaloneCode,
+              preview: <Accordion type="single" collapsible defaultValue="item-1"><AccordionItem value="item-1"><AccordionTrigger>What is this component?</AccordionTrigger><AccordionContent>A collapsible accordion with animated expand and collapse.</AccordionContent></AccordionItem><AccordionItem value="item-2"><AccordionTrigger>How does it behave?</AccordionTrigger><AccordionContent>Opening one item closes the other.</AccordionContent></AccordionItem></Accordion>,
+            },
+            {
+              value: "multiple",
+              label: "Multiple expand",
+              code: multipleCode,
+              preview: <AccordionGroup type="multiple" defaultValue={["item-1", "item-2"]}><AccordionItem value="item-1" index={0}><AccordionTrigger>First section</AccordionTrigger><AccordionContent>Multiple items can remain expanded.</AccordionContent></AccordionItem><AccordionItem value="item-2" index={1}><AccordionTrigger>Second section</AccordionTrigger><AccordionContent>Each item operates independently.</AccordionContent></AccordionItem></AccordionGroup>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("standalone")}>
         <p className="text-body text-fg-muted">{t("standaloneDescription")}</p>
         <ComponentPreview code={standaloneCode}>

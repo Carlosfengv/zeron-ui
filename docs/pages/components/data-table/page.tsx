@@ -1,6 +1,7 @@
 "use client";
 
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -245,6 +246,16 @@ export default function DataTableDoc() {
       slug="data-table"
       description="Composable data table with sorting, filtering, pagination, selection, column visibility, and pinning."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            { value: "directory", label: "Project directory", code: exampleCode, preview: <div className="w-full"><ProjectsTable /></div> },
+            { value: "pinned", label: "Pinned columns", code: pinnedColumnsCode, preview: <div className="w-full"><PinnedProjectsTable /></div> },
+            { value: "empty", label: "Empty state", code: '<DataTable emptyMessage="No projects found." table={table} />', preview: <div className="w-full"><EmptyProjectsTable /></div> },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("projectDirectory")}>
         <ComponentPreview code={exampleCode}>
           <div className="w-full">

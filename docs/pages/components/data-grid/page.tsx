@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { DeferredDataGridDemo } from "@docs/components/shell/site/deferred-data-grid-demo";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 
@@ -83,6 +84,18 @@ export default function DataGridDoc() {
       slug="data-grid"
       description={t("description")}
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          inspectable={false}
+          minHeightClass="min-h-[420px]"
+          padding="responsive"
+          variants={[
+            { value: "planner", label: "Release planner", code: exampleCode, preview: <DeferredDataGridDemo height={360} shortcuts /> },
+            { value: "compact", label: "Compact grid", code: exampleCode.replace("height={360}", "height={280}"), preview: <DeferredDataGridDemo height={280} /> },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("releasePlanner")}>
         <ComponentPreview
           code={exampleCode}

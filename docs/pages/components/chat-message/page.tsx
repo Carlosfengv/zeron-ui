@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ChatMessage } from "@zeron/ui/chat-message";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useIcon } from "@zeron/icons/context";
@@ -122,6 +123,26 @@ export default function ChatMessageDoc() {
       slug="chat-message"
       description="A single chat transcript entry with baked-in entrance and layout motion. Right-aligned accent bubble for the user, left-aligned plain text for the assistant, with optional file attachments and a hover-revealed meta row."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          minHeightClass="min-h-[180px]"
+          variants={[
+            {
+              value: "conversation",
+              label: "Conversation",
+              code: conversationCode,
+              preview: <div className="w-full max-w-xl flex flex-col gap-2"><ChatMessage from="user" time="Wednesday 6:06 PM" actions={<MessageActions from="user" />}>What does good design actually mean?</ChatMessage><ChatMessage from="assistant" actions={<MessageActions from="assistant" />}>Good design is mostly invisible — you notice it when it is missing.</ChatMessage></div>,
+            },
+            {
+              value: "roles",
+              label: "Roles",
+              code: rolesCode,
+              preview: <div className="w-full max-w-xl flex flex-col gap-2"><ChatMessage from="user">Right-aligned accent bubble.</ChatMessage><ChatMessage from="assistant">Left-aligned, no background.</ChatMessage></div>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("conversation")}>
         <ComponentPreview code={conversationCode} minHeightClass="min-h-[220px]">
           <div className="w-full max-w-xl flex flex-col gap-2">

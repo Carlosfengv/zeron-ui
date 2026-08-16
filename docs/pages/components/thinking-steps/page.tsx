@@ -13,6 +13,7 @@ import {
   type StepStatus,
 } from "@zeron/ui/thinking-steps";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useIcon } from "@zeron/icons/context";
@@ -744,6 +745,21 @@ export default function ThinkingStepsDoc() {
       slug="thinking-steps"
       description="Chain-of-thought reasoning display with collapsible steps, sequential animation, source badges, and image support."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "detailed", label: "Detailed", code: basicCode,
+              preview: <ThinkingSteps><ThinkingStepsHeader /><ThinkingStepsContent><ThinkingStep icon="search" label="Searched the web" /><ThinkingStep icon="globe" label="Read 3 sources"><ThinkingStepDetails summary="Explored 3 files" details={["Read accordion.tsx", "Read badge.tsx", "Read components.ts"]} /></ThinkingStep><ThinkingStep icon="check" label="Done" isLast /></ThinkingStepsContent></ThinkingSteps>,
+            },
+            {
+              value: "minimal", label: "Minimal", code: minimalCode,
+              preview: <ThinkingSteps><ThinkingStepsHeader /><ThinkingStepsContent><ThinkingStep showIcon={false} label="Ran a command" /><ThinkingStep showIcon={false} label="Done" isLast /></ThinkingStepsContent></ThinkingSteps>,
+            },
+          ]}
+        />
+      </DocSection>
+
       {/* 1. Basic — static, icons, details */}
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>

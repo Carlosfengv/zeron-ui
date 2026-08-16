@@ -2,6 +2,7 @@
 
 import { ColorPicker, ColorPickerPopover } from "@zeron/ui/color-picker";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -100,6 +101,16 @@ export default function ColorPickerDoc() {
       slug="color-picker"
       description="Color picker with HEX, RGB, HSL, and OKLCH formats, alpha channel, optional swatches, and an eyedropper. Available as an inline panel or popover."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            { value: "inline", label: "Inline", code: basicCode, preview: <ColorPicker defaultValue="#6B97FF" /> },
+            { value: "popover", label: "Popover", code: popoverCode, preview: <ColorPickerPopover triggerLabel="Fill" defaultValue="#6B97FF" /> },
+            { value: "oklch", label: "OKLCH", code: oklchCode, preview: <ColorPicker defaultFormat="oklch" defaultValue="#6B97FF" /> },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("default")}>
         <ComponentPreview code={basicCode}>
           <ColorPicker defaultValue="#6B97FF" />

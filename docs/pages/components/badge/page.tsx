@@ -2,6 +2,7 @@
 
 import { Badge, badgeColors, type BadgeColor } from "@zeron/ui/badge";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -58,6 +59,31 @@ export default function BadgeDoc() {
       slug="badge"
       description={t("description")}
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "solid",
+              label: "Solid",
+              code: `<Badge color="violet">Fiction</Badge>`,
+              preview: <Badge color="violet">Fiction</Badge>,
+            },
+            {
+              value: "dot",
+              label: "Dot",
+              code: `<Badge variant="dot" color="violet">Fiction</Badge>`,
+              preview: <Badge variant="dot" color="violet">Fiction</Badge>,
+            },
+            {
+              value: "status",
+              label: "Status",
+              code: `<Badge status="warning">Attention needed</Badge>`,
+              preview: <Badge status="warning">Attention needed</Badge>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("solid")}>
         <ComponentPreview code={solidCode}>
           <div className="flex flex-wrap items-center gap-2">

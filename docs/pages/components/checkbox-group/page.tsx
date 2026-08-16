@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CheckboxGroup, CheckboxItem } from "@zeron/ui/checkbox-group";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
@@ -55,6 +56,31 @@ export default function CheckboxGroupDoc() {
       slug="checkbox-group"
       description="Checkbox group with merged backgrounds for contiguous selections."
     >
+      <DocSection title="Playground">
+        <VariantPlayground
+          variants={[
+            {
+              value: "single",
+              label: "One selected",
+              code: basicCode,
+              preview: <CheckboxGroup checkedIndices={new Set([0])}><CheckboxItem index={0} label="Apples" checked onToggle={() => {}} /><CheckboxItem index={1} label="Bananas" checked={false} onToggle={() => {}} /></CheckboxGroup>,
+            },
+            {
+              value: "adjacent",
+              label: "Adjacent selection",
+              code: `<CheckboxGroup checkedIndices={new Set([0, 1])}>...</CheckboxGroup>`,
+              preview: <CheckboxGroup checkedIndices={new Set([0, 1])}><CheckboxItem index={0} label="Apples" checked onToggle={() => {}} /><CheckboxItem index={1} label="Bananas" checked onToggle={() => {}} /><CheckboxItem index={2} label="Cherries" checked={false} onToggle={() => {}} /></CheckboxGroup>,
+            },
+            {
+              value: "separate",
+              label: "Separate selection",
+              code: `<CheckboxGroup checkedIndices={new Set([0, 2])}>...</CheckboxGroup>`,
+              preview: <CheckboxGroup checkedIndices={new Set([0, 2])}><CheckboxItem index={0} label="Apples" checked onToggle={() => {}} /><CheckboxItem index={1} label="Bananas" checked={false} onToggle={() => {}} /><CheckboxItem index={2} label="Cherries" checked onToggle={() => {}} /></CheckboxGroup>,
+            },
+          ]}
+        />
+      </DocSection>
+
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
           <CheckboxGroup checkedIndices={checked}>
