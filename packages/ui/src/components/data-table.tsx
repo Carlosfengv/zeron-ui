@@ -415,12 +415,15 @@ function DataTableColumnHeader<TData, TValue>({
 }
 
 export type DataTableToolbarProps<TData> = React.ComponentProps<"div"> & {
+  /** Whether to render the column-visibility control beside toolbar actions. */
+  showViewOptions?: boolean;
   table: TanstackTable<TData>;
 };
 
 function DataTableToolbar<TData>({
   children,
   className,
+  showViewOptions = true,
   table,
   ...props
 }: DataTableToolbarProps<TData>) {
@@ -465,7 +468,7 @@ function DataTableToolbar<TData>({
       </div>
       <div className="flex shrink-0 items-center gap-2">
         {children}
-        <DataTableViewOptions table={table} />
+        {showViewOptions && <DataTableViewOptions table={table} />}
       </div>
     </div>
   );
