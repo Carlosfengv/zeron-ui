@@ -61,6 +61,39 @@ const barCode = `<MetricCard
   }}
 />`;
 
+const dashboardCardClass = [
+  "w-full self-stretch rounded-lg border-[0.5px] border-border bg-surface-floating px-3 py-2",
+  "[&_[data-slot=metric-card-label]]:text-label [&_[data-slot=metric-card-label]]:leading-5 [&_[data-slot=metric-card-label]]:!text-fg-default/40",
+  "[&_[data-slot=metric-card-value-row]>span:first-child]:text-base [&_[data-slot=metric-card-value-row]>span:first-child]:leading-6 [&_[data-slot=metric-card-value-row]>span:first-child]:!text-fg-default/80",
+  "[&_[data-slot=metric-card-breakdown]_span:first-child]:!text-fg-default/40 [&_[data-slot=metric-card-breakdown]_span:last-child]:!text-fg-default/80",
+].join(" ");
+
+const dashboardCode = `const dashboardCardClass = [
+  "w-full self-stretch rounded-lg border-[0.5px] border-border bg-surface-floating px-3 py-2",
+  "[&_[data-slot=metric-card-label]]:text-label [&_[data-slot=metric-card-label]]:leading-5 [&_[data-slot=metric-card-label]]:!text-fg-default/40",
+  "[&_[data-slot=metric-card-value-row]>span:first-child]:text-base [&_[data-slot=metric-card-value-row]>span:first-child]:leading-6 [&_[data-slot=metric-card-value-row]>span:first-child]:!text-fg-default/80",
+  "[&_[data-slot=metric-card-breakdown]_span:first-child]:!text-fg-default/40 [&_[data-slot=metric-card-breakdown]_span:last-child]:!text-fg-default/80",
+].join(" ");
+
+<div className="w-full">
+  <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+    <MetricCard
+      className={dashboardCardClass}
+      label="会话数量"
+      value="2,482"
+      separator
+      content={{
+        type: "breakdown",
+        items: [
+          { label: "进行中的", value: 128 },
+          { label: "较上期", value: "+8.2%" },
+        ],
+      }}
+    />
+    {/* 其余卡片使用相同结构 */}
+  </div>
+</div>`;
+
 const props: PropDef[] = [
   { name: "label", type: "string", description: "The metric being measured." },
   { name: "value", type: "string | number", description: "The primary metric result." },
@@ -69,6 +102,7 @@ const props: PropDef[] = [
   { name: "footer", type: "ReactNode", description: "Optional supporting content below the metric value, such as a period-over-period comparison." },
   { name: "tone", type: '"default" | "positive" | "warning" | "critical"', default: '"default"', description: "Semantic emphasis for the primary value." },
   { name: "content", type: "MetricCardContent", default: '{ type: "none" }', description: "Optional breakdown or micro chart; charts require at least 24 finite data points." },
+  { name: "separator", type: "boolean", default: "false", description: "Renders a horizontal separator before supporting content." },
   { name: "state", type: '"ready" | "loading" | "unavailable" | "stale" | "error"', default: '"ready"', description: "Controls data availability and loading presentation." },
   { name: "statusMessage", type: "ReactNode", description: "Optional explanation for stale, unavailable, or failed data." },
   { name: "action", type: "ReactNode", description: "Optional action rendered above the whole-card action layer." },
@@ -144,6 +178,54 @@ export default function MetricCardDoc() {
               ],
             }}
           />
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title="Dashboard metrics">
+        <ComponentPreview code={dashboardCode}>
+          <div className="w-full">
+            <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+              <MetricCard
+                className={dashboardCardClass}
+                label="会话数量"
+                value="2,482"
+                separator
+                content={{
+                  type: "breakdown",
+                  items: [
+                    { label: "进行中的", value: 128 },
+                    { label: "较上期", value: "+8.2%" },
+                  ],
+                }}
+              />
+              <MetricCard
+                className={dashboardCardClass}
+                label="任务最终完成率"
+                value="98.10%"
+                separator
+                content={{
+                  type: "breakdown",
+                  items: [
+                    { label: "成功", value: "8,567" },
+                    { label: "失败&取消", value: 114 },
+                  ],
+                }}
+              />
+              <MetricCard
+                className={dashboardCardClass}
+                label="会话累计成本"
+                value="¥1,871.60"
+                separator
+                content={{
+                  type: "breakdown",
+                  items: [
+                    { label: "高成本会话", value: 23 },
+                    { label: "异常会话", value: 37 },
+                  ],
+                }}
+              />
+            </div>
+          </div>
         </ComponentPreview>
       </DocSection>
 

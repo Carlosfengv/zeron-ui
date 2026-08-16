@@ -59,6 +59,8 @@ export interface MetricCardProps
   footer?: ReactNode;
   tone?: MetricTone;
   content?: MetricCardContent;
+  /** Renders a horizontal separator between the primary metric and supporting content. */
+  separator?: boolean;
   state?: MetricCardState;
   /** Optional text displayed for unavailable, stale, or failed data. */
   statusMessage?: ReactNode;
@@ -266,15 +268,17 @@ function MetricCardChart({
 function MetricCardBreakdown({
   layout = "list",
   items,
-}: Extract<MetricCardContent, { type: "breakdown" }>) {
+  className,
+}: Extract<MetricCardContent, { type: "breakdown" }> & { className?: string }) {
   return (
     <div
       role="list"
       data-slot="metric-card-breakdown"
       data-layout={layout}
       className={cn(
-        "mt-2 w-full text-body",
-        layout === "grid" ? "grid grid-cols-2 gap-x-4" : "flex flex-col"
+        "w-full text-body",
+        layout === "grid" ? "grid grid-cols-2 gap-x-4" : "flex flex-col",
+        className
       )}
     >
       {items.map((item, index) => (
@@ -308,6 +312,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
       footer,
       tone = "default",
       content = { type: "none" },
+      separator = false,
       state = "ready",
       statusMessage,
       action,
@@ -325,6 +330,8 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
     const interactive = (interactiveProp ?? Boolean(onClick)) && Boolean(onClick) && !loading;
     const valueClass = unavailable ? "text-fg-subtle" : toneClass(tone);
     const contentSkeletonClass = "h-15";
+    const showSeparator = separator && content.type !== "none" && !unavailable;
+    const supportingContentClassName = showSeparator ? undefined : "mt-2";
 
     return (
       <div
@@ -393,13 +400,21 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
             </div>
           )}
 
-          {loading && content.type !== "none" && (
-            <span aria-hidden data-slot="metric-card-content-skeleton" className={cn("mt-2 animate-pulse rounded-lg bg-muted", contentSkeletonClass)} />
+          {showSeparator && (
+            <div
+              role="separator"
+              data-slot="metric-card-separator"
+              className="relative h-2 w-full before:absolute before:inset-x-0 before:top-1/2 before:border-t-[0.5px] before:border-border"
+            />
           )}
 
-          {showContent && content.type === "breakdown" && <MetricCardBreakdown {...content} />}
+          {loading && content.type !== "none" && (
+            <span aria-hidden data-slot="metric-card-content-skeleton" className={cn(supportingContentClassName, "animate-pulse rounded-lg bg-muted", contentSkeletonClass)} />
+          )}
+
+          {showContent && content.type === "breakdown" && <MetricCardBreakdown {...content} className={supportingContentClassName} />}
           {showContent && content.type === "visualization" && (
-            <div className="mt-2">
+            <div className={supportingContentClassName}>
               <MetricCardChart {...content} interactive={!interactive} />
             </div>
           )}

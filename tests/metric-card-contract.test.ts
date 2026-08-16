@@ -46,6 +46,11 @@ describe("MetricCard contract", () => {
     expect(source).toContain('type: "none"');
     expect(source).toContain('type: "breakdown"');
     expect(source).toContain('type: "visualization"');
+    expect(source).toContain("separator?: boolean");
+    expect(source).toContain("separator = false");
+    expect(source).toContain('data-slot="metric-card-separator"');
+    expect(source).toContain('role="separator"');
+    expect(source).toContain("before:border-t-[0.5px] before:border-border");
     expect(source).toContain("interactive?: boolean");
     expect(source).toContain('role="list"');
     expect(source).toContain('role="img"');
