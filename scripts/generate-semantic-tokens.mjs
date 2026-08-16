@@ -602,7 +602,7 @@ export function updateRegistry(registry) {
 
   const badge = registry.items.find((entry) => entry.name === "badge");
   if (!badge) throw new Error('packages/ui/registry.json is missing the "badge" UI item');
-  badge.description = "Compact label with semantic status variants and a private categorical-color palette.";
+  badge.description = "Compact label with semantic statuses, strong fills, and named or custom categorical colors.";
   const badgeColorsPath = "packages/ui/src/components/badge-colors.ts";
   if (!badge.files.some((file) => file.path === badgeColorsPath)) {
     badge.files.push({

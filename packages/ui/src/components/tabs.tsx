@@ -61,7 +61,11 @@ export type TabLabelVisibility = "all" | "active";
  * A compact Badge configuration for a TabItem. Pass a number or text for the
  * default badge, or use the complete Badge API for color and status badges.
  */
-export type TabBadgeProps = Omit<BadgeProps, "children"> & {
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, K>
+  : never;
+
+export type TabBadgeProps = DistributiveOmit<BadgeProps, "children"> & {
   children: ReactNode;
 };
 

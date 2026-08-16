@@ -647,7 +647,7 @@
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
-      "description": "Compact label with semantic status variants and a private categorical-color palette.",
+      "description": "Compact label with semantic statuses, strong fills, and named or custom categorical colors.",
       "dependencies": [
         "class-variance-authority",
         "tw-animate-css"

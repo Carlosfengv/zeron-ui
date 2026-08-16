@@ -15,6 +15,30 @@ const solidCode = `import { Badge } from "./components";
 <Badge color="blue">History</Badge>
 <Badge color="rose">Poetry</Badge>`;
 
+const strongCode = `import { Badge } from "./components";
+
+<Badge variant="strong" color="violet">Fiction</Badge>
+<Badge variant="strong" color="amber">Science</Badge>
+<Badge variant="strong" color="green">Philosophy</Badge>
+<Badge variant="strong" color="blue">History</Badge>
+<Badge variant="strong" color="rose">Poetry</Badge>`;
+
+const customColorCode = `import { Badge } from "./components";
+
+<Badge
+  variant="strong"
+  color={{ base: "var(--brand)", onStrong: "var(--fg-on-brand)" }}
+>
+  Brand variable
+</Badge>
+
+<Badge
+  variant="strong"
+  color={{ base: "#6D28D9", onStrong: "#FFFFFF" }}
+>
+  Custom color
+</Badge>`;
+
 const dotCode = `import { Badge } from "./components";
 
 <Badge variant="dot" color="violet">Fiction</Badge>
@@ -31,8 +55,15 @@ const sizesCode = `import { Badge } from "./components";
 
 const statusCode = `import { Badge } from "./components";
 
+<Badge status="neutral">Queued</Badge>
+<Badge status="info">In review</Badge>
+<Badge status="success">Ready</Badge>
 <Badge status="warning">Attention needed</Badge>
 <Badge status="danger">Sync failed</Badge>`;
+
+const announcedStatusCode = `<Badge status="warning" role="status">
+  Credentials expire in 3 days
+</Badge>`;
 
 const allColors = Object.keys(badgeColors) as BadgeColor[];
 
@@ -48,10 +79,11 @@ const colorsCode = `import { Badge } from "./components";
 export default function BadgeDoc() {
   const t = useTranslations("badge");
   const badgeProps: PropDef[] = [
-    { name: "variant", type: '"solid" | "dot"', default: '"solid"', description: t("variant") },
+    { name: "variant", type: '"solid" | "strong" | "dot"', default: '"solid"', description: t("variant") },
     { name: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: t("size") },
-    { name: "color", type: "BadgeColor", default: '"gray"', description: t("color") },
-    { name: "status", type: '"danger" | "warning"', description: t("statusDescription") },
+    { name: "color", type: "BadgeColorInput", default: '"gray"', description: t("color") },
+    { name: "status", type: '"danger" | "warning" | "success" | "info" | "neutral"', description: t("statusDescription") },
+    { name: "role", type: '"status" | ...', description: t("roleDescription") },
   ];
   return (
     <DocPage
@@ -67,6 +99,12 @@ export default function BadgeDoc() {
               label: "Solid",
               code: `<Badge color="violet">Fiction</Badge>`,
               preview: <Badge color="violet">Fiction</Badge>,
+            },
+            {
+              value: "strong",
+              label: "Strong",
+              code: `<Badge variant="strong" color="violet">Fiction</Badge>`,
+              preview: <Badge variant="strong" color="violet">Fiction</Badge>,
             },
             {
               value: "dot",
@@ -92,6 +130,37 @@ export default function BadgeDoc() {
             <Badge color="green">Philosophy</Badge>
             <Badge color="blue">History</Badge>
             <Badge color="rose">Poetry</Badge>
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("strong")}>
+        <ComponentPreview code={strongCode}>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="strong" color="violet">Fiction</Badge>
+            <Badge variant="strong" color="amber">Science</Badge>
+            <Badge variant="strong" color="green">Philosophy</Badge>
+            <Badge variant="strong" color="blue">History</Badge>
+            <Badge variant="strong" color="rose">Poetry</Badge>
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("customColors")}>
+        <ComponentPreview code={customColorCode}>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge
+              variant="strong"
+              color={{ base: "var(--brand)", onStrong: "var(--fg-on-brand)" }}
+            >
+              Brand variable
+            </Badge>
+            <Badge
+              variant="strong"
+              color={{ base: "#6D28D9", onStrong: "#FFFFFF" }}
+            >
+              Custom color
+            </Badge>
           </div>
         </ComponentPreview>
       </DocSection>
@@ -135,6 +204,13 @@ export default function BadgeDoc() {
                 </Badge>
               ))}
             </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {allColors.map((c) => (
+                <Badge key={c} variant="strong" color={c}>
+                  {c.charAt(0).toUpperCase() + c.slice(1)}
+                </Badge>
+              ))}
+            </div>
           </div>
         </ComponentPreview>
       </DocSection>
@@ -142,10 +218,26 @@ export default function BadgeDoc() {
       <DocSection title={t("status")}>
         <ComponentPreview code={statusCode}>
           <div className="flex flex-wrap items-center gap-2">
+            <Badge status="neutral">Queued</Badge>
+            <Badge status="info">In review</Badge>
+            <Badge status="success">Ready</Badge>
             <Badge status="warning">Attention needed</Badge>
             <Badge status="danger">Sync failed</Badge>
           </div>
         </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("accessibility")}>
+        <div className="flex flex-col gap-3">
+          <p className="max-w-2xl text-body leading-6 text-fg-muted">
+            {t("accessibilityDescription")}
+          </p>
+          <ComponentPreview code={announcedStatusCode}>
+            <Badge status="warning" role="status">
+              Credentials expire in 3 days
+            </Badge>
+          </ComponentPreview>
+        </div>
       </DocSection>
 
       <DocSection title={t("apiReference")}>

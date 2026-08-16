@@ -8,6 +8,8 @@ import {
   badgeColors,
   badgeStatusTokens,
   type BadgeColor,
+  type BadgeColorInput,
+  type BadgeCustomColor,
   type BadgeStatus,
 } from "./badge-colors";
 
@@ -18,6 +20,7 @@ const badgeVariants = cva(
     variants: {
       variant: {
         solid: "",
+        strong: "",
         dot: "border border-border text-fg-default",
       },
       size: {
@@ -33,13 +36,24 @@ const badgeVariants = cva(
   }
 );
 
-interface BadgeProps
-  extends Omit<HTMLAttributes<HTMLSpanElement>, "color">,
-    VariantProps<typeof badgeVariants> {
-  color?: BadgeColor;
-  /** Product status, intentionally distinct from categorical `color`. */
-  status?: BadgeStatus;
-}
+type BadgeBaseProps = Omit<HTMLAttributes<HTMLSpanElement>, "color"> &
+  Omit<VariantProps<typeof badgeVariants>, "variant">;
+
+type BadgeProps = BadgeBaseProps &
+  (
+    | {
+        variant?: "solid" | "dot";
+        color?: BadgeColorInput;
+        /** Product status, intentionally distinct from categorical `color`. */
+        status?: BadgeStatus;
+      }
+    | {
+        variant: "strong";
+        color?: BadgeColorInput;
+        /** Strong status badges need dedicated on-fill semantic tokens first. */
+        status?: never;
+      }
+  );
 
 const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   (
@@ -55,24 +69,27 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
     },
     ref
   ) => {
-    const isSolid = variant === "solid";
+    const showsDot = variant === "dot";
     const statusColors = status ? badgeStatusTokens[status] : null;
     const categoricalTokens = badgeCategoricalTokens(color);
     const dotSize = size === "sm" ? 6 : size === "lg" ? 8 : 7;
 
-    const colorStyle = isSolid
-      ? statusColors
+    const categoricalStyle = variant === "strong"
+      ? categoricalTokens.strong
+      : categoricalTokens.soft;
+    const colorStyle = showsDot
+      ? {}
+      : statusColors
         ? {
             color: statusColors.foreground,
             backgroundColor: statusColors.background,
             borderColor: statusColors.border,
           }
         : {
-            color: categoricalTokens.foreground,
-            backgroundColor: categoricalTokens.background,
-            borderColor: categoricalTokens.border,
-          }
-      : {};
+            color: categoricalStyle.foreground,
+            backgroundColor: categoricalStyle.background,
+            borderColor: categoricalStyle.border,
+          };
 
     const dotColor = statusColors
       ? statusColors.icon
@@ -83,16 +100,15 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
         ref={ref}
         className={cn(
           badgeVariants({ variant, size }),
-          statusColors && isSolid && "border",
+          statusColors && !showsDot && "border",
           "rounded-lg",
           className
         )}
         style={{ ...colorStyle, ...style }}
         data-status={status}
-        role={status ? "status" : undefined}
         {...props}
       >
-        {!isSolid && (
+        {showsDot && (
           <span
             className="shrink-0 rounded-full"
             style={{
@@ -111,4 +127,10 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
 Badge.displayName = "Badge";
 
 export { Badge, badgeVariants, badgeColors };
-export type { BadgeProps, BadgeColor, BadgeStatus };
+export type {
+  BadgeProps,
+  BadgeColor,
+  BadgeColorInput,
+  BadgeCustomColor,
+  BadgeStatus,
+};
