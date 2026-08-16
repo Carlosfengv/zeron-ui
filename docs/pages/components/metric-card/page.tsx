@@ -61,19 +61,10 @@ const barCode = `<MetricCard
   }}
 />`;
 
-const dashboardCardClass = [
-  "w-full self-stretch rounded-lg border-[0.5px] border-border bg-surface-floating px-3 py-2",
-  "[&_[data-slot=metric-card-label]]:text-label [&_[data-slot=metric-card-label]]:leading-5 [&_[data-slot=metric-card-label]]:!text-fg-default/40",
-  "[&_[data-slot=metric-card-value-row]>span:first-child]:text-base [&_[data-slot=metric-card-value-row]>span:first-child]:leading-6 [&_[data-slot=metric-card-value-row]>span:first-child]:!text-fg-default/80",
-  "[&_[data-slot=metric-card-breakdown]_span:first-child]:!text-fg-default/40 [&_[data-slot=metric-card-breakdown]_span:last-child]:!text-fg-default/80",
-].join(" ");
+const dashboardCardClass = "w-full self-stretch rounded-lg border-[0.5px] border-border bg-surface-floating px-3 py-2";
 
-const dashboardCode = `const dashboardCardClass = [
-  "w-full self-stretch rounded-lg border-[0.5px] border-border bg-surface-floating px-3 py-2",
-  "[&_[data-slot=metric-card-label]]:text-label [&_[data-slot=metric-card-label]]:leading-5 [&_[data-slot=metric-card-label]]:!text-fg-default/40",
-  "[&_[data-slot=metric-card-value-row]>span:first-child]:text-base [&_[data-slot=metric-card-value-row]>span:first-child]:leading-6 [&_[data-slot=metric-card-value-row]>span:first-child]:!text-fg-default/80",
-  "[&_[data-slot=metric-card-breakdown]_span:first-child]:!text-fg-default/40 [&_[data-slot=metric-card-breakdown]_span:last-child]:!text-fg-default/80",
-].join(" ");
+const dashboardCode = `const dashboardCardClass =
+  "w-full self-stretch rounded-lg border-[0.5px] border-border bg-surface-floating px-3 py-2";
 
 <div className="w-full">
   <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">

@@ -38,10 +38,14 @@
           "color-destructive-hover": "var(--destructive-hover)",
           "color-destructive-active": "var(--destructive-active)",
           "color-danger-surface": "var(--danger-surface)",
+          "color-danger-surface-raised": "var(--danger-surface-raised)",
           "color-warning-surface": "var(--warning-surface)",
+          "color-warning-surface-raised": "var(--warning-surface-raised)",
           "color-success-surface": "var(--success-surface)",
           "color-info-surface": "var(--info-surface)",
+          "color-info-surface-raised": "var(--info-surface-raised)",
           "color-neutral-status-surface": "var(--neutral-status-surface)",
+          "color-neutral-status-surface-raised": "var(--neutral-status-surface-raised)",
           "color-scrim": "var(--scrim)",
           "color-inverse-background": "var(--inverse-background)",
           "color-inverse-background-hover": "var(--inverse-background-hover)",
@@ -123,11 +127,15 @@
           "destructive": "#F73920",
           "destructive-hover": "#F9654B",
           "destructive-active": "#FA8F78",
-          "danger-surface": "#FEF2ED",
-          "warning-surface": "#FFF8EA",
+          "danger-surface": "#FEE2E2",
+          "danger-surface-raised": "#FECACA",
+          "warning-surface": "#FEF3C7",
+          "warning-surface-raised": "#FDE68A",
           "success-surface": "#EAF8EF",
-          "info-surface": "#EAF5FE",
-          "neutral-status-surface": "#F9F9F9",
+          "info-surface": "#DBEAFE",
+          "info-surface-raised": "#BFDBFE",
+          "neutral-status-surface": "#F5F5F5",
+          "neutral-status-surface-raised": "#E5E5E5",
           "scrim": "rgb(0 0 0 / 0.4)",
           "inverse-background": "#00030A",
           "inverse-background-hover": "#001033",
@@ -136,7 +144,7 @@
           "border-subtle": "rgb(52 57 71 / 0.07)",
           "input": "#E5E5E5",
           "input-hover": "rgb(23 23 23 / 0.24)",
-          "danger-border": "#F73920",
+          "danger-border": "#B91C1C",
           "warning-border": "#D06700",
           "success-border": "#23864B",
           "info-border": "#0060D2",
@@ -228,11 +236,15 @@
           "destructive": "#FC4932",
           "destructive-hover": "#FD725B",
           "destructive-active": "#FD9983",
-          "danger-surface": "#6D090B",
-          "warning-surface": "#531D00",
+          "danger-surface": "#991B1B",
+          "danger-surface-raised": "#B91C1C",
+          "warning-surface": "#92400E",
+          "warning-surface-raised": "#B45309",
           "success-surface": "#123B25",
-          "info-surface": "#002D6E",
-          "neutral-status-surface": "#31353B",
+          "info-surface": "#1E40AF",
+          "info-surface-raised": "#1D4ED8",
+          "neutral-status-surface": "#262626",
+          "neutral-status-surface-raised": "#404040",
           "scrim": "rgb(0 0 0 / 0.8)",
           "inverse-background": "#DEE5EF",
           "inverse-background-hover": "#B6C6DF",
@@ -605,6 +617,27 @@
       ]
     },
     {
+      "name": "inline-notice",
+      "type": "registry:ui",
+      "title": "Inline Notice",
+      "description": "Quiet inline emphasis container that composes with Badge by default, with an optional semantic emphasized variant and opt-in live-region semantics.",
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/badge.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/inline-notice.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/inline-notice.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "ask-user-questions",
       "type": "registry:ui",
       "title": "Ask User Questions",
@@ -635,7 +668,7 @@
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
-      "description": "Compact label with semantic status variants and a private categorical-color palette.",
+      "description": "Compact label with semantic statuses, strong fills, and named or custom categorical colors.",
       "dependencies": [
         "class-variance-authority",
         "tw-animate-css"
@@ -2002,6 +2035,81 @@
           "path": "packages/ui/src/components/top-nav.tsx",
           "type": "registry:ui",
           "target": "components/ui/top-nav.tsx"
+        }
+      ]
+    },
+    {
+      "name": "cluster-environment-list-01",
+      "type": "registry:block",
+      "title": "集群环境列表",
+      "description": "A filterable cluster-environment overview with health and data-freshness states.",
+      "categories": [
+        "application",
+        "operations"
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/cluster-environment-list-01/cluster-environment-list.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/cluster-environment-list-01/cluster-environment-list.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/cluster-environment-list-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cluster-environment-list-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "personal-settings-01",
+      "type": "registry:block",
+      "title": "个人设置",
+      "description": "A personal settings workspace for model services, API keys, credentials, profile details, and usage.",
+      "categories": [
+        "application",
+        "settings"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/app-shell.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/field.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/input-group.json",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/table.json",
+        "https://zeron-ui.vercel.app/r/top-nav.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/personal-settings-01/personal-settings.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/personal-settings-01/personal-settings.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/personal-settings-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/personal-settings-01/index.ts"
         }
       ]
     },
