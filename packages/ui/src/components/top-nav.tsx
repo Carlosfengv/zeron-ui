@@ -23,7 +23,7 @@ import {
   type PopoverProps,
 } from "#components/popover";
 
-const topNavVariants = cva("grid min-h-control-lg min-w-0 items-center gap-3 px-3", {
+const topNavVariants = cva("grid min-h-12 min-w-0 items-center gap-3 px-3", {
   variants: {
     variant: {
       default: "",
@@ -81,7 +81,16 @@ const TopNavBrand = forwardRef<HTMLDivElement, TopNavBrandProps>(({ className, .
 TopNavBrand.displayName = "TopNavBrand";
 
 const TopNavNavigation = forwardRef<HTMLDivElement, TopNavNavigationProps>(({ className, ...props }, ref) => (
-  <div ref={ref} data-slot="top-nav-navigation" className={cn("flex min-w-0 self-stretch items-center", className)} {...props} />
+  <div
+    ref={ref}
+    data-slot="top-nav-navigation"
+    className={cn(
+      "flex min-w-0 self-stretch items-center",
+      "[&>[data-slot=nav-menu]>[data-slot=nav-list]>[data-slot=nav-item]>[data-slot=nav-item-trigger]]:h-12",
+      className
+    )}
+    {...props}
+  />
 ));
 TopNavNavigation.displayName = "TopNavNavigation";
 

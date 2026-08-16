@@ -176,7 +176,7 @@ describe("shell and page-layout composition contract", () => {
     expect(docs).not.toContain('className="w-full p-4 sm:p-5 group-data-[fullscreen=true]/preview-content:h-full"');
     expect(docs).toContain('padding="none"');
     expect(docs).toContain("<PlaygroundLayout");
-    expect(docs).toContain('<PlaygroundPanel\n      title="TopNav"');
+    expect(docs).toContain('<PlaygroundPanel\n      onShuffle={() => {');
     expect(docs).toContain('<PlayField label="Navigation alignment">');
     expect(docs).toContain("<PlaySelect");
     expect(docs).not.toContain('role="group" aria-label="Navigation alignment"');
@@ -184,7 +184,7 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("aligns TopNav navigation left, center, or right with center as the default", () => {
-    expect(topNav).toContain('cva("grid min-h-control-lg min-w-0 items-center gap-3 px-3"');
+    expect(topNav).toContain('cva("grid min-h-12 min-w-0 items-center gap-3 px-3"');
     expect(topNav).toContain('data-slot="top-nav-brand" className={cn("flex shrink-0 items-center gap-2 px-3"');
     expect(topNav).toContain('data-slot="top-nav-actions" className={cn("ml-auto flex shrink-0 items-center gap-1 px-3"');
     expect(topNav).toContain('export type TopNavNavigationAlign = "left" | "center" | "right";');
@@ -195,6 +195,9 @@ describe("shell and page-layout composition contract", () => {
     expect(topNav).toContain('data-navigation-align={navigationAlign ?? "center"}');
     expect(topNav).toContain('topNavVariants({ variant, navigationAlign })');
     expect(topNav).toContain('export type TopNavNavigationProps = ComponentPropsWithoutRef<"div">;');
+    expect(topNav).toContain(
+      '"[&>[data-slot=nav-menu]>[data-slot=nav-list]>[data-slot=nav-item]>[data-slot=nav-item-trigger]]:h-12"'
+    );
     expect(topNav).not.toContain("data-align={align}");
 
     const docs = source("docs/pages/components/top-nav/page.tsx");
