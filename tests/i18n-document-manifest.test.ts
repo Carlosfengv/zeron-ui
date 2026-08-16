@@ -14,9 +14,9 @@ const ROOT = new URL("..", import.meta.url).pathname;
 describe("documentation manifest", () => {
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "icons"]);
-    expect(pageDocEntries).toHaveLength(63);
-    expect(detailDocEntries).toHaveLength(63);
-    expect(legacyDocRedirects).toHaveLength(50);
+    expect(pageDocEntries).toHaveLength(64);
+    expect(detailDocEntries).toHaveLength(64);
+    expect(legacyDocRedirects).toHaveLength(51);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });
 

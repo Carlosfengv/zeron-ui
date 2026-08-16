@@ -43,6 +43,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/dropdown": () => import("@docs/pages/components/dropdown/page"),
   "components/field": () => import("@docs/pages/components/field/page"),
   "components/info-item": () => import("@docs/pages/components/info-item/page"),
+  "components/inline-notice": () => import("@docs/pages/components/inline-notice/page"),
   "components/input": () => import("@docs/pages/components/input/page"),
   "components/input-copy": () => import("@docs/pages/components/input-copy/page"),
   "components/input-group": () => import("@docs/pages/components/input-group/page"),

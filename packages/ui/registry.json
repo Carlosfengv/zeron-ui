@@ -617,6 +617,27 @@
       ]
     },
     {
+      "name": "inline-notice",
+      "type": "registry:ui",
+      "title": "Inline Notice",
+      "description": "Quiet inline emphasis container that composes with Badge by default, with an optional semantic emphasized variant and opt-in live-region semantics.",
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "badge"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/inline-notice.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/inline-notice.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "ask-user-questions",
       "type": "registry:ui",
       "title": "Ask User Questions",
