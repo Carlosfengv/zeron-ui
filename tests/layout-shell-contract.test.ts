@@ -249,7 +249,7 @@ describe("shell and page-layout composition contract", () => {
     expect(docs).toContain(">Zentrix</strong>");
     expect(docs).toContain(">能力中心</span>");
     expect(docs).toContain('label: "首页"');
-    expect(docs).toContain('label: "模型服务"');
+    expect(docs).toContain('label: "模型广场"');
     expect(docs).toContain('label: "MCP 广场"');
     expect(docs).toContain('<Button type="button" size="md" variant="neutral" className="px-2">登录</Button>');
     expect(docs).toContain('<ComponentPreview code={code} padding="none">');

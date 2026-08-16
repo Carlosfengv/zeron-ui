@@ -28,8 +28,34 @@ describe("Resource Catalog gallery preview", () => {
     );
     expect(resourceCatalog).toContain('window.matchMedia("(min-width: 1536px)")');
     expect(resourceCatalog).toContain('return 4;');
+    expect(resourceCatalog).toContain('label: "模型广场"');
     expect(resourceCatalog).toContain(
       'style={{ gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))" }}'
+    );
+  });
+
+  it("uses one mutually exclusive sort selection for newest and most used", () => {
+    expect(resourceCatalog).toContain(
+      'const [sort, setSort] = useState<SortOrder>("newest");'
+    );
+    expect(resourceCatalog).toContain('activeValue={sort}');
+    expect(resourceCatalog).toContain('setSort("newest")');
+    expect(resourceCatalog).toContain('setSort("most-used")');
+    expect(resourceCatalog).toContain(".toSorted(");
+    expect(resourceCatalog).not.toContain(".filter((item) => sort");
+  });
+
+  it("filters model results by every provider represented in the current data", () => {
+    expect(resourceCatalog).toContain('const [provider, setProvider] = useState("all");');
+    expect(resourceCatalog).toContain(
+      'sourceItems.filter((item) => item.kind === "model").map((item) => item.provider)'
+    );
+    expect(resourceCatalog).toContain('aria-label="模型厂商筛选"');
+    expect(resourceCatalog).toContain('kind === "model" && (');
+    expect(resourceCatalog).toContain("const modelProviderIcons = {");
+    expect(resourceCatalog).toContain('<ModelProviderMark provider={value} size={16} />');
+    expect(resourceCatalog).toContain(
+      '.filter((item) => provider === "all" || item.provider === provider)'
     );
   });
 });

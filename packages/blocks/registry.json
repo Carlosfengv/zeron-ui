@@ -5,8 +5,8 @@
     {
       "name": "resource-catalog-01",
       "type": "registry:block",
-      "title": "Resource Catalog 1",
-      "description": "A filterable model-service and MCP marketplace with page-local navigation, search, and responsive resource cards.",
+      "title": "模型和 MCP 广场",
+      "description": "A filterable model and MCP marketplace with page-local navigation, search, and responsive resource cards.",
       "categories": ["application", "catalog"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
       "registryDependencies": ["app-shell", "badge", "button", "card", "icon-context", "input", "kbd", "nav-item", "nav-menu", "page-layout", "top-nav", "utils"],

@@ -37,7 +37,7 @@ import { Button } from "@zeron/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardGroup, CardHeader, CardTitle } from "@zeron/ui/card";
 import { Input } from "@zeron/ui/input";
 import { Kbd, KbdGroup } from "@zeron/ui/kbd";
-import { NavItem, NavItemContent, NavItemLabel, NavItemTrigger } from "@zeron/ui/nav-item";
+import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@zeron/ui/nav-item";
 import { NavMenu } from "@zeron/ui/nav-menu";
 import { PageBody, PageContent, PageLayout, PageSidebar } from "@zeron/ui/page-layout";
 import { TopNav, TopNavActions, TopNavBrand, TopNavNavigation } from "@zeron/ui/top-nav";
@@ -46,7 +46,7 @@ import { cn } from "@zeron/ui/system/utils";
 import { catalogLabels, categoryLabels, mcpCatalogItems, modelCatalogItems, type McpBrandIcon, type ResourceCatalogItem, type ResourceCatalogKind } from "./catalog-data";
 
 export interface ResourceCatalogProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
-  /** Switches between the model-service and MCP-marketplace data presentations. */
+  /** Switches between the model and MCP marketplace data presentations. */
   kind?: ResourceCatalogKind;
   /** Replaces the built-in demonstration data for the selected kind. */
   items?: readonly ResourceCatalogItem[];
@@ -80,6 +80,18 @@ const mcpBrandIcons = {
   wechat,
 } satisfies Record<McpBrandIcon, { svg: string }>;
 
+const modelProviderIcons = {
+  "Z.ai": ChatGLMColor,
+  "Moonshot AI": MoonshotMono,
+  DeepSeek: DeepSeekColor,
+  "Alibaba Cloud": QwenColor,
+  OpenAI: OpenAIMono,
+  Anthropic: AnthropicMono,
+  Google: GeminiColor,
+  "Black Forest Labs": FluxMono,
+  BAAI: BAAIMono,
+} as const;
+
 function subscribeToViewport(onStoreChange: () => void) {
   const mediaQueries = [
     window.matchMedia("(min-width: 768px)"),
@@ -101,7 +113,7 @@ function useCatalogColumns() {
   return useSyncExternalStore(subscribeToViewport, readCatalogColumns, () => 1);
 }
 
-function CatalogIcon({ icon }: { icon: IconName }) {
+function CatalogIcon({ icon, size = 20 }: { icon: IconName; size?: number }) {
   const SearchIcon = useIcon("search");
   const SpreadsheetIcon = useIcon("file-spreadsheet");
   const GlobeIcon = useIcon("globe");
@@ -127,38 +139,23 @@ function CatalogIcon({ icon }: { icon: IconName }) {
     palette: PaletteIcon,
   };
   const Icon = icons[icon] ?? GlobeIcon;
-  return <Icon aria-hidden size={20} strokeWidth={1.5} className="text-fg-muted" />;
+  return <Icon aria-hidden size={size} strokeWidth={1.5} className="text-fg-muted" />;
 }
 
 function McpBrandMark({ icon }: { icon: McpBrandIcon }) {
   return <span aria-hidden className="[&>svg]:block [&>svg]:size-5" dangerouslySetInnerHTML={{ __html: mcpBrandIcons[icon].svg }} />;
 }
 
-function ResourceMark({ item }: { item: ResourceCatalogItem }) {
-  const ProviderIcon = item.modelId?.includes("glm")
-    ? ChatGLMColor
-    : item.modelId?.includes("kimi")
-      ? MoonshotMono
-      : item.modelId?.includes("deepseek")
-        ? DeepSeekColor
-        : item.modelId?.includes("qwen") || item.modelId?.includes("wan")
-          ? QwenColor
-          : item.modelId?.includes("gpt") || item.modelId?.includes("embedding")
-            ? OpenAIMono
-            : item.modelId?.includes("claude")
-              ? AnthropicMono
-              : item.modelId?.includes("gemini")
-                ? GeminiColor
-                : item.modelId?.includes("flux")
-                  ? FluxMono
-                  : item.modelId?.includes("bge")
-                    ? BAAIMono
-                    : ChatGLMColor;
+function ModelProviderMark({ provider, size = 24 }: { provider: string; size?: number }) {
+  const ProviderIcon = modelProviderIcons[provider as keyof typeof modelProviderIcons];
+  return ProviderIcon ? <ProviderIcon size={size} /> : <CatalogIcon icon="globe" size={size} />;
+}
 
+function ResourceMark({ item }: { item: ResourceCatalogItem }) {
   return (
     <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-hover">
       {item.kind === "model" && item.modelId ? (
-        <ProviderIcon size={24} />
+        <ModelProviderMark provider={item.provider} />
       ) : item.brandIcon ? (
         <McpBrandMark icon={item.brandIcon} />
       ) : (
@@ -205,7 +202,7 @@ function ResourceCard({ item, selected, onSelect }: { item: ResourceCatalogItem;
   );
 }
 
-/** A filterable resource directory that renders model-service and MCP-marketplace views. */
+/** A filterable resource directory that renders model and MCP marketplace views. */
 export function ResourceCatalog({ kind = "model", items, onKindChange, className, ...props }: ResourceCatalogProps) {
   const defaultItems = kind === "model" ? modelCatalogItems : mcpCatalogItems;
   const sourceItems = items ?? defaultItems;
@@ -215,11 +212,13 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, className
   const ResetIcon = useIcon("rotate-ccw");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
+  const [provider, setProvider] = useState("all");
   const [sort, setSort] = useState<SortOrder>("newest");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     setCategory("all");
+    setProvider("all");
     setSelectedId(null);
   }, [kind]);
 
@@ -231,27 +230,43 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, className
     () => new Map(categories.map((value) => [value, sourceItems.filter((item) => item.category === value).length])),
     [categories, sourceItems]
   );
+  const modelProviders = useMemo(
+    () => kind === "model"
+      ? [...new Set(sourceItems.filter((item) => item.kind === "model").map((item) => item.provider))].toSorted((left, right) => left.localeCompare(right))
+      : [],
+    [kind, sourceItems]
+  );
+  const providerCounts = useMemo(
+    () => new Map(modelProviders.map((value) => [value, sourceItems.filter((item) => item.provider === value).length])),
+    [modelProviders, sourceItems]
+  );
   const activeFilterLabel = useMemo(() => {
     const normalizedQuery = query.trim();
     if (normalizedQuery) return `搜索：${normalizedQuery}`;
 
     const sortLabel = sort === "newest" ? labels.newest : labels.mostUsed;
-    if (category === "all") return sortLabel;
-    return `${categoryLabels[category] ?? category} · ${sortLabel}`;
-  }, [category, labels.mostUsed, labels.newest, query, sort]);
+    const filters = [
+      category === "all" ? null : categoryLabels[category] ?? category,
+      provider === "all" ? null : provider,
+      sortLabel,
+    ].filter(Boolean);
+    return filters.join(" · ");
+  }, [category, labels.mostUsed, labels.newest, provider, query, sort]);
   const visibleItems = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase();
     return sourceItems
       .filter((item) => category === "all" || item.category === category)
+      .filter((item) => provider === "all" || item.provider === provider)
       .filter((item) => !normalizedQuery || `${item.name} ${item.description} ${item.provider}`.toLocaleLowerCase().includes(normalizedQuery))
       .toSorted((left, right) => sort === "newest"
         ? right.createdAt.localeCompare(left.createdAt)
         : right.usageCount - left.usageCount);
-  }, [category, query, sort, sourceItems]);
+  }, [category, provider, query, sort, sourceItems]);
 
   const clearFilters = () => {
     setQuery("");
     setCategory("all");
+    setProvider("all");
     setSort("newest");
   };
 
@@ -265,7 +280,7 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, className
           </TopNavBrand>
           <TopNavNavigation className="overflow-hidden">
             <NavMenu as="div" orientation="horizontal" variant="underline" activeValue={`#${kind}`} keyboardNavigation="roving" aria-label="Capability navigation" className="w-full">
-              {[{ value: "#home", label: "首页" }, { value: "#model", label: "模型服务" }, { value: "#mcp", label: "MCP 广场" }].map((item) => (
+              {[{ value: "#home", label: "首页" }, { value: "#model", label: "模型广场" }, { value: "#mcp", label: "MCP 广场" }].map((item) => (
                 <NavItem key={item.value} value={item.value} className="shrink-0">
                   <NavItemTrigger
                     href={item.value}
@@ -302,7 +317,7 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, className
             </label>
 
             <section className="mt-5">
-              <p className="px-2 text-label text-fg-subtle">热门推荐 🔥</p>
+              <p className="px-2 text-label text-fg-subtle">排序</p>
               <NavMenu as="div" activeValue={sort} keyboardNavigation="roving" aria-label="排序方式" className="mt-1">
                 <NavItem value="newest"><NavItemTrigger href="#newest" onClick={(event) => { event.preventDefault(); setSort("newest"); }}>{labels.newest}</NavItemTrigger></NavItem>
                 <NavItem value="most-used"><NavItemTrigger href="#most-used" onClick={(event) => { event.preventDefault(); setSort("most-used"); }}>{labels.mostUsed}</NavItemTrigger></NavItem>
@@ -323,6 +338,23 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, className
                 ))}
               </NavMenu>
             </section>
+
+            {kind === "model" && (
+              <section className="mt-5">
+                <p className="px-2 text-label text-fg-subtle">模型厂商</p>
+                <NavMenu as="div" activeValue={provider} keyboardNavigation="roving" aria-label="模型厂商筛选" className="mt-1">
+                  <NavItem value="all"><NavItemTrigger href="#all-providers" onClick={(event) => { event.preventDefault(); setProvider("all"); }}><NavItemContent><NavItemLabel>{labels.all}</NavItemLabel></NavItemContent><span className="ml-auto px-3 text-label text-fg-muted">{sourceItems.length}</span></NavItemTrigger></NavItem>
+                  {modelProviders.map((value) => (
+                    <NavItem key={value} value={value}>
+                      <NavItemTrigger href={`#provider-${value}`} onClick={(event) => { event.preventDefault(); setProvider(value); }}>
+                        <NavItemContent><NavItemLeading><ModelProviderMark provider={value} size={16} /></NavItemLeading><NavItemLabel>{value}</NavItemLabel></NavItemContent>
+                        <span className="ml-auto px-3 text-label text-fg-muted">{providerCounts.get(value)}</span>
+                      </NavItemTrigger>
+                    </NavItem>
+                  ))}
+                </NavMenu>
+              </section>
+            )}
           </PageSidebar>
 
           <PageContent>

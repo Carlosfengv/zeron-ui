@@ -97,10 +97,10 @@ const demoSections = {
     description: "集中发现模型与工具能力，并快速接入现有业务场景。",
   },
   models: {
-    label: "模型服务",
-    eyebrow: "模型服务",
+    label: "模型广场",
+    eyebrow: "模型广场",
     title: "统一管理模型能力",
-    description: "在一个入口中查看、选择并配置适合不同任务的模型服务。",
+    description: "在一个入口中查看、选择并配置适合不同任务的模型。",
   },
   mcp: {
     label: "MCP 广场",

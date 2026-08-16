@@ -115,7 +115,7 @@ export const mcpCatalogItems = [
 ] as const satisfies readonly ResourceCatalogItem[];
 
 export const catalogLabels = {
-  model: { title: "模型服务", search: "搜索模型", all: "全部", newest: "最新上架", mostUsed: "最多使用", empty: "没有找到匹配的模型" },
+  model: { title: "模型广场", search: "搜索模型", all: "全部", newest: "最新上架", mostUsed: "最多使用", empty: "没有找到匹配的模型" },
   mcp: { title: "MCP 广场", search: "搜索 MCP", all: "全部", newest: "最新上架", mostUsed: "最多使用", empty: "没有找到匹配的 MCP 服务" },
 } as const;
 
