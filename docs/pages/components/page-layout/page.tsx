@@ -8,6 +8,7 @@ import {
   PageHeader,
   PageHeaderContent,
   PageLayout,
+  PageSidebar,
   PageSubnav,
   PageSubnavItem,
   PageSubnavList,
@@ -37,6 +38,15 @@ const compositionCode = `<PageLayout gutter="none" className="h-[32rem]">
 </PageLayout>`;
 
 const bodyOnlyCode = `<PageLayout gutter="none" className="h-[32rem]">
+  <PageContent>
+    <PageBody>...</PageBody>
+  </PageContent>
+</PageLayout>`;
+
+const sidebarCode = `<PageLayout className="h-[32rem]">
+  <PageSidebar width="200px" aria-label="Catalog filters">
+    <nav>...</nav>
+  </PageSidebar>
   <PageContent>
     <PageBody>...</PageBody>
   </PageContent>
@@ -95,6 +105,42 @@ function PageSubnavPreview() {
   );
 }
 
+function PageSidebarPreview() {
+  const SearchIcon = useIcon("search");
+  const DatabaseIcon = useIcon("file-spreadsheet");
+  const CodeIcon = useIcon("file-text");
+
+  return (
+    <PageLayout className="h-[28rem]">
+      <PageSidebar aria-label="Catalog filters" className="p-3">
+        <div className="flex h-control-md items-center gap-2 rounded-lg bg-hover px-2 text-label text-fg-muted">
+          <SearchIcon aria-hidden size={14} />
+          <span>Search resources</span>
+        </div>
+        <nav aria-label="Resource categories" className="mt-4 space-y-1">
+          <p className="px-2 text-label text-fg-subtle">Categories</p>
+          <a href="#all" className="flex h-control-md items-center justify-between rounded-lg bg-active px-2 text-body text-fg-default">
+            All resources <span className="text-label text-fg-muted">24</span>
+          </a>
+          <a href="#models" className="flex h-control-md items-center gap-2 rounded-lg px-2 text-body text-fg-muted hover:bg-hover hover:text-fg-default">
+            <CodeIcon aria-hidden size={14} /> Models
+          </a>
+          <a href="#mcp" className="flex h-control-md items-center gap-2 rounded-lg px-2 text-body text-fg-muted hover:bg-hover hover:text-fg-default">
+            <DatabaseIcon aria-hidden size={14} /> MCP servers
+          </a>
+        </nav>
+      </PageSidebar>
+      <PageContent>
+        <PageBody className="p-4">
+          <p className="text-label text-fg-muted">Catalog results</p>
+          <h2 className="mt-1 text-title text-fg-default">A shared content surface</h2>
+          <p className="mt-2 max-w-md text-body text-fg-muted">The sidebar owns local filters while the main area remains the page's flexible scroll region.</p>
+        </PageBody>
+      </PageContent>
+    </PageLayout>
+  );
+}
+
 const props: PropDef[] = [
   {
     name: "size",
@@ -114,6 +160,12 @@ const props: PropDef[] = [
     description: "Optional breadcrumb context above the page's unified content container.",
   },
   {
+    name: "PageSidebar",
+    type: 'aside props & { width?: CSSProperties["width"] }',
+    default: 'width: "200px"',
+    description: "A direct PageLayout child for page-local navigation or filters. It forms one shared surface with PageContent and stacks above it below lg.",
+  },
+  {
     name: "PageHeaderContent",
     type: "div props & { icon?: IconComponent }",
     description: "Header content with an optional 20px leading icon and gap-2 spacing.",
@@ -126,7 +178,7 @@ const props: PropDef[] = [
   {
     name: "PageBody",
     type: "div props",
-    description: "The flexible vertical scroll region. It directly receives page children and does not prescribe their layout.",
+    description: "The flexible vertical scroll region. It centers direct page content and constrains its width to 1280px.",
   },
   {
     name: "PageSubnav",
@@ -170,6 +222,12 @@ export default function PageLayoutDoc() {
               code: bodyOnlyCode,
               preview: <PageLayout gutter="none" className="h-[18rem] bg-surface-raised"><PageContent><PageBody className="rounded-lg bg-muted p-4">A page can omit its separate title area.</PageBody></PageContent></PageLayout>,
             },
+            {
+              value: "sidebar",
+              label: "With sidebar",
+              code: sidebarCode,
+              preview: <PageSidebarPreview />,
+            },
           ]}
         />
       </DocSection>
@@ -193,6 +251,11 @@ export default function PageLayoutDoc() {
               <PageBody className="rounded-lg bg-muted p-4">A page can omit its separate title area.</PageBody>
             </PageContent>
           </PageLayout>
+        </ComponentPreview>
+      </DocSection>
+      <DocSection title="Sidebar content layout">
+        <ComponentPreview code={sidebarCode} padding="compact">
+          <PageSidebarPreview />
         </ComponentPreview>
       </DocSection>
       <DocSection title="API Reference"><PropsTable props={props} /></DocSection>

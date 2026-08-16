@@ -98,8 +98,10 @@ describe("shell and page-layout composition contract", () => {
     expect(zaiopsDoc).not.toContain('className="h-full min-h-0"');
   });
 
-  it("keeps PageBody as a transparent content boundary", () => {
-    expect(pageLayout).toContain('cn("min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain", className)');
+  it("keeps PageBody as a centered scroll boundary", () => {
+    expect(pageLayout).toContain(
+      'cn("mx-auto min-h-0 w-full max-w-[1280px] min-w-0 flex-1 overflow-y-auto overscroll-contain", className)'
+    );
     expect(pageLayout).not.toContain("PageAside");
     expect(pageLayout).not.toContain("data-slot=\"page-aside\"");
   });
@@ -107,7 +109,10 @@ describe("shell and page-layout composition contract", () => {
   it("stacks page navigation and content beneath the breadcrumb header", () => {
     expect(pageLayout).toContain('data-slot="page-content"');
     expect(pageLayout).toContain('flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden');
-    expect(pageLayout).toContain('cva("mx-auto flex h-full w-full min-h-0 min-w-0 flex-col"');
+    expect(pageLayout).toContain('const pageLayoutVariants = cva(');
+    expect(pageLayout).toContain('"mx-auto flex h-full w-full min-h-0 min-w-0 flex-col"');
+    expect(pageLayout).toContain('"[&:has(>_[data-slot=page-sidebar])]:grid-cols-[auto_minmax(0,1fr)]"');
+    expect(pageLayout).toContain('export interface PageSidebarProps');
   });
 
   it("lets PageHeaderContent add a consistent leading icon without changing its children", () => {
@@ -117,7 +122,7 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("makes PageBody the scroll boundary below fixed page chrome", () => {
-    expect(pageLayout).toContain('"min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain"');
+    expect(pageLayout).toContain('"mx-auto min-h-0 w-full max-w-[1280px] min-w-0 flex-1 overflow-y-auto overscroll-contain"');
     expect(pageLayout).toContain('"min-w-0 shrink-0 border-b border-border p-3"');
   });
 
@@ -262,6 +267,6 @@ describe("shell and page-layout composition contract", () => {
     expect(docs).toContain('const collapseModes: SidebarCollapsible[] = ["icon", "offcanvas", "none"]');
     expect(docs).toContain("function SidebarCollapsePlayground()");
     expect(docs).toContain("<SidebarFloatingTrigger");
-    expect(docs).toContain('<DocSection title="Collapse playground">');
+    expect(docs).toContain('<DocSection title="Playground">');
   });
 });

@@ -5,6 +5,7 @@ import {
   forwardRef,
   useContext,
   type ComponentPropsWithoutRef,
+  type CSSProperties,
   type ReactNode,
 } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -18,7 +19,20 @@ export type PageLayoutSize = "sm" | "md" | "lg" | "full";
 export type PageLayoutGutter = "default" | "none";
 export type PageSubnavLabelVisibility = "all" | "active";
 
-const pageLayoutVariants = cva("mx-auto flex h-full w-full min-h-0 min-w-0 flex-col", {
+const pageLayoutVariants = cva(
+  [
+    "mx-auto flex h-full w-full min-h-0 min-w-0 flex-col",
+    "[&:has(>_[data-slot=page-sidebar])]:grid",
+    "[&:has(>_[data-slot=page-sidebar])]:grid-cols-[auto_minmax(0,1fr)]",
+    "[&:has(>_[data-slot=page-sidebar])]:grid-rows-[minmax(0,1fr)]",
+    "[&:has(>_[data-slot=page-sidebar])]:gap-0",
+    "[&:has(>_[data-slot=page-sidebar])>_[data-slot=page-content]]:rounded-l-none",
+    "[&:has(>_[data-slot=page-sidebar])>_[data-slot=page-content]]:border-l-0",
+    "max-lg:[&:has(>_[data-slot=page-sidebar])]:grid-cols-1",
+    "max-lg:[&:has(>_[data-slot=page-sidebar])>_[data-slot=page-content]]:rounded-t-none",
+    "max-lg:[&:has(>_[data-slot=page-sidebar])>_[data-slot=page-content]]:border-t-0",
+  ],
+  {
   variants: {
     size: {
       sm: "max-w-[40rem]",
@@ -32,7 +46,8 @@ const pageLayoutVariants = cva("mx-auto flex h-full w-full min-h-0 min-w-0 flex-
     },
   },
   defaultVariants: { size: "full", gutter: "default" },
-});
+  }
+);
 
 export interface PageLayoutProps extends ComponentPropsWithoutRef<"div">, VariantProps<typeof pageLayoutVariants> {}
 export type PageHeaderProps = ComponentPropsWithoutRef<"header">;
@@ -43,6 +58,10 @@ export interface PageHeaderContentProps extends ComponentPropsWithoutRef<"div"> 
 export type PageTitleProps = ComponentPropsWithoutRef<"h1">;
 export type PageDescriptionProps = ComponentPropsWithoutRef<"p">;
 export type PageActionsProps = ComponentPropsWithoutRef<"div">;
+export interface PageSidebarProps extends ComponentPropsWithoutRef<"aside"> {
+  /** Fixed desktop track width. The layout becomes a stacked flow below `lg`. */
+  width?: CSSProperties["width"];
+}
 export type PageContentProps = ComponentPropsWithoutRef<"div">;
 export type PageBodyProps = ComponentPropsWithoutRef<"div">;
 export type PageSubnavProps = ComponentPropsWithoutRef<"nav">;
@@ -111,6 +130,25 @@ const PageActions = forwardRef<HTMLDivElement, PageActionsProps>(({ className, .
 
 PageActions.displayName = "PageActions";
 
+const PageSidebar = forwardRef<HTMLElement, PageSidebarProps>(
+  ({ width = "200px", className, style, ...props }, ref) => (
+    <aside
+      ref={ref}
+      data-slot="page-sidebar"
+      className={cn(
+        "min-h-0 w-[var(--page-sidebar-width)] shrink-0 overflow-y-auto overscroll-contain",
+        "border-[0.5px] border-border border-r-0 bg-surface-floating rounded-l-xl",
+        "max-lg:w-full max-lg:rounded-t-xl max-lg:rounded-b-none max-lg:border-r-[0.5px] max-lg:border-b-0",
+        className
+      )}
+      style={{ "--page-sidebar-width": width, ...style } as CSSProperties}
+      {...props}
+    />
+  )
+);
+
+PageSidebar.displayName = "PageSidebar";
+
 const PageContent = forwardRef<HTMLDivElement, PageContentProps>(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -126,7 +164,12 @@ const PageContent = forwardRef<HTMLDivElement, PageContentProps>(({ className, .
 PageContent.displayName = "PageContent";
 
 const PageBody = forwardRef<HTMLDivElement, PageBodyProps>(({ className, ...props }, ref) => (
-  <div ref={ref} data-slot="page-body" className={cn("min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain", className)} {...props} />
+  <div
+    ref={ref}
+    data-slot="page-body"
+    className={cn("mx-auto min-h-0 w-full max-w-[1280px] min-w-0 flex-1 overflow-y-auto overscroll-contain", className)}
+    {...props}
+  />
 ));
 
 PageBody.displayName = "PageBody";
@@ -211,6 +254,7 @@ export {
   PageTitle,
   PageDescription,
   PageActions,
+  PageSidebar,
   PageContent,
   PageBody,
   PageSubnav,
