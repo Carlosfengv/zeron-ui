@@ -503,7 +503,7 @@ function DataTableToolbarFilter<TData>({
           inputMode="numeric"
           onChange={(event) => column.setFilterValue(event.target.value)}
           placeholder={meta?.placeholder ?? meta?.label ?? column.id}
-          size="default"
+          size="sm"
           type="number"
           value={(column.getFilterValue() as string) ?? ""}
         />
@@ -521,7 +521,7 @@ function DataTableToolbarFilter<TData>({
       className="w-40 lg:w-56"
       onChange={(event) => column.setFilterValue(event.target.value)}
       placeholder={meta?.placeholder ?? meta?.label ?? column.id}
-      size="default"
+      size="sm"
       value={(column.getFilterValue() as string) ?? ""}
     />
   );
@@ -686,14 +686,15 @@ function DataTablePagination<TData>({
         <div className="flex items-center gap-2 whitespace-nowrap">
           <span className="text-label text-fg-default">Rows per page</span>
           <Select
+            itemDensity="compact"
             onValueChange={(value) => table.setPageSize(Number(value))}
+            size="sm"
             value={`${table.getState().pagination.pageSize}`}
           >
             <SelectTrigger
               aria-label="Rows per page"
               className="min-w-18 w-18 px-2 text-label"
               placeholder={`${table.getState().pagination.pageSize}`}
-              size="md"
             />
             <SelectContent>
             {pageSizeOptions.map((pageSize) => (
@@ -718,7 +719,8 @@ function DataTablePagination<TData>({
             className="hidden lg:inline-flex"
             disabled={!table.getCanPreviousPage()}
             onClick={() => table.setPageIndex(0)}
-            size="icon-sm"
+            iconOnly
+            size="sm"
             variant="tertiary"
           >
             <ChevronsLeft />
@@ -727,7 +729,8 @@ function DataTablePagination<TData>({
             aria-label="Go to previous page"
             disabled={!table.getCanPreviousPage()}
             onClick={() => table.previousPage()}
-            size="icon-sm"
+            iconOnly
+            size="sm"
             variant="tertiary"
           >
             <ChevronLeft />
@@ -736,7 +739,8 @@ function DataTablePagination<TData>({
             aria-label="Go to next page"
             disabled={!table.getCanNextPage()}
             onClick={() => table.nextPage()}
-            size="icon-sm"
+            iconOnly
+            size="sm"
             variant="tertiary"
           >
             <ChevronRight />
@@ -746,7 +750,8 @@ function DataTablePagination<TData>({
             className="hidden lg:inline-flex"
             disabled={!table.getCanNextPage()}
             onClick={() => table.setPageIndex(Math.max(table.getPageCount() - 1, 0))}
-            size="icon-sm"
+            iconOnly
+            size="sm"
             variant="tertiary"
           >
             <ChevronsRight />

@@ -125,7 +125,7 @@ export const SidebarIdentityRow = forwardRef<HTMLElement, SidebarIdentityRowProp
     );
 
     const rowClassName = cn(
-      "min-w-0 w-full min-h-control-md h-auto justify-start gap-1.5 px-0.5 py-2 [&>span.relative]:w-full [&>span.relative]:justify-start [&>span.relative>span]:min-w-0 [&>span.relative>span]:w-full",
+      "min-w-0 w-full min-h-control-lg h-auto justify-start gap-1.5 px-0.5 py-2 [&>span.relative]:w-full [&>span.relative]:justify-start [&>span.relative>span]:min-w-0 [&>span.relative>span]:w-full",
       as === "button" && "max-xl:min-h-11",
       className
     );
@@ -154,7 +154,7 @@ export const SidebarIdentityRow = forwardRef<HTMLElement, SidebarIdentityRowProp
         data-slot="sidebar-identity-row"
         data-layout={resolvedLayout}
         data-trailing-placement={trailingPlacement}
-        className={cn("flex min-h-control-md h-auto items-center", rowClassName)}
+        className={cn("flex min-h-control-lg h-auto items-center", rowClassName)}
         {...props}
       >
         {content}

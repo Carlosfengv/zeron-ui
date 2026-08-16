@@ -35,7 +35,7 @@ function Textarea({ className, rows = 1, ...props }: React.ComponentProps<"texta
   return (
     <textarea
       className={cn(
-        "flex min-h-control-sm w-full resize-none border border-input bg-transparent px-3 py-2 text-body text-fg-default outline-none",
+        "flex min-h-control-md w-full resize-none border border-input bg-transparent px-3 py-2 text-body text-fg-default outline-none",
         "placeholder:text-fg-muted focus-visible:ring-1 focus-visible:ring-focus-ring",
         "disabled:pointer-events-none disabled:opacity-50",
         "rounded-lg",

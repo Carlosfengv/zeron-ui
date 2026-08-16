@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "control-size",
+  "type": "registry:lib",
+  "title": "Control Size",
+  "description": "Shared control-size types, height classes, and visual recipes for standard Zeron controls.",
+  "files": [
+    {
+      "path": "packages/ui/src/tokens/control-size.ts",
+      "content": "export const controlSizes = [\"xs\", \"sm\", \"md\", \"lg\", \"xl\"] as const;\nexport type ControlSize = (typeof controlSizes)[number];\nexport const controlSizeClasses: Record<ControlSize, string> = {\n    xs: \"h-control-xs\",\n    sm: \"h-control-sm\",\n    md: \"h-control-md\",\n    lg: \"h-control-lg\",\n    xl: \"h-control-xl\",\n};\nexport const controlSizeRecipe = {\n    xs: { height: 24, text: \"text-label\", icon: 12, gap: \"gap-1\" },\n    sm: { height: 28, text: \"text-label\", icon: 14, gap: \"gap-1\" },\n    md: { height: 32, text: \"text-body\", icon: 16, gap: \"gap-1.5\" },\n    lg: { height: 36, text: \"text-body\", icon: 16, gap: \"gap-1.5\" },\n    xl: { height: 40, text: \"text-body\", icon: 18, gap: \"gap-2\" },\n} as const satisfies Record<ControlSize, {\n    height: number;\n    text: string;\n    icon: number;\n    gap: string;\n}>;\nexport const controlButtonPaddingClasses: Record<ControlSize, string> = {\n    xs: \"px-2\",\n    sm: \"px-2.5\",\n    md: \"px-3\",\n    lg: \"px-3.5\",\n    xl: \"px-4\",\n};\nexport const controlFieldPaddingClasses: Record<ControlSize, string> = {\n    xs: \"px-1.5\",\n    sm: \"px-2\",\n    md: \"px-2.5\",\n    lg: \"px-3\",\n    xl: \"px-3.5\",\n};\n",
+      "type": "registry:lib",
+      "target": "lib/tokens/control-size.ts"
+    }
+  ]
+}

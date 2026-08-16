@@ -183,10 +183,11 @@ describe("semantic color consumers", () => {
     const inputGroup = read(join(UI_ROOT, "input-group.tsx"));
     const button = read(join(UI_ROOT, "button.tsx"));
     const shortcuts = read(join(UI_ROOT, "data-grid/data-grid-keyboard-shortcuts.tsx"));
-    expect(button).toContain('"icon-xs": "size-control-xs');
-    expect(inputGroup).toContain('xs: "h-control-xs');
-    expect(inputGroup).toContain('"icon-xs": "size-control-xs');
-    expect(shortcuts).toContain('className="h-control-sm pl-8"');
+    expect(button).toContain("iconOnly: { true: \"aspect-square p-0\" }");
+    expect(button).toContain("controlSizeClasses.xs");
+    expect(inputGroup).toContain("InputGroupSizeContext");
+    expect(inputGroup).toContain("controlSizeClasses[size]");
+    expect(shortcuts).toContain('className="h-control-md pl-8"');
   });
 
   it("keeps input and input-group surfaces flat", () => {
@@ -228,7 +229,8 @@ describe("semantic color consumers", () => {
     const toast = read(join(UI_ROOT, "toast.tsx"));
 
     expect(toast).toContain('import { Button } from "#components/button"');
-    expect(toast).toContain('size="icon-xs"');
+    expect(toast).toContain("iconOnly");
+    expect(toast).toContain('size="xs"');
     expect(toast).not.toContain("<button");
     expect(toast).toContain("bg-success-surface text-fg-success");
     expect(toast).not.toContain("color-mix(");

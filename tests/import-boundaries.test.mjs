@@ -89,9 +89,15 @@ describe("public import boundaries", () => {
 
   it("exposes every Registry lib and hook through its public namespace", () => {
     for (const item of registry.items.filter((entry) => entry.type === "registry:lib")) {
-      const ts = join(ROOT, "packages/ui/src/system", `${item.name}.ts`);
-      const tsx = join(ROOT, "packages/ui/src/system", `${item.name}.tsx`);
-      expect(existsSync(ts) || existsSync(tsx), item.name).toBe(true);
+      const files = (item.files ?? []).filter((file) => file.type === "registry:lib");
+      expect(files.length, item.name).toBeGreaterThan(0);
+      for (const file of files) {
+        expect(
+          file.path.startsWith("packages/ui/src/system/") ||
+            file.path.startsWith("packages/ui/src/tokens/"),
+          file.path
+        ).toBe(true);
+      }
     }
     for (const item of registry.items.filter((entry) => entry.type === "registry:hook")) {
       const ts = join(ROOT, "packages/ui/src/hooks", `${item.name}.ts`);

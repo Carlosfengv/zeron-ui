@@ -712,7 +712,6 @@ export function ProviderCreateForm({
                             <InputGroupButton
                               aria-label={showApiKey ? labels.hideSecret : labels.showSecret}
                               onClick={() => setShowApiKey((current) => !current)}
-                              size="sm"
                             >
                               {showApiKey ? labels.hideSecret : labels.showSecret}
                             </InputGroupButton>

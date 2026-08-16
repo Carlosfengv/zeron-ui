@@ -540,16 +540,16 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
           "relative z-content flex items-center cursor-pointer bg-transparent border-none outline-none",
           badge == null ? "px-3" : "pl-3 pr-1.5",
           variant === "pill" && [
-            "h-control-sm",
+            "h-control-md",
             collapseLabel ? "gap-0" : "gap-2",
           ],
           variant === "segment" && [
-            "h-control-sm",
+            "h-control-md",
             collapseLabel ? "gap-0" : "gap-2",
             "rounded-lg",
           ],
           variant === "underline" && [
-            "h-control-md",
+            "h-control-lg",
             collapseLabel ? "gap-0" : "gap-2",
           ],
           className

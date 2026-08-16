@@ -476,7 +476,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
               onClick={onDismiss}
               aria-label="Dismiss"
               className={cn(
-                "absolute right-2 top-2 z-action flex h-control-xs w-7 items-center justify-center text-fg-muted hover:text-fg-default hover:bg-hover cursor-pointer outline-none transition-colors duration-fast focus-visible:ring-1 focus-visible:ring-focus-ring",
+                "absolute right-2 top-2 z-action flex h-control-sm w-7 items-center justify-center text-fg-muted hover:text-fg-default hover:bg-hover cursor-pointer outline-none transition-colors duration-fast focus-visible:ring-1 focus-visible:ring-focus-ring",
                 "rounded-lg"
               )}
             >
@@ -863,7 +863,7 @@ function CardButton({
   );
 
   const classes = cn(
-    "group/action relative z-action inline-flex items-center justify-center gap-1.5 h-control-xs px-2.5 text-label cursor-pointer outline-none",
+    "group/action relative z-action inline-flex items-center justify-center gap-1.5 h-control-sm px-2.5 text-label cursor-pointer outline-none",
     "transition-colors duration-fast",
     "focus-visible:ring-1 focus-visible:ring-focus-ring",
     "disabled:opacity-50 disabled:pointer-events-none",

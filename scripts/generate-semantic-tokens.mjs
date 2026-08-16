@@ -14,6 +14,7 @@ import {
   motionDurationTokens,
   fontTokens,
   controlHeightTokens,
+  badgeHeightTokens,
   layerTokens,
 } from "../packages/ui/src/tokens/semantic-tokens.mjs";
 
@@ -82,6 +83,11 @@ export function registryCssVars() {
     light[`control-height-${token.name}`] = token.value;
     dark[`control-height-${token.name}`] = token.value;
   }
+  for (const token of badgeHeightTokens) {
+    theme[`spacing-badge-${token.name}`] = `var(--badge-height-${token.name})`;
+    light[`badge-height-${token.name}`] = token.value;
+    dark[`badge-height-${token.name}`] = token.value;
+  }
 
   for (const token of layerTokens) {
     light[`layer-${token.name}`] = String(token.value);
@@ -135,6 +141,7 @@ function renderRootDeclarations() {
   }
   for (const token of motionDurationTokens) lines.push(cssDeclaration(`motion-duration-${token.name}`, token.value));
   for (const token of controlHeightTokens) lines.push(cssDeclaration(`control-height-${token.name}`, token.value));
+  for (const token of badgeHeightTokens) lines.push(cssDeclaration(`badge-height-${token.name}`, token.value));
   for (const token of layerTokens) lines.push(cssDeclaration(`layer-${token.name}`, token.value));
   return lines.join("\n");
 }
@@ -231,6 +238,9 @@ export function renderDocumentation() {
   ]);
   const controlRows = controlHeightTokens.map((t) => [
     `\`--control-height-${t.name}\``, `\`h-control-${t.name}\``, `${t.px}px`, t.usage,
+  ]);
+  const badgeRows = badgeHeightTokens.map((t) => [
+    `\`--badge-height-${t.name}\``, `\`h-badge-${t.name}\``, `${t.px}px`, t.usage,
   ]);
   const shadowRows = shadowTokens.map((t) => [
     `\`--shadow-${t.name}\``, `\`shadow-${t.name}\``, t.usage,
@@ -446,6 +456,12 @@ ${table(["CSS 令牌", "Tailwind", "值", "用途"], controlRows)}
 
 图标按钮和文字按钮应共享同一高度令牌。图标按钮的宽度可复用同一控件尺寸，例如 \`w-control-sm\`。
 
+## 徽标高度
+
+${table(["CSS 令牌", "Tailwind", "值", "用途"], badgeRows)}
+
+Badge 不借用 Control Height。\`h-badge-*\` 只用于状态标签等非标准交互控件。
+
 ## 圆角
 
 组件直接使用 Tailwind 原生圆角刻度，不发布自定义 Radius Token 或运行时 Shape Provider。
@@ -556,6 +572,24 @@ export function updateRegistry(registry) {
   item.cssVars = registryCssVars();
   item.css = registryCssRules();
 
+  const controlSizeName = "control-size";
+  const controlSizeItem = registry.items.find((entry) => entry.name === controlSizeName);
+  const controlSizeDefinition = {
+    name: controlSizeName,
+    type: "registry:lib",
+    title: "Control Size",
+    description: "Shared control-size types, height classes, and visual recipes for standard Zeron controls.",
+    files: [
+      {
+        path: "packages/ui/src/tokens/control-size.ts",
+        type: "registry:lib",
+        target: "lib/tokens/control-size.ts",
+      },
+    ],
+  };
+  if (controlSizeItem) Object.assign(controlSizeItem, controlSizeDefinition);
+  else registry.items.splice(registry.items.indexOf(item) + 1, 0, controlSizeDefinition);
+
   for (const entry of registry.items) {
     if (entry.type !== "registry:ui") continue;
     entry.dependencies = [...new Set([...(entry.dependencies ?? []), "tw-animate-css"])];
@@ -576,6 +610,14 @@ export function updateRegistry(registry) {
       type: "registry:ui",
       target: "components/ui/badge-colors.ts",
     });
+  }
+
+  for (const componentName of ["button", "input", "input-group", "select"]) {
+    const component = registry.items.find((entry) => entry.name === componentName);
+    if (!component) throw new Error(`packages/ui/registry.json is missing the "${componentName}" UI item`);
+    component.registryDependencies = [
+      ...new Set([...(component.registryDependencies ?? []), controlSizeName]),
+    ];
   }
   return registry;
 }

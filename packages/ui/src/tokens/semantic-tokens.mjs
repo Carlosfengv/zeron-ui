@@ -222,11 +222,17 @@ export const fontTokens = {
 };
 
 export const controlHeightTokens = [
-  { name: "xs", value: "1.75rem", px: 28, usage: "超紧凑按钮、徽标操作" },
-  { name: "sm", value: "2rem", px: 32, usage: "紧凑按钮、导航项和分段控件" },
-  { name: "md", value: "2.25rem", px: 36, usage: "默认输入框、菜单项和按钮" },
-  { name: "lg", value: "2.5rem", px: 40, usage: "大按钮和触控友好控件" },
-  { name: "xl", value: "2.75rem", px: 44, usage: "主要触控控件" },
+  { name: "xs", value: "1.5rem", px: 24, usage: "极致紧凑、非触控优先操作" },
+  { name: "sm", value: "1.75rem", px: 28, usage: "紧凑按钮、导航项和数据工具栏" },
+  { name: "md", value: "2rem", px: 32, usage: "默认输入框、选择器和按钮" },
+  { name: "lg", value: "2.25rem", px: 36, usage: "宽松按钮、菜单项和表单控件" },
+  { name: "xl", value: "2.5rem", px: 40, usage: "大型控件和宽松交互界面" },
+];
+
+export const badgeHeightTokens = [
+  { name: "sm", value: "1.25rem", px: 20, usage: "紧凑状态标签" },
+  { name: "md", value: "1.5rem", px: 24, usage: "默认状态标签" },
+  { name: "lg", value: "1.75rem", px: 28, usage: "强调状态标签" },
 ];
 
 export const layerTokens = [
@@ -257,5 +263,6 @@ export const semanticTokens = {
   motionDurations: motionDurationTokens,
   fonts: fontTokens,
   controlHeights: controlHeightTokens,
+  badgeHeights: badgeHeightTokens,
   layers: layerTokens,
 };

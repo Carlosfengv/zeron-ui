@@ -132,7 +132,7 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
     const itemClassName = cn(
       // Keep rows at 32px and prevent max-height popup columns from
       // compressing a long list instead of scrolling it.
-      `relative z-content flex h-control-sm shrink-0 items-center gap-2 rounded-lg px-2 cursor-pointer outline-none`,
+      `relative z-content flex h-control-md shrink-0 items-center gap-2 rounded-lg px-2 cursor-pointer outline-none`,
       disabled && "opacity-50 pointer-events-none",
       className
     );

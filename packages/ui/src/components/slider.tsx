@@ -1445,7 +1445,7 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
       <motion.div
         ref={mergedRef}
         className={cn(
-          "relative w-full h-control-sm select-none touch-none border border-border overflow-hidden outline-offset-2",
+          "relative w-full h-control-md select-none touch-none border border-border overflow-hidden outline-offset-2",
           variant === "scrubber"
             ? "flex items-center gap-3 px-4 cursor-ew-resize"
             : "cursor-ew-resize",

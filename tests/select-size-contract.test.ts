@@ -7,10 +7,15 @@ const selectSource = fs.readFileSync(
   "utf8"
 );
 
-describe("Select item density", () => {
-  it("uses the 32px control token by default and the 36px token for large triggers", () => {
-    expect(selectSource).toContain('default: "h-control-sm"');
-    expect(selectSource).toContain('large: "h-control-md"');
-    expect(selectSource).toContain('props.size === "lg" ? "large" : "default"');
+describe("Select size and density", () => {
+  it("keeps control size and menu density independent", () => {
+    expect(selectSource).toContain("size?: ControlSize;");
+    expect(selectSource).toContain("itemDensity?: SelectItemDensity;");
+    expect(selectSource).toContain('size = "md"');
+    expect(selectSource).toContain('itemDensity = "regular"');
+    expect(selectSource).toContain('compact: "h-control-md');
+    expect(selectSource).toContain('regular: "h-control-lg');
+    expect(selectSource).toContain('comfortable: "h-control-xl');
+    expect(selectSource).toContain("const { size } = useSelectContext();");
   });
 });

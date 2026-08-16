@@ -90,7 +90,10 @@
           "spacing-control-sm": "var(--control-height-sm)",
           "spacing-control-md": "var(--control-height-md)",
           "spacing-control-lg": "var(--control-height-lg)",
-          "spacing-control-xl": "var(--control-height-xl)"
+          "spacing-control-xl": "var(--control-height-xl)",
+          "spacing-badge-sm": "var(--badge-height-sm)",
+          "spacing-badge-md": "var(--badge-height-md)",
+          "spacing-badge-lg": "var(--badge-height-lg)"
         },
         "light": {
           "font-family-sans": "\"Inter\", system-ui, sans-serif",
@@ -176,11 +179,14 @@
           "motion-duration-moderate-exit": "120ms",
           "motion-duration-moderate": "160ms",
           "motion-duration-slow": "240ms",
-          "control-height-xs": "1.75rem",
-          "control-height-sm": "2rem",
-          "control-height-md": "2.25rem",
-          "control-height-lg": "2.5rem",
-          "control-height-xl": "2.75rem",
+          "control-height-xs": "1.5rem",
+          "control-height-sm": "1.75rem",
+          "control-height-md": "2rem",
+          "control-height-lg": "2.25rem",
+          "control-height-xl": "2.5rem",
+          "badge-height-sm": "1.25rem",
+          "badge-height-md": "1.5rem",
+          "badge-height-lg": "1.75rem",
           "layer-underlay": "-10",
           "layer-base": "0",
           "layer-decoration": "1",
@@ -278,11 +284,14 @@
           "motion-duration-moderate-exit": "120ms",
           "motion-duration-moderate": "160ms",
           "motion-duration-slow": "240ms",
-          "control-height-xs": "1.75rem",
-          "control-height-sm": "2rem",
-          "control-height-md": "2.25rem",
-          "control-height-lg": "2.5rem",
-          "control-height-xl": "2.75rem",
+          "control-height-xs": "1.5rem",
+          "control-height-sm": "1.75rem",
+          "control-height-md": "2rem",
+          "control-height-lg": "2.25rem",
+          "control-height-xl": "2.5rem",
+          "badge-height-sm": "1.25rem",
+          "badge-height-md": "1.5rem",
+          "badge-height-lg": "1.75rem",
           "layer-underlay": "-10",
           "layer-base": "0",
           "layer-decoration": "1",
@@ -337,6 +346,19 @@
       },
       "dependencies": [
         "tw-animate-css"
+      ]
+    },
+    {
+      "name": "control-size",
+      "type": "registry:lib",
+      "title": "Control Size",
+      "description": "Shared control-size types, height classes, and visual recipes for standard Zeron controls.",
+      "files": [
+        {
+          "path": "packages/ui/src/tokens/control-size.ts",
+          "type": "registry:lib",
+          "target": "lib/tokens/control-size.ts"
+        }
       ]
     },
     {
@@ -698,7 +720,8 @@
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/surfaces.json",
         "https://zeron-ui.vercel.app/r/utils.json",
-        "https://zeron-ui.vercel.app/r/icon-context.json"
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/control-size.json"
       ],
       "files": [
         {
@@ -1149,7 +1172,7 @@
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
-      "description": "Text input with outline, secondary, and ghost variants, four sizes, and accessible focus, validation, disabled, and file states.",
+      "description": "Text input with outline, secondary, and ghost variants, five sizes, and accessible focus, validation, disabled, and file states.",
       "dependencies": [
         "@base-ui/react",
         "class-variance-authority",
@@ -1157,7 +1180,8 @@
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/surfaces.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/control-size.json"
       ],
       "files": [
         {
@@ -1248,7 +1272,8 @@
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/use-proximity-hover.json",
         "https://zeron-ui.vercel.app/r/button.json",
-        "https://zeron-ui.vercel.app/r/input.json"
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/control-size.json"
       ],
       "files": [
         {
@@ -1659,7 +1684,8 @@
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/use-proximity-hover.json",
         "https://zeron-ui.vercel.app/r/elevated.json",
-        "https://zeron-ui.vercel.app/r/portal-container-context.json"
+        "https://zeron-ui.vercel.app/r/portal-container-context.json",
+        "https://zeron-ui.vercel.app/r/control-size.json"
       ],
       "files": [
         {

@@ -161,7 +161,8 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
                     render={
                       <Button
                         variant="ghost"
-                        size="icon-sm"
+                        iconOnly
+                        size="sm"
                         className="absolute right-3 top-3"
                       >
                         <XIcon />

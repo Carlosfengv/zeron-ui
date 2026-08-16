@@ -28,8 +28,8 @@ describe("MetricCard contract", () => {
 
   it("uses the project surface, boundary, typography, and state tokens", () => {
     expect(source).toContain("rounded-xl border-[0.5px] border-border bg-surface-floating p-3");
-    expect(source).toContain("text-[14px] leading-5 text-fg-muted");
-    expect(source).toContain("text-[24px] leading-9 font-semibold tabular-nums");
+    expect(source).toContain("text-body text-fg-muted");
+    expect(source).toContain("text-heading font-semibold tabular-nums");
     expect(source).toContain("text-fg-success");
     expect(source).toContain("text-fg-warning");
     expect(source).toContain("text-fg-danger");

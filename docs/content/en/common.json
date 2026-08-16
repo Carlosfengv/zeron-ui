@@ -117,7 +117,7 @@
       "dialog": "Modal dialog with smooth enter/exit animations and overlay.",
       "dropdown": "Menu-style dropdown with proximity hover and animated backgrounds.",
       "field": "Accessible form composition for labels, descriptions, validation messages, groups, and fieldsets.",
-      "input": "Text input with three variants, four sizes, and accessible validation states.",
+      "input": "Text input with three variants, five sizes, and accessible validation states.",
       "input-copy": "Read-only input with copy-to-clipboard button and animated feedback.",
       "input-group": "Composable input with addons, compact actions, textarea support, and validation.",
       "info-item": "Composable information row with leading media, primary and supporting text, and a flexible trailing value or detail.",

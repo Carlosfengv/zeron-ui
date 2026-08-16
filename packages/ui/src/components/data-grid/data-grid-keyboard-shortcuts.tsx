@@ -263,7 +263,7 @@ function DataGridKeyboardShortcutsImpl({
             <Input
               ref={inputRef}
               placeholder="Search shortcuts..."
-              className="h-control-sm pl-8"
+              className="h-control-md pl-8"
               value={input}
               onChange={onInputChange}
             />

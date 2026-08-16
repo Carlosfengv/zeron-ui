@@ -226,7 +226,8 @@ export function ComponentPreview({
             <Tooltip content={isFullscreen ? t("exitFullscreen") : t("fullscreen")} side="top">
               <Button
                 variant="ghost"
-                size="icon"
+                iconOnly
+                size="sm"
                 className="h-8 w-8"
                 aria-label={isFullscreen ? t("exitFullscreen") : t("fullscreen")}
                 onClick={toggleFullscreen}
@@ -241,7 +242,8 @@ export function ComponentPreview({
             <Tooltip content={playbackButton?.tooltip ?? t("replayAnimation")} side="top">
               <Button
                 variant="ghost"
-                size="icon"
+                iconOnly
+                size="lg"
                 onClick={playbackButton?.onClick ?? onReplay}
                 className="h-10 w-10 text-fg-muted/60"
                 aria-label={playbackButton?.tooltip ?? t("replayAnimation")}

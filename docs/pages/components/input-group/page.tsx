@@ -48,7 +48,7 @@ const { search: Search, x: X } = useIcons();
   </InputGroupAddon>
   <InputGroupInput placeholder="Search projects..." />
   <InputGroupAddon align="inline-end">
-    <InputGroupButton size="icon-xs" aria-label="Clear">
+    <InputGroupButton iconOnly aria-label="Clear">
       <X />
     </InputGroupButton>
   </InputGroupAddon>
@@ -79,6 +79,12 @@ const statesCode = `<InputGroup>
 
 const groupProps: PropDef[] = [
   {
+    name: "size",
+    type: '"xs" | "sm" | "md" | "lg" | "xl"',
+    default: '"md"',
+    description: "Owns the height, typography, padding, and icon sizing of the compound control.",
+  },
+  {
     name: "children",
     type: "ReactNode",
     description: "InputGroupInput, InputGroupTextarea, addon, and action content.",
@@ -96,10 +102,10 @@ const addonProps: PropDef[] = [
 
 const buttonProps: PropDef[] = [
   {
-    name: "size",
-    type: '"xs" | "sm" | "icon-xs" | "icon-sm"',
-    default: '"xs"',
-    description: "Compact size suited to an input group.",
+    name: "iconOnly",
+    type: "boolean",
+    default: "false",
+    description: "Makes the inherited action square while keeping the group-owned size.",
   },
   {
     name: "variant",
@@ -115,12 +121,6 @@ const controlProps: PropDef[] = [
     type: '"outline" | "secondary" | "ghost"',
     default: '"outline"',
     description: "Input variant; its surface is made transparent inside the group.",
-  },
-  {
-    name: "size",
-    type: '"sm" | "default" | "lg" | "xl"',
-    default: '"default"',
-    description: "Height and typography inherited from Input.",
   },
 ];
 
@@ -188,7 +188,7 @@ export default function InputGroupDoc() {
               </InputGroupAddon>
               <InputGroupInput placeholder="Search projects..." aria-label="Search projects" />
               <InputGroupAddon align="inline-end">
-                <InputGroupButton size="icon-xs" aria-label="Clear search">
+                <InputGroupButton iconOnly aria-label="Clear search">
                   <X />
                 </InputGroupButton>
               </InputGroupAddon>

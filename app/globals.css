@@ -119,11 +119,14 @@
   --motion-duration-moderate-exit: 120ms;
   --motion-duration-moderate: 160ms;
   --motion-duration-slow: 240ms;
-  --control-height-xs: 1.75rem;
-  --control-height-sm: 2rem;
-  --control-height-md: 2.25rem;
-  --control-height-lg: 2.5rem;
-  --control-height-xl: 2.75rem;
+  --control-height-xs: 1.5rem;
+  --control-height-sm: 1.75rem;
+  --control-height-md: 2rem;
+  --control-height-lg: 2.25rem;
+  --control-height-xl: 2.5rem;
+  --badge-height-sm: 1.25rem;
+  --badge-height-md: 1.5rem;
+  --badge-height-lg: 1.75rem;
   --layer-underlay: -10;
   --layer-base: 0;
   --layer-decoration: 1;
@@ -251,6 +254,9 @@
   --spacing-control-md: var(--control-height-md);
   --spacing-control-lg: var(--control-height-lg);
   --spacing-control-xl: var(--control-height-xl);
+  --spacing-badge-sm: var(--badge-height-sm);
+  --spacing-badge-md: var(--badge-height-md);
+  --spacing-badge-lg: var(--badge-height-lg);
 
   /* Reserved for the canonical-shadcn comparison page only. */
   --color-primary: var(--primary);

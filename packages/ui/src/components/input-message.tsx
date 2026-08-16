@@ -253,7 +253,7 @@ function QueuedRow({
       }}
       className={cn(
         // Fixed height keeps queued rows aligned during reorder animations.
-        "group/qrow flex h-control-sm items-center gap-2 rounded-lg bg-muted px-2.5",
+        "group/qrow flex h-control-md items-center gap-2 rounded-lg bg-muted px-2.5",
         "text-body text-fg-default/85 select-none outline-none",
         "cursor-grab active:cursor-grabbing",
         "focus-visible:ring-1 focus-visible:ring-focus-ring", "font-normal"
@@ -890,7 +890,8 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
               <Button
                 type="button"
                 variant="primary"
-                size="icon-sm"
+                iconOnly
+                size="sm"
                 onClick={buttonMode === "stop" ? handleStop : handleSend}
                 disabled={buttonMode === "stop" ? disabled : !canSend}
                 aria-label={buttonLabel}
@@ -915,9 +916,9 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
                     {buttonMode === "stop" ? (
                       <span className="h-3 w-3 rounded-sm bg-current" />
                     ) : (
-                      // Override icon-sm's small 14px svg — the send glyph reads
-                      // better a touch larger. `size` matches the attribute to
-                      // the CSS so the svg box stays centered.
+                      // The send glyph reads better a touch larger than the
+                      // control's standard icon. `size` matches the CSS box so
+                      // it stays centered.
                       <ArrowUpIcon
                         size={19}
                         className="block !h-[19px] !w-[19px]"

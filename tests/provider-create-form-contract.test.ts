@@ -88,4 +88,13 @@ describe("Provider Create Form 1 block contract", () => {
     expect(source).toContain("text-fg-muted");
     expect(source).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
   });
+
+  it("keeps the API key field on the 32px system-default InputGroup size", () => {
+    expect(source).toContain(
+      '<InputGroup aria-invalid={Boolean(errors.apiKey) || undefined}>'
+    );
+    expect(source).not.toContain(
+      '<InputGroup size="sm" aria-invalid={Boolean(errors.apiKey) || undefined}>'
+    );
+  });
 });

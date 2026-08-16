@@ -57,24 +57,24 @@ const variantsCode = `import { Select, SelectTrigger, SelectContent, SelectItem 
 
 const sizesCode = `import { Select, SelectTrigger, SelectContent, SelectItem } from "./components";
 
-<Select>
-  <SelectTrigger size="sm" placeholder="Small" />
+<Select size="sm" itemDensity="compact">
+  <SelectTrigger placeholder="Small" />
   <SelectContent>
     <SelectItem index={0} value="a">Option A</SelectItem>
     <SelectItem index={1} value="b">Option B</SelectItem>
   </SelectContent>
 </Select>
 
-<Select>
-  <SelectTrigger size="md" placeholder="Medium" />
+<Select size="md" itemDensity="regular">
+  <SelectTrigger placeholder="Medium" />
   <SelectContent>
     <SelectItem index={0} value="a">Option A</SelectItem>
     <SelectItem index={1} value="b">Option B</SelectItem>
   </SelectContent>
 </Select>
 
-<Select>
-  <SelectTrigger size="lg" placeholder="Large" />
+<Select size="lg" itemDensity="comfortable">
+  <SelectTrigger placeholder="Large" />
   <SelectContent>
     <SelectItem index={0} value="a">Option A</SelectItem>
     <SelectItem index={1} value="b">Option B</SelectItem>
@@ -188,6 +188,18 @@ const disabledCode = `import { Select, SelectTrigger, SelectContent, SelectItem 
 
 const selectProps: PropDef[] = [
   {
+    name: "size",
+    type: '"xs" | "sm" | "md" | "lg" | "xl"',
+    default: '"md"',
+    description: "Height, padding, text size, and icon size of the trigger.",
+  },
+  {
+    name: "itemDensity",
+    type: '"compact" | "regular" | "comfortable"',
+    default: '"regular"',
+    description: "Independent density of options in the popup.",
+  },
+  {
     name: "value",
     type: "string",
     description: "Controlled selected value.",
@@ -243,12 +255,6 @@ const triggerProps: PropDef[] = [
     type: '"bordered" | "borderless"',
     default: '"bordered"',
     description: "Visual style of the trigger.",
-  },
-  {
-    name: "size",
-    type: '"sm" | "md" | "lg"',
-    default: '"md"',
-    description: "Height, padding, text size, and icon size of the trigger.",
   },
   {
     name: "icon",
@@ -403,24 +409,24 @@ export default function SelectDoc() {
       <DocSection title={t("sizes")}>
         <ComponentPreview code={sizesCode}>
           <div className="flex flex-wrap items-center gap-3">
-            <Select>
-              <SelectTrigger size="sm" placeholder="Small" />
+            <Select size="sm" itemDensity="compact">
+              <SelectTrigger placeholder="Small" />
               <SelectContent>
                 <SelectItem index={0} value="a">Option A</SelectItem>
                 <SelectItem index={1} value="b">Option B</SelectItem>
               </SelectContent>
             </Select>
 
-            <Select>
-              <SelectTrigger size="md" placeholder="Medium" />
+            <Select size="md" itemDensity="regular">
+              <SelectTrigger placeholder="Medium" />
               <SelectContent>
                 <SelectItem index={0} value="a">Option A</SelectItem>
                 <SelectItem index={1} value="b">Option B</SelectItem>
               </SelectContent>
             </Select>
 
-            <Select>
-              <SelectTrigger size="lg" placeholder="Large" />
+            <Select size="lg" itemDensity="comfortable">
+              <SelectTrigger placeholder="Large" />
               <SelectContent>
                 <SelectItem index={0} value="a">Option A</SelectItem>
                 <SelectItem index={1} value="b">Option B</SelectItem>

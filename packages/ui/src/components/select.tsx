@@ -24,6 +24,12 @@ import { spring, exitFallbackMs } from "#system/springs";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 import { Elevated } from "#system/elevated";
 import { usePortalContainer } from "#system/portal-container-context";
+import {
+  controlFieldPaddingClasses,
+  controlSizeClasses,
+  controlSizeRecipe,
+  type ControlSize,
+} from "../tokens/control-size";
 
 // ---------------------------------------------------------------------------
 // Select context
@@ -45,7 +51,8 @@ const selectionAckMs = 300;
 interface SelectContextValue {
   value: string;
   open: boolean;
-  itemSize: "default" | "large";
+  size: ControlSize;
+  itemDensity: SelectItemDensity;
   actionsRef: React.RefObject<{ unmount: () => void } | null>;
 }
 
@@ -71,6 +78,8 @@ const SelectContentContext =
 // Select (root)
 // ---------------------------------------------------------------------------
 
+export type SelectItemDensity = "compact" | "regular" | "comfortable";
+
 interface SelectProps {
   children: ReactNode;
   value?: string;
@@ -82,6 +91,8 @@ interface SelectProps {
   disabled?: boolean;
   name?: string;
   required?: boolean;
+  size?: ControlSize;
+  itemDensity?: SelectItemDensity;
 }
 
 /**
@@ -122,6 +133,8 @@ function Select({
   disabled = false,
   name,
   required,
+  size = "md",
+  itemDensity = "regular",
 }: SelectProps) {
   const [internalValue, setInternalValue] = useState(defaultValue ?? "");
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
@@ -130,7 +143,6 @@ function Select({
   const currentValue = value !== undefined ? value : internalValue;
 
   const items = useMemo(() => collectSelectItems(children), [children]);
-  const itemSize = getSelectItemSize(children);
 
   const handleValueChange = useCallback(
     (next: string | null) => {
@@ -180,8 +192,8 @@ function Select({
   );
 
   const ctx = useMemo(
-    () => ({ value: currentValue, open, itemSize, actionsRef }),
-    [currentValue, open, itemSize]
+    () => ({ value: currentValue, open, size, itemDensity, actionsRef }),
+    [currentValue, open, size, itemDensity]
   );
 
   return (
@@ -229,9 +241,11 @@ const triggerVariants = cva(
           "border border-transparent bg-transparent text-fg-default hover:bg-hover",
       },
       size: {
-        sm: "h-control-xs gap-1.5 px-2.5 text-label",
-        md: "h-control-sm gap-2 px-3 text-body",
-        lg: "h-control-md gap-2 px-3.5 text-body",
+        xs: cn(controlSizeClasses.xs, controlFieldPaddingClasses.xs, "gap-1 text-label"),
+        sm: cn(controlSizeClasses.sm, controlFieldPaddingClasses.sm, "gap-1 text-label"),
+        md: cn(controlSizeClasses.md, controlFieldPaddingClasses.md, "gap-1.5 text-body"),
+        lg: cn(controlSizeClasses.lg, controlFieldPaddingClasses.lg, "gap-1.5 text-body"),
+        xl: cn(controlSizeClasses.xl, controlFieldPaddingClasses.xl, "gap-2 text-body"),
       },
     },
     defaultVariants: {
@@ -243,7 +257,7 @@ const triggerVariants = cva(
 
 interface SelectTriggerProps
   extends Omit<HTMLAttributes<HTMLButtonElement>, "children">,
-    VariantProps<typeof triggerVariants> {
+    Omit<VariantProps<typeof triggerVariants>, "size"> {
   icon?: IconComponent;
   placeholder?: string;
   error?: string;
@@ -255,7 +269,6 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
     {
       className,
       variant,
-      size = "md",
       icon: Icon,
       placeholder = "Select…",
       error,
@@ -264,7 +277,8 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
     },
     ref
   ) => {
-    const iconSize = size === "sm" ? 14 : size === "lg" ? 20 : 16;
+    const { size } = useSelectContext();
+    const iconSize = controlSizeRecipe[size].icon;
 
     return (
       <div className={cn("flex flex-col gap-1", wrapperClassName)}>
@@ -319,32 +333,6 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
 );
 
 SelectTrigger.displayName = "SelectTrigger";
-
-/**
- * Menu rows deliberately have two density levels: the default 32px row and
- * the 36px row paired with a large trigger. Reading the trigger here keeps
- * the compound API ergonomic and prevents every SelectItem from having to
- * repeat the same size prop.
- */
-function getSelectItemSize(children: ReactNode): "default" | "large" {
-  let result: "default" | "large" = "default";
-
-  Children.forEach(children, (child) => {
-    if (!isValidElement(child) || result === "large") return;
-
-    const props = child.props as { children?: ReactNode; size?: string };
-    if (child.type === SelectTrigger) {
-      result = props.size === "lg" ? "large" : "default";
-      return;
-    }
-
-    if (props.children && getSelectItemSize(props.children) === "large") {
-      result = "large";
-    }
-  });
-
-  return result;
-}
 
 // ---------------------------------------------------------------------------
 // SelectContent
@@ -678,24 +666,29 @@ SelectContent.displayName = "SelectContent";
 // ---------------------------------------------------------------------------
 
 const selectItemVariants = cva(
-  "relative z-content flex shrink-0 items-center gap-2 px-2 text-body cursor-pointer outline-none select-none transition-[color] duration-fast",
+  "relative z-content flex shrink-0 items-center cursor-pointer outline-none select-none transition-[color] duration-fast",
   {
     variants: {
-      size: {
-        // Default rows share the 32px control token used by the medium
-        // trigger. Large selects opt into the 36px control token below.
-        default: "h-control-sm",
-        large: "h-control-md",
+      density: {
+        compact: "h-control-md gap-1.5 px-2 text-label",
+        regular: "h-control-lg gap-2 px-2.5 text-body",
+        comfortable: "h-control-xl gap-2 px-3 text-body",
       },
     },
     defaultVariants: {
-      size: "default",
+      density: "regular",
     },
   }
 );
 
+const selectItemIconSizes: Record<SelectItemDensity, number> = {
+  compact: 14,
+  regular: 16,
+  comfortable: 18,
+};
+
 // Shared by BadgeOverflow's option-style popup. It intentionally uses the
-// Select default density (32px).
+// Select regular density unless the consumer explicitly supplies another one.
 const selectItemClassName = selectItemVariants();
 
 interface SelectItemProps extends HTMLAttributes<HTMLDivElement> {
@@ -742,6 +735,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
     const isActive = contentCtx?.activeIndex === index;
     const isChecked = selectCtx.value === value;
     const skipAnimation = !hasMounted.current;
+    const itemIconSize = selectItemIconSizes[selectCtx.itemDensity];
 
     return (
       <SelectPrimitive.Item
@@ -762,11 +756,11 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
             data-proximity-index={index}
             data-value={value}
             className={cn(
-              // Fixed token height keeps rows consistent while long popups
-              // scroll. Large triggers use the corresponding large row.
+              // Fixed density height keeps rows consistent while long popups
+              // scroll, independently of the trigger's outer control size.
               // shrink-0: the popup is a max-height flex column, so without it
               // a long list compresses rows to fit instead of scrolling.
-              selectItemVariants({ size: selectCtx.itemSize }),
+              selectItemVariants({ density: selectCtx.itemDensity }),
               "rounded-lg",
               isActive || isChecked
                 ? "text-fg-default"
@@ -780,7 +774,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
       >
         {Icon && (
           <Icon
-            size={16}
+            size={itemIconSize}
             strokeWidth={isActive || isChecked ? 2 : 1.5}
             className="shrink-0 transition-[color,stroke-width] duration-fast"
           />
@@ -795,13 +789,13 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
         {/* Always-rendered fixed slot so the check appearing/disappearing
             never changes the row's intrinsic width — without it the whole
             popup resizes when a selection lands. */}
-        <span aria-hidden className="shrink-0 w-4 h-4">
+        <span aria-hidden className="shrink-0" style={{ width: itemIconSize, height: itemIconSize }}>
           <AnimatePresence>
             {isChecked && (
               <motion.svg
                 key="check"
-                width={16}
-                height={16}
+                width={itemIconSize}
+                height={itemIconSize}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"

@@ -29,9 +29,9 @@ export function HomeIntro() {
           </div>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <Button variant="ghost" size="icon" disabled aria-label="No previous page"><ArrowRight className="rotate-180" /></Button>
+          <Button iconOnly variant="ghost" size="md" disabled aria-label="No previous page"><ArrowRight className="rotate-180" /></Button>
           <Tooltip content={<span>{t("nextIntroduction")} &ensp;<kbd className="font-mono opacity-50">&rarr;</kbd></span>}>
-            <Button asChild variant="ghost" size="icon">
+            <Button asChild iconOnly variant="ghost" size="md">
               <Link href={localizePathname("/docs", localePrefix)} aria-label={t("nextIntroduction")}><ArrowRight /></Link>
             </Button>
           </Tooltip>

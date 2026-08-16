@@ -109,7 +109,7 @@ function ResponsiveSidebarTrigger() {
   const { isMobile } = useSidebar();
   return (
     <SidebarTrigger
-      size="icon-xs"
+      size="xs"
       label={isMobile ? "关闭导航" : "收起侧边栏"}
       className="shrink-0"
     />
@@ -189,7 +189,7 @@ function SidebarSearchTrigger({ onOpen }: { onOpen: () => void }) {
       type="button"
       variant="ghost"
       size="lg"
-      className="h-control-md w-full justify-start px-1.5 max-xl:min-h-11"
+      className="h-control-lg w-full justify-start px-1.5 max-xl:min-h-11"
       aria-keyshortcuts="Meta+K Control+K"
       onClick={onOpen}
     >
@@ -243,7 +243,7 @@ function RecentSessionItem({ session }: { session: Session }) {
   return (
     <li
       data-slot="recent-session-item"
-      className="flex min-w-0 items-center gap-1 px-1.5 text-body text-fg-muted h-control-md max-xl:min-h-11"
+      className="flex min-w-0 items-center gap-1 px-1.5 text-body text-fg-muted h-control-lg max-xl:min-h-11"
     >
       <span className="flex size-4 shrink-0 items-center justify-center text-fg-muted">
         <Message size={16} strokeWidth={1.5} />
@@ -302,7 +302,7 @@ function SidebarSkeleton() {
   return (
     <div aria-busy="true" className="space-y-1 px-1.5 py-1" role="status">
       <span className="sr-only">正在加载诊断会话</span>
-      {[0, 1].map((index) => <Skeleton key={index} aria-hidden className="h-control-md w-full max-xl:min-h-11" />)}
+      {[0, 1].map((index) => <Skeleton key={index} aria-hidden className="h-control-lg w-full max-xl:min-h-11" />)}
     </div>
   );
 }
@@ -320,7 +320,7 @@ function RecentSessionsContent({
   if (state === "empty") return null;
   if (state === "error") {
     return (
-      <div className="flex min-h-control-md items-center justify-between gap-2 px-1.5 text-label text-fg-muted">
+      <div className="flex min-h-control-lg items-center justify-between gap-2 px-1.5 text-label text-fg-muted">
         <span>会话暂不可用</span>
         <Button variant="ghost" size="sm" onClick={onRetry}>重试</Button>
       </div>
@@ -504,11 +504,11 @@ export function ZaiopsSidebarPreview({ className }: { className?: string }) {
             sessionsState={sessionsState}
           />
           <PageLayout className="h-full min-w-0 flex-1">
-            <PageHeader className="h-control-xs py-0 max-sm:flex-row">
+            <PageHeader className="h-control-sm py-0 max-sm:flex-row">
               <div className="flex h-full min-w-0 items-center gap-2">
                 <SidebarFloatingTrigger
                   collapsedBehavior="offcanvas"
-                  size="icon-xs"
+                  size="xs"
                   label="展开侧边栏"
                   menuLabel="打开侧边栏菜单"
                   className="shrink-0"

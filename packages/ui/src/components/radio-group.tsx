@@ -412,7 +412,7 @@ const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
         }}
         className={cn(
           // Fixed height keeps every option row aligned and easy to target.
-          `relative z-content flex h-control-sm items-center gap-2.5 rounded-lg px-3 cursor-pointer outline-none`,
+          `relative z-content flex h-control-md items-center gap-2.5 rounded-lg px-3 cursor-pointer outline-none`,
           disabled && "pointer-events-none opacity-50",
           readOnly && "cursor-default",
           className

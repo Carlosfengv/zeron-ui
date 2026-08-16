@@ -45,24 +45,21 @@ describe("package Registry sources", () => {
 
   it("uses public lib and hooks paths as canonical Registry sources", () => {
     const sourceRules = {
-      "registry:lib": {
-        source: "packages/ui/src/system/",
-        target: "lib/",
-      },
-      "registry:hook": {
-        source: "packages/ui/src/hooks/",
-        target: "hooks/",
-      },
+      "registry:lib": "packages/ui/src/",
+      "registry:hook": "packages/ui/src/hooks/",
     };
     const runtimeFiles = uiRegistry.items.flatMap((item) =>
       (item.files ?? []).filter((file) => file.type in sourceRules)
     );
     for (const file of runtimeFiles) {
-      const rule = sourceRules[file.type];
-      expect(file.path.startsWith(rule.source), file.path).toBe(true);
-      expect(file.target, `${file.path}: target`).toBe(
-        `${rule.target}${file.path.slice(rule.source.length)}`
-      );
+      const source = sourceRules[file.type];
+      expect(file.path.startsWith(source), file.path).toBe(true);
+      const target = file.type === "registry:hook"
+        ? `hooks/${file.path.slice("packages/ui/src/hooks/".length)}`
+        : file.path.startsWith("packages/ui/src/tokens/")
+          ? `lib/tokens/${file.path.slice("packages/ui/src/tokens/".length)}`
+          : `lib/${file.path.slice("packages/ui/src/system/".length)}`;
+      expect(file.target, `${file.path}: target`).toBe(target);
     }
   });
 

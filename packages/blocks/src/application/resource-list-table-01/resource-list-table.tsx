@@ -486,7 +486,7 @@ export function ResourceListTable({
               ? labels.bulkToolbarAriaLabel
               : labels.toolbarAriaLabel
           }
-          className="flex min-h-control-sm min-w-0 flex-wrap items-center justify-between gap-2"
+          className="flex min-h-control-md min-w-0 flex-wrap items-center justify-between gap-2"
           role="toolbar"
         >
           {showBulkToolbar ? (
@@ -521,7 +521,7 @@ export function ResourceListTable({
           ) : (
             <>
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
-                <InputGroup className="h-control-sm w-full max-w-[450px] border-border hover:border-border">
+                <InputGroup size="sm" className="w-full max-w-[450px] border-border hover:border-border">
                   <InputGroupAddon className="pr-2">
                     <SearchIcon aria-hidden="true" size={16} strokeWidth={1.5} />
                   </InputGroupAddon>
@@ -532,7 +532,6 @@ export function ResourceListTable({
                       nameColumn?.setFilterValue(event.target.value)
                     }
                     placeholder={labels.searchPlaceholder}
-                    size="default"
                     value={(nameColumn?.getFilterValue() as string) ?? ""}
                   />
                 </InputGroup>
@@ -551,7 +550,8 @@ export function ResourceListTable({
                 <Button
                   aria-label={labels.refresh}
                   onClick={onRefresh}
-                  size="icon-sm"
+                  iconOnly
+                  size="sm"
                   variant="tertiary"
                 >
                   <RefreshIcon />

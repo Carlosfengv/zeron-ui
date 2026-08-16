@@ -1300,7 +1300,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                     // Resting height: a few lines for multi-line, one row for
                     // single-line. The textarea still auto-resizes above this
                     // floor as content wraps.
-                    isFreeTextMultiline ? "min-h-[76px]" : "min-h-control-lg",
+                    isFreeTextMultiline ? "min-h-[76px]" : "min-h-control-xl",
                     "rounded-lg",
                     // Mirror the "Something else" field instead of a blue focus
                     // ring. Empty + at rest: no border, fully quiet. Hover
@@ -1698,7 +1698,7 @@ function Row({
   const chipSlot = (
     <span
       className={cn(
-        "shrink-0 w-7 h-control-xs relative inline-flex items-center justify-center",
+        "shrink-0 w-7 h-control-sm relative inline-flex items-center justify-center",
         topAlign &&
           (bodyLayout === "stacked" ? "-mt-px" : "-mt-1.25")
       )}
@@ -1736,7 +1736,7 @@ function Row({
   const rightArrowSlot = chipPosition === "left" && !isMulti && (
     <span
       className={cn(
-        "shrink-0 w-7 h-control-xs relative inline-flex items-center justify-center",
+        "shrink-0 w-7 h-control-sm relative inline-flex items-center justify-center",
         topAlign &&
           (bodyLayout === "stacked" ? "-mt-px" : "-mt-1.25")
       )}
@@ -1791,7 +1791,7 @@ function Row({
         // items-center keeps a 1-line row visually centred — that's why
         // the Other row defers topAlign until its textarea actually wraps.
         topAlign ? "items-start" : "items-center",
-        bodyLayout === "stacked" ? "min-h-14 py-2" : "min-h-control-lg py-1.5",
+        bodyLayout === "stacked" ? "min-h-14 py-2" : "min-h-control-xl py-1.5",
         // Mirror the horizontal padding based on chip side so the row
         // reads visually balanced in both orientations. For chip-on-left
         // + multi-select there's no right slot, so widen the right padding

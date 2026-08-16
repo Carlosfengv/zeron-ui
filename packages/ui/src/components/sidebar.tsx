@@ -411,7 +411,8 @@ const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
       <Button
         ref={forwardedRef}
         variant="ghost"
-        size="icon"
+        iconOnly
+        size="md"
         aria-label={label}
         onClick={(event) => {
           onClick?.(event);
@@ -490,7 +491,8 @@ const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTrig
             <Button
               ref={forwardedRef}
               variant="tertiary"
-              size="icon-sm"
+              iconOnly
+              size="sm"
               aria-label={opensMenuOnClick ? menuLabel : label}
               active={open}
               className={cn(
@@ -679,7 +681,8 @@ const SidebarGroupAction = forwardRef<HTMLButtonElement, SidebarGroupActionProps
     ref={ref}
     type={type}
     variant="ghost"
-    size="icon-sm"
+    iconOnly
+    size="sm"
     data-slot="sidebar-group-action"
     className={cn("absolute right-1 top-0 text-fg-muted group-data-[state=collapsed]/sidebar:hidden", className)}
     {...props}

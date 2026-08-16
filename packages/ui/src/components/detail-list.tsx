@@ -32,7 +32,7 @@ const DetailListItem = forwardRef<HTMLDivElement, DetailListItemProps>(
       role="listitem"
       data-slot="detail-list-item"
       className={cn(
-        "flex min-h-8 min-w-0 items-center justify-between gap-4 py-1.5",
+        "flex min-h-control-md min-w-0 items-center justify-between gap-4 py-1.5",
         className
       )}
       {...props}

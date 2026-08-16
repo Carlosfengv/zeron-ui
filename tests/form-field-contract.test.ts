@@ -42,7 +42,9 @@ describe("form field primitives contract", () => {
   });
 
   it("keeps the default InputGroup on the md control-height token", () => {
-    expect(inputGroupSource).toContain("flex h-control-sm w-full");
+    expect(inputGroupSource).toContain('size = "md"');
+    expect(inputGroupSource).toContain("controlSizeClasses[size]");
+    expect(inputGroupSource).toContain("InputGroupSizeContext");
     expect(inputGroupSource).toContain("h-full !min-h-0 flex-1 rounded-none");
     expect(inputGroupSource).toContain("has-[textarea]:h-auto");
   });

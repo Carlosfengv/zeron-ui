@@ -16,7 +16,7 @@ export default function IconCatalogPage() {
   return (
     <DocPage title={t("title")} slug="catalog" description={t("description")} collection="icons" showInstall={false}>
       <input
-        className="min-h-control-sm w-full rounded-lg border border-border bg-transparent px-3 text-body text-fg-default outline-none placeholder:text-fg-subtle focus-visible:ring-1 focus-visible:ring-focus-ring"
+        className="min-h-control-md w-full rounded-lg border border-border bg-transparent px-3 text-body text-fg-default outline-none placeholder:text-fg-subtle focus-visible:ring-1 focus-visible:ring-focus-ring"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         placeholder={t("searchPlaceholder")}

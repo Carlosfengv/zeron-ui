@@ -64,7 +64,7 @@ function OperationsSearchTrigger({ onOpen }: { onOpen: () => void }) {
       type="button"
       variant="ghost"
       size="lg"
-      className="h-control-md w-full justify-start px-1.5 max-xl:min-h-11"
+      className="h-control-lg w-full justify-start px-1.5 max-xl:min-h-11"
       aria-keyshortcuts="Meta+K Control+K"
       onClick={onOpen}
     >
@@ -148,7 +148,7 @@ function OperationsNavigationPanel({
                 <button
                   key={name}
                   type="button"
-                  className="flex h-control-md w-full items-center rounded-lg px-2 text-left text-body text-fg-default transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
+                  className="flex h-control-lg w-full items-center rounded-lg px-2 text-left text-body text-fg-default transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
                   aria-pressed={organization === name}
                   onClick={() => onOrganizationChange(name)}
                 >
@@ -159,7 +159,7 @@ function OperationsNavigationPanel({
           </DropdownMenu>
           {showSidebarTrigger && (
             <SidebarTrigger
-              size="icon-xs"
+              size="xs"
               label="Collapse operations navigation"
               className="shrink-0"
             />
@@ -258,11 +258,11 @@ export function ZaiopsOperations({
           />
         </Sidebar>
         <PageLayout className="h-full min-w-0 flex-1">
-          <PageHeader className="h-control-xs py-0 max-sm:flex-row">
+          <PageHeader className="h-control-sm py-0 max-sm:flex-row">
             <div className="flex h-full min-w-0 items-center gap-2">
               <SidebarFloatingTrigger
                 collapsedBehavior="offcanvas"
-                size="icon-xs"
+                size="xs"
                 label="Expand operations navigation"
                 menuLabel="Open operations navigation menu"
                 className="shrink-0"

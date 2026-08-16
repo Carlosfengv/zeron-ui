@@ -23,14 +23,16 @@ const variantsCode = `import { Textarea } from "./components";
 
 const sizesCode = `import { Textarea } from "./components";
 
-<Textarea size="default" placeholder="Default" />
-<Textarea size="lg" placeholder="Large" />`;
+<Textarea density="compact" rows={2} placeholder="Compact" />
+<Textarea density="regular" rows={3} placeholder="Regular" />
+<Textarea density="comfortable" rows={4} placeholder="Comfortable" />`;
 
 export default function TextareaDoc() {
   const t = useTranslations("textarea");
   const textareaProps: PropDef[] = [
     { name: "variant", type: '"outline" | "secondary" | "ghost"', default: '"outline"', description: t("variantProp") },
-    { name: "size", type: '"default" | "lg"', default: '"default"', description: t("sizeProp") },
+    { name: "density", type: '"compact" | "regular" | "comfortable"', default: '"regular"', description: t("sizeProp") },
+    { name: "rows", type: "number", description: "Native minimum visible row count." },
     { name: "disabled", type: "boolean", default: "false", description: t("disabledProp") },
     { name: "aria-invalid", type: 'boolean | "true" | "false"', default: "false", description: t("ariaInvalidProp") },
   ];
@@ -39,7 +41,7 @@ export default function TextareaDoc() {
     <DocPage
       title="Textarea"
       slug="textarea"
-      description="Multi-line text input with semantic variants, two content sizes, resizing, and field validation support."
+      description="Multi-line text input with semantic variants, density options, native rows, resizing, and field validation support."
     >
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
@@ -66,8 +68,9 @@ export default function TextareaDoc() {
       <DocSection title={t("sizes")}>
         <ComponentPreview code={sizesCode}>
           <div className="grid w-full max-w-2xl gap-3 md:grid-cols-2">
-            <Textarea size="default" placeholder={t("defaultSize")} aria-label={t("defaultSize")} />
-            <Textarea size="lg" placeholder={t("largeSize")} aria-label={t("largeSize")} />
+            <Textarea density="compact" rows={2} placeholder={t("defaultSize")} aria-label={t("defaultSize")} />
+            <Textarea density="regular" rows={3} placeholder={t("largeSize")} aria-label={t("largeSize")} />
+            <Textarea density="comfortable" rows={4} placeholder="Comfortable" aria-label="Comfortable textarea" />
           </div>
         </ComponentPreview>
       </DocSection>

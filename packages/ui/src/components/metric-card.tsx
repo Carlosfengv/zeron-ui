@@ -348,7 +348,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
         )}
 
         <div className="relative z-content flex min-w-0 flex-col">
-          <span data-slot="metric-card-label" className="truncate text-[14px] leading-5 text-fg-muted">
+          <span data-slot="metric-card-label" className="truncate text-body text-fg-muted">
             {label}
           </span>
 
@@ -356,7 +356,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
             {loading ? (
               <span aria-hidden className="mt-0.5 h-6 w-24 animate-pulse rounded-lg bg-muted" />
             ) : (
-              <span className={cn("min-w-0 truncate text-[24px] leading-9 font-semibold tabular-nums", valueClass)}>
+              <span className={cn("min-w-0 truncate text-heading font-semibold tabular-nums", valueClass)}>
                 {unavailable ? "—" : value}
                 {unit && <span className="ml-1 text-body font-medium text-fg-muted">{unit}</span>}
               </span>

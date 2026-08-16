@@ -67,7 +67,7 @@ const NavItem = forwardRef<HTMLElement, NavItemProps>(
 
     const itemClassName = cn(
       "group/nav-item relative z-content flex min-w-0 items-center",
-      "group-data-[state=collapsed]/sidebar:size-control-md group-data-[state=collapsed]/sidebar:self-center",
+      "group-data-[state=collapsed]/sidebar:size-control-lg group-data-[state=collapsed]/sidebar:self-center",
       "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50",
       navMenu && "py-0.5",
       !navMenu && [
@@ -150,8 +150,8 @@ const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
           className: cn(
             "relative z-content flex min-w-0 flex-1 items-center gap-2 px-3 text-body font-normal whitespace-nowrap outline-none",
             variant === "underline"
-              ? "h-control-md border-b-2 border-transparent data-[active=true]:border-fg-default"
-              : "h-control-sm",
+              ? "h-control-lg border-b-2 border-transparent data-[active=true]:border-fg-default"
+              : "h-control-md",
             "group-data-[state=collapsed]/sidebar:h-full group-data-[state=collapsed]/sidebar:w-full group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:px-0",
             "cursor-pointer text-fg-muted transition-[color,border-color] duration-fast",
             "hover:text-fg-default focus-visible:text-fg-default",
@@ -269,7 +269,8 @@ const NavItemAction = forwardRef<HTMLButtonElement, NavItemActionProps>(
         ref={ref}
         type={type}
         variant="ghost"
-        size="icon-sm"
+        iconOnly
+        size="sm"
         data-slot="nav-item-action"
         className={cn("relative z-content mr-1 shrink-0 text-fg-muted", className)}
         {...props}
@@ -312,7 +313,7 @@ const NavItemSubTrigger = forwardRef<HTMLElement, NavItemSubTriggerProps>(
         ref: ref as React.Ref<HTMLAnchorElement>,
         "data-slot": "nav-item-sub-trigger",
         className: cn(
-          "flex h-control-sm min-w-0 items-center px-2 text-body text-fg-muted outline-none transition-colors duration-fast hover:text-fg-default focus-visible:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring",
+          "flex h-control-md min-w-0 items-center px-2 text-body text-fg-muted outline-none transition-colors duration-fast hover:text-fg-default focus-visible:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring",
           className
         ),
         ...props,

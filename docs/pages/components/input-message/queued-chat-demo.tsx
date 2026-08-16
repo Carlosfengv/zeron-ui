@@ -771,7 +771,8 @@ export function QueuedChatDemo({
                     <Tooltip content="Add" side="top">
                       <Button
                         variant="ghost"
-                        size="icon-sm"
+                        iconOnly
+                        size="sm"
                         aria-label="Attach files"
                         active={attachOpen}
                         onClick={() => setAttachOpen((o) => !o)}

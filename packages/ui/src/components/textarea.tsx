@@ -26,14 +26,15 @@ const textareaVariants = cva(
         secondary: "border border-transparent bg-emphasis shadow-none",
         ghost: "border border-transparent bg-transparent shadow-none",
       },
-      size: {
-        default: "min-h-24 px-3 py-2",
-        lg: "min-h-32 px-3.5 py-2.5",
+      density: {
+        compact: "px-2.5 py-1.5 text-label",
+        regular: "px-3 py-2 text-body",
+        comfortable: "px-3.5 py-2.5 text-body",
       },
     },
     defaultVariants: {
       variant: "outline",
-      size: "default",
+      density: "regular",
     },
   }
 );
@@ -43,11 +44,11 @@ export interface TextareaProps
     VariantProps<typeof textareaVariants> {}
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, size = "default", variant = "outline", ...props }, ref) => {
+  ({ className, density = "regular", variant = "outline", ...props }, ref) => {
     const controlProps = {
       ...props,
-      className: cn(textareaVariants({ size, variant }), "rounded-lg", className),
-      "data-size": size,
+      className: cn(textareaVariants({ density, variant }), "rounded-lg", className),
+      "data-density": density,
       "data-slot": "textarea",
       "data-variant": variant,
     } as ComponentPropsWithoutRef<typeof FieldPrimitive.Control>;

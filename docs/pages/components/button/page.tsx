@@ -22,7 +22,8 @@ import {
 function getButtonProps(t: ReturnType<typeof useTranslations>): PropDef[] {
   return [
     { name: "variant", type: '"primary" | "neutral" | "destructive" | "secondary" | "tertiary" | "ghost"', default: '"primary"', description: t("visualStyle") },
-    { name: "size", type: '"sm" | "md" | "lg" | "icon-xs" | "icon-sm" | "icon" | "icon-lg"', default: '"md"', description: t("buttonSize") },
+    { name: "size", type: '"xs" | "sm" | "md" | "lg" | "xl"', default: '"md"', description: t("buttonSize") },
+    { name: "iconOnly", type: "boolean", default: "false", description: t("iconOnly") },
     { name: "loading", type: "boolean", default: "false", description: t("loadingDescription") },
     { name: "active", type: "boolean", default: "false", description: t("activeDescription") },
     { name: "leadingIcon", type: "IconComponent", description: t("leadingIconDescription") },
@@ -198,14 +199,7 @@ function ButtonGroupGuidance() {
 // kept in sync in the Code tab.
 
 type PlayVariant = ButtonVariant;
-type PlaySize = "sm" | "md" | "lg";
-
-// "Icon only" swaps the text sizes for their square counterparts.
-const ICON_ONLY_SIZE: Record<PlaySize, "icon-sm" | "icon" | "icon-lg"> = {
-  sm: "icon-sm",
-  md: "icon",
-  lg: "icon-lg",
-};
+type PlaySize = "xs" | "sm" | "md" | "lg" | "xl";
 
 function buildButtonCode(o: {
   variant: PlayVariant;
@@ -218,10 +212,10 @@ function buildButtonCode(o: {
   active: boolean;
   disabled: boolean;
 }) {
-  const size = o.iconOnly ? ICON_ONLY_SIZE[o.size] : o.size;
   const props: string[] = [];
   if (o.variant !== "primary") props.push(`variant="${o.variant}"`);
-  if (size !== "md") props.push(`size="${size}"`);
+  if (o.size !== "md") props.push(`size="${o.size}"`);
+  if (o.iconOnly) props.push("iconOnly");
   if (!o.iconOnly && o.leading) props.push("leadingIcon={Plus}");
   if (!o.iconOnly && o.trailing) props.push("trailingIcon={ArrowRight}");
   if (o.loading) props.push("loading");
@@ -295,7 +289,7 @@ function ButtonPlayground() {
     const pick = <T,>(arr: readonly T[]) =>
       arr[Math.floor(Math.random() * arr.length)];
     setVariant(pick(["primary", "neutral", "destructive", "secondary", "tertiary", "ghost"] as const));
-    setSize(pick(["sm", "md", "lg"] as const));
+    setSize(pick(["xs", "sm", "md", "lg", "xl"] as const));
     setIconOnly(Math.random() > 0.85);
     setLeading(Math.random() > 0.5);
     setTrailing(Math.random() > 0.75);
@@ -328,9 +322,11 @@ function ButtonPlayground() {
             value={size}
             onChange={(v) => setSize(v as PlaySize)}
             options={[
+              { value: "xs", label: "Extra small" },
               { value: "sm", label: "Small" },
               { value: "md", label: "Medium" },
               { value: "lg", label: "Large" },
+              { value: "xl", label: "Extra large" },
             ]}
           />
         </PlayField>
@@ -392,7 +388,8 @@ function ButtonPlayground() {
         <ComponentPreview code={code} minHeightClass="min-h-[280px]">
           <Button
             variant={variant}
-            size={iconOnly ? ICON_ONLY_SIZE[size] : size}
+            size={size}
+            iconOnly={iconOnly}
             leadingIcon={!iconOnly && leading ? Plus : undefined}
             trailingIcon={!iconOnly && trailing ? ArrowRight : undefined}
             loading={loading}
@@ -425,12 +422,15 @@ const Plus = useIcon("plus");
 <Button size="sm">Small</Button>
 <Button size="md">Medium</Button>
 <Button size="lg">Large</Button>
+<Button size="xs">Extra small</Button>
+<Button size="xl">Extra large</Button>
 
 // ${t("iconButtonSizes")}
-<Button size="icon-xs"><Plus /></Button>
-<Button size="icon-sm"><Plus /></Button>
-<Button size="icon"><Plus /></Button>
-<Button size="icon-lg"><Plus /></Button>`;
+<Button size="xs" iconOnly aria-label="Add"><Plus /></Button>
+<Button size="sm" iconOnly aria-label="Add"><Plus /></Button>
+<Button size="md" iconOnly aria-label="Add"><Plus /></Button>
+<Button size="lg" iconOnly aria-label="Add"><Plus /></Button>
+<Button size="xl" iconOnly aria-label="Add"><Plus /></Button>`;
   const iconsCode = `import { Button } from "./components";
 import { useIcon } from "@zeron/icons/context";
 
@@ -484,14 +484,17 @@ const Loader = useIcon("loader");
                 <Button size="sm">Small</Button>
                 <Button size="md">Medium</Button>
                 <Button size="lg">Large</Button>
+                <Button size="xs">Extra small</Button>
+                <Button size="xl">Extra large</Button>
               </div>
             </DemoGroup>
             <DemoGroup label={t("iconButtonSizes")}>
               <div className="flex flex-wrap items-center gap-2">
-                <Button size="icon-xs"><Plus /></Button>
-                <Button size="icon-sm"><Plus /></Button>
-                <Button size="icon"><Plus /></Button>
-                <Button size="icon-lg"><Plus /></Button>
+                <Button size="xs" iconOnly aria-label="Add"><Plus /></Button>
+                <Button size="sm" iconOnly aria-label="Add"><Plus /></Button>
+                <Button size="md" iconOnly aria-label="Add"><Plus /></Button>
+                <Button size="lg" iconOnly aria-label="Add"><Plus /></Button>
+                <Button size="xl" iconOnly aria-label="Add"><Plus /></Button>
               </div>
             </DemoGroup>
           </div>

@@ -136,7 +136,7 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("keeps collapsed Sidebar navigation items at the 36px control size", () => {
-    expect(navItem).toContain("group-data-[state=collapsed]/sidebar:size-control-md");
+    expect(navItem).toContain("group-data-[state=collapsed]/sidebar:size-control-lg");
     expect(navItem).not.toContain("group-data-[state=collapsed]/sidebar:size-8");
   });
 
@@ -165,7 +165,7 @@ describe("shell and page-layout composition contract", () => {
     expect(docs).not.toContain("<PageHeader>");
     expect(docs).toContain("<TopNavAppShellPlayground />");
     expect(docs).toContain('<div className="h-[400px] w-full group-data-[fullscreen=true]/preview-content:h-full">');
-    expect(docs).toContain('className="h-full min-h-0 w-full overflow-hidden border-[0.5px] border-border text-body"');
+    expect(docs).toContain('className="h-full min-h-0 w-full overflow-hidden text-body"');
     expect(docs).not.toContain('className="h-[22rem]');
     expect(docs).not.toContain('align="bottom"');
     expect(docs).not.toContain('className="w-full p-4 sm:p-5 group-data-[fullscreen=true]/preview-content:h-full"');
@@ -179,7 +179,7 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("aligns TopNav navigation left, center, or right with center as the default", () => {
-    expect(topNav).toContain('cva("grid min-h-control-md min-w-0 items-center gap-3 px-3"');
+    expect(topNav).toContain('cva("grid min-h-control-lg min-w-0 items-center gap-3 px-3"');
     expect(topNav).toContain('data-slot="top-nav-brand" className={cn("flex shrink-0 items-center gap-2 px-3"');
     expect(topNav).toContain('data-slot="top-nav-actions" className={cn("ml-auto flex shrink-0 items-center gap-1 px-3"');
     expect(topNav).toContain('export type TopNavNavigationAlign = "left" | "center" | "right";');
@@ -208,7 +208,7 @@ describe("shell and page-layout composition contract", () => {
     expect(navMenu).toContain('"max-w-[calc(100%_+_8px)] overflow-x-auto scrollbar-hide"');
     expect(navMenu).toContain('variant === "underline" ? "gap-3"');
     expect(navMenu).toContain('{variant !== "underline" && isMeasured && activeRect && (');
-    expect(navItem).toContain('"h-control-md border-b-2 border-transparent data-[active=true]:border-fg-default"');
+    expect(navItem).toContain('"h-control-lg border-b-2 border-transparent data-[active=true]:border-fg-default"');
   });
 
   it("offers an optional TopNav dropdown item with a replaceable chevron suffix", () => {

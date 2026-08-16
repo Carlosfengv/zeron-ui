@@ -21,31 +21,55 @@ import { cn } from "#system/utils";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 import { Button, type ButtonProps } from "#components/button";
 import { Input, type InputProps } from "#components/input";
+import {
+  controlSizeClasses,
+  controlSizeRecipe,
+  type ControlSize,
+} from "../tokens/control-size";
 
 // ── Compound input group ─────────────────────────────────
 
-type InputGroupProps = HTMLAttributes<HTMLDivElement>;
+interface InputGroupProps extends HTMLAttributes<HTMLDivElement> {
+  size?: ControlSize;
+}
+
+const InputGroupSizeContext = createContext<ControlSize | null>(null);
+
+function useInputGroupSize() {
+  return useContext(InputGroupSizeContext) ?? "md";
+}
+
+const inputGroupAddonPaddingClasses: Record<ControlSize, string> = {
+  xs: "px-1 [&_svg]:size-3",
+  sm: "px-1.5 [&_svg]:size-3.5",
+  md: "px-2 [&_svg]:size-4",
+  lg: "px-2.5 [&_svg]:size-4",
+  xl: "px-3 [&_svg]:size-[18px]",
+};
 
 const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
-  ({ className, ...props }, ref) => {
-
+  ({ className, size = "md", ...props }, ref) => {
     return (
-      <div
-        ref={ref}
-        className={cn(
-          "group/input-group relative flex h-control-sm w-full min-w-0 items-center border border-input bg-transparent outline-none hover:border-input-hover hover:bg-hover",
-          "transition-[background-color,border-color,box-shadow,color] duration-fast",
-          "has-[[data-slot=input-group-control]:focus-visible]:ring-1 has-[[data-slot=input-group-control]:focus-visible]:ring-focus-ring",
-          "has-aria-invalid:border-danger-border has-aria-invalid:hover:border-danger-border has-aria-invalid:ring-1 has-aria-invalid:ring-danger-border/40 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-1 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-focus-ring has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-offset-2",
-          "has-[textarea]:h-auto has-data-[align=block-start]:h-auto has-data-[align=block-start]:flex-col has-data-[align=block-start]:items-stretch",
-          "has-data-[align=block-end]:h-auto has-data-[align=block-end]:flex-col has-data-[align=block-end]:items-stretch",
-          "rounded-lg",
-          className
-        )}
-        data-slot="input-group"
-        role="group"
-        {...props}
-      />
+      <InputGroupSizeContext.Provider value={size}>
+        <div
+          ref={ref}
+          className={cn(
+            "group/input-group relative flex w-full min-w-0 items-center border border-input bg-transparent outline-none hover:border-input-hover hover:bg-hover",
+            controlSizeClasses[size],
+            "transition-[background-color,border-color,box-shadow,color] duration-fast",
+            "has-[[data-slot=input-group-control]:focus-visible]:ring-1 has-[[data-slot=input-group-control]:focus-visible]:ring-focus-ring",
+            "has-aria-invalid:border-danger-border has-aria-invalid:hover:border-danger-border has-aria-invalid:ring-1 has-aria-invalid:ring-danger-border/40 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-1 has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-focus-ring has-aria-invalid:has-[[data-slot=input-group-control]:focus-visible]:outline-offset-2",
+            "has-[textarea]:h-auto has-data-[align=block-start]:h-auto has-data-[align=block-start]:flex-col has-data-[align=block-start]:items-stretch",
+            "has-data-[align=block-end]:h-auto has-data-[align=block-end]:flex-col has-data-[align=block-end]:items-stretch",
+            "rounded-lg",
+            className
+          )}
+          data-size={size}
+          data-slot="input-group"
+          role="group"
+          {...props}
+        />
+      </InputGroupSizeContext.Provider>
     );
   }
 );
@@ -75,6 +99,7 @@ interface InputGroupAddonProps
 
 const InputGroupAddon = forwardRef<HTMLDivElement, InputGroupAddonProps>(
   ({ className, align = "inline-start", onClick, ...props }, ref) => {
+    const size = useInputGroupSize();
     const handleClick: MouseEventHandler<HTMLDivElement> = (event) => {
       onClick?.(event);
       if (event.defaultPrevented || (event.target as HTMLElement).closest("button")) {
@@ -89,7 +114,12 @@ const InputGroupAddon = forwardRef<HTMLDivElement, InputGroupAddonProps>(
     return (
       <div
         ref={ref}
-        className={cn(inputGroupAddonVariants({ align }), className)}
+        className={cn(
+          inputGroupAddonVariants({ align }),
+          controlSizeRecipe[size].text,
+          inputGroupAddonPaddingClasses[size],
+          className
+        )}
         data-align={align}
         data-slot="input-group-addon"
         onClick={handleClick}
@@ -102,49 +132,35 @@ const InputGroupAddon = forwardRef<HTMLDivElement, InputGroupAddonProps>(
 
 InputGroupAddon.displayName = "InputGroupAddon";
 
-const inputGroupButtonVariants = cva("flex items-center shadow-none", {
-  variants: {
-    size: {
-      xs: "h-control-xs px-2 text-label",
-      sm: "h-control-xs px-2.5 text-label",
-      "icon-xs": "size-control-xs p-0",
-      "icon-sm": "size-control-xs p-0",
-    },
-  },
-  defaultVariants: {
-    size: "xs",
-  },
-});
-
 interface InputGroupButtonProps
-  extends Omit<ButtonProps, "size">,
-    VariantProps<typeof inputGroupButtonVariants> {}
+  extends Omit<ButtonProps, "size" | "iconOnly"> {
+  iconOnly?: boolean;
+}
 
 const InputGroupButton = forwardRef<HTMLButtonElement, InputGroupButtonProps>(
   (
     {
       className,
-      size = "xs",
+      iconOnly = false,
       type = "button",
       variant = "ghost",
       ...props
     },
     ref
   ) => {
-    const buttonSize =
-      size === "icon-xs"
-        ? "icon-xs"
-        : size === "icon-sm"
-          ? "icon-sm"
-          : "sm";
+    const size = useInputGroupSize();
 
     return (
       <Button
         ref={ref}
-        className={cn(inputGroupButtonVariants({ size }), className)}
+        className={cn(
+          "h-full rounded-md [&_[data-slot=button-background]]:inset-y-0.5",
+          className
+        )}
         data-size={size}
         data-slot="input-group-button"
-        size={buttonSize}
+        iconOnly={iconOnly}
+        size={size}
         type={type}
         variant={variant}
         {...props}
@@ -158,41 +174,49 @@ InputGroupButton.displayName = "InputGroupButton";
 type InputGroupTextProps = HTMLAttributes<HTMLSpanElement>;
 
 const InputGroupText = forwardRef<HTMLSpanElement, InputGroupTextProps>(
-  ({ className, ...props }, ref) => (
-    <span
-      ref={ref}
-      className={cn(
-        "flex items-center text-body text-fg-muted [&_svg]:pointer-events-none",
-        className
-      )}
-      data-slot="input-group-text"
-      {...props}
-    />
-  )
+  ({ className, ...props }, ref) => {
+    const size = useInputGroupSize();
+    return (
+      <span
+        ref={ref}
+        className={cn(
+          "flex items-center text-fg-muted [&_svg]:pointer-events-none",
+          controlSizeRecipe[size].text,
+          className
+        )}
+        data-slot="input-group-text"
+        {...props}
+      />
+    );
+  }
 );
 
 InputGroupText.displayName = "InputGroupText";
 
-type InputGroupInputProps = InputProps;
+type InputGroupInputProps = Omit<InputProps, "size">;
 
 const InputGroupInput = forwardRef<HTMLInputElement, InputGroupInputProps>(
-  ({ className, ...props }, ref) => (
-    <Input
-      ref={ref}
-      className={cn(
-        "h-full !min-h-0 flex-1 rounded-none border-0 bg-transparent py-0 shadow-none hover:bg-transparent focus-visible:ring-0",
-        // The composite group owns the visible frame. Keep aria-invalid on the
-        // actual input for Field/assistive-technology semantics, but prevent the
-        // Input primitive from drawing a second, square validation boundary.
-        "aria-invalid:border-0 aria-invalid:hover:border-0 aria-invalid:ring-0 aria-invalid:focus-visible:outline-0",
-        "group-has-data-[align=inline-start]/input-group:pl-0",
-        "group-has-data-[align=inline-end]/input-group:pr-0",
-        className
-      )}
-      data-slot="input-group-control"
-      {...props}
-    />
-  )
+  ({ className, ...props }, ref) => {
+    const size = useInputGroupSize();
+    return (
+      <Input
+        ref={ref}
+        className={cn(
+          "h-full !min-h-0 flex-1 rounded-none border-0 bg-transparent py-0 shadow-none hover:bg-transparent focus-visible:ring-0",
+          // The composite group owns the visible frame. Keep aria-invalid on the
+          // actual input for Field/assistive-technology semantics, but prevent the
+          // Input primitive from drawing a second, square validation boundary.
+          "aria-invalid:border-0 aria-invalid:hover:border-0 aria-invalid:ring-0 aria-invalid:focus-visible:outline-0",
+          "group-has-data-[align=inline-start]/input-group:pl-0",
+          "group-has-data-[align=inline-end]/input-group:pr-0",
+          className
+        )}
+        data-slot="input-group-control"
+        size={size}
+        {...props}
+      />
+    );
+  }
 );
 
 InputGroupInput.displayName = "InputGroupInput";
@@ -459,7 +483,6 @@ export {
   InputGroupInput,
   InputGroupTextarea,
   inputGroupAddonVariants,
-  inputGroupButtonVariants,
   InputFieldGroup,
   InputField,
 };

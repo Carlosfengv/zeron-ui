@@ -2029,7 +2029,9 @@ export function FileCell<TData>({
                           <Button
                             type="button"
                             variant="ghost"
-                            size="icon"
+                            iconOnly
+                            size="xs"
+                            aria-label={`Remove ${file.name}`}
                             className="size-5 rounded-sm"
                             onClick={() => removeFile(file.id)}
                             disabled={isPending}

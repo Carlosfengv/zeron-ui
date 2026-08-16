@@ -21,9 +21,9 @@ const badgeVariants = cva(
         dot: "border border-border text-fg-default",
       },
       size: {
-        sm: "h-5 px-2 text-label gap-1",
-        md: "h-6 px-2.5 text-label gap-1.5",
-        lg: "h-control-xs px-3 text-body gap-1.5",
+        sm: "h-badge-sm px-2 text-label gap-1",
+        md: "h-badge-md px-2.5 text-label gap-1.5",
+        lg: "h-badge-lg px-3 text-body gap-1.5",
       },
     },
     defaultVariants: {

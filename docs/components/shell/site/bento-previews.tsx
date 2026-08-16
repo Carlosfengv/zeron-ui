@@ -157,13 +157,13 @@ function ButtonGroupPreview() {
 
   return (
     <ButtonGroup aria-label="Document actions">
-      <Button variant="tertiary" size="icon-sm" aria-label="Edit">
+      <Button iconOnly variant="tertiary" size="sm" aria-label="Edit">
         <Pencil />
       </Button>
-      <Button variant="tertiary" size="icon-sm" aria-label="Duplicate">
+      <Button iconOnly variant="tertiary" size="sm" aria-label="Duplicate">
         <Copy />
       </Button>
-      <Button variant="tertiary" size="icon-sm" aria-label="Archive">
+      <Button iconOnly variant="tertiary" size="sm" aria-label="Archive">
         <Archive />
       </Button>
     </ButtonGroup>

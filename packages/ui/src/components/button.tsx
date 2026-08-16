@@ -12,6 +12,28 @@ import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { IconComponent } from "#system/icon-context";
 import { cn } from "#system/utils";
+import {
+  controlButtonPaddingClasses,
+  controlSizeClasses,
+  controlSizeRecipe,
+  type ControlSize,
+} from "../tokens/control-size";
+
+const buttonSizeVariants = {
+  xs: cn(controlSizeClasses.xs, controlButtonPaddingClasses.xs, "text-label gap-1"),
+  sm: cn(controlSizeClasses.sm, controlButtonPaddingClasses.sm, "text-label gap-1"),
+  md: cn(controlSizeClasses.md, controlButtonPaddingClasses.md, "text-body gap-1.5"),
+  lg: cn(controlSizeClasses.lg, controlButtonPaddingClasses.lg, "text-body gap-1.5"),
+  xl: cn(controlSizeClasses.xl, controlButtonPaddingClasses.xl, "text-body gap-2"),
+} satisfies Record<ControlSize, string>;
+
+const spinnerSizeClasses: Record<ControlSize, string> = {
+  xs: "size-3",
+  sm: "size-3.5",
+  md: "size-4",
+  lg: "size-4",
+  xl: "size-[18px]",
+};
 
 const buttonVariants = cva(
   [
@@ -30,25 +52,22 @@ const buttonVariants = cva(
         tertiary: "text-fg-default",
         ghost: "text-fg-muted hover:text-fg-default",
       },
-      size: {
-        sm: "h-control-xs px-3 text-label gap-1",
-        md: "h-control-sm px-4 text-body gap-1.5",
-        lg: "h-control-md px-5 text-body gap-1.5",
-        "icon-xs": "size-control-xs p-0 [&_svg]:size-3.5",
-        "icon-sm": "h-control-sm w-8 p-0 [&_svg]:h-3.5 [&_svg]:w-3.5",
-        icon: "h-control-md w-9 p-0 [&_svg]:h-4 [&_svg]:w-4",
-        "icon-lg": "h-control-lg w-10 p-0 [&_svg]:h-5 [&_svg]:w-5",
-      },
+      size: buttonSizeVariants,
+      iconOnly: { true: "aspect-square p-0" },
       iconLeft: { true: "" },
       iconRight: { true: "" },
     },
     compoundVariants: [
+      { size: "xs", iconLeft: true, className: "pl-1" },
       { size: "sm", iconLeft: true, className: "pl-1.5" },
-      { size: "md", iconLeft: true, className: "pl-2.5" },
-      { size: "lg", iconLeft: true, className: "pl-3.5" },
+      { size: "md", iconLeft: true, className: "pl-2" },
+      { size: "lg", iconLeft: true, className: "pl-2.5" },
+      { size: "xl", iconLeft: true, className: "pl-3" },
+      { size: "xs", iconRight: true, className: "pr-1" },
       { size: "sm", iconRight: true, className: "pr-1.5" },
-      { size: "md", iconRight: true, className: "pr-2.5" },
-      { size: "lg", iconRight: true, className: "pr-3.5" },
+      { size: "md", iconRight: true, className: "pr-2" },
+      { size: "lg", iconRight: true, className: "pr-2.5" },
+      { size: "xl", iconRight: true, className: "pr-3" },
     ],
     defaultVariants: {
       variant: "primary",
@@ -62,6 +81,8 @@ interface ButtonProps
     VariantProps<typeof buttonVariants> {
   /** When true, the given single React-element child becomes the rendered element (slot-style). */
   asChild?: boolean;
+  /** Renders a square, icon-only button at the selected control size. */
+  iconOnly?: boolean;
   loading?: boolean;
   leadingIcon?: IconComponent;
   trailingIcon?: IconComponent;
@@ -99,6 +120,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       variant,
       size,
       asChild = false,
+      iconOnly = false,
       loading = false,
       leadingIcon: LeadingIcon,
       trailingIcon: TrailingIcon,
@@ -127,22 +149,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           }>)
         : null;
     const label = asChildElement ? asChildElement.props.children : children;
-    const isIconOnly =
-      size === "icon" ||
-      size === "icon-xs" ||
-      size === "icon-sm" ||
-      size === "icon-lg";
-    const iconSize = size === "sm" ? 14 : size === "lg" ? 20 : 16;
-    // Spinner box tracks the button height (sm is h-control-xs, lg/icon are h-control-md, …) so
-    // the loading glyph stays proportionate across sizes.
-    const spinnerSizeClass =
-      size === "sm" || size === "icon-xs"
-        ? "h-control-xs w-7"
-        : size === "lg" || size === "icon"
-          ? "h-control-md w-9"
-          : size === "icon-lg"
-            ? "h-control-lg w-10"
-            : "h-control-sm w-8";
+    const resolvedSize = (size ?? "md") as ControlSize;
+    const iconSize = controlSizeRecipe[resolvedSize].icon;
+    const spinnerSizeClass = spinnerSizeClasses[resolvedSize];
     const bgClass = active
       ? activeBgVariants[variant ?? "primary"]
       : bgVariants[variant ?? "primary"];
@@ -162,11 +171,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           {loading ? (
             <>
               <span className="flex items-center justify-center gap-[inherit] opacity-0">
-                {LeadingIcon && !isIconOnly && (
+                {LeadingIcon && !iconOnly && (
                   <LeadingIcon size={iconSize} strokeWidth={2} />
                 )}
                 {label}
-                {TrailingIcon && !isIconOnly && (
+                {TrailingIcon && !iconOnly && (
                   <TrailingIcon size={iconSize} strokeWidth={2} />
                 )}
               </span>
@@ -190,7 +199,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 </svg>
               </span>
             </>
-          ) : isIconOnly ? (
+          ) : iconOnly ? (
             <span className="[&_svg]:stroke-[1.5] [&_svg]:transition-[stroke-width] [&_svg]:duration-fast group-hover:[&_svg]:stroke-[2]">
               {label}
             </span>
@@ -220,9 +229,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const rootClassName = cn(
       buttonVariants({
         variant,
-        size,
-        iconLeft: !isIconOnly && !!LeadingIcon,
-        iconRight: !isIconOnly && !!TrailingIcon,
+        size: resolvedSize,
+        iconOnly,
+        iconLeft: !iconOnly && !!LeadingIcon,
+        iconRight: !iconOnly && !!TrailingIcon,
       }),
       "rounded-lg",
       className

@@ -19,7 +19,7 @@ const variantsCode = `import { Input } from "./components";
 const sizesCode = `import { Input } from "./components";
 
 <Input size="sm" placeholder="Small" />
-<Input size="default" placeholder="Default" />
+<Input size="md" placeholder="Medium" />
 <Input size="lg" placeholder="Large" />
 <Input size="xl" placeholder="Extra large" />`;
 
@@ -41,7 +41,7 @@ export default function InputDoc() {
   const t = useTranslations("input");
   const inputProps: PropDef[] = [
     { name: "variant", type: '"outline" | "secondary" | "ghost"', default: '"outline"', description: t("variant") },
-    { name: "size", type: '"sm" | "default" | "lg" | "xl"', default: '"default"', description: t("size") },
+    { name: "size", type: '"xs" | "sm" | "md" | "lg" | "xl"', default: '"md"', description: t("size") },
     { name: "type", type: "React.HTMLInputTypeAttribute", default: '"text"', description: t("type") },
     { name: "disabled", type: "boolean", default: "false", description: t("disabled") },
     { name: "aria-invalid", type: "boolean | \"true\" | \"false\"", default: "false", description: t("ariaInvalid") },
@@ -50,7 +50,7 @@ export default function InputDoc() {
     <DocPage
       title="Input"
       slug="input"
-      description="Text input with outline, secondary, and ghost variants, four sizes, and accessible validation states."
+      description="Text input with outline, secondary, and ghost variants, five sizes, and accessible validation states."
     >
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
@@ -73,8 +73,9 @@ export default function InputDoc() {
       <DocSection title={t("sizes")}>
         <ComponentPreview code={sizesCode}>
           <div className="flex w-72 max-w-full flex-col gap-3">
+            <Input size="xs" placeholder="Extra small" aria-label="Extra small input" />
             <Input size="sm" placeholder="Small" aria-label="Small input" />
-            <Input size="default" placeholder="Default" aria-label="Default input" />
+            <Input size="md" placeholder="Medium" aria-label="Medium input" />
             <Input size="lg" placeholder="Large" aria-label="Large input" />
             <Input size="xl" placeholder="Extra large" aria-label="Extra large input" />
           </div>

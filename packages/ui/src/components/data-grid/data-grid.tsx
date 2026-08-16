@@ -265,7 +265,7 @@ export function DataGrid<TData>({
               <div
                 role="gridcell"
                 tabIndex={0}
-                className="relative flex h-control-sm grow items-center bg-transparent transition-colors duration-fast hover:bg-hover focus:bg-active focus:outline-none"
+                className="relative flex h-control-md grow items-center bg-transparent transition-colors duration-fast hover:bg-hover focus:bg-active focus:outline-none"
                 style={{
                   width: table.getTotalSize(),
                   minWidth: table.getTotalSize(),

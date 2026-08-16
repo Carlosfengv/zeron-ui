@@ -181,7 +181,8 @@ function DemoPageInner() {
             <Tooltip content={prevSlide ? <span>{prevSlide.name} &ensp;<kbd className="font-mono opacity-50">&larr;</kbd></span> : "No previous"}>
               <Button
                 variant="ghost"
-                size="icon"
+                iconOnly
+                size="md"
                 onClick={() => goTo(currentIndex - 1)}
                 disabled={!prevSlide}
                 aria-label="Previous slide"
@@ -192,7 +193,8 @@ function DemoPageInner() {
             <Tooltip content={nextSlide ? <span>{nextSlide.name} &ensp;<kbd className="font-mono opacity-50">&rarr;</kbd></span> : "No next"}>
               <Button
                 variant="ghost"
-                size="icon"
+                iconOnly
+                size="md"
                 onClick={() => goTo(currentIndex + 1)}
                 disabled={!nextSlide}
                 aria-label="Next slide"

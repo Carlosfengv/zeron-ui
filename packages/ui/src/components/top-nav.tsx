@@ -23,7 +23,7 @@ import {
   type PopoverProps,
 } from "#components/popover";
 
-const topNavVariants = cva("grid min-h-control-md min-w-0 items-center gap-3 px-3", {
+const topNavVariants = cva("grid min-h-control-lg min-w-0 items-center gap-3 px-3", {
   variants: {
     variant: {
       default: "",

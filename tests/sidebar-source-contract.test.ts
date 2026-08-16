@@ -90,7 +90,7 @@ describe("sidebar implementation contract", () => {
 
   it("composes the ZAIops main area from PageLayout without a PageSubnav", () => {
     expect(zaiopsPreview).toContain('<PageLayout className="h-full min-w-0 flex-1">');
-    expect(zaiopsPreview).toContain('<PageHeader className="h-control-xs py-0 max-sm:flex-row">');
+    expect(zaiopsPreview).toContain('<PageHeader className="h-control-sm py-0 max-sm:flex-row">');
     expect(zaiopsPreview).toContain("<PageContent>");
     expect(zaiopsPreview).toContain('<PageBody className="p-6">');
     expect(zaiopsPreview).not.toContain("PageSubnav");
@@ -105,7 +105,7 @@ describe("sidebar implementation contract", () => {
     expect(identityRow).toContain('flex min-w-0 w-full items-center gap-1.5');
     expect(identityRow).toContain('data-slot="sidebar-identity-leading"');
     expect(identityRow).toContain('trailingPlacement === "edge" && "ms-auto"');
-    expect(identityRow).toContain('min-h-control-md h-auto justify-start gap-1.5 px-0.5 py-2');
+    expect(identityRow).toContain('min-h-control-lg h-auto justify-start gap-1.5 px-0.5 py-2');
     expect(identityRow).toContain('[&>span.relative>span]:w-full');
     expect(zaiopsPreview).toContain("<SidebarIdentityRow");
     expect(zaiopsPreview).toContain('trailingPlacement="edge"');
@@ -129,7 +129,8 @@ describe("sidebar implementation contract", () => {
     expect(sidebar).toContain("toggle();");
     expect(sidebar).toContain('useIcon("chevrons-right")');
     expect(sidebar).toContain('useIcon("chevrons-left")');
-    expect(sidebar).toContain('size="icon-sm"');
+    expect(sidebar).toContain("iconOnly");
+    expect(sidebar).toContain('size="sm"');
     expect(sidebar).toContain('variant="tertiary"');
     expect(zaiopsPreview).toContain("<SidebarFloatingTrigger");
     expect(zaiopsPreview).toContain('collapsedBehavior="offcanvas"');
@@ -144,12 +145,12 @@ describe("sidebar implementation contract", () => {
     expect(sidebar).toContain('if (!opensMenuOnClick)');
     expect(zaiopsBlock).toContain('<SidebarProvider breakpointBehavior="collapse">');
     expect(zaiopsBlock).not.toContain('clickBehavior="menu"');
-    expect(zaiopsBlock).toContain('size="icon-xs"\n              label="Collapse operations navigation"\n              className="shrink-0"');
-    expect(zaiopsBlock).toContain('collapsedBehavior="offcanvas"\n                size="icon-xs"');
+    expect(zaiopsBlock).toContain('size="xs"\n              label="Collapse operations navigation"\n              className="shrink-0"');
+    expect(zaiopsBlock).toContain('collapsedBehavior="offcanvas"\n                size="xs"');
     expect(zaiopsBlock).toContain('label="Expand operations navigation"');
     expect(zaiopsBlock).toContain('menuLabel="Open operations navigation menu"');
-    expect(zaiopsPreview).toContain('size="icon-xs"\n      label={isMobile ? "关闭导航" : "收起侧边栏"}\n      className="shrink-0"');
-    expect(zaiopsPreview).toContain('collapsedBehavior="offcanvas"\n                  size="icon-xs"');
+    expect(zaiopsPreview).toContain('size="xs"\n      label={isMobile ? "关闭导航" : "收起侧边栏"}\n      className="shrink-0"');
+    expect(zaiopsPreview).toContain('collapsedBehavior="offcanvas"\n                  size="xs"');
     expect(zaiopsPreview).toContain('<SidebarProvider breakpointBehavior="collapse">');
     expect(zaiopsPreview).not.toContain("CompactOpenTrigger");
     expect(zaiopsPreview).not.toContain('className="flex h-full items-center xl:hidden"');
@@ -188,7 +189,7 @@ describe("sidebar implementation contract", () => {
       const navigationTriggerClass = sourceFile.match(
         /<NavItemTrigger[\s\S]*?className="([^"]+)"[\s\S]*?<\/NavItemTrigger>/
       )?.[1];
-      expect(navigationTriggerClass).not.toContain("h-control-md");
+      expect(navigationTriggerClass).not.toContain("h-control-lg");
       expect(navigationTriggerClass).not.toContain("max-xl:min-h-11");
     }
   });
@@ -203,7 +204,7 @@ describe("sidebar implementation contract", () => {
 
   it("keeps the ZAIops page-header controls and breadcrumb on one 28px row", () => {
     for (const sourceFile of [zaiopsPreview, zaiopsBlock]) {
-      expect(sourceFile).toContain('<PageHeader className="h-control-xs py-0 max-sm:flex-row">');
+      expect(sourceFile).toContain('<PageHeader className="h-control-sm py-0 max-sm:flex-row">');
       expect(sourceFile).toContain('<div className="flex h-full min-w-0 items-center gap-2">');
       expect(sourceFile).toContain('<PageHeaderContent icon={Home} className="h-full">');
     }

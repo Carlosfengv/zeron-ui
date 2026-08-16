@@ -85,7 +85,7 @@ import { ProIconProvider } from "@/lib/pro-icon-provider";
 | [DataTable](https://zeron-ui.vercel.app/docs/data-table) | TanStack data table with sorting, filters, pagination, selection, visibility, and pinning |
 | [Dialog](https://zeron-ui.vercel.app/docs/dialog) | Modal with smooth enter/exit animations and overlay |
 | [Dropdown](https://zeron-ui.vercel.app/docs/dropdown) | Menu-style dropdown with proximity hover |
-| [Input](https://zeron-ui.vercel.app/docs/input) | Text input with three variants, four sizes, and accessible validation states |
+| [Input](https://zeron-ui.vercel.app/docs/input) | Text input with three variants, five sizes, and accessible validation states |
 | [InputCopy](https://zeron-ui.vercel.app/docs/input-copy) | Read-only input with copy-to-clipboard and animated feedback |
 | [InputGroup](https://zeron-ui.vercel.app/docs/input-group) | Composable input with addons, compact actions, textarea support, and validation |
 | [Kbd](https://zeron-ui.vercel.app/docs/kbd) | Compact keycaps and shortcut groups for keyboard commands and interaction hints |

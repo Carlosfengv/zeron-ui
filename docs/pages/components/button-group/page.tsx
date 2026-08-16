@@ -104,7 +104,7 @@ export default function ButtonGroupDoc() {
   <DropdownMenu>
     <DropdownTrigger
       render={
-        <Button variant="primary" size="icon-sm" aria-label="${t("morePublishOptions")}">
+        <Button variant="primary" iconOnly size="sm" aria-label="${t("morePublishOptions")}">
           <ChevronDown />
         </Button>
       }
@@ -121,17 +121,17 @@ export default function ButtonGroupDoc() {
 <TooltipProvider>
   <ButtonGroup aria-label="${t("historyNavigation")}">
     <Tooltip content="${t("previous")}">
-      <Button variant="tertiary" size="icon-sm" aria-label="${t("previous")}">
+      <Button variant="tertiary" iconOnly size="sm" aria-label="${t("previous")}">
         <ArrowLeft />
       </Button>
     </Tooltip>
     <Tooltip content="${t("refresh")}">
-      <Button variant="tertiary" size="icon-sm" aria-label="${t("refresh")}">
+      <Button variant="tertiary" iconOnly size="sm" aria-label="${t("refresh")}">
         <Rotate />
       </Button>
     </Tooltip>
     <Tooltip content="${t("next")}">
-      <Button variant="tertiary" size="icon-sm" aria-label="${t("next")}">
+      <Button variant="tertiary" iconOnly size="sm" aria-label="${t("next")}">
         <ArrowRight />
       </Button>
     </Tooltip>
@@ -192,7 +192,8 @@ export default function ButtonGroupDoc() {
                   <Button
                     active={splitOpen}
                     variant="primary"
-                    size="icon-sm"
+                    iconOnly
+                    size="sm"
                     aria-label={t("morePublishOptions")}
                   >
                     <ChevronDown />
@@ -226,7 +227,8 @@ export default function ButtonGroupDoc() {
               <Tooltip content={t("previous")}>
                 <Button
                   variant="tertiary"
-                  size="icon-sm"
+                  iconOnly
+                  size="sm"
                   aria-label={t("previous")}
                 >
                   <ArrowLeft />
@@ -235,7 +237,8 @@ export default function ButtonGroupDoc() {
               <Tooltip content={t("refresh")}>
                 <Button
                   variant="tertiary"
-                  size="icon-sm"
+                  iconOnly
+                  size="sm"
                   aria-label={t("refresh")}
                 >
                   <Rotate />
@@ -244,7 +247,8 @@ export default function ButtonGroupDoc() {
               <Tooltip content={t("next")}>
                 <Button
                   variant="tertiary"
-                  size="icon-sm"
+                  iconOnly
+                  size="sm"
                   aria-label={t("next")}
                 >
                   <ArrowRight />

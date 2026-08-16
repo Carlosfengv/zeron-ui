@@ -422,7 +422,7 @@ const Toast = memo(function Toast({
               <motion.span
                 layout="position"
                 className={cn(
-                  "inline-flex h-control-xs w-7 shrink-0 items-center justify-center rounded-lg",
+                  "inline-flex h-control-sm w-7 shrink-0 items-center justify-center rounded-lg",
                   !isSingleLine && "mt-0.5",
                   STATUS_STYLE[status],
                   classNames?.icon,
@@ -526,7 +526,8 @@ const Toast = memo(function Toast({
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon-xs"
+                  iconOnly
+                  size="xs"
                   onClick={() => onDismiss?.(item.id)}
                   aria-label={closeLabel}
                   className={cn(

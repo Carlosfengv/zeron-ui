@@ -66,10 +66,9 @@ export function SettingsContent({
         <Tooltip content={<span>{t("pressToCycle", { key: "T" })}</span>} side={tooltipSide}>
           <div className="flex items-center justify-between">
             <span className="text-label text-fg-muted">{t("theme")}</span>
-            <Select value={theme} onValueChange={(v) => setTheme(v as Theme)}>
+            <Select size="sm" value={theme} onValueChange={(v) => setTheme(v as Theme)}>
               <SelectTrigger
                 variant="borderless"
-                size="md"
                 className="min-w-0 w-auto"
                 icon={themeOptions.find((o) => o.value === theme)?.icon}
               />
@@ -92,20 +91,20 @@ export function SettingsContent({
               setBrandColor(rgbToHex({ r: parsed.r, g: parsed.g, b: parsed.b }))
             }
             swatches={["#0060D2", "#7C3AED", "#DB2777", "#DC2626", "#EA580C", "#16A34A"]}
-            triggerClassName="h-control-sm min-w-0 px-1.5 border-transparent hover:bg-hover"
+            triggerClassName="h-control-md min-w-0 px-1.5 border-transparent hover:bg-hover"
           />
         </div>
         <Tooltip content={<span>{t("pressToCycle", { key: "I" })}</span>} side={tooltipSide}>
           <div className="flex items-center justify-between">
             <span className="text-label text-fg-muted">{t("icons")}</span>
             <Select
+              size="sm"
               value={iconVariant}
               onValueChange={(value) => setIconVariant(value as IconVariant)}
               disabled={isVariantLoading}
             >
               <SelectTrigger
                 variant="borderless"
-                size="md"
                 className="min-w-0 w-auto"
                 icon={PaintbrushIcon}
               />
@@ -124,8 +123,8 @@ export function SettingsContent({
       {showLanguage && (
         <div className="flex items-center justify-between py-3">
           <span className="text-label text-fg-muted">{t("language")}</span>
-          <Select value={selectedLocale} onValueChange={changeLocale}>
-            <SelectTrigger variant="borderless" size="md" className="min-w-0 w-auto" />
+          <Select size="sm" value={selectedLocale} onValueChange={changeLocale}>
+            <SelectTrigger variant="borderless" className="min-w-0 w-auto" />
             <SelectContent>
               <SelectItem value="en" index={0}>{t("english")}</SelectItem>
               <SelectItem value="zh-CN" index={1}>{t("chinese")}</SelectItem>

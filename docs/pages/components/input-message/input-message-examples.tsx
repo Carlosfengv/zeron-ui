@@ -178,7 +178,8 @@ const FileTextIcon = useIcon("square-library");
       <Tooltip content="Add" side="top">
         <Button
           variant="ghost"
-          size="icon-sm"
+          iconOnly
+          size="sm"
           aria-label="Attach files"
           active={attachOpen}
           onClick={() => setAttachOpen((o) => !o)}
@@ -276,7 +277,7 @@ const PlusIcon = useIcon("plus");
   value={value}
   onValueChange={setValue}
   leftSlot={
-    <Button variant="ghost" size="icon-sm" aria-label="Attach">
+    <Button iconOnly variant="ghost" size="sm" aria-label="Attach">
       <PlusIcon />
     </Button>
   }
@@ -636,7 +637,7 @@ export function InputMessageExamples() {
               onValueChange={setLeftValue}
               onSend={() => setLeftValue("")}
               leftSlot={
-                <Button variant="ghost" size="icon-sm" aria-label="Attach">
+                <Button iconOnly variant="ghost" size="sm" aria-label="Attach">
                   <PlusIcon />
                 </Button>
               }

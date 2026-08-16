@@ -177,7 +177,8 @@ export default function AtlasPage() {
                 leftSlot={({ openFilePicker }) => (
                   <Button
                     variant="ghost"
-                    size="icon-sm"
+                    iconOnly
+                    size="sm"
                     onClick={() => openFilePicker()}
                     aria-label="Attach file"
                   >
@@ -204,10 +205,10 @@ function AssistantActions({
 }): ReactNode {
   return (
     <>
-      <Button variant="ghost" size="icon-sm" aria-label="Copy">
+      <Button iconOnly variant="ghost" size="sm" aria-label="Copy">
         <Copy />
       </Button>
-      <Button variant="ghost" size="icon-sm" aria-label="Regenerate">
+      <Button iconOnly variant="ghost" size="sm" aria-label="Regenerate">
         <Regen />
       </Button>
     </>
