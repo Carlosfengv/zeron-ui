@@ -15,6 +15,7 @@ export function ResourceCatalogBlockDocClient({ code }: { code: string }) {
       code={code}
       description={t("description")}
       previewMinHeightClass="min-h-[44rem]"
+      registryName="model-mcp-marketplace-01"
       slug="resource-catalog-01"
       title={t("title")}
       preview={<ResourceCatalog kind={kind} onKindChange={setKind} />}

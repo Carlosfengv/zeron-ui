@@ -30,6 +30,7 @@ interface BlockDetailPageProps {
   description: ReactNode;
   preview: ReactNode;
   previewMinHeightClass?: string;
+  registryName?: string;
   slug: string;
   title: string;
 }
@@ -41,6 +42,7 @@ export function BlockDetailPage({
   preview,
   previewMinHeightClass = "min-h-[32rem]",
   slug,
+  registryName = slug,
   title,
 }: BlockDetailPageProps) {
   const pathname = usePathname();
@@ -112,7 +114,7 @@ export function BlockDetailPage({
               <h2 className="mb-3 text-title font-semibold leading-none text-fg-default">
                 {common("installation")}
               </h2>
-              <InstallCommand value={`npx zeron-ui add ${slug}`} />
+              <InstallCommand value={`npx zeron-ui add ${registryName}`} />
             </section>
 
             <div className="flex flex-col gap-7 py-6">{children}</div>

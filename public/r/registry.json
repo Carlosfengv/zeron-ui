@@ -2006,6 +2006,51 @@
       ]
     },
     {
+      "name": "model-mcp-marketplace-01",
+      "type": "registry:block",
+      "title": "模型和 MCP 广场",
+      "description": "A filterable model and MCP marketplace with page-local navigation, search, and responsive resource cards.",
+      "categories": [
+        "application",
+        "catalog"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/app-shell.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/kbd.json",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/top-nav.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-catalog-01/catalog-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-catalog-01/catalog-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-catalog-01/resource-catalog.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-catalog-01/resource-catalog.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-catalog-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-catalog-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "provider-create-form-01",
       "type": "registry:block",
       "title": "Provider Create Form 1",

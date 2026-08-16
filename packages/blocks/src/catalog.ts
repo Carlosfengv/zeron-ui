@@ -1,6 +1,7 @@
 export const blockCatalog = [
   {
-    name: "resource-catalog-01",
+    name: "model-mcp-marketplace-01",
+    slug: "resource-catalog-01",
     title: "模型和 MCP 广场",
     description: "A filterable model and MCP marketplace with page-local navigation, search, and responsive resource cards.",
     categories: ["application", "catalog"],

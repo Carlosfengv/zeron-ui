@@ -89,34 +89,37 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
             </div>
 
             <div className="divide-y divide-border">
-              {blocks.map((block) => (
-                <article className="grid gap-5 py-5 lg:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.05fr)] lg:items-center" key={block.name}>
-                  <div className="overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-raised p-2">
-                    <div className="overflow-hidden rounded-lg border-[0.5px] border-border bg-surface-base">
-                      <BlockPreview name={block.name} />
+              {blocks.map((block) => {
+                const pageSlug = "slug" in block ? block.slug : block.name;
+                return (
+                  <article className="grid gap-5 py-5 lg:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.05fr)] lg:items-center" key={block.name}>
+                    <div className="overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-raised p-2">
+                      <div className="overflow-hidden rounded-lg border-[0.5px] border-border bg-surface-base">
+                        <BlockPreview name={pageSlug} />
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="min-w-0 lg:px-3">
-                    <div className="flex flex-wrap gap-2">
-                      {block.categories.map((item) => <Badge key={item} variant="dot" size="sm">{item}</Badge>)}
+                    <div className="min-w-0 lg:px-3">
+                      <div className="flex flex-wrap gap-2">
+                        {block.categories.map((item) => <Badge key={item} variant="dot" size="sm">{item}</Badge>)}
+                      </div>
+                      <h3 className="mt-4 text-heading font-semibold leading-tight text-fg-default">
+                        <Link className="rounded-lg outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring" href={`${localePrefix}/docs/blocks/${pageSlug}`}>
+                          {block.title}
+                        </Link>
+                      </h3>
+                      <p className="mt-2 max-w-xl text-body text-fg-muted">{block.description}</p>
+                      <p className="mt-3 text-label text-fg-subtle">Uses: {block.dependencies.join(", ")}</p>
+                      <div className="mt-5 flex flex-wrap items-center gap-3">
+                        <Button asChild className="whitespace-nowrap" size="sm" trailingIcon={ArrowRight} variant="neutral">
+                          <Link href={`${localePrefix}/docs/blocks/${pageSlug}`}>{text.open}</Link>
+                        </Button>
+                        <InstallCommand compact value={`npx zeron-ui add ${block.name}`} />
+                      </div>
                     </div>
-                    <h3 className="mt-4 text-heading font-semibold leading-tight text-fg-default">
-                      <Link className="rounded-lg outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring" href={`${localePrefix}/docs/blocks/${block.name}`}>
-                        {block.title}
-                      </Link>
-                    </h3>
-                    <p className="mt-2 max-w-xl text-body text-fg-muted">{block.description}</p>
-                    <p className="mt-3 text-label text-fg-subtle">Uses: {block.dependencies.join(", ")}</p>
-                    <div className="mt-5 flex flex-wrap items-center gap-3">
-                      <Button asChild className="whitespace-nowrap" size="sm" trailingIcon={ArrowRight} variant="neutral">
-                        <Link href={`${localePrefix}/docs/blocks/${block.name}`}>{text.open}</Link>
-                      </Button>
-                      <InstallCommand compact value={`npx zeron-ui add ${block.name}`} />
-                    </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                );
+              })}
               {blocks.length === 0 && (
                 <div className="flex min-h-48 items-center justify-center text-body text-fg-muted">
                   {text.noResults}

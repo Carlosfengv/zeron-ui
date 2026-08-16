@@ -3,7 +3,7 @@
   "name": "zeron-blocks",
   "items": [
     {
-      "name": "resource-catalog-01",
+      "name": "model-mcp-marketplace-01",
       "type": "registry:block",
       "title": "模型和 MCP 广场",
       "description": "A filterable model and MCP marketplace with page-local navigation, search, and responsive resource cards.",
