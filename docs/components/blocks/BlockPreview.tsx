@@ -2,6 +2,7 @@
 
 import { TopNavAppShell } from "@zeron/blocks/top-nav-app-shell-01";
 import { ZaiopsOperations } from "@zeron/blocks/zaiops-operations-01";
+import { PersonalSettings } from "@zeron/blocks/personal-settings-01";
 import { ResourceDetails } from "@zeron/blocks/resource-details-01";
 import { ResourceListTable } from "@zeron/blocks/resource-list-table-01";
 import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
@@ -10,6 +11,16 @@ import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
 import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
 
 export function BlockPreview({ name }: { name: string }) {
+  if (name === "personal-settings-01") {
+    return (
+      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
+        <div className="w-[960px] origin-top scale-[0.26]">
+          <PersonalSettings />
+        </div>
+      </div>
+    );
+  }
+
   if (name === "provider-create-form-01") {
     return (
       <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
