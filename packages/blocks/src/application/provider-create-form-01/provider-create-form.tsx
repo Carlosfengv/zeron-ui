@@ -8,7 +8,9 @@ import {
   type CSSProperties,
   type FormEvent,
 } from "react";
-import { ModelIcon, ProviderIcon } from "@lobehub/icons";
+import AnthropicMono from "@lobehub/icons/es/Anthropic/components/Mono";
+import DeepSeekColor from "@lobehub/icons/es/DeepSeek/components/Color";
+import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono";
 import {
   Alert,
   AlertDescription,
@@ -94,6 +96,21 @@ export interface ProviderOption {
   value: ProviderKind;
   label: string;
   icon?: string;
+}
+
+function ProviderBrandIcon({ className, provider, size = 20 }: { className?: string; provider: ProviderKind; size?: number }) {
+  const Icon = provider === "openai" ? OpenAIMono : provider === "anthropic" ? AnthropicMono : DeepSeekColor;
+  return <Icon aria-hidden className={className} size={size} />;
+}
+
+function ProviderModelIcon({ model, size = 20 }: { model: string; size?: number }) {
+  const normalizedModel = model.toLowerCase();
+  const Icon = normalizedModel.includes("claude")
+    ? AnthropicMono
+    : normalizedModel.includes("deepseek")
+      ? DeepSeekColor
+      : OpenAIMono;
+  return <Icon aria-hidden size={size} />;
 }
 
 export interface ProviderConnectionResult {
@@ -334,12 +351,12 @@ function SectionHeading({ title, description }: { title: string; description: st
 }
 
 function createProviderIcon(provider: string): IconComponent {
-  function ProviderBrandIcon({ className, size = 16 }: { className?: string; size?: number }) {
-    return <ProviderIcon className={className} provider={provider} size={size} type="color" />;
+  function ProviderOptionIcon({ className, size = 16 }: { className?: string; size?: number }) {
+    return <ProviderBrandIcon className={className} provider={provider as ProviderKind} size={size} />;
   }
 
-  ProviderBrandIcon.displayName = `ProviderBrandIcon(${provider})`;
-  return ProviderBrandIcon;
+  ProviderOptionIcon.displayName = `ProviderBrandIcon(${provider})`;
+  return ProviderOptionIcon;
 }
 
 function StepTrack({ labels }: { labels: ProviderCreateFormLabels }) {
@@ -769,7 +786,7 @@ export function ProviderCreateForm({
                             >
                               <div className="flex min-w-0 items-center gap-3">
                                 <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center">
-                                  <ModelIcon model={model.id} size={20} type="color" />
+                                  <ProviderModelIcon model={model.id} size={20} />
                                 </span>
                                 <div className="min-w-0">
                                   <p className="truncate text-body font-medium text-fg-default">
@@ -830,7 +847,7 @@ export function ProviderCreateForm({
                         <DetailListValue>
                           <span className="flex items-center justify-end gap-2">
                             <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center">
-                              <ProviderIcon provider={values.kind} size={18} type="color" />
+                              <ProviderBrandIcon provider={values.kind} size={18} />
                             </span>
                             <span className="truncate">{values.name}</span>
                           </span>
@@ -856,7 +873,7 @@ export function ProviderCreateForm({
                         {enabledModels.map((model) => (
                           <div className="flex min-w-0 items-center gap-3 px-3 py-3" key={model.id}>
                             <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center">
-                              <ModelIcon model={model.id} size={20} type="color" />
+                              <ProviderModelIcon model={model.id} size={20} />
                             </span>
                             <div className="min-w-0">
                               <p className="truncate text-body font-medium text-fg-default">

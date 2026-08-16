@@ -54,9 +54,11 @@ describe("Provider Create Form 1 block contract", () => {
     expect(source).toContain("<Badge");
     expect(source).toContain("<DetailList");
     expect(source).toContain("<Alert");
-    expect(source).toContain('import { ModelIcon, ProviderIcon } from "@lobehub/icons"');
-    expect(source).toContain("<ModelIcon");
-    expect(source).toContain("<ProviderIcon");
+    expect(source).toContain('import AnthropicMono from "@lobehub/icons/es/Anthropic/components/Mono"');
+    expect(source).toContain('import DeepSeekColor from "@lobehub/icons/es/DeepSeek/components/Color"');
+    expect(source).toContain('import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono"');
+    expect(source).toContain("function ProviderBrandIcon");
+    expect(source).toContain("function ProviderModelIcon");
     expect(source).toContain('connectionResult?.status === "error"');
     expect(source).not.toContain('connectionResult.status === "success" ? "neutral" : "danger"');
   });
