@@ -14,6 +14,8 @@ import {
   CardFeature,
   CardButton,
 } from "@zeron/ui/card";
+import { Badge } from "@zeron/ui/badge";
+import ChatGLMColor from "@lobehub/icons/es/ChatGLM/components/Color";
 import { useIcon, type IconComponent } from "@zeron/icons/context";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
@@ -114,6 +116,38 @@ const separatedCode = `// Separated inline tiles with a full-height image; the a
     </CardFooter>
   </Card>
   {/* …three more */}
+</CardGroup>`;
+
+const resourceSummaryCode = `import { Badge } from "@zeron/ui/badge";
+import ChatGLMColor from "@lobehub/icons/es/ChatGLM/components/Color";
+import {
+  Card, CardContent, CardDescription, CardFooter,
+  CardGroup, CardHeader, CardMedia, CardTitle,
+} from "@zeron/ui/card";
+
+// Keep the shared shell and swap only the structured footer content.
+<CardGroup columns={2} border="outlined" separated>
+  <Card className="bg-surface-floating pb-0 transition-colors duration-fast hover:bg-hover">
+    <CardContent className="flex items-start gap-2 px-4 pt-4">
+      <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-hover">
+        <ChatGLMColor size={24} />
+      </span>
+      <CardHeader className="flex min-w-0 flex-1 flex-col gap-0 p-0">
+        <div className="flex items-center gap-2">
+          <CardTitle>GLM-5.2</CardTitle>
+        </div>
+        <CardDescription className="line-clamp-3 text-label leading-5">
+          Long-context reasoning for agentic engineering.
+        </CardDescription>
+      </CardHeader>
+    </CardContent>
+    <div aria-hidden className="mx-4 mt-3 border-t border-border-subtle" />
+    <CardFooter className="mt-auto gap-1.5 px-4 py-3 text-label text-fg-muted tabular-nums">
+      <span>Context: 1049k</span>
+      <span>Max output: 262k</span>
+    </CardFooter>
+  </Card>
+  {/* An integration card uses the same anatomy with attribution in its footer. */}
 </CardGroup>`;
 
 const promoCode = `<Card dismissible onDismiss={() => {}}
@@ -311,6 +345,64 @@ function SeparatedDemo() {
             </CardFooter>
           </Card>
         ))}
+      </CardGroup>
+    </div>
+  );
+}
+
+// A resource card is a composition pattern rather than a new primitive. The
+// shell remains Card; the only semantic variation is the structured footer.
+function ResourceSummaryDemo() {
+  const Globe = useIcon("globe");
+  const Link = useIcon("link");
+
+  return (
+    <div className="w-full max-w-[860px]">
+      <CardGroup columns={2} border="outlined" separated>
+        <Card className="bg-surface-floating pb-0 transition-colors duration-fast hover:bg-hover">
+          <CardContent className="flex items-start gap-2 px-4 pt-4">
+            <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-hover">
+              <ChatGLMColor size={24} />
+            </span>
+            <CardHeader className="flex min-w-0 flex-1 flex-col gap-0 p-0">
+              <div className="flex min-w-0 items-center gap-2">
+                <CardTitle>GLM-5.2</CardTitle>
+              </div>
+              <CardDescription className="line-clamp-3 text-label leading-5">
+                GLM-5.2 is built for long-horizon agentic engineering with a 1M-token context window.
+              </CardDescription>
+            </CardHeader>
+          </CardContent>
+          <div aria-hidden className="mx-4 mt-3 border-t border-border-subtle" />
+          <CardFooter className="mt-auto gap-1.5 px-4 py-3 text-label text-fg-muted tabular-nums">
+            <span>Context: 1049k</span>
+            <span>Max output: 262k</span>
+          </CardFooter>
+        </Card>
+
+        <Card className="bg-surface-floating pb-0 transition-colors duration-fast hover:bg-hover">
+          <CardContent className="flex items-start gap-2 px-4 pt-4">
+            <CardMedia icon={Globe} className="mb-0" />
+            <CardHeader className="flex min-w-0 flex-1 flex-col gap-0 p-0">
+              <div className="flex min-w-0 items-center gap-2">
+                <CardTitle>天眼查 MCP</CardTitle>
+              </div>
+              <CardDescription className="line-clamp-3 text-label leading-5">
+                为智能体提供企业工商、风险诉讼、知识产权与招投标等数据查询能力。
+              </CardDescription>
+            </CardHeader>
+          </CardContent>
+          <div aria-hidden className="mx-4 mt-3 border-t border-border-subtle" />
+          <CardFooter className="mt-auto justify-between gap-2 px-4 py-3 text-label text-fg-muted">
+            <Badge color="blue" size="sm">
+              <span className="flex items-center gap-1">
+                <Link aria-hidden size={12} strokeWidth={1.5} />
+                Zentrix
+              </span>
+            </Badge>
+            <span className="truncate">@TianYanCha</span>
+          </CardFooter>
+        </Card>
       </CardGroup>
     </div>
   );
@@ -723,6 +815,12 @@ export default function CardDoc() {
       <DocSection title={t("grid")}>
         <ComponentPreview code={gridCode} padding="compact">
           <GridDemo />
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("resourceSummary")}>
+        <ComponentPreview code={resourceSummaryCode} padding="compact">
+          <ResourceSummaryDemo />
         </ComponentPreview>
       </DocSection>
 

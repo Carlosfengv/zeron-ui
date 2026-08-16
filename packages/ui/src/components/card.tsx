@@ -544,7 +544,7 @@ const CardTitle = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>>(
         <span
           className={cn(
             "col-start-1 row-start-1 text-fg-default transition-[font-weight] duration-fast motion-reduce:transition-none",
-            emphasized ? "font-semibold" : "font-normal"
+            emphasized ? "font-semibold" : "font-medium"
           )}
         >
           {children}

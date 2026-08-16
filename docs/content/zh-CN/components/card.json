@@ -1,6 +1,6 @@
 {
   "card": {
-    "playground": "演练场", "basic": "基础用法", "grid": "网格 — 二维邻近效果", "outlinedGroup": "带边框分组", "separatedTiles": "分离卡片", "fullyYours": "自由组合", "selected": "选中状态", "apiReference": "API 参考",
+    "playground": "演练场", "basic": "基础用法", "grid": "网格 — 二维邻近效果", "resourceSummary": "资源摘要卡", "outlinedGroup": "带边框分组", "separatedTiles": "分离卡片", "fullyYours": "自由组合", "selected": "选中状态", "apiReference": "API 参考",
     "fluidMotion": "流畅动效", "fluidMotionDescription": "按三种层级调校的弹簧过渡", "accessible": "默认无障碍", "accessibleDescription": "每个部分都提供焦点可见状态和 ARIA 角色", "themeable": "随心定制", "themeableDescription": "运行时可替换圆角、图标和基础组件", "darkMode": "适配深色模式", "darkModeDescription": "令牌会自动适应浅色与深色主题", "proximityHover": "邻近悬停", "proximityHoverDescription": "磁吸式高亮会预览点击的落点", "dropInRegistry": "即插即用的注册表", "dropInRegistryDescription": "用一条 shadcn 命令安装任意组件",
     "connect": "连接", "getStarted": "开始使用", "learnMore": "了解更多", "restoreCard": "恢复卡片", "meetCard": "认识全新的 Card 组件", "pixelPerfect": "始终像素级精确", "pixelPerfectDescription": "以令牌驱动，在任意圆角、浅色或深色主题下都清晰准确地呈现设计", "layouts": "堆叠、行内或网格", "layoutsDescription": "一套组合式 API，默认无边框，也支持分离卡片或共用外框",
     "card": "卡片", "media": "媒体", "icon": "图标", "logo": "标志", "image": "图片", "none": "无", "description": "描述", "primaryButton": "主要按钮", "secondaryButton": "次要按钮", "ghostButton": "幽灵按钮", "cardGroup": "卡片组", "orientation": "方向", "inline": "行内", "columns": "列数", "border": "边框", "outlined": "带边框", "separated": "分离", "proximity": "邻近悬停",
