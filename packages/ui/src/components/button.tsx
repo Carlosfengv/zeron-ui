@@ -38,6 +38,7 @@ const spinnerSizeClasses: Record<ControlSize, string> = {
 const iconOnlyIconSizeClasses: Partial<Record<ControlSize, string>> = {
   xs: "[&_svg]:size-4",
   sm: "[&_svg]:size-4",
+  md: "[&_svg]:size-5",
 };
 
 const buttonVariants = cva(

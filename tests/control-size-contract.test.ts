@@ -39,10 +39,10 @@ describe("Control Size contract", () => {
     });
   });
 
-  it("uses 16px icons in extra-small and small icon-only buttons", () => {
+  it("uses the specified icon sizes in small icon-only buttons", () => {
     expect(buttonSource).toContain("const iconOnlyIconSizeClasses");
     expect(buttonSource).toMatch(
-      /xs: "\[&_svg\]:size-4"[\s\S]*?sm: "\[&_svg\]:size-4"/
+      /xs: "\[&_svg\]:size-4"[\s\S]*?sm: "\[&_svg\]:size-4"[\s\S]*?md: "\[&_svg\]:size-5"/
     );
     expect(buttonSource).toContain(
       "iconOnlyIconSizeClasses[resolvedSize]"
