@@ -11,22 +11,25 @@ import slack from "@thesvg/icons/slack";
 import { AppShell, AppShellHeader, AppShellMain } from "@zeron/ui/app-shell";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
 import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
-import { Field, FieldGroup, FieldLabel } from "@zeron/ui/field";
 import { DataTable, DataTableColumnHeader, DataTableToolbar, useDataTable } from "@zeron/ui/data-table";
+import { InfoItem, InfoItemContent, InfoItemDescription, InfoItemGroup, InfoItemTitle, InfoItemTrailing } from "@zeron/ui/info-item";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@zeron/ui/input-group";
 import { MenuItem } from "@zeron/ui/menu-item";
 import { MetricCard } from "@zeron/ui/metric-card";
 import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@zeron/ui/nav-item";
 import { NavMenu } from "@zeron/ui/nav-menu";
 import { PageBody, PageContent, PageLayout, PageSidebar } from "@zeron/ui/page-layout";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
 import { SidebarIdentityAvatar } from "@zeron/ui/sidebar-identity-row";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@zeron/ui/table";
 import { TopNav, TopNavActions, TopNavBrand } from "@zeron/ui/top-nav";
+import { Switch } from "@zeron/ui/switch";
 import { type IconComponent, useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
 
-type SettingsView = "models" | "keys" | "credentials" | "profile" | "usage";
+type SettingsView = "models" | "keys" | "credentials" | "profile" | "preferences" | "usage";
 type ServiceStatus = "正常" | "已用尽" | "需要重新获取";
 
 interface ModelService {
@@ -86,7 +89,8 @@ const viewCopy: Record<SettingsView, { title: string; description: string; searc
   models: { title: "模型服务", description: "模型服务为您提供统一、可靠的 AI 模型调用入口。使用一个访问地址和 API 令牌，即可按权限调用可用的对话、文本生成、Embedding、图像生成等模型能力。", search: "搜索模型服务" },
   keys: { title: "API keys", description: "创建、轮换和撤销用于调用 Zentrix API 的访问密钥。" },
   credentials: { title: "凭证管理", description: "管理被模型服务和自动化流程引用的第三方凭证。" },
-  profile: { title: "个人资料", description: "更新你的显示信息与个人设置。" },
+  profile: { title: "账户", description: "管理你的个人资料、登录信息与已登录设备。" },
+  preferences: { title: "偏好设置", description: "配置外观、输入方式、语言与时间格式。" },
   usage: { title: "使用情况", description: "查看当前计费周期内的模型调用、令牌与额度使用情况。" },
 };
 
@@ -156,6 +160,7 @@ export function PersonalSettings({ className, defaultView = "models", ...props }
   const LockIcon = useIcon("lock");
   const ShieldIcon = useIcon("shield");
   const UserIcon = useIcon("user");
+  const SettingsIcon = useIcon("settings");
   const ClockIcon = useIcon("clock");
   const [view, setView] = useState<SettingsView>(defaultView);
   const [query, setQuery] = useState("");
@@ -172,7 +177,7 @@ export function PersonalSettings({ className, defaultView = "models", ...props }
       <AppShellHeader className="static bg-surface-base">
         <TopNav navigationAlign="left">
           <TopNavBrand className="gap-3 text-fg-default"><strong className="text-heading font-bold leading-none">Zentrix</strong><span className="text-body font-medium">个人设置</span></TopNavBrand>
-          <TopNavActions><Button type="button" variant="ghost" trailingIcon={ChevronDown}><SidebarIdentityAvatar>C</SidebarIdentityAvatar><span>Carlos</span></Button></TopNavActions>
+          <TopNavActions><Button type="button" variant="ghost" trailingIcon={ChevronDown}><span className="flex items-center gap-2"><SidebarIdentityAvatar>C</SidebarIdentityAvatar><span>Carlos</span></span></Button></TopNavActions>
         </TopNav>
       </AppShellHeader>
 
@@ -180,13 +185,13 @@ export function PersonalSettings({ className, defaultView = "models", ...props }
         <PageLayout size="full" className="h-full pt-0">
           <PageSidebar aria-label="个人设置导航" className="p-3">
             <SettingsNavGroup activeView={view} label="资源" items={[{ value: "models", label: "模型服务", icon: BrainIcon }, { value: "keys", label: "API keys", icon: LockIcon }, { value: "credentials", label: "凭证管理", icon: ShieldIcon }]} onChange={setSettingsView} />
-            <SettingsNavGroup activeView={view} className="mt-5" label="个人设置" items={[{ value: "profile", label: "个人资料", icon: UserIcon }, { value: "usage", label: "使用情况", icon: ClockIcon }]} onChange={setSettingsView} />
+            <SettingsNavGroup activeView={view} className="mt-5" label="个人设置" items={[{ value: "profile", label: "个人资料", icon: UserIcon }, { value: "preferences", label: "偏好设置", icon: SettingsIcon }, { value: "usage", label: "使用情况", icon: ClockIcon }]} onChange={setSettingsView} />
           </PageSidebar>
           <PageContent>
             <PageBody className="p-4 sm:p-6">
               <section className="mx-auto w-full max-w-[960px]">
                 {view === "usage" ? <UsageSettings /> : <><header className="max-w-3xl"><h1 className="text-title font-semibold text-fg-default">{copy.title}</h1><p className="mt-1 text-label leading-5 text-fg-muted">{copy.description}</p></header>
-                <div className="mt-4">{view === "models" ? <div className="flex flex-col gap-2.5"><InputGroup className="w-full max-w-[450px] border-border hover:border-border" size="md"><InputGroupAddon className="pr-2"><SearchIcon aria-hidden size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput aria-label={copy.search} className="h-full min-h-0" onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} value={query} /></InputGroup><ModelServicesTable services={services} /></div> : view === "keys" ? <ApiKeysTable copyIcon={CopyIcon} plusIcon={PlusIcon} /> : view === "credentials" ? <CredentialsTable plusIcon={PlusIcon} /> : <ProfileSettings />}</div></>}
+                <div className="mt-4">{view === "models" ? <div className="flex flex-col gap-2.5"><InputGroup className="w-full max-w-[450px] border-border hover:border-border" size="md"><InputGroupAddon className="pr-2"><SearchIcon aria-hidden size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput aria-label={copy.search} className="h-full min-h-0" onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} value={query} /></InputGroup><ModelServicesTable services={services} /></div> : view === "keys" ? <ApiKeysTable copyIcon={CopyIcon} plusIcon={PlusIcon} /> : view === "credentials" ? <CredentialsTable plusIcon={PlusIcon} /> : view === "preferences" ? <PreferencesSettings /> : <ProfileSettings />}</div></>}
               </section>
             </PageBody>
           </PageContent>
@@ -218,7 +223,7 @@ function ApiKeysTable({ copyIcon: CopyIcon, plusIcon: PlusIcon }: { copyIcon: Re
   ], [CopyIcon]);
   const { table } = useDataTable({ columns, data, getRowId: (key) => key.id, initialState: { columnPinning: { left: ["name"], right: ["actions"] }, pagination: { pageIndex: 0, pageSize: 10 } } });
 
-  return <DataTable className="gap-2.5 [&_[data-slot=data-table-pagination]]:px-2" emptyMessage="没有找到匹配的 API key。" table={table}><DataTableToolbar table={table}><Button type="button" variant="tertiary" leadingIcon={PlusIcon}>创建 key</Button></DataTableToolbar></DataTable>;
+  return <DataTable className="gap-2.5 [&_[data-slot=data-table-pagination]]:px-2" emptyMessage="没有找到匹配的 API key。" table={table}><DataTableToolbar showViewOptions={false} table={table}><Button type="button" variant="tertiary" leadingIcon={PlusIcon}>创建 key</Button></DataTableToolbar></DataTable>;
 }
 
 function CredentialsTable({ plusIcon: PlusIcon }: { plusIcon: ReturnType<typeof useIcon> }) {
@@ -232,11 +237,145 @@ function CredentialsTable({ plusIcon: PlusIcon }: { plusIcon: ReturnType<typeof 
   ], []);
   const { table } = useDataTable({ columns, data, getRowId: (credential) => credential.id, initialState: { columnPinning: { left: ["name"], right: ["actions"] }, pagination: { pageIndex: 0, pageSize: 10 } } });
 
-  return <DataTable className="gap-2.5 [&_[data-slot=data-table-pagination]]:px-2" emptyMessage="没有找到匹配的凭证。" table={table}><DataTableToolbar table={table}><Button type="button" variant="tertiary" leadingIcon={PlusIcon}>添加凭证</Button></DataTableToolbar></DataTable>;
+  return <DataTable className="gap-2.5 [&_[data-slot=data-table-pagination]]:px-2" emptyMessage="没有找到匹配的凭证。" table={table}><DataTableToolbar showViewOptions={false} table={table}><Button type="button" variant="tertiary" leadingIcon={PlusIcon}>添加凭证</Button></DataTableToolbar></DataTable>;
 }
 
+type AccountAction = "email" | "password" | "verification" | "passkey" | "delete" | "logout-all" | "logout-device";
+
+function PreferencesSettings() {
+  const [theme, setTheme] = useState("light");
+  const [highContrast, setHighContrast] = useState("system");
+  const [enterAddsLine, setEnterAddsLine] = useState(false);
+  const [language, setLanguage] = useState("zh-CN");
+  const [numberFormat, setNumberFormat] = useState("default");
+  const [textDirectionControls, setTextDirectionControls] = useState(false);
+  const [startWeekOnMonday, setStartWeekOnMonday] = useState(true);
+  const [dateFormat, setDateFormat] = useState("relative");
+  const [automaticTimeZone, setAutomaticTimeZone] = useState(true);
+  const [timeZone, setTimeZone] = useState("asia-shanghai");
+
+  return <div className="w-full space-y-9">
+    <SettingsSection title="外观">
+      <InfoItemGroup>
+        <PreferenceInfoItem description="选择此设备上的 Zentrix 外观主题。" title="主题"><PreferenceSelect ariaLabel="主题" onChange={setTheme} options={[{ value: "light", label: "浅色" }, { value: "dark", label: "深色" }, { value: "system", label: "跟随系统" }]} value={theme} /></PreferenceInfoItem>
+        <PreferenceInfoItem badge="Beta" description="提高界面对比度，增强信息可见性。" title="高对比度"><PreferenceSelect ariaLabel="高对比度" onChange={setHighContrast} options={[{ value: "system", label: "跟随系统" }, { value: "on", label: "开启" }, { value: "off", label: "关闭" }]} value={highContrast} /></PreferenceInfoItem>
+      </InfoItemGroup>
+    </SettingsSection>
+
+    <SettingsSection title="输入选项">
+      <InfoItemGroup><PreferenceInfoItem description="适用于聊天、评论和其他输入框。按 Cmd/Ctrl + Enter 发送内容。" title="使用 Enter 换行"><Switch checked={enterAddsLine} label={<span className="sr-only">使用 Enter 换行</span>} onCheckedChange={setEnterAddsLine} /></PreferenceInfoItem></InfoItemGroup>
+    </SettingsSection>
+
+    <SettingsSection title="语言与时间">
+      <InfoItemGroup>
+        <PreferenceInfoItem description="选择 Zentrix 的显示语言。" title="语言"><PreferenceSelect ariaLabel="语言" onChange={setLanguage} options={[{ value: "zh-CN", label: "简体中文" }, { value: "en-US", label: "English (US)" }, { value: "ja-JP", label: "日本語" }]} value={language} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="选择数字和货币的显示方式；默认会使用语言设置。" title="数字格式"><PreferenceSelect ariaLabel="数字格式" onChange={setNumberFormat} options={[{ value: "default", label: "默认" }, { value: "zh-CN", label: "1,234.56" }, { value: "de-DE", label: "1.234,56" }]} value={numberFormat} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="始终在编辑器中显示从左到右或从右到左的文字方向切换。" title="始终显示文字方向控制"><Switch checked={textDirectionControls} label={<span className="sr-only">始终显示文字方向控制</span>} onCheckedChange={setTextDirectionControls} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="这会影响日历中一周的第一天。" title="每周从星期一开始"><Switch checked={startWeekOnMonday} label={<span className="sr-only">每周从星期一开始</span>} onCheckedChange={setStartWeekOnMonday} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="设置新建 @日期 提及的默认显示格式。" title="日期格式"><PreferenceSelect ariaLabel="日期格式" onChange={setDateFormat} options={[{ value: "relative", label: "相对日期" }, { value: "standard", label: "2026-08-16" }, { value: "long", label: "2026 年 8 月 16 日" }]} value={dateFormat} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="提醒、通知和邮件会根据你的当前时区送达。" title="根据位置自动设置时区"><Switch checked={automaticTimeZone} label={<span className="sr-only">根据位置自动设置时区</span>} onCheckedChange={setAutomaticTimeZone} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="选择你所在的时区。" title="时区"><PreferenceSelect ariaLabel="时区" disabled={automaticTimeZone} onChange={setTimeZone} options={[{ value: "asia-shanghai", label: "GMT+8 · 上海" }, { value: "asia-tokyo", label: "GMT+9 · 东京" }, { value: "america-los-angeles", label: "GMT-7 · 洛杉矶" }]} value={timeZone} /></PreferenceInfoItem>
+      </InfoItemGroup>
+    </SettingsSection>
+  </div>;
+}
+
+const accountActionCopy: Record<AccountAction, { title: string; description: string; confirm: string }> = {
+  email: { title: "管理邮箱", description: "更新用于登录和接收账户通知的邮箱地址。", confirm: "保存邮箱" },
+  password: { title: "设置密码", description: "设置密码后，你可以使用邮箱和密码登录账户。", confirm: "设置密码" },
+  verification: { title: "开启两步验证", description: "使用验证器应用为账户增加一层安全保护。", confirm: "开启验证" },
+  passkey: { title: "添加通行密钥", description: "使用本设备的生物识别或屏幕锁定方式安全登录。", confirm: "添加通行密钥" },
+  delete: { title: "删除账户", description: "此操作将永久删除你的账户和个人数据，且无法撤销。", confirm: "删除账户" },
+  "logout-all": { title: "退出其他设备", description: "这会退出除当前设备外的全部登录会话。", confirm: "退出其他设备" },
+  "logout-device": { title: "退出此设备", description: "该设备将需要重新验证身份后才能继续访问。", confirm: "退出设备" },
+};
+
 function ProfileSettings() {
-  return <div className="max-w-xl rounded-lg border-[0.5px] border-border p-4"><FieldGroup><Field><FieldLabel>显示名称</FieldLabel><InputGroup><InputGroupInput defaultValue="Carlos" /></InputGroup></Field><Field><FieldLabel>邮箱</FieldLabel><InputGroup><InputGroupInput defaultValue="carlos@zentrix.dev" type="email" /></InputGroup></Field><div className="pt-2"><Button type="button" variant="primary">保存更改</Button></div></FieldGroup></div>;
+  const [preferredName, setPreferredName] = useState("Carlos");
+  const [email, setEmail] = useState("carlos@zentrix.dev");
+  const [emailDraft, setEmailDraft] = useState(email);
+  const [profileSaved, setProfileSaved] = useState(false);
+  const [supportAccess, setSupportAccess] = useState(false);
+  const [passwordAdded, setPasswordAdded] = useState(false);
+  const [verificationEnabled, setVerificationEnabled] = useState(false);
+  const [passkeyAdded, setPasskeyAdded] = useState(false);
+  const [accountDeleted, setAccountDeleted] = useState(false);
+  const [accountAction, setAccountAction] = useState<AccountAction | null>(null);
+  const [deviceToLogout, setDeviceToLogout] = useState<string | null>(null);
+  const [devices, setDevices] = useState([
+    { id: "current", name: "macOS", lastActive: "现在", location: "中国上海", current: true },
+    { id: "office", name: "macOS", lastActive: "今天 17:51", location: "中国上海", current: false },
+    { id: "travel", name: "macOS", lastActive: "7 月 16 日 12:57", location: "日本东京", current: false },
+  ]);
+  const actionCopy = accountAction ? accountActionCopy[accountAction] : accountActionCopy.email;
+
+  const openAccountAction = (action: AccountAction, deviceId?: string) => {
+    if (action === "email") setEmailDraft(email);
+    setDeviceToLogout(deviceId ?? null);
+    setAccountAction(action);
+  };
+
+  const confirmAccountAction = () => {
+    if (accountAction === "email") setEmail(emailDraft);
+    if (accountAction === "password") setPasswordAdded(true);
+    if (accountAction === "verification") setVerificationEnabled(true);
+    if (accountAction === "passkey") setPasskeyAdded(true);
+    if (accountAction === "delete") setAccountDeleted(true);
+    if (accountAction === "logout-all") setDevices((current) => current.filter((device) => device.current));
+    if (accountAction === "logout-device" && deviceToLogout) setDevices((current) => current.filter((device) => device.id !== deviceToLogout));
+    setDeviceToLogout(null);
+    setAccountAction(null);
+  };
+
+  if (accountDeleted) return <div className="w-full rounded-lg border border-border bg-surface-raised px-5 py-10 text-center"><h2 className="text-title font-semibold text-fg-default">账户已删除</h2><p className="mt-2 text-body text-fg-muted">你的本地演示账户已被移除。</p></div>;
+
+  return <div className="w-full space-y-9">
+    <SettingsSection title="个人资料">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+        <SidebarIdentityAvatar className="size-[60px] text-title" tone="brand">C</SidebarIdentityAvatar>
+        <div className="w-full max-w-md"><label className="text-body font-medium text-fg-default" htmlFor="preferred-name">显示名称</label><InputGroup className="mt-2"><InputGroupInput id="preferred-name" onChange={(event) => { setPreferredName(event.target.value); setProfileSaved(false); }} value={preferredName} /></InputGroup></div>
+        <Button onClick={() => setProfileSaved(true)} type="button" variant="tertiary">保存</Button>
+      </div>
+      <p className="mt-3 text-label text-fg-muted">{profileSaved ? "个人资料已保存。" : "此名称会显示在你的协作记录与公开资料中。"}</p>
+    </SettingsSection>
+
+    <SettingsSection title="账户安全">
+      <InfoItemGroup>
+        <AccountInfoItem action="管理邮箱" description={email} grouped onAction={() => openAccountAction("email")} title="邮箱" />
+        <AccountInfoItem action={passwordAdded ? "已设置" : "添加密码"} description={passwordAdded ? "已设置密码，可使用邮箱和密码登录。" : "为账户设置密码。"} disabled={passwordAdded} grouped onAction={() => openAccountAction("password")} title="密码" />
+        <AccountInfoItem action={verificationEnabled ? "已开启" : "添加验证方式"} description="为账户增加一层安全保护。" disabled={verificationEnabled} grouped onAction={() => openAccountAction("verification")} title="两步验证" />
+        <AccountInfoItem action={passkeyAdded ? "已添加" : "添加通行密钥"} description="使用设备生物识别或屏幕锁定方式登录。" disabled={passkeyAdded} grouped onAction={() => openAccountAction("passkey")} title="通行密钥" />
+      </InfoItemGroup>
+    </SettingsSection>
+
+    <SettingsSection title="支持">
+      <InfoItemGroup><InfoItem className="min-h-[86px] px-4 py-3.5"><InfoItemContent><InfoItemTitle>支持访问</InfoItemTitle><InfoItemDescription>授权 Zentrix 支持团队临时访问你的账户，以协助排查问题或恢复内容；你可随时撤销。</InfoItemDescription></InfoItemContent><InfoItemTrailing><Switch checked={supportAccess} label={<span className="sr-only">支持访问</span>} onCheckedChange={setSupportAccess} /></InfoItemTrailing></InfoItem></InfoItemGroup>
+      <div className="mt-3"><AccountInfoItem action="删除账户" destructive description="永久删除账户后，你将无法再访问所属工作区与个人数据。" onAction={() => openAccountAction("delete")} title="删除我的账户" /></div>
+    </SettingsSection>
+
+    <SettingsSection title="设备">
+      <div className="mb-3"><AccountInfoItem action="退出其他设备" destructive description="退出除当前设备以外的全部活跃会话。" onAction={() => openAccountAction("logout-all")} title="退出其他设备" /></div>
+      <div className="overflow-x-auto"><Table className="min-w-[620px]"><TableHeader><TableRow><TableHead>设备名称</TableHead><TableHead>最近活跃</TableHead><TableHead>位置</TableHead><TableHead className="w-24 text-right"><span className="sr-only">操作</span></TableHead></TableRow></TableHeader><TableBody>{devices.map((device, index) => <TableRow index={index} key={device.id}><TableCell className="font-medium text-fg-default">{device.name}{device.current && <span className="ml-2 text-label font-normal text-fg-brand">当前设备</span>}</TableCell><TableCell className="text-fg-muted">{device.lastActive}</TableCell><TableCell className="text-fg-muted">{device.location}</TableCell><TableCell><div className="flex justify-end">{!device.current && <Button onClick={() => openAccountAction("logout-device", device.id)} size="md" type="button" variant="tertiary">退出</Button>}</div></TableCell></TableRow>)}</TableBody></Table></div>
+    </SettingsSection>
+
+    <Dialog onOpenChange={(open) => { if (!open) { setAccountAction(null); setDeviceToLogout(null); } }} open={accountAction !== null}><DialogContent size="sm"><DialogHeader><DialogTitle>{actionCopy.title}</DialogTitle><DialogDescription>{actionCopy.description}</DialogDescription></DialogHeader>{accountAction === "email" && <div><label className="text-body font-medium text-fg-default" htmlFor="account-email">邮箱地址</label><InputGroup className="mt-2"><InputGroupInput id="account-email" onChange={(event) => setEmailDraft(event.target.value)} type="email" value={emailDraft} /></InputGroup></div>}{accountAction === "password" && <div><label className="text-body font-medium text-fg-default" htmlFor="account-password">新密码</label><InputGroup className="mt-2"><InputGroupInput id="account-password" placeholder="至少 8 位字符" type="password" /></InputGroup></div>}<DialogFooter><DialogClose render={<Button type="button" variant="ghost">取消</Button>} /><Button onClick={confirmAccountAction} type="button" variant={accountAction === "delete" || accountAction === "logout-all" || accountAction === "logout-device" ? "destructive" : "primary"}>{actionCopy.confirm}</Button></DialogFooter></DialogContent></Dialog>
+  </div>;
+}
+
+function SettingsSection({ children, title }: { children: ReactNode; title: string }) {
+  return <section aria-labelledby={`${title}-title`}><h2 className="border-b border-border pb-3 text-title font-semibold text-fg-default" id={`${title}-title`}>{title}</h2><div className="pt-4">{children}</div></section>;
+}
+
+function PreferenceInfoItem({ badge, children, description, title }: { badge?: string; children: ReactNode; description: string; title: string }) {
+  return <InfoItem className="min-h-[76px] px-4 py-3.5"><InfoItemContent><InfoItemTitle className="flex items-center gap-1.5">{title}{badge && <Badge color="gray" size="sm">{badge}</Badge>}</InfoItemTitle><InfoItemDescription>{description}</InfoItemDescription></InfoItemContent><InfoItemTrailing>{children}</InfoItemTrailing></InfoItem>;
+}
+
+function PreferenceSelect({ ariaLabel, disabled = false, onChange, options, value }: { ariaLabel: string; disabled?: boolean; onChange: (value: string) => void; options: readonly { label: string; value: string }[]; value: string }) {
+  return <Select disabled={disabled} onValueChange={onChange} size="md" value={value}><SelectTrigger aria-label={ariaLabel} className="min-w-32 max-w-56" /> <SelectContent>{options.map((option, index) => <SelectItem index={index} key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select>;
+}
+
+function AccountInfoItem({ action, description, destructive = false, disabled = false, grouped = false, onAction, title }: { action: string; description: string; destructive?: boolean; disabled?: boolean; grouped?: boolean; onAction: () => void; title: string }) {
+  return <InfoItem className={cn("min-h-[76px] px-4 py-3.5", !grouped && "rounded-lg border-[0.5px] border-border")}><InfoItemContent><InfoItemTitle>{title}</InfoItemTitle><InfoItemDescription>{description}</InfoItemDescription></InfoItemContent><InfoItemTrailing><Button disabled={disabled} onClick={onAction} size="md" type="button" variant={destructive ? "destructive" : "tertiary"}>{action}</Button></InfoItemTrailing></InfoItem>;
 }
 
 function UsageSettings() {
