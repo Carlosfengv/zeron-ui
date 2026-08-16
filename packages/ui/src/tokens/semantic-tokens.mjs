@@ -92,7 +92,7 @@ export const boundaryColorTokens = classify([
   { name: "border-subtle", light: "rgb(52 57 71 / 0.07)", dark: "rgb(255 255 255 / 0.05)", usage: "低强调分隔线和紧凑组件的弱边界" },
   { name: "input", light: neutral[200], dark: neutral[700], usage: "输入和选择控件的静止边界；随主题保持低强调层级" },
   { name: "input-hover", light: "rgb(23 23 23 / 0.24)", dark: "rgb(245 245 245 / 0.24)", usage: "输入和选择控件的悬停边界；在静止边界之上提供临时反馈" },
-  { name: "danger-border", light: "#F73920", dark: "#FC4932", usage: "错误、失败和风险状态的边界；在普通与 Danger Surface 上保持 3:1 非文本对比度" },
+  { name: "danger-border", light: danger[700], dark: "#FC4932", usage: "错误、失败和风险状态的边界；在普通与 Danger Surface 上保持 3:1 非文本对比度" },
   { name: "warning-border", light: "#D06700", dark: "#FF9314", usage: "警告状态的边界；在普通与 Warning Surface 上保持 3:1 非文本对比度" },
   { name: "success-border", light: "#23864B", dark: "#55C779", usage: "成功、完成和正向结果状态的边界；在普通与 Success Surface 上保持 3:1 非文本对比度" },
   { name: "info-border", light: "#0060D2", dark: "#1483FD", usage: "说明、提示和信息状态的边界；在普通与 Info Surface 上保持 3:1 非文本对比度" },

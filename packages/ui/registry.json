@@ -144,7 +144,7 @@
           "border-subtle": "rgb(52 57 71 / 0.07)",
           "input": "#E5E5E5",
           "input-hover": "rgb(23 23 23 / 0.24)",
-          "danger-border": "#F73920",
+          "danger-border": "#B91C1C",
           "warning-border": "#D06700",
           "success-border": "#23864B",
           "info-border": "#0060D2",
