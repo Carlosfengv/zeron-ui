@@ -179,7 +179,7 @@ function ResourceCard({ item, selected, onSelect }: { item: ResourceCatalogItem;
           <div className="flex min-w-0 items-center gap-2">
             <CardTitle className="truncate">{item.name}</CardTitle>
           </div>
-          <CardDescription title={item.description} className="mt-1 line-clamp-3 text-label leading-5">
+          <CardDescription title={item.description} className="mt-1 line-clamp-3 text-label leading-5 text-fg-subtle">
             {item.description}
           </CardDescription>
         </CardHeader>

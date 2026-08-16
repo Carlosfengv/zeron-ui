@@ -79,4 +79,10 @@ describe("Resource Catalog gallery preview", () => {
       '.filter((item) => provider === "all" || item.provider === provider)'
     );
   });
+
+  it("uses the subtle foreground token for model and MCP card descriptions", () => {
+    expect(resourceCatalog).toContain(
+      'className="mt-1 line-clamp-3 text-label leading-5 text-fg-subtle"'
+    );
+  });
 });
