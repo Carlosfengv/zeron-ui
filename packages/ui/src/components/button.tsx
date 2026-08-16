@@ -35,6 +35,11 @@ const spinnerSizeClasses: Record<ControlSize, string> = {
   xl: "size-[18px]",
 };
 
+const iconOnlyIconSizeClasses: Partial<Record<ControlSize, string>> = {
+  xs: "[&_svg]:size-4",
+  sm: "[&_svg]:size-4",
+};
+
 const buttonVariants = cva(
   [
     "group relative isolate inline-flex items-center justify-center outline-none cursor-pointer",
@@ -200,7 +205,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               </span>
             </>
           ) : iconOnly ? (
-            <span className="[&_svg]:stroke-[1.5] [&_svg]:transition-[stroke-width] [&_svg]:duration-fast group-hover:[&_svg]:stroke-[2]">
+            <span
+              className={cn(
+                "[&_svg]:stroke-[1.5] [&_svg]:transition-[stroke-width] [&_svg]:duration-fast group-hover:[&_svg]:stroke-[2]",
+                iconOnlyIconSizeClasses[resolvedSize]
+              )}
+            >
               {label}
             </span>
           ) : (
