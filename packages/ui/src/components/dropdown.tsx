@@ -524,9 +524,9 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
                   setActiveIndex(null);
                 }}
                 className={cn(
-                  // min-w tracks the trigger via the Positioner's
-                  // --anchor-width var.
-                  `relative flex flex-col gap-0.5 w-72 max-w-full min-w-[var(--anchor-width)] max-h-[min(480px,var(--available-height))] overflow-y-auto rounded-xl p-1 select-none outline-none`,
+                  // Match shadcn's compact menu sizing: content determines
+                  // the width, with a 128px minimum and viewport-bound height.
+                  `relative flex flex-col gap-0.5 min-w-32 max-h-[var(--available-height)] overflow-y-auto rounded-xl p-1 select-none outline-none`,
                   className
                 )}
               >
