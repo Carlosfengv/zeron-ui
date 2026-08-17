@@ -225,7 +225,7 @@ export function ZlrNavigation({ onNavigate }: { onNavigate?: (value: string) => 
                 {group.items.map((item) => {
                   const Icon = iconByName[item.icon];
                   return (
-                    <NavItem key={item.value} value={item.value}>
+                    <NavItem className="py-0" key={item.value} value={item.value}>
                       <NavItemTrigger
                         render={<button type="button" />}
                         className="h-8 rounded-md px-2 text-body data-[active=true]:bg-active"
@@ -371,10 +371,10 @@ export function ZlrList({
     <section className={cn("h-full min-h-0 w-full self-start overflow-hidden bg-surface-base", className)} {...props}>
       <SidebarProvider breakpointBehavior="collapse">
         <div className="flex h-full min-h-0 min-w-0 overflow-hidden">
-          <Sidebar ariaLabel="ZS Live Recovery 导航" className="relative h-full" collapsible="icon" collapsedWidth="3.5rem" mobileWidth="min(240px, calc(100vw - 24px))" width="240px">
+          <Sidebar ariaLabel="ZS Live Recovery 导航" className="relative h-full [&_[data-slot=sidebar-panel]]:!border-x-0" collapsible="icon" collapsedWidth="3.5rem" mobileWidth="min(240px, calc(100vw - 24px))" width="240px">
             <ZlrNavigation onNavigate={onNavigate} />
           </Sidebar>
-          <main className="min-h-0 min-w-0 flex-1 overflow-hidden p-2">
+          <main className="min-h-0 min-w-0 flex-1 overflow-hidden py-2 pr-2">
             <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-border-subtle bg-surface-floating">
               <header className="flex h-12 shrink-0 items-center justify-between border-b border-border-subtle px-3">
                 <div className="flex items-center gap-2 text-body font-medium text-fg-default">
