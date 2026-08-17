@@ -30,7 +30,7 @@ test("prints help", async () => {
 test("prints the package version without a command", async () => {
   const output = outputBuffer();
   assert.equal(await runCli(["--version"], { stdout: output.stream }), 0);
-  assert.equal(output.value(), "0.2.0-beta.2\n");
+  assert.equal(output.value(), "0.2.0-beta.3\n");
 });
 
 test("checks the supported Node range", () => {
