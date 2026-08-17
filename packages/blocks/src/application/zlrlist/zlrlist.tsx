@@ -225,7 +225,7 @@ export function ZlrNavigation({ onNavigate }: { onNavigate?: (value: string) => 
                 {group.items.map((item) => {
                   const Icon = iconByName[item.icon];
                   return (
-                    <NavItem key={item.value} value={item.value}>
+                    <NavItem className="py-0" key={item.value} value={item.value}>
                       <NavItemTrigger
                         render={<button type="button" />}
                         className="h-8 rounded-md px-2 text-body data-[active=true]:bg-active"
