@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Card, CardDescription, CardGroup, CardHeader, CardTitle } from "@zeron/ui/card";
+import { Container, ContainerBody, ContainerFooter } from "@zeron/ui/container";
 import { Input } from "@zeron/ui/input";
 import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@zeron/ui/nav-item";
 import { NavMenu } from "@zeron/ui/nav-menu";
@@ -212,8 +213,8 @@ export function ComponentsGallery({ localePrefix = "" }: { localePrefix?: string
           query={query}
         />
 
-        <PageContent className="max-lg:flex-none max-lg:overflow-visible">
-          <PageBody className="h-full max-w-none p-4 sm:px-[18px] sm:py-5 max-lg:h-auto max-lg:overflow-visible">
+        <PageContent className="overflow-y-auto overscroll-contain max-lg:flex-none">
+          <PageBody className="h-auto max-w-[1620px] overflow-visible p-4 sm:px-[18px] sm:py-5">
             <header className="border-b border-border pb-5">
               <h1 id="component-gallery-title" className="text-heading font-semibold leading-tight text-fg-default">{text.galleryTitle}</h1>
               <p className="mt-2 max-w-3xl text-body text-fg-muted">{text.galleryDescription}</p>
@@ -232,7 +233,7 @@ export function ComponentsGallery({ localePrefix = "" }: { localePrefix?: string
                       <h2 id={`component-group-${group.section}`} className="text-title font-semibold text-fg-default">{sectionLabels[language][group.section]}</h2>
                       <span className="text-label text-fg-muted">{group.entries.length}</span>
                     </header>
-                    <CardGroup border="outlined" columns={3} separated style={{ gridTemplateColumns: "repeat(auto-fit, minmax(17rem, 1fr))" }}>
+                    <CardGroup columns={3} separated style={{ gridTemplateColumns: "repeat(auto-fit, minmax(17rem, 1fr))" }}>
                       {group.entries.map((entry) => <ComponentCard key={entry.slug} entry={entry} href={`${localePrefix}/docs/components/${entry.slug}`} language={language} />)}
                     </CardGroup>
                   </section>
@@ -290,14 +291,20 @@ function ComponentCard({ entry, href, language }: { entry: DocEntry; href: strin
   const Icon = useIcon(entry.icon);
   const description = componentCardDescription(entry.slug, language, entry.description);
   return (
-    <Card className="group flex min-w-0 flex-col bg-surface-floating transition-colors duration-fast hover:bg-hover">
-      <CardHeader className="flex min-w-0 flex-1 flex-col">
-        <div className="flex size-10 items-center justify-center rounded-lg bg-surface-raised text-fg-default transition-colors duration-fast group-hover:bg-surface-floating">
-          <Icon aria-hidden size={20} strokeWidth={1.5} />
-        </div>
-        <CardTitle className="mt-5"><Link className="rounded outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring" href={href}>{entry.name}</Link></CardTitle>
-        {description && <CardDescription className="mt-2 line-clamp-3">{description}</CardDescription>}
-      </CardHeader>
+    <Card className="group min-w-0 pb-0">
+      <Container className="h-full">
+        <ContainerBody className="p-0">
+          <CardHeader className="flex min-h-40 min-w-0 flex-1 flex-col">
+            <div className="flex size-10 items-center justify-center rounded-lg bg-surface-raised text-fg-default transition-colors duration-fast group-hover:bg-surface-floating">
+              <Icon aria-hidden size={20} strokeWidth={1.5} />
+            </div>
+            {description && <CardDescription className="mt-5 line-clamp-3">{description}</CardDescription>}
+          </CardHeader>
+        </ContainerBody>
+        <ContainerFooter className="justify-start">
+          <CardTitle><Link className="rounded outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring" href={href}>{entry.name}</Link></CardTitle>
+        </ContainerFooter>
+      </Container>
     </Card>
   );
 }
