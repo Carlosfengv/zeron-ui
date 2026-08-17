@@ -28,4 +28,10 @@ describe("Slider color contract", () => {
     expect(source.match(/backgroundColor: colorStyle\.fill/g)).toHaveLength(2);
     expect(source.match(/color: colorStyle\.onFill/g)).toHaveLength(2);
   });
+
+  it("allows embedded sliders to suppress the temporary hover range", () => {
+    expect(source).toContain("showHoverPreview?: boolean;");
+    expect(source).toContain("showHoverPreview = true");
+    expect(source).toContain("!showHoverPreview || dragging.current");
+  });
 });

@@ -39,6 +39,7 @@ describe("focus modality contract", () => {
     expect(colorPicker).toContain(
       "has-[[data-slot=color-input-control]:focus-visible]:ring-1"
     );
+    expect(colorPicker.match(/showHoverPreview=\{false\}/g)).toHaveLength(2);
   });
 
   it("does not route empty preview clicks into the first control", () => {

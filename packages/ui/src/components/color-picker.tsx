@@ -585,6 +585,7 @@ function HueSlider({ h, onChange }: { h: number; onChange: (h: number) => void }
       max={360}
       step={1}
       showValue={false}
+      showHoverPreview={false}
       hideFill
       thumbColor={hueColor}
       thumbBorderColor="rgba(255,255,255,0.9)"
@@ -628,6 +629,7 @@ function AlphaSlider({
       max={100}
       step={1}
       showValue={false}
+      showHoverPreview={false}
       hideFill
       thumbColor={solidColor}
       thumbBorderColor="rgba(255,255,255,0.9)"

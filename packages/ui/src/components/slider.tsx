@@ -48,6 +48,8 @@ interface SliderProps
   steps?: number[];
   showSteps?: boolean;
   showValue?: boolean;
+  /** Shows the temporary range between the current value and hovered position. */
+  showHoverPreview?: boolean;
   valuePosition?: ValuePosition;
   formatValue?: (v: number) => string;
   label?: string;
@@ -342,6 +344,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
       steps,
       showSteps = false,
       showValue = true,
+      showHoverPreview = true,
       valuePosition = "left",
       formatValue = String,
       label,
@@ -404,14 +407,14 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
 
     // Show hover tooltip after 100ms delay
     useEffect(() => {
-      if (isHovered) {
+      if (isHovered && showHoverPreview) {
         hoverDelayRef.current = setTimeout(() => setShowHoverTooltip(true), 100);
       } else {
         if (hoverDelayRef.current) clearTimeout(hoverDelayRef.current);
         setShowHoverTooltip(false);
       }
       return () => { if (hoverDelayRef.current) clearTimeout(hoverDelayRef.current); };
-    }, [isHovered]);
+    }, [isHovered, showHoverPreview]);
 
     // --- Motion values ---
     const motionX0 = useMotionValue(0);
@@ -871,7 +874,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
             setHoverPreview(null);
           }}
           onMouseMove={(e) => {
-            if (dragging.current) return;
+            if (!showHoverPreview || dragging.current) return;
             const trackEl = trackRef.current;
             if (!trackEl) return;
             const trackRect = trackEl.getBoundingClientRect();
@@ -975,7 +978,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
             />
             {/* Hover value tooltip */}
             <AnimatePresence>
-              {hoverPreview && showHoverTooltip && !isPressed && valuePosition !== "tooltip" && (
+              {showHoverPreview && hoverPreview && showHoverTooltip && !isPressed && valuePosition !== "tooltip" && (
                 <motion.div
                   key="hover-tooltip"
                   className="absolute -translate-x-1/2 pointer-events-none z-raised"
@@ -1030,7 +1033,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
                 className="absolute h-full pointer-events-none z-indicator"
                 initial={false}
                 animate={{
-                  opacity: hoverPreview && !isPressed ? 1 : 0,
+                  opacity: showHoverPreview && hoverPreview && !isPressed ? 1 : 0,
                 }}
                 transition={{
                   opacity: { duration: 0.15 },
