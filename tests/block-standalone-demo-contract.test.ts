@@ -11,6 +11,7 @@ describe("standalone block demos", () => {
   const slugs = source("docs/components/blocks/standalone-blocks.ts");
   const shell = source("docs/components/shell/site/sidebar-layout.tsx");
   const middleware = source("middleware.ts");
+  const preview = source("docs/components/content/ComponentPreview.tsx");
 
   it("gives every registered block a dedicated, static standalone route", () => {
     expect(route).toContain("export const dynamicParams = false;");
@@ -27,5 +28,10 @@ describe("standalone block demos", () => {
     expect(shell).toContain("const pagePathname = internalPathname(pathname);");
     expect(middleware).toContain('"/block-demo/:path*"');
     expect(middleware).toContain('"/(en|zh-cn)/block-demo/:path*"');
+  });
+
+  it("keeps the standalone-demo action available on both preview tabs", () => {
+    expect(preview).toContain("{standaloneHref && (");
+    expect(preview).not.toContain("{standaloneHref && tab === 0 && (");
   });
 });

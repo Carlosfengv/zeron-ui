@@ -230,7 +230,7 @@ export function ComponentPreview({
               className="h-8 px-2 rounded-lg"
             />
           )}
-          {standaloneHref && tab === 0 && (
+          {standaloneHref && (
             <Tooltip content={t("openStandalone")} side="top">
               <Button
                 asChild
