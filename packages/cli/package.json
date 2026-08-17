@@ -4,7 +4,7 @@
   "description": "Install Zeron Design components into your project.",
   "type": "module",
   "bin": {
-    "zeron-ui": "./src/index.js"
+    "zeron-ui": "src/index.js"
   },
   "files": [
     "src",
