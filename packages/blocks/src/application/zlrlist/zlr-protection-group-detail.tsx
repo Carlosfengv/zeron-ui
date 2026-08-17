@@ -333,7 +333,7 @@ export function ZlrProtectionGroupDetail({
     <section className={cn("h-full min-h-0 w-full overflow-hidden bg-surface-base", className)} {...props}>
       <SidebarProvider breakpointBehavior="collapse" defaultOpen={false}>
         <div className="flex h-full min-h-0 min-w-0 overflow-hidden">
-          <Sidebar ariaLabel="ZS Live Recovery 导航" className="relative h-full" collapsible="icon" collapsedWidth="3.5rem" mobileWidth="min(240px, calc(100vw - 24px))" width="240px">
+          <Sidebar ariaLabel="ZS Live Recovery 导航" className="relative h-full [&_[data-slot=sidebar-panel]]:!border-x-0" collapsible="icon" collapsedWidth="3.5rem" mobileWidth="min(240px, calc(100vw - 24px))" width="240px">
             <ZlrNavigation onNavigate={onNavigate} />
           </Sidebar>
           <main className="min-h-0 min-w-0 flex-1 overflow-hidden py-2 pr-2">
