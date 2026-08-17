@@ -111,26 +111,28 @@ export function BlockDetailPage({
             </div>
           </section>
 
-          <section className="rounded-xl bg-surface-floating px-5 py-6 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge color="blue">{kindLabel}</Badge>
-              {artifact && <Badge variant="dot">{artifact.product}</Badge>}
-              <Badge variant="dot">{readinessLabel}</Badge>
-              <Badge variant="dot">{dataModeLabel}</Badge>
-            </div>
-            <h1 id="artifact-title" className="mt-5 text-heading font-bold leading-tight text-fg-default">{title}</h1>
-            <p className="mt-2 max-w-3xl text-body text-fg-muted">{description}</p>
-          </section>
-
           <section className="rounded-xl bg-surface-floating px-5 py-6 sm:px-6 lg:px-8 lg:py-8">
-            <section className="border-b border-border py-6">
-              <h2 className="mb-3 text-title font-semibold leading-none text-fg-default">
-                {common("installation")}
-              </h2>
-              <InstallCommand value={`npx zeron-ui add ${registryName}`} />
-            </section>
+            <div className="mx-auto w-full max-w-[960px]">
+              <div className="pb-6">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge color="blue">{kindLabel}</Badge>
+                  {artifact && <Badge variant="dot">{artifact.product}</Badge>}
+                  <Badge variant="dot">{readinessLabel}</Badge>
+                  <Badge variant="dot">{dataModeLabel}</Badge>
+                </div>
+                <h1 id="artifact-title" className="mt-5 text-heading font-bold leading-tight text-fg-default">{title}</h1>
+                <p className="mt-2 max-w-3xl text-body text-fg-muted">{description}</p>
+              </div>
 
-            <div className="flex flex-col gap-7 py-6">{children}</div>
+              <section className="border-t border-border py-6">
+                <h2 className="mb-3 text-title font-semibold leading-none text-fg-default">
+                  {common("installation")}
+                </h2>
+                <InstallCommand value={`npx zeron-ui add ${registryName}`} />
+              </section>
+
+              <div className="flex flex-col gap-7 py-6">{children}</div>
+            </div>
           </section>
         </div>
       </div>
