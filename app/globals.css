@@ -55,8 +55,10 @@
   --destructive: light-dark(#F73920, #FC4932);
   --destructive-hover: light-dark(#F9654B, #FD725B);
   --destructive-active: light-dark(#FA8F78, #FD9983);
+  --danger-surface-subtle: light-dark(#FEF2F2, #7F1D1D);
   --danger-surface: light-dark(#FEE2E2, #991B1B);
   --danger-surface-raised: light-dark(#FECACA, #B91C1C);
+  --warning-surface-subtle: light-dark(#FFFBEB, #78350F);
   --warning-surface: light-dark(#FEF3C7, #92400E);
   --warning-surface-raised: light-dark(#FDE68A, #B45309);
   --success-surface: light-dark(#EAF8EF, #123B25);
@@ -204,8 +206,10 @@
   --color-destructive: var(--destructive);
   --color-destructive-hover: var(--destructive-hover);
   --color-destructive-active: var(--destructive-active);
+  --color-danger-surface-subtle: var(--danger-surface-subtle);
   --color-danger-surface: var(--danger-surface);
   --color-danger-surface-raised: var(--danger-surface-raised);
+  --color-warning-surface-subtle: var(--warning-surface-subtle);
   --color-warning-surface: var(--warning-surface);
   --color-warning-surface-raised: var(--warning-surface-raised);
   --color-success-surface: var(--success-surface);

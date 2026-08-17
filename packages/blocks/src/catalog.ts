@@ -4,7 +4,7 @@ export const blockCatalog = [
     title: "集群环境列表",
     description: "A filterable cluster-environment overview with critical, warning, normal, offline, and data-freshness states.",
     categories: ["application", "operations"],
-    dependencies: ["page-layout", "tabs", "input", "button", "card", "badge"],
+    dependencies: ["page-layout", "tabs", "input", "button", "card", "badge", "inline-notice"],
   },
   {
     name: "personal-settings-01",

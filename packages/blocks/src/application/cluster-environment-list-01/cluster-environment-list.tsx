@@ -5,10 +5,11 @@ import AlertSquareIcon from "@hugeicons/core-free-icons/AlertSquareIcon";
 import CheckmarkSquare01Icon from "@hugeicons/core-free-icons/CheckmarkSquare01Icon";
 import CloudOffIcon from "@hugeicons/core-free-icons/CloudOffIcon";
 import Fire02Icon from "@hugeicons/core-free-icons/Fire02Icon";
-import { Badge } from "@zeron/ui/badge";
+import { Badge, type BadgeColor, type BadgeStatus } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Card, CardContent, CardFooter, CardGroup } from "@zeron/ui/card";
 import { Input } from "@zeron/ui/input";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
 import { PageBody, PageContent, PageHeader, PageHeaderContent, PageLayout } from "@zeron/ui/page-layout";
 import { useIcon, type IconComponent } from "@zeron/ui/system/icon-context";
 import { createHugeIcon } from "@zeron/ui/system/huge-icon";
@@ -59,11 +60,17 @@ export const defaultClusterEnvironments = [
   { id: "chengdu-stale", name: "生产环境 C", location: "生产 · 成都机房", health: "normal", freshness: "expired", metrics: [{ label: "计算", value: "12/12 宿主机", tone: "normal" }, { label: "存储", value: "可用 45.23%", tone: "normal" }, { label: "网络", value: "链路稳定", tone: "normal" }] },
 ] as const satisfies readonly ClusterEnvironmentItem[];
 
-const healthPresentation: Record<ClusterEnvironmentHealth, { cardSurface: string }> = {
-  critical: { cardSurface: "bg-danger-surface" },
-  warning: { cardSurface: "bg-warning-surface" },
-  normal: { cardSurface: "bg-hover" },
-  offline: { cardSurface: "bg-neutral-status-surface" },
+const healthPresentation: Record<ClusterEnvironmentHealth, { cardSurface: string; badge: BadgeStatus; label: string }> = {
+  critical: { cardSurface: "bg-danger-surface-subtle", badge: "danger", label: "P0·严重" },
+  warning: { cardSurface: "bg-warning-surface-subtle", badge: "warning", label: "P1·告警" },
+  normal: { cardSurface: "bg-hover", badge: "info", label: "正常" },
+  offline: { cardSurface: "bg-neutral-status-surface", badge: "neutral", label: "离线" },
+};
+
+const strongFooterBadgeColors: Partial<Record<ClusterEnvironmentHealth, BadgeColor>> = {
+  critical: "red",
+  warning: "amber",
+  offline: "gray",
 };
 
 const healthIcons: Record<ClusterEnvironmentHealth, IconComponent> = {
@@ -78,7 +85,10 @@ const filterIcons: Partial<Record<ClusterEnvironmentFilter, IconComponent>> = he
 function EnvironmentCard({ item, onViewDetails }: { item: ClusterEnvironmentItem; onViewDetails?: (item: ClusterEnvironmentItem) => void }) {
   const presentation = healthPresentation[item.health];
   const Environment = useIcon("square-library");
-  const Report = useIcon("check-square");
+  const footerStatus = item.freshness === "expired"
+    ? { badge: "neutral" as const, label: "数据已过期" }
+    : presentation;
+  const strongFooterBadgeColor = item.freshness === "expired" ? undefined : strongFooterBadgeColors[item.health];
   return <Card className={cn("overflow-hidden rounded-2xl border-[0.5px] border-border p-2", presentation.cardSurface)} label={`查看 ${item.name}`}>
     <CardContent className="flex min-h-0 flex-col gap-2 p-0">
       <div className="flex min-w-0 items-start gap-2 p-1">
@@ -89,11 +99,11 @@ function EnvironmentCard({ item, onViewDetails }: { item: ClusterEnvironmentItem
         {item.metrics.map((metric) => {
           const MetricIcon = healthIcons[metric.tone];
 
-          return <div key={metric.label} className="min-w-0 px-1.5 py-1"><dt className="text-body text-fg-muted">{metric.label}</dt><dd className="mt-1 flex min-w-0 items-center gap-1 text-body text-fg-default"><MetricIcon className={cn("size-4 shrink-0", metric.tone === "critical" && "text-fg-danger", metric.tone === "warning" && "text-fg-warning", metric.tone === "normal" && "text-fg-info", metric.tone === "offline" && "text-fg-subtle")} strokeWidth={2} /><span className="truncate">{metric.value}</span></dd></div>;
+          return <div key={metric.label} className="min-w-0 px-1.5 py-1"><dt className="text-body text-fg-muted">{metric.label}</dt><dd className="mt-1 flex min-w-0 items-center gap-1 text-body font-medium text-fg-default"><MetricIcon className={cn("size-4 shrink-0", metric.tone === "critical" && "text-fg-danger", metric.tone === "warning" && "text-fg-warning", metric.tone === "normal" && "text-fg-info", metric.tone === "offline" && "text-fg-subtle")} strokeWidth={2} /><span className="truncate">{metric.value}</span></dd></div>;
         })}
       </dl>
     </CardContent>
-    <CardFooter className="mt-2 justify-between gap-2 p-0"><span className="flex min-w-0 items-center gap-1 text-body text-fg-muted">{item.reportLabel ? <>{item.health === "critical" && <Report className="size-4 shrink-0" />}{item.reportLabel}</> : <>{item.freshness === "expired" ? <Badge status="neutral" size="sm" className="border-0">数据已过期</Badge> : <Badge status="info" size="sm" className="border-0">正常</Badge>}巡检 21 / 21 完成</>}</span><Button type="button" size="sm" variant="ghost" onClick={() => onViewDetails?.(item)}>查看详情</Button></CardFooter>
+    <CardFooter className="mt-2 justify-between gap-2 p-0"><InlineNotice variant="emphasized" tone={footerStatus.badge} className="min-w-0">{strongFooterBadgeColor ? <Badge variant="strong" color={strongFooterBadgeColor} size="sm" className="shrink-0">{footerStatus.label}</Badge> : <Badge status={footerStatus.badge} size="sm" className="shrink-0 border-0">{footerStatus.label}</Badge>}<InlineNoticeContent className="truncate">{item.incident?.title ?? item.reportLabel ?? "巡检 21 / 21 完成"}</InlineNoticeContent></InlineNotice><Button type="button" size="sm" variant="ghost" onClick={() => onViewDetails?.(item)}>查看详情</Button></CardFooter>
   </Card>;
 }
 

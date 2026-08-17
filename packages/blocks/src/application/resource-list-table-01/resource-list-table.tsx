@@ -4,7 +4,9 @@ import type { ColumnDef } from "@tanstack/react-table";
 import {
   type ComponentPropsWithoutRef,
   type ReactNode,
+  useEffect,
   useMemo,
+  useState,
 } from "react";
 import { Badge, type BadgeStatus } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
@@ -446,8 +448,14 @@ export function ResourceListTable({
     [StatusIcon, labels, onEdit]
   );
   const data = useMemo(() => [...resources], [resources]);
+  const [isTableMounted, setIsTableMounted] = useState(false);
+
+  useEffect(() => {
+    setIsTableMounted(true);
+  }, []);
 
   const { table } = useDataTable({
+    autoResetPageIndex: isTableMounted,
     columns,
     data,
     enableRowSelection: true,
