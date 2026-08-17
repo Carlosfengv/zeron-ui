@@ -228,7 +228,7 @@ export function ZlrNavigation({ onNavigate }: { onNavigate?: (value: string) => 
                     <NavItem key={item.value} value={item.value}>
                       <NavItemTrigger
                         render={<button type="button" />}
-                        className="h-8 rounded-md px-2 text-body data-[active=true]:bg-active"
+                        className="h-8 rounded-md px-2 text-body"
                         onClick={() => onNavigate?.(item.value)}
                         tooltip={item.label}
                       >
