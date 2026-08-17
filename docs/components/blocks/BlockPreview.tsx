@@ -41,7 +41,7 @@ function ResponsivePreview({
   }, [canvasWidth]);
 
   return (
-    <div ref={containerRef} className={`relative h-52 w-full overflow-hidden ${surface}`}>
+    <div ref={containerRef} className={`relative aspect-video w-full overflow-hidden ${surface}`}>
       <div
         className="origin-top-left"
         style={{ height: canvasHeight, transform: `scale(${scale})`, width: canvasWidth }}

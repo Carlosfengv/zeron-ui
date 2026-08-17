@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Badge } from "@zeron/ui/badge";
 import { Input } from "@zeron/ui/input";
-import { Card, CardDescription, CardGroup, CardHeader } from "@zeron/ui/card";
+import { Container, ContainerBody, ContainerFooter } from "@zeron/ui/container";
 import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@zeron/ui/nav-item";
 import { NavMenu } from "@zeron/ui/nav-menu";
 import { PageBody, PageContent, PageLayout, PageSidebar } from "@zeron/ui/page-layout";
@@ -176,23 +177,28 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
             </div>
 
             {templates.length ? (
-            <CardGroup border="outlined" columns={2} separated style={{ gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))" }}>
+            <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))" }}>
               {templates.map((artifact) => (
-                <Card key={artifact.slug} className="flex min-w-0 flex-col overflow-hidden bg-surface-floating">
-                  <div
+                <Container key={artifact.slug} className="min-w-0 overflow-hidden">
+                  <ContainerBody
                     aria-hidden={artifact.kind !== "block" && artifact.kind !== "layout"}
+                    className="p-1"
                     inert={artifact.kind !== "block" && artifact.kind !== "layout"}
-                    className="border-b border-border bg-surface-base"
                   >
                     <BlockPreview name={artifact.slug} />
-                  </div>
-                  <CardHeader className="pb-0">
-                    <h2 className="text-title font-semibold leading-tight text-fg-default"><Link className="rounded outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring" href={`${localePrefix}/docs/blocks/${artifact.slug}`}>{artifact.title}</Link></h2>
-                    <CardDescription className="mt-2">{artifact.description}</CardDescription>
-                  </CardHeader>
-                </Card>
+                  </ContainerBody>
+                  <ContainerFooter className="justify-between px-3 py-3">
+                    <Link className="rounded text-body font-medium text-fg-muted outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring" href={`${localePrefix}/docs/blocks/${artifact.slug}`}>
+                      {artifact.title}
+                    </Link>
+                    <div className="flex items-center gap-1.5">
+                      <Badge size="sm" variant="dot">{productLabels[language][artifact.product]}</Badge>
+                      <Badge color="blue" size="sm">{kindLabels[language][artifact.kind]}</Badge>
+                    </div>
+                  </ContainerFooter>
+                </Container>
               ))}
-            </CardGroup>
+            </div>
             ) : <p className="flex min-h-64 items-center justify-center rounded-xl border border-dashed border-border bg-surface-raised p-6 text-body text-fg-muted">{text.empty}</p>}
           </PageBody>
         </PageContent>
