@@ -153,7 +153,8 @@
       "resource-metric-list-01": "通过状态分段条紧凑展示基础设施资源数量和健康分布。",
       "resource-status-all-01": "通过环形分布、状态数量和可判断覆盖率汇总展示资源状态。",
       "top-nav-app-shell-01": "带居中 TopNav 与聚焦内容区的堆叠式应用外壳。",
-      "zaiops-operations-01": "带响应式 Sidebar、组织切换和分组导航的运维工作区 recipe。"
+      "zaiops-operations-01": "带响应式 Sidebar、组织切换和分组导航的运维工作区 recipe。",
+      "zlrlist": "带响应式导航、与 Figma 对齐的保护组列表和详情工作区。"
     }
   }
 }

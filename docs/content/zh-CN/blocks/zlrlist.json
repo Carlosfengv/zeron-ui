@@ -1,0 +1,8 @@
+{
+  "zlrlistBlock": {
+    "title": "ZLR 保护组",
+    "description": "带站点切换、搜索、多选、行操作和中文分页的 ZS Live Recovery 保护组工作区。",
+    "guidance": "数据接入",
+    "guidanceBody": "通过 groups 和 sites 替换示例数据。Block 管理本地搜索、多选与分页状态；使用回调将导航、站点切换、新建和行菜单接入应用。"
+  }
+}

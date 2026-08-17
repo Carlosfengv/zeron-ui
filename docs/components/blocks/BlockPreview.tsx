@@ -11,6 +11,7 @@ import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
 import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
 import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
 import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
+import { ZlrList } from "@zeron/blocks/zlrlist";
 
 export function BlockPreview({ name }: { name: string }) {
   if (name === "cluster-environment-detail-01") {
@@ -126,6 +127,16 @@ export function BlockPreview({ name }: { name: string }) {
     return (
       <div className="h-52 overflow-hidden">
         <ZaiopsOperations className="h-full min-h-0" />
+      </div>
+    );
+  }
+
+  if (name === "zlrlist") {
+    return (
+      <div className="h-52 overflow-hidden">
+        <div className="w-[1280px] origin-top scale-[0.26]">
+          <ZlrList />
+        </div>
       </div>
     );
   }

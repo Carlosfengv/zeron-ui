@@ -17,6 +17,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "blocks/resource-status-all-01": () => import("@docs/pages/blocks/resource-status-all-01/page"),
   "blocks/top-nav-app-shell-01": () => import("@docs/pages/blocks/top-nav-app-shell-01/page"),
   "blocks/zaiops-operations-01": () => import("@docs/pages/blocks/zaiops-operations-01/page"),
+  "blocks/zlrlist": () => import("@docs/pages/blocks/zlrlist/page"),
   "icons/catalog": () => import("@docs/pages/icons/catalog/page"),
   "icons/overview": () => import("@docs/pages/icons/overview/page"),
   "icons/providers": () => import("@docs/pages/icons/providers/page"),

@@ -1,0 +1,8 @@
+{
+  "zlrlistBlock": {
+    "title": "ZLR Protection Groups",
+    "description": "A ZS Live Recovery protection-group workspace with site switching, search, selection, row actions, and Chinese pagination.",
+    "guidance": "Data integration",
+    "guidanceBody": "Pass groups and sites to replace the sample data. The block owns local search, selection, and pagination state; use callbacks to connect navigation, site changes, creation, and row menus to your application."
+  }
+}

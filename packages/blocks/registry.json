@@ -267,6 +267,42 @@
           "target": "components/blocks/zaiops-operations-01/index.ts"
         }
       ]
+    },
+    {
+      "name": "zlrlist",
+      "type": "registry:block",
+      "title": "ZLR 保护组",
+      "description": "A ZS Live Recovery protection-group list and detail workspace with recovery plans and Chinese pagination.",
+      "categories": ["application", "operations", "tables"],
+      "dependencies": ["tw-animate-css", "@tanstack/react-table"],
+      "registryDependencies": ["badge", "button", "checkbox", "detail-list", "icon-context", "input-group", "nav-item", "nav-menu", "select", "sidebar", "sidebar-identity-row", "table", "tabs", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/zlrlist/zlrlist.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/zlrlist/zlrlist.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/zlrlist/zlr-protection-group-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/zlrlist/zlr-protection-group-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/zlrlist/zlr-workspace.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/zlrlist/zlr-workspace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/zlrlist/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/zlrlist/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/zlrlist/assets/zlr-logo.svg",
+          "type": "registry:file",
+          "target": "components/blocks/zlrlist/assets/zlr-logo.svg"
+        }
+      ]
     }
   ]
 }

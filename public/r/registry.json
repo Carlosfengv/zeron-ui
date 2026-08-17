@@ -2499,6 +2499,64 @@
           "target": "components/blocks/zaiops-operations-01/index.ts"
         }
       ]
+    },
+    {
+      "name": "zlrlist",
+      "type": "registry:block",
+      "title": "ZLR 保护组",
+      "description": "A ZS Live Recovery protection-group list and detail workspace with recovery plans and Chinese pagination.",
+      "categories": [
+        "application",
+        "operations",
+        "tables"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@tanstack/react-table"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/checkbox.json",
+        "https://zeron-ui.vercel.app/r/detail-list.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/input-group.json",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/sidebar.json",
+        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
+        "https://zeron-ui.vercel.app/r/table.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/zlrlist/zlrlist.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/zlrlist/zlrlist.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/zlrlist/zlr-protection-group-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/zlrlist/zlr-protection-group-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/zlrlist/zlr-workspace.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/zlrlist/zlr-workspace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/zlrlist/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/zlrlist/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/zlrlist/assets/zlr-logo.svg",
+          "type": "registry:file",
+          "target": "components/blocks/zlrlist/assets/zlr-logo.svg"
+        }
+      ]
     }
   ]
 }

@@ -153,7 +153,8 @@
       "resource-metric-list-01": "A compact resource inventory with status distribution bars for infrastructure health at a glance.",
       "resource-status-all-01": "A resource-status summary with a circular distribution, detailed counts, and determinate-state coverage.",
       "top-nav-app-shell-01": "A stacked application shell with a centered TopNav and focused content area.",
-      "zaiops-operations-01": "An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation."
+      "zaiops-operations-01": "An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation.",
+      "zlrlist": "A ZS Live Recovery protection-group workspace with responsive navigation, Figma-aligned list and detail views."
     }
   }
 }

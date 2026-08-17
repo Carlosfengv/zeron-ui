@@ -77,4 +77,11 @@ export const blockCatalog = [
     categories: ["application", "operations"],
     dependencies: ["sidebar", "page-layout", "nav-menu", "nav-item"],
   },
+  {
+    name: "zlrlist",
+    title: "ZLR 保护组",
+    description: "A ZS Live Recovery protection-group list and detail workspace with site switching, recovery plans, and Chinese pagination.",
+    categories: ["application", "operations", "tables"],
+    dependencies: ["sidebar", "nav-menu", "nav-item", "tabs", "input-group", "table", "checkbox", "select", "button", "badge", "detail-list"],
+  },
 ] as const;
