@@ -1,26 +1,7 @@
 "use client";
 
 import type * as React from "react";
-import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
 import { cn } from "#system/utils";
-
-function Separator({
-  className,
-  orientation = "horizontal",
-  ...props
-}: SeparatorPrimitive.Props) {
-  return (
-    <SeparatorPrimitive
-      className={cn(
-        "shrink-0 bg-border",
-        orientation === "horizontal" ? "h-px w-full" : "w-px self-stretch",
-        className
-      )}
-      orientation={orientation}
-      {...props}
-    />
-  );
-}
 
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -47,4 +28,4 @@ function Textarea({ className, rows = 1, ...props }: React.ComponentProps<"texta
   );
 }
 
-export { Separator, Skeleton, Textarea };
+export { Skeleton, Textarea };

@@ -106,9 +106,7 @@ describe("semantic color consumers", () => {
     const dataTable = read(join(UI_ROOT, "data-table.tsx"));
     const dataGrid = read(join(UI_ROOT, "data-grid/data-grid.tsx"));
     const dataGridRow = read(join(UI_ROOT, "data-grid/data-grid-row.tsx"));
-    const dataGridPrimitives = read(
-      join(UI_ROOT, "data-grid/data-grid-primitives.tsx")
-    );
+    const separator = read(join(UI_ROOT, "separator.tsx"));
 
     expect(input).toContain("border border-border bg-transparent");
     expect(table).toContain(
@@ -126,7 +124,7 @@ describe("semantic color consumers", () => {
     expect(dataGrid).not.toContain("border-border/70");
     expect(dataGrid).not.toContain("border-border-subtle");
     expect(dataGridRow).not.toContain("border-border-subtle");
-    expect(dataGridPrimitives).toContain("shrink-0 bg-border");
+    expect(separator).toContain("after:bg-border");
   });
 
   it("uses floating surfaces for primary interactive component panels", () => {

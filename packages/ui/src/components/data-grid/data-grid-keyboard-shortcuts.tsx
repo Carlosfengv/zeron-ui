@@ -13,7 +13,7 @@ import {
 } from "../dialog";
 import { Input } from "../input";
 import { Kbd, KbdGroup } from "../kbd";
-import { Separator } from "./data-grid-primitives";
+import { Separator } from "../separator";
 
 const SHORTCUT_KEY = "/";
 const SearchIcon = createIconSlot("search");

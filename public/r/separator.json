@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "separator",
+  "type": "registry:ui",
+  "title": "Separator (Base UI)",
+  "description": "Accessible horizontal or vertical separator with an 8px layout gutter and semantic border color. Base UI flavor.",
+  "dependencies": [
+    "@base-ui/react",
+    "tw-animate-css"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "packages/ui/src/components/separator.tsx",
+      "content": "\"use client\";\nimport { forwardRef, type ComponentPropsWithoutRef, type ComponentRef, } from \"react\";\nimport { Separator as SeparatorPrimitive } from \"@base-ui/react/separator\";\nimport { cn } from \"@lib/utils\";\ntype SeparatorProps = ComponentPropsWithoutRef<typeof SeparatorPrimitive>;\nconst Separator = forwardRef<ComponentRef<typeof SeparatorPrimitive>, SeparatorProps>(({ className, orientation = \"horizontal\", ...props }, ref) => (<SeparatorPrimitive ref={ref} orientation={orientation} data-slot=\"separator\" className={cn(\"pointer-events-none flex shrink-0 items-center justify-center\", \"after:block after:shrink-0 after:bg-border after:content-['']\", orientation === \"horizontal\"\n        ? \"h-2 w-full after:h-px after:w-full\"\n        : \"w-2 self-stretch after:h-full after:w-px\", className)} {...props}/>));\nSeparator.displayName = \"Separator\";\nexport { Separator };\nexport type { SeparatorProps };\n",
+      "type": "registry:ui",
+      "target": "components/ui/separator.tsx"
+    }
+  ]
+}

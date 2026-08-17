@@ -864,6 +864,7 @@
         "dropdown",
         "input",
         "kbd",
+        "separator",
         "select",
         "toast"
       ],
@@ -1699,6 +1700,27 @@
         {
           "path": "packages/ui/src/components/scroll-area.tsx",
           "target": "components/ui/scroll-area.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator (Base UI)",
+      "description": "Accessible horizontal or vertical separator with an 8px layout gutter and semantic border color. Base UI flavor.",
+      "dependencies": [
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/separator.tsx",
+          "target": "components/ui/separator.tsx",
           "type": "registry:ui"
         }
       ]
