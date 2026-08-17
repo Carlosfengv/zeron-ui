@@ -672,6 +672,9 @@ function DataTablePagination<TData>({
   const ChevronsLeft = useIcon("chevrons-left");
   const ChevronsRight = useIcon("chevrons-right");
   const pageSize = table.getState().pagination.pageSize;
+  const hasSelectionCheckbox = table
+    .getAllLeafColumns()
+    .some((column) => column.id === "select");
   const resolvedPageSizeOptions = pageSizeOptions.includes(pageSize)
     ? pageSizeOptions
     : [...pageSizeOptions, pageSize].sort((left, right) => left - right);
@@ -680,15 +683,18 @@ function DataTablePagination<TData>({
     <div
       className={cn(
         "flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 text-body sm:flex-row sm:gap-8",
+        !hasSelectionCheckbox && "sm:justify-end",
         className
       )}
       data-slot="data-table-pagination"
       {...props}
     >
-      <div className="flex-1 whitespace-nowrap text-fg-muted">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
-      </div>
+      {hasSelectionCheckbox && (
+        <div className="flex-1 whitespace-nowrap text-fg-muted">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+      )}
       <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
         <div className="flex items-center gap-2 whitespace-nowrap">
           <span className="text-label text-fg-default">Rows per page</span>
