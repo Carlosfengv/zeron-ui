@@ -57,8 +57,16 @@ interface Target {
   anchor: string;
   meta: string;
   padding: string;
+  paddingToken: string | null;
   margin: string;
+  marginToken: string | null;
   gap: string | null;
+  gapToken: string | null;
+  radius: string;
+  radiusToken: string | null;
+  background: string | null;
+  backgroundToken: string | null;
+  heightToken: string | null;
   /** Type metrics — only set when the element directly wraps text. */
   font: {
     size: string; // "14px / 20px" (font-size / line-height)
@@ -66,6 +74,8 @@ interface Target {
     weight: string; // computed CSS weight, optionally followed by diagnostic variable axes
     tracking: string; // letter-spacing
     color: string; // resolved text color as hex
+    typeToken: string | null;
+    colorToken: string | null;
   } | null;
 }
 
@@ -91,6 +101,150 @@ function boxShorthand(t: number, r: number, b: number, l: number): string {
   if (t === r && r === b && b === l) return `${R(t)}px`;
   if (t === b && l === r) return `${R(t)}px ${R(r)}px`;
   return `${R(t)}px ${R(r)}px ${R(b)}px ${R(l)}px`;
+}
+
+/** Preserve non-length computed values such as `margin-inline: auto`. */
+function computedBoxShorthand(t: string, r: string, b: string, l: string): string {
+  if (t === r && r === b && b === l) return t;
+  if (t === b && l === r) return `${t} ${r}`;
+  if (l === r) return `${t} ${r} ${b}`;
+  return `${t} ${r} ${b} ${l}`;
+}
+
+function arePixelLengths(...values: string[]): boolean {
+  return values.every((value) => /^-?(?:[\d.]+|[\d.]+e[+-]?\d+)px$/i.test(value));
+}
+
+/**
+ * Tailwind v4 derives spacing utilities from the single `--spacing` theme
+ * variable: `p-4`, for example, compiles to `calc(var(--spacing) * 4)`.
+ * The browser exposes the resolved pixels in computed styles, so restore the
+ * documented token notation alongside that value for the inspector.
+ */
+function spacingToken(px: number): string | null {
+  const step = px / 4;
+  if (!Number.isFinite(step) || Math.abs(step - Math.round(step * 100) / 100) > 0.001) {
+    return null;
+  }
+  const normalized = Math.round(step * 100) / 100;
+  return `--spacing(${normalized})`;
+}
+
+/** Collapse four Tailwind spacing references with the same rules as CSS box shorthand. */
+function boxTokenShorthand(t: number, r: number, b: number, l: number): string | null {
+  const tokens = [spacingToken(t), spacingToken(r), spacingToken(b), spacingToken(l)];
+  if (tokens.some((token) => token === null)) return null;
+  const [top, right, bottom, left] = tokens as [string, string, string, string];
+  if (top === right && right === bottom && bottom === left) return top;
+  if (top === bottom && left === right) return `${top} ${right}`;
+  if (left === right) return `${top} ${right} ${bottom}`;
+  return `${top} ${right} ${bottom} ${left}`;
+}
+
+const radiusTokens = new Map<number, string>([
+  [2, "--radius-xs"],
+  [4, "--radius-sm"],
+  [6, "--radius-md"],
+  [8, "--radius-lg"],
+  [12, "--radius-xl"],
+  [16, "--radius-2xl"],
+  [24, "--radius-3xl"],
+  [32, "--radius-4xl"],
+]);
+
+function radiusToken(px: number): string | null {
+  // Tailwind's `rounded-full` is generated from an infinite radius rather
+  // than a `--radius-*` theme variable, so name the utility itself.
+  if (px > 10_000) return "rounded-full";
+  return radiusTokens.get(Math.round(px)) ?? null;
+}
+
+function radiusTokenShorthand(t: number, r: number, b: number, l: number): string | null {
+  const tokens = [radiusToken(t), radiusToken(r), radiusToken(b), radiusToken(l)];
+  if (tokens.some((token) => token === null)) return null;
+  const [top, right, bottom, left] = tokens as [string, string, string, string];
+  if (top === right && right === bottom && bottom === left) return top;
+  if (top === bottom && left === right) return `${top} ${right}`;
+  if (left === right) return `${top} ${right} ${bottom}`;
+  return `${top} ${right} ${bottom} ${left}`;
+}
+
+function valueWithToken(value: string, token: string | null) {
+  return token ? `${value} · ${token}` : value;
+}
+
+const typographyTokenByMetrics = new Map<string, string>([
+  ["12px / 16px", "--font-size-label · --line-height-label"],
+  ["14px / 20px", "--font-size-body · --line-height-body"],
+  ["18px / 26px", "--font-size-title · --line-height-title"],
+  ["24px / 32px", "--font-size-heading · --line-height-heading"],
+]);
+
+function cssVariableInValue(value: string): string | null {
+  return /var\(\s*(--[\w-]+)/.exec(value)?.[1] ?? null;
+}
+
+function isThemeVariable(variable: string): boolean {
+  return getComputedStyle(document.documentElement).getPropertyValue(variable).trim() !== "";
+}
+
+/**
+ * Recover a semantic variable from the unprefixed Tailwind utility that set
+ * it. Computed styles intentionally resolve `var()` calls, so this preserves
+ * provenance for the inspector. Text styles can be inherited; backgrounds
+ * cannot, hence the caller chooses whether to walk parent elements.
+ */
+function tokenFromUtility(
+  element: HTMLElement,
+  utility: "text" | "bg",
+  inherited: boolean,
+): string | null {
+  for (let node: HTMLElement | null = element; node; node = inherited ? node.parentElement : null) {
+    const inlineValue = node.style.getPropertyValue(
+      utility === "text" ? "color" : "background-color",
+    );
+    const inlineToken = cssVariableInValue(inlineValue);
+    if (inlineToken && isThemeVariable(inlineToken)) return inlineToken;
+
+    for (const className of node.classList) {
+      // State and responsive variants do not necessarily apply while the
+      // overlay owns the pointer. Only show a token for an unprefixed utility.
+      const utilityClass = className.replace(/^!/, "");
+      if (utilityClass.includes(":")) continue;
+
+      const arbitraryToken = cssVariableInValue(utilityClass);
+      if (utilityClass.startsWith(`${utility}-[`) && arbitraryToken && isThemeVariable(arbitraryToken)) {
+        return arbitraryToken;
+      }
+
+      if (!utilityClass.startsWith(`${utility}-`)) continue;
+      const tokenName = utilityClass.slice(utility.length + 1).split("/")[0];
+      const token = `--${tokenName}`;
+      if (isThemeVariable(token)) return token;
+    }
+  }
+  return null;
+}
+
+function heightTokenFromUtility(element: HTMLElement, renderedHeight: number): string | null {
+  for (let node: HTMLElement | null = element; node; node = node.parentElement) {
+    for (const className of node.classList) {
+      const utility = className.replace(/^!/, "");
+      if (utility.includes(":")) continue;
+      const match = /^(?:min-|max-)?h-(control|badge)-(xs|sm|md|lg|xl)$/.exec(utility);
+      // A background layer often occupies its control parent's whole box. In
+      // that case retain the parent's height token, but don't assign it to a
+      // smaller text child merely because it inherits the same component.
+      if (match && Math.abs(node.getBoundingClientRect().height - renderedHeight) < 0.5) {
+        return `--${match[1]}-height-${match[2]}`;
+      }
+    }
+  }
+  return null;
+}
+
+function isTransparent(color: string): boolean {
+  return color === "transparent" || /^rgba?\(0,\s*0,\s*0(?:,\s*0)?\)$/.test(color);
 }
 
 export function InspectOverlay({
@@ -178,6 +332,17 @@ export function InspectOverlay({
       const mr = parseFloat(cs.marginRight) || 0;
       const mb = parseFloat(cs.marginBottom) || 0;
       const ml = parseFloat(cs.marginLeft) || 0;
+      const rtl = parseFloat(cs.borderTopLeftRadius) || 0;
+      const rtr = parseFloat(cs.borderTopRightRadius) || 0;
+      const rbr = parseFloat(cs.borderBottomRightRadius) || 0;
+      const rbl = parseFloat(cs.borderBottomLeftRadius) || 0;
+      const marginValues = [cs.marginTop, cs.marginRight, cs.marginBottom, cs.marginLeft] as const;
+      const radiusValues = [
+        cs.borderTopLeftRadius,
+        cs.borderTopRightRadius,
+        cs.borderBottomRightRadius,
+        cs.borderBottomLeftRadius,
+      ] as const;
 
       const left = r.left - iLeft;
       const top = r.top - iTop;
@@ -273,8 +438,12 @@ export function InspectOverlay({
           weight,
           tracking,
           color: rgbToHex(cs.color),
+          typeToken: typographyTokenByMetrics.get(`${sizePx}px / ${lh}`) ?? null,
+          colorToken: tokenFromUtility(el, "text", true),
         };
       }
+
+      const background = isTransparent(cs.backgroundColor) ? null : rgbToHex(cs.backgroundColor);
 
       setTarget({
         left,
@@ -292,8 +461,16 @@ export function InspectOverlay({
         anchor,
         meta,
         padding: boxShorthand(pt, pr, pb, pl),
-        margin: boxShorthand(mt, mr, mb, ml),
+        paddingToken: boxTokenShorthand(pt, pr, pb, pl),
+        margin: computedBoxShorthand(...marginValues),
+        marginToken: arePixelLengths(...marginValues) ? boxTokenShorthand(mt, mr, mb, ml) : null,
         gap: isFlex && gapVal > 0 ? `${Math.round(gapVal)}px` : null,
+        gapToken: isFlex && gapVal > 0 ? spacingToken(gapVal) : null,
+        radius: computedBoxShorthand(...radiusValues),
+        radiusToken: arePixelLengths(...radiusValues) ? radiusTokenShorthand(rtl, rtr, rbr, rbl) : null,
+        background,
+        backgroundToken: background ? tokenFromUtility(el, "bg", false) : null,
+        heightToken: heightTokenFromUtility(el, height),
         font,
       });
     },
@@ -487,18 +664,26 @@ export function InspectOverlay({
                 {target.anchor}
               </div>
               <div>{target.meta}</div>
+              {target.heightToken && <div>height {valueWithToken(`${Math.round(target.height)}px`, target.heightToken)}</div>}
+              {target.background && <div>background {valueWithToken(target.background, target.backgroundToken)}</div>}
               <div>
-                padding {target.padding} · margin {target.margin}
+                padding {valueWithToken(target.padding, target.paddingToken)}
               </div>
-              {target.gap && <div>gap {target.gap}</div>}
+              <div>
+                margin {valueWithToken(target.margin, target.marginToken)}
+              </div>
+              {target.gap && <div>gap {valueWithToken(target.gap, target.gapToken)}</div>}
+              {target.radius !== "0px" && (
+                <div>radius {valueWithToken(target.radius, target.radiusToken)}</div>
+              )}
               {target.font && (
                 <>
-                  <div>font {target.font.size}</div>
+                  <div>font {valueWithToken(target.font.size, target.font.typeToken)}</div>
                   <div>
                     {target.font.family} · {target.font.weight}
                   </div>
                   <div>
-                    tracking {target.font.tracking} · {target.font.color}
+                    tracking {target.font.tracking} · color {valueWithToken(target.font.color, target.font.colorToken)}
                   </div>
                 </>
               )}
