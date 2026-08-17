@@ -140,12 +140,19 @@ export function SettingsContent({
 /** Desktop-only right column that mirrors the left sidebar styling. */
 export function RightPanel({
   localePrefix = "",
+  placement = "shell",
+  showSettings = true,
   showLanguage = false,
 }: {
   localePrefix?: string;
+  placement?: "shell" | "content";
+  showSettings?: boolean;
   showLanguage?: boolean;
 }) {
   const t = useTranslations("settings");
+  const className = placement === "content"
+    ? "sticky top-4 z-raised col-start-1 row-start-1 hidden w-64 self-start justify-self-end xl:block"
+    : "shrink-0 w-64 sticky top-4 self-start mt-4 mr-2 xl-fade-block max-xl:fixed max-xl:top-0 max-xl:right-0 max-xl:z-40 max-xl:pointer-events-none";
   return (
     // max-xl:fixed — during the xl-fade-block fade-out the panel keeps
     // display:block for the transition (allow-discrete), which would hold its
@@ -157,20 +164,22 @@ export function RightPanel({
     // second panel (RightRailTarget) below the settings.
     // xl-fade-block sets display:block at ≥xl, so the flex column lives on an
     // inner wrapper (else it would override `flex` and drop the gap).
-    <div className="shrink-0 w-64 sticky top-4 self-start mt-4 mr-2 xl-fade-block max-xl:fixed max-xl:top-0 max-xl:right-0 max-xl:z-40 max-xl:pointer-events-none">
+    <div className={className}>
       <div className="flex flex-col gap-3">
-        <aside className="rounded-lg border-[0.5px] border-border-subtle bg-surface-floating p-4">
-          <SurfaceProvider role="floating">
-            <div className="pl-1 pt-2 pb-2">
-              <h2
-                className="text-title text-fg-default leading-none font-semibold"
-              >
-                {t("heading")}
-              </h2>
-            </div>
-            <SettingsContent tooltipSide="left" localePrefix={localePrefix} showLanguage={showLanguage} />
-          </SurfaceProvider>
-        </aside>
+        {showSettings && (
+          <aside className="rounded-lg border-[0.5px] border-border-subtle bg-surface-floating p-4">
+            <SurfaceProvider role="floating">
+              <div className="pl-1 pt-2 pb-2">
+                <h2
+                  className="text-title text-fg-default leading-none font-semibold"
+                >
+                  {t("heading")}
+                </h2>
+              </div>
+              <SettingsContent tooltipSide="left" localePrefix={localePrefix} showLanguage={showLanguage} />
+            </SurfaceProvider>
+          </aside>
+        )}
 
         {/* Page-owned slot — e.g. the Card doc's Playground controls. */}
         <RightRailTarget />

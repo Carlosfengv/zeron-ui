@@ -1,12 +1,13 @@
 import "server-only";
 
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { pageLoaders } from "@docs/generated/page-loaders.generated";
 import { collectionDefinitions, contentKeyOf, docEntries, getDocEntry, pathnameOf } from "@docs/manifest";
 import { PageMessages } from "@docs/i18n/page-provider";
 import { BlocksGallery } from "@docs/components/blocks/BlocksGallery";
-import { DocumentationCollectionCard } from "@docs/components/content/DocumentationCollectionCard";
+import { ComponentsGallery } from "@docs/components/components/ComponentsGallery";
 import { localeAlternates, localizedPathname } from "@docs/seo/locale";
 import type { AppLocale } from "@/app/_i18n/routing";
 
@@ -71,39 +72,44 @@ export function renderCollectionPage({ collection, locale }: { collection: strin
   const definition = collectionDefinitions.find(({ id }) => id === collection);
   if (!definition) notFound();
 
-  if (collection === "blocks") return <BlocksGallery localePrefix={locale === "zh-CN" ? "/zh-cn" : ""} />;
+  if (collection === "blocks") {
+    return (
+      <Suspense fallback={<div aria-busy="true" className="min-h-svh bg-surface-base" />}>
+        <BlocksGallery localePrefix={locale === "zh-CN" ? "/zh-cn" : ""} />
+      </Suspense>
+    );
+  }
+
+  if (collection === "components") {
+    return (
+      <Suspense fallback={<div aria-busy="true" className="min-h-svh bg-surface-base" />}>
+        <ComponentsGallery localePrefix={locale === "zh-CN" ? "/zh-cn" : ""} />
+      </Suspense>
+    );
+  }
 
   const entries = docEntries.filter((entry) => entry.collection === collection);
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-20">
+    <section aria-labelledby="collection-title" className="mx-auto w-full max-w-5xl px-6 py-20">
       <p className="text-label text-fg-muted">Documentation</p>
-      <h1 className="mt-2 text-display font-semibold text-fg-default">{definition.id}</h1>
+      <h1 id="collection-title" className="mt-2 text-display font-semibold text-fg-default">{definition.id}</h1>
       {entries.length ? (
         <ul className="mt-10 grid gap-3 sm:grid-cols-2">
           {entries.map((entry) => (
             <li key={entry.slug}>
-              {collection === "components" ? (
-                <DocumentationCollectionCard
-                  description={entry.description}
-                  href={localizedPathname(pathnameOf(entry), locale)}
-                  icon={entry.icon}
-                  name={entry.name}
-                />
-              ) : (
-                <a
-                  className="block rounded-lg border border-border p-4 transition-colors hover:bg-hover"
-                  href={localizedPathname(pathnameOf(entry), locale)}
-                >
-                  <span className="font-medium text-fg-default">{entry.name}</span>
-                  {entry.description && <span className="mt-1 block text-body text-fg-muted">{entry.description}</span>}
-                </a>
-              )}
+              <a
+                className="block rounded-lg border border-border p-4 transition-colors hover:bg-hover"
+                href={localizedPathname(pathnameOf(entry), locale)}
+              >
+                <span className="font-medium text-fg-default">{entry.name}</span>
+                {entry.description && <span className="mt-1 block text-body text-fg-muted">{entry.description}</span>}
+              </a>
             </li>
           ))}
         </ul>
       ) : (
         <p className="mt-8 text-body text-fg-muted">This collection is being prepared.</p>
       )}
-    </main>
+    </section>
   );
 }
