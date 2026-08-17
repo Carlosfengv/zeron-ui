@@ -336,7 +336,7 @@ export function ZlrProtectionGroupDetail({
           <Sidebar ariaLabel="ZS Live Recovery 导航" className="relative h-full" collapsible="icon" collapsedWidth="3.5rem" mobileWidth="min(240px, calc(100vw - 24px))" width="240px">
             <ZlrNavigation onNavigate={onNavigate} />
           </Sidebar>
-          <main className="min-h-0 min-w-0 flex-1 overflow-hidden p-2">
+          <main className="min-h-0 min-w-0 flex-1 overflow-hidden py-2 pr-2">
             <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-border-subtle bg-surface-floating">
               <header className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-border-subtle px-3">
                 <div className="flex min-w-0 items-center gap-1 text-body font-medium text-fg-default">
