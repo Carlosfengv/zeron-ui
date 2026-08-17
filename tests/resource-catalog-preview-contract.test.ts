@@ -13,6 +13,7 @@ const resourceCatalog = readFileSync(
 );
 const blockCatalog = readFileSync(join(ROOT, "packages/blocks/src/catalog.ts"), "utf8");
 const blockRegistry = readFileSync(join(ROOT, "packages/blocks/registry.json"), "utf8");
+const blocksPackage = readFileSync(join(ROOT, "packages/blocks/package.json"), "utf8");
 const blockDetailPage = readFileSync(
   join(ROOT, "docs/components/blocks/BlockDetailPage.tsx"),
   "utf8"
@@ -84,5 +85,11 @@ describe("Resource Catalog gallery preview", () => {
     expect(resourceCatalog).toContain(
       'className="mt-1 line-clamp-3 text-label leading-5 text-fg-subtle"'
     );
+  });
+
+  it("declares every brand-icon dependency used by the catalog and its install artifact", () => {
+    expect(resourceCatalog).toContain('from "@thesvg/icons/supabase"');
+    expect(blocksPackage).toContain('"@thesvg/icons": "^3.2.15"');
+    expect(blockRegistry).toContain('"dependencies": ["tw-animate-css", "@lobehub/icons", "@thesvg/icons"]');
   });
 });

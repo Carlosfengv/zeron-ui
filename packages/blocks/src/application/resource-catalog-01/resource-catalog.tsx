@@ -52,6 +52,8 @@ export interface ResourceCatalogProps extends Omit<ComponentPropsWithoutRef<"div
   items?: readonly ResourceCatalogItem[];
   /** Enables in-place switching for previews; omit it when navigation is route-owned. */
   onKindChange?: (kind: ResourceCatalogKind) => void;
+  /** Called after a resource is selected, so the product route can own navigation. */
+  onResourceSelect?: (item: ResourceCatalogItem) => void;
 }
 
 type SortOrder = "newest" | "most-used";
@@ -203,7 +205,7 @@ function ResourceCard({ item, selected, onSelect }: { item: ResourceCatalogItem;
 }
 
 /** A filterable resource directory that renders model and MCP marketplace views. */
-export function ResourceCatalog({ kind = "model", items, onKindChange, className, ...props }: ResourceCatalogProps) {
+export function ResourceCatalog({ kind = "model", items, onKindChange, onResourceSelect, className, ...props }: ResourceCatalogProps) {
   const defaultItems = kind === "model" ? modelCatalogItems : mcpCatalogItems;
   const sourceItems = items ?? defaultItems;
   const labels = catalogLabels[kind];
@@ -374,7 +376,7 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, className
                   style={{ gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))" }}
                 >
                   {visibleItems.map((item) => (
-                    <ResourceCard key={item.id} item={item} selected={selectedId === item.id} onSelect={() => setSelectedId(item.id)} />
+                    <ResourceCard key={item.id} item={item} selected={selectedId === item.id} onSelect={() => { setSelectedId(item.id); onResourceSelect?.(item); }} />
                   ))}
                 </CardGroup>
               ) : (

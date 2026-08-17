@@ -9,11 +9,33 @@ import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
 import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
 import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
 import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
+import { McpDetail } from "@zeron/blocks/mcp-detail-01";
+import { ModelDetail } from "@zeron/blocks/model-detail-01";
 import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
 import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
 import { ZlrList } from "@zeron/blocks/zlrlist";
 
 export function BlockPreview({ name }: { name: string }) {
+  if (name === "mcp-detail-01") {
+    return (
+      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
+        <div className="h-[900px] w-[1320px] origin-top scale-[0.26]">
+          <McpDetail />
+        </div>
+      </div>
+    );
+  }
+
+  if (name === "model-detail-01") {
+    return (
+      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
+        <div className="h-[900px] w-[1320px] origin-top scale-[0.26]">
+          <ModelDetail />
+        </div>
+      </div>
+    );
+  }
+
   if (name === "cluster-environment-detail-01") {
     return (
       <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">

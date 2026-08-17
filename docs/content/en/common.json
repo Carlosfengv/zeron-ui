@@ -147,6 +147,8 @@
       "providers": "Free and licensed icon styles, plus the boundary for optional Pro packages.",
       "provider-create-form-01": "A three-step provider setup workflow with credential verification, model discovery, per-model availability, and final review.",
       "resource-catalog-01": "A responsive model and MCP marketplace with search, sorting, page-local filters, and resource cards.",
+      "mcp-detail-01": "An MCP resource detail page with safe connection generation and a minimal tool test panel.",
+      "model-detail-01": "A model detail page with API-key handoff, code samples, benchmark data, and endpoint information.",
       "resource-details-01": "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",
       "resource-list-table-01": "A searchable, selectable resource inventory with status filtering and reusable row actions.",
       "cluster-environment-detail-01": "A cluster environment health report that composes overview, metrics, incidents, and inspection detail into one workspace.",

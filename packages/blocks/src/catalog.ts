@@ -1,5 +1,19 @@
 export const blockCatalog = [
   {
+    name: "mcp-detail-01",
+    title: "MCP 详情",
+    description: "An MCP resource detail page with connection generation, safe copy feedback, and a minimal tool test panel.",
+    categories: ["application", "details"],
+    dependencies: ["page-layout", "breadcrumb", "tabs", "select", "textarea", "input-copy", "inline-notice", "card", "badge", "button"],
+  },
+  {
+    name: "model-detail-01",
+    title: "模型详情",
+    description: "A model detail page with API-key handoff, runnable code samples, benchmarks, and endpoint information.",
+    categories: ["application", "details"],
+    dependencies: ["page-layout", "breadcrumb", "tabs", "table", "input-copy", "card", "badge", "button"],
+  },
+  {
     name: "cluster-environment-detail-01",
     title: "集群环境详情",
     description: "An inspection-report workspace that combines environment context, resource health, and incident follow-up.",

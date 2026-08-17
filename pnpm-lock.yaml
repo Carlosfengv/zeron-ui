@@ -150,6 +150,9 @@ importers:
       '@lobehub/icons':
         specifier: ^5.16.0
         version: 5.16.0(@lobehub/ui@5.30.2)(@types/react@19.2.14)(antd@6.6.0(date-fns@4.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@thesvg/icons':
+        specifier: ^3.2.15
+        version: 3.3.1
       '@zeron/ui':
         specifier: workspace:*
         version: link:../ui
