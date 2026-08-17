@@ -291,11 +291,11 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
     const valueElement = (
       <span
         className={cn(
-          "flex-1 min-w-0 text-left text-body text-fg-default font-mono py-2 select-none truncate",
-          align === "left" ? "pl-1" : "pl-0", "font-normal"
+          "flex-1 min-w-0 select-text truncate py-2 text-left font-mono text-body text-fg-default",
+          align === "left" ? "pl-1 pr-1.5" : "pl-1.5 pr-0", "font-normal"
         )}
       >
-        <mark className="bg-transparent text-fg-default transition-colors duration-fast group-hover:bg-brand/20 group-hover:text-fg-default">
+        <mark className="bg-transparent text-fg-default transition-colors duration-fast selection:bg-brand selection:text-fg-on-brand group-hover:bg-brand/20 group-hover:text-fg-default">
           {value}
         </mark>
       </span>
@@ -325,9 +325,8 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
         }
         aria-labelledby={label ? `${buttonId} ${labelId}` : undefined}
         className={cn(
-          "group flex items-center w-full cursor-pointer outline-none transition-all duration-fast",
+          "group flex w-full items-center rounded-xl bg-surface-base outline-none transition-all duration-fast",
           "focus-visible:ring-1 focus-visible:ring-focus-ring",
-          "rounded-lg"
         )}
       >
         {buttonContent}

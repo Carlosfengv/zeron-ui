@@ -102,8 +102,9 @@ describe("shell and page-layout composition contract", () => {
     expect(pageLayout).toContain(
       'cn("mx-auto min-h-0 w-full max-w-[1280px] min-w-0 flex-1 overflow-y-auto overscroll-contain", className)'
     );
-    expect(pageLayout).not.toContain("PageAside");
-    expect(pageLayout).not.toContain("data-slot=\"page-aside\"");
+    expect(pageLayout).toContain("PageAside");
+    expect(pageLayout).toContain('data-slot="page-aside"');
+    expect(pageLayout).toContain('data-slot="page-columns"');
   });
 
   it("stacks page navigation and content beneath the breadcrumb header", () => {

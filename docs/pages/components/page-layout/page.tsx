@@ -3,12 +3,15 @@
 import { useState } from "react";
 import {
   PageBody,
+  PageAside,
+  PageColumns,
   PageContent,
   PageDescription,
   PageHeader,
   PageHeaderContent,
   PageLayout,
   PageSidebar,
+  PagePrimary,
   PageSubnav,
   PageSubnavItem,
   PageSubnavList,
@@ -51,6 +54,11 @@ const sidebarCode = `<PageLayout className="h-[32rem]">
     <PageBody>...</PageBody>
   </PageContent>
 </PageLayout>`;
+
+const columnsCode = `<PageColumns asideWidth="24rem" columnsAt="xl">
+  <PageAside aria-label="Quickstart">...</PageAside>
+  <PagePrimary>...</PagePrimary>
+</PageColumns>`;
 
 const previewSections = {
   overview: {
@@ -141,6 +149,27 @@ function PageSidebarPreview() {
   );
 }
 
+function PageColumnsPreview() {
+  return (
+    <PageLayout gutter="none" className="h-[22rem] bg-surface-raised p-3">
+      <PageContent>
+        <PageBody className="p-4">
+          <PageColumns asideWidth="11rem" columnsAt="lg">
+            <PageAside aria-label="Quickstart" className="rounded-xl border border-border bg-surface-floating p-3">
+              <p className="text-title text-fg-default">Quickstart</p>
+              <p className="mt-1 text-label text-fg-muted">Appears first in the collapsed reading order.</p>
+            </PageAside>
+            <PagePrimary className="rounded-xl bg-muted p-3">
+              <p className="text-title text-fg-default">Primary content</p>
+              <p className="mt-1 text-body text-fg-muted">On desktop this stays in the first grid column, regardless of the Aside-first DOM order.</p>
+            </PagePrimary>
+          </PageColumns>
+        </PageBody>
+      </PageContent>
+    </PageLayout>
+  );
+}
+
 const props: PropDef[] = [
   {
     name: "size",
@@ -179,6 +208,17 @@ const props: PropDef[] = [
     name: "PageBody",
     type: "div props",
     description: "The flexible vertical scroll region. It centers direct page content and constrains its width to 1280px.",
+  },
+  {
+    name: "PageColumns",
+    type: 'div props & { asideWidth?: CSSProperties["width"]; columnsAt?: "lg" | "xl" }',
+    default: 'asideWidth: "25rem", columnsAt: "lg"',
+    description: "A PageBody-local grid. On collapse it keeps DOM order; when expanded PagePrimary is always left and PageAside is right.",
+  },
+  {
+    name: "PagePrimary / PageAside",
+    type: "div props / aside props",
+    description: "Direct PageColumns children with min-width protection. PageAside retains native complementary-content semantics.",
   },
   {
     name: "PageSubnav",
@@ -228,6 +268,12 @@ export default function PageLayoutDoc() {
               code: sidebarCode,
               preview: <PageSidebarPreview />,
             },
+            {
+              value: "columns",
+              label: "Primary with aside",
+              code: columnsCode,
+              preview: <PageColumnsPreview />,
+            },
           ]}
         />
       </DocSection>
@@ -256,6 +302,11 @@ export default function PageLayoutDoc() {
       <DocSection title="Sidebar content layout">
         <ComponentPreview code={sidebarCode} padding="compact">
           <PageSidebarPreview />
+        </ComponentPreview>
+      </DocSection>
+      <DocSection title="Primary with aside">
+        <ComponentPreview code={columnsCode} padding="compact">
+          <PageColumnsPreview />
         </ComponentPreview>
       </DocSection>
       <DocSection title="API Reference"><PropsTable props={props} /></DocSection>

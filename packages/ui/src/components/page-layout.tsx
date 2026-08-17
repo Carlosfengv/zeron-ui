@@ -18,6 +18,7 @@ import type { IconComponent } from "#system/icon-context";
 export type PageLayoutSize = "sm" | "md" | "lg" | "full";
 export type PageLayoutGutter = "default" | "none";
 export type PageSubnavLabelVisibility = "all" | "active";
+export type PageColumnsBreakpoint = "lg" | "xl";
 
 const pageLayoutVariants = cva(
   [
@@ -64,6 +65,14 @@ export interface PageSidebarProps extends ComponentPropsWithoutRef<"aside"> {
 }
 export type PageContentProps = ComponentPropsWithoutRef<"div">;
 export type PageBodyProps = ComponentPropsWithoutRef<"div">;
+export interface PageColumnsProps extends ComponentPropsWithoutRef<"div"> {
+  /** Fixed desktop track width for the auxiliary column. Numeric values are interpreted as px. */
+  asideWidth?: CSSProperties["width"];
+  /** Breakpoint at which the primary and auxiliary columns become a grid. */
+  columnsAt?: PageColumnsBreakpoint;
+}
+export type PagePrimaryProps = ComponentPropsWithoutRef<"div">;
+export type PageAsideProps = ComponentPropsWithoutRef<"aside">;
 export type PageSubnavProps = ComponentPropsWithoutRef<"nav">;
 export interface PageSubnavListProps extends Omit<NavMenuProps, "as" | "orientation" | "variant"> {
   /** Shows every icon label, or only the active item's label. Requires item icons for the collapsed state. */
@@ -174,6 +183,57 @@ const PageBody = forwardRef<HTMLDivElement, PageBodyProps>(({ className, ...prop
 
 PageBody.displayName = "PageBody";
 
+const pageColumnsBreakpointClasses: Record<PageColumnsBreakpoint, readonly string[]> = {
+  lg: [
+    "lg:[&:has(>_[data-slot=page-aside])]:grid-cols-[minmax(0,1fr)_var(--page-aside-width)]",
+    "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:col-start-1",
+    "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:row-start-1",
+    "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:col-start-2",
+    "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:row-start-1",
+  ],
+  xl: [
+    "xl:[&:has(>_[data-slot=page-aside])]:grid-cols-[minmax(0,1fr)_var(--page-aside-width)]",
+    "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:col-start-1",
+    "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:row-start-1",
+    "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:col-start-2",
+    "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:row-start-1",
+  ],
+};
+
+function toCssDimension(value: CSSProperties["width"]) {
+  return typeof value === "number" ? `${value}px` : value;
+}
+
+const PageColumns = forwardRef<HTMLDivElement, PageColumnsProps>(
+  ({ asideWidth = "25rem", columnsAt = "lg", className, style, ...props }, ref) => (
+    <div
+      ref={ref}
+      data-slot="page-columns"
+      className={cn(
+        "grid min-w-0 grid-cols-1 items-start gap-5",
+        pageColumnsBreakpointClasses[columnsAt],
+        className
+      )}
+      style={{ "--page-aside-width": toCssDimension(asideWidth), ...style } as CSSProperties}
+      {...props}
+    />
+  )
+);
+
+PageColumns.displayName = "PageColumns";
+
+const PagePrimary = forwardRef<HTMLDivElement, PagePrimaryProps>(({ className, ...props }, ref) => (
+  <div ref={ref} data-slot="page-primary" className={cn("min-w-0", className)} {...props} />
+));
+
+PagePrimary.displayName = "PagePrimary";
+
+const PageAside = forwardRef<HTMLElement, PageAsideProps>(({ className, ...props }, ref) => (
+  <aside ref={ref} data-slot="page-aside" className={cn("min-w-0", className)} {...props} />
+));
+
+PageAside.displayName = "PageAside";
+
 const PageSubnav = forwardRef<HTMLElement, PageSubnavProps>(({ className, ...props }, ref) => (
   <nav ref={ref} data-slot="page-subnav" className={cn("min-w-0 shrink-0 border-b border-border p-3", className)} {...props} />
 ));
@@ -257,6 +317,9 @@ export {
   PageSidebar,
   PageContent,
   PageBody,
+  PageColumns,
+  PagePrimary,
+  PageAside,
   PageSubnav,
   PageSubnavList,
   PageSubnavItem,
