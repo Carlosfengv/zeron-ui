@@ -129,8 +129,8 @@ export default function GuidesPage() {
           </div>
         </PageSidebar>
 
-        <PageContent className="max-lg:flex-none max-lg:overflow-visible">
-          <PageBody className="h-full max-w-none p-4 sm:px-[18px] sm:py-5 max-lg:h-auto max-lg:overflow-visible">
+        <PageContent className="overflow-y-auto overscroll-contain max-lg:flex-none max-lg:overflow-visible">
+          <PageBody className="h-auto max-w-[1620px] overflow-visible p-4 sm:px-[18px] sm:py-5">
             <header className="border-b border-border pb-5">
               <h1 id="guides-gallery-title" className="text-heading font-semibold leading-tight text-fg-default">{t.galleryTitle}</h1>
               <p className="mt-2 max-w-3xl text-body text-fg-muted">{t.galleryDescription}</p>
