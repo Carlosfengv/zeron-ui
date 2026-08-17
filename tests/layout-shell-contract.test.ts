@@ -64,12 +64,16 @@ describe("shell and page-layout composition contract", () => {
     expect(appShell).toContain('const Main = landmark ? "main" : "div";');
   });
 
-  it("keeps block previews at a responsive 16:9 ratio and lets scrolling continue to the page", () => {
+  it("keeps block previews at a responsive 16:9 ratio and opens their chrome-free demos in a new tab", () => {
     expect(blockDetail).toContain('"aspect-video max-h-[1008px] min-h-0 min-w-0 w-full overflow-hidden rounded-xl"');
     expect(blockDetail).not.toContain("previewMinHeightClass");
     expect(blockDetail).not.toContain("requiresPreviewActivation");
     expect(blockDetail).not.toContain("inert=");
-    expect(blockDetail).toContain("fullScreenable");
+    expect(blockDetail).toContain('standaloneHref={localizePathname(`/block-demo/${slug}`, localePrefix)}');
+    expect(blockDetail).not.toContain("fullScreenable");
+    expect(componentPreview).toContain("standaloneHref?: string;");
+    expect(componentPreview).toContain('target="_blank"');
+    expect(componentPreview).toContain('rel="noopener noreferrer"');
     expect(blockDetail).toContain("allowScrollChaining");
     expect(componentPreview).toContain("allowScrollChaining?: boolean;");
     expect(componentPreview).toContain("!allowScrollChaining && \"overscroll-contain\"");

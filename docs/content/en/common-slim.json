@@ -13,7 +13,7 @@
   "pager": { "previous": "Previous: {name}", "next": "Next: {name}", "nonePrevious": "No previous component", "noneNext": "No next component" },
   "common": { "installation": "Installation", "builtOnBaseUi": "Built on Base UI primitives.", "viewDocumentation": "View {name} documentation", "new": "New", "updated": "Updated" },
   "propsTable": { "prop": "Prop", "type": "Type", "default": "Default", "description": "Description" },
-  "preview": { "preview": "Preview", "code": "Code", "inspect": "Inspect", "replayAnimation": "Replay animation", "fullscreen": "Full screen", "exitFullscreen": "Exit full screen", "highlighting": "Highlighting…" },
+  "preview": { "preview": "Preview", "code": "Code", "inspect": "Inspect", "replayAnimation": "Replay animation", "fullscreen": "Full screen", "exitFullscreen": "Exit full screen", "openStandalone": "Open standalone demo", "highlighting": "Highlighting…" },
   "playground": { "variant": "Playground variant", "randomize": "Randomize", "randomizeProperties": "Randomize properties" },
   "tableDoc": { "basic": "Basic", "apiReference": "API Reference", "tableChildren": "TableHeader and TableBody children.", "rowIndex": "Row index for proximity hover. Omit for header rows.", "rowChildren": "TableCell or TableHead children." },
   "docMeta": { "descriptions": {} }

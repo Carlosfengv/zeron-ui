@@ -56,6 +56,9 @@ interface ComponentPreviewProps {
   inspectable?: boolean;
   /** Let the live preview expand to the browser's native full-screen mode. */
   fullScreenable?: boolean;
+  /** A dedicated, chrome-free preview URL. When provided, the preview action
+   *  opens this URL in a separate tab instead of requesting native fullscreen. */
+  standaloneHref?: string;
   /** Stretch the preview and its active panel to fill the available height. */
   fill?: boolean;
   /** Allow wheel or trackpad scrolling to continue to the document after the
@@ -77,6 +80,7 @@ export function ComponentPreview({
   align = "center",
   inspectable = true,
   fullScreenable = false,
+  standaloneHref,
   fill = false,
   allowScrollChaining = false,
   browserFrame = false,
@@ -226,7 +230,29 @@ export function ComponentPreview({
               className="h-8 px-2 rounded-lg"
             />
           )}
-          {fullScreenable && tab === 0 && (
+          {standaloneHref && tab === 0 && (
+            <Tooltip content={t("openStandalone")} side="top">
+              <Button
+                asChild
+                variant="ghost"
+                iconOnly
+                size="sm"
+                className="h-8 w-8"
+              >
+                <a
+                  aria-label={t("openStandalone")}
+                  href={standaloneHref}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 3h7v7M21 3l-9 9M11 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" />
+                  </svg>
+                </a>
+              </Button>
+            </Tooltip>
+          )}
+          {fullScreenable && !standaloneHref && tab === 0 && (
             <Tooltip content={isFullscreen ? t("exitFullscreen") : t("fullscreen")} side="top">
               <Button
                 variant="ghost"

@@ -99,11 +99,11 @@ export function BlockDetailPage({
                 code={code}
                 browserFrame
                 fill
-                fullScreenable
                 inspectable={false}
                 align="top"
                 allowScrollChaining
                 padding="none"
+                standaloneHref={localizePathname(`/block-demo/${slug}`, localePrefix)}
                 title={`${slug}.tsx`}
               >
                 {preview}

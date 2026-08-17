@@ -1,0 +1,22 @@
+export const standaloneBlockSlugs = [
+  "cluster-environment-detail-01",
+  "cluster-environment-list-01",
+  "mcp-detail-01",
+  "model-detail-01",
+  "personal-settings-01",
+  "provider-create-form-01",
+  "resource-catalog-01",
+  "resource-details-01",
+  "resource-list-table-01",
+  "resource-metric-list-01",
+  "resource-status-all-01",
+  "top-nav-app-shell-01",
+  "zaiops-operations-01",
+  "zlrlist",
+] as const;
+
+export type StandaloneBlockSlug = (typeof standaloneBlockSlugs)[number];
+
+export function isStandaloneBlockSlug(slug: string): slug is StandaloneBlockSlug {
+  return standaloneBlockSlugs.some((candidate) => candidate === slug);
+}

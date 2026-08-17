@@ -73,6 +73,7 @@
     "replayAnimation": "重新播放动画",
     "fullscreen": "全屏展示",
     "exitFullscreen": "退出全屏展示",
+    "openStandalone": "在新标签页打开演示",
     "highlighting": "正在高亮…"
   },
   "playground": {

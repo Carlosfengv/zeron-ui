@@ -13,7 +13,7 @@
   "pager": { "previous": "上一页：{name}", "next": "下一页：{name}", "nonePrevious": "没有上一页组件", "noneNext": "没有下一页组件" },
   "common": { "installation": "安装", "builtOnBaseUi": "基于 Base UI 原语构建。", "viewDocumentation": "查看 {name} 文档", "new": "新增", "updated": "已更新" },
   "propsTable": { "prop": "属性", "type": "类型", "default": "默认值", "description": "说明" },
-  "preview": { "preview": "预览", "code": "代码", "inspect": "检查", "replayAnimation": "重新播放动画", "fullscreen": "全屏展示", "exitFullscreen": "退出全屏展示", "highlighting": "正在高亮…" },
+  "preview": { "preview": "预览", "code": "代码", "inspect": "检查", "replayAnimation": "重新播放动画", "fullscreen": "全屏展示", "exitFullscreen": "退出全屏展示", "openStandalone": "在新标签页打开演示", "highlighting": "正在高亮…" },
   "playground": { "variant": "交互预览", "randomize": "随机生成", "randomizeProperties": "随机调整属性" },
   "tableDoc": { "basic": "基础用法", "apiReference": "API 参考", "tableChildren": "TableHeader 和 TableBody children.", "rowIndex": "用于邻近悬停的行索引；表头行请省略。", "rowChildren": "TableCell 或 TableHead children." },
   "docMeta": { "descriptions": {} }

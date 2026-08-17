@@ -73,6 +73,7 @@
     "replayAnimation": "Replay animation",
     "fullscreen": "Full screen",
     "exitFullscreen": "Exit full screen",
+    "openStandalone": "Open standalone demo",
     "highlighting": "Highlighting…"
   },
   "playground": {
