@@ -9,7 +9,7 @@
       "description": "An inspection-report workspace that combines environment context, resource health, and incident follow-up.",
       "categories": ["application", "operations"],
       "dependencies": ["tw-animate-css"],
-      "registryDependencies": ["badge", "breadcrumb", "button", "card", "data-table", "dropdown", "icon-context", "inline-notice", "metric-card", "page-layout", "resource-metric-list-01", "resource-status-all-01", "separator", "tabs", "utils"],
+      "registryDependencies": ["badge", "breadcrumb", "button", "button-group", "card", "data-table", "dropdown", "icon-context", "inline-notice", "metric-card", "page-layout", "popover", "resource-metric-list-01", "resource-status-all-01", "separator", "tabs", "utils"],
       "files": [
         { "path": "packages/blocks/src/application/cluster-environment-detail-01/cluster-environment-detail.tsx", "type": "registry:component", "target": "components/blocks/cluster-environment-detail-01/cluster-environment-detail.tsx" },
         { "path": "packages/blocks/src/application/cluster-environment-detail-01/index.ts", "type": "registry:component", "target": "components/blocks/cluster-environment-detail-01/index.ts" }
