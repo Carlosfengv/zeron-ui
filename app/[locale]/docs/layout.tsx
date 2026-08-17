@@ -13,8 +13,12 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
   const isBlocksDetail = pathname.startsWith("/docs/blocks/");
   const isBlocksWorkspace = pathname === "/docs/blocks" || pathname.startsWith("/docs/blocks/");
 
-  if (isBlocksCollection || isComponentsCollection) {
+  if (isBlocksCollection) {
     return <div className="h-[calc(100svh-3rem)] min-h-0 w-full">{children}</div>;
+  }
+
+  if (isComponentsCollection) {
+    return <div className="h-full min-h-0 w-full">{children}</div>;
   }
 
   if (isBlocksDetail) {

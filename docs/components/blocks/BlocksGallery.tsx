@@ -182,10 +182,12 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
                 <Container key={artifact.slug} className="min-w-0 overflow-hidden">
                   <ContainerBody
                     aria-hidden={artifact.kind !== "block" && artifact.kind !== "layout"}
-                    className="p-1"
+                    className="overflow-hidden overscroll-auto p-1"
                     inert={artifact.kind !== "block" && artifact.kind !== "layout"}
                   >
-                    <BlockPreview name={artifact.slug} />
+                    <div className="pointer-events-none">
+                      <BlockPreview name={artifact.slug} />
+                    </div>
                   </ContainerBody>
                   <ContainerFooter className="justify-between px-3 py-3">
                     <Link className="rounded text-body font-medium text-fg-muted outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring" href={`${localePrefix}/docs/blocks/${artifact.slug}`}>

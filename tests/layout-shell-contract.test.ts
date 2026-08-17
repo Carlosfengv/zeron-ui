@@ -16,6 +16,9 @@ describe("shell and page-layout composition contract", () => {
   const rightPanel = source("docs/components/shell/site/right-panel.tsx");
   const componentPreview = source("docs/components/content/ComponentPreview.tsx");
   const blockDetail = source("docs/components/blocks/BlockDetailPage.tsx");
+  const siteShell = source("docs/components/shell/site/site-shell.tsx");
+  const docsLayout = source("app/[locale]/docs/layout.tsx");
+  const componentsGallery = source("docs/components/components/ComponentsGallery.tsx");
   const topNavBlock = source("packages/blocks/src/application/top-nav-app-shell-01/top-nav-app-shell.tsx");
   const zaiopsBlock = source("packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx");
 
@@ -23,6 +26,18 @@ describe("shell and page-layout composition contract", () => {
     expect(appShell).toContain(
       '"[&:not(:has(>_[data-slot=app-shell-header]))>_[data-slot=app-shell-main]]:row-span-2"'
     );
+  });
+
+  it("lets workspace pages fill the space below the site header without extending the document", () => {
+    expect(siteShell).toContain('className={isComponentsWorkspace ? "flex min-h-0 overflow-hidden" : "flex min-h-0"}');
+    expect(siteShell).not.toContain('className="flex min-h-svh"');
+    expect(siteShell).toContain('const isComponentsWorkspace = currentPathname === "/docs/components" || isComponentsDetail;');
+    expect(siteShell).toContain('className={isComponentsWorkspace ? "h-svh overflow-hidden" : undefined}');
+    expect(docsLayout).toContain('if (isBlocksCollection) {\n    return <div className="h-[calc(100svh-3rem)] min-h-0 w-full">{children}</div>;\n  }');
+    expect(docsLayout).toContain('if (isComponentsCollection) {\n    return <div className="h-full min-h-0 w-full">{children}</div>;\n  }');
+    expect(componentsGallery).toContain('className="flex h-full min-h-0 w-full bg-surface-base"');
+    expect(componentsGallery).not.toContain('className="flex h-[calc(100svh-3rem)] min-h-0 w-full bg-surface-base"');
+    expect(componentsGallery).toContain('className="overflow-hidden overscroll-auto p-0"');
   });
 
   it("owns the base background at the shell while PageContent provides the floating surface", () => {

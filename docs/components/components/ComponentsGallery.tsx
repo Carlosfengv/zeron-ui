@@ -263,7 +263,7 @@ export function ComponentsDetailWorkspace({ children }: { children: React.ReactN
   };
 
   return (
-    <section className="flex h-[calc(100svh-3rem)] min-h-0 w-full bg-surface-base">
+    <section className="flex h-full min-h-0 w-full bg-surface-base">
       <PageLayout size="full" className="h-full min-h-0 w-full max-lg:!flex max-lg:overflow-y-auto" gutter="default">
         <ComponentDirectorySidebar
           activeSection={activeSection ?? null}
@@ -293,7 +293,7 @@ function ComponentCard({ entry, href, language }: { entry: DocEntry; href: strin
   return (
     <Card className="group min-w-0 pb-0">
       <Container className="h-full">
-        <ContainerBody className="p-0">
+        <ContainerBody className="overflow-hidden overscroll-auto p-0">
           <CardHeader className="flex min-h-40 min-w-0 flex-1 flex-col">
             <div className="flex size-10 items-center justify-center rounded-lg bg-surface-raised text-fg-default transition-colors duration-fast group-hover:bg-surface-floating">
               <Icon aria-hidden size={20} strokeWidth={1.5} />

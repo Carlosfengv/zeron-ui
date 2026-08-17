@@ -147,6 +147,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
   const isBlocksWorkspace = currentPathname === "/docs/blocks" || currentPathname.startsWith("/docs/blocks/");
   const isGuidesWorkspace = currentPathname === "/guides";
   const isComponentsDetail = currentPathname.startsWith("/docs/components/");
+  const isComponentsWorkspace = currentPathname === "/docs/components" || isComponentsDetail;
   const hasDocumentationSidebar = currentPathname === "/docs" || currentPathname.startsWith("/docs/icons");
   const expectedIndexRef = useRef(pageOrderFor(currentPathname).indexOf(currentPathname));
 
@@ -177,7 +178,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
 
   return (
     <RightRailProvider>
-      <AppShell layout="stacked">
+      <AppShell layout="stacked" className={isComponentsWorkspace ? "h-svh overflow-hidden" : undefined}>
         <AppShellHeader className="border-b border-border bg-surface-base">
           <DocsPrimaryNavigation
             currentPathname={currentPathname}
@@ -185,9 +186,9 @@ function DocsShellContent({ children }: { children: ReactNode }) {
             showSidebarTrigger={hasDocumentationSidebar}
           />
         </AppShellHeader>
-        <AppShellMain className="flex min-h-svh">
+        <AppShellMain className={isComponentsWorkspace ? "flex min-h-0 overflow-hidden" : "flex min-h-0"}>
           {hasDocumentationSidebar && <AppShellSidebar><DocsSidebar localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} /></AppShellSidebar>}
-          <div className="min-w-0 flex-1">{children}</div>
+          <div className="min-h-0 min-w-0 flex-1">{children}</div>
           {currentPathname !== "/" && !isBlocksWorkspace && !isGuidesWorkspace && currentPathname !== "/docs/components" && !isComponentsDetail && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
         </AppShellMain>
       </AppShell>
