@@ -1,0 +1,8 @@
+{
+  "clusterEnvironmentDetailBlock": {
+    "title": "Cluster Environment Detail 1",
+    "description": "An inspection-report workspace for one cluster environment, with health scores, resource state, and follow-up incidents.",
+    "guidance": "Data integration",
+    "guidanceBody": "Pass environment and reports from your monitoring domain. The selected report supplies all overview data, while the topology, plan, audit, and issue views are optional slots for application-specific content."
+  }
+}

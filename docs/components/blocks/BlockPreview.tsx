@@ -10,8 +10,19 @@ import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
 import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
 import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
 import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
+import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
 
 export function BlockPreview({ name }: { name: string }) {
+  if (name === "cluster-environment-detail-01") {
+    return (
+      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
+        <div className="w-[1200px] origin-top scale-[0.27]">
+          <ClusterEnvironmentDetail />
+        </div>
+      </div>
+    );
+  }
+
   if (name === "cluster-environment-list-01") {
     return (
       <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">

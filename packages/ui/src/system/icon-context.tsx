@@ -169,6 +169,7 @@ export type IconName =
   | "doc-popover"
   | "doc-radio-group"
   | "doc-select"
+  | "doc-separator"
   | "doc-slider"
   | "doc-stepper"
   | "doc-switch"

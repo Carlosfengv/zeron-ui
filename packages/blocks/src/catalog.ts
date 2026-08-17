@@ -1,10 +1,17 @@
 export const blockCatalog = [
   {
+    name: "cluster-environment-detail-01",
+    title: "集群环境详情",
+    description: "An inspection-report workspace that combines environment context, resource health, and incident follow-up.",
+    categories: ["application", "operations"],
+    dependencies: ["page-layout", "breadcrumb", "button", "card", "tabs", "dropdown", "metric-card", "info-item", "resource-status-all-01", "resource-metric-list-01"],
+  },
+  {
     name: "cluster-environment-list-01",
     title: "集群环境列表",
     description: "A filterable cluster-environment overview with critical, warning, normal, offline, and data-freshness states.",
     categories: ["application", "operations"],
-    dependencies: ["page-layout", "tabs", "input", "button", "card", "badge", "inline-notice"],
+    dependencies: ["page-layout", "breadcrumb", "tabs", "input", "button", "card", "badge", "inline-notice"],
   },
   {
     name: "personal-settings-01",

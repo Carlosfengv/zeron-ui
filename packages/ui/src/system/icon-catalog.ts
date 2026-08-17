@@ -159,6 +159,7 @@ export function createIconMap(
     "doc-popover": createHugeIcon(icons.CursorInWindowIcon, options),
     "doc-radio-group": createHugeIcon(icons.RadioButtonIcon, options),
     "doc-select": createHugeIcon(icons.Select01Icon, options),
+    "doc-separator": createHugeIcon(icons.PanelTopBottomDashedIcon, options),
     "doc-slider": createHugeIcon(icons.SlidersHorizontalIcon, options),
     "doc-stepper": createHugeIcon(icons.WorkflowCircle01Icon, options),
     "doc-switch": createHugeIcon(icons.ToggleOnIcon, options),

@@ -1,0 +1,8 @@
+{
+  "clusterEnvironmentDetailBlock": {
+    "title": "集群环境详情 1",
+    "description": "面向单个集群环境的巡检报告工作区，整合健康评分、资源状态与异常事件处置入口。",
+    "guidance": "数据接入",
+    "guidanceBody": "从监控领域模型传入 environment 与 reports。当前选中的报告统一驱动总览数据；拓扑、方案、审计和问题处置可通过可选 Slot 接入业务内容。"
+  }
+}

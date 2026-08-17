@@ -1,0 +1,12 @@
+{
+  "separator": {
+    "basic": "基础用法",
+    "orientations": "方向",
+    "inContext": "上下文用法",
+    "apiReference": "API 参考",
+    "orientationProp": "设置分隔线的视觉方向和无障碍方向语义。",
+    "classNameProp": "应用到分隔线间距容器的附加类名；可使用 after: 工具类调整线条。",
+    "horizontal": "横向",
+    "vertical": "纵向"
+  }
+}

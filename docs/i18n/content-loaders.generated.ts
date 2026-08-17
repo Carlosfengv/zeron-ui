@@ -13,6 +13,7 @@ const commonLoaders: Record<AppLocale, Loader> = {
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
     home: () => import("@docs/content/en/home.json"),
+    "blocks/cluster-environment-detail-01": () => import("@docs/content/en/blocks/cluster-environment-detail-01.json"),
     "blocks/cluster-environment-list-01": () => import("@docs/content/en/blocks/cluster-environment-list-01.json"),
     "docs/introduction": () => import("@docs/content/en/components/introduction.json"),
     "components/button": () => import("@docs/content/en/components/button.json"),
@@ -53,6 +54,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "components/input-group": () => import("@docs/content/en/components/input-group.json"),
     "components/info-item": () => import("@docs/content/en/components/info-item.json"),
     "components/select": () => import("@docs/content/en/components/select.json"),
+    "components/separator": () => import("@docs/content/en/components/separator.json"),
     "components/slider": () => import("@docs/content/en/components/slider.json"),
     "components/tabs": () => import("@docs/content/en/components/tabs.json"),
     "components/textarea": () => import("@docs/content/en/components/textarea.json"),
@@ -76,6 +78,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   },
   "zh-CN": {
     home: () => import("@docs/content/zh-CN/home.json"),
+    "blocks/cluster-environment-detail-01": () => import("@docs/content/zh-CN/blocks/cluster-environment-detail-01.json"),
     "blocks/cluster-environment-list-01": () => import("@docs/content/zh-CN/blocks/cluster-environment-list-01.json"),
     "docs/introduction": () => import("@docs/content/zh-CN/components/introduction.json"),
     "components/button": () => import("@docs/content/zh-CN/components/button.json"),
@@ -116,6 +119,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "components/input-group": () => import("@docs/content/zh-CN/components/input-group.json"),
     "components/info-item": () => import("@docs/content/zh-CN/components/info-item.json"),
     "components/select": () => import("@docs/content/zh-CN/components/select.json"),
+    "components/separator": () => import("@docs/content/zh-CN/components/separator.json"),
     "components/slider": () => import("@docs/content/zh-CN/components/slider.json"),
     "components/tabs": () => import("@docs/content/zh-CN/components/tabs.json"),
     "components/textarea": () => import("@docs/content/zh-CN/components/textarea.json"),

@@ -14,7 +14,8 @@
     "./resource-status-all-01": "./src/application/resource-status-all-01/index.ts",
     "./top-nav-app-shell-01": "./src/application/top-nav-app-shell-01/index.ts",
     "./zaiops-operations-01": "./src/application/zaiops-operations-01/index.ts",
-    "./cluster-environment-list-01": "./src/application/cluster-environment-list-01/index.ts"
+    "./cluster-environment-list-01": "./src/application/cluster-environment-list-01/index.ts",
+    "./cluster-environment-detail-01": "./src/application/cluster-environment-detail-01/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --project tsconfig.json --noEmit"

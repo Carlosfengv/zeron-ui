@@ -2067,6 +2067,48 @@
       ]
     },
     {
+      "name": "cluster-environment-detail-01",
+      "type": "registry:block",
+      "title": "集群环境详情",
+      "description": "An inspection-report workspace that combines environment context, resource health, and incident follow-up.",
+      "categories": [
+        "application",
+        "operations"
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/breadcrumb.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/data-table.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/metric-card.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/resource-metric-list-01.json",
+        "https://zeron-ui.vercel.app/r/resource-status-all-01.json",
+        "https://zeron-ui.vercel.app/r/separator.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/cluster-environment-detail-01/cluster-environment-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/cluster-environment-detail-01/cluster-environment-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/cluster-environment-detail-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cluster-environment-detail-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "cluster-environment-list-01",
       "type": "registry:block",
       "title": "集群环境列表",
@@ -2080,6 +2122,7 @@
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/breadcrumb.json",
         "https://zeron-ui.vercel.app/r/button.json",
         "https://zeron-ui.vercel.app/r/card.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",

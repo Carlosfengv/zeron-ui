@@ -1,0 +1,12 @@
+{
+  "separator": {
+    "basic": "Basic",
+    "orientations": "Orientations",
+    "inContext": "In Context",
+    "apiReference": "API Reference",
+    "orientationProp": "Sets the visual and accessible orientation of the separator.",
+    "classNameProp": "Additional classes applied to the separator gutter. Target the rule with after: utilities.",
+    "horizontal": "Horizontal",
+    "vertical": "Vertical"
+  }
+}

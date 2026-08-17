@@ -6,6 +6,7 @@ export type DocPageModule = { default: ComponentType };
 export type DocPageLoader = () => Promise<DocPageModule>;
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "blocks/cluster-environment-detail-01": () => import("@docs/pages/blocks/cluster-environment-detail-01/page"),
   "blocks/cluster-environment-list-01": () => import("@docs/pages/blocks/cluster-environment-list-01/page"),
   "blocks/personal-settings-01": () => import("@docs/pages/blocks/personal-settings-01/page"),
   "blocks/provider-create-form-01": () => import("@docs/pages/blocks/provider-create-form-01/page"),
@@ -56,6 +57,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/radio-group": () => import("@docs/pages/components/radio-group/page"),
   "components/scrollbars": () => import("@docs/pages/components/scrollbars/page"),
   "components/select": () => import("@docs/pages/components/select/page"),
+  "components/separator": () => import("@docs/pages/components/separator/page"),
   "components/semantic-tokens": () => import("@docs/pages/components/semantic-tokens/page"),
   "components/sidebar": () => import("@docs/pages/components/sidebar/page"),
   "components/slider": () => import("@docs/pages/components/slider/page"),

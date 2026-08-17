@@ -4,7 +4,12 @@ import { docEntries, type DocCollection } from "@docs/manifest";
 import { DocPager } from "@docs/components/navigation/DocPager";
 import { InstallCommand } from "@docs/components/content/InstallCommand";
 
-const BASE_UI_BACKED_SLUGS = new Set(["color-picker", "ask-user-questions", "input-group"]);
+const BASE_UI_BACKED_SLUGS = new Set([
+  "color-picker",
+  "ask-user-questions",
+  "input-group",
+  "separator",
+]);
 
 interface DocPageProps {
   title: string;
