@@ -74,10 +74,10 @@
   --border-subtle: light-dark(rgb(52 57 71 / 0.07), rgb(255 255 255 / 0.05));
   --input: light-dark(#E5E5E5, #404040);
   --input-hover: light-dark(rgb(23 23 23 / 0.24), rgb(245 245 245 / 0.24));
-  --danger-border: light-dark(#B91C1C, #FC4932);
+  --danger-border: light-dark(#B91C1C, #FCA5A5);
   --warning-border: light-dark(#D06700, #FF9314);
   --success-border: light-dark(#23864B, #55C779);
-  --info-border: light-dark(#0060D2, #1483FD);
+  --info-border: light-dark(#0060D2, #60A5FA);
   --neutral-status-border: light-dark(#6B7075, #8B9095);
   --focus-ring: #6088E8;
   --hover: light-dark(rgb(220 227 239 / 0.25), rgb(220 227 239 / 0.08));

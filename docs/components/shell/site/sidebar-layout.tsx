@@ -17,7 +17,7 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   if (isFullscreen) return <main className="min-h-screen">{children}</main>;
 
   return (
-    <Suspense fallback={<main className="min-h-screen">{children}</main>}>
+    <Suspense fallback={<div className="min-h-screen">{children}</div>}>
       <SiteShell>{children}</SiteShell>
     </Suspense>
   );
