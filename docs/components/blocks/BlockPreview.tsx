@@ -133,8 +133,8 @@ export function BlockPreview({ name }: { name: string }) {
 
   if (name === "zlrlist") {
     return (
-      <div className="h-52 overflow-hidden">
-        <div className="w-[1280px] origin-top scale-[0.26]">
+      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
+        <div className="h-[800px] w-[1280px] origin-top scale-[0.26]">
           <ZlrList />
         </div>
       </div>
