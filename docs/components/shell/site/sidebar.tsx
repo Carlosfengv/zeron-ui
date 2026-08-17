@@ -20,8 +20,8 @@ import {
 } from "@zeron/ui/sidebar";
 import { cn } from "@zeron/ui/system/utils";
 import { useIcon, type IconName } from "@zeron/icons/context";
-import { CollectionSwitcher } from "@docs/components/navigation/CollectionSwitcher";
 import { docEntries, sectionDefinitions, pathnameOf, type DocCollection } from "@docs/manifest";
+import { artifactCatalog } from "@docs/catalog/artifacts";
 import { SettingsContent } from "@docs/components/shell/site/right-panel";
 import { internalPathname, localizePathname } from "@docs/components/shell/site/locale-path";
 import { SurfaceProvider } from "@zeron/ui/system/surface-context";
@@ -76,6 +76,15 @@ function DocsSidebarContent({ localePrefix = "" }: Pick<DocsSidebarProps, "local
   const pathCollection = currentPathname.split("/")[2];
   const collection: DocCollection = pathCollection === "blocks" || pathCollection === "icons" ? pathCollection : "components";
   const sections = sectionDefinitions.filter((definition) => definition.collection === collection);
+  const currentArtifact = collection === "blocks" ? artifactCatalog.find(({ slug }) => currentPathname.endsWith(`/${slug}`)) : undefined;
+  const relatedTemplates = currentArtifact
+    ? artifactCatalog
+      .filter((artifact) => artifact.kind === currentArtifact.kind && artifact.slug !== currentArtifact.slug)
+      .map((artifact) => docEntries.find((entry) => entry.collection === "blocks" && entry.slug === artifact.slug))
+      .filter((entry): entry is (typeof docEntries)[number] => Boolean(entry))
+      .slice(0, 5)
+    : [];
+  const relatedTemplatesLabel = localePrefix ? "相关业务模板" : "Related templates";
   const section = (key: string, label: string, count: number, ariaLabel: string, children: ReactNode) => (
     <section key={key}>
       <p className="flex items-center gap-2 px-1 pb-1.5 text-label text-fg-muted">
@@ -87,12 +96,14 @@ function DocsSidebarContent({ localePrefix = "" }: Pick<DocsSidebarProps, "local
 
   return (
     <>
-      <NavMenu activeValue={currentPathname === "/" ? localizePathname("/", localePrefix) : currentPathname === "/docs" ? localizePathname("/docs", localePrefix) : null} keyboardNavigation="roving" aria-label={t("main")}>
-        <SiteNavItem href={localizePathname("/", localePrefix)} label={t("showcase")} icon="doc-showcase" />
-        <SiteNavItem href={localizePathname("/docs", localePrefix)} label={t("introduction")} icon="doc-introduction" />
-      </NavMenu>
-      <CollectionSwitcher localePrefix={localePrefix} />
-      {sections.map((definition) => {
+      {currentPathname !== "/guides" && collection === "blocks" && relatedTemplates.length > 0 && section(
+        "related-templates",
+        relatedTemplatesLabel,
+        relatedTemplates.length,
+        relatedTemplatesLabel,
+        relatedTemplates.map((item) => <SiteNavItem key={item.slug} href={localizePathname(pathnameOf(item), localePrefix)} label={item.name} icon={item.icon} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />),
+      )}
+      {currentPathname !== "/guides" && collection !== "blocks" && sections.map((definition) => {
         const entries = docEntries.filter((entry) => entry.collection === collection && entry.section === definition.id);
         const label = t.has(definition.navigationKey) ? t(definition.navigationKey) : definition.id;
         return section(definition.id, label, entries.length, label, entries.map((item) => <SiteNavItem key={item.slug} href={localizePathname(pathnameOf(item), localePrefix)} label={item.name} icon={item.icon} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />));

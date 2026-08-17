@@ -19,6 +19,7 @@ const blockDetailPage = readFileSync(
   "utf8"
 );
 const blocksGallery = readFileSync(join(ROOT, "docs/components/blocks/BlocksGallery.tsx"), "utf8");
+const artifactCatalog = readFileSync(join(ROOT, "docs/catalog/artifacts.ts"), "utf8");
 const resourceCatalogDoc = readFileSync(
   join(ROOT, "docs/pages/blocks/resource-catalog-01/ResourceCatalogBlockDocClient.tsx"),
   "utf8"
@@ -31,7 +32,8 @@ describe("Resource Catalog gallery preview", () => {
     );
     expect(blockPreview).toContain('if (name === "resource-catalog-01")');
     expect(blockPreview).toContain('<ResourceCatalog />');
-    expect(blockPreview).toContain('w-[1560px] origin-top scale-[0.32]');
+    expect(blockPreview).toContain('ResponsivePreview canvasHeight={900} canvasWidth={1560}><ResourceCatalog /></ResponsivePreview>');
+    expect(blockPreview).toContain('container.clientWidth / canvasWidth');
   });
 
   it("keeps the documentation route while using the marketplace installation name", () => {
@@ -41,7 +43,9 @@ describe("Resource Catalog gallery preview", () => {
     expect(blockDetailPage).toContain('registryName = slug');
     expect(blockDetailPage).toContain('npx zeron-ui add ${registryName}');
     expect(resourceCatalogDoc).toContain('registryName="model-mcp-marketplace-01"');
-    expect(blocksGallery).toContain('const pageSlug = "slug" in block ? block.slug : block.name;');
+    expect(artifactCatalog).toContain('slug: "resource-catalog-01", registryName: "model-mcp-marketplace-01"');
+    expect(blocksGallery).toContain("artifactCatalog");
+    expect(blocksGallery).toContain('<BlockPreview name={artifact.slug} />');
   });
 
   it("uses a wider content area and four cards on wide displays", () => {

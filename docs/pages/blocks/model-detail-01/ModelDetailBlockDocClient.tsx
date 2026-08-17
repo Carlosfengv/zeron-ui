@@ -23,7 +23,6 @@ export function ModelDetailBlockDocClient({ code }: { code: string }) {
     <BlockDetailPage
       code={code}
       description={t("description")}
-      previewMinHeightClass="min-h-[44rem]"
       registryName="model-detail-01"
       slug="model-detail-01"
       title={t("title")}

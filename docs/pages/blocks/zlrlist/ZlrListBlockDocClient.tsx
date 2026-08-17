@@ -11,7 +11,6 @@ export function ZlrListBlockDocClient({ code }: { code: string }) {
     <BlockDetailPage
       code={code}
       description="A ZS Live Recovery protection-group workspace with responsive navigation and Figma-aligned list and detail views."
-      previewMinHeightClass="min-h-[36rem]"
       slug="zlrlist"
       title="ZLR Protection Groups"
       preview={<ZlrWorkspace />}

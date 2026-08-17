@@ -23,7 +23,6 @@ export function McpDetailBlockDocClient({ code }: { code: string }) {
     <BlockDetailPage
       code={code}
       description={t("description")}
-      previewMinHeightClass="min-h-[44rem]"
       registryName="mcp-detail-01"
       slug="mcp-detail-01"
       title={t("title")}

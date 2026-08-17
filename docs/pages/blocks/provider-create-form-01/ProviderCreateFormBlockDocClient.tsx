@@ -14,7 +14,6 @@ export function ProviderCreateFormBlockDocClient({ code }: { code: string }) {
     <BlockDetailPage
       code={code}
       description={t("description")}
-      previewMinHeightClass="min-h-[44rem]"
       slug="provider-create-form-01"
       title={t("title")}
       preview={

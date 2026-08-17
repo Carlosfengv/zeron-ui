@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { TopNavAppShell } from "@zeron/blocks/top-nav-app-shell-01";
 import { ZaiopsOperations } from "@zeron/blocks/zaiops-operations-01";
 import { PersonalSettings } from "@zeron/blocks/personal-settings-01";
@@ -15,120 +16,112 @@ import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-0
 import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
 import { ZlrList } from "@zeron/blocks/zlrlist";
 
+function ResponsivePreview({
+  canvasHeight,
+  canvasWidth,
+  children,
+  surface = "bg-surface-base",
+}: {
+  canvasHeight: number;
+  canvasWidth: number;
+  children: ReactNode;
+  surface?: string;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.32);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const updateScale = () => setScale(Math.max(0.01, container.clientWidth / canvasWidth));
+    updateScale();
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [canvasWidth]);
+
+  return (
+    <div ref={containerRef} className={`relative h-52 w-full overflow-hidden ${surface}`}>
+      <div
+        className="origin-top-left"
+        style={{ height: canvasHeight, transform: `scale(${scale})`, width: canvasWidth }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function BlockPreview({ name }: { name: string }) {
   if (name === "mcp-detail-01") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
-        <div className="h-[900px] w-[1320px] origin-top scale-[0.26]">
-          <McpDetail />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={900} canvasWidth={1320}><McpDetail /></ResponsivePreview>
     );
   }
 
   if (name === "model-detail-01") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
-        <div className="h-[900px] w-[1320px] origin-top scale-[0.26]">
-          <ModelDetail />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={900} canvasWidth={1320}><ModelDetail /></ResponsivePreview>
     );
   }
 
   if (name === "cluster-environment-detail-01") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
-        <div className="w-[1200px] origin-top scale-[0.27]">
-          <ClusterEnvironmentDetail />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ClusterEnvironmentDetail /></ResponsivePreview>
     );
   }
 
   if (name === "cluster-environment-list-01") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
-        <div className="w-[1200px] origin-top scale-[0.32]">
-          <ClusterEnvironmentList />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ClusterEnvironmentList /></ResponsivePreview>
     );
   }
 
   if (name === "personal-settings-01") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
-        <div className="w-[960px] origin-top scale-[0.26]">
-          <PersonalSettings />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalSettings /></ResponsivePreview>
     );
   }
 
   if (name === "provider-create-form-01") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
-        <div className="w-[960px] origin-top scale-[0.3]">
-          <ProviderCreateForm />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={760} canvasWidth={960}><ProviderCreateForm /></ResponsivePreview>
     );
   }
 
   if (name === "resource-catalog-01") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-3">
-        <div className="w-[1560px] origin-top scale-[0.32]">
-          <ResourceCatalog />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={900} canvasWidth={1560}><ResourceCatalog /></ResponsivePreview>
     );
   }
 
   if (name === "resource-details-01") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-3">
-        <div className="w-[400px] origin-top scale-[0.48]">
-          <ResourceDetails />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={520} canvasWidth={400}><ResourceDetails /></ResponsivePreview>
     );
   }
 
   if (name === "resource-metric-list-01") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-3">
-        <div className="w-[700px] origin-top scale-[0.44]">
-          <ResourceMetricList />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={560} canvasWidth={700}><ResourceMetricList /></ResponsivePreview>
     );
   }
 
   if (name === "resource-list-table-01") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-raised p-3">
-        <div className="w-[1120px] origin-top scale-[0.32]">
-          <ResourceListTable />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><ResourceListTable /></ResponsivePreview>
     );
   }
 
   if (name === "resource-status-all-01") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-3">
-        <div className="w-[701px] origin-top scale-[0.44]">
-          <ResourceStatusAll />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={560} canvasWidth={701}><ResourceStatusAll /></ResponsivePreview>
     );
   }
 
   if (name === "top-nav-app-shell-01") {
     return (
-      <div className="h-52 overflow-hidden">
+      <ResponsivePreview canvasHeight={560} canvasWidth={960}>
         <TopNavAppShell
           className="h-full min-h-0 border-0"
           brand="Zentrix"
@@ -141,25 +134,19 @@ export function BlockPreview({ name }: { name: string }) {
             <p className="mt-2 text-title font-semibold text-fg-default">A focused capability surface.</p>
           </div>
         </TopNavAppShell>
-      </div>
+      </ResponsivePreview>
     );
   }
 
   if (name === "zaiops-operations-01") {
     return (
-      <div className="h-52 overflow-hidden">
-        <ZaiopsOperations className="h-full min-h-0" />
-      </div>
+      <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ZaiopsOperations className="h-full min-h-0" /></ResponsivePreview>
     );
   }
 
   if (name === "zlrlist") {
     return (
-      <div className="flex h-52 justify-center overflow-hidden bg-surface-base p-2">
-        <div className="h-[800px] w-[1280px] origin-top scale-[0.26]">
-          <ZlrList />
-        </div>
-      </div>
+      <ResponsivePreview canvasHeight={800} canvasWidth={1280}><ZlrList /></ResponsivePreview>
     );
   }
   return null;

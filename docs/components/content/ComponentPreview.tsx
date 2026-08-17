@@ -50,7 +50,7 @@ interface ComponentPreviewProps {
    *  vertical room. */
   minHeightClass?: string;
   /** Vertical alignment of the preview content. Defaults to "center". */
-  align?: "center" | "bottom";
+  align?: "center" | "top" | "bottom";
   /** Show the Inspect toggle (pixel rulers + box-model inspector). Defaults to
    *  true; set false for previews where an overlay would get in the way. */
   inspectable?: boolean;
@@ -58,6 +58,9 @@ interface ComponentPreviewProps {
   fullScreenable?: boolean;
   /** Stretch the preview and its active panel to fill the available height. */
   fill?: boolean;
+  /** Allow wheel or trackpad scrolling to continue to the document after the
+   *  live preview reaches its top or bottom edge. */
+  allowScrollChaining?: boolean;
   /** Render the preview in a browser-like frame. Intended for full block demos. */
   browserFrame?: boolean;
   children: ReactNode;
@@ -75,6 +78,7 @@ export function ComponentPreview({
   inspectable = true,
   fullScreenable = false,
   fill = false,
+  allowScrollChaining = false,
   browserFrame = false,
   children,
 }: ComponentPreviewProps) {
@@ -277,9 +281,12 @@ export function ComponentPreview({
             className={cn(
               "group/preview-content relative flex justify-center bg-surface-floating",
               isFullscreen || fill
-                ? "min-h-0 flex-1 overflow-y-auto overscroll-contain [&>*]:min-h-full [&>*]:w-full [&>*]:min-w-0"
+                ? cn(
+                  "min-h-0 flex-1 overflow-y-auto [&>*]:min-h-full [&>*]:w-full [&>*]:min-w-0",
+                  !allowScrollChaining && "overscroll-contain",
+                )
                 : minHeightClass,
-              align === "bottom" ? "items-end" : "items-center",
+              align === "bottom" ? "items-end" : align === "top" ? "items-start" : "items-center",
               padding === "none"
                 ? "p-0"
                 : padding === "compact"

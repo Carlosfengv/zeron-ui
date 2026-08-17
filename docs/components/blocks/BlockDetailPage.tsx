@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Badge } from "@zeron/ui/badge";
 import { cn } from "@zeron/ui/system/utils";
 import {
@@ -17,19 +17,20 @@ import {
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { InstallCommand } from "@docs/components/content/InstallCommand";
 import { DocPager } from "@docs/components/navigation/DocPager";
-import { blockCatalog } from "@zeron/blocks/catalog";
 import { docEntries } from "@docs/manifest";
+import { getArtifact } from "@docs/catalog/artifacts";
 import {
   localePrefixFromPathname,
   localizePathname,
 } from "@docs/components/shell/site/locale-path";
+
+const previewFrameClass = "aspect-video max-h-[1008px] min-h-0 min-w-0 w-full overflow-hidden rounded-xl";
 
 interface BlockDetailPageProps {
   children: ReactNode;
   code: string;
   description: ReactNode;
   preview: ReactNode;
-  previewMinHeightClass?: string;
   registryName?: string;
   slug: string;
   title: string;
@@ -40,7 +41,6 @@ export function BlockDetailPage({
   code,
   description,
   preview,
-  previewMinHeightClass = "min-h-[32rem]",
   slug,
   registryName = slug,
   title,
@@ -49,24 +49,31 @@ export function BlockDetailPage({
   const localePrefix = localePrefixFromPathname(pathname);
   const common = useTranslations("common");
   const previewText = useTranslations("preview");
+  const artifact = getArtifact(slug);
+  const isChinese = Boolean(localePrefix);
+  const collectionLabel = isChinese ? "业务模板" : "Business templates";
   const entries = docEntries.filter((entry) => entry.collection === "blocks");
   const currentIndex = entries.findIndex((entry) => entry.slug === slug);
   const prev = currentIndex > 0
     ? entries[currentIndex - 1]
-    : { slug: "", name: "Blocks", collection: "blocks" as const, pathname: "/docs/blocks" };
+    : { slug: "", name: collectionLabel, collection: "blocks" as const, pathname: "/docs/blocks" };
   const next = currentIndex >= 0 && currentIndex < entries.length - 1
     ? entries[currentIndex + 1]
     : null;
 
+  const kindLabel = artifact ? (isChinese ? ({ block: "区块", page: "页面", flow: "流程", prototype: "原型", layout: "布局" } as const)[artifact.kind] : artifact.kind) : "Block";
+  const readinessLabel = artifact ? (isChinese ? ({ "copy-ready": "可直接使用", "adapter-required": "需要接入数据", "demo-only": "仅用于演示" } as const)[artifact.readiness] : artifact.readiness.replace(/-/g, " ")) : "registry:block";
+  const dataModeLabel = artifact ? (isChinese ? ({ static: "静态", mock: "模拟数据", controlled: "受控数据", "api-ready": "可接 API" } as const)[artifact.dataMode] : artifact.dataMode.replace(/-/g, " ")) : "registry:block";
+
   return (
-    <main className="min-h-svh min-w-0 bg-surface-base p-3 pt-14 xl:pt-3">
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col">
+    <article aria-labelledby="artifact-title" className="min-w-0 bg-surface-base p-3">
+      <div className="flex w-full flex-col">
         <header className="flex h-11 shrink-0 items-center justify-between gap-3 px-2 sm:px-3">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink render={<Link href={localizePathname("/docs/blocks", localePrefix)} />}>
-                  Blocks
+                  {collectionLabel}
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -82,34 +89,40 @@ export function BlockDetailPage({
           <section
             aria-label={previewText("preview")}
             className={cn(
-              "h-[clamp(32rem,70svh,52rem)] min-w-0 overflow-hidden rounded-xl",
-              previewMinHeightClass
+              previewFrameClass,
+              "relative"
             )}
           >
-            <ComponentPreview
-              className="rounded-xl"
-              code={code}
-              browserFrame
-              fill
-              fullScreenable
-              inspectable={false}
-              padding="none"
-              title={`${slug}.tsx`}
-            >
-              {preview}
-            </ComponentPreview>
+            <div className="h-full">
+              <ComponentPreview
+                className="rounded-xl"
+                code={code}
+                browserFrame
+                fill
+                fullScreenable
+                inspectable={false}
+                align="top"
+                allowScrollChaining
+                padding="none"
+                title={`${slug}.tsx`}
+              >
+                {preview}
+              </ComponentPreview>
+            </div>
           </section>
 
-          <aside className="rounded-xl bg-surface-floating px-5 py-6 sm:px-6 lg:px-8 lg:py-8">
-            <header className="border-b border-border pb-6">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge color="blue">{blockCatalog.length} blocks</Badge>
-                <Badge variant="dot">registry:block</Badge>
-              </div>
-              <h1 className="mt-5 text-heading font-bold leading-tight text-fg-default">{title}</h1>
-              <p className="mt-2 text-body text-fg-muted">{description}</p>
-            </header>
+          <section className="rounded-xl bg-surface-floating px-5 py-6 sm:px-6 lg:px-8">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge color="blue">{kindLabel}</Badge>
+              {artifact && <Badge variant="dot">{artifact.product}</Badge>}
+              <Badge variant="dot">{readinessLabel}</Badge>
+              <Badge variant="dot">{dataModeLabel}</Badge>
+            </div>
+            <h1 id="artifact-title" className="mt-5 text-heading font-bold leading-tight text-fg-default">{title}</h1>
+            <p className="mt-2 max-w-3xl text-body text-fg-muted">{description}</p>
+          </section>
 
+          <section className="rounded-xl bg-surface-floating px-5 py-6 sm:px-6 lg:px-8 lg:py-8">
             <section className="border-b border-border py-6">
               <h2 className="mb-3 text-title font-semibold leading-none text-fg-default">
                 {common("installation")}
@@ -118,10 +131,10 @@ export function BlockDetailPage({
             </section>
 
             <div className="flex flex-col gap-7 py-6">{children}</div>
-          </aside>
+          </section>
         </div>
       </div>
-    </main>
+    </article>
   );
 }
 

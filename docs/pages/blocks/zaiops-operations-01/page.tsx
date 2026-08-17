@@ -15,7 +15,6 @@ export default function ZaiopsOperationsBlockDoc() {
     <BlockDetailPage
       code={code}
       description={t("description")}
-      previewMinHeightClass="min-h-[36rem]"
       slug="zaiops-operations-01"
       title={t("title")}
       preview={

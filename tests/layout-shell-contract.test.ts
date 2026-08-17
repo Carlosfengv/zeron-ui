@@ -64,12 +64,17 @@ describe("shell and page-layout composition contract", () => {
     expect(appShell).toContain('const Main = landmark ? "main" : "div";');
   });
 
-  it("gives fill previews a definite responsive height at every breakpoint", () => {
-    expect(blockDetail).toContain('"h-[clamp(32rem,70svh,52rem)] min-w-0 overflow-hidden rounded-xl"');
-    expect(blockDetail).toContain("previewMinHeightClass");
-    expect(blockDetail).not.toContain('lg:h-[clamp(36rem,70svh,52rem)]');
+  it("keeps block previews at a responsive 16:9 ratio and lets scrolling continue to the page", () => {
+    expect(blockDetail).toContain('"aspect-video max-h-[1008px] min-h-0 min-w-0 w-full overflow-hidden rounded-xl"');
+    expect(blockDetail).not.toContain("previewMinHeightClass");
+    expect(blockDetail).not.toContain("requiresPreviewActivation");
+    expect(blockDetail).not.toContain("inert=");
+    expect(blockDetail).toContain("fullScreenable");
+    expect(blockDetail).toContain("allowScrollChaining");
+    expect(componentPreview).toContain("allowScrollChaining?: boolean;");
+    expect(componentPreview).toContain("!allowScrollChaining && \"overscroll-contain\"");
     expect(componentPreview).toContain(
-      '"min-h-0 flex-1 overflow-y-auto overscroll-contain [&>*]:min-h-full [&>*]:w-full [&>*]:min-w-0"'
+      '"min-h-0 flex-1 overflow-y-auto [&>*]:min-h-full [&>*]:w-full [&>*]:min-w-0"'
     );
   });
 
