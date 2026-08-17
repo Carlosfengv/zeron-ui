@@ -5,7 +5,9 @@
   "title": "集群环境详情",
   "description": "An inspection-report workspace that combines environment context, resource health, and incident follow-up.",
   "dependencies": [
-    "tw-animate-css"
+    "tw-animate-css",
+    "@lobehub/icons",
+    "@thesvg/icons"
   ],
   "registryDependencies": [
     "https://zeron-ui.vercel.app/r/badge.json",

@@ -1904,7 +1904,7 @@
       "name": "page-layout",
       "type": "registry:ui",
       "title": "Page Layout",
-      "description": "Responsive page header, body, action, and aside composition.",
+      "description": "Responsive page header, body, action, and primary-with-aside composition.",
       "dependencies": [
         "class-variance-authority",
         "tw-animate-css"
@@ -2076,7 +2076,9 @@
         "operations"
       ],
       "dependencies": [
-        "tw-animate-css"
+        "tw-animate-css",
+        "@lobehub/icons",
+        "@thesvg/icons"
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/badge.json",
@@ -2120,7 +2122,8 @@
         "operations"
       ],
       "dependencies": [
-        "tw-animate-css"
+        "tw-animate-css",
+        "@lobehub/icons"
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/badge.json",
@@ -2198,7 +2201,8 @@
       ],
       "dependencies": [
         "tw-animate-css",
-        "@lobehub/icons"
+        "@lobehub/icons",
+        "@thesvg/icons"
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/app-shell.json",
@@ -2229,6 +2233,121 @@
           "path": "packages/blocks/src/application/resource-catalog-01/index.ts",
           "type": "registry:component",
           "target": "components/blocks/resource-catalog-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "mcp-detail-01",
+      "type": "registry:block",
+      "title": "MCP 详情",
+      "description": "An MCP resource detail page with safe connection generation and a minimal tool test panel.",
+      "categories": [
+        "application",
+        "details"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons",
+        "@thesvg/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/breadcrumb.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/input-copy.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/textarea.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/mcp-detail-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/mcp-detail-01/mcp-detail-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/assets.d.ts",
+          "type": "registry:file",
+          "target": "components/blocks/mcp-detail-01/assets.d.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/assets/cline.svg",
+          "type": "registry:file",
+          "target": "components/blocks/mcp-detail-01/assets/cline.svg"
+        },
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/assets/supabase-mcp-cursor.png",
+          "type": "registry:file",
+          "target": "components/blocks/mcp-detail-01/assets/supabase-mcp-cursor.png"
+        },
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/mcp-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/mcp-detail-01/mcp-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/mcp-detail-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "model-detail-01",
+      "type": "registry:block",
+      "title": "模型详情",
+      "description": "A model detail page with API-key handoff, code samples, benchmark data, and endpoint information.",
+      "categories": [
+        "application",
+        "details"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/breadcrumb.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/input-copy.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/table.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/model-detail-01/model-detail-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-detail-01/model-detail-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/model-detail-01/assets.d.ts",
+          "type": "registry:file",
+          "target": "components/blocks/model-detail-01/assets.d.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/model-detail-01/assets/cline.svg",
+          "type": "registry:file",
+          "target": "components/blocks/model-detail-01/assets/cline.svg"
+        },
+        {
+          "path": "packages/blocks/src/application/model-detail-01/model-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/model-detail-01/model-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/model-detail-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-detail-01/index.ts"
         }
       ]
     },

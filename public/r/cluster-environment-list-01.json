@@ -5,7 +5,8 @@
   "title": "集群环境列表",
   "description": "A filterable cluster-environment overview with health and data-freshness states.",
   "dependencies": [
-    "tw-animate-css"
+    "tw-animate-css",
+    "@lobehub/icons"
   ],
   "registryDependencies": [
     "https://zeron-ui.vercel.app/r/badge.json",

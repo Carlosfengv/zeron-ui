@@ -1904,7 +1904,7 @@
       "name": "page-layout",
       "type": "registry:ui",
       "title": "Page Layout",
-      "description": "Responsive page header, body, action, and aside composition.",
+      "description": "Responsive page header, body, action, and primary-with-aside composition.",
       "dependencies": [
         "class-variance-authority",
         "tw-animate-css"
