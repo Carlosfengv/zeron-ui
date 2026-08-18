@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "chart",
+  "type": "registry:ui",
+  "title": "Chart",
+  "description": "Composable Recharts container, tooltip, and color configuration following the shadcn chart API.",
+  "dependencies": [
+    "recharts",
+    "tw-animate-css"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "packages/ui/src/components/chart.tsx",
+      "content": "\"use client\";\nimport * as React from \"react\";\nimport { ResponsiveContainer, Tooltip, type TooltipPayloadEntry } from \"recharts\";\nimport { cn } from \"@lib/utils\";\nconst THEMES = { light: \"\", dark: \".dark\" } as const;\nexport type ChartConfig = Record<string, {\n    label?: React.ReactNode;\n    color?: string;\n    theme?: Partial<Record<keyof typeof THEMES, string>>;\n}>;\nconst ChartContext = React.createContext<ChartConfig | null>(null);\nfunction useChartConfig() {\n    const config = React.useContext(ChartContext);\n    if (!config)\n        throw new Error(\"Chart components must be used within a ChartContainer.\");\n    return config;\n}\nfunction ChartStyle({ config, id }: {\n    config: ChartConfig;\n    id: string;\n}) {\n    const entries = Object.entries(config).filter(([, item]) => item.color || item.theme);\n    if (!entries.length)\n        return null;\n    return <style dangerouslySetInnerHTML={{\n            __html: Object.entries(THEMES).map(([theme, selector]) => `${selector} [data-chart=${id}] {\\n${entries.map(([key, item]) => {\n                const color = item.theme?.[theme as keyof typeof THEMES] ?? item.color;\n                return color ? `  --color-${key}: ${color};` : \"\";\n            }).join(\"\\n\")}\\n}`).join(\"\\n\"),\n        }}/>;\n}\nexport function ChartContainer({ children, className, config, id, ...props }: React.ComponentPropsWithoutRef<\"div\"> & {\n    config: ChartConfig;\n}) {\n    const generatedId = React.useId();\n    const chartId = `chart-${id ?? generatedId.replace(/:/g, \"\")}`;\n    return <ChartContext.Provider value={config}><div data-chart={chartId} className={cn(\"flex min-h-40 w-full justify-center text-label [&_.recharts-cartesian-axis-tick_text]:fill-[var(--fg-subtle)] [&_.recharts-layer]:outline-none [&_.recharts-surface]:outline-none\", className)} {...props}><ChartStyle config={config} id={chartId}/><ResponsiveContainer>{children as React.ReactElement}</ResponsiveContainer></div></ChartContext.Provider>;\n}\nexport const ChartTooltip = Tooltip;\nexport function ChartTooltipContent({ active, className, hideIndicator = false, label, labelFormatter, payload, valueFormatter }: {\n    active?: boolean;\n    className?: string;\n    hideIndicator?: boolean;\n    label?: string | number;\n    labelFormatter?: (label: string | number) => React.ReactNode;\n    payload?: readonly TooltipPayloadEntry[];\n    valueFormatter?: (value: unknown, name: string) => React.ReactNode;\n}) {\n    const config = useChartConfig();\n    if (!active || !payload?.length)\n        return null;\n    return <div className={cn(\"grid min-w-36 gap-1.5 rounded-lg border-[0.5px] border-border bg-surface-floating px-3 py-2 text-label shadow-floating\", className)}><p className=\"font-medium text-fg-default\">{labelFormatter ? labelFormatter(label ?? \"\") : label}</p><div className=\"grid gap-1.5\">{payload.filter((item) => item.type !== \"none\").map((item) => {\n            const key = String(item.dataKey ?? item.name ?? \"value\");\n            const itemConfig = config[key];\n            const color = item.color ?? `var(--color-${key})`;\n            const name = String(itemConfig?.label ?? item.name ?? key);\n            return <div className=\"flex items-center justify-between gap-4\" key={key}><span className=\"flex items-center gap-1.5 text-fg-muted\">{!hideIndicator && <span aria-hidden className=\"size-2 rounded-[2px]\" style={{ backgroundColor: color }}/>}{name}</span><span className=\"font-medium tabular-nums text-fg-default\">{valueFormatter ? valueFormatter(item.value, name) : String(item.value ?? \"—\")}</span></div>;\n        })}</div></div>;\n}\n",
+      "type": "registry:ui",
+      "target": "components/ui/chart.tsx"
+    }
+  ]
+}

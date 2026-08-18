@@ -2062,6 +2062,27 @@
       ]
     },
     {
+      "name": "chart",
+      "type": "registry:ui",
+      "title": "Chart",
+      "description": "Composable Recharts container, tooltip, and color configuration following the shadcn chart API.",
+      "dependencies": [
+        "recharts",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chart.tsx"
+        }
+      ]
+    },
+    {
       "name": "top-nav",
       "type": "registry:ui",
       "title": "Top Nav",
@@ -2275,6 +2296,7 @@
         "https://zeron-ui.vercel.app/r/app-shell.json",
         "https://zeron-ui.vercel.app/r/badge.json",
         "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/chart.json",
         "https://zeron-ui.vercel.app/r/field.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/input-group.json",
