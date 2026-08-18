@@ -5,7 +5,6 @@ import { WebhookIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Badge, type BadgeColor } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
-import { ChatMessage } from "@zeron/ui/chat-message";
 import { InfoItem, InfoItemContent, InfoItemDescription, InfoItemGroup, InfoItemTitle } from "@zeron/ui/info-item";
 import { Input } from "@zeron/ui/input";
 import { PageBody, PageContent, PageHeader, PageHeaderContent, PageLayout, PageTitle } from "@zeron/ui/page-layout";
@@ -15,11 +14,11 @@ import { useIcon, type IconComponentProps, type IconName } from "@zeron/ui/syste
 import { cn } from "@zeron/ui/system/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@zeron/ui/table";
 import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
-import { ThinkingIndicator } from "@zeron/ui/thinking-indicator";
-import { ThinkingStep, ThinkingSteps, ThinkingStepsContent, ThinkingStepsHeader } from "@zeron/ui/thinking-steps";
 import { Tooltip } from "@zeron/ui/tooltip";
 import { defaultAgentTracePayload } from "./session-default";
+import { projectAgentTranscript } from "./stream-projection";
 import { expandAgentTraceEntries, parseAgentTracePayload } from "./trace-jsonl";
+import { TranscriptFlow } from "./transcript-flow";
 
 export { defaultAgentTracePayload } from "./session-default";
 
@@ -505,7 +504,10 @@ function rawJson(value: unknown): string {
 
 function compactNumber(value: number | undefined): string {
   if (value === undefined) return "—";
-  return Intl.NumberFormat(undefined, { notation: "compact", maximumFractionDigits: 1 }).format(value);
+  const absolute = Math.abs(value);
+  if (absolute >= 1_000_000) return `${(value / 1_000_000).toFixed(2)} M`;
+  if (absolute >= 1_000) return `${(value / 1_000).toFixed(2)} K`;
+  return new Intl.NumberFormat("en").format(value);
 }
 
 function formatDuration(milliseconds: number | undefined): string {
@@ -541,13 +543,13 @@ function formatTime(value: number | undefined): string {
 function TurnStatusIcon({ status }: { status: AgentTraceTurn["status"] }) {
   const state = status ?? "running";
   const presentation = {
-    completed: { label: "Completed", icon: "check" as IconName, className: "bg-success" },
-    error: { label: "Error", icon: "x" as IconName, className: "bg-danger" },
-    aborted: { label: "Aborted", icon: "pause" as IconName, className: "bg-warning" },
-    running: { label: "Running", icon: "loader" as IconName, className: "bg-info" },
+    completed: { label: "Completed", icon: "check" as IconName, className: "bg-fg-success" },
+    error: { label: "Error", icon: "x" as IconName, className: "bg-fg-danger" },
+    aborted: { label: "Aborted", icon: "pause" as IconName, className: "bg-fg-warning" },
+    running: { label: "Running", icon: "loader" as IconName, className: "bg-fg-info" },
   }[state];
 
-  return <span role="img" aria-label={`Turn status: ${presentation.label}`} title={presentation.label} className={cn("grid size-5 shrink-0 place-items-center rounded-sm text-white", presentation.className)}><TraceIcon name={presentation.icon} size={14} className={state === "running" ? "animate-spin" : undefined} /></span>;
+  return <span role="img" aria-label={`Turn status: ${presentation.label}`} title={presentation.label} className={cn("grid size-4 shrink-0 place-items-center rounded-sm text-white", presentation.className)}><TraceIcon name={presentation.icon} size={14} className={state === "running" ? "animate-spin" : undefined} /></span>;
 }
 
 function primaryEvent(row: AgentTraceRow): JsonRecord | null {
@@ -671,7 +673,7 @@ function inspectorTabs(row: AgentTraceRow): readonly { id: InspectorTab; label: 
 }
 
 function InspectorCode({ children, error = false }: { children: string; error?: boolean }) {
-  return <pre className={cn("overflow-x-auto whitespace-pre-wrap break-words text-label leading-5 text-fg-muted", error && "text-fg-danger")}>{children}</pre>;
+  return <pre className={cn("overflow-x-auto whitespace-pre-wrap break-words text-sm leading-5 text-fg-muted", error && "text-fg-danger")}>{children}</pre>;
 }
 
 function InspectorSummary({ row }: { row: AgentTraceRow }) {
@@ -693,58 +695,20 @@ function InspectorPreview({ row }: { row: AgentTraceRow }) {
   const output = row.kind === "assistant" ? assistantOutput(row) : row.kind === "tool" ? rowOutput(row) : rowInput(row);
   const calls = row.kind === "assistant" ? toolCalls(row) : [];
   return <div className="space-y-3">
-    {reasoning && <details className="rounded-lg border border-border-subtle p-2.5 text-label text-fg-muted"><summary className="cursor-pointer font-normal text-fg-default">Thinking</summary><InspectorCode>{reasoning}</InspectorCode></details>}
+    {reasoning && <details className="rounded-lg border border-border-subtle p-2.5 text-sm text-fg-muted"><summary className="cursor-pointer font-normal text-fg-default">Thinking</summary><InspectorCode>{reasoning}</InspectorCode></details>}
     {output && <InspectorCode>{output}</InspectorCode>}
-    {calls.map((call, index) => <section key={`${call.name ?? "tool-call"}:${index}`} className="rounded-lg border border-border-subtle p-2.5"><p className="text-label font-normal text-fg-default">Tool call · {call.name ?? "Unknown"}</p><InspectorCode>{call.text}</InspectorCode></section>)}
+    {calls.map((call, index) => <section key={`${call.name ?? "tool-call"}:${index}`} className="rounded-lg border border-border-subtle p-2.5"><p className="text-sm font-normal text-fg-default">Tool call · {call.name ?? "Unknown"}</p><InspectorCode>{call.text}</InspectorCode></section>)}
   </div>;
 }
 
 function InspectorSchema({ row }: { row: AgentTraceRow }) {
   const data = rowData(row);
   const schema = data?.schema ?? data?.parameters;
-  return schema === undefined ? <p className="text-label text-fg-muted">Schema unavailable in this JSONL record.</p> : <InspectorCode>{rawJson(schema)}</InspectorCode>;
-}
-
-function AssistantTranscriptContent({ row }: { row: AgentTraceRow }) {
-  const streaming = row.status === "running";
-  if (!row.content?.length) return <div className="space-y-2"><p className="whitespace-pre-wrap">{row.preview}</p>{streaming && <ThinkingIndicator className="px-0 py-0" />}</div>;
-  return <div className="space-y-3">{row.content.map((block, index) => {
-    if (block.kind === "reasoning") return <ThinkingSteps key={`${block.kind}:${index}`} defaultOpen={streaming} className="w-full"><ThinkingStepsHeader>{streaming ? "Reasoning in progress" : "Reasoning"}</ThinkingStepsHeader><ThinkingStepsContent><ThinkingStep label={streaming ? "Thinking" : "Reasoning complete"} status={streaming ? "active" : "complete"} isLast showIcon={false}><p className="whitespace-pre-wrap text-label leading-5 text-fg-muted">{block.text}</p></ThinkingStep></ThinkingStepsContent></ThinkingSteps>;
-    if (block.kind === "tool-call") return <p key={`${block.kind}:${index}`} className="text-label text-fg-muted">Calling <span className="font-medium text-fg-default">{block.name ?? "tool"}</span>{block.text ? "…" : ""}</p>;
-    return <p key={`${block.kind}:${index}`} className="whitespace-pre-wrap leading-6">{block.text}</p>;
-  })}{streaming && <ThinkingIndicator className="px-0 py-0" />}</div>;
-}
-
-function ChatTranscript({ rows, replaying }: { rows: readonly AgentTraceRow[]; replaying: boolean }) {
-  const messages = rows.filter((row) => row.kind !== "context" && row.kind !== "event");
-
-  if (messages.length === 0) {
-    return <div className="flex h-full items-center justify-center p-6 text-body text-fg-muted">No conversation records found in this JSON.</div>;
-  }
-
-  return (
-    <ScrollArea className="h-full" viewportClassName="h-full" orientation="vertical">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4 sm:p-6">
-        {messages.map((row) => {
-          if (row.kind === "user") {
-            return <ChatMessage key={row.id} from="user" time={formatTime(row.time)}>{row.preview}</ChatMessage>;
-          }
-          if (row.kind === "assistant") {
-            return <ChatMessage key={row.id} from="assistant"><div><AssistantTranscriptContent row={row} />{(row.input !== undefined || row.output !== undefined || row.think !== undefined) && <p className="mt-3 text-label tabular-nums text-fg-subtle">Input {compactNumber(row.input)} · Output {compactNumber(row.output)} · Think {compactNumber(row.think)}</p>}</div></ChatMessage>;
-          }
-          if (row.kind === "tool") {
-            return <section key={row.id} className="self-start max-w-[86%] rounded-lg border border-border bg-surface-raised px-3 py-2"><div className="flex flex-wrap items-center gap-2"><Badge size="sm" color={row.status === "error" ? "red" : "amber"}>{row.label}</Badge><span className="text-label tabular-nums text-fg-subtle">{formatDuration(row.durationMs)}</span></div><pre className="mt-2 max-h-28 overflow-auto whitespace-pre-wrap break-words text-label leading-5 text-fg-muted">{row.preview}</pre>{row.result && <p className={cn("mt-2 border-t border-border pt-2 text-label leading-5", row.status === "error" ? "text-fg-danger" : "text-fg-default")}>{row.result}</p>}</section>;
-          }
-          return <p key={row.id} className="self-center text-label text-fg-subtle">{row.label} · {row.preview}</p>;
-        })}
-        {replaying && !messages.some((row) => row.kind === "assistant" && row.status === "running") && <ThinkingIndicator className="self-start px-0 py-1" />}
-      </div>
-    </ScrollArea>
-  );
+  return schema === undefined ? <p className="text-sm text-fg-muted">Schema unavailable in this JSONL record.</p> : <InspectorCode>{rawJson(schema)}</InspectorCode>;
 }
 
 function InspectorInfoItem({ children, title }: { children: ReactNode; title: string }) {
-  return <InfoItem><InfoItemContent><InfoItemTitle className="font-normal">{title}</InfoItemTitle><InfoItemDescription>{children}</InfoItemDescription></InfoItemContent></InfoItem>;
+  return <InfoItem><InfoItemContent><InfoItemTitle className="text-sm font-normal">{title}</InfoItemTitle><InfoItemDescription className="text-sm">{children}</InfoItemDescription></InfoItemContent></InfoItem>;
 }
 
 /** A high-fidelity, browser-local replica of DSH's Trajectory ledger. */
@@ -777,8 +741,7 @@ export function AgentTrace({
   const replayEntries = useMemo(() => traceEntries(payload), [payload]);
   const turns = useMemo(() => normalizeAgentTracePayload(payload), [payload]);
   const rows = useMemo(() => turns.flatMap((turn) => turn.groups.flatMap((group) => group.rows)), [turns]);
-  const replayTurns = useMemo(() => replayIndex === null ? null : normalizeAgentTracePayload({ events: replayEntries.slice(0, replayIndex) }), [replayEntries, replayIndex]);
-  const chatRows = useMemo(() => (replayTurns ?? turns).flatMap((turn) => turn.groups.flatMap((group) => group.rows)), [replayTurns, turns]);
+  const transcript = useMemo(() => projectAgentTranscript(replayIndex === null ? replayEntries : replayEntries.slice(0, replayIndex)), [replayEntries, replayIndex]);
   const selected = rows.find((row) => row.id === selectedId) ?? null;
   const times = rows.flatMap((row) => row.time === undefined ? [] : [row.time]);
   const domainStart = times.length ? Math.min(...times) : 0;
@@ -865,7 +828,7 @@ export function AgentTrace({
               </div>
             </div>
             <TabPanel value="chat" className="min-h-0 flex-1">
-              <ChatTranscript rows={chatRows} replaying={replaying} />
+              <TranscriptFlow items={transcript} replaying={replaying} />
             </TabPanel>
             <TabPanel value="trace" className="flex min-h-0 flex-1 flex-col [&_[role=tab]_*]:!font-normal">
               <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-raised px-3 py-2">
@@ -922,7 +885,7 @@ export function AgentTrace({
         </ScrollArea>
         {selected && <aside className="flex min-h-[18rem] w-full shrink-0 flex-col border-t border-border bg-surface-raised text-sm lg:h-full lg:border-l lg:border-t-0" aria-label="Record inspector">
           <Tabs value={inspectorTab} onValueChange={(value) => setInspectorTab(value as InspectorTab)} variant="underline" color="neutral" className="flex min-h-0 flex-1 flex-col">
-            <header className="border-b border-border px-3 py-2"><div className="flex items-center justify-between gap-2"><span className="text-label text-fg-subtle">Record #{selected.seq ?? "—"}</span><Badge size="sm" className="!font-normal" color={selected.status === "error" ? "red" : selected.kind === "tool" ? "amber" : "blue"}>{kindStyle[selected.kind].label}</Badge></div><h3 className="mt-1 text-body font-normal text-fg-default">{selected.label}</h3></header>
+            <header className="border-b border-border px-3 py-2"><div className="flex items-center justify-between gap-2"><span className="text-sm text-fg-subtle">Record #{selected.seq ?? "—"}</span><Badge size="sm" className="!font-normal" color={selected.status === "error" ? "red" : selected.kind === "tool" ? "amber" : "blue"}>{kindStyle[selected.kind].label}</Badge></div><h3 className="mt-1 text-sm font-normal text-fg-default">{selected.label}</h3></header>
             <TabsList className="mx-0 px-2" aria-label="Inspector tabs">{inspectorTabs(selected).map((tab) => <TabItem key={tab.id} value={tab.id} label={tab.label} />)}</TabsList>
             <ScrollArea className="min-h-0 flex-1" viewportClassName="h-full" orientation="vertical">
               <TabPanel value="summary" className="p-3"><InspectorSummary row={selected} /></TabPanel>

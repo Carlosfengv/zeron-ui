@@ -9,11 +9,18 @@
       "description": "A turn-aware trace viewer that projects agent messages, tool calls, and results from uploaded JSON.",
       "categories": ["application", "agent", "observability"],
       "dependencies": ["tw-animate-css"],
-      "registryDependencies": ["badge", "button", "chat-message", "icon-context", "info-item", "input", "page-layout", "resizable", "scroll-area", "table", "tabs", "thinking-indicator", "thinking-steps", "tooltip", "utils"],
+      "registryDependencies": ["badge", "button", "chat-message", "icon-context", "info-item", "input", "page-layout", "resizable", "scroll-area", "table", "tabs", "thinking-indicator", "tooltip", "utils"],
       "files": [
         { "path": "packages/blocks/src/application/agent-trace-01/agent-trace.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/agent-trace.tsx" },
         { "path": "packages/blocks/src/application/agent-trace-01/session-default.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/session-default.ts" },
+        { "path": "packages/blocks/src/application/agent-trace-01/markdown-content.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/markdown-content.tsx" },
+        { "path": "packages/blocks/src/application/agent-trace-01/reasoning-row.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/reasoning-row.tsx" },
+        { "path": "packages/blocks/src/application/agent-trace-01/stream-projection.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/stream-projection.ts" },
         { "path": "packages/blocks/src/application/agent-trace-01/trace-jsonl.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/trace-jsonl.ts" },
+        { "path": "packages/blocks/src/application/agent-trace-01/tool-call-card.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/tool-call-card.tsx" },
+        { "path": "packages/blocks/src/application/agent-trace-01/transcript-flow.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/transcript-flow.tsx" },
+        { "path": "packages/blocks/src/application/agent-trace-01/transcript-grouping.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/transcript-grouping.ts" },
+        { "path": "packages/blocks/src/application/agent-trace-01/use-stream-scroll.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/use-stream-scroll.ts" },
         { "path": "packages/blocks/src/application/agent-trace-01/index.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/index.ts" }
       ]
     },
