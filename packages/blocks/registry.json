@@ -9,9 +9,11 @@
       "description": "A turn-aware trace viewer that projects agent messages, tool calls, and results from uploaded JSON.",
       "categories": ["application", "agent", "observability"],
       "dependencies": ["tw-animate-css"],
-      "registryDependencies": ["badge", "button", "chat-message", "icon-context", "info-item", "input", "page-layout", "resizable", "scroll-area", "table", "tabs", "tooltip", "utils"],
+      "registryDependencies": ["badge", "button", "chat-message", "icon-context", "info-item", "input", "page-layout", "resizable", "scroll-area", "table", "tabs", "thinking-indicator", "thinking-steps", "tooltip", "utils"],
       "files": [
         { "path": "packages/blocks/src/application/agent-trace-01/agent-trace.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/agent-trace.tsx" },
+        { "path": "packages/blocks/src/application/agent-trace-01/session-default.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/session-default.ts" },
+        { "path": "packages/blocks/src/application/agent-trace-01/trace-jsonl.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/trace-jsonl.ts" },
         { "path": "packages/blocks/src/application/agent-trace-01/index.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/index.ts" }
       ]
     },

@@ -6,3 +6,4 @@ export {
   type AgentTraceRow,
   type AgentTraceTurn,
 } from "./agent-trace";
+export { parseAgentTracePayload } from "./trace-jsonl";

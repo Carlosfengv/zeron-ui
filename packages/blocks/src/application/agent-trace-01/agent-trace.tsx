@@ -15,12 +15,24 @@ import { useIcon, type IconComponentProps, type IconName } from "@zeron/ui/syste
 import { cn } from "@zeron/ui/system/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@zeron/ui/table";
 import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
+import { ThinkingIndicator } from "@zeron/ui/thinking-indicator";
+import { ThinkingStep, ThinkingSteps, ThinkingStepsContent, ThinkingStepsHeader } from "@zeron/ui/thinking-steps";
 import { Tooltip } from "@zeron/ui/tooltip";
+import { defaultAgentTracePayload } from "./session-default";
+import { expandAgentTraceEntries, parseAgentTracePayload } from "./trace-jsonl";
+
+export { defaultAgentTracePayload } from "./session-default";
 
 type JsonRecord = Record<string, unknown>;
 type TraceKind = "user" | "assistant" | "tool" | "system" | "context" | "event";
 type AgentTraceView = "chat" | "trace";
 type TraceDisplayControl = "duration" | "turns" | "calls";
+
+type AgentTraceContentBlock = {
+  kind: "text" | "reasoning" | "tool-call" | "unknown";
+  text: string;
+  name?: string;
+};
 
 /** Keeps the server and first client render identical when icon variants load on the client. */
 function TraceIcon({ name, size = 14, strokeWidth = 1.5, ...props }: { name: IconName } & IconComponentProps) {
@@ -54,6 +66,8 @@ export interface AgentTraceRow {
   input?: number;
   output?: number;
   think?: number;
+  /** Ordered message blocks reconstructed from DSH content or raw stream chunks. */
+  content?: readonly AgentTraceContentBlock[];
 }
 
 export interface AgentTraceTurn {
@@ -125,6 +139,10 @@ function envelopeEntries(payload: unknown): readonly unknown[] {
   return [root];
 }
 
+function traceEntries(payload: unknown): readonly unknown[] {
+  return expandAgentTraceEntries(envelopeEntries(payload));
+}
+
 function eventTurn(item: JsonRecord): number | undefined {
   const data = record(item.data);
   return numberValue(item.turn) ?? numberValue(data?.turn);
@@ -165,6 +183,85 @@ function usageFields(value: unknown): Pick<AgentTraceRow, "input" | "output" | "
   };
 }
 
+function traceContentBlocks(value: unknown): readonly AgentTraceContentBlock[] {
+  const values = Array.isArray(value) ? value : value === undefined ? [] : [value];
+  const blocks: AgentTraceContentBlock[] = [];
+  for (const entry of values) {
+    const block = record(entry);
+    const type = typeof block?.type === "string" ? block.type : "unknown";
+    if (type === "text") blocks.push({ kind: "text", text: plainText(block?.text) });
+    else if (type === "reasoning") blocks.push({ kind: "reasoning", text: plainText(block?.text) });
+    else if (type === "tool-call") {
+      const name = typeof block?.name === "string" ? block.name : "Tool call";
+      const argumentsText = plainText(block?.arguments ?? block?.args ?? "");
+      blocks.push({ kind: "tool-call", text: argumentsText, name });
+    } else blocks.push({ kind: "unknown", text: plainText(entry) });
+  }
+  return blocks.filter((block) => block.text || block.kind === "tool-call");
+}
+
+function contentPreview(blocks: readonly AgentTraceContentBlock[], fallback: string): string {
+  const visible = blocks.filter((block) => block.kind !== "tool-call").map((block) => block.text).filter(Boolean).join("\n");
+  if (visible) return preview(visible, fallback);
+  const calls = blocks.filter((block) => block.kind === "tool-call").map((block) => block.name).filter(Boolean);
+  return calls.length ? `Calling ${calls.join(", ")}` : fallback;
+}
+
+type ChunkAccumulator = {
+  turn: number;
+  step: number;
+  seq: number;
+  time?: number;
+  blocks: Map<number, AgentTraceContentBlock>;
+  raw: unknown[];
+  usage?: Pick<AgentTraceRow, "input" | "output" | "think">;
+  finished?: "success" | "error";
+};
+
+function chunkKey(turn: number, step: number): string {
+  return `${turn}:${step}`;
+}
+
+function updateChunk(accumulator: ChunkAccumulator, item: JsonRecord, data: JsonRecord): void {
+  const chunk = record(data.chunk);
+  const type = typeof chunk?.type === "string" ? chunk.type : "";
+  const index = numberValue(chunk?.index);
+  accumulator.raw.push(item);
+  if (type === "usage") {
+    accumulator.usage = usageFields(chunk?.usage);
+    return;
+  }
+  if (type === "finish") {
+    const reason = record(chunk?.reason);
+    accumulator.finished = reason?.kind === "error" || reason?.kind === "aborted" ? "error" : "success";
+    return;
+  }
+  if (index === undefined) return;
+  const previous = accumulator.blocks.get(index);
+  if (type === "block-start") {
+    const blockType = typeof chunk?.blockType === "string" ? chunk.blockType : "unknown";
+    accumulator.blocks.set(index, { kind: blockType === "text" ? "text" : blockType === "reasoning" ? "reasoning" : blockType === "tool-call" ? "tool-call" : "unknown", text: "" });
+    return;
+  }
+  if (type === "text-delta" || type === "reasoning-delta") {
+    const kind = type === "text-delta" ? "text" : "reasoning";
+    accumulator.blocks.set(index, { kind, text: `${previous?.text ?? ""}${plainText(chunk?.text)}` });
+    return;
+  }
+  if (type === "tool-call-delta") {
+    accumulator.blocks.set(index, {
+      kind: "tool-call",
+      name: typeof chunk?.name === "string" ? chunk.name : previous?.name ?? "Tool call",
+      text: `${previous?.text ?? ""}${plainText(chunk?.argumentsDelta)}`,
+    });
+    return;
+  }
+  if (type === "block-end") {
+    const [block] = traceContentBlocks(chunk?.block);
+    if (block) accumulator.blocks.set(index, block);
+  }
+}
+
 function sourceType(item: JsonRecord): string {
   if (typeof item.type === "string") return item.type;
   if (typeof item.role === "string") return `${item.role}/message`;
@@ -186,7 +283,7 @@ function statusFromReason(value: unknown): AgentTraceTurn["status"] {
  * message arrays. Tool results are joined back to their calls through `callId`.
  */
 export function normalizeAgentTracePayload(payload: unknown): readonly AgentTraceTurn[] {
-  const entries = envelopeEntries(payload).map((value, index) => ({
+  const entries = traceEntries(payload).map((value, index) => ({
     item: record(value),
     index,
   })).filter((entry): entry is { item: JsonRecord; index: number } => entry.item !== null);
@@ -207,6 +304,7 @@ export function normalizeAgentTracePayload(payload: unknown): readonly AgentTrac
 
   const turns = new Map<string, { label: string; status?: AgentTraceTurn["status"]; startedAt?: number; endedAt?: number; groups: Map<string, { label: string; rows: AgentTraceRow[] }> }>();
   const calls = new Map<string, AgentTraceRow>();
+  const chunks = new Map<string, ChunkAccumulator>();
   const ensureGroup = (turn: number | undefined, step: number | undefined) => {
     const key = turn === undefined ? "prelude" : String(turn);
     let traceTurn = turns.get(key);
@@ -246,7 +344,18 @@ export function normalizeAgentTracePayload(payload: unknown): readonly AgentTrac
       ensureGroup(directTurn, undefined).traceTurn.startedAt = time;
       continue;
     }
-    if (type === "step/start" || type === "step/end" || type === "assistant/chunk" && completedMessages.has(`${turn}:${step}`)) continue;
+    if (type === "assistant/chunk") {
+      if (turn === undefined || step === undefined) continue;
+      const key = chunkKey(turn, step);
+      let accumulator = chunks.get(key);
+      if (!accumulator) {
+        accumulator = { turn, step, seq, ...(time === undefined ? {} : { time }), blocks: new Map(), raw: [] };
+        chunks.set(key, accumulator);
+      }
+      updateChunk(accumulator, item, data);
+      continue;
+    }
+    if (type === "step/start" || type === "step/end") continue;
     if (type === "request/header") {
       const header = record(data.header);
       const tools = Array.isArray(header?.tools) ? header.tools.length : 0;
@@ -259,7 +368,8 @@ export function normalizeAgentTracePayload(payload: unknown): readonly AgentTrac
     }
     if (type === "assistant/message" || type === "assistant/chunk" || type === "assistant") {
       const message = record(data.message) ?? data;
-      add(turn, step, { id, kind: "assistant", label: type === "assistant/chunk" ? "Assistant · streaming" : "Assistant", preview: preview(message.content ?? message.text ?? item.content, "Assistant response"), raw: item, seq, step, time, status: type === "assistant/chunk" ? "running" : "success", ...usageFields(data.usage ?? message.usage) });
+      const content = traceContentBlocks(message.content ?? message.text ?? item.content);
+      add(turn, step, { id, kind: "assistant", label: "Assistant", preview: contentPreview(content, "Assistant response"), raw: item, seq, step, time, status: "success", ...usageFields(data.usage ?? message.usage), ...(content.length ? { content } : {}) });
       continue;
     }
     if (type === "tool/call") {
@@ -295,31 +405,34 @@ export function normalizeAgentTracePayload(payload: unknown): readonly AgentTrac
     }
   }
 
+  for (const accumulator of chunks.values()) {
+    if (completedMessages.has(chunkKey(accumulator.turn, accumulator.step))) continue;
+    const content = [...accumulator.blocks.entries()].sort(([left], [right]) => left - right).map(([, block]) => block);
+    if (content.length === 0) continue;
+    add(accumulator.turn, accumulator.step, {
+      id: `stream:${accumulator.turn}:${accumulator.step}:${accumulator.seq}`,
+      kind: "assistant",
+      label: accumulator.finished === "error" ? "Assistant · interrupted" : "Assistant · streaming",
+      preview: contentPreview(content, "Assistant response"),
+      raw: accumulator.raw,
+      seq: accumulator.seq,
+      step: accumulator.step,
+      ...(accumulator.time === undefined ? {} : { time: accumulator.time }),
+      status: accumulator.finished ?? "running",
+      ...(accumulator.usage ?? {}),
+      content,
+    });
+  }
+
   return [...turns.entries()].map(([id, turn]) => ({
     id,
     label: turn.label,
     ...(turn.status === undefined ? {} : { status: turn.status }),
     ...(turn.startedAt === undefined ? {} : { startedAt: turn.startedAt }),
     ...(turn.endedAt === undefined ? {} : { endedAt: turn.endedAt }),
-    groups: [...turn.groups.entries()].map(([groupId, group]) => ({ id: groupId, label: group.label, rows: group.rows })),
+    groups: [...turn.groups.entries()].map(([groupId, group]) => ({ id: groupId, label: group.label, rows: group.rows.toSorted((left, right) => (left.seq ?? Number.MAX_SAFE_INTEGER) - (right.seq ?? Number.MAX_SAFE_INTEGER)) })),
   })).filter((turn) => turn.groups.some((group) => group.rows.length > 0));
 }
-
-export const defaultAgentTracePayload = {
-  events: [
-    { seq: 1, time: 1722506400000, type: "turn/start", data: { turn: 1 } },
-    { seq: 2, time: 1722506400200, type: "user/message", data: { id: "msg_01", content: [{ type: "text", text: "检查最近部署为什么导致接口延迟升高，并给出缓解建议。" }], source: { kind: "user" } } },
-    { seq: 3, time: 1722506400300, type: "request/header", data: { header: { system: "You are a production operations assistant.", tools: [{ name: "search_logs" }, { name: "get_deployment" }] }, reason: "initial" } },
-    { seq: 4, time: 1722506400400, type: "assistant/message", data: { turn: 1, step: 1, message: { content: [{ type: "text", text: "我先对照部署窗口和错误日志，确认延迟的集中位置。" }], toolCalls: [{ id: "call_logs", name: "search_logs" }] } } },
-    { seq: 5, time: 1722506400500, type: "tool/call", data: { turn: 1, step: 1, callId: "call_logs", name: "search_logs", arguments: "{\"query\":\"p95 latency after deploy\",\"window\":\"30m\"}" } },
-    { seq: 6, time: 1722506401200, type: "tool/result", data: { turn: 1, step: 1, message: { callId: "call_logs", content: [{ type: "text", text: "p95 latency rose from 240 ms to 1.8 s on /v1/orders. 68% of slow requests wait on inventory-service." }] } } },
-    { seq: 7, time: 1722506401400, type: "assistant/message", data: { turn: 1, step: 2, message: { content: [{ type: "text", text: "延迟集中在 inventory-service，我再确认这次部署是否修改了连接池或重试策略。" }] } } },
-    { seq: 8, time: 1722506401500, type: "tool/call", data: { turn: 1, step: 2, callId: "call_deploy", name: "get_deployment", arguments: "{\"service\":\"inventory-service\",\"environment\":\"production\"}" } },
-    { seq: 9, time: 1722506401900, type: "tool/result", data: { turn: 1, step: 2, message: { callId: "call_deploy", content: [{ type: "text", text: "v2024.08.01 changed the connection pool limit from 80 to 12." }] } } },
-    { seq: 10, time: 1722506402100, type: "assistant/message", data: { turn: 1, step: 3, message: { content: [{ type: "text", text: "根因是连接池上限下降造成 inventory-service 排队。建议立即回滚到 80，并在恢复后为连接池饱和度设置告警。" }] }, usage: { inputTokens: 2180, outputTokens: 154 } } },
-    { seq: 11, time: 1722506402200, type: "turn/end", data: { turn: 1, reason: { kind: "completed" } } },
-  ],
-} as const;
 
 const kindStyle: Record<TraceKind, { dot: string; lane: number; label: string }> = {
   user: { dot: "bg-fg-brand", lane: 0, label: "USER" },
@@ -339,7 +452,7 @@ const kindBadgeColor: Record<TraceKind, BadgeColor> = {
   event: "gray",
 };
 
-type InspectorTab = "summary" | "input" | "output" | "raw";
+type InspectorTab = "summary" | "preview" | "raw" | "source" | "input" | "output" | "schema" | "timing";
 type TimelineRange = { start: number; end: number };
 
 const desktopQuery = "(min-width: 1024px)";
@@ -425,18 +538,184 @@ function formatTime(value: number | undefined): string {
   return new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit", fractionalSecondDigits: 3 });
 }
 
+function TurnStatusIcon({ status }: { status: AgentTraceTurn["status"] }) {
+  const state = status ?? "running";
+  const presentation = {
+    completed: { label: "Completed", icon: "check" as IconName, className: "bg-success" },
+    error: { label: "Error", icon: "x" as IconName, className: "bg-danger" },
+    aborted: { label: "Aborted", icon: "pause" as IconName, className: "bg-warning" },
+    running: { label: "Running", icon: "loader" as IconName, className: "bg-info" },
+  }[state];
+
+  return <span role="img" aria-label={`Turn status: ${presentation.label}`} title={presentation.label} className={cn("grid size-5 shrink-0 place-items-center rounded-sm text-white", presentation.className)}><TraceIcon name={presentation.icon} size={14} className={state === "running" ? "animate-spin" : undefined} /></span>;
+}
+
+function primaryEvent(row: AgentTraceRow): JsonRecord | null {
+  const raw = record(row.raw);
+  return record(raw?.call) ?? raw;
+}
+
+function resultEvent(row: AgentTraceRow): JsonRecord | null {
+  return record(record(row.raw)?.result);
+}
+
+function rowData(row: AgentTraceRow): JsonRecord | null {
+  const event = primaryEvent(row);
+  return event ? eventData(event) : null;
+}
+
+function resultData(row: AgentTraceRow): JsonRecord | null {
+  const event = resultEvent(row);
+  return event ? eventData(event) : null;
+}
+
+function rowMessage(row: AgentTraceRow): JsonRecord | null {
+  const data = rowData(row);
+  return record(data?.message) ?? data;
+}
+
+function contentText(value: unknown): string {
+  const blocks = traceContentBlocks(value);
+  if (blocks.length) return blocks.map((block) => block.text).filter(Boolean).join("\n\n");
+  return plainText(value);
+}
+
+function rowSource(row: AgentTraceRow): unknown {
+  const message = rowMessage(row);
+  const data = rowData(row);
+  const result = resultData(row);
+  const resultMessage = record(result?.message);
+  return message?.source ?? resultMessage?.source ?? result?.source ?? data?.source;
+}
+
+function sourceLabel(source: unknown): string {
+  const value = record(source);
+  if (!value) return "Not recorded";
+  if (value.kind === "user") return "User";
+  if (value.kind === "tool") return "Tool";
+  if (value.kind === "plugin") return typeof value.plugin === "string" ? `Plugin · ${value.plugin}` : "Plugin";
+  if (value.kind === "model") {
+    const provider = typeof value.provider === "string" ? value.provider : "Model";
+    const model = typeof value.model === "string" ? value.model : undefined;
+    return model ? `${provider} · ${model}` : provider;
+  }
+  return typeof value.kind === "string" ? value.kind : "Recorded source";
+}
+
+function rowUsage(row: AgentTraceRow): { input?: number; cacheRead?: number; cacheWrite?: number; output?: number; reasoning?: number } {
+  const data = rowData(row);
+  const message = rowMessage(row);
+  const usage = record(data?.usage) ?? record(message?.usage);
+  if (!usage) return {};
+  const input = numberValue(usage.inputTokens) ?? numberValue(usage.input);
+  const cacheRead = numberValue(usage.cacheReadTokens) ?? numberValue(usage.cacheRead);
+  const cacheWrite = numberValue(usage.cacheWriteTokens) ?? numberValue(usage.cacheWrite);
+  const output = numberValue(usage.outputTokens) ?? numberValue(usage.output);
+  const reasoning = numberValue(usage.reasoningTokens) ?? numberValue(usage.think);
+  return { ...(input === undefined ? {} : { input }), ...(cacheRead === undefined ? {} : { cacheRead }), ...(cacheWrite === undefined ? {} : { cacheWrite }), ...(output === undefined ? {} : { output }), ...(reasoning === undefined ? {} : { reasoning }) };
+}
+
+function assistantReasoning(row: AgentTraceRow): string {
+  if (row.content) return row.content.filter((block) => block.kind === "reasoning").map((block) => block.text).filter(Boolean).join("\n\n");
+  return traceContentBlocks(rowMessage(row)?.content).filter((block) => block.kind === "reasoning").map((block) => block.text).filter(Boolean).join("\n\n");
+}
+
+function assistantOutput(row: AgentTraceRow): string {
+  if (row.content) return row.content.filter((block) => block.kind === "text" || block.kind === "unknown").map((block) => block.text).filter(Boolean).join("\n\n");
+  return traceContentBlocks(rowMessage(row)?.content).filter((block) => block.kind === "text" || block.kind === "unknown").map((block) => block.text).filter(Boolean).join("\n\n");
+}
+
+function toolCalls(row: AgentTraceRow): readonly AgentTraceContentBlock[] {
+  if (row.content) return row.content.filter((block) => block.kind === "tool-call");
+  return traceContentBlocks(rowMessage(row)?.content).filter((block) => block.kind === "tool-call");
+}
+
 function rowInput(row: AgentTraceRow): string {
-  if (row.kind === "tool") return row.preview;
-  const source = record(row.raw);
-  const data = source ? eventData(source) : null;
-  return preview(data?.content ?? data?.message ?? row.preview, row.preview);
+  const data = rowData(row);
+  if (row.kind === "tool") return typeof data?.arguments === "string" ? data.arguments : data?.arguments === undefined ? "No payload captured." : rawJson(data.arguments);
+  if (row.kind === "assistant" && row.content) return row.content.map((block) => block.kind === "tool-call" ? `${block.name ?? "tool"}: ${block.text}` : block.text).filter(Boolean).join("\n\n");
+  if (row.kind === "assistant") return contentText(rowMessage(row)?.content);
+  return contentText(data?.content ?? data?.message ?? row.preview);
 }
 
 function rowOutput(row: AgentTraceRow): string {
-  return row.result ?? (row.kind === "assistant" ? row.preview : "No output recorded.");
+  if (row.kind === "assistant") return assistantOutput(row) || "No output recorded.";
+  if (row.kind === "tool") {
+    const result = resultData(row);
+    const message = record(result?.message);
+    return contentText(message?.content ?? result?.content) || row.result || "No result captured.";
+  }
+  return row.result ?? "No output recorded.";
 }
 
-function ChatTranscript({ rows }: { rows: readonly AgentTraceRow[] }) {
+function inspectorTabs(row: AgentTraceRow): readonly { id: InspectorTab; label: string }[] {
+  if (row.kind === "tool") return [
+    { id: "summary", label: "Summary" },
+    { id: "input", label: "Payload" },
+    { id: "output", label: "Result" },
+    { id: "schema", label: "Schema" },
+    { id: "timing", label: "Timing" },
+  ];
+  if (row.kind === "user" || row.kind === "assistant" || row.kind === "context") return [
+    { id: "summary", label: "Summary" },
+    { id: "preview", label: "Preview" },
+    { id: "raw", label: "Raw" },
+    ...(rowSource(row) === undefined ? [] : [{ id: "source" as const, label: "Source" }]),
+  ];
+  return [
+    { id: "summary", label: "Summary" },
+    { id: "input", label: "Payload" },
+    { id: "raw", label: "Raw" },
+    ...(rowSource(row) === undefined ? [] : [{ id: "source" as const, label: "Source" }]),
+  ];
+}
+
+function InspectorCode({ children, error = false }: { children: string; error?: boolean }) {
+  return <pre className={cn("overflow-x-auto whitespace-pre-wrap break-words text-label leading-5 text-fg-muted", error && "text-fg-danger")}>{children}</pre>;
+}
+
+function InspectorSummary({ row }: { row: AgentTraceRow }) {
+  const usage = rowUsage(row);
+  const source = rowSource(row);
+  return <InfoItemGroup>
+    <InspectorInfoItem title="Status">{row.status ?? "Recorded"}</InspectorInfoItem>
+    {source !== undefined && <InspectorInfoItem title="Source">{sourceLabel(source)}</InspectorInfoItem>}
+    <InspectorInfoItem title="Sequence">#{row.seq ?? "—"}</InspectorInfoItem>
+    {row.kind === "assistant" && <><InspectorInfoItem title="Input">{usage.input === undefined ? "Not reported" : `${compactNumber(usage.input)} tok`}</InspectorInfoItem>{usage.cacheRead !== undefined && <InspectorInfoItem title="Cached">{compactNumber(usage.cacheRead)} tok</InspectorInfoItem>}{usage.cacheWrite !== undefined && <InspectorInfoItem title="Cache created">{compactNumber(usage.cacheWrite)} tok</InspectorInfoItem>}<InspectorInfoItem title="Output">{usage.output === undefined ? "Not reported" : `${compactNumber(usage.output)} tok`}</InspectorInfoItem>{usage.reasoning !== undefined && <InspectorInfoItem title="Reasoning">{compactNumber(usage.reasoning)} tok</InspectorInfoItem>}</>}
+    {row.callId && <InspectorInfoItem title="Call ID">{row.callId}</InspectorInfoItem>}
+    <InspectorInfoItem title="Started">{formatTime(row.time)}</InspectorInfoItem>
+    <InspectorInfoItem title="Duration">{formatDuration(row.durationMs)}</InspectorInfoItem>
+  </InfoItemGroup>;
+}
+
+function InspectorPreview({ row }: { row: AgentTraceRow }) {
+  const reasoning = row.kind === "assistant" ? assistantReasoning(row) : "";
+  const output = row.kind === "assistant" ? assistantOutput(row) : row.kind === "tool" ? rowOutput(row) : rowInput(row);
+  const calls = row.kind === "assistant" ? toolCalls(row) : [];
+  return <div className="space-y-3">
+    {reasoning && <details className="rounded-lg border border-border-subtle p-2.5 text-label text-fg-muted"><summary className="cursor-pointer font-normal text-fg-default">Thinking</summary><InspectorCode>{reasoning}</InspectorCode></details>}
+    {output && <InspectorCode>{output}</InspectorCode>}
+    {calls.map((call, index) => <section key={`${call.name ?? "tool-call"}:${index}`} className="rounded-lg border border-border-subtle p-2.5"><p className="text-label font-normal text-fg-default">Tool call · {call.name ?? "Unknown"}</p><InspectorCode>{call.text}</InspectorCode></section>)}
+  </div>;
+}
+
+function InspectorSchema({ row }: { row: AgentTraceRow }) {
+  const data = rowData(row);
+  const schema = data?.schema ?? data?.parameters;
+  return schema === undefined ? <p className="text-label text-fg-muted">Schema unavailable in this JSONL record.</p> : <InspectorCode>{rawJson(schema)}</InspectorCode>;
+}
+
+function AssistantTranscriptContent({ row }: { row: AgentTraceRow }) {
+  const streaming = row.status === "running";
+  if (!row.content?.length) return <div className="space-y-2"><p className="whitespace-pre-wrap">{row.preview}</p>{streaming && <ThinkingIndicator className="px-0 py-0" />}</div>;
+  return <div className="space-y-3">{row.content.map((block, index) => {
+    if (block.kind === "reasoning") return <ThinkingSteps key={`${block.kind}:${index}`} defaultOpen={streaming} className="w-full"><ThinkingStepsHeader>{streaming ? "Reasoning in progress" : "Reasoning"}</ThinkingStepsHeader><ThinkingStepsContent><ThinkingStep label={streaming ? "Thinking" : "Reasoning complete"} status={streaming ? "active" : "complete"} isLast showIcon={false}><p className="whitespace-pre-wrap text-label leading-5 text-fg-muted">{block.text}</p></ThinkingStep></ThinkingStepsContent></ThinkingSteps>;
+    if (block.kind === "tool-call") return <p key={`${block.kind}:${index}`} className="text-label text-fg-muted">Calling <span className="font-medium text-fg-default">{block.name ?? "tool"}</span>{block.text ? "…" : ""}</p>;
+    return <p key={`${block.kind}:${index}`} className="whitespace-pre-wrap leading-6">{block.text}</p>;
+  })}{streaming && <ThinkingIndicator className="px-0 py-0" />}</div>;
+}
+
+function ChatTranscript({ rows, replaying }: { rows: readonly AgentTraceRow[]; replaying: boolean }) {
   const messages = rows.filter((row) => row.kind !== "context" && row.kind !== "event");
 
   if (messages.length === 0) {
@@ -451,20 +730,21 @@ function ChatTranscript({ rows }: { rows: readonly AgentTraceRow[] }) {
             return <ChatMessage key={row.id} from="user" time={formatTime(row.time)}>{row.preview}</ChatMessage>;
           }
           if (row.kind === "assistant") {
-            return <ChatMessage key={row.id} from="assistant"><div><p>{row.preview}</p>{(row.input !== undefined || row.output !== undefined || row.think !== undefined) && <p className="mt-2 text-label tabular-nums text-fg-subtle">Input {compactNumber(row.input)} · Output {compactNumber(row.output)} · Think {compactNumber(row.think)}</p>}</div></ChatMessage>;
+            return <ChatMessage key={row.id} from="assistant"><div><AssistantTranscriptContent row={row} />{(row.input !== undefined || row.output !== undefined || row.think !== undefined) && <p className="mt-3 text-label tabular-nums text-fg-subtle">Input {compactNumber(row.input)} · Output {compactNumber(row.output)} · Think {compactNumber(row.think)}</p>}</div></ChatMessage>;
           }
           if (row.kind === "tool") {
             return <section key={row.id} className="self-start max-w-[86%] rounded-lg border border-border bg-surface-raised px-3 py-2"><div className="flex flex-wrap items-center gap-2"><Badge size="sm" color={row.status === "error" ? "red" : "amber"}>{row.label}</Badge><span className="text-label tabular-nums text-fg-subtle">{formatDuration(row.durationMs)}</span></div><pre className="mt-2 max-h-28 overflow-auto whitespace-pre-wrap break-words text-label leading-5 text-fg-muted">{row.preview}</pre>{row.result && <p className={cn("mt-2 border-t border-border pt-2 text-label leading-5", row.status === "error" ? "text-fg-danger" : "text-fg-default")}>{row.result}</p>}</section>;
           }
           return <p key={row.id} className="self-center text-label text-fg-subtle">{row.label} · {row.preview}</p>;
         })}
+        {replaying && !messages.some((row) => row.kind === "assistant" && row.status === "running") && <ThinkingIndicator className="self-start px-0 py-1" />}
       </div>
     </ScrollArea>
   );
 }
 
 function InspectorInfoItem({ children, title }: { children: ReactNode; title: string }) {
-  return <InfoItem><InfoItemContent><InfoItemTitle>{title}</InfoItemTitle><InfoItemDescription>{children}</InfoItemDescription></InfoItemContent></InfoItem>;
+  return <InfoItem><InfoItemContent><InfoItemTitle className="font-normal">{title}</InfoItemTitle><InfoItemDescription>{children}</InfoItemDescription></InfoItemContent></InfoItem>;
 }
 
 /** A high-fidelity, browser-local replica of DSH's Trajectory ledger. */
@@ -488,13 +768,17 @@ export function AgentTrace({
   const [range, setRange] = useState<TimelineRange | null>(null);
   const [view, setView] = useState<AgentTraceView>(defaultView);
   const [activeDisplayControl, setActiveDisplayControl] = useState<TraceDisplayControl>("duration");
+  const [replayIndex, setReplayIndex] = useState<number | null>(null);
   const desktopLayout = useDesktopLayout();
   const inputRef = useRef<HTMLInputElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const pointerStart = useRef<number | null>(null);
   const payload = data ?? localData;
+  const replayEntries = useMemo(() => traceEntries(payload), [payload]);
   const turns = useMemo(() => normalizeAgentTracePayload(payload), [payload]);
   const rows = useMemo(() => turns.flatMap((turn) => turn.groups.flatMap((group) => group.rows)), [turns]);
+  const replayTurns = useMemo(() => replayIndex === null ? null : normalizeAgentTracePayload({ events: replayEntries.slice(0, replayIndex) }), [replayEntries, replayIndex]);
+  const chatRows = useMemo(() => (replayTurns ?? turns).flatMap((turn) => turn.groups.flatMap((group) => group.rows)), [replayTurns, turns]);
   const selected = rows.find((row) => row.id === selectedId) ?? null;
   const times = rows.flatMap((row) => row.time === undefined ? [] : [row.time]);
   const domainStart = times.length ? Math.min(...times) : 0;
@@ -502,16 +786,32 @@ export function AgentTrace({
   const domainDuration = Math.max(1, domainEnd - domainStart);
   const query = search.trim().toLocaleLowerCase();
   const allTurnsCollapsed = turns.length > 0 && turns.every((turn) => collapsedTurns.has(turn.id));
+  const replaying = replayIndex !== null;
+
+  useEffect(() => {
+    if (replayIndex === null) return;
+    if (replayIndex >= replayEntries.length) {
+      setReplayIndex(null);
+      return;
+    }
+    const current = record(replayEntries[replayIndex]);
+    const previous = replayIndex > 0 ? record(replayEntries[replayIndex - 1]) : null;
+    const gap = (eventTime(current ?? {}) ?? 0) - (eventTime(previous ?? {}) ?? 0);
+    const delay = replayIndex === 0 ? 0 : Math.min(480, Math.max(36, gap));
+    const timer = window.setTimeout(() => setReplayIndex((index) => index === null ? null : index + 1), delay);
+    return () => window.clearTimeout(timer);
+  }, [replayEntries, replayIndex]);
 
   const importFile = async (file: File | undefined) => {
     if (!file) return;
     try {
-      const next = JSON.parse(await file.text()) as unknown;
+      const next = parseAgentTracePayload(await file.text());
       if (envelopeEntries(next).length === 0) throw new Error("No messages or events were found.");
       setLocalData(next);
       onDataChange?.(next);
       setSelectedId(null);
       setRange(null);
+      setReplayIndex(null);
       setError(null);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Unable to read that JSON file.");
@@ -559,14 +859,15 @@ export function AgentTrace({
                 <TabItem value="trace" label="Trace" />
               </TabsList>
               <div className="flex shrink-0 items-center gap-1 px-3 py-2">
-                <Tooltip content="Load sample"><Button type="button" size="md" variant="tertiary" iconOnly aria-label="Load sample" className="[&_svg]:!size-4" onClick={() => { setLocalData(defaultAgentTracePayload); onDataChange?.(defaultAgentTracePayload); setError(null); setSelectedId(null); }}><TraceIcon name="rotate-ccw" /></Button></Tooltip>
-                {allowUpload && <><input ref={inputRef} className="sr-only" type="file" accept="application/json,.json" onChange={(event) => { void importFile(event.target.files?.[0]); event.currentTarget.value = ""; }} /><Tooltip content="Upload JSON"><Button type="button" size="md" variant="tertiary" iconOnly aria-label="Upload JSON" className="[&_svg]:!size-4" onClick={() => inputRef.current?.click()}><TraceIcon name="upload" /></Button></Tooltip></>}
+                {view === "chat" && <Button type="button" size="sm" variant={replaying ? "secondary" : "tertiary"} onClick={() => setReplayIndex(replaying ? null : 0)}>{replaying ? "Stop replay" : "Replay"}</Button>}
+                <Tooltip content="Load sample"><Button type="button" size="md" variant="tertiary" iconOnly aria-label="Load sample" className="[&_svg]:!size-4" onClick={() => { setLocalData(defaultAgentTracePayload); onDataChange?.(defaultAgentTracePayload); setError(null); setSelectedId(null); setReplayIndex(null); }}><TraceIcon name="rotate-ccw" /></Button></Tooltip>
+                {allowUpload && <><input ref={inputRef} className="sr-only" type="file" accept="application/json,application/x-ndjson,.json,.jsonl,.ndjson" onChange={(event) => { void importFile(event.target.files?.[0]); event.currentTarget.value = ""; }} /><Tooltip content="Upload JSON"><Button type="button" size="md" variant="tertiary" iconOnly aria-label="Upload JSON" className="[&_svg]:!size-4" onClick={() => inputRef.current?.click()}><TraceIcon name="upload" /></Button></Tooltip></>}
               </div>
             </div>
             <TabPanel value="chat" className="min-h-0 flex-1">
-              <ChatTranscript rows={rows} />
+              <ChatTranscript rows={chatRows} replaying={replaying} />
             </TabPanel>
-            <TabPanel value="trace" className="flex min-h-0 flex-1 flex-col">
+            <TabPanel value="trace" className="flex min-h-0 flex-1 flex-col [&_[role=tab]_*]:!font-normal">
               <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-raised px-3 py-2">
                 <Tabs value={activeDisplayControl} onValueChange={(value) => setActiveDisplayControl(value as TraceDisplayControl)} variant="segment" color="neutral" aria-label="Trace display controls">
                   <TabsList labelVisibility="active" className="my-0">
@@ -596,21 +897,22 @@ export function AgentTrace({
         <ScrollArea className="min-h-0 min-w-0 flex-1" viewportClassName="h-full" orientation="both">
           <Table className="w-full min-w-[720px] table-fixed border-collapse text-sm">
             <colgroup><col className="w-12" /><col className="w-28" /><col /><col className="w-[4.5rem]" /><col className="w-[4.5rem]" /><col className="w-[4.5rem]" /><col className="w-[4.5rem]" /></colgroup>
-            <TableHeader className="sticky top-0 z-20 bg-surface-raised text-fg-subtle"><TableRow className="h-8 border-b border-border"><TableHead className="px-2 text-right text-sm font-medium">#</TableHead><TableHead className="px-2 text-left text-sm font-medium">Event</TableHead><TableHead className="px-2 text-left text-sm font-medium">Content</TableHead><TableHead className="px-2 text-right text-sm font-medium">Input</TableHead><TableHead className="px-2 text-right text-sm font-medium">Output</TableHead><TableHead className="px-2 text-right text-sm font-medium">Think</TableHead><TableHead className="px-2 text-right text-sm font-medium">Time</TableHead></TableRow></TableHeader>
+            <TableHeader className="sticky top-0 z-20 bg-surface-raised text-fg-subtle"><TableRow className="h-8 border-b border-border"><TableHead className="px-2 text-right text-sm font-normal">#</TableHead><TableHead className="px-2 text-left text-sm font-normal">Event</TableHead><TableHead className="px-2 text-left text-sm font-normal">Content</TableHead><TableHead className="px-2 text-right text-sm font-normal">Input</TableHead><TableHead className="px-2 text-right text-sm font-normal">Output</TableHead><TableHead className="px-2 text-right text-sm font-normal">Think</TableHead><TableHead className="px-2 text-right text-sm font-normal">Time</TableHead></TableRow></TableHeader>
             <TableBody>{turns.map((turn) => {
               const collapsed = collapsedTurns.has(turn.id);
               const metrics = turnMetrics(turn);
-              return <Fragment key={turn.id}><TableRow className="sticky top-8 z-10 border-y border-border bg-surface-base"><TableCell colSpan={7} className="h-8 px-2"><button type="button" onClick={() => setCollapsedTurns((current) => { const next = new Set(current); if (next.has(turn.id)) next.delete(turn.id); else next.add(turn.id); return next; })} className="flex w-full items-center gap-2 text-left outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"><span className="text-fg-muted">{collapsed ? "▸" : "▾"}</span><span className="font-semibold text-fg-default">{turn.label}</span>{turn.status && <Badge size="sm" color={turn.status === "completed" ? "green" : turn.status === "error" ? "red" : "gray"}>{turn.status}</Badge>}<span className="ml-auto grid w-[18rem] grid-cols-4 text-right tabular-nums text-fg-subtle"><span title="Input">{compactNumber(metrics.input)}</span><span title="Output">{compactNumber(metrics.output)}</span><span title="Think">{compactNumber(metrics.think)}</span><span title="Time">{formatDuration(metrics.durationMs)}</span></span></button></TableCell></TableRow>
+              return <Fragment key={turn.id}><TableRow className="sticky top-8 z-10 border-y border-border bg-surface-base"><TableCell colSpan={7} className="h-8 px-2"><button type="button" onClick={() => setCollapsedTurns((current) => { const next = new Set(current); if (next.has(turn.id)) next.delete(turn.id); else next.add(turn.id); return next; })} className="flex w-full items-center gap-2 text-left outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"><span className="text-fg-muted">{collapsed ? "▸" : "▾"}</span><TurnStatusIcon status={turn.status} /><span className="font-normal text-fg-default">{turn.label}</span><span className="ml-auto grid w-[18rem] grid-cols-4 text-right font-normal tabular-nums text-fg-subtle"><span title="Input">{compactNumber(metrics.input)}</span><span title="Output">{compactNumber(metrics.output)}</span><span title="Think">{compactNumber(metrics.think)}</span><span title="Time">{formatDuration(metrics.durationMs)}</span></span></button></TableCell></TableRow>
                 {!collapsed && turn.groups.map((group) => <Fragment key={`${turn.id}:${group.id}`}>
                   <TableRow className="border-b border-border-subtle bg-surface-raised/60"><TableCell colSpan={7} className="h-7 px-2 text-xs font-normal text-fg-subtle"><span>{group.label}</span><span className="ml-2">{group.rows.length} record{group.rows.length === 1 ? "" : "s"}</span></TableCell></TableRow>
                   {group.rows.filter((row) => !hideCalls || row.kind !== "tool").map((row) => {
                     const style = kindStyle[row.kind];
                     const match = !query || `${row.label} ${row.preview} ${row.result ?? ""} ${row.callId ?? ""}`.toLocaleLowerCase().includes(query);
                     const inRange = range === null || row.time === undefined || row.time >= Math.min(range.start, range.end) && row.time <= Math.max(range.start, range.end);
-                    return <TableRow key={row.id} tabIndex={0} onClick={() => { setSelectedId(row.id); setInspectorTab("summary"); }} className={cn("h-9 cursor-pointer border-b border-border-subtle outline-none transition-colors hover:bg-hover focus-visible:ring-1 focus-visible:ring-focus-ring", selected?.id === row.id && "bg-active", (!match || !inRange) && "opacity-25")}>
+                    const selectedRow = selected?.id === row.id;
+                    return <TableRow key={row.id} tabIndex={0} onClick={() => { setSelectedId(row.id); setInspectorTab("summary"); }} className={cn("h-9 cursor-pointer border-b border-border-subtle outline-none transition-colors focus-visible:ring-1 focus-visible:ring-focus-ring", selectedRow ? "bg-info-surface hover:bg-info-surface" : "hover:bg-hover", (!match || !inRange) && "opacity-25")}>
                       <TableCell className="px-2 text-right tabular-nums text-fg-subtle">{row.seq ? `#${row.seq}` : ""}</TableCell>
-                      <TableCell className="px-2"><Badge size="sm" color={kindBadgeColor[row.kind]}>{style.label}</Badge></TableCell>
-                      <TableCell className="px-2"><div className="flex min-w-0 items-center gap-2"><span className="shrink-0 font-medium text-fg-default">{row.label}</span><span className="truncate text-fg-muted">{row.preview}</span>{row.result && <span className={cn("truncate text-fg-subtle", row.status === "error" && "text-fg-danger")}>→ {row.result}</span>}</div></TableCell>
+                      <TableCell className="px-2"><Badge size="sm" className="!font-normal" color={kindBadgeColor[row.kind]}>{style.label}</Badge></TableCell>
+                      <TableCell className="px-2"><div className="flex min-w-0 items-center gap-2"><span className="shrink-0 font-normal text-fg-default">{row.label}</span><span className="truncate text-fg-muted">{row.preview}</span>{row.result && <span className={cn("truncate text-fg-subtle", row.status === "error" && "text-fg-danger")}>→ {row.result}</span>}</div></TableCell>
                       <TableCell className="px-2 text-right tabular-nums text-fg-subtle">{row.kind === "assistant" ? compactNumber(row.input) : ""}</TableCell><TableCell className="px-2 text-right tabular-nums text-fg-subtle">{row.kind === "assistant" ? compactNumber(row.output) : ""}</TableCell><TableCell className="px-2 text-right tabular-nums text-fg-subtle">{row.kind === "assistant" ? compactNumber(row.think) : ""}</TableCell><TableCell className="px-2 text-right tabular-nums text-fg-subtle">{formatDuration(row.durationMs)}</TableCell>
                     </TableRow>;
                   })}
@@ -620,13 +922,17 @@ export function AgentTrace({
         </ScrollArea>
         {selected && <aside className="flex min-h-[18rem] w-full shrink-0 flex-col border-t border-border bg-surface-raised text-sm lg:h-full lg:border-l lg:border-t-0" aria-label="Record inspector">
           <Tabs value={inspectorTab} onValueChange={(value) => setInspectorTab(value as InspectorTab)} variant="underline" color="neutral" className="flex min-h-0 flex-1 flex-col">
-            <header className="border-b border-border px-3 py-2"><div className="flex items-center justify-between gap-2"><span className="text-label text-fg-subtle">Record #{selected.seq ?? "—"}</span><Badge size="sm" color={selected.status === "error" ? "red" : selected.kind === "tool" ? "amber" : "blue"}>{kindStyle[selected.kind].label}</Badge></div><h3 className="mt-1 text-body font-semibold text-fg-default">{selected.label}</h3></header>
-            <TabsList className="mx-0 px-2" aria-label="Inspector tabs">{(["summary", "input", "output", "raw"] as const).map((tab) => <TabItem key={tab} value={tab} label={tab} className="capitalize" />)}</TabsList>
+            <header className="border-b border-border px-3 py-2"><div className="flex items-center justify-between gap-2"><span className="text-label text-fg-subtle">Record #{selected.seq ?? "—"}</span><Badge size="sm" className="!font-normal" color={selected.status === "error" ? "red" : selected.kind === "tool" ? "amber" : "blue"}>{kindStyle[selected.kind].label}</Badge></div><h3 className="mt-1 text-body font-normal text-fg-default">{selected.label}</h3></header>
+            <TabsList className="mx-0 px-2" aria-label="Inspector tabs">{inspectorTabs(selected).map((tab) => <TabItem key={tab.id} value={tab.id} label={tab.label} />)}</TabsList>
             <ScrollArea className="min-h-0 flex-1" viewportClassName="h-full" orientation="vertical">
-              <TabPanel value="summary" className="p-3"><InfoItemGroup><InspectorInfoItem title="Event">{kindStyle[selected.kind].label}</InspectorInfoItem><InspectorInfoItem title="Sequence">#{selected.seq ?? "—"}</InspectorInfoItem><InspectorInfoItem title="Started">{formatTime(selected.time)}</InspectorInfoItem><InspectorInfoItem title="Duration">{formatDuration(selected.durationMs)}</InspectorInfoItem>{selected.callId && <InspectorInfoItem title="Call ID">{selected.callId}</InspectorInfoItem>}<InspectorInfoItem title="Preview">{selected.preview}</InspectorInfoItem></InfoItemGroup></TabPanel>
-              <TabPanel value="input" className="p-3"><pre className="whitespace-pre-wrap break-words text-label leading-5 text-fg-muted">{rowInput(selected)}</pre></TabPanel>
-              <TabPanel value="output" className="p-3"><pre className="whitespace-pre-wrap break-words text-label leading-5 text-fg-muted">{rowOutput(selected)}</pre></TabPanel>
-              <TabPanel value="raw" className="p-3"><pre className="text-label leading-5 text-fg-muted">{rawJson(selected.raw)}</pre></TabPanel>
+              <TabPanel value="summary" className="p-3"><InspectorSummary row={selected} /></TabPanel>
+              <TabPanel value="preview" className="p-3"><InspectorPreview row={selected} /></TabPanel>
+              <TabPanel value="input" className="p-3"><InspectorCode>{rowInput(selected)}</InspectorCode></TabPanel>
+              <TabPanel value="output" className="p-3"><InspectorCode error={selected.status === "error"}>{rowOutput(selected)}</InspectorCode></TabPanel>
+              <TabPanel value="schema" className="p-3"><InspectorSchema row={selected} /></TabPanel>
+              <TabPanel value="timing" className="p-3"><InfoItemGroup><InspectorInfoItem title="Started">{formatTime(selected.time)}</InspectorInfoItem><InspectorInfoItem title="Duration">{formatDuration(selected.durationMs)}</InspectorInfoItem><InspectorInfoItem title="Timing source">{selected.time === undefined ? "Not available" : "Session timestamps"}</InspectorInfoItem></InfoItemGroup></TabPanel>
+              <TabPanel value="raw" className="p-3"><InspectorCode>{rawJson(primaryEvent(selected) ?? selected.raw)}</InspectorCode></TabPanel>
+              <TabPanel value="source" className="p-3"><InspectorCode>{rowSource(selected) === undefined ? "Source not recorded." : rawJson(rowSource(selected))}</InspectorCode></TabPanel>
             </ScrollArea>
           </Tabs>
         </aside>}

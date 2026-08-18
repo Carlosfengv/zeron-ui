@@ -2112,6 +2112,8 @@
         "https://zeron-ui.vercel.app/r/scroll-area.json",
         "https://zeron-ui.vercel.app/r/table.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/thinking-indicator.json",
+        "https://zeron-ui.vercel.app/r/thinking-steps.json",
         "https://zeron-ui.vercel.app/r/tooltip.json",
         "https://zeron-ui.vercel.app/r/utils.json"
       ],
@@ -2120,6 +2122,16 @@
           "path": "packages/blocks/src/application/agent-trace-01/agent-trace.tsx",
           "type": "registry:component",
           "target": "components/blocks/agent-trace-01/agent-trace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/session-default.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/session-default.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/trace-jsonl.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/trace-jsonl.ts"
         },
         {
           "path": "packages/blocks/src/application/agent-trace-01/index.ts",
