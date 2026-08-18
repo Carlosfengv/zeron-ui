@@ -1705,6 +1705,27 @@
       ]
     },
     {
+      "name": "resizable",
+      "type": "registry:ui",
+      "title": "Resizable",
+      "description": "Accessible, keyboard-operable resizable panels powered by react-resizable-panels.",
+      "dependencies": [
+        "react-resizable-panels",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/resizable.tsx",
+          "target": "components/ui/resizable.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "separator",
       "type": "registry:ui",
       "title": "Separator (Base UI)",

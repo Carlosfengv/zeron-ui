@@ -13,6 +13,7 @@ const commonLoaders: Record<AppLocale, Loader> = {
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
     home: () => import("@docs/content/en/home.json"),
+    "blocks/agent-trace-01": () => import("@docs/content/en/blocks/agent-trace-01.json"),
     "blocks/cluster-environment-detail-01": () => import("@docs/content/en/blocks/cluster-environment-detail-01.json"),
     "blocks/cluster-environment-list-01": () => import("@docs/content/en/blocks/cluster-environment-list-01.json"),
     "blocks/mcp-detail-01": () => import("@docs/content/en/blocks/mcp-detail-01.json"),
@@ -42,6 +43,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "components/metric-card": () => import("@docs/content/en/components/metric-card.json"),
     "components/badge-overflow": () => import("@docs/content/en/components/badge-overflow.json"),
     "components/radio-group": () => import("@docs/content/en/components/radio-group.json"),
+    "components/resizable": () => import("@docs/content/en/components/resizable.json"),
     "components/color-picker": () => import("@docs/content/en/components/color-picker.json"),
     "components/popover": () => import("@docs/content/en/components/popover.json"),
     "components/dropdown": () => import("@docs/content/en/components/dropdown.json"),
@@ -81,6 +83,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   },
   "zh-CN": {
     home: () => import("@docs/content/zh-CN/home.json"),
+    "blocks/agent-trace-01": () => import("@docs/content/zh-CN/blocks/agent-trace-01.json"),
     "blocks/cluster-environment-detail-01": () => import("@docs/content/zh-CN/blocks/cluster-environment-detail-01.json"),
     "blocks/cluster-environment-list-01": () => import("@docs/content/zh-CN/blocks/cluster-environment-list-01.json"),
     "blocks/mcp-detail-01": () => import("@docs/content/zh-CN/blocks/mcp-detail-01.json"),
@@ -110,6 +113,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "components/metric-card": () => import("@docs/content/zh-CN/components/metric-card.json"),
     "components/badge-overflow": () => import("@docs/content/zh-CN/components/badge-overflow.json"),
     "components/radio-group": () => import("@docs/content/zh-CN/components/radio-group.json"),
+    "components/resizable": () => import("@docs/content/zh-CN/components/resizable.json"),
     "components/color-picker": () => import("@docs/content/zh-CN/components/color-picker.json"),
     "components/popover": () => import("@docs/content/zh-CN/components/popover.json"),
     "components/dropdown": () => import("@docs/content/zh-CN/components/dropdown.json"),

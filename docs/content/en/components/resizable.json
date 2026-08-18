@@ -1,0 +1,17 @@
+{
+  "resizableDoc": {
+    "description": "Accessible split-pane layouts with pointer and keyboard resizing.",
+    "basic": "Basic",
+    "primary": "Primary content",
+    "inspector": "Inspector",
+    "apiReference": "API Reference",
+    "orientation": "The resize axis. Horizontal is the default.",
+    "defaultLayout": "An initial layout map, useful when restoring a saved workspace.",
+    "layoutChanged": "Called after a completed pointer or keyboard resize.",
+    "defaultSize": "Initial panel size. Numbers are pixels; strings can use percentages or CSS units.",
+    "minSize": "Minimum panel size accepted by the resize interaction.",
+    "maxSize": "Maximum panel size accepted by the resize interaction.",
+    "withHandle": "Shows a quiet visual grip while keeping the full separator hit target.",
+    "doubleClick": "Set true to prevent double-clicking the separator from resetting its panels."
+  }
+}

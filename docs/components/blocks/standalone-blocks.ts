@@ -1,4 +1,5 @@
 export const standaloneBlockSlugs = [
+  "agent-trace-01",
   "cluster-environment-detail-01",
   "cluster-environment-list-01",
   "mcp-detail-01",

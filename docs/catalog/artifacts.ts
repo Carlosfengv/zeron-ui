@@ -33,6 +33,11 @@ export interface ArtifactEntry {
  */
 export const artifactCatalog: readonly ArtifactEntry[] = [
   {
+    slug: "agent-trace-01", registryName: "agent-trace-01",
+    title: "Agent Trace", description: "A turn-aware agent execution trace with local JSON upload and raw-record inspection.",
+    kind: "block", product: "shared", domains: ["ai agent", "observability"], patterns: ["trace", "timeline", "debugging"], searchTerms: ["agent", "trace", "tool call", "message", "轨迹", "调用链", "消息"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
+  },
+  {
     slug: "provider-create-form-01", registryName: "provider-create-form-01",
     title: "Provider Create Flow", description: "A guided provider setup with credential validation, model discovery and a final review.",
     kind: "flow", product: "zentrix", domains: ["model provider", "configuration"], patterns: ["wizard", "validation"], searchTerms: ["provider", "create", "模型服务商", "创建流程"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,

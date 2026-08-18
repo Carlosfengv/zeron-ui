@@ -6,6 +6,7 @@ export type DocPageModule = { default: ComponentType };
 export type DocPageLoader = () => Promise<DocPageModule>;
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "blocks/agent-trace-01": () => import("@docs/pages/blocks/agent-trace-01/page"),
   "blocks/cluster-environment-detail-01": () => import("@docs/pages/blocks/cluster-environment-detail-01/page"),
   "blocks/cluster-environment-list-01": () => import("@docs/pages/blocks/cluster-environment-list-01/page"),
   "blocks/mcp-detail-01": () => import("@docs/pages/blocks/mcp-detail-01/page"),
@@ -58,6 +59,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/page-layout": () => import("@docs/pages/components/page-layout/page"),
   "components/popover": () => import("@docs/pages/components/popover/page"),
   "components/radio-group": () => import("@docs/pages/components/radio-group/page"),
+  "components/resizable": () => import("@docs/pages/components/resizable/page"),
   "components/scrollbars": () => import("@docs/pages/components/scrollbars/page"),
   "components/select": () => import("@docs/pages/components/select/page"),
   "components/separator": () => import("@docs/pages/components/separator/page"),

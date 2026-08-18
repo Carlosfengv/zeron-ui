@@ -8,7 +8,7 @@ describe("business template catalog", () => {
     const registryNames = new Set(blockCatalog.map(({ name }) => name));
     const artifactRegistryNames = artifactCatalog.map(({ registryName }) => registryName);
 
-    expect(artifactCatalog).toHaveLength(14);
+    expect(artifactCatalog).toHaveLength(15);
     expect(new Set(artifactRegistryNames).size).toBe(artifactCatalog.length);
     expect(new Set(artifactRegistryNames)).toEqual(registryNames);
   });

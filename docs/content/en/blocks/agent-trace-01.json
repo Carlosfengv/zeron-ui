@@ -1,0 +1,8 @@
+{
+  "agentTraceBlock": {
+    "title": "Agent Trace 1",
+    "description": "A local, turn-aware viewer for agent messages, tool calls, and results from a real JSON payload.",
+    "guidance": "Data input",
+    "guidanceBody": "Pass a DSH-style event log, a { events } or { messages } envelope, or a simple role/content array through data. The built-in upload control reads JSON only in the browser; use onDataChange when the host needs to own the imported payload."
+  }
+}

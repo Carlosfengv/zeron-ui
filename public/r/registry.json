@@ -259,10 +259,10 @@
           "border-subtle": "rgb(255 255 255 / 0.05)",
           "input": "#404040",
           "input-hover": "rgb(245 245 245 / 0.24)",
-          "danger-border": "#FC4932",
+          "danger-border": "#FCA5A5",
           "warning-border": "#FF9314",
           "success-border": "#55C779",
-          "info-border": "#1483FD",
+          "info-border": "#60A5FA",
           "neutral-status-border": "#8B9095",
           "focus-ring": "#6088E8",
           "hover": "rgb(220 227 239 / 0.08)",
@@ -1705,6 +1705,27 @@
       ]
     },
     {
+      "name": "resizable",
+      "type": "registry:ui",
+      "title": "Resizable",
+      "description": "Accessible, keyboard-operable resizable panels powered by react-resizable-panels.",
+      "dependencies": [
+        "react-resizable-panels",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/resizable.tsx",
+          "target": "components/ui/resizable.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "separator",
       "type": "registry:ui",
       "title": "Separator (Base UI)",
@@ -2063,6 +2084,47 @@
           "path": "packages/ui/src/components/top-nav.tsx",
           "type": "registry:ui",
           "target": "components/ui/top-nav.tsx"
+        }
+      ]
+    },
+    {
+      "name": "agent-trace-01",
+      "type": "registry:block",
+      "title": "Agent Trace",
+      "description": "A turn-aware trace viewer that projects agent messages, tool calls, and results from uploaded JSON.",
+      "categories": [
+        "application",
+        "agent",
+        "observability"
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/chat-message.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/info-item.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/resizable.json",
+        "https://zeron-ui.vercel.app/r/scroll-area.json",
+        "https://zeron-ui.vercel.app/r/table.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/agent-trace.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/agent-trace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/index.ts"
         }
       ]
     },

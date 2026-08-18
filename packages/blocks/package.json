@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./catalog": "./src/catalog.ts",
+    "./agent-trace-01": "./src/application/agent-trace-01/index.ts",
     "./provider-create-form-01": "./src/application/provider-create-form-01/index.ts",
     "./resource-catalog-01": "./src/application/resource-catalog-01/index.ts",
     "./mcp-detail-01": "./src/application/mcp-detail-01/index.ts",

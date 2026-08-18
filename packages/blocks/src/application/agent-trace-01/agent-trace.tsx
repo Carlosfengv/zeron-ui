@@ -1,0 +1,640 @@
+"use client";
+
+import { Children, Fragment, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentPropsWithoutRef, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { WebhookIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Badge, type BadgeColor } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { ChatMessage } from "@zeron/ui/chat-message";
+import { InfoItem, InfoItemContent, InfoItemDescription, InfoItemGroup, InfoItemTitle } from "@zeron/ui/info-item";
+import { Input } from "@zeron/ui/input";
+import { PageBody, PageContent, PageHeader, PageHeaderContent, PageLayout, PageTitle } from "@zeron/ui/page-layout";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@zeron/ui/resizable";
+import { ScrollArea } from "@zeron/ui/scroll-area";
+import { useIcon, type IconComponentProps, type IconName } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@zeron/ui/table";
+import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
+import { Tooltip } from "@zeron/ui/tooltip";
+
+type JsonRecord = Record<string, unknown>;
+type TraceKind = "user" | "assistant" | "tool" | "system" | "context" | "event";
+type AgentTraceView = "chat" | "trace";
+type TraceDisplayControl = "duration" | "turns" | "calls";
+
+/** Keeps the server and first client render identical when icon variants load on the client. */
+function TraceIcon({ name, size = 14, strokeWidth = 1.5, ...props }: { name: IconName } & IconComponentProps) {
+  const Icon = useIcon(name);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => setHydrated(true), []);
+
+  return hydrated ? <Icon size={size} strokeWidth={strokeWidth} aria-hidden="true" {...props} /> : <span aria-hidden="true" className="inline-block size-3.5" />;
+}
+
+const DurationTabIcon = (props: IconComponentProps) => <TraceIcon name="clock" {...props} />;
+const TurnsTabIcon = (props: IconComponentProps) => <TraceIcon name="list" {...props} />;
+const CallsTabIcon = (props: IconComponentProps) => <HugeiconsIcon icon={WebhookIcon} aria-hidden="true" {...props} />;
+
+export interface AgentTraceRow {
+  id: string;
+  kind: TraceKind;
+  label: string;
+  preview: string;
+  raw: unknown;
+  seq?: number;
+  step?: number;
+  callId?: string;
+  result?: string;
+  status?: "running" | "success" | "error";
+  /** Recorded event time, when the uploaded log carries one. */
+  time?: number;
+  /** Measured call duration. Tool calls receive this from their matching result. */
+  durationMs?: number;
+  input?: number;
+  output?: number;
+  think?: number;
+}
+
+export interface AgentTraceTurn {
+  id: string;
+  label: string;
+  status?: "completed" | "error" | "aborted" | "running";
+  /** Boundary timestamps are retained so the Turn ledger can show total elapsed time. */
+  startedAt?: number;
+  endedAt?: number;
+  groups: readonly { id: string; label: string; rows: readonly AgentTraceRow[] }[];
+}
+
+export interface AgentTraceProps extends Omit<ComponentPropsWithoutRef<"section">, "children"> {
+  /** A DSH-style session log, a `{ events }` / `{ messages }` envelope, or an array of agent messages. */
+  data?: unknown;
+  /** Enables the built-in local JSON picker. No file content leaves the browser. */
+  allowUpload?: boolean;
+  /** Called after a valid local JSON file has been parsed. Use with `data` to control the component. */
+  onDataChange?: (data: unknown) => void;
+  /** Short label displayed above the trace. */
+  title?: string;
+  /** Initial workspace surface. Trace remains the default for backwards compatibility. */
+  defaultView?: AgentTraceView;
+}
+
+function record(value: unknown): JsonRecord | null {
+  return value !== null && typeof value === "object" && !Array.isArray(value) ? value as JsonRecord : null;
+}
+
+function numberValue(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function plainText(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (Array.isArray(value)) return value.map(plainText).filter(Boolean).join("\n");
+  const item = record(value);
+  if (!item) return "";
+  for (const key of ["text", "content", "output", "input", "reasoning", "thinking", "arguments"]) {
+    if (item[key] !== undefined) {
+      const text = plainText(item[key]);
+      if (text) return text;
+    }
+  }
+  if (item.type === "image" || item.image_url !== undefined) return "[image]";
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return "[unserializable value]";
+  }
+}
+
+function preview(value: unknown, fallback: string): string {
+  const text = plainText(value).replace(/\s+/g, " ").trim();
+  if (!text) return fallback;
+  return text.length > 180 ? `${text.slice(0, 177)}…` : text;
+}
+
+function envelopeEntries(payload: unknown): readonly unknown[] {
+  if (Array.isArray(payload)) return payload;
+  const root = record(payload);
+  if (!root) return [];
+  if (Array.isArray(root.events)) return root.events;
+  if (Array.isArray(root.messages)) return root.messages;
+  const data = record(root.data);
+  if (data && Array.isArray(data.events)) return data.events;
+  if (data && Array.isArray(data.messages)) return data.messages;
+  return [root];
+}
+
+function eventTurn(item: JsonRecord): number | undefined {
+  const data = record(item.data);
+  return numberValue(item.turn) ?? numberValue(data?.turn);
+}
+
+function eventStep(item: JsonRecord): number | undefined {
+  const data = record(item.data);
+  return numberValue(item.step) ?? numberValue(data?.step);
+}
+
+function eventData(item: JsonRecord): JsonRecord {
+  return record(item.data) ?? item;
+}
+
+function eventTime(item: JsonRecord): number | undefined {
+  const data = record(item.data);
+  for (const value of [item.time, item.timestamp, item.createdAt, data?.time, data?.timestamp]) {
+    const number = numberValue(value);
+    if (number !== undefined) return number;
+    if (typeof value === "string") {
+      const parsed = Date.parse(value);
+      if (Number.isFinite(parsed)) return parsed;
+    }
+  }
+  return undefined;
+}
+
+function usageFields(value: unknown): Pick<AgentTraceRow, "input" | "output" | "think"> {
+  const usage = record(value);
+  if (!usage) return {};
+  const input = numberValue(usage.inputTokens) ?? numberValue(usage.input);
+  const output = numberValue(usage.outputTokens) ?? numberValue(usage.output);
+  const think = numberValue(usage.reasoningTokens) ?? numberValue(usage.think);
+  return {
+    ...(input === undefined ? {} : { input }),
+    ...(output === undefined ? {} : { output }),
+    ...(think === undefined ? {} : { think }),
+  };
+}
+
+function sourceType(item: JsonRecord): string {
+  if (typeof item.type === "string") return item.type;
+  if (typeof item.role === "string") return `${item.role}/message`;
+  return "event";
+}
+
+function statusFromReason(value: unknown): AgentTraceTurn["status"] {
+  const reason = record(value);
+  const kind = typeof reason?.kind === "string" ? reason.kind : "";
+  if (kind === "completed") return "completed";
+  if (kind === "error" || kind === "max-tokens") return "error";
+  if (kind === "aborted" || kind === "blocked" || kind === "interrupted") return "aborted";
+  return "running";
+}
+
+/**
+ * Projects real agent messages into the small, portable ledger consumed by this block.
+ * It understands the DSH session-event vocabulary and also accepts common `{ role, content }`
+ * message arrays. Tool results are joined back to their calls through `callId`.
+ */
+export function normalizeAgentTracePayload(payload: unknown): readonly AgentTraceTurn[] {
+  const entries = envelopeEntries(payload).map((value, index) => ({
+    item: record(value),
+    index,
+  })).filter((entry): entry is { item: JsonRecord; index: number } => entry.item !== null);
+
+  const completedMessages = new Set(entries.flatMap(({ item }) => {
+    const type = sourceType(item);
+    const turn = eventTurn(item);
+    const step = eventStep(item);
+    return type === "assistant/message" && turn !== undefined && step !== undefined ? [`${turn}:${step}`] : [];
+  }));
+  const upcomingTurns: Array<number | undefined> = [];
+  let followingTurn: number | undefined;
+  for (let index = entries.length - 1; index >= 0; index--) {
+    upcomingTurns[index] = followingTurn;
+    const turn = eventTurn(entries[index].item);
+    if (turn !== undefined) followingTurn = turn;
+  }
+
+  const turns = new Map<string, { label: string; status?: AgentTraceTurn["status"]; startedAt?: number; endedAt?: number; groups: Map<string, { label: string; rows: AgentTraceRow[] }> }>();
+  const calls = new Map<string, AgentTraceRow>();
+  const ensureGroup = (turn: number | undefined, step: number | undefined) => {
+    const key = turn === undefined ? "prelude" : String(turn);
+    let traceTurn = turns.get(key);
+    if (!traceTurn) {
+      traceTurn = { label: turn === undefined ? "准备阶段" : `Turn ${turn}`, groups: new Map() };
+      turns.set(key, traceTurn);
+    }
+    const groupKey = step === undefined ? "messages" : `step:${step}`;
+    let group = traceTurn.groups.get(groupKey);
+    if (!group) {
+      group = { label: step === undefined ? "Messages" : `Step ${step}`, rows: [] };
+      traceTurn.groups.set(groupKey, group);
+    }
+    return { key, traceTurn, group };
+  };
+  const add = (turn: number | undefined, step: number | undefined, row: AgentTraceRow) => {
+    ensureGroup(turn, step).group.rows.push(row);
+  };
+
+  for (const { item, index } of entries) {
+    const type = sourceType(item);
+    const data = eventData(item);
+    const seq = numberValue(item.seq) ?? index + 1;
+    const directTurn = eventTurn(item);
+    const turn = directTurn ?? ((type === "user/message" || type === "request/header") ? upcomingTurns[index] : undefined);
+    const step = eventStep(item);
+    const id = `trace:${seq}:${type}`;
+    const time = eventTime(item);
+
+    if (type === "turn/end") {
+      const traceTurn = ensureGroup(directTurn, undefined).traceTurn;
+      traceTurn.status = statusFromReason(data.reason);
+      traceTurn.endedAt = time;
+      continue;
+    }
+    if (type === "turn/start") {
+      ensureGroup(directTurn, undefined).traceTurn.startedAt = time;
+      continue;
+    }
+    if (type === "step/start" || type === "step/end" || type === "assistant/chunk" && completedMessages.has(`${turn}:${step}`)) continue;
+    if (type === "request/header") {
+      const header = record(data.header);
+      const tools = Array.isArray(header?.tools) ? header.tools.length : 0;
+      add(turn, step, { id, kind: "system", label: "Request context", preview: tools ? `System prompt · ${tools} tools available` : "System prompt updated", raw: item, seq, step, time });
+      continue;
+    }
+    if (type === "user/message" || type === "user") {
+      add(turn, step, { id, kind: "user", label: "User", preview: preview(data.content ?? item.content, "User message"), raw: item, seq, step, time });
+      continue;
+    }
+    if (type === "assistant/message" || type === "assistant/chunk" || type === "assistant") {
+      const message = record(data.message) ?? data;
+      add(turn, step, { id, kind: "assistant", label: type === "assistant/chunk" ? "Assistant · streaming" : "Assistant", preview: preview(message.content ?? message.text ?? item.content, "Assistant response"), raw: item, seq, step, time, status: type === "assistant/chunk" ? "running" : "success", ...usageFields(data.usage ?? message.usage) });
+      continue;
+    }
+    if (type === "tool/call") {
+      const callId = typeof data.callId === "string" ? data.callId : `call:${seq}`;
+      const toolName = typeof data.name === "string" ? data.name : "Tool call";
+      const row: AgentTraceRow = { id, kind: "tool", label: toolName, preview: preview(data.arguments, "No arguments"), raw: item, seq, step, time, callId, status: "running" };
+      calls.set(callId, row);
+      add(turn, step, row);
+      continue;
+    }
+    if (type === "tool/result" || type === "tool") {
+      const message = record(data.message) ?? data;
+      const callId = typeof message.callId === "string" ? message.callId : typeof data.callId === "string" ? data.callId : undefined;
+      const result = preview(message.content ?? message.output ?? data.content, "Tool completed");
+      const errored = data.error !== undefined || item.error !== undefined || item.status === "error";
+      const paired = callId ? calls.get(callId) : undefined;
+      if (paired) {
+        paired.result = result;
+        paired.status = errored ? "error" : "success";
+        paired.raw = { call: paired.raw, result: item };
+        if (time !== undefined && paired.time !== undefined) paired.durationMs = Math.max(0, time - paired.time);
+      } else {
+        add(turn, step, { id, kind: "tool", label: "Tool result", preview: result, raw: item, seq, step, time, callId, status: errored ? "error" : "success" });
+      }
+      continue;
+    }
+    if (type === "system/message" || type === "system") {
+      add(turn, step, { id, kind: "system", label: "System", preview: preview(data.content ?? item.content, "System message"), raw: item, seq, step, time });
+      continue;
+    }
+    if (type === "context/message" || type === "context") {
+      add(turn, step, { id, kind: "context", label: "Context", preview: preview(data.content ?? item.content, "Injected context"), raw: item, seq, step, time });
+    }
+  }
+
+  return [...turns.entries()].map(([id, turn]) => ({
+    id,
+    label: turn.label,
+    ...(turn.status === undefined ? {} : { status: turn.status }),
+    ...(turn.startedAt === undefined ? {} : { startedAt: turn.startedAt }),
+    ...(turn.endedAt === undefined ? {} : { endedAt: turn.endedAt }),
+    groups: [...turn.groups.entries()].map(([groupId, group]) => ({ id: groupId, label: group.label, rows: group.rows })),
+  })).filter((turn) => turn.groups.some((group) => group.rows.length > 0));
+}
+
+export const defaultAgentTracePayload = {
+  events: [
+    { seq: 1, time: 1722506400000, type: "turn/start", data: { turn: 1 } },
+    { seq: 2, time: 1722506400200, type: "user/message", data: { id: "msg_01", content: [{ type: "text", text: "检查最近部署为什么导致接口延迟升高，并给出缓解建议。" }], source: { kind: "user" } } },
+    { seq: 3, time: 1722506400300, type: "request/header", data: { header: { system: "You are a production operations assistant.", tools: [{ name: "search_logs" }, { name: "get_deployment" }] }, reason: "initial" } },
+    { seq: 4, time: 1722506400400, type: "assistant/message", data: { turn: 1, step: 1, message: { content: [{ type: "text", text: "我先对照部署窗口和错误日志，确认延迟的集中位置。" }], toolCalls: [{ id: "call_logs", name: "search_logs" }] } } },
+    { seq: 5, time: 1722506400500, type: "tool/call", data: { turn: 1, step: 1, callId: "call_logs", name: "search_logs", arguments: "{\"query\":\"p95 latency after deploy\",\"window\":\"30m\"}" } },
+    { seq: 6, time: 1722506401200, type: "tool/result", data: { turn: 1, step: 1, message: { callId: "call_logs", content: [{ type: "text", text: "p95 latency rose from 240 ms to 1.8 s on /v1/orders. 68% of slow requests wait on inventory-service." }] } } },
+    { seq: 7, time: 1722506401400, type: "assistant/message", data: { turn: 1, step: 2, message: { content: [{ type: "text", text: "延迟集中在 inventory-service，我再确认这次部署是否修改了连接池或重试策略。" }] } } },
+    { seq: 8, time: 1722506401500, type: "tool/call", data: { turn: 1, step: 2, callId: "call_deploy", name: "get_deployment", arguments: "{\"service\":\"inventory-service\",\"environment\":\"production\"}" } },
+    { seq: 9, time: 1722506401900, type: "tool/result", data: { turn: 1, step: 2, message: { callId: "call_deploy", content: [{ type: "text", text: "v2024.08.01 changed the connection pool limit from 80 to 12." }] } } },
+    { seq: 10, time: 1722506402100, type: "assistant/message", data: { turn: 1, step: 3, message: { content: [{ type: "text", text: "根因是连接池上限下降造成 inventory-service 排队。建议立即回滚到 80，并在恢复后为连接池饱和度设置告警。" }] }, usage: { inputTokens: 2180, outputTokens: 154 } } },
+    { seq: 11, time: 1722506402200, type: "turn/end", data: { turn: 1, reason: { kind: "completed" } } },
+  ],
+} as const;
+
+const kindStyle: Record<TraceKind, { dot: string; lane: number; label: string }> = {
+  user: { dot: "bg-fg-brand", lane: 0, label: "USER" },
+  assistant: { dot: "bg-fg-success", lane: 1, label: "ASSISTANT" },
+  tool: { dot: "bg-fg-warning", lane: 2, label: "TOOL" },
+  system: { dot: "bg-fg-muted", lane: 0, label: "SYSTEM" },
+  context: { dot: "bg-fg-info", lane: 0, label: "CONTEXT" },
+  event: { dot: "bg-fg-subtle", lane: 0, label: "EVENT" },
+};
+
+const kindBadgeColor: Record<TraceKind, BadgeColor> = {
+  user: "blue",
+  assistant: "green",
+  tool: "amber",
+  system: "gray",
+  context: "indigo",
+  event: "gray",
+};
+
+type InspectorTab = "summary" | "input" | "output" | "raw";
+type TimelineRange = { start: number; end: number };
+
+const desktopQuery = "(min-width: 1024px)";
+
+function subscribeToDesktopLayout(listener: () => void) {
+  const media = window.matchMedia(desktopQuery);
+  media.addEventListener("change", listener);
+  return () => media.removeEventListener("change", listener);
+}
+
+function desktopLayoutSnapshot() {
+  return window.matchMedia(desktopQuery).matches;
+}
+
+/** Keeps mobile Trace content stacked rather than squeezing a horizontal split pane. */
+function useDesktopLayout() {
+  return useSyncExternalStore(subscribeToDesktopLayout, desktopLayoutSnapshot, () => false);
+}
+
+function TraceSplitLayout({ desktop, children }: { desktop: boolean; children: ReactNode }) {
+  const panels = Children.toArray(children);
+
+  if (!desktop || panels.length !== 2) {
+    return <div className="flex min-h-0 flex-1 flex-col">{children}</div>;
+  }
+
+  return (
+    <ResizablePanelGroup
+      id="agent-trace-layout"
+      orientation="horizontal"
+      resizeTargetMinimumSize={{ fine: 12, coarse: 24 }}
+      className="min-h-0 flex-1"
+    >
+      <ResizablePanel id="agent-trace-ledger" defaultSize="68%" minSize="28rem">
+        <div className="size-full min-h-0 min-w-0 [&>[data-slot=scroll-area]]:size-full">
+          {panels[0]}
+        </div>
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel id="agent-trace-inspector" defaultSize="32%" minSize="18rem" maxSize="30rem">
+        {panels[1]}
+      </ResizablePanel>
+    </ResizablePanelGroup>
+  );
+}
+
+function rawJson(value: unknown): string {
+  try { return JSON.stringify(value, null, 2); } catch { return String(value); }
+}
+
+function compactNumber(value: number | undefined): string {
+  if (value === undefined) return "—";
+  return Intl.NumberFormat(undefined, { notation: "compact", maximumFractionDigits: 1 }).format(value);
+}
+
+function formatDuration(milliseconds: number | undefined): string {
+  if (milliseconds === undefined) return "—";
+  if (milliseconds < 1000) return `${Math.round(milliseconds)} ms`;
+  return `${(milliseconds / 1000).toFixed(milliseconds < 10_000 ? 2 : 1)} s`;
+}
+
+function turnMetrics(turn: AgentTraceTurn): Pick<AgentTraceRow, "input" | "output" | "think" | "durationMs"> {
+  const rows = turn.groups.flatMap((group) => group.rows);
+  const assistantRows = rows.filter((row) => row.kind === "assistant");
+  const total = (key: "input" | "output" | "think") => {
+    const values = assistantRows.flatMap((row) => row[key] === undefined ? [] : [row[key]]);
+    return values.length ? values.reduce((sum, value) => sum + value, 0) : undefined;
+  };
+  const timedRows = rows.flatMap((row) => row.time === undefined ? [] : [{ start: row.time, end: row.time + (row.durationMs ?? 0) }]);
+  const startedAt = turn.startedAt ?? (timedRows.length ? Math.min(...timedRows.map((row) => row.start)) : undefined);
+  const endedAt = turn.endedAt ?? (timedRows.length ? Math.max(...timedRows.map((row) => row.end)) : undefined);
+
+  return {
+    ...(total("input") === undefined ? {} : { input: total("input") }),
+    ...(total("output") === undefined ? {} : { output: total("output") }),
+    ...(total("think") === undefined ? {} : { think: total("think") }),
+    ...(startedAt === undefined || endedAt === undefined ? {} : { durationMs: Math.max(0, endedAt - startedAt) }),
+  };
+}
+
+function formatTime(value: number | undefined): string {
+  if (value === undefined) return "—";
+  return new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit", fractionalSecondDigits: 3 });
+}
+
+function rowInput(row: AgentTraceRow): string {
+  if (row.kind === "tool") return row.preview;
+  const source = record(row.raw);
+  const data = source ? eventData(source) : null;
+  return preview(data?.content ?? data?.message ?? row.preview, row.preview);
+}
+
+function rowOutput(row: AgentTraceRow): string {
+  return row.result ?? (row.kind === "assistant" ? row.preview : "No output recorded.");
+}
+
+function ChatTranscript({ rows }: { rows: readonly AgentTraceRow[] }) {
+  const messages = rows.filter((row) => row.kind !== "context" && row.kind !== "event");
+
+  if (messages.length === 0) {
+    return <div className="flex h-full items-center justify-center p-6 text-body text-fg-muted">No conversation records found in this JSON.</div>;
+  }
+
+  return (
+    <ScrollArea className="h-full" viewportClassName="h-full" orientation="vertical">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4 sm:p-6">
+        {messages.map((row) => {
+          if (row.kind === "user") {
+            return <ChatMessage key={row.id} from="user" time={formatTime(row.time)}>{row.preview}</ChatMessage>;
+          }
+          if (row.kind === "assistant") {
+            return <ChatMessage key={row.id} from="assistant"><div><p>{row.preview}</p>{(row.input !== undefined || row.output !== undefined || row.think !== undefined) && <p className="mt-2 text-label tabular-nums text-fg-subtle">Input {compactNumber(row.input)} · Output {compactNumber(row.output)} · Think {compactNumber(row.think)}</p>}</div></ChatMessage>;
+          }
+          if (row.kind === "tool") {
+            return <section key={row.id} className="self-start max-w-[86%] rounded-lg border border-border bg-surface-raised px-3 py-2"><div className="flex flex-wrap items-center gap-2"><Badge size="sm" color={row.status === "error" ? "red" : "amber"}>{row.label}</Badge><span className="text-label tabular-nums text-fg-subtle">{formatDuration(row.durationMs)}</span></div><pre className="mt-2 max-h-28 overflow-auto whitespace-pre-wrap break-words text-label leading-5 text-fg-muted">{row.preview}</pre>{row.result && <p className={cn("mt-2 border-t border-border pt-2 text-label leading-5", row.status === "error" ? "text-fg-danger" : "text-fg-default")}>{row.result}</p>}</section>;
+          }
+          return <p key={row.id} className="self-center text-label text-fg-subtle">{row.label} · {row.preview}</p>;
+        })}
+      </div>
+    </ScrollArea>
+  );
+}
+
+function InspectorInfoItem({ children, title }: { children: ReactNode; title: string }) {
+  return <InfoItem><InfoItemContent><InfoItemTitle>{title}</InfoItemTitle><InfoItemDescription>{children}</InfoItemDescription></InfoItemContent></InfoItem>;
+}
+
+/** A high-fidelity, browser-local replica of DSH's Trajectory ledger. */
+export function AgentTrace({
+  allowUpload = true,
+  className,
+  data,
+  defaultView = "trace",
+  onDataChange,
+  title = "Trajectory",
+  ...props
+}: AgentTraceProps) {
+  const [localData, setLocalData] = useState<unknown>(defaultAgentTracePayload);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [durationMode, setDurationMode] = useState(true);
+  const [collapsedTurns, setCollapsedTurns] = useState<Set<string>>(new Set());
+  const [hideCalls, setHideCalls] = useState(false);
+  const [inspectorTab, setInspectorTab] = useState<InspectorTab>("summary");
+  const [range, setRange] = useState<TimelineRange | null>(null);
+  const [view, setView] = useState<AgentTraceView>(defaultView);
+  const [activeDisplayControl, setActiveDisplayControl] = useState<TraceDisplayControl>("duration");
+  const desktopLayout = useDesktopLayout();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const pointerStart = useRef<number | null>(null);
+  const payload = data ?? localData;
+  const turns = useMemo(() => normalizeAgentTracePayload(payload), [payload]);
+  const rows = useMemo(() => turns.flatMap((turn) => turn.groups.flatMap((group) => group.rows)), [turns]);
+  const selected = rows.find((row) => row.id === selectedId) ?? null;
+  const times = rows.flatMap((row) => row.time === undefined ? [] : [row.time]);
+  const domainStart = times.length ? Math.min(...times) : 0;
+  const domainEnd = times.length ? Math.max(...times, domainStart + 1) : 1;
+  const domainDuration = Math.max(1, domainEnd - domainStart);
+  const query = search.trim().toLocaleLowerCase();
+  const allTurnsCollapsed = turns.length > 0 && turns.every((turn) => collapsedTurns.has(turn.id));
+
+  const importFile = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const next = JSON.parse(await file.text()) as unknown;
+      if (envelopeEntries(next).length === 0) throw new Error("No messages or events were found.");
+      setLocalData(next);
+      onDataChange?.(next);
+      setSelectedId(null);
+      setRange(null);
+      setError(null);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Unable to read that JSON file.");
+    }
+  };
+
+  const pointerTime = (clientX: number) => {
+    const rect = timelineRef.current?.getBoundingClientRect();
+    if (!rect) return domainStart;
+    const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
+    return domainStart + domainDuration * fraction;
+  };
+  const beginRange = (event: ReactPointerEvent<HTMLDivElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    const start = pointerTime(event.clientX);
+    pointerStart.current = start;
+    setRange({ start, end: start });
+  };
+  const moveRange = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (pointerStart.current === null) return;
+    setRange({ start: pointerStart.current, end: pointerTime(event.clientX) });
+  };
+  const endRange = () => {
+    if (range && Math.abs(range.end - range.start) < domainDuration * 0.012) setRange(null);
+    pointerStart.current = null;
+  };
+
+  return (
+    <PageLayout
+      className={cn("min-h-[42rem]", className)}
+      {...props}
+    >
+      <PageHeader>
+        <PageHeaderContent>
+          <PageTitle className="truncate text-body font-semibold">{title}</PageTitle>
+        </PageHeaderContent>
+      </PageHeader>
+
+      <PageContent>
+        <PageBody className="flex max-w-none flex-col overflow-hidden">
+          <Tabs value={view} onValueChange={(value) => setView(value as AgentTraceView)} variant="pill" color="neutral" className="flex min-h-0 flex-1 flex-col">
+            <div className="flex shrink-0 items-center justify-between border-b border-border">
+              <TabsList className="!bg-transparent !rounded-none px-3 py-2" aria-label="Agent workspace">
+                <TabItem value="chat" label="Chat" />
+                <TabItem value="trace" label="Trace" />
+              </TabsList>
+              <div className="flex shrink-0 items-center gap-1 px-3 py-2">
+                <Tooltip content="Load sample"><Button type="button" size="md" variant="tertiary" iconOnly aria-label="Load sample" className="[&_svg]:!size-4" onClick={() => { setLocalData(defaultAgentTracePayload); onDataChange?.(defaultAgentTracePayload); setError(null); setSelectedId(null); }}><TraceIcon name="rotate-ccw" /></Button></Tooltip>
+                {allowUpload && <><input ref={inputRef} className="sr-only" type="file" accept="application/json,.json" onChange={(event) => { void importFile(event.target.files?.[0]); event.currentTarget.value = ""; }} /><Tooltip content="Upload JSON"><Button type="button" size="md" variant="tertiary" iconOnly aria-label="Upload JSON" className="[&_svg]:!size-4" onClick={() => inputRef.current?.click()}><TraceIcon name="upload" /></Button></Tooltip></>}
+              </div>
+            </div>
+            <TabPanel value="chat" className="min-h-0 flex-1">
+              <ChatTranscript rows={rows} />
+            </TabPanel>
+            <TabPanel value="trace" className="flex min-h-0 flex-1 flex-col">
+              <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-raised px-3 py-2">
+                <Tabs value={activeDisplayControl} onValueChange={(value) => setActiveDisplayControl(value as TraceDisplayControl)} variant="segment" color="neutral" aria-label="Trace display controls">
+                  <TabsList labelVisibility="active" className="my-0">
+                    <TabItem value="duration" icon={DurationTabIcon} label="Duration" onClick={() => setDurationMode((current) => !current)} />
+                    <TabItem value="turns" icon={TurnsTabIcon} label="Turns" onClick={() => setCollapsedTurns(allTurnsCollapsed ? new Set() : new Set(turns.map((turn) => turn.id)))} />
+                    <TabItem value="calls" icon={CallsTabIcon} label="Calls" onClick={() => setHideCalls((current) => !current)} />
+                  </TabsList>
+                </Tabs>
+                <label className="relative w-32 sm:w-40"><span className="sr-only">Search trace</span><span aria-hidden="true" className="pointer-events-none absolute left-2 top-1/2 z-content -translate-y-1/2 text-fg-subtle"><TraceIcon name="search" /></span><Input size="md" type="text" role="searchbox" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search trace" aria-label="Search trace" className={cn("pl-7", query && "pr-8")} />{query && <Button type="button" size="xs" variant="ghost" iconOnly aria-label="Clear trace search" onClick={() => setSearch("")} className="absolute right-1 top-1/2 z-content -translate-y-1/2"><TraceIcon name="x" /></Button>}</label>
+              </div>
+              {error && <p role="alert" className="border-b border-danger-border bg-danger-surface-subtle px-3 py-2 text-label text-fg-danger">{error}</p>}
+      <section className="grid shrink-0 grid-cols-[48px_minmax(0,1fr)] border-b border-border bg-surface-raised" aria-label="Trajectory overview">
+        <div className="relative border-r border-border text-[10px] text-fg-subtle"><span className="absolute right-1 top-1">Input</span><span className="absolute right-1 top-[20px]">Model</span><span className="absolute right-1 top-[35px]">Tools</span></div>
+        <div ref={timelineRef} onPointerDown={beginRange} onPointerMove={moveRange} onPointerUp={endRange} onPointerCancel={endRange} onContextMenu={(event) => { event.preventDefault(); setRange(null); }} className="relative h-[50px] cursor-crosshair overflow-hidden touch-none">
+          {range && <span className="absolute inset-y-0 bg-brand/10" style={{ left: `${(Math.min(range.start, range.end) - domainStart) / domainDuration * 100}%`, width: `${Math.abs(range.end - range.start) / domainDuration * 100}%` }} />}
+          {rows.map((row, index) => {
+            const style = kindStyle[row.kind];
+            const left = row.time === undefined ? index / Math.max(1, rows.length) * 100 : (row.time - domainStart) / domainDuration * 100;
+            const width = durationMode && row.durationMs ? Math.max(0.8, row.durationMs / domainDuration * 100) : Math.max(1.2, 86 / Math.max(1, rows.length));
+            const inRange = range === null || row.time === undefined || row.time >= Math.min(range.start, range.end) && row.time <= Math.max(range.start, range.end);
+            return <Tooltip key={row.id} content={<span className="block max-w-64 whitespace-pre-wrap">{style.label} · {row.label}{"\n"}{formatTime(row.time)} · {formatDuration(row.durationMs)}</span>}><button type="button" onClick={(event) => { event.stopPropagation(); setSelectedId(row.id); setInspectorTab("summary"); }} aria-label={`${style.label}: ${row.label}`} className={cn("absolute h-2 rounded-[2px] outline-none transition-opacity focus-visible:ring-1 focus-visible:ring-focus-ring", style.dot, selected?.id === row.id && "ring-1 ring-fg-default ring-offset-1 ring-offset-surface-raised", !inRange && "opacity-20")} style={{ top: `${7 + style.lane * 14}px`, left: `${Math.min(98.5, left)}%`, width: `${Math.min(100 - left, width)}%` }} /></Tooltip>;
+          })}
+        </div>
+      </section>
+
+      {turns.length === 0 ? <div className="flex min-h-48 flex-1 items-center justify-center text-body text-fg-muted">No renderable message records found in this JSON.</div> : <TraceSplitLayout desktop={desktopLayout}>
+        <ScrollArea className="min-h-0 min-w-0 flex-1" viewportClassName="h-full" orientation="both">
+          <Table className="w-full min-w-[720px] table-fixed border-collapse text-sm">
+            <colgroup><col className="w-12" /><col className="w-28" /><col /><col className="w-[4.5rem]" /><col className="w-[4.5rem]" /><col className="w-[4.5rem]" /><col className="w-[4.5rem]" /></colgroup>
+            <TableHeader className="sticky top-0 z-20 bg-surface-raised text-fg-subtle"><TableRow className="h-8 border-b border-border"><TableHead className="px-2 text-right text-sm font-medium">#</TableHead><TableHead className="px-2 text-left text-sm font-medium">Event</TableHead><TableHead className="px-2 text-left text-sm font-medium">Content</TableHead><TableHead className="px-2 text-right text-sm font-medium">Input</TableHead><TableHead className="px-2 text-right text-sm font-medium">Output</TableHead><TableHead className="px-2 text-right text-sm font-medium">Think</TableHead><TableHead className="px-2 text-right text-sm font-medium">Time</TableHead></TableRow></TableHeader>
+            <TableBody>{turns.map((turn) => {
+              const collapsed = collapsedTurns.has(turn.id);
+              const metrics = turnMetrics(turn);
+              return <Fragment key={turn.id}><TableRow className="sticky top-8 z-10 border-y border-border bg-surface-base"><TableCell colSpan={7} className="h-8 px-2"><button type="button" onClick={() => setCollapsedTurns((current) => { const next = new Set(current); if (next.has(turn.id)) next.delete(turn.id); else next.add(turn.id); return next; })} className="flex w-full items-center gap-2 text-left outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"><span className="text-fg-muted">{collapsed ? "▸" : "▾"}</span><span className="font-semibold text-fg-default">{turn.label}</span>{turn.status && <Badge size="sm" color={turn.status === "completed" ? "green" : turn.status === "error" ? "red" : "gray"}>{turn.status}</Badge>}<span className="ml-auto grid w-[18rem] grid-cols-4 text-right tabular-nums text-fg-subtle"><span title="Input">{compactNumber(metrics.input)}</span><span title="Output">{compactNumber(metrics.output)}</span><span title="Think">{compactNumber(metrics.think)}</span><span title="Time">{formatDuration(metrics.durationMs)}</span></span></button></TableCell></TableRow>
+                {!collapsed && turn.groups.map((group) => <Fragment key={`${turn.id}:${group.id}`}>
+                  <TableRow className="border-b border-border-subtle bg-surface-raised/60"><TableCell colSpan={7} className="h-7 px-2 text-xs font-normal text-fg-subtle"><span>{group.label}</span><span className="ml-2">{group.rows.length} record{group.rows.length === 1 ? "" : "s"}</span></TableCell></TableRow>
+                  {group.rows.filter((row) => !hideCalls || row.kind !== "tool").map((row) => {
+                    const style = kindStyle[row.kind];
+                    const match = !query || `${row.label} ${row.preview} ${row.result ?? ""} ${row.callId ?? ""}`.toLocaleLowerCase().includes(query);
+                    const inRange = range === null || row.time === undefined || row.time >= Math.min(range.start, range.end) && row.time <= Math.max(range.start, range.end);
+                    return <TableRow key={row.id} tabIndex={0} onClick={() => { setSelectedId(row.id); setInspectorTab("summary"); }} className={cn("h-9 cursor-pointer border-b border-border-subtle outline-none transition-colors hover:bg-hover focus-visible:ring-1 focus-visible:ring-focus-ring", selected?.id === row.id && "bg-active", (!match || !inRange) && "opacity-25")}>
+                      <TableCell className="px-2 text-right tabular-nums text-fg-subtle">{row.seq ? `#${row.seq}` : ""}</TableCell>
+                      <TableCell className="px-2"><Badge size="sm" color={kindBadgeColor[row.kind]}>{style.label}</Badge></TableCell>
+                      <TableCell className="px-2"><div className="flex min-w-0 items-center gap-2"><span className="shrink-0 font-medium text-fg-default">{row.label}</span><span className="truncate text-fg-muted">{row.preview}</span>{row.result && <span className={cn("truncate text-fg-subtle", row.status === "error" && "text-fg-danger")}>→ {row.result}</span>}</div></TableCell>
+                      <TableCell className="px-2 text-right tabular-nums text-fg-subtle">{row.kind === "assistant" ? compactNumber(row.input) : ""}</TableCell><TableCell className="px-2 text-right tabular-nums text-fg-subtle">{row.kind === "assistant" ? compactNumber(row.output) : ""}</TableCell><TableCell className="px-2 text-right tabular-nums text-fg-subtle">{row.kind === "assistant" ? compactNumber(row.think) : ""}</TableCell><TableCell className="px-2 text-right tabular-nums text-fg-subtle">{formatDuration(row.durationMs)}</TableCell>
+                    </TableRow>;
+                  })}
+                </Fragment>)}</Fragment>;
+            })}</TableBody>
+          </Table>
+        </ScrollArea>
+        {selected && <aside className="flex min-h-[18rem] w-full shrink-0 flex-col border-t border-border bg-surface-raised text-sm lg:h-full lg:border-l lg:border-t-0" aria-label="Record inspector">
+          <Tabs value={inspectorTab} onValueChange={(value) => setInspectorTab(value as InspectorTab)} variant="underline" color="neutral" className="flex min-h-0 flex-1 flex-col">
+            <header className="border-b border-border px-3 py-2"><div className="flex items-center justify-between gap-2"><span className="text-label text-fg-subtle">Record #{selected.seq ?? "—"}</span><Badge size="sm" color={selected.status === "error" ? "red" : selected.kind === "tool" ? "amber" : "blue"}>{kindStyle[selected.kind].label}</Badge></div><h3 className="mt-1 text-body font-semibold text-fg-default">{selected.label}</h3></header>
+            <TabsList className="mx-0 px-2" aria-label="Inspector tabs">{(["summary", "input", "output", "raw"] as const).map((tab) => <TabItem key={tab} value={tab} label={tab} className="capitalize" />)}</TabsList>
+            <ScrollArea className="min-h-0 flex-1" viewportClassName="h-full" orientation="vertical">
+              <TabPanel value="summary" className="p-3"><InfoItemGroup><InspectorInfoItem title="Event">{kindStyle[selected.kind].label}</InspectorInfoItem><InspectorInfoItem title="Sequence">#{selected.seq ?? "—"}</InspectorInfoItem><InspectorInfoItem title="Started">{formatTime(selected.time)}</InspectorInfoItem><InspectorInfoItem title="Duration">{formatDuration(selected.durationMs)}</InspectorInfoItem>{selected.callId && <InspectorInfoItem title="Call ID">{selected.callId}</InspectorInfoItem>}<InspectorInfoItem title="Preview">{selected.preview}</InspectorInfoItem></InfoItemGroup></TabPanel>
+              <TabPanel value="input" className="p-3"><pre className="whitespace-pre-wrap break-words text-label leading-5 text-fg-muted">{rowInput(selected)}</pre></TabPanel>
+              <TabPanel value="output" className="p-3"><pre className="whitespace-pre-wrap break-words text-label leading-5 text-fg-muted">{rowOutput(selected)}</pre></TabPanel>
+              <TabPanel value="raw" className="p-3"><pre className="text-label leading-5 text-fg-muted">{rawJson(selected.raw)}</pre></TabPanel>
+            </ScrollArea>
+          </Tabs>
+        </aside>}
+      </TraceSplitLayout>}
+            </TabPanel>
+          </Tabs>
+        </PageBody>
+      </PageContent>
+    </PageLayout>
+  );
+}

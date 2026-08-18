@@ -1,0 +1,17 @@
+{
+  "resizableDoc": {
+    "description": "支持指针和键盘调整大小的无障碍分栏布局。",
+    "basic": "基础用法",
+    "primary": "主要内容",
+    "inspector": "检查器",
+    "apiReference": "API 参考",
+    "orientation": "调整尺寸的轴向；默认是横向。",
+    "defaultLayout": "初始布局映射，适用于恢复已保存的工作区。",
+    "layoutChanged": "指针或键盘调整完成后调用。",
+    "defaultSize": "面板初始尺寸；数字表示像素，字符串可使用百分比或 CSS 单位。",
+    "minSize": "交互时允许的面板最小尺寸。",
+    "maxSize": "交互时允许的面板最大尺寸。",
+    "withHandle": "显示低调的拖拽握柄，但不缩小完整的分隔条命中区。",
+    "doubleClick": "设为 true 可阻止双击分隔条时重置相邻面板。"
+  }
+}

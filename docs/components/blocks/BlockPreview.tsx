@@ -15,6 +15,7 @@ import { ModelDetail } from "@zeron/blocks/model-detail-01";
 import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
 import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
 import { ZlrList } from "@zeron/blocks/zlrlist";
+import { AgentTrace } from "@zeron/blocks/agent-trace-01";
 
 function ResponsivePreview({
   canvasHeight,
@@ -53,6 +54,10 @@ function ResponsivePreview({
 }
 
 export function BlockPreview({ name }: { name: string }) {
+  if (name === "agent-trace-01") {
+    return <ResponsivePreview canvasHeight={760} canvasWidth={1160}><AgentTrace className="h-full min-h-0 rounded-none border-0" /></ResponsivePreview>;
+  }
+
   if (name === "mcp-detail-01") {
     return (
       <ResponsivePreview canvasHeight={900} canvasWidth={1320}><McpDetail /></ResponsivePreview>
