@@ -40,6 +40,10 @@ describe("shell and page-layout composition contract", () => {
     expect(componentsGallery).toContain('className="overflow-hidden overscroll-auto p-0"');
   });
 
+  it("makes component gallery cards clickable across their full surface", () => {
+    expect(componentsGallery).toContain('<Card className="group min-w-0 pb-0" href={href} label={entry.name}>');
+  });
+
   it("owns the base background at the shell while PageContent provides the floating surface", () => {
     expect(appShell).toContain('"min-h-svh min-w-0 bg-surface-base"');
     expect(pageLayout).toContain(

@@ -174,9 +174,14 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
             </div>
 
             {templates.length ? (
-            <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))" }}>
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
               {templates.map((artifact) => (
-                <Container key={artifact.slug} className="min-w-0 overflow-hidden">
+                <Container key={artifact.slug} className="group relative min-w-0 cursor-pointer overflow-hidden transition-colors duration-fast hover:bg-hover">
+                  <Link
+                    aria-label={artifact.title}
+                    className="absolute inset-0 z-raised rounded-[inherit] outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
+                    href={`${localePrefix}/docs/blocks/${artifact.slug}`}
+                  />
                   <ContainerBody
                     aria-hidden={artifact.kind !== "block" && artifact.kind !== "layout"}
                     className="overflow-hidden overscroll-auto p-1"
@@ -187,9 +192,7 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
                     </div>
                   </ContainerBody>
                   <ContainerFooter className="justify-between px-3 py-3">
-                    <Link className="rounded text-body font-medium text-fg-muted outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring" href={`${localePrefix}/docs/blocks/${artifact.slug}`}>
-                      {artifact.title}
-                    </Link>
+                    <span className="text-body font-medium text-fg-muted transition-colors group-hover:text-fg-brand group-focus-within:text-fg-brand">{artifact.title}</span>
                     <div className="flex items-center gap-1.5">
                       <Badge size="sm" variant="dot">{productLabels[language][artifact.product]}</Badge>
                       <Badge color="blue" size="sm">{kindLabels[language][artifact.kind]}</Badge>

@@ -230,7 +230,7 @@ export function ComponentsGallery({ localePrefix = "" }: { localePrefix?: string
                       <h2 id={`component-group-${group.section}`} className="text-title font-semibold text-fg-default">{sectionLabels[language][group.section]}</h2>
                       <span className="text-label text-fg-muted">{group.entries.length}</span>
                     </header>
-                    <CardGroup className="gap-4" columns={3} separated style={{ gridTemplateColumns: "repeat(auto-fit, minmax(17rem, 1fr))" }}>
+                    <CardGroup className="gap-4" columns={3} separated style={{ gridTemplateColumns: "repeat(auto-fill, minmax(17rem, 1fr))" }}>
                       {group.entries.map((entry) => <ComponentCard key={entry.slug} entry={entry} href={`${localePrefix}/docs/components/${entry.slug}`} language={language} />)}
                     </CardGroup>
                   </section>
@@ -288,7 +288,7 @@ function ComponentCard({ entry, href, language }: { entry: DocEntry; href: strin
   const Icon = useIcon(entry.icon);
   const description = componentCardDescription(entry.slug, language, entry.description);
   return (
-    <Card className="group min-w-0 pb-0">
+    <Card className="group min-w-0 pb-0" href={href} label={entry.name}>
       <Container className="h-full">
         <ContainerBody className="overflow-hidden overscroll-auto p-0">
           <CardHeader className="flex min-h-40 min-w-0 flex-1 flex-col">
@@ -299,7 +299,7 @@ function ComponentCard({ entry, href, language }: { entry: DocEntry; href: strin
           </CardHeader>
         </ContainerBody>
         <ContainerFooter className="justify-start">
-          <CardTitle><Link className="rounded outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring" href={href}>{entry.name}</Link></CardTitle>
+          <CardTitle className="transition-colors group-hover/card:text-fg-brand group-focus-within/card:text-fg-brand">{entry.name}</CardTitle>
         </ContainerFooter>
       </Container>
     </Card>

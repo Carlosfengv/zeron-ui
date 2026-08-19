@@ -48,6 +48,9 @@ describe("Resource Catalog gallery preview", () => {
     expect(blocksGallery).toContain('<BlockPreview name={artifact.slug} />');
     expect(blocksGallery).toContain('className="overflow-hidden overscroll-auto p-1"');
     expect(blocksGallery).toContain('<div className="pointer-events-none">');
+    expect(blocksGallery).toContain('aria-label={artifact.title}');
+    expect(blocksGallery).toContain('href={`${localePrefix}/docs/blocks/${artifact.slug}`}');
+    expect(blocksGallery).toContain('className="grid grid-cols-1 gap-4 xl:grid-cols-2"');
   });
 
   it("uses a wider content area and four cards on wide displays", () => {
