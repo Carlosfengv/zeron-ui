@@ -42,6 +42,27 @@ export const blockCatalog = [
     dependencies: ["app-shell", "top-nav", "page-layout", "nav-menu", "nav-item", "input-group", "table", "field", "badge", "button", "@lobehub/icons"],
   },
   {
+    name: "personal-model-usage-01",
+    title: "个人模型用量",
+    description: "A standalone personal model usage dashboard with billing filters, trend charts, and consumption details.",
+    categories: ["application", "settings", "analytics"],
+    dependencies: ["personal-settings-01"],
+  },
+  {
+    name: "personal-usage-01",
+    title: "个人使用情况",
+    description: "A standalone personal activity dashboard with contextual read-only settings navigation.",
+    categories: ["application", "settings", "analytics"],
+    dependencies: ["personal-settings-01"],
+  },
+  {
+    name: "resource-settings-01",
+    title: "模型服务设置",
+    description: "A standalone model-service settings page with contextual read-only settings navigation.",
+    categories: ["application", "settings"],
+    dependencies: ["personal-settings-01"],
+  },
+  {
     name: "model-mcp-marketplace-01",
     slug: "resource-catalog-01",
     title: "模型和 MCP 广场",

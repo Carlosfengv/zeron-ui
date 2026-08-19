@@ -227,6 +227,8 @@ const modelUsageFilterOptions = {
 export interface PersonalSettingsProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
   /** The first settings page rendered by the block. */
   defaultView?: SettingsView;
+  /** Keeps all non-current sidebar destinations visible but unavailable. */
+  lockedNavigation?: boolean;
 }
 
 function ProviderMark({ provider }: { provider: ModelService["provider"] }) {
@@ -262,7 +264,7 @@ function RowActions({ items, label }: { items: readonly string[]; label: string 
 }
 
 /** Personal account settings with model services, API keys, credentials, profile, and usage pages. */
-export function PersonalSettings({ className, defaultView = "models", ...props }: PersonalSettingsProps) {
+export function PersonalSettings({ className, defaultView = "keys", lockedNavigation = false, ...props }: PersonalSettingsProps) {
   const SearchIcon = useIcon("search");
   const ChevronDown = useIcon("chevron-down");
   const PlusIcon = useIcon("plus");
@@ -296,8 +298,8 @@ export function PersonalSettings({ className, defaultView = "models", ...props }
       <AppShellMain landmark={false} className="min-h-0 overflow-hidden">
         <PageLayout size="full" className="h-full pt-0">
           <PageSidebar aria-label="个人设置导航" className="p-3">
-            <SettingsNavGroup activeView={view} label="资源" items={[{ value: "models", label: "模型服务", icon: BrainIcon }, { value: "keys", label: "API keys", icon: LockIcon }, { value: "credentials", label: "凭证管理", icon: ShieldIcon }]} onChange={setSettingsView} />
-            <SettingsNavGroup activeView={view} className="mt-5" label="个人设置" items={[{ value: "profile", label: "个人资料", icon: UserIcon }, { value: "preferences", label: "偏好设置", icon: SettingsIcon }, { value: "usage", label: "使用情况", icon: ClockIcon }, { value: "modelUsage", label: "模型用量", icon: LibraryIcon }]} onChange={setSettingsView} />
+            <SettingsNavGroup activeView={view} disabled={lockedNavigation} disabledViews={lockedNavigation ? [] : ["models"]} label="资源" items={[{ value: "models", label: "模型服务", icon: BrainIcon }, { value: "keys", label: "API keys", icon: LockIcon }, { value: "credentials", label: "凭证管理", icon: ShieldIcon }]} onChange={setSettingsView} />
+            <SettingsNavGroup activeView={view} className="mt-5" disabled={lockedNavigation} disabledViews={lockedNavigation ? [] : ["usage", "modelUsage"]} label="个人设置" items={[{ value: "profile", label: "个人资料", icon: UserIcon }, { value: "preferences", label: "偏好设置", icon: SettingsIcon }, { value: "usage", label: "使用情况", icon: ClockIcon }, { value: "modelUsage", label: "模型用量", icon: LibraryIcon }]} onChange={setSettingsView} />
           </PageSidebar>
           <PageContent className="overflow-y-auto overscroll-contain">
             <PageBody className="flex-none overflow-visible p-4 sm:p-6">
@@ -313,8 +315,8 @@ export function PersonalSettings({ className, defaultView = "models", ...props }
   );
 }
 
-function SettingsNavGroup({ activeView, className, items, label, onChange }: { activeView: SettingsView; className?: string; items: readonly { value: SettingsView; label: string; icon: IconComponent }[]; label: string; onChange: (view: SettingsView) => void }) {
-  return <section className={className}><p className="px-2 text-label text-fg-subtle">{label}</p><NavMenu as="div" activeValue={activeView} aria-label={label} className="mt-1" keyboardNavigation="roving">{items.map((item) => <NavItem key={item.value} value={item.value}><NavItemTrigger href={`#${item.value}`} onClick={(event) => { event.preventDefault(); onChange(item.value); }}><NavItemLeading className="group-data-[active=true]/nav-item:text-fg-brand"><item.icon aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading><NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>)}</NavMenu></section>;
+function SettingsNavGroup({ activeView, className, disabled = false, disabledViews = [], items, label, onChange }: { activeView: SettingsView; className?: string; disabled?: boolean; disabledViews?: readonly SettingsView[]; items: readonly { value: SettingsView; label: string; icon: IconComponent }[]; label: string; onChange: (view: SettingsView) => void }) {
+  return <section className={className}><p className="px-2 text-label text-fg-subtle">{label}</p><NavMenu as="div" activeValue={activeView} aria-label={label} className="mt-1" keyboardNavigation="roving">{items.map((item) => <NavItem disabled={(disabled && item.value !== activeView) || disabledViews.includes(item.value)} key={item.value} value={item.value}><NavItemTrigger href={`#${item.value}`} onClick={(event) => { event.preventDefault(); onChange(item.value); }}><NavItemLeading className="group-data-[active=true]/nav-item:text-fg-brand"><item.icon aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading><NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>)}</NavMenu></section>;
 }
 
 function ModelServicesTable({ services }: { services: readonly ModelService[] }) {

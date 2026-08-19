@@ -72,6 +72,45 @@
       ]
     },
     {
+      "name": "personal-model-usage-01",
+      "type": "registry:block",
+      "title": "个人模型用量",
+      "description": "A standalone personal model usage dashboard with contextual read-only settings navigation.",
+      "categories": ["application", "settings", "analytics"],
+      "dependencies": ["tw-animate-css", "@lobehub/icons"],
+      "registryDependencies": ["personal-settings-01"],
+      "files": [
+        { "path": "packages/blocks/src/application/personal-model-usage-01/personal-model-usage.tsx", "type": "registry:component", "target": "components/blocks/personal-model-usage-01/personal-model-usage.tsx" },
+        { "path": "packages/blocks/src/application/personal-model-usage-01/index.ts", "type": "registry:component", "target": "components/blocks/personal-model-usage-01/index.ts" }
+      ]
+    },
+    {
+      "name": "personal-usage-01",
+      "type": "registry:block",
+      "title": "个人使用情况",
+      "description": "A standalone personal activity dashboard with contextual read-only settings navigation.",
+      "categories": ["application", "settings", "analytics"],
+      "dependencies": ["tw-animate-css", "@lobehub/icons"],
+      "registryDependencies": ["personal-settings-01"],
+      "files": [
+        { "path": "packages/blocks/src/application/personal-usage-01/personal-usage.tsx", "type": "registry:component", "target": "components/blocks/personal-usage-01/personal-usage.tsx" },
+        { "path": "packages/blocks/src/application/personal-usage-01/index.ts", "type": "registry:component", "target": "components/blocks/personal-usage-01/index.ts" }
+      ]
+    },
+    {
+      "name": "resource-settings-01",
+      "type": "registry:block",
+      "title": "模型服务设置",
+      "description": "A standalone model-service settings page with contextual read-only settings navigation.",
+      "categories": ["application", "settings"],
+      "dependencies": ["tw-animate-css", "@lobehub/icons"],
+      "registryDependencies": ["personal-settings-01"],
+      "files": [
+        { "path": "packages/blocks/src/application/resource-settings-01/resource-settings.tsx", "type": "registry:component", "target": "components/blocks/resource-settings-01/resource-settings.tsx" },
+        { "path": "packages/blocks/src/application/resource-settings-01/index.ts", "type": "registry:component", "target": "components/blocks/resource-settings-01/index.ts" }
+      ]
+    },
+    {
       "name": "model-mcp-marketplace-01",
       "type": "registry:block",
       "title": "模型和 MCP 广场",

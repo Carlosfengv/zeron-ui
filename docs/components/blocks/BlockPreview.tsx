@@ -4,6 +4,9 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { TopNavAppShell } from "@zeron/blocks/top-nav-app-shell-01";
 import { ZaiopsOperations } from "@zeron/blocks/zaiops-operations-01";
 import { PersonalSettings } from "@zeron/blocks/personal-settings-01";
+import { PersonalModelUsage } from "@zeron/blocks/personal-model-usage-01";
+import { PersonalUsage } from "@zeron/blocks/personal-usage-01";
+import { ResourceSettings } from "@zeron/blocks/resource-settings-01";
 import { ResourceDetails } from "@zeron/blocks/resource-details-01";
 import { ResourceListTable } from "@zeron/blocks/resource-list-table-01";
 import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
@@ -86,6 +89,18 @@ export function BlockPreview({ name }: { name: string }) {
     return (
       <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalSettings /></ResponsivePreview>
     );
+  }
+
+  if (name === "personal-model-usage-01") {
+    return <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalModelUsage /></ResponsivePreview>;
+  }
+
+  if (name === "personal-usage-01") {
+    return <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalUsage /></ResponsivePreview>;
+  }
+
+  if (name === "resource-settings-01") {
+    return <ResponsivePreview canvasHeight={900} canvasWidth={960}><ResourceSettings /></ResponsivePreview>;
   }
 
   if (name === "provider-create-form-01") {

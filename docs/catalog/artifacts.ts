@@ -58,6 +58,21 @@ export const artifactCatalog: readonly ArtifactEntry[] = [
     kind: "prototype", product: "shared", domains: ["settings", "account"], patterns: ["settings", "sidebar"], searchTerms: ["settings", "api key", "account", "个人设置", "凭证"], readiness: "demo-only", dataMode: "mock", devices: ["desktop", "responsive"], featured: true,
   },
   {
+    slug: "personal-model-usage-01", registryName: "personal-model-usage-01",
+    title: "Personal Model Usage", description: "A standalone billing dashboard with usage filters, spending trends, attribution and call details.",
+    kind: "page", product: "zentrix", domains: ["settings", "billing", "model usage"], patterns: ["analytics", "data table", "sidebar"], searchTerms: ["model usage", "billing", "spend", "token", "模型用量", "消费", "计费"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"], featured: true,
+  },
+  {
+    slug: "personal-usage-01", registryName: "personal-usage-01",
+    title: "Personal Usage", description: "A standalone dashboard for personal activity, calls and token usage.",
+    kind: "page", product: "zentrix", domains: ["settings", "usage"], patterns: ["analytics", "sidebar"], searchTerms: ["personal usage", "activity", "token", "调用", "个人使用情况"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"],
+  },
+  {
+    slug: "resource-settings-01", registryName: "resource-settings-01",
+    title: "Model Service Settings", description: "A standalone model-service settings page with contextual navigation.",
+    kind: "page", product: "zentrix", domains: ["settings", "model service"], patterns: ["settings", "table", "sidebar"], searchTerms: ["model service", "provider", "settings", "模型服务", "设置"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"],
+  },
+  {
     slug: "resource-catalog-01", registryName: "model-mcp-marketplace-01",
     title: "Model & MCP Marketplace", description: "A responsive marketplace with search, sorting, filters and resource cards.",
     kind: "page", product: "zentrix", domains: ["model", "mcp", "marketplace"], patterns: ["catalog", "search", "filter"], searchTerms: ["model", "mcp", "marketplace", "模型", "广场", "资源目录"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"], featured: true,
