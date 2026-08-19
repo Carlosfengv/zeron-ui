@@ -7,6 +7,7 @@
  *   - the generated token block in app/globals.css
  *   - the `surfaces` registry:theme item in packages/ui/registry.json
  *   - SEMANTIC-TOKENS.md
+ *   - the publishable @zeron/tokens CSS and JavaScript entrypoints
  */
 
 import { referenceColors } from "./reference-colors.mjs";

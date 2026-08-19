@@ -1,0 +1,27 @@
+{
+  "name": "@zeron/tokens",
+  "version": "0.1.0",
+  "description": "Zeron Design semantic tokens for CSS and JavaScript consumers.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "./tokens.css"
+  ],
+  "style": "./tokens.css",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "default": "./index.mjs"
+    },
+    "./styles.css": "./tokens.css",
+    "./tokens.css": "./tokens.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.mjs",
+    "index.d.ts",
+    "tokens.css",
+    "README.md"
+  ]
+}

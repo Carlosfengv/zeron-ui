@@ -552,11 +552,31 @@ export default function SemanticTokensPage() {
           </div>
         </details>
 
+        <DocSection title={t("packageInstall")}>
+          <SectionDescription>{t("packageInstallBody")}</SectionDescription>
+          <div className="flex flex-col gap-3 border-y border-border py-4">
+            <div>
+              <p className="text-label font-medium text-fg-default">{t("packageInstallCommand")}</p>
+              <pre className="mt-2 overflow-x-auto rounded-lg bg-surface-raised p-3 text-label text-fg-default"><code>pnpm add @zeron/tokens</code></pre>
+            </div>
+            <div>
+              <p className="text-label font-medium text-fg-default">{t("packageCssImport")}</p>
+              <p className="mt-1 text-label leading-relaxed text-fg-muted">{t("packageCssImportBody")}</p>
+              <pre className="mt-2 overflow-x-auto rounded-lg bg-surface-raised p-3 text-label text-fg-default"><code>{'@import "@zeron/tokens/styles.css";'}</code></pre>
+            </div>
+            <div>
+              <p className="text-label font-medium text-fg-default">{t("packageJsImport")}</p>
+              <p className="mt-1 text-label leading-relaxed text-fg-muted">{t("packageJsImportBody")}</p>
+              <pre className="mt-2 overflow-x-auto rounded-lg bg-surface-raised p-3 text-label text-fg-default"><code>{'import { semanticTokens } from "@zeron/tokens";'}</code></pre>
+            </div>
+          </div>
+        </DocSection>
+
         <DocSection title={t("developerReference")}>
           <SectionDescription>{t("developerReferenceBody")}</SectionDescription>
           <div className="border-y border-border px-3 py-3.5">
             <p className="text-label text-fg-muted">{t("source")}</p>
-            <TokenCode>src/system/tokens/semantic-tokens.mjs</TokenCode>
+            <TokenCode>packages/ui/src/tokens/semantic-tokens.mjs</TokenCode>
           </div>
           <div className="border-y border-border px-3 py-3.5">
             <p className="text-body font-medium text-fg-default">{t("naming")}</p>

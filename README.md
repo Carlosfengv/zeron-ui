@@ -34,6 +34,23 @@ The Registry remains directly compatible with shadcn as a fallback:
 npx shadcn@latest add https://zeron-ui.vercel.app/r/button.json
 ```
 
+### Use design tokens without installing components
+
+Install the standalone token package when a project only needs Zeron's semantic
+CSS variables and Tailwind v4 mappings:
+
+```bash
+pnpm add @zeron/tokens
+```
+
+Import it once from the global stylesheet:
+
+```css
+@import "@zeron/tokens/styles.css";
+```
+
+Use `semanticTokens` from `@zeron/tokens` for JavaScript or TypeScript tooling.
+
 Dependencies resolve automatically. Font weight animations require the [Inter](https://fonts.google.com/specimen/Inter) variable font.
 
 ## Icons

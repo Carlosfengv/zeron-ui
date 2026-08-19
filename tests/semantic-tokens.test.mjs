@@ -6,6 +6,8 @@ import {
   registryCssVars,
   renderDocumentation,
   renderGlobalsBlock,
+  renderTokenPackageCss,
+  renderTokenPackageModule,
 } from "../scripts/generate-semantic-tokens.mjs";
 import {
   colorTokens,
@@ -399,6 +401,13 @@ describe("semantic token generation", () => {
 
   it("keeps the semantic token documentation in sync", () => {
     expect(read("SEMANTIC-TOKENS.md")).toBe(renderDocumentation());
+  });
+
+  it("keeps the standalone token package in sync with the semantic source", () => {
+    expect(read("packages/tokens/tokens.css")).toBe(renderTokenPackageCss());
+    expect(read("packages/tokens/index.mjs")).toBe(renderTokenPackageModule());
+    expect(read("packages/tokens/package.json")).toContain('"@zeron/tokens"');
+    expect(read("packages/tokens/tokens.css")).not.toContain("@font-face");
   });
 });
 

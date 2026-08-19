@@ -16,12 +16,15 @@ import {
   controlHeightTokens,
   badgeHeightTokens,
   layerTokens,
+  semanticTokens,
 } from "../packages/ui/src/tokens/semantic-tokens.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const GLOBALS_PATH = `${ROOT}/app/globals.css`;
 const REGISTRY_PATH = `${ROOT}/packages/ui/registry.json`;
 const DOC_PATH = `${ROOT}/SEMANTIC-TOKENS.md`;
+const TOKEN_PACKAGE_CSS_PATH = `${ROOT}/packages/tokens/tokens.css`;
+const TOKEN_PACKAGE_JS_PATH = `${ROOT}/packages/tokens/index.mjs`;
 const START = "/* BEGIN GENERATED SEMANTIC TOKENS — DO NOT EDIT */";
 const END = "/* END GENERATED SEMANTIC TOKENS */";
 
@@ -212,6 +215,58 @@ ${indentLines(layerClasses)}
 ${END}`;
 }
 
+/**
+ * The standalone package intentionally excludes the application's @font-face
+ * declaration. A consuming app owns its font files, while this package only
+ * supplies the semantic token contract and optional Tailwind theme mapping.
+ */
+export function renderTokenPackageCss() {
+  const layerClasses = layerTokens
+    .map((token) => `.z-${token.name} { z-index: var(--layer-${token.name}); }`)
+    .join("\n");
+
+  return `/* Generated from packages/ui/src/tokens/semantic-tokens.mjs. Do not edit. */
+@custom-variant dark (&:is(.dark *));
+
+:root { color-scheme: light dark; }
+
+:root,
+.light,
+.dark {
+${indentLines(renderRootDeclarations())}
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+${indentLines(renderModeSelection("dark"), 4)}
+  }
+}
+
+.light {
+  color-scheme: light;
+${indentLines(renderModeSelection("light"))}
+}
+
+.dark {
+  color-scheme: dark;
+${indentLines(renderModeSelection("dark"))}
+}
+
+@theme inline {
+${indentLines(renderThemeDeclarations())}
+}
+
+@layer utilities {
+${indentLines(layerClasses)}
+}
+`;
+}
+
+export function renderTokenPackageModule() {
+  const data = JSON.stringify(semanticTokens, null, 2);
+  return `// Generated from packages/ui/src/tokens/semantic-tokens.mjs. Do not edit.\n\nconst tokenData = ${data};\n\nexport const colors = tokenData.colors;\nexport const foregroundColorTokens = tokenData.foregrounds;\nexport const fillColorTokens = tokenData.fills;\nexport const boundaryColorTokens = tokenData.boundaries;\nexport const overlayColorTokens = tokenData.overlays;\nexport const supportColorTokens = tokenData.supportColors;\nexport const surfaceTokens = tokenData.surfaces;\nexport const shadowTokens = tokenData.shadows;\nexport const typographyTokens = tokenData.typography;\nexport const motionDurationTokens = tokenData.motionDurations;\nexport const fontTokens = tokenData.fonts;\nexport const controlHeightTokens = tokenData.controlHeights;\nexport const badgeHeightTokens = tokenData.badgeHeights;\nexport const layerTokens = tokenData.layers;\nexport const semanticTokens = tokenData;\n\nexport default semanticTokens;\n`;
+}
+
 const table = (headers, rows) => [
   `| ${headers.join(" | ")} |`,
   `| ${headers.map(() => "---").join(" | ")} |`,
@@ -290,6 +345,32 @@ pnpm registry:build
 # 4. 验证没有漂移
 pnpm tokens:check
 \`\`\`
+
+## 作为项目依赖使用
+
+\`@zeron/tokens\` 是独立的、可发布的 token 包；只需要令牌时无需通过 CLI 安装组件。
+
+\`\`\`bash
+pnpm add @zeron/tokens
+# 或 npm install @zeron/tokens
+\`\`\`
+
+在全局 CSS 入口导入 CSS 变量和 Tailwind v4 的语义工具类映射：
+
+\`\`\`css
+@import "@zeron/tokens/styles.css";
+\`\`\`
+
+导入后可直接使用 \`var(--surface-base)\`、\`var(--fg-default)\` 等运行时变量；在 Tailwind v4
+项目中也可使用 \`bg-surface-base\`、\`text-fg-default\` 等语义类。包不包含字体文件，消费项目应自行加载字体。
+
+JavaScript 和 TypeScript 使用方可读取同一份 token 元数据：
+
+\`\`\`ts
+import { semanticTokens, surfaceTokens } from "@zeron/tokens";
+\`\`\`
+
+\`semanticTokens\` 适用于主题编辑器、设计令牌检查和其他构建工具；它的名称与 CSS 入口保持一致。
 
 ## 前景颜色
 
@@ -629,6 +710,8 @@ async function expectedArtifacts() {
     globals: replaceBlock(globals, renderGlobalsBlock()),
     registry: `${JSON.stringify(updateRegistry(registry), null, 2)}\n`,
     documentation: renderDocumentation(),
+    tokenPackageCss: renderTokenPackageCss(),
+    tokenPackageModule: renderTokenPackageModule(),
   };
 }
 
@@ -639,6 +722,8 @@ async function main() {
     [GLOBALS_PATH, expected.globals],
     [REGISTRY_PATH, expected.registry],
     [DOC_PATH, expected.documentation],
+    [TOKEN_PACKAGE_CSS_PATH, expected.tokenPackageCss],
+    [TOKEN_PACKAGE_JS_PATH, expected.tokenPackageModule],
   ];
 
   if (check) {
@@ -658,6 +743,7 @@ async function main() {
   console.log("✓ generated app/globals.css token block");
   console.log("✓ generated packages/ui/registry.json semantic theme");
   console.log("✓ generated SEMANTIC-TOKENS.md");
+  console.log("✓ generated @zeron/tokens CSS and JavaScript entrypoints");
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
