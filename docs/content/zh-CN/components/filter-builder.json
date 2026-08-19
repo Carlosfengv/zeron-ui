@@ -1,0 +1,20 @@
+{
+  "filterBuilder": {
+    "playground": "交互示例",
+    "controlled": "受控状态",
+    "controlledBody": "当当前查询需要写入 URL、服务端请求或应用状态时，使用 filters、logic 及其变更回调。非受控默认值更适合局部且自包含的视图。",
+    "asyncOptions": "异步与大量选项",
+    "asyncOptionsBody": "远程搜索可提供 loadOptions。请求会防抖，并在新查询覆盖旧查询时取消；选项达到 100 项后会自动虚拟化。",
+    "serverFiltering": "服务端筛选",
+    "serverFilteringBody": "FilterBuilder 只负责编辑条件。将其 JSON 安全的状态序列化为查询参数或请求体，在服务端校验，并通过字段白名单转换操作符。小型客户端数据集可使用 createFilterPredicate。",
+    "apiReference": "API 参考",
+    "fieldsProp": "可用字段及其编辑器。字段可为 text、number、select、multiSelect、boolean、date、dateRange 或 custom。",
+    "filtersProp": "受控条件列表。每条条件包含 id、字段 id、操作符和 JSON 安全的值。",
+    "defaultFiltersProp": "非受控使用时的初始条件列表。",
+    "logicProp": "决定需要满足全部条件还是任意条件。",
+    "onFiltersChangeProp": "添加、编辑或移除条件后触发。",
+    "allowDuplicateFieldsProp": "允许同一字段添加多条条件。",
+    "maxFiltersProp": "限制可添加条件的总数量。",
+    "readOnlyProp": "展示当前条件，但不提供修改控件。"
+  }
+}

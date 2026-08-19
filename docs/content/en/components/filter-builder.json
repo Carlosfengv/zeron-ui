@@ -1,0 +1,20 @@
+{
+  "filterBuilder": {
+    "playground": "Playground",
+    "controlled": "Controlled state",
+    "controlledBody": "Use filters and logic with their change callbacks when the current query belongs in a URL, a server request, or application state. The uncontrolled defaults are useful for local, self-contained views.",
+    "asyncOptions": "Async and large option sets",
+    "asyncOptionsBody": "Provide loadOptions for remote search. Requests are debounced and cancelled when a newer query replaces them; option lists virtualize automatically from 100 items.",
+    "serverFiltering": "Server filtering",
+    "serverFilteringBody": "FilterBuilder deliberately owns only condition editing. Serialize its JSON-safe state into a query or request body, validate it on the server, and translate operators through a field allowlist. createFilterPredicate is available for small client-side datasets.",
+    "apiReference": "API Reference",
+    "fieldsProp": "The available fields and their editors. A field can be text, number, select, multiSelect, boolean, date, dateRange, or custom.",
+    "filtersProp": "Controlled condition list. Each clause contains an id, field id, operator, and JSON-safe value.",
+    "defaultFiltersProp": "Initial condition list for uncontrolled use.",
+    "logicProp": "Whether all conditions or any condition must match.",
+    "onFiltersChangeProp": "Called after a condition is added, edited, or removed.",
+    "allowDuplicateFieldsProp": "Allows more than one condition for the same field.",
+    "maxFiltersProp": "Caps the total number of conditions that can be added.",
+    "readOnlyProp": "Renders the active conditions without mutation controls."
+  }
+}

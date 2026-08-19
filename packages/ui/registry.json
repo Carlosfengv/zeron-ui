@@ -1016,9 +1016,112 @@
           "target": "lib/data-grid-types.ts"
         },
         {
+          "path": "packages/ui/src/system/filter-types.ts",
+          "type": "registry:lib",
+          "target": "lib/filter-types.ts"
+        },
+        {
           "path": "packages/ui/src/system/compose-refs.ts",
           "type": "registry:lib",
           "target": "lib/compose-refs.ts"
+        }
+      ]
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "Theme-aware calendar primitive with single and range selection support.",
+      "dependencies": [
+        "react-day-picker"
+      ],
+      "registryDependencies": [
+        "utils",
+        "icon-context",
+        "button"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/calendar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/calendar.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/data-grid/data-grid-calendar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/data-grid/data-grid-calendar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "filter-builder",
+      "type": "registry:ui",
+      "title": "FilterBuilder",
+      "description": "Composable typed filters for complex data views, with text, number, option, boolean, date, async, and custom editors.",
+      "dependencies": [
+        "@tanstack/react-virtual",
+        "date-fns",
+        "react-day-picker"
+      ],
+      "registryDependencies": [
+        "utils",
+        "icon-context",
+        "button",
+        "button-group",
+        "calendar",
+        "input",
+        "popover"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/filter-builder/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-builder/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-builder/filter-builder.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/filter-builder/filter-builder.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/filter-builder/filter-clause.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/filter-builder/filter-clause.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/filter-builder/filter-field-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/filter-builder/filter-field-menu.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/filter-builder/filter-operator-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/filter-builder/filter-operator-menu.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/filter-builder/filter-option-list.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/filter-builder/filter-option-list.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/filter-builder/filter-types.ts",
+          "type": "registry:lib",
+          "target": "components/ui/filter-builder/filter-types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-builder/filter-utils.ts",
+          "type": "registry:lib",
+          "target": "components/ui/filter-builder/filter-utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-builder/filter-value-editor.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/filter-builder/filter-value-editor.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/filter-types.ts",
+          "type": "registry:lib",
+          "target": "lib/filter-types.ts"
         }
       ]
     },
