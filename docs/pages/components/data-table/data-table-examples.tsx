@@ -3,6 +3,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { Badge, type BadgeColor } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
 import { Checkbox } from "@zeron/ui/checkbox";
 import {
   DataTable,
@@ -10,6 +11,15 @@ import {
   DataTableToolbar,
   useDataTable,
 } from "@zeron/ui/data-table";
+import {
+  Empty,
+  EmptyActions,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyIllustration,
+  EmptyMedia,
+  EmptyTitle,
+} from "@zeron/ui/empty";
 import { type IconComponent, useIcon } from "@zeron/ui/system/icon-context";
 
 type Project = {
@@ -156,5 +166,26 @@ export function EmptyProjectsTable() {
   const StatusIcon = useIcon("dot");
   const columns = useMemo(() => getColumns(StatusIcon), [StatusIcon]);
   const { table } = useDataTable({ columns, data: emptyProjects });
-  return <DataTable emptyMessage="No projects found." table={table} />;
+
+  return (
+    <DataTable
+      emptyState={
+        <Empty density="compact" reason="first-use" scope="section">
+          <EmptyMedia>
+            <EmptyIllustration variant="resources" />
+          </EmptyMedia>
+          <EmptyHeader>
+            <EmptyTitle>No projects found.</EmptyTitle>
+            <EmptyDescription>
+              Create a project to start tracking work, ownership, and budget.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyActions>
+            <Button size="sm">Create project</Button>
+          </EmptyActions>
+        </Empty>
+      }
+      table={table}
+    />
+  );
 }

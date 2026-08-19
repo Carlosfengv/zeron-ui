@@ -34,6 +34,15 @@ import {
   DropdownSeparator,
   DropdownTrigger,
 } from "#components/dropdown";
+import {
+  Empty,
+  EmptyActions,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyIllustration,
+  EmptyMedia,
+  EmptyTitle,
+} from "#components/empty";
 import { MenuItem } from "#components/menu-item";
 import { Input } from "#components/input";
 import {
@@ -154,6 +163,9 @@ function useDataTable<TData>({
 
 export type DataTableProps<TData> = React.ComponentProps<"div"> & {
   actionBar?: React.ReactNode;
+  /** Replaces the built-in empty state when the current row model has no rows. */
+  emptyState?: React.ReactNode;
+  /** Title used by the built-in empty state. */
   emptyMessage?: React.ReactNode;
   table: TanstackTable<TData>;
 };
@@ -173,6 +185,7 @@ function DataTable<TData>({
   children,
   className,
   emptyMessage = "No results.",
+  emptyState,
   table,
   ...props
 }: DataTableProps<TData>) {
@@ -180,6 +193,9 @@ function DataTable<TData>({
   const tableElementRef = React.useRef<HTMLTableElement>(null);
   const [scrollEdges, setScrollEdges] =
     React.useState<HorizontalScrollEdges>(initialHorizontalScrollEdges);
+  const isFilteredEmpty =
+    table.getState().columnFilters.length > 0 &&
+    table.getPreFilteredRowModel().rows.length > 0;
 
   const updateScrollEdges = React.useCallback(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -298,10 +314,45 @@ function DataTable<TData>({
               ) : (
                 <TableRow>
                   <TableCell
-                    className="h-24 align-middle text-center text-fg-muted"
+                    className="p-0 align-middle"
                     colSpan={Math.max(table.getVisibleLeafColumns().length, 1)}
                   >
-                    {emptyMessage}
+                    {emptyState ?? (
+                      <Empty
+                        announce={isFilteredEmpty}
+                        density="compact"
+                        reason={
+                          isFilteredEmpty ? "no-filter-results" : "no-data"
+                        }
+                        scope="section"
+                      >
+                        <EmptyMedia>
+                          <EmptyIllustration
+                            variant={isFilteredEmpty ? "filter" : "resources"}
+                          />
+                        </EmptyMedia>
+                        <EmptyHeader>
+                          <EmptyTitle>{emptyMessage}</EmptyTitle>
+                          {isFilteredEmpty && (
+                            <EmptyDescription>
+                              Try adjusting your search or clearing the active
+                              filters.
+                            </EmptyDescription>
+                          )}
+                        </EmptyHeader>
+                        {isFilteredEmpty && (
+                          <EmptyActions>
+                            <Button
+                              onClick={() => table.resetColumnFilters()}
+                              size="sm"
+                              variant="secondary"
+                            >
+                              Clear filters
+                            </Button>
+                          </EmptyActions>
+                        )}
+                      </Empty>
+                    )}
                   </TableCell>
                 </TableRow>
               )}

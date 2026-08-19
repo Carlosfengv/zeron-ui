@@ -215,10 +215,43 @@ export function PinnedProjectsTable() {
   );
 }`;
 
+const emptyStateCode = `import { Button } from "@zeron/ui/button";
+import { DataTable } from "@zeron/ui/data-table";
+import {
+  Empty,
+  EmptyActions,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyIllustration,
+  EmptyMedia,
+  EmptyTitle,
+} from "@zeron/ui/empty";
+
+<DataTable
+  emptyState={
+    <Empty density="compact" reason="first-use" scope="section">
+      <EmptyMedia>
+        <EmptyIllustration variant="resources" />
+      </EmptyMedia>
+      <EmptyHeader>
+        <EmptyTitle>No projects found.</EmptyTitle>
+        <EmptyDescription>
+          Create a project to start tracking work, ownership, and budget.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyActions>
+        <Button size="sm">Create project</Button>
+      </EmptyActions>
+    </Empty>
+  }
+  table={table}
+/>`;
+
 const dataTableProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "table", type: "Table<TData>", description: t("table") },
   { name: "children", type: "ReactNode", description: t("children") },
   { name: "actionBar", type: "ReactNode", description: t("actionBar") },
+  { name: "emptyState", type: "ReactNode", description: t("emptyStateContent") },
   { name: "emptyMessage", type: "ReactNode", default: '"No results."', description: t("emptyMessage") },
 ];
 
@@ -251,7 +284,7 @@ export default function DataTableDoc() {
           variants={[
             { value: "directory", label: "Project directory", code: exampleCode, preview: <div className="w-full"><ProjectsTable /></div> },
             { value: "pinned", label: "Pinned columns", code: pinnedColumnsCode, preview: <div className="w-full"><PinnedProjectsTable /></div> },
-            { value: "empty", label: "Empty state", code: '<DataTable emptyMessage="No projects found." table={table} />', preview: <div className="w-full"><EmptyProjectsTable /></div> },
+            { value: "empty", label: "Empty state", code: emptyStateCode, preview: <div className="w-full"><EmptyProjectsTable /></div> },
           ]}
         />
       </DocSection>
@@ -276,7 +309,7 @@ export default function DataTableDoc() {
       </DocSection>
 
       <DocSection title={t("emptyState")}>
-        <ComponentPreview code={'<DataTable emptyMessage="No projects found." table={table} />'}>
+        <ComponentPreview code={emptyStateCode}>
           <div className="w-full">
             <EmptyProjectsTable />
           </div>
