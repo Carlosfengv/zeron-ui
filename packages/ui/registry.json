@@ -1033,9 +1033,11 @@
       "title": "Calendar",
       "description": "Theme-aware calendar primitive with single and range selection support.",
       "dependencies": [
-        "react-day-picker"
+        "react-day-picker",
+        "tw-animate-css"
       ],
       "registryDependencies": [
+        "surfaces",
         "utils",
         "icon-context",
         "button"
@@ -1061,9 +1063,11 @@
       "dependencies": [
         "@tanstack/react-virtual",
         "date-fns",
-        "react-day-picker"
+        "react-day-picker",
+        "tw-animate-css"
       ],
       "registryDependencies": [
+        "surfaces",
         "utils",
         "icon-context",
         "button",

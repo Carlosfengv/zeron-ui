@@ -1,0 +1,32 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "resource-settings-01",
+  "type": "registry:block",
+  "title": "模型服务设置",
+  "description": "A standalone model-service settings page with contextual read-only settings navigation.",
+  "dependencies": [
+    "tw-animate-css",
+    "@lobehub/icons"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/personal-settings-01.json"
+  ],
+  "files": [
+    {
+      "path": "packages/blocks/src/application/resource-settings-01/resource-settings.tsx",
+      "content": "\"use client\";\nimport { PersonalSettings, type PersonalSettingsProps } from \"../personal-settings-01\";\nexport type ResourceSettingsProps = Omit<PersonalSettingsProps, \"defaultView\" | \"lockedNavigation\">;\n/** A standalone model-service settings page with contextual, read-only navigation. */\nexport function ResourceSettings(props: ResourceSettingsProps) {\n    return <PersonalSettings defaultView=\"models\" lockedNavigation {...props}/>;\n}\n",
+      "type": "registry:component",
+      "target": "components/blocks/resource-settings-01/resource-settings.tsx"
+    },
+    {
+      "path": "packages/blocks/src/application/resource-settings-01/index.ts",
+      "content": "export { ResourceSettings } from \"./resource-settings\";\nexport type { ResourceSettingsProps } from \"./resource-settings\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/resource-settings-01/index.ts"
+    }
+  ],
+  "categories": [
+    "application",
+    "settings"
+  ]
+}

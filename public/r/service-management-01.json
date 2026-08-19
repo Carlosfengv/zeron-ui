@@ -1,6 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "service-management-01",
+  "type": "registry:block",
   "title": "服务管理",
   "description": "A service workspace with operational progress, support authorization, and cluster operation history.",
   "dependencies": [
@@ -41,6 +42,5 @@
     "application",
     "operations",
     "service"
-  ],
-  "type": "registry:block"
+  ]
 }

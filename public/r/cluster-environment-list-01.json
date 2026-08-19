@@ -1,6 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "cluster-environment-list-01",
+  "type": "registry:block",
   "title": "集群环境列表",
   "description": "A filterable cluster-environment overview with health and data-freshness states.",
   "dependencies": [
@@ -9,13 +10,20 @@
   ],
   "registryDependencies": [
     "https://zeron-ui.vercel.app/r/badge.json",
-    "https://zeron-ui.vercel.app/r/breadcrumb.json",
     "https://zeron-ui.vercel.app/r/button.json",
     "https://zeron-ui.vercel.app/r/card.json",
+    "https://zeron-ui.vercel.app/r/dialog.json",
+    "https://zeron-ui.vercel.app/r/dropdown.json",
     "https://zeron-ui.vercel.app/r/icon-context.json",
     "https://zeron-ui.vercel.app/r/inline-notice.json",
     "https://zeron-ui.vercel.app/r/input.json",
+    "https://zeron-ui.vercel.app/r/kbd.json",
+    "menu-item",
+    "https://zeron-ui.vercel.app/r/nav-item.json",
+    "https://zeron-ui.vercel.app/r/nav-menu.json",
     "https://zeron-ui.vercel.app/r/page-layout.json",
+    "https://zeron-ui.vercel.app/r/sidebar.json",
+    "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
     "https://zeron-ui.vercel.app/r/tabs.json",
     "https://zeron-ui.vercel.app/r/utils.json"
   ],
@@ -36,6 +44,5 @@
   "categories": [
     "application",
     "operations"
-  ],
-  "type": "registry:block"
+  ]
 }

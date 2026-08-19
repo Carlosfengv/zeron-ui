@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "personal-usage-01",
+  "type": "registry:block",
+  "title": "个人使用情况",
+  "description": "A standalone personal activity dashboard with contextual read-only settings navigation.",
+  "dependencies": [
+    "tw-animate-css",
+    "@lobehub/icons"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/personal-settings-01.json"
+  ],
+  "files": [
+    {
+      "path": "packages/blocks/src/application/personal-usage-01/personal-usage.tsx",
+      "content": "\"use client\";\nimport { PersonalSettings, type PersonalSettingsProps } from \"../personal-settings-01\";\nexport type PersonalUsageProps = Omit<PersonalSettingsProps, \"defaultView\" | \"lockedNavigation\">;\n/** A standalone personal activity dashboard with contextual, read-only navigation. */\nexport function PersonalUsage(props: PersonalUsageProps) {\n    return <PersonalSettings defaultView=\"usage\" lockedNavigation {...props}/>;\n}\n",
+      "type": "registry:component",
+      "target": "components/blocks/personal-usage-01/personal-usage.tsx"
+    },
+    {
+      "path": "packages/blocks/src/application/personal-usage-01/index.ts",
+      "content": "export { PersonalUsage } from \"./personal-usage\";\nexport type { PersonalUsageProps } from \"./personal-usage\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/personal-usage-01/index.ts"
+    }
+  ],
+  "categories": [
+    "application",
+    "settings",
+    "analytics"
+  ]
+}

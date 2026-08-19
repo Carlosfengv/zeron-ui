@@ -1033,9 +1033,11 @@
       "title": "Calendar",
       "description": "Theme-aware calendar primitive with single and range selection support.",
       "dependencies": [
-        "react-day-picker"
+        "react-day-picker",
+        "tw-animate-css"
       ],
       "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "https://zeron-ui.vercel.app/r/utils.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/button.json"
@@ -1061,9 +1063,11 @@
       "dependencies": [
         "@tanstack/react-virtual",
         "date-fns",
-        "react-day-picker"
+        "react-day-picker",
+        "tw-animate-css"
       ],
       "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
         "https://zeron-ui.vercel.app/r/utils.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/button.json",
@@ -2340,15 +2344,22 @@
         "https://zeron-ui.vercel.app/r/button-group.json",
         "https://zeron-ui.vercel.app/r/card.json",
         "https://zeron-ui.vercel.app/r/data-table.json",
+        "https://zeron-ui.vercel.app/r/dialog.json",
         "https://zeron-ui.vercel.app/r/dropdown.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/kbd.json",
+        "menu-item",
         "https://zeron-ui.vercel.app/r/metric-card.json",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
         "https://zeron-ui.vercel.app/r/page-layout.json",
         "https://zeron-ui.vercel.app/r/popover.json",
         "https://zeron-ui.vercel.app/r/resource-metric-list-01.json",
         "https://zeron-ui.vercel.app/r/resource-status-all-01.json",
         "https://zeron-ui.vercel.app/r/separator.json",
+        "https://zeron-ui.vercel.app/r/sidebar.json",
+        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
         "https://zeron-ui.vercel.app/r/utils.json"
       ],
@@ -2380,13 +2391,20 @@
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/badge.json",
-        "https://zeron-ui.vercel.app/r/breadcrumb.json",
         "https://zeron-ui.vercel.app/r/button.json",
         "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/dialog.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/inline-notice.json",
         "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/kbd.json",
+        "menu-item",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
         "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/sidebar.json",
+        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
         "https://zeron-ui.vercel.app/r/utils.json"
       ],
@@ -2400,6 +2418,134 @@
           "path": "packages/blocks/src/application/cluster-environment-list-01/index.ts",
           "type": "registry:component",
           "target": "components/blocks/cluster-environment-list-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "inspection-report-list-01",
+      "type": "registry:block",
+      "title": "巡检报告列表",
+      "description": "An inspection report workspace with operations navigation, filtering, and report state actions.",
+      "categories": [
+        "application",
+        "operations"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/dialog.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/kbd.json",
+        "menu-item",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/sidebar.json",
+        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/inspection-report-list-01/inspection-report-list.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/inspection-report-list-01/inspection-report-list.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/inspection-report-list-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/inspection-report-list-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "monitoring-alert-list-01",
+      "type": "registry:block",
+      "title": "监控告警列表",
+      "description": "A monitoring alert workspace with operations navigation, severity filters, and AI analysis actions.",
+      "categories": [
+        "application",
+        "operations",
+        "monitoring"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/dialog.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/kbd.json",
+        "menu-item",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/sidebar.json",
+        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/monitoring-alert-list-01/monitoring-alert-list.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/monitoring-alert-list-01/monitoring-alert-list.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/monitoring-alert-list-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/monitoring-alert-list-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "service-management-01",
+      "type": "registry:block",
+      "title": "服务管理",
+      "description": "A service workspace with operational progress, support authorization, and cluster operation history.",
+      "categories": [
+        "application",
+        "operations",
+        "service"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/data-table.json",
+        "https://zeron-ui.vercel.app/r/dialog.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/kbd.json",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/sidebar.json",
+        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/service-management-01/service-management.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/service-management-01/service-management.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/service-management-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/service-management-01/index.ts"
         }
       ]
     },
@@ -2444,6 +2590,95 @@
           "path": "packages/blocks/src/application/personal-settings-01/index.ts",
           "type": "registry:component",
           "target": "components/blocks/personal-settings-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "personal-model-usage-01",
+      "type": "registry:block",
+      "title": "个人模型用量",
+      "description": "A standalone personal model usage dashboard with contextual read-only settings navigation.",
+      "categories": [
+        "application",
+        "settings",
+        "analytics"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/personal-settings-01.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/personal-model-usage-01/personal-model-usage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/personal-model-usage-01/personal-model-usage.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/personal-model-usage-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/personal-model-usage-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "personal-usage-01",
+      "type": "registry:block",
+      "title": "个人使用情况",
+      "description": "A standalone personal activity dashboard with contextual read-only settings navigation.",
+      "categories": [
+        "application",
+        "settings",
+        "analytics"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/personal-settings-01.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/personal-usage-01/personal-usage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/personal-usage-01/personal-usage.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/personal-usage-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/personal-usage-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "resource-settings-01",
+      "type": "registry:block",
+      "title": "模型服务设置",
+      "description": "A standalone model-service settings page with contextual read-only settings navigation.",
+      "categories": [
+        "application",
+        "settings"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/personal-settings-01.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-settings-01/resource-settings.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-settings-01/resource-settings.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-settings-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-settings-01/index.ts"
         }
       ]
     },
