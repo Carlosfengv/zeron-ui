@@ -49,6 +49,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/metric-card": () => import("@docs/pages/components/metric-card/page"),
   "components/dialog": () => import("@docs/pages/components/dialog/page"),
   "components/dropdown": () => import("@docs/pages/components/dropdown/page"),
+  "components/empty": () => import("@docs/pages/components/empty/page"),
   "components/field": () => import("@docs/pages/components/field/page"),
   "components/info-item": () => import("@docs/pages/components/info-item/page"),
   "components/inline-notice": () => import("@docs/pages/components/inline-notice/page"),
