@@ -3,6 +3,6 @@
     "title": "Agent Trace 1",
     "description": "将真实 JSON 中的 agent 消息、工具调用和结果按轮次投影为可检查的本地 Trace 视图。",
     "guidance": "数据接入",
-    "guidanceBody": "通过 data 传入 DSH 风格事件日志、{ events } / { messages } 包装对象，或简单的 role/content 消息数组。内置上传仅在浏览器本地读取 JSON；需要由宿主保存导入数据时，配合 onDataChange 使用。"
+    "guidanceBody": "通过 data 传入 DSH 风格事件日志、events 或 messages 包装对象，或简单的 role/content 消息数组。内置上传仅在浏览器本地读取 JSON；需要由宿主保存导入数据时，配合 onDataChange 使用。"
   }
 }
