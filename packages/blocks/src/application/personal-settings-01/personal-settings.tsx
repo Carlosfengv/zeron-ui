@@ -2,6 +2,7 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState, type ComponentPropsWithoutRef, type ReactNode } from "react";
+import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis } from "recharts";
 import ChatGLMColor from "@lobehub/icons/es/ChatGLM/components/Color";
 import DeepSeekColor from "@lobehub/icons/es/DeepSeek/components/Color";
 import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono";
@@ -11,6 +12,7 @@ import slack from "@thesvg/icons/slack";
 import { AppShell, AppShellHeader, AppShellMain } from "@zeron/ui/app-shell";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@zeron/ui/chart";
 import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
 import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
@@ -32,11 +34,12 @@ import { Switch } from "@zeron/ui/switch";
 import { type IconComponent, useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
 
-type SettingsView = "models" | "keys" | "credentials" | "profile" | "preferences" | "usage";
+type SettingsView = "models" | "keys" | "credentials" | "profile" | "preferences" | "usage" | "modelUsage";
 type ServiceStatus = "正常" | "已用尽" | "需要重新获取";
 type ActivityView = "tokens" | "messages";
 type UsagePeriod = "hour" | "day" | "week" | "month";
 type UsageRankIcon = "deepseek" | "openai" | "glm" | "jira" | "tool" | "message";
+type ModelUsageRange = "day" | "week" | "month";
 
 interface UsageRankRowData {
   label: string;
@@ -78,6 +81,10 @@ const apiKeys = [
   { id: "key-archive", name: "Archive importer", value: "zx_live_••••••••H7qR", createdAt: "2026-04-30", lastUsed: "90 天前", status: "需要重新获取" as const },
 ] as const;
 
+const accountBalance = "¥2,840.00";
+const availableModelServiceCount = modelServices.filter((service) => service.status === "正常").length;
+const availableApiKeyCount = apiKeys.filter((key) => key.status === "正常").length;
+
 const credentials = [
   { id: "postgres", name: "Postgres Readonly", value: "DSN URL", brand: "postgresql" as const, status: "正常" as const },
   { id: "github", name: "GitHub App", value: "App token", brand: "github" as const, status: "正常" as const },
@@ -105,6 +112,7 @@ const viewCopy: Record<SettingsView, { title: string; description: string; searc
   profile: { title: "账户", description: "管理你的个人资料、登录信息与已登录设备。" },
   preferences: { title: "偏好设置", description: "配置外观、输入方式、语言与时间格式。" },
   usage: { title: "使用情况", description: "查看当前计费周期内的模型调用、令牌与额度使用情况。" },
+  modelUsage: { title: "模型用量", description: "查看通过 API Key 发起的模型调用、消费金额与计费归属。" },
 };
 
 const usagePeriodOptions: readonly { label: string; value: UsagePeriod }[] = [
@@ -140,6 +148,8 @@ const usageMetrics: Record<UsagePeriod, readonly { label: string; value: string;
     { label: "累计 Token 数", value: "1.28 M", change: "1.28M", detail: "本月", positive: undefined },
   ],
 };
+
+const usageMetricCardClass = "h-full self-stretch rounded-lg bg-surface-base [&_[data-slot=metric-card-label]]:text-label [&_[data-slot=metric-card-value-row]]:mt-1 [&_[data-slot=metric-card-value-row]>span:first-child]:text-title";
 
 const usageRankData: Record<UsagePeriod, { models: readonly UsageRankRowData[]; mcp: readonly UsageRankRowData[]; topics: readonly UsageRankRowData[] }> = {
   hour: {
@@ -179,6 +189,40 @@ const usageSummaries = [
   { value: "171.4 M", label: "当月 Token 消耗" },
   { value: "311.1 M", label: "总计" },
 ] as const;
+
+const modelUsageRangeOptions: readonly { label: string; value: ModelUsageRange }[] = [
+  { label: "今天", value: "day" },
+  { label: "最近 7 天", value: "week" },
+  { label: "本月", value: "month" },
+];
+
+const spendChartConfig = {
+  amount: { label: "消费金额", color: "var(--brand)" },
+} satisfies ChartConfig;
+
+const attributionChartConfig = {
+  amount: { label: "消费金额", color: "var(--brand)" },
+} satisfies ChartConfig;
+
+const attributionChartColors = ["var(--brand)", "var(--info-border)", "var(--success-border)", "var(--neutral)"] as const;
+
+const modelUsageRecords = [
+  { id: "usage-01", date: "2026-08-19", apiKey: "prod-••C4hA", service: "默认模型服务", model: "gpt-4.1", attribution: "产品研发部", calls: 3950, inputTokens: 11.2, cachedTokens: 2.1, outputTokens: 3.0, amount: 404.32 },
+  { id: "usage-02", date: "2026-08-18", apiKey: "agent-••G5dT", service: "DeepSeek Production", model: "DeepSeek-v4-pro", attribution: "智能客服项目", calls: 2402, inputTokens: 8.9, cachedTokens: 1.4, outputTokens: 2.4, amount: 220.88 },
+  { id: "usage-03", date: "2026-08-17", apiKey: "prod-••C4hA", service: "GLM 模型组", model: "GLM-5-Turbo", attribution: "产品研发部", calls: 1879, inputTokens: 5.4, cachedTokens: 0.8, outputTokens: 2.3, amount: 73.28 },
+  { id: "usage-04", date: "2026-08-15", apiKey: "support-••S8pJ", service: "默认模型服务", model: "gpt-4.1", attribution: "智能客服项目", calls: 1456, inputTokens: 4.1, cachedTokens: 0.6, outputTokens: 1.2, amount: 147.64 },
+  { id: "usage-05", date: "2026-08-11", apiKey: "staging-••R7vE", service: "DeepSeek Production", model: "DeepSeek-v4-flash", attribution: "平台工程部", calls: 1290, inputTokens: 3.8, cachedTokens: 0.4, outputTokens: 0.9, amount: 44.52 },
+  { id: "usage-06", date: "2026-08-06", apiKey: "analytics-••A9kL", service: "默认模型服务", model: "gpt-4.1", attribution: "产品研发部", calls: 894, inputTokens: 2.7, cachedTokens: 0.3, outputTokens: 0.7, amount: 89.64 },
+  { id: "usage-07", date: "2026-08-03", apiKey: "dev-••M2pQ", service: "GLM 模型组", model: "GLM-5-Turbo", attribution: "平台工程部", calls: 612, inputTokens: 1.9, cachedTokens: 0.1, outputTokens: 0.5, amount: 21.76 },
+] as const;
+
+type ModelUsageRecord = (typeof modelUsageRecords)[number];
+
+const modelUsageFilterOptions = {
+  attributions: [...new Set(modelUsageRecords.map((record) => record.attribution))].map((value) => ({ label: value, value })),
+  models: [...new Set(modelUsageRecords.map((record) => record.model))].map((value) => ({ label: value, value })),
+  services: [...new Set(modelUsageRecords.map((record) => record.service))].map((value) => ({ label: value, value })),
+} as const;
 
 export interface PersonalSettingsProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
   /** The first settings page rendered by the block. */
@@ -229,6 +273,7 @@ export function PersonalSettings({ className, defaultView = "models", ...props }
   const UserIcon = useIcon("user");
   const SettingsIcon = useIcon("settings");
   const ClockIcon = useIcon("clock");
+  const LibraryIcon = useIcon("square-library");
   const [view, setView] = useState<SettingsView>(defaultView);
   const [query, setQuery] = useState("");
   const copy = viewCopy[view];
@@ -252,12 +297,12 @@ export function PersonalSettings({ className, defaultView = "models", ...props }
         <PageLayout size="full" className="h-full pt-0">
           <PageSidebar aria-label="个人设置导航" className="p-3">
             <SettingsNavGroup activeView={view} label="资源" items={[{ value: "models", label: "模型服务", icon: BrainIcon }, { value: "keys", label: "API keys", icon: LockIcon }, { value: "credentials", label: "凭证管理", icon: ShieldIcon }]} onChange={setSettingsView} />
-            <SettingsNavGroup activeView={view} className="mt-5" label="个人设置" items={[{ value: "profile", label: "个人资料", icon: UserIcon }, { value: "preferences", label: "偏好设置", icon: SettingsIcon }, { value: "usage", label: "使用情况", icon: ClockIcon }]} onChange={setSettingsView} />
+            <SettingsNavGroup activeView={view} className="mt-5" label="个人设置" items={[{ value: "profile", label: "个人资料", icon: UserIcon }, { value: "preferences", label: "偏好设置", icon: SettingsIcon }, { value: "usage", label: "使用情况", icon: ClockIcon }, { value: "modelUsage", label: "模型用量", icon: LibraryIcon }]} onChange={setSettingsView} />
           </PageSidebar>
-          <PageContent>
-            <PageBody className="p-4 sm:p-6">
+          <PageContent className="overflow-y-auto overscroll-contain">
+            <PageBody className="flex-none overflow-visible p-4 sm:p-6">
               <section className="mx-auto w-full max-w-[960px]">
-                {view === "usage" ? <UsageSettings /> : <><header className="max-w-3xl"><h1 className="text-title font-semibold text-fg-default">{copy.title}</h1><p className="mt-1 text-label leading-5 text-fg-muted">{copy.description}</p></header>
+                {view === "modelUsage" ? <ModelUsageSettings /> : view === "usage" ? <UsageSettings /> : <><header className="max-w-3xl"><h1 className="text-title font-semibold text-fg-default">{copy.title}</h1><p className="mt-1 text-label leading-5 text-fg-muted">{copy.description}</p></header>
                 <div className="mt-4">{view === "models" ? <div className="flex flex-col gap-2.5"><InputGroup className="w-full max-w-[450px] border-border hover:border-border" size="md"><InputGroupAddon className="pr-2"><SearchIcon aria-hidden size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput aria-label={copy.search} className="h-full min-h-0" onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} value={query} /></InputGroup><ModelServicesTable services={services} /></div> : view === "keys" ? <ApiKeysTable copyIcon={CopyIcon} plusIcon={PlusIcon} /> : view === "credentials" ? <CredentialsTable plusIcon={PlusIcon} /> : view === "preferences" ? <PreferencesSettings /> : <ProfileSettings />}</div></>}
               </section>
             </PageBody>
@@ -445,6 +490,72 @@ function AccountInfoItem({ action, description, destructive = false, disabled = 
   return <InfoItem className={cn("min-h-[76px] px-4 py-3.5", !grouped && "rounded-lg border-[0.5px] border-border")}><InfoItemContent><InfoItemTitle>{title}</InfoItemTitle><InfoItemDescription>{description}</InfoItemDescription></InfoItemContent><InfoItemTrailing><Button disabled={disabled} onClick={onAction} size="md" type="button" variant={destructive ? "destructive" : "tertiary"}>{action}</Button></InfoItemTrailing></InfoItem>;
 }
 
+function ModelUsageSettings() {
+  const [range, setRange] = useState<ModelUsageRange>("month");
+  const [service, setService] = useState("all");
+  const [attribution, setAttribution] = useState("all");
+  const [model, setModel] = useState("all");
+  const [apiKey, setApiKey] = useState("all");
+  const services = [...new Set(modelUsageRecords.map((record) => record.service))];
+  const attributions = [...new Set(modelUsageRecords.map((record) => record.attribution))];
+  const models = [...new Set(modelUsageRecords.map((record) => record.model))];
+  const apiKeys = [...new Set(modelUsageRecords.map((record) => record.apiKey))];
+  const filteredRecords = useMemo(() => modelUsageRecords.filter((record) => {
+    const withinRange = range === "month" ? true : range === "week" ? record.date >= "2026-08-13" : record.date === "2026-08-19";
+    return withinRange && (service === "all" || record.service === service) && (attribution === "all" || record.attribution === attribution) && (model === "all" || record.model === model) && (apiKey === "all" || record.apiKey === apiKey);
+  }), [apiKey, attribution, model, range, service]);
+  const totals = useMemo(() => filteredRecords.reduce((summary, record) => ({ amount: summary.amount + record.amount, calls: summary.calls + record.calls, inputTokens: summary.inputTokens + record.inputTokens, cachedTokens: summary.cachedTokens + record.cachedTokens, outputTokens: summary.outputTokens + record.outputTokens }), { amount: 0, calls: 0, inputTokens: 0, cachedTokens: 0, outputTokens: 0 }), [filteredRecords]);
+  const attributionRows = useMemo(() => Array.from(filteredRecords.reduce((rows, record) => rows.set(record.attribution, (rows.get(record.attribution) ?? 0) + record.amount), new Map<string, number>())).sort(([, left], [, right]) => right - left), [filteredRecords]);
+  const attributionChartData = useMemo(() => attributionRows.map(([label, amount], index) => ({ label, amount, fill: attributionChartColors[index % attributionChartColors.length] })), [attributionRows]);
+  const modelShareRows = useMemo(() => Array.from(filteredRecords.reduce((rows, record) => rows.set(record.model, (rows.get(record.model) ?? 0) + record.amount), new Map<string, number>())).sort(([, left], [, right]) => right - left), [filteredRecords]);
+  const trendPoints = useMemo(() => {
+    const [startDay, dayCount] = range === "month" ? [1, 30] : range === "week" ? [13, 7] : [19, 1];
+    return Array.from({ length: dayCount }, (_, index) => {
+      const date = `2026-08-${String(startDay + index).padStart(2, "0")}`;
+      const amount = filteredRecords.filter((record) => record.date === date).reduce((sum, record) => sum + record.amount, 0);
+      return { date, amount };
+    });
+  }, [filteredRecords, range]);
+
+  return <div className="space-y-4 py-1">
+    <header className="flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-heading font-semibold text-fg-default">模型用量</h1><p className="mt-1 text-label leading-5 text-fg-muted">按调用时的 API Key、模型服务授权与计费归属统计消费。</p></div><Button onClick={() => undefined} type="button" variant="tertiary">导出明细</Button></header>
+
+    <section aria-label="账户资源概览" className="grid items-stretch gap-3 sm:grid-cols-3"><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">可用于模型调用</span>} label="账户余额" value={accountBalance} /><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">当前已授权且可调用</span>} label="可用模型服务" value={`${availableModelServiceCount} 个`} /><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">状态正常的调用 Key</span>} label="可用 API Key" value={`${availableApiKeyCount} 个`} /></section>
+
+    <Separator />
+
+    <section aria-label="模型用量筛选"><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5"><UsageFilter label="时间范围" value={range} onChange={(value) => setRange(value as ModelUsageRange)} options={modelUsageRangeOptions} /><UsageFilter label="模型服务" value={service} onChange={setService} options={[{ label: "全部模型服务", value: "all" }, ...services.map((item) => ({ label: item, value: item }))]} /><UsageFilter label="计费归属" value={attribution} onChange={setAttribution} options={[{ label: "全部部门 / 项目", value: "all" }, ...attributions.map((item) => ({ label: item, value: item }))]} /><UsageFilter label="模型" value={model} onChange={setModel} options={[{ label: "全部模型", value: "all" }, ...models.map((item) => ({ label: item, value: item }))]} /><UsageFilter label="API Key" value={apiKey} onChange={setApiKey} options={[{ label: "全部 API Key", value: "all" }, ...apiKeys.map((item) => ({ label: item, value: item }))]} /></div></section>
+
+    <section aria-label="核心用量指标" className="grid items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-4"><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">按调用时单价计算</span>} label="消费金额" value={`¥${totals.amount.toFixed(2)}`} /><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-brand">成功率 99.2%</span>} label="模型调用次数" value={totals.calls.toLocaleString("zh-CN")} /><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">输入 {totals.inputTokens.toFixed(1)}M · 输出 {totals.outputTokens.toFixed(1)}M</span>} label="总 Token" value={`${(totals.inputTokens + totals.cachedTokens + totals.outputTokens).toFixed(1)} M`} /><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">每次调用的平均成本</span>} label="平均单次成本" value={totals.calls ? `¥${(totals.amount / totals.calls).toFixed(3)}` : "—"} /></section>
+
+    <div className="flex flex-col gap-4"><Container><ContainerHeader className="px-4 py-2"><div><h2 className="text-body font-medium text-fg-default" id="spend-trend-title">消费趋势</h2></div><span className="text-label text-fg-subtle">单位：¥</span></ContainerHeader><ContainerBody className="px-2 pb-4 pt-0 sm:px-6"><section aria-labelledby="spend-trend-title"><ChartContainer className="aspect-auto h-[250px] w-full" config={spendChartConfig}><BarChart accessibilityLayer data={trendPoints} margin={{ left: 12, right: 12 }}><CartesianGrid stroke="var(--border)" strokeOpacity={0.35} vertical={false} /><XAxis axisLine={false} dataKey="date" minTickGap={32} tickFormatter={(value: string) => new Date(value).toLocaleDateString("zh-CN", { month: "short", day: "numeric" })} tickLine={false} tickMargin={8} /><ChartTooltip content={<ChartTooltipContent className="w-[150px]" labelFormatter={(value) => new Date(String(value)).toLocaleDateString("zh-CN", { month: "short", day: "numeric", year: "numeric" })} valueFormatter={(value) => `¥${Number(value).toFixed(2)}`} />} cursor={{ fill: "var(--surface-raised)" }} /><Bar dataKey="amount" fill="var(--color-amount)" /></BarChart></ChartContainer></section></ContainerBody></Container>
+      <div className="grid gap-4 lg:grid-cols-2"><Container><ContainerHeader className="px-4 py-2"><h2 className="text-body font-medium text-fg-default" id="spend-breakdown-title">计费归属</h2><span className="text-label text-fg-subtle">按金额</span></ContainerHeader><ContainerBody className="flex items-center px-4 pb-4 pt-0"><section aria-labelledby="spend-breakdown-title" className="w-full">{attributionChartData.length ? <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center"><div className="relative shrink-0"><ChartContainer className="aspect-square h-52 min-h-0 w-52" config={attributionChartConfig}><PieChart><ChartTooltip content={<ChartTooltipContent hideIndicator labelFormatter={(label) => String(label)} valueFormatter={(value) => `¥${Number(value).toFixed(2)}`} />} cursor={false} /><Pie data={attributionChartData} dataKey="amount" innerRadius={58} nameKey="label" outerRadius={84} paddingAngle={2} stroke="var(--surface-raised)" strokeWidth={3}>{attributionChartData.map((item) => <Cell fill={item.fill} key={item.label} />)}</Pie></PieChart></ChartContainer><div aria-hidden className="absolute inset-0 flex flex-col items-center justify-center text-center"><span className="text-title font-semibold tabular-nums text-fg-default">¥{totals.amount.toFixed(0)}</span><span className="mt-0.5 text-label text-fg-muted">总消费</span></div></div><div className="w-full min-w-0 space-y-3">{attributionChartData.map((item) => <div className="flex items-center justify-between gap-3" key={item.label}><div className="flex min-w-0 items-center gap-2"><span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: item.fill }} /><span className="truncate text-body text-fg-default">{item.label}</span></div><div className="shrink-0 text-right"><p className="text-body font-medium tabular-nums text-fg-default">¥{item.amount.toFixed(2)}</p><p className="mt-0.5 text-label tabular-nums text-fg-muted">{totals.amount ? `${(item.amount / totals.amount * 100).toFixed(1)}%` : "—"}</p></div></div>)}</div></div> : <div className="flex h-48 items-center justify-center text-body text-fg-muted">当前筛选条件下没有计费归属。</div>}</section></ContainerBody></Container><Container><ContainerHeader className="px-4 py-2"><h2 className="text-body font-medium text-fg-default" id="model-share-title">模型占比</h2><span className="text-label text-fg-subtle">按金额</span></ContainerHeader><ContainerBody className="flex items-center px-2 pb-4 pt-0"><section aria-labelledby="model-share-title" className="w-full space-y-2.5">{modelShareRows.length ? modelShareRows.map(([label, amount]) => <div className="relative flex h-10 overflow-hidden rounded-lg bg-hover px-2.5" key={label}><span aria-hidden className="absolute inset-y-0 left-0 rounded-lg bg-brand/15" style={{ width: `${totals.amount ? amount / totals.amount * 100 : 0}%` }} /><div className="relative flex w-full items-center justify-between gap-2"><div className="flex min-w-0 items-center gap-2 text-label text-fg-default"><span className="flex size-5 shrink-0 items-center justify-center text-fg-muted"><ModelLogo model={label} size={16} /></span><span className="truncate">{label}</span></div><div className="shrink-0 text-right"><span className="block text-label font-medium tabular-nums text-fg-default">¥{amount.toFixed(2)}</span><span className="block text-label tabular-nums text-fg-muted">{totals.amount ? `${(amount / totals.amount * 100).toFixed(1)}%` : "—"}</span></div></div></div>) : <div className="flex h-48 items-center justify-center text-body text-fg-muted">当前筛选条件下没有模型调用。</div>}</section></ContainerBody></Container></div></div>
+
+    <section aria-labelledby="model-usage-details-title"><div className="flex items-baseline justify-between gap-3"><div><h2 className="text-body font-medium text-fg-default" id="model-usage-details-title">消费明细</h2><p className="mt-1 text-label text-fg-muted">按 API Key、模型服务和模型汇总；计费归属取调用发生时的快照。</p></div><span className="shrink-0 text-label text-fg-subtle">{totals.calls.toLocaleString("zh-CN")} 次调用</span></div><ModelUsageDetailsTable records={filteredRecords} /></section>
+  </div>;
+}
+
+function UsageFilter({ label, onChange, options, value }: { label: string; onChange: (value: string) => void; options: readonly { label: string; value: string }[]; value: string }) {
+  return <div className="min-w-0"><Select onValueChange={onChange} size="md" value={value}><SelectTrigger aria-label={label} className="w-full" prefix={<><span>{label}</span><span aria-hidden className="h-4 w-px bg-border" /></>} /><SelectContent>{options.map((option, index) => <SelectItem index={index} key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select></div>;
+}
+
+function ModelUsageDetailsTable({ records }: { records: readonly ModelUsageRecord[] }) {
+  const data = useMemo(() => [...records], [records]);
+  const columns = useMemo<ColumnDef<ModelUsageRecord, unknown>[]>(() => [
+    { accessorKey: "date", header: ({ column }) => <DataTableColumnHeader column={column} label="日期" />, cell: ({ row }) => <span className="tabular-nums text-fg-muted">{row.original.date.slice(5).replace("-", "/")}</span> },
+    { accessorKey: "apiKey", header: ({ column }) => <DataTableColumnHeader column={column} label="API Key" />, meta: { label: "API Key", placeholder: "搜索 API Key", variant: "text" }, cell: ({ row }) => <span className="font-mono text-label text-fg-muted">{row.original.apiKey}</span> },
+    { accessorKey: "service", header: ({ column }) => <DataTableColumnHeader column={column} label="模型服务" />, filterFn: (row, id, value: string[]) => value.includes(String(row.getValue(id))), meta: { label: "模型服务", options: modelUsageFilterOptions.services, variant: "multiSelect" }, cell: ({ row }) => <span className="font-medium text-fg-default">{row.original.service}</span> },
+    { accessorKey: "model", header: ({ column }) => <DataTableColumnHeader column={column} label="模型" />, filterFn: (row, id, value: string[]) => value.includes(String(row.getValue(id))), meta: { label: "模型", options: modelUsageFilterOptions.models, variant: "multiSelect" }, cell: ({ row }) => <span className="flex items-center gap-1.5"><ModelLogo model={row.original.model} /><span>{row.original.model}</span></span> },
+    { accessorKey: "attribution", header: ({ column }) => <DataTableColumnHeader column={column} label="计费归属" />, filterFn: (row, id, value: string[]) => value.includes(String(row.getValue(id))), meta: { label: "计费归属", options: modelUsageFilterOptions.attributions, variant: "multiSelect" }, cell: ({ row }) => <span>{row.original.attribution}</span> },
+    { accessorKey: "calls", header: ({ column }) => <DataTableColumnHeader className="justify-end" column={column} label="调用次数" />, cell: ({ row }) => <span className="block text-right tabular-nums">{row.original.calls.toLocaleString("zh-CN")}</span> },
+    { id: "tokens", accessorFn: (row) => row.inputTokens + row.cachedTokens + row.outputTokens, header: ({ column }) => <DataTableColumnHeader className="justify-end" column={column} label="Token" />, cell: ({ row }) => <span className="block text-right tabular-nums text-fg-muted">{(row.original.inputTokens + row.original.cachedTokens + row.original.outputTokens).toFixed(1)}M</span> },
+    { accessorKey: "amount", header: ({ column }) => <DataTableColumnHeader className="justify-end" column={column} label="金额" />, cell: ({ row }) => <span className="block text-right font-medium tabular-nums text-fg-default">¥{row.original.amount.toFixed(2)}</span> },
+  ], []);
+  const { table } = useDataTable({ columns, data, getRowId: (record) => record.id, initialState: { pagination: { pageIndex: 0, pageSize: 5 }, sorting: [{ id: "date", desc: true }] } });
+
+  return <DataTable className="mt-4 gap-2.5 [&_[data-slot=data-table-pagination]]:px-2" emptyMessage="当前筛选条件下没有模型调用。" table={table}><DataTableToolbar showViewOptions={false} table={table} /></DataTable>;
+}
+
 function UsageSettings() {
   const MessageIcon = useIcon("message-circle");
   const ToolIcon = useIcon("settings");
@@ -458,7 +569,7 @@ function UsageSettings() {
   return <div className="space-y-5 py-1">
     <header><h1 className="text-heading font-semibold text-fg-default">👋 你好 Carlos，这是你与 Zentrix 一起记录协作的第 466 天</h1></header>
 
-    <section aria-labelledby="usage-period-title"><div className="flex items-center"><div aria-label={`最近${selectedUsagePeriod.label}使用情况`} className="flex items-center text-body font-medium text-fg-default" id="usage-period-title" role="heading" aria-level={2}><span>最近</span><Select onValueChange={(value) => setUsagePeriod(value as UsagePeriod)} size="sm" value={usagePeriod}><SelectTrigger aria-label="使用情况周期" className="h-auto min-w-0 !border-0 rounded-md bg-surface-base px-1.5 py-1 text-body font-medium hover:bg-surface-base" variant="borderless" wrapperClassName="mx-1" /><SelectContent align="start">{usagePeriodOptions.map((option, index) => <SelectItem index={index} key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select><span>使用情况</span></div></div><div className="mt-3 grid items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-4">{usageMetrics[usagePeriod].map((metric) => <MetricCard className="h-full self-stretch rounded-lg bg-surface-base [&_[data-slot=metric-card-label]]:text-label [&_[data-slot=metric-card-value-row]]:mt-1 [&_[data-slot=metric-card-value-row]>span:first-child]:text-title" footer={<span className={cn(metric.positive === true ? "text-fg-brand" : metric.positive === false ? "text-fg-muted" : "text-fg-subtle")}><span className="font-medium">{metric.change}</span> {metric.detail}</span>} key={metric.label} label={metric.label} value={metric.value} />)}</div></section>
+    <section aria-labelledby="usage-period-title"><div className="flex items-center"><div aria-label={`最近${selectedUsagePeriod.label}使用情况`} className="flex items-center text-body font-medium text-fg-default" id="usage-period-title" role="heading" aria-level={2}><span>最近</span><Select onValueChange={(value) => setUsagePeriod(value as UsagePeriod)} size="sm" value={usagePeriod}><SelectTrigger aria-label="使用情况周期" className="h-auto min-w-0 !border-0 rounded-md bg-surface-base px-1.5 py-1 text-body font-medium hover:bg-surface-base" variant="borderless" wrapperClassName="mx-1" /><SelectContent align="start">{usagePeriodOptions.map((option, index) => <SelectItem index={index} key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select><span>使用情况</span></div></div><div className="mt-3 grid items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-4">{usageMetrics[usagePeriod].map((metric) => <MetricCard className={usageMetricCardClass} footer={<span className={cn(metric.positive === true ? "text-fg-brand" : metric.positive === false ? "text-fg-muted" : "text-fg-subtle")}><span className="font-medium">{metric.change}</span> {metric.detail}</span>} key={metric.label} label={metric.label} value={metric.value} />)}</div></section>
 
     <div className="grid gap-5 lg:grid-cols-3"><UsageRank title="模型使用率" subtitle={`模型 / ${selectedUsagePeriod.label}消息数`} rows={rankRows(usageRankData[usagePeriod].models)} /><UsageRank title="MCP 使用率" subtitle={`助手 / ${selectedUsagePeriod.label}话题数`} rows={rankRows(usageRankData[usagePeriod].mcp)} /><UsageRank title="话题内容量" subtitle={`话题 / ${selectedUsagePeriod.label}消息数`} rows={rankRows(usageRankData[usagePeriod].topics)} /></div>
 
