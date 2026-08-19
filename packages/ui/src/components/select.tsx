@@ -256,9 +256,10 @@ const triggerVariants = cva(
 );
 
 interface SelectTriggerProps
-  extends Omit<HTMLAttributes<HTMLButtonElement>, "children">,
+  extends Omit<HTMLAttributes<HTMLButtonElement>, "children" | "prefix">,
     Omit<VariantProps<typeof triggerVariants>, "size"> {
   icon?: IconComponent;
+  prefix?: ReactNode;
   placeholder?: string;
   error?: string;
   wrapperClassName?: string;
@@ -270,6 +271,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
       className,
       variant,
       icon: Icon,
+      prefix,
       placeholder = "Select…",
       error,
       wrapperClassName,
@@ -304,6 +306,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
                 className="shrink-0 text-fg-subtle transition-[color,stroke-width] duration-fast group-hover:text-fg-default group-hover:stroke-[2]"
               />
             )}
+            {prefix && <span className="flex shrink-0 items-center gap-1.5 text-label text-fg-muted">{prefix}</span>}
             <SelectPrimitive.Value
               placeholder={placeholder}
               className="min-w-0 flex-1 text-left truncate data-[placeholder]:text-fg-subtle"
