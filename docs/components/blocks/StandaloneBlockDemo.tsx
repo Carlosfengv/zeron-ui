@@ -78,7 +78,7 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
         </TopNavAppShell>
       );
     case "zaiops-operations-01":
-      return <ZaiopsOperations title="Inspection overview" description="Review cluster health and governance tasks." />;
+      return <ZaiopsOperations />;
     case "zlrlist":
       return <ZlrWorkspace />;
   }
