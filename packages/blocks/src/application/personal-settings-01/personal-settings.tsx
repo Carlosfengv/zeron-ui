@@ -2,7 +2,6 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState, type ComponentPropsWithoutRef, type ReactNode } from "react";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import ChatGLMColor from "@lobehub/icons/es/ChatGLM/components/Color";
 import DeepSeekColor from "@lobehub/icons/es/DeepSeek/components/Color";
 import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono";
@@ -12,7 +11,7 @@ import slack from "@thesvg/icons/slack";
 import { AppShell, AppShellHeader, AppShellMain } from "@zeron/ui/app-shell";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@zeron/ui/chart";
+import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
 import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
 import { DataTable, DataTableColumnHeader, DataTableToolbar, useDataTable } from "@zeron/ui/data-table";
@@ -24,8 +23,10 @@ import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger }
 import { NavMenu } from "@zeron/ui/nav-menu";
 import { PageBody, PageContent, PageLayout, PageSidebar } from "@zeron/ui/page-layout";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
+import { Separator } from "@zeron/ui/separator";
 import { SidebarIdentityAvatar } from "@zeron/ui/sidebar-identity-row";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@zeron/ui/table";
+import { TabItem, Tabs, TabsList } from "@zeron/ui/tabs";
 import { TopNav, TopNavActions, TopNavBrand } from "@zeron/ui/top-nav";
 import { Switch } from "@zeron/ui/switch";
 import { type IconComponent, useIcon } from "@zeron/ui/system/icon-context";
@@ -33,6 +34,16 @@ import { cn } from "@zeron/ui/system/utils";
 
 type SettingsView = "models" | "keys" | "credentials" | "profile" | "preferences" | "usage";
 type ServiceStatus = "正常" | "已用尽" | "需要重新获取";
+type ActivityView = "tokens" | "messages";
+type UsagePeriod = "hour" | "day" | "week" | "month";
+type UsageRankIcon = "deepseek" | "openai" | "glm" | "jira" | "tool" | "message";
+
+interface UsageRankRowData {
+  label: string;
+  value: string;
+  fill: string;
+  icon: UsageRankIcon;
+}
 
 interface ModelService {
   id: string;
@@ -96,57 +107,78 @@ const viewCopy: Record<SettingsView, { title: string; description: string; searc
   usage: { title: "使用情况", description: "查看当前计费周期内的模型调用、令牌与额度使用情况。" },
 };
 
-type UsageMetric = "cost" | "tokens" | "calls";
-type UsageModelId = "gpt" | "deepseek" | "glm";
-
-interface ModelUsage {
-  cost: number;
-  tokens: number;
-  calls: number;
-}
-
-interface DailyUsage extends Record<UsageModelId, ModelUsage> {
-  date: string;
-  balance: number;
-}
-
-const usageModels: readonly { id: UsageModelId; label: string; fill: string; mutedFill: string }[] = [
-  { id: "gpt", label: "GPT-5.1", fill: "var(--brand)", mutedFill: "bg-brand" },
-  { id: "deepseek", label: "DeepSeek-V4", fill: "var(--warning)", mutedFill: "bg-warning" },
-  { id: "glm", label: "GLM-5-Turbo", fill: "var(--neutral)", mutedFill: "bg-neutral" },
+const usagePeriodOptions: readonly { label: string; value: UsagePeriod }[] = [
+  { label: "一小时", value: "hour" },
+  { label: "一天", value: "day" },
+  { label: "一周", value: "week" },
+  { label: "一个月", value: "month" },
 ];
 
-const dailyUsage: readonly DailyUsage[] = [
-  { date: "08/20", balance: 96.6, gpt: { cost: 0.88, tokens: 0.18, calls: 96 }, deepseek: { cost: 0.94, tokens: 0.61, calls: 478 }, glm: { cost: 0.42, tokens: 0.72, calls: 821 } },
-  { date: "08/21", balance: 92.4, gpt: { cost: 1.62, tokens: 0.33, calls: 138 }, deepseek: { cost: 1.34, tokens: 0.88, calls: 612 }, glm: { cost: 1.24, tokens: 1.42, calls: 1242 } },
-  { date: "08/22", balance: 87.1, gpt: { cost: 2.06, tokens: 0.44, calls: 174 }, deepseek: { cost: 1.83, tokens: 1.12, calls: 748 }, glm: { cost: 1.41, tokens: 1.66, calls: 1388 } },
-  { date: "08/23", balance: 82.8, gpt: { cost: 1.74, tokens: 0.36, calls: 149 }, deepseek: { cost: 1.42, tokens: 0.91, calls: 655 }, glm: { cost: 1.14, tokens: 1.31, calls: 1105 } },
-  { date: "08/24", balance: 77.9, gpt: { cost: 2.42, tokens: 0.51, calls: 215 }, deepseek: { cost: 1.26, tokens: 0.79, calls: 581 }, glm: { cost: 1.19, tokens: 1.43, calls: 1196 } },
-  { date: "08/25", balance: 72.3, gpt: { cost: 2.21, tokens: 0.47, calls: 202 }, deepseek: { cost: 2.07, tokens: 1.29, calls: 846 }, glm: { cost: 1.29, tokens: 1.55, calls: 1296 } },
-  { date: "08/26", balance: 68.4, gpt: { cost: 2.11, tokens: 0.45, calls: 188 }, deepseek: { cost: 1.76, tokens: 1.08, calls: 729 }, glm: { cost: 1.25, tokens: 1.28, calls: 1024 } },
-];
+const usageMetrics: Record<UsagePeriod, readonly { label: string; value: string; change: string; detail: string; positive?: boolean }[]> = {
+  hour: [
+    { label: "模型调用次数", value: "182", change: "+8%", detail: "较上一小时", positive: true },
+    { label: "MCP 调用", value: "68", change: "+4.4%", detail: "较上一小时", positive: true },
+    { label: "消息数", value: "6", change: "+20%", detail: "较上一小时", positive: true },
+    { label: "累计 Token 数", value: "4.8 K", change: "4.8K", detail: "本小时", positive: undefined },
+  ],
+  day: [
+    { label: "模型调用次数", value: "2,121", change: "+5.6%", detail: "较昨天", positive: true },
+    { label: "MCP 调用", value: "734", change: "-1.8%", detail: "较昨天", positive: false },
+    { label: "消息数", value: "33", change: "+10%", detail: "较昨天", positive: true },
+    { label: "累计 Token 数", value: "56.2 K", change: "56.2K", detail: "今日", positive: undefined },
+  ],
+  week: [
+    { label: "模型调用次数", value: "11,212", change: "+12%", detail: "周环比", positive: true },
+    { label: "MCP 调用", value: "4,112", change: "-2.1%", detail: "上周", positive: false },
+    { label: "消息数", value: "33", change: "-10%", detail: "上周", positive: false },
+    { label: "累计 Token 数", value: "302.8 K", change: "302.8K", detail: "本周", positive: undefined },
+  ],
+  month: [
+    { label: "模型调用次数", value: "47,380", change: "+18.7%", detail: "月环比", positive: true },
+    { label: "MCP 调用", value: "16,824", change: "+6.2%", detail: "上月", positive: true },
+    { label: "消息数", value: "141", change: "+8.5%", detail: "上月", positive: true },
+    { label: "累计 Token 数", value: "1.28 M", change: "1.28M", detail: "本月", positive: undefined },
+  ],
+};
 
-const balanceChartConfig = {
-  balance: { label: "余额", color: "var(--brand)" },
-} satisfies ChartConfig;
-
-const consumptionChartConfig = {
-  gpt: { label: "GPT-5.1", color: "var(--brand)" },
-  deepseek: { label: "DeepSeek-V4", color: "var(--warning)" },
-  glm: { label: "GLM-5-Turbo", color: "var(--neutral)" },
-} satisfies ChartConfig;
-
-const collaborationMetrics = [
-  { label: "模型调用次数", value: "11,212", change: "+12%", detail: "周环比", positive: true },
-  { label: "MCP 调用", value: "4,112", change: "-2.1%", detail: "上周", positive: false },
-  { label: "消息数", value: "33", change: "-10%", detail: "上周", positive: false },
-  { label: "累计 Token 数", value: "302.8 K", change: "302.8K", detail: "上周", positive: undefined },
-] as const;
+const usageRankData: Record<UsagePeriod, { models: readonly UsageRankRowData[]; mcp: readonly UsageRankRowData[]; topics: readonly UsageRankRowData[] }> = {
+  hour: {
+    models: [{ label: "DeepSeek", value: "2", fill: "100%", icon: "deepseek" }, { label: "gpt-4o-mini", value: "1", fill: "50%", icon: "openai" }, { label: "GLM-5-Turbo", value: "1", fill: "50%", icon: "glm" }, { label: "GPT-5", value: "1", fill: "50%", icon: "openai" }, { label: "DeepSeek-R1", value: "1", fill: "50%", icon: "deepseek" }],
+    mcp: [{ label: "Jira", value: "1", fill: "100%", icon: "jira" }, { label: "GitHub", value: "1", fill: "100%", icon: "tool" }, { label: "Slack", value: "1", fill: "100%", icon: "tool" }, { label: "Postgres", value: "1", fill: "100%", icon: "tool" }, { label: "Notion", value: "1", fill: "100%", icon: "tool" }],
+    topics: [{ label: "Onboarding", value: "4", fill: "100%", icon: "message" }, { label: "自我介绍", value: "1", fill: "25%", icon: "message" }, { label: "API 接入", value: "1", fill: "25%", icon: "message" }, { label: "发布检查", value: "1", fill: "25%", icon: "message" }, { label: "数据分析", value: "1", fill: "25%", icon: "message" }],
+  },
+  day: {
+    models: [{ label: "DeepSeek", value: "7", fill: "100%", icon: "deepseek" }, { label: "gpt-4o-mini", value: "2", fill: "29%", icon: "openai" }, { label: "GLM-5-Turbo", value: "2", fill: "29%", icon: "glm" }, { label: "GPT-5", value: "1", fill: "14%", icon: "openai" }, { label: "DeepSeek-R1", value: "1", fill: "14%", icon: "deepseek" }],
+    mcp: [{ label: "Jira", value: "3", fill: "100%", icon: "jira" }, { label: "GitHub", value: "2", fill: "67%", icon: "tool" }, { label: "Slack", value: "2", fill: "67%", icon: "tool" }, { label: "Postgres", value: "1", fill: "33%", icon: "tool" }, { label: "Notion", value: "1", fill: "33%", icon: "tool" }],
+    topics: [{ label: "Onboarding", value: "15", fill: "100%", icon: "message" }, { label: "API 接入", value: "7", fill: "47%", icon: "message" }, { label: "发布检查", value: "5", fill: "33%", icon: "message" }, { label: "自我介绍", value: "4", fill: "27%", icon: "message" }, { label: "数据分析", value: "3", fill: "20%", icon: "message" }],
+  },
+  week: {
+    models: [{ label: "DeepSeek", value: "11", fill: "100%", icon: "deepseek" }, { label: "GLM-5-Turbo", value: "5", fill: "45%", icon: "glm" }, { label: "gpt-4o-mini", value: "2", fill: "18%", icon: "openai" }, { label: "GPT-5", value: "2", fill: "18%", icon: "openai" }, { label: "DeepSeek-R1", value: "1", fill: "9%", icon: "deepseek" }],
+    mcp: [{ label: "Jira", value: "2", fill: "100%", icon: "jira" }, { label: "GitHub", value: "2", fill: "100%", icon: "tool" }, { label: "Slack", value: "1", fill: "50%", icon: "tool" }, { label: "Postgres", value: "1", fill: "50%", icon: "tool" }, { label: "Notion", value: "1", fill: "50%", icon: "tool" }],
+    topics: [{ label: "Onboarding", value: "24", fill: "100%", icon: "message" }, { label: "API 接入", value: "11", fill: "46%", icon: "message" }, { label: "发布检查", value: "7", fill: "29%", icon: "message" }, { label: "数据分析", value: "5", fill: "21%", icon: "message" }, { label: "自我介绍", value: "4", fill: "17%", icon: "message" }],
+  },
+  month: {
+    models: [{ label: "DeepSeek", value: "42", fill: "100%", icon: "deepseek" }, { label: "GLM-5-Turbo", value: "19", fill: "45%", icon: "glm" }, { label: "GPT-5", value: "13", fill: "31%", icon: "openai" }, { label: "gpt-4o-mini", value: "10", fill: "24%", icon: "openai" }, { label: "DeepSeek-R1", value: "8", fill: "19%", icon: "deepseek" }],
+    mcp: [{ label: "Jira", value: "8", fill: "100%", icon: "jira" }, { label: "GitHub", value: "7", fill: "88%", icon: "tool" }, { label: "Slack", value: "5", fill: "63%", icon: "tool" }, { label: "Postgres", value: "4", fill: "50%", icon: "tool" }, { label: "Notion", value: "3", fill: "38%", icon: "tool" }],
+    topics: [{ label: "Onboarding", value: "93", fill: "100%", icon: "message" }, { label: "API 接入", value: "48", fill: "52%", icon: "message" }, { label: "发布检查", value: "31", fill: "33%", icon: "message" }, { label: "数据分析", value: "24", fill: "26%", icon: "message" }, { label: "自我介绍", value: "18", fill: "19%", icon: "message" }],
+  },
+};
 
 const usageMonths = ["六月", "七月", "八月", "九月", "十月", "十一月", "十二月", "一月", "二月", "三月", "四月", "五月"] as const;
-const heatmapActivity: Record<string, 1 | 2 | 3> = {
+const tokenHeatmapActivity: Record<string, 1 | 2 | 3> = {
   "0-1-4": 1, "0-3-1": 2, "1-0-2": 1, "1-3-5": 1, "2-2-3": 3, "3-0-5": 1, "5-1-2": 2, "5-3-3": 1, "6-2-5": 1, "8-1-4": 1, "9-2-2": 2, "10-0-5": 1, "10-3-4": 2, "11-1-1": 1, "11-3-5": 3,
 };
+
+const messageHeatmapActivity: Record<string, 1 | 2 | 3> = {
+  "0-0-2": 1, "0-2-5": 2, "1-1-3": 1, "1-3-0": 3, "2-0-4": 2, "3-2-1": 1, "4-1-5": 2, "5-0-3": 3, "6-2-4": 1, "7-3-2": 2, "8-0-5": 1, "9-1-0": 3, "10-2-3": 2, "11-0-1": 1, "11-3-4": 2,
+};
+
+const usageSummaries = [
+  { value: "2,121", label: "LLM 调用次数" },
+  { value: "17.4K", label: "今日 Token 消耗" },
+  { value: "171.4 M", label: "当月 Token 消耗" },
+  { value: "311.1 M", label: "总计" },
+] as const;
 
 export interface PersonalSettingsProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
   /** The first settings page rendered by the block. */
@@ -413,73 +445,40 @@ function AccountInfoItem({ action, description, destructive = false, disabled = 
   return <InfoItem className={cn("min-h-[76px] px-4 py-3.5", !grouped && "rounded-lg border-[0.5px] border-border")}><InfoItemContent><InfoItemTitle>{title}</InfoItemTitle><InfoItemDescription>{description}</InfoItemDescription></InfoItemContent><InfoItemTrailing><Button disabled={disabled} onClick={onAction} size="md" type="button" variant={destructive ? "destructive" : "tertiary"}>{action}</Button></InfoItemTrailing></InfoItem>;
 }
 
-function formatUsageValue(value: number, metric: UsageMetric) {
-  if (metric === "cost") return `¥${value.toFixed(2)}`;
-  if (metric === "tokens") return `${value.toFixed(2)}M`;
-  return value.toLocaleString("zh-CN");
-}
-
-function totalModelUsage(modelId: UsageModelId, metric: UsageMetric) {
-  return dailyUsage.reduce((total, day) => total + day[modelId][metric], 0);
-}
-
-function BalanceTrendChart() {
-  return <ChartContainer config={balanceChartConfig} className="mt-4 h-48 w-full">
-    <AreaChart accessibilityLayer data={dailyUsage} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
-      <CartesianGrid stroke="var(--border)" strokeDasharray="3 4" vertical={false} />
-      <XAxis axisLine={false} dataKey="date" tickLine={false} tickMargin={8} />
-      <YAxis axisLine={false} domain={[0, 100]} tickFormatter={(value) => `¥${value}`} tickLine={false} tickMargin={8} width={42} />
-      <ChartTooltip content={<ChartTooltipContent labelFormatter={(label) => `${label} 余额`} valueFormatter={(value) => `¥${Number(value).toFixed(2)}`} />} cursor={{ stroke: "var(--border)", strokeDasharray: "3 4" }} />
-      <Area dataKey="balance" fill="var(--color-balance)" fillOpacity={0.12} stroke="var(--color-balance)" strokeWidth={2} type="monotone" />
-    </AreaChart>
-  </ChartContainer>;
-}
-
-function StackedConsumptionChart({ metric }: { metric: UsageMetric }) {
-  const chartData = dailyUsage.map((day) => ({ date: day.date, gpt: day.gpt[metric], deepseek: day.deepseek[metric], glm: day.glm[metric] }));
-  const tickFormatter = (value: number) => metric === "cost" ? `¥${value.toFixed(0)}` : metric === "tokens" ? `${value.toFixed(1)}M` : value.toLocaleString("zh-CN");
-
-  return <ChartContainer config={consumptionChartConfig} className="mt-4 h-52 w-full">
-    <BarChart accessibilityLayer data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
-      <CartesianGrid stroke="var(--border)" strokeDasharray="3 4" vertical={false} />
-      <XAxis axisLine={false} dataKey="date" tickLine={false} tickMargin={8} />
-      <YAxis axisLine={false} tickFormatter={tickFormatter} tickLine={false} tickMargin={8} width={42} />
-      <ChartTooltip content={<ChartTooltipContent labelFormatter={(label) => `${label} 消耗`} valueFormatter={(value) => formatUsageValue(Number(value), metric)} />} cursor={{ fill: "var(--hover)" }} />
-      <Bar dataKey="gpt" fill="var(--color-gpt)" radius={0} stackId="usage" />
-      <Bar dataKey="deepseek" fill="var(--color-deepseek)" radius={0} stackId="usage" />
-      <Bar dataKey="glm" fill="var(--color-glm)" radius={[3, 3, 0, 0]} stackId="usage" />
-    </BarChart>
-  </ChartContainer>;
-}
-
 function UsageSettings() {
   const MessageIcon = useIcon("message-circle");
-  const [metric, setMetric] = useState<UsageMetric>("cost");
-  const totalCost = usageModels.reduce((total, model) => total + totalModelUsage(model.id, "cost"), 0);
-  const totalCalls = usageModels.reduce((total, model) => total + totalModelUsage(model.id, "calls"), 0);
-  const metricLabels: Record<UsageMetric, string> = { cost: "额度", tokens: "Token", calls: "调用次数" };
+  const ToolIcon = useIcon("settings");
+  const [activityView, setActivityView] = useState<ActivityView>("tokens");
+  const [usagePeriod, setUsagePeriod] = useState<UsagePeriod>("week");
   const heatmapColor = ["bg-hover", "bg-brand/30", "bg-brand/60", "bg-brand"] as const;
-  const creditMetrics = [
-    { label: "可用额度", value: "¥68.40", detail: "剩余 68.4%" },
-    { label: "本期已用", value: `¥${totalCost.toFixed(2)}`, detail: "总额度 ¥100.00" },
-    { label: "近 7 日日均", value: `¥${(totalCost / dailyUsage.length).toFixed(2)}`, detail: "较上周 +12.4%" },
-    { label: "预计可用至", value: "09/05", detail: "按近 7 日消耗估算" },
-  ] as const;
+  const heatmapActivity = activityView === "tokens" ? tokenHeatmapActivity : messageHeatmapActivity;
+  const selectedUsagePeriod = usagePeriodOptions.find((option) => option.value === usagePeriod)!;
+  const rankRows = (rows: readonly UsageRankRowData[]) => rows.slice(0, 5).map((row) => ({ ...row, icon: row.icon === "deepseek" ? <DeepSeekColor size={16} /> : row.icon === "openai" ? <OpenAIMono size={15} /> : row.icon === "glm" ? <ChatGLMColor size={16} /> : row.icon === "jira" ? <span className="flex size-4 items-center justify-center rounded-sm bg-brand text-[9px] font-bold text-fg-on-brand">J</span> : row.icon === "tool" ? <ToolIcon size={16} strokeWidth={1.5} /> : <MessageIcon size={16} strokeWidth={1.5} /> }));
 
   return <div className="space-y-5 py-1">
-    <header><h1 className="text-heading font-semibold text-fg-default">👋 你好 Carlos，这是你与 Zentrix 一起记录协作的第 466 天</h1><p className="mt-1 text-sm text-fg-muted">本期额度还剩 68.4%，将于 9 月 1 日 00:00 重置。</p></header>
+    <header><h1 className="text-heading font-semibold text-fg-default">👋 你好 Carlos，这是你与 Zentrix 一起记录协作的第 466 天</h1></header>
 
-    <section aria-labelledby="credit-overview-title"><div className="flex items-baseline justify-between gap-3"><h2 className="text-base font-medium text-fg-default" id="credit-overview-title">本期额度</h2><span className="text-label text-fg-subtle">2026/08/01 — 2026/08/31</span></div><div className="mt-3 grid items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-4">{creditMetrics.map((item) => <MetricCard className="h-full self-stretch rounded-lg bg-surface-base [&_[data-slot=metric-card-label]]:text-label [&_[data-slot=metric-card-value-row]]:mt-1 [&_[data-slot=metric-card-value-row]>span:first-child]:text-title" footer={<span className="text-fg-muted">{item.detail}</span>} key={item.label} label={item.label} value={item.value} />)}</div></section>
+    <section aria-labelledby="usage-period-title"><div className="flex items-center"><div aria-label={`最近${selectedUsagePeriod.label}使用情况`} className="flex items-center text-body font-medium text-fg-default" id="usage-period-title" role="heading" aria-level={2}><span>最近</span><Select onValueChange={(value) => setUsagePeriod(value as UsagePeriod)} size="sm" value={usagePeriod}><SelectTrigger aria-label="使用情况周期" className="h-auto min-w-0 !border-0 rounded-md bg-surface-base px-1.5 py-1 text-body font-medium hover:bg-surface-base" variant="borderless" wrapperClassName="mx-1" /><SelectContent align="start">{usagePeriodOptions.map((option, index) => <SelectItem index={index} key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select><span>使用情况</span></div></div><div className="mt-3 grid items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-4">{usageMetrics[usagePeriod].map((metric) => <MetricCard className="h-full self-stretch rounded-lg bg-surface-base [&_[data-slot=metric-card-label]]:text-label [&_[data-slot=metric-card-value-row]]:mt-1 [&_[data-slot=metric-card-value-row]>span:first-child]:text-title" footer={<span className={cn(metric.positive === true ? "text-fg-brand" : metric.positive === false ? "text-fg-muted" : "text-fg-subtle")}><span className="font-medium">{metric.change}</span> {metric.detail}</span>} key={metric.label} label={metric.label} value={metric.value} />)}</div></section>
 
-    <section aria-label="额度趋势和每日消耗" className="overflow-hidden rounded-lg border-[0.5px] border-border bg-surface-base p-3 sm:p-4"><div className="grid gap-6 lg:grid-cols-2 lg:gap-0"><div className="min-w-0 lg:border-r lg:border-border lg:pr-5"><div className="flex items-baseline justify-between gap-2"><div><h2 className="text-base font-medium text-fg-default">余额趋势</h2><p className="mt-1 text-sm text-fg-muted">每日结算余额</p></div><span className="text-label text-fg-subtle">近 7 天</span></div><BalanceTrendChart /></div><div className="min-w-0 lg:pl-5"><div className="flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-base font-medium text-fg-default">每日消耗</h2><p className="mt-1 text-sm text-fg-muted">按模型堆叠展示</p></div><div className="flex w-fit rounded-lg border-[0.5px] border-border bg-surface-raised p-1" role="group" aria-label="消耗指标">{(Object.keys(metricLabels) as UsageMetric[]).map((option) => <button aria-pressed={metric === option} className={cn("rounded-md px-2.5 py-1 text-label transition-colors", metric === option ? "bg-surface-base font-medium text-fg-default shadow-sm" : "text-fg-muted hover:text-fg-default")} key={option} onClick={() => setMetric(option)} type="button">{metricLabels[option]}</button>)}</div></div><StackedConsumptionChart metric={metric} /><div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">{usageModels.map((model) => <span className="flex items-center gap-1.5 text-label text-fg-muted" key={model.id}><span aria-hidden className={cn("size-2 rounded-sm", model.mutedFill)} />{model.label}</span>)}</div></div></div></section>
+    <div className="grid gap-5 lg:grid-cols-3"><UsageRank title="模型使用率" subtitle={`模型 / ${selectedUsagePeriod.label}消息数`} rows={rankRows(usageRankData[usagePeriod].models)} /><UsageRank title="MCP 使用率" subtitle={`助手 / ${selectedUsagePeriod.label}话题数`} rows={rankRows(usageRankData[usagePeriod].mcp)} /><UsageRank title="话题内容量" subtitle={`话题 / ${selectedUsagePeriod.label}消息数`} rows={rankRows(usageRankData[usagePeriod].topics)} /></div>
 
-    <section aria-labelledby="model-breakdown-title"><div className="flex items-baseline justify-between gap-3"><div><h2 className="text-base font-medium text-fg-default" id="model-breakdown-title">模型额度明细</h2><p className="mt-1 text-sm text-fg-muted">消费金额、Token 和调用次数保持同一模型口径。</p></div><Button size="sm" type="button" variant="ghost">导出 CSV</Button></div><div className="mt-3 overflow-x-auto rounded-lg border-[0.5px] border-border"><Table className="min-w-[700px]"><TableHeader><TableRow><TableHead>模型</TableHead><TableHead className="text-right">调用次数</TableHead><TableHead className="text-right">Token 消耗</TableHead><TableHead className="text-right">额度消耗</TableHead><TableHead className="w-36">占本期消耗</TableHead></TableRow></TableHeader><TableBody>{usageModels.map((model, index) => { const cost = totalModelUsage(model.id, "cost"); const tokens = totalModelUsage(model.id, "tokens"); const calls = totalModelUsage(model.id, "calls"); const share = (cost / totalCost) * 100; return <TableRow index={index} key={model.id}><TableCell><div className="flex items-center gap-2"><ModelLogo model={model.label} size={16} /><span className="font-medium text-fg-default">{model.label}</span></div></TableCell><TableCell className="text-right tabular-nums text-fg-muted">{calls.toLocaleString("zh-CN")}</TableCell><TableCell className="text-right tabular-nums text-fg-muted">{tokens.toFixed(2)}M</TableCell><TableCell className="text-right font-medium tabular-nums text-fg-default">¥{cost.toFixed(2)}</TableCell><TableCell><div className="flex items-center gap-2"><span aria-hidden className="h-1.5 w-16 overflow-hidden rounded-full bg-muted"><span className="block h-full rounded-full" style={{ backgroundColor: model.fill, width: `${share}%` }} /></span><span className="text-label tabular-nums text-fg-muted">{share.toFixed(1)}%</span></div></TableCell></TableRow>; })}</TableBody></Table></div></section>
+    <Separator />
 
-    <section aria-labelledby="collaboration-week-title" className="border-t border-border pt-5"><h2 className="text-base font-medium text-fg-default" id="collaboration-week-title">最近一周使用行为</h2><div className="mt-3 grid items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-4">{collaborationMetrics.map((item) => <MetricCard className="h-full self-stretch rounded-lg bg-surface-base [&_[data-slot=metric-card-label]]:text-label [&_[data-slot=metric-card-value-row]]:mt-1 [&_[data-slot=metric-card-value-row]>span:first-child]:text-title" footer={<span className={cn(item.positive === true ? "text-fg-brand" : item.positive === false ? "text-fg-muted" : "text-fg-subtle")}><span className="font-medium">{item.change}</span> {item.detail}</span>} key={item.label} label={item.label} value={item.value} />)}</div></section>
-
-    <section aria-label="过去一年的使用热力图" className="overflow-hidden rounded-lg border-[0.5px] border-border bg-surface-base p-3 sm:p-4"><div className="overflow-x-auto pb-1"><div className="min-w-[720px]"><div className="grid grid-cols-12 gap-2">{usageMonths.map((month, monthIndex) => <div key={month}><p className="text-label text-fg-subtle">{month}</p><div className="mt-2 grid grid-flow-col grid-rows-7 gap-1">{Array.from({ length: 28 }, (_, index) => { const week = Math.floor(index / 7); const day = index % 7; const level = heatmapActivity[`${monthIndex}-${week}-${day}`] ?? 0; return <span aria-hidden className={cn("aspect-square rounded-[2px]", heatmapColor[level])} key={index} />; })}</div></div>)}</div></div></div><div className="mt-3 flex items-center justify-end gap-1.5 text-label text-fg-subtle"><span>较少</span>{heatmapColor.map((color, index) => <span aria-hidden className={cn("size-3 rounded-[2px]", color)} key={color} />)}<span>较多</span></div></section>
-
-    <div className="grid gap-5 lg:grid-cols-3"><UsageRank title="模型使用率" subtitle="模型 / 消息数" rows={[{ label: "DeepSeek", value: "11", fill: "100%", icon: <DeepSeekColor size={16} /> }, { label: "gpt-4o-mini", value: "2", fill: "18%", icon: <OpenAIMono size={15} /> }]} /><UsageRank title="MCP 使用率" subtitle="助手 / 话题数" rows={[{ label: "Jira", value: "2", fill: "100%", icon: <span className="flex size-4 items-center justify-center rounded-sm bg-brand text-[9px] font-bold text-fg-on-brand">J</span> }]} /><UsageRank title="话题内容量" subtitle="话题 / 消息数" rows={[{ label: "Onboarding", value: "24", fill: "100%", icon: <MessageIcon size={16} strokeWidth={1.5} /> }, { label: "自我介绍", value: "4", fill: "18%", icon: <MessageIcon size={16} strokeWidth={1.5} /> }]} /></div>
+    <Container>
+      <ContainerHeader className="px-4 py-0">
+        <h2 className="text-body font-medium text-fg-default" id="yearly-activity-title">最近一年活跃度</h2>
+        <Tabs aria-label="最近一年活跃度视角" color="neutral" onValueChange={(value) => setActivityView(value as ActivityView)} value={activityView} variant="segment">
+          <TabsList className="my-0">
+            <TabItem label="Token" value="tokens" />
+            <TabItem label="消息数" value="messages" />
+          </TabsList>
+        </Tabs>
+      </ContainerHeader>
+      <ContainerBody className="p-3 sm:p-4">
+        <section aria-labelledby="yearly-activity-title"><div className="overflow-x-auto pb-1"><div className="min-w-[720px]"><div className="grid grid-cols-12 gap-2">{usageMonths.map((month, monthIndex) => <div key={month}><p className="text-label text-fg-subtle">{month}</p><div className="mt-2 grid grid-flow-col grid-rows-7 gap-1">{Array.from({ length: 28 }, (_, index) => { const week = Math.floor(index / 7); const day = index % 7; const level = heatmapActivity[`${monthIndex}-${week}-${day}`] ?? 0; return <span aria-hidden className={cn("aspect-square rounded-[2px]", heatmapColor[level])} key={index} />; })}</div></div>)}</div></div></div><div className="mt-3 flex items-center justify-end gap-1.5 text-label text-fg-subtle"><span>较少</span>{heatmapColor.map((color, index) => <span aria-hidden className={cn("size-3 rounded-[2px]", color)} key={index} />)}<span>较多</span></div></section>
+      </ContainerBody>
+      <ContainerFooter className="grid grid-cols-2 items-start justify-stretch gap-x-6 gap-y-3 px-4 py-3 sm:grid-cols-4">{usageSummaries.map((summary) => <div key={summary.label}><p className="text-body font-semibold tabular-nums text-fg-default">{summary.value}</p><p className="mt-0.5 text-label text-fg-muted">{summary.label}</p></div>)}</ContainerFooter>
+    </Container>
   </div>;
 }
 
