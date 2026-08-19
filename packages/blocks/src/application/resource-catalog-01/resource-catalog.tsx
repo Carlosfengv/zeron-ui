@@ -35,6 +35,15 @@ import { AppShell, AppShellHeader, AppShellMain } from "@zeron/ui/app-shell";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardGroup, CardHeader, CardTitle } from "@zeron/ui/card";
+import {
+  Empty,
+  EmptyActions,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyIllustration,
+  EmptyMedia,
+  EmptyTitle,
+} from "@zeron/ui/empty";
 import { Input } from "@zeron/ui/input";
 import { Kbd, KbdGroup } from "@zeron/ui/kbd";
 import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@zeron/ui/nav-item";
@@ -209,6 +218,7 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, onResourc
   const defaultItems = kind === "model" ? modelCatalogItems : mcpCatalogItems;
   const sourceItems = items ?? defaultItems;
   const labels = catalogLabels[kind];
+  const resourceLabel = kind === "model" ? "模型" : "MCP 服务";
   const columns = useCatalogColumns();
   const SearchIcon = useIcon("search");
   const ResetIcon = useIcon("rotate-ccw");
@@ -217,6 +227,9 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, onResourc
   const [provider, setProvider] = useState("all");
   const [sort, setSort] = useState<SortOrder>("newest");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const normalizedQuery = query.trim();
+  const hasSearchQuery = normalizedQuery.length > 0;
+  const hasActiveFilters = category !== "all" || provider !== "all";
 
   useEffect(() => {
     setCategory("all");
@@ -243,7 +256,6 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, onResourc
     [modelProviders, sourceItems]
   );
   const activeFilterLabel = useMemo(() => {
-    const normalizedQuery = query.trim();
     if (normalizedQuery) return `搜索：${normalizedQuery}`;
 
     const sortLabel = sort === "newest" ? labels.newest : labels.mostUsed;
@@ -253,23 +265,27 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, onResourc
       sortLabel,
     ].filter(Boolean);
     return filters.join(" · ");
-  }, [category, labels.mostUsed, labels.newest, provider, query, sort]);
+  }, [category, labels.mostUsed, labels.newest, normalizedQuery, provider, sort]);
   const visibleItems = useMemo(() => {
-    const normalizedQuery = query.trim().toLocaleLowerCase();
+    const normalizedSearchQuery = normalizedQuery.toLocaleLowerCase();
     return sourceItems
       .filter((item) => category === "all" || item.category === category)
       .filter((item) => provider === "all" || item.provider === provider)
-      .filter((item) => !normalizedQuery || `${item.name} ${item.description} ${item.provider}`.toLocaleLowerCase().includes(normalizedQuery))
+      .filter((item) => !normalizedSearchQuery || `${item.name} ${item.description} ${item.provider}`.toLocaleLowerCase().includes(normalizedSearchQuery))
       .toSorted((left, right) => sort === "newest"
         ? right.createdAt.localeCompare(left.createdAt)
         : right.usageCount - left.usageCount);
-  }, [category, provider, query, sort, sourceItems]);
+  }, [category, normalizedQuery, provider, sort, sourceItems]);
 
+  const clearSearch = () => setQuery("");
   const clearFilters = () => {
+    setCategory("all");
+    setProvider("all");
+  };
+  const clearAllConditions = () => {
     setQuery("");
     setCategory("all");
     setProvider("all");
-    setSort("newest");
   };
 
   return (
@@ -365,7 +381,12 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, onResourc
                 <div>
                   <p className="text-label text-fg-muted">{activeFilterLabel}</p>
                 </div>
-                <span aria-live="polite" className="text-label text-fg-muted">{visibleItems.length} 个结果</span>
+                <span
+                  aria-live={visibleItems.length > 0 ? "polite" : "off"}
+                  className="text-label text-fg-muted"
+                >
+                  {visibleItems.length} 个结果
+                </span>
               </div>
 
               {visibleItems.length ? (
@@ -380,11 +401,69 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, onResourc
                   ))}
                 </CardGroup>
               ) : (
-                <div className="flex min-h-64 flex-col items-start justify-center rounded-xl border border-dashed border-border bg-surface-raised p-6">
-                  <p className="text-title text-fg-default">{labels.empty}</p>
-                  <p className="mt-1 max-w-md text-body text-fg-muted">尝试更换关键词或清除当前筛选，查看全部可用资源。</p>
-                  <Button type="button" variant="tertiary" size="sm" leadingIcon={ResetIcon} className="mt-4" onClick={clearFilters}>清除筛选</Button>
-                </div>
+                <Empty
+                  announce={hasSearchQuery || hasActiveFilters}
+                  className="min-h-[22rem]"
+                  reason={
+                    hasSearchQuery
+                      ? "no-results"
+                      : hasActiveFilters
+                        ? "no-filter-results"
+                        : "no-data"
+                  }
+                  scope="section"
+                >
+                  <EmptyMedia>
+                    <EmptyIllustration
+                      variant={
+                        hasSearchQuery
+                          ? "search"
+                          : hasActiveFilters
+                            ? "filter"
+                            : "resources"
+                      }
+                    />
+                  </EmptyMedia>
+                  <EmptyHeader>
+                    <EmptyTitle>
+                      {hasSearchQuery
+                        ? "没有匹配的搜索结果"
+                        : hasActiveFilters
+                          ? "当前筛选下没有结果"
+                          : `暂无可用${resourceLabel}`}
+                    </EmptyTitle>
+                    <EmptyDescription>
+                      {hasSearchQuery
+                        ? `未找到与“${normalizedQuery}”匹配的${resourceLabel}。请检查关键词，或清空搜索后重试。`
+                        : hasActiveFilters
+                          ? `尝试选择其他分类${kind === "model" ? "或模型厂商" : ""}，或清除筛选查看全部${resourceLabel}。`
+                          : `${resourceLabel}上架后会显示在这里。`}
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  {(hasSearchQuery || hasActiveFilters) && (
+                    <EmptyActions>
+                      <Button
+                        leadingIcon={ResetIcon}
+                        onClick={hasSearchQuery ? clearSearch : clearFilters}
+                        size="sm"
+                        type="button"
+                        variant="secondary"
+                      >
+                        {hasSearchQuery ? "清空搜索" : "清除筛选"}
+                      </Button>
+                      {hasSearchQuery && hasActiveFilters && (
+                        <Button
+                          onClick={clearAllConditions}
+                          size="sm"
+                          type="button"
+                          variant="ghost"
+                        >
+                          清除全部条件
+                        </Button>
+                      )}
+                    </EmptyActions>
+                  )}
+                </Empty>
               )}
             </PageBody>
           </PageContent>

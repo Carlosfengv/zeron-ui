@@ -31,7 +31,7 @@
       "description": "An inspection-report workspace that combines environment context, resource health, and incident follow-up.",
       "categories": ["application", "operations"],
       "dependencies": ["tw-animate-css", "@lobehub/icons", "@thesvg/icons"],
-      "registryDependencies": ["badge", "breadcrumb", "button", "button-group", "card", "data-table", "dropdown", "icon-context", "inline-notice", "metric-card", "page-layout", "popover", "resource-metric-list-01", "resource-status-all-01", "separator", "tabs", "utils"],
+      "registryDependencies": ["badge", "breadcrumb", "button", "button-group", "card", "data-table", "dialog", "dropdown", "icon-context", "inline-notice", "kbd", "menu-item", "metric-card", "nav-item", "nav-menu", "page-layout", "popover", "resource-metric-list-01", "resource-status-all-01", "separator", "sidebar", "sidebar-identity-row", "tabs", "utils"],
       "files": [
         { "path": "packages/blocks/src/application/cluster-environment-detail-01/cluster-environment-detail.tsx", "type": "registry:component", "target": "components/blocks/cluster-environment-detail-01/cluster-environment-detail.tsx" },
         { "path": "packages/blocks/src/application/cluster-environment-detail-01/index.ts", "type": "registry:component", "target": "components/blocks/cluster-environment-detail-01/index.ts" }
@@ -44,7 +44,7 @@
       "description": "A filterable cluster-environment overview with health and data-freshness states.",
       "categories": ["application", "operations"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["badge", "breadcrumb", "button", "card", "icon-context", "inline-notice", "input", "page-layout", "tabs", "utils"],
+      "registryDependencies": ["badge", "button", "card", "dialog", "dropdown", "icon-context", "inline-notice", "input", "kbd", "menu-item", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "tabs", "utils"],
       "files": [
         { "path": "packages/blocks/src/application/cluster-environment-list-01/cluster-environment-list.tsx", "type": "registry:component", "target": "components/blocks/cluster-environment-list-01/cluster-environment-list.tsx" },
         { "path": "packages/blocks/src/application/cluster-environment-list-01/index.ts", "type": "registry:component", "target": "components/blocks/cluster-environment-list-01/index.ts" }
@@ -117,7 +117,7 @@
       "description": "A filterable model and MCP marketplace with page-local navigation, search, and responsive resource cards.",
       "categories": ["application", "catalog"],
       "dependencies": ["tw-animate-css", "@lobehub/icons", "@thesvg/icons"],
-      "registryDependencies": ["app-shell", "badge", "button", "card", "icon-context", "input", "kbd", "nav-item", "nav-menu", "page-layout", "top-nav", "utils"],
+      "registryDependencies": ["app-shell", "badge", "button", "card", "empty", "icon-context", "input", "kbd", "nav-item", "nav-menu", "page-layout", "top-nav", "utils"],
       "files": [
         {
           "path": "packages/blocks/src/application/resource-catalog-01/catalog-data.ts",

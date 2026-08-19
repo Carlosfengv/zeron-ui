@@ -93,6 +93,28 @@ describe("Resource Catalog gallery preview", () => {
     );
   });
 
+  it("uses Empty for search, filter, and source-data zero states", () => {
+    expect(resourceCatalog).toContain('from "@zeron/ui/empty"');
+    expect(resourceCatalog).toContain("const hasSearchQuery = normalizedQuery.length > 0;");
+    expect(resourceCatalog).toMatch(
+      /hasActiveFilters\s*\? "no-filter-results"/
+    );
+    expect(resourceCatalog).toContain('? "search"');
+    expect(resourceCatalog).toContain('? "filter"');
+    expect(resourceCatalog).toContain(': "resources"');
+    expect(resourceCatalog).toContain("清空搜索");
+    expect(resourceCatalog).toContain("清除筛选");
+    expect(resourceCatalog).toContain("清除全部条件");
+    expect(resourceCatalog).toContain(
+      'aria-live={visibleItems.length > 0 ? "polite" : "off"}'
+    );
+    expect(resourceCatalog).not.toContain("rounded-xl border border-dashed");
+  });
+
+  it("declares Empty as an install dependency", () => {
+    expect(blockRegistry).toContain('"card", "empty", "icon-context"');
+  });
+
   it("declares every brand-icon dependency used by the catalog and its install artifact", () => {
     expect(resourceCatalog).toContain('from "@thesvg/icons/supabase"');
     expect(blocksPackage).toContain('"@thesvg/icons": "^3.2.15"');
