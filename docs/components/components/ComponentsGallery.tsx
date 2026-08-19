@@ -21,7 +21,6 @@ const copy = {
   en: {
     all: "All",
     empty: "No components match the current search and filters.",
-    filters: "Filters",
     filterByCategory: "Filter by category",
     componentNavigation: "Component navigation",
     galleryDescription: "Browse foundations, layouts and interaction primitives by the job they solve.",
@@ -32,7 +31,6 @@ const copy = {
   zh: {
     all: "全部",
     empty: "没有符合当前搜索和筛选条件的组件。",
-    filters: "筛选",
     filterByCategory: "按类别筛选",
     componentNavigation: "组件导航",
     galleryDescription: "按要解决的问题浏览基础、布局与交互组件。",
@@ -121,9 +119,8 @@ function ComponentDirectorySidebar({
       <div>
         <div className="relative">
           <SearchIcon aria-hidden className="pointer-events-none absolute left-3 top-1/2 z-content size-4 -translate-y-1/2 text-fg-muted" strokeWidth={1.5} />
-          <Input aria-label={text.search} className="bg-surface-base pl-9" onChange={(event) => onQueryChange(event.target.value)} placeholder={text.search} value={query} />
+          <Input aria-label={text.search} className="pl-9" onChange={(event) => onQueryChange(event.target.value)} placeholder={text.search} value={query} variant="ghost" />
         </div>
-        <p className="mt-5 border-t border-border pt-5 text-label font-medium text-fg-default">{text.filters}</p>
         <section className="mt-4">
           <p className="px-1 pb-1.5 text-label text-fg-muted">{text.filterByCategory}</p>
           <NavMenu activeValue={activeSection ?? "all"} aria-label={text.filterByCategory} className="max-lg:[&_[data-slot=nav-list]]:flex-row max-lg:[&_[data-slot=nav-list]]:flex-wrap" keyboardNavigation="roving">
@@ -233,7 +230,7 @@ export function ComponentsGallery({ localePrefix = "" }: { localePrefix?: string
                       <h2 id={`component-group-${group.section}`} className="text-title font-semibold text-fg-default">{sectionLabels[language][group.section]}</h2>
                       <span className="text-label text-fg-muted">{group.entries.length}</span>
                     </header>
-                    <CardGroup columns={3} separated style={{ gridTemplateColumns: "repeat(auto-fit, minmax(17rem, 1fr))" }}>
+                    <CardGroup className="gap-4" columns={3} separated style={{ gridTemplateColumns: "repeat(auto-fit, minmax(17rem, 1fr))" }}>
                       {group.entries.map((entry) => <ComponentCard key={entry.slug} entry={entry} href={`${localePrefix}/docs/components/${entry.slug}`} language={language} />)}
                     </CardGroup>
                   </section>

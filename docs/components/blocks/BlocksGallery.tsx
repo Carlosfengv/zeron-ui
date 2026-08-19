@@ -17,7 +17,6 @@ const copy = {
   en: {
     all: "All",
     empty: "No business templates match the current search and filters.",
-    filters: "Filters",
     filterByProduct: "Filter by product",
     filterByType: "Filter by type",
     galleryDescription: "Find real product assets by task, product context and readiness. Types describe the asset boundary; they do not change its registry installation format.",
@@ -28,7 +27,6 @@ const copy = {
   zh: {
     all: "全部",
     empty: "没有符合当前搜索和筛选条件的业务模板。",
-    filters: "筛选",
     filterByProduct: "按产品筛选",
     filterByType: "按类型筛选",
     galleryDescription: "按任务、产品语境和接入成熟度查找真实业务资产。类型用于说明资产边界，不会改变 Registry 的安装格式。",
@@ -144,9 +142,8 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
           <div>
             <div className="relative">
               <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 z-content size-4 -translate-y-1/2 text-fg-muted" strokeWidth={1.5} />
-              <Input aria-label={text.search} className="bg-surface-base pl-9" onChange={(event) => { const nextQuery = event.target.value; setQuery(nextQuery); updateUrl(kind, product, nextQuery); }} placeholder={text.search} value={query} />
+              <Input aria-label={text.search} className="pl-9" onChange={(event) => { const nextQuery = event.target.value; setQuery(nextQuery); updateUrl(kind, product, nextQuery); }} placeholder={text.search} value={query} variant="ghost" />
             </div>
-            <p className="mt-5 border-t border-border pt-5 text-label font-medium text-fg-default">{text.filters}</p>
             <section className="mt-4">
               <p className="px-1 pb-1.5 text-label text-fg-muted">{text.filterByType}</p>
               <NavMenu activeValue={kind ?? "all"} aria-label={text.filterByType} className="max-lg:[&_[data-slot=nav-list]]:flex-row max-lg:[&_[data-slot=nav-list]]:flex-wrap" keyboardNavigation="roving">
@@ -177,7 +174,7 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
             </div>
 
             {templates.length ? (
-            <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))" }}>
+            <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))" }}>
               {templates.map((artifact) => (
                 <Container key={artifact.slug} className="min-w-0 overflow-hidden">
                   <ContainerBody
