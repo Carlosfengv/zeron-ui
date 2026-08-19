@@ -17,6 +17,8 @@ import { McpDetail } from "@zeron/blocks/mcp-detail-01";
 import { ModelDetail } from "@zeron/blocks/model-detail-01";
 import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
 import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
+import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";
+import { MonitoringAlertList } from "@zeron/blocks/monitoring-alert-list-01";
 import { ZlrList } from "@zeron/blocks/zlrlist";
 import { AgentTrace } from "@zeron/blocks/agent-trace-01";
 
@@ -82,6 +84,18 @@ export function BlockPreview({ name }: { name: string }) {
   if (name === "cluster-environment-list-01") {
     return (
       <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ClusterEnvironmentList /></ResponsivePreview>
+    );
+  }
+
+  if (name === "inspection-report-list-01") {
+    return (
+      <ResponsivePreview canvasHeight={760} canvasWidth={1280}><InspectionReportList className="h-full min-h-0" /></ResponsivePreview>
+    );
+  }
+
+  if (name === "monitoring-alert-list-01") {
+    return (
+      <ResponsivePreview canvasHeight={760} canvasWidth={1280}><MonitoringAlertList className="h-full min-h-0" /></ResponsivePreview>
     );
   }
 

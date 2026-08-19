@@ -53,6 +53,16 @@ export const artifactCatalog: readonly ArtifactEntry[] = [
     kind: "page", product: "zaiops", domains: ["operations", "cluster", "monitoring"], patterns: ["list", "data table", "filter"], searchTerms: ["cluster", "environment", "list", "table", "集群", "列表", "分页表格"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"], featured: true,
   },
   {
+    slug: "inspection-report-list-01", registryName: "inspection-report-list-01",
+    title: "Inspection Report List", description: "A filterable inspection report workspace with priority, freshness and contextual actions.",
+    kind: "page", product: "zaiops", domains: ["operations", "inspection", "reporting"], patterns: ["list", "filter", "status"], searchTerms: ["inspection", "report", "list", "巡检", "报告", "列表"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"], featured: true,
+  },
+  {
+    slug: "monitoring-alert-list-01", registryName: "monitoring-alert-list-01",
+    title: "Monitoring Alert List", description: "A filterable monitoring alert workspace with severity states and AI analysis actions.",
+    kind: "page", product: "zaiops", domains: ["operations", "monitoring", "alerts"], patterns: ["list", "filter", "status"], searchTerms: ["monitoring", "alert", "severity", "监控", "告警", "列表"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"], featured: true,
+  },
+  {
     slug: "personal-settings-01", registryName: "personal-settings-01",
     title: "Personal Settings", description: "A multi-view settings workspace for model services, API keys, credentials and usage.",
     kind: "prototype", product: "shared", domains: ["settings", "account"], patterns: ["settings", "sidebar"], searchTerms: ["settings", "api key", "account", "个人设置", "凭证"], readiness: "demo-only", dataMode: "mock", devices: ["desktop", "responsive"], featured: true,

@@ -1,0 +1,8 @@
+{
+  "inspectionReportListBlock": {
+    "title": "巡检报告列表 1",
+    "description": "具备共享操作导航、筛选、报告新鲜度状态与行操作的巡检报告工作区。",
+    "guidance": "数据接入",
+    "guidanceBody": "从巡检服务提供 reports。优先级、报告新鲜度、环境和生成时间保持独立，列表即可同时呈现当前风险与报告可用性。"
+  }
+}

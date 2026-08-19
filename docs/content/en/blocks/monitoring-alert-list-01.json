@@ -1,0 +1,8 @@
+{
+  "monitoringAlertListBlock": {
+    "title": "Monitoring Alert List 1",
+    "description": "A monitoring alert workspace with shared operations navigation, severity filters, and AI analysis actions.",
+    "guidance": "Data integration",
+    "guidanceBody": "Provide alerts from your monitoring service. Resource context, severity, duration, related workloads, and operational state remain independent so the list can prioritize investigation."
+  }
+}

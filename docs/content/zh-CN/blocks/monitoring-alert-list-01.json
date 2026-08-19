@@ -1,0 +1,8 @@
+{
+  "monitoringAlertListBlock": {
+    "title": "监控告警列表 1",
+    "description": "具备共享操作导航、严重度筛选与 AI 分析操作的监控告警工作区。",
+    "guidance": "数据接入",
+    "guidanceBody": "从监控服务提供 alerts。资源上下文、严重度、持续时长、关联工作负载与运行状态保持独立，列表即可优先呈现待排查的告警。"
+  }
+}

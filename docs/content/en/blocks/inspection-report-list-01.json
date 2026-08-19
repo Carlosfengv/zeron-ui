@@ -1,0 +1,8 @@
+{
+  "inspectionReportListBlock": {
+    "title": "Inspection Report List 1",
+    "description": "An operations report workspace with shared navigation, filtering, freshness states, and row actions.",
+    "guidance": "Data integration",
+    "guidanceBody": "Provide reports from your inspection service. Priority, freshness, environment, and generated time remain independent so the list can show both current risk and report availability."
+  }
+}

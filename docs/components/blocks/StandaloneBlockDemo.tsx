@@ -2,6 +2,8 @@
 
 import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
 import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
+import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";
+import { MonitoringAlertList } from "@zeron/blocks/monitoring-alert-list-01";
 import { McpDetail } from "@zeron/blocks/mcp-detail-01";
 import { ModelDetail } from "@zeron/blocks/model-detail-01";
 import { PersonalSettings } from "@zeron/blocks/personal-settings-01";
@@ -32,6 +34,10 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <ClusterEnvironmentDetail className="h-full" />;
     case "cluster-environment-list-01":
       return <ClusterEnvironmentList className="h-full min-h-0" />;
+    case "inspection-report-list-01":
+      return <InspectionReportList className="h-full min-h-0" />;
+    case "monitoring-alert-list-01":
+      return <MonitoringAlertList className="h-full min-h-0" />;
     case "mcp-detail-01":
       return <DetailBlockPreviewShell active="mcp"><McpDetail /></DetailBlockPreviewShell>;
     case "model-detail-01":

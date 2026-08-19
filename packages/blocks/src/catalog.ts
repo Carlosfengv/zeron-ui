@@ -35,6 +35,20 @@ export const blockCatalog = [
     dependencies: ["page-layout", "tabs", "input", "button", "card", "badge", "dialog", "dropdown", "kbd", "nav-item", "nav-menu", "sidebar", "sidebar-identity-row", "inline-notice"],
   },
   {
+    name: "inspection-report-list-01",
+    title: "巡检报告列表",
+    description: "An inspection report workspace with operations navigation, filters, report status, and contextual actions.",
+    categories: ["application", "operations"],
+    dependencies: ["page-layout", "sidebar", "nav-menu", "nav-item", "input", "dropdown", "badge", "button"],
+  },
+  {
+    name: "monitoring-alert-list-01",
+    title: "监控告警列表",
+    description: "A monitoring alert workspace with shared operations navigation, severity filters, and AI analysis actions.",
+    categories: ["application", "operations", "monitoring"],
+    dependencies: ["page-layout", "sidebar", "nav-menu", "nav-item", "input", "dropdown", "badge", "button"],
+  },
+  {
     name: "personal-settings-01",
     title: "个人设置",
     description: "A personal settings workspace for model services, API keys, credentials, profile details, and usage.",
