@@ -644,6 +644,26 @@
       ]
     },
     {
+      "name": "empty",
+      "type": "registry:ui",
+      "title": "Empty",
+      "description": "Composable empty and zero-data states with page, section, and inline scopes; opt-in live-region semantics; custom media; and six theme-aware illustrations.",
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/empty.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/empty.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "ask-user-questions",
       "type": "registry:ui",
       "title": "Ask User Questions",
