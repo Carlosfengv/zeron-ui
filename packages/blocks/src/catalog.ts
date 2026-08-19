@@ -49,6 +49,13 @@ export const blockCatalog = [
     dependencies: ["page-layout", "sidebar", "nav-menu", "nav-item", "input", "dropdown", "badge", "button"],
   },
   {
+    name: "service-management-01",
+    title: "服务管理",
+    description: "A service workspace with progress, vendor authorizations, and cluster operation history.",
+    categories: ["application", "operations", "service"],
+    dependencies: ["page-layout", "sidebar", "nav-menu", "nav-item", "data-table", "tabs", "badge", "button", "dialog", "dropdown", "kbd"],
+  },
+  {
     name: "personal-settings-01",
     title: "个人设置",
     description: "A personal settings workspace for model services, API keys, credentials, profile details, and usage.",

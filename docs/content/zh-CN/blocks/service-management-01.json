@@ -1,0 +1,8 @@
+{
+  "serviceManagementBlock": {
+    "title": "服务管理 1",
+    "description": "用于查看服务进度、服务授权与集群操作记录的共享运维工作区。",
+    "guidance": "数据接入",
+    "guidanceBody": "分别提供服务工单、厂商授权与可审计的集群操作记录；左侧导航负责切换当前服务视图。"
+  }
+}

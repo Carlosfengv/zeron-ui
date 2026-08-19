@@ -19,6 +19,7 @@ import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-0
 import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
 import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";
 import { MonitoringAlertList } from "@zeron/blocks/monitoring-alert-list-01";
+import { ServiceManagement } from "@zeron/blocks/service-management-01";
 import { ZlrList } from "@zeron/blocks/zlrlist";
 import { AgentTrace } from "@zeron/blocks/agent-trace-01";
 
@@ -96,6 +97,12 @@ export function BlockPreview({ name }: { name: string }) {
   if (name === "monitoring-alert-list-01") {
     return (
       <ResponsivePreview canvasHeight={760} canvasWidth={1280}><MonitoringAlertList className="h-full min-h-0" /></ResponsivePreview>
+    );
+  }
+
+  if (name === "service-management-01") {
+    return (
+      <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ServiceManagement className="h-full min-h-0" /></ResponsivePreview>
     );
   }
 

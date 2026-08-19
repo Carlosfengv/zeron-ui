@@ -24,7 +24,8 @@
     "./cluster-environment-list-01": "./src/application/cluster-environment-list-01/index.ts",
     "./cluster-environment-detail-01": "./src/application/cluster-environment-detail-01/index.ts",
     "./inspection-report-list-01": "./src/application/inspection-report-list-01/index.ts",
-    "./monitoring-alert-list-01": "./src/application/monitoring-alert-list-01/index.ts"
+    "./monitoring-alert-list-01": "./src/application/monitoring-alert-list-01/index.ts",
+    "./service-management-01": "./src/application/service-management-01/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --project tsconfig.json --noEmit"

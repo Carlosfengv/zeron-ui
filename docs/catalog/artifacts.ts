@@ -63,6 +63,11 @@ export const artifactCatalog: readonly ArtifactEntry[] = [
     kind: "page", product: "zaiops", domains: ["operations", "monitoring", "alerts"], patterns: ["list", "filter", "status"], searchTerms: ["monitoring", "alert", "severity", "监控", "告警", "列表"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"], featured: true,
   },
   {
+    slug: "service-management-01", registryName: "service-management-01",
+    title: "Service Management", description: "A shared service workspace for progress, vendor authorizations, and cluster operation history.",
+    kind: "page", product: "zaiops", domains: ["operations", "service", "support"], patterns: ["workspace", "list", "status"], searchTerms: ["service", "authorization", "operation", "服务", "授权", "操作记录"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"], featured: true,
+  },
+  {
     slug: "personal-settings-01", registryName: "personal-settings-01",
     title: "Personal Settings", description: "A multi-view settings workspace for model services, API keys, credentials and usage.",
     kind: "prototype", product: "shared", domains: ["settings", "account"], patterns: ["settings", "sidebar"], searchTerms: ["settings", "api key", "account", "个人设置", "凭证"], readiness: "demo-only", dataMode: "mock", devices: ["desktop", "responsive"], featured: true,

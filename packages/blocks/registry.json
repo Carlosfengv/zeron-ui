@@ -77,6 +77,19 @@
       ]
     },
     {
+      "name": "service-management-01",
+      "type": "registry:block",
+      "title": "服务管理",
+      "description": "A service workspace with operational progress, support authorization, and cluster operation history.",
+      "categories": ["application", "operations", "service"],
+      "dependencies": ["tw-animate-css", "@lobehub/icons"],
+      "registryDependencies": ["badge", "button", "data-table", "dialog", "dropdown", "icon-context", "kbd", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "tabs", "utils"],
+      "files": [
+        { "path": "packages/blocks/src/application/service-management-01/service-management.tsx", "type": "registry:component", "target": "components/blocks/service-management-01/service-management.tsx" },
+        { "path": "packages/blocks/src/application/service-management-01/index.ts", "type": "registry:component", "target": "components/blocks/service-management-01/index.ts" }
+      ]
+    },
+    {
       "name": "personal-settings-01",
       "type": "registry:block",
       "title": "个人设置",

@@ -1,0 +1,8 @@
+{
+  "serviceManagementBlock": {
+    "title": "Service Management 1",
+    "description": "A shared operations workspace for service progress, vendor authorizations, and cluster operation history.",
+    "guidance": "Data integration",
+    "guidanceBody": "Provide service tickets, vendor authorization records, and auditable cluster operations independently. The active service view is controlled by the left navigation."
+  }
+}
