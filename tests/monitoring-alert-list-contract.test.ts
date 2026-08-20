@@ -11,8 +11,12 @@ describe("Monitoring Alert List 1 block contract", () => {
     expect(source).toContain("MonitoringAlertResolutionAction");
     expect(source).toContain("ResolutionRecords");
     expect(source).toContain("resolutionRecords?: readonly MonitoringAlertResolutionRecord[]");
+    expect(source).toContain('resolutionState?: MonitoringAlertResolutionState');
+    expect(source).toContain('const label = isResolved ? "已处置"');
     expect(source).toContain('label="处置"');
     expect(source).toContain('label="不再提醒"');
+    expect(source).toContain("_120px_144px]");
+    expect(source).not.toContain("_max-content_max-content]");
   });
 
   it("declares the primitives required for resolution history", () => {

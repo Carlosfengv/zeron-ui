@@ -33,6 +33,7 @@ function ListPagination({ onPageChange, onPageSizeChange, page, pageSize, total 
 
 type NavigationItem = { value: string; label: string; icon: IconComponent };
 export type MonitoringAlertSeverity = "critical" | "warning" | "general";
+export type MonitoringAlertResolutionState = "pending" | "resolved";
 
 export interface MonitoringAlertItem {
   id: string;
@@ -47,6 +48,7 @@ export interface MonitoringAlertItem {
   duration: string;
   state: string;
   related: string;
+  resolutionState?: MonitoringAlertResolutionState;
   resolutionRecords?: readonly MonitoringAlertResolutionRecord[];
 }
 
@@ -74,7 +76,7 @@ const getServerPlatformShortcut = () => null;
 const getPlatformShortcut = () => /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ K" : "Ctrl K";
 
 export const defaultMonitoringAlertItems = [
-  { id: "storage-capacity", resource: "PS–生产存储–01", resourceType: "Ceph主存储", environment: "生产环境 B", location: "生产 · 成都机房", severity: "critical", level: "P0", title: "容量使用率达到78%", description: "预计18天后超过85%阈值", duration: "已持续了2小时18分", state: "", related: "关联了 186 VM", resolutionRecords: [{ id: "storage-capacity-1", operator: "陈浩", occurredAt: "2026/7/30 19:03", detail: "清理过期快照并将低优先级卷迁移至备用存储池。" }] },
+  { id: "storage-capacity", resource: "PS–生产存储–01", resourceType: "Ceph主存储", environment: "生产环境 B", location: "生产 · 成都机房", severity: "critical", level: "P0", title: "容量使用率达到78%", description: "预计18天后超过85%阈值", duration: "已持续了2小时18分", state: "", related: "关联了 186 VM", resolutionState: "resolved", resolutionRecords: [{ id: "storage-capacity-1", operator: "陈浩", occurredAt: "2026/7/30 19:03", detail: "清理过期快照并将低优先级卷迁移至备用存储池。" }] },
   { id: "host-bond-1", resource: "PROD–HOST–07", resourceType: "HostVO", environment: "生产环境 B", location: "生产 · 成都机房", severity: "critical", level: "P0", title: "bond链路降为单链路", description: "业务网络仍可用，冗余已降低", duration: "持续42分钟", state: "状态稳定", related: "关联了 22 VM", resolutionRecords: [{ id: "host-bond-1-1", operator: "王敏", occurredAt: "2026/7/30 18:47", detail: "已切换至冗余链路，并安排现场检查物理端口。" }, { id: "host-bond-1-2", operator: "李宁", occurredAt: "2026/7/30 19:10", detail: "复核网络连通性，持续观察链路状态。" }] },
   { id: "host-bond-2", resource: "PROD–HOST–08", resourceType: "HostVO", environment: "生产环境 B", location: "生产 · 成都机房", severity: "general", level: "P2", title: "CPU 使用率超过基线", description: "近 15 分钟持续高于日常范围", duration: "持续16分钟", state: "待观察", related: "关联了 18 VM" },
   { id: "database-replica-delay", resource: "DB–CORE–03", resourceType: "DatabaseVO", environment: "生产环境 A", location: "生产 · 上海一号机房", severity: "critical", level: "P0", title: "数据库副本延迟超过阈值", description: "主从延迟已超过 90 秒", duration: "持续28分钟", state: "影响评估中", related: "关联了 34 VM" },
@@ -132,9 +134,11 @@ function ResolutionRecords({ records }: { records: readonly MonitoringAlertResol
 
 function MonitoringAlertResolutionAction({ alert, onResolve }: { alert: MonitoringAlertItem; onResolve?: (alert: MonitoringAlertItem) => void }) {
   const records = alert.resolutionRecords ?? [];
-  const label = records.length ? `处置${records.length}次` : "处置";
-  if (!records.length) return <Button type="button" size="sm" variant="tertiary" onClick={() => onResolve?.(alert)}>{label}</Button>;
-  return <Popover trigger="hover" hoverDelay={120} closeDelay={160}><PopoverTrigger render={<Button type="button" size="sm" variant="tertiary" onClick={() => onResolve?.(alert)}>{label}</Button>} /><PopoverContent align="end" side="bottom" sideOffset={6} className="w-80 p-3"><ResolutionRecords records={records} /></PopoverContent></Popover>;
+  const isResolved = alert.resolutionState === "resolved";
+  const label = isResolved ? "已处置" : records.length ? `处置${records.length}次` : "处置";
+  const button = <Button aria-label={isResolved ? `${alert.resource} 已处置，查看处置记录` : undefined} className={cn(isResolved && "text-fg-success hover:text-fg-success")} type="button" size="sm" variant="tertiary" onClick={() => { if (!isResolved) onResolve?.(alert); }}>{label}</Button>;
+  if (!records.length) return button;
+  return <Popover trigger="hover" hoverDelay={120} closeDelay={160}><PopoverTrigger render={button} /><PopoverContent align="end" side="bottom" sideOffset={6} className="w-80 p-3"><ResolutionRecords records={records} /></PopoverContent></Popover>;
 }
 
 function MonitoringAlertActionSplitButton({ alert, onAnalyze, onMute, onResolve }: { alert: MonitoringAlertItem; onAnalyze?: (alert: MonitoringAlertItem) => void; onMute?: (alert: MonitoringAlertItem) => void; onResolve?: (alert: MonitoringAlertItem) => void }) {
@@ -145,7 +149,7 @@ function MonitoringAlertActionSplitButton({ alert, onAnalyze, onMute, onResolve 
 function MonitoringAlertRow({ alert, onAnalyze, onMute, onResolve }: { alert: MonitoringAlertItem; onAnalyze?: (alert: MonitoringAlertItem) => void; onMute?: (alert: MonitoringAlertItem) => void; onResolve?: (alert: MonitoringAlertItem) => void }) {
   const Monitor = useIcon("monitor");
   const severityColor = alert.severity === "critical" ? "red" : alert.severity === "warning" ? "orange" : "blue";
-  return <div className="grid min-h-16 min-w-[1180px] grid-cols-[minmax(240px,1fr)_minmax(260px,1.2fr)_minmax(150px,.65fr)_minmax(200px,.85fr)_minmax(130px,.6fr)_max-content_max-content] items-center gap-x-3 border-b-[0.5px] border-border px-3 py-2 last:border-b-0"><div className="flex min-w-0 items-center gap-3"><Badge color={severityColor} size="sm" variant="strong">{alert.level}</Badge><span className="grid size-8 shrink-0 place-items-center rounded-md bg-info-surface/60 text-fg-default"><Monitor aria-hidden size={20} strokeWidth={1.5} /></span><div className="min-w-0"><p className="truncate text-body font-medium text-fg-default">{alert.resource}</p><p className="truncate text-label text-fg-muted">{alert.resourceType}</p></div></div><div className="min-w-0"><p className="truncate text-body font-medium text-fg-default">{alert.title}</p><p className="truncate text-label text-fg-muted">{alert.description}</p></div><p className="truncate text-body text-fg-default">{alert.location}</p><p className="truncate text-body text-fg-default">{alert.duration}{alert.state && <span className="ms-1 text-fg-muted">{alert.state}</span>}</p><p className="whitespace-nowrap text-body text-fg-default">{alert.related}</p><div className="justify-self-start"><MonitoringAlertResolutionAction alert={alert} onResolve={onResolve} /></div><div className="justify-self-start"><MonitoringAlertActionSplitButton alert={alert} onAnalyze={onAnalyze} onMute={onMute} onResolve={onResolve} /></div></div>;
+  return <div className="grid min-h-16 min-w-[1240px] grid-cols-[minmax(220px,1fr)_minmax(240px,1.2fr)_minmax(140px,.65fr)_minmax(180px,.85fr)_minmax(130px,.6fr)_120px_144px] items-center gap-x-3 border-b-[0.5px] border-border px-3 py-2 last:border-b-0"><div className="flex min-w-0 items-center gap-3"><Badge color={severityColor} size="sm" variant="strong">{alert.level}</Badge><span className="grid size-8 shrink-0 place-items-center rounded-md bg-info-surface/60 text-fg-default"><Monitor aria-hidden size={20} strokeWidth={1.5} /></span><div className="min-w-0"><p className="truncate text-body font-medium text-fg-default">{alert.resource}</p><p className="truncate text-label text-fg-muted">{alert.resourceType}</p></div></div><div className="min-w-0"><p className="truncate text-body font-medium text-fg-default">{alert.title}</p><p className="truncate text-label text-fg-muted">{alert.description}</p></div><p className="truncate text-body text-fg-default">{alert.location}</p><p className="truncate text-body text-fg-default">{alert.duration}{alert.state && <span className="ms-1 text-fg-muted">{alert.state}</span>}</p><p className="whitespace-nowrap text-body text-fg-default">{alert.related}</p><div className="justify-self-end"><MonitoringAlertResolutionAction alert={alert} onResolve={onResolve} /></div><div className="justify-self-end"><MonitoringAlertActionSplitButton alert={alert} onAnalyze={onAnalyze} onMute={onMute} onResolve={onResolve} /></div></div>;
 }
 
 /** A ZAIops monitoring alert workspace with shared operations navigation and severity filters. */
