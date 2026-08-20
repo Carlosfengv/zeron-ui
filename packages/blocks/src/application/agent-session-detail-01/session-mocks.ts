@@ -1,4 +1,4 @@
-/** Two complete sessions for the left-nav detail-page demo. */
+/** Three complete sessions across two agents for the detail-page demo. */
 export const defaultAgentSessions = [
   { id: "openclaw-market-briefing", title: "搜集 OpenClaw 市场情报", description: "每 24 小时一帮我搜集 OpenClaw 市场情报", agent: "Zeron", updatedAt: "15分钟", badge: "定时任务", badgeColor: "gray", badgeTone: "neutral-button", data: { events: [
     { seq: 1, time: 1787060969259, type: "turn/start", data: { turn: 1 } },
@@ -17,5 +17,11 @@ export const defaultAgentSessions = [
     { seq: 5, time: 1787064586568, type: "tool/result", data: { turn: 1, step: 1, message: { callId: "architecture-search-01", content: [{ type: "text", text: "Retrieved internal guidance for tool contracts, trace schemas, and task evaluations." }] } } },
     { seq: 6, time: 1787064590637, type: "assistant/message", data: { turn: 1, step: 2, usage: { inputTokens: 1115, outputTokens: 487, reasoningTokens: 88 }, message: { role: "assistant", source: { kind: "model", provider: "zeron", model: "Zeron Agent" }, content: [{ type: "text", text: "建议从单一任务闭环开始：定义输入输出和工具权限，持久化每个 turn 的事件，再用可回放的 trace 建立测试集和评估指标。" }] } } },
     { seq: 7, time: 1787064590644, type: "turn/end", data: { turn: 1, reason: { kind: "completed" } } },
+  ] } },
+  { id: "release-confirmation", title: "发布策略等待确认", description: "确认生产环境发布策略后继续执行", agent: "Zeron carlos test", updatedAt: "刚刚", badge: "待确认", badgeStatus: "warning", data: { events: [
+    { seq: 1, time: 1787068180259, type: "turn/start", data: { turn: 1 } },
+    { seq: 2, time: 1787068180284, type: "user/message", data: { turn: 1, content: [{ type: "text", text: "请准备生产环境发布策略，并在执行前等待我的确认。" }] } },
+    { seq: 3, time: 1787068180637, type: "assistant/message", data: { turn: 1, step: 1, usage: { inputTokens: 420, outputTokens: 96, reasoningTokens: 18 }, message: { role: "assistant", source: { kind: "model", provider: "zeron", model: "Zeron Agent" }, content: [{ type: "text", text: "发布策略已准备完成，等待你确认后再继续执行。" }] } } },
+    { seq: 4, time: 1787068180644, type: "turn/end", data: { turn: 1, reason: { kind: "completed" } } },
   ] } },
 ] as const;
