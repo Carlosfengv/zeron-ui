@@ -23,6 +23,14 @@ Object.defineProperty(window, "ResizeObserver", {
 afterEach(cleanup);
 
 describe("single-DOM-text components", () => {
+  it("keeps button labels on one line and prevents buttons from shrinking", () => {
+    render(<Button>按钮标签会换行</Button>);
+
+    const button = screen.getByRole("button", { name: "按钮标签会换行" });
+    expect(button.className).toContain("shrink-0");
+    expect(button.className).toContain("whitespace-nowrap");
+  });
+
   it("renders each TabItem label once while reserving its selected width with a pseudo-element", () => {
     const { container } = render(
       <Tabs defaultValue="overview">

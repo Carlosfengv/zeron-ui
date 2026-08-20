@@ -43,7 +43,7 @@ const iconOnlyIconSizeClasses: Partial<Record<ControlSize, string>> = {
 
 const buttonVariants = cva(
   [
-    "group relative isolate inline-flex items-center justify-center outline-none cursor-pointer",
+    "group relative isolate inline-flex shrink-0 items-center justify-center whitespace-nowrap outline-none cursor-pointer",
     "transition-colors duration-fast",
     "disabled:opacity-50 disabled:pointer-events-none",
     "focus-visible:ring-1 focus-visible:ring-focus-ring",
