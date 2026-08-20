@@ -6,6 +6,16 @@ import {
   useMemo,
   useState,
 } from "react";
+import Image from "next/image";
+import {
+  ColorPickerIcon,
+  GlobeIcon,
+  HelpCircleIcon,
+  Logout01Icon,
+  Settings01Icon,
+  Wallet01Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { cn } from "@zeron/ui/system/utils";
 import { Button } from "@zeron/ui/button";
 import {
@@ -21,6 +31,10 @@ import {
   DropdownTrigger,
 } from "@zeron/ui/dropdown";
 import { Kbd, KbdGroup } from "@zeron/ui/kbd";
+import {
+  SidebarAccountMenu,
+  type SidebarAccountMenuSection,
+} from "@zeron/ui/sidebar-account-menu";
 import { MenuItem } from "@zeron/ui/menu-item";
 import {
   NavItem,
@@ -57,6 +71,7 @@ import {
   PageTitle,
 } from "@zeron/ui/page-layout";
 import { Skeleton } from "@zeron/ui/data-grid/data-grid-primitives";
+import { useThemeContext } from "@zeron/ui/system/theme-context";
 import { useIcon, type IconComponent } from "@zeron/icons/context";
 
 type Organization = {
@@ -78,12 +93,6 @@ type Session = {
 };
 
 type SessionState = "loading" | "ready" | "empty" | "error";
-
-type AccountAction = {
-  id: string;
-  label: string;
-  onSelect: () => void;
-};
 
 const organizations: Organization[] = [
   { id: "zaiops", name: "ZAIops 生产组织", monogram: "Z" },
@@ -260,41 +269,72 @@ function RecentSessionItem({ session }: { session: Session }) {
   );
 }
 
-function AccountMenuTrigger({ actions }: { actions: AccountAction[] }) {
+function AccountMenuTrigger() {
   const More = useIcon("ellipsis");
-  const Settings = useIcon("settings");
-  const User = useIcon("user");
+  const ChevronRight = useIcon("chevron-right");
+  const { theme, setTheme } = useThemeContext();
+  const [language, setLanguage] = useState("zh-CN");
+  const accountIcon = (icon: IconSvgElement) => <HugeiconsIcon aria-hidden className="size-4 shrink-0 text-fg-muted" icon={icon} size={16} strokeWidth={1.5} />;
+  const sections: SidebarAccountMenuSection[] = [
+    {
+      items: [
+        {
+          id: "theme",
+          label: "主题",
+          leading: accountIcon(ColorPickerIcon),
+          trailing: <ChevronRight aria-hidden className="size-4 text-fg-muted" />,
+          submenu: {
+            value: theme,
+            onValueChange: (value) => setTheme(value as typeof theme),
+            options: [
+              { value: "system", label: "跟随系统" },
+              { value: "light", label: "浅色" },
+              { value: "dark", label: "深色" },
+            ],
+          },
+        },
+        {
+          id: "language",
+          label: "语言",
+          leading: accountIcon(GlobeIcon),
+          trailing: <ChevronRight aria-hidden className="size-4 text-fg-muted" />,
+          submenu: {
+            value: language,
+            onValueChange: setLanguage,
+            options: [
+              { value: "zh-CN", label: "中文" },
+              { value: "en", label: "English" },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      items: [
+        { id: "spending-limit", label: "消费额度", leading: accountIcon(Wallet01Icon) },
+        { id: "settings", label: "设置", leading: accountIcon(Settings01Icon) },
+      ],
+    },
+    {
+      items: [
+        { id: "logout", label: "退出登录", leading: accountIcon(Logout01Icon) },
+        { id: "help-feedback", label: "帮助与反馈", leading: accountIcon(HelpCircleIcon) },
+      ],
+    },
+  ];
 
   return (
-    <DropdownMenu>
-      <DropdownTrigger
-          render={
-            <SidebarIdentityRow
-              as="button"
-              primary="Carlos Feng"
-              description="wei.feng@zstack.io"
-              layout="two-line"
-              trailingPlacement="edge"
-              leading={<SidebarIdentityAvatar>CF</SidebarIdentityAvatar>}
-              trailing={<More className="size-4" />}
-            />
-        }
-      />
-      <DropdownContent
-        align="center"
-        className="!w-60 !min-w-60 !max-w-60"
-      >
-        {actions.map((action, index) => (
-          <MenuItem
-            key={action.id}
-            index={index}
-            icon={index === 0 ? User : Settings}
-            label={action.label}
-            onSelect={action.onSelect}
-          />
-        ))}
-      </DropdownContent>
-    </DropdownMenu>
+    <SidebarAccountMenu
+      primary="Carlos Feng"
+      description="wei.feng@zstack.io"
+      triggerTrailing={<More aria-hidden className="size-4" />}
+      avatar={
+        <SidebarIdentityAvatar className="overflow-hidden rounded-[10px] bg-transparent p-0">
+          <Image alt="" className="size-full object-cover" height={32} src="/figma/zstack-account-menu/avatar.jpeg" width={32} />
+        </SidebarIdentityAvatar>
+      }
+      sections={sections}
+    />
   );
 }
 
@@ -335,7 +375,6 @@ function RecentSessionsContent({
 
 interface ZaiopsNavigationPanelProps {
   activeNavigationValue: string;
-  accountActions: AccountAction[];
   onNavigate?: () => void;
   onOrganizationChange: (organizationId: string) => void;
   onRetrySessions: () => void;
@@ -349,7 +388,6 @@ interface ZaiopsNavigationPanelProps {
 
 function ZaiopsNavigationPanel({
   activeNavigationValue,
-  accountActions,
   onNavigate,
   onOrganizationChange,
   onRetrySessions,
@@ -442,7 +480,7 @@ function ZaiopsNavigationPanel({
       </SidebarContent>
 
       <SidebarFooter className="px-2 pb-[max(0.375rem,env(safe-area-inset-bottom))] pt-1.5">
-        <AccountMenuTrigger actions={accountActions} />
+        <AccountMenuTrigger />
       </SidebarFooter>
     </>
   );
@@ -471,11 +509,6 @@ export function ZaiopsSidebarPreview({ className }: { className?: string }) {
   const [sessionsState, setSessionsState] = useState<SessionState>("loading");
   const [sessions, setSessions] = useState<Session[]>([]);
   const Home = useIcon("home");
-  const accountActions = useMemo<AccountAction[]>(() => [
-    { id: "profile", label: "账户设置", onSelect: () => undefined },
-    { id: "preferences", label: "偏好设置", onSelect: () => undefined },
-  ], []);
-
   useEffect(() => {
     const now = Date.now();
     setSessions([
@@ -494,7 +527,6 @@ export function ZaiopsSidebarPreview({ className }: { className?: string }) {
         )}>
           <ZaiopsSidebar
             activeNavigationValue={activeNavigationValue}
-            accountActions={accountActions}
             onOrganizationChange={setOrganizationId}
             onRetrySessions={() => setSessionsState("ready")}
             onSearchOpen={() => setSearchOpen(true)}
@@ -518,7 +550,6 @@ export function ZaiopsSidebarPreview({ className }: { className?: string }) {
                   renderContent={({ close }) => (
                     <ZaiopsNavigationPanel
                       activeNavigationValue={activeNavigationValue}
-                      accountActions={accountActions}
                       onNavigate={close}
                       onOrganizationChange={setOrganizationId}
                       onRetrySessions={() => setSessionsState("ready")}

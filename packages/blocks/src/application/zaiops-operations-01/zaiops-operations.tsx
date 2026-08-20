@@ -2,6 +2,9 @@
 
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { ColorPickerIcon, GlobeIcon, HelpCircleIcon, Logout01Icon, Settings01Icon, Wallet01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
@@ -14,6 +17,7 @@ import { NavMenu } from "@zeron/ui/nav-menu";
 import { PageBody, PageContent, PageHeader, PageHeaderContent, PageLayout } from "@zeron/ui/page-layout";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarFloatingTrigger, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarProvider, SidebarTrigger } from "@zeron/ui/sidebar";
 import { SidebarIdentityAvatar, SidebarIdentityRow } from "@zeron/ui/sidebar-identity-row";
+import { SidebarAccountMenu, type SidebarAccountMenuSection } from "@zeron/ui/sidebar-account-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@zeron/ui/table";
 import { useIcon, type IconComponent } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
@@ -52,6 +56,8 @@ interface OperationsNavigationPanelProps {
 }
 
 function OperationsNavigationPanel({ activeValue, organization, onOrganizationChange, onSearchOpen, onNavigate, showSidebarTrigger = false }: OperationsNavigationPanelProps) {
+  const [theme, setTheme] = useState("system");
+  const [language, setLanguage] = useState("zh-CN");
   const ChevronDown = useIcon("chevron-down");
   const Home = useIcon("home");
   const List = useIcon("list");
@@ -61,6 +67,22 @@ function OperationsNavigationPanel({ activeValue, organization, onOrganizationCh
   const Layers = useIcon("doc-surfaces");
   const Chat = useIcon("message-circle");
   const More = useIcon("ellipsis");
+  const ChevronRight = useIcon("chevron-right");
+  const accountIcon = (icon: IconSvgElement) => <HugeiconsIcon aria-hidden className="size-4 shrink-0 text-fg-muted" icon={icon} size={16} strokeWidth={1.5} />;
+  const accountSections: SidebarAccountMenuSection[] = [
+    { items: [
+      { id: "theme", label: "主题", leading: accountIcon(ColorPickerIcon), trailing: <ChevronRight aria-hidden className="size-4 text-fg-muted" />, submenu: { value: theme, onValueChange: setTheme, options: [{ value: "system", label: "跟随系统" }, { value: "light", label: "浅色" }, { value: "dark", label: "深色" }] } },
+      { id: "language", label: "语言", leading: accountIcon(GlobeIcon), trailing: <ChevronRight aria-hidden className="size-4 text-fg-muted" />, submenu: { value: language, onValueChange: setLanguage, options: [{ value: "zh-CN", label: "中文" }, { value: "en", label: "English" }] } },
+    ] },
+    { items: [
+      { id: "spending-limit", label: "消费额度", leading: accountIcon(Wallet01Icon) },
+      { id: "settings", label: "设置", leading: accountIcon(Settings01Icon) },
+    ] },
+    { items: [
+      { id: "logout", label: "退出登录", leading: accountIcon(Logout01Icon) },
+      { id: "help-feedback", label: "帮助与反馈", leading: accountIcon(HelpCircleIcon) },
+    ] },
+  ];
   const primary: NavigationItem[] = [{ value: operationsHomeHref, label: "首页", icon: Home }, { value: "/clusters", label: "集群环境", icon: List }, { value: "/reports", label: "巡检报告", icon: Check }];
   const services: NavigationItem[] = [{ value: "/service-progress", label: "服务进度", icon: Clock }, { value: "/service-authorizations", label: "服务授权", icon: User }, { value: "/operation-history", label: "操作记录", icon: Layers }];
   const renderItem = (item: NavigationItem) => {
@@ -87,7 +109,7 @@ function OperationsNavigationPanel({ activeValue, organization, onOrganizationCh
         <NavMenu activeValue={null} aria-label="诊断会话" keyboardNavigation="roving">{["使用 specialist-network - 新会话", "在使用率最高的那台设备上…"].map((session) => <NavItem key={session} value={session}><NavItemTrigger className="px-1.5" onClick={(event) => event.preventDefault()} render={<a href="#diagnostic-sessions" />}><NavItemLeading><Chat aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading><NavItemContent><NavItemLabel>{session}</NavItemLabel></NavItemContent></NavItemTrigger><span className="relative me-1 flex h-control-md w-8 shrink-0 items-center justify-end"><span className="whitespace-nowrap text-label text-fg-subtle transition-opacity group-hover/nav-item:opacity-0 group-focus-within/nav-item:opacity-0">2分钟</span><DropdownMenu><DropdownTrigger render={<Button aria-label={`${session} 更多操作`} className="absolute right-0 opacity-0 pointer-events-none group-hover/nav-item:pointer-events-auto group-hover/nav-item:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100" iconOnly size="xs" type="button" variant="ghost"><More aria-hidden size={16} strokeWidth={1.5} /></Button>} /><DropdownContent align="end" className="w-36"><MenuItem index={0} label="重命名会话" onSelect={() => undefined} /><MenuItem index={1} label="删除会话" onSelect={() => undefined} /></DropdownContent></DropdownMenu></span></NavItem>)}</NavMenu>
       </SidebarGroup>
     </SidebarContent>
-    <SidebarFooter className="px-2 py-1.5"><SidebarIdentityRow description="wei.feng@zstack.io" leading={<SidebarIdentityAvatar className="rounded-lg">CF</SidebarIdentityAvatar>} primary="carlos" trailing={<More className="size-4" />} trailingPlacement="edge" /></SidebarFooter>
+    <SidebarFooter className="px-2 py-1.5"><SidebarAccountMenu description="wei.feng@zstack.io" primary="carlos" triggerTrailing={<More aria-hidden className="size-4" />} avatar={<SidebarIdentityAvatar className="overflow-hidden rounded-[10px] bg-transparent p-0"><Image alt="" className="size-full object-cover" height={32} src="/figma/zstack-account-menu/avatar.jpeg" width={32} /></SidebarIdentityAvatar>} sections={accountSections} /></SidebarFooter>
   </>;
 }
 

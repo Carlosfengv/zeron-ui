@@ -70,6 +70,11 @@ interface MenuItemProps extends HTMLAttributes<HTMLDivElement> {
   /** Optional leading icon. When omitted, the row renders text-only with no
    *  reserved icon column. */
   icon?: IconComponent;
+  /** Custom leading content, useful when an application supplies a branded
+   *  asset instead of an icon from the shared catalog. */
+  leading?: ReactNode;
+  /** Optional trailing content, such as a disclosure indicator. */
+  trailing?: ReactNode;
   label: string;
   index: number;
   /** When a boolean, the item is a radio-style option (role="menuitemradio"
@@ -87,6 +92,8 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
   (
     {
       icon: Icon,
+      leading,
+      trailing,
       label,
       index,
       checked,
@@ -139,7 +146,7 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
 
     const content = (
       <>
-        {Icon && (
+        {leading ?? (Icon && (
           <Icon
             size={16}
             strokeWidth={isActive || checked ? 2 : 1.5}
@@ -148,7 +155,7 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
               isActive || checked ? "text-fg-default" : "text-fg-muted"
             )}
           />
-        )}
+        ))}
         <span
           data-label={label}
           className="inline-grid flex-1 text-body after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-label)]"
@@ -165,6 +172,7 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
             {label}
           </span>
         </span>
+        {trailing}
         <AnimatePresence>
           {checked && (
             <motion.svg
