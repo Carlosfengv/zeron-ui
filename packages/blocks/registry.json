@@ -26,6 +26,20 @@
       ]
     },
     {
+      "name": "agent-session-detail-01",
+      "type": "registry:block",
+      "title": "Agent Session Detail",
+      "description": "A session detail workspace with agent navigation, switchable sessions, and an embedded execution trace.",
+      "categories": ["application", "agent", "details"],
+      "dependencies": ["tw-animate-css"],
+      "registryDependencies": ["agent-trace-01", "badge", "breadcrumb", "button", "dropdown", "icon-context", "input-message", "menu-item", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "utils"],
+      "files": [
+        { "path": "packages/blocks/src/application/agent-session-detail-01/agent-session-detail.tsx", "type": "registry:component", "target": "components/blocks/agent-session-detail-01/agent-session-detail.tsx" },
+        { "path": "packages/blocks/src/application/agent-session-detail-01/session-mocks.ts", "type": "registry:component", "target": "components/blocks/agent-session-detail-01/session-mocks.ts" },
+        { "path": "packages/blocks/src/application/agent-session-detail-01/index.ts", "type": "registry:component", "target": "components/blocks/agent-session-detail-01/index.ts" }
+      ]
+    },
+    {
       "name": "cluster-environment-detail-01",
       "type": "registry:block",
       "title": "集群环境详情",

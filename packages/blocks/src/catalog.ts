@@ -7,6 +7,13 @@ export const blockCatalog = [
     dependencies: ["badge", "button", "detail-list", "@lobehub/icons"],
   },
   {
+    name: "agent-session-detail-01",
+    title: "Agent Session Detail",
+    description: "A session detail workspace with agent navigation, switchable sessions, and an embedded execution trace.",
+    categories: ["application", "agent", "details"],
+    dependencies: ["agent-trace-01", "badge", "breadcrumb", "button", "dropdown", "input-message", "menu-item", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row"],
+  },
+  {
     name: "mcp-detail-01",
     title: "MCP 详情",
     description: "An MCP resource detail page with connection generation, safe copy feedback, and a minimal tool test panel.",

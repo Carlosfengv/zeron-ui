@@ -94,6 +94,10 @@ export interface AgentTraceProps extends Omit<ComponentPropsWithoutRef<"section"
   title?: string;
   /** Initial workspace surface. Trace remains the default for backwards compatibility. */
   defaultView?: AgentTraceView;
+  /** Optional composition rendered below the Chat transcript. */
+  chatFooter?: ReactNode;
+  /** Renders only the trace workspace so it can live inside an application detail page. */
+  layout?: "standalone" | "embedded";
   /** IANA timezone used for every recorded timestamp. */
   timeZone?: string;
   /** Locale used for every recorded timestamp. */
@@ -770,6 +774,8 @@ export function AgentTrace({
   className,
   data,
   defaultView = "trace",
+  chatFooter,
+  layout = "standalone",
   timeZone = DEFAULT_TRACE_TIME_ZONE,
   locale = DEFAULT_TRACE_LOCALE,
   onDataChange,
@@ -858,19 +864,8 @@ export function AgentTrace({
     pointerStart.current = null;
   };
 
-  return (
-    <PageLayout
-      className={cn("min-h-[42rem]", className)}
-      {...props}
-    >
-      <PageHeader>
-        <PageHeaderContent>
-          <PageTitle className="truncate text-body font-semibold">{title}</PageTitle>
-        </PageHeaderContent>
-      </PageHeader>
-
-      <PageContent>
-        <PageBody className="flex max-w-none flex-col overflow-hidden">
+  const workspace = (
+    <PageBody className="flex max-w-none flex-col overflow-hidden">
           <Tabs value={view} onValueChange={(value) => setView(value as AgentTraceView)} variant="pill" color="neutral" className="flex min-h-0 flex-1 flex-col">
             <div className="flex shrink-0 items-center justify-between border-b border-border">
               <TabsList className="!bg-transparent !rounded-none px-3 py-2" aria-label="Agent workspace">
@@ -883,8 +878,9 @@ export function AgentTrace({
                 {allowUpload && <><input ref={inputRef} className="sr-only" type="file" accept="application/json,application/x-ndjson,.json,.jsonl,.ndjson" onChange={(event) => { void importFile(event.target.files?.[0]); event.currentTarget.value = ""; }} /><Tooltip content="Upload JSON"><Button type="button" size="md" variant="tertiary" iconOnly aria-label="Upload JSON" className="[&_svg]:!size-4" onClick={() => inputRef.current?.click()}><TraceIcon name="upload" /></Button></Tooltip></>}
               </div>
             </div>
-            <TabPanel value="chat" className="min-h-0 flex-1">
-              <TranscriptFlow items={transcript} replaying={replaying} timeZone={timeZone} locale={locale} />
+            <TabPanel value="chat" className="flex min-h-0 flex-1 flex-col">
+              <div className="min-h-0 flex-1"><TranscriptFlow items={transcript} replaying={replaying} timeZone={timeZone} locale={locale} /></div>
+              {chatFooter}
             </TabPanel>
             <TabPanel value="trace" className="flex min-h-0 flex-1 flex-col [&_[role=tab]_*]:!font-normal">
               <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-raised px-3 py-2">
@@ -958,8 +954,19 @@ export function AgentTrace({
       </TraceSplitLayout>}
             </TabPanel>
           </Tabs>
-        </PageBody>
-      </PageContent>
-    </PageLayout>
+    </PageBody>
   );
+
+  if (layout === "embedded") {
+    return <section className={cn("flex min-h-0 min-w-0 flex-1 flex-col", className)} {...props}>{workspace}</section>;
+  }
+
+  return <PageLayout className={cn("min-h-[42rem]", className)} {...props}>
+    <PageHeader>
+      <PageHeaderContent>
+        <PageTitle className="truncate text-body font-semibold">{title}</PageTitle>
+      </PageHeaderContent>
+    </PageHeader>
+    <PageContent>{workspace}</PageContent>
+  </PageLayout>;
 }
