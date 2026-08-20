@@ -84,7 +84,7 @@ function DocsSidebarContent({ localePrefix = "" }: Pick<DocsSidebarProps, "local
       .filter((entry): entry is (typeof docEntries)[number] => Boolean(entry))
       .slice(0, 5)
     : [];
-  const relatedTemplatesLabel = localePrefix ? "相关业务模板" : "Related templates";
+  const relatedTemplatesLabel = localePrefix === "/en" ? "Related templates" : "相关业务模板";
   const section = (key: string, label: string, count: number, ariaLabel: string, children: ReactNode) => (
     <section key={key}>
       <p className="flex items-center gap-2 px-1 pb-1.5 text-label text-fg-muted">

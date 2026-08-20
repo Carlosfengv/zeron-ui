@@ -99,7 +99,7 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
   const [product, setProduct] = useState<ArtifactProduct | null>(() => initialProduct(searchParams.get("product")));
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
   const Search = useIcon("search");
-  const language = localePrefix ? "zh" : "en";
+  const language = localePrefix === "/en" ? "en" : "zh";
   const text = copy[language];
   const normalizedQuery = query.trim().toLowerCase();
   const updateUrl = (nextKind: ArtifactKind | null, nextProduct: ArtifactProduct | null, nextQuery: string) => {

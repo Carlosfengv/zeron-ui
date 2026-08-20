@@ -75,7 +75,7 @@ export function renderCollectionPage({ collection, locale }: { collection: strin
   if (collection === "blocks") {
     return (
       <Suspense fallback={<div aria-busy="true" className="min-h-svh bg-surface-base" />}>
-        <BlocksGallery localePrefix={locale === "zh-CN" ? "/zh-cn" : ""} />
+        <BlocksGallery localePrefix={locale === "en" ? "/en" : ""} />
       </Suspense>
     );
   }
@@ -83,7 +83,7 @@ export function renderCollectionPage({ collection, locale }: { collection: strin
   if (collection === "components") {
     return (
       <Suspense fallback={<div aria-busy="true" className="min-h-svh bg-surface-base" />}>
-        <ComponentsGallery localePrefix={locale === "zh-CN" ? "/zh-cn" : ""} />
+        <ComponentsGallery localePrefix={locale === "en" ? "/en" : ""} />
       </Suspense>
     );
   }

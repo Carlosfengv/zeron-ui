@@ -51,10 +51,10 @@ export function SettingsContent({
     { label: "Duotone Rounded", value: "duotone-rounded" },
   ];
   const iconStyleOptions = allIconStyleOptions.filter((option) => availableVariants.includes(option.value));
-  const selectedLocale = localePrefix ? "zh-CN" : "en";
+  const selectedLocale = localePrefix === "/en" ? "en" : "zh-CN";
 
   const changeLocale = (nextLocale: string) => {
-    const target = localizePathname(internalPathname(pathname), nextLocale === "zh-CN" ? "/zh-cn" : "");
+    const target = localizePathname(internalPathname(pathname), nextLocale === "en" ? "/en" : "");
     const query = typeof window === "undefined" ? "" : window.location.search.slice(1);
     const hash = typeof window === "undefined" ? "" : window.location.hash;
     router.replace(`${target}${query ? `?${query}` : ""}${hash}`);

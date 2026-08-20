@@ -42,37 +42,33 @@ describe("i18n production smoke", () => {
     try {
       await waitForServer(server);
 
-      const english = await fetch(`${origin}/docs/components/button`);
-      const englishHtml = await english.text();
-      expect(english.status).toBe(200);
-      expect(englishHtml).toContain('<html lang="en"');
-      expect(englishHtml).toContain('<link rel="canonical" href="https://zeron-ui.vercel.app/docs/components/button"');
-      expect(englishHtml).toContain('hrefLang="en"');
-      expect(englishHtml).toContain('hrefLang="zh-CN"');
-
-      const chinese = await fetch(`${origin}/zh-cn/docs/components/button`);
+      const chinese = await fetch(`${origin}/docs/components/button`);
       const chineseHtml = await chinese.text();
       expect(chinese.status).toBe(200);
       expect(chineseHtml).toContain('<html lang="zh-CN"');
-      expect(chineseHtml).toContain('<link rel="canonical" href="https://zeron-ui.vercel.app/zh-cn/docs/components/button"');
+      expect(chineseHtml).toContain('<link rel="canonical" href="https://zeron-ui.vercel.app/docs/components/button"');
       expect(chineseHtml).toContain("基础用法");
       expect(chineseHtml).toContain("自定义外观");
       expect(chineseHtml).toContain("语言");
 
-      const prefixedEnglish = await fetch(`${origin}/en/docs/components/button`, { redirect: "manual" });
-      expect(prefixedEnglish.status).toBeGreaterThanOrEqual(300);
-      expect(prefixedEnglish.headers.get("location")).toBe("/docs/components/button");
+      const english = await fetch(`${origin}/en/docs/components/button`);
+      const englishHtml = await english.text();
+      expect(english.status).toBe(200);
+      expect(englishHtml).toContain('<html lang="en"');
+      expect(englishHtml).toContain('<link rel="canonical" href="https://zeron-ui.vercel.app/en/docs/components/button"');
+      expect(englishHtml).toContain('hrefLang="en"');
+      expect(englishHtml).toContain('hrefLang="zh-CN"');
 
       const unknownLocale = await fetch(`${origin}/fr/docs/components/button`);
       expect(unknownLocale.status).toBe(404);
 
       const internalDemo = await fetch(`${origin}/demo`);
       expect(internalDemo.status).toBe(200);
-      expect(await internalDemo.text()).toContain('<html lang="en"');
+      expect(await internalDemo.text()).toContain('<html lang="zh-CN"');
 
-      const legacy = await fetch(`${origin}/zh-cn/docs/tabs-subtle`, { redirect: "manual" });
+      const legacy = await fetch(`${origin}/docs/tabs-subtle`, { redirect: "manual" });
       expect(legacy.status).toBeGreaterThanOrEqual(300);
-      expect(legacy.headers.get("location")).toBe("/zh-cn/docs/components/tabs");
+      expect(legacy.headers.get("location")).toBe("/docs/components/tabs");
 
       const oldButton = await fetch(`${origin}/docs/button`, { redirect: "manual" });
       expect(oldButton.status).toBe(308);
@@ -86,7 +82,7 @@ describe("i18n production smoke", () => {
         expect(sitemapXml).toContain(localizedUrl(pathnameOf(entry), "zh-CN"));
       }
       expect(sitemapXml).not.toContain("[locale]");
-      expect(sitemapXml).not.toContain("/en/docs/");
+      expect(sitemapXml).not.toContain("/zh-cn/docs/");
 
       const robots = await fetch(`${origin}/robots.txt`);
       expect(robots.status).toBe(200);

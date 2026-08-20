@@ -69,7 +69,7 @@ function GuideFilter({ active, count, icon, label, onSelect, value }: {
 
 export default function GuidesPage() {
   const pathname = usePathname();
-  const language = localePrefixFromPathname(pathname) ? "zh" : "en";
+  const language = localePrefixFromPathname(pathname) === "/en" ? "en" : "zh";
   const t = copy[language];
   const [category, setCategory] = useState<GuideCategory | null>(null);
   const [query, setQuery] = useState("");

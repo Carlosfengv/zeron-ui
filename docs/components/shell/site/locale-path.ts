@@ -1,6 +1,6 @@
 export function localePrefixFromPathname(pathname: string) {
   const normalized = pathname.toLowerCase();
-  return normalized === "/zh-cn" || normalized.startsWith("/zh-cn/") ? "/zh-cn" : "";
+  return normalized === "/en" || normalized.startsWith("/en/") ? "/en" : "";
 }
 
 export function internalPathname(pathname: string) {

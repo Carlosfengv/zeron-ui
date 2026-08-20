@@ -166,7 +166,7 @@ export function ComponentsGallery({ localePrefix = "" }: { localePrefix?: string
   const searchParams = useSearchParams();
   const [section, setSection] = useState<ComponentSection | null>(() => initialSection(searchParams.get("section")));
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
-  const language = localePrefix ? "zh" : "en";
+  const language = localePrefix === "/en" ? "en" : "zh";
   const text = copy[language];
   const normalizedQuery = query.trim().toLowerCase();
   const components = useMemo(() => docEntries.filter((entry) => entry.collection === "components"), []);
@@ -247,11 +247,11 @@ export function ComponentsGallery({ localePrefix = "" }: { localePrefix?: string
 export function ComponentsDetailWorkspace({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const language = pathname.startsWith("/zh-") ? "zh" : "en";
+  const language = pathname.startsWith("/en/") ? "en" : "zh";
   const components = useMemo(() => docEntries.filter((entry) => entry.collection === "components"), []);
   const slug = pathname.split("/").at(-1);
   const activeSection = components.find((entry) => entry.slug === slug)?.section as ComponentSection | undefined;
-  const collectionPath = `${language === "zh" ? "/zh-cn" : ""}/docs/components`;
+  const collectionPath = `${language === "en" ? "/en" : ""}/docs/components`;
   const navigateToCollection = (nextSection: ComponentSection | null, nextQuery = "") => {
     const params = new URLSearchParams();
     if (nextSection) params.set("section", nextSection);
@@ -266,14 +266,14 @@ export function ComponentsDetailWorkspace({ children }: { children: React.ReactN
           activeSection={activeSection ?? null}
           currentSlug={slug}
           language={language}
-          localePrefix={language === "zh" ? "/zh-cn" : ""}
+          localePrefix={language === "en" ? "/en" : ""}
           onQueryChange={(query) => navigateToCollection(null, query)}
           onSectionSelect={(nextSection) => navigateToCollection(nextSection)}
           query=""
         />
         <PageContent className="overflow-y-auto overscroll-contain max-lg:flex-none max-lg:overflow-visible">
           <div className="grid min-h-full min-w-0">
-            <RightPanel localePrefix={language === "zh" ? "/zh-cn" : ""} placement="content" showSettings={false} />
+            <RightPanel localePrefix={language === "en" ? "/en" : ""} placement="content" showSettings={false} />
             <PageBody className="col-start-1 row-start-1 h-auto max-w-[1100px] flex-none overflow-visible py-10 xl:pr-72">
               {children}
             </PageBody>

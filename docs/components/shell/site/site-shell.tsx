@@ -51,9 +51,10 @@ function DocsPrimaryNavigation({
   const SunIcon = useIcon("sun");
   const MoonIcon = useIcon("moon");
   const nextTheme = theme === "dark" ? "light" : "dark";
-  const themeActionLabel = localePrefix
-    ? nextTheme === "dark" ? "切换至深色模式" : "切换至浅色模式"
-    : nextTheme === "dark" ? "Switch to dark mode" : "Switch to light mode";
+  const isEnglish = localePrefix === "/en";
+  const themeActionLabel = isEnglish
+    ? nextTheme === "dark" ? "Switch to dark mode" : "Switch to light mode"
+    : nextTheme === "dark" ? "切换至深色模式" : "切换至浅色模式";
   const activePath = currentPathname === "/"
     ? localizePathname("/", localePrefix)
     : currentPathname === "/guides"
@@ -71,11 +72,11 @@ function DocsPrimaryNavigation({
     { href: localizePathname("/docs/components", localePrefix), label: t("componentsEntry") },
     { href: localizePathname("/guides", localePrefix), label: t("guides") },
   ];
-  const languageActionLabel = localePrefix ? "Switch to English" : "切换至中文";
-  const languageLabel = localePrefix ? "EN" : "中";
-  const alternateLocalePrefix = localePrefix ? "" : "/zh-cn";
+  const languageActionLabel = isEnglish ? "切换至中文" : "Switch to English";
+  const languageLabel = isEnglish ? "中" : "EN";
+  const alternateLocalePrefix = isEnglish ? "" : "/en";
   const languageHref = `${localizePathname(currentPathname, alternateLocalePrefix)}${searchParams.size ? `?${searchParams}` : ""}`;
-  const brandLabel = localePrefix ? "品牌色" : "Brand";
+  const brandLabel = isEnglish ? "Brand" : "品牌色";
 
   return (
     <TopNav navigationAlign="left" className="w-full gap-2 border-0 px-4 sm:px-6">

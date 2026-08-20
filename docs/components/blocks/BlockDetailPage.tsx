@@ -50,7 +50,7 @@ export function BlockDetailPage({
   const common = useTranslations("common");
   const previewText = useTranslations("preview");
   const artifact = getArtifact(slug);
-  const isChinese = Boolean(localePrefix);
+  const isChinese = localePrefix !== "/en";
   const collectionLabel = isChinese ? "业务模板" : "Business templates";
   const entries = docEntries.filter((entry) => entry.collection === "blocks");
   const currentIndex = entries.findIndex((entry) => entry.slug === slug);

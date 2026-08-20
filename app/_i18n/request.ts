@@ -7,7 +7,7 @@ const commonMessages = {
 } as const;
 
 export default getRequestConfig(async ({ locale }) => {
-  const resolvedLocale = locale ?? "en";
+  const resolvedLocale = locale ?? "zh-CN";
   assertLocale(resolvedLocale);
 
   return {

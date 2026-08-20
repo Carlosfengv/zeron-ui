@@ -4,7 +4,7 @@ import type { AppLocale } from "@/app/_i18n/routing";
 export const SITE_URL = "https://zeron-ui.vercel.app";
 
 export function localizedPathname(pathname: string, locale: AppLocale) {
-  return locale === "zh-CN" ? `/zh-cn${pathname === "/" ? "" : pathname}` : pathname;
+  return locale === "en" ? `/en${pathname === "/" ? "" : pathname}` : pathname;
 }
 
 export function localizedUrl(pathname: string, locale: AppLocale) {
