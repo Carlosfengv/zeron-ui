@@ -3,11 +3,13 @@ import type { Locale } from "date-fns";
 import type { IconComponent } from "#system/icon-context";
 import type {
   BooleanFilterOperator,
+  BuiltInFilterOperator,
   DateFilterOperator,
   FilterClauseValue,
   FilterDateRangeValue,
   FilterOperator,
   FilterScalar,
+  JSONValue,
   NumberFilterOperator,
   SelectFilterOperator,
   TextFilterOperator,
@@ -16,11 +18,13 @@ import type { ControlSize } from "../../tokens/control-size";
 
 export type {
   BooleanFilterOperator,
+  BuiltInFilterOperator,
   DateFilterOperator,
   FilterClauseValue,
   FilterDateRangeValue,
   FilterOperator,
   FilterScalar,
+  JSONValue,
   NumberFilterOperator,
   SelectFilterOperator,
   TextFilterOperator,
@@ -33,6 +37,8 @@ export interface FilterClause {
   field: string;
   operator: FilterOperator;
   value?: FilterClauseValue;
+  /** Host-defined, JSON-safe state that participates in a clause's meaning. */
+  meta?: Record<string, JSONValue>;
 }
 
 export interface FilterOption<TValue extends FilterScalar = string> {
@@ -119,18 +125,29 @@ export interface DateFilterField extends FilterFieldBase {
 }
 
 export interface FilterEditorRenderProps {
+  clause: Readonly<FilterClause>;
   field: CustomFilterField;
   operator: FilterOperator;
   value: FilterClauseValue | undefined;
+  meta: Record<string, JSONValue> | undefined;
   onChange: (value: FilterClauseValue | undefined) => void;
+  onMetaChange: (meta: Record<string, JSONValue> | undefined) => void;
+  onClauseChange: (update: FilterClauseEditorUpdate) => void;
   disabled?: boolean;
   readOnly?: boolean;
 }
 
+export type FilterClauseEditorUpdate = Partial<
+  Pick<FilterClause, "value" | "meta">
+>;
+
 export interface CustomFilterField extends FilterFieldBase {
   type: "custom";
   renderEditor: (props: FilterEditorRenderProps) => ReactNode;
-  renderValue?: (value: FilterClauseValue | undefined) => ReactNode;
+  renderValue?: (
+    value: FilterClauseValue | undefined,
+    context: Pick<FilterEditorRenderProps, "clause" | "meta">,
+  ) => ReactNode;
 }
 
 export type FilterField =
@@ -165,14 +182,14 @@ export interface FilterBuilderMessages {
   selectedCount: (count: number) => string;
   matchAll: string;
   matchAny: string;
-  operators: Record<FilterOperator, string>;
+  operators: Record<BuiltInFilterOperator, string>;
 }
 
 export type FilterBuilderMessagesInput = Omit<
   Partial<FilterBuilderMessages>,
   "operators"
 > & {
-  operators?: Partial<Record<FilterOperator, string>>;
+  operators?: Partial<Record<BuiltInFilterOperator, string>>;
 };
 
 export interface FilterBuilderProps
@@ -184,6 +201,8 @@ export interface FilterBuilderProps
   logic?: FilterLogic;
   defaultLogic?: FilterLogic;
   onLogicChange?: (logic: FilterLogic) => void;
+  /** The logic modes the host query backend can represent. */
+  supportedLogic?: readonly FilterLogic[];
   showLogic?: boolean;
   size?: ControlSize;
   disabled?: boolean;

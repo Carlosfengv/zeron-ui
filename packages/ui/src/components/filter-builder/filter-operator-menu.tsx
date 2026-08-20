@@ -9,13 +9,18 @@ import {
 } from "#components/popover";
 import { cn } from "#system/utils";
 import type { ControlSize } from "../../tokens/control-size";
-import type { FilterField, FilterOperator } from "./filter-types";
+import type {
+  BuiltInFilterOperator,
+  FilterBuilderMessages,
+  FilterField,
+  FilterOperator,
+} from "./filter-types";
 import { operatorsForField } from "./filter-utils";
 
 interface FilterOperatorMenuProps {
   disabled?: boolean;
   field: FilterField;
-  messages: Record<FilterOperator, string>;
+  messages: FilterBuilderMessages["operators"];
   onValueChange: (operator: FilterOperator) => void;
   readOnly?: boolean;
   size: ControlSize;
@@ -33,7 +38,7 @@ export function FilterOperatorMenu({
 }: FilterOperatorMenuProps) {
   const [open, setOpen] = React.useState(false);
   const operators = operatorsForField(field);
-  const label = messages[value] ?? operators.find((operator) => operator.value === value)?.label;
+  const label = operatorLabel(value, operators, messages);
 
   if (readOnly) {
     return <span className="inline-flex items-center px-2.5 text-body text-fg-muted">{label}</span>;
@@ -71,11 +76,21 @@ export function FilterOperatorMenu({
               size={size}
               variant={value === operator.value ? "secondary" : "ghost"}
             >
-              {messages[operator.value] ?? operator.label}
+              {operatorLabel(operator.value, operators, messages)}
             </Button>
           ))}
         </div>
       </PopoverContent>
     </Popover>
   );
+}
+
+function operatorLabel(
+  value: FilterOperator,
+  operators: readonly { value: FilterOperator; label: string }[],
+  messages: FilterBuilderMessages["operators"],
+) {
+  return messages[value as BuiltInFilterOperator] ??
+    operators.find((operator) => operator.value === value)?.label ??
+    String(value);
 }

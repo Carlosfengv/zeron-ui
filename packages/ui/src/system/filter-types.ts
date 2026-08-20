@@ -1,7 +1,8 @@
 /**
  * Shared filter vocabulary used by the data grid and FilterBuilder. Values are
- * deliberately framework-agnostic and JSON-safe so callers can persist them
- * in URLs or send them to a server without a second conversion step.
+ * JSON-safe so callers can serialize them, but their operator names are UI
+ * vocabulary rather than a backend query protocol. Server-backed consumers
+ * should validate fields and translate operators at their application boundary.
  */
 export type TextFilterOperator =
   | "contains"
@@ -47,12 +48,18 @@ export type SelectFilterOperator =
 
 export type BooleanFilterOperator = "isTrue" | "isFalse";
 
-export type FilterOperator =
+export type BuiltInFilterOperator =
   | TextFilterOperator
   | NumberFilterOperator
   | DateFilterOperator
   | SelectFilterOperator
   | BooleanFilterOperator;
+
+/**
+ * A FilterBuilder operator. Built-in values retain autocomplete while hosts
+ * can declare protocol-specific operators on individual fields.
+ */
+export type FilterOperator = BuiltInFilterOperator | (string & {});
 
 export interface FilterDateRangeValue {
   from?: string;
@@ -61,6 +68,14 @@ export interface FilterDateRangeValue {
 
 export type FilterScalar = string | number | boolean;
 
+export type JSONValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JSONValue[]
+  | { [key: string]: JSONValue };
+
 export type FilterClauseValue =
   | FilterScalar
   | FilterScalar[]
@@ -68,7 +83,7 @@ export type FilterClauseValue =
 
 /** Backwards-compatible value shape used by the existing DataGrid. */
 export interface FilterValue {
-  operator: FilterOperator;
+  operator: BuiltInFilterOperator;
   value?: FilterScalar | FilterScalar[];
   endValue?: string | number;
 }

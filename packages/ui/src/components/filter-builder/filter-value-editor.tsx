@@ -15,6 +15,8 @@ import { useIcon } from "#system/icon-context";
 import type { ControlSize } from "../../tokens/control-size";
 import type {
   FilterClauseValue,
+  FilterClause,
+  FilterClauseEditorUpdate,
   FilterField,
   FilterOption,
   FilterOperator,
@@ -32,6 +34,7 @@ interface FilterValueEditorProps {
   autoFocus?: boolean;
   disabled?: boolean;
   field: FilterField;
+  clause: FilterClause;
   locale?: string;
   messages: {
     loadOptionsError: string;
@@ -42,6 +45,7 @@ interface FilterValueEditorProps {
     selectedCount: (count: number) => string;
   };
   onChange: (value: FilterClauseValue | undefined) => void;
+  onClauseChange: (update: FilterClauseEditorUpdate) => void;
   operator: FilterOperator;
   readOnly?: boolean;
   size: ControlSize;
@@ -52,11 +56,26 @@ export function FilterValueEditor(props: FilterValueEditorProps) {
   if (!operatorNeedsValue(props.operator)) return null;
 
   if (props.field.type === "custom") {
+    if (props.readOnly && props.field.renderValue) {
+      return (
+        <div className="min-w-0">
+          {props.field.renderValue(props.value, {
+            clause: props.clause,
+            meta: props.clause.meta,
+          })}
+        </div>
+      );
+    }
+
     return <div className="min-w-0">{props.field.renderEditor({
+      clause: props.clause,
       field: props.field,
       operator: props.operator,
       value: props.value,
+      meta: props.clause.meta,
       onChange: props.onChange,
+      onMetaChange: (meta) => props.onClauseChange({ meta }),
+      onClauseChange: props.onClauseChange,
       disabled: props.disabled,
       readOnly: props.readOnly,
     })}</div>;

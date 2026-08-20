@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "#components/button";
 import { ButtonGroup, ButtonGroupText } from "#components/button-group";
 import { useIcon } from "#system/icon-context";
@@ -8,6 +7,7 @@ import type { ControlSize } from "../../tokens/control-size";
 import type {
   FilterBuilderMessages,
   FilterClause,
+  FilterClauseEditorUpdate,
   FilterClauseValue,
   FilterField,
   FilterOperator,
@@ -22,6 +22,7 @@ interface FilterClauseRowProps {
   field: FilterField;
   locale?: string;
   messages: FilterBuilderMessages;
+  onClauseChange: (update: FilterClauseEditorUpdate) => void;
   onOperatorChange: (operator: FilterOperator) => void;
   onRemove: () => void;
   onValueChange: (value: FilterClauseValue | undefined) => void;
@@ -36,6 +37,7 @@ export function FilterClauseRow({
   field,
   locale,
   messages,
+  onClauseChange,
   onOperatorChange,
   onRemove,
   onValueChange,
@@ -65,7 +67,9 @@ export function FilterClauseRow({
         field={field}
         locale={locale}
         messages={messages}
+        clause={clause}
         onChange={onValueChange}
+        onClauseChange={onClauseChange}
         operator={clause.operator}
         readOnly={readOnly}
         size={size}

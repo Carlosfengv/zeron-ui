@@ -1,4 +1,5 @@
 import type {
+  BuiltInFilterOperator,
   FilterBuilderMessages,
   FilterBuilderMessagesInput,
   FilterClause,
@@ -8,14 +9,16 @@ import type {
   FilterLogic,
   FilterOperator,
   FilterOperatorDefinition,
+  JSONValue,
   FilterState,
   FilterStateParseResult,
 } from "./filter-types";
 
-const emptyOperators: FilterOperator[] = ["isEmpty", "isNotEmpty"];
-const booleanOperators: FilterOperator[] = ["isTrue", "isFalse"];
+const emptyOperators = ["isEmpty", "isNotEmpty"] as const satisfies readonly BuiltInFilterOperator[];
+const booleanOperators = ["isTrue", "isFalse"] as const satisfies readonly BuiltInFilterOperator[];
+const valuelessOperators: readonly string[] = [...emptyOperators, ...booleanOperators];
 
-const defaultOperatorValues: Record<FilterField["type"], FilterOperator[]> = {
+const defaultOperatorValues: Record<FilterField["type"], readonly BuiltInFilterOperator[]> = {
   text: [
     "contains",
     "notContains",
@@ -43,7 +46,7 @@ const defaultOperatorValues: Record<FilterField["type"], FilterOperator[]> = {
   custom: ["equals", ...emptyOperators],
 };
 
-const operatorLabels: Record<FilterOperator, string> = {
+const operatorLabels: Record<BuiltInFilterOperator, string> = {
   contains: "contains",
   notContains: "does not contain",
   equals: "equals",
@@ -110,7 +113,7 @@ export function operatorsForField(field: FilterField): FilterOperatorDefinition[
 }
 
 export function operatorNeedsValue(operator: FilterOperator) {
-  return !emptyOperators.includes(operator) && !booleanOperators.includes(operator);
+  return !valuelessOperators.includes(operator);
 }
 
 export function defaultOperatorForField(field: FilterField): FilterOperator {
@@ -134,6 +137,7 @@ export function normaliseValueForOperator(
   nextOperator: FilterOperator,
 ): FilterClauseValue | undefined {
   if (!operatorNeedsValue(nextOperator)) return undefined;
+  if (!isBuiltInFilterOperator(nextOperator)) return value;
   if (nextOperator === "isBetween") {
     if (typeof value === "number") return [value];
     if (typeof value === "string") return { from: value };
@@ -143,6 +147,12 @@ export function normaliseValueForOperator(
   }
   if (isDateRange(value) && nextOperator !== "isBetween") return value.from;
   return value;
+}
+
+export function isBuiltInFilterOperator(
+  operator: FilterOperator,
+): operator is BuiltInFilterOperator {
+  return Object.prototype.hasOwnProperty.call(operatorLabels, operator);
 }
 
 export function validateFilterValue(
@@ -214,6 +224,7 @@ export function parseFilterState(
       if (!candidate || typeof candidate !== "object") return false;
       const clause = candidate as Partial<FilterClause>;
       if (typeof clause.id !== "string" || typeof clause.field !== "string" || typeof clause.operator !== "string") return false;
+      if (clause.meta !== undefined && !isFilterClauseMeta(clause.meta)) return false;
       const field = fieldMap.get(clause.field);
       return Boolean(
         field &&
@@ -297,6 +308,23 @@ export function matchesFilter(value: unknown, filter: FilterClause): boolean {
 
 export function isDateRange(value: FilterClauseValue | undefined): value is FilterDateRangeValue {
   return Boolean(value && typeof value === "object" && !Array.isArray(value) && ("from" in value || "to" in value));
+}
+
+function isFilterClauseMeta(value: unknown): value is Record<string, JSONValue> {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      Object.values(value).every(isJSONValue),
+  );
+}
+
+function isJSONValue(value: unknown): value is JSONValue {
+  if (value === null || typeof value === "string" || typeof value === "boolean") return true;
+  if (typeof value === "number") return Number.isFinite(value);
+  if (Array.isArray(value)) return value.every(isJSONValue);
+  if (typeof value === "object") return Object.values(value).every(isJSONValue);
+  return false;
 }
 
 export function isIsoDate(value: string) {

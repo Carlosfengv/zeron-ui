@@ -5,6 +5,7 @@ import {
   defaultOperatorForField,
   matchesFilter,
   normaliseValueForOperator,
+  operatorNeedsValue,
   parseFilterState,
   serializeFilterState,
   validateFilterValue,
@@ -20,6 +21,15 @@ const fields: FilterField[] = [
   { id: "status", label: "Status", type: "select" },
   { id: "tags", label: "Tags", type: "multiSelect" },
   { id: "createdAt", label: "Created", type: "dateRange" },
+];
+
+const hostFields: FilterField[] = [
+  {
+    id: "folder",
+    label: "Folder",
+    type: "text",
+    operators: [{ value: "under", label: "Under folder" }],
+  },
 ];
 
 describe("FilterBuilder state utilities", () => {
@@ -59,6 +69,38 @@ describe("FilterBuilder state utilities", () => {
       state: { logic: "and", filters: [state.filters[0]] },
     });
     expect(parseFilterState("not json", fields)).toMatchObject({ error: "Invalid filter state." });
+  });
+
+  it("accepts host operators without changing their values", () => {
+    expect(defaultOperatorForField(hostFields[0]!)).toBe("under");
+    expect(operatorNeedsValue("under")).toBe(true);
+    expect(operatorNeedsValue("isEmpty")).toBe(false);
+    expect(normaliseValueForOperator(["root", "child"], "under")).toEqual(["root", "child"]);
+  });
+
+  it("round-trips JSON-safe clause metadata and rejects invalid metadata", () => {
+    const state: FilterState = {
+      logic: "and",
+      filters: [{
+        id: "folder-filter",
+        field: "folder",
+        operator: "under",
+        value: "folder-1",
+        meta: { dimensionKey: "quality", nested: { enabled: true } },
+      }],
+    };
+
+    expect(parseFilterState(serializeFilterState(state), hostFields)).toEqual({ state });
+    expect(parseFilterState(JSON.stringify({
+      logic: "and",
+      filters: [{
+        id: "invalid-meta",
+        field: "folder",
+        operator: "under",
+        value: "folder-1",
+        meta: ["not", "an", "object"],
+      }],
+    }), hostFields)).toEqual({ state: { logic: "and", filters: [] } });
   });
 });
 

@@ -20,6 +20,8 @@ import {
   resolveFilterBuilderMessages,
 } from "./filter-utils";
 
+const allFilterLogic = ["and", "or"] as const satisfies readonly FilterLogic[];
+
 function useControllableState<T>(
   value: T | undefined,
   defaultValue: T,
@@ -51,16 +53,24 @@ export function FilterBuilder({
   readOnly = false,
   showLogic,
   size = "md",
+  supportedLogic,
   trigger,
   ...props
 }: FilterBuilderProps) {
   const Eraser = useIcon("eraser");
+  const resolvedSupportedLogic = React.useMemo(() => {
+    const values = supportedLogic?.length ? supportedLogic : allFilterLogic;
+    return Array.from(new Set(values));
+  }, [supportedLogic]);
+  const resolvedDefaultLogic = resolvedSupportedLogic.includes(defaultLogic)
+    ? defaultLogic
+    : resolvedSupportedLogic[0]!;
   const [filters, setFilters] = useControllableState<FilterClause[]>(
     filtersProp === undefined ? undefined : [...filtersProp],
     [...defaultFilters],
     onFiltersChange,
   );
-  const [logic, setLogic] = useControllableState<FilterLogic>(logicProp, defaultLogic, onLogicChange);
+  const [logic, setLogic] = useControllableState<FilterLogic>(logicProp, resolvedDefaultLogic, onLogicChange);
   const [lastAddedId, setLastAddedId] = React.useState<string>();
   const messages = React.useMemo(() => resolveFilterBuilderMessages(messagesInput), [messagesInput]);
   const fieldMap = React.useMemo(() => new Map(fields.map((field) => [field.id, field])), [fields]);
@@ -72,6 +82,11 @@ export function FilterBuilder({
     const timer = window.setTimeout(() => setLastAddedId(undefined), 500);
     return () => window.clearTimeout(timer);
   }, [lastAddedId]);
+
+  React.useEffect(() => {
+    if (resolvedSupportedLogic.includes(logic)) return;
+    setLogic(resolvedSupportedLogic[0]!);
+  }, [logic, resolvedSupportedLogic, setLogic]);
 
   const addFilter = React.useCallback((field: FilterField) => {
     if (disabled || readOnly || (maxFilters !== undefined && filters.length >= maxFilters)) return;
@@ -95,7 +110,7 @@ export function FilterBuilder({
     setFilters(filters.filter((clause) => clause.id !== id));
   }, [filters, setFilters]);
 
-  const resolvedShowLogic = showLogic ?? filters.length > 1;
+  const resolvedShowLogic = resolvedSupportedLogic.length > 1 && (showLogic ?? filters.length > 1);
   return (
     <div
       aria-label="Filters"
@@ -122,27 +137,20 @@ export function FilterBuilder({
       )}
       {resolvedShowLogic && (
         <div className="flex overflow-hidden rounded-lg border border-border shadow-control" role="group">
-          <Button
-            active={logic === "and"}
-            aria-pressed={logic === "and"}
-            disabled={isDisabled}
-            onClick={() => setLogic("and")}
-            size={size}
-            variant="tertiary"
-          >
-            {messages.matchAll}
-          </Button>
-          <Button
-            active={logic === "or"}
-            aria-pressed={logic === "or"}
-            className="rounded-l-none border-l-0"
-            disabled={isDisabled}
-            onClick={() => setLogic("or")}
-            size={size}
-            variant="tertiary"
-          >
-            {messages.matchAny}
-          </Button>
+          {resolvedSupportedLogic.map((supported, index) => (
+            <Button
+              active={logic === supported}
+              aria-pressed={logic === supported}
+              className={index > 0 ? "rounded-l-none border-l-0" : undefined}
+              disabled={isDisabled}
+              key={supported}
+              onClick={() => setLogic(supported)}
+              size={size}
+              variant="tertiary"
+            >
+              {supported === "and" ? messages.matchAll : messages.matchAny}
+            </Button>
+          ))}
         </div>
       )}
       {filters.map((clause) => {
@@ -157,6 +165,7 @@ export function FilterBuilder({
             key={clause.id}
             locale={locale}
             messages={messages}
+            onClauseChange={(update) => updateClause(clause.id, update)}
             onOperatorChange={(operator) => updateOperator(clause, operator)}
             onRemove={() => removeClause(clause.id)}
             onValueChange={(value: FilterClauseValue | undefined) => updateClause(clause.id, { value })}

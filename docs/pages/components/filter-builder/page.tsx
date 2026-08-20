@@ -65,6 +65,7 @@ const [logic, setLogic] = useState<FilterLogic>("and");
   fields={fields}
   filters={filters}
   logic={logic}
+  supportedLogic={["and"]}
   onFiltersChange={setFilters}
   onLogicChange={setLogic}
 />`;
@@ -109,6 +110,7 @@ export default function FilterBuilderDoc() {
     { name: "filters", type: "FilterClause[]", description: t("filtersProp") },
     { name: "defaultFilters", type: "FilterClause[]", default: "[]", description: t("defaultFiltersProp") },
     { name: "logic", type: '"and" | "or"', description: t("logicProp") },
+    { name: "supportedLogic", type: '("and" | "or")[]', description: t("supportedLogicProp") },
     { name: "onFiltersChange", type: "(filters) => void", description: t("onFiltersChangeProp") },
     { name: "allowDuplicateFields", type: "boolean", default: "true", description: t("allowDuplicateFieldsProp") },
     { name: "maxFilters", type: "number", description: t("maxFiltersProp") },
