@@ -49,6 +49,10 @@ const TriggerRow = forwardRef<HTMLButtonElement, TriggerRowProps>(
     const ChevronRight = useIcon("chevron-right");
     const [isHovered, setIsHovered] = useState(false);
     const highlighted = open || isHovered;
+    const reservedLabel =
+      typeof children === "string" || typeof children === "number"
+        ? String(children)
+        : undefined;
 
     return (
       <div
@@ -76,14 +80,14 @@ const TriggerRow = forwardRef<HTMLButtonElement, TriggerRowProps>(
           )}
           {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
         >
-          {/* Label with dual-layer text (invisible bold layer reserves width) */}
-          <span className="inline-grid text-body text-left">
-            <span
-              className="col-start-1 row-start-1 invisible font-semibold"
-              aria-hidden="true"
-            >
-              {children}
-            </span>
+          <span
+            data-label={reservedLabel}
+            className={cn(
+              "inline-grid text-body text-left",
+              reservedLabel !== undefined &&
+                "after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-label)]"
+            )}
+          >
             <span
               className={cn(
                 "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",

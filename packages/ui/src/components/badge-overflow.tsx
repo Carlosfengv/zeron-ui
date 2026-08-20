@@ -80,21 +80,43 @@ function BadgeOverflow<T = string>(props: BadgeOverflowProps<T>) {
   const [badgeGap, setBadgeGap] = React.useState(4);
   const [badgeHeight, setBadgeHeight] = React.useState(20);
   const [overflowBadgeWidth, setOverflowBadgeWidth] = React.useState(40);
-  const [isMeasured, setIsMeasured] = React.useState(false);
   const [badgeWidths, setBadgeWidths] = React.useState<Map<number, number>>(
     new Map()
   );
+  const [measuredInputs, setMeasuredInputs] = React.useState<{
+    items: T[] | null;
+    getBadgeLabel: ((item: T) => string) | null;
+    renderBadge: typeof renderBadge | null;
+    renderOverflow: typeof renderOverflow | null;
+  }>({
+    items: null,
+    getBadgeLabel: null,
+    renderBadge: null,
+    renderOverflow: null,
+  });
+  const needsMeasurement =
+    measuredInputs.items !== items ||
+    measuredInputs.getBadgeLabel !== getBadgeLabel ||
+    measuredInputs.renderBadge !== renderBadge ||
+    measuredInputs.renderOverflow !== renderOverflow;
 
   React.useLayoutEffect(() => {
-    if (!rootRef.current || !measureRef.current) return;
+    if (!rootRef.current) return;
 
     function measureContainer() {
-      if (!rootRef.current || !measureRef.current) return;
+      if (!rootRef.current) return;
 
       const computedStyle = getComputedStyle(rootRef.current);
       const gap = parseFloat(computedStyle.gap) || 4;
       const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
       const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
+      setBadgeGap(gap);
+      setContainerWidth(
+        rootRef.current.clientWidth - paddingLeft - paddingRight
+      );
+
+      if (!measureRef.current) return;
+
       const widthMap = new Map<number, number>();
       const measureChildren = measureRef.current.children;
 
@@ -108,14 +130,15 @@ function BadgeOverflow<T = string>(props: BadgeOverflowProps<T>) {
         | HTMLElement
         | undefined;
 
-      setBadgeGap(gap);
       setBadgeWidths(widthMap);
       setBadgeHeight(firstBadge?.offsetHeight || 20);
       setOverflowBadgeWidth(overflowBadge?.offsetWidth || 40);
-      setContainerWidth(
-        rootRef.current.clientWidth - paddingLeft - paddingRight
-      );
-      setIsMeasured(true);
+      setMeasuredInputs({
+        items,
+        getBadgeLabel,
+        renderBadge,
+        renderOverflow,
+      });
     }
 
     measureContainer();
@@ -123,7 +146,7 @@ function BadgeOverflow<T = string>(props: BadgeOverflowProps<T>) {
     const resizeObserver = new ResizeObserver(measureContainer);
     resizeObserver.observe(rootRef.current);
     return () => resizeObserver.disconnect();
-  }, [items, getBadgeLabel, renderBadge, renderOverflow]);
+  }, [items, getBadgeLabel, renderBadge, renderOverflow, needsMeasurement]);
 
   const placeholderHeight = React.useMemo(
     () => badgeHeight * lineCount + badgeGap * (lineCount - 1),
@@ -242,7 +265,7 @@ function BadgeOverflow<T = string>(props: BadgeOverflowProps<T>) {
     </Popover>
   );
 
-  const children = isMeasured ? (
+  const children = !needsMeasurement ? (
     <>
       {visibleItems.map((item) => (
         <React.Fragment key={getBadgeKey(item)}>
@@ -268,7 +291,7 @@ function BadgeOverflow<T = string>(props: BadgeOverflowProps<T>) {
         className: cn("flex flex-wrap", className),
         style: {
           gap: badgeGap,
-          minHeight: isMeasured ? undefined : placeholderHeight,
+          minHeight: needsMeasurement ? placeholderHeight : undefined,
           ...style,
         },
         children,
@@ -280,19 +303,22 @@ function BadgeOverflow<T = string>(props: BadgeOverflowProps<T>) {
 
   return (
     <>
-      <div
-        ref={measureRef}
-        aria-hidden="true"
-        className="pointer-events-none invisible absolute flex flex-wrap"
-        style={{ gap: badgeGap }}
-      >
-        {items.map((item) => (
-          <React.Fragment key={getBadgeKey(item)}>
-            {renderBadge(item, getBadgeLabel(item))}
-          </React.Fragment>
-        ))}
-        {overflow(Math.max(99, items.length))}
-      </div>
+      {needsMeasurement && (
+        <div
+          ref={measureRef}
+          data-badge-overflow-measurement=""
+          aria-hidden="true"
+          className="pointer-events-none invisible absolute flex flex-wrap"
+          style={{ gap: badgeGap }}
+        >
+          {items.map((item) => (
+            <React.Fragment key={getBadgeKey(item)}>
+              {renderBadge(item, getBadgeLabel(item))}
+            </React.Fragment>
+          ))}
+          {overflow(Math.max(99, items.length))}
+        </div>
+      )}
       {element}
     </>
   );

@@ -1109,12 +1109,12 @@
         },
         {
           "path": "packages/ui/src/components/filter-builder/filter-types.ts",
-          "type": "registry:lib",
+          "type": "registry:ui",
           "target": "components/ui/filter-builder/filter-types.ts"
         },
         {
           "path": "packages/ui/src/components/filter-builder/filter-utils.ts",
-          "type": "registry:lib",
+          "type": "registry:ui",
           "target": "components/ui/filter-builder/filter-utils.ts"
         },
         {
@@ -1126,6 +1126,29 @@
           "path": "packages/ui/src/system/filter-types.ts",
           "type": "registry:lib",
           "target": "lib/filter-types.ts"
+        }
+      ]
+    },
+    {
+      "name": "menu-item",
+      "type": "registry:ui",
+      "title": "MenuItem",
+      "description": "Accessible menu row primitive with icon, selection, and keyboard-menu integration.",
+      "dependencies": [
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "springs",
+        "icon-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/menu-item.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/menu-item.tsx"
         }
       ]
     },

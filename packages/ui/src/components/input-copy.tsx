@@ -217,8 +217,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
                   />
                 </svg>
               </span>
-              <span className="select-none inline-grid text-left">
-                <span className="col-start-1 row-start-1 invisible" aria-hidden="true">Copied</span>
+              <span data-reserve-text="Copied" className="select-none inline-grid text-left after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:content-[attr(data-reserve-text)]">
                 <span className="col-start-1 row-start-1">Failed</span>
               </span>
             </motion.span>
@@ -252,8 +251,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
                   />
                 </svg>
               </span>
-              <span className="select-none inline-grid text-left">
-                <span className="col-start-1 row-start-1 invisible" aria-hidden="true">Copied</span>
+              <span data-reserve-text="Copied" className="select-none inline-grid text-left after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:content-[attr(data-reserve-text)]">
                 <span className="col-start-1 row-start-1">Copied</span>
               </span>
             </motion.span>
@@ -269,8 +267,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
               <span className="flex items-center justify-center">
                 <CopyIcon size={14} strokeWidth={1.5} className="transition-[stroke-width] duration-fast group-hover:stroke-[2]" />
               </span>
-              <span className="select-none inline-grid text-left">
-                <span className="col-start-1 row-start-1 invisible" aria-hidden="true">Copied</span>
+              <span data-reserve-text="Copied" className="select-none inline-grid text-left after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:content-[attr(data-reserve-text)]">
                 <span className="col-start-1 row-start-1">Copy</span>
               </span>
             </motion.span>

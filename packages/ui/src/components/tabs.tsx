@@ -492,14 +492,14 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
         ? <Badge size="sm" {...badge} />
         : <Badge size="sm">{badge}</Badge>;
 
+    // The pseudo-element reserves the semibold width without creating a
+    // second DOM text node. A hidden DOM copy makes getByText(label)
+    // ambiguous even when it is aria-hidden.
     const labelContent = (
-      <span className="inline-grid text-body whitespace-nowrap">
-        <span
-          className="col-start-1 row-start-1 invisible font-semibold"
-          aria-hidden="true"
-        >
-          {label}
-        </span>
+      <span
+        data-label={label}
+        className="inline-grid text-body whitespace-nowrap after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-label)]"
+      >
         <span
           className={cn(
             "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",

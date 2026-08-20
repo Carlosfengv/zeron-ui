@@ -8,7 +8,6 @@ import type {
   FilterLogic,
   FilterOperator,
   FilterOperatorDefinition,
-  FilterScalar,
   FilterState,
   FilterStateParseResult,
 } from "./filter-types";

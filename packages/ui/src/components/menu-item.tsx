@@ -140,30 +140,19 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
     const content = (
       <>
         {Icon && (
-          <span className="inline-grid">
-            <span className="col-start-1 row-start-1 invisible">
-              <Icon size={16} strokeWidth={2} />
-            </span>
-            <Icon
-              size={16}
-              strokeWidth={isActive || checked ? 2 : 1.5}
-              className={cn(
-                "col-start-1 row-start-1 transition-[color,stroke-width] duration-fast",
-                isActive || checked
-                  ? "text-fg-default"
-                  : "text-fg-muted"
-              )}
-            />
-          </span>
+          <Icon
+            size={16}
+            strokeWidth={isActive || checked ? 2 : 1.5}
+            className={cn(
+              "shrink-0 transition-[color,stroke-width] duration-fast",
+              isActive || checked ? "text-fg-default" : "text-fg-muted"
+            )}
+          />
         )}
-        {/* The invisible bold copy reserves width so weight changes do not reflow. */}
-        <span className="inline-grid flex-1 text-body">
-          <span
-            className="col-start-1 row-start-1 invisible font-semibold"
-            aria-hidden="true"
-          >
-            {label}
-          </span>
+        <span
+          data-label={label}
+          className="inline-grid flex-1 text-body after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-label)]"
+        >
           <span
             className={cn(
               "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",

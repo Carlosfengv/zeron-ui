@@ -65,8 +65,8 @@ describe("DataTable pinned-column contract", () => {
     expect(dataTableSource).toContain(
       '"align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block"'
     );
-    expect(dataTableSource).toContain(
-      'className="h-24 align-middle text-center text-fg-muted"'
-    );
+    expect(dataTableSource).toContain('className="p-0 align-middle"');
+    expect(dataTableSource).toContain('<Empty');
+    expect(dataTableSource).toContain('density="compact"');
   });
 });

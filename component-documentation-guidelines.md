@@ -133,47 +133,34 @@ If the component animates, add it to the `SPEED_USAGE` array on the Motion page 
 
 ---
 
-## Animated Font Weight — the Ghost-Span Pattern
+## Animated Font Weight — Single-DOM-Text Pattern
 
-When text gets heavier on an interactive state (selected, checked, active, open, interacting), **every** instance in this project uses the same structure. A heavier weight is wider, so animating weight on a bare text node causes the layout to reflow as the user interacts. To prevent this, render an invisible "ghost" copy of the label at the **heaviest** weight to reserve the width, and overlay the visible (animating) copy in the same grid cell.
+When text gets heavier on an interactive state (selected, checked, active, open, interacting), reserve the heaviest width without duplicating the label in the DOM. `aria-hidden` removes a node from the accessibility tree, but it does not remove it from DOM text queries and it must never wrap cloned interactive content.
 
-**Required structure — copy verbatim:**
+For a string or number label, use a `data-*` attribute and an invisible pseudo-element in the same grid cell:
 
 ```tsx
-<span className="inline-grid">
-  {/* Ghost: reserves width at the heaviest weight, hidden from AT */}
-  <span
-    className="col-start-1 row-start-1 invisible"
-    style={{ fontVariationSettings: fontWeights.semibold }}
-    aria-hidden="true"
-  >
-    {label}
-  </span>
-  {/* Visible: animates between weights in the same cell */}
-  <span
-    className="col-start-1 row-start-1 transition-[color,font-variation-settings] duration-80"
-    style={{
-      fontVariationSettings: isSelected
-        ? fontWeights.semibold
-        : fontWeights.normal,
-    }}
-  >
+<span
+  data-label={label}
+  className="inline-grid after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-label)]"
+>
+  <span className="col-start-1 row-start-1 transition-[color,font-weight] duration-fast">
     {label}
   </span>
 </span>
 ```
 
 **Rules:**
-- Weight comes from `fontVariationSettings` + the `fontWeights` tokens (`@/lib/font-weight`), **never** `font-weight` / `fontWeight` — the design uses Inter's variable `wght` axis.
-- Each `fontWeights` token also pairs in an optical-size (`opsz`) value (e.g. `"'wght' 550, 'opsz' 20"`). This is intentional, **not** a stray axis: a heavier `wght` widens the text and a tighter (higher) `opsz` pulls it back, so animating between weights keeps the advance width nearly constant — the closed→bold delta drops from ~3px to ~0.6px (≈±0.5%), centered on zero. A sub-pixel residual remains because a single opsz value can't zero every string (glyph mixes scale differently); the ghost span still pins the container, so nothing reflows regardless. `font-variation-settings` interpolates `opsz` alongside `wght` during the transition. The explicit `opsz` overrides `font-optical-sizing: auto` on purpose — weight, not font-size, drives optical size here. Always read these from the tokens; never hand-write a bare `'wght' N` string.
-- The ghost span is always set to the **heaviest** weight the visible span can reach, carries `invisible` + `aria-hidden="true"`, and renders the identical content.
-- Both spans share the cell via `col-start-1 row-start-1` inside an `inline-grid` (or `grid`/`inline-grid flex-1` when it must fill a row).
+- Use the component's existing typography API. If it uses variable-font settings, preserve its paired `wght` and `opsz` values; otherwise preserve its existing Tailwind weight classes.
+- The `::after` pseudo-element is always set to the **heaviest** weight the visible text can reach, has `invisible`, and uses `content-[attr(data-label)]` (or an equivalently named `data-*` attribute).
+- The pseudo-element and visible span share the cell via `after:col-start-1 after:row-start-1` and `col-start-1 row-start-1` inside an `inline-grid` (or `grid`/`inline-grid flex-1` when it must fill a row).
+- For React elements, fragments, mixed children, or any interactive content, render the children exactly once. Do not clone them to stabilize width.
 - The transition **must** include `font-variation-settings` in its property list (e.g. `transition-[color,font-variation-settings] duration-80`). Plain `transition-colors` / `transition-opacity` will *not* animate weight — it snaps. Use `duration-80` (the slider's value readout is the one intentional exception at `duration-100`).
-- Skip the ghost span only when the weight is **static** for the lifetime of the node (e.g. table header vs body rows never change) or the element is already a **fixed-size box** (e.g. a `w-5 h-5` chip holding a single digit) — there is nothing to reflow.
+- Skip width reservation when the weight is **static** for the lifetime of the node (e.g. table header vs body rows never change) or the element is already a **fixed-size box** (e.g. a `w-5 h-5` chip holding a single digit) — there is nothing to reflow.
 - **Standard weight pairs:** resting `normal` → active `semibold` (400 → 550) is the default for selected/checked/active/open states. Use `medium` as the *resting* weight only when the component's default text is already medium and you want a smaller jump to `semibold` (e.g. ask-user options, 450 → 550). The slider's value readout is the lone `normal` → `medium` case. Don't invent new pairs — pick from these so the whole system animates at consistent magnitudes.
-- **If you change the weight tokens or introduce much larger text,** re-measure and re-tune the paired `opsz` values. Method: render the label in an offscreen `<span style="font-optical-sizing:none">`, measure `getBoundingClientRect().width` at the resting `wght/opsz` vs each candidate bold `opsz`, and pick the `opsz` that centers the closed→bold width delta on zero across representative labels (longer strings dominate the perceived shift). The current values were tuned this way against real component labels.
+- **If you change variable-font tokens or introduce much larger text,** re-measure and re-tune the paired `opsz` values. Method: render the label in an offscreen `<span style="font-optical-sizing:none">`, measure `getBoundingClientRect().width` at the resting `wght/opsz` vs each candidate bold `opsz`, and pick the `opsz` that centers the closed→bold width delta on zero across representative labels (longer strings dominate the perceived shift).
 
-Reference implementations: `menu-item.tsx`, `nav-item.tsx`, `tabs.tsx`, `accordion.tsx`, `checkbox-group.tsx`, `radio-group.tsx`, `color-picker.tsx`, `ask-user-questions.tsx`.
+Reference implementations: `tabs.tsx`, `card.tsx`.
 
 ---
 

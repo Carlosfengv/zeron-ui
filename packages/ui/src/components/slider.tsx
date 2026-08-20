@@ -209,16 +209,13 @@ function ValueDisplay({
 
   const renderValue = (index: number) => {
     if (editingIndex === index) {
+      const editingReserve = `${label ? `${label}: ` : ""}${formatValue(max)}`;
+
       return (
-        <span className="inline-grid text-body">
-          {/* Ghost for layout stability — widest possible value */}
-          <span
-            className="col-start-1 row-start-1 invisible font-medium"
-            aria-hidden="true"
-          >
-            {label ? `${label}: ` : ""}
-            {formatValue(max)}
-          </span>
+        <span
+          data-reserve-text={editingReserve}
+          className="inline-grid text-body after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-medium after:content-[attr(data-reserve-text)]"
+        >
           <span className="col-start-1 row-start-1 flex items-center gap-1">
             {label && (
               <span className="text-fg-muted">{label}:</span>
@@ -265,19 +262,14 @@ function ValueDisplay({
 
   return (
     <span
+      data-reserve-text={widestValue}
       className={cn(
         "inline-grid shrink-0 text-body leading-none text-fg-muted transition-[font-weight] duration-100 motion-reduce:transition-none",
         "tabular-nums",
+        "after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:whitespace-nowrap after:font-medium after:content-[attr(data-reserve-text)]",
         isInteracting ? "font-medium" : "font-normal"
       )}
     >
-      {/* Invisible ghost — reserves width of widest possible value */}
-      <span
-        className="col-start-1 row-start-1 invisible whitespace-nowrap font-medium"
-        aria-hidden="true"
-      >
-        {widestValue}
-      </span>
       <span className="col-start-1 row-start-1 whitespace-nowrap">
         {label && editingIndex === null && (
           <span className="text-fg-muted">{label}: </span>

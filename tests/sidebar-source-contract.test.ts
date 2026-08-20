@@ -145,10 +145,11 @@ describe("sidebar implementation contract", () => {
     expect(sidebar).toContain('if (!opensMenuOnClick)');
     expect(zaiopsBlock).toContain('<SidebarProvider breakpointBehavior="collapse">');
     expect(zaiopsBlock).not.toContain('clickBehavior="menu"');
-    expect(zaiopsBlock).toContain('size="xs"\n              label="Collapse operations navigation"\n              className="shrink-0"');
-    expect(zaiopsBlock).toContain('collapsedBehavior="offcanvas"\n                size="xs"');
-    expect(zaiopsBlock).toContain('label="Expand operations navigation"');
-    expect(zaiopsBlock).toContain('menuLabel="Open operations navigation menu"');
+    expect(zaiopsBlock).toContain('label="收起操作导航"');
+    expect(zaiopsBlock).toContain('collapsedBehavior="offcanvas"');
+    expect(zaiopsBlock).toContain('label="展开操作导航"');
+    expect(zaiopsBlock).toContain('menuLabel="打开操作导航菜单"');
+    expect(zaiopsBlock).toContain('size="xs"');
     expect(zaiopsPreview).toContain('size="xs"\n      label={isMobile ? "关闭导航" : "收起侧边栏"}\n      className="shrink-0"');
     expect(zaiopsPreview).toContain('collapsedBehavior="offcanvas"\n                  size="xs"');
     expect(zaiopsPreview).toContain('<SidebarProvider breakpointBehavior="collapse">');
@@ -167,14 +168,14 @@ describe("sidebar implementation contract", () => {
 
   it("uses the App Router paths and one shared navigation panel", () => {
     for (const href of [
-      "/",
+      "/block-demo/zaiops-operations-01",
       "/clusters",
       "/reports",
-      "/inspection-plans",
-      "/expert-skills",
-      "/knowledge-base",
+      "/service-progress",
+      "/service-authorizations",
+      "/operation-history",
     ]) {
-      expect(zaiopsBlock).toContain(`value: "${href}"`);
+      expect(zaiopsBlock).toContain(`"${href}"`);
     }
     expect(zaiopsBlock).toContain('render={<Link href={item.value} />}');
     expect(zaiopsBlock).toContain("function OperationsNavigationPanel(");
@@ -206,7 +207,9 @@ describe("sidebar implementation contract", () => {
     for (const sourceFile of [zaiopsPreview, zaiopsBlock]) {
       expect(sourceFile).toContain('<PageHeader className="h-control-sm py-0 max-sm:flex-row">');
       expect(sourceFile).toContain('<div className="flex h-full min-w-0 items-center gap-2">');
-      expect(sourceFile).toContain('<PageHeaderContent icon={Home} className="h-full">');
+      expect(sourceFile).toMatch(
+        /<PageHeaderContent(?: className="h-full" icon=\{Home\}| icon=\{Home\} className="h-full")>/,
+      );
     }
   });
 

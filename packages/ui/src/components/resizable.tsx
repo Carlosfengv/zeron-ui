@@ -59,7 +59,7 @@ function ResizableHandle({
       {withHandle && (
         <span
           aria-hidden="true"
-          className="relative z-content flex size-4 items-center justify-center rounded-md bg-surface-floating text-[10px] leading-none text-fg-subtle opacity-0 transition-opacity duration-fast group-data-[separator=hover]/resizable-handle:opacity-100 group-data-[separator=active]/resizable-handle:opacity-100 group-focus-visible/resizable-handle:opacity-100 aria-[orientation=horizontal]:rotate-90"
+          className="relative z-content flex size-4 items-center justify-center rounded-md bg-surface-floating text-label leading-none text-fg-subtle opacity-0 transition-opacity duration-fast group-data-[separator=hover]/resizable-handle:opacity-100 group-data-[separator=active]/resizable-handle:opacity-100 group-focus-visible/resizable-handle:opacity-100 aria-[orientation=horizontal]:rotate-90"
         >
           ⋮
         </span>

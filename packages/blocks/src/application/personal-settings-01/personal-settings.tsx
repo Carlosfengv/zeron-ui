@@ -566,7 +566,7 @@ function UsageSettings() {
   const heatmapColor = ["bg-hover", "bg-brand/30", "bg-brand/60", "bg-brand"] as const;
   const heatmapActivity = activityView === "tokens" ? tokenHeatmapActivity : messageHeatmapActivity;
   const selectedUsagePeriod = usagePeriodOptions.find((option) => option.value === usagePeriod)!;
-  const rankRows = (rows: readonly UsageRankRowData[]) => rows.slice(0, 5).map((row) => ({ ...row, icon: row.icon === "deepseek" ? <DeepSeekColor size={16} /> : row.icon === "openai" ? <OpenAIMono size={15} /> : row.icon === "glm" ? <ChatGLMColor size={16} /> : row.icon === "jira" ? <span className="flex size-4 items-center justify-center rounded-sm bg-brand text-[9px] font-bold text-fg-on-brand">J</span> : row.icon === "tool" ? <ToolIcon size={16} strokeWidth={1.5} /> : <MessageIcon size={16} strokeWidth={1.5} /> }));
+  const rankRows = (rows: readonly UsageRankRowData[]) => rows.slice(0, 5).map((row) => ({ ...row, icon: row.icon === "deepseek" ? <DeepSeekColor size={16} /> : row.icon === "openai" ? <OpenAIMono size={15} /> : row.icon === "glm" ? <ChatGLMColor size={16} /> : row.icon === "jira" ? <span className="flex size-4 items-center justify-center rounded-sm bg-brand text-label font-bold text-fg-on-brand">J</span> : row.icon === "tool" ? <ToolIcon size={16} strokeWidth={1.5} /> : <MessageIcon size={16} strokeWidth={1.5} /> }));
 
   return <div className="space-y-5 py-1">
     <header><h1 className="text-heading font-semibold text-fg-default">👋 你好 Carlos，这是你与 Zentrix 一起记录协作的第 466 天</h1></header>

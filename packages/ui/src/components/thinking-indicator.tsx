@@ -81,11 +81,9 @@ const ThinkingIndicator = forwardRef<HTMLDivElement, ThinkingIndicatorProps>(
       )}
       <span
         aria-hidden="true"
-        className="inline-grid text-body overflow-hidden font-medium"
+        data-reserve-text={words.reduce((a, b) => (a.length >= b.length ? a : b))}
+        className="inline-grid text-body overflow-hidden font-medium after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:content-[attr(data-reserve-text)]"
       >
-        <span className="col-start-1 row-start-1 invisible shimmer-text">
-          {words.reduce((a, b) => (a.length >= b.length ? a : b))}
-        </span>
         {reduceMotion ? (
           <span className="col-start-1 row-start-1 shimmer-text">
             {words[0]}

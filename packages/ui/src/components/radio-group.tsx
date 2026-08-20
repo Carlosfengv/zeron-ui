@@ -431,14 +431,10 @@ const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
           value={radioValue}
         />
 
-        {/* The invisible bold copy reserves width so weight changes do not reflow. */}
-        <span className="inline-grid text-body">
-          <span
-            className="col-start-1 row-start-1 invisible font-semibold"
-            aria-hidden="true"
-          >
-            {label}
-          </span>
+        <span
+          data-label={label}
+          className="inline-grid text-body after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-label)]"
+        >
           <span
             className={cn(
               "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",

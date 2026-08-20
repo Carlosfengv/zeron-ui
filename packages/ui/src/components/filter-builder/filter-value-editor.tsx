@@ -15,7 +15,6 @@ import { useIcon } from "#system/icon-context";
 import type { ControlSize } from "../../tokens/control-size";
 import type {
   FilterClauseValue,
-  FilterDateRangeValue,
   FilterField,
   FilterOption,
   FilterOperator,

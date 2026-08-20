@@ -398,14 +398,10 @@ const InputField = forwardRef<HTMLDivElement, InputFieldProps>(
           className
         )}
       >
-        {/* Label */}
-        <Field.Label className="inline-grid text-body pl-3">
-          <span
-            className="col-start-1 row-start-1 invisible font-semibold"
-            aria-hidden="true"
-          >
-            {label}
-          </span>
+        <Field.Label
+          data-label={label}
+          className="inline-grid text-body pl-3 after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-label)]"
+        >
           <span
             className={cn(
               "col-start-1 row-start-1",

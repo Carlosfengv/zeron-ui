@@ -3,7 +3,7 @@ import { Fragment, type ReactNode } from "react";
 function inlineCode(text: string): ReactNode {
   const pieces = text.split(/(`[^`]+`)/g);
   return pieces.map((piece, index) => piece.startsWith("`") && piece.endsWith("`")
-    ? <code key={index} className="rounded bg-surface-raised px-1 py-0.5 font-mono text-[0.9em] text-fg-default">{piece.slice(1, -1)}</code>
+    ? <code key={index} className="rounded bg-surface-raised px-1 py-0.5 font-mono text-fg-default">{piece.slice(1, -1)}</code>
     : <Fragment key={index}>{piece}</Fragment>);
 }
 

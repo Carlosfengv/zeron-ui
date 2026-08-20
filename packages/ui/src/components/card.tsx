@@ -528,21 +528,26 @@ CardHeader.displayName = "CardHeader";
 const CardTitle = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>>(
   ({ className, children, ...props }, ref) => {
     const { emphasized } = useContext(CardContext);
-    // Ghost-span pattern: an invisible semibold copy reserves the width so the
-    // resting→active weight animation never reflows the row.
+    // Reserve width with generated content only for primitive text. Cloning
+    // arbitrary children would duplicate Badge/Button trees in the DOM.
+    const reservedTitle =
+      typeof children === "string" || typeof children === "number"
+        ? String(children)
+        : undefined;
+
     return (
       <span
         ref={ref}
         data-slot="card-title"
-        className={cn("inline-grid text-body", className)}
+        className={cn(
+          "inline-grid text-body",
+          reservedTitle !== undefined &&
+            "after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-title)]",
+          className
+        )}
         {...props}
+        data-title={reservedTitle}
       >
-        <span
-          className="col-start-1 row-start-1 invisible font-semibold"
-          aria-hidden="true"
-        >
-          {children}
-        </span>
         <span
           className={cn(
             "col-start-1 row-start-1 text-fg-default transition-[font-weight] duration-fast motion-reduce:transition-none",

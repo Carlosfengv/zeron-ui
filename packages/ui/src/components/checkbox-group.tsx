@@ -324,14 +324,10 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
           />
         )}
 
-        {/* The invisible weighted copy reserves width so weight changes do not reflow. */}
-        <span className="inline-grid min-w-0 flex-1 text-body">
-          <span
-            className="col-start-1 row-start-1 invisible font-medium"
-            aria-hidden="true"
-          >
-            {label}
-          </span>
+        <span
+          data-label={label}
+          className="inline-grid min-w-0 flex-1 text-body after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-medium after:content-[attr(data-label)]"
+        >
           <span
             className={cn(
               "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",

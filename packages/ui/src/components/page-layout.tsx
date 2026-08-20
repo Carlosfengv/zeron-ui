@@ -266,11 +266,19 @@ const PageSubnavItem = forwardRef<HTMLElement, PageSubnavItemProps>(
     const collapseLabel = labelVisibility === "active" && !!Icon;
     const showLabel = !collapseLabel || isActive;
     const accessibleLabel = label ?? (typeof children === "string" ? children : undefined);
+    const reservedLabel =
+      typeof children === "string" || typeof children === "number"
+        ? String(children)
+        : undefined;
     const labelContent = (
-      <span className="inline-grid min-w-0 whitespace-nowrap">
-        <span aria-hidden="true" className="col-start-1 row-start-1 invisible font-semibold">
-          {children}
-        </span>
+      <span
+        data-label={reservedLabel}
+        className={cn(
+          "inline-grid min-w-0 whitespace-nowrap",
+          reservedLabel !== undefined &&
+            "after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-label)]"
+        )}
+      >
         <span className="col-start-1 row-start-1 font-normal text-inherit group-data-[active=true]/nav-item:font-semibold">
           {children}
         </span>

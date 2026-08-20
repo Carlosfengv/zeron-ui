@@ -576,7 +576,7 @@ export default function SemanticTokensPage() {
           <SectionDescription>{t("developerReferenceBody")}</SectionDescription>
           <div className="border-y border-border px-3 py-3.5">
             <p className="text-label text-fg-muted">{t("source")}</p>
-            <TokenCode>packages/ui/src/tokens/semantic-tokens.mjs</TokenCode>
+            <TokenCode>semantic-tokens.mjs</TokenCode>
           </div>
           <div className="border-y border-border px-3 py-3.5">
             <p className="text-body font-medium text-fg-default">{t("naming")}</p>

@@ -206,7 +206,7 @@ describe("semantic color consumers", () => {
     expect(checkboxGroup).toContain(
       'checked ? "font-medium" : "font-normal"',
     );
-    expect(checkboxGroup).toContain("invisible font-medium");
+    expect(checkboxGroup).toContain("after:invisible after:font-medium");
     expect(checkboxGroup).not.toContain(
       'checked ? "font-semibold" : "font-normal"',
     );

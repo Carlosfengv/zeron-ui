@@ -214,16 +214,31 @@ NavItemContent.displayName = "NavItemContent";
 export type NavItemLabelProps = ComponentPropsWithoutRef<"span">;
 
 const NavItemLabel = forwardRef<HTMLSpanElement, NavItemLabelProps>(
-  ({ className, children, ...props }, ref) => (
-    <span ref={ref} data-slot="nav-item-label" className={cn("inline-grid min-w-0 max-w-full", className)} {...props}>
-      <span aria-hidden="true" className="col-start-1 row-start-1 invisible truncate font-semibold">
-        {children}
+  ({ className, children, ...props }, ref) => {
+    const reservedLabel =
+      typeof children === "string" || typeof children === "number"
+        ? String(children)
+        : undefined;
+
+    return (
+      <span
+        ref={ref}
+        data-slot="nav-item-label"
+        className={cn(
+          "inline-grid min-w-0 max-w-full",
+          reservedLabel !== undefined &&
+            "after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:truncate after:font-semibold after:content-[attr(data-label)]",
+          className
+        )}
+        {...props}
+        data-label={reservedLabel}
+      >
+        <span className="col-start-1 row-start-1 truncate font-normal text-inherit transition-[font-weight] duration-fast motion-reduce:transition-none group-data-[active=true]/nav-item:font-semibold">
+          {children}
+        </span>
       </span>
-      <span className="col-start-1 row-start-1 truncate font-normal text-inherit transition-[font-weight] duration-fast motion-reduce:transition-none group-data-[active=true]/nav-item:font-semibold">
-        {children}
-      </span>
-    </span>
-  )
+    );
+  }
 );
 
 NavItemLabel.displayName = "NavItemLabel";

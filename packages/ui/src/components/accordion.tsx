@@ -692,6 +692,10 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
     const groupCtx = useAccordionGroup();
     const { index, isOpen, triggerRef } = useAccordionItemContext();
     const [isHovered, setIsHovered] = useState(false);
+    const reservedLabel =
+      typeof children === "string" || typeof children === "number"
+        ? String(children)
+        : undefined;
 
     const isActive = groupCtx?.grouped
       ? groupCtx.activeIndex === index
@@ -712,14 +716,14 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
           )}
           {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
         >
-          {/* Label with dual-layer text */}
-          <span className="inline-grid text-body flex-1 text-left">
-            <span
-              className="col-start-1 row-start-1 invisible font-semibold"
-              aria-hidden="true"
-            >
-              {children}
-            </span>
+          <span
+            data-label={reservedLabel}
+            className={cn(
+              "inline-grid text-body flex-1 text-left",
+              reservedLabel !== undefined &&
+                "after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-label)]"
+            )}
+          >
             <span
               className={cn(
                 "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",

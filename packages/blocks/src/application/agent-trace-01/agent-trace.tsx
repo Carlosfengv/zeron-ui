@@ -843,7 +843,7 @@ export function AgentTrace({
               </div>
               {error && <p role="alert" className="border-b border-danger-border bg-danger-surface-subtle px-3 py-2 text-label text-fg-danger">{error}</p>}
       <section className="grid shrink-0 grid-cols-[48px_minmax(0,1fr)] border-b border-border bg-surface-raised" aria-label="Trajectory overview">
-        <div className="relative border-r border-border text-[10px] text-fg-subtle"><span className="absolute right-1 top-1">Input</span><span className="absolute right-1 top-[20px]">Model</span><span className="absolute right-1 top-[35px]">Tools</span></div>
+        <div className="relative border-r border-border text-label text-fg-subtle"><span className="absolute right-1 top-1">Input</span><span className="absolute right-1 top-[20px]">Model</span><span className="absolute right-1 top-[35px]">Tools</span></div>
         <div ref={timelineRef} onPointerDown={beginRange} onPointerMove={moveRange} onPointerUp={endRange} onPointerCancel={endRange} onContextMenu={(event) => { event.preventDefault(); setRange(null); }} className="relative h-[50px] cursor-crosshair overflow-hidden touch-none">
           {range && <span className="absolute inset-y-0 bg-brand/10" style={{ left: `${(Math.min(range.start, range.end) - domainStart) / domainDuration * 100}%`, width: `${Math.abs(range.end - range.start) / domainDuration * 100}%` }} />}
           {rows.map((row, index) => {
