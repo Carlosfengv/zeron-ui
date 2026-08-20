@@ -69,6 +69,7 @@ import Loading01Icon from "@hugeicons-pro/core-duotone-rounded/Loading01Icon";
 import LockIcon from "@hugeicons-pro/core-duotone-rounded/LockIcon";
 import Mail01Icon from "@hugeicons-pro/core-duotone-rounded/Mail01Icon";
 import Menu01Icon from "@hugeicons-pro/core-duotone-rounded/Menu01Icon";
+import Mic01Icon from "@hugeicons-pro/core-duotone-rounded/Mic01Icon";
 import Moon02Icon from "@hugeicons-pro/core-duotone-rounded/Moon02Icon";
 import MoreHorizontalIcon from "@hugeicons-pro/core-duotone-rounded/MoreHorizontalIcon";
 import NextIcon from "@hugeicons-pro/core-duotone-rounded/NextIcon";
@@ -100,6 +101,7 @@ import FileImageIcon from "@hugeicons-pro/core-duotone-rounded/FileImageIcon";
 import FileSpreadsheetIcon from "@hugeicons-pro/core-duotone-rounded/FileSpreadsheetIcon";
 import FileVideoIcon from "@hugeicons-pro/core-duotone-rounded/FileVideoIcon";
 import FileZipIcon from "@hugeicons-pro/core-duotone-rounded/FileZipIcon";
+import Folder01Icon from "@hugeicons-pro/core-duotone-rounded/Folder01Icon";
 import HashtagIcon from "@hugeicons-pro/core-duotone-rounded/HashtagIcon";
 import ListViewIcon from "@hugeicons-pro/core-duotone-rounded/ListViewIcon";
 import PinIcon from "@hugeicons-pro/core-duotone-rounded/PinIcon";
@@ -185,6 +187,7 @@ export const duotoneRoundedIcons = createIconMap(
   LockIcon,
   Mail01Icon,
   Menu01Icon,
+  Mic01Icon,
   Moon02Icon,
   MoreHorizontalIcon,
   NextIcon,
@@ -216,6 +219,7 @@ export const duotoneRoundedIcons = createIconMap(
   FileSpreadsheetIcon,
   FileVideoIcon,
   FileZipIcon,
+  Folder01Icon,
   HashtagIcon,
   ListViewIcon,
   PinIcon,

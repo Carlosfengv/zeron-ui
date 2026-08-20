@@ -4,7 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { InputMessage } from "@zeron/ui/input-message";
 import { ChatMessage } from "@zeron/ui/chat-message";
 import { Button } from "@zeron/ui/button";
+import {
+  DropdownContent,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@zeron/ui/dropdown";
+import { MenuItem } from "@zeron/ui/menu-item";
 import { useIcon } from "@zeron/icons/context";
+import { ClaudeCode } from "@lobehub/icons";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
@@ -452,6 +459,183 @@ const disabledCode = `import { InputMessage } from "./components";
   disabled
 />`;
 
+const agentComposerCode = `import { useState } from "react";
+import { ClaudeCode } from "@lobehub/icons";
+import {
+  Button,
+  DropdownContent,
+  DropdownMenu,
+  DropdownTrigger,
+  InputMessage,
+  MenuItem,
+} from "./components";
+
+const [draft, setDraft] = useState("");
+
+<div className="w-full max-w-[768px]">
+  <InputMessage
+    value={draft}
+    onValueChange={setDraft}
+    placeholder="可以向 Zeron 询问任何事情。输入 @ 使用连接应用或者提及文件。输入 / 可以指定技能"
+    leftSlot={<AgentActions />}
+    rightSlot={<Button variant="ghost" iconOnly size="sm"><MicIcon /></Button>}
+    footer={<AgentContextControls />}
+    disclaimer="内容由 AI 生成，请核实重要信息"
+  />
+</div>`;
+
+const agentModels = ["自动选择", "Claude Sonnet 4.6", "Claude Haiku 4.5"];
+const agentWorkspaces = ["选择工作目录", "~/Projects/zeron", "~/Projects/atlas"];
+const agentPermissions = ["默认权限", "仅限工作目录", "完全访问"];
+
+function AgentComposerDemo() {
+  const [value, setValue] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const [model, setModel] = useState(0);
+  const [workspace, setWorkspace] = useState(0);
+  const [permission, setPermission] = useState(0);
+  const [recording, setRecording] = useState(false);
+  const ImageIcon = useIcon("image");
+  const MicIcon = useIcon("mic");
+  const FolderIcon = useIcon("folder");
+  const ShieldIcon = useIcon("shield");
+  const ChevronDownIcon = useIcon("chevron-down");
+  const contextControls = (
+    <>
+      <DropdownMenu>
+        <DropdownTrigger
+          render={
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              leadingIcon={FolderIcon}
+              trailingIcon={ChevronDownIcon}
+              className="rounded-lg text-fg-subtle"
+            >
+              {agentWorkspaces[workspace]}
+            </Button>
+          }
+        />
+        <DropdownContent checkedIndex={workspace}>
+          {agentWorkspaces.map((item, index) => (
+            <MenuItem
+              key={item}
+              index={index}
+              label={item}
+              checked={workspace === index}
+              onSelect={() => setWorkspace(index)}
+            />
+          ))}
+        </DropdownContent>
+      </DropdownMenu>
+      <DropdownMenu>
+        <DropdownTrigger
+          render={
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              leadingIcon={ShieldIcon}
+              trailingIcon={ChevronDownIcon}
+              className="rounded-lg text-fg-subtle"
+            >
+              {agentPermissions[permission]}
+            </Button>
+          }
+        />
+        <DropdownContent checkedIndex={permission}>
+          {agentPermissions.map((item, index) => (
+            <MenuItem
+              key={item}
+              index={index}
+              label={item}
+              checked={permission === index}
+              onSelect={() => setPermission(index)}
+            />
+          ))}
+        </DropdownContent>
+      </DropdownMenu>
+    </>
+  );
+
+  return (
+    <div className="w-full max-w-[768px]">
+      <InputMessage
+        composerClassName="shadow-[0_3px_8px_rgb(37_40_46_/_0.1)]"
+        value={value}
+        onValueChange={setValue}
+        onSend={() => {
+          setValue("");
+          setFiles([]);
+        }}
+        files={files}
+        onFilesChange={setFiles}
+        placeholder="可以向 Zeron 询问任何事情。输入 @ 使用连接应用或者提及文件。输入 / 可以指定技能"
+        leftSlot={({ openFilePicker }) => (
+          <>
+            <Button
+              type="button"
+              variant="ghost"
+              iconOnly
+              size="sm"
+              className="rounded-xl bg-hover"
+              onClick={() => openFilePicker("image/*")}
+              aria-label="添加图片"
+            >
+              <ImageIcon />
+            </Button>
+            <DropdownMenu>
+              <DropdownTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-xl bg-[rgba(217,119,87,0.12)] text-fg-default"
+                    trailingIcon={ChevronDownIcon}
+                  >
+                    <ClaudeCode size={16} />
+                    {agentModels[model]}
+                  </Button>
+                }
+              />
+              <DropdownContent checkedIndex={model}>
+                {agentModels.map((item, index) => (
+                  <MenuItem
+                    key={item}
+                    index={index}
+                    label={item}
+                    checked={model === index}
+                    onSelect={() => setModel(index)}
+                  />
+                ))}
+              </DropdownContent>
+            </DropdownMenu>
+          </>
+        )}
+        rightSlot={
+          <Button
+            type="button"
+            variant="ghost"
+            iconOnly
+            size="sm"
+            className="rounded-lg"
+            active={recording}
+            onClick={() => setRecording((current) => !current)}
+            aria-label={recording ? "停止语音输入" : "开始语音输入"}
+            aria-pressed={recording}
+          >
+            <MicIcon />
+          </Button>
+        }
+        footer={contextControls}
+        disclaimer="内容由 AI 生成，请核实重要信息"
+      />
+    </div>
+  );
+}
+
 const inputMessageProps: PropDef[] = [
   { name: "value", type: "string", description: "Controlled textarea value." },
   { name: "onValueChange", type: "(value: string) => void", description: "Called with the new value on every textarea change." },
@@ -459,11 +643,17 @@ const inputMessageProps: PropDef[] = [
   { name: "placeholder", type: "string", default: '"Ask me anything…"', description: "Placeholder shown when the value is empty. While a file is being dragged over the component (and attachments are enabled), the placeholder swaps to “Drop files here to add to chat”." },
   { name: "leftSlot", type: "ReactNode | (ctx) => ReactNode", description: "Content rendered in the bottom-left action area. May be a render-fn that receives `{ openFilePicker, files }` — `openFilePicker(acceptOverride?)` opens the native file picker (optionally scoped to a subset of accept types, e.g. `\"image/*\"`)." },
   { name: "rightSlot", type: "ReactNode | (ctx) => ReactNode", description: "Content rendered in the bottom-right action area, before the built-in send button. Same render-fn shape as `leftSlot`." },
+  { name: "footer", type: "ReactNode", description: "Session-level controls rendered below the editor card, such as workspace and permission selectors." },
+  { name: "disclaimer", type: "ReactNode", description: "Optional content rendered beneath the composer shell, typically an AI-output disclaimer." },
+  { name: "composerClassName", type: "string", description: "Extra classes for the floating editor card inside the agent-composer shell." },
+  { name: "footerClassName", type: "string", description: "Extra classes for the footer that contains `footer`." },
   { name: "disabled", type: "boolean", default: "false", description: "Disables the textarea, send button, and drag-and-drop." },
   { name: "minRows", type: "number", default: "1", description: "Minimum visible rows before the textarea grows." },
   { name: "maxRows", type: "number", default: "8", description: "Maximum visible rows before the textarea starts to scroll." },
   { name: "clickToFocus", type: "boolean", default: "true", description: "When true, clicking anywhere on the surrounding container (outside of buttons / links / inputs) focuses the textarea." },
   { name: "sendLabel", type: "string", default: '"Send"', description: "Accessible label for the send button." },
+  { name: "sendVariant", type: '"primary" | "neutral"', default: '"neutral"', description: "Visual treatment for the built-in send button. The agent-composer default is neutral; use primary for a branded send action." },
+  { name: "layout", type: '"compact" | "expanded"', default: '"expanded"', description: "Expanded layout is the agent-composer default: it gives the textarea the available card height and pins actions to the bottom. Use compact for a content-sized editor." },
   { name: "files", type: "File[]", description: "Controlled list of attached files. Pair with `onFilesChange` to enable drag-and-drop and the file-picker slot helper. When omitted, attachment behavior is disabled." },
   { name: "onFilesChange", type: "(files: File[]) => void", description: "Called when files are added (drag-drop or picker) or removed via the preview tile’s × button. Duplicate drops of the same file (same name + size + lastModified) are silently de-duplicated." },
   { name: "accept", type: "string", default: '"image/png,image/jpeg,application/pdf"', description: "Accepted MIME types as a comma-separated string. Used by both the file picker and the drag-and-drop filter." },
@@ -634,6 +824,12 @@ export function InputMessageExamples() {
               }}
             />
           </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title="Agent composer">
+        <ComponentPreview code={agentComposerCode} minHeightClass="min-h-[300px]">
+          <AgentComposerDemo />
         </ComponentPreview>
       </DocSection>
 

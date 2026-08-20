@@ -77,6 +77,7 @@ export interface IconDefinitions {
   FileSpreadsheetIcon: unknown;
   FileVideoIcon: unknown;
   FileZipIcon: unknown;
+  Folder01Icon: unknown;
   GlobeIcon: unknown;
   HashtagIcon: unknown;
   Home01Icon: unknown;
@@ -89,6 +90,7 @@ export interface IconDefinitions {
   LockIcon: unknown;
   Mail01Icon: unknown;
   Menu01Icon: unknown;
+  Mic01Icon: unknown;
   Moon02Icon: unknown;
   MoreHorizontalIcon: unknown;
   NextIcon: unknown;
@@ -243,6 +245,8 @@ export function createIconMap(
     "file-spreadsheet": createHugeIcon(icons.FileSpreadsheetIcon, options),
     "file-text": createHugeIcon(icons.File02Icon, options),
     "file-video": createHugeIcon(icons.FileVideoIcon, options),
+    folder: createHugeIcon(icons.Folder01Icon, options),
+    mic: createHugeIcon(icons.Mic01Icon, options),
     hash: createHugeIcon(icons.HashtagIcon, options),
     "list-checks": createHugeIcon(icons.Task01Icon, options),
     list: createHugeIcon(icons.ListViewIcon, options),

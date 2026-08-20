@@ -41,6 +41,7 @@ import FileImageIcon from "@hugeicons/core-free-icons/FileImageIcon";
 import FileSpreadsheetIcon from "@hugeicons/core-free-icons/FileSpreadsheetIcon";
 import FileVideoIcon from "@hugeicons/core-free-icons/FileVideoIcon";
 import FileZipIcon from "@hugeicons/core-free-icons/FileZipIcon";
+import Folder01Icon from "@hugeicons/core-free-icons/Folder01Icon";
 import GlobeIcon from "@hugeicons/core-free-icons/GlobeIcon";
 import HashtagIcon from "@hugeicons/core-free-icons/HashtagIcon";
 import Home01Icon from "@hugeicons/core-free-icons/Home01Icon";
@@ -53,6 +54,7 @@ import ListViewIcon from "@hugeicons/core-free-icons/ListViewIcon";
 import LockIcon from "@hugeicons/core-free-icons/LockIcon";
 import Mail01Icon from "@hugeicons/core-free-icons/Mail01Icon";
 import Menu01Icon from "@hugeicons/core-free-icons/Menu01Icon";
+import Mic01Icon from "@hugeicons/core-free-icons/Mic01Icon";
 import Moon02Icon from "@hugeicons/core-free-icons/Moon02Icon";
 import MoreHorizontalIcon from "@hugeicons/core-free-icons/MoreHorizontalIcon";
 import NextIcon from "@hugeicons/core-free-icons/NextIcon";
@@ -197,7 +199,7 @@ export type IconName =
   | "calendar" | "check-square" | "trash" | "eraser" | "scissors" | "upload"
   | "pin" | "pin-off" | "file" | "file-archive" | "file-audio" | "file-image"
   | "file-spreadsheet" | "file-text" | "file-video" | "hash" | "list-checks" | "list"
-  | "presentation" | "type" | "baseline";
+  | "presentation" | "type" | "baseline" | "folder" | "mic";
 
 export type IconVariant =
   | "stroke-rounded"
@@ -285,6 +287,7 @@ export const defaultIcons = createIconMap({
   FileSpreadsheetIcon,
   FileVideoIcon,
   FileZipIcon,
+  Folder01Icon,
   GlobeIcon,
   HashtagIcon,
   Home01Icon,
@@ -297,6 +300,7 @@ export const defaultIcons = createIconMap({
   LockIcon,
   Mail01Icon,
   Menu01Icon,
+  Mic01Icon,
   Moon02Icon,
   MoreHorizontalIcon,
   NextIcon,

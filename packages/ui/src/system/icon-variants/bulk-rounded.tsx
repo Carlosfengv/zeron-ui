@@ -69,6 +69,7 @@ import Loading01Icon from "@hugeicons-pro/core-bulk-rounded/Loading01Icon";
 import LockIcon from "@hugeicons-pro/core-bulk-rounded/LockIcon";
 import Mail01Icon from "@hugeicons-pro/core-bulk-rounded/Mail01Icon";
 import Menu01Icon from "@hugeicons-pro/core-bulk-rounded/Menu01Icon";
+import Mic01Icon from "@hugeicons-pro/core-bulk-rounded/Mic01Icon";
 import Moon02Icon from "@hugeicons-pro/core-bulk-rounded/Moon02Icon";
 import MoreHorizontalIcon from "@hugeicons-pro/core-bulk-rounded/MoreHorizontalIcon";
 import NextIcon from "@hugeicons-pro/core-bulk-rounded/NextIcon";
@@ -100,6 +101,7 @@ import FileImageIcon from "@hugeicons-pro/core-bulk-rounded/FileImageIcon";
 import FileSpreadsheetIcon from "@hugeicons-pro/core-bulk-rounded/FileSpreadsheetIcon";
 import FileVideoIcon from "@hugeicons-pro/core-bulk-rounded/FileVideoIcon";
 import FileZipIcon from "@hugeicons-pro/core-bulk-rounded/FileZipIcon";
+import Folder01Icon from "@hugeicons-pro/core-bulk-rounded/Folder01Icon";
 import HashtagIcon from "@hugeicons-pro/core-bulk-rounded/HashtagIcon";
 import ListViewIcon from "@hugeicons-pro/core-bulk-rounded/ListViewIcon";
 import PinIcon from "@hugeicons-pro/core-bulk-rounded/PinIcon";
@@ -185,6 +187,7 @@ export const bulkRoundedIcons = createIconMap(
   LockIcon,
   Mail01Icon,
   Menu01Icon,
+  Mic01Icon,
   Moon02Icon,
   MoreHorizontalIcon,
   NextIcon,
@@ -216,6 +219,7 @@ export const bulkRoundedIcons = createIconMap(
   FileSpreadsheetIcon,
   FileVideoIcon,
   FileZipIcon,
+  Folder01Icon,
   HashtagIcon,
   ListViewIcon,
   PinIcon,

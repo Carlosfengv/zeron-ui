@@ -6,7 +6,7 @@ export default function InputMessageDoc() {
     <DocPage
       title="InputMessage"
       slug="input-message"
-      description="Chat-style message composer with an auto-resizing textarea, flexible left/right action slots, and a built-in send button on a Surface-2 substrate."
+      description="Agent-style message composer with a floating editor, flexible action slots, contextual footer controls, and an optional AI-output disclaimer."
     >
       <InputMessageExamples />
     </DocPage>

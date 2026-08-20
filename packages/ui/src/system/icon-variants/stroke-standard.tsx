@@ -69,6 +69,7 @@ import Loading01Icon from "@hugeicons-pro/core-stroke-standard/Loading01Icon";
 import LockIcon from "@hugeicons-pro/core-stroke-standard/LockIcon";
 import Mail01Icon from "@hugeicons-pro/core-stroke-standard/Mail01Icon";
 import Menu01Icon from "@hugeicons-pro/core-stroke-standard/Menu01Icon";
+import Mic01Icon from "@hugeicons-pro/core-stroke-standard/Mic01Icon";
 import Moon02Icon from "@hugeicons-pro/core-stroke-standard/Moon02Icon";
 import MoreHorizontalIcon from "@hugeicons-pro/core-stroke-standard/MoreHorizontalIcon";
 import NextIcon from "@hugeicons-pro/core-stroke-standard/NextIcon";
@@ -100,6 +101,7 @@ import FileImageIcon from "@hugeicons-pro/core-stroke-standard/FileImageIcon";
 import FileSpreadsheetIcon from "@hugeicons-pro/core-stroke-standard/FileSpreadsheetIcon";
 import FileVideoIcon from "@hugeicons-pro/core-stroke-standard/FileVideoIcon";
 import FileZipIcon from "@hugeicons-pro/core-stroke-standard/FileZipIcon";
+import Folder01Icon from "@hugeicons-pro/core-stroke-standard/Folder01Icon";
 import HashtagIcon from "@hugeicons-pro/core-stroke-standard/HashtagIcon";
 import ListViewIcon from "@hugeicons-pro/core-stroke-standard/ListViewIcon";
 import PinIcon from "@hugeicons-pro/core-stroke-standard/PinIcon";
@@ -185,6 +187,7 @@ export const strokeStandardIcons = createIconMap(
   LockIcon,
   Mail01Icon,
   Menu01Icon,
+  Mic01Icon,
   Moon02Icon,
   MoreHorizontalIcon,
   NextIcon,
@@ -216,6 +219,7 @@ export const strokeStandardIcons = createIconMap(
   FileSpreadsheetIcon,
   FileVideoIcon,
   FileZipIcon,
+  Folder01Icon,
   HashtagIcon,
   ListViewIcon,
   PinIcon,

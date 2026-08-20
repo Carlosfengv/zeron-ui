@@ -23,6 +23,7 @@ import { surfaceClasses } from "#system/surface-classes";
 import { SurfaceProvider } from "#system/surface-context";
 import { FileThumbnail } from "#components/file-thumbnail";
 import { Button } from "#components/button";
+import { Container, ContainerFooter } from "#components/container";
 import { Tooltip } from "#components/tooltip";
 
 const useIsoLayoutEffect =
@@ -91,6 +92,16 @@ interface InputMessageProps
   /** Content rendered in the bottom-right action area, before the built-in
    *  send button. Same render-fn shape as leftSlot. */
   rightSlot?: InputMessageSlot;
+  /** Session-level controls rendered below the editor in the agent footer.
+   *  Use this for contextual controls such as workspace or permission menus. */
+  footer?: ReactNode;
+  /** Optional content displayed beneath the agent composer, such as an AI
+   *  output disclaimer. */
+  disclaimer?: ReactNode;
+  /** Extra classes for the editor card inside the agent composer shell. */
+  composerClassName?: string;
+  /** Extra classes for the footer that contains `footer`. */
+  footerClassName?: string;
   /** Disables the textarea, send button, and drag-and-drop. */
   disabled?: boolean;
   /** Minimum visible rows before the textarea grows. */
@@ -101,6 +112,13 @@ interface InputMessageProps
   clickToFocus?: boolean;
   /** Accessible label for the send button. */
   sendLabel?: string;
+  /** Visual treatment for the built-in send button. The agent-composer
+   *  default is `"neutral"`; use `"primary"` for a branded send action. */
+  sendVariant?: "primary" | "neutral";
+  /** `"expanded"` gives the text area the available vertical space and pins
+   *  the action row to the bottom. This is the agent-composer default;
+   *  `"compact"` restores the content-sized layout. */
+  layout?: "compact" | "expanded";
   /** Controlled list of attached files. When undefined, attachment behavior
    *  is disabled (no drag-drop, no file input). */
   files?: File[];
@@ -307,11 +325,17 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
       placeholder = "Ask me anything…",
       leftSlot,
       rightSlot,
+      footer,
+      disclaimer,
+      composerClassName,
+      footerClassName,
       disabled,
       minRows = 1,
       maxRows = 8,
       clickToFocus = true,
       sendLabel = "Send",
+      sendVariant = "neutral",
+      layout = "expanded",
       files,
       onFilesChange,
       accept = DEFAULT_ACCEPT,
@@ -735,28 +759,34 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
     return (
       <div
         ref={ref}
-        onMouseDown={handleContainerMouseDown}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={cn(
-          // The edge is the raised shadow's hairline ring, not a
-          // border. State changes recolor that same 1px ring in place rather
-          // than layering a second colored border beside it — so hover / focus
-          // bump *contrast* without ever appearing to thicken the stroke.
-          "flex flex-col gap-1 p-2 transition-[box-shadow,color] duration-fast",
-          surfaceClasses("raised", "raised"),
-          "rounded-xl",
-          clickToFocus && !disabled && "cursor-text",
-          disabled && "opacity-50 pointer-events-none",
-          className
-        )}
-        style={edgeShadow ? { boxShadow: edgeShadow, ...style } : style}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        className={cn("w-full", className)}
+        style={style}
         {...props}
       >
-        <SurfaceProvider role="raised">
+        <Container className="rounded-3xl bg-hover p-1">
+          <div
+            onMouseDown={handleContainerMouseDown}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={cn(
+              // The edge is the raised shadow's hairline ring, not a
+              // border. State changes recolor that same 1px ring in place rather
+              // than layering a second colored border beside it — so hover / focus
+              // bump *contrast* without ever appearing to thicken the stroke.
+              "flex flex-col transition-[box-shadow,color] duration-fast",
+              layout === "expanded" ? "min-h-[120px] gap-2 p-3" : "gap-1 p-2",
+              surfaceClasses("floating", "raised"),
+              "rounded-2xl",
+              clickToFocus && !disabled && "cursor-text",
+              disabled && "opacity-50 pointer-events-none",
+              composerClassName
+            )}
+            style={edgeShadow ? { boxShadow: edgeShadow } : undefined}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+          >
+            <SurfaceProvider role="floating">
           {supportsFiles && (
             <input
               ref={fileInputRef}
@@ -878,8 +908,12 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
             aria-label={textareaProps?.["aria-label"] ?? "Message"}
             className={cn(
               "w-full resize-none bg-transparent outline-none",
-              "text-body leading-5 text-fg-default placeholder:text-fg-muted",
-              "px-2 py-2", "font-normal"
+              "text-body leading-5 text-fg-default",
+              layout === "expanded"
+                ? "placeholder:text-fg-subtle/60"
+                : "placeholder:text-fg-muted",
+              layout === "expanded" ? "min-h-0 flex-1 p-0" : "px-2 py-2",
+              "font-normal"
             )}
             {...restTextareaProps}
           />
@@ -889,7 +923,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
               {rightContent}
               <Button
                 type="button"
-                variant="primary"
+                variant={sendVariant}
                 iconOnly
                 size="sm"
                 onClick={buttonMode === "stop" ? handleStop : handleSend}
@@ -933,7 +967,21 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
           <span className="sr-only" role="status" aria-live="polite">
             {liveMsg}
           </span>
-        </SurfaceProvider>
+            </SurfaceProvider>
+          </div>
+          {footer && (
+            <ContainerFooter
+              className={cn("justify-start gap-2 px-1.5 py-1", footerClassName)}
+            >
+              {footer}
+            </ContainerFooter>
+          )}
+        </Container>
+        {disclaimer && (
+          <p className="mt-1 text-center text-label text-fg-subtle">
+            {disclaimer}
+          </p>
+        )}
       </div>
     );
   }
