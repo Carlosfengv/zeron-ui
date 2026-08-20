@@ -3,6 +3,20 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "file-manager-01",
+      "type": "registry:block",
+      "title": "File Manager",
+      "description": "A token-native, storage-agnostic file-management workspace with icon, list, and Finder-style column views.",
+      "categories": ["application", "storage", "files"],
+      "dependencies": ["@tanstack/react-virtual", "tw-animate-css"],
+      "registryDependencies": ["button", "dialog", "icon-context", "input", "select", "tabs", "utils"],
+      "files": [
+        { "path": "packages/blocks/src/application/file-manager-01/file-manager.tsx", "type": "registry:component", "target": "components/blocks/file-manager-01/file-manager.tsx" },
+        { "path": "packages/blocks/src/application/file-manager-01/file-manager-types.ts", "type": "registry:component", "target": "components/blocks/file-manager-01/file-manager-types.ts" },
+        { "path": "packages/blocks/src/application/file-manager-01/index.ts", "type": "registry:component", "target": "components/blocks/file-manager-01/index.ts" }
+      ]
+    },
+    {
       "name": "agent-trace-01",
       "type": "registry:block",
       "title": "Agent Trace",

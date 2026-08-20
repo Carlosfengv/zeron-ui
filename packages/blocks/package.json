@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./catalog": "./src/catalog.ts",
+    "./file-manager-01": "./src/application/file-manager-01/index.ts",
     "./agent-trace-01": "./src/application/agent-trace-01/index.ts",
     "./agent-session-detail-01": "./src/application/agent-session-detail-01/index.ts",
     "./provider-create-form-01": "./src/application/provider-create-form-01/index.ts",
@@ -38,6 +39,7 @@
   },
   "dependencies": {
     "@lobehub/icons": "^5.16.0",
+    "@tanstack/react-virtual": "^3.14.9",
     "@thesvg/icons": "^3.2.15",
     "@zeron/ui": "workspace:*",
     "react-markdown": "^10.1.0",
