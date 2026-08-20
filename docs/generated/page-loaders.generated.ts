@@ -76,6 +76,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/semantic-tokens": () => import("@docs/pages/components/semantic-tokens/page"),
   "components/sidebar": () => import("@docs/pages/components/sidebar/page"),
   "components/slider": () => import("@docs/pages/components/slider/page"),
+  "components/sortable-collection": () => import("@docs/pages/components/sortable-collection/page"),
   "components/stepper": () => import("@docs/pages/components/stepper/page"),
   "components/surfaces": () => import("@docs/pages/components/surfaces/page"),
   "components/switch": () => import("@docs/pages/components/switch/page"),

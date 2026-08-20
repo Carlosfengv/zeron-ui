@@ -39,6 +39,7 @@ export const componentCardDescriptions = {
     separator: "带语义边框色和安全间距的无障碍水平与垂直分隔线。",
     select: "带动画的选择菜单，支持带边框、无边框变体与可选图标。",
     slider: "范围滑块，支持步进吸附、区间模式与动画滑块手柄。",
+    "sortable-collection": "受控的可排序列表，支持行内编辑、移除和从目录添加项目。",
     stepper: "无障碍多步骤导航，支持校验、完成状态与键盘操作。",
     switch: "带动画滑块与标签的开关控件。",
     table: "具有行悬停反馈和语义化标记的数据表格。",

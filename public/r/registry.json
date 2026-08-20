@@ -1727,6 +1727,32 @@
       ]
     },
     {
+      "name": "sortable-collection",
+      "type": "registry:ui",
+      "title": "SortableCollection",
+      "description": "Controlled reorderable list with drag preview, keyboard sorting, optional inline editing, removal, and catalog-based adding.",
+      "dependencies": [
+        "@hugeicons/core-free-icons",
+        "@hugeicons/react",
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/popover.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/sortable-collection.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sortable-collection.tsx"
+        }
+      ]
+    },
+    {
       "name": "stepper",
       "type": "registry:ui",
       "title": "Stepper (Base UI)",

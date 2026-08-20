@@ -1,0 +1,10 @@
+{
+  "sortableCollection": {
+    "basic": "Basic",
+    "editing": "Inline editing",
+    "editingBody": "Enable the edit action only where a product needs it. The editing callback owns the form and receives a close helper; sorting pauses until editing finishes.",
+    "dragBehavior": "Reorder behavior and accessibility",
+    "dragBehaviorBody": "Drag from the horizontal handle. The active row follows the pointer at 60% opacity, its original location becomes an empty gray placeholder, and a brand-colored line identifies another insertion point. Returning to the original location highlights that placeholder border.",
+    "keyboardBody": "For keyboard use, focus the drag handle and press Space or Enter to begin. Use Arrow Up and Arrow Down to move the item, press Space or Enter to place it, or Escape to cancel. Changes are announced through a live region."
+  }
+}

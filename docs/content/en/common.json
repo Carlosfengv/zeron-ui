@@ -133,6 +133,7 @@
       "separator": "Accessible horizontal and vertical rules with a semantic border color and layout-safe gutter.",
       "select": "Animated select menu with bordered/borderless variants and optional icons.",
       "slider": "Range slider with step snapping, range mode, and animated thumb.",
+      "sortable-collection": "Controlled reorderable list with optional inline editing, removal, and catalog-based adding.",
       "stepper": "Accessible multi-step navigation with validation, completion states, and keyboard controls.",
       "switch": "Toggle switch with animated thumb and label.",
       "table": "Data table with row hover effects and semantic markup.",
