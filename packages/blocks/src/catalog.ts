@@ -51,9 +51,9 @@ export const blockCatalog = [
   {
     name: "monitoring-alert-list-01",
     title: "监控告警列表",
-    description: "A monitoring alert workspace with shared operations navigation, severity filters, and AI analysis actions.",
+    description: "A monitoring alert workspace with shared operations navigation, severity filters, resolution history, and contextual actions.",
     categories: ["application", "operations", "monitoring"],
-    dependencies: ["page-layout", "sidebar", "nav-menu", "nav-item", "input", "dropdown", "badge", "button"],
+    dependencies: ["page-layout", "sidebar", "nav-menu", "nav-item", "input", "dropdown", "badge", "button", "button-group", "popover"],
   },
   {
     name: "service-management-01",

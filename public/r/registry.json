@@ -2546,7 +2546,7 @@
       "name": "monitoring-alert-list-01",
       "type": "registry:block",
       "title": "监控告警列表",
-      "description": "A monitoring alert workspace with operations navigation, severity filters, and AI analysis actions.",
+      "description": "A monitoring alert workspace with operations navigation, severity filters, resolution history, and contextual actions.",
       "categories": [
         "application",
         "operations",
@@ -2559,6 +2559,7 @@
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/badge.json",
         "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/button-group.json",
         "https://zeron-ui.vercel.app/r/dialog.json",
         "https://zeron-ui.vercel.app/r/dropdown.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
@@ -2568,6 +2569,7 @@
         "https://zeron-ui.vercel.app/r/nav-item.json",
         "https://zeron-ui.vercel.app/r/nav-menu.json",
         "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/popover.json",
         "https://zeron-ui.vercel.app/r/sidebar.json",
         "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
         "https://zeron-ui.vercel.app/r/utils.json"
