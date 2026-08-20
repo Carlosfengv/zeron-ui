@@ -10,6 +10,7 @@ import { ReasoningRow } from "./reasoning-row";
 import type { AgentTranscriptBlock, AgentTranscriptItem } from "./stream-projection";
 import { ToolCallCard } from "./tool-call-card";
 import { groupTranscriptFlows } from "./transcript-grouping";
+import { formatTraceTime } from "./trace-time";
 import { useStreamScroll } from "./use-stream-scroll";
 
 function compactNumber(value: number | undefined): string {
@@ -18,10 +19,6 @@ function compactNumber(value: number | undefined): string {
   if (absolute >= 1_000_000) return `${(value / 1_000_000).toFixed(2)} M`;
   if (absolute >= 1_000) return `${(value / 1_000).toFixed(2)} K`;
   return new Intl.NumberFormat("en").format(value);
-}
-
-function formatTime(value: number | undefined): string {
-  return value === undefined ? "" : new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(value);
 }
 
 function AssistantBlocks({ blocks, streaming }: { blocks: readonly AgentTranscriptBlock[]; streaming: boolean }) {
@@ -39,7 +36,7 @@ function TurnStatus() {
 }
 
 /** Stable, bottom-following conversation flow for replayed and live stream snapshots. */
-export function TranscriptFlow({ items, replaying }: { items: readonly AgentTranscriptItem[]; replaying: boolean }) {
+export function TranscriptFlow({ items, replaying, timeZone, locale }: { items: readonly AgentTranscriptItem[]; replaying: boolean; timeZone?: string; locale?: string }) {
   const signature = useMemo(() => items.map((item) => {
     if (item.kind === "assistant") return `${item.id}:${item.status}:${item.blocks.map((block) => block.text.length).join(",")}`;
     if (item.kind === "tool") return `${item.id}:${item.status}:${item.result?.length ?? 0}`;
@@ -50,7 +47,7 @@ export function TranscriptFlow({ items, replaying }: { items: readonly AgentTran
   const finalUsage = [...items].reverse().find((item): item is Extract<AgentTranscriptItem, { kind: "assistant" }> => item.kind === "assistant" && (item.input !== undefined || item.output !== undefined || item.think !== undefined));
   const flows = useMemo(() => groupTranscriptFlows(items), [items]);
   const renderItem = (item: AgentTranscriptItem) => {
-    if (item.kind === "user") return <ChatMessage key={item.id} from="user" time={formatTime(item.time)} className="[&>div:first-child]:rounded-xl [&>div:first-child]:bg-brand [&>div:first-child]:text-fg-on-brand">{item.text}</ChatMessage>;
+    if (item.kind === "user") return <ChatMessage key={item.id} from="user" time={formatTraceTime(item.time, { locale, timeZone })} className="[&>div:first-child]:rounded-xl [&>div:first-child]:bg-brand [&>div:first-child]:text-fg-on-brand">{item.text}</ChatMessage>;
     if (item.kind === "assistant") return <ChatMessage key={item.id} from="assistant" data-streaming={item.status === "running" || undefined} className="min-w-0 max-w-full [&>div:first-child]:min-w-0 [&>div:first-child]:max-w-full"><div><AssistantBlocks blocks={item.blocks} streaming={item.status === "running"} />{item.status === "interrupted" && <p role="status" className="mt-2 text-label text-fg-danger">Stream interrupted</p>}</div></ChatMessage>;
     if (item.kind === "tool") return <ToolCallCard key={item.id} item={item} />;
     return <div key={item.id} className="self-center flex items-center gap-2 text-label text-fg-subtle"><Badge size="sm" color="gray">{item.kind === "system" ? "SYSTEM" : "CONTEXT"}</Badge><span className="max-w-xl truncate">{item.text}</span></div>;

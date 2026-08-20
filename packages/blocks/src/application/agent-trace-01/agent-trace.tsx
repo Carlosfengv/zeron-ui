@@ -18,6 +18,7 @@ import { Tooltip } from "@zeron/ui/tooltip";
 import { defaultAgentTracePayload } from "./session-default";
 import { projectAgentTranscript } from "./stream-projection";
 import { expandAgentTraceEntries, parseAgentTracePayload } from "./trace-jsonl";
+import { DEFAULT_TRACE_LOCALE, DEFAULT_TRACE_TIME_ZONE, formatTraceTime } from "./trace-time";
 import { TranscriptFlow } from "./transcript-flow";
 
 export { defaultAgentTracePayload } from "./session-default";
@@ -90,6 +91,10 @@ export interface AgentTraceProps extends Omit<ComponentPropsWithoutRef<"section"
   title?: string;
   /** Initial workspace surface. Trace remains the default for backwards compatibility. */
   defaultView?: AgentTraceView;
+  /** IANA timezone used for every recorded timestamp. */
+  timeZone?: string;
+  /** Locale used for every recorded timestamp. */
+  locale?: string;
 }
 
 function record(value: unknown): JsonRecord | null {
@@ -535,11 +540,6 @@ function turnMetrics(turn: AgentTraceTurn): Pick<AgentTraceRow, "input" | "outpu
   };
 }
 
-function formatTime(value: number | undefined): string {
-  if (value === undefined) return "—";
-  return new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit", fractionalSecondDigits: 3 });
-}
-
 function TurnStatusIcon({ status }: { status: AgentTraceTurn["status"] }) {
   const state = status ?? "running";
   const presentation = {
@@ -676,7 +676,7 @@ function InspectorCode({ children, error = false }: { children: string; error?: 
   return <pre className={cn("overflow-x-auto whitespace-pre-wrap break-words text-sm leading-5 text-fg-muted", error && "text-fg-danger")}>{children}</pre>;
 }
 
-function InspectorSummary({ row }: { row: AgentTraceRow }) {
+function InspectorSummary({ row, formatTime }: { row: AgentTraceRow; formatTime: (value: number | undefined) => string }) {
   const usage = rowUsage(row);
   const source = rowSource(row);
   return <InfoItemGroup>
@@ -717,6 +717,8 @@ export function AgentTrace({
   className,
   data,
   defaultView = "trace",
+  timeZone = DEFAULT_TRACE_TIME_ZONE,
+  locale = DEFAULT_TRACE_LOCALE,
   onDataChange,
   title = "Trajectory",
   ...props
@@ -748,6 +750,7 @@ export function AgentTrace({
   const domainEnd = times.length ? Math.max(...times, domainStart + 1) : 1;
   const domainDuration = Math.max(1, domainEnd - domainStart);
   const query = search.trim().toLocaleLowerCase();
+  const formatTime = (value: number | undefined) => formatTraceTime(value, { locale, precision: "millisecond", timeZone }) || "—";
   const allTurnsCollapsed = turns.length > 0 && turns.every((turn) => collapsedTurns.has(turn.id));
   const replaying = replayIndex !== null;
 
@@ -828,7 +831,7 @@ export function AgentTrace({
               </div>
             </div>
             <TabPanel value="chat" className="min-h-0 flex-1">
-              <TranscriptFlow items={transcript} replaying={replaying} />
+              <TranscriptFlow items={transcript} replaying={replaying} timeZone={timeZone} locale={locale} />
             </TabPanel>
             <TabPanel value="trace" className="flex min-h-0 flex-1 flex-col [&_[role=tab]_*]:!font-normal">
               <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-raised px-3 py-2">
@@ -888,7 +891,7 @@ export function AgentTrace({
             <header className="border-b border-border px-3 py-2"><div className="flex items-center justify-between gap-2"><span className="text-sm text-fg-subtle">Record #{selected.seq ?? "—"}</span><Badge size="sm" className="!font-normal" color={selected.status === "error" ? "red" : selected.kind === "tool" ? "amber" : "blue"}>{kindStyle[selected.kind].label}</Badge></div><h3 className="mt-1 text-sm font-normal text-fg-default">{selected.label}</h3></header>
             <TabsList className="mx-0 px-2" aria-label="Inspector tabs">{inspectorTabs(selected).map((tab) => <TabItem key={tab.id} value={tab.id} label={tab.label} />)}</TabsList>
             <ScrollArea className="min-h-0 flex-1" viewportClassName="h-full" orientation="vertical">
-              <TabPanel value="summary" className="p-3"><InspectorSummary row={selected} /></TabPanel>
+              <TabPanel value="summary" className="p-3"><InspectorSummary formatTime={formatTime} row={selected} /></TabPanel>
               <TabPanel value="preview" className="p-3"><InspectorPreview row={selected} /></TabPanel>
               <TabPanel value="input" className="p-3"><InspectorCode>{rowInput(selected)}</InspectorCode></TabPanel>
               <TabPanel value="output" className="p-3"><InspectorCode error={selected.status === "error"}>{rowOutput(selected)}</InspectorCode></TabPanel>

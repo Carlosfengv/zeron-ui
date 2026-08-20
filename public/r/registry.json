@@ -2320,6 +2320,11 @@
           "target": "components/blocks/agent-trace-01/trace-jsonl.ts"
         },
         {
+          "path": "packages/blocks/src/application/agent-trace-01/trace-time.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/trace-time.ts"
+        },
+        {
           "path": "packages/blocks/src/application/agent-trace-01/tool-call-card.tsx",
           "type": "registry:component",
           "target": "components/blocks/agent-trace-01/tool-call-card.tsx"

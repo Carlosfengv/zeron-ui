@@ -17,6 +17,7 @@
         { "path": "packages/blocks/src/application/agent-trace-01/reasoning-row.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/reasoning-row.tsx" },
         { "path": "packages/blocks/src/application/agent-trace-01/stream-projection.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/stream-projection.ts" },
         { "path": "packages/blocks/src/application/agent-trace-01/trace-jsonl.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/trace-jsonl.ts" },
+        { "path": "packages/blocks/src/application/agent-trace-01/trace-time.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/trace-time.ts" },
         { "path": "packages/blocks/src/application/agent-trace-01/tool-call-card.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/tool-call-card.tsx" },
         { "path": "packages/blocks/src/application/agent-trace-01/transcript-flow.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/transcript-flow.tsx" },
         { "path": "packages/blocks/src/application/agent-trace-01/transcript-grouping.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/transcript-grouping.ts" },
