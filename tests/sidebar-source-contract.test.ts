@@ -9,6 +9,9 @@ describe("sidebar implementation contract", () => {
   const sidebar = source("packages/ui/src/components/sidebar.tsx");
   const drawer = source("packages/ui/src/components/mobile-drawer.tsx");
   const identityRow = source("packages/ui/src/components/sidebar-identity-row.tsx");
+  const accountMenu = source("packages/ui/src/components/sidebar-account-menu.tsx");
+  const dropdown = source("packages/ui/src/components/dropdown.tsx");
+  const menuItem = source("packages/ui/src/components/menu-item.tsx");
   const navMenu = source("packages/ui/src/components/nav-menu.tsx");
   const sidebarDocs = source("docs/pages/components/sidebar/page.tsx");
   const zaiopsBlock = source("packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx");
@@ -107,12 +110,21 @@ describe("sidebar implementation contract", () => {
     expect(identityRow).toContain('trailingPlacement === "edge" && "ms-auto"');
     expect(identityRow).toContain('min-h-control-lg h-auto justify-start gap-1.5 px-0.5 py-2');
     expect(identityRow).toContain('[&>span.relative>span]:w-full');
-    expect(zaiopsPreview).toContain("<SidebarIdentityRow");
-    expect(zaiopsPreview).toContain('trailingPlacement="edge"');
-    expect(zaiopsPreview).toContain("<DropdownTrigger");
+    expect(zaiopsPreview).toContain("<SidebarAccountMenu");
+    expect(zaiopsPreview).toContain('triggerTrailing={<More aria-hidden className="size-4" />}');
     expect(zaiopsPreview).toContain('alignOffset={20}');
     expect(zaiopsPreview).toContain('className="!w-60 !min-w-60 !max-w-60"');
-    expect(zaiopsPreview).toContain('<DropdownContent\n        align="center"\n        className="!w-60 !min-w-60 !max-w-60"');
+    expect(accountMenu).toContain('side="top"');
+    expect(accountMenu).toContain('!w-[264px] !min-w-[264px] !max-w-[264px]');
+    expect(accountMenu).toContain('data-proximity-index={index}');
+    expect(accountMenu).toContain('item={item} index={index}');
+    expect(menuItem).toContain("leading?: ReactNode;");
+    expect(menuItem).toContain("trailing?: ReactNode;");
+  });
+
+  it("does not let a portaled submenu move the parent menu hover state", () => {
+    expect(dropdown).toContain('containerRef.current?.contains(e.target as Node)');
+    expect(dropdown).toContain('handlers.onMouseLeave();');
   });
 
   it("allows exactly one active ZAIops navigation item across menu groups", () => {

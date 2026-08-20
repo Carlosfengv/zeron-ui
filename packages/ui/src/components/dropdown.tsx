@@ -501,7 +501,19 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
                   handlers.onMouseEnter();
                   setFocusedIndex(null);
                 }}
-                onMouseMove={handlers.onMouseMove}
+                onMouseMove={(e) => {
+                  // React events from a submenu portal bubble through the
+                  // parent menu's component tree even though the pointer is
+                  // no longer inside this popup in the DOM. Do not resolve a
+                  // parent-menu proximity target from that child popup's
+                  // coordinates, otherwise its rows can highlight the
+                  // nearest unrelated parent item.
+                  if (!containerRef.current?.contains(e.target as Node)) {
+                    handlers.onMouseLeave();
+                    return;
+                  }
+                  handlers.onMouseMove(e);
+                }}
                 onMouseLeave={handlers.onMouseLeave}
                 onFocus={(e) => {
                   const indexAttr = (e.target as HTMLElement)
