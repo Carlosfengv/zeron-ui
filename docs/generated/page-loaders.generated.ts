@@ -7,6 +7,7 @@ export type DocPageLoader = () => Promise<DocPageModule>;
 
 export const pageLoaders: Record<string, DocPageLoader> = {
   "blocks/agent-trace-01": () => import("@docs/pages/blocks/agent-trace-01/page"),
+  "blocks/agent-session-detail-01": () => import("@docs/pages/blocks/agent-session-detail-01/page"),
   "blocks/cluster-environment-detail-01": () => import("@docs/pages/blocks/cluster-environment-detail-01/page"),
   "blocks/cluster-environment-list-01": () => import("@docs/pages/blocks/cluster-environment-list-01/page"),
   "blocks/inspection-report-list-01": () => import("@docs/pages/blocks/inspection-report-list-01/page"),

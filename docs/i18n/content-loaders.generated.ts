@@ -14,6 +14,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
     home: () => import("@docs/content/en/home.json"),
     "blocks/agent-trace-01": () => import("@docs/content/en/blocks/agent-trace-01.json"),
+    "blocks/agent-session-detail-01": () => import("@docs/content/en/blocks/agent-session-detail-01.json"),
     "blocks/cluster-environment-detail-01": () => import("@docs/content/en/blocks/cluster-environment-detail-01.json"),
     "blocks/cluster-environment-list-01": () => import("@docs/content/en/blocks/cluster-environment-list-01.json"),
     "blocks/inspection-report-list-01": () => import("@docs/content/en/blocks/inspection-report-list-01.json"),
@@ -92,6 +93,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   "zh-CN": {
     home: () => import("@docs/content/zh-CN/home.json"),
     "blocks/agent-trace-01": () => import("@docs/content/zh-CN/blocks/agent-trace-01.json"),
+    "blocks/agent-session-detail-01": () => import("@docs/content/zh-CN/blocks/agent-session-detail-01.json"),
     "blocks/cluster-environment-detail-01": () => import("@docs/content/zh-CN/blocks/cluster-environment-detail-01.json"),
     "blocks/cluster-environment-list-01": () => import("@docs/content/zh-CN/blocks/cluster-environment-list-01.json"),
     "blocks/inspection-report-list-01": () => import("@docs/content/zh-CN/blocks/inspection-report-list-01.json"),

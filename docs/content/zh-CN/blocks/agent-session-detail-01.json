@@ -1,0 +1,8 @@
+{
+  "agentSessionDetailBlock": {
+    "title": "Agent Session Detail 1",
+    "description": "包含可切换会话、Agent 导航与内嵌执行轨迹的会话详情工作区。",
+    "guidance": "会话数据",
+    "guidanceBody": "通过 sessions 传入会话记录，并使用 activeSessionId 和 onActiveSessionChange 控制选择状态。每个会话提供元数据及传递给 Agent Trace 的 JSON 数据。"
+  }
+}

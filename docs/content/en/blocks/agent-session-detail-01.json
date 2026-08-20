@@ -1,0 +1,8 @@
+{
+  "agentSessionDetailBlock": {
+    "title": "Agent Session Detail 1",
+    "description": "A session detail workspace with switchable sessions, agent navigation, and an embedded execution trace.",
+    "guidance": "Session input",
+    "guidanceBody": "Pass session records through sessions and control selection with activeSessionId and onActiveSessionChange. Each session provides metadata and the JSON payload passed to Agent Trace."
+  }
+}

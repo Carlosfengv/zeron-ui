@@ -21,6 +21,7 @@ import { TopNavAppShell } from "@zeron/blocks/top-nav-app-shell-01";
 import { ZaiopsOperations } from "@zeron/blocks/zaiops-operations-01";
 import { ZlrWorkspace } from "@zeron/blocks/zlrlist";
 import { AgentTrace } from "@zeron/blocks/agent-trace-01";
+import { AgentSessionDetail } from "@zeron/blocks/agent-session-detail-01";
 import { Button } from "@zeron/ui/button";
 import { DetailBlockPreviewShell } from "@docs/pages/blocks/_components/DetailBlockPreviewShell";
 import type { StandaloneBlockSlug } from "./standalone-blocks";
@@ -31,6 +32,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
     case "agent-trace-01":
       return <AgentTrace className="h-full min-h-0 rounded-none border-0" />;
+    case "agent-session-detail-01":
+      return <AgentSessionDetail className="h-full min-h-0" />;
     case "cluster-environment-detail-01":
       return <ClusterEnvironmentDetail className="h-full" />;
     case "cluster-environment-list-01":

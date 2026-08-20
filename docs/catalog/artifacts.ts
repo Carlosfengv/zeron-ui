@@ -38,6 +38,11 @@ export const artifactCatalog: readonly ArtifactEntry[] = [
     kind: "block", product: "shared", domains: ["ai agent", "observability"], patterns: ["trace", "timeline", "debugging"], searchTerms: ["agent", "trace", "tool call", "message", "轨迹", "调用链", "消息"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
   },
   {
+    slug: "agent-session-detail-01", registryName: "agent-session-detail-01",
+    title: "Agent Session Detail", description: "A session detail workspace with agent navigation, switchable sessions and an embedded execution trace.",
+    kind: "page", product: "shared", domains: ["ai agent", "sessions"], patterns: ["detail", "sidebar", "trace"], searchTerms: ["agent", "session", "trace", "会话", "详情", "智能体"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
+  },
+  {
     slug: "provider-create-form-01", registryName: "provider-create-form-01",
     title: "Provider Create Flow", description: "A guided provider setup with credential validation, model discovery and a final review.",
     kind: "flow", product: "zentrix", domains: ["model provider", "configuration"], patterns: ["wizard", "validation"], searchTerms: ["provider", "create", "模型服务商", "创建流程"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,

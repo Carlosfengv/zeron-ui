@@ -22,6 +22,7 @@ import { MonitoringAlertList } from "@zeron/blocks/monitoring-alert-list-01";
 import { ServiceManagement } from "@zeron/blocks/service-management-01";
 import { ZlrList } from "@zeron/blocks/zlrlist";
 import { AgentTrace } from "@zeron/blocks/agent-trace-01";
+import { AgentSessionDetail } from "@zeron/blocks/agent-session-detail-01";
 
 function ResponsivePreview({
   canvasHeight,
@@ -62,6 +63,10 @@ function ResponsivePreview({
 export function BlockPreview({ name }: { name: string }) {
   if (name === "agent-trace-01") {
     return <ResponsivePreview canvasHeight={760} canvasWidth={1160}><AgentTrace className="h-full min-h-0 rounded-none border-0" /></ResponsivePreview>;
+  }
+
+  if (name === "agent-session-detail-01") {
+    return <ResponsivePreview canvasHeight={760} canvasWidth={1160}><AgentSessionDetail className="h-full min-h-0" /></ResponsivePreview>;
   }
 
   if (name === "mcp-detail-01") {
