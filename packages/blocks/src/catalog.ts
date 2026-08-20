@@ -4,7 +4,7 @@ export const blockCatalog = [
     title: "Agent Trace",
     description: "A turn-aware trace viewer that projects agent messages, tool calls, and results from uploaded JSON.",
     categories: ["application", "agent", "observability"],
-    dependencies: ["badge", "button"],
+    dependencies: ["badge", "button", "detail-list", "@lobehub/icons"],
   },
   {
     name: "mcp-detail-01",

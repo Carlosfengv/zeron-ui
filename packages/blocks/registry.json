@@ -8,8 +8,8 @@
       "title": "Agent Trace",
       "description": "A turn-aware trace viewer that projects agent messages, tool calls, and results from uploaded JSON.",
       "categories": ["application", "agent", "observability"],
-      "dependencies": ["tw-animate-css", "react-markdown", "remark-breaks", "remark-gfm"],
-      "registryDependencies": ["badge", "button", "chat-message", "icon-context", "info-item", "input", "page-layout", "resizable", "scroll-area", "table", "tabs", "thinking-indicator", "tooltip", "utils"],
+      "dependencies": ["tw-animate-css", "react-markdown", "remark-breaks", "remark-gfm", "@lobehub/icons"],
+      "registryDependencies": ["badge", "button", "chat-message", "detail-list", "icon-context", "input", "page-layout", "resizable", "scroll-area", "table", "tabs", "thinking-indicator", "tooltip", "utils"],
       "files": [
         { "path": "packages/blocks/src/application/agent-trace-01/agent-trace.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/agent-trace.tsx" },
         { "path": "packages/blocks/src/application/agent-trace-01/session-default.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/session-default.ts" },

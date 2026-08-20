@@ -1,11 +1,14 @@
 "use client";
 
 import { Children, Fragment, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentPropsWithoutRef, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
-import { WebhookIcon } from "@hugeicons/core-free-icons";
+import { ArrowDown01Icon as ChevronDownIcon, WebhookIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import AnthropicMono from "@lobehub/icons/es/Anthropic/components/Mono";
+import DeepSeekColor from "@lobehub/icons/es/DeepSeek/components/Color";
+import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono";
 import { Badge, type BadgeColor } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
-import { InfoItem, InfoItemContent, InfoItemDescription, InfoItemGroup, InfoItemTitle } from "@zeron/ui/info-item";
+import { DetailList, DetailListItem, DetailListLabel, DetailListSeparator, DetailListValue } from "@zeron/ui/detail-list";
 import { Input } from "@zeron/ui/input";
 import { PageBody, PageContent, PageHeader, PageHeaderContent, PageLayout, PageTitle } from "@zeron/ui/page-layout";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@zeron/ui/resizable";
@@ -604,6 +607,41 @@ function sourceLabel(source: unknown): string {
   return typeof value.kind === "string" ? value.kind : "Recorded source";
 }
 
+function modelSource(source: unknown): { provider: string; model?: string } | null {
+  const value = record(source);
+  if (!value || value.kind !== "model") return null;
+  const provider = typeof value.provider === "string" ? value.provider : "Model";
+  const model = typeof value.model === "string" ? value.model : undefined;
+  return { provider, ...(model === undefined ? {} : { model }) };
+}
+
+function ModelLogo({ source, size = 16 }: { source: { provider: string; model?: string }; size?: number }) {
+  const identity = `${source.provider} ${source.model ?? ""}`.toLowerCase();
+  const Icon = identity.includes("deepseek")
+    ? DeepSeekColor
+    : identity.includes("claude") || identity.includes("anthropic")
+      ? AnthropicMono
+      : identity.includes("gpt") || identity.includes("openai")
+        ? OpenAIMono
+        : null;
+
+  return Icon
+    ? <Icon aria-hidden size={size} />
+    : <span aria-hidden className="grid size-4 place-items-center rounded bg-hover text-[9px] font-semibold text-fg-muted">AI</span>;
+}
+
+function RowStatus({ status }: { status: AgentTraceRow["status"] }) {
+  const state = status ?? "recorded";
+  const presentation = {
+    success: { label: "Success", icon: "check" as IconName, className: "bg-fg-success" },
+    error: { label: "Error", icon: "x" as IconName, className: "bg-fg-danger" },
+    running: { label: "Running", icon: "loader" as IconName, className: "bg-fg-info" },
+    recorded: { label: "Recorded", icon: "dot" as IconName, className: "bg-fg-muted" },
+  }[state];
+
+  return <span className="inline-flex items-center gap-1.5"><span role="img" aria-label={`Status: ${presentation.label}`} className={cn("grid size-4 place-items-center rounded-sm text-white", presentation.className)}><TraceIcon name={presentation.icon} size={12} className={state === "running" ? "animate-spin" : undefined} /></span><span>{presentation.label}</span></span>;
+}
+
 function rowUsage(row: AgentTraceRow): { input?: number; cacheRead?: number; cacheWrite?: number; output?: number; reasoning?: number } {
   const data = rowData(row);
   const message = rowMessage(row);
@@ -679,15 +717,34 @@ function InspectorCode({ children, error = false }: { children: string; error?: 
 function InspectorSummary({ row, formatTime }: { row: AgentTraceRow; formatTime: (value: number | undefined) => string }) {
   const usage = rowUsage(row);
   const source = rowSource(row);
-  return <InfoItemGroup>
-    <InspectorInfoItem title="Status">{row.status ?? "Recorded"}</InspectorInfoItem>
-    {source !== undefined && <InspectorInfoItem title="Source">{sourceLabel(source)}</InspectorInfoItem>}
-    <InspectorInfoItem title="Sequence">#{row.seq ?? "—"}</InspectorInfoItem>
-    {row.kind === "assistant" && <><InspectorInfoItem title="Input">{usage.input === undefined ? "Not reported" : `${compactNumber(usage.input)} tok`}</InspectorInfoItem>{usage.cacheRead !== undefined && <InspectorInfoItem title="Cached">{compactNumber(usage.cacheRead)} tok</InspectorInfoItem>}{usage.cacheWrite !== undefined && <InspectorInfoItem title="Cache created">{compactNumber(usage.cacheWrite)} tok</InspectorInfoItem>}<InspectorInfoItem title="Output">{usage.output === undefined ? "Not reported" : `${compactNumber(usage.output)} tok`}</InspectorInfoItem>{usage.reasoning !== undefined && <InspectorInfoItem title="Reasoning">{compactNumber(usage.reasoning)} tok</InspectorInfoItem>}</>}
-    {row.callId && <InspectorInfoItem title="Call ID">{row.callId}</InspectorInfoItem>}
-    <InspectorInfoItem title="Started">{formatTime(row.time)}</InspectorInfoItem>
-    <InspectorInfoItem title="Duration">{formatDuration(row.durationMs)}</InspectorInfoItem>
-  </InfoItemGroup>;
+  const model = modelSource(source);
+  return <DetailList className="w-full max-w-none">
+    <DetailListItem>
+      <DetailListLabel>状态</DetailListLabel>
+      <DetailListValue className="max-w-none"><RowStatus status={row.status} /></DetailListValue>
+    </DetailListItem>
+    {model
+      ? <DetailListItem>
+          <DetailListLabel>模型</DetailListLabel>
+          <DetailListValue className="max-w-none"><span className="flex min-w-0 items-center gap-1.5"><ModelLogo source={model} /><span className="truncate">{model.model ?? model.provider}</span></span></DetailListValue>
+        </DetailListItem>
+      : source !== undefined && <DetailListItem><DetailListLabel>来源</DetailListLabel><DetailListValue>{sourceLabel(source)}</DetailListValue></DetailListItem>}
+    <DetailListItem><DetailListLabel>序号</DetailListLabel><DetailListValue>#{row.seq ?? "—"}</DetailListValue></DetailListItem>
+    {row.kind === "assistant" && <>
+      <DetailListSeparator />
+      <DetailListItem><DetailListLabel>输入</DetailListLabel><DetailListValue>{usage.input === undefined ? "未上报" : `${compactNumber(usage.input)} tok`}</DetailListValue></DetailListItem>
+      {usage.cacheRead !== undefined && <DetailListItem><DetailListLabel>缓存读取</DetailListLabel><DetailListValue>{compactNumber(usage.cacheRead)} tok</DetailListValue></DetailListItem>}
+      {usage.cacheWrite !== undefined && <DetailListItem><DetailListLabel>缓存写入</DetailListLabel><DetailListValue>{compactNumber(usage.cacheWrite)} tok</DetailListValue></DetailListItem>}
+      <DetailListItem><DetailListLabel>输出</DetailListLabel><DetailListValue>{usage.output === undefined ? "未上报" : `${compactNumber(usage.output)} tok`}</DetailListValue></DetailListItem>
+      {usage.reasoning !== undefined && <DetailListItem><DetailListLabel>推理</DetailListLabel><DetailListValue>{compactNumber(usage.reasoning)} tok</DetailListValue></DetailListItem>}
+    </>}
+    {(row.callId || row.time !== undefined || row.durationMs !== undefined) && <>
+      <DetailListSeparator />
+      {row.callId && <DetailListItem><DetailListLabel>调用 ID</DetailListLabel><DetailListValue className="font-mono text-label break-all">{row.callId}</DetailListValue></DetailListItem>}
+      <DetailListItem><DetailListLabel>开始时间</DetailListLabel><DetailListValue>{formatTime(row.time)}</DetailListValue></DetailListItem>
+      <DetailListItem><DetailListLabel>耗时</DetailListLabel><DetailListValue>{formatDuration(row.durationMs)}</DetailListValue></DetailListItem>
+    </>}
+  </DetailList>;
 }
 
 function InspectorPreview({ row }: { row: AgentTraceRow }) {
@@ -705,10 +762,6 @@ function InspectorSchema({ row }: { row: AgentTraceRow }) {
   const data = rowData(row);
   const schema = data?.schema ?? data?.parameters;
   return schema === undefined ? <p className="text-sm text-fg-muted">Schema unavailable in this JSONL record.</p> : <InspectorCode>{rawJson(schema)}</InspectorCode>;
-}
-
-function InspectorInfoItem({ children, title }: { children: ReactNode; title: string }) {
-  return <InfoItem><InfoItemContent><InfoItemTitle className="text-sm font-normal">{title}</InfoItemTitle><InfoItemDescription className="text-sm">{children}</InfoItemDescription></InfoItemContent></InfoItem>;
 }
 
 /** A high-fidelity, browser-local replica of DSH's Trajectory ledger. */
@@ -867,7 +920,7 @@ export function AgentTrace({
             <TableBody>{turns.map((turn) => {
               const collapsed = collapsedTurns.has(turn.id);
               const metrics = turnMetrics(turn);
-              return <Fragment key={turn.id}><TableRow className="sticky top-8 z-10 border-y border-border bg-surface-base"><TableCell colSpan={7} className="h-8 px-2"><button type="button" onClick={() => setCollapsedTurns((current) => { const next = new Set(current); if (next.has(turn.id)) next.delete(turn.id); else next.add(turn.id); return next; })} className="flex w-full items-center gap-2 text-left outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"><span className="text-fg-muted">{collapsed ? "▸" : "▾"}</span><TurnStatusIcon status={turn.status} /><span className="font-normal text-fg-default">{turn.label}</span><span className="ml-auto grid w-[18rem] grid-cols-4 text-right font-normal tabular-nums text-fg-subtle"><span title="Input">{compactNumber(metrics.input)}</span><span title="Output">{compactNumber(metrics.output)}</span><span title="Think">{compactNumber(metrics.think)}</span><span title="Time">{formatDuration(metrics.durationMs)}</span></span></button></TableCell></TableRow>
+              return <Fragment key={turn.id}><TableRow className="sticky top-8 z-10 border-y border-border bg-surface-base"><TableCell colSpan={7} className="h-8 px-2"><button type="button" aria-label={`${collapsed ? "展开" : "收起"} ${turn.label}`} onClick={() => setCollapsedTurns((current) => { const next = new Set(current); if (next.has(turn.id)) next.delete(turn.id); else next.add(turn.id); return next; })} className="flex w-full items-center gap-2 text-left outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"><span aria-hidden="true" className="grid size-5 shrink-0 place-items-center text-fg-muted"><HugeiconsIcon icon={ChevronDownIcon} size={18} strokeWidth={1.75} className={cn("transition-transform", collapsed && "-rotate-90")} /></span><TurnStatusIcon status={turn.status} /><span className="font-normal text-fg-default">{turn.label}</span><span className="ml-auto grid w-[18rem] grid-cols-4 text-right font-normal tabular-nums text-fg-subtle"><span title="Input">{compactNumber(metrics.input)}</span><span title="Output">{compactNumber(metrics.output)}</span><span title="Think">{compactNumber(metrics.think)}</span><span title="Time">{formatDuration(metrics.durationMs)}</span></span></button></TableCell></TableRow>
                 {!collapsed && turn.groups.map((group) => <Fragment key={`${turn.id}:${group.id}`}>
                   <TableRow className="border-b border-border-subtle bg-surface-raised/60"><TableCell colSpan={7} className="h-7 px-2 text-xs font-normal text-fg-subtle"><span>{group.label}</span><span className="ml-2">{group.rows.length} record{group.rows.length === 1 ? "" : "s"}</span></TableCell></TableRow>
                   {group.rows.filter((row) => !hideCalls || row.kind !== "tool").map((row) => {
@@ -896,7 +949,7 @@ export function AgentTrace({
               <TabPanel value="input" className="p-3"><InspectorCode>{rowInput(selected)}</InspectorCode></TabPanel>
               <TabPanel value="output" className="p-3"><InspectorCode error={selected.status === "error"}>{rowOutput(selected)}</InspectorCode></TabPanel>
               <TabPanel value="schema" className="p-3"><InspectorSchema row={selected} /></TabPanel>
-              <TabPanel value="timing" className="p-3"><InfoItemGroup><InspectorInfoItem title="Started">{formatTime(selected.time)}</InspectorInfoItem><InspectorInfoItem title="Duration">{formatDuration(selected.durationMs)}</InspectorInfoItem><InspectorInfoItem title="Timing source">{selected.time === undefined ? "Not available" : "Session timestamps"}</InspectorInfoItem></InfoItemGroup></TabPanel>
+              <TabPanel value="timing" className="p-3"><DetailList className="w-full max-w-none"><DetailListItem><DetailListLabel>Started</DetailListLabel><DetailListValue>{formatTime(selected.time)}</DetailListValue></DetailListItem><DetailListItem><DetailListLabel>Duration</DetailListLabel><DetailListValue>{formatDuration(selected.durationMs)}</DetailListValue></DetailListItem><DetailListItem><DetailListLabel>Timing source</DetailListLabel><DetailListValue>{selected.time === undefined ? "Not available" : "Session timestamps"}</DetailListValue></DetailListItem></DetailList></TabPanel>
               <TabPanel value="raw" className="p-3"><InspectorCode>{rawJson(primaryEvent(selected) ?? selected.raw)}</InspectorCode></TabPanel>
               <TabPanel value="source" className="p-3"><InspectorCode>{rowSource(selected) === undefined ? "Source not recorded." : rawJson(rowSource(selected))}</InspectorCode></TabPanel>
             </ScrollArea>
