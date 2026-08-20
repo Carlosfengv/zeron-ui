@@ -1,0 +1,8 @@
+{
+  "fileManagerBlock": {
+    "title": "文件管理器 1",
+    "description": "一个遵循当前 Design Token 的文件管理工作区，提供图标、列表和 Finder 风格分栏三种视图。",
+    "guidance": "接入方式",
+    "guidanceBody": "文件记录与存储变更仍由业务侧维护；通过 actions 接入新建文件夹、重命名、移动、删除和下载。对于分页或懒加载 API，请受控传入 currentFolderId 和 breadcrumbItems，并使用 dataMode=server 与 onRequestData；回调会收到当前目录、搜索词、排序和 AbortSignal。将响应合并进业务缓存，并通过 onError 处理失败请求。"
+  }
+}

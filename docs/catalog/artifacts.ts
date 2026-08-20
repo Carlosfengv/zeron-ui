@@ -118,6 +118,11 @@ export const artifactCatalog: readonly ArtifactEntry[] = [
     kind: "block", product: "shared", domains: ["resource", "operations"], patterns: ["data table", "filter", "bulk action"], searchTerms: ["resource", "list", "table", "filter", "资源", "表格", "筛选"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
   },
   {
+    slug: "file-manager-01", registryName: "file-manager-01",
+    title: "File Manager", description: "A token-native file-management workspace with icon, list, and Finder-style column views.",
+    kind: "block", product: "shared", domains: ["storage", "files", "content"], patterns: ["file browser", "tree", "column view"], searchTerms: ["file", "folder", "storage", "browser", "finder", "文件", "文件夹", "文件管理"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
+  },
+  {
     slug: "resource-metric-list-01", registryName: "resource-metric-list-01",
     title: "Resource Metric List", description: "A compact resource inventory with status distribution bars for infrastructure health.",
     kind: "block", product: "zaiops", domains: ["resource", "monitoring"], patterns: ["metrics", "status"], searchTerms: ["metric", "resource", "status", "资源", "指标", "状态"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"],

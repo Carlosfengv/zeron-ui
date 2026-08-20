@@ -15,6 +15,7 @@ import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
 import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
 import { ResourceDetails } from "@zeron/blocks/resource-details-01";
 import { ResourceListTable } from "@zeron/blocks/resource-list-table-01";
+import { FileManager, type FileManagerItem } from "@zeron/blocks/file-manager-01";
 import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
 import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
 import { TopNavAppShell } from "@zeron/blocks/top-nav-app-shell-01";
@@ -27,6 +28,13 @@ import { DetailBlockPreviewShell } from "@docs/pages/blocks/_components/DetailBl
 import type { StandaloneBlockSlug } from "./standalone-blocks";
 
 const centeredDemoClass = "flex h-full min-h-0 w-full items-center justify-center overflow-auto bg-surface-base p-4 sm:p-8";
+
+const fileManagerDemoItems: FileManagerItem[] = [
+  { id: "design", kind: "folder", name: "Design", parentId: null, modifiedAt: "2026-08-18" },
+  { id: "reports", kind: "folder", name: "Reports", parentId: null, modifiedAt: "2026-08-14" },
+  { id: "brief", kind: "file", name: "Project brief.pdf", parentId: null, extension: "pdf", size: 2_450_000, modifiedAt: "2026-08-20" },
+  { id: "roadmap", kind: "file", name: "Roadmap.xlsx", parentId: null, extension: "xlsx", size: 645_000, modifiedAt: "2026-08-19" },
+];
 
 export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
@@ -64,6 +72,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <div className={`${centeredDemoClass} items-start`}><ResourceDetails /></div>;
     case "resource-list-table-01":
       return <div className="h-full overflow-auto bg-surface-raised p-3 sm:p-6"><ResourceListTable /></div>;
+    case "file-manager-01":
+      return <div className="h-full overflow-auto bg-surface-raised p-3 sm:p-6"><FileManager className="h-full" items={fileManagerDemoItems} /></div>;
     case "resource-metric-list-01":
       return <div className={centeredDemoClass}><ResourceMetricList /></div>;
     case "resource-status-all-01":

@@ -1,0 +1,8 @@
+{
+  "fileManagerBlock": {
+    "title": "File Manager 1",
+    "description": "A token-native, storage-agnostic workspace for browsing and managing files in icon, list, and Finder-style column views.",
+    "guidance": "Integration",
+    "guidanceBody": "Keep file records and storage mutations in your product, then connect createFolder, rename, move, remove, and download through actions. For paged or lazy APIs, use controlled currentFolderId with breadcrumbItems, dataMode=server, and onRequestData; it receives the active folder, query, sort, and AbortSignal. Merge each response into your cache and handle rejected requests with onError."
+  }
+}

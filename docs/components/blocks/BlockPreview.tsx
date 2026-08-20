@@ -9,6 +9,7 @@ import { PersonalUsage } from "@zeron/blocks/personal-usage-01";
 import { ResourceSettings } from "@zeron/blocks/resource-settings-01";
 import { ResourceDetails } from "@zeron/blocks/resource-details-01";
 import { ResourceListTable } from "@zeron/blocks/resource-list-table-01";
+import { FileManager, type FileManagerItem } from "@zeron/blocks/file-manager-01";
 import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
 import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
 import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
@@ -23,6 +24,13 @@ import { ServiceManagement } from "@zeron/blocks/service-management-01";
 import { ZlrList } from "@zeron/blocks/zlrlist";
 import { AgentTrace } from "@zeron/blocks/agent-trace-01";
 import { AgentSessionDetail } from "@zeron/blocks/agent-session-detail-01";
+
+const fileManagerPreviewItems: FileManagerItem[] = [
+  { id: "design", kind: "folder", name: "Design", parentId: null, modifiedAt: "2026-08-18" },
+  { id: "reports", kind: "folder", name: "Reports", parentId: null, modifiedAt: "2026-08-14" },
+  { id: "brief", kind: "file", name: "Project brief.pdf", parentId: null, extension: "pdf", size: 2_450_000, modifiedAt: "2026-08-20" },
+  { id: "roadmap", kind: "file", name: "Roadmap.xlsx", parentId: null, extension: "xlsx", size: 645_000, modifiedAt: "2026-08-19" },
+];
 
 function ResponsivePreview({
   canvasHeight,
@@ -156,6 +164,14 @@ export function BlockPreview({ name }: { name: string }) {
   if (name === "resource-list-table-01") {
     return (
       <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><ResourceListTable /></ResponsivePreview>
+    );
+  }
+
+  if (name === "file-manager-01") {
+    return (
+      <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised">
+        <FileManager className="h-full rounded-none border-0" items={fileManagerPreviewItems} />
+      </ResponsivePreview>
     );
   }
 
