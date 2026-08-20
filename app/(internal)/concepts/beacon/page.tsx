@@ -411,8 +411,8 @@ export default function BeaconPage() {
           <Select value={priority} onValueChange={setPriority}>
             <SelectTrigger placeholder="Priority" className="min-w-[150px]" />
             <SelectContent>
-              {PRIORITY_FILTER.map((p, i) => (
-                <SelectItem key={p.value} index={i} value={p.value}>
+              {PRIORITY_FILTER.map((p) => (
+                <SelectItem key={p.value} value={p.value}>
                   {p.label}
                 </SelectItem>
               ))}

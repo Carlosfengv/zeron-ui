@@ -956,8 +956,8 @@ export function SelectCell<TData>({
             sideOffset={-8}
             className="min-w-[calc(var(--anchor-width)+16px)]"
           >
-            {options.map((option, index) => (
-              <SelectItem key={option.value} index={index} value={option.value}>
+            {options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}

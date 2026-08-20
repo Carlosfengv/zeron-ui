@@ -62,8 +62,8 @@ export function PlaySelect({
         className="min-w-0 w-auto h-7 px-2 text-label"
       />
       <SelectContent>
-        {options.map((o, i) => (
-          <SelectItem key={o.value} value={o.value} index={i}>
+        {options.map((o) => (
+          <SelectItem key={o.value} value={o.value}>
             {o.label}
           </SelectItem>
         ))}

@@ -73,8 +73,8 @@ export function SettingsContent({
                 icon={themeOptions.find((o) => o.value === theme)?.icon}
               />
               <SelectContent>
-                {themeOptions.map((o, i) => (
-                  <SelectItem key={o.value} value={o.value} index={i} icon={o.icon}>
+                {themeOptions.map((o) => (
+                  <SelectItem key={o.value} value={o.value} icon={o.icon}>
                     {o.label}
                   </SelectItem>
                 ))}
@@ -109,8 +109,8 @@ export function SettingsContent({
                 icon={PaintbrushIcon}
               />
               <SelectContent>
-                {iconStyleOptions.map((option, index) => (
-                  <SelectItem key={option.value} value={option.value} index={index} icon={PaintbrushIcon}>
+                {iconStyleOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value} icon={PaintbrushIcon}>
                     {option.label}
                   </SelectItem>
                 ))}
@@ -126,8 +126,8 @@ export function SettingsContent({
           <Select size="sm" value={selectedLocale} onValueChange={changeLocale}>
             <SelectTrigger variant="borderless" className="min-w-0 w-auto" />
             <SelectContent>
-              <SelectItem value="en" index={0}>{t("english")}</SelectItem>
-              <SelectItem value="zh-CN" index={1}>{t("chinese")}</SelectItem>
+              <SelectItem value="en">{t("english")}</SelectItem>
+              <SelectItem value="zh-CN">{t("chinese")}</SelectItem>
             </SelectContent>
           </Select>
         </div>

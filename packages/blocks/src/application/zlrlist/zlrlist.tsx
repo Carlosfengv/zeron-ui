@@ -430,7 +430,7 @@ export function ZlrList({
                   <span>每页行数</span>
                   <Select itemDensity="compact" onValueChange={(value) => table.setPageSize(Number(value))} size="sm" value={`${table.getState().pagination.pageSize}`}>
                     <SelectTrigger aria-label="每页行数" className="h-7 w-[70px] min-w-[70px] rounded-lg px-2 text-body" />
-                    <SelectContent>{[10, 20, 30, 40].map((size, index) => <SelectItem index={index} key={size} value={`${size}`}>{size}</SelectItem>)}</SelectContent>
+                    <SelectContent>{[10, 20, 30, 40].map((size) => <SelectItem key={size} value={`${size}`}>{size}</SelectItem>)}</SelectContent>
                   </Select>
                   <span>第 {pageIndex + 1} 页，共 {pageCount} 页</span>
                   <div className="flex items-center gap-2">

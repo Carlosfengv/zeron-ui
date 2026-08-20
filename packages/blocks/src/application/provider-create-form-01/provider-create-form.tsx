@@ -695,10 +695,9 @@ export function ProviderCreateForm({
                             placeholder={labels.providerPlaceholder}
                           />
                           <SelectContent>
-                            {providerOptions.map((option, index) => (
+                            {providerOptions.map((option) => (
                               <SelectItem
                                 icon={providerIcons.get(option.value)}
-                                index={index}
                                 key={option.value}
                                 value={option.value}
                               >

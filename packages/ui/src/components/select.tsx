@@ -14,6 +14,7 @@ import {
   type ReactNode,
   type HTMLAttributes,
   type ComponentProps,
+  type ComponentPropsWithoutRef,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -53,6 +54,7 @@ interface SelectContextValue {
   open: boolean;
   size: ControlSize;
   itemDensity: SelectItemDensity;
+  itemIndexByValue: ReadonlyMap<string, number>;
   actionsRef: React.RefObject<{ unmount: () => void } | null>;
 }
 
@@ -108,12 +110,18 @@ function collectSelectItems(
 ) {
   Children.forEach(node, (child) => {
     if (!isValidElement(child)) return;
-    const props = child.props as { value?: unknown; children?: ReactNode };
+    const props = child.props as {
+      value?: unknown;
+      children?: ReactNode;
+      label?: ReactNode;
+    };
     if (typeof props.value === "string") {
       out.push({
         value: props.value,
-        label:
-          typeof props.children === "string" ? props.children : props.value,
+        // The trigger renders this collection before the popup has mounted.
+        // Preserve rich option labels instead of leaking an internal value
+        // such as "all" into the closed control.
+        label: props.label ?? props.children ?? props.value,
       });
     } else if (props.children) {
       collectSelectItems(props.children, out);
@@ -143,6 +151,10 @@ function Select({
   const currentValue = value !== undefined ? value : internalValue;
 
   const items = useMemo(() => collectSelectItems(children), [children]);
+  const itemIndexByValue = useMemo(
+    () => new Map(items.map((item, index) => [item.value, index])),
+    [items]
+  );
 
   const handleValueChange = useCallback(
     (next: string | null) => {
@@ -192,8 +204,15 @@ function Select({
   );
 
   const ctx = useMemo(
-    () => ({ value: currentValue, open, size, itemDensity, actionsRef }),
-    [currentValue, open, size, itemDensity]
+    () => ({
+      value: currentValue,
+      open,
+      size,
+      itemDensity,
+      itemIndexByValue,
+      actionsRef,
+    }),
+    [currentValue, open, size, itemDensity, itemIndexByValue]
   );
 
   return (
@@ -256,11 +275,11 @@ const triggerVariants = cva(
 );
 
 interface SelectTriggerProps
-  extends Omit<HTMLAttributes<HTMLButtonElement>, "children" | "prefix">,
+  extends Omit<ComponentPropsWithoutRef<"button">, "children" | "prefix" | "size">,
     Omit<VariantProps<typeof triggerVariants>, "size"> {
   icon?: IconComponent;
   prefix?: ReactNode;
-  placeholder?: string;
+  placeholder?: ReactNode;
   error?: string;
   wrapperClassName?: string;
 }
@@ -696,7 +715,12 @@ const selectItemClassName = selectItemVariants();
 
 interface SelectItemProps extends HTMLAttributes<HTMLDivElement> {
   icon?: IconComponent;
-  index: number;
+  /** Text shown by the closed trigger. Defaults to the item children. */
+  label?: ReactNode;
+  /** Plain text used by keyboard typeahead when the label is not text-only. */
+  textValue?: string;
+  /** @deprecated Select derives an index from item order. */
+  index?: number;
   value: string;
   disabled?: boolean;
 }
@@ -707,6 +731,8 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
       className,
       children,
       icon: Icon,
+      label,
+      textValue,
       value,
       index,
       disabled = false,
@@ -718,6 +744,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
     const contentCtx = useContext(SelectContentContext);
     const internalRef = useRef<HTMLDivElement>(null);
     const hasMounted = useRef(false);
+    const resolvedIndex = selectCtx.itemIndexByValue.get(value) ?? index;
 
     useEffect(() => {
       hasMounted.current = true;
@@ -730,12 +757,12 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
     // measurement permanently unsettled while the pointer moved.
     const registerItem = contentCtx?.registerItem;
     useEffect(() => {
-      if (!registerItem) return;
-      registerItem(index, internalRef.current);
-      return () => registerItem(index, null);
-    }, [index, registerItem]);
+      if (!registerItem || resolvedIndex === undefined) return;
+      registerItem(resolvedIndex, internalRef.current);
+      return () => registerItem(resolvedIndex, null);
+    }, [registerItem, resolvedIndex]);
 
-    const isActive = contentCtx?.activeIndex === index;
+    const isActive = contentCtx?.activeIndex === resolvedIndex;
     const isChecked = selectCtx.value === value;
     const skipAnimation = !hasMounted.current;
     const itemIconSize = selectItemIconSizes[selectCtx.itemDensity];
@@ -744,7 +771,14 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
       <SelectPrimitive.Item
         value={value}
         disabled={disabled}
-        label={typeof children === "string" ? children : undefined}
+        label={
+          textValue ??
+          (typeof label === "string"
+            ? label
+            : typeof children === "string"
+              ? children
+              : undefined)
+        }
         render={
           <div
             ref={(node: HTMLDivElement | null) => {
@@ -756,7 +790,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
                 (ref as React.MutableRefObject<HTMLDivElement | null>).current =
                   node;
             }}
-            data-proximity-index={index}
+            data-proximity-index={resolvedIndex}
             data-value={value}
             className={cn(
               // Fixed density height keeps rows consistent while long popups

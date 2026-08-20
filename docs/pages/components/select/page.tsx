@@ -29,10 +29,10 @@ const [value, setValue] = useState("");
 <Select value={value} onValueChange={setValue}>
   <SelectTrigger placeholder="Select a fruit…" />
   <SelectContent>
-    <SelectItem index={0} value="apple">Apple</SelectItem>
-    <SelectItem index={1} value="banana">Banana</SelectItem>
-    <SelectItem index={2} value="cherry">Cherry</SelectItem>
-    <SelectItem index={3} value="mango">Mango</SelectItem>
+    <SelectItem value="apple">Apple</SelectItem>
+    <SelectItem value="banana">Banana</SelectItem>
+    <SelectItem value="cherry">Cherry</SelectItem>
+    <SelectItem value="mango">Mango</SelectItem>
   </SelectContent>
 </Select>`;
 
@@ -42,8 +42,8 @@ const variantsCode = `import { Select, SelectTrigger, SelectContent, SelectItem 
 <Select>
   <SelectTrigger variant="bordered" placeholder="Bordered" />
   <SelectContent>
-    <SelectItem index={0} value="a">Option A</SelectItem>
-    <SelectItem index={1} value="b">Option B</SelectItem>
+    <SelectItem value="a">Option A</SelectItem>
+    <SelectItem value="b">Option B</SelectItem>
   </SelectContent>
 </Select>
 
@@ -51,8 +51,8 @@ const variantsCode = `import { Select, SelectTrigger, SelectContent, SelectItem 
 <Select>
   <SelectTrigger variant="borderless" placeholder="Borderless" />
   <SelectContent>
-    <SelectItem index={0} value="a">Option A</SelectItem>
-    <SelectItem index={1} value="b">Option B</SelectItem>
+    <SelectItem value="a">Option A</SelectItem>
+    <SelectItem value="b">Option B</SelectItem>
   </SelectContent>
 </Select>`;
 
@@ -61,24 +61,24 @@ const sizesCode = `import { Select, SelectTrigger, SelectContent, SelectItem } f
 <Select size="sm" itemDensity="compact">
   <SelectTrigger placeholder="Small" />
   <SelectContent>
-    <SelectItem index={0} value="a">Option A</SelectItem>
-    <SelectItem index={1} value="b">Option B</SelectItem>
+    <SelectItem value="a">Option A</SelectItem>
+    <SelectItem value="b">Option B</SelectItem>
   </SelectContent>
 </Select>
 
 <Select size="md" itemDensity="regular">
   <SelectTrigger placeholder="Medium" />
   <SelectContent>
-    <SelectItem index={0} value="a">Option A</SelectItem>
-    <SelectItem index={1} value="b">Option B</SelectItem>
+    <SelectItem value="a">Option A</SelectItem>
+    <SelectItem value="b">Option B</SelectItem>
   </SelectContent>
 </Select>
 
 <Select size="lg" itemDensity="comfortable">
   <SelectTrigger placeholder="Large" />
   <SelectContent>
-    <SelectItem index={0} value="a">Option A</SelectItem>
-    <SelectItem index={1} value="b">Option B</SelectItem>
+    <SelectItem value="a">Option A</SelectItem>
+    <SelectItem value="b">Option B</SelectItem>
   </SelectContent>
 </Select>`;
 
@@ -94,9 +94,9 @@ const ThemeIcon = themeIcons[theme] ?? Monitor;
 <Select value={theme} onValueChange={setTheme}>
   <SelectTrigger icon={ThemeIcon} placeholder="Theme" />
   <SelectContent>
-    <SelectItem index={0} value="system" icon={Monitor}>System</SelectItem>
-    <SelectItem index={1} value="light" icon={Sun}>Light</SelectItem>
-    <SelectItem index={2} value="dark" icon={Moon}>Dark</SelectItem>
+    <SelectItem value="system" icon={Monitor}>System</SelectItem>
+    <SelectItem value="light" icon={Sun}>Light</SelectItem>
+    <SelectItem value="dark" icon={Moon}>Dark</SelectItem>
   </SelectContent>
 </Select>`;
 
@@ -110,14 +110,14 @@ const { mail: Mail, bell: Bell, shield: Shield, user: User } = useIcons();
   <SelectContent>
     <SelectGroup>
       <SelectLabel>Account</SelectLabel>
-      <SelectItem index={0} value="profile" icon={User}>Profile</SelectItem>
-      <SelectItem index={1} value="email" icon={Mail}>Email</SelectItem>
+      <SelectItem value="profile" icon={User}>Profile</SelectItem>
+      <SelectItem value="email" icon={Mail}>Email</SelectItem>
     </SelectGroup>
     <SelectSeparator />
     <SelectGroup>
       <SelectLabel>Preferences</SelectLabel>
-      <SelectItem index={2} value="notifications" icon={Bell}>Notifications</SelectItem>
-      <SelectItem index={3} value="privacy" icon={Shield}>Privacy</SelectItem>
+      <SelectItem value="notifications" icon={Bell}>Notifications</SelectItem>
+      <SelectItem value="privacy" icon={Shield}>Privacy</SelectItem>
     </SelectGroup>
   </SelectContent>
 </Select>`;
@@ -130,22 +130,22 @@ const Globe = useIcon("globe");
 <Select value={timezone} onValueChange={setTimezone}>
   <SelectTrigger icon={Globe} placeholder="Select timezone…" />
   <SelectContent>
-    <SelectItem index={0} value="utc-8">(UTC-8) Pacific Time</SelectItem>
-    <SelectItem index={1} value="utc-7">(UTC-7) Mountain Time</SelectItem>
-    <SelectItem index={2} value="utc-6">(UTC-6) Central Time</SelectItem>
-    <SelectItem index={3} value="utc-5">(UTC-5) Eastern Time</SelectItem>
-    <SelectItem index={4} value="utc-4">(UTC-4) Atlantic Time</SelectItem>
-    <SelectItem index={5} value="utc-3">(UTC-3) Buenos Aires</SelectItem>
-    <SelectItem index={6} value="utc-1">(UTC-1) Azores</SelectItem>
-    <SelectItem index={7} value="utc+0">(UTC+0) London</SelectItem>
-    <SelectItem index={8} value="utc+1">(UTC+1) Paris</SelectItem>
-    <SelectItem index={9} value="utc+2">(UTC+2) Helsinki</SelectItem>
-    <SelectItem index={10} value="utc+3">(UTC+3) Moscow</SelectItem>
-    <SelectItem index={11} value="utc+5:30">(UTC+5:30) Mumbai</SelectItem>
-    <SelectItem index={12} value="utc+8">(UTC+8) Singapore</SelectItem>
-    <SelectItem index={13} value="utc+9">(UTC+9) Tokyo</SelectItem>
-    <SelectItem index={14} value="utc+10">(UTC+10) Sydney</SelectItem>
-    <SelectItem index={15} value="utc+12">(UTC+12) Auckland</SelectItem>
+    <SelectItem value="utc-8">(UTC-8) Pacific Time</SelectItem>
+    <SelectItem value="utc-7">(UTC-7) Mountain Time</SelectItem>
+    <SelectItem value="utc-6">(UTC-6) Central Time</SelectItem>
+    <SelectItem value="utc-5">(UTC-5) Eastern Time</SelectItem>
+    <SelectItem value="utc-4">(UTC-4) Atlantic Time</SelectItem>
+    <SelectItem value="utc-3">(UTC-3) Buenos Aires</SelectItem>
+    <SelectItem value="utc-1">(UTC-1) Azores</SelectItem>
+    <SelectItem value="utc+0">(UTC+0) London</SelectItem>
+    <SelectItem value="utc+1">(UTC+1) Paris</SelectItem>
+    <SelectItem value="utc+2">(UTC+2) Helsinki</SelectItem>
+    <SelectItem value="utc+3">(UTC+3) Moscow</SelectItem>
+    <SelectItem value="utc+5:30">(UTC+5:30) Mumbai</SelectItem>
+    <SelectItem value="utc+8">(UTC+8) Singapore</SelectItem>
+    <SelectItem value="utc+9">(UTC+9) Tokyo</SelectItem>
+    <SelectItem value="utc+10">(UTC+10) Sydney</SelectItem>
+    <SelectItem value="utc+12">(UTC+12) Auckland</SelectItem>
   </SelectContent>
 </Select>`;
 
@@ -157,9 +157,9 @@ const errorCode = `import { Select, SelectTrigger, SelectContent, SelectItem } f
     error="Please select a role to continue."
   />
   <SelectContent>
-    <SelectItem index={0} value="admin">Admin</SelectItem>
-    <SelectItem index={1} value="editor">Editor</SelectItem>
-    <SelectItem index={2} value="viewer">Viewer</SelectItem>
+    <SelectItem value="admin">Admin</SelectItem>
+    <SelectItem value="editor">Editor</SelectItem>
+    <SelectItem value="viewer">Viewer</SelectItem>
   </SelectContent>
 </Select>`;
 
@@ -169,7 +169,7 @@ const disabledCode = `import { Select, SelectTrigger, SelectContent, SelectItem 
 <Select disabled>
   <SelectTrigger placeholder="Disabled" />
   <SelectContent>
-    <SelectItem index={0} value="a">Option A</SelectItem>
+    <SelectItem value="a">Option A</SelectItem>
   </SelectContent>
 </Select>
 
@@ -177,9 +177,9 @@ const disabledCode = `import { Select, SelectTrigger, SelectContent, SelectItem 
 <Select>
   <SelectTrigger placeholder="Some disabled…" />
   <SelectContent>
-    <SelectItem index={0} value="a">Available</SelectItem>
-    <SelectItem index={1} value="b" disabled>Unavailable</SelectItem>
-    <SelectItem index={2} value="c">Available</SelectItem>
+    <SelectItem value="a">Available</SelectItem>
+    <SelectItem value="b" disabled>Unavailable</SelectItem>
+    <SelectItem value="c">Available</SelectItem>
   </SelectContent>
 </Select>`;
 
@@ -282,14 +282,19 @@ const triggerProps: PropDef[] = [
 
 const itemProps: PropDef[] = [
   {
-    name: "index",
-    type: "number",
-    description: "Position index within the content for proximity hover.",
-  },
-  {
     name: "value",
     type: "string",
     description: "Unique value for this option.",
+  },
+  {
+    name: "label",
+    type: "ReactNode",
+    description: "Label shown by the closed trigger; defaults to the item content.",
+  },
+  {
+    name: "textValue",
+    type: "string",
+    description: "Plain-text label used for keyboard typeahead.",
   },
   {
     name: "icon",
@@ -373,9 +378,9 @@ export default function SelectDoc() {
         <VariantPlayground
           minHeightClass="min-h-[220px]"
           variants={[
-            { value: "bordered", label: "Bordered", code: basicCode, preview: <Select value={basic} onValueChange={setBasic}><SelectTrigger placeholder="Select a fruit…" /><SelectContent><SelectItem index={0} value="apple">Apple</SelectItem><SelectItem index={1} value="banana">Banana</SelectItem><SelectItem index={2} value="cherry">Cherry</SelectItem></SelectContent></Select> },
-            { value: "borderless", label: "Borderless", code: `<Select><SelectTrigger variant="borderless" placeholder="Borderless" /><SelectContent>...</SelectContent></Select>`, preview: <Select value={borderless} onValueChange={setBorderless}><SelectTrigger variant="borderless" placeholder="Borderless" /><SelectContent><SelectItem index={0} value="apple">Apple</SelectItem><SelectItem index={1} value="banana">Banana</SelectItem></SelectContent></Select> },
-            { value: "with-icon", label: "With icon", code: iconsCode, preview: <Select value={theme} onValueChange={setTheme}><SelectTrigger icon={ThemeIcon} placeholder="Theme" /><SelectContent><SelectItem index={0} value="system" icon={Monitor}>System</SelectItem><SelectItem index={1} value="light" icon={Sun}>Light</SelectItem><SelectItem index={2} value="dark" icon={Moon}>Dark</SelectItem></SelectContent></Select> },
+            { value: "bordered", label: "Bordered", code: basicCode, preview: <Select value={basic} onValueChange={setBasic}><SelectTrigger placeholder="Select a fruit…" /><SelectContent><SelectItem value="apple">Apple</SelectItem><SelectItem value="banana">Banana</SelectItem><SelectItem value="cherry">Cherry</SelectItem></SelectContent></Select> },
+            { value: "borderless", label: "Borderless", code: `<Select><SelectTrigger variant="borderless" placeholder="Borderless" /><SelectContent>...</SelectContent></Select>`, preview: <Select value={borderless} onValueChange={setBorderless}><SelectTrigger variant="borderless" placeholder="Borderless" /><SelectContent><SelectItem value="apple">Apple</SelectItem><SelectItem value="banana">Banana</SelectItem></SelectContent></Select> },
+            { value: "with-icon", label: "With icon", code: iconsCode, preview: <Select value={theme} onValueChange={setTheme}><SelectTrigger icon={ThemeIcon} placeholder="Theme" /><SelectContent><SelectItem value="system" icon={Monitor}>System</SelectItem><SelectItem value="light" icon={Sun}>Light</SelectItem><SelectItem value="dark" icon={Moon}>Dark</SelectItem></SelectContent></Select> },
           ]}
         />
       </DocSection>
@@ -385,10 +390,10 @@ export default function SelectDoc() {
           <Select value={basic} onValueChange={setBasic}>
             <SelectTrigger placeholder="Select a fruit…" />
             <SelectContent>
-              <SelectItem index={0} value="apple">Apple</SelectItem>
-              <SelectItem index={1} value="banana">Banana</SelectItem>
-              <SelectItem index={2} value="cherry">Cherry</SelectItem>
-              <SelectItem index={3} value="mango">Mango</SelectItem>
+              <SelectItem value="apple">Apple</SelectItem>
+              <SelectItem value="banana">Banana</SelectItem>
+              <SelectItem value="cherry">Cherry</SelectItem>
+              <SelectItem value="mango">Mango</SelectItem>
             </SelectContent>
           </Select>
         </ComponentPreview>
@@ -400,18 +405,18 @@ export default function SelectDoc() {
             <Select value={bordered} onValueChange={setBordered}>
               <SelectTrigger variant="bordered" placeholder="Bordered" />
               <SelectContent>
-                <SelectItem index={0} value="apple">Apple</SelectItem>
-                <SelectItem index={1} value="banana">Banana</SelectItem>
-                <SelectItem index={2} value="cherry">Cherry</SelectItem>
+                <SelectItem value="apple">Apple</SelectItem>
+                <SelectItem value="banana">Banana</SelectItem>
+                <SelectItem value="cherry">Cherry</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={borderless} onValueChange={setBorderless}>
               <SelectTrigger variant="borderless" placeholder="Borderless" />
               <SelectContent>
-                <SelectItem index={0} value="apple">Apple</SelectItem>
-                <SelectItem index={1} value="banana">Banana</SelectItem>
-                <SelectItem index={2} value="cherry">Cherry</SelectItem>
+                <SelectItem value="apple">Apple</SelectItem>
+                <SelectItem value="banana">Banana</SelectItem>
+                <SelectItem value="cherry">Cherry</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -424,24 +429,24 @@ export default function SelectDoc() {
             <Select size="sm" itemDensity="compact">
               <SelectTrigger placeholder="Small" />
               <SelectContent>
-                <SelectItem index={0} value="a">Option A</SelectItem>
-                <SelectItem index={1} value="b">Option B</SelectItem>
+                <SelectItem value="a">Option A</SelectItem>
+                <SelectItem value="b">Option B</SelectItem>
               </SelectContent>
             </Select>
 
             <Select size="md" itemDensity="regular">
               <SelectTrigger placeholder="Medium" />
               <SelectContent>
-                <SelectItem index={0} value="a">Option A</SelectItem>
-                <SelectItem index={1} value="b">Option B</SelectItem>
+                <SelectItem value="a">Option A</SelectItem>
+                <SelectItem value="b">Option B</SelectItem>
               </SelectContent>
             </Select>
 
             <Select size="lg" itemDensity="comfortable">
               <SelectTrigger placeholder="Large" />
               <SelectContent>
-                <SelectItem index={0} value="a">Option A</SelectItem>
-                <SelectItem index={1} value="b">Option B</SelectItem>
+                <SelectItem value="a">Option A</SelectItem>
+                <SelectItem value="b">Option B</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -453,9 +458,9 @@ export default function SelectDoc() {
           <Select value={theme} onValueChange={setTheme}>
             <SelectTrigger icon={ThemeIcon} placeholder="Theme" />
             <SelectContent>
-              <SelectItem index={0} value="system" icon={Monitor}>System</SelectItem>
-              <SelectItem index={1} value="light" icon={Sun}>Light</SelectItem>
-              <SelectItem index={2} value="dark" icon={Moon}>Dark</SelectItem>
+              <SelectItem value="system" icon={Monitor}>System</SelectItem>
+              <SelectItem value="light" icon={Sun}>Light</SelectItem>
+              <SelectItem value="dark" icon={Moon}>Dark</SelectItem>
             </SelectContent>
           </Select>
         </ComponentPreview>
@@ -468,14 +473,14 @@ export default function SelectDoc() {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Account</SelectLabel>
-                <SelectItem index={0} value="profile" icon={User}>Profile</SelectItem>
-                <SelectItem index={1} value="email" icon={Mail}>Email</SelectItem>
+                <SelectItem value="profile" icon={User}>Profile</SelectItem>
+                <SelectItem value="email" icon={Mail}>Email</SelectItem>
               </SelectGroup>
               <SelectSeparator />
               <SelectGroup>
                 <SelectLabel>Preferences</SelectLabel>
-                <SelectItem index={2} value="notifications" icon={Bell}>Notifications</SelectItem>
-                <SelectItem index={3} value="privacy" icon={Shield}>Privacy</SelectItem>
+                <SelectItem value="notifications" icon={Bell}>Notifications</SelectItem>
+                <SelectItem value="privacy" icon={Shield}>Privacy</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -487,22 +492,22 @@ export default function SelectDoc() {
           <Select value={timezone} onValueChange={setTimezone}>
             <SelectTrigger icon={Globe} placeholder="Select timezone…" />
             <SelectContent>
-              <SelectItem index={0} value="utc-8">(UTC-8) Pacific Time</SelectItem>
-              <SelectItem index={1} value="utc-7">(UTC-7) Mountain Time</SelectItem>
-              <SelectItem index={2} value="utc-6">(UTC-6) Central Time</SelectItem>
-              <SelectItem index={3} value="utc-5">(UTC-5) Eastern Time</SelectItem>
-              <SelectItem index={4} value="utc-4">(UTC-4) Atlantic Time</SelectItem>
-              <SelectItem index={5} value="utc-3">(UTC-3) Buenos Aires</SelectItem>
-              <SelectItem index={6} value="utc-1">(UTC-1) Azores</SelectItem>
-              <SelectItem index={7} value="utc+0">(UTC+0) London</SelectItem>
-              <SelectItem index={8} value="utc+1">(UTC+1) Paris</SelectItem>
-              <SelectItem index={9} value="utc+2">(UTC+2) Helsinki</SelectItem>
-              <SelectItem index={10} value="utc+3">(UTC+3) Moscow</SelectItem>
-              <SelectItem index={11} value="utc+5:30">(UTC+5:30) Mumbai</SelectItem>
-              <SelectItem index={12} value="utc+8">(UTC+8) Singapore</SelectItem>
-              <SelectItem index={13} value="utc+9">(UTC+9) Tokyo</SelectItem>
-              <SelectItem index={14} value="utc+10">(UTC+10) Sydney</SelectItem>
-              <SelectItem index={15} value="utc+12">(UTC+12) Auckland</SelectItem>
+              <SelectItem value="utc-8">(UTC-8) Pacific Time</SelectItem>
+              <SelectItem value="utc-7">(UTC-7) Mountain Time</SelectItem>
+              <SelectItem value="utc-6">(UTC-6) Central Time</SelectItem>
+              <SelectItem value="utc-5">(UTC-5) Eastern Time</SelectItem>
+              <SelectItem value="utc-4">(UTC-4) Atlantic Time</SelectItem>
+              <SelectItem value="utc-3">(UTC-3) Buenos Aires</SelectItem>
+              <SelectItem value="utc-1">(UTC-1) Azores</SelectItem>
+              <SelectItem value="utc+0">(UTC+0) London</SelectItem>
+              <SelectItem value="utc+1">(UTC+1) Paris</SelectItem>
+              <SelectItem value="utc+2">(UTC+2) Helsinki</SelectItem>
+              <SelectItem value="utc+3">(UTC+3) Moscow</SelectItem>
+              <SelectItem value="utc+5:30">(UTC+5:30) Mumbai</SelectItem>
+              <SelectItem value="utc+8">(UTC+8) Singapore</SelectItem>
+              <SelectItem value="utc+9">(UTC+9) Tokyo</SelectItem>
+              <SelectItem value="utc+10">(UTC+10) Sydney</SelectItem>
+              <SelectItem value="utc+12">(UTC+12) Auckland</SelectItem>
             </SelectContent>
           </Select>
         </ComponentPreview>
@@ -516,9 +521,9 @@ export default function SelectDoc() {
               error="Please select a role to continue."
             />
             <SelectContent>
-              <SelectItem index={0} value="admin">Admin</SelectItem>
-              <SelectItem index={1} value="editor">Editor</SelectItem>
-              <SelectItem index={2} value="viewer">Viewer</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="editor">Editor</SelectItem>
+              <SelectItem value="viewer">Viewer</SelectItem>
             </SelectContent>
           </Select>
         </ComponentPreview>
@@ -530,16 +535,16 @@ export default function SelectDoc() {
             <Select disabled>
               <SelectTrigger placeholder="Disabled" />
               <SelectContent>
-                <SelectItem index={0} value="a">Option A</SelectItem>
+                <SelectItem value="a">Option A</SelectItem>
               </SelectContent>
             </Select>
 
             <Select>
               <SelectTrigger placeholder="Some disabled…" />
               <SelectContent>
-                <SelectItem index={0} value="a">Available</SelectItem>
-                <SelectItem index={1} value="b" disabled>Unavailable</SelectItem>
-                <SelectItem index={2} value="c">Available</SelectItem>
+                <SelectItem value="a">Available</SelectItem>
+                <SelectItem value="b" disabled>Unavailable</SelectItem>
+                <SelectItem value="c">Available</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -763,7 +763,6 @@ function DataTablePagination<TData>({
             <SelectContent>
             {resolvedPageSizeOptions.map((option) => (
               <SelectItem
-                index={resolvedPageSizeOptions.indexOf(option)}
                 key={option}
                 value={`${option}`}
               >

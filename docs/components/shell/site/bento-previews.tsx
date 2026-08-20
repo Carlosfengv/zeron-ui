@@ -416,8 +416,8 @@ function SelectPreview() {
       <Select value={value} onValueChange={setValue}>
         <SelectTrigger placeholder={SELECT_PLACEHOLDER} variant="bordered" />
         <SelectContent>
-          {SELECT_ROLES.map((role, i) => (
-            <SelectItem key={role} index={i} value={role}>
+          {SELECT_ROLES.map((role) => (
+            <SelectItem key={role} value={role}>
               {role}
             </SelectItem>
           ))}
