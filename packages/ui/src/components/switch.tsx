@@ -64,6 +64,13 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
       uncheckedValue,
       thumbTransition,
       className,
+      onClick,
+      onPointerEnter,
+      onPointerLeave,
+      onPointerDown,
+      onPointerMove,
+      onPointerUp,
+      onPointerCancel,
       ...props
     },
     ref
@@ -220,14 +227,44 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
           className
         )}
         onPointerEnter={(e) => {
+          onPointerEnter?.(e);
+          if (e.defaultPrevented) return;
           if (e.pointerType === "mouse") setHovered(true);
         }}
-        onPointerLeave={() => setHovered(false)}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerCancel}
-        onClick={() => {
+        onPointerLeave={(e) => {
+          onPointerLeave?.(e);
+          if (!e.defaultPrevented) setHovered(false);
+        }}
+        onPointerDown={(e) => {
+          onPointerDown?.(e);
+          if (!e.defaultPrevented) handlePointerDown(e);
+        }}
+        onPointerMove={(e) => {
+          onPointerMove?.(e);
+          if (!e.defaultPrevented) handlePointerMove(e);
+        }}
+        onPointerUp={(e) => {
+          onPointerUp?.(e);
+          if (!e.defaultPrevented) handlePointerUp();
+        }}
+        onPointerCancel={(e) => {
+          onPointerCancel?.(e);
+          if (!e.defaultPrevented) handlePointerCancel();
+        }}
+        onClick={(e) => {
+          onClick?.(e);
+          if (e.defaultPrevented) return;
+
+          const target = e.target instanceof Element ? e.target : null;
+          // Base UI renders its visually-hidden checkbox beside the switch
+          // root. Let the primitive own events from either element: otherwise
+          // that checkbox click bubbles here and can submit a second toggle.
+          if (
+            target?.closest('[data-slot="switch-control"]') ||
+            target instanceof HTMLInputElement
+          ) {
+            return;
+          }
           if (disabled || readOnly || didDrag.current) return;
           commitChecked(!checked);
         }}
@@ -237,6 +274,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
         <SwitchPrimitive.Root
           checked={checked}
           aria-labelledby={labelId}
+          data-slot="switch-control"
           onCheckedChange={(nextChecked) => {
             if (didDrag.current) return;
             commitChecked(nextChecked);
