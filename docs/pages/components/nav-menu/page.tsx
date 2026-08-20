@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import { Badge, type BadgeStatus } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
 import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
 import { MenuItem } from "@zeron/ui/menu-item";
 import {
@@ -121,6 +124,84 @@ import {
     </SidebarGroupContent>
   </SidebarGroup>
 </div>`;
+
+const agentSessionsCode = `const agents = [
+  {
+    id: "zeron",
+    name: "Zeron",
+    defaultOpen: true,
+    sessions: [
+      { id: "market-intel", title: "搜集 OpenClaw 市场情报", badge: "定时任务" },
+      { id: "production-data", title: "查询最近生产环境数据", updatedAt: "1分钟" },
+    ],
+  },
+];
+
+<SidebarGroup collapsible defaultOpen={agent.defaultOpen}>
+  <SidebarGroupTrigger>
+    <Image alt="" className="size-5 rounded-md" height={20} src="/figma/nav-menu-agent-avatar.png" width={20} />
+    {agent.name}
+  </SidebarGroupTrigger>
+  <SidebarGroupContent>
+    <NavMenu
+      activeValue={activeSessionId}
+      className="[--active:var(--hover)] [&_[data-slot=nav-list]]:gap-0"
+    >
+      {agent.sessions.map((session) => (
+        <NavItem className="py-0" key={session.id} value={session.id}>
+          <NavItemTrigger className="h-8 gap-1 px-1.5" render={<button type="button" />}>
+            <NavItemLeading className="size-5"><SessionChannelIcon /></NavItemLeading>
+            <NavItemContent><NavItemLabel>{session.title}</NavItemLabel></NavItemContent>
+          </NavItemTrigger>
+          <span className="relative mr-1 flex h-8 min-w-11 items-center justify-end">
+            {session.badge ?? <span className="text-[10px] text-fg-subtle">{session.updatedAt}</span>}
+            <DropdownMenu>
+              <DropdownTrigger render={<NavItemAction className="absolute right-0 mr-0 size-6 opacity-0 group-hover/nav-item:opacity-100 group-focus-within/nav-item:opacity-100" />} />
+              <DropdownContent align="end"><MenuItem index={0} label="重命名" /></DropdownContent>
+            </DropdownMenu>
+          </span>
+        </NavItem>
+      ))}
+    </NavMenu>
+  </SidebarGroupContent>
+</SidebarGroup>`;
+
+interface AgentSessionDemoItem {
+  id: string;
+  title: string;
+  badge?: string;
+  badgeStatus?: BadgeStatus;
+  channel?: "dingtalk";
+  updatedAt?: string;
+}
+
+interface AgentSessionDemoGroup {
+  id: string;
+  name: string;
+  defaultOpen: boolean;
+  sessions: readonly AgentSessionDemoItem[];
+}
+
+const agentSessionGroups: readonly AgentSessionDemoGroup[] = [
+  {
+    id: "zeron",
+    name: "Zeron",
+    defaultOpen: true,
+    sessions: [
+      { id: "market-intel", title: "搜集 OpenClaw 市场情报", badge: "定时任务" },
+      { id: "production-data", title: "查询最近生产环境数据", updatedAt: "1分钟" },
+      { id: "build-agent", title: "如何构建 Agent", channel: "dingtalk", updatedAt: "2分钟" },
+    ],
+  },
+  {
+    id: "zeron-carlos",
+    name: "Zeron carlos test",
+    defaultOpen: false,
+    sessions: [
+      { id: "approval-needed", title: "发布策略等待确认", badge: "待确认", badgeStatus: "warning" },
+    ],
+  },
+];
 
 const props: PropDef[] = [
   { name: "activeValue", type: "string | null", default: "null", description: "Strict value match used for aria-current and active styling." },
@@ -325,6 +406,145 @@ function NavMenuPlayground() {
   );
 }
 
+function AgentSessionsDemo() {
+  const ChevronRight = useIcon("chevron-right");
+  const More = useIcon("ellipsis");
+  const [activeSessionId, setActiveSessionId] = useState("market-intel");
+  const [openAgentIds, setOpenAgentIds] = useState<string[]>(() =>
+    agentSessionGroups.filter((agent) => agent.defaultOpen).map((agent) => agent.id)
+  );
+
+  return (
+    <ComponentPreview code={agentSessionsCode} minHeightClass="min-h-[300px]">
+      <div className="w-[272px] max-w-full [--agent-session-nav-row-height:32px] [--agent-session-nav-radius:8px] [--agent-session-nav-selected:var(--hover)]">
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-1.5 pb-1.5">智能体</SidebarGroupLabel>
+          <div className="space-y-1.5">
+            {agentSessionGroups.map((agent) => {
+              const hasActiveSession = agent.sessions.some((session) => session.id === activeSessionId);
+              const isOpen = openAgentIds.includes(agent.id);
+
+              return (
+                <SidebarGroup
+                  key={agent.id}
+                  collapsible
+                  open={isOpen}
+                  onOpenChange={(open) => setOpenAgentIds((current) =>
+                    open ? [...new Set([...current, agent.id])] : current.filter((id) => id !== agent.id)
+                  )}
+                  className="group/agent-session-nav"
+                >
+                  <SidebarGroupTrigger
+                    className="mb-0 h-[var(--agent-session-nav-row-height)] gap-1 px-1.5 text-body font-semibold text-fg-default"
+                    indicator={
+                      <ChevronRight
+                        aria-hidden="true"
+                        size={16}
+                        strokeWidth={1.5}
+                        className="shrink-0 transition-transform duration-fast group-data-[panel-open]/sidebar-group-trigger:rotate-90 motion-reduce:transition-none"
+                      />
+                    }
+                  >
+                    <span className="flex min-w-0 items-center gap-1">
+                      <Image
+                        alt=""
+                        className="size-5 shrink-0 rounded-md border-[0.5px] border-border object-cover"
+                        height={20}
+                        src="/figma/nav-menu-agent-avatar.png"
+                        width={20}
+                      />
+                      <span className="truncate">{agent.name}</span>
+                    </span>
+                  </SidebarGroupTrigger>
+                  {isOpen && (
+                    <DropdownMenu>
+                      <DropdownTrigger
+                        render={
+                          <Button
+                            aria-label={`${agent.name} 更多操作`}
+                            className="absolute right-6 top-1 size-6 text-fg-muted"
+                            iconOnly
+                            size="xs"
+                            type="button"
+                            variant="ghost"
+                          >
+                            <More aria-hidden="true" size={16} strokeWidth={1.5} />
+                          </Button>
+                        }
+                      />
+                      <DropdownContent align="end" className="w-36">
+                        <MenuItem index={0} label="编辑智能体" onSelect={() => undefined} />
+                        <MenuItem index={1} label="智能体设置" onSelect={() => undefined} />
+                      </DropdownContent>
+                    </DropdownMenu>
+                  )}
+                  <SidebarGroupContent className="pt-0">
+                    <NavMenu
+                      activeValue={hasActiveSession ? activeSessionId : null}
+                      aria-label={`${agent.name} 会话`}
+                      keyboardNavigation="roving"
+                      className="[--active:var(--agent-session-nav-selected)] [&_[data-slot=nav-list]]:gap-0"
+                    >
+                      {agent.sessions.map((session) => (
+                        <NavItem key={session.id} value={session.id} className="py-0">
+                          <NavItemTrigger
+                            className="h-[var(--agent-session-nav-row-height)] gap-1 px-1.5"
+                            render={<button type="button" />}
+                            onClick={() => setActiveSessionId(session.id)}
+                          >
+                            <NavItemLeading className="size-5">
+                              {session.channel === "dingtalk" && (
+                                <Image alt="钉钉" className="size-4" height={16} src="/figma/nav-menu-dingtalk.svg" width={16} />
+                              )}
+                            </NavItemLeading>
+                            <NavItemContent>
+                              <NavItemLabel>{session.title}</NavItemLabel>
+                            </NavItemContent>
+                          </NavItemTrigger>
+                          <span className="relative mr-1 flex h-[var(--agent-session-nav-row-height)] min-w-11 shrink-0 items-center justify-end">
+                            {session.badge ? (
+                              <Badge
+                                size="sm"
+                                status={session.badgeStatus}
+                                className="h-5 rounded px-1 text-[10px] leading-5 transition-opacity group-hover/nav-item:opacity-0 group-focus-within/nav-item:opacity-0"
+                                style={session.badgeStatus ? undefined : { backgroundColor: "var(--inverse-background)", color: "var(--fg-on-inverse)" }}
+                              >
+                                {session.badge}
+                              </Badge>
+                            ) : (
+                              <span className="whitespace-nowrap text-[10px] text-fg-subtle transition-opacity group-hover/nav-item:opacity-0 group-focus-within/nav-item:opacity-0">
+                                {session.updatedAt}
+                              </span>
+                            )}
+                            <DropdownMenu>
+                              <DropdownTrigger
+                                render={
+                                  <NavItemAction
+                                    aria-label={`${session.title} 更多操作`}
+                                    className="pointer-events-none absolute right-0 mr-0 size-6 opacity-0 group-hover/nav-item:pointer-events-auto group-hover/nav-item:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100"
+                                  />
+                                }
+                              />
+                              <DropdownContent align="end" className="w-36">
+                                <MenuItem index={0} label="重命名会话" onSelect={() => undefined} />
+                                <MenuItem index={1} label="删除会话" onSelect={() => undefined} />
+                              </DropdownContent>
+                            </DropdownMenu>
+                          </span>
+                        </NavItem>
+                      ))}
+                    </NavMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              );
+            })}
+          </div>
+        </SidebarGroup>
+      </div>
+    </ComponentPreview>
+  );
+}
+
 export default function NavMenuDoc() {
   const [active, setActive] = useState("projects");
   const [groupedActive, setGroupedActive] = useState("projects");
@@ -401,6 +621,12 @@ export default function NavMenuDoc() {
             </SidebarGroup>
           </div>
         </ComponentPreview>
+      </DocSection>
+      <DocSection title="Agent sessions">
+        <p className="max-w-3xl text-body leading-5 text-fg-muted">
+          Compose a collapsible <code>SidebarGroup</code> for each agent, then render its sessions with <code>NavMenu</code>. The metadata slot shows a status badge before time, while the session menu replaces that metadata only on hover or keyboard focus.
+        </p>
+        <AgentSessionsDemo />
       </DocSection>
       <DocSection title="Standalone item">
         <ComponentPreview code={standaloneCode}>
