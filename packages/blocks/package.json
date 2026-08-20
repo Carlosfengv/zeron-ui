@@ -39,7 +39,10 @@
     "@lobehub/icons": "^5.16.0",
     "@thesvg/icons": "^3.2.15",
     "@zeron/ui": "workspace:*",
-    "recharts": "^3.10.1"
+    "react-markdown": "^10.1.0",
+    "recharts": "^3.10.1",
+    "remark-breaks": "^4.0.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",

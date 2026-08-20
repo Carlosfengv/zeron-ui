@@ -2270,7 +2270,10 @@
         "observability"
       ],
       "dependencies": [
-        "tw-animate-css"
+        "tw-animate-css",
+        "react-markdown",
+        "remark-breaks",
+        "remark-gfm"
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/badge.json",
