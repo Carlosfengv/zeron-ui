@@ -320,7 +320,11 @@ export function FileItemVisual<TData>({
       className={cn(
         "relative flex shrink-0 items-center justify-center overflow-hidden",
         isLarge ? "h-16 w-20 rounded-lg" : "size-8 rounded-md",
-        item.kind === "folder" ? "text-fg-brand" : "text-fg-muted",
+        selected && view !== "icon"
+          ? "text-fg-on-brand"
+          : item.kind === "folder"
+            ? "text-fg-brand"
+            : "text-fg-muted",
         className
       )}
     >
@@ -338,9 +342,20 @@ export function FileItemVisual<TData>({
         ) : custom ? (
           custom
         ) : item.kind === "folder" ? (
-          <StorageUIFolderIcon className={cn(isLarge ? "h-11 w-14" : "h-4 w-5")} />
+          <StorageUIFolderIcon
+            className={cn(
+              isLarge ? "h-11 w-14" : "h-4 w-5",
+              selected && view !== "icon" && "text-fg-on-brand"
+            )}
+          />
         ) : (
-          <StorageUIFileTypeIcon item={item} className={cn(isLarge ? "size-11" : "size-5")} />
+          <StorageUIFileTypeIcon
+            item={item}
+            className={cn(
+              isLarge ? "size-11" : "size-5",
+              selected && view !== "icon" && "text-fg-on-brand"
+            )}
+          />
         ))}
       {pending ? (
         <span className="absolute inset-0 grid place-items-center bg-surface-floating/75">
@@ -1113,7 +1128,6 @@ function IconView<TData>({
                     aria-selected={selected}
                     className={cn(
                       "group flex h-[96px] min-w-0 flex-col items-center gap-1.5 rounded-lg px-1 py-1 outline-none transition-colors duration-fast hover:bg-hover focus-visible:ring-1 focus-visible:ring-focus-ring",
-                      selected && "bg-selection"
                     )}
                     onClick={(event) => select(item, event, entries)}
                     onDoubleClick={() => open(item)}
@@ -1126,7 +1140,7 @@ function IconView<TData>({
                       selected={selected}
                       view="icon"
                     />
-                    <span className={cn("line-clamp-2 max-w-full rounded-sm px-1 text-center text-label leading-4", selected ? "font-medium text-fg-default" : "text-fg-default")}>
+                    <span className={cn("line-clamp-2 max-w-full rounded-sm px-1 text-center text-label leading-4", selected ? "bg-brand font-medium text-fg-on-brand" : "text-fg-default")}>
                       {displayName(item, showFileExtensions)}
                     </span>
                   </button>
@@ -1172,6 +1186,7 @@ function ListView<TData>({
   onSortChange: (sort: FileManagerSort) => void;
 }) {
   const parentRef = React.useRef<HTMLDivElement>(null);
+  const rowRefs = React.useRef(new Map<string, HTMLDivElement>());
   const gridTemplateColumns = React.useMemo(
     () => columns.map((column, index) => index === 0 ? "minmax(15rem, 1fr)" : column.width ?? "minmax(8rem, 1fr)").join(" "),
     [columns]
@@ -1188,7 +1203,10 @@ function ListView<TData>({
     const selectedIndex = rows.findIndex((row) => selectedSet.has(row.item.id));
     const nextIndex = Math.max(0, Math.min(rows.length - 1, (selectedIndex < 0 ? 0 : selectedIndex) + offset));
     const next = rows[nextIndex]?.item;
-    if (next) select(next, undefined, treeItems);
+    if (!next) return;
+    select(next, undefined, treeItems);
+    virtualizer.scrollToIndex(nextIndex, { align: "auto" });
+    requestAnimationFrame(() => rowRefs.current.get(next.id)?.focus());
   };
 
   return (
@@ -1232,23 +1250,24 @@ function ListView<TData>({
             return (
               <div
                 key={item.id}
+                ref={(node) => {
+                  if (node) rowRefs.current.set(item.id, node);
+                  else rowRefs.current.delete(item.id);
+                }}
                 aria-expanded={row.hasChildren ? expandedIds.has(item.id) : undefined}
                 aria-level={row.depth + 1}
                 aria-selected={selected}
                 className={cn(
-                  "absolute inset-x-0 grid h-10 items-center border-b border-border-subtle px-3 text-body outline-none transition-colors duration-fast hover:bg-hover focus-within:bg-hover",
-                  selected && "bg-selection"
+                  "absolute inset-x-0 grid h-10 cursor-default items-center rounded-none border-b border-border-subtle px-3 text-body outline-none transition-colors duration-fast hover:bg-hover focus-visible:z-content focus-visible:rounded-none focus-visible:bg-brand focus-visible:text-fg-on-brand focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-focus-ring",
+                  selected && "bg-brand text-fg-on-brand hover:bg-brand"
                 )}
                 role="row"
                 style={{ gridTemplateColumns, transform: `translateY(${virtualRow.start}px)` }}
+                tabIndex={0}
+                onClick={(event) => select(item, event, treeItems)}
                 onDoubleClick={() => open(item)}
               >
-                <button
-                  type="button"
-                  className="flex min-w-0 items-center gap-1.5 rounded-sm text-left outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
-                  role="gridcell"
-                  onClick={(event) => select(item, event, treeItems)}
-                >
+                <div className="flex min-w-0 items-center gap-1.5 text-left" role="gridcell">
                   <span style={{ width: row.depth * 16 }} />
                   {row.hasChildren ? (
                     <span
@@ -1262,10 +1281,10 @@ function ListView<TData>({
                     </span>
                   ) : <span className="size-4 shrink-0" />}
                   <FileItemVisual item={item} pending={pendingIds.has(item.id)} renderIcon={renderIcon} renderThumbnail={renderThumbnail} selected={selected} view="list" />
-                  <span className="truncate font-medium text-fg-default">{displayName(item, showFileExtensions)}</span>
-                </button>
+                  <span className={cn("truncate font-medium", selected ? "text-fg-on-brand" : "text-fg-default")}>{displayName(item, showFileExtensions)}</span>
+                </div>
                 {columns.slice(1).map((column) => (
-                  <span key={column.id} role="gridcell" className={cn("truncate text-sm text-fg-muted", column.className)}>{column.value(item)}</span>
+                  <span key={column.id} role="gridcell" className={cn("truncate text-sm", selected ? "text-fg-on-brand" : "text-fg-muted", column.className)}>{column.value(item)}</span>
                 ))}
               </div>
             );
@@ -1308,7 +1327,11 @@ function ColumnView<TData>({
   const folders = [null, ...breadcrumbs.map((folder) => folder.id)];
   const breadcrumbById = React.useMemo(() => new Map(breadcrumbs.map((folder) => [folder.id, folder])), [breadcrumbs]);
   const selection = Array.from(selectedSet).map((id) => index.byId.get(id)).find(Boolean) ?? null;
+  const itemRefs = React.useRef(new Map<string, HTMLButtonElement>());
   const ChevronRight = useIcon("chevron-right");
+  const focusItem = React.useCallback((item: FileManagerItem<TData>) => {
+    requestAnimationFrame(() => itemRefs.current.get(item.id)?.focus());
+  }, []);
 
   return (
     <div className="flex h-full min-w-max overflow-auto" aria-label={labels.files} role="group">
@@ -1327,16 +1350,48 @@ function ColumnView<TData>({
                 return (
                   <button
                     key={item.id}
+                    ref={(node) => {
+                      if (node) itemRefs.current.set(item.id, node);
+                      else itemRefs.current.delete(item.id);
+                    }}
                     type="button"
                     role="option"
                     aria-selected={selected}
-                    className={cn("flex h-8 w-full min-w-0 items-center gap-2 rounded-md px-2 text-left outline-none transition-colors duration-fast hover:bg-hover focus-visible:ring-1 focus-visible:ring-focus-ring", selected && "bg-selection")}
+                    className={cn(
+                      "flex h-8 w-full min-w-0 items-center gap-2 rounded-md px-2 text-left outline-none transition-colors duration-fast hover:bg-hover focus-visible:bg-brand focus-visible:text-fg-on-brand focus-visible:ring-1 focus-visible:ring-focus-ring",
+                      selected && "bg-brand text-fg-on-brand hover:bg-brand"
+                    )}
                     onClick={(event) => select(item, event, columnItems)}
                     onDoubleClick={() => open(item)}
+                    onKeyDown={(event) => {
+                      const itemIndex = columnItems.findIndex((entry) => entry.id === item.id);
+                      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+                        event.preventDefault();
+                        const offset = event.key === "ArrowDown" ? 1 : -1;
+                        const next = columnItems[Math.max(0, Math.min(columnItems.length - 1, itemIndex + offset))];
+                        if (next) {
+                          select(next, undefined, columnItems);
+                          focusItem(next);
+                        }
+                        return;
+                      }
+                      if (event.key === "ArrowRight" && item.kind === "folder") {
+                        event.preventDefault();
+                        select(item, undefined, columnItems);
+                        open(item);
+                        return;
+                      }
+                      if (event.key === "ArrowLeft" && folder) {
+                        event.preventDefault();
+                        const parentItems = sortedChildren(folder.parentId);
+                        select(folder, undefined, parentItems);
+                        focusItem(folder);
+                      }
+                    }}
                   >
                     <FileItemVisual item={item} pending={pendingIds.has(item.id)} renderIcon={renderIcon} renderThumbnail={renderThumbnail} selected={selected} view="column" />
-                    <span className="min-w-0 flex-1 truncate text-label text-fg-default">{displayName(item, showFileExtensions)}</span>
-                    {item.kind === "folder" ? <ChevronRight className="size-3.5 shrink-0 text-fg-subtle" /> : null}
+                    <span className={cn("min-w-0 flex-1 truncate text-label", selected ? "text-fg-on-brand" : "text-fg-default")}>{displayName(item, showFileExtensions)}</span>
+                    {item.kind === "folder" ? <ChevronRight className={cn("size-3.5 shrink-0", selected ? "text-fg-on-brand" : "text-fg-subtle")} /> : null}
                   </button>
                 );
               })}
