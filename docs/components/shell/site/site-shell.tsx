@@ -23,7 +23,7 @@ import { internalPathname, localePrefixFromPathname, localizePathname } from "@d
 
 function pageOrderFor(pathname: string) {
   const collection = pathname.split("/")[2] as DocCollection | undefined;
-  if (collection !== "components" && collection !== "blocks" && collection !== "icons") return ["/", "/docs"];
+  if (collection !== "components" && collection !== "blocks" && collection !== "icons") return ["/docs"];
   return [`/docs/${collection}`, ...docEntries.filter((entry) => entry.collection === collection).map((entry) => `/docs/${entry.collection}/${entry.slug}`)];
 }
 
@@ -55,9 +55,7 @@ function DocsPrimaryNavigation({
   const themeActionLabel = isEnglish
     ? nextTheme === "dark" ? "Switch to dark mode" : "Switch to light mode"
     : nextTheme === "dark" ? "切换至深色模式" : "切换至浅色模式";
-  const activePath = currentPathname === "/"
-    ? localizePathname("/", localePrefix)
-    : currentPathname === "/guides"
+  const activePath = currentPathname === "/guides"
       ? localizePathname("/guides", localePrefix)
       : currentPathname.startsWith("/docs/blocks")
         ? localizePathname("/docs/blocks", localePrefix)
@@ -67,7 +65,6 @@ function DocsPrimaryNavigation({
             ? localizePathname("/docs", localePrefix)
             : null;
   const items = [
-    { href: localizePathname("/", localePrefix), label: t("showcase") },
     { href: localizePathname("/docs/blocks", localePrefix), label: t("businessTemplates") },
     { href: localizePathname("/docs/components", localePrefix), label: t("componentsEntry") },
     { href: localizePathname("/guides", localePrefix), label: t("guides") },
@@ -81,7 +78,7 @@ function DocsPrimaryNavigation({
   return (
     <TopNav navigationAlign="left" className="w-full gap-2 border-0 px-4 sm:px-6">
       <TopNavBrand className="shrink-0 px-0 pr-3 text-title font-semibold tracking-tight text-fg-default sm:pr-8">
-        <Link aria-label="Zeron Design" href={localizePathname("/", localePrefix)}>
+        <Link aria-label="Zeron Design" href={localizePathname("/docs/blocks", localePrefix)}>
           <span className="sm:hidden">ZD</span>
           <span className="max-sm:hidden">Zeron Design</span>
         </Link>
@@ -144,7 +141,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
   const { closeMobile } = useSidebar();
   const localePrefix = localePrefixFromPathname(pathname);
   const currentPathname = internalPathname(pathname);
-  const isLocalizedDocumentation = currentPathname === "/" || currentPathname === "/guides" || currentPathname === "/docs" || currentPathname.startsWith("/docs/");
+  const isLocalizedDocumentation = currentPathname === "/guides" || currentPathname === "/docs" || currentPathname.startsWith("/docs/");
   const isBlocksWorkspace = currentPathname === "/docs/blocks" || currentPathname.startsWith("/docs/blocks/");
   const isGuidesWorkspace = currentPathname === "/guides";
   const isComponentsDetail = currentPathname.startsWith("/docs/components/");
@@ -190,7 +187,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
         <AppShellMain className={isComponentsWorkspace ? "flex min-h-0 overflow-hidden" : "flex min-h-0"}>
           {hasDocumentationSidebar && <AppShellSidebar><DocsSidebar localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} /></AppShellSidebar>}
           <div className="min-h-0 min-w-0 flex-1">{children}</div>
-          {currentPathname !== "/" && !isBlocksWorkspace && !isGuidesWorkspace && currentPathname !== "/docs/components" && !isComponentsDetail && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
+          {!isBlocksWorkspace && !isGuidesWorkspace && currentPathname !== "/docs/components" && !isComponentsDetail && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
         </AppShellMain>
       </AppShell>
     </RightRailProvider>
