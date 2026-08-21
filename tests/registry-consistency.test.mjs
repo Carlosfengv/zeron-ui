@@ -151,6 +151,14 @@ describe("committed build output", () => {
     }
   });
 
+  it("publishes the combobox token import through the installed lib alias", () => {
+    const item = JSON.parse(readFileSync(join(outDir, "combobox.json"), "utf-8"));
+    const source = item.files?.[0]?.content ?? "";
+
+    expect(source).toContain('from "@lib/tokens/control-size"');
+    expect(source).not.toContain('from "../tokens/control-size"');
+  });
+
   it("does not retain the removed font-weight artifact", () => {
     expect(existsSync(join(outDir, "font-weight.json"))).toBe(false);
   });
