@@ -37,8 +37,12 @@ interface SwitchProps extends Omit<HTMLAttributes<HTMLDivElement>, "defaultCheck
 
 const TRACK_WIDTH = 34;
 const TRACK_HEIGHT = 20;
+const TRACK_BORDER_WIDTH = 0.5;
 const THUMB_SIZE = 16;
 const THUMB_OFFSET = 2;
+// Absolutely positioned children start inside the track's border. Compensate
+// for its half-pixel stroke so the thumb is centered in the painted 20px pill.
+const THUMB_Y_OFFSET = (TRACK_HEIGHT - THUMB_SIZE) / 2 - TRACK_BORDER_WIDTH;
 const THUMB_TRAVEL = TRACK_WIDTH - THUMB_SIZE - THUMB_OFFSET * 2;
 const PILL_EXTEND = 2;
 const PRESS_EXTEND = 4;
@@ -113,7 +117,9 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
         ? THUMB_SIZE + PILL_EXTEND
         : THUMB_SIZE;
     const thumbHeight = pressed ? THUMB_SIZE - PRESS_SHRINK : THUMB_SIZE;
-    const thumbY = pressed ? THUMB_OFFSET + PRESS_SHRINK / 2 : THUMB_OFFSET;
+    const thumbY = pressed
+      ? THUMB_Y_OFFSET + PRESS_SHRINK / 2
+      : THUMB_Y_OFFSET;
     const extraWidth = thumbWidth - THUMB_SIZE;
     const thumbX = checked
       ? THUMB_OFFSET + THUMB_TRAVEL - extraWidth
