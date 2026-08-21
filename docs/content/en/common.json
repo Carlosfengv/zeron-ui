@@ -116,6 +116,7 @@
       "checkbox": "Compact checkbox with checked, mixed, disabled, validation, and form states.",
       "checkbox-group": "Checkbox group with merged backgrounds for contiguous selections.",
       "color-picker": "Color picker with HEX/RGB/HSL/OKLCH formats, alpha, swatches, and popover trigger.",
+      "combobox": "Filterable single- or multi-select with typed object values, groups, chips, and custom triggers.",
       "data-grid": "Virtualized spreadsheet grid with inline editing, range selection, search, copy and paste, and pinned columns.",
       "data-table": "TanStack data table with sorting, filters, pagination, selection, visibility, and pinning.",
       "detail-list": "Framed label-value list with grouped sections and separators for compact resource and entity details.",
