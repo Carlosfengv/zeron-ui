@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { useMemo, useState, type ComponentPropsWithoutRef, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentPropsWithoutRef, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis } from "recharts";
 import ChatGLMColor from "@lobehub/icons/es/ChatGLM/components/Color";
 import DeepSeekColor from "@lobehub/icons/es/DeepSeek/components/Color";
@@ -15,9 +15,11 @@ import { Button } from "@zeron/ui/button";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@zeron/ui/chart";
 import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
+import { DetailList, DetailListItem, DetailListLabel, DetailListValue } from "@zeron/ui/detail-list";
 import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
-import { DataTable, DataTableColumnHeader, DataTableToolbar, useDataTable } from "@zeron/ui/data-table";
+import { DataTable, DataTableColumnHeader, DataTablePagination, DataTableToolbar, useDataTable } from "@zeron/ui/data-table";
 import { InfoItem, InfoItemContent, InfoItemDescription, InfoItemGroup, InfoItemTitle, InfoItemTrailing } from "@zeron/ui/info-item";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@zeron/ui/input-group";
 import { MenuItem } from "@zeron/ui/menu-item";
 import { MetricCard } from "@zeron/ui/metric-card";
@@ -34,12 +36,16 @@ import { Switch } from "@zeron/ui/switch";
 import { type IconComponent, useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
 
-type SettingsView = "models" | "keys" | "credentials" | "profile" | "preferences" | "usage" | "modelUsage";
+type SettingsView = "models" | "keys" | "credentials" | "profile" | "preferences" | "usage" | "modelUsage" | "callLogs";
 type ServiceStatus = "正常" | "已用尽" | "需要重新获取";
 type ActivityView = "tokens" | "messages";
 type UsagePeriod = "hour" | "day" | "week" | "month";
 type UsageRankIcon = "deepseek" | "openai" | "glm" | "jira" | "tool" | "message";
 type ModelUsageRange = "day" | "week" | "month";
+type CallLogRange = ModelUsageRange | "custom";
+type CallLogView = "calls" | "runs";
+type CallLogKind = "model" | "mcp";
+type CallLogStatus = "success" | "degraded" | "failed";
 
 interface UsageRankRowData {
   label: string;
@@ -113,6 +119,7 @@ const viewCopy: Record<SettingsView, { title: string; description: string; searc
   preferences: { title: "偏好设置", description: "配置外观、输入方式、语言与时间格式。" },
   usage: { title: "使用情况", description: "查看当前计费周期内的模型调用、令牌与额度使用情况。" },
   modelUsage: { title: "模型用量", description: "查看通过 API Key 发起的模型调用、消费金额与计费归属。" },
+  callLogs: { title: "调用日志", description: "逐次核对模型和 MCP 调用，并按回答查看完整执行链路。" },
 };
 
 const usagePeriodOptions: readonly { label: string; value: UsagePeriod }[] = [
@@ -200,6 +207,28 @@ const spendChartConfig = {
   amount: { label: "消费金额", color: "var(--brand)" },
 } satisfies ChartConfig;
 
+const callLogTrendConfig = {
+  model: { label: "模型", color: "light-dark(var(--brand-active), var(--brand))" },
+  mcp: { label: "MCP", color: "light-dark(var(--brand), var(--brand-active))" },
+} satisfies ChartConfig;
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const CALL_LOG_TIMELINE_BUCKETS = 60;
+const callLogLatestTimestamp = Date.parse("2026-08-21T10:32:18+08:00");
+const callLogContextStart = callLogLatestTimestamp - CALL_LOG_TIMELINE_BUCKETS * DAY_IN_MS;
+const callLogDateFormatter = new Intl.DateTimeFormat("zh-CN", { day: "numeric", month: "numeric", timeZone: "Asia/Shanghai" });
+const callLogDateTimeFormatter = new Intl.DateTimeFormat("zh-CN", { day: "numeric", hour: "2-digit", minute: "2-digit", month: "numeric", timeZone: "Asia/Shanghai" });
+
+const callLogTrendBuckets = Array.from({ length: CALL_LOG_TIMELINE_BUCKETS }, (_, index) => {
+  const start = callLogContextStart + index * DAY_IN_MS;
+  const end = start + DAY_IN_MS;
+  return {
+    end,
+    label: callLogDateFormatter.format(end),
+    start,
+  };
+});
+
 const attributionChartConfig = {
   amount: { label: "消费金额", color: "var(--brand)" },
 } satisfies ChartConfig;
@@ -224,11 +253,159 @@ const modelUsageFilterOptions = {
   services: [...new Set(modelUsageRecords.map((record) => record.service))].map((value) => ({ label: value, value })),
 } as const;
 
+interface CallLogRecord {
+  id: string;
+  timestamp: number;
+  time: string;
+  kind: CallLogKind;
+  status: CallLogStatus;
+  code: string;
+  requested: string;
+  actual: string;
+  service: string;
+  attribution: string;
+  apiKey: string;
+  tokens?: number;
+  firstTokenMs?: number;
+  durationMs: number;
+  amount?: number;
+  runId: string;
+  summary: string;
+  operation?: "只读" | "外部写入";
+  upstreamId?: string;
+  detail?: string;
+}
+
+interface CallLogRun {
+  id: string;
+  timestamp: number;
+  time: string;
+  status: CallLogStatus;
+  prompt: string;
+  modelCalls: number;
+  mcpCalls: number;
+  tokens: number;
+  durationMs: number;
+  amount: number;
+  detail: string;
+}
+
+const callLogTimeFormatter = new Intl.DateTimeFormat("en-CA", { day: "2-digit", hour: "2-digit", hour12: false, minute: "2-digit", month: "2-digit", second: "2-digit", timeZone: "Asia/Shanghai" });
+
+function formatCallLogTime(timestamp: number) {
+  const parts = Object.fromEntries(callLogTimeFormatter.formatToParts(timestamp).map((part) => [part.type, part.value]));
+  return `${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+}
+
+const callLogMockScenarios = [
+  { prompt: "根据销售数据生成日报并同步到项目群", planning: "理解销售分析目标并制定查询计划", tool: "postgres / query_sales", toolService: "Postgres Readonly", toolSummary: "查询当日销售汇总数据", operation: "只读" as const, final: "整合销售数据并生成日报", attribution: "产品研发部", apiKey: "prod-••C4hA", model: "GPT-5", modelService: "OpenAI Gateway" },
+  { prompt: "检查发布分支状态并整理变更内容", planning: "拆解发布检查步骤并确定检索范围", tool: "github / search_code", toolService: "GitHub App", toolSummary: "检索发布分支中的变更文件", operation: "只读" as const, final: "归纳发布状态与关键变更", attribution: "智能客服项目", apiKey: "agent-••G5dT", model: "GPT-5", modelService: "OpenAI Gateway" },
+  { prompt: "分析服务日志并定位异常原因", planning: "识别日志时间窗与异常分析维度", tool: "postgres / query_logs", toolService: "Analytics Warehouse", toolSummary: "读取服务错误日志与指标", operation: "只读" as const, final: "总结异常原因并给出处理建议", attribution: "平台工程部", apiKey: "staging-••R7vE", model: "DeepSeek-v4-pro", modelService: "DeepSeek Production" },
+  { prompt: "生成客户分析摘要并发送给协作群", planning: "整理客户分析维度与输出结构", tool: "slack / send_message", toolService: "Slack workspace", toolSummary: "发送客户分析摘要", operation: "外部写入" as const, final: "确认摘要内容与发送结果", attribution: "市场项目", apiKey: "webhook-••W8sN", model: "gpt-4.1", modelService: "默认模型服务" },
+] as const;
+
+function buildCallLogMockData() {
+  const records: CallLogRecord[] = [];
+  const runs: CallLogRun[] = [];
+  for (let dayIndex = 0; dayIndex < CALL_LOG_TIMELINE_BUCKETS; dayIndex += 1) {
+    const runCount = dayIndex === CALL_LOG_TIMELINE_BUCKETS - 1 ? 3 : dayIndex % 4 === 0 ? 2 : 1;
+    for (let runIndex = 0; runIndex < runCount; runIndex += 1) {
+      const scenario = callLogMockScenarios[(dayIndex + runIndex) % callLogMockScenarios.length];
+      const status: CallLogStatus = dayIndex === CALL_LOG_TIMELINE_BUCKETS - 1 ? (["success", "degraded", "failed"] as const)[runIndex] : (dayIndex + runIndex * 7) % 19 === 0 ? "failed" : (dayIndex + runIndex * 5) % 11 === 0 ? "degraded" : "success";
+      const runTimestamp = callLogContextStart + dayIndex * DAY_IN_MS + (14 + runIndex * 2) * 60 * 60 * 1000 + (dayIndex * 13 % 40) * 60 * 1000;
+      const runId = `run_${String(dayIndex + 1).padStart(2, "0")}_${runIndex + 1}`;
+      const requestedModel = status === "degraded" ? "GPT-5" : scenario.model;
+      const actualModel = status === "degraded" ? "gpt-4.1" : scenario.model;
+      const modelService = status === "degraded" ? "默认模型服务" : scenario.modelService;
+      const callBlueprints = [
+        { kind: "model" as const, timestamp: runTimestamp, status: status === "degraded" ? "degraded" as const : "success" as const, code: status === "degraded" ? "FALLBACK" : "200", requested: requestedModel, actual: actualModel, service: modelService, summary: scenario.planning, tokens: 3200 + dayIndex * 37 + runIndex * 211, durationMs: 2600 + dayIndex % 7 * 170, amount: 0.018 + (dayIndex % 6) * 0.003, detail: status === "degraded" ? "请求模型超时，重试后降级至 gpt-4.1" : "请求模型与实际模型一致" },
+        { kind: "mcp" as const, timestamp: runTimestamp + 90_000, status: status === "failed" ? "failed" as const : "success" as const, code: status === "failed" ? "403" : "200", requested: scenario.tool, actual: scenario.tool, service: scenario.toolService, summary: scenario.toolSummary, durationMs: 900 + dayIndex % 5 * 210, operation: scenario.operation, detail: status === "failed" ? "MCP_PERMISSION_DENIED · 当前凭证无权执行该操作" : scenario.operation === "外部写入" ? "外部写入已完成" : `返回 ${12 + dayIndex % 24} 行结果` },
+        { kind: "model" as const, timestamp: runTimestamp + 180_000, status: status === "failed" ? "failed" as const : "success" as const, code: status === "failed" ? "424" : "200", requested: actualModel, actual: actualModel, service: modelService, summary: scenario.final, tokens: 2100 + dayIndex * 29 + runIndex * 173, durationMs: 2100 + dayIndex % 6 * 190, amount: 0.012 + (dayIndex % 5) * 0.002, detail: status === "failed" ? "上游 MCP 调用失败，未生成最终回答" : "最终回答已生成" },
+      ];
+      const runRecords = callBlueprints.map((call, callIndex): CallLogRecord => ({
+        ...call,
+        id: `call-${call.kind}-${String(dayIndex + 1).padStart(2, "0")}-${runIndex + 1}-${callIndex + 1}`,
+        time: formatCallLogTime(call.timestamp),
+        attribution: scenario.attribution,
+        apiKey: scenario.apiKey,
+        firstTokenMs: call.kind === "model" ? 420 + dayIndex % 8 * 55 : undefined,
+        runId,
+        upstreamId: `${call.kind === "model" ? "req" : "mcp"}_${String(dayIndex + 1).padStart(2, "0")}_${runIndex + 1}_${callIndex + 1}`,
+      }));
+      records.push(...runRecords);
+      runs.push({
+        id: runId,
+        timestamp: runTimestamp,
+        time: formatCallLogTime(runTimestamp),
+        status,
+        prompt: scenario.prompt,
+        modelCalls: runRecords.filter((record) => record.kind === "model").length,
+        mcpCalls: runRecords.filter((record) => record.kind === "mcp").length,
+        tokens: runRecords.reduce((total, record) => total + (record.tokens ?? 0), 0),
+        durationMs: runRecords.reduce((total, record) => total + record.durationMs, 0),
+        amount: runRecords.reduce((total, record) => total + (record.amount ?? 0), 0),
+        detail: status === "failed" ? "MCP 调用失败，未生成最终回答" : status === "degraded" ? "发生 1 次模型降级，最终回答已完成" : "回答链路执行成功",
+      });
+    }
+  }
+  return {
+    records: records.sort((a, b) => b.timestamp - a.timestamp),
+    runs: runs.sort((a, b) => b.timestamp - a.timestamp),
+  };
+}
+
+const callLogMockData = buildCallLogMockData();
+const callLogRecords: readonly CallLogRecord[] = callLogMockData.records;
+const callLogRuns: readonly CallLogRun[] = callLogMockData.runs;
+const callLogAttributionOptions = [...new Set(callLogRecords.map((record) => record.attribution))].map((value) => ({ label: value, value }));
+
+function aggregateCallLogTrend(records: readonly CallLogRecord[]) {
+  return callLogTrendBuckets.map((point) => {
+    const bucketRecords = records.filter((record) => record.timestamp >= point.start && record.timestamp < point.end);
+    return {
+      ...point,
+      model: bucketRecords.filter((record) => record.kind === "model").length,
+      mcp: bucketRecords.filter((record) => record.kind === "mcp").length,
+    };
+  });
+}
+
+interface CallLogTimeSelection {
+  startIndex: number;
+  endIndex: number;
+}
+
+const callLogQuickSelections: Record<ModelUsageRange, CallLogTimeSelection & { label: string }> = {
+  day: { endIndex: CALL_LOG_TIMELINE_BUCKETS - 1, label: "最近 24 小时", startIndex: CALL_LOG_TIMELINE_BUCKETS - 1 },
+  week: { endIndex: CALL_LOG_TIMELINE_BUCKETS - 1, label: "最近 7 天", startIndex: CALL_LOG_TIMELINE_BUCKETS - 7 },
+  month: { endIndex: CALL_LOG_TIMELINE_BUCKETS - 1, label: "最近 30 天", startIndex: CALL_LOG_TIMELINE_BUCKETS - 30 },
+};
+
+function getCallLogSelectionTimestamps(selection: CallLogTimeSelection) {
+  return {
+    end: Math.min(callLogLatestTimestamp, callLogContextStart + (selection.endIndex + 1) * DAY_IN_MS),
+    start: callLogContextStart + selection.startIndex * DAY_IN_MS,
+  };
+}
+
+function isCallLogTimeInSelection(timestamp: number, selection: CallLogTimeSelection) {
+  const selectedTime = getCallLogSelectionTimestamps(selection);
+  return timestamp <= selectedTime.end && timestamp >= selectedTime.start;
+}
+
+const callLogStatusCopy: Record<CallLogStatus, { label: string }> = {
+  success: { label: "成功" },
+  degraded: { label: "已降级" },
+  failed: { label: "失败" },
+};
+
 export interface PersonalSettingsProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
   /** The first settings page rendered by the block. */
   defaultView?: SettingsView;
   /** Keeps all non-current sidebar destinations visible but unavailable. */
   lockedNavigation?: boolean;
+  /** Destinations that remain available when navigation is locked. */
+  enabledViews?: readonly SettingsView[];
 }
 
 function ProviderMark({ provider }: { provider: ModelService["provider"] }) {
@@ -264,7 +441,7 @@ function RowActions({ items, label }: { items: readonly string[]; label: string 
 }
 
 /** Personal account settings with model services, API keys, credentials, profile, and usage pages. */
-export function PersonalSettings({ className, defaultView = "keys", lockedNavigation = false, ...props }: PersonalSettingsProps) {
+export function PersonalSettings({ className, defaultView = "keys", enabledViews, lockedNavigation = false, ...props }: PersonalSettingsProps) {
   const SearchIcon = useIcon("search");
   const ChevronDown = useIcon("chevron-down");
   const PlusIcon = useIcon("plus");
@@ -276,6 +453,7 @@ export function PersonalSettings({ className, defaultView = "keys", lockedNaviga
   const SettingsIcon = useIcon("settings");
   const ClockIcon = useIcon("clock");
   const LibraryIcon = useIcon("square-library");
+  const CallLogsIcon = useIcon("list");
   const [view, setView] = useState<SettingsView>(defaultView);
   const [query, setQuery] = useState("");
   const copy = viewCopy[view];
@@ -298,13 +476,13 @@ export function PersonalSettings({ className, defaultView = "keys", lockedNaviga
       <AppShellMain landmark={false} className="min-h-0 overflow-hidden">
         <PageLayout size="full" className="h-full pt-0">
           <PageSidebar aria-label="个人设置导航" className="p-3">
-            <SettingsNavGroup activeView={view} disabled={lockedNavigation} disabledViews={lockedNavigation ? [] : ["models"]} label="资源" items={[{ value: "models", label: "模型服务", icon: BrainIcon }, { value: "keys", label: "API keys", icon: LockIcon }, { value: "credentials", label: "凭证管理", icon: ShieldIcon }]} onChange={setSettingsView} />
-            <SettingsNavGroup activeView={view} className="mt-5" disabled={lockedNavigation} disabledViews={lockedNavigation ? [] : ["usage", "modelUsage"]} label="个人设置" items={[{ value: "profile", label: "个人资料", icon: UserIcon }, { value: "preferences", label: "偏好设置", icon: SettingsIcon }, { value: "usage", label: "使用情况", icon: ClockIcon }, { value: "modelUsage", label: "模型用量", icon: LibraryIcon }]} onChange={setSettingsView} />
+            <SettingsNavGroup activeView={view} enabledViews={lockedNavigation ? enabledViews ?? [view] : undefined} disabledViews={lockedNavigation ? [] : ["models"]} label="资源" items={[{ value: "models", label: "模型服务", icon: BrainIcon }, { value: "keys", label: "API keys", icon: LockIcon }, { value: "credentials", label: "凭证管理", icon: ShieldIcon }]} onChange={setSettingsView} />
+            <SettingsNavGroup activeView={view} className="mt-5" enabledViews={lockedNavigation ? enabledViews ?? [view] : undefined} disabledViews={lockedNavigation ? [] : ["usage", "modelUsage", "callLogs"]} label="个人设置" items={[{ value: "profile", label: "个人资料", icon: UserIcon }, { value: "preferences", label: "偏好设置", icon: SettingsIcon }, { value: "usage", label: "使用情况", icon: ClockIcon }, { value: "modelUsage", label: "模型用量", icon: LibraryIcon }, { value: "callLogs", label: "调用日志", icon: CallLogsIcon }]} onChange={setSettingsView} />
           </PageSidebar>
           <PageContent className="overflow-y-auto overscroll-contain">
             <PageBody className="flex-none overflow-visible p-4 sm:p-6">
               <section className="mx-auto w-full max-w-[960px]">
-                {view === "modelUsage" ? <ModelUsageSettings /> : view === "usage" ? <UsageSettings /> : <><header className="max-w-3xl"><h1 className="text-title font-semibold text-fg-default">{copy.title}</h1><p className="mt-1 text-label leading-5 text-fg-muted">{copy.description}</p></header>
+                {view === "callLogs" ? <CallLogsSettings /> : view === "modelUsage" ? <ModelUsageSettings /> : view === "usage" ? <UsageSettings /> : <><header className="max-w-3xl"><h1 className="text-title font-semibold text-fg-default">{copy.title}</h1><p className="mt-1 text-label leading-5 text-fg-muted">{copy.description}</p></header>
                 <div className="mt-4">{view === "models" ? <div className="flex flex-col gap-2.5"><InputGroup className="w-full max-w-[450px] border-border hover:border-border" size="md"><InputGroupAddon className="pr-2"><SearchIcon aria-hidden size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput aria-label={copy.search} className="h-full min-h-0" onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} value={query} /></InputGroup><ModelServicesTable services={services} /></div> : view === "keys" ? <ApiKeysTable copyIcon={CopyIcon} plusIcon={PlusIcon} /> : view === "credentials" ? <CredentialsTable plusIcon={PlusIcon} /> : view === "preferences" ? <PreferencesSettings /> : <ProfileSettings />}</div></>}
               </section>
             </PageBody>
@@ -315,8 +493,8 @@ export function PersonalSettings({ className, defaultView = "keys", lockedNaviga
   );
 }
 
-function SettingsNavGroup({ activeView, className, disabled = false, disabledViews = [], items, label, onChange }: { activeView: SettingsView; className?: string; disabled?: boolean; disabledViews?: readonly SettingsView[]; items: readonly { value: SettingsView; label: string; icon: IconComponent }[]; label: string; onChange: (view: SettingsView) => void }) {
-  return <section className={className}><p className="px-2 text-label text-fg-subtle">{label}</p><NavMenu as="div" activeValue={activeView} aria-label={label} className="mt-1" keyboardNavigation="roving">{items.map((item) => <NavItem disabled={(disabled && item.value !== activeView) || disabledViews.includes(item.value)} key={item.value} value={item.value}><NavItemTrigger href={`#${item.value}`} onClick={(event) => { event.preventDefault(); onChange(item.value); }}><NavItemLeading className="group-data-[active=true]/nav-item:text-fg-brand"><item.icon aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading><NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>)}</NavMenu></section>;
+function SettingsNavGroup({ activeView, className, disabledViews = [], enabledViews, items, label, onChange }: { activeView: SettingsView; className?: string; disabledViews?: readonly SettingsView[]; enabledViews?: readonly SettingsView[]; items: readonly { value: SettingsView; label: string; icon: IconComponent }[]; label: string; onChange: (view: SettingsView) => void }) {
+  return <section className={className}><p className="px-2 text-label text-fg-subtle">{label}</p><NavMenu as="div" activeValue={activeView} aria-label={label} className="mt-1" keyboardNavigation="roving">{items.map((item) => <NavItem disabled={enabledViews ? !enabledViews.includes(item.value) : disabledViews.includes(item.value)} key={item.value} value={item.value}><NavItemTrigger href={`#${item.value}`} onClick={(event) => { event.preventDefault(); onChange(item.value); }}><NavItemLeading className="group-data-[active=true]/nav-item:text-fg-brand"><item.icon aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading><NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>)}</NavMenu></section>;
 }
 
 function ModelServicesTable({ services }: { services: readonly ModelService[] }) {
@@ -490,6 +668,231 @@ function PreferenceSelect({ ariaLabel, disabled = false, onChange, options, valu
 
 function AccountInfoItem({ action, description, destructive = false, disabled = false, grouped = false, onAction, title }: { action: string; description: string; destructive?: boolean; disabled?: boolean; grouped?: boolean; onAction: () => void; title: string }) {
   return <InfoItem className={cn("min-h-[76px] px-4 py-3.5", !grouped && "rounded-lg border-[0.5px] border-border")}><InfoItemContent><InfoItemTitle>{title}</InfoItemTitle><InfoItemDescription>{description}</InfoItemDescription></InfoItemContent><InfoItemTrailing><Button disabled={disabled} onClick={onAction} size="md" type="button" variant={destructive ? "destructive" : "tertiary"}>{action}</Button></InfoItemTrailing></InfoItem>;
+}
+
+function formatCallDuration(durationMs: number) {
+  return durationMs < 1000 ? `${durationMs}ms` : `${(durationMs / 1000).toFixed(durationMs >= 10000 ? 1 : 2)}s`;
+}
+
+function formatCallTokens(tokens: number) {
+  return tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}K` : tokens.toLocaleString("zh-CN");
+}
+
+function CallLogStatusBadge({ status }: { status: CallLogStatus }) {
+  const presentation = callLogStatusCopy[status];
+  if (status === "failed") return <Badge color="red" size="sm" variant="strong">{presentation.label}</Badge>;
+  if (status === "degraded") return <Badge color="amber" size="sm" variant="strong">{presentation.label}</Badge>;
+  return <Badge color="green" size="sm">{presentation.label}</Badge>;
+}
+
+function CallLogKindBadge({ kind }: { kind: CallLogKind }) {
+  return <Badge color={kind === "model" ? "blue" : "amber"} size="sm">{kind === "model" ? "模型" : "MCP"}</Badge>;
+}
+
+function formatCallLogSelection(selection: CallLogTimeSelection) {
+  const selectedTime = getCallLogSelectionTimestamps(selection);
+  return `${callLogDateTimeFormatter.format(selectedTime.start)} – ${callLogDateTimeFormatter.format(selectedTime.end)}`;
+}
+
+function CallLogTimeline({ data, onSelectionChange, selection }: {
+  data: readonly { end: number; label: string; mcp: number; model: number; start: number }[];
+  onSelectionChange: (selection: CallLogTimeSelection) => void;
+  selection: CallLogTimeSelection;
+}) {
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const dragStartIndex = useRef<number | null>(null);
+  const dragMode = useRef<"create" | "move" | null>(null);
+  const dragOriginSelection = useRef<CallLogTimeSelection | null>(null);
+  const [draftSelection, setDraftSelection] = useState<CallLogTimeSelection | null>(null);
+  const activeSelection = draftSelection ?? selection;
+  const selectionLabel = formatCallLogSelection(activeSelection);
+  const normalizeSelection = (startIndex: number, endIndex: number) => ({
+    endIndex: Math.max(startIndex, endIndex),
+    startIndex: Math.min(startIndex, endIndex),
+  });
+  const getIndexAtPointer = (clientX: number) => {
+    const bounds = timelineRef.current?.getBoundingClientRect();
+    if (!bounds?.width) return 0;
+    const position = Math.min(0.9999, Math.max(0, (clientX - bounds.left) / bounds.width));
+    return Math.floor(position * CALL_LOG_TIMELINE_BUCKETS);
+  };
+  const getSelectionAtIndex = (index: number) => {
+    if (dragMode.current === "move" && dragStartIndex.current !== null && dragOriginSelection.current) {
+      const origin = dragOriginSelection.current;
+      const selectionWidth = origin.endIndex - origin.startIndex;
+      const nextStartIndex = Math.min(CALL_LOG_TIMELINE_BUCKETS - selectionWidth - 1, Math.max(0, origin.startIndex + index - dragStartIndex.current));
+      return { endIndex: nextStartIndex + selectionWidth, startIndex: nextStartIndex };
+    }
+    return normalizeSelection(dragStartIndex.current ?? index, index);
+  };
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    event.currentTarget.blur();
+    const index = getIndexAtPointer(event.clientX);
+    const moveExistingSelection = index >= selection.startIndex && index <= selection.endIndex;
+    dragStartIndex.current = index;
+    dragMode.current = moveExistingSelection ? "move" : "create";
+    dragOriginSelection.current = moveExistingSelection ? selection : null;
+    setDraftSelection(moveExistingSelection ? selection : { endIndex: index, startIndex: index });
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (dragStartIndex.current === null) return;
+    setDraftSelection(getSelectionAtIndex(getIndexAtPointer(event.clientX)));
+  };
+  const finishPointerSelection = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (dragStartIndex.current === null) return;
+    const nextSelection = getSelectionAtIndex(getIndexAtPointer(event.clientX));
+    dragStartIndex.current = null;
+    dragMode.current = null;
+    dragOriginSelection.current = null;
+    setDraftSelection(null);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    onSelectionChange(nextSelection);
+  };
+  const handlePointerCancel = (event: ReactPointerEvent<HTMLDivElement>) => {
+    dragStartIndex.current = null;
+    dragMode.current = null;
+    dragOriginSelection.current = null;
+    setDraftSelection(null);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+  };
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const selectionWidth = selection.endIndex - selection.startIndex;
+    let startIndex = selection.startIndex;
+    if (event.key === "ArrowLeft") startIndex = Math.max(0, startIndex - 1);
+    else if (event.key === "ArrowRight") startIndex = Math.min(CALL_LOG_TIMELINE_BUCKETS - selectionWidth - 1, startIndex + 1);
+    else if (event.key === "Home") startIndex = 0;
+    else if (event.key === "End") startIndex = CALL_LOG_TIMELINE_BUCKETS - selectionWidth - 1;
+    else return;
+    event.preventDefault();
+    onSelectionChange({ endIndex: startIndex + selectionWidth, startIndex });
+  };
+  const selectionLeft = activeSelection.startIndex / CALL_LOG_TIMELINE_BUCKETS * 100;
+  const selectionWidth = (activeSelection.endIndex - activeSelection.startIndex + 1) / CALL_LOG_TIMELINE_BUCKETS * 100;
+  const isSelectedIndex = (index: number) => index >= activeSelection.startIndex && index <= activeSelection.endIndex;
+
+  return <section aria-labelledby="call-trend-title"><div aria-label={`当前时间范围：${selectionLabel}。拖动空白处可重新选择，拖动已选范围可整体移动，方向键也可移动当前范围。`} aria-valuemax={CALL_LOG_TIMELINE_BUCKETS} aria-valuemin={1} aria-valuenow={activeSelection.endIndex + 1} aria-valuetext={selectionLabel} className="relative cursor-crosshair touch-none rounded-md !outline-none" onKeyDown={handleKeyDown} onPointerCancel={handlePointerCancel} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={finishPointerSelection} ref={timelineRef} role="slider" tabIndex={0}><div aria-hidden className="pointer-events-none absolute inset-y-0 z-10 rounded-sm border border-fg-brand bg-brand/10" style={{ left: `${selectionLeft}%`, width: `${selectionWidth}%` }}><span className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-fg-brand" /><span className="absolute inset-y-1 right-0 w-0.5 rounded-full bg-fg-brand" /></div><ChartContainer className="relative aspect-auto h-[68px] min-h-0 w-full [&_.recharts-layer]:!outline-none [&_.recharts-surface]:!outline-none [&_.recharts-tooltip-wrapper]:!z-20 [&_.recharts-wrapper]:!outline-none" config={callLogTrendConfig}><BarChart accessibilityLayer={false} data={data} margin={{ bottom: 4, left: 0, right: 0, top: 20 }}><XAxis dataKey="label" hide /><ChartTooltip content={<ChartTooltipContent className="w-[170px]" labelFormatter={(value) => String(value)} valueFormatter={(value) => `${Number(value).toLocaleString("zh-CN")} 次`} />} cursor={{ fill: "var(--surface-raised)" }} isAnimationActive={false} /><Bar dataKey="model" fill="var(--color-model)" stackId="calls">{data.map((point, index) => <Cell fill={isSelectedIndex(index) ? "var(--color-model)" : "light-dark(var(--surface-raised), var(--surface-base))"} key={`model-${point.start}`} />)}</Bar><Bar dataKey="mcp" fill="var(--color-mcp)" stackId="calls">{data.map((point, index) => <Cell fill={isSelectedIndex(index) ? "var(--color-mcp)" : "light-dark(var(--surface-base), var(--surface-raised))"} key={`mcp-${point.start}`} />)}</Bar></BarChart></ChartContainer></div><div className="mt-1 flex items-center justify-between gap-3 text-label text-fg-subtle"><span>{callLogDateFormatter.format(callLogContextStart)}</span><span className="hidden text-center sm:inline">拖动选区可整体移动</span><span>{callLogDateFormatter.format(callLogLatestTimestamp)}</span></div></section>;
+}
+
+function CallLogDataTable({ onOpen, records }: { onOpen: (record: CallLogRecord) => void; records: readonly CallLogRecord[] }) {
+  const ArrowRightIcon = useIcon("arrow-right");
+  const columns = useMemo<ColumnDef<CallLogRecord>[]>(() => [{ accessorKey: "id" }], []);
+  const data = useMemo(() => [...records], [records]);
+  const { table } = useDataTable({ columns, data, getRowId: (record) => record.id, initialState: { pagination: { pageIndex: 0, pageSize: 10 } } });
+  useEffect(() => table.setPageIndex(0), [records, table]);
+  const pagination = table.getState().pagination;
+  const pageOffset = pagination.pageIndex * pagination.pageSize;
+  const pageRecords = table.getRowModel().rows.map((row) => row.original);
+
+  return <div className="space-y-2"><div className="overflow-hidden rounded-xl border border-border bg-surface-floating"><div className="overflow-x-auto"><Table className="min-w-[1160px] text-label"><TableHeader className="[&_th]:whitespace-nowrap"><TableRow><TableHead className="sticky left-0 z-content w-36 min-w-36 max-w-36 bg-surface-floating">时间</TableHead><TableHead className="sticky left-36 z-content w-24 min-w-24 max-w-24 border-r border-border bg-surface-floating">事件类型</TableHead><TableHead className="w-52">目标</TableHead><TableHead className="min-w-52">内容</TableHead><TableHead className="w-24">状态</TableHead><TableHead className="w-40">Request ID</TableHead><TableHead className="w-20">Code</TableHead><TableHead className="w-20 text-right">Token</TableHead><TableHead className="w-20 text-right">耗时</TableHead><TableHead className="w-14"><span className="sr-only">查看</span></TableHead><TableHead className="sticky right-0 z-content w-24 min-w-24 max-w-24 border-l border-border bg-surface-floating text-right">费用</TableHead></TableRow></TableHeader><TableBody>{pageRecords.length ? pageRecords.map((record, index) => <TableRow index={pageOffset + index} key={record.id}><TableCell className="sticky left-0 z-content w-36 min-w-36 max-w-36 whitespace-nowrap bg-surface-floating font-mono tabular-nums text-fg-muted group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]">{record.time}</TableCell><TableCell className="sticky left-36 z-content w-24 min-w-24 max-w-24 border-r border-border bg-surface-floating group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]"><CallLogKindBadge kind={record.kind} /></TableCell><TableCell><div className="min-w-0"><div className="flex items-center gap-1.5 font-medium text-fg-default">{record.kind === "model" && <ModelLogo model={record.actual} />}<span>{record.requested}</span>{record.requested !== record.actual && <><span className="text-fg-subtle">→</span><span>{record.actual}</span></>}</div><p className="mt-0.5 truncate text-fg-muted">{record.service}</p></div></TableCell><TableCell className="min-w-52"><p className="max-w-sm truncate text-fg-muted" title={record.summary}>{record.summary}</p></TableCell><TableCell><CallLogStatusBadge status={record.status} /></TableCell><TableCell className="max-w-40 truncate font-mono text-fg-muted" title={record.id}>{record.id}</TableCell><TableCell className={cn("font-mono", record.status === "failed" ? "text-fg-danger" : record.status === "degraded" ? "text-fg-warning" : "text-fg-muted")}>{record.code}</TableCell><TableCell className="text-right tabular-nums">{record.tokens ? formatCallTokens(record.tokens) : "—"}</TableCell><TableCell className="text-right tabular-nums">{formatCallDuration(record.durationMs)}</TableCell><TableCell><Button aria-label={`检查 ${record.id}`} iconOnly onClick={() => onOpen(record)} size="sm" type="button" variant="ghost"><ArrowRightIcon aria-hidden size={16} strokeWidth={1.5} /></Button></TableCell><TableCell className="sticky right-0 z-content w-24 min-w-24 max-w-24 border-l border-border bg-surface-floating text-right font-medium tabular-nums group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]">{record.amount === undefined ? "—" : `¥${record.amount.toFixed(3)}`}</TableCell></TableRow>) : <TableRow><TableCell className="h-32 text-center text-fg-muted" colSpan={11}>没有找到匹配的调用日志。</TableCell></TableRow>}</TableBody></Table></div></div>{records.length > 0 && <DataTablePagination className="px-2" pageSizeOptions={[10, 20, 50]} table={table} />}</div>;
+}
+
+function CallRunDataTable({ onOpen, runs }: { onOpen: (run: CallLogRun) => void; runs: readonly CallLogRun[] }) {
+  const ArrowRightIcon = useIcon("arrow-right");
+  const columns = useMemo<ColumnDef<CallLogRun>[]>(() => [{ accessorKey: "id" }], []);
+  const data = useMemo(() => [...runs], [runs]);
+  const { table } = useDataTable({ columns, data, getRowId: (run) => run.id, initialState: { pagination: { pageIndex: 0, pageSize: 10 } } });
+  useEffect(() => table.setPageIndex(0), [runs, table]);
+  const pagination = table.getState().pagination;
+  const pageOffset = pagination.pageIndex * pagination.pageSize;
+  const pageRuns = table.getRowModel().rows.map((row) => row.original);
+
+  return <div className="space-y-2"><div className="overflow-hidden rounded-xl border border-border bg-surface-floating"><div className="overflow-x-auto"><Table className="min-w-[1080px] text-label"><TableHeader className="[&_th]:whitespace-nowrap"><TableRow><TableHead className="w-36">开始时间</TableHead><TableHead className="w-32">Run ID</TableHead><TableHead className="w-24">状态</TableHead><TableHead>输入消息</TableHead><TableHead>回答结果</TableHead><TableHead className="w-28">调用</TableHead><TableHead className="w-20 text-right">Token</TableHead><TableHead className="w-20 text-right">耗时</TableHead><TableHead className="w-20 text-right">费用</TableHead><TableHead className="w-14"><span className="sr-only">查看</span></TableHead></TableRow></TableHeader><TableBody>{pageRuns.length ? pageRuns.map((run, index) => <TableRow index={pageOffset + index} key={run.id}><TableCell className="whitespace-nowrap font-mono tabular-nums text-fg-muted">{run.time}</TableCell><TableCell className="font-mono text-fg-muted">{run.id}</TableCell><TableCell><CallLogStatusBadge status={run.status} /></TableCell><TableCell><p className="max-w-md truncate font-medium text-fg-default" title={run.prompt}>{run.prompt}</p></TableCell><TableCell><p className="max-w-md truncate text-fg-muted" title={run.detail}>{run.detail}</p></TableCell><TableCell><span>MODEL {run.modelCalls}</span><span className="mx-1 text-fg-subtle">/</span><span>MCP {run.mcpCalls}</span></TableCell><TableCell className="text-right tabular-nums">{formatCallTokens(run.tokens)}</TableCell><TableCell className="text-right tabular-nums">{formatCallDuration(run.durationMs)}</TableCell><TableCell className="text-right font-medium tabular-nums">¥{run.amount.toFixed(3)}</TableCell><TableCell><Button aria-label={`检查 ${run.id}`} iconOnly onClick={() => onOpen(run)} size="sm" type="button" variant="ghost"><ArrowRightIcon aria-hidden size={16} strokeWidth={1.5} /></Button></TableCell></TableRow>) : <TableRow><TableCell className="h-32 text-center text-fg-muted" colSpan={10}>没有找到匹配的回答日志。</TableCell></TableRow>}</TableBody></Table></div></div>{runs.length > 0 && <DataTablePagination className="px-2" pageSizeOptions={[10, 20, 50]} table={table} />}</div>;
+}
+
+function CallLogsSettings() {
+  const SearchIcon = useIcon("search");
+  const [view, setView] = useState<CallLogView>("calls");
+  const [range, setRange] = useState<CallLogRange>("day");
+  const [timeSelection, setTimeSelection] = useState<CallLogTimeSelection>(callLogQuickSelections.day);
+  const [kind, setKind] = useState<"all" | CallLogKind>("all");
+  const [status, setStatus] = useState<"all" | CallLogStatus>("all");
+  const [attribution, setAttribution] = useState("all");
+  const [query, setQuery] = useState("");
+  const [selectedCallId, setSelectedCallId] = useState("");
+  const [selectedRunId, setSelectedRunId] = useState("");
+  const [detailOpen, setDetailOpen] = useState(false);
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredCalls = useMemo(() => callLogRecords.filter((record) => {
+    const matchesQuery = !normalizedQuery || `${record.id} ${record.runId} ${record.requested} ${record.actual} ${record.service} ${record.attribution} ${record.apiKey} ${record.summary} ${record.upstreamId ?? ""}`.toLowerCase().includes(normalizedQuery);
+    return isCallLogTimeInSelection(record.timestamp, timeSelection) && matchesQuery && (kind === "all" || record.kind === kind) && (status === "all" || record.status === status) && (attribution === "all" || record.attribution === attribution);
+  }), [attribution, kind, normalizedQuery, status, timeSelection]);
+  const filteredRuns = useMemo(() => callLogRuns.filter((run) => {
+    const matchesQuery = !normalizedQuery || `${run.id} ${run.prompt} ${run.detail}`.toLowerCase().includes(normalizedQuery);
+    const matchesAttribution = attribution === "all" || callLogRecords.some((record) => record.runId === run.id && record.attribution === attribution);
+    return isCallLogTimeInSelection(run.timestamp, timeSelection) && matchesQuery && matchesAttribution && (status === "all" || run.status === status);
+  }), [attribution, normalizedQuery, status, timeSelection]);
+  const filteredTrendCalls = useMemo(() => {
+    if (view === "calls") return callLogRecords.filter((record) => {
+      const matchesQuery = !normalizedQuery || `${record.id} ${record.runId} ${record.requested} ${record.actual} ${record.service} ${record.attribution} ${record.apiKey} ${record.summary} ${record.upstreamId ?? ""}`.toLowerCase().includes(normalizedQuery);
+      return matchesQuery && (kind === "all" || record.kind === kind) && (status === "all" || record.status === status) && (attribution === "all" || record.attribution === attribution);
+    });
+    const visibleRunIds = new Set(callLogRuns.filter((run) => {
+      const matchesQuery = !normalizedQuery || `${run.id} ${run.prompt} ${run.detail}`.toLowerCase().includes(normalizedQuery);
+      const matchesAttribution = attribution === "all" || callLogRecords.some((record) => record.runId === run.id && record.attribution === attribution);
+      return matchesQuery && matchesAttribution && (status === "all" || run.status === status);
+    }).map((run) => run.id));
+    return callLogRecords.filter((record) => visibleRunIds.has(record.runId));
+  }, [attribution, kind, normalizedQuery, status, view]);
+  const trendPoints = useMemo(() => aggregateCallLogTrend(filteredTrendCalls), [filteredTrendCalls]);
+  const selectedRangeLabel = range === "custom" ? formatCallLogSelection(timeSelection) : callLogQuickSelections[range].label;
+  const applyQuickRange = (nextRange: ModelUsageRange) => {
+    setRange(nextRange);
+    setTimeSelection(callLogQuickSelections[nextRange]);
+  };
+  const applyTimelineSelection = (nextSelection: CallLogTimeSelection) => {
+    setTimeSelection(nextSelection);
+    const matchingRange = (Object.keys(callLogQuickSelections) as ModelUsageRange[]).find((key) => {
+      const quickSelection = callLogQuickSelections[key];
+      return quickSelection.startIndex === nextSelection.startIndex && quickSelection.endIndex === nextSelection.endIndex;
+    });
+    setRange(matchingRange ?? "custom");
+  };
+  const selectedCall = callLogRecords.find((record) => record.id === selectedCallId);
+  const selectedRun = callLogRuns.find((run) => run.id === selectedRunId);
+  const openCall = (record: CallLogRecord) => { setSelectedCallId(record.id); setSelectedRunId(""); setDetailOpen(true); };
+  const openRun = (run: CallLogRun) => { setSelectedRunId(run.id); setSelectedCallId(""); setDetailOpen(true); };
+
+  return <div className="space-y-4 py-1">
+    <header className="flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-heading font-semibold text-fg-default">调用日志</h1><p className="mt-1 text-label leading-5 text-fg-muted">逐次核对模型和 MCP 调用，并按回答查看完整执行链路。</p></div><Button onClick={() => undefined} type="button" variant="tertiary">导出记录</Button></header>
+
+    <Tabs aria-label="调用日志视角" color="neutral" onValueChange={(value) => setView(value as CallLogView)} value={view} variant="segment"><TabsList><TabItem label="按调用" value="calls" /><TabItem label="按回答" value="runs" /></TabsList></Tabs>
+
+    <section aria-label="调用日志筛选" className={cn("grid gap-3 sm:grid-cols-2", view === "calls" ? "lg:grid-cols-5" : "lg:grid-cols-4")}>
+      <UsageFilter label="时间范围" value={range} onChange={(value) => { if (value !== "custom") applyQuickRange(value as ModelUsageRange); }} options={[{ label: "最近 24 小时", value: "day" }, { label: "最近 7 天", value: "week" }, { label: "最近 30 天", value: "month" }, ...(range === "custom" ? [{ label: "自定义范围", value: "custom" }] : [])]} />
+      {view === "calls" && <UsageFilter label="调用类型" value={kind} onChange={(value) => setKind(value as "all" | CallLogKind)} options={[{ label: "全部类型", value: "all" }, { label: "模型", value: "model" }, { label: "MCP", value: "mcp" }]} />}
+      <UsageFilter label="状态" value={status} onChange={(value) => setStatus(value as "all" | CallLogStatus)} options={[{ label: "全部状态", value: "all" }, { label: "成功", value: "success" }, { label: "已降级", value: "degraded" }, { label: "失败", value: "failed" }]} />
+      <UsageFilter label="计费归属" value={attribution} onChange={setAttribution} options={[{ label: "全部计费归属", value: "all" }, ...callLogAttributionOptions]} />
+      <InputGroup className="w-full border-border hover:border-border" size="md"><InputGroupAddon className="pr-2"><SearchIcon aria-hidden size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput aria-label="搜索调用日志" className="h-full min-h-0" onChange={(event) => setQuery(event.target.value)} placeholder={view === "calls" ? "搜索调用、Run ID 或模型" : "搜索问题或 Run ID"} value={query} /></InputGroup>
+    </section>
+
+    <Container><ContainerHeader className="gap-4 overflow-x-auto px-4 py-2"><h2 className="shrink-0 text-body font-medium text-fg-default" id="call-trend-title">调用趋势</h2><div className="flex shrink-0 items-center gap-3 whitespace-nowrap text-label text-fg-subtle"><span className="flex items-center gap-1.5"><span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: "light-dark(var(--brand-active), var(--brand))" }} />模型</span><span className="flex items-center gap-1.5"><span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: "light-dark(var(--brand), var(--brand-active))" }} />MCP</span><span className="text-fg-muted">当前：{selectedRangeLabel}</span></div></ContainerHeader><ContainerBody className="p-3"><CallLogTimeline data={trendPoints} onSelectionChange={applyTimelineSelection} selection={timeSelection} /></ContainerBody></Container>
+
+    {view === "calls" ? <>
+      <div className="flex flex-wrap items-center gap-2 text-label text-fg-muted"><span className="mr-2">显示 {filteredCalls.length.toLocaleString("zh-CN")} 条</span><Badge color="red" size="sm" variant="strong">错误 {filteredCalls.filter((record) => record.status === "failed").length}</Badge><Badge color="amber" size="sm" variant="strong">降级 {filteredCalls.filter((record) => record.status === "degraded").length}</Badge><span className="ml-2 text-fg-subtle">按时间倒序</span></div>
+      <CallLogDataTable onOpen={openCall} records={filteredCalls} />
+    </> : <>
+      <div className="flex flex-wrap items-center gap-2 text-label text-fg-muted"><span className="mr-2">显示 {filteredRuns.length.toLocaleString("zh-CN")} 条</span><Badge color="red" size="sm" variant="strong">错误 {filteredRuns.filter((run) => run.status === "failed").length}</Badge><Badge color="amber" size="sm" variant="strong">降级 {filteredRuns.filter((run) => run.status === "degraded").length}</Badge><span className="ml-2 text-fg-subtle">按 Run 聚合</span></div>
+      <CallRunDataTable onOpen={openRun} runs={filteredRuns} />
+    </>}
+    <Dialog onOpenChange={setDetailOpen} open={detailOpen}><DialogContent className="max-h-[min(80svh,760px)] max-w-[760px] overflow-y-auto" size="lg">{selectedCall ? <CallLogDetail record={selectedCall} /> : selectedRun ? <CallRunDetail run={selectedRun} /> : null}</DialogContent></Dialog>
+  </div>;
+}
+
+function CallLogDetail({ record }: { record: CallLogRecord }) {
+  return <><DialogHeader><div className="flex flex-wrap items-center gap-2"><DialogTitle>调用检查</DialogTitle><CallLogKindBadge kind={record.kind} /><CallLogStatusBadge status={record.status} /></div><DialogDescription className="font-mono">{record.time} · {record.id}</DialogDescription></DialogHeader><div className="space-y-3">
+    {record.status !== "success" && <InlineNotice tone={record.status === "failed" ? "danger" : "warning"} variant="emphasized"><InlineNoticeContent>{record.detail}</InlineNoticeContent></InlineNotice>}
+    <div className="grid gap-3 sm:grid-cols-2"><DetailList><DetailListItem><DetailListLabel>{record.kind === "model" ? "请求模型" : "MCP 工具"}</DetailListLabel><DetailListValue>{record.requested}</DetailListValue></DetailListItem><DetailListItem><DetailListLabel>{record.kind === "model" ? "实际模型" : "操作类型"}</DetailListLabel><DetailListValue>{record.kind === "model" ? record.actual : record.operation}</DetailListValue></DetailListItem><DetailListItem><DetailListLabel>状态码</DetailListLabel><DetailListValue className="font-mono">{record.code}</DetailListValue></DetailListItem><DetailListItem><DetailListLabel>服务</DetailListLabel><DetailListValue>{record.service}</DetailListValue></DetailListItem><DetailListItem><DetailListLabel>Run ID</DetailListLabel><DetailListValue className="font-mono text-label">{record.runId}</DetailListValue></DetailListItem></DetailList><DetailList><DetailListItem><DetailListLabel>计费归属</DetailListLabel><DetailListValue>{record.attribution}</DetailListValue></DetailListItem><DetailListItem><DetailListLabel>API Key</DetailListLabel><DetailListValue className="font-mono text-label">{record.apiKey}</DetailListValue></DetailListItem><DetailListItem><DetailListLabel>总耗时</DetailListLabel><DetailListValue>{formatCallDuration(record.durationMs)}</DetailListValue></DetailListItem>{record.firstTokenMs !== undefined && <DetailListItem><DetailListLabel>首 Token 延迟</DetailListLabel><DetailListValue>{record.firstTokenMs}ms</DetailListValue></DetailListItem>}<DetailListItem><DetailListLabel>Token / 金额</DetailListLabel><DetailListValue>{record.tokens ? record.tokens.toLocaleString("zh-CN") : "—"} / {record.amount === undefined ? "—" : `¥${record.amount.toFixed(3)}`}</DetailListValue></DetailListItem><DetailListItem><DetailListLabel>上游 Request ID</DetailListLabel><DetailListValue className="font-mono text-label break-all">{record.upstreamId ?? "—"}</DetailListValue></DetailListItem></DetailList></div>
+    {record.status === "success" && <InlineNotice><InlineNoticeContent>{record.detail}</InlineNoticeContent></InlineNotice>}
+    <div className="rounded-lg border border-border-subtle bg-surface-raised px-3 py-2"><p className="text-label text-fg-subtle">事件摘要</p><p className="mt-1 text-body text-fg-default">{record.summary}</p></div>
+  </div></>;
+}
+
+function CallRunDetail({ run }: { run: CallLogRun }) {
+  const calls = callLogRecords.filter((record) => record.runId === run.id).sort((a, b) => a.timestamp - b.timestamp);
+  return <><DialogHeader><div className="flex flex-wrap items-center gap-2"><DialogTitle>回答链路</DialogTitle><CallLogStatusBadge status={run.status} /></div><DialogDescription className="font-mono">{run.time} · {run.id}</DialogDescription></DialogHeader><p className="mb-4 text-body text-fg-default">{run.prompt}</p><div className="mb-4 flex flex-wrap gap-x-4 gap-y-1 text-label text-fg-muted"><span>MODEL {run.modelCalls}</span><span>MCP {run.mcpCalls}</span><span>{formatCallTokens(run.tokens)} Token</span><span>{formatCallDuration(run.durationMs)}</span><span>¥{run.amount.toFixed(3)}</span></div><div className="overflow-x-auto border-y border-border-subtle"><Table className="min-w-[760px] text-label"><TableHeader><TableRow><TableHead className="w-14">#</TableHead><TableHead className="w-20">事件</TableHead><TableHead className="w-44">调用目标</TableHead><TableHead>事件摘要</TableHead><TableHead className="w-24">状态</TableHead><TableHead className="w-20">Code</TableHead><TableHead className="w-20 text-right">耗时</TableHead><TableHead className="w-20 text-right">费用</TableHead></TableRow></TableHeader><TableBody>{calls.map((record, index) => <TableRow index={index} key={record.id}><TableCell className="font-mono tabular-nums text-fg-muted">{String(index + 1).padStart(2, "0")}</TableCell><TableCell><CallLogKindBadge kind={record.kind} /></TableCell><TableCell><p className="font-medium text-fg-default">{record.requested}{record.requested !== record.actual ? ` → ${record.actual}` : ""}</p><p className="mt-0.5 text-fg-muted">{record.service}</p></TableCell><TableCell className="text-fg-muted">{record.summary}</TableCell><TableCell><CallLogStatusBadge status={record.status} /></TableCell><TableCell className="font-mono text-fg-muted">{record.code}</TableCell><TableCell className="text-right tabular-nums">{formatCallDuration(record.durationMs)}</TableCell><TableCell className="text-right tabular-nums">{record.amount === undefined ? "—" : `¥${record.amount.toFixed(3)}`}</TableCell></TableRow>)}</TableBody></Table></div></>;
 }
 
 function ModelUsageSettings() {

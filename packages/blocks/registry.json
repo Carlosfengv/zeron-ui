@@ -122,10 +122,10 @@
       "name": "personal-settings-01",
       "type": "registry:block",
       "title": "个人设置",
-      "description": "A personal settings workspace for model services, API keys, credentials, profile details, and usage.",
+      "description": "A personal settings workspace for model services, API keys, credentials, profile details, usage, and call logs.",
       "categories": ["application", "settings"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["app-shell", "badge", "button", "container", "field", "icon-context", "input-group", "nav-item", "nav-menu", "page-layout", "select", "separator", "table", "tabs", "top-nav", "utils"],
+      "registryDependencies": ["app-shell", "badge", "button", "container", "detail-list", "field", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "select", "separator", "table", "tabs", "top-nav", "utils"],
       "files": [
         {
           "path": "packages/blocks/src/application/personal-settings-01/personal-settings.tsx",
@@ -143,7 +143,7 @@
       "name": "personal-model-usage-01",
       "type": "registry:block",
       "title": "个人模型用量",
-      "description": "A standalone personal model usage dashboard with contextual read-only settings navigation.",
+      "description": "A standalone personal model workspace with billing analysis, atomic call logs, and answer-level execution traces.",
       "categories": ["application", "settings", "analytics"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
       "registryDependencies": ["personal-settings-01"],

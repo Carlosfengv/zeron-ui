@@ -2729,7 +2729,7 @@
       "name": "personal-settings-01",
       "type": "registry:block",
       "title": "个人设置",
-      "description": "A personal settings workspace for model services, API keys, credentials, profile details, and usage.",
+      "description": "A personal settings workspace for model services, API keys, credentials, profile details, usage, and call logs.",
       "categories": [
         "application",
         "settings"
@@ -2743,8 +2743,10 @@
         "https://zeron-ui.vercel.app/r/badge.json",
         "https://zeron-ui.vercel.app/r/button.json",
         "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/detail-list.json",
         "https://zeron-ui.vercel.app/r/field.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
         "https://zeron-ui.vercel.app/r/input-group.json",
         "https://zeron-ui.vercel.app/r/nav-item.json",
         "https://zeron-ui.vercel.app/r/nav-menu.json",
@@ -2773,7 +2775,7 @@
       "name": "personal-model-usage-01",
       "type": "registry:block",
       "title": "个人模型用量",
-      "description": "A standalone personal model usage dashboard with contextual read-only settings navigation.",
+      "description": "A standalone personal model workspace with billing analysis, atomic call logs, and answer-level execution traces.",
       "categories": [
         "application",
         "settings",

@@ -65,14 +65,14 @@ export const blockCatalog = [
   {
     name: "personal-settings-01",
     title: "个人设置",
-    description: "A personal settings workspace for model services, API keys, credentials, profile details, and usage.",
+    description: "A personal settings workspace for model services, API keys, credentials, profile details, usage, and call logs.",
     categories: ["application", "settings"],
-    dependencies: ["app-shell", "top-nav", "page-layout", "nav-menu", "nav-item", "input-group", "table", "field", "badge", "button", "@lobehub/icons"],
+    dependencies: ["app-shell", "top-nav", "page-layout", "nav-menu", "nav-item", "input-group", "table", "field", "badge", "button", "detail-list", "inline-notice", "@lobehub/icons"],
   },
   {
     name: "personal-model-usage-01",
     title: "个人模型用量",
-    description: "A standalone personal model usage dashboard with billing filters, trend charts, and consumption details.",
+    description: "A standalone personal model workspace with billing analysis, atomic call logs, and answer-level execution traces.",
     categories: ["application", "settings", "analytics"],
     dependencies: ["personal-settings-01"],
   },
