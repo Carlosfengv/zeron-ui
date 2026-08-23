@@ -148,7 +148,7 @@ describe("Combobox interactions", () => {
     expect(document.activeElement).toBe(input);
   });
 
-  it("supports controlled multiple values with removable chips", () => {
+  it("supports removable chips without enlarging a one-line control", () => {
     function MultipleExample() {
       const [value, setValue] = useState<string[]>(["Next.js"]);
       const anchor = useComboboxAnchor();
@@ -188,6 +188,16 @@ describe("Combobox interactions", () => {
     }
 
     render(<MultipleExample />);
+    const chips = document.querySelector<HTMLElement>(
+      '[data-slot="combobox-chips"]'
+    );
+    const chip = document.querySelector<HTMLElement>(
+      '[data-slot="combobox-chip"]'
+    );
+
+    expect(chips?.classList.contains("py-0")).toBe(true);
+    expect(chip?.classList.contains("h-badge-md")).toBe(true);
+
     fireEvent.click(screen.getByRole("button", { name: "Remove Next.js" }));
 
     expect(screen.queryByText("Next.js")).toBeNull();

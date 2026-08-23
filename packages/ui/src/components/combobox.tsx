@@ -646,7 +646,7 @@ const ComboboxChips = forwardRef<HTMLDivElement, ComboboxChipsProps>(
       <ComboboxPrimitive.Chips
         ref={ref}
         className={cn(
-          "flex min-w-[200px] flex-wrap items-center gap-1 border border-input bg-transparent p-1 outline-none",
+          "flex min-w-[200px] flex-wrap items-center gap-1 border border-input bg-transparent px-1 py-0 outline-none",
           "h-auto rounded-lg shadow-control",
           comboboxChipsMinHeightClasses[size],
           "transition-[background-color,border-color,box-shadow,color] duration-fast hover:border-input-hover hover:bg-hover",
@@ -665,6 +665,22 @@ const ComboboxChips = forwardRef<HTMLDivElement, ComboboxChipsProps>(
 );
 
 ComboboxChips.displayName = "ComboboxChips";
+
+const comboboxChipSizeClasses: Record<ControlSize, string> = {
+  xs: "h-badge-sm gap-1 pl-1.5 pr-0.5",
+  sm: "h-badge-sm gap-1 pl-2 pr-1",
+  md: "h-badge-md gap-1 pl-2 pr-1",
+  lg: "h-badge-md gap-1 pl-2 pr-1",
+  xl: "h-badge-lg gap-1.5 pl-2.5 pr-1",
+};
+
+const comboboxChipRemoveSizeClasses: Record<ControlSize, string> = {
+  xs: "h-4 w-4",
+  sm: "h-4 w-4",
+  md: "h-5 w-5",
+  lg: "h-5 w-5",
+  xl: "h-6 w-6",
+};
 
 export interface ComboboxChipProps
   extends Omit<ComboboxPrimitive.Chip.Props, "className"> {
@@ -691,7 +707,8 @@ const ComboboxChip = forwardRef<HTMLDivElement, ComboboxChipProps>(
       <ComboboxPrimitive.Chip
         ref={ref}
         className={cn(
-          "inline-flex h-6 max-w-full items-center gap-1 rounded-md bg-emphasis pl-2 pr-1 text-label text-fg-default",
+          "inline-flex max-w-full items-center rounded-md bg-emphasis text-label text-fg-default",
+          comboboxChipSizeClasses[size],
           "data-disabled:pointer-events-none data-disabled:opacity-50",
           className
         )}
@@ -705,7 +722,10 @@ const ComboboxChip = forwardRef<HTMLDivElement, ComboboxChipProps>(
             data-slot="combobox-chip-remove"
             render={
               <Button
-                className="h-5 w-5 rounded-sm p-0 [&_[data-slot=button-background]]:inset-0"
+                className={cn(
+                  "shrink-0 rounded-sm p-0 [&_[data-slot=button-background]]:inset-0",
+                  comboboxChipRemoveSizeClasses[size]
+                )}
                 iconOnly
                 size="xs"
                 type="button"
