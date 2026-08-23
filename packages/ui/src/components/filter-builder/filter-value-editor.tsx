@@ -1,11 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { format, parseISO } from "date-fns";
-import type { DateRange, Matcher } from "react-day-picker";
 import { Button } from "#components/button";
-import { Calendar } from "#components/calendar";
 import { Input } from "#components/input";
+import { DatePicker, DateRangePicker, parseISODate } from "#components/temporal-picker";
 import {
   Popover,
   PopoverContent,
@@ -24,11 +22,7 @@ import type {
   SelectFilterField,
 } from "./filter-types";
 import { FilterOptionList } from "./filter-option-list";
-import {
-  isDateRange,
-  operatorNeedsValue,
-  validateFilterValue,
-} from "./filter-utils";
+import { operatorNeedsValue, validateFilterValue } from "./filter-utils";
 
 interface FilterValueEditorProps {
   autoFocus?: boolean;
@@ -324,70 +318,23 @@ function DateValueEditor({
   size,
   value,
 }: FilterValueEditorProps & { field: Extract<FilterField, { type: "date" | "dateRange" }> }) {
-  const CalendarIcon = useIcon("calendar");
-  const [open, setOpen] = React.useState(false);
-  const [draftRange, setDraftRange] = React.useState<DateRange | undefined>();
   const isRange = field.type === "dateRange";
-  const summary = formatDateValue(value, locale);
-  const calendarDisabled = React.useMemo<Matcher | undefined>(() => {
-    const before = field.minDate ? toDate(field.minDate) : undefined;
-    const after = field.maxDate ? toDate(field.maxDate) : undefined;
-    if (before && after) return { before, after };
-    if (before) return { before };
-    if (after) return { after };
-    return undefined;
-  }, [field.maxDate, field.minDate]);
-
-  React.useEffect(() => {
-    if (!open) setDraftRange(toDateRange(value));
-  }, [open, value]);
-
-  if (readOnly) return <span className="inline-flex min-w-0 items-center truncate px-2.5 text-body text-fg-muted">{summary}</span>;
-
-  return (
-    <Popover onOpenChange={setOpen} open={open}>
-      <PopoverTrigger
-        render={
-          <Button active={open} disabled={disabled} leadingIcon={CalendarIcon} size={size} variant="tertiary">
-            <span className="max-w-48 truncate">{summary}</span>
-          </Button>
-        }
-      />
-      <PopoverContent align="start" className="p-1" sideOffset={4}>
-        {isRange ? (
-          <Calendar
-            locale={field.locale}
-            mode="range"
-            numberOfMonths={1}
-            disabled={calendarDisabled}
-            onSelect={(range) => {
-              setDraftRange(range);
-              if (range?.from && range.to) {
-                onChange({ from: toIsoDate(range.from), to: toIsoDate(range.to) });
-                setOpen(false);
-              }
-            }}
-            selected={draftRange}
-          />
-        ) : (
-          <Calendar
-            locale={field.locale}
-            mode="single"
-            disabled={calendarDisabled}
-            onSelect={(date) => {
-              if (!date) return;
-              onChange(toIsoDate(date));
-              setOpen(false);
-            }}
-            selected={typeof value === "string" ? toDate(value) : undefined}
-          />
-        )}
-        <div className="flex justify-end px-2 pb-2">
-          <Button onClick={() => { onChange(undefined); setOpen(false); }} size={size} variant="ghost">Clear</Button>
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
+  const pickerLocale = locale ?? field.locale?.code ?? "en-US";
+  const minValue = field.minDate ? parseISODate(field.minDate) : undefined;
+  const maxValue = field.maxDate ? parseISODate(field.maxDate) : undefined;
+  if (isRange) {
+    const range = value && typeof value === "object" && !Array.isArray(value)
+      ? (() => {
+          const candidate = value as { from?: unknown; to?: unknown };
+          const from = typeof candidate.from === "string" ? parseISODate(candidate.from) : undefined;
+          const to = typeof candidate.to === "string" ? parseISODate(candidate.to) : undefined;
+          return from && to ? { from, to } : undefined;
+        })()
+      : undefined;
+    return <DateRangePicker calendarTimeZone="UTC" commitMode="complete" disabled={disabled} locale={pickerLocale} maxValue={maxValue} minValue={minValue} numberOfMonths={1} onValueChange={(next) => onChange(next)} readOnly={readOnly} size={size} value={range} />;
+  }
+  const date = typeof value === "string" ? parseISODate(value) : undefined;
+  return <DatePicker calendarTimeZone="UTC" commitMode="complete" disabled={disabled} locale={pickerLocale} maxValue={maxValue} minValue={minValue} onValueChange={(next) => onChange(next)} readOnly={readOnly} size={size} value={date} />;
 }
 
 function useFilterOptions(field: SelectFilterField, query: string, enabled: boolean) {
@@ -480,32 +427,4 @@ function optionSummary(
   if (selected.length === 1) return optionText(selected[0]!);
   if (selected.length === 2) return selected.map(optionText).join(", ");
   return selectedCount(selected.length);
-}
-
-function toIsoDate(date: Date) {
-  return format(date, "yyyy-MM-dd");
-}
-
-function toDate(value: string) {
-  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? parseISO(value) : undefined;
-}
-
-function toDateRange(value: FilterClauseValue | undefined): DateRange | undefined {
-  if (!isDateRange(value)) return undefined;
-  return { from: value.from ? toDate(value.from) : undefined, to: value.to ? toDate(value.to) : undefined };
-}
-
-function formatDateValue(value: FilterClauseValue | undefined, locale?: string) {
-  if (typeof value === "string") {
-    const date = toDate(value);
-    return date ? new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(date) : "Pick a date";
-  }
-  if (isDateRange(value)) {
-    const from = value.from ? toDate(value.from) : undefined;
-    const to = value.to ? toDate(value.to) : undefined;
-    const formatter = new Intl.DateTimeFormat(locale, { dateStyle: "medium" });
-    if (from && to) return `${formatter.format(from)} – ${formatter.format(to)}`;
-    if (from) return formatter.format(from);
-  }
-  return "Pick a date";
 }

@@ -5,6 +5,7 @@ import {
   forwardRef,
   useContext,
   useId,
+  type ComponentProps,
   type HTMLAttributes,
   type ReactNode,
 } from "react";
@@ -23,6 +24,7 @@ import { usePortalContainer } from "#system/portal-container-context";
 type PopoverSide = "top" | "right" | "bottom" | "left";
 type PopoverAlign = "start" | "center" | "end";
 type PopoverTriggerMode = "click" | "hover";
+type PopoverAnchor = ComponentProps<typeof PopoverPrimitive.Positioner>["anchor"];
 
 interface PopoverVisualContextValue {
   closeDelay: number;
@@ -49,7 +51,7 @@ export interface PopoverProps
   liquid?: boolean;
   /** Blur feeding the liquid merge. Larger values produce a softer neck. */
   gooStrength?: number;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: PopoverPrimitive.Root.Props["onOpenChange"];
 }
 
 function Popover({
@@ -76,7 +78,7 @@ function Popover({
       }}
     >
       <PopoverPrimitive.Root
-        onOpenChange={(nextOpen) => onOpenChange?.(nextOpen)}
+        onOpenChange={(nextOpen, eventDetails) => onOpenChange?.(nextOpen, eventDetails)}
         {...props}
       >
         {children}
@@ -181,6 +183,8 @@ export interface PopoverContentProps
   surfaceShadow?: ShadowRole;
   /** Portal target for bounded previews or embedded canvases. */
   container?: HTMLElement | null;
+  /** Explicit positioning anchor for controlled popovers without a trigger button. */
+  anchor?: PopoverAnchor;
   collisionPadding?: number;
   liquid?: boolean;
   side?: PopoverSide;
@@ -198,6 +202,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
       surfaceShadow = "floating",
       collisionPadding = 12,
       container,
+      anchor,
       liquid,
       side = "bottom",
       sideOffset = 10,
@@ -222,6 +227,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
         <PopoverPrimitive.Positioner
           align={align}
           alignOffset={alignOffset}
+          anchor={anchor}
           collisionPadding={collisionPadding}
           className="z-popover outline-none"
           side={side}

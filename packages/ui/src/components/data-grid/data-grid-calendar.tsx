@@ -107,11 +107,11 @@ function Calendar({
           defaultClassNames.day,
         ),
         range_start: cn(
-          "rounded-l-lg bg-selection",
+          "rounded-l-lg bg-[color-mix(in_oklch,var(--brand)_16%,transparent)]",
           defaultClassNames.range_start,
         ),
-        range_middle: cn("rounded-none", defaultClassNames.range_middle),
-        range_end: cn("rounded-r-lg bg-selection", defaultClassNames.range_end),
+        range_middle: cn("rounded-none bg-[color-mix(in_oklch,var(--brand)_16%,transparent)]", defaultClassNames.range_middle),
+        range_end: cn("rounded-r-lg bg-[color-mix(in_oklch,var(--brand)_16%,transparent)]", defaultClassNames.range_end),
         today: cn(
           "bg-emphasis text-fg-default rounded-lg data-[selected=true]:rounded-none",
           defaultClassNames.today,
@@ -182,6 +182,11 @@ function CalendarDayButton({
   ...props
 }: React.ComponentProps<typeof DayButton>) {
   const defaultClassNames = getDefaultClassNames();
+  const singleSelection = modifiers.selected
+    && !modifiers.range_start
+    && !modifiers.range_end
+    && !modifiers.range_middle;
+  const primarySelection = singleSelection || modifiers.range_start || modifiers.range_end;
 
   const ref = React.useRef<HTMLButtonElement>(null);
   React.useEffect(() => {
@@ -191,20 +196,15 @@ function CalendarDayButton({
   return (
     <Button
       ref={ref}
-      variant="ghost"
+      variant={primarySelection ? "primary" : "ghost"}
       size="md"
       data-day={day.date.toLocaleDateString()}
-      data-selected-single={
-        modifiers.selected &&
-        !modifiers.range_start &&
-        !modifiers.range_end &&
-        !modifiers.range_middle
-      }
+      data-selected-single={singleSelection}
       data-range-start={modifiers.range_start}
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       className={cn(
-        "flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 font-normal leading-none data-[range-end=true]:rounded-lg data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-lg data-[range-end=true]:rounded-r-lg data-[range-start=true]:rounded-l-lg data-[range-end=true]:bg-inverse-background data-[range-middle=true]:bg-selection data-[range-start=true]:bg-inverse-background data-[selected-single=true]:bg-inverse-background data-[range-end=true]:text-fg-on-inverse data-[range-middle=true]:text-fg-default data-[range-start=true]:text-fg-on-inverse data-[selected-single=true]:text-fg-on-inverse group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-raised group-data-[focused=true]/day:ring-1 group-data-[focused=true]/day:ring-focus-ring [&>span]:text-label [&>span]:opacity-70",
+        "flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 font-normal leading-none data-[range-end=true]:rounded-lg data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-lg data-[range-end=true]:rounded-r-lg data-[range-start=true]:rounded-l-lg data-[range-middle=true]:bg-[color-mix(in_oklch,var(--brand)_16%,transparent)] data-[range-middle=true]:text-fg-brand group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-raised group-data-[focused=true]/day:ring-1 group-data-[focused=true]/day:ring-focus-ring [&>span]:text-label [&>span]:opacity-70",
         defaultClassNames.day,
         className,
       )}
