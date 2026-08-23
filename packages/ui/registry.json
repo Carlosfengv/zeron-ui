@@ -946,11 +946,6 @@
           "target": "components/ui/data-grid/data-grid-search.tsx"
         },
         {
-          "path": "packages/ui/src/components/data-grid/data-grid-command.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/data-grid/data-grid-command.tsx"
-        },
-        {
           "path": "packages/ui/src/components/data-grid/data-grid-calendar.tsx",
           "type": "registry:ui",
           "target": "components/ui/data-grid/data-grid-calendar.tsx"
@@ -1056,6 +1051,47 @@
       ]
     },
     {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "cmdk-based command primitives with a replaceable input slot for searchable menus and structured query controls.",
+      "dependencies": [
+        "cmdk",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "icon-context",
+        "dialog"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/command.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/command.tsx"
+        }
+      ]
+    },
+    {
+      "name": "filter-core",
+      "type": "registry:lib",
+      "title": "Filter Core",
+      "description": "Headless, JSON-safe filter vocabulary shared by visual and text-query filter controls.",
+      "files": [
+        {
+          "path": "packages/ui/src/system/filter-types.ts",
+          "type": "registry:lib",
+          "target": "lib/filter-types.ts"
+        },
+        {
+          "path": "packages/ui/src/system/filter-core.ts",
+          "type": "registry:lib",
+          "target": "lib/filter-core.ts"
+        }
+      ]
+    },
+    {
       "name": "filter-builder",
       "type": "registry:ui",
       "title": "FilterBuilder",
@@ -1074,7 +1110,8 @@
         "button-group",
         "calendar",
         "input",
-        "popover"
+        "popover",
+        "filter-core"
       ],
       "files": [
         {
@@ -1127,6 +1164,93 @@
           "type": "registry:lib",
           "target": "lib/filter-types.ts"
         }
+      ]
+    },
+    {
+      "name": "filter-query-core",
+      "type": "registry:ui",
+      "title": "Filter Query Core",
+      "description": "Headless parser, serializer, reconciliation logic, and state hook for reusable structured filter text inputs.",
+      "registryDependencies": [
+        "surfaces",
+        "filter-core"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/filter-query-core/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-core/filter-query-types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/filter-query-types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-core/filter-query-codec.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/filter-query-codec.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-core/filter-query-parser.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/filter-query-parser.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-core/filter-query-reconcile.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/filter-query-reconcile.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-core/use-filter-query-input.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/use-filter-query-input.ts"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
+      "name": "filter-query-input",
+      "type": "registry:ui",
+      "title": "Filter Query Input",
+      "description": "cmdk-powered structured filter input with replaceable fields, aliases, free-text mapping, history, and controllable commit behavior.",
+      "registryDependencies": [
+        "surfaces",
+        "filter-query-core",
+        "command",
+        "input-group",
+        "kbd",
+        "popover",
+        "control-size",
+        "utils",
+        "icon-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/filter-query-input/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-input/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-input/filter-query-input.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-input/filter-query-input.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-input/filter-query-history.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-input/filter-query-history.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-input/filter-query-slots.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-input/filter-query-slots.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
       ]
     },
     {
@@ -2284,6 +2408,99 @@
           "path": "packages/ui/src/components/chart.tsx",
           "type": "registry:ui",
           "target": "components/ui/chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "time-range-histogram",
+      "type": "registry:ui",
+      "title": "Time Range Histogram",
+      "description": "Controlled stacked histogram with pointer and keyboard time-range selection over ordered buckets.",
+      "dependencies": [
+        "recharts",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "chart",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/time-range-histogram.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/time-range-histogram.tsx"
+        }
+      ]
+    },
+    {
+      "name": "temporal-picker",
+      "type": "registry:ui",
+      "title": "Temporal Picker",
+      "description": "Typed date, time, and date-time pickers with draft Apply flows, relative presets, IANA time zones, and DST-safe instant conversion.",
+      "dependencies": [
+        "@base-ui/react",
+        "date-fns",
+        "framer-motion",
+        "react-day-picker",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "button",
+        "calendar",
+        "input-group",
+        "popover",
+        "mobile-drawer",
+        "icon-context",
+        "use-touch-primary"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/temporal-picker/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/temporal-types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/temporal-types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/temporal-utils.ts",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/temporal-utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/temporal-presets.ts",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/temporal-presets.ts"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/use-temporal-picker-state.ts",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/use-temporal-picker-state.ts"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/temporal-picker-shell.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/temporal-picker-shell.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/time-field.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/time-field.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/date-and-time-pickers.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/date-and-time-pickers.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/date-time-pickers.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/date-time-pickers.tsx"
         }
       ]
     },

@@ -946,11 +946,6 @@
           "target": "components/ui/data-grid/data-grid-search.tsx"
         },
         {
-          "path": "packages/ui/src/components/data-grid/data-grid-command.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/data-grid/data-grid-command.tsx"
-        },
-        {
           "path": "packages/ui/src/components/data-grid/data-grid-calendar.tsx",
           "type": "registry:ui",
           "target": "components/ui/data-grid/data-grid-calendar.tsx"
@@ -1056,6 +1051,47 @@
       ]
     },
     {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "cmdk-based command primitives with a replaceable input slot for searchable menus and structured query controls.",
+      "dependencies": [
+        "cmdk",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/dialog.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/command.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/command.tsx"
+        }
+      ]
+    },
+    {
+      "name": "filter-core",
+      "type": "registry:lib",
+      "title": "Filter Core",
+      "description": "Headless, JSON-safe filter vocabulary shared by visual and text-query filter controls.",
+      "files": [
+        {
+          "path": "packages/ui/src/system/filter-types.ts",
+          "type": "registry:lib",
+          "target": "lib/filter-types.ts"
+        },
+        {
+          "path": "packages/ui/src/system/filter-core.ts",
+          "type": "registry:lib",
+          "target": "lib/filter-core.ts"
+        }
+      ]
+    },
+    {
       "name": "filter-builder",
       "type": "registry:ui",
       "title": "FilterBuilder",
@@ -1074,7 +1110,8 @@
         "https://zeron-ui.vercel.app/r/button-group.json",
         "https://zeron-ui.vercel.app/r/calendar.json",
         "https://zeron-ui.vercel.app/r/input.json",
-        "https://zeron-ui.vercel.app/r/popover.json"
+        "https://zeron-ui.vercel.app/r/popover.json",
+        "https://zeron-ui.vercel.app/r/filter-core.json"
       ],
       "files": [
         {
@@ -1127,6 +1164,93 @@
           "type": "registry:lib",
           "target": "lib/filter-types.ts"
         }
+      ]
+    },
+    {
+      "name": "filter-query-core",
+      "type": "registry:ui",
+      "title": "Filter Query Core",
+      "description": "Headless parser, serializer, reconciliation logic, and state hook for reusable structured filter text inputs.",
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/filter-core.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/filter-query-core/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-core/filter-query-types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/filter-query-types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-core/filter-query-codec.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/filter-query-codec.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-core/filter-query-parser.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/filter-query-parser.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-core/filter-query-reconcile.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/filter-query-reconcile.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-core/use-filter-query-input.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-core/use-filter-query-input.ts"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
+      "name": "filter-query-input",
+      "type": "registry:ui",
+      "title": "Filter Query Input",
+      "description": "cmdk-powered structured filter input with replaceable fields, aliases, free-text mapping, history, and controllable commit behavior.",
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/filter-query-core.json",
+        "https://zeron-ui.vercel.app/r/command.json",
+        "https://zeron-ui.vercel.app/r/input-group.json",
+        "https://zeron-ui.vercel.app/r/kbd.json",
+        "https://zeron-ui.vercel.app/r/popover.json",
+        "https://zeron-ui.vercel.app/r/control-size.json",
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/filter-query-input/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-input/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-input/filter-query-input.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-input/filter-query-input.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-input/filter-query-history.ts",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-input/filter-query-history.ts"
+        },
+        {
+          "path": "packages/ui/src/components/filter-query-input/filter-query-slots.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/filter-query-input/filter-query-slots.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
       ]
     },
     {
@@ -2288,6 +2412,99 @@
       ]
     },
     {
+      "name": "time-range-histogram",
+      "type": "registry:ui",
+      "title": "Time Range Histogram",
+      "description": "Controlled stacked histogram with pointer and keyboard time-range selection over ordered buckets.",
+      "dependencies": [
+        "recharts",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/time-range-histogram.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/time-range-histogram.tsx"
+        }
+      ]
+    },
+    {
+      "name": "temporal-picker",
+      "type": "registry:ui",
+      "title": "Temporal Picker",
+      "description": "Typed date, time, and date-time pickers with draft Apply flows, relative presets, IANA time zones, and DST-safe instant conversion.",
+      "dependencies": [
+        "@base-ui/react",
+        "date-fns",
+        "framer-motion",
+        "react-day-picker",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/calendar.json",
+        "https://zeron-ui.vercel.app/r/input-group.json",
+        "https://zeron-ui.vercel.app/r/popover.json",
+        "https://zeron-ui.vercel.app/r/mobile-drawer.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/use-touch-primary.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/temporal-picker/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/temporal-types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/temporal-types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/temporal-utils.ts",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/temporal-utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/temporal-presets.ts",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/temporal-presets.ts"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/use-temporal-picker-state.ts",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/use-temporal-picker-state.ts"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/temporal-picker-shell.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/temporal-picker-shell.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/time-field.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/time-field.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/date-and-time-pickers.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/date-and-time-pickers.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/temporal-picker/date-time-pickers.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/temporal-picker/date-time-pickers.tsx"
+        }
+      ]
+    },
+    {
       "name": "top-nav",
       "type": "registry:ui",
       "title": "Top Nav",
@@ -2736,12 +2953,14 @@
       ],
       "dependencies": [
         "tw-animate-css",
-        "@lobehub/icons"
+        "@lobehub/icons",
+        "recharts"
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/app-shell.json",
         "https://zeron-ui.vercel.app/r/badge.json",
         "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/chart.json",
         "https://zeron-ui.vercel.app/r/container.json",
         "https://zeron-ui.vercel.app/r/detail-list.json",
         "https://zeron-ui.vercel.app/r/field.json",
@@ -2755,6 +2974,7 @@
         "https://zeron-ui.vercel.app/r/separator.json",
         "https://zeron-ui.vercel.app/r/table.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/time-range-histogram.json",
         "https://zeron-ui.vercel.app/r/top-nav.json",
         "https://zeron-ui.vercel.app/r/utils.json"
       ],
@@ -3345,6 +3565,138 @@
           "path": "packages/blocks/src/application/zlrlist/assets/zlr-logo.svg",
           "type": "registry:file",
           "target": "components/blocks/zlrlist/assets/zlr-logo.svg"
+        }
+      ]
+    },
+    {
+      "name": "infinite-log-table-01",
+      "type": "registry:block",
+      "title": "Infinite Log Table",
+      "description": "A schema-driven virtualized log explorer with inferred fields, dynamic filters, cursor pagination, Live tailing, and record detail.",
+      "categories": [
+        "application",
+        "tables",
+        "observability"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@tanstack/react-table",
+        "@tanstack/react-virtual"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/accordion.json",
+        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/checkbox.json",
+        "https://zeron-ui.vercel.app/r/checkbox-group.json",
+        "https://zeron-ui.vercel.app/r/detail-list.json",
+        "https://zeron-ui.vercel.app/r/dialog.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/field.json",
+        "https://zeron-ui.vercel.app/r/filter-query-input.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/input-group.json",
+        "https://zeron-ui.vercel.app/r/mobile-drawer.json",
+        "https://zeron-ui.vercel.app/r/scroll-area.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/sortable-collection.json",
+        "https://zeron-ui.vercel.app/r/temporal-picker.json",
+        "https://zeron-ui.vercel.app/r/time-range-histogram.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-data-source.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-data-source.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-mocks.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-mocks.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-controller.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-controller.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-fields.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-fields.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-field-icons.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-field-icons.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-outcome.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-outcome.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-time-range.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-time-range.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-timing.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-timing.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-filters.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-filters.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-generic-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-filters.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-generic-filters.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-table-view.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-generic-table-view.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-query-adapter.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-query-adapter.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-table-view.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-table-view.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-table.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-table.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/index.ts"
         }
       ]
     }

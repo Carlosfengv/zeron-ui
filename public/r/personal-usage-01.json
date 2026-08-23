@@ -14,7 +14,7 @@
   "files": [
     {
       "path": "packages/blocks/src/application/personal-usage-01/personal-usage.tsx",
-      "content": "\"use client\";\nimport { PersonalSettings, type PersonalSettingsProps } from \"../personal-settings-01\";\nexport type PersonalUsageProps = Omit<PersonalSettingsProps, \"defaultView\" | \"lockedNavigation\">;\n/** A standalone personal activity dashboard with contextual, read-only navigation. */\nexport function PersonalUsage(props: PersonalUsageProps) {\n    return <PersonalSettings defaultView=\"usage\" lockedNavigation {...props}/>;\n}\n",
+      "content": "\"use client\";\nimport { PersonalSettings, type PersonalSettingsProps } from \"../personal-settings-01\";\nexport type PersonalUsageProps = Omit<PersonalSettingsProps, \"defaultView\" | \"enabledViews\" | \"lockedNavigation\">;\n/** A standalone personal activity dashboard with contextual, read-only navigation. */\nexport function PersonalUsage(props: PersonalUsageProps) {\n    return <PersonalSettings defaultView=\"usage\" lockedNavigation {...props}/>;\n}\n",
       "type": "registry:component",
       "target": "components/blocks/personal-usage-01/personal-usage.tsx"
     },

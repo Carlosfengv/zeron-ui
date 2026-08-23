@@ -1,5 +1,6 @@
 {
   "name": "surfaces",
+  "type": "registry:theme",
   "title": "Semantic Design Tokens",
   "description": "Complete semantic token system: color, typography, control sizes, shadows, surfaces, and layers. Layout spacing and border radii use Tailwind's native scale. The historical surfaces slug is retained for compatibility.",
   "cssVars": {

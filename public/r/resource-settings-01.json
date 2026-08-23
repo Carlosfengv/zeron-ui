@@ -14,7 +14,7 @@
   "files": [
     {
       "path": "packages/blocks/src/application/resource-settings-01/resource-settings.tsx",
-      "content": "\"use client\";\nimport { PersonalSettings, type PersonalSettingsProps } from \"../personal-settings-01\";\nexport type ResourceSettingsProps = Omit<PersonalSettingsProps, \"defaultView\" | \"lockedNavigation\">;\n/** A standalone model-service settings page with contextual, read-only navigation. */\nexport function ResourceSettings(props: ResourceSettingsProps) {\n    return <PersonalSettings defaultView=\"models\" lockedNavigation {...props}/>;\n}\n",
+      "content": "\"use client\";\nimport { PersonalSettings, type PersonalSettingsProps } from \"../personal-settings-01\";\nexport type ResourceSettingsProps = Omit<PersonalSettingsProps, \"defaultView\" | \"enabledViews\" | \"lockedNavigation\">;\n/** A standalone model-service settings page with contextual, read-only navigation. */\nexport function ResourceSettings(props: ResourceSettingsProps) {\n    return <PersonalSettings defaultView=\"models\" lockedNavigation {...props}/>;\n}\n",
       "type": "registry:component",
       "target": "components/blocks/resource-settings-01/resource-settings.tsx"
     },

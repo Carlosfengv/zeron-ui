@@ -9,7 +9,7 @@ import { pathToFileURL } from "node:url";
 import { transformRegistryImports } from "./transform-imports.mjs";
 
 const REGISTRY_DIR = new URL("../../../public/r", import.meta.url).pathname;
-export const BASE_URL = "https://zeron-ui.vercel.app/r";
+export const BASE_URL = process.env.ZERON_REGISTRY_BASE_URL ?? "https://zeron-ui.vercel.app/r";
 
 export function localItemNames(catalog) {
   return new Set(Array.isArray(catalog.items) ? catalog.items.map((item) => item.name) : []);
@@ -94,7 +94,7 @@ export async function processRegistry(registryDir = REGISTRY_DIR) {
   // publish it directly from the composed catalog.
   const surfaces = catalog.items?.find((item) => item.name === "surfaces");
   if (surfaces) {
-    const { type: _type, ...theme } = structuredClone(surfaces);
+    const theme = structuredClone(surfaces);
     theme.$schema = "https://ui.shadcn.com/schema/registry-item.json";
     rewriteDeps(theme, itemNames);
     addRuntimeDependencies(theme);
