@@ -8,11 +8,11 @@ const source = readFileSync(
 );
 
 describe("Slider color contract", () => {
-  it("exposes the supported semantic colors and defaults both sliders to brand", () => {
+  it("exposes the supported semantic colors and defaults all sliders to brand", () => {
     expect(source).toContain(
       'type SliderColor = "brand" | "nature" | "danger" | "warning"'
     );
-    expect(source.match(/color = "brand"/g)).toHaveLength(2);
+    expect(source.match(/color = "brand"/g)).toHaveLength(3);
     expect(source).toContain("SliderColor,");
   });
 
@@ -23,10 +23,10 @@ describe("Slider color contract", () => {
     expect(source).toContain('fill: "var(--warning-border)"');
   });
 
-  it("applies the selected color to compact and comfortable fills", () => {
+  it("applies the selected color to every slider fill", () => {
     expect(source).toContain("colorStyle.fillClassName, fillClassName");
-    expect(source.match(/backgroundColor: colorStyle\.fill/g)).toHaveLength(2);
-    expect(source.match(/color: colorStyle\.onFill/g)).toHaveLength(2);
+    expect(source.match(/backgroundColor: colorStyle\.fill/g)).toHaveLength(3);
+    expect(source.match(/color: colorStyle\.onFill/g)).toHaveLength(3);
   });
 
   it("allows embedded sliders to suppress the temporary hover range", () => {

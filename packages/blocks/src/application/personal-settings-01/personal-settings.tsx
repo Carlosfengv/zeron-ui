@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useMemo, useRef, useState, type ComponentPropsWithoutRef, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ComponentPropsWithoutRef, type ReactNode } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis } from "recharts";
 import ChatGLMColor from "@lobehub/icons/es/ChatGLM/components/Color";
 import DeepSeekColor from "@lobehub/icons/es/DeepSeek/components/Color";
@@ -31,6 +31,7 @@ import { Separator } from "@zeron/ui/separator";
 import { SidebarIdentityAvatar } from "@zeron/ui/sidebar-identity-row";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@zeron/ui/table";
 import { TabItem, Tabs, TabsList } from "@zeron/ui/tabs";
+import { TimeRangeHistogram, type TimeRangeHistogramRange, type TimeRangeHistogramSeries } from "@zeron/ui/time-range-histogram";
 import { TopNav, TopNavActions, TopNavBrand } from "@zeron/ui/top-nav";
 import { Switch } from "@zeron/ui/switch";
 import { type IconComponent, useIcon } from "@zeron/ui/system/icon-context";
@@ -207,10 +208,10 @@ const spendChartConfig = {
   amount: { label: "消费金额", color: "var(--brand)" },
 } satisfies ChartConfig;
 
-const callLogTrendConfig = {
-  model: { label: "模型", color: "light-dark(var(--brand-active), var(--brand))" },
-  mcp: { label: "MCP", color: "light-dark(var(--brand), var(--brand-active))" },
-} satisfies ChartConfig;
+const callLogTrendSeries = [
+  { dataKey: "model", label: "模型", color: "light-dark(var(--brand-active), var(--brand))", inactiveColor: "light-dark(var(--surface-raised), var(--surface-base))" },
+  { dataKey: "mcp", label: "MCP", color: "light-dark(var(--brand), var(--brand-active))", inactiveColor: "light-dark(var(--surface-base), var(--surface-raised))" },
+] satisfies readonly TimeRangeHistogramSeries[];
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 const CALL_LOG_TIMELINE_BUCKETS = 60;
@@ -370,27 +371,14 @@ function aggregateCallLogTrend(records: readonly CallLogRecord[]) {
   });
 }
 
-interface CallLogTimeSelection {
-  startIndex: number;
-  endIndex: number;
-}
-
-const callLogQuickSelections: Record<ModelUsageRange, CallLogTimeSelection & { label: string }> = {
-  day: { endIndex: CALL_LOG_TIMELINE_BUCKETS - 1, label: "最近 24 小时", startIndex: CALL_LOG_TIMELINE_BUCKETS - 1 },
-  week: { endIndex: CALL_LOG_TIMELINE_BUCKETS - 1, label: "最近 7 天", startIndex: CALL_LOG_TIMELINE_BUCKETS - 7 },
-  month: { endIndex: CALL_LOG_TIMELINE_BUCKETS - 1, label: "最近 30 天", startIndex: CALL_LOG_TIMELINE_BUCKETS - 30 },
+const callLogQuickSelections: Record<ModelUsageRange, TimeRangeHistogramRange & { label: string }> = {
+  day: { end: callLogLatestTimestamp, label: "最近 24 小时", start: callLogLatestTimestamp - DAY_IN_MS },
+  week: { end: callLogLatestTimestamp, label: "最近 7 天", start: callLogLatestTimestamp - 7 * DAY_IN_MS },
+  month: { end: callLogLatestTimestamp, label: "最近 30 天", start: callLogLatestTimestamp - 30 * DAY_IN_MS },
 };
 
-function getCallLogSelectionTimestamps(selection: CallLogTimeSelection) {
-  return {
-    end: Math.min(callLogLatestTimestamp, callLogContextStart + (selection.endIndex + 1) * DAY_IN_MS),
-    start: callLogContextStart + selection.startIndex * DAY_IN_MS,
-  };
-}
-
-function isCallLogTimeInSelection(timestamp: number, selection: CallLogTimeSelection) {
-  const selectedTime = getCallLogSelectionTimestamps(selection);
-  return timestamp <= selectedTime.end && timestamp >= selectedTime.start;
+function isCallLogTimeInSelection(timestamp: number, selection: TimeRangeHistogramRange) {
+  return timestamp <= selection.end && timestamp >= selection.start;
 }
 
 const callLogStatusCopy: Record<CallLogStatus, { label: string }> = {
@@ -689,91 +677,8 @@ function CallLogKindBadge({ kind }: { kind: CallLogKind }) {
   return <Badge color={kind === "model" ? "blue" : "amber"} size="sm">{kind === "model" ? "模型" : "MCP"}</Badge>;
 }
 
-function formatCallLogSelection(selection: CallLogTimeSelection) {
-  const selectedTime = getCallLogSelectionTimestamps(selection);
-  return `${callLogDateTimeFormatter.format(selectedTime.start)} – ${callLogDateTimeFormatter.format(selectedTime.end)}`;
-}
-
-function CallLogTimeline({ data, onSelectionChange, selection }: {
-  data: readonly { end: number; label: string; mcp: number; model: number; start: number }[];
-  onSelectionChange: (selection: CallLogTimeSelection) => void;
-  selection: CallLogTimeSelection;
-}) {
-  const timelineRef = useRef<HTMLDivElement>(null);
-  const dragStartIndex = useRef<number | null>(null);
-  const dragMode = useRef<"create" | "move" | null>(null);
-  const dragOriginSelection = useRef<CallLogTimeSelection | null>(null);
-  const [draftSelection, setDraftSelection] = useState<CallLogTimeSelection | null>(null);
-  const activeSelection = draftSelection ?? selection;
-  const selectionLabel = formatCallLogSelection(activeSelection);
-  const normalizeSelection = (startIndex: number, endIndex: number) => ({
-    endIndex: Math.max(startIndex, endIndex),
-    startIndex: Math.min(startIndex, endIndex),
-  });
-  const getIndexAtPointer = (clientX: number) => {
-    const bounds = timelineRef.current?.getBoundingClientRect();
-    if (!bounds?.width) return 0;
-    const position = Math.min(0.9999, Math.max(0, (clientX - bounds.left) / bounds.width));
-    return Math.floor(position * CALL_LOG_TIMELINE_BUCKETS);
-  };
-  const getSelectionAtIndex = (index: number) => {
-    if (dragMode.current === "move" && dragStartIndex.current !== null && dragOriginSelection.current) {
-      const origin = dragOriginSelection.current;
-      const selectionWidth = origin.endIndex - origin.startIndex;
-      const nextStartIndex = Math.min(CALL_LOG_TIMELINE_BUCKETS - selectionWidth - 1, Math.max(0, origin.startIndex + index - dragStartIndex.current));
-      return { endIndex: nextStartIndex + selectionWidth, startIndex: nextStartIndex };
-    }
-    return normalizeSelection(dragStartIndex.current ?? index, index);
-  };
-  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return;
-    event.preventDefault();
-    event.currentTarget.blur();
-    const index = getIndexAtPointer(event.clientX);
-    const moveExistingSelection = index >= selection.startIndex && index <= selection.endIndex;
-    dragStartIndex.current = index;
-    dragMode.current = moveExistingSelection ? "move" : "create";
-    dragOriginSelection.current = moveExistingSelection ? selection : null;
-    setDraftSelection(moveExistingSelection ? selection : { endIndex: index, startIndex: index });
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (dragStartIndex.current === null) return;
-    setDraftSelection(getSelectionAtIndex(getIndexAtPointer(event.clientX)));
-  };
-  const finishPointerSelection = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (dragStartIndex.current === null) return;
-    const nextSelection = getSelectionAtIndex(getIndexAtPointer(event.clientX));
-    dragStartIndex.current = null;
-    dragMode.current = null;
-    dragOriginSelection.current = null;
-    setDraftSelection(null);
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-    onSelectionChange(nextSelection);
-  };
-  const handlePointerCancel = (event: ReactPointerEvent<HTMLDivElement>) => {
-    dragStartIndex.current = null;
-    dragMode.current = null;
-    dragOriginSelection.current = null;
-    setDraftSelection(null);
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-  };
-  const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    const selectionWidth = selection.endIndex - selection.startIndex;
-    let startIndex = selection.startIndex;
-    if (event.key === "ArrowLeft") startIndex = Math.max(0, startIndex - 1);
-    else if (event.key === "ArrowRight") startIndex = Math.min(CALL_LOG_TIMELINE_BUCKETS - selectionWidth - 1, startIndex + 1);
-    else if (event.key === "Home") startIndex = 0;
-    else if (event.key === "End") startIndex = CALL_LOG_TIMELINE_BUCKETS - selectionWidth - 1;
-    else return;
-    event.preventDefault();
-    onSelectionChange({ endIndex: startIndex + selectionWidth, startIndex });
-  };
-  const selectionLeft = activeSelection.startIndex / CALL_LOG_TIMELINE_BUCKETS * 100;
-  const selectionWidth = (activeSelection.endIndex - activeSelection.startIndex + 1) / CALL_LOG_TIMELINE_BUCKETS * 100;
-  const isSelectedIndex = (index: number) => index >= activeSelection.startIndex && index <= activeSelection.endIndex;
-
-  return <section aria-labelledby="call-trend-title"><div aria-label={`当前时间范围：${selectionLabel}。拖动空白处可重新选择，拖动已选范围可整体移动，方向键也可移动当前范围。`} aria-valuemax={CALL_LOG_TIMELINE_BUCKETS} aria-valuemin={1} aria-valuenow={activeSelection.endIndex + 1} aria-valuetext={selectionLabel} className="relative cursor-crosshair touch-none rounded-md !outline-none" onKeyDown={handleKeyDown} onPointerCancel={handlePointerCancel} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={finishPointerSelection} ref={timelineRef} role="slider" tabIndex={0}><div aria-hidden className="pointer-events-none absolute inset-y-0 z-10 rounded-sm border border-fg-brand bg-brand/10" style={{ left: `${selectionLeft}%`, width: `${selectionWidth}%` }}><span className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-fg-brand" /><span className="absolute inset-y-1 right-0 w-0.5 rounded-full bg-fg-brand" /></div><ChartContainer className="relative aspect-auto h-[68px] min-h-0 w-full [&_.recharts-layer]:!outline-none [&_.recharts-surface]:!outline-none [&_.recharts-tooltip-wrapper]:!z-20 [&_.recharts-wrapper]:!outline-none" config={callLogTrendConfig}><BarChart accessibilityLayer={false} data={data} margin={{ bottom: 4, left: 0, right: 0, top: 20 }}><XAxis dataKey="label" hide /><ChartTooltip content={<ChartTooltipContent className="w-[170px]" labelFormatter={(value) => String(value)} valueFormatter={(value) => `${Number(value).toLocaleString("zh-CN")} 次`} />} cursor={{ fill: "var(--surface-raised)" }} isAnimationActive={false} /><Bar dataKey="model" fill="var(--color-model)" stackId="calls">{data.map((point, index) => <Cell fill={isSelectedIndex(index) ? "var(--color-model)" : "light-dark(var(--surface-raised), var(--surface-base))"} key={`model-${point.start}`} />)}</Bar><Bar dataKey="mcp" fill="var(--color-mcp)" stackId="calls">{data.map((point, index) => <Cell fill={isSelectedIndex(index) ? "var(--color-mcp)" : "light-dark(var(--surface-base), var(--surface-raised))"} key={`mcp-${point.start}`} />)}</Bar></BarChart></ChartContainer></div><div className="mt-1 flex items-center justify-between gap-3 text-label text-fg-subtle"><span>{callLogDateFormatter.format(callLogContextStart)}</span><span className="hidden text-center sm:inline">拖动选区可整体移动</span><span>{callLogDateFormatter.format(callLogLatestTimestamp)}</span></div></section>;
+function formatCallLogSelection(selection: TimeRangeHistogramRange) {
+  return `${callLogDateTimeFormatter.format(selection.start)} – ${callLogDateTimeFormatter.format(selection.end)}`;
 }
 
 function CallLogDataTable({ onOpen, records }: { onOpen: (record: CallLogRecord) => void; records: readonly CallLogRecord[] }) {
@@ -806,7 +711,7 @@ function CallLogsSettings() {
   const SearchIcon = useIcon("search");
   const [view, setView] = useState<CallLogView>("calls");
   const [range, setRange] = useState<CallLogRange>("day");
-  const [timeSelection, setTimeSelection] = useState<CallLogTimeSelection>(callLogQuickSelections.day);
+  const [timeSelection, setTimeSelection] = useState<TimeRangeHistogramRange>(callLogQuickSelections.day);
   const [kind, setKind] = useState<"all" | CallLogKind>("all");
   const [status, setStatus] = useState<"all" | CallLogStatus>("all");
   const [attribution, setAttribution] = useState("all");
@@ -842,11 +747,11 @@ function CallLogsSettings() {
     setRange(nextRange);
     setTimeSelection(callLogQuickSelections[nextRange]);
   };
-  const applyTimelineSelection = (nextSelection: CallLogTimeSelection) => {
+  const applyTimelineSelection = (nextSelection: TimeRangeHistogramRange) => {
     setTimeSelection(nextSelection);
     const matchingRange = (Object.keys(callLogQuickSelections) as ModelUsageRange[]).find((key) => {
       const quickSelection = callLogQuickSelections[key];
-      return quickSelection.startIndex === nextSelection.startIndex && quickSelection.endIndex === nextSelection.endIndex;
+      return quickSelection.start === nextSelection.start && quickSelection.end === nextSelection.end;
     });
     setRange(matchingRange ?? "custom");
   };
@@ -868,7 +773,7 @@ function CallLogsSettings() {
       <InputGroup className="w-full border-border hover:border-border" size="md"><InputGroupAddon className="pr-2"><SearchIcon aria-hidden size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput aria-label="搜索调用日志" className="h-full min-h-0" onChange={(event) => setQuery(event.target.value)} placeholder={view === "calls" ? "搜索调用、Run ID 或模型" : "搜索问题或 Run ID"} value={query} /></InputGroup>
     </section>
 
-    <Container><ContainerHeader className="gap-4 overflow-x-auto px-4 py-2"><h2 className="shrink-0 text-body font-medium text-fg-default" id="call-trend-title">调用趋势</h2><div className="flex shrink-0 items-center gap-3 whitespace-nowrap text-label text-fg-subtle"><span className="flex items-center gap-1.5"><span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: "light-dark(var(--brand-active), var(--brand))" }} />模型</span><span className="flex items-center gap-1.5"><span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: "light-dark(var(--brand), var(--brand-active))" }} />MCP</span><span className="text-fg-muted">当前：{selectedRangeLabel}</span></div></ContainerHeader><ContainerBody className="p-3"><CallLogTimeline data={trendPoints} onSelectionChange={applyTimelineSelection} selection={timeSelection} /></ContainerBody></Container>
+    <Container><ContainerHeader className="gap-4 overflow-x-auto px-4 py-2"><h2 className="shrink-0 text-body font-medium text-fg-default" id="call-trend-title">调用趋势</h2><div className="flex shrink-0 items-center gap-3 whitespace-nowrap text-label text-fg-subtle"><span className="flex items-center gap-1.5"><span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: "light-dark(var(--brand-active), var(--brand))" }} />模型</span><span className="flex items-center gap-1.5"><span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: "light-dark(var(--brand), var(--brand-active))" }} />MCP</span><span className="text-fg-muted">当前：{selectedRangeLabel}</span></div></ContainerHeader><ContainerBody className="p-3"><TimeRangeHistogram ariaLabel="调用趋势时间范围" aria-labelledby="call-trend-title" data={trendPoints} formatRange={formatCallLogSelection} formatValue={(value) => `${value.toLocaleString("zh-CN")} 次`} instruction="拖动选区可整体移动" onValueChange={applyTimelineSelection} rangeEndLabel={callLogDateFormatter.format(callLogLatestTimestamp)} rangeStartLabel={callLogDateFormatter.format(callLogContextStart)} series={callLogTrendSeries} value={timeSelection} /></ContainerBody></Container>
 
     {view === "calls" ? <>
       <div className="flex flex-wrap items-center gap-2 text-label text-fg-muted"><span className="mr-2">显示 {filteredCalls.length.toLocaleString("zh-CN")} 条</span><Badge color="red" size="sm" variant="strong">错误 {filteredCalls.filter((record) => record.status === "failed").length}</Badge><Badge color="amber" size="sm" variant="strong">降级 {filteredCalls.filter((record) => record.status === "degraded").length}</Badge><span className="ml-2 text-fg-subtle">按时间倒序</span></div>

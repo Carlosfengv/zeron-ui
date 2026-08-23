@@ -1102,10 +1102,8 @@ Slider.displayName = "Slider";
 // SliderComfortable
 // ---------------------------------------------------------------------------
 
-interface SliderComfortableProps
+interface SliderComfortableCommonProps
   extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue" | "onDrag" | "onDragStart" | "onDragEnd" | "onDragOver" | "onAnimationStart"> {
-  value: number;
-  onChange: (value: number) => void;
   min?: number;
   max?: number;
   step?: number;
@@ -1117,7 +1115,23 @@ interface SliderComfortableProps
   disabled?: boolean;
 }
 
-const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
+interface SliderComfortableSingleProps extends SliderComfortableCommonProps {
+  value: number;
+  onChange: (value: number) => void;
+}
+
+interface SliderComfortableRangeProps extends SliderComfortableCommonProps {
+  value: [number, number];
+  onChange: (value: [number, number]) => void;
+  /** Called once after a pointer or keyboard interaction commits the range. */
+  onValueCommit?: (value: [number, number]) => void;
+  /** Keeps the label available to the thumbs while rendering only the range value. */
+  showLabel?: boolean;
+}
+
+type SliderComfortableProps = SliderComfortableSingleProps | SliderComfortableRangeProps;
+
+const SliderComfortableSingle = forwardRef<HTMLDivElement, SliderComfortableSingleProps>(
   (
     {
       value,
@@ -1725,6 +1739,200 @@ const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>(
     );
   }
 );
+
+SliderComfortableSingle.displayName = "SliderComfortableSingle";
+
+const SliderComfortableRange = forwardRef<HTMLDivElement, SliderComfortableRangeProps>(
+  (
+    {
+      value,
+      onChange,
+      onValueCommit,
+      min = 0,
+      max = 100,
+      step = 1,
+      variant = "scrubber",
+      label,
+      showLabel = true,
+      formatValue = String,
+      color = "brand",
+      disabled = false,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const activeThumb = useRef<0 | 1 | null>(null);
+    const [focusedThumb, setFocusedThumb] = useState<0 | 1 | null>(null);
+    const colorStyle = sliderColors[color];
+    const lower = Math.max(min, Math.min(max, Math.min(value[0], value[1])));
+    const upper = Math.max(min, Math.min(max, Math.max(value[0], value[1])));
+    const span = Math.max(max - min, 1);
+    const lowerPercent = ((lower - min) / span) * 100;
+    const upperPercent = ((upper - min) / span) * 100;
+    const rangeText = lower === upper
+      ? formatValue(lower)
+      : `${formatValue(lower)}–${formatValue(upper)}`;
+
+    const mergedRef = useCallback((element: HTMLDivElement | null) => {
+      containerRef.current = element;
+      if (typeof ref === "function") ref(element);
+      else if (ref) ref.current = element;
+    }, [ref]);
+
+    const valueFromX = useCallback((clientX: number) => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect || rect.width <= 0) return min;
+      const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      const raw = min + ratio * (max - min);
+      const snapped = Math.round((raw - min) / step) * step + min;
+      return Math.max(min, Math.min(max, snapped));
+    }, [max, min, step]);
+
+    const rangeForThumb = useCallback((index: 0 | 1, nextValue: number): [number, number] => (
+      index === 0
+        ? [Math.min(nextValue, upper), upper]
+        : [lower, Math.max(nextValue, lower)]
+    ), [lower, upper]);
+
+    const updateThumb = useCallback((index: 0 | 1, nextValue: number) => {
+      onChange(rangeForThumb(index, nextValue));
+    }, [onChange, rangeForThumb]);
+
+    const handlePointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+      if (disabled || (event.pointerType === "mouse" && event.button !== 0)) return;
+      event.preventDefault();
+      const nextValue = valueFromX(event.clientX);
+      const index: 0 | 1 = Math.abs(nextValue - lower) <= Math.abs(nextValue - upper) ? 0 : 1;
+      activeThumb.current = index;
+      updateThumb(index, nextValue);
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }, [disabled, lower, updateThumb, upper, valueFromX]);
+
+    const handlePointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+      if (activeThumb.current === null) return;
+      updateThumb(activeThumb.current, valueFromX(event.clientX));
+    }, [updateThumb, valueFromX]);
+
+    const handlePointerUp = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+      const index = activeThumb.current;
+      if (index === null) return;
+      const committedRange = rangeForThumb(index, valueFromX(event.clientX));
+      activeThumb.current = null;
+      onChange(committedRange);
+      onValueCommit?.(committedRange);
+    }, [onChange, onValueCommit, rangeForThumb, valueFromX]);
+
+    const handlePointerCancel = useCallback(() => {
+      activeThumb.current = null;
+    }, []);
+
+    return (
+      <div className="relative w-full touch-none">
+        <div
+          {...props}
+          className={cn(
+            "relative flex h-control-md w-full cursor-ew-resize select-none touch-none items-center gap-3 overflow-hidden rounded-lg border border-border px-4 outline-offset-2",
+            disabled && "pointer-events-none opacity-50",
+            className,
+          )}
+          onPointerCancel={handlePointerCancel}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          ref={mergedRef}
+        >
+          <SliderPrimitive.Root
+            className="absolute inset-0 opacity-0 pointer-events-none [&_*]:pointer-events-none"
+            disabled={disabled}
+            max={max}
+            min={min}
+            onValueChange={(next) => onChange([next[0] ?? lower, next[1] ?? upper])}
+            onValueCommitted={(next) => onValueCommit?.([next[0] ?? lower, next[1] ?? upper])}
+            step={step}
+            value={[lower, upper]}
+          >
+            <SliderPrimitive.Control className="h-full w-full">
+              <SliderPrimitive.Track className="h-full w-full">
+                <SliderPrimitive.Indicator />
+              </SliderPrimitive.Track>
+              <SliderPrimitive.Thumb
+                aria-label={label ? `${label} minimum` : "Minimum"}
+                className="block outline-none"
+                getAriaValueText={() => formatValue(lower)}
+                index={0}
+                onBlur={() => setFocusedThumb((current) => current === 0 ? null : current)}
+                onFocus={() => setFocusedThumb(0)}
+              />
+              <SliderPrimitive.Thumb
+                aria-label={label ? `${label} maximum` : "Maximum"}
+                className="block outline-none"
+                getAriaValueText={() => formatValue(upper)}
+                index={1}
+                onBlur={() => setFocusedThumb((current) => current === 1 ? null : current)}
+                onFocus={() => setFocusedThumb(1)}
+              />
+            </SliderPrimitive.Control>
+          </SliderPrimitive.Root>
+
+          {variant === "pips" && (
+            <div aria-hidden className="absolute inset-x-3 inset-y-0 flex items-center justify-between opacity-30">
+              {Array.from({ length: Math.min(21, Math.floor((max - min) / step) + 1) }, (_, index) => (
+                <span className="size-1 rounded-full bg-fg-muted" key={index} />
+              ))}
+            </div>
+          )}
+
+          <div
+            aria-hidden
+            className="absolute inset-y-0"
+            style={{
+              backgroundColor: colorStyle.fill,
+              left: `${lowerPercent}%`,
+              width: `${upperPercent - lowerPercent}%`,
+            }}
+          />
+          {[lowerPercent, upperPercent].map((position, index) => (
+            <span
+              aria-hidden
+              className="absolute inset-y-2 z-control w-0.5 rounded-full"
+              key={index}
+              style={{
+                backgroundColor: focusedThumb === index ? "var(--fg-default)" : "var(--input)",
+                left: `calc(${position}% - 1px)`,
+              }}
+            />
+          ))}
+
+          <div className="relative z-content flex min-w-0 flex-1 items-center gap-3 text-body text-fg-muted pointer-events-none">
+            {showLabel && label && <span className="min-w-0 flex-1 truncate">{label}</span>}
+            <span className="ml-auto shrink-0 tabular-nums">{rangeText}</span>
+          </div>
+          <div
+            aria-hidden
+            className="absolute inset-0 z-content flex items-center gap-3 px-4 text-body pointer-events-none"
+            style={{
+              clipPath: `inset(0 ${100 - upperPercent}% 0 ${lowerPercent}%)`,
+              color: colorStyle.onFill,
+            }}
+          >
+            {showLabel && label && <span className="min-w-0 flex-1 truncate">{label}</span>}
+            <span className="ml-auto shrink-0 tabular-nums">{rangeText}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+);
+
+SliderComfortableRange.displayName = "SliderComfortableRange";
+
+const SliderComfortable = forwardRef<HTMLDivElement, SliderComfortableProps>((props, ref) => (
+  Array.isArray(props.value)
+    ? <SliderComfortableRange {...props as SliderComfortableRangeProps} ref={ref} />
+    : <SliderComfortableSingle {...props as SliderComfortableSingleProps} ref={ref} />
+));
 
 SliderComfortable.displayName = "SliderComfortable";
 
