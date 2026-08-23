@@ -100,6 +100,7 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
     } = props;
 
     const containerRef = useRef<HTMLDivElement>(null);
+    const triggerElementsRef = useRef<Map<number, HTMLElement>>(new Map());
     const fullItemElementsRef = useRef<Map<number, HTMLElement>>(new Map());
     const [openItemRects, setOpenItemRects] = useState<Map<number, ItemRect>>(
       new Map()
@@ -115,6 +116,15 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
       registerItem,
       measureItems,
     } = useProximityHover(containerRef);
+
+    const registerTriggerItem = useCallback(
+      (index: number, element: HTMLElement | null) => {
+        if (element) triggerElementsRef.current.set(index, element);
+        else triggerElementsRef.current.delete(index);
+        registerItem(index, element);
+      },
+      [registerItem]
+    );
 
     const registerFullItem = useCallback(
       (index: number, element: HTMLElement | null) => {
@@ -276,7 +286,7 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
     // fresh context object each time would re-render every item with it.
     const groupContextValue = useMemo<AccordionGroupContextValue>(
       () => ({
-        registerItem,
+        registerItem: registerTriggerItem,
         registerFullItem,
         activeIndex,
         grouped: true,
@@ -285,7 +295,7 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
         openItemRects,
       }),
       [
-        registerItem,
+        registerTriggerItem,
         registerFullItem,
         activeIndex,
         remeasure,
@@ -349,18 +359,25 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
                 }}
                 onMouseLeave={handlers.onMouseLeave}
                 onFocus={(e) => {
-                  const indexAttr = (e.target as HTMLElement)
-                    .closest("[data-proximity-index]")
-                    ?.getAttribute("data-proximity-index");
-                  if (indexAttr != null) {
-                    const idx = Number(indexAttr);
-                    setActiveIndex(idx);
-                    setFocusedIndex(
-                      (e.target as HTMLElement).matches(":focus-visible")
-                        ? idx
-                        : null
-                    );
+                  const target = e.target as HTMLElement;
+                  const focusedEntry = [...triggerElementsRef.current].find(
+                    ([, trigger]) => trigger.contains(target)
+                  );
+
+                  if (!focusedEntry) {
+                    // Focus moved into an expanded panel. Nested controls may
+                    // use their own proximity index, but they must not keep or
+                    // recreate the parent accordion's focus ring.
+                    setFocusedIndex(null);
+                    setActiveIndex(null);
+                    return;
                   }
+
+                  const [idx] = focusedEntry;
+                  setActiveIndex(idx);
+                  setFocusedIndex(
+                    target.matches(":focus-visible") ? idx : null
+                  );
                 }}
                 onBlur={(e) => {
                   if (
@@ -649,7 +666,6 @@ const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
                       ref as React.MutableRefObject<HTMLDivElement | null>
                     ).current = node;
                 }}
-                data-proximity-index={index}
                 className={cn(!groupCtx?.grouped && "relative", className)}
                 {...props}
               >
@@ -709,7 +725,7 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
         <AccordionPrimitive.Trigger
           ref={ref as React.Ref<HTMLElement>}
           className={cn(
-            `relative z-content flex items-center gap-2.5 rounded-lg px-3 py-2 w-full cursor-pointer outline-none select-none`,
+            "relative z-content flex items-center gap-2.5 rounded-lg px-3 py-2 w-full cursor-pointer outline-none select-none",
             !groupCtx?.grouped &&
               "focus-visible:ring-1 focus-visible:ring-focus-ring focus-visible:ring-offset-0",
             className
