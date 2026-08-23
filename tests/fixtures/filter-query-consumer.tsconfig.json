@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "baseUrl": "../..",
+    "target": "ES2017",
+    "jsx": "preserve",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "paths": {
+      "@zeron/ui/*": ["packages/ui/src/*"]
+    },
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "strict": true
+  },
+  "files": ["filter-query-consumer.tsx"]
+}
