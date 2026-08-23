@@ -24,8 +24,6 @@ import { cn } from "#system/utils";
 import { createIconSlot } from "#system/icon-context";
 import { Badge } from "../badge";
 import { Button } from "../button";
-import { Calendar } from "./data-grid-calendar";
-import { Checkbox } from "../checkbox";
 import {
   Command,
   CommandEmpty,
@@ -34,7 +32,9 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "./data-grid-command";
+} from "../command";
+import { Calendar } from "./data-grid-calendar";
+import { Checkbox } from "../checkbox";
 import { Popover, PopoverAnchor, PopoverContent } from "./data-grid-popover";
 import {
   Select,
