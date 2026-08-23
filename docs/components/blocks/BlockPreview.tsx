@@ -9,6 +9,7 @@ import { PersonalUsage } from "@zeron/blocks/personal-usage-01";
 import { ResourceSettings } from "@zeron/blocks/resource-settings-01";
 import { ResourceDetails } from "@zeron/blocks/resource-details-01";
 import { ResourceListTable } from "@zeron/blocks/resource-list-table-01";
+import { InfiniteLogTable } from "@zeron/blocks/infinite-log-table-01";
 import { FileManager, type FileManagerItem } from "@zeron/blocks/file-manager-01";
 import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
 import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
@@ -164,6 +165,12 @@ export function BlockPreview({ name }: { name: string }) {
   if (name === "resource-list-table-01") {
     return (
       <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><ResourceListTable /></ResponsivePreview>
+    );
+  }
+
+  if (name === "infinite-log-table-01") {
+    return (
+      <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><InfiniteLogTable className="h-full rounded-none border-0" /></ResponsivePreview>
     );
   }
 

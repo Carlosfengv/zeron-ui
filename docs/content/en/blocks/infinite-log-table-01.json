@@ -1,0 +1,12 @@
+{
+  "infiniteLogTableBlock": {
+    "title": "Infinite Log Table",
+    "description": "A data- or schema-driven virtualized log explorer with dynamic columns and filters, seek pagination, live tailing, and record detail.",
+    "integrationTitle": "Use in an application",
+    "integrationBody": "When records are provided, the block infers columns, field types, and filters from the data. Pass fields to explicitly control order, labels, visibility, filtering, sorting, and rendering. Pass dataSource for a cursor-backed API; remote sources should also provide fields. The block owns transient pagination and virtual rows while state and onStateChange control filters, sorting, and Live mode.",
+    "dataSourceTitle": "Data source contract",
+    "dataSourceBody": "A data source returns opaque seek cursors bound to a snapshot revision. Live sources additionally provide a checkpoint, subscription, and metadata loader so result counts and facets stay current without replacing the history being examined.",
+    "registryBoundaryTitle": "Registry installation boundary",
+    "registryBoundaryBody": "The Registry artifact is plain React source: it does not import Next.js, React Query, nuqs, Zustand, SuperJSON, or Zod, and requires no provider. The monorepo-wide @zeron/blocks package currently retains a Next peer dependency for unrelated blocks; use the Registry artifact when a provider-free installation boundary is required."
+  }
+}

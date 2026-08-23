@@ -1,0 +1,12 @@
+{
+  "infiniteLogTableBlock": {
+    "title": "通用无限日志表格",
+    "description": "一个由数据或字段 schema 驱动的虚拟化日志浏览器，支持动态列与筛选、seek 游标分页、Live tail 和记录详情。",
+    "integrationTitle": "在应用中使用",
+    "integrationBody": "传入 records 时，Block 会从数据推断列、字段类型和筛选方式；传入 fields 可显式控制顺序、名称、显示、筛选、排序和渲染。传入 dataSource 可接入基于游标的 API，远程数据建议同时传入 fields。Block 管理瞬时分页与虚拟行，宿主可通过 state 与 onStateChange 控制筛选、排序与 Live 状态。",
+    "dataSourceTitle": "数据源契约",
+    "dataSourceBody": "数据源返回绑定 snapshot revision 的 opaque seek cursor。支持 Live 的数据源还需要提供 checkpoint、subscription 与 metadata loader，使结果数量与 Facet 可以保持最新，同时不替换用户正在查看的历史记录。",
+    "registryBoundaryTitle": "Registry 安装边界",
+    "registryBoundaryBody": "Registry 产物是纯 React 源码：不导入 Next.js、React Query、nuqs、Zustand、SuperJSON 或 Zod，也不要求任何 Provider。整个 monorepo 的 @zeron/blocks package 仍因无关 Block 保留 Next peer dependency；若需要无 Provider 的安装边界，请使用 Registry 产物。"
+  }
+}

@@ -15,6 +15,7 @@ import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
 import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
 import { ResourceDetails } from "@zeron/blocks/resource-details-01";
 import { ResourceListTable } from "@zeron/blocks/resource-list-table-01";
+import { InfiniteLogTable } from "@zeron/blocks/infinite-log-table-01";
 import { FileManager, type FileManagerItem } from "@zeron/blocks/file-manager-01";
 import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
 import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
@@ -72,6 +73,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <div className={`${centeredDemoClass} items-start`}><ResourceDetails /></div>;
     case "resource-list-table-01":
       return <div className="h-full overflow-auto bg-surface-raised p-3 sm:p-6"><ResourceListTable /></div>;
+    case "infinite-log-table-01":
+      return <div className="h-full overflow-hidden bg-surface-raised"><InfiniteLogTable className="h-full border-0" /></div>;
     case "file-manager-01":
       return <div className="h-full overflow-auto bg-surface-raised p-3 sm:p-6"><FileManager className="h-full" items={fileManagerDemoItems} /></div>;
     case "resource-metric-list-01":

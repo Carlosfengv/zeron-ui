@@ -45,6 +45,8 @@
     "c6": "Label shown on the left side. Transitions from muted to foreground on hover.",
     "c7": "Custom formatter for the value shown on the right.",
     "c8": "Semantic color applied to the filled region. Defaults to brand.",
-    "c9": "Disables all interaction."
+    "c9": "Disables all interaction.",
+    "c10": "In range mode, keeps the label accessible while hiding it inside the control.",
+    "c11": "In range mode, called once when pointer or keyboard interaction commits the value."
   }
 }

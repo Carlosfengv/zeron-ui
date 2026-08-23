@@ -118,6 +118,11 @@ export const artifactCatalog: readonly ArtifactEntry[] = [
     kind: "block", product: "shared", domains: ["resource", "operations"], patterns: ["data table", "filter", "bulk action"], searchTerms: ["resource", "list", "table", "filter", "资源", "表格", "筛选"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
   },
   {
+    slug: "infinite-log-table-01", registryName: "infinite-log-table-01",
+    title: "Infinite Log Table", description: "A schema-driven virtualized log explorer with dynamic fields and filters, seek pagination, Live tailing, and record detail.",
+    kind: "block", product: "shared", domains: ["observability", "monitoring"], patterns: ["infinite table", "log explorer", "live tail"], searchTerms: ["log", "infinite", "cursor", "schema", "日志", "观测", "字段", "筛选"], readiness: "copy-ready", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
     slug: "file-manager-01", registryName: "file-manager-01",
     title: "File Manager", description: "A token-native file-management workspace with icon, list, and Finder-style column views.",
     kind: "block", product: "shared", domains: ["storage", "files", "content"], patterns: ["file browser", "tree", "column view"], searchTerms: ["file", "folder", "storage", "browser", "finder", "文件", "文件夹", "文件管理"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,

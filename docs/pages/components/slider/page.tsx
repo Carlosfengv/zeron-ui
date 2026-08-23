@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Slider, SliderComfortable } from "@zeron/ui/slider";
+import { Field, FieldLabel } from "@zeron/ui/field";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
@@ -107,6 +108,25 @@ const [volume, setVolume] = useState(50);
   max={100}
   formatValue={(v) => \`\${v}%\`}
 />`;
+
+const comfortableRangeCode = `import { Field, FieldLabel, SliderComfortable } from "./components";
+
+const [latencyRange, setLatencyRange] = useState<[number, number]>([100, 600]);
+
+<Field>
+  <FieldLabel>Latency</FieldLabel>
+  <SliderComfortable
+    variant="scrubber"
+    label="Latency"
+    showLabel={false}
+    value={latencyRange}
+    onChange={setLatencyRange}
+    min={0}
+    max={1000}
+    step={10}
+    formatValue={(v) => \`\${v} ms\`}
+  />
+</Field>`;
 
 const comfortableFormatCode = `import { SliderComfortable } from "./components";
 
@@ -215,17 +235,31 @@ const sliderProps: PropDef[] = [
     default: "false",
     description: "Disables all interaction.",
   },
+  {
+    name: "showLabel",
+    type: "boolean",
+    default: "true",
+    description:
+      "In range mode, keeps the label accessible while hiding it inside the control.",
+  },
+  {
+    name: "onValueCommit",
+    type: "(value: [number, number]) => void",
+    description:
+      "In range mode, called once when pointer or keyboard interaction commits the value.",
+  },
 ];
 
 const comfortableProps: PropDef[] = [
   {
     name: "value",
-    type: "number",
-    description: "Current selected value.",
+    type: "number | [number, number]",
+    description:
+      "Current value. Pass a tuple to enable range mode with two thumbs.",
   },
   {
     name: "onChange",
-    type: "(value: number) => void",
+    type: "(value: number | [number, number]) => void",
     description: "Called when the value changes via click, drag, or keyboard.",
   },
   {
@@ -304,6 +338,7 @@ export default function SliderDoc() {
 
   const [roundness, setRoundness] = useState(2);
   const [volume, setVolume] = useState(50);
+  const [latencyRange, setLatencyRange] = useState<[number, number]>([100, 600]);
   const [quality, setQuality] = useState(2);
 
   return (
@@ -485,6 +520,25 @@ export default function SliderDoc() {
               formatValue={(v) => `${v}%`}
             />
           </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title="Comfortable range">
+        <ComponentPreview code={comfortableRangeCode}>
+          <Field className="w-72">
+            <FieldLabel>Latency</FieldLabel>
+            <SliderComfortable
+              variant="scrubber"
+              label="Latency"
+              showLabel={false}
+              value={latencyRange}
+              onChange={setLatencyRange}
+              min={0}
+              max={1000}
+              step={10}
+              formatValue={(v) => `${v} ms`}
+            />
+          </Field>
         </ComponentPreview>
       </DocSection>
 

@@ -1,0 +1,31 @@
+{
+  "timeRangeHistogram": {
+    "description": "A controlled stacked histogram for selecting and moving a bucket-aligned time range with pointer or keyboard input.",
+    "interactiveRange": "Interactive range",
+    "requestVolume": "Request volume",
+    "success": "Success",
+    "warning": "Warning",
+    "error": "Error",
+    "ariaLabel": "Request volume time range",
+    "instruction": "Drag the selection to move the range",
+    "requests": "{count, plural, one {# request} other {# requests}}",
+    "behavior": "Behavior",
+    "behaviorPointer": "Drag outside the active selection to create a new range. Drag inside it to move the range without changing its duration.",
+    "behaviorKeyboard": "Use Arrow keys to move one bucket, Page Up or Page Down to move five buckets, and Home or End to reach either boundary.",
+    "behaviorData": "The component visualizes already aggregated buckets. Filtering and server-side aggregation remain the responsibility of the consuming feature.",
+    "apiReference": "API Reference",
+    "p0": "Accessible name for the interactive range selector.",
+    "p1": "Ordered, non-overlapping buckets with start, end, label, and series values.",
+    "p2": "Series keys, labels, active colors, and optional inactive colors.",
+    "p3": "Controlled start and end timestamps for the selected range.",
+    "p4": "Called when pointer or keyboard interaction commits a new bucket-aligned range.",
+    "p5": "Formats the selected range announced by assistive technology.",
+    "p6": "Formats each series value in the tooltip.",
+    "p7": "Overrides the label beneath the first bucket.",
+    "p8": "Overrides the label beneath the last bucket.",
+    "p9": "Optional visible pointer and keyboard interaction hint.",
+    "p10": "Content rendered when data contains no buckets.",
+    "p11": "Disables pointer and keyboard selection without hiding the histogram.",
+    "p12": "Class applied to the fixed-height chart container."
+  }
+}
