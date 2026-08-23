@@ -1,5 +1,12 @@
 export const blockCatalog = [
   {
+    name: "file-manager-01",
+    title: "File Manager",
+    description: "A token-native, storage-agnostic file-management workspace with icon, list, and Finder-style column views.",
+    categories: ["application", "storage", "files"],
+    dependencies: ["button", "dialog", "input", "select", "tabs", "@tanstack/react-virtual"],
+  },
+  {
     name: "agent-trace-01",
     title: "Agent Trace",
     description: "A turn-aware trace viewer that projects agent messages, tool calls, and results from uploaded JSON.",
@@ -153,5 +160,12 @@ export const blockCatalog = [
     description: "A ZS Live Recovery protection-group list and detail workspace with site switching, recovery plans, and Chinese pagination.",
     categories: ["application", "operations", "tables"],
     dependencies: ["sidebar", "nav-menu", "nav-item", "tabs", "input-group", "table", "checkbox", "select", "button", "badge", "detail-list"],
+  },
+  {
+    name: "infinite-log-table-01",
+    title: "Infinite Log Table",
+    description: "A schema-driven virtualized log explorer with dynamic fields and filters, cursor pagination, live tailing, and record detail.",
+    categories: ["application", "tables", "observability"],
+    dependencies: ["button", "checkbox", "dialog", "input-group", "mobile-drawer", "recharts", "@tanstack/react-table", "@tanstack/react-virtual"],
   },
 ] as const;

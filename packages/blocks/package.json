@@ -27,7 +27,8 @@
     "./cluster-environment-detail-01": "./src/application/cluster-environment-detail-01/index.ts",
     "./inspection-report-list-01": "./src/application/inspection-report-list-01/index.ts",
     "./monitoring-alert-list-01": "./src/application/monitoring-alert-list-01/index.ts",
-    "./service-management-01": "./src/application/service-management-01/index.ts"
+    "./service-management-01": "./src/application/service-management-01/index.ts",
+    "./infinite-log-table-01": "./src/application/infinite-log-table-01/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --project tsconfig.json --noEmit"
@@ -39,6 +40,7 @@
   },
   "dependencies": {
     "@lobehub/icons": "^5.16.0",
+    "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.9",
     "@thesvg/icons": "^3.2.15",
     "@zeron/ui": "workspace:*",
