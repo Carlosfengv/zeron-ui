@@ -44,6 +44,8 @@ import type {
   InfiniteLogTimeRange,
 } from "./infinite-log-types";
 
+const LOG_ROW_HEIGHT = 32;
+
 type ColumnId =
   | "select"
   | "timestamp"
@@ -311,7 +313,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
   );
   const virtualizer = useVirtualizer({
     count: virtualItemCount,
-    estimateSize: (index) => hasLiveBoundary && index === liveBoundaryRecordIndex ? 32 : 40,
+    estimateSize: () => LOG_ROW_HEIGHT,
     getItemKey: (index) => {
       if (hasLiveBoundary && index === liveBoundaryRecordIndex) {
         return `live-boundary:${liveBoundary?.recordId ?? "unknown"}`;
@@ -331,8 +333,8 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
     ? virtualRows
     : Array.from({ length: Math.min(virtualItemCount, 20) }, (_, index) => ({
         index,
-        size: hasLiveBoundary && index === liveBoundaryRecordIndex ? 32 : 40,
-        start: index * 40 - (hasLiveBoundary && index > liveBoundaryRecordIndex ? 8 : 0),
+        size: LOG_ROW_HEIGHT,
+        start: index * LOG_ROW_HEIGHT,
       }));
   const allLoadedSelected = rows.length > 0 && rows.every((record) => selectedIds.has(record.id));
   const someLoadedSelected = rows.some((record) => selectedIds.has(record.id));
@@ -525,15 +527,15 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
         role="grid"
         tabIndex={0}
       >
-        <div className="sticky top-0 z-raised min-w-max border-b border-border bg-surface-floating" role="row">
-          <div className="grid min-w-full" style={{ gridTemplateColumns }}>
+        <div className="sticky top-0 z-raised h-control-md min-w-max border-b border-border bg-surface-floating" role="row">
+          <div className="grid h-full min-w-full" style={{ gridTemplateColumns }}>
             {visibleColumns.map((column) => {
               const field = sortForColumn(column);
               const direction = sort?.field === field ? sort?.direction : undefined;
               const SortIcon = direction === "asc" ? ChevronUp : direction === "desc" ? ChevronDown : ChevronsUpDown;
               const header = table.getFlatHeaders().find((candidate) => candidate.column.id === column);
               return (
-                <div aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field ? "none" : undefined} className={cn("relative flex min-w-0 items-center border-e border-border-subtle px-3 py-2 last:border-e-0", column === "select" && "justify-center px-0")} key={column} role="columnheader">
+                <div aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field ? "none" : undefined} className={cn("relative flex h-full min-w-0 items-center border-e border-border-subtle px-3 last:border-e-0", column === "select" && "justify-center px-0")} key={column} role="columnheader">
                   {column === "select" ? (
                     <Checkbox aria-label="Select all loaded logs" checked={allLoadedSelected ? true : someLoadedSelected ? "indeterminate" : false} onCheckedChange={onToggleAllLoaded} />
                   ) : field ? (

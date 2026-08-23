@@ -25,6 +25,8 @@ import type {
   InfiniteLogTimeRange,
 } from "./infinite-log-types";
 
+const LOG_ROW_HEIGHT = 32;
+
 interface ColumnItem extends SortableCollectionItem {
   id: string;
   title: string;
@@ -222,7 +224,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
   }, [hasLiveBoundary, liveBoundaryRecordIndex]);
   const virtualizer = useVirtualizer({
     count: virtualCount,
-    estimateSize: (index) => hasLiveBoundary && index === liveBoundaryRecordIndex ? 32 : 40,
+    estimateSize: () => LOG_ROW_HEIGHT,
     getItemKey: (index) => {
       if (hasLiveBoundary && index === liveBoundaryRecordIndex) return `live-boundary:${liveBoundary?.recordId}`;
       const recordIndex = recordIndexForVirtualIndex(index);
@@ -233,7 +235,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
     overscan: 10,
   });
   const virtualRows = virtualizer.getVirtualItems();
-  const renderedRows = virtualRows.length > 0 ? virtualRows : Array.from({ length: Math.min(virtualCount, 20) }, (_, index) => ({ index, size: 40, start: index * 40 }));
+  const renderedRows = virtualRows.length > 0 ? virtualRows : Array.from({ length: Math.min(virtualCount, 20) }, (_, index) => ({ index, size: LOG_ROW_HEIGHT, start: index * LOG_ROW_HEIGHT }));
   const allSelected = rows.length > 0 && rows.every((record) => selectedIds.has(record.id));
   const someSelected = rows.some((record) => selectedIds.has(record.id));
 
@@ -293,14 +295,14 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
       {pendingLiveCount > 0 && <div className="absolute left-1/2 top-14 z-action -translate-x-1/2"><Button onClick={() => { onApplyPending(); requestAnimationFrame(() => viewportRef.current?.scrollTo({ top: 0, behavior: "smooth" })); }} size="sm" type="button" variant="secondary">{labels.newRecords(pendingLiveCount)}</Button></div>}
 
       <div aria-colcount={visibleFields.length + 1} aria-busy={loading || updating || undefined} aria-label="Log table" aria-rowcount={(metadata?.filteredCount ?? rows.length) + 1} className="relative min-h-0 flex-1 overflow-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" onScroll={() => onAtTopChange((viewportRef.current?.scrollTop ?? 0) < 8)} ref={viewportRef} role="grid" tabIndex={0}>
-        <div className="sticky top-0 z-raised grid min-w-max border-b border-border bg-surface-floating" role="row" style={{ gridTemplateColumns }}>
+        <div className="sticky top-0 z-raised grid h-control-md min-w-max border-b border-border bg-surface-floating" role="row" style={{ gridTemplateColumns }}>
           <div className="flex items-center justify-center" role="columnheader"><Checkbox aria-label="Select all loaded logs" checked={allSelected ? true : someSelected ? "indeterminate" : false} onCheckedChange={onToggleAllLoaded} /></div>
           {visibleFields.map((field) => {
             const direction = sort?.field === field.id ? sort.direction : undefined;
             const SortIcon = direction === "asc" ? ChevronUp : direction === "desc" ? ChevronDown : ChevronsUpDown;
             const header = table.getFlatHeaders().find((candidate) => candidate.column.id === field.id);
             return (
-              <div aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field.sortable ? "none" : undefined} className="relative flex min-w-0 items-center border-e border-border-subtle px-3 py-2" key={field.id} role="columnheader">
+              <div aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field.sortable ? "none" : undefined} className="relative flex h-full min-w-0 items-center border-e border-border-subtle px-3" key={field.id} role="columnheader">
                 {field.sortable ? <Button className="-ml-2 whitespace-nowrap px-2 text-body font-medium text-fg-default" onClick={() => onSortChange(sort?.field === field.id ? { field: field.id, direction: sort.direction === "desc" ? "asc" : "desc" } : { field: field.id, direction: "desc" })} size="sm" trailingIcon={SortIcon} type="button" variant="ghost">{field.label ?? field.id}</Button> : <span className="truncate text-body font-medium text-fg-default">{field.label ?? field.id}</span>}
                 <div aria-label={`Resize ${field.label ?? field.id} column`} className="absolute inset-y-0 right-0 w-1 cursor-col-resize touch-none hover:bg-border-strong" onDoubleClick={() => table.getColumn(field.id)?.resetSize()} onMouseDown={header?.getResizeHandler()} onTouchStart={header?.getResizeHandler()} role="separator" />
               </div>

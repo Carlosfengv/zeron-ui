@@ -73,7 +73,10 @@ describe("InfiniteLogTable", () => {
     fireEvent.click(screen.getByRole("checkbox", { name: "billing" }));
     await waitFor(() => expect(within(grid).queryByText("index.updated")).toBeNull());
 
-    const row = within(grid).getAllByRole("row")[1]!;
+    const rows = within(grid).getAllByRole("row");
+    expect(rows[0]?.classList.contains("h-control-md")).toBe(true);
+    const row = rows[1]!;
+    expect(row.style.height).toBe("32px");
     fireEvent.keyDown(row, { key: "Enter" });
     const dialog = await screen.findByRole("dialog", { name: /job-1 details/i });
     expect(within(dialog).getByText("Service")).toBeTruthy();
@@ -96,8 +99,11 @@ describe("InfiniteLogTable", () => {
     expect(screen.getByRole("slider", { name: "Request trend time range" })).toBeTruthy();
     expect(screen.getByText("Live").closest("button")?.hasAttribute("disabled")).toBe(true);
     expect(document.querySelectorAll('[role="row"]').length).toBeLessThan(90);
+    const firstLogRow = screen.getAllByRole("checkbox", { name: /Select req_/ })[0]?.closest<HTMLElement>('[role="row"]');
+    expect(firstLogRow?.style.height).toBe("32px");
 
     const grid = screen.getByRole("grid", { name: "HTTP request log table" });
+    expect(within(grid).getAllByRole("row")[0]?.classList.contains("h-control-md")).toBe(true);
     const titledHeaders = within(grid).getAllByRole("columnheader").slice(1);
     expect(titledHeaders).toHaveLength(9);
     expect(titledHeaders.every((header) => Boolean(header.querySelector("svg")))).toBe(true);
@@ -227,25 +233,25 @@ describe("InfiniteLogTable", () => {
     expect(onStateChange).toHaveBeenCalledTimes(1);
   });
 
-  it("shows flat timing phase range filters and commits only after dragging", async () => {
+  it("uses the shared range slider for latency and commits only after dragging", async () => {
     const onStateChange = vi.fn();
     render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} onStateChange={onStateChange} records={createMockLogRecords({ days: 2 })} /></div>);
     await waitFor(() => expect(screen.getByRole("grid", { name: "HTTP request log table" })).toBeTruthy());
 
-    fireEvent.click(screen.getByRole("button", { name: "Timing phases" }));
-    const timingPanel = screen.getByRole("region", { name: "Timing phases" });
-    const minimum = screen.getByRole("slider", { name: "DNS lookup minimum" });
-    const rangeControl = minimum.closest("[role='group']")?.parentElement;
-    expect(rangeControl?.textContent).toContain("0 ms–200 ms");
-    expect(rangeControl?.textContent).not.toContain("DNS lookup");
-    expect(screen.getByRole("slider", { name: "DNS lookup maximum" })).toBeTruthy();
-    expect(screen.getByRole("slider", { name: "TCP connection minimum" })).toBeTruthy();
-    expect(screen.getByRole("slider", { name: "TLS handshake minimum" })).toBeTruthy();
-    expect(screen.getByRole("slider", { name: "Time to first byte minimum" })).toBeTruthy();
-    expect(screen.getByRole("slider", { name: "Response transfer minimum" })).toBeTruthy();
-    expect(within(timingPanel).queryByRole("button")).toBeNull();
+    const filters = screen.getByRole("complementary", { name: "Log filters" });
+    fireEvent.click(within(filters).getByRole("button", { name: "Latency" }));
+    const latencyPanel = screen.getByRole("region", { name: "Latency" });
+    const minimum = screen.getByRole("slider", { name: "Latency minimum" });
+    const maximum = screen.getByRole("slider", { name: "Latency maximum" });
+    const latencyField = minimum.closest("[data-slot='field']") as HTMLElement;
+    const pointerTrack = minimum.closest("[role='group']")?.nextElementSibling as HTMLElement;
+    expect(within(latencyField).getByText("Min.")).toBeTruthy();
+    expect(within(latencyField).getByText("Max.")).toBeTruthy();
+    expect(maximum).toBeTruthy();
+    expect(within(latencyPanel).queryByRole("button", { name: "Apply" })).toBeNull();
 
-    vi.spyOn(rangeControl as HTMLElement, "getBoundingClientRect").mockReturnValue({
+    Object.defineProperty(pointerTrack, "offsetWidth", { configurable: true, value: 200 });
+    vi.spyOn(pointerTrack, "getBoundingClientRect").mockReturnValue({
       bottom: 32,
       height: 32,
       left: 0,
@@ -257,13 +263,61 @@ describe("InfiniteLogTable", () => {
       toJSON: () => ({}),
     });
     const callsBeforeDrag = onStateChange.mock.calls.length;
-    fireEvent.pointerDown(rangeControl as HTMLElement, { button: 0, clientX: 0, pointerId: 1 });
-    fireEvent.pointerMove(rangeControl as HTMLElement, { clientX: 50, pointerId: 1 });
+    fireEvent.pointerDown(pointerTrack, { button: 0, clientX: 10, pointerId: 1 });
+    fireEvent.pointerMove(pointerTrack, { clientX: 100, pointerId: 1 });
+    const previewMinimum = Number((minimum as HTMLInputElement).value);
+    expect(previewMinimum).toBeGreaterThan(0);
+    expect(within(latencyField).getByText(`${previewMinimum} ms`)).toBeTruthy();
     expect(onStateChange).toHaveBeenCalledTimes(callsBeforeDrag);
-    fireEvent.pointerUp(rangeControl as HTMLElement, { clientX: 50, pointerId: 1 });
+    fireEvent.pointerUp(pointerTrack, { clientX: 100, pointerId: 1 });
 
     await waitFor(() => expect(onStateChange).toHaveBeenLastCalledWith(expect.objectContaining({
-      filters: expect.objectContaining({ timing: { dns: { min: 50 } } }),
+      filters: expect.objectContaining({ latency: { min: previewMinimum } }),
+    })));
+  });
+
+  it("shows flat timing phase range filters and commits only after dragging", async () => {
+    const onStateChange = vi.fn();
+    render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} onStateChange={onStateChange} records={createMockLogRecords({ days: 2 })} /></div>);
+    await waitFor(() => expect(screen.getByRole("grid", { name: "HTTP request log table" })).toBeTruthy());
+
+    fireEvent.click(screen.getByRole("button", { name: "Timing phases" }));
+    const timingPanel = screen.getByRole("region", { name: "Timing phases" });
+    const minimum = screen.getByRole("slider", { name: "DNS lookup minimum" });
+    const timingField = minimum.closest("[data-slot='field']") as HTMLElement;
+    const pointerTrack = minimum.closest("[role='group']")?.nextElementSibling as HTMLElement;
+    expect(within(timingField).getByText("Min.")).toBeTruthy();
+    expect(within(timingField).getByText("Max.")).toBeTruthy();
+    expect(within(timingField).getByText("0 ms")).toBeTruthy();
+    expect(within(timingField).getByText("200 ms")).toBeTruthy();
+    expect(screen.getByRole("slider", { name: "DNS lookup maximum" })).toBeTruthy();
+    expect(screen.getByRole("slider", { name: "TCP connection minimum" })).toBeTruthy();
+    expect(screen.getByRole("slider", { name: "TLS handshake minimum" })).toBeTruthy();
+    expect(screen.getByRole("slider", { name: "Time to first byte minimum" })).toBeTruthy();
+    expect(screen.getByRole("slider", { name: "Response transfer minimum" })).toBeTruthy();
+    expect(within(timingPanel).queryByRole("button")).toBeNull();
+
+    Object.defineProperty(pointerTrack, "offsetWidth", { configurable: true, value: 200 });
+    vi.spyOn(pointerTrack, "getBoundingClientRect").mockReturnValue({
+      bottom: 32,
+      height: 32,
+      left: 0,
+      right: 200,
+      top: 0,
+      width: 200,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+    const callsBeforeDrag = onStateChange.mock.calls.length;
+    fireEvent.pointerDown(pointerTrack, { button: 0, clientX: 10, pointerId: 1 });
+    fireEvent.pointerMove(pointerTrack, { clientX: 60, pointerId: 1 });
+    expect(onStateChange).toHaveBeenCalledTimes(callsBeforeDrag);
+    expect(within(timingField).getByText("60 ms")).toBeTruthy();
+    fireEvent.pointerUp(pointerTrack, { clientX: 60, pointerId: 1 });
+
+    await waitFor(() => expect(onStateChange).toHaveBeenLastCalledWith(expect.objectContaining({
+      filters: expect.objectContaining({ timing: { dns: { min: 60 } } }),
     })));
   });
 

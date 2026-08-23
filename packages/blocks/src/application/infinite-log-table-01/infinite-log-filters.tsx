@@ -8,11 +8,11 @@ import { Field, FieldGroup, FieldLabel } from "@zeron/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@zeron/ui/input-group";
 import { ScrollArea } from "@zeron/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger } from "@zeron/ui/select";
-import { SliderComfortable } from "@zeron/ui/slider";
+import { Slider } from "@zeron/ui/slider";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { DateTimeRangePicker, createRecentDateTimePreset, parseISODateTime } from "@zeron/ui/temporal-picker";
 import type { DateTimeRangeValue, TemporalPreset } from "@zeron/ui/temporal-picker";
-import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { infiniteLogOutcomeVisuals } from "./infinite-log-outcome";
 import { formatInfiniteLogTimeRange } from "./infinite-log-time-range";
 import { defaultInfiniteLogFilters } from "./infinite-log-types";
@@ -193,27 +193,29 @@ const timingPhaseDefinitions: readonly {
   { key: "transfer", label: "Response transfer" },
 ];
 
-function createTimingSliderDomain(facet?: LogRangeFacet, value?: NumericRange) {
+function createRangeSliderDomain(facet?: LogRangeFacet, value?: NumericRange) {
   const observedMaximum = Math.max(1, facet?.max ?? 0, value?.min ?? 0, value?.max ?? 0);
   const step = observedMaximum <= 100 ? 1 : observedMaximum <= 1_000 ? 10 : observedMaximum <= 5_000 ? 50 : 100;
   return { min: 0, max: Math.ceil(observedMaximum / step) * step, step };
 }
 
-function TimingPhaseSliderEditor({
+function RangeSliderEditor({
   facet,
   label,
   onApply,
+  showLabel = true,
   value,
 }: {
   facet?: LogRangeFacet;
   label: string;
   onApply: (range?: NumericRange) => void;
+  showLabel?: boolean;
   value?: NumericRange;
 }) {
   // Keep the scale stable across Live facet updates so a handle does not move
   // under the pointer while the user is editing the range.
   const hasFacetDomain = useRef(facet?.max !== undefined);
-  const [domain, setDomain] = useState(() => createTimingSliderDomain(facet, value));
+  const [domain, setDomain] = useState(() => createRangeSliderDomain(facet, value));
   const facetMaximum = facet?.max;
   const valueMinimum = value?.min;
   const valueMaximum = value?.max;
@@ -221,7 +223,7 @@ function TimingPhaseSliderEditor({
   useEffect(() => {
     if (hasFacetDomain.current || facetMaximum === undefined) return;
     hasFacetDomain.current = true;
-    setDomain(createTimingSliderDomain({ max: facetMaximum }, {
+    setDomain(createRangeSliderDomain({ max: facetMaximum }, {
       max: valueMaximum,
       min: valueMinimum,
     }));
@@ -232,12 +234,15 @@ function TimingPhaseSliderEditor({
     clamp(value?.min ?? domain.min),
     clamp(value?.max ?? domain.max),
   ]);
+  const rangeRef = useRef(range);
 
   useEffect(() => {
-    setRange([
+    const nextRange: [number, number] = [
       clamp(value?.min ?? domain.min),
       clamp(value?.max ?? domain.max),
-    ]);
+    ];
+    rangeRef.current = nextRange;
+    setRange(nextRange);
   }, [clamp, domain.max, domain.min, value?.max, value?.min]);
 
   const commitRange = (committedRange: [number, number]) => {
@@ -246,23 +251,49 @@ function TimingPhaseSliderEditor({
     if (committedRange[1] < domain.max) next.max = committedRange[1];
     onApply(Object.keys(next).length > 0 ? next : undefined);
   };
+  const updateRange = (nextValue: number | [number, number]) => {
+    if (!Array.isArray(nextValue)) return;
+    rangeRef.current = nextValue;
+    setRange(nextValue);
+  };
+  const commitKeyboardRange = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (["ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "End", "Home", "PageDown", "PageUp"].includes(event.key)) {
+      commitRange(rangeRef.current);
+    }
+  };
 
   return (
-    <Field className="flex min-w-0 flex-col gap-2.5">
-      <FieldLabel className="px-1 text-label font-normal">{label}</FieldLabel>
-      <SliderComfortable
-        disabled={facet?.max === undefined}
-        formatValue={(current) => `${current} ms`}
-        label={label}
-        max={domain.max}
-        min={domain.min}
-        onChange={setRange}
-        onValueCommit={commitRange}
-        step={domain.step}
-        showLabel={false}
-        value={range}
-        variant="scrubber"
-      />
+    <Field className="flex min-w-0 flex-col gap-2">
+      {showLabel && <FieldLabel className="px-1 text-label font-normal">{label}</FieldLabel>}
+      <div className="grid min-w-0 grid-cols-2 gap-3 px-1 text-label text-fg-muted">
+        <span className="flex min-w-0 items-baseline justify-between gap-1.5">
+          <span>Min.</span>
+          <output className="min-w-0 truncate tabular-nums text-fg-default">{range[0]} ms</output>
+        </span>
+        <span className="flex min-w-0 items-baseline justify-between gap-1.5">
+          <span>Max.</span>
+          <output className="min-w-0 truncate tabular-nums text-fg-default">{range[1]} ms</output>
+        </span>
+      </div>
+      <div
+        data-slot="timing-phase-range-control"
+        onKeyUp={commitKeyboardRange}
+        onPointerUp={() => commitRange(rangeRef.current)}
+      >
+        <Slider
+          disabled={facet?.max === undefined}
+          formatValue={(current) => `${current} ms`}
+          label={label}
+          max={domain.max}
+          min={domain.min}
+          onChange={updateRange}
+          showHoverPreview={false}
+          showValue={false}
+          step={domain.step}
+          value={range}
+          valuePosition="top"
+        />
+      </div>
     </Field>
   );
 }
@@ -279,7 +310,7 @@ function TimingPhaseFilters({
   return (
     <div className="flex min-w-0 flex-col gap-4 py-1">
       {timingPhaseDefinitions.map((phase) => (
-        <TimingPhaseSliderEditor
+        <RangeSliderEditor
           facet={metadata?.facets.timing[phase.key]}
           key={phase.key}
           label={phase.label}
@@ -469,7 +500,13 @@ export const InfiniteLogFilters = memo(function InfiniteLogFilters({ filters, me
           <InputGroup size="sm"><InputGroupAddon><Search aria-hidden /></InputGroupAddon><InputGroupInput aria-label={labels.pathname} onChange={(event) => patch({ pathname: event.target.value })} placeholder="Search" value={filters.pathname} /></InputGroup>
         </FilterGroup>
         <FilterGroup index={7} title={labels.latency} value="latency">
-          <RangeEditor label={labels.latency} onApply={(latency) => patch({ latency })} value={filters.latency} />
+          <RangeSliderEditor
+            facet={metadata?.facets.latency}
+            label={labels.latency}
+            onApply={(latency) => patch({ latency })}
+            showLabel={false}
+            value={filters.latency}
+          />
         </FilterGroup>
         <FilterGroup index={8} title={labels.timingPhases} value="timing-phases">
           <TimingPhaseFilters metadata={metadata} onApply={patchTiming} timing={filters.timing} />
