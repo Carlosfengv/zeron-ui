@@ -280,7 +280,7 @@ export function TimeRangeHistogram({
         </div>
         <ChartContainer
           className={cn(
-            "relative aspect-auto h-[68px] min-h-0 w-full [&_.recharts-layer]:!outline-none [&_.recharts-surface]:!outline-none [&_.recharts-tooltip-wrapper]:!z-20 [&_.recharts-wrapper]:!outline-none",
+            "relative aspect-auto h-[68px] min-h-0 w-full [&_.recharts-layer]:!outline-none [&_.recharts-surface]:!outline-none [&_.recharts-tooltip-wrapper]:!z-tooltip [&_.recharts-wrapper]:!outline-none",
             chartClassName,
           )}
           config={chartConfig}

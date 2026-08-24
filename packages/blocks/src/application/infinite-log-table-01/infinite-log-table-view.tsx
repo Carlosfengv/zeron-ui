@@ -32,12 +32,14 @@ import {
 } from "react";
 import { redactInfiniteLogRecord } from "./infinite-log-data-source";
 import { infiniteLogFieldIcons } from "./infinite-log-field-icons";
+import { InfiniteLogHeaderFilter } from "./infinite-log-header-filter";
 import { infiniteLogOutcomeVisuals } from "./infinite-log-outcome";
 import { formatInfiniteLogDateTime } from "./infinite-log-time-range";
 import { formatMilliseconds, InfiniteLogTimingBar } from "./infinite-log-timing";
 import type {
   InfiniteLogMetadata,
   InfiniteLogLiveBoundary,
+  InfiniteLogFilters,
   InfiniteLogRecord,
   InfiniteLogSort,
   InfiniteLogTableLabels,
@@ -84,23 +86,14 @@ const defaultColumnSize: Record<ColumnId, number> = {
   select: 44,
   timestamp: 176,
   outcome: 120,
-  status: 96,
-  method: 104,
+  status: 120,
+  method: 120,
   host: 180,
   pathname: 280,
   region: 150,
   latency: 120,
   timing: 220,
   id: 176,
-};
-
-const minimumColumnSize: Partial<Record<ColumnId, number>> = {
-  select: 44,
-  timestamp: 144,
-  outcome: 112,
-  status: 96,
-  method: 96,
-  latency: 120,
 };
 
 const columnLabels: Record<ColumnId, keyof InfiniteLogTableLabels | "requestId"> = {
@@ -153,6 +146,7 @@ interface InfiniteLogTableViewProps {
   activeRecordId?: string;
   rows: readonly InfiniteLogRecord[];
   metadata?: InfiniteLogMetadata;
+  filters: InfiniteLogFilters;
   timeRange?: InfiniteLogTimeRange;
   sort?: InfiniteLogSort;
   selectedIds: ReadonlySet<string>;
@@ -168,6 +162,7 @@ interface InfiniteLogTableViewProps {
   pendingLiveCount: number;
   redactRecord?: (record: InfiniteLogRecord) => InfiniteLogRecord;
   onSortChange: (sort?: InfiniteLogSort) => void;
+  onFiltersChange: (filters: InfiniteLogFilters) => void;
   onTimeRangeChange: (range: TimeRangeHistogramRange) => void;
   onToggleRecord: (record: InfiniteLogRecord) => void;
   onToggleAllLoaded: () => void;
@@ -186,6 +181,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
   activeRecordId,
   rows,
   metadata,
+  filters,
   timeRange,
   sort,
   selectedIds,
@@ -201,6 +197,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
   pendingLiveCount,
   redactRecord = redactInfiniteLogRecord,
   onSortChange,
+  onFiltersChange,
   onTimeRangeChange,
   onToggleRecord,
   onToggleAllLoaded,
@@ -265,7 +262,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
       accessorFn: (record) => record[id as keyof InfiniteLogRecord],
       enableResizing: id !== "select",
       size: defaultColumnSize[id],
-      minSize: minimumColumnSize[id] ?? (id === "pathname" ? 150 : 56),
+      minSize: id === "select" ? 44 : 120,
     })),
     [],
   );
@@ -417,6 +414,58 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
     }
   };
 
+  const renderHeaderFilter = (column: ColumnId) => {
+    if (column === "outcome") {
+      const options = metadata?.facets.outcomes.values.map(({ count, value }) => ({ count, label: value, value })) ?? [];
+      if (options.length === 0) return null;
+      return <InfiniteLogHeaderFilter
+        clearLabel={labels.clear}
+        label={getColumnLabel(column, labels)}
+        onSelectedValuesChange={(outcomes) => onFiltersChange({ ...filters, outcomes: outcomes as InfiniteLogFilters["outcomes"] })}
+        options={options}
+        selectedValues={[...filters.outcomes]}
+      />;
+    }
+    if (column === "status") {
+      const options = metadata?.facets.statuses.values.map(({ count, value }) => ({ count, label: String(value), value: String(value) })) ?? [];
+      if (options.length === 0) return null;
+      return <InfiniteLogHeaderFilter
+        clearLabel={labels.clear}
+        label={getColumnLabel(column, labels)}
+        onSelectedValuesChange={(statuses) => onFiltersChange({ ...filters, statuses: statuses.map(Number) })}
+        options={options}
+        selectedValues={filters.statuses.map(String)}
+        sort={{
+          direction: sort?.field === "status" ? sort.direction : undefined,
+          onChange: (direction) => onSortChange({ field: "status", direction }),
+        }}
+      />;
+    }
+    if (column === "method") {
+      const options = metadata?.facets.methods.values.map(({ count, value }) => ({ count, label: value, value })) ?? [];
+      if (options.length === 0) return null;
+      return <InfiniteLogHeaderFilter
+        clearLabel={labels.clear}
+        label={getColumnLabel(column, labels)}
+        onSelectedValuesChange={(methods) => onFiltersChange({ ...filters, methods: methods as InfiniteLogFilters["methods"] })}
+        options={options}
+        selectedValues={[...filters.methods]}
+      />;
+    }
+    if (column === "region") {
+      const options = metadata?.facets.regions.values.map(({ count, value }) => ({ count, label: value, value })) ?? [];
+      if (options.length === 0) return null;
+      return <InfiniteLogHeaderFilter
+        clearLabel={labels.clear}
+        label={getColumnLabel(column, labels)}
+        onSelectedValuesChange={(regions) => onFiltersChange({ ...filters, regions })}
+        options={options}
+        selectedValues={[...filters.regions]}
+      />;
+    }
+    return null;
+  };
+
   const updateSort = (column: ColumnId) => {
     const field = sortForColumn(column);
     if (!field) return;
@@ -495,7 +544,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
       </div>
 
       {timelineData.length > 0 && (
-        <div className="border-b border-border-subtle bg-surface-floating px-3 py-2">
+        <div className="relative z-tooltip border-b border-border-subtle bg-surface-floating px-3 py-2">
           <div className="mb-1 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
             <span className="text-label font-medium text-fg-default">{labels.requestTrend}</span>
             <div aria-hidden className="flex items-center gap-3 text-label text-fg-muted">
@@ -547,6 +596,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
               const direction = sort?.field === field ? sort?.direction : undefined;
               const SortIcon = direction === "asc" ? ChevronUp : direction === "desc" ? ChevronDown : ChevronsUpDown;
               const header = table.getFlatHeaders().find((candidate) => candidate.column.id === column);
+              const headerFilter = renderHeaderFilter(column);
               return (
                 <div
                   aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field ? "none" : undefined}
@@ -561,15 +611,21 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                 >
                   {column === "select" ? (
                     <Checkbox aria-label="Select all loaded logs" checked={allLoadedSelected ? true : someLoadedSelected ? "indeterminate" : false} onCheckedChange={onToggleAllLoaded} />
-                  ) : field ? (
-                    <Button className={cn("-ml-2 whitespace-nowrap px-2", headerTitleClassName)} leadingIcon={infiniteLogFieldIcons[column]} onClick={() => updateSort(column)} size="sm" trailingIcon={SortIcon} type="button" variant="ghost">
-                      {getColumnLabel(column, labels)}
-                    </Button>
+                  ) : field && !headerFilter ? (
+                    <div className="flex min-w-0 flex-1 items-center">
+                      <Button className={cn("-ml-2 min-w-0 flex-1 whitespace-nowrap px-2", headerTitleClassName)} leadingIcon={infiniteLogFieldIcons[column]} onClick={() => updateSort(column)} size="sm" trailingIcon={SortIcon} type="button" variant="ghost">
+                        {getColumnLabel(column, labels)}
+                      </Button>
+                    </div>
                   ) : (
-                    <span className={cn("flex min-w-0 items-center gap-1.5", headerTitleClassName)}>
-                      <ColumnHeaderIcon column={column} />
-                      <span className="truncate">{getColumnLabel(column, labels)}</span>
-                    </span>
+                    <div className="flex min-w-0 flex-1 items-center">
+                      <span className={cn("flex min-w-0 flex-1 items-center gap-1.5", headerTitleClassName)}>
+                        <ColumnHeaderIcon column={column} />
+                        <span className="truncate">{getColumnLabel(column, labels)}</span>
+                        {field && !headerFilter && <SortIcon aria-hidden className="size-3.5 shrink-0 text-fg-muted" />}
+                      </span>
+                      {headerFilter}
+                    </div>
                   )}
                   {column !== "select" && (
                     <div

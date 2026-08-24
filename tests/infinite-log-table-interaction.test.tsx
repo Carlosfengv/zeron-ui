@@ -72,7 +72,7 @@ describe("InfiniteLogTable", () => {
     render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} records={records} /></div>);
 
     const grid = await screen.findByRole("grid", { name: "Log table" });
-    expect(within(grid).getByRole("button", { name: "Service" })).toBeTruthy();
+    expect(within(grid).getByRole("button", { name: "Filter and sort Service" })).toBeTruthy();
     expect(within(grid).getByRole("button", { name: "Duration" })).toBeTruthy();
     expect(within(grid).getByText("invoice.created")).toBeTruthy();
     expect(screen.getByRole("checkbox", { name: "billing" })).toBeTruthy();
@@ -127,7 +127,10 @@ describe("InfiniteLogTable", () => {
     const toolbar = openedInput.closest("header");
     expect(toolbar?.classList.contains("flex-nowrap")).toBe(true);
     expect(screen.getByRole("button", { name: "Refresh" }).parentElement?.classList.contains("shrink-0")).toBe(true);
-    expect(screen.getByRole("slider", { name: "Request trend time range" })).toBeTruthy();
+    const timelineSlider = screen.getByRole("slider", { name: "Request trend time range" });
+    expect(timelineSlider).toBeTruthy();
+    expect(timelineSlider.closest("section")?.parentElement?.classList.contains("z-tooltip")).toBe(true);
+    expect(timelineSlider.querySelector("[data-chart]")?.className).toContain("[&_.recharts-tooltip-wrapper]:!z-tooltip");
     expect(screen.getByText("Live").closest("button")?.hasAttribute("disabled")).toBe(true);
     expect(document.querySelectorAll('[role="row"]').length).toBeLessThan(90);
     const firstLogRow = screen.getAllByRole("checkbox", { name: /Select req_/ })[0]?.closest<HTMLElement>('[role="row"]');
@@ -142,7 +145,9 @@ describe("InfiniteLogTable", () => {
 
     const grid = screen.getByRole("grid", { name: "HTTP request log table" });
     expect(within(grid).getAllByRole("row")[0]?.classList.contains("h-control-md")).toBe(true);
-    expect(within(grid).getAllByRole("row")[0]?.querySelector<HTMLElement>(".grid")?.style.gridTemplateColumns).toContain("minmax(");
+    const httpGridTemplateColumns = within(grid).getAllByRole("row")[0]?.querySelector<HTMLElement>(".grid")?.style.gridTemplateColumns;
+    expect(httpGridTemplateColumns).toContain("minmax(");
+    expect(httpGridTemplateColumns).toContain("120px 120px");
     const pinnedHeaders = within(grid).getAllByRole("row")[0]?.querySelectorAll('[data-sticky-column]');
     expect(pinnedHeaders).toHaveLength(2);
     expect(pinnedHeaders?.[0]?.classList.contains("left-0")).toBe(true);
@@ -159,7 +164,7 @@ describe("InfiniteLogTable", () => {
     expect(successFilter.querySelector(".bg-brand")).toBeTruthy();
     expect(successTrendMarker?.getAttribute("style")).toContain("var(--brand)");
     const staticHeader = within(grid).getByRole("columnheader", { name: /Outcome/ }).querySelector("span");
-    const sortableHeader = within(grid).getByRole("button", { name: "Status" });
+    const sortableHeader = within(grid).getByRole("columnheader", { name: /Status/ }).querySelector("span");
     for (const header of [staticHeader, sortableHeader]) {
       expect(header?.classList.contains("text-body")).toBe(true);
       expect(header?.classList.contains("font-medium")).toBe(true);
@@ -174,6 +179,58 @@ describe("InfiniteLogTable", () => {
     expect(await screen.findByRole("option", { name: /api\.zeron\.dev/ })).toBeTruthy();
     expect(screen.getByText("Values", { selector: "[cmdk-group-heading]" })).toBeTruthy();
     expect(screen.queryByText("Filters", { selector: "[cmdk-group-heading]" })).toBeNull();
+  });
+
+  it("filters HTTP columns from their header dropdown with multiple checkbox selections", async () => {
+    const onStateChange = vi.fn();
+    render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} onStateChange={onStateChange} records={createMockLogRecords({ days: 2 })} /></div>);
+    const grid = await screen.findByRole("grid", { name: "HTTP request log table" });
+
+    fireEvent.click(within(grid).getByRole("button", { name: "Filter Outcome" }));
+    const outcomeOptions = await screen.findByRole("group", { name: "Filter Outcome" });
+    fireEvent.click(within(outcomeOptions).getByRole("checkbox", { name: "success" }));
+    await waitFor(() => expect(grid.querySelector('[aria-label="Outcome active filters: 1"]')?.textContent).toBe("1"));
+    fireEvent.click(within(outcomeOptions).getByRole("checkbox", { name: "warning" }));
+
+    await waitFor(() => expect(onStateChange).toHaveBeenLastCalledWith(expect.objectContaining({
+      filters: expect.objectContaining({ outcomes: ["success", "warning"] }),
+    })));
+    expect(within(grid).getByRole("button", { name: "Filter Outcome" })).toBeTruthy();
+    await waitFor(() => expect(grid.querySelector('[aria-label="Outcome active filters: 2"]')?.textContent).toBe("2"));
+
+    fireEvent.click(within(grid).getByRole("button", { name: "Filter and sort Status" }));
+    fireEvent.click(screen.getByRole("button", { name: "Sort ascending" }));
+    await waitFor(() => expect(onStateChange).toHaveBeenLastCalledWith(expect.objectContaining({
+      sort: { direction: "asc", field: "status" },
+    })));
+    await waitFor(() => expect(grid.querySelector('[aria-label="Status sorted ascending"] svg')).toBeTruthy());
+
+    fireEvent.click(within(grid).getByRole("button", { name: "Filter Method" }));
+    const methodOptions = await screen.findByRole("group", { name: "Filter Method" });
+    const methodScrollArea = methodOptions.closest<HTMLElement>('[data-slot="scroll-area"]');
+    expect(methodScrollArea?.classList.contains("h-52")).toBe(true);
+    expect(methodScrollArea?.querySelector('[data-slot="scroll-area-viewport"]')?.classList.contains("overscroll-contain")).toBe(true);
+  });
+
+  it("filters generic multi-select fields from their header dropdown", async () => {
+    const onStateChange = vi.fn();
+    const records = [
+      { id: "job-1", timestamp: "2026-08-22T00:00:00.000Z", service: "billing", event: "invoice.created" },
+      { id: "job-2", timestamp: "2026-08-22T00:01:00.000Z", service: "search", event: "index.updated" },
+    ];
+    render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} onStateChange={onStateChange} records={records} /></div>);
+    const grid = await screen.findByRole("grid", { name: "Log table" });
+
+    fireEvent.click(within(grid).getByRole("button", { name: "Filter and sort Service" }));
+    const serviceOptions = await screen.findByRole("group", { name: "Filter Service" });
+    fireEvent.click(within(serviceOptions).getByRole("checkbox", { name: "billing" }));
+    fireEvent.click(within(serviceOptions).getByRole("checkbox", { name: "search" }));
+
+    await waitFor(() => expect(onStateChange).toHaveBeenLastCalledWith(expect.objectContaining({
+      filters: expect.objectContaining({
+        fields: expect.objectContaining({ service: { operator: "isAnyOf", value: ["billing", "search"] } }),
+      }),
+    })));
   });
 
   it("filters to a selected trend range and pauses Live", async () => {
@@ -220,7 +277,8 @@ describe("InfiniteLogTable", () => {
 
   it("offers and applies common time ranges", async () => {
     const onStateChange = vi.fn();
-    render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} onStateChange={onStateChange} records={createMockLogRecords({ days: 2 })} /></div>);
+    const records = createMockLogRecords({ days: 2 });
+    render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} onStateChange={onStateChange} records={records} /></div>);
     await waitFor(() => expect(screen.getByRole("grid", { name: "HTTP request log table" })).toBeTruthy());
 
     const timeRangeSelect = screen.getByRole("combobox", { name: "Time range" });
@@ -235,6 +293,8 @@ describe("InfiniteLogTable", () => {
     })));
     const presetRange = onStateChange.mock.lastCall?.[0]?.filters.timeRange;
     expect(Date.parse(presetRange.to) - Date.parse(presetRange.from)).toBe(30 * 60_000);
+    expect(Date.parse(presetRange.to)).toBeGreaterThanOrEqual(Math.max(...records.map((record) => Date.parse(record.timestamp))));
+    await waitFor(() => expect(within(screen.getByRole("grid", { name: "HTTP request log table" })).getAllByRole("row").length).toBeGreaterThan(1));
     await waitFor(() => {
       const selection = document.querySelector<HTMLElement>('[data-slot="time-range-histogram-selection"]');
       expect(selection?.style.width).not.toBe("100%");

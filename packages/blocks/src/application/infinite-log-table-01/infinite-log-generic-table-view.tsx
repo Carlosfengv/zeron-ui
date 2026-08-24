@@ -15,11 +15,13 @@ import { cn } from "@zeron/ui/system/utils";
 import { TimeRangeHistogram, type TimeRangeHistogramRange, type TimeRangeHistogramSeries } from "@zeron/ui/time-range-histogram";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { getInfiniteLogFieldValue } from "./infinite-log-fields";
+import { InfiniteLogHeaderFilter } from "./infinite-log-header-filter";
 import { formatInfiniteLogDateTime } from "./infinite-log-time-range";
 import type {
   InfiniteLogBaseRecord,
   InfiniteLogField,
   InfiniteLogLiveBoundary,
+  InfiniteLogFilters,
   InfiniteLogMetadata,
   InfiniteLogSort,
   InfiniteLogTableLabels,
@@ -40,6 +42,7 @@ interface GenericInfiniteLogTableViewProps<TRecord extends InfiniteLogBaseRecord
   rows: readonly TRecord[];
   fields: readonly InfiniteLogField<TRecord>[];
   metadata?: InfiniteLogMetadata;
+  filters: InfiniteLogFilters;
   timeRange?: InfiniteLogTimeRange;
   sort?: InfiniteLogSort;
   selectedIds: ReadonlySet<string>;
@@ -55,6 +58,7 @@ interface GenericInfiniteLogTableViewProps<TRecord extends InfiniteLogBaseRecord
   pendingLiveCount: number;
   redactRecord: (record: TRecord) => TRecord;
   onSortChange: (sort?: InfiniteLogSort) => void;
+  onFiltersChange: (filters: InfiniteLogFilters) => void;
   onTimeRangeChange: (range: TimeRangeHistogramRange) => void;
   onToggleRecord: (record: TRecord) => void;
   onToggleAllLoaded: () => void;
@@ -110,6 +114,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
   rows,
   fields,
   metadata,
+  filters,
   timeRange,
   sort,
   selectedIds,
@@ -125,6 +130,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
   pendingLiveCount,
   redactRecord,
   onSortChange,
+  onFiltersChange,
   onTimeRangeChange,
   onToggleRecord,
   onToggleAllLoaded,
@@ -166,7 +172,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
     id: field.id,
     accessorFn: (record) => getInfiniteLogFieldValue(record, field),
     enableResizing: true,
-    minSize: field.minWidth ?? 88,
+    minSize: Math.max(field.minWidth ?? 120, 120),
     size: field.width ?? 180,
   })), [fields]);
   const table = useReactTable({
@@ -262,6 +268,36 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
     } catch { setCopied(false); }
   };
 
+  const renderHeaderFilter = (field: InfiniteLogField<TRecord>) => {
+    if (field.filter !== "multiSelect") return null;
+    const options = metadata?.fieldFacets?.[field.id]?.values?.map(({ count, value }) => ({
+      count,
+      label: String(value),
+      value: String(value),
+    })) ?? [];
+    if (options.length === 0) return null;
+    const fieldFilter = filters.fields?.[field.id];
+    const selectedValues = fieldFilter?.operator === "isAnyOf"
+      ? fieldFilter.value.map(String)
+      : [];
+    return <InfiniteLogHeaderFilter
+      clearLabel={labels.clear}
+      label={field.label ?? field.id}
+      onSelectedValuesChange={(values) => {
+        const nextFields = { ...(filters.fields ?? {}) };
+        if (values.length > 0) nextFields[field.id] = { operator: "isAnyOf", value: values };
+        else delete nextFields[field.id];
+        onFiltersChange({ ...filters, fields: nextFields });
+      }}
+      options={options}
+      selectedValues={selectedValues}
+      sort={field.sortable ? {
+        direction: sort?.field === field.id ? sort.direction : undefined,
+        onChange: (direction) => onSortChange({ field: field.id, direction }),
+      } : undefined}
+    />;
+  };
+
   return (
     <section aria-label="Log results" className="relative flex min-h-0 flex-1 flex-col overflow-hidden border-t border-border-subtle bg-surface-floating">
       <div className="flex min-h-control-lg items-center justify-between gap-2 border-b border-border-subtle bg-surface-raised px-3 py-1.5">
@@ -282,7 +318,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
       </div>
 
       {timelineData.length > 0 && series.length > 0 && (
-        <div className="border-b border-border-subtle bg-surface-floating px-3 py-2">
+        <div className="relative z-tooltip border-b border-border-subtle bg-surface-floating px-3 py-2">
           <div className="mb-1 flex items-center gap-4"><span className="text-label font-medium text-fg-default">{labels.requestTrend}</span></div>
           <TimeRangeHistogram
             ariaLabel={labels.timelineAriaLabel}
@@ -309,9 +345,13 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
             const direction = sort?.field === field.id ? sort.direction : undefined;
             const SortIcon = direction === "asc" ? ChevronUp : direction === "desc" ? ChevronDown : ChevronsUpDown;
             const header = table.getFlatHeaders().find((candidate) => candidate.column.id === field.id);
+            const headerFilter = renderHeaderFilter(field);
             return (
               <div aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field.sortable ? "none" : undefined} className={cn("relative flex h-full min-w-0 items-center border-e border-border-subtle px-3", index === 0 && "sticky left-[44px] z-control bg-surface-floating shadow-[1px_0_0_var(--border-subtle)]")} data-sticky-column={index === 0 ? field.id : undefined} key={field.id} role="columnheader">
-                {field.sortable ? <Button className="-ml-2 whitespace-nowrap px-2 text-body font-medium text-fg-default" onClick={() => onSortChange(sort?.field === field.id ? { field: field.id, direction: sort.direction === "desc" ? "asc" : "desc" } : { field: field.id, direction: "desc" })} size="sm" trailingIcon={SortIcon} type="button" variant="ghost">{field.label ?? field.id}</Button> : <span className="truncate text-body font-medium text-fg-default">{field.label ?? field.id}</span>}
+                <div className="flex min-w-0 flex-1 items-center">
+                  {field.sortable && !headerFilter ? <Button className="-ml-2 min-w-0 flex-1 whitespace-nowrap px-2 text-body font-medium text-fg-default" onClick={() => onSortChange(sort?.field === field.id ? { field: field.id, direction: sort.direction === "desc" ? "asc" : "desc" } : { field: field.id, direction: "desc" })} size="sm" trailingIcon={SortIcon} type="button" variant="ghost">{field.label ?? field.id}</Button> : <span className="flex min-w-0 flex-1 items-center gap-1.5 truncate text-body font-medium text-fg-default">{field.label ?? field.id}{field.sortable && !headerFilter && <SortIcon aria-hidden className="size-3.5 shrink-0 text-fg-muted" />}</span>}
+                  {headerFilter}
+                </div>
                 <div aria-label={`Resize ${field.label ?? field.id} column`} className="absolute inset-y-0 right-0 w-1 cursor-col-resize touch-none hover:bg-border-strong" onDoubleClick={() => table.getColumn(field.id)?.resetSize()} onMouseDown={header?.getResizeHandler()} onTouchStart={header?.getResizeHandler()} role="separator" />
               </div>
             );

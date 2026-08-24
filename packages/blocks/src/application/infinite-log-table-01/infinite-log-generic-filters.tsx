@@ -62,7 +62,7 @@ export const GenericInfiniteLogFilters = memo(function GenericInfiniteLogFilters
       <ScrollArea className="min-h-0 flex-1" viewportClassName="overscroll-contain p-2">
         <AccordionGroup className="min-w-0 w-full" defaultValue={["time-range", filterableFields[0]?.id].filter(Boolean) as string[]} type="multiple">
           <FilterGroup index={0} title={labels.timeRange} value="time-range">
-            <TimeRangeFilter labels={labels} locale={locale} onChange={(timeRange) => onChange({ ...filters, timeRange })} timeRange={filters.timeRange} timeZone={timeZone} />
+            <TimeRangeFilter labels={labels} locale={locale} metadata={metadata} onChange={(timeRange) => onChange({ ...filters, timeRange })} timeRange={filters.timeRange} timeZone={timeZone} />
           </FilterGroup>
           {filterableFields.map((field, fieldIndex) => {
             const filter = filters.fields?.[field.id];

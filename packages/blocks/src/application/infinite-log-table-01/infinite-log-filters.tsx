@@ -69,6 +69,15 @@ function toDateTimeRangeValue(timeRange?: InfiniteLogFilterState["timeRange"]): 
   return from && to ? { from, to } : undefined;
 }
 
+function latestTimelineTime(metadata?: InfiniteLogMetadata) {
+  const latest = Math.max(
+    ...((metadata?.timeline?.buckets ?? [])
+      .map((bucket) => Date.parse(bucket.end))
+      .filter(Number.isFinite)),
+  );
+  return Number.isFinite(latest) ? new Date(latest) : new Date();
+}
+
 function formatCompactCount(value: number) {
   return new Intl.NumberFormat(undefined, {
     compactDisplay: "short",
@@ -325,12 +334,14 @@ function TimingPhaseFilters({
 export function TimeRangeFilter({
   labels,
   locale,
+  metadata,
   onChange,
   timeRange,
   timeZone,
 }: {
   labels: InfiniteLogTableLabels;
   locale: string;
+  metadata?: InfiniteLogMetadata;
   onChange: (timeRange?: InfiniteLogFilterState["timeRange"]) => void;
   timeRange?: InfiniteLogFilterState["timeRange"];
   timeZone: string;
@@ -379,7 +390,7 @@ export function TimeRangeFilter({
           setCustomDialogOpen(false);
           const preset = presets.find((item) => item.id === value);
           if (preset) {
-            const nextRange = preset.resolve({ locale, now: new Date(), timeZone });
+            const nextRange = preset.resolve({ locale, now: latestTimelineTime(metadata), timeZone });
             appliedPreset.current = { id: preset.id, rangeKey: timeRangeKey(nextRange) };
             setSelection(preset.id);
             onChange(nextRange);
@@ -460,7 +471,7 @@ export const InfiniteLogFilters = memo(function InfiniteLogFilters({ filters, me
       <ScrollArea className="min-h-0 flex-1" viewportClassName="overscroll-contain p-2">
         <AccordionGroup className="min-w-0 w-full" defaultValue={["time-range", "outcome"]} type="multiple">
         <FilterGroup index={0} title={labels.timeRange} value="time-range">
-          <TimeRangeFilter labels={labels} locale={locale} onChange={(timeRange) => patch({ timeRange })} timeRange={filters.timeRange} timeZone={timeZone} />
+          <TimeRangeFilter labels={labels} locale={locale} metadata={metadata} onChange={(timeRange) => patch({ timeRange })} timeRange={filters.timeRange} timeZone={timeZone} />
         </FilterGroup>
 
         <FilterGroup index={1} title={labels.outcome} value="outcome">
