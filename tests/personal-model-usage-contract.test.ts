@@ -67,8 +67,10 @@ describe("Personal model usage call-log contract", () => {
     expect(callLogs).toContain('className="sticky left-36 z-content w-24 min-w-24 max-w-24 border-r border-border bg-surface-floating">事件类型');
     expect(callLogs).toContain('className="sticky right-0 z-content w-24 min-w-24 max-w-24 border-l border-border bg-surface-floating text-right">费用');
     expect(callLogs).toContain('group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]');
-    expect(callLogs).toContain('>事件类型</TableHead><TableHead className="w-52">目标</TableHead><TableHead className="min-w-52">内容</TableHead><TableHead className="w-24">状态</TableHead><TableHead className="w-40">Request ID<');
-    expect(callLogs).toContain(">输入消息</TableHead><TableHead>回答结果<");
+    expect(callLogs).toContain('>事件类型</TableHead><TableHead className="w-52 min-w-52 max-w-52">目标</TableHead><TableHead className="w-52 min-w-52 max-w-52">内容</TableHead><TableHead className="w-24">状态</TableHead><TableHead className="w-40">Request ID<');
+    expect(callLogs).toContain('className="sticky left-0 z-content w-36 min-w-36 max-w-36 bg-surface-floating">开始时间');
+    expect(callLogs).toContain('>输入消息</TableHead><TableHead className="w-52 min-w-52 max-w-52">回答结果</TableHead><TableHead className="w-52 min-w-52 max-w-52">调用</TableHead>');
+    expect(callLogs).toContain('className="sticky right-0 z-content w-20 min-w-20 max-w-20 border-l border-border bg-surface-floating text-right">费用');
     expect(callLogs).toContain('<Badge color="red" size="sm" variant="strong">错误');
     expect(callLogs).toContain('<Badge color="amber" size="sm" variant="strong">降级');
     expect(callLogs).toContain('<UsageFilter label="计费归属"');
