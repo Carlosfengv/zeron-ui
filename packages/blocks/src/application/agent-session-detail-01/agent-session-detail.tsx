@@ -127,7 +127,7 @@ function SessionNavigation({ activeSessionId, onSessionSelect, sessions, showSid
         <div className="space-y-1.5">
           {agentGroups.map((group) => {
             const containsActiveSession = group.sessions.some((session) => session.id === activeSessionId);
-            const open = containsActiveSession || openAgentNames.includes(group.agent);
+            const open = openAgentNames.includes(group.agent);
 
             return <SidebarGroup key={group.agent} collapsible open={open} onOpenChange={(nextOpen) => setOpenAgentNames((current) => nextOpen ? [...new Set([...current, group.agent])] : current.filter((name) => name !== group.agent))}>
               <SidebarGroupTrigger className="mb-0 h-8 gap-1 px-1.5 text-body font-semibold text-fg-default" indicator={<ChevronRight aria-hidden size={16} strokeWidth={1.5} className="shrink-0 transition-transform duration-fast group-data-[panel-open]/sidebar-group-trigger:rotate-90 motion-reduce:transition-none" />}>
