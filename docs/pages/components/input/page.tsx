@@ -5,6 +5,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AgentGuide } from "@docs/components/content/AgentGuide";
 import { useTranslations } from "next-intl";
 
 const basicCode = `import { Input } from "./components";
@@ -125,6 +126,8 @@ export default function InputDoc() {
           Text-editing controls may show their focus ring after either pointer or keyboard focus, according to the browser&apos;s <code>:focus-visible</code> behavior.
         </p>
       </DocSection>
+
+      <AgentGuide collection="components" slug="input" />
 
       <DocSection title={t("apiReference")}>
         <PropsTable props={inputProps} />

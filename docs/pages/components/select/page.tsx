@@ -15,6 +15,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AgentGuide } from "@docs/components/content/AgentGuide";
 import { useTranslations } from "next-intl";
 
 // ---------------------------------------------------------------------------
@@ -550,6 +551,8 @@ export default function SelectDoc() {
           </div>
         </ComponentPreview>
       </DocSection>
+
+      <AgentGuide collection="components" slug="select" />
 
       <DocSection title={`${t("apiReference")} — Select`}>
         <PropsTable props={localize(selectProps, "p")} />

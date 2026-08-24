@@ -2,6 +2,7 @@
 
 import { InfiniteLogTable } from "@zeron/blocks/infinite-log-table-01";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
+import { AgentGuide } from "@docs/components/content/AgentGuide";
 import { useTranslations } from "next-intl";
 
 export function InfiniteLogTableBlockDocClient({ code }: { code: string }) {
@@ -23,6 +24,7 @@ export function InfiniteLogTableBlockDocClient({ code }: { code: string }) {
       <BlockDetailSection title={t("registryBoundaryTitle")}>
         <p className="text-body text-fg-muted">{t("registryBoundaryBody")}</p>
       </BlockDetailSection>
+      <AgentGuide collection="blocks" slug="infinite-log-table-01" />
     </BlockDetailPage>
   );
 }

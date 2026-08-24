@@ -7,6 +7,7 @@ import { Button } from "@zeron/ui/button";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AgentGuide } from "@docs/components/content/AgentGuide";
 import { ScrollArea } from "@zeron/ui/scroll-area";
 import { Switch } from "@zeron/ui/switch";
 import {
@@ -543,6 +544,8 @@ const Loader = useIcon("loader");
           Buttons use <code>:focus-visible</code>: keyboard focus receives a ring, while pointer focus normally does not. Browser and user accessibility preferences that request visible focus are always respected.
         </p>
       </DocSection>
+
+      <AgentGuide collection="components" slug="button" />
 
       <DocSection title={t("apiReference")}>
         <PropsTable props={getButtonProps(t)} />
