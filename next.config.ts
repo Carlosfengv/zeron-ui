@@ -4,6 +4,11 @@ import { legacyDocRedirects, pathnameOf } from "./docs/manifest";
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@zeron/ui", "@zeron/blocks", "@zeron/icons"],
+  // Keep production builds below Vercel's memory limit. This trades a small
+  // amount of compilation time for a lower Webpack peak-memory footprint.
+  experimental: {
+    webpackMemoryOptimizations: true,
+  },
   // Keep the long-running dev server isolated from `next build`. Both commands
   // otherwise write to `.next`, and a production build can invalidate the
   // active Turbopack cache and turn every dev request into a 500 response.
