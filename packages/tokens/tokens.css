@@ -20,6 +20,7 @@
   --fg-success: light-dark(#176B3A, #9DE7B4);
   --fg-info: light-dark(#004DAF, #A1D2FE);
   --fg-neutral-status: light-dark(#555B61, #C7CBCE);
+  --fg-on-primary-action: light-dark(var(--fg-on-brand), #FFFFFF);
   --fg-on-brand: light-dark(#FFFFFF, #00040D);
   --fg-on-danger: var(--fg-on-brand);
   --fg-on-inverse: light-dark(#FFFFFF, #00040D);
@@ -171,6 +172,7 @@
   --color-fg-success: var(--fg-success);
   --color-fg-info: var(--fg-info);
   --color-fg-neutral-status: var(--fg-neutral-status);
+  --color-fg-on-primary-action: var(--fg-on-primary-action);
   --color-fg-on-brand: var(--fg-on-brand);
   --color-fg-on-danger: var(--fg-on-danger);
   --color-fg-on-inverse: var(--fg-on-inverse);

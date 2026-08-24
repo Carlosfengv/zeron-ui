@@ -93,6 +93,16 @@ const tokenData = {
       }
     },
     {
+      "name": "fg-on-primary-action",
+      "light": "var(--fg-on-brand)",
+      "dark": "#FFFFFF",
+      "usage": "主要按钮的文字和图标；浅色模式沿用品牌主题计算的前景色，深色模式保持白色",
+      "classification": {
+        "channel": "foreground",
+        "intent": "neutral"
+      }
+    },
+    {
       "name": "fg-on-brand",
       "light": "#FFFFFF",
       "dark": "#00040D",
@@ -655,6 +665,16 @@ const tokenData = {
       "classification": {
         "channel": "foreground",
         "intent": "neutral-status"
+      }
+    },
+    {
+      "name": "fg-on-primary-action",
+      "light": "var(--fg-on-brand)",
+      "dark": "#FFFFFF",
+      "usage": "主要按钮的文字和图标；浅色模式沿用品牌主题计算的前景色，深色模式保持白色",
+      "classification": {
+        "channel": "foreground",
+        "intent": "neutral"
       }
     },
     {

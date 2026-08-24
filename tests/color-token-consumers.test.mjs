@@ -36,6 +36,11 @@ describe("semantic color consumers", () => {
     expect(source).not.toContain("bg-accent");
   });
 
+  it("uses the primary-action foreground for primary button text", () => {
+    const source = read(join(UI_ROOT, "button.tsx"));
+    expect(source).toContain('primary: "text-fg-on-primary-action"');
+  });
+
   it("uses a semantic half-pixel boundary on switches", () => {
     const source = read(join(UI_ROOT, "switch.tsx"));
 

@@ -51,7 +51,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "text-fg-on-brand",
+        primary: "text-fg-on-primary-action",
         neutral: "text-fg-on-inverse",
         destructive: "text-fg-on-danger",
         secondary: "text-fg-default",

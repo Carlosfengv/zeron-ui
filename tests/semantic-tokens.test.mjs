@@ -300,10 +300,15 @@ describe("semantic token generation", () => {
       "fg-success",
       "fg-info",
       "fg-neutral-status",
+      "fg-on-primary-action",
       "fg-on-brand",
       "fg-on-danger",
       "fg-on-inverse",
     ]);
+
+    expect(
+      foregroundColorTokens.find(({ name }) => name === "fg-on-primary-action")
+    ).toMatchObject({ light: "var(--fg-on-brand)", dark: "#FFFFFF" });
 
     const generated = [
       renderGlobalsBlock(),
