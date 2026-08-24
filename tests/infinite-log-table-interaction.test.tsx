@@ -129,7 +129,7 @@ describe("InfiniteLogTable", () => {
     expect(screen.getByRole("button", { name: "Refresh" }).parentElement?.classList.contains("shrink-0")).toBe(true);
     const timelineSlider = screen.getByRole("slider", { name: "Request trend time range" });
     expect(timelineSlider).toBeTruthy();
-    expect(timelineSlider.closest("section")?.parentElement?.classList.contains("z-tooltip")).toBe(true);
+    expect(timelineSlider.closest("section")?.parentElement?.classList.contains("z-action")).toBe(true);
     expect(timelineSlider.querySelector("[data-chart]")?.className).toContain("[&_.recharts-tooltip-wrapper]:!z-tooltip");
     expect(screen.getByText("Live").closest("button")?.hasAttribute("disabled")).toBe(true);
     expect(document.querySelectorAll('[role="row"]').length).toBeLessThan(90);

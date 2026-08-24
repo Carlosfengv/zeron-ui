@@ -318,7 +318,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
       </div>
 
       {timelineData.length > 0 && series.length > 0 && (
-        <div className="relative z-tooltip border-b border-border-subtle bg-surface-floating px-3 py-2">
+        <div className="relative z-action border-b border-border-subtle bg-surface-floating px-3 py-2">
           <div className="mb-1 flex items-center gap-4"><span className="text-label font-medium text-fg-default">{labels.requestTrend}</span></div>
           <TimeRangeHistogram
             ariaLabel={labels.timelineAriaLabel}

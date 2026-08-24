@@ -544,7 +544,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
       </div>
 
       {timelineData.length > 0 && (
-        <div className="relative z-tooltip border-b border-border-subtle bg-surface-floating px-3 py-2">
+        <div className="relative z-action border-b border-border-subtle bg-surface-floating px-3 py-2">
           <div className="mb-1 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
             <span className="text-label font-medium text-fg-default">{labels.requestTrend}</span>
             <div aria-hidden className="flex items-center gap-3 text-label text-fg-muted">
