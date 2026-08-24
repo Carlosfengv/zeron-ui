@@ -75,7 +75,7 @@ const defaultLabels: InfiniteLogTableLabels = {
   showFilters: "Show filters",
   refresh: "Refresh",
   live: "Live",
-  pauseLive: "Pause live",
+  pauseLive: "Pause",
   loadMore: "Load more",
   noResults: "No request logs match these filters.",
   noMoreRows: "End of request log",
@@ -505,7 +505,7 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
           )}
           <div className="ml-auto flex shrink-0 items-center gap-1">
             <Button aria-label={labels.refresh} disabled={controller.refreshing} iconOnly onClick={controller.refresh} size="sm" type="button" variant="tertiary"><Refresh aria-hidden /></Button>
-            <Button aria-describedby={!liveAvailable ? "infinite-log-live-unavailable" : undefined} className="shrink-0 whitespace-nowrap" disabled={!liveAvailable} leadingIcon={liveActive ? Pause : Play} onClick={toggleLive} size="sm" type="button" variant={liveActive ? "secondary" : "primary"}>
+            <Button aria-describedby={!liveAvailable ? "infinite-log-live-unavailable" : undefined} className="shrink-0 whitespace-nowrap" disabled={!liveAvailable} leadingIcon={liveActive ? Pause : Play} onClick={toggleLive} size="sm" type="button" variant={liveActive ? "neutral" : "primary"}>
               {liveActive ? labels.pauseLive : labels.live}
             </Button>
             {!liveAvailable && <span className="sr-only" id="infinite-log-live-unavailable">{labels.liveUnavailable}</span>}

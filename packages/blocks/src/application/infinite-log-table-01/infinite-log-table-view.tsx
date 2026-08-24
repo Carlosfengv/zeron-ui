@@ -118,7 +118,10 @@ const columnLabels: Record<ColumnId, keyof InfiniteLogTableLabels | "requestId">
 };
 
 const headerTitleClassName = "text-body font-medium text-fg-default";
-const stickyCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-0 before:bg-hover before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
+const stickyCellInteractionClassName = "transition-colors group-hover/log-row:bg-hover group-focus-visible/log-row:bg-selection";
+const newLiveRowBackgroundClassName = "bg-[color-mix(in_oklch,var(--info-surface)_50%,var(--surface-floating))]";
+const newLiveRowHoverClassName = "hover:bg-[color-mix(in_oklch,var(--info-surface)_70%,var(--surface-floating))]";
+const stickyNewLiveRowHoverClassName = "group-hover/log-row:bg-[color-mix(in_oklch,var(--info-surface)_70%,var(--surface-floating))]";
 const timelineSeries = [
   { dataKey: "success", label: "Success", color: infiniteLogOutcomeVisuals.success.chartColor, inactiveColor: "var(--surface-raised)" },
   { dataKey: "warning", label: "Warning", color: infiniteLogOutcomeVisuals.warning.chartColor, inactiveColor: "var(--surface-base)" },
@@ -635,7 +638,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                   aria-rowindex={virtualRow.index + 2}
                   className={cn(
                     "group/log-row absolute left-0 grid min-w-full cursor-pointer border-b border-border-subtle/70 text-left outline-none transition-colors hover:bg-hover focus-visible:z-raised focus-visible:bg-selection focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring",
-                    isNewLiveRecord && "bg-info-surface/50 hover:bg-info-surface/70",
+                    isNewLiveRecord && [newLiveRowBackgroundClassName, newLiveRowHoverClassName],
                     isActiveRecord && "z-content shadow-[inset_2px_0_0_var(--brand)]",
                   )}
                   data-detail-active={isActiveRecord ? "" : undefined}
@@ -660,7 +663,9 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                           "sticky z-content",
                           stickyCellInteractionClassName,
                           column === "select" ? "left-0 justify-center px-0" : "left-[44px] shadow-[1px_0_0_var(--border-subtle)]",
-                          isNewLiveRecord ? "bg-info-surface" : "bg-surface-floating",
+                          isNewLiveRecord
+                            ? [newLiveRowBackgroundClassName, stickyNewLiveRowHoverClassName]
+                            : "bg-surface-floating",
                           column === "select" && isActiveRecord && "shadow-[inset_2px_0_0_var(--brand)]",
                         ],
                       )}
