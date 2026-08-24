@@ -4,6 +4,7 @@ import { Button } from "@zeron/ui/button";
 import { FilterQueryInput, useFilterQueryHistory } from "@zeron/ui/filter-query-input";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@zeron/ui/input-group";
 import { MobileDrawer } from "@zeron/ui/mobile-drawer";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@zeron/ui/resizable";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
 import type { TimeRangeHistogramRange } from "@zeron/ui/time-range-histogram";
@@ -82,6 +83,8 @@ const defaultLabels: InfiniteLogTableLabels = {
   copyJson: "Copy JSON",
   copySelected: "Copy selected JSON",
   copied: "Copied",
+  previousRecord: "Previous request",
+  nextRecord: "Next request",
   liveUnavailable: "Live updates are unavailable for this data source.",
   requestTrend: "Request trend",
   timelineAriaLabel: "Request trend time range",
@@ -99,6 +102,8 @@ const genericLabelOverrides: Partial<InfiniteLogTableLabels> = {
   noMoreRows: "End of log",
   requestTrend: "Log trend",
   timelineAriaLabel: "Log trend time range",
+  previousRecord: "Previous record",
+  nextRecord: "Next record",
   requestCount: (count) => `${count.toLocaleString()} ${count === 1 ? "record" : "records"}`,
   newRecords: (count) => `${count} new ${count === 1 ? "record" : "records"}`,
   newRecordsAbove: (count) => `${count} new ${count === 1 ? "record" : "records"} above`,
@@ -332,10 +337,25 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
     setDetailOpen(true);
     onRecordOpen?.(safeRecord);
   }, [onRecordOpen, redactRecord]);
-  const closeDetail = useCallback((open: boolean) => {
-    if (open) return;
+  const closeDetail = useCallback(() => {
     setDetailOpen(false);
+    setDetailRecord(undefined);
+    requestAnimationFrame(() => detailTrigger.current?.focus());
   }, []);
+  const detailRecordIndex = detailRecord
+    ? controller.rows.findIndex((record) => record.id === detailRecord.id)
+    : -1;
+  const navigateDetail = useCallback((offset: -1 | 1) => {
+    if (!detailRecord) return;
+    const currentIndex = controller.rows.findIndex((record) => record.id === detailRecord.id);
+    const nextRecord = controller.rows[currentIndex + offset];
+    if (!nextRecord) return;
+    const safeRecord = redactRecord(nextRecord);
+    setDetailRecord(safeRecord);
+    onRecordOpen?.(safeRecord);
+  }, [controller.rows, detailRecord, onRecordOpen, redactRecord]);
+  const previousDetailDisabled = detailRecordIndex <= 0;
+  const nextDetailDisabled = detailRecordIndex < 0 || detailRecordIndex >= controller.rows.length - 1;
   const emptyContent = useMemo(() => emptyState?.(commandContext), [commandContext, emptyState]);
   const errorContent = useMemo(
     () => errorState?.({ error: controller.error, retry: controller.retry }),
@@ -344,6 +364,101 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
   const queryFields = useMemo(() => createInfiniteLogFilterFields(controller.metadata), [controller.metadata]);
   const queryFieldConfigs = useMemo(() => createInfiniteLogQueryFields(timeZone, controller.metadata), [controller.metadata, timeZone]);
   const queryClauses = useMemo(() => fromInfiniteLogFilters(filterDraft), [filterDraft]);
+  const activeRecordId = detailOpen ? detailRecord?.id : undefined;
+
+  const tableView = genericMode ? <GenericInfiniteLogTableView
+    activeRecordId={activeRecordId}
+    error={controller.error}
+    errorContent={errorContent}
+    fetchingMore={controller.fetchingMore}
+    fields={fields}
+    hasNextPage={controller.hasNextPage}
+    labels={labels}
+    liveBoundary={controller.liveBoundary}
+    loading={controller.loading}
+    locale={locale}
+    metadata={genericMetadata}
+    onApplyPending={controller.applyPendingLiveRows}
+    onAtTopChange={controller.setAtTop}
+    onClearSelection={clearSelection}
+    onLoadMore={controller.loadMore}
+    onOpenRecord={openRecord}
+    onRetry={controller.retry}
+    onSortChange={updateSort}
+    onTimeRangeChange={updateTimelineRange}
+    onToggleAllLoaded={toggleAllLoaded}
+    onToggleRecord={toggleRecord}
+    emptyContent={emptyContent}
+    pendingLiveCount={controller.pendingLiveCount}
+    redactRecord={redactRecord}
+    rows={controller.rows}
+    selectedIds={selectedIds}
+    sort={state.sort}
+    tableId={tableId}
+    timeZone={timeZone}
+    timeRange={state.filters.timeRange}
+    updating={controller.refreshing}
+  /> : <InfiniteLogTableView
+    activeRecordId={activeRecordId}
+    error={controller.error}
+    errorContent={errorContent}
+    fetchingMore={controller.fetchingMore}
+    hasNextPage={controller.hasNextPage}
+    labels={labels}
+    liveBoundary={controller.liveBoundary}
+    loading={controller.loading}
+    locale={locale}
+    metadata={controller.metadata}
+    onApplyPending={controller.applyPendingLiveRows}
+    onAtTopChange={controller.setAtTop}
+    onClearSelection={clearSelection}
+    onLoadMore={controller.loadMore}
+    onOpenRecord={openRecord as unknown as (record: InfiniteLogRecord, trigger: HTMLElement) => void}
+    onRetry={controller.retry}
+    onSortChange={updateSort}
+    onTimeRangeChange={updateTimelineRange}
+    onToggleAllLoaded={toggleAllLoaded}
+    onToggleRecord={toggleRecord as unknown as (record: InfiniteLogRecord) => void}
+    emptyContent={emptyContent}
+    pendingLiveCount={controller.pendingLiveCount}
+    redactRecord={redactRecord as unknown as (record: InfiniteLogRecord) => InfiniteLogRecord}
+    rows={controller.rows as unknown as readonly InfiniteLogRecord[]}
+    selectedIds={selectedIds}
+    sort={state.sort}
+    tableId={tableId}
+    timeZone={timeZone}
+    timeRange={state.filters.timeRange}
+    updating={controller.refreshing}
+  />;
+
+  const detailView = detailRecord ? genericMode ? (
+    <GenericInfiniteLogDetail
+      fields={fields}
+      labels={labels}
+      locale={locale}
+      nextDisabled={nextDetailDisabled}
+      onClose={closeDetail}
+      onNext={() => navigateDetail(1)}
+      onPrevious={() => navigateDetail(-1)}
+      previousDisabled={previousDetailDisabled}
+      record={detailRecord}
+      renderDetail={renderDetail}
+      timeZone={timeZone}
+    />
+  ) : (
+    <InfiniteLogDetail
+      labels={labels}
+      locale={locale}
+      nextDisabled={nextDetailDisabled}
+      onClose={closeDetail}
+      onNext={() => navigateDetail(1)}
+      onPrevious={() => navigateDetail(-1)}
+      previousDisabled={previousDetailDisabled}
+      record={detailRecord as unknown as InfiniteLogRecord}
+      renderDetail={renderDetail as ((record: InfiniteLogRecord) => React.ReactNode) | undefined}
+      timeZone={timeZone}
+    />
+  ) : null;
 
   return (
     <section
@@ -397,69 +512,34 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
             {toolbarActions?.(toolbarContext)}
           </div>
         </header>
-        {genericMode ? <GenericInfiniteLogTableView
-          error={controller.error}
-          errorContent={errorContent}
-          fetchingMore={controller.fetchingMore}
-          fields={fields}
-          hasNextPage={controller.hasNextPage}
-          labels={labels}
-          liveBoundary={controller.liveBoundary}
-          loading={controller.loading}
-          locale={locale}
-          metadata={genericMetadata}
-          onApplyPending={controller.applyPendingLiveRows}
-          onAtTopChange={controller.setAtTop}
-          onClearSelection={clearSelection}
-          onLoadMore={controller.loadMore}
-          onOpenRecord={openRecord}
-          onRetry={controller.retry}
-          onSortChange={updateSort}
-          onTimeRangeChange={updateTimelineRange}
-          onToggleAllLoaded={toggleAllLoaded}
-          onToggleRecord={toggleRecord}
-          emptyContent={emptyContent}
-          pendingLiveCount={controller.pendingLiveCount}
-          redactRecord={redactRecord}
-          rows={controller.rows}
-          selectedIds={selectedIds}
-          sort={state.sort}
-          tableId={tableId}
-          timeZone={timeZone}
-          timeRange={state.filters.timeRange}
-          updating={controller.refreshing}
-        /> : <InfiniteLogTableView
-          error={controller.error}
-          errorContent={errorContent}
-          fetchingMore={controller.fetchingMore}
-          hasNextPage={controller.hasNextPage}
-          labels={labels}
-          liveBoundary={controller.liveBoundary}
-          loading={controller.loading}
-          locale={locale}
-          metadata={controller.metadata}
-          onApplyPending={controller.applyPendingLiveRows}
-          onAtTopChange={controller.setAtTop}
-          onClearSelection={clearSelection}
-          onLoadMore={controller.loadMore}
-          onOpenRecord={openRecord as unknown as (record: InfiniteLogRecord, trigger: HTMLElement) => void}
-          onRetry={controller.retry}
-          onSortChange={updateSort}
-          onTimeRangeChange={updateTimelineRange}
-          onToggleAllLoaded={toggleAllLoaded}
-          onToggleRecord={toggleRecord as unknown as (record: InfiniteLogRecord) => void}
-          emptyContent={emptyContent}
-          pendingLiveCount={controller.pendingLiveCount}
-          redactRecord={redactRecord as unknown as (record: InfiniteLogRecord) => InfiniteLogRecord}
-          rows={controller.rows as unknown as readonly InfiniteLogRecord[]}
-          selectedIds={selectedIds}
-          sort={state.sort}
-          tableId={tableId}
-          timeZone={timeZone}
-          timeRange={state.filters.timeRange}
-          updating={controller.refreshing}
-        />}
-        {footerSlot}
+        <ResizablePanelGroup
+          className="min-h-0 flex-1"
+          id={`${tableId}-workspace`}
+          orientation="horizontal"
+          resizeTargetMinimumSize={{ coarse: 32, fine: 12 }}
+        >
+          <ResizablePanel className="size-full min-w-0" id={`${tableId}-results`} minSize="16rem">
+            <div className="flex h-full w-full min-h-0 min-w-0 flex-col">
+              {tableView}
+              {footerSlot}
+            </div>
+          </ResizablePanel>
+          {detailOpen && detailView ? (
+            <>
+              <ResizableHandle aria-label="Resize log details" id={`${tableId}-detail-handle`} withHandle />
+              <ResizablePanel
+                className="size-full"
+                defaultSize="320px"
+                groupResizeBehavior="preserve-pixel-size"
+                id={`${tableId}-detail`}
+                maxSize="50%"
+                minSize="15rem"
+              >
+                {detailView}
+              </ResizablePanel>
+            </>
+          ) : null}
+        </ResizablePanelGroup>
       </div>
 
       <MobileDrawer
@@ -478,12 +558,6 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
           )}
         </div>
       </MobileDrawer>
-
-      {genericMode ? (
-        <GenericInfiniteLogDetail fields={fields} labels={labels} locale={locale} onOpenChange={closeDetail} open={detailOpen} record={detailRecord} renderDetail={renderDetail} timeZone={timeZone} triggerRef={detailTrigger} />
-      ) : (
-        <InfiniteLogDetail labels={labels} locale={locale} onOpenChange={closeDetail} open={detailOpen} record={detailRecord as unknown as InfiniteLogRecord} renderDetail={renderDetail as ((record: InfiniteLogRecord) => React.ReactNode) | undefined} timeZone={timeZone} triggerRef={detailTrigger} />
-      )}
     </section>
   );
 }

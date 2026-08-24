@@ -118,6 +118,7 @@ const columnLabels: Record<ColumnId, keyof InfiniteLogTableLabels | "requestId">
 };
 
 const headerTitleClassName = "text-body font-medium text-fg-default";
+const stickyCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-0 before:bg-hover before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
 const timelineSeries = [
   { dataKey: "success", label: "Success", color: infiniteLogOutcomeVisuals.success.chartColor, inactiveColor: "var(--surface-raised)" },
   { dataKey: "warning", label: "Warning", color: infiniteLogOutcomeVisuals.warning.chartColor, inactiveColor: "var(--surface-base)" },
@@ -146,6 +147,7 @@ function ColumnHeaderIcon({ column }: { column: Exclude<ColumnId, "select"> }) {
 
 interface InfiniteLogTableViewProps {
   tableId: string;
+  activeRecordId?: string;
   rows: readonly InfiniteLogRecord[];
   metadata?: InfiniteLogMetadata;
   timeRange?: InfiniteLogTimeRange;
@@ -178,6 +180,7 @@ interface InfiniteLogTableViewProps {
 
 export const InfiniteLogTableView = memo(function InfiniteLogTableView({
   tableId,
+  activeRecordId,
   rows,
   metadata,
   timeRange,
@@ -280,7 +283,14 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
     state: { columnOrder, columnVisibility, columnSizing },
   });
   const visibleColumns = table.getVisibleLeafColumns().map((column) => column.id as ColumnId);
-  const gridTemplateColumns = visibleColumns.map((column) => `${table.getColumn(column)?.getSize() ?? defaultColumnSize[column]}px`).join(" ");
+  const firstDataColumn = visibleColumns.find((column) => column !== "select");
+  const fluidColumn = visibleColumns.includes("pathname")
+    ? "pathname"
+    : visibleColumns.findLast((column) => column !== "select");
+  const gridTemplateColumns = visibleColumns.map((column) => {
+    const size = table.getColumn(column)?.getSize() ?? defaultColumnSize[column];
+    return column === fluidColumn ? `minmax(${size}px, 1fr)` : `${size}px`;
+  }).join(" ");
   const columnItems = useMemo<ColumnCollectionItem[]>(
     () => columnOrder
       .filter((column): column is CustomizableColumnId => column !== "select")
@@ -521,7 +531,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
         aria-busy={loading || updating || undefined}
         aria-label="HTTP request log table"
         aria-rowcount={(metadata?.filteredCount ?? rows.length) + 1 + (hasLiveBoundary ? 1 : 0)}
-        className="relative min-h-0 flex-1 overflow-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        className="relative min-h-0 flex-1 overflow-x-auto overflow-y-auto overscroll-x-contain focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         onScroll={onScroll}
         ref={viewportRef}
         role="grid"
@@ -535,7 +545,17 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
               const SortIcon = direction === "asc" ? ChevronUp : direction === "desc" ? ChevronDown : ChevronsUpDown;
               const header = table.getFlatHeaders().find((candidate) => candidate.column.id === column);
               return (
-                <div aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field ? "none" : undefined} className={cn("relative flex h-full min-w-0 items-center border-e border-border-subtle px-3 last:border-e-0", column === "select" && "justify-center px-0")} key={column} role="columnheader">
+                <div
+                  aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field ? "none" : undefined}
+                  className={cn(
+                    "relative flex h-full min-w-0 items-center border-e border-border-subtle px-3 last:border-e-0",
+                    column === "select" && "sticky left-0 z-control justify-center bg-surface-floating px-0",
+                    column === firstDataColumn && "sticky left-[44px] z-control bg-surface-floating shadow-[1px_0_0_var(--border-subtle)]",
+                  )}
+                  data-sticky-column={column === "select" || column === firstDataColumn ? column : undefined}
+                  key={column}
+                  role="columnheader"
+                >
                   {column === "select" ? (
                     <Checkbox aria-label="Select all loaded logs" checked={allLoadedSelected ? true : someLoadedSelected ? "indeterminate" : false} onCheckedChange={onToggleAllLoaded} />
                   ) : field ? (
@@ -608,13 +628,17 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
               const record = recordIndex === null ? undefined : rows[recordIndex];
               if (!record) return null;
               const isNewLiveRecord = hasLiveBoundary && recordIndex !== null && recordIndex < liveBoundaryRecordIndex;
+              const isActiveRecord = activeRecordId === record.id;
               return (
                 <div
+                  aria-selected={isActiveRecord || undefined}
                   aria-rowindex={virtualRow.index + 2}
                   className={cn(
-                    "absolute left-0 grid min-w-full cursor-pointer border-b border-border-subtle/70 text-left outline-none transition-colors hover:bg-hover focus-visible:z-raised focus-visible:bg-selection focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring",
+                    "group/log-row absolute left-0 grid min-w-full cursor-pointer border-b border-border-subtle/70 text-left outline-none transition-colors hover:bg-hover focus-visible:z-raised focus-visible:bg-selection focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring",
                     isNewLiveRecord && "bg-info-surface/50 hover:bg-info-surface/70",
+                    isActiveRecord && "z-content shadow-[inset_2px_0_0_var(--brand)]",
                   )}
+                  data-detail-active={isActiveRecord ? "" : undefined}
                   data-live-new={isNewLiveRecord ? "" : undefined}
                   key={record.id}
                   onClick={(event) => onOpenRecord(record, event.currentTarget)}
@@ -629,7 +653,21 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                   tabIndex={0}
                 >
                   {visibleColumns.map((column) => (
-                    <div className={cn("flex min-w-0 items-center overflow-hidden border-e border-border-subtle px-3 last:border-e-0", column === "select" && "justify-center px-0")} key={column} role="gridcell">{renderCell(record, column)}</div>
+                    <div
+                      className={cn(
+                        "flex min-w-0 items-center overflow-hidden border-e border-border-subtle px-3 last:border-e-0",
+                        (column === "select" || column === firstDataColumn) && [
+                          "sticky z-content",
+                          stickyCellInteractionClassName,
+                          column === "select" ? "left-0 justify-center px-0" : "left-[44px] shadow-[1px_0_0_var(--border-subtle)]",
+                          isNewLiveRecord ? "bg-info-surface" : "bg-surface-floating",
+                          column === "select" && isActiveRecord && "shadow-[inset_2px_0_0_var(--brand)]",
+                        ],
+                      )}
+                      data-sticky-column={column === "select" || column === firstDataColumn ? column : undefined}
+                      key={column}
+                      role="gridcell"
+                    >{renderCell(record, column)}</div>
                   ))}
                 </div>
               );

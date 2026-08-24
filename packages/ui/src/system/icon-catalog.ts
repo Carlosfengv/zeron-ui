@@ -203,6 +203,7 @@ export function createIconMap(
     "arrow-left": createHugeIcon(icons.ArrowLeft01Icon, options),
     "arrow-right": createHugeIcon(icons.ArrowRight01Icon, options),
     "arrow-up": createHugeIcon(icons.ArrowUp01Icon, options),
+    "arrow-down": createHugeIcon(icons.ArrowDown01Icon, options),
     search: createHugeIcon(icons.Search01Icon, options),
     loader: createHugeIcon(icons.Loading01Icon, options),
     users: createHugeIcon(icons.UserGroupIcon, options),

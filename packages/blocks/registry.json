@@ -473,7 +473,7 @@
       "description": "A schema-driven virtualized log explorer with inferred fields, dynamic filters, cursor pagination, Live tailing, and record detail.",
       "categories": ["application", "tables", "observability"],
       "dependencies": ["tw-animate-css", "@tanstack/react-table", "@tanstack/react-virtual"],
-      "registryDependencies": ["accordion", "alert", "badge", "button", "checkbox", "checkbox-group", "detail-list", "dialog", "dropdown", "empty", "field", "filter-query-input", "icon-context", "inline-notice", "input-group", "mobile-drawer", "scroll-area", "select", "sortable-collection", "temporal-picker", "time-range-histogram", "utils"],
+      "registryDependencies": ["accordion", "alert", "badge", "button", "checkbox", "checkbox-group", "detail-list", "dialog", "dropdown", "empty", "field", "filter-query-input", "icon-context", "inline-notice", "input-group", "mobile-drawer", "resizable", "scroll-area", "select", "sortable-collection", "temporal-picker", "time-range-histogram", "utils"],
       "files": [
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-types.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-types.ts" },
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-data-source.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-data-source.ts" },

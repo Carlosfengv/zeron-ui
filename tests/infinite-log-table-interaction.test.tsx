@@ -2,10 +2,17 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { InfiniteLogTable } from "../packages/blocks/src/application/infinite-log-table-01/infinite-log-table";
 import { createInfiniteLogMetadata } from "../packages/blocks/src/application/infinite-log-table-01/infinite-log-data-source";
 import { createMockLogRecords } from "../packages/blocks/src/application/infinite-log-table-01/infinite-log-mocks";
 import { defaultInfiniteLogFilters, type InfiniteLogDataSource, type InfiniteLogLiveBatch } from "../packages/blocks/src/application/infinite-log-table-01/infinite-log-types";
+
+vi.mock("@zeron/ui/resizable", () => ({
+  ResizablePanelGroup: ({ children, className, id }: { children?: ReactNode; className?: string; id?: string }) => <div className={className} data-slot="resizable-panel-group" id={id}>{children}</div>,
+  ResizablePanel: ({ children, className, id }: { children?: ReactNode; className?: string; id?: string }) => <div className={className} data-slot="resizable-panel" id={id}>{children}</div>,
+  ResizableHandle: ({ "aria-label": ariaLabel, id }: { "aria-label"?: string; id?: string }) => <div aria-label={ariaLabel} data-slot="resizable-handle" id={id} role="separator" />,
+}));
 
 class TestResizeObserver {
   constructor(private readonly callback: ResizeObserverCallback) {}
@@ -72,15 +79,39 @@ describe("InfiniteLogTable", () => {
 
     fireEvent.click(screen.getByRole("checkbox", { name: "billing" }));
     await waitFor(() => expect(within(grid).queryByText("index.updated")).toBeNull());
+    fireEvent.click(screen.getByRole("checkbox", { name: "billing" }));
+    await waitFor(() => expect(within(grid).getByText("index.updated")).toBeTruthy());
 
     const rows = within(grid).getAllByRole("row");
     expect(rows[0]?.classList.contains("h-control-md")).toBe(true);
-    const row = rows[1]!;
+    expect(rows[0]?.style.gridTemplateColumns).toContain("minmax(");
+    const genericPinnedHeaders = rows[0]?.querySelectorAll('[data-sticky-column]');
+    expect(genericPinnedHeaders).toHaveLength(2);
+    expect(genericPinnedHeaders?.[0]?.classList.contains("sticky")).toBe(true);
+    expect(genericPinnedHeaders?.[1]?.classList.contains("left-[44px]")).toBe(true);
+    const row = within(grid).getByText("invoice.created").closest<HTMLElement>('[role="row"]')!;
     expect(row.style.height).toBe("32px");
+    const genericPinnedCells = row.querySelectorAll('[data-sticky-column]');
+    expect(genericPinnedCells).toHaveLength(2);
+    expect(genericPinnedCells[0]?.classList.contains("left-0")).toBe(true);
+    expect(genericPinnedCells[1]?.classList.contains("left-[44px]")).toBe(true);
+    expect(genericPinnedCells[1]?.classList.contains("bg-surface-floating")).toBe(true);
+    expect(genericPinnedCells[1]?.classList.contains("before:bg-hover")).toBe(true);
+    expect(genericPinnedCells[1]?.classList.contains("group-hover/log-row:bg-hover")).toBe(false);
     fireEvent.keyDown(row, { key: "Enter" });
-    const dialog = await screen.findByRole("dialog", { name: /job-1 details/i });
-    expect(within(dialog).getByText("Service")).toBeTruthy();
-    expect(within(dialog).getByText("billing")).toBeTruthy();
+    const detail = await screen.findByRole("complementary", { name: /job-1 details/i });
+    expect(within(detail).getByText("Service")).toBeTruthy();
+    expect(within(detail).getByText("billing")).toBeTruthy();
+    const previousRecord = within(detail).getByRole<HTMLButtonElement>("button", { name: "Previous record" });
+    const nextRecord = within(detail).getByRole<HTMLButtonElement>("button", { name: "Next record" });
+    expect(previousRecord.disabled && nextRecord.disabled).toBe(false);
+    fireEvent.click(previousRecord.disabled ? nextRecord : previousRecord);
+    const nextDetail = await screen.findByRole("complementary", { name: /job-2 details/i });
+    const nextPreviousRecord = within(nextDetail).getByRole<HTMLButtonElement>("button", { name: "Previous record" });
+    const nextNextRecord = within(nextDetail).getByRole<HTMLButtonElement>("button", { name: "Next record" });
+    expect(nextPreviousRecord.disabled && nextNextRecord.disabled).toBe(false);
+    fireEvent.click(nextPreviousRecord.disabled ? nextNextRecord : nextPreviousRecord);
+    expect(await screen.findByRole("complementary", { name: /job-1 details/i })).toBeTruthy();
   });
 
   it("renders a virtualized HTTP request log explorer with static records", async () => {
@@ -101,9 +132,20 @@ describe("InfiniteLogTable", () => {
     expect(document.querySelectorAll('[role="row"]').length).toBeLessThan(90);
     const firstLogRow = screen.getAllByRole("checkbox", { name: /Select req_/ })[0]?.closest<HTMLElement>('[role="row"]');
     expect(firstLogRow?.style.height).toBe("32px");
+    const pinnedCells = firstLogRow?.querySelectorAll('[data-sticky-column]');
+    expect(pinnedCells).toHaveLength(2);
+    expect(pinnedCells?.[0]?.classList.contains("sticky")).toBe(true);
+    expect(pinnedCells?.[1]?.classList.contains("left-[44px]")).toBe(true);
+    expect(pinnedCells?.[1]?.classList.contains("bg-surface-floating")).toBe(true);
+    expect(pinnedCells?.[1]?.classList.contains("before:bg-hover")).toBe(true);
 
     const grid = screen.getByRole("grid", { name: "HTTP request log table" });
     expect(within(grid).getAllByRole("row")[0]?.classList.contains("h-control-md")).toBe(true);
+    expect(within(grid).getAllByRole("row")[0]?.querySelector<HTMLElement>(".grid")?.style.gridTemplateColumns).toContain("minmax(");
+    const pinnedHeaders = within(grid).getAllByRole("row")[0]?.querySelectorAll('[data-sticky-column]');
+    expect(pinnedHeaders).toHaveLength(2);
+    expect(pinnedHeaders?.[0]?.classList.contains("left-0")).toBe(true);
+    expect(pinnedHeaders?.[1]?.classList.contains("left-[44px]")).toBe(true);
     const titledHeaders = within(grid).getAllByRole("columnheader").slice(1);
     expect(titledHeaders).toHaveLength(9);
     expect(titledHeaders.every((header) => Boolean(header.querySelector("svg")))).toBe(true);
@@ -199,18 +241,46 @@ describe("InfiniteLogTable", () => {
   });
 
   it("opens the request detail from a keyboard-operable virtual row", async () => {
-    render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} records={createMockLogRecords({ days: 1 })} /></div>);
+    const records = createMockLogRecords({ days: 1 });
+    render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} records={records} /></div>);
     await waitFor(() => expect(screen.getAllByRole("row").length).toBeGreaterThan(1));
 
     const row = screen.getAllByRole("row")[1]!;
     fireEvent.keyDown(row, { key: "Enter" });
 
-    await waitFor(() => expect(screen.getByRole("dialog", { name: /request details/i })).toBeTruthy());
+    const detail = await screen.findByRole("complementary", { name: /request details/i });
+    expect(screen.getByRole("separator", { name: "Resize log details" })).toBeTruthy();
+    expect(detail.classList.contains("w-full")).toBe(true);
+    expect(row.getAttribute("aria-selected")).toBe("true");
+    expect(row.hasAttribute("data-detail-active")).toBe(true);
+    expect(row.classList.contains("shadow-[inset_2px_0_0_var(--brand)]")).toBe(true);
+    const detailPanel = detail.closest<HTMLElement>('[data-slot="resizable-panel"]');
+    expect(detailPanel?.classList.contains("size-full")).toBe(true);
+    const grid = screen.getByRole("grid", { name: "HTTP request log table" });
+    expect(grid.classList.contains("overflow-x-auto")).toBe(true);
+    const resultsPanel = grid.closest<HTMLElement>('[data-slot="resizable-panel"]');
+    expect(resultsPanel?.firstElementChild?.classList.contains("w-full")).toBe(true);
     await waitFor(() => expect(screen.getByText("Headers")).toBeTruthy());
+    const initialRecordId = detail.querySelector("header p")?.textContent;
+    const previousRequest = within(detail).getByRole<HTMLButtonElement>("button", { name: "Previous request" });
+    const nextRequest = within(detail).getByRole<HTMLButtonElement>("button", { name: "Next request" });
+    expect(previousRequest.disabled).toBe(true);
+    expect(nextRequest.disabled).toBe(false);
+    expect(previousRequest.querySelector('[data-slot="button-background"]')?.classList.contains("border")).toBe(true);
+    expect(nextRequest.querySelector('[data-slot="button-background"]')?.classList.contains("border")).toBe(true);
+    fireEvent.click(nextRequest);
+    await waitFor(() => expect(detail.querySelector("header p")?.textContent).not.toBe(initialRecordId));
+    expect(row.getAttribute("aria-selected")).not.toBe("true");
+    const nextRow = screen.getAllByRole("row")[2]!;
+    expect(nextRow.getAttribute("aria-selected")).toBe("true");
+    expect(previousRequest.disabled).toBe(false);
+    fireEvent.click(previousRequest);
+    await waitFor(() => expect(detail.querySelector("header p")?.textContent).toBe(initialRecordId));
     fireEvent.click(screen.getByRole("button", { name: "Copy JSON" }));
     await waitFor(() => expect(screen.getByText("Copied")).toBeTruthy());
     fireEvent.click(screen.getByRole("button", { name: "Close request details" }));
-    await waitFor(() => expect(screen.queryByRole("dialog", { name: /request details/i })).toBeNull());
+    await waitFor(() => expect(screen.queryByRole("complementary", { name: /request details/i })).toBeNull());
+    expect(row.hasAttribute("data-detail-active")).toBe(false);
   });
 
   it("batches facet changes before refreshing the result query", async () => {

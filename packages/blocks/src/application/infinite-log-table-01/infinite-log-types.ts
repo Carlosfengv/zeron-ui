@@ -269,6 +269,8 @@ export interface InfiniteLogTableLabels {
   copyJson: string;
   copySelected: string;
   copied: string;
+  previousRecord: string;
+  nextRecord: string;
   liveUnavailable: string;
   requestTrend: string;
   timelineAriaLabel: string;

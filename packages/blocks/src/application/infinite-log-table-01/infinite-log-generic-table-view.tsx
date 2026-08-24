@@ -11,6 +11,7 @@ import { Empty, EmptyHeader, EmptyTitle } from "@zeron/ui/empty";
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
 import { SortableCollection, type SortableCollectionItem } from "@zeron/ui/sortable-collection";
 import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
 import { TimeRangeHistogram, type TimeRangeHistogramRange, type TimeRangeHistogramSeries } from "@zeron/ui/time-range-histogram";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { getInfiniteLogFieldValue } from "./infinite-log-fields";
@@ -26,6 +27,7 @@ import type {
 } from "./infinite-log-types";
 
 const LOG_ROW_HEIGHT = 32;
+const stickyCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-0 before:bg-hover before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
 
 interface ColumnItem extends SortableCollectionItem {
   id: string;
@@ -34,6 +36,7 @@ interface ColumnItem extends SortableCollectionItem {
 
 interface GenericInfiniteLogTableViewProps<TRecord extends InfiniteLogBaseRecord> {
   tableId: string;
+  activeRecordId?: string;
   rows: readonly TRecord[];
   fields: readonly InfiniteLogField<TRecord>[];
   metadata?: InfiniteLogMetadata;
@@ -103,6 +106,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
   TRecord extends InfiniteLogBaseRecord,
 >({
   tableId: _tableId,
+  activeRecordId,
   rows,
   fields,
   metadata,
@@ -178,7 +182,11 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
     state: { columnOrder, columnSizing, columnVisibility },
   });
   const visibleFields = table.getVisibleLeafColumns().map((column) => fieldById.get(column.id)).filter((field): field is InfiniteLogField<TRecord> => Boolean(field));
-  const gridTemplateColumns = `44px ${visibleFields.map((field) => `${table.getColumn(field.id)?.getSize() ?? field.width ?? 180}px`).join(" ")}`;
+  const fluidFieldId = visibleFields.at(-1)?.id;
+  const gridTemplateColumns = `44px ${visibleFields.map((field) => {
+    const size = table.getColumn(field.id)?.getSize() ?? field.width ?? 180;
+    return field.id === fluidFieldId ? `minmax(${size}px, 1fr)` : `${size}px`;
+  }).join(" ")}`;
   const columnItems = columnOrder.flatMap((id) => {
     const field = fieldById.get(id);
     return field ? [{ id, title: field.label ?? id, removable: false } satisfies ColumnItem] : [];
@@ -294,15 +302,15 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
 
       {pendingLiveCount > 0 && <div className="absolute left-1/2 top-14 z-action -translate-x-1/2"><Button onClick={() => { onApplyPending(); requestAnimationFrame(() => viewportRef.current?.scrollTo({ top: 0, behavior: "smooth" })); }} size="sm" type="button" variant="secondary">{labels.newRecords(pendingLiveCount)}</Button></div>}
 
-      <div aria-colcount={visibleFields.length + 1} aria-busy={loading || updating || undefined} aria-label="Log table" aria-rowcount={(metadata?.filteredCount ?? rows.length) + 1} className="relative min-h-0 flex-1 overflow-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" onScroll={() => onAtTopChange((viewportRef.current?.scrollTop ?? 0) < 8)} ref={viewportRef} role="grid" tabIndex={0}>
+      <div aria-colcount={visibleFields.length + 1} aria-busy={loading || updating || undefined} aria-label="Log table" aria-rowcount={(metadata?.filteredCount ?? rows.length) + 1} className="relative min-h-0 flex-1 overflow-x-auto overflow-y-auto overscroll-x-contain focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" onScroll={() => onAtTopChange((viewportRef.current?.scrollTop ?? 0) < 8)} ref={viewportRef} role="grid" tabIndex={0}>
         <div className="sticky top-0 z-raised grid h-control-md min-w-max border-b border-border bg-surface-floating" role="row" style={{ gridTemplateColumns }}>
-          <div className="flex items-center justify-center" role="columnheader"><Checkbox aria-label="Select all loaded logs" checked={allSelected ? true : someSelected ? "indeterminate" : false} onCheckedChange={onToggleAllLoaded} /></div>
-          {visibleFields.map((field) => {
+          <div className="sticky left-0 z-control flex items-center justify-center border-e border-border-subtle bg-surface-floating" data-sticky-column="select" role="columnheader"><Checkbox aria-label="Select all loaded logs" checked={allSelected ? true : someSelected ? "indeterminate" : false} onCheckedChange={onToggleAllLoaded} /></div>
+          {visibleFields.map((field, index) => {
             const direction = sort?.field === field.id ? sort.direction : undefined;
             const SortIcon = direction === "asc" ? ChevronUp : direction === "desc" ? ChevronDown : ChevronsUpDown;
             const header = table.getFlatHeaders().find((candidate) => candidate.column.id === field.id);
             return (
-              <div aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field.sortable ? "none" : undefined} className="relative flex h-full min-w-0 items-center border-e border-border-subtle px-3" key={field.id} role="columnheader">
+              <div aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field.sortable ? "none" : undefined} className={cn("relative flex h-full min-w-0 items-center border-e border-border-subtle px-3", index === 0 && "sticky left-[44px] z-control bg-surface-floating shadow-[1px_0_0_var(--border-subtle)]")} data-sticky-column={index === 0 ? field.id : undefined} key={field.id} role="columnheader">
                 {field.sortable ? <Button className="-ml-2 whitespace-nowrap px-2 text-body font-medium text-fg-default" onClick={() => onSortChange(sort?.field === field.id ? { field: field.id, direction: sort.direction === "desc" ? "asc" : "desc" } : { field: field.id, direction: "desc" })} size="sm" trailingIcon={SortIcon} type="button" variant="ghost">{field.label ?? field.id}</Button> : <span className="truncate text-body font-medium text-fg-default">{field.label ?? field.id}</span>}
                 <div aria-label={`Resize ${field.label ?? field.id} column`} className="absolute inset-y-0 right-0 w-1 cursor-col-resize touch-none hover:bg-border-strong" onDoubleClick={() => table.getColumn(field.id)?.resetSize()} onMouseDown={header?.getResizeHandler()} onTouchStart={header?.getResizeHandler()} role="separator" />
               </div>
@@ -320,10 +328,11 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
               const recordIndex = recordIndexForVirtualIndex(virtualRow.index);
               const record = recordIndex === null ? undefined : rows[recordIndex];
               if (!record) return null;
+              const isActiveRecord = activeRecordId === record.id;
               return (
-                <div aria-rowindex={virtualRow.index + 2} className="absolute left-0 grid min-w-full cursor-pointer border-b border-border-subtle/70 outline-none transition-colors hover:bg-hover focus-visible:bg-selection focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring" key={record.id} onClick={(event) => onOpenRecord(record, event.currentTarget)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onOpenRecord(record, event.currentTarget); } }} role="row" style={{ gridTemplateColumns, height: `${virtualRow.size}px`, transform: `translateY(${virtualRow.start}px)` }} tabIndex={0}>
-                  <div className="flex items-center justify-center" role="gridcell"><Checkbox aria-label={`Select ${record.id}`} checked={selectedIds.has(record.id)} onCheckedChange={() => onToggleRecord(record)} onClick={(event) => event.stopPropagation()} /></div>
-                  {visibleFields.map((field) => <div className="flex min-w-0 items-center overflow-hidden border-e border-border-subtle px-3" key={field.id} role="gridcell">{renderValue(field, record, locale, timeZone)}</div>)}
+                <div aria-rowindex={virtualRow.index + 2} aria-selected={isActiveRecord || undefined} className={cn("group/log-row absolute left-0 grid min-w-full cursor-pointer border-b border-border-subtle/70 outline-none transition-colors hover:bg-hover focus-visible:bg-selection focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring", isActiveRecord && "z-content shadow-[inset_2px_0_0_var(--brand)]")} data-detail-active={isActiveRecord ? "" : undefined} key={record.id} onClick={(event) => onOpenRecord(record, event.currentTarget)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onOpenRecord(record, event.currentTarget); } }} role="row" style={{ gridTemplateColumns, height: `${virtualRow.size}px`, transform: `translateY(${virtualRow.start}px)` }} tabIndex={0}>
+                  <div className={cn("sticky left-0 z-content flex items-center justify-center border-e border-border-subtle bg-surface-floating", stickyCellInteractionClassName, isActiveRecord && "shadow-[inset_2px_0_0_var(--brand)]")} data-sticky-column="select" role="gridcell"><Checkbox aria-label={`Select ${record.id}`} checked={selectedIds.has(record.id)} onCheckedChange={() => onToggleRecord(record)} onClick={(event) => event.stopPropagation()} /></div>
+                  {visibleFields.map((field, index) => <div className={cn("flex min-w-0 items-center overflow-hidden border-e border-border-subtle px-3", index === 0 && ["sticky left-[44px] z-content bg-surface-floating shadow-[1px_0_0_var(--border-subtle)]", stickyCellInteractionClassName])} data-sticky-column={index === 0 ? field.id : undefined} key={field.id} role="gridcell">{renderValue(field, record, locale, timeZone)}</div>)}
                 </div>
               );
             })}

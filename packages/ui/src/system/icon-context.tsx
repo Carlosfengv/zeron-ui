@@ -190,7 +190,7 @@ export type IconName =
   | "x" | "copy" | "menu" | "dot"
   | "monitor" | "sun" | "moon" | "rectangle-horizontal" | "circle"
   | "square-library" | "clock" | "star" | "settings"
-  | "plus" | "arrow-left" | "arrow-right" | "arrow-up" | "search" | "loader"
+  | "plus" | "arrow-left" | "arrow-right" | "arrow-up" | "arrow-down" | "search" | "loader"
   | "users" | "lock" | "mail" | "bell" | "shield" | "palette"
   | "lightbulb" | "rocket" | "heart" | "paintbrush" | "brain"
   | "globe" | "user" | "image" | "link" | "check" | "rotate-ccw"
