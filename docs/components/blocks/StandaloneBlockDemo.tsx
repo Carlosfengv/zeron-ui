@@ -1,5 +1,6 @@
 "use client";
 
+import { AvailabilityMonitor } from "@zeron/blocks/availability-monitor-01";
 import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
 import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
 import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";
@@ -39,6 +40,8 @@ const fileManagerDemoItems: FileManagerItem[] = [
 
 export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "availability-monitor-01":
+      return <div className="h-full overflow-auto bg-surface-base p-4 sm:p-8"><AvailabilityMonitor className="mx-auto" /></div>;
     case "agent-trace-01":
       return <AgentTrace className="h-full min-h-0 rounded-none border-0" />;
     case "agent-session-detail-01":

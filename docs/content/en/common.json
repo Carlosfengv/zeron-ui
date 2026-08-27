@@ -154,6 +154,7 @@
       "catalog": "Searchable names generated from the free icon provider's actual exports.",
       "providers": "Free and licensed icon styles, plus the boundary for optional Pro packages.",
       "provider-create-form-01": "A three-step provider setup workflow with credential verification, model discovery, per-model availability, and final review.",
+      "availability-monitor-01": "A routing-aware service availability block with summary metrics, a 72-hour status strip, and a 24-hour comparison chart.",
       "agent-trace-01": "A turn-aware agent execution trace with local JSON upload and raw-record inspection.",
       "agent-session-detail-01": "A session detail workspace with agent navigation, session switching, and an embedded execution trace.",
       "resource-catalog-01": "A responsive model and MCP marketplace with search, sorting, page-local filters, and resource cards.",

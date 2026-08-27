@@ -3,6 +3,30 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "availability-monitor-01",
+      "type": "registry:block",
+      "title": "Availability Monitor",
+      "description": "A routing-aware service availability block with summary metrics, a 72-hour status strip, and a 24-hour comparison chart.",
+      "categories": ["application", "monitoring", "observability"],
+      "dependencies": [
+        "recharts",
+        "tw-animate-css"
+      ],
+      "registryDependencies": ["button", "chart", "container", "icon-context", "status-overview", "tooltip", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/availability-monitor-01/availability-monitor.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/availability-monitor-01/availability-monitor.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/availability-monitor-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/availability-monitor-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "file-manager-01",
       "type": "registry:block",
       "title": "File Manager",

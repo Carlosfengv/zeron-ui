@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { AvailabilityMonitor } from "@zeron/blocks/availability-monitor-01";
 import { TopNavAppShell } from "@zeron/blocks/top-nav-app-shell-01";
 import { ZaiopsOperations } from "@zeron/blocks/zaiops-operations-01";
 import { PersonalSettings } from "@zeron/blocks/personal-settings-01";
@@ -70,6 +71,10 @@ function ResponsivePreview({
 }
 
 export function BlockPreview({ name }: { name: string }) {
+  if (name === "availability-monitor-01") {
+    return <ResponsivePreview canvasHeight={760} canvasWidth={1046}><div className="min-h-full bg-surface-base p-8"><AvailabilityMonitor /></div></ResponsivePreview>;
+  }
+
   if (name === "agent-trace-01") {
     return <ResponsivePreview canvasHeight={760} canvasWidth={1160}><AgentTrace className="h-full min-h-0 rounded-none border-0" /></ResponsivePreview>;
   }

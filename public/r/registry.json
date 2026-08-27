@@ -20,6 +20,7 @@
           "color-fg-success": "var(--fg-success)",
           "color-fg-info": "var(--fg-info)",
           "color-fg-neutral-status": "var(--fg-neutral-status)",
+          "color-fg-on-primary-action": "var(--fg-on-primary-action)",
           "color-fg-on-brand": "var(--fg-on-brand)",
           "color-fg-on-danger": "var(--fg-on-danger)",
           "color-fg-on-inverse": "var(--fg-on-inverse)",
@@ -112,6 +113,7 @@
           "fg-success": "#176B3A",
           "fg-info": "#004DAF",
           "fg-neutral-status": "#555B61",
+          "fg-on-primary-action": "var(--fg-on-brand)",
           "fg-on-brand": "#FFFFFF",
           "fg-on-danger": "var(--fg-on-brand)",
           "fg-on-inverse": "#FFFFFF",
@@ -223,6 +225,7 @@
           "fg-success": "#9DE7B4",
           "fg-info": "#A1D2FE",
           "fg-neutral-status": "#C7CBCE",
+          "fg-on-primary-action": "#FFFFFF",
           "fg-on-brand": "#00040D",
           "fg-on-danger": "var(--fg-on-brand)",
           "fg-on-inverse": "#00040D",
@@ -2548,6 +2551,42 @@
           "path": "packages/ui/src/components/top-nav.tsx",
           "type": "registry:ui",
           "target": "components/ui/top-nav.tsx"
+        }
+      ]
+    },
+    {
+      "name": "availability-monitor-01",
+      "type": "registry:block",
+      "title": "Availability Monitor",
+      "description": "A routing-aware service availability block with summary metrics, a 72-hour status strip, and a 24-hour comparison chart.",
+      "categories": [
+        "application",
+        "monitoring",
+        "observability"
+      ],
+      "dependencies": [
+        "recharts",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/chart.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/status-overview.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/availability-monitor-01/availability-monitor.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/availability-monitor-01/availability-monitor.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/availability-monitor-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/availability-monitor-01/index.ts"
         }
       ]
     },

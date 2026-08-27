@@ -6,6 +6,7 @@ export type DocPageModule = { default: ComponentType };
 export type DocPageLoader = () => Promise<DocPageModule>;
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "blocks/availability-monitor-01": () => import("@docs/pages/blocks/availability-monitor-01/page"),
   "blocks/agent-trace-01": () => import("@docs/pages/blocks/agent-trace-01/page"),
   "blocks/agent-session-detail-01": () => import("@docs/pages/blocks/agent-session-detail-01/page"),
   "blocks/cluster-environment-detail-01": () => import("@docs/pages/blocks/cluster-environment-detail-01/page"),

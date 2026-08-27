@@ -1,0 +1,1 @@
+{"availabilityMonitorBlock":{"title":"可用性监控 1","description":"展示汇总指标、72 小时状态条和 24 小时路由对比趋势的服务可用性 Block。","guidance":"数据接入","guidanceBody":"可通过属性接入监控 API 返回的正常运行时间、可用性汇总、逐小时状态分段和带时间戳的趋势数据。Block 支持独立查看路由与直连曲线，并保留语义状态色和无障碍摘要。"}}

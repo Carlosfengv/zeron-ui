@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./catalog": "./src/catalog.ts",
+    "./availability-monitor-01": "./src/application/availability-monitor-01/index.ts",
     "./file-manager-01": "./src/application/file-manager-01/index.ts",
     "./agent-trace-01": "./src/application/agent-trace-01/index.ts",
     "./agent-session-detail-01": "./src/application/agent-session-detail-01/index.ts",

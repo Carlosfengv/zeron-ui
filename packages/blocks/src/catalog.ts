@@ -1,5 +1,12 @@
 export const blockCatalog = [
   {
+    name: "availability-monitor-01",
+    title: "Availability Monitor",
+    description: "A routing-aware service availability block with summary metrics, a 72-hour status strip, and a 24-hour comparison chart.",
+    categories: ["application", "monitoring", "observability"],
+    dependencies: ["button", "chart", "container", "icon-context", "status-overview", "tooltip", "recharts"],
+  },
+  {
     name: "file-manager-01",
     title: "File Manager",
     description: "A token-native, storage-agnostic file-management workspace with icon, list, and Finder-style column views.",
