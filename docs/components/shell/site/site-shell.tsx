@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { Suspense, useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -35,6 +35,42 @@ function GitHubMark() {
   );
 }
 
+interface LocaleSwitchLinkProps {
+  alternateLocalePrefix: string;
+  currentPathname: string;
+  label: string;
+  actionLabel: string;
+}
+
+function LocaleSwitchLink({
+  alternateLocalePrefix,
+  currentPathname,
+  label,
+  actionLabel,
+}: LocaleSwitchLinkProps) {
+  const searchParams = useSearchParams();
+  const href = `${localizePathname(currentPathname, alternateLocalePrefix)}${searchParams.size ? `?${searchParams}` : ""}`;
+
+  return (
+    <Button asChild aria-label={actionLabel} size="sm" variant="ghost">
+      <Link href={href}>{label}</Link>
+    </Button>
+  );
+}
+
+function LocaleSwitchLinkFallback({
+  alternateLocalePrefix,
+  currentPathname,
+  label,
+  actionLabel,
+}: LocaleSwitchLinkProps) {
+  return (
+    <Button asChild aria-label={actionLabel} size="sm" variant="ghost">
+      <Link href={localizePathname(currentPathname, alternateLocalePrefix)}>{label}</Link>
+    </Button>
+  );
+}
+
 function DocsPrimaryNavigation({
   localePrefix,
   currentPathname,
@@ -45,7 +81,6 @@ function DocsPrimaryNavigation({
   showSidebarTrigger: boolean;
 }) {
   const t = useTranslations("navigation");
-  const searchParams = useSearchParams();
   const { theme, setTheme } = useThemeContext();
   const { brandColor, setBrandColor } = useBrandColor();
   const SunIcon = useIcon("sun");
@@ -72,7 +107,6 @@ function DocsPrimaryNavigation({
   const languageActionLabel = isEnglish ? "切换至中文" : "Switch to English";
   const languageLabel = isEnglish ? "中" : "EN";
   const alternateLocalePrefix = isEnglish ? "" : "/en";
-  const languageHref = `${localizePathname(currentPathname, alternateLocalePrefix)}${searchParams.size ? `?${searchParams}` : ""}`;
   const brandLabel = isEnglish ? "Brand" : "品牌色";
 
   return (
@@ -95,7 +129,7 @@ function DocsPrimaryNavigation({
         >
           {items.map((item) => (
             <NavItem key={item.href} value={item.href} className="shrink-0">
-              <NavItemTrigger render={<Link href={item.href} />}>
+              <NavItemTrigger render={<Link href={item.href} prefetch={false} />}>
                 <NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent>
               </NavItemTrigger>
             </NavItem>
@@ -125,9 +159,23 @@ function DocsPrimaryNavigation({
           </Button>
         </Tooltip>
         <Tooltip content={languageActionLabel} side="bottom">
-          <Button asChild aria-label={languageActionLabel} size="sm" variant="ghost">
-            <Link href={languageHref}>{languageLabel}</Link>
-          </Button>
+          <Suspense
+            fallback={
+              <LocaleSwitchLinkFallback
+                actionLabel={languageActionLabel}
+                alternateLocalePrefix={alternateLocalePrefix}
+                currentPathname={currentPathname}
+                label={languageLabel}
+              />
+            }
+          >
+            <LocaleSwitchLink
+              actionLabel={languageActionLabel}
+              alternateLocalePrefix={alternateLocalePrefix}
+              currentPathname={currentPathname}
+              label={languageLabel}
+            />
+          </Suspense>
         </Tooltip>
         {showSidebarTrigger && <SidebarTrigger label={t("open")} className="xl:hidden" />}
       </TopNavActions>

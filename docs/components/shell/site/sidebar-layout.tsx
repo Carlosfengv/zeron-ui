@@ -1,12 +1,9 @@
 "use client";
 
-import { lazy, Suspense, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { internalPathname } from "@docs/components/shell/site/locale-path";
-
-const SiteShell = lazy(() =>
-  import("@docs/components/shell/site/site-shell").then((module) => ({ default: module.SiteShell }))
-);
+import { SiteShell } from "@docs/components/shell/site/site-shell";
 
 export function SidebarLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -19,11 +16,7 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
 
   if (isFullscreen) return <main className="min-h-screen">{children}</main>;
 
-  return (
-    <Suspense fallback={<div className="min-h-screen">{children}</div>}>
-      <SiteShell>{children}</SiteShell>
-    </Suspense>
-  );
+  return <SiteShell>{children}</SiteShell>;
 }
 
 export default SidebarLayout;
