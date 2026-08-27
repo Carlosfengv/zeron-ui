@@ -1659,6 +1659,27 @@
       ]
     },
     {
+      "name": "status-overview",
+      "type": "registry:ui",
+      "title": "Status Overview",
+      "description": "Inspectable timeline and node-status rail with semantic states, a shared tooltip, and keyboard navigation.",
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/status-overview.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/status-overview.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "input-message",
       "type": "registry:ui",
       "title": "Input Message",
