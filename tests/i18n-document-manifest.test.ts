@@ -32,7 +32,9 @@ describe("documentation manifest", () => {
   });
 
   it("uses one generic route and a generated page-loader map for every formal detail page", () => {
-    expect(existsSync(join(ROOT, "app/[locale]/docs/[collection]/[slug]/page.tsx"))).toBe(true);
+    expect(existsSync(join(ROOT, "app/[locale]/docs/components/[slug]/page.tsx"))).toBe(true);
+    expect(existsSync(join(ROOT, "app/[locale]/docs/blocks/[slug]/page.tsx"))).toBe(true);
+    expect(existsSync(join(ROOT, "app/[locale]/docs/icons/[slug]/page.tsx"))).toBe(true);
     const loaders = readFileSync(join(ROOT, "docs/generated/page-loaders.generated.ts"), "utf8");
     for (const entry of detailDocEntries) {
       expect(loaders).toContain(`\"${entry.collection}/${entry.slug}\"`);

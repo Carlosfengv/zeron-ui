@@ -1,14 +1,19 @@
 "use client";
 
+import { lazy, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { internalPathname } from "@docs/components/shell/site/locale-path";
-import { ComponentsDetailWorkspace } from "@docs/components/components/ComponentsGallery";
+
+const ComponentsDetailWorkspace = lazy(() =>
+  import("@docs/components/components/ComponentsGallery").then((module) => ({ default: module.ComponentsDetailWorkspace }))
+);
 
 export default function DocsLayout({ children }: { children: ReactNode }) {
   const pathname = internalPathname(usePathname());
   const isBlocksCollection = pathname === "/docs/blocks";
   const isComponentsCollection = pathname === "/docs/components";
+  const isIconsCollection = pathname === "/docs/icons";
   const isComponentsDetail = pathname.startsWith("/docs/components/");
   const isBlocksDetail = pathname.startsWith("/docs/blocks/");
   const isBlocksWorkspace = pathname === "/docs/blocks" || pathname.startsWith("/docs/blocks/");
@@ -21,12 +26,18 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
     return <div className="h-full min-h-0 w-full">{children}</div>;
   }
 
+  if (isIconsCollection) return children;
+
   if (isBlocksDetail) {
     return <div className="w-full">{children}</div>;
   }
 
   if (isComponentsDetail) {
-    return <ComponentsDetailWorkspace>{children}</ComponentsDetailWorkspace>;
+    return (
+      <Suspense fallback={<div className="h-full min-h-0 w-full">{children}</div>}>
+        <ComponentsDetailWorkspace>{children}</ComponentsDetailWorkspace>
+      </Suspense>
+    );
   }
 
   return (
