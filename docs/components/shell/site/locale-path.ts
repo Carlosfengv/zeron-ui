@@ -4,9 +4,13 @@ export function localePrefixFromPathname(pathname: string) {
 }
 
 export function internalPathname(pathname: string) {
-  const prefix = localePrefixFromPathname(pathname);
-  if (!prefix) return pathname;
-  return pathname.slice(prefix.length) || "/";
+  const normalized = pathname.toLowerCase();
+  const prefix = normalized === "/en" || normalized.startsWith("/en/")
+    ? "/en"
+    : normalized === "/zh-cn" || normalized.startsWith("/zh-cn/")
+      ? "/zh-CN"
+      : "";
+  return prefix ? pathname.slice(prefix.length) || "/" : pathname;
 }
 
 export function localizePathname(pathname: string, prefix: string) {

@@ -17,6 +17,7 @@ describe("shell and page-layout composition contract", () => {
   const componentPreview = source("docs/components/content/ComponentPreview.tsx");
   const blockDetail = source("docs/components/blocks/BlockDetailPage.tsx");
   const siteShell = source("docs/components/shell/site/site-shell.tsx");
+  const localePath = source("docs/components/shell/site/locale-path.ts");
   const docsLayout = source("app/[locale]/docs/layout.tsx");
   const componentsGallery = source("docs/components/components/ComponentsGallery.tsx");
   const topNavBlock = source("packages/blocks/src/application/top-nav-app-shell-01/top-nav-app-shell.tsx");
@@ -33,12 +34,17 @@ describe("shell and page-layout composition contract", () => {
     expect(siteShell).not.toContain('className="flex min-h-svh"');
     expect(siteShell).toContain('const isComponentsWorkspace = currentPathname === "/docs/components" || isComponentsDetail;');
     expect(siteShell).toContain('className={isComponentsWorkspace ? "h-svh overflow-hidden" : undefined}');
-    expect(docsLayout).toContain('return <div className="w-full">{children}</div>;');
+    expect(docsLayout).toContain('return <div className="h-full min-h-0 w-full">{children}</div>;');
     expect(docsLayout).not.toContain("usePathname");
     expect(docsLayout).not.toContain("max-w-[960px]");
     expect(componentsGallery).toContain('className="flex h-full min-h-0 w-full bg-surface-base"');
     expect(componentsGallery).not.toContain('className="flex h-[calc(100svh-3rem)] min-h-0 w-full bg-surface-base"');
     expect(componentsGallery).toContain('className="overflow-hidden overscroll-auto p-0"');
+  });
+
+  it("normalizes both localized documentation paths before selecting a workspace layout", () => {
+    expect(localePath).toContain('normalized === "/zh-cn" || normalized.startsWith("/zh-cn/")');
+    expect(localePath).toContain('return prefix ? pathname.slice(prefix.length) || "/" : pathname;');
   });
 
   it("makes component gallery cards clickable across their full surface", () => {
