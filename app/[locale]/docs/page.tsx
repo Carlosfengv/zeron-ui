@@ -29,5 +29,9 @@ export default async function DocsIndex({ params }: { params: Promise<{ locale: 
   const { locale } = await params;
   assertLocale(locale);
   setRequestLocale(locale);
-  return <PageMessages locale={locale} namespace="docs/introduction"><IntroductionContent /></PageMessages>;
+  return (
+    <div className="mx-auto mt-12 w-full max-w-[960px] py-20 sm:py-28 lg:mt-0">
+      <PageMessages locale={locale} namespace="docs/introduction"><IntroductionContent /></PageMessages>
+    </div>
+  );
 }

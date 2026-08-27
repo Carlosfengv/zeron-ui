@@ -66,7 +66,7 @@ export function BlockDetailPage({
   const dataModeLabel = artifact ? (isChinese ? ({ static: "静态", mock: "模拟数据", controlled: "受控数据", "api-ready": "可接 API" } as const)[artifact.dataMode] : artifact.dataMode.replace(/-/g, " ")) : "registry:block";
 
   return (
-    <article aria-labelledby="artifact-title" className="min-w-0 bg-surface-base p-3">
+    <article aria-labelledby="artifact-title" className="min-w-0 bg-surface-base p-3" data-docs-workspace="blocks">
       <div className="flex w-full flex-col">
         <header className="flex h-11 shrink-0 items-center justify-between gap-3 px-2 sm:px-3">
           <Breadcrumb>

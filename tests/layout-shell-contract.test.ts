@@ -29,12 +29,13 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("lets workspace pages fill the space below the site header without extending the document", () => {
-    expect(siteShell).toContain('className={isComponentsWorkspace ? "flex min-h-0 overflow-hidden" : "flex min-h-0"}');
+    expect(siteShell).toContain('[&:has([data-docs-workspace=blocks])>aside]:hidden');
     expect(siteShell).not.toContain('className="flex min-h-svh"');
     expect(siteShell).toContain('const isComponentsWorkspace = currentPathname === "/docs/components" || isComponentsDetail;');
     expect(siteShell).toContain('className={isComponentsWorkspace ? "h-svh overflow-hidden" : undefined}');
-    expect(docsLayout).toContain('if (isBlocksCollection) {\n    return <div className="h-[calc(100svh-3rem)] min-h-0 w-full">{children}</div>;\n  }');
-    expect(docsLayout).toContain('if (isComponentsCollection) {\n    return <div className="h-full min-h-0 w-full">{children}</div>;\n  }');
+    expect(docsLayout).toContain('return <div className="w-full">{children}</div>;');
+    expect(docsLayout).not.toContain("usePathname");
+    expect(docsLayout).not.toContain("max-w-[960px]");
     expect(componentsGallery).toContain('className="flex h-full min-h-0 w-full bg-surface-base"');
     expect(componentsGallery).not.toContain('className="flex h-[calc(100svh-3rem)] min-h-0 w-full bg-surface-base"');
     expect(componentsGallery).toContain('className="overflow-hidden overscroll-auto p-0"');
@@ -85,6 +86,7 @@ describe("shell and page-layout composition contract", () => {
 
   it("keeps block previews at a responsive 16:9 ratio and opens their chrome-free demos in a new tab", () => {
     expect(blockDetail).toContain('"aspect-video max-h-[1008px] min-h-0 min-w-0 w-full overflow-hidden rounded-xl"');
+    expect(blockDetail).toContain('data-docs-workspace="blocks"');
     expect(blockDetail).not.toContain("previewMinHeightClass");
     expect(blockDetail).not.toContain("requiresPreviewActivation");
     expect(blockDetail).not.toContain("inert=");

@@ -232,7 +232,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
             showSidebarTrigger={hasDocumentationSidebar}
           />
         </AppShellHeader>
-        <AppShellMain className={isComponentsWorkspace ? "flex min-h-0 overflow-hidden" : "flex min-h-0"}>
+        <AppShellMain className={isComponentsWorkspace ? "flex min-h-0 overflow-hidden [&:has([data-docs-workspace=blocks])>aside]:hidden" : "flex min-h-0 [&:has([data-docs-workspace=blocks])>aside]:hidden"}>
           {hasDocumentationSidebar && <AppShellSidebar><DocsSidebar localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} /></AppShellSidebar>}
           <div className="min-h-0 min-w-0 flex-1">{children}</div>
           {!isBlocksWorkspace && !isGuidesWorkspace && currentPathname !== "/docs/components" && !isComponentsDetail && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
