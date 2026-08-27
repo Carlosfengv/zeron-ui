@@ -56,6 +56,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/filter-query-input": () => import("@docs/pages/components/filter-query-input/page"),
   "components/detail-list": () => import("@docs/pages/components/detail-list/page"),
   "components/metric-card": () => import("@docs/pages/components/metric-card/page"),
+  "components/status-overview": () => import("@docs/pages/components/status-overview/page"),
   "components/dialog": () => import("@docs/pages/components/dialog/page"),
   "components/dropdown": () => import("@docs/pages/components/dropdown/page"),
   "components/empty": () => import("@docs/pages/components/empty/page"),

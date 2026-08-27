@@ -122,6 +122,7 @@
       "filter-query-input": "Structured cmdk query input with configurable fields, aliases, codecs, and portable filter clauses.",
       "detail-list": "Framed label-value list with grouped sections and separators for compact resource and entity details.",
       "metric-card": "Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction.",
+      "status-overview": "Inspectable timeline and node-status rail with semantic states, a shared tooltip, and keyboard navigation.",
       "dialog": "Modal dialog with smooth enter/exit animations and overlay.",
       "dropdown": "Menu-style dropdown with proximity hover and animated backgrounds.",
       "field": "Accessible form composition for labels, descriptions, validation messages, groups, and fieldsets.",
