@@ -32,7 +32,7 @@ const Container = forwardRef<HTMLDivElement, ContainerProps>(
         ref={ref}
         data-slot="container"
         className={cn(
-          "flex min-h-0 min-w-0 flex-col rounded-3xl bg-surface-raised p-2",
+          "flex min-h-0 min-w-0 flex-col gap-2 rounded-3xl bg-surface-raised p-2",
           className
         )}
         {...props}
@@ -49,7 +49,7 @@ const ContainerHeader = forwardRef<HTMLElement, ContainerHeaderProps>(
       ref={ref}
       data-slot="container-header"
       className={cn(
-        "flex shrink-0 min-w-0 flex-wrap items-center justify-between gap-2 px-3 py-2",
+        "flex shrink-0 min-w-0 flex-wrap items-center justify-between gap-2 px-3",
         className
       )}
       {...props}
