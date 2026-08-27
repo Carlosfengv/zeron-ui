@@ -28,9 +28,9 @@ const resourceCatalogDoc = readFileSync(
 describe("Resource Catalog gallery preview", () => {
   it("renders a scaled ResourceCatalog preview instead of an empty card", () => {
     expect(blockPreview).toContain(
-      'import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";'
+      'import("@zeron/blocks/resource-catalog-01")'
     );
-    expect(blockPreview).toContain('if (name === "resource-catalog-01")');
+    expect(blockPreview).toContain('"resource-catalog-01": () =>');
     expect(blockPreview).toContain('<ResourceCatalog />');
     expect(blockPreview).toContain('ResponsivePreview canvasHeight={900} canvasWidth={1560}><ResourceCatalog /></ResponsivePreview>');
     expect(blockPreview).toContain('container.clientWidth / canvasWidth');

@@ -1,31 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { AvailabilityMonitor } from "@zeron/blocks/availability-monitor-01";
-import { TopNavAppShell } from "@zeron/blocks/top-nav-app-shell-01";
-import { ZaiopsOperations } from "@zeron/blocks/zaiops-operations-01";
-import { PersonalSettings } from "@zeron/blocks/personal-settings-01";
-import { PersonalModelUsage } from "@zeron/blocks/personal-model-usage-01";
-import { PersonalUsage } from "@zeron/blocks/personal-usage-01";
-import { ResourceSettings } from "@zeron/blocks/resource-settings-01";
-import { ResourceDetails } from "@zeron/blocks/resource-details-01";
-import { ResourceListTable } from "@zeron/blocks/resource-list-table-01";
-import { InfiniteLogTable } from "@zeron/blocks/infinite-log-table-01";
-import { FileManager, type FileManagerItem } from "@zeron/blocks/file-manager-01";
-import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
-import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
-import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
-import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
-import { McpDetail } from "@zeron/blocks/mcp-detail-01";
-import { ModelDetail } from "@zeron/blocks/model-detail-01";
-import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
-import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
-import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";
-import { MonitoringAlertList } from "@zeron/blocks/monitoring-alert-list-01";
-import { ServiceManagement } from "@zeron/blocks/service-management-01";
-import { ZlrList } from "@zeron/blocks/zlrlist";
-import { AgentTrace } from "@zeron/blocks/agent-trace-01";
-import { AgentSessionDetail } from "@zeron/blocks/agent-session-detail-01";
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
+import type { FileManagerItem } from "@zeron/blocks/file-manager-01";
 
 const fileManagerPreviewItems: FileManagerItem[] = [
   { id: "design", kind: "folder", name: "Design", parentId: null, modifiedAt: "2026-08-18" },
@@ -33,6 +9,9 @@ const fileManagerPreviewItems: FileManagerItem[] = [
   { id: "brief", kind: "file", name: "Project brief.pdf", parentId: null, extension: "pdf", size: 2_450_000, modifiedAt: "2026-08-20" },
   { id: "roadmap", kind: "file", name: "Roadmap.xlsx", parentId: null, extension: "xlsx", size: 645_000, modifiedAt: "2026-08-19" },
 ];
+
+type PreviewModule = { default: ComponentType };
+type PreviewLoader = () => Promise<PreviewModule>;
 
 function ResponsivePreview({
   canvasHeight,
@@ -60,168 +39,143 @@ function ResponsivePreview({
 
   return (
     <div ref={containerRef} className={`relative aspect-video w-full overflow-hidden ${surface}`}>
-      <div
-        className="origin-top-left"
-        style={{ height: canvasHeight, transform: `scale(${scale})`, width: canvasWidth }}
-      >
+      <div className="origin-top-left" style={{ height: canvasHeight, transform: `scale(${scale})`, width: canvasWidth }}>
         {children}
       </div>
     </div>
   );
 }
 
-export function BlockPreview({ name }: { name: string }) {
-  if (name === "availability-monitor-01") {
-    return <ResponsivePreview canvasHeight={760} canvasWidth={1046}><div className="min-h-full bg-surface-base p-8"><AvailabilityMonitor /></div></ResponsivePreview>;
-  }
-
-  if (name === "agent-trace-01") {
-    return <ResponsivePreview canvasHeight={760} canvasWidth={1160}><AgentTrace className="h-full min-h-0 rounded-none border-0" /></ResponsivePreview>;
-  }
-
-  if (name === "agent-session-detail-01") {
-    return <ResponsivePreview canvasHeight={760} canvasWidth={1160}><AgentSessionDetail className="h-full min-h-0" /></ResponsivePreview>;
-  }
-
-  if (name === "mcp-detail-01") {
-    return (
-      <ResponsivePreview canvasHeight={900} canvasWidth={1320}><McpDetail /></ResponsivePreview>
-    );
-  }
-
-  if (name === "model-detail-01") {
-    return (
-      <ResponsivePreview canvasHeight={900} canvasWidth={1320}><ModelDetail /></ResponsivePreview>
-    );
-  }
-
-  if (name === "cluster-environment-detail-01") {
-    return (
-      <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ClusterEnvironmentDetail /></ResponsivePreview>
-    );
-  }
-
-  if (name === "cluster-environment-list-01") {
-    return (
-      <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ClusterEnvironmentList /></ResponsivePreview>
-    );
-  }
-
-  if (name === "inspection-report-list-01") {
-    return (
-      <ResponsivePreview canvasHeight={760} canvasWidth={1280}><InspectionReportList className="h-full min-h-0" /></ResponsivePreview>
-    );
-  }
-
-  if (name === "monitoring-alert-list-01") {
-    return (
-      <ResponsivePreview canvasHeight={760} canvasWidth={1280}><MonitoringAlertList className="h-full min-h-0" /></ResponsivePreview>
-    );
-  }
-
-  if (name === "service-management-01") {
-    return (
-      <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ServiceManagement className="h-full min-h-0" /></ResponsivePreview>
-    );
-  }
-
-  if (name === "personal-settings-01") {
-    return (
-      <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalSettings /></ResponsivePreview>
-    );
-  }
-
-  if (name === "personal-model-usage-01") {
-    return <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalModelUsage /></ResponsivePreview>;
-  }
-
-  if (name === "personal-usage-01") {
-    return <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalUsage /></ResponsivePreview>;
-  }
-
-  if (name === "resource-settings-01") {
-    return <ResponsivePreview canvasHeight={900} canvasWidth={960}><ResourceSettings /></ResponsivePreview>;
-  }
-
-  if (name === "provider-create-form-01") {
-    return (
-      <ResponsivePreview canvasHeight={760} canvasWidth={960}><ProviderCreateForm /></ResponsivePreview>
-    );
-  }
-
-  if (name === "resource-catalog-01") {
-    return (
-      <ResponsivePreview canvasHeight={900} canvasWidth={1560}><ResourceCatalog /></ResponsivePreview>
-    );
-  }
-
-  if (name === "resource-details-01") {
-    return (
-      <ResponsivePreview canvasHeight={520} canvasWidth={400}><ResourceDetails /></ResponsivePreview>
-    );
-  }
-
-  if (name === "resource-metric-list-01") {
-    return (
-      <ResponsivePreview canvasHeight={560} canvasWidth={700}><ResourceMetricList /></ResponsivePreview>
-    );
-  }
-
-  if (name === "resource-list-table-01") {
-    return (
-      <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><ResourceListTable /></ResponsivePreview>
-    );
-  }
-
-  if (name === "infinite-log-table-01") {
-    return (
-      <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><InfiniteLogTable className="h-full rounded-none border-0" /></ResponsivePreview>
-    );
-  }
-
-  if (name === "file-manager-01") {
-    return (
-      <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised">
-        <FileManager className="h-full rounded-none border-0" items={fileManagerPreviewItems} />
-      </ResponsivePreview>
-    );
-  }
-
-  if (name === "resource-status-all-01") {
-    return (
-      <ResponsivePreview canvasHeight={560} canvasWidth={701}><ResourceStatusAll /></ResponsivePreview>
-    );
-  }
-
-  if (name === "top-nav-app-shell-01") {
-    return (
+const previewLoaders: Record<string, PreviewLoader> = {
+  "availability-monitor-01": () => import("@zeron/blocks/availability-monitor-01").then(({ AvailabilityMonitor }) => ({
+    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1046}><div className="min-h-full bg-surface-base p-8"><AvailabilityMonitor /></div></ResponsivePreview>,
+  })),
+  "agent-trace-01": () => import("@zeron/blocks/agent-trace-01").then(({ AgentTrace }) => ({
+    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1160}><AgentTrace className="h-full min-h-0 rounded-none border-0" /></ResponsivePreview>,
+  })),
+  "agent-session-detail-01": () => import("@zeron/blocks/agent-session-detail-01").then(({ AgentSessionDetail }) => ({
+    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1160}><AgentSessionDetail className="h-full min-h-0" /></ResponsivePreview>,
+  })),
+  "mcp-detail-01": () => import("@zeron/blocks/mcp-detail-01").then(({ McpDetail }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1320}><McpDetail /></ResponsivePreview>,
+  })),
+  "model-detail-01": () => import("@zeron/blocks/model-detail-01").then(({ ModelDetail }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1320}><ModelDetail /></ResponsivePreview>,
+  })),
+  "cluster-environment-detail-01": () => import("@zeron/blocks/cluster-environment-detail-01").then(({ ClusterEnvironmentDetail }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ClusterEnvironmentDetail /></ResponsivePreview>,
+  })),
+  "cluster-environment-list-01": () => import("@zeron/blocks/cluster-environment-list-01").then(({ ClusterEnvironmentList }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ClusterEnvironmentList /></ResponsivePreview>,
+  })),
+  "inspection-report-list-01": () => import("@zeron/blocks/inspection-report-list-01").then(({ InspectionReportList }) => ({
+    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><InspectionReportList className="h-full min-h-0" /></ResponsivePreview>,
+  })),
+  "monitoring-alert-list-01": () => import("@zeron/blocks/monitoring-alert-list-01").then(({ MonitoringAlertList }) => ({
+    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><MonitoringAlertList className="h-full min-h-0" /></ResponsivePreview>,
+  })),
+  "service-management-01": () => import("@zeron/blocks/service-management-01").then(({ ServiceManagement }) => ({
+    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ServiceManagement className="h-full min-h-0" /></ResponsivePreview>,
+  })),
+  "personal-settings-01": () => import("@zeron/blocks/personal-settings-01").then(({ PersonalSettings }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalSettings /></ResponsivePreview>,
+  })),
+  "personal-model-usage-01": () => import("@zeron/blocks/personal-model-usage-01").then(({ PersonalModelUsage }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalModelUsage /></ResponsivePreview>,
+  })),
+  "personal-usage-01": () => import("@zeron/blocks/personal-usage-01").then(({ PersonalUsage }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalUsage /></ResponsivePreview>,
+  })),
+  "resource-settings-01": () => import("@zeron/blocks/resource-settings-01").then(({ ResourceSettings }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><ResourceSettings /></ResponsivePreview>,
+  })),
+  "provider-create-form-01": () => import("@zeron/blocks/provider-create-form-01").then(({ ProviderCreateForm }) => ({
+    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={960}><ProviderCreateForm /></ResponsivePreview>,
+  })),
+  "resource-catalog-01": () => import("@zeron/blocks/resource-catalog-01").then(({ ResourceCatalog }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1560}><ResourceCatalog /></ResponsivePreview>,
+  })),
+  "resource-details-01": () => import("@zeron/blocks/resource-details-01").then(({ ResourceDetails }) => ({
+    default: () => <ResponsivePreview canvasHeight={520} canvasWidth={400}><ResourceDetails /></ResponsivePreview>,
+  })),
+  "resource-metric-list-01": () => import("@zeron/blocks/resource-metric-list-01").then(({ ResourceMetricList }) => ({
+    default: () => <ResponsivePreview canvasHeight={560} canvasWidth={700}><ResourceMetricList /></ResponsivePreview>,
+  })),
+  "resource-list-table-01": () => import("@zeron/blocks/resource-list-table-01").then(({ ResourceListTable }) => ({
+    default: () => <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><ResourceListTable /></ResponsivePreview>,
+  })),
+  "infinite-log-table-01": () => import("@zeron/blocks/infinite-log-table-01").then(({ InfiniteLogTable }) => ({
+    default: () => <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><InfiniteLogTable className="h-full rounded-none border-0" /></ResponsivePreview>,
+  })),
+  "file-manager-01": () => import("@zeron/blocks/file-manager-01").then(({ FileManager }) => ({
+    default: () => <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><FileManager className="h-full rounded-none border-0" items={fileManagerPreviewItems} /></ResponsivePreview>,
+  })),
+  "resource-status-all-01": () => import("@zeron/blocks/resource-status-all-01").then(({ ResourceStatusAll }) => ({
+    default: () => <ResponsivePreview canvasHeight={560} canvasWidth={701}><ResourceStatusAll /></ResponsivePreview>,
+  })),
+  "top-nav-app-shell-01": () => import("@zeron/blocks/top-nav-app-shell-01").then(({ TopNavAppShell }) => ({
+    default: () => (
       <ResponsivePreview canvasHeight={560} canvasWidth={960}>
-        <TopNavAppShell
-          className="h-full min-h-0 border-0"
-          brand="Zentrix"
-          context={null}
-          activeHref="#mcp"
-          navigation={[{ label: "Home", href: "#home" }, { label: "Models", href: "#models" }, { label: "MCP", href: "#mcp" }]}
-        >
-          <div className="p-5">
-            <p className="text-label text-fg-muted">MCP marketplace</p>
-            <p className="mt-2 text-title font-semibold text-fg-default">A focused capability surface.</p>
-          </div>
+        <TopNavAppShell className="h-full min-h-0 border-0" brand="Zentrix" context={null} activeHref="#mcp" navigation={[{ label: "Home", href: "#home" }, { label: "Models", href: "#models" }, { label: "MCP", href: "#mcp" }]}>
+          <div className="p-5"><p className="text-label text-fg-muted">MCP marketplace</p><p className="mt-2 text-title font-semibold text-fg-default">A focused capability surface.</p></div>
         </TopNavAppShell>
       </ResponsivePreview>
-    );
-  }
+    ),
+  })),
+  "zaiops-operations-01": () => import("@zeron/blocks/zaiops-operations-01").then(({ ZaiopsOperations }) => ({
+    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ZaiopsOperations className="h-full min-h-0" /></ResponsivePreview>,
+  })),
+  zlrlist: () => import("@zeron/blocks/zlrlist").then(({ ZlrList }) => ({
+    default: () => <ResponsivePreview canvasHeight={800} canvasWidth={1280}><ZlrList /></ResponsivePreview>,
+  })),
+};
 
-  if (name === "zaiops-operations-01") {
-    return (
-      <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ZaiopsOperations className="h-full min-h-0" /></ResponsivePreview>
-    );
-  }
+function PreviewPlaceholder() {
+  return <div aria-hidden="true" className="aspect-video w-full animate-pulse bg-surface-raised" />;
+}
 
-  if (name === "zlrlist") {
-    return (
-      <ResponsivePreview canvasHeight={800} canvasWidth={1280}><ZlrList /></ResponsivePreview>
+function usePreviewVisibility() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    if (!("IntersectionObserver" in window)) {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setIsVisible(true);
+        observer.disconnect();
+      },
+      { rootMargin: "480px 0px" },
     );
-  }
-  return null;
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return { isVisible, ref };
+}
+
+export function BlockPreview({ name }: { name: string }) {
+  const { isVisible, ref } = usePreviewVisibility();
+  const [Preview, setPreview] = useState<ComponentType | null>(null);
+  const loader = previewLoaders[name];
+
+  useEffect(() => {
+    if (!isVisible || !loader || Preview) return;
+    let cancelled = false;
+    void loader().then((module) => {
+      if (!cancelled) setPreview(() => module.default);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [Preview, isVisible, loader]);
+
+  return <div ref={ref} className="w-full">{Preview ? <Preview /> : <PreviewPlaceholder />}</div>;
 }
