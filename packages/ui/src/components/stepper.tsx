@@ -675,7 +675,7 @@ function StepperItem(props: StepperItemProps) {
         dir: context.dir,
         ref,
         className: cn(
-          "relative flex items-center p-2 transition-colors duration-fast data-[state=active]:bg-hover",
+          "relative flex items-center transition-colors duration-fast data-[state=active]:bg-hover",
           orientation === "horizontal"
             ? "flex-row"
             : "w-full flex-col items-start",
@@ -993,11 +993,11 @@ function StepperTrigger(props: ButtonProps) {
         tabIndex: isTabStop ? 0 : -1,
         ref: composedRef,
         className: cn(
-          "inline-flex items-center justify-center gap-3 text-left outline-none transition-[color,box-shadow] duration-fast",
+          "inline-flex items-center justify-center gap-3 px-2 py-1.5 pl-1.5 text-left outline-none transition-[color,box-shadow] duration-fast [&:has([data-slot=description])]:pl-2",
           "focus-visible:ring-1 focus-visible:ring-focus-ring",
           "disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-1 aria-invalid:ring-danger-border/40 aria-invalid:focus-visible:outline-1 aria-invalid:focus-visible:outline-focus-ring aria-invalid:focus-visible:outline-offset-2",
           "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-          "rounded-lg",
+          "rounded-2xl",
           className,
         ),
         onClick,
