@@ -29,7 +29,7 @@ import type {
 } from "./infinite-log-types";
 
 const LOG_ROW_HEIGHT = 32;
-const stickyCellInteractionClassName = "transition-colors group-hover/log-row:bg-hover group-focus-visible/log-row:bg-selection";
+const stickyCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-0 before:bg-hover before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
 
 interface ColumnItem extends SortableCollectionItem {
   id: string;
@@ -363,7 +363,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
             {renderedRows.map((virtualRow) => {
               if (hasLiveBoundary && virtualRow.index === liveBoundaryRecordIndex) {
                 const label = labels.newRecordsAbove(liveBoundaryRecordIndex);
-                return <div aria-label={label} aria-rowindex={virtualRow.index + 2} className="absolute left-0 flex min-w-full items-center border-y border-border bg-surface-raised px-3" key={`boundary:${liveBoundary?.recordId}`} role="row" style={{ height: `${virtualRow.size}px`, transform: `translateY(${virtualRow.start}px)` }}>{label}</div>;
+                return <div aria-label={label} aria-rowindex={virtualRow.index + 2} className="absolute left-0 grid min-w-full items-center border-y border-border bg-surface-raised" key={`boundary:${liveBoundary?.recordId}`} role="row" style={{ gridTemplateColumns, height: `${virtualRow.size}px`, top: `${virtualRow.start}px` }}><div aria-colspan={visibleFields.length + 1} className="sticky left-0 flex h-full w-full max-w-[100vw] justify-self-start items-center px-3" role="gridcell" style={{ gridColumn: "1 / -1" }}>{label}</div></div>;
               }
               const recordIndex = recordIndexForVirtualIndex(virtualRow.index);
               const record = recordIndex === null ? undefined : rows[recordIndex];

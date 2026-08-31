@@ -111,10 +111,10 @@ const columnLabels: Record<ColumnId, keyof InfiniteLogTableLabels | "requestId">
 };
 
 const headerTitleClassName = "text-body font-medium text-fg-default";
-const stickyCellInteractionClassName = "transition-colors group-hover/log-row:bg-hover group-focus-visible/log-row:bg-selection";
+const stickyCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-0 before:bg-hover before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
+const stickyNewLiveCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-0 before:bg-[color-mix(in_oklch,var(--info-surface)_70%,var(--surface-floating))] before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
 const newLiveRowBackgroundClassName = "bg-[color-mix(in_oklch,var(--info-surface)_50%,var(--surface-floating))]";
 const newLiveRowHoverClassName = "hover:bg-[color-mix(in_oklch,var(--info-surface)_70%,var(--surface-floating))]";
-const stickyNewLiveRowHoverClassName = "group-hover/log-row:bg-[color-mix(in_oklch,var(--info-surface)_70%,var(--surface-floating))]";
 const timelineSeries = [
   { dataKey: "success", label: "Success", color: infiniteLogOutcomeVisuals.success.chartColor, inactiveColor: "var(--surface-raised)" },
   { dataKey: "warning", label: "Warning", color: infiniteLogOutcomeVisuals.warning.chartColor, inactiveColor: "var(--surface-base)" },
@@ -669,12 +669,12 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                   <div
                     aria-label={label}
                     aria-rowindex={virtualRow.index + 2}
-                    className="absolute left-0 flex min-w-full items-center border-y border-border bg-surface-raised"
+                    className="absolute left-0 grid min-w-full items-center border-y border-border bg-surface-raised"
                     key={`live-boundary:${liveBoundary?.recordId ?? "unknown"}`}
                     role="row"
-                    style={{ height: `${virtualRow.size}px`, transform: `translateY(${virtualRow.start}px)` }}
+                    style={{ gridTemplateColumns, height: `${virtualRow.size}px`, top: `${virtualRow.start}px` }}
                   >
-                    <div aria-colspan={visibleColumns.length} className="sticky left-0 flex h-full w-[min(32rem,100vw)] items-center gap-2 px-3" role="gridcell">
+                    <div aria-colspan={visibleColumns.length} className="sticky left-0 flex h-full w-full max-w-[100vw] justify-self-start items-center gap-2 px-3" role="gridcell" style={{ gridColumn: "1 / -1" }}>
                       <span aria-hidden className="h-px w-6 shrink-0 bg-border-strong" />
                       <span aria-live="polite" className="whitespace-nowrap text-label font-medium text-fg-default">{label}</span>
                       <span aria-hidden className="h-px min-w-8 flex-1 bg-border-strong" />
@@ -717,11 +717,9 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                         "flex min-w-0 items-center overflow-hidden border-e border-border-subtle px-3 last:border-e-0",
                         (column === "select" || column === firstDataColumn) && [
                           "sticky z-content",
-                          stickyCellInteractionClassName,
+                          isNewLiveRecord ? stickyNewLiveCellInteractionClassName : stickyCellInteractionClassName,
                           column === "select" ? "left-0 justify-center px-0" : "left-[44px] shadow-[1px_0_0_var(--border-subtle)]",
-                          isNewLiveRecord
-                            ? [newLiveRowBackgroundClassName, stickyNewLiveRowHoverClassName]
-                            : "bg-surface-floating",
+                          isNewLiveRecord ? newLiveRowBackgroundClassName : "bg-surface-floating",
                           column === "select" && isActiveRecord && "shadow-[inset_2px_0_0_var(--brand)]",
                         ],
                       )}

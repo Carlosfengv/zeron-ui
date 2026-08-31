@@ -96,8 +96,9 @@ describe("InfiniteLogTable", () => {
     expect(genericPinnedCells[0]?.classList.contains("left-0")).toBe(true);
     expect(genericPinnedCells[1]?.classList.contains("left-[44px]")).toBe(true);
     expect(genericPinnedCells[1]?.classList.contains("bg-surface-floating")).toBe(true);
-    expect(genericPinnedCells[1]?.classList.contains("before:bg-hover")).toBe(false);
-    expect(genericPinnedCells[1]?.classList.contains("group-hover/log-row:bg-hover")).toBe(true);
+    expect(genericPinnedCells[1]?.classList.contains("before:bg-hover")).toBe(true);
+    expect(genericPinnedCells[1]?.classList.contains("group-hover/log-row:before:opacity-100")).toBe(true);
+    expect(genericPinnedCells[1]?.classList.contains("group-hover/log-row:bg-hover")).toBe(false);
     fireEvent.keyDown(row, { key: "Enter" });
     const detail = await screen.findByRole("complementary", { name: /job-1 details/i });
     expect(within(detail).getByText("Service")).toBeTruthy();
@@ -140,8 +141,9 @@ describe("InfiniteLogTable", () => {
     expect(pinnedCells?.[0]?.classList.contains("sticky")).toBe(true);
     expect(pinnedCells?.[1]?.classList.contains("left-[44px]")).toBe(true);
     expect(pinnedCells?.[1]?.classList.contains("bg-surface-floating")).toBe(true);
-    expect(pinnedCells?.[1]?.classList.contains("before:bg-hover")).toBe(false);
-    expect(pinnedCells?.[1]?.classList.contains("group-hover/log-row:bg-hover")).toBe(true);
+    expect(pinnedCells?.[1]?.classList.contains("before:bg-hover")).toBe(true);
+    expect(pinnedCells?.[1]?.classList.contains("group-hover/log-row:before:opacity-100")).toBe(true);
+    expect(pinnedCells?.[1]?.classList.contains("group-hover/log-row:bg-hover")).toBe(false);
 
     const grid = screen.getByRole("grid", { name: "HTTP request log table" });
     expect(within(grid).getAllByRole("row")[0]?.classList.contains("h-control-md")).toBe(true);
@@ -504,12 +506,23 @@ describe("InfiniteLogTable", () => {
     emit?.({ metadata, rows: [firstLive] });
     await waitFor(() => {
       expect(screen.getByRole("row", { name: "1 new request above" })).toBeTruthy();
+      const boundaryRow = screen.getByRole<HTMLElement>("row", { name: "1 new request above" });
+      const boundaryCell = within(boundaryRow).getByRole<HTMLElement>("gridcell");
+      expect(boundaryRow.classList.contains("grid")).toBe(true);
+      expect(boundaryRow.style.gridTemplateColumns).toContain("minmax(");
+      expect(boundaryCell.classList.contains("w-full")).toBe(true);
+      expect(boundaryCell.classList.contains("max-w-[100vw]")).toBe(true);
+      expect(boundaryCell.classList.contains("w-[min(32rem,100vw)]")).toBe(false);
+      expect(boundaryCell.style.gridColumn).toBe("1 / -1");
+      expect(boundaryRow.style.top).toBe("32px");
+      expect(boundaryRow.style.transform).toBe("");
       const liveRow = screen.getByRole("row", { name: /Select live-1/ });
       expect(liveRow.hasAttribute("data-live-new")).toBe(true);
       expect(liveRow.classList.contains("bg-[color-mix(in_oklch,var(--info-surface)_50%,var(--surface-floating))]")).toBe(true);
       for (const stickyCell of liveRow.querySelectorAll("[data-sticky-column]")) {
         expect(stickyCell.classList.contains("bg-[color-mix(in_oklch,var(--info-surface)_50%,var(--surface-floating))]")).toBe(true);
-        expect(stickyCell.classList.contains("group-hover/log-row:bg-[color-mix(in_oklch,var(--info-surface)_70%,var(--surface-floating))]")).toBe(true);
+        expect(stickyCell.classList.contains("before:bg-[color-mix(in_oklch,var(--info-surface)_70%,var(--surface-floating))]")).toBe(true);
+        expect(stickyCell.classList.contains("group-hover/log-row:before:opacity-100")).toBe(true);
       }
     });
 
