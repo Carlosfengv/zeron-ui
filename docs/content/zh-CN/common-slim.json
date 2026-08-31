@@ -1,7 +1,7 @@
 {
   "site": { "title": "Zeron Design", "description": "由 Zeron Design 打造的开源 UI 组件" },
   "navigation": {
-    "main": "主导航", "system": "系统导航", "layout": "布局导航", "components": "组件导航", "aiAgent": "AI Agent 导航",
+    "main": "主导航", "system": "系统导航", "foundations": "基础", "layout": "布局与容器", "navigation": "导航", "input": "输入与选择", "action": "触发与执行", "dataDisplay": "数据展示", "feedback": "反馈与状态", "overlay": "浮层与辅助", "components": "组件导航", "aiAgent": "AI 交互",
     "showcase": "展示", "businessTemplates": "业务模板", "componentsEntry": "组件", "guides": "指南", "introduction": "介绍",
     "systemGroup": "系统", "layoutGroup": "布局", "componentsGroup": "组件", "aiAgentGroup": "AI Agent", "open": "打开导航",
     "application": "业务模板", "overview": "概览", "usage": "使用方式", "catalog": "目录", "providers": "Provider"

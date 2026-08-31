@@ -14,7 +14,17 @@ import { docEntries, type DocEntry } from "@docs/manifest";
 import { RightPanel } from "@docs/components/shell/site/right-panel";
 import { componentCardDescription } from "@docs/components/components/component-card-copy";
 
-const componentSections = ["foundations", "layout", "components", "ai-agent"] as const;
+const componentSections = [
+  "foundations",
+  "layout",
+  "navigation",
+  "input",
+  "action",
+  "data-display",
+  "feedback",
+  "overlay",
+  "ai-agent",
+] as const;
 type ComponentSection = (typeof componentSections)[number];
 
 const copy = {
@@ -23,7 +33,7 @@ const copy = {
     empty: "No components match the current search and filters.",
     filterByCategory: "Filter by category",
     componentNavigation: "Component navigation",
-    galleryDescription: "Browse foundations, layouts and interaction primitives by the job they solve.",
+    galleryDescription: "Browse components by the job they help you accomplish.",
     galleryTitle: "Find the right component",
     results: "{count} components",
     search: "Search components…",
@@ -33,7 +43,7 @@ const copy = {
     empty: "没有符合当前搜索和筛选条件的组件。",
     filterByCategory: "按类别筛选",
     componentNavigation: "组件导航",
-    galleryDescription: "按要解决的问题浏览基础、布局与交互组件。",
+    galleryDescription: "按要完成的任务浏览组件。",
     galleryTitle: "找到合适的组件",
     results: "{count} 个组件",
     search: "搜索组件…",
@@ -41,15 +51,40 @@ const copy = {
 } as const;
 
 const sectionLabels = {
-  en: { foundations: "Foundations", layout: "Layout", components: "Components", "ai-agent": "AI agent" },
-  zh: { foundations: "基础", layout: "布局", components: "组件", "ai-agent": "AI Agent" },
+  en: {
+    foundations: "Foundations",
+    layout: "Layout & containers",
+    navigation: "Navigation",
+    input: "Input & selection",
+    action: "Triggers & execution",
+    "data-display": "Data display",
+    feedback: "Feedback & status",
+    overlay: "Overlays & guidance",
+    "ai-agent": "AI interaction",
+  },
+  zh: {
+    foundations: "基础",
+    layout: "布局与容器",
+    navigation: "导航",
+    input: "输入与选择",
+    action: "触发与执行",
+    "data-display": "数据展示",
+    feedback: "反馈与状态",
+    overlay: "浮层与辅助",
+    "ai-agent": "AI 交互",
+  },
 } as const;
 
 const sectionIcons: Record<ComponentSection | "all", IconName> = {
   all: "square-library",
   foundations: "doc-semantic-tokens",
   layout: "doc-page-layout",
-  components: "doc-card",
+  navigation: "doc-breadcrumb",
+  input: "doc-input",
+  action: "doc-button",
+  "data-display": "doc-card",
+  feedback: "doc-toast",
+  overlay: "doc-popover",
   "ai-agent": "doc-ask-user-questions",
 };
 

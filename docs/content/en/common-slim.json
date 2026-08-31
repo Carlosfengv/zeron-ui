@@ -1,7 +1,7 @@
 {
   "site": { "title": "Zeron Design", "description": "Open Source UI components created by Zeron Design" },
   "navigation": {
-    "main": "Main navigation", "system": "System navigation", "layout": "Layout navigation", "components": "Component navigation", "aiAgent": "AI Agent navigation",
+    "main": "Main navigation", "system": "System navigation", "foundations": "Foundations", "layout": "Layout & containers", "navigation": "Navigation", "input": "Input & selection", "action": "Triggers & execution", "dataDisplay": "Data display", "feedback": "Feedback & status", "overlay": "Overlays & guidance", "components": "Component navigation", "aiAgent": "AI interaction",
     "showcase": "Showcase", "businessTemplates": "Business templates", "componentsEntry": "Components", "guides": "Guides", "introduction": "Introduction",
     "systemGroup": "System", "layoutGroup": "Layout", "componentsGroup": "Components", "aiAgentGroup": "AI Agent", "open": "Open navigation",
     "application": "Business templates", "overview": "Overview", "usage": "Usage", "catalog": "Catalog", "providers": "Providers"

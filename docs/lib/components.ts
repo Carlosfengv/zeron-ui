@@ -15,6 +15,15 @@ export interface ComponentEntry {
 export type SystemEntry = Omit<ComponentEntry, "gridSize" | "dotColor">;
 export type LayoutEntry = Omit<ComponentEntry, "gridSize" | "dotColor">;
 
+const functionalComponentSections = [
+  "navigation",
+  "input",
+  "action",
+  "data-display",
+  "feedback",
+  "overlay",
+] as const;
+
 function toEntry(entry: DocEntry): ComponentEntry {
   return {
     slug: entry.slug,
@@ -29,7 +38,7 @@ function toEntry(entry: DocEntry): ComponentEntry {
 }
 
 export const systemList: SystemEntry[] = docEntries.filter((entry) => entry.section === "foundations").map(toEntry);
-export const componentList: ComponentEntry[] = docEntries.filter((entry) => entry.section === "components").map(toEntry);
+export const componentList: ComponentEntry[] = docEntries.filter((entry) => functionalComponentSections.includes(entry.section as (typeof functionalComponentSections)[number])).map(toEntry);
 export const layoutList: LayoutEntry[] = docEntries.filter((entry) => entry.section === "layout").map(toEntry);
 export const aiAgentList: ComponentEntry[] = docEntries.filter((entry) => entry.section === "ai-agent").map(toEntry);
 export const legacyDocSlugs = ["tabs-subtle"] as const;
