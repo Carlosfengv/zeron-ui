@@ -10,6 +10,7 @@ import {
   type PointerEvent,
   type ReactNode,
 } from "react";
+import { Skeleton } from "#components/skeleton";
 import { cn } from "#system/utils";
 
 export type MetricTone = "default" | "positive" | "warning" | "critical";
@@ -364,7 +365,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
 
           <div data-slot="metric-card-value-row" className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
             {loading ? (
-              <span aria-hidden className="mt-0.5 h-6 w-24 animate-pulse rounded-lg bg-muted" />
+              <Skeleton className="mt-0.5 h-6 w-24" />
             ) : (
               <span className={cn("min-w-0 truncate text-heading font-semibold tabular-nums", valueClass)}>
                 {unavailable ? "—" : value}
@@ -373,7 +374,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
             )}
             {meta &&
               (loading ? (
-                <span aria-hidden className="h-4 w-16 animate-pulse rounded-lg bg-muted" />
+                <Skeleton className="h-4 w-16" />
               ) : (
                 <span data-slot="metric-card-meta" className="ml-auto truncate text-label text-fg-subtle">
                   {meta}
@@ -409,7 +410,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
           )}
 
           {loading && content.type !== "none" && (
-            <span aria-hidden data-slot="metric-card-content-skeleton" className={cn(supportingContentClassName, "animate-pulse rounded-lg bg-muted", contentSkeletonClass)} />
+            <Skeleton data-slot="metric-card-content-skeleton" className={cn(supportingContentClassName, contentSkeletonClass)} />
           )}
 
           {showContent && content.type === "breakdown" && <MetricCardBreakdown {...content} className={supportingContentClassName} />}

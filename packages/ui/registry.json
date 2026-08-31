@@ -834,7 +834,7 @@
       "name": "data-table",
       "type": "registry:ui",
       "title": "Data Table",
-      "description": "Feature-rich TanStack data table with sorting, text and faceted filters, pagination, row selection, column visibility, pinning, and empty/action states.",
+      "description": "Feature-rich TanStack data table with sorting, filters, pagination, selection, pinning, and accessible Skeleton loading and empty states.",
       "dependencies": [
         "@tanstack/react-table",
         "tw-animate-css"
@@ -889,6 +889,7 @@
         "input",
         "kbd",
         "separator",
+        "skeleton",
         "select",
         "toast"
       ],
@@ -1648,6 +1649,7 @@
       "description": "Self-sizing single-metric card with optional breakdown, accessible trend visualization, data states, and whole-card interaction.",
       "registryDependencies": [
         "surfaces",
+        "skeleton",
         "utils"
       ],
       "files": [
@@ -1668,6 +1670,7 @@
       "description": "Inspectable timeline and node-status rail with semantic states, a shared tooltip, and keyboard navigation.",
       "registryDependencies": [
         "surfaces",
+        "skeleton",
         "tooltip",
         "utils"
       ],
@@ -1808,13 +1811,14 @@
       "name": "table",
       "type": "registry:ui",
       "title": "Table",
-      "description": "Animated table with proximity-based row hover highlighting and fluid border transitions. Includes TableHeader, TableBody, TableRow, TableHead, and TableCell sub-components.",
+      "description": "Animated semantic table primitives with proximity row hover and a composable Skeleton loading body.",
       "dependencies": [
         "framer-motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
         "surfaces",
+        "skeleton",
         "utils",
         "springs",
         "use-proximity-hover"
@@ -2067,6 +2071,26 @@
         {
           "path": "packages/ui/src/components/separator.tsx",
           "target": "components/ui/separator.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "Token-native decorative loading placeholder with composable dimensions, semantic color, and reduced-motion support.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/skeleton.tsx",
+          "target": "components/ui/skeleton.tsx",
           "type": "registry:ui"
         }
       ]

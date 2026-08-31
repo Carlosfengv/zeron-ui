@@ -1,16 +1,8 @@
 "use client";
 
 import type * as React from "react";
+import { Skeleton } from "../skeleton";
 import { cn } from "#system/utils";
-
-function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      className={cn("animate-pulse bg-muted", "rounded-lg", className)}
-      {...props}
-    />
-  );
-}
 
 function Textarea({ className, rows = 1, ...props }: React.ComponentProps<"textarea">) {
   return (

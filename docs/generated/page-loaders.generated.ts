@@ -78,6 +78,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/scrollbars": () => import("@docs/pages/components/scrollbars/page"),
   "components/select": () => import("@docs/pages/components/select/page"),
   "components/separator": () => import("@docs/pages/components/separator/page"),
+  "components/skeleton": () => import("@docs/pages/components/skeleton/page"),
   "components/semantic-tokens": () => import("@docs/pages/components/semantic-tokens/page"),
   "components/sidebar": () => import("@docs/pages/components/sidebar/page"),
   "components/slider": () => import("@docs/pages/components/slider/page"),

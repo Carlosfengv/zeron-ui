@@ -1,0 +1,22 @@
+{
+  "skeleton": {
+    "basic": "基础用法",
+    "avatar": "头像",
+    "card": "卡片",
+    "text": "文本",
+    "form": "表单",
+    "table": "表格",
+    "accessibility": "无障碍",
+    "accessibilityBody": "Skeleton 默认作为装饰元素隐藏。请在状态切换前，于 busy 区域外保留一条视觉隐藏的状态元素，并在开始加载时更新其文案；aria-busy 只应设置在正在更新的内容区域。",
+    "usage": "使用建议",
+    "usageBody": "骨架应尽量匹配最终内容的尺寸，并在加载期间保持结构稳定。请使用 Skeleton 替代临时编写的动画 div；不确定时长的操作反馈使用 Spinner，加载完成且确认无数据后再使用 Empty。",
+    "apiReference": "API 参考",
+    "classNameProp": "通过工具类设置占位元素的尺寸和形状。",
+    "ariaHiddenProp": "默认将装饰性占位元素移出无障碍树。请通过相邻的状态提示播报加载，而非暴露占位元素本身。",
+    "loadingProfile": "正在加载个人资料",
+    "loadingCard": "正在加载卡片",
+    "loadingArticle": "正在加载文章",
+    "loadingForm": "正在加载表单",
+    "loadingTable": "正在加载表格"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "skeleton",
+  "type": "registry:ui",
+  "title": "Skeleton",
+  "description": "Token-native decorative loading placeholder with composable dimensions, semantic color, and reduced-motion support.",
+  "dependencies": [
+    "tw-animate-css"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "packages/ui/src/components/skeleton.tsx",
+      "content": "import { forwardRef, type ComponentPropsWithoutRef } from \"react\";\nimport { cn } from \"@lib/utils\";\nexport type SkeletonProps = ComponentPropsWithoutRef<\"div\">;\n/**\n * A decorative placeholder that preserves layout while content is loading.\n *\n * Size and shape are intentionally composed with `className` so a skeleton can\n * mirror the content it replaces without growing a second sizing API.\n */\nconst Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(({ className, \"aria-hidden\": ariaHidden = true, ...props }, ref) => (<div ref={ref} aria-hidden={ariaHidden} data-slot=\"skeleton\" className={cn(\"animate-pulse rounded-lg bg-emphasis motion-reduce:animate-none\", className)} {...props}/>));\nSkeleton.displayName = \"Skeleton\";\nexport { Skeleton };\n",
+      "type": "registry:ui",
+      "target": "components/ui/skeleton.tsx"
+    }
+  ]
+}

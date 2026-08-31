@@ -13,6 +13,7 @@ import {
   type ThHTMLAttributes,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Skeleton } from "#components/skeleton";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 import { useProximityHover } from "#hooks/use-proximity-hover";
@@ -135,6 +136,93 @@ const TableBody = forwardRef<
 
 TableBody.displayName = "TableBody";
 
+// ── TableSkeletonBody ───────────────────────────────────
+
+export interface TableSkeletonBodyProps
+  extends Omit<HTMLAttributes<HTMLTableSectionElement>, "children"> {
+  /** Number of cells rendered in each placeholder row. */
+  columns: number;
+  /** Number of placeholder rows. @default 5 */
+  rows?: number;
+  /** Additional classes applied to every placeholder cell. */
+  cellClassName?: string;
+  /** Customizes cell attributes, for example sticky positioning and width. */
+  getCellProps?: (
+    rowIndex: number,
+    columnIndex: number
+  ) => Omit<TdHTMLAttributes<HTMLTableCellElement>, "children">;
+  /** Replaces the default text-line Skeleton for a particular cell. */
+  renderCell?: (rowIndex: number, columnIndex: number) => ReactNode;
+}
+
+/**
+ * A semantic tbody that preserves a table's columns and row height while its
+ * data is loading. Set aria-busy on the surrounding Table or region.
+ */
+const TableSkeletonBody = forwardRef<
+  HTMLTableSectionElement,
+  TableSkeletonBodyProps
+>(
+  (
+    {
+      columns,
+      rows = 5,
+      cellClassName,
+      getCellProps,
+      renderCell,
+      className,
+      "aria-hidden": ariaHidden = true,
+      ...props
+    },
+    ref
+  ) => {
+    const columnCount = Math.max(1, Math.floor(columns));
+    const rowCount = Math.max(1, Math.floor(rows));
+
+    return (
+      <tbody
+        ref={ref}
+        aria-hidden={ariaHidden}
+        data-slot="table-skeleton-body"
+        className={cn("[&>tr:last-child]:border-b-0", className)}
+        {...props}
+      >
+        {Array.from({ length: rowCount }, (_, rowIndex) => (
+          <TableRow key={rowIndex}>
+            {Array.from({ length: columnCount }, (_, columnIndex) => {
+              const cellProps = getCellProps?.(rowIndex, columnIndex);
+              const customCell = renderCell?.(rowIndex, columnIndex);
+
+              return (
+                <TableCell
+                  {...cellProps}
+                  key={columnIndex}
+                  className={cn(cellClassName, cellProps?.className)}
+                >
+                  {customCell === undefined ? (
+                    <Skeleton
+                      className={cn(
+                        "h-5",
+                        columnIndex === 0
+                          ? "w-3/4"
+                          : columnIndex === columnCount - 1
+                            ? "w-1/2"
+                            : "w-2/3"
+                      )}
+                    />
+                  ) : customCell}
+                </TableCell>
+              );
+            })}
+          </TableRow>
+        ))}
+      </tbody>
+    );
+  }
+);
+
+TableSkeletonBody.displayName = "TableSkeletonBody";
+
 // ── TableRow ─────────────────────────────────────────────
 
 interface TableRowProps extends HTMLAttributes<HTMLTableRowElement> {
@@ -221,4 +309,12 @@ TableCell.displayName = "TableCell";
 
 // ── Exports ──────────────────────────────────────────────
 
-export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell };
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableSkeletonBody,
+  TableRow,
+  TableHead,
+  TableCell,
+};

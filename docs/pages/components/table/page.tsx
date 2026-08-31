@@ -2,6 +2,7 @@ import {
   Table,
   TableHeader,
   TableBody,
+  TableSkeletonBody,
   TableRow,
   TableHead,
   TableCell,
@@ -44,6 +45,27 @@ const basicCode = `import {
   </TableBody>
 </Table>`;
 
+const loadingCode = `import {
+  Table, TableHeader, TableSkeletonBody,
+  TableRow, TableHead,
+} from "@zeron/ui/table";
+
+<div>
+  <span aria-atomic="true" className="sr-only" role="status">
+    Loading table data
+  </span>
+  <Table aria-busy="true">
+    <TableHeader>
+      <TableRow>
+        <TableHead>Name</TableHead>
+        <TableHead>Role</TableHead>
+        <TableHead>Status</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableSkeletonBody columns={3} rows={5} />
+  </Table>
+</div>`;
+
 export default function TableDoc() {
   const t = useTranslations("tableDoc");
   const tableProps: PropDef[] = [
@@ -52,6 +74,13 @@ export default function TableDoc() {
   const rowProps: PropDef[] = [
     { name: "index", type: "number", description: t("rowIndex") },
     { name: "children", type: "ReactNode", description: t("rowChildren") },
+  ];
+  const skeletonBodyProps: PropDef[] = [
+    { name: "columns", type: "number", description: t("skeletonColumns") },
+    { name: "rows", type: "number", default: "5", description: t("skeletonRows") },
+    { name: "cellClassName", type: "string", description: t("skeletonCellClassName") },
+    { name: "getCellProps", type: "(rowIndex, columnIndex) => td props", description: t("skeletonGetCellProps") },
+    { name: "renderCell", type: "(rowIndex, columnIndex) => ReactNode", description: t("skeletonRenderCell") },
   ];
   return (
     <DocPage
@@ -111,12 +140,39 @@ export default function TableDoc() {
         </ComponentPreview>
       </DocSection>
 
+      <DocSection title={t("loading")}>
+        <p className="mb-3 max-w-3xl text-body leading-6 text-fg-muted">
+          {t("loadingDescription")}
+        </p>
+        <ComponentPreview code={loadingCode}>
+          <div className="w-full">
+            <span aria-atomic="true" className="sr-only" role="status">
+              {t("loadingMessage")}
+            </span>
+            <Table aria-busy="true">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableSkeletonBody columns={3} rows={5} />
+            </Table>
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
       <DocSection title={`${t("apiReference")} — Table`}>
         <PropsTable props={tableProps} />
       </DocSection>
 
       <DocSection title={`${t("apiReference")} — TableRow`}>
         <PropsTable props={rowProps} />
+      </DocSection>
+
+      <DocSection title={`${t("apiReference")} — TableSkeletonBody`}>
+        <PropsTable props={skeletonBodyProps} />
       </DocSection>
     </DocPage>
   );

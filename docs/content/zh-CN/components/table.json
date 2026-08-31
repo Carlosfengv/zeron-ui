@@ -1,9 +1,17 @@
 {
   "tableDoc": {
     "basic": "基础用法",
+    "loading": "加载状态",
+    "loadingDescription": "保留最终表头和列结构，只在数据加载期间替换表体，从而减少布局跳动。",
+    "loadingMessage": "正在加载表格数据",
     "apiReference": "API 参考",
     "tableChildren": "TableHeader 和 TableBody 子元素。",
     "rowIndex": "用于邻近悬停的行索引；表头行请省略。",
-    "rowChildren": "TableCell 或 TableHead 子元素。"
+    "rowChildren": "TableCell 或 TableHead 子元素。",
+    "skeletonColumns": "每个占位行渲染的单元格数量。",
+    "skeletonRows": "加载期间渲染的占位行数量。",
+    "skeletonCellClassName": "应用于每个加载单元格的附加类名。",
+    "skeletonGetCellProps": "返回用于列宽、固定定位或其他结构样式的单元格属性。",
+    "skeletonRenderCell": "将默认文本线条 Skeleton 替换为更接近最终内容形状的元素。"
   }
 }

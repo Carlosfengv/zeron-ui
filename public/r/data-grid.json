@@ -26,6 +26,7 @@
     "https://zeron-ui.vercel.app/r/input.json",
     "https://zeron-ui.vercel.app/r/kbd.json",
     "https://zeron-ui.vercel.app/r/separator.json",
+    "https://zeron-ui.vercel.app/r/skeleton.json",
     "https://zeron-ui.vercel.app/r/select.json",
     "https://zeron-ui.vercel.app/r/toast.json"
   ],
@@ -116,7 +117,7 @@
     },
     {
       "path": "packages/ui/src/components/data-grid/data-grid-primitives.tsx",
-      "content": "\"use client\";\nimport type * as React from \"react\";\nimport { cn } from \"@lib/utils\";\nfunction Skeleton({ className, ...props }: React.ComponentProps<\"div\">) {\n    return (<div className={cn(\"animate-pulse bg-muted\", \"rounded-lg\", className)} {...props}/>);\n}\nfunction Textarea({ className, rows = 1, ...props }: React.ComponentProps<\"textarea\">) {\n    return (<textarea className={cn(\"flex min-h-control-md w-full resize-none border border-input bg-transparent px-3 py-2 text-body text-fg-default outline-none\", \"placeholder:text-fg-muted focus-visible:ring-1 focus-visible:ring-focus-ring\", \"disabled:pointer-events-none disabled:opacity-50\", \"rounded-lg\", className)} rows={rows} {...props}/>);\n}\nexport { Skeleton, Textarea };\n",
+      "content": "\"use client\";\nimport type * as React from \"react\";\nimport { Skeleton } from \"../skeleton\";\nimport { cn } from \"@lib/utils\";\nfunction Textarea({ className, rows = 1, ...props }: React.ComponentProps<\"textarea\">) {\n    return (<textarea className={cn(\"flex min-h-control-md w-full resize-none border border-input bg-transparent px-3 py-2 text-body text-fg-default outline-none\", \"placeholder:text-fg-muted focus-visible:ring-1 focus-visible:ring-focus-ring\", \"disabled:pointer-events-none disabled:opacity-50\", \"rounded-lg\", className)} rows={rows} {...props}/>);\n}\nexport { Skeleton, Textarea };\n",
       "type": "registry:ui",
       "target": "components/ui/data-grid/data-grid-primitives.tsx"
     },

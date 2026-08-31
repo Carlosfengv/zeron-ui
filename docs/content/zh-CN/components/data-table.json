@@ -1,1 +1,29 @@
-{"dataTable":{"projectDirectory":"项目目录","pinnedColumns":"固定列","pinnedColumnsDescription":"水平滚动可查看前两列固定在左侧，Budget 固定在右侧。","emptyState":"空状态","apiReference":"API 参考","table":"由 useDataTable 返回的 TanStack 表格实例。","children":"在表格上方渲染的可选工具栏或自定义内容。","actionBar":"选中一条或多条筛选结果时显示的操作。","emptyStateContent":"当前行模型没有数据时显示的自定义 Empty 组合。","emptyMessage":"内置 Empty 状态使用的标题；存在筛选条件时还会显示操作提示和清空筛选按钮。","data":"提供给 TanStack Table 的行数据。","columns":"列定义、表头、单元格和筛选元数据。","initialState":"初始排序、分页、显隐和固定状态。","options":"其他 TanStack Table 选项，包括行选择和自定义筛选函数。","label":"筛选器和视图选项使用的易读列标签。","variant":"为该列生成的工具栏筛选器。","filterOptions":"选择和多选筛选器的选项。","placeholder":"文本和数字筛选器的占位符。","unit":"显示在数字筛选器中的可选后缀。"}}
+{
+  "dataTable": {
+    "projectDirectory": "项目目录",
+    "pinnedColumns": "固定列",
+    "pinnedColumnsDescription": "水平滚动可查看前两列固定在左侧，Budget 固定在右侧。",
+    "emptyState": "空状态",
+    "loadingState": "加载状态",
+    "loadingStateDescription": "Skeleton 行替换表体时，表头、列宽、固定列位置、分页区域和当前页高度保持稳定。",
+    "apiReference": "API 参考",
+    "table": "由 useDataTable 返回的 TanStack 表格实例。",
+    "children": "在表格上方渲染的可选工具栏或自定义内容。",
+    "actionBar": "选中一条或多条筛选结果时显示的操作。",
+    "emptyStateContent": "当前行模型没有数据时显示的自定义 Empty 组合。",
+    "emptyMessage": "内置 Empty 状态使用的标题；存在筛选条件时还会显示操作提示和清空筛选按钮。",
+    "isLoading": "使用按列对齐的 Skeleton 表体替换数据行和空状态。",
+    "loadingMessage": "表格加载时播报的无障碍状态消息。",
+    "loadingRowCount": "加载期间显示的占位行数量，默认使用当前每页数量。",
+    "renderLoadingCell": "通过行索引、列索引和 TanStack 列自定义加载单元格。",
+    "data": "提供给 TanStack Table 的行数据。",
+    "columns": "列定义、表头、单元格和筛选元数据。",
+    "initialState": "初始排序、分页、显隐和固定状态。",
+    "options": "其他 TanStack Table 选项，包括行选择和自定义筛选函数。",
+    "label": "筛选器和视图选项使用的易读列标签。",
+    "variant": "为该列生成的工具栏筛选器。",
+    "filterOptions": "选择和多选筛选器的选项。",
+    "placeholder": "文本和数字筛选器的占位符。",
+    "unit": "显示在数字筛选器中的可选后缀。"
+  }
+}

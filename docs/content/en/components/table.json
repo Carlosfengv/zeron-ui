@@ -1,9 +1,17 @@
 {
   "tableDoc": {
     "basic": "Basic",
+    "loading": "Loading",
+    "loadingDescription": "Keep the final headers and column structure mounted, then replace only the body while the data is loading.",
+    "loadingMessage": "Loading table data",
     "apiReference": "API Reference",
     "tableChildren": "TableHeader and TableBody children.",
     "rowIndex": "Row index for proximity hover. Omit for header rows.",
-    "rowChildren": "TableCell or TableHead children."
+    "rowChildren": "TableCell or TableHead children.",
+    "skeletonColumns": "Number of placeholder cells rendered in every row.",
+    "skeletonRows": "Number of placeholder rows rendered while loading.",
+    "skeletonCellClassName": "Additional classes applied to every loading cell.",
+    "skeletonGetCellProps": "Returns cell attributes for column sizing, sticky positioning, or other structural styles.",
+    "skeletonRenderCell": "Replaces the default text-line Skeleton for cells with another final shape."
   }
 }

@@ -63,6 +63,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableSkeletonBody,
 } from "#components/table";
 import { cn } from "#system/utils";
 import { useIcon, type IconComponent } from "#system/icon-context";
@@ -167,7 +168,23 @@ export type DataTableProps<TData> = React.ComponentProps<"div"> & {
   emptyState?: React.ReactNode;
   /** Title used by the built-in empty state. */
   emptyMessage?: React.ReactNode;
+  /** Replaces data and empty rows with a column-aligned Skeleton body. */
+  isLoading?: boolean;
+  /** Accessible message announced while the table is loading. */
+  loadingMessage?: React.ReactNode;
+  /** Number of placeholder rows shown while loading. Defaults to the current page size. */
+  loadingRowCount?: number;
+  /** Customizes a loading cell when its final shape is not text-like. */
+  renderLoadingCell?: (
+    context: DataTableLoadingCellContext<TData>
+  ) => React.ReactNode;
   table: TanstackTable<TData>;
+};
+
+export type DataTableLoadingCellContext<TData> = {
+  column: Column<TData, unknown>;
+  columnIndex: number;
+  rowIndex: number;
 };
 
 type HorizontalScrollEdges = {
@@ -186,7 +203,12 @@ function DataTable<TData>({
   className,
   emptyMessage = "No results.",
   emptyState,
+  isLoading = false,
+  loadingMessage = "Loading data.",
+  loadingRowCount,
+  renderLoadingCell,
   table,
+  "aria-busy": ariaBusy,
   ...props
 }: DataTableProps<TData>) {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
@@ -196,6 +218,9 @@ function DataTable<TData>({
   const isFilteredEmpty =
     table.getState().columnFilters.length > 0 &&
     table.getPreFilteredRowModel().rows.length > 0;
+  const visibleColumns = table.getVisibleLeafColumns();
+  const resolvedLoadingRowCount =
+    loadingRowCount ?? table.getState().pagination.pageSize;
 
   const updateScrollEdges = React.useCallback(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -242,10 +267,15 @@ function DataTable<TData>({
     <div
       className={cn("flex w-full min-w-0 flex-col gap-2", className)}
       data-slot="data-table"
+      data-loading={isLoading || undefined}
       {...props}
     >
+      <span aria-atomic="true" className="sr-only" role="status">
+        {isLoading ? loadingMessage : null}
+      </span>
       {children}
       <div
+        aria-busy={ariaBusy ?? (isLoading || undefined)}
         className={cn(
           "overflow-hidden border border-border bg-surface-floating",
           "rounded-xl"
@@ -281,88 +311,119 @@ function DataTable<TData>({
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row, rowIndex) => (
-                  <TableRow
-                    data-state={row.getIsSelected() ? "selected" : undefined}
-                    index={rowIndex}
-                    key={row.id}
-                    className="data-[state=selected]:bg-selection"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        className={cn(
-                          "align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block",
-                          cell.column.getIsPinned() &&
-                            "group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]"
-                        )}
-                        key={cell.id}
-                        style={getCommonPinningStyles(cell.column, {
-                          backgroundImage: row.getIsSelected()
-                            ? "linear-gradient(var(--selection), var(--selection))"
-                            : undefined,
-                          showLeftShadow: scrollEdges.canScrollLeft,
-                          showRightShadow: scrollEdges.canScrollRight,
-                        })}
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    className="p-0 align-middle"
-                    colSpan={Math.max(table.getVisibleLeafColumns().length, 1)}
-                  >
-                    {emptyState ?? (
-                      <Empty
-                        announce={isFilteredEmpty}
-                        density="compact"
-                        reason={
-                          isFilteredEmpty ? "no-filter-results" : "no-data"
-                        }
-                        scope="section"
-                      >
-                        <EmptyMedia>
-                          <EmptyIllustration
-                            variant={isFilteredEmpty ? "filter" : "resources"}
-                          />
-                        </EmptyMedia>
-                        <EmptyHeader>
-                          <EmptyTitle>{emptyMessage}</EmptyTitle>
-                          {isFilteredEmpty && (
-                            <EmptyDescription>
-                              Try adjusting your search or clearing the active
-                              filters.
-                            </EmptyDescription>
+            {isLoading ? (
+              <TableSkeletonBody
+                cellClassName="align-middle whitespace-nowrap"
+                columns={Math.max(visibleColumns.length, 1)}
+                rows={resolvedLoadingRowCount}
+                getCellProps={(_, columnIndex) => {
+                  const column = visibleColumns[columnIndex];
+                  if (!column) return {};
+
+                  return {
+                    style: getCommonPinningStyles(column, {
+                      showLeftShadow: scrollEdges.canScrollLeft,
+                      showRightShadow: scrollEdges.canScrollRight,
+                    }),
+                  };
+                }}
+                renderCell={(rowIndex, columnIndex) => {
+                  const column = visibleColumns[columnIndex];
+                  return column
+                    ? renderLoadingCell?.({ column, columnIndex, rowIndex })
+                    : undefined;
+                }}
+              />
+            ) : (
+              <TableBody>
+                {table.getRowModel().rows.length ? (
+                  table.getRowModel().rows.map((row, rowIndex) => (
+                    <TableRow
+                      data-state={row.getIsSelected() ? "selected" : undefined}
+                      index={rowIndex}
+                      key={row.id}
+                      className="data-[state=selected]:bg-selection"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          className={cn(
+                            "align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block",
+                            cell.column.getIsPinned() &&
+                              "group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]"
                           )}
-                        </EmptyHeader>
-                        {isFilteredEmpty && (
-                          <EmptyActions>
-                            <Button
-                              onClick={() => table.resetColumnFilters()}
-                              size="sm"
-                              variant="secondary"
-                            >
-                              Clear filters
-                            </Button>
-                          </EmptyActions>
-                        )}
-                      </Empty>
-                    )}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
+                          key={cell.id}
+                          style={getCommonPinningStyles(cell.column, {
+                            backgroundImage: row.getIsSelected()
+                              ? "linear-gradient(var(--selection), var(--selection))"
+                              : undefined,
+                            showLeftShadow: scrollEdges.canScrollLeft,
+                            showRightShadow: scrollEdges.canScrollRight,
+                          })}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      className="p-0 align-middle"
+                      colSpan={Math.max(
+                        table.getVisibleLeafColumns().length,
+                        1
+                      )}
+                    >
+                      {emptyState ?? (
+                        <Empty
+                          announce={isFilteredEmpty}
+                          density="compact"
+                          reason={
+                            isFilteredEmpty ? "no-filter-results" : "no-data"
+                          }
+                          scope="section"
+                        >
+                          <EmptyMedia>
+                            <EmptyIllustration
+                              variant={isFilteredEmpty ? "filter" : "resources"}
+                            />
+                          </EmptyMedia>
+                          <EmptyHeader>
+                            <EmptyTitle>{emptyMessage}</EmptyTitle>
+                            {isFilteredEmpty && (
+                              <EmptyDescription>
+                                Try adjusting your search or clearing the active
+                                filters.
+                              </EmptyDescription>
+                            )}
+                          </EmptyHeader>
+                          {isFilteredEmpty && (
+                            <EmptyActions>
+                              <Button
+                                onClick={() => table.resetColumnFilters()}
+                                size="sm"
+                                variant="secondary"
+                              >
+                                Clear filters
+                              </Button>
+                            </EmptyActions>
+                          )}
+                        </Empty>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            )}
           </Table>
         </div>
       </div>
       <div className="flex flex-col gap-2.5">
         <DataTablePagination table={table} />
-        {actionBar &&
+        {!isLoading && actionBar &&
           table.getFilteredSelectedRowModel().rows.length > 0 &&
           actionBar}
       </div>

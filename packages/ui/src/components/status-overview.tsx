@@ -12,6 +12,7 @@ import {
   type PointerEvent,
   type ReactNode,
 } from "react";
+import { Skeleton } from "#components/skeleton";
 import { Tooltip } from "#components/tooltip";
 import { cn } from "#system/utils";
 
@@ -368,7 +369,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
           <div data-slot="status-overview-summary" className="flex min-w-0 items-baseline gap-1.5 text-body">
             <span className="text-fg-subtle">{summary.label}</span>
             {loading ? (
-              <span aria-hidden className="h-4 w-16 animate-pulse rounded bg-muted" />
+              <Skeleton className="h-4 w-16 rounded" />
             ) : (
               <span className={cn("font-medium tabular-nums", summaryTone)}>{summary.value}</span>
             )}
@@ -377,7 +378,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
       </div>
 
       <div className="mt-3 min-w-0">
-        {loading && <span aria-hidden data-slot="status-overview-skeleton" className="block h-control-md animate-pulse rounded-sm bg-muted" />}
+        {loading && <Skeleton data-slot="status-overview-skeleton" className="h-control-md rounded-sm" />}
         {showRail && <StatusSegmentRail ariaLabel={ariaLabel} content={content} />}
         {showData && empty && (
           <div data-slot="status-overview-state-message" role="status" className="grid min-h-control-md place-items-center text-label text-fg-subtle">

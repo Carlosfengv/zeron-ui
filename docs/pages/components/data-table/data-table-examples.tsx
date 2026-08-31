@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { Badge, type BadgeColor } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Checkbox } from "@zeron/ui/checkbox";
+import { Skeleton } from "@zeron/ui/skeleton";
 import {
   DataTable,
   DataTableColumnHeader,
@@ -160,6 +161,37 @@ export function ProjectsTable() {
 
 export function PinnedProjectsTable() {
   return <ProjectsTableDemo forceHorizontalScroll />;
+}
+
+export function LoadingProjectsTable() {
+  const StatusIcon = useIcon("dot");
+  const columns = useMemo(() => getColumns(StatusIcon), [StatusIcon]);
+  const { table } = useDataTable({
+    columns,
+    data: emptyProjects,
+    initialState: {
+      columnPinning: { left: ["select", "name"], right: ["budget"] },
+    },
+  });
+
+  return (
+    <DataTable
+      isLoading
+      loadingMessage="Loading projects"
+      renderLoadingCell={({ column }) => {
+        if (column.id === "select") {
+          return <Skeleton className="size-4 rounded-sm" />;
+        }
+
+        if (column.id === "status") {
+          return <Skeleton className="h-5 w-20 rounded-full" />;
+        }
+
+        return undefined;
+      }}
+      table={table}
+    />
+  );
 }
 
 export function EmptyProjectsTable() {

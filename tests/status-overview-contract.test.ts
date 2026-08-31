@@ -17,7 +17,7 @@ describe("StatusOverview contract", () => {
     const item = registry.items.find((entry: { name: string }) => entry.name === "status-overview");
     expect(item).toMatchObject({
       type: "registry:ui",
-      registryDependencies: ["surfaces", "tooltip", "utils"],
+      registryDependencies: ["surfaces", "skeleton", "tooltip", "utils"],
       files: [
         {
           path: "packages/ui/src/components/status-overview.tsx",

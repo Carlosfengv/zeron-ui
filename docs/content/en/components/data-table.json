@@ -1,1 +1,29 @@
-{"dataTable":{"projectDirectory":"Project Directory","pinnedColumns":"Pinned Columns","pinnedColumnsDescription":"Scroll horizontally to see the first two columns remain fixed on the left and Budget remain fixed on the right.","emptyState":"Empty State","apiReference":"API Reference","table":"TanStack table instance returned by useDataTable.","children":"Optional toolbar or custom content rendered above the table.","actionBar":"Selection actions shown when one or more filtered rows are selected.","emptyStateContent":"Custom Empty composition shown when the current row model has no rows.","emptyMessage":"Title used by the built-in Empty state. Active filters also add guidance and a clear-filter action.","data":"Rows supplied to TanStack Table.","columns":"Column definitions, headers, cells, and filter metadata.","initialState":"Initial sorting, pagination, visibility, and pinning state.","options":"Other TanStack Table options, including row selection and custom filter functions.","label":"Readable column label used by filters and view options.","variant":"Toolbar filter generated for this column.","filterOptions":"Options for select and multi-select filters.","placeholder":"Placeholder for text and number filters.","unit":"Optional suffix displayed inside a number filter."}}
+{
+  "dataTable": {
+    "projectDirectory": "Project Directory",
+    "pinnedColumns": "Pinned Columns",
+    "pinnedColumnsDescription": "Scroll horizontally to see the first two columns remain fixed on the left and Budget remain fixed on the right.",
+    "emptyState": "Empty State",
+    "loadingState": "Loading State",
+    "loadingStateDescription": "Headers, column widths, pinned positioning, pagination, and the current page height remain stable while Skeleton rows replace the table body.",
+    "apiReference": "API Reference",
+    "table": "TanStack table instance returned by useDataTable.",
+    "children": "Optional toolbar or custom content rendered above the table.",
+    "actionBar": "Selection actions shown when one or more filtered rows are selected.",
+    "emptyStateContent": "Custom Empty composition shown when the current row model has no rows.",
+    "emptyMessage": "Title used by the built-in Empty state. Active filters also add guidance and a clear-filter action.",
+    "isLoading": "Replaces data and empty rows with a column-aligned Skeleton body.",
+    "loadingMessage": "Accessible status announced while the table is loading.",
+    "loadingRowCount": "Number of placeholder rows shown while loading. Defaults to the current page size.",
+    "renderLoadingCell": "Customizes a loading cell using its row index, column index, and TanStack column.",
+    "data": "Rows supplied to TanStack Table.",
+    "columns": "Column definitions, headers, cells, and filter metadata.",
+    "initialState": "Initial sorting, pagination, visibility, and pinning state.",
+    "options": "Other TanStack Table options, including row selection and custom filter functions.",
+    "label": "Readable column label used by filters and view options.",
+    "variant": "Toolbar filter generated for this column.",
+    "filterOptions": "Options for select and multi-select filters.",
+    "placeholder": "Placeholder for text and number filters.",
+    "unit": "Optional suffix displayed inside a number filter."
+  }
+}

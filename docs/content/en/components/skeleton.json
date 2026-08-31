@@ -1,0 +1,22 @@
+{
+  "skeleton": {
+    "basic": "Basic",
+    "avatar": "Avatar",
+    "card": "Card",
+    "text": "Text",
+    "form": "Form",
+    "table": "Table",
+    "accessibility": "Accessibility",
+    "accessibilityBody": "Skeletons are decorative by default. Keep one visually hidden status element mounted outside the busy region before the transition, then update its text when loading begins. Put aria-busy only on the region being updated.",
+    "usage": "Usage guidance",
+    "usageBody": "Match the final content's dimensions closely, keep the placeholder structure stable, and use Skeleton instead of one-off animated divs. Use a spinner for an action with indeterminate progress and an empty state only after loading has completed.",
+    "apiReference": "API Reference",
+    "classNameProp": "Sets the placeholder's dimensions and shape with utility classes.",
+    "ariaHiddenProp": "Keeps the decorative placeholder out of the accessibility tree by default. Announce loading with a sibling status instead of exposing the placeholder.",
+    "loadingProfile": "Loading profile",
+    "loadingCard": "Loading card",
+    "loadingArticle": "Loading article",
+    "loadingForm": "Loading form",
+    "loadingTable": "Loading table"
+  }
+}

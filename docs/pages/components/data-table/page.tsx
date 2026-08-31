@@ -7,6 +7,7 @@ import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
 import {
   EmptyProjectsTable,
+  LoadingProjectsTable,
   PinnedProjectsTable,
   ProjectsTable,
 } from "./data-table-examples";
@@ -247,12 +248,24 @@ import {
   table={table}
 />`;
 
+const loadingCode = `import { DataTable } from "@zeron/ui/data-table";
+
+<DataTable
+  isLoading={isLoading}
+  loadingMessage="Loading projects"
+  table={table}
+/>`;
+
 const dataTableProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "table", type: "Table<TData>", description: t("table") },
   { name: "children", type: "ReactNode", description: t("children") },
   { name: "actionBar", type: "ReactNode", description: t("actionBar") },
   { name: "emptyState", type: "ReactNode", description: t("emptyStateContent") },
   { name: "emptyMessage", type: "ReactNode", default: '"No results."', description: t("emptyMessage") },
+  { name: "isLoading", type: "boolean", default: "false", description: t("isLoading") },
+  { name: "loadingMessage", type: "ReactNode", default: '"Loading data."', description: t("loadingMessage") },
+  { name: "loadingRowCount", type: "number", default: "Current page size", description: t("loadingRowCount") },
+  { name: "renderLoadingCell", type: "(context) => ReactNode", description: t("renderLoadingCell") },
 ];
 
 const hookProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
@@ -284,6 +297,7 @@ export default function DataTableDoc() {
           variants={[
             { value: "directory", label: "Project directory", code: exampleCode, preview: <div className="w-full"><ProjectsTable /></div> },
             { value: "pinned", label: "Pinned columns", code: pinnedColumnsCode, preview: <div className="w-full"><PinnedProjectsTable /></div> },
+            { value: "loading", label: "Loading", code: loadingCode, preview: <div className="w-full"><LoadingProjectsTable /></div> },
             { value: "empty", label: "Empty state", code: emptyStateCode, preview: <div className="w-full"><EmptyProjectsTable /></div> },
           ]}
         />
@@ -312,6 +326,15 @@ export default function DataTableDoc() {
         <ComponentPreview code={emptyStateCode}>
           <div className="w-full">
             <EmptyProjectsTable />
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("loadingState")}>
+        <p className="text-body text-fg-muted">{t("loadingStateDescription")}</p>
+        <ComponentPreview code={loadingCode}>
+          <div className="w-full">
+            <LoadingProjectsTable />
           </div>
         </ComponentPreview>
       </DocSection>
