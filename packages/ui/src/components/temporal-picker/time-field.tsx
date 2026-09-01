@@ -52,6 +52,7 @@ function optionValues(max: number, step: number, padding = 2) {
 interface TimeColumnProps {
   ariaLabel: string;
   disabled?: boolean;
+  isValueDisabled?: (value: string) => boolean;
   invalid?: boolean;
   label: string;
   onSelect: (value: string) => void;
@@ -60,7 +61,7 @@ interface TimeColumnProps {
   values: string[];
 }
 
-function TimeColumn({ ariaLabel, disabled, invalid, label, onSelect, size, value, values }: TimeColumnProps) {
+function TimeColumn({ ariaLabel, disabled, isValueDisabled, invalid, label, onSelect, size, value, values }: TimeColumnProps) {
   const selectedItemRef = React.useRef<HTMLButtonElement>(null);
 
   React.useEffect(() => {
@@ -68,7 +69,7 @@ function TimeColumn({ ariaLabel, disabled, invalid, label, onSelect, size, value
   }, [value]);
 
   return (
-    <section aria-invalid={invalid || undefined} aria-label={ariaLabel} className="flex min-w-16 flex-col" data-slot="time-field-column">
+    <section aria-invalid={invalid || undefined} aria-label={ariaLabel} className="flex min-w-40 flex-col" data-slot="time-field-column">
       <div className="border-b border-border-subtle px-2 py-1.5 text-center text-label text-fg-muted">{label}</div>
       <ScrollArea className="h-40" viewportClassName="overscroll-contain p-1">
         <div className="flex flex-col gap-0.5" role="group" aria-label={ariaLabel}>
@@ -81,7 +82,7 @@ function TimeColumn({ ariaLabel, disabled, invalid, label, onSelect, size, value
                 aria-label={`${item} ${label}`}
                 aria-pressed={selected}
                 className="w-full justify-center tabular-nums"
-                disabled={disabled}
+                disabled={disabled || isValueDisabled?.(item)}
                 onClick={() => onSelect(item)}
                 size={size}
                 type="button"
@@ -152,6 +153,43 @@ export const TimeField = React.forwardRef<HTMLDivElement, TimeFieldProps>(functi
     if (nextValue && valid(nextValue)) commit(nextValue, { source: "time-field" });
   };
 
+  const hourValues = twelveHour
+    ? Array.from({ length: 12 }, (_, index) => String(index + 1))
+    : optionValues(23, 1);
+  const minuteValues = optionValues(59, minuteStep);
+  const secondValues = optionValues(59, secondStep);
+
+  const isPartDisabled = (part: keyof TimeDraft) => (nextPart: string) => {
+    const next = { ...draft, [part]: nextPart } as TimeDraft;
+    let hours = next.hour ? [next.hour] : hourValues;
+    let minutes = next.minute ? [next.minute] : minuteValues;
+    let seconds = includeSeconds ? next.second ? [next.second] : secondValues : [""];
+    let periods: TimeDraft["period"][] = twelveHour
+      ? next.period ? [next.period] : ["AM", "PM"]
+      : [""];
+
+    // A higher-order choice must stay available whenever one valid lower-order
+    // completion exists. Otherwise an invalid draft such as 00:00 with a 23:59
+    // minimum cannot move to 23:59 because both 23 and 59 disable each other.
+    if (part === "hour") {
+      minutes = minuteValues;
+      seconds = includeSeconds ? secondValues : [""];
+    } else if (part === "minute") {
+      seconds = includeSeconds ? secondValues : [""];
+    } else if (part === "period") {
+      hours = hourValues;
+      minutes = minuteValues;
+      seconds = includeSeconds ? secondValues : [""];
+      periods = [next.period];
+    }
+
+    const hasValidCompletion = periods.some((period) => hours.some((hour) => minutes.some((minute) => seconds.some((second) => {
+      const candidate = toValue({ hour, minute, second, period }, twelveHour, includeSeconds);
+      return Boolean(candidate && valid(candidate));
+    }))));
+    return !hasValidCompletion;
+  };
+
   React.useEffect(() => {
     const formElement = formValueRef.current?.form;
     if (!formElement) return;
@@ -162,11 +200,6 @@ export const TimeField = React.forwardRef<HTMLDivElement, TimeFieldProps>(functi
     return () => formElement.removeEventListener("reset", reset);
   }, [commit, controlled, defaultValue]);
 
-  const hourValues = twelveHour
-    ? Array.from({ length: 12 }, (_, index) => String(index + 1))
-    : optionValues(23, 1);
-  const minuteValues = optionValues(59, minuteStep);
-  const secondValues = optionValues(59, secondStep);
   const columnCount = 2 + Number(includeSeconds) + Number(twelveHour);
 
   return (
@@ -177,18 +210,18 @@ export const TimeField = React.forwardRef<HTMLDivElement, TimeFieldProps>(functi
       aria-invalid={invalid || undefined}
       aria-labelledby={ariaLabelledBy}
       aria-label={ariaLabel}
-      className={cn("grid w-fit max-w-full overflow-hidden rounded-xl border border-border-subtle bg-surface-base shadow-control", columnCount === 2 && "grid-cols-2", columnCount === 3 && "grid-cols-3", columnCount === 4 && "grid-cols-4", className)}
+      className={cn("grid w-fit max-w-full overflow-x-auto", columnCount === 2 && "grid-cols-2", columnCount === 3 && "grid-cols-3", columnCount === 4 && "grid-cols-4", className)}
       data-slot="time-field"
       id={id}
       role="group"
     >
-      <TimeColumn ariaLabel={`${baseLabel} hour`} disabled={disabledSelect} invalid={invalid} label="HH" onSelect={(next) => change("hour", next)} size={size} value={draft.hour} values={hourValues} />
-      <TimeColumn ariaLabel={`${baseLabel} minute`} disabled={disabledSelect} invalid={invalid} label="MM" onSelect={(next) => change("minute", next)} size={size} value={draft.minute} values={minuteValues} />
+      <TimeColumn ariaLabel={`${baseLabel} hour`} disabled={disabledSelect} isValueDisabled={isPartDisabled("hour")} invalid={invalid} label="HH" onSelect={(next) => change("hour", next)} size={size} value={draft.hour} values={hourValues} />
+      <TimeColumn ariaLabel={`${baseLabel} minute`} disabled={disabledSelect} isValueDisabled={isPartDisabled("minute")} invalid={invalid} label="MM" onSelect={(next) => change("minute", next)} size={size} value={draft.minute} values={minuteValues} />
       {includeSeconds && (
-        <TimeColumn ariaLabel={`${baseLabel} second`} disabled={disabledSelect} invalid={invalid} label="SS" onSelect={(next) => change("second", next)} size={size} value={draft.second} values={secondValues} />
+        <TimeColumn ariaLabel={`${baseLabel} second`} disabled={disabledSelect} isValueDisabled={isPartDisabled("second")} invalid={invalid} label="SS" onSelect={(next) => change("second", next)} size={size} value={draft.second} values={secondValues} />
       )}
       {twelveHour && (
-        <TimeColumn ariaLabel={`${baseLabel} period`} disabled={disabledSelect} invalid={invalid} label="AM/PM" onSelect={(next) => change("period", next)} size={size} value={draft.period} values={["AM", "PM"]} />
+        <TimeColumn ariaLabel={`${baseLabel} period`} disabled={disabledSelect} isValueDisabled={isPartDisabled("period")} invalid={invalid} label="AM/PM" onSelect={(next) => change("period", next)} size={size} value={draft.period} values={["AM", "PM"]} />
       )}
       {name && <input ref={formValueRef} aria-hidden className="sr-only" form={form} name={name} readOnly required={required} tabIndex={-1} type="text" value={displayValue ?? ""} />}
     </div>

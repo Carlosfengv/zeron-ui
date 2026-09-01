@@ -6,6 +6,11 @@
     "scheduledRange": "Scheduled range",
     "timeSelection": "Time selection",
     "dateSelection": "Date selection",
+    "customTriggerFormat": "Custom trigger formatting",
+    "dateFormat": "Formatted date",
+    "timeFormat": "Formatted time",
+    "customDateFormatHint": "Use formatValue to customize the trigger while retaining the original ISO date value.",
+    "customTimeFormatHint": "The same callback can format a time trigger without changing the committed ISO time.",
     "dateTimeSelection": "Date and time",
     "single": "Single",
     "range": "Range",
@@ -36,6 +41,7 @@
     "p5": "Named values resolved once on activation. A preset may be drafted or committed independently of closeOnCommit.",
     "p6": "Controls displayed date and time formatting plus the calendar language tag.",
     "p7": "Injects the reference instant used when resolving relative presets.",
-    "p8": "Disabled blocks interaction; read-only renders the committed summary without an editable trigger."
+    "p8": "Disabled blocks interaction; read-only renders the committed summary without an editable trigger.",
+    "p9": "Formats only the committed value shown by the trigger or read-only summary. It does not change the emitted ISO value; date-time formatters also receive the resolved IANA time zone."
   }
 }

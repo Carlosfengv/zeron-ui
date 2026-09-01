@@ -225,10 +225,11 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
     if (core.presetBehavior === "commit") core.submit(value, { source: "preset", presetId: preset.id });
   };
   const panel = (
-    <div className="min-w-[18rem]" data-slot="date-picker-panel">
+    <div className="w-[18rem] max-w-full" data-slot="date-picker-panel">
       <PickerHeader>{core.messages.selectDate}</PickerHeader>
       <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
       <Calendar
+        className="w-full"
         disabled={(date) => dateDisabled(date, props)}
         formatters={pickerCalendarFormatters(locale)}
         labels={pickerCalendarLabels(locale)}
@@ -300,11 +301,13 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
   const summary = core.committedValue
     ? props.formatValue?.(core.committedValue) ?? `${formatISODate(core.committedValue.from, locale)} – ${formatISODate(core.committedValue.to, locale)}`
     : props.placeholder ?? core.messages.selectDate;
+  const multipleMonths = (props.numberOfMonths ?? 1) > 1;
   const panel = (
-    <div className="min-w-[18rem]" data-slot="date-range-picker-panel">
+    <div className={multipleMonths ? "w-fit max-w-[92vw]" : "w-[18rem] max-w-full"} data-slot="date-range-picker-panel">
       <PickerHeader>{core.messages.selectDate}</PickerHeader>
       <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
       <Calendar
+        className={multipleMonths ? "w-fit" : "w-full"}
         disabled={(date) => dateDisabled(date, props)}
         formatters={pickerCalendarFormatters(locale)}
         labels={pickerCalendarLabels(locale)}
@@ -353,10 +356,10 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(f
   };
   const summary = core.committedValue ? props.formatValue?.(core.committedValue) ?? formatISOTime(core.committedValue, locale, props.hourCycle) : props.placeholder ?? core.messages.selectTime;
   const panel = (
-    <div className="w-fit max-w-full" data-slot="time-picker-panel">
+    <div className="w-[18rem] max-w-full" data-slot="time-picker-panel">
       <PickerHeader>{core.messages.selectTime}</PickerHeader>
       <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
-      <div className="p-3"><TimeField aria-label={core.messages.selectTime} granularity={props.granularity} hourCycle={props.hourCycle} maxValue={props.maxValue} minValue={props.minValue} minuteStep={props.minuteStep} onValueChange={(value) => select(value, { source: "time-field" })} secondStep={props.secondStep} size={props.size} value={core.draft} /></div>
+      <TimeField aria-label={core.messages.selectTime} className="w-full [&_[data-slot=time-field-column]]:min-w-0" granularity={props.granularity} hourCycle={props.hourCycle} maxValue={props.maxValue} minValue={props.minValue} minuteStep={props.minuteStep} onValueChange={(value) => select(value, { source: "time-field" })} secondStep={props.secondStep} size={props.size} value={core.draft} />
       <TemporalPickerActions applyDisabled={!valid(core.draft) || temporalValueEquals(core.draft, core.committedValue)} clearable={Boolean(core.committedValue || core.draft)} messages={core.messages} onApply={() => valid(core.draft) && core.submit(core.draft, { source: "apply", presetId: activePresetId })} onCancel={core.cancel} onClear={() => { clearActivePreset(); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
     </div>
   );
@@ -385,14 +388,21 @@ export const TimeRangePicker = React.forwardRef<HTMLButtonElement, TimeRangePick
     setActivePreset(preset.id, next); setDraft(next); core.updateDraft(next);
     if (core.presetBehavior === "commit") core.submit(next, { source: "preset", presetId: preset.id });
   };
+  const overnightEnabled = Boolean(props.allowOvernight && draft.overnight);
+  const startMaxValue = !overnightEnabled && draft.to && (!props.maxValue || compareISOTime(draft.to, props.maxValue) < 0)
+    ? draft.to
+    : props.maxValue;
+  const endMinValue = !overnightEnabled && draft.from && (!props.minValue || compareISOTime(draft.from, props.minValue) > 0)
+    ? draft.from
+    : props.minValue;
   const summary = core.committedValue ? props.formatValue?.(core.committedValue) ?? `${formatISOTime(core.committedValue.from, locale, props.hourCycle)} – ${formatISOTime(core.committedValue.to, locale, props.hourCycle)}${core.committedValue.overnight ? ` (${core.messages.nextDay})` : ""}` : props.placeholder ?? core.messages.selectTime;
   const panel = (
-    <div className="w-fit max-w-full" data-slot="time-range-picker-panel">
+    <div className="w-[18rem] max-w-full" data-slot="time-range-picker-panel">
       <PickerHeader>{core.messages.selectTime}</PickerHeader>
       <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
-      <div className="grid gap-3 p-3 sm:grid-cols-2">
-        <label className="grid gap-1 text-label text-fg-muted"><span>{core.messages.start}</span><TimeField aria-label={core.messages.start} granularity={props.granularity} hourCycle={props.hourCycle} maxValue={props.maxValue} minValue={props.minValue} minuteStep={props.minuteStep} onValueChange={(from) => update({ ...draft, from })} secondStep={props.secondStep} size={props.size} value={draft.from} /></label>
-        <label className="grid gap-1 text-label text-fg-muted"><span>{core.messages.end}</span><TimeField aria-label={core.messages.end} granularity={props.granularity} hourCycle={props.hourCycle} maxValue={props.maxValue} minValue={props.minValue} minuteStep={props.minuteStep} onValueChange={(to) => update({ ...draft, to })} secondStep={props.secondStep} size={props.size} value={draft.to} /></label>
+      <div className="grid sm:grid-cols-2 sm:divide-x sm:divide-border-subtle">
+        <label className="grid min-w-0 gap-1 text-label text-fg-muted"><span className="bg-surface-base px-2 py-1">{core.messages.start}</span><TimeField aria-label={core.messages.start} className="w-full [&_[data-slot=time-field-column]]:min-w-0" granularity={props.granularity} hourCycle={props.hourCycle} maxValue={startMaxValue} minValue={props.minValue} minuteStep={props.minuteStep} onValueChange={(from) => update({ ...draft, from })} secondStep={props.secondStep} size={props.size} value={draft.from} /></label>
+        <label className="grid min-w-0 gap-1 text-label text-fg-muted"><span className="bg-surface-base px-2 py-1">{core.messages.end}</span><TimeField aria-label={core.messages.end} className="w-full [&_[data-slot=time-field-column]]:min-w-0" granularity={props.granularity} hourCycle={props.hourCycle} maxValue={props.maxValue} minValue={endMinValue} minuteStep={props.minuteStep} onValueChange={(to) => update({ ...draft, to })} secondStep={props.secondStep} size={props.size} value={draft.to} /></label>
       </div>
       {props.allowOvernight && <label className="flex items-center gap-2 px-3 pb-3 text-label text-fg-muted"><input checked={Boolean(draft.overnight)} onChange={(event) => update({ ...draft, overnight: event.target.checked || undefined })} type="checkbox" /><span>{core.messages.nextDay}</span></label>}
       <TemporalPickerActions applyDisabled={!valid(draft) || temporalValueEquals(draft as TimeRangeValue | undefined, core.committedValue)} clearable={Boolean(core.committedValue || draft.from || draft.to)} messages={core.messages} onApply={() => valid(draft) && core.submit(draft, { source: "apply", presetId: activePresetId })} onCancel={core.cancel} onClear={() => { clearActivePreset(); setDraft({}); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />

@@ -4,16 +4,12 @@ import * as React from "react";
 import {
   DatePicker,
   DateRangePicker,
-  DateTimePicker,
-  DateTimeRangePicker,
   TimePicker,
   TimeRangePicker,
   assertISODate,
-  createRecentDateTimePreset,
+  assertISOTime,
   type DateRangeValue,
-  type DateTimeRangeValue,
   type ISODateString,
-  type ISODateTimeString,
   type ISOTimeString,
   type TimeRangeValue,
 } from "@zeron/ui/temporal-picker";
@@ -31,36 +27,48 @@ function Example() {
 
   return (
     <>
-      <TimePicker value={single} onValueChange={setSingle} />
-      <TimeRangePicker value={range} onValueChange={setRange} />
+      <TimePicker
+        value={single}
+        onValueChange={setSingle}
+        formatValue={(value) => value.slice(0, 5)}
+      />
+      <TimeRangePicker
+        value={range}
+        onValueChange={setRange}
+        formatValue={({ from, to }) => \`\${from} → \${to}\`}
+      />
     </>
   );
 }`;
 
 const dateCode = `import { DatePicker, DateRangePicker } from "@zeron/ui/temporal-picker";
 
-<DatePicker value={single} onValueChange={setSingle} />
+<DatePicker
+  value={single}
+  onValueChange={setSingle}
+  formatValue={(value) => value.replaceAll("-", "/")}
+/>
 <DateRangePicker
   commitMode="apply"
   value={range}
   onValueChange={setRange}
+  formatValue={({ from, to }) =>
+    \`\${from.replaceAll("-", "/")} → \${to.replaceAll("-", "/")}\`
+  }
 />`;
 
-const dateTimeCode = `import {
-  DateTimePicker,
-  DateTimeRangePicker,
-} from "@zeron/ui/temporal-picker";
+const formatValueCode = `import { DatePicker, TimePicker } from "@zeron/ui/temporal-picker";
 
-<DateTimePicker
-  timeZone="America/Los_Angeles"
-  value={single}
-  onValueChange={setSingle}
+<DatePicker
+  value={date}
+  onValueChange={setDate}
+  formatValue={(value) => value.replaceAll("-", "/")}
 />
-<DateTimeRangePicker
-  commitMode="apply"
-  timeZone="America/Los_Angeles"
-  value={range}
-  onValueChange={setRange}
+
+<TimePicker
+  value={time}
+  onValueChange={setTime}
+  formatValue={(value) => value.slice(0, 5).replace(":", "h")}
 />`;
 
 const pickerProps: PropDef[] = [
@@ -73,6 +81,7 @@ const pickerProps: PropDef[] = [
   { name: "locale", type: "BCP 47 string", default: '"en-US"', description: "Controls displayed date and time formatting plus the calendar language tag." },
   { name: "now", type: "() => Date", description: "Injects the reference instant used when resolving relative presets." },
   { name: "disabled / readOnly", type: "boolean", default: "false", description: "Disabled blocks interaction; read-only renders the committed summary without an editable trigger." },
+  { name: "formatValue", type: "(value, timeZone?) => ReactNode", description: "Formats only the committed value shown by the trigger or read-only summary. It does not change the emitted ISO value." },
 ];
 
 function ValuePreview({ value }: { value: unknown }) {
@@ -118,10 +127,10 @@ function TimeSelectionDemo() {
   return (
     <DemoPair>
       <PickerCase description={t("singleTimeHint")} label={t("single")} value={single}>
-        <TimePicker aria-label={t("chooseTime")} onValueChange={setSingle} value={single} />
+        <TimePicker aria-label={t("chooseTime")} formatValue={(value) => value.slice(0, 5)} onValueChange={setSingle} value={single} />
       </PickerCase>
       <PickerCase description={t("rangeTimeHint")} label={t("range")} value={range}>
-        <TimeRangePicker aria-label={t("chooseTimeRange")} commitMode="apply" onValueChange={setRange} value={range} />
+        <TimeRangePicker aria-label={t("chooseTimeRange")} commitMode="apply" formatValue={({ from, to }) => `${from} → ${to}`} onValueChange={setRange} value={range} />
       </PickerCase>
     </DemoPair>
   );
@@ -140,31 +149,27 @@ function DateSelectionDemo() {
   return (
     <DemoPair>
       <PickerCase description={t("singleDateHint")} label={t("single")} value={single}>
-        <DatePicker aria-label={t("chooseDate")} onValueChange={setSingle} presets={[todayPreset]} value={single} />
+        <DatePicker aria-label={t("chooseDate")} formatValue={(value) => value.replaceAll("-", "/")} onValueChange={setSingle} presets={[todayPreset]} value={single} />
       </PickerCase>
       <PickerCase description={t("rangeDateHint")} label={t("range")} value={range}>
-        <DateRangePicker aria-label={t("chooseDateRange")} commitMode="apply" onValueChange={setRange} value={range} />
+        <DateRangePicker aria-label={t("chooseDateRange")} commitMode="apply" formatValue={({ from, to }) => `${from.replaceAll("-", "/")} → ${to.replaceAll("-", "/")}`} onValueChange={setRange} value={range} />
       </PickerCase>
     </DemoPair>
   );
 }
 
-function DateTimeSelectionDemo() {
+function FormatValueDemo() {
   const t = useTranslations("temporalPicker");
-  const [single, setSingle] = React.useState<ISODateTimeString>();
-  const [range, setRange] = React.useState<DateTimeRangeValue>();
-  const recentPreset = React.useMemo(
-    () => createRecentDateTimePreset({ amount: 1, id: "last-hour", label: t("lastHour"), unit: "hour" }),
-    [t],
-  );
+  const [date, setDate] = React.useState<ISODateString | undefined>(() => assertISODate("2026-09-10"));
+  const [time, setTime] = React.useState<ISOTimeString | undefined>(() => assertISOTime("16:30"));
 
   return (
     <DemoPair>
-      <PickerCase description={t("singleDateTimeHint")} label={t("single")} value={single}>
-        <DateTimePicker aria-label={t("chooseDateTime")} onValueChange={setSingle} timeZone="America/Los_Angeles" value={single} />
+      <PickerCase description={t("customDateFormatHint")} label={t("dateFormat")} value={date}>
+        <DatePicker formatValue={(value) => value.replaceAll("-", "/")} onValueChange={setDate} value={date} />
       </PickerCase>
-      <PickerCase description={t("rangeDateTimeHint")} label={t("range")} value={range}>
-        <DateTimeRangePicker aria-label={t("chooseDateTimeRange")} commitMode="apply" onValueChange={setRange} presets={[recentPreset]} timeZone="America/Los_Angeles" value={range} />
+      <PickerCase description={t("customTimeFormatHint")} label={t("timeFormat")} value={time}>
+        <TimePicker formatValue={(value) => value.slice(0, 5).replace(":", "h")} onValueChange={setTime} value={time} />
       </PickerCase>
     </DemoPair>
   );
@@ -188,9 +193,9 @@ export default function TemporalPickerDoc() {
         </ComponentPreview>
       </DocSection>
 
-      <DocSection title={t("dateTimeSelection")}>
-        <ComponentPreview align="top" code={dateTimeCode} minHeightClass="min-h-[12rem]" padding="compact">
-          <DateTimeSelectionDemo />
+      <DocSection title={t("customTriggerFormat")}>
+        <ComponentPreview align="top" code={formatValueCode} minHeightClass="min-h-[12rem]" padding="compact">
+          <FormatValueDemo />
         </ComponentPreview>
       </DocSection>
 

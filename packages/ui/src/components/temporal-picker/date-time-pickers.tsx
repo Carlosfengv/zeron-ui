@@ -35,6 +35,8 @@ interface DateTimeDraft {
 
 type DateTimeFieldOptions = Pick<DateTimePickerProps, "granularity" | "hourCycle" | "minuteStep" | "secondStep"> & {
   isTimeUnavailable?: (time: ISOTimeString, context: { date: ISODateString; timeZone: string; endpoint?: TemporalRangeEndpoint }) => boolean;
+  maxTime?: ISOTimeString;
+  minTime?: ISOTimeString;
 };
 
 function draftFromInstant(value: ISODateTimeString | undefined, timeZone: string): DateTimeDraft {
@@ -91,13 +93,16 @@ function DateTimeFields({
     ? props.isTimeUnavailable?.(draft.time, { date: draft.date, timeZone, ...(endpoint ? { endpoint } : {}) })
     : false;
   return (
-    <div className={active === undefined ? "grid gap-1.5" : "grid gap-1.5 rounded-lg border border-transparent p-2 data-[active=true]:border-focus-ring/50 data-[active=true]:bg-emphasis/50"} data-active={active || undefined}>
+    <div className={active === undefined ? "grid gap-1.5" : "grid gap-1.5 p-2"} data-active={active || undefined}>
       {endpoint && <span className="text-label font-medium text-fg-muted">{label}</span>}
       <TimeField
         aria-label={label}
+        className="w-full [&_[data-slot=time-field-column]]:min-w-0"
         granularity={props.granularity}
         hourCycle={props.hourCycle}
         invalid={Boolean(unavailable || resolution?.kind === "nonexistent" || resolution?.kind === "ambiguous")}
+        maxValue={props.maxTime}
+        minValue={props.minTime}
         minuteStep={props.minuteStep}
         onValueChange={(time) => onChange({ ...draft, time, selectedInstant: undefined })}
         secondStep={props.secondStep}
@@ -152,11 +157,12 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
   };
   const summary = core.committedValue ? props.formatValue?.(core.committedValue, timeZone) ?? formatISODateTime(core.committedValue, locale, timeZone, props.granularity === "second") : props.placeholder ?? core.messages.selectDateTime;
   const panel = (
-    <div className="min-w-[19rem]" data-slot="date-time-picker-panel">
+    <div className="w-[19rem] max-w-full" data-slot="date-time-picker-panel">
       <PickerHeader>{core.messages.selectDateTime}</PickerHeader>
       <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
       <div className="p-1">
         <Calendar
+          className="w-full"
           disabled={(date) => dateDisabled(date, { isDateUnavailable: props.isDateUnavailable })}
           formatters={pickerCalendarFormatters(locale)}
           labels={pickerCalendarLabels(locale)}
@@ -166,7 +172,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
           selected={draft.date ? dateToCalendarDate(draft.date) : undefined}
         />
       </div>
-      <div className="border-t border-border-subtle p-3"><DateTimeFields draft={draft} messages={core.messages} onChange={update} onSelectAmbiguous={(selectedInstant) => update({ ...draft, selectedInstant })} props={{ granularity: props.granularity, hourCycle: props.hourCycle, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: props.isTimeUnavailable }} resolution={resolution} timeZone={timeZone} /></div>
+      <div className="border-t border-border-subtle"><DateTimeFields draft={draft} messages={core.messages} onChange={update} onSelectAmbiguous={(selectedInstant) => update({ ...draft, selectedInstant })} props={{ granularity: props.granularity, hourCycle: props.hourCycle, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: props.isTimeUnavailable }} resolution={resolution} timeZone={timeZone} /></div>
       <TemporalPickerActions applyDisabled={!valid || temporalValueEquals(value, core.committedValue)} clearable={Boolean(core.committedValue || draft.date || draft.time)} messages={core.messages} onApply={() => valid && value && core.submit(value, { source: "apply", presetId: activePresetId })} onCancel={core.cancel} onClear={() => { clearActivePreset(); setDraft({}); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
     </div>
   );
@@ -215,7 +221,6 @@ export const DateTimeRangePicker = React.forwardRef<HTMLButtonElement, DateTimeR
     const nextValue = nextStart && nextEnd && endpointValid(nextStart, "start", nextDraft.start) && endpointValid(nextEnd, "end", nextDraft.end) && compareISODateTime(nextStart, nextEnd) <= 0 ? { from: nextStart, to: nextEnd } : undefined;
     core.updateDraft(nextValue);
     clearActivePreset();
-    if (endpoint === "start" && next.date && next.time) setActiveEndpoint("end");
   };
   const selectPreset = (preset: TemporalPreset<DateTimeRangeValue>) => {
     const next = preset.resolve({ now: (props.now ?? (() => new Date()))(), locale, timeZone });
@@ -226,14 +231,16 @@ export const DateTimeRangePicker = React.forwardRef<HTMLButtonElement, DateTimeR
     if (core.presetBehavior === "commit") core.submit(next, { source: "preset", presetId: preset.id });
   };
   const activeDraft = draft[activeEndpoint];
+  const endpointsShareDate = Boolean(draft.start.date && draft.start.date === draft.end.date);
   const summary = core.committedValue ? props.formatValue?.(core.committedValue, timeZone) ?? `${formatISODateTime(core.committedValue.from, locale, timeZone, props.granularity === "second")} – ${formatISODateTime(core.committedValue.to, locale, timeZone, props.granularity === "second")}` : props.placeholder ?? core.messages.selectDateTime;
   const panel = (
-    <div className="min-w-[20rem]" data-slot="date-time-range-picker-panel">
+    <div className="w-[34rem] max-w-[92vw]" data-slot="date-time-range-picker-panel">
       <PickerHeader>{core.messages.selectDateTime}</PickerHeader>
       <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
-      <div className="grid divide-y divide-border-subtle md:grid-cols-[auto_minmax(15rem,1fr)] md:divide-x md:divide-y-0">
-        <div className="p-1">
+      <div className="grid divide-y divide-border-subtle md:grid-cols-[minmax(0,1.2fr)_minmax(15rem,1fr)] md:divide-x md:divide-y-0">
+        <div className="min-w-0 p-1">
           <Calendar
+            className="w-full"
             disabled={(date) => dateDisabled(date, { isDateUnavailable: (value) => props.isDateUnavailable?.(value, activeEndpoint) ?? false })}
             formatters={pickerCalendarFormatters(locale)}
             labels={pickerCalendarLabels(locale)}
@@ -244,12 +251,12 @@ export const DateTimeRangePicker = React.forwardRef<HTMLButtonElement, DateTimeR
             selected={activeDraft.date ? dateToCalendarDate(activeDraft.date) : undefined}
           />
         </div>
-        <div className="grid content-start gap-2 p-3">
+        <div className="grid min-w-0 content-start gap-2">
           <div className="text-left" onFocus={() => setActiveEndpoint("start")} onPointerDown={() => setActiveEndpoint("start")}>
-            <DateTimeFields active={activeEndpoint === "start"} draft={draft.start} endpoint="start" messages={core.messages} onChange={(next) => updateEndpoint("start", next)} onSelectAmbiguous={(selectedInstant) => updateEndpoint("start", { ...draft.start, selectedInstant })} props={{ granularity: props.granularity, hourCycle: props.hourCycle, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: (time, context) => props.isTimeUnavailable?.(time, { ...context, endpoint: context.endpoint ?? "start" }) ?? false }} resolution={startResolution} timeZone={timeZone} />
+            <DateTimeFields active={activeEndpoint === "start"} draft={draft.start} endpoint="start" messages={core.messages} onChange={(next) => updateEndpoint("start", next)} onSelectAmbiguous={(selectedInstant) => updateEndpoint("start", { ...draft.start, selectedInstant })} props={{ granularity: props.granularity, hourCycle: props.hourCycle, maxTime: endpointsShareDate ? draft.end.time : undefined, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: (time, context) => props.isTimeUnavailable?.(time, { ...context, endpoint: context.endpoint ?? "start" }) ?? false }} resolution={startResolution} timeZone={timeZone} />
           </div>
           <div className="text-left" onFocus={() => setActiveEndpoint("end")} onPointerDown={() => setActiveEndpoint("end")}>
-            <DateTimeFields active={activeEndpoint === "end"} draft={draft.end} endpoint="end" messages={core.messages} onChange={(next) => updateEndpoint("end", next)} onSelectAmbiguous={(selectedInstant) => updateEndpoint("end", { ...draft.end, selectedInstant })} props={{ granularity: props.granularity, hourCycle: props.hourCycle, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: (time, context) => props.isTimeUnavailable?.(time, { ...context, endpoint: context.endpoint ?? "end" }) ?? false }} resolution={endResolution} timeZone={timeZone} />
+            <DateTimeFields active={activeEndpoint === "end"} draft={draft.end} endpoint="end" messages={core.messages} onChange={(next) => updateEndpoint("end", next)} onSelectAmbiguous={(selectedInstant) => updateEndpoint("end", { ...draft.end, selectedInstant })} props={{ granularity: props.granularity, hourCycle: props.hourCycle, minTime: endpointsShareDate ? draft.start.time : undefined, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: (time, context) => props.isTimeUnavailable?.(time, { ...context, endpoint: context.endpoint ?? "end" }) ?? false }} resolution={endResolution} timeZone={timeZone} />
           </div>
           {startValue && endValue && compareISODateTime(startValue, endValue) > 0 && <p className="text-label text-fg-danger" role="alert">{core.messages.startAfterEnd}</p>}
         </div>

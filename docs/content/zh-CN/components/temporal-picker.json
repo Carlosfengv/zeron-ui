@@ -6,6 +6,11 @@
     "scheduledRange": "计划时间范围",
     "timeSelection": "时间选择",
     "dateSelection": "日期选择",
+    "customTriggerFormat": "自定义 Trigger 回显格式",
+    "dateFormat": "日期格式化",
+    "timeFormat": "时间格式化",
+    "customDateFormatHint": "使用 formatValue 自定义 Trigger 回显，同时保留原始 ISO 日期值。",
+    "customTimeFormatHint": "时间选择器同样可以自定义回显格式，不会改变提交的 ISO 时间。",
     "dateTimeSelection": "日期与时间组合",
     "single": "单个",
     "range": "范围",
@@ -36,6 +41,7 @@
     "p5": "命名值会在激活时解析一次。预设可独立决定是写入草稿还是直接提交，也可独立决定是否关闭。",
     "p6": "控制日期和时间的显示格式，以及日历的语言标签。",
     "p7": "注入解析相对预设时使用的参考时间点。",
-    "p8": "disabled 会阻止交互；readOnly 只显示已提交摘要，不提供可编辑触发器。"
+    "p8": "disabled 会阻止交互；readOnly 只显示已提交摘要，不提供可编辑触发器。",
+    "p9": "仅格式化 Trigger 或只读摘要中显示的已提交值，不会改变组件输出的 ISO 值；日期时间格式化函数还会收到最终使用的 IANA 时区。"
   }
 }

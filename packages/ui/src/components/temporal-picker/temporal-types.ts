@@ -175,6 +175,7 @@ export interface TimePickerProps extends TemporalPickerCommonProps {
   minValue?: ISOTimeString;
   maxValue?: ISOTimeString;
   presets?: readonly TemporalPreset<ISOTimeString>[];
+  /** Formats only the trigger/read-only summary; the committed ISO value is unchanged. */
   formatValue?: (value: ISOTimeString) => React.ReactNode;
 }
 
@@ -190,6 +191,7 @@ export interface TimeRangePickerProps extends TemporalPickerCommonProps {
   maxValue?: ISOTimeString;
   allowOvernight?: boolean;
   presets?: readonly TemporalPreset<TimeRangeValue>[];
+  /** Formats only the trigger/read-only summary; the committed ISO range is unchanged. */
   formatValue?: (value: TimeRangeValue) => React.ReactNode;
 }
 
@@ -204,6 +206,7 @@ export interface DatePickerProps extends TemporalPickerCommonProps {
   firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   showOutsideDays?: boolean;
   presets?: readonly TemporalPreset<ISODateString>[];
+  /** Formats only the trigger/read-only summary; the committed ISO value is unchanged. */
   formatValue?: (value: ISODateString) => React.ReactNode;
 }
 
@@ -222,6 +225,7 @@ export interface DateRangePickerProps extends TemporalPickerCommonProps {
   firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   showOutsideDays?: boolean;
   presets?: readonly TemporalPreset<DateRangeValue>[];
+  /** Formats only the trigger/read-only summary; the committed ISO range is unchanged. */
   formatValue?: (value: DateRangeValue) => React.ReactNode;
 }
 
@@ -241,6 +245,7 @@ export interface DateTimePickerProps extends TemporalPickerCommonProps {
   isTimeUnavailable?: (time: ISOTimeString, context: DateTimeAvailabilityContext) => boolean;
   isDateTimeUnavailable?: (value: ISODateTimeString) => boolean;
   presets?: readonly TemporalPreset<ISODateTimeString>[];
+  /** Formats only the trigger/read-only summary and receives the resolved IANA time zone. */
   formatValue?: (value: ISODateTimeString, timeZone: string) => React.ReactNode;
 }
 
@@ -266,5 +271,6 @@ export interface DateTimeRangePickerProps extends TemporalPickerCommonProps {
   ) => boolean;
   isDateTimeUnavailable?: (value: ISODateTimeString, endpoint: TemporalRangeEndpoint) => boolean;
   presets?: readonly TemporalPreset<DateTimeRangeValue>[];
+  /** Formats only the trigger/read-only summary and receives the resolved IANA time zone. */
   formatValue?: (value: DateTimeRangeValue, timeZone: string) => React.ReactNode;
 }
