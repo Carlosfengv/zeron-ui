@@ -81,6 +81,11 @@
     "fullscreen": "Full screen",
     "exitFullscreen": "Exit full screen",
     "openStandalone": "Open standalone demo",
+    "copyToFigma": "Copy to Figma",
+    "copyingToFigma": "Copying to Figma…",
+    "copiedToFigma": "Copied — paste in Figma",
+    "copyToFigmaFailed": "Couldn’t copy to Figma",
+    "retryCopyToFigma": "Try copying to Figma again",
     "highlighting": "Highlighting…"
   },
   "playground": {

@@ -29,6 +29,14 @@ const nextConfig: NextConfig = {
       ];
     });
   },
+  async rewrites() {
+    return [
+      {
+        source: "/figma-capture.js",
+        destination: "https://mcp.figma.com/mcp/html-to-design/capture.js",
+      },
+    ];
+  },
 };
 
 const withNextIntl = createNextIntlPlugin("./app/_i18n/request.ts");

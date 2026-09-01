@@ -81,6 +81,11 @@
     "fullscreen": "全屏展示",
     "exitFullscreen": "退出全屏展示",
     "openStandalone": "在新标签页打开演示",
+    "copyToFigma": "复制到 Figma",
+    "copyingToFigma": "正在复制到 Figma…",
+    "copiedToFigma": "已复制，请在 Figma 中粘贴",
+    "copyToFigmaFailed": "无法复制到 Figma",
+    "retryCopyToFigma": "重试复制到 Figma",
     "highlighting": "正在高亮…"
   },
   "playground": {

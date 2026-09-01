@@ -3,8 +3,10 @@
 import {
   useCallback,
   useEffect,
+  useId,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import dynamic from "next/dynamic";
@@ -15,12 +17,36 @@ import { Switch } from "@zeron/ui/switch";
 import { Button } from "@zeron/ui/button";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { figmaCaptureToast } from "@docs/components/content/FigmaCaptureToaster";
+import {
+  copyElementToFigma,
+  getFigmaCaptureBusy,
+  preloadFigmaCapture,
+  subscribeFigmaCaptureBusy,
+} from "@docs/lib/figma-capture";
 import { PortalContainerProvider } from "@zeron/ui/system/portal-container-context";
 import { cn } from "@zeron/ui/system/utils";
 
 const InspectOverlay = dynamic(() =>
   import("@docs/components/playground/InspectOverlay").then((module) => module.InspectOverlay)
 );
+
+function FigmaIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M5.5 1a2.5 2.5 0 0 0 0 5H8V1H5.5Z" />
+      <path d="M5.5 6a2.5 2.5 0 0 0 0 5H8V6H5.5Z" opacity=".8" />
+      <path d="M5.5 11a2.5 2.5 0 1 0 2.5 2.5V11H5.5Z" opacity=".6" />
+      <path d="M8 1v5h2.5a2.5 2.5 0 0 0 0-5H8Z" opacity=".7" />
+      <circle cx="10.5" cy="8.5" r="2.5" opacity=".9" />
+    </svg>
+  );
+}
 
 export interface PlaybackButton {
   icon: ReactNode;
@@ -90,6 +116,14 @@ export function ComponentPreview({
   const [tab, setTab] = useState(0);
   const [inspect, setInspect] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [figmaCopyState, setFigmaCopyState] = useState<
+    "idle" | "copying" | "copied" | "error"
+  >("idle");
+  const figmaCaptureBusy = useSyncExternalStore(
+    subscribeFigmaCaptureBusy,
+    getFigmaCaptureBusy,
+    () => false,
+  );
   const [highlighted, setHighlighted] = useState<{
     code: string;
     html: string;
@@ -97,6 +131,7 @@ export function ComponentPreview({
   const [highlightFailedFor, setHighlightFailedFor] = useState<string | null>(null);
   const ReplayIcon = useIcon("rotate-ccw");
   const SearchIcon = useIcon("search");
+  const previewId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const previewRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameElement, setFrameElement] = useState<HTMLDivElement | null>(null);
@@ -115,6 +150,45 @@ export function ComponentPreview({
     }
 
     void frame.requestFullscreen().catch(() => {});
+  };
+
+  const prewarmFigmaCapture = useCallback(() => {
+    void preloadFigmaCapture().catch(() => {
+      // The click retries the request and surfaces an actionable error.
+    });
+  }, []);
+
+  const copyToFigma = async () => {
+    if (figmaCopyState === "copying" || figmaCaptureBusy) return;
+
+    let copyPromise: Promise<void>;
+    try {
+      copyPromise = copyElementToFigma(
+        `[data-figma-capture-id="${previewId}"]`,
+      );
+    } catch {
+      return;
+    }
+
+    setFigmaCopyState("copying");
+    const toastId = figmaCaptureToast.loading(t("copyingToFigma"));
+    try {
+      await copyPromise;
+      setFigmaCopyState("copied");
+      figmaCaptureToast.update(toastId, {
+        title: t("copiedToFigma"),
+        status: "success",
+        duration: 3_000,
+      });
+    } catch (error) {
+      console.error("Unable to copy component preview to Figma", error);
+      setFigmaCopyState("error");
+      figmaCaptureToast.update(toastId, {
+        title: t("copyToFigmaFailed"),
+        status: "error",
+        duration: 4_000,
+      });
+    }
   };
 
   const html = highlighted?.code === code ? highlighted.html : "";
@@ -230,6 +304,48 @@ export function ComponentPreview({
               className="h-8 px-2 rounded-lg"
             />
           )}
+          {tab === 0 && (
+            <Tooltip
+              content={
+                figmaCopyState === "copying" || figmaCaptureBusy
+                  ? t("copyingToFigma")
+                  : figmaCopyState === "copied"
+                    ? t("copiedToFigma")
+                    : figmaCopyState === "error"
+                      ? t("retryCopyToFigma")
+                      : t("copyToFigma")
+              }
+              side="top"
+            >
+              <Button
+                variant="ghost"
+                iconOnly
+                size="sm"
+                className="h-8 w-8"
+                aria-label={
+                  figmaCopyState === "copying" || figmaCaptureBusy
+                    ? t("copyingToFigma")
+                    : figmaCopyState === "error"
+                      ? t("retryCopyToFigma")
+                      : t("copyToFigma")
+                }
+                disabled={figmaCopyState === "copying" || figmaCaptureBusy}
+                onClick={copyToFigma}
+                onFocus={prewarmFigmaCapture}
+                onPointerDown={prewarmFigmaCapture}
+                onPointerEnter={prewarmFigmaCapture}
+              >
+                {figmaCopyState === "copying" ? (
+                  <span
+                    aria-hidden="true"
+                    className="size-4 animate-spin rounded-full border-[1.5px] border-current border-t-transparent"
+                  />
+                ) : (
+                  <FigmaIcon className="size-4" />
+                )}
+              </Button>
+            </Tooltip>
+          )}
           {standaloneHref && (
             <Tooltip content={t("openStandalone")} side="top">
               <Button
@@ -303,6 +419,7 @@ export function ComponentPreview({
           <div
             ref={previewRef}
             data-slot="component-preview-content"
+            data-figma-capture-id={previewId}
             data-fullscreen={isFullscreen || undefined}
             className={cn(
               "group/preview-content relative flex justify-center bg-surface-floating",
