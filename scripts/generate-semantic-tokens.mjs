@@ -7,6 +7,7 @@ import {
   boundaryColorTokens,
   overlayColorTokens,
   supportColorTokens,
+  componentColorTokens,
   surfaceTokens,
   shadowSupportTokens,
   shadowTokens,
@@ -51,6 +52,11 @@ export function registryCssVars() {
   }
   for (const token of supportColorTokens) {
     theme[`color-${token.name}`] = `var(--${token.name})`;
+    light[token.name] = token.light;
+    dark[token.name] = token.dark;
+  }
+  for (const token of componentColorTokens) {
+    theme[`color-${token.utility ?? token.name}`] = `var(--${token.name})`;
     light[token.name] = token.light;
     dark[token.name] = token.dark;
   }
@@ -123,6 +129,12 @@ function renderRootDeclarations() {
     ));
   }
   for (const token of supportColorTokens) {
+    lines.push(cssDeclaration(
+      token.name,
+      token.light === token.dark ? token.light : `light-dark(${token.light}, ${token.dark})`
+    ));
+  }
+  for (const token of componentColorTokens) {
     lines.push(cssDeclaration(
       token.name,
       token.light === token.dark ? token.light : `light-dark(${token.light}, ${token.dark})`
@@ -264,7 +276,7 @@ ${indentLines(layerClasses)}
 
 export function renderTokenPackageModule() {
   const data = JSON.stringify(semanticTokens, null, 2);
-  return `// Generated from packages/ui/src/tokens/semantic-tokens.mjs. Do not edit.\n\nconst tokenData = ${data};\n\nexport const colors = tokenData.colors;\nexport const foregroundColorTokens = tokenData.foregrounds;\nexport const fillColorTokens = tokenData.fills;\nexport const boundaryColorTokens = tokenData.boundaries;\nexport const overlayColorTokens = tokenData.overlays;\nexport const supportColorTokens = tokenData.supportColors;\nexport const surfaceTokens = tokenData.surfaces;\nexport const shadowTokens = tokenData.shadows;\nexport const typographyTokens = tokenData.typography;\nexport const motionDurationTokens = tokenData.motionDurations;\nexport const fontTokens = tokenData.fonts;\nexport const controlHeightTokens = tokenData.controlHeights;\nexport const badgeHeightTokens = tokenData.badgeHeights;\nexport const layerTokens = tokenData.layers;\nexport const semanticTokens = tokenData;\n\nexport default semanticTokens;\n`;
+  return `// Generated from packages/ui/src/tokens/semantic-tokens.mjs. Do not edit.\n\nconst tokenData = ${data};\n\nexport const colors = tokenData.colors;\nexport const foregroundColorTokens = tokenData.foregrounds;\nexport const fillColorTokens = tokenData.fills;\nexport const boundaryColorTokens = tokenData.boundaries;\nexport const overlayColorTokens = tokenData.overlays;\nexport const supportColorTokens = tokenData.supportColors;\nexport const componentColorTokens = tokenData.componentColors;\nexport const surfaceTokens = tokenData.surfaces;\nexport const shadowTokens = tokenData.shadows;\nexport const typographyTokens = tokenData.typography;\nexport const motionDurationTokens = tokenData.motionDurations;\nexport const fontTokens = tokenData.fonts;\nexport const controlHeightTokens = tokenData.controlHeights;\nexport const badgeHeightTokens = tokenData.badgeHeights;\nexport const layerTokens = tokenData.layers;\nexport const semanticTokens = tokenData;\n\nexport default semanticTokens;\n`;
 }
 
 const table = (headers, rows) => [
@@ -282,6 +294,9 @@ export function renderDocumentation() {
   const boundaryRows = tokenRows(boundaryColorTokens);
   const overlayRows = tokenRows(overlayColorTokens);
   const supportRows = tokenRows(supportColorTokens);
+  const componentRows = componentColorTokens.map((t) => [
+    `\`--${t.name}\``, `\`bg-${t.utility ?? t.name}\``, `\`${t.light}\``, `\`${t.dark}\``, t.usage,
+  ]);
   const surfaceRows = surfaceTokens.map((t) => [
     `\`--surface-${t.name}\``, `\`bg-surface-${t.name}\``, `\`${t.light}\``, `\`${t.dark}\``, t.usage,
   ]);
@@ -428,6 +443,13 @@ ${table(["CSS 令牌", "浅色", "深色", "分类", "用途"], overlayRows)}
 ## 支持颜色
 
 ${table(["CSS 令牌", "浅色", "深色", "分类", "用途"], supportRows)}
+
+## 组件颜色
+
+${table(["CSS 令牌", "Tailwind", "浅色", "深色", "用途"], componentRows)}
+
+组件颜色是稳定的组件配方，不是新的承载面层级。Card 默认使用 \`bg-card\`，其值由
+\`--card-background\` 提供；需要特殊承载关系时，调用方仍可用明确的 \`bg-surface-*\` 类覆盖。
 
 ## 承载面（Surface）
 

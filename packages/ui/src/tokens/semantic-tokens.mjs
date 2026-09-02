@@ -127,6 +127,10 @@ export const supportColorTokens = classify([
   { name: "scrollbar-thumb-active", light: "rgb(0 0 0 / 0.16)", dark: "rgb(255 255 255 / 0.16)", usage: "滚动条滑块的拖拽或按下状态" },
 ], "support");
 
+export const componentColorTokens = classify([
+  { name: "card-background", utility: "card", light: neutral[0], dark: "#292929", usage: "Card 与卡片式资源项的默认背景填充" },
+], "component");
+
 export const surfaceTokens = classify([
   { name: "base", light: "#F6F8FB", dark: "#1B1B1B", usage: "应用的最低承载面；用于页面和应用画布" },
   { name: "raised", light: "#F0F3F8", dark: "#292929", usage: "相对基底轻微抬升；用于工具区和低强调容器" },
@@ -265,6 +269,7 @@ export const semanticTokens = {
   boundaries: boundaryColorTokens,
   overlays: overlayColorTokens,
   supportColors: supportColorTokens,
+  componentColors: componentColorTokens,
   surfaces: surfaceTokens,
   shadows: shadowTokens,
   typography: typographyTokens,

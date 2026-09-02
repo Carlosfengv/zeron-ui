@@ -1,5 +1,6 @@
 export type ColorToken = {
   name: string;
+  utility?: string;
   light: string;
   dark: string;
   usage: string;
@@ -31,6 +32,7 @@ export const fillColorTokens: readonly ColorToken[];
 export const boundaryColorTokens: readonly ColorToken[];
 export const overlayColorTokens: readonly ColorToken[];
 export const supportColorTokens: readonly ColorToken[];
+export const componentColorTokens: readonly ColorToken[];
 export const surfaceTokens: readonly ColorToken[];
 export const shadowTokens: readonly ColorToken[];
 export const typographyTokens: readonly TypographyToken[];
@@ -47,6 +49,7 @@ export const semanticTokens: {
   readonly boundaries: readonly ColorToken[];
   readonly overlays: readonly ColorToken[];
   readonly supportColors: readonly ColorToken[];
+  readonly componentColors: readonly ColorToken[];
   readonly surfaces: readonly ColorToken[];
   readonly shadows: readonly ColorToken[];
   readonly typography: readonly TypographyToken[];

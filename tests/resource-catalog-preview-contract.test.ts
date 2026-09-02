@@ -96,9 +96,9 @@ describe("Resource Catalog gallery preview", () => {
     );
   });
 
-  it("uses the raised surface for model and MCP item cards", () => {
+  it("uses the Card background token for model and MCP item cards", () => {
     expect(resourceCatalog).toContain(
-      'className="bg-surface-raised pb-0 transition-colors duration-fast hover:bg-hover"'
+      'className="bg-card pb-0 transition-colors duration-fast hover:bg-hover"'
     );
   });
 

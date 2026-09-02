@@ -127,7 +127,7 @@ import {
 
 // Keep the shared shell and swap only the structured footer content.
 <CardGroup columns={2} border="outlined" separated>
-  <Card className="bg-surface-floating pb-0 transition-colors duration-fast hover:bg-hover">
+  <Card className="bg-card pb-0 transition-colors duration-fast hover:bg-hover">
     <CardContent className="flex items-start gap-2 px-4 pt-4">
       <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-hover">
         <ChatGLMColor size={24} />
@@ -359,7 +359,7 @@ function ResourceSummaryDemo() {
   return (
     <div className="w-full max-w-[860px]">
       <CardGroup columns={2} border="outlined" separated>
-        <Card className="bg-surface-floating pb-0 transition-colors duration-fast hover:bg-hover">
+        <Card className="bg-card pb-0 transition-colors duration-fast hover:bg-hover">
           <CardContent className="flex items-start gap-2 px-4 pt-4">
             <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-hover">
               <ChatGLMColor size={24} />
@@ -380,7 +380,7 @@ function ResourceSummaryDemo() {
           </CardFooter>
         </Card>
 
-        <Card className="bg-surface-floating pb-0 transition-colors duration-fast hover:bg-hover">
+        <Card className="bg-card pb-0 transition-colors duration-fast hover:bg-hover">
           <CardContent className="flex items-start gap-2 px-4 pt-4">
             <CardMedia icon={Globe} className="mb-0" />
             <CardHeader className="flex min-w-0 flex-1 flex-col gap-0 p-0">

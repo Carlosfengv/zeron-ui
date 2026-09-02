@@ -29,11 +29,11 @@ import { useProximityHover } from "#hooks/use-proximity-hover";
 // layout (stacked list, inline rows, or grid) plus the magnetic proximity
 // highlight that previews where a click will land.
 //
-// Unlike stock shadcn, the surface is transparent and borderless by default:
-// cards inherit whatever substrate their parent provides (see the Surfaces
-// system) and lean on hairline dividers / the proximity highlight rather than
-// a drawn frame. A Card renders fine on its own; inside a CardGroup it
-// registers itself so the group's highlight can find it.
+// Unlike stock shadcn, cards use the themeable card background token while
+// remaining borderless by default. They lean on hairline dividers / the
+// proximity highlight rather than a drawn frame. A Card renders fine on its
+// own; inside a CardGroup it registers itself so the group's highlight can
+// find it.
 // ---------------------------------------------------------------------------
 
 type CardOrientation = "card" | "inline";
@@ -419,7 +419,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           data-orientation={orientation}
           aria-disabled={disabled || undefined}
           className={cn(
-            "group/card relative z-content min-w-0 min-h-[60px]",
+            "group/card relative z-content min-w-0 min-h-[60px] bg-card",
             inlineImage
               ? // Image on the left; the text + actions ride in a centred
                 // column beside it (see the wrapper in the body below).

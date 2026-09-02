@@ -6,8 +6,8 @@ const ROOT = new URL("..", import.meta.url).pathname;
 const UI_ROOT = join(ROOT, "packages/ui/src/components");
 const PALETTE_UTILITY = /\b(?:bg|text|border|ring|outline|fill|stroke)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-[0-9]{2,3}\b|\b(?:bg|text|border|ring|outline|fill|stroke)-(?:white|black)\b/;
 const RAW_COLOR = /#[0-9a-fA-F]{3,8}\b|\b(?:rgb|rgba|hsl|hsla)\((?!var\(--)/;
-const LEGACY_COLOR_UTILITY = /\b(?:bg|text|border|fill|stroke|ring|outline|decoration|ring-offset|from|to|via)-(?:background|foreground|card|card-foreground|muted-foreground|accent|accent-hover|accent-active|accent-subtlest|accent-subtle|accent-foreground|selected|brand-foreground|destructive-subtle|destructive-light|destructive-foreground)(?:\/|\b)/;
-const LEGACY_COLOR_VARIABLE = /--(?:background|foreground|card|card-foreground|muted-foreground|accent|accent-hover|accent-active|accent-subtlest|accent-subtle|accent-foreground|selected|brand-foreground|destructive-subtle|destructive-light|destructive-foreground)\b/;
+const LEGACY_COLOR_UTILITY = /\b(?:bg|text|border|fill|stroke|ring|outline|decoration|ring-offset|from|to|via)-(?:background|foreground|card-foreground|muted-foreground|accent|accent-hover|accent-active|accent-subtlest|accent-subtle|accent-foreground|selected|brand-foreground|destructive-subtle|destructive-light|destructive-foreground)(?:\/|\b)/;
+const LEGACY_COLOR_VARIABLE = /--(?:background|foreground|card-foreground|muted-foreground|accent|accent-hover|accent-active|accent-subtlest|accent-subtle|accent-foreground|selected|brand-foreground|destructive-subtle|destructive-light|destructive-foreground)\b|--card(?=\s*:)/;
 
 function componentFiles(directory = UI_ROOT) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -34,6 +34,11 @@ describe("semantic color consumers", () => {
     expect(source).toContain("bg-secondary-action");
     expect(source).toContain("text-fg-default");
     expect(source).not.toContain("bg-accent");
+  });
+
+  it("uses the component Card background token by default", () => {
+    const source = read(join(UI_ROOT, "card.tsx"));
+    expect(source).toContain("min-h-[60px] bg-card");
   });
 
   it("uses the primary-action foreground for primary button text", () => {

@@ -182,7 +182,7 @@ function ResourceCard({ item, selected, onSelect }: { item: ResourceCatalogItem;
       label={`Open ${item.name}`}
       onClick={onSelect}
       selected={selected}
-      className="bg-surface-raised pb-0 transition-colors duration-fast hover:bg-hover"
+      className="bg-card pb-0 transition-colors duration-fast hover:bg-hover"
     >
       <CardContent className="flex items-start gap-2 px-4 pt-4">
         <ResourceMark item={item} />

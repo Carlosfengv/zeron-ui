@@ -88,6 +88,7 @@
   --scrollbar-thumb: light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.08));
   --scrollbar-thumb-hover: light-dark(rgb(0 0 0 / 0.12), rgb(255 255 255 / 0.12));
   --scrollbar-thumb-active: light-dark(rgb(0 0 0 / 0.16), rgb(255 255 255 / 0.16));
+  --card-background: light-dark(#FFFFFF, #292929);
   --shadow-color: rgb(0 0 0 / 0.06);
   --dm-hi-base: rgba(255,255,255,0.01);
   --dm-hi-mid: rgba(255,255,255,0.02);
@@ -240,6 +241,7 @@
   --color-scrollbar-thumb: var(--scrollbar-thumb);
   --color-scrollbar-thumb-hover: var(--scrollbar-thumb-hover);
   --color-scrollbar-thumb-active: var(--scrollbar-thumb-active);
+  --color-card: var(--card-background);
   --color-surface-base: var(--surface-base);
   --color-surface-raised: var(--surface-raised);
   --color-surface-floating: var(--surface-floating);

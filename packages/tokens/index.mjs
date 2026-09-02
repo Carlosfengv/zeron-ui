@@ -1215,6 +1215,19 @@ const tokenData = {
       }
     }
   ],
+  "componentColors": [
+    {
+      "name": "card-background",
+      "utility": "card",
+      "light": "#FFFFFF",
+      "dark": "#292929",
+      "usage": "Card 与卡片式资源项的默认背景填充",
+      "classification": {
+        "channel": "component",
+        "intent": "neutral"
+      }
+    }
+  ],
   "surfaces": [
     {
       "name": "base",
@@ -1486,6 +1499,7 @@ export const fillColorTokens = tokenData.fills;
 export const boundaryColorTokens = tokenData.boundaries;
 export const overlayColorTokens = tokenData.overlays;
 export const supportColorTokens = tokenData.supportColors;
+export const componentColorTokens = tokenData.componentColors;
 export const surfaceTokens = tokenData.surfaces;
 export const shadowTokens = tokenData.shadows;
 export const typographyTokens = tokenData.typography;

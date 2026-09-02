@@ -14,6 +14,7 @@ import {
   foregroundColorTokens,
   fillColorTokens,
   boundaryColorTokens,
+  componentColorTokens,
   supportColorTokens,
   semanticTokens,
   shadowTokens,
@@ -86,6 +87,7 @@ describe("semantic token generation", () => {
     const { theme, light, dark } = registryCssVars();
 
     expect(theme).toMatchObject({
+      "color-card": "var(--card-background)",
       "color-surface-base": "var(--surface-base)",
       "color-surface-raised": "var(--surface-raised)",
       "color-surface-floating": "var(--surface-floating)",
@@ -96,6 +98,7 @@ describe("semantic token generation", () => {
       "shadow-overlay": "var(--shadow-overlay)",
     });
     expect(light).toMatchObject({
+      "card-background": "#FFFFFF",
       ...Object.fromEntries(
         surfaceTokens.map((token) => [`surface-${token.name}`, token.light]),
       ),
@@ -104,6 +107,7 @@ describe("semantic token generation", () => {
       ),
     });
     expect(dark).toMatchObject({
+      "card-background": "#292929",
       ...Object.fromEntries(
         surfaceTokens.map((token) => [`surface-${token.name}`, token.dark]),
       ),
@@ -112,6 +116,7 @@ describe("semantic token generation", () => {
       ),
     });
     expect(renderGlobalsBlock()).not.toMatch(/--(?:background|card):/);
+    expect(renderGlobalsBlock()).toContain("--card-background: light-dark(#FFFFFF, #292929);");
   });
 
   it("keeps the raised surface aligned with the migrated theme", () => {
@@ -130,7 +135,7 @@ describe("semantic token generation", () => {
 
   it("does not publish retired compatibility color aliases", () => {
     const retiredNames = [
-      "background", "foreground", "card", "card-foreground", "muted-foreground",
+      "background", "foreground", "card-foreground", "muted-foreground",
       "accent", "accent-hover", "accent-active", "accent-subtlest", "accent-subtle",
       "accent-foreground", "selected", "brand-foreground", "destructive-subtle",
       "destructive-light", "destructive-foreground",
@@ -270,7 +275,7 @@ describe("semantic token generation", () => {
   });
 
   it("classifies every color token by one visual channel and semantic intent", () => {
-    for (const token of [...colorTokens, ...supportColorTokens, ...surfaceTokens]) {
+    for (const token of [...colorTokens, ...supportColorTokens, ...componentColorTokens, ...surfaceTokens]) {
       expect(token.classification).toMatchObject({
         channel: expect.any(String),
         intent: expect.any(String),
