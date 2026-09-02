@@ -105,7 +105,7 @@ export default function ButtonGroupDoc() {
   <DropdownMenu>
     <DropdownTrigger
       render={
-        <Button variant="primary" iconOnly size="sm" aria-label="${t("morePublishOptions")}">
+        <Button variant="primary" iconOnly aria-label="${t("morePublishOptions")}">
           <ChevronDown />
         </Button>
       }
@@ -204,7 +204,6 @@ export default function ButtonGroupDoc() {
                     active={splitOpen}
                     variant="primary"
                     iconOnly
-                    size="sm"
                     aria-label={t("morePublishOptions")}
                   >
                     <ChevronDown />
