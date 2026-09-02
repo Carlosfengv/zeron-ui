@@ -3,11 +3,11 @@
 import {
   useCallback,
   useEffect,
-  useId,
   useRef,
   useState,
   useSyncExternalStore,
   type ReactNode,
+  type RefObject,
 } from "react";
 import dynamic from "next/dynamic";
 import { useIcon } from "@zeron/icons/context";
@@ -22,6 +22,7 @@ import {
   copyElementToFigma,
   getFigmaCaptureBusy,
   preloadFigmaCapture,
+  resolveFigmaCaptureTarget,
   subscribeFigmaCaptureBusy,
 } from "@docs/lib/figma-capture";
 import { PortalContainerProvider } from "@zeron/ui/system/portal-container-context";
@@ -92,6 +93,9 @@ interface ComponentPreviewProps {
   allowScrollChaining?: boolean;
   /** Render the preview in a browser-like frame. Intended for full block demos. */
   browserFrame?: boolean;
+  /** Explicit DOM target for Figma capture. Use for portaled components whose
+   *  rendered layer is not a descendant of the preview content. */
+  figmaCaptureTargetRef?: RefObject<Element | null>;
   children: ReactNode;
 }
 
@@ -110,6 +114,7 @@ export function ComponentPreview({
   fill = false,
   allowScrollChaining = false,
   browserFrame = false,
+  figmaCaptureTargetRef,
   children,
 }: ComponentPreviewProps) {
   const t = useTranslations("preview");
@@ -124,6 +129,8 @@ export function ComponentPreview({
     getFigmaCaptureBusy,
     () => false,
   );
+  const isFigmaCopying =
+    figmaCopyState === "copying" || figmaCaptureBusy;
   const [highlighted, setHighlighted] = useState<{
     code: string;
     html: string;
@@ -131,7 +138,6 @@ export function ComponentPreview({
   const [highlightFailedFor, setHighlightFailedFor] = useState<string | null>(null);
   const ReplayIcon = useIcon("rotate-ccw");
   const SearchIcon = useIcon("search");
-  const previewId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const previewRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameElement, setFrameElement] = useState<HTMLDivElement | null>(null);
@@ -159,13 +165,32 @@ export function ComponentPreview({
   }, []);
 
   const copyToFigma = async () => {
-    if (figmaCopyState === "copying" || figmaCaptureBusy) return;
+    if (isFigmaCopying) return;
+
+    let captureTarget: Element;
+    try {
+      if (!previewRef.current) {
+        throw new Error("The component preview is not mounted");
+      }
+      captureTarget = resolveFigmaCaptureTarget(
+        previewRef.current,
+        figmaCaptureTargetRef?.current,
+      );
+    } catch (error) {
+      console.error("Unable to resolve the Figma capture target", error);
+      setFigmaCopyState("error");
+      const toastId = figmaCaptureToast.loading(t("copyingToFigma"));
+      figmaCaptureToast.update(toastId, {
+        title: t("copyToFigmaFailed"),
+        status: "error",
+        duration: 4_000,
+      });
+      return;
+    }
 
     let copyPromise: Promise<void>;
     try {
-      copyPromise = copyElementToFigma(
-        `[data-figma-capture-id="${previewId}"]`,
-      );
+      copyPromise = copyElementToFigma(captureTarget);
     } catch {
       return;
     }
@@ -307,7 +332,7 @@ export function ComponentPreview({
           {tab === 0 && (
             <Tooltip
               content={
-                figmaCopyState === "copying" || figmaCaptureBusy
+                isFigmaCopying
                   ? t("copyingToFigma")
                   : figmaCopyState === "copied"
                     ? t("copiedToFigma")
@@ -323,26 +348,20 @@ export function ComponentPreview({
                 size="sm"
                 className="h-8 w-8"
                 aria-label={
-                  figmaCopyState === "copying" || figmaCaptureBusy
+                  isFigmaCopying
                     ? t("copyingToFigma")
                     : figmaCopyState === "error"
                       ? t("retryCopyToFigma")
                       : t("copyToFigma")
                 }
-                disabled={figmaCopyState === "copying" || figmaCaptureBusy}
+                disabled={isFigmaCopying}
+                loading={isFigmaCopying}
                 onClick={copyToFigma}
                 onFocus={prewarmFigmaCapture}
                 onPointerDown={prewarmFigmaCapture}
                 onPointerEnter={prewarmFigmaCapture}
               >
-                {figmaCopyState === "copying" ? (
-                  <span
-                    aria-hidden="true"
-                    className="size-4 animate-spin rounded-full border-[1.5px] border-current border-t-transparent"
-                  />
-                ) : (
-                  <FigmaIcon className="size-4" />
-                )}
+                <FigmaIcon className="size-4" />
               </Button>
             </Tooltip>
           )}
@@ -419,7 +438,6 @@ export function ComponentPreview({
           <div
             ref={previewRef}
             data-slot="component-preview-content"
-            data-figma-capture-id={previewId}
             data-fullscreen={isFullscreen || undefined}
             className={cn(
               "group/preview-content relative flex justify-center bg-surface-floating",

@@ -375,6 +375,7 @@ function ToastPlayground() {
               </Button>
             </div>
             <ToastStack
+              data-figma-capture-target=""
               toasts={visible ? [previewToast] : []}
               onDismiss={() => setVisible(false)}
               position={position}
@@ -441,6 +442,7 @@ function PositionDemo() {
             </div>
           </div>
           <ToastStack
+            data-figma-capture-target=""
             toasts={[previewToast]}
             position={position}
             placement="absolute"

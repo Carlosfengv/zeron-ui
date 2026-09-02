@@ -1,5 +1,7 @@
 const FIGMA_CAPTURE_SCRIPT_ID = "zeron-figma-capture-script";
 const FIGMA_CAPTURE_SCRIPT_URL = "/figma-capture.js";
+const FIGMA_CAPTURE_TARGET_ATTRIBUTE = "data-figma-capture-target-id";
+const FIGMA_CAPTURE_TARGET_SELECTOR = "[data-figma-capture-target]";
 const FIGMA_TOOLBAR_HOST_ID = "__figma_capture_toolbar_host__";
 const FIGMA_TOOLBAR_HIDE_STYLE_ID = "__h2f_hide_official_toolbar__";
 const CAPTURE_ACK_TIMEOUT_MS = 1_400;
@@ -30,6 +32,7 @@ declare global {
 let captureScriptPromise: Promise<CaptureForDesign> | null = null;
 let captureInFlight: Promise<void> | null = null;
 let captureBusy = false;
+let captureTargetSeed = 0;
 const captureBusyListeners = new Set<() => void>();
 
 export function subscribeFigmaCaptureBusy(listener: () => void) {
@@ -39,6 +42,34 @@ export function subscribeFigmaCaptureBusy(listener: () => void) {
 
 export function getFigmaCaptureBusy() {
   return captureBusy;
+}
+
+export function resolveFigmaCaptureTarget(
+  preview: Element,
+  explicitTarget?: Element | null,
+) {
+  if (explicitTarget) {
+    if (!explicitTarget.isConnected) {
+      throw new Error("The explicit Figma capture target is not mounted");
+    }
+    return explicitTarget;
+  }
+
+  const markedTargets = preview.querySelectorAll(
+    FIGMA_CAPTURE_TARGET_SELECTOR,
+  );
+  if (markedTargets.length > 1) {
+    throw new Error("The preview has multiple explicit Figma capture targets");
+  }
+  if (markedTargets.length === 1) return markedTargets[0]!;
+
+  if (preview.children.length === 1) return preview.children[0]!;
+  if (preview.children.length === 0) {
+    throw new Error("The preview does not contain a Figma capture target");
+  }
+  throw new Error(
+    "The preview has multiple roots; mark one with data-figma-capture-target",
+  );
 }
 
 function setFigmaCaptureBusy(busy: boolean) {
@@ -253,14 +284,37 @@ async function performFigmaCopy(selector: string) {
   }
 }
 
-export function copyElementToFigma(selector: string) {
+function markCaptureTarget(target: Element) {
+  const token = `zeron-${Date.now().toString(36)}-${captureTargetSeed++}`;
+  const previousValue = target.getAttribute(FIGMA_CAPTURE_TARGET_ATTRIBUTE);
+  target.setAttribute(FIGMA_CAPTURE_TARGET_ATTRIBUTE, token);
+
+  return {
+    selector: `[${FIGMA_CAPTURE_TARGET_ATTRIBUTE}="${token}"]`,
+    restore() {
+      if (target.getAttribute(FIGMA_CAPTURE_TARGET_ATTRIBUTE) !== token) return;
+      if (previousValue === null) {
+        target.removeAttribute(FIGMA_CAPTURE_TARGET_ATTRIBUTE);
+      } else {
+        target.setAttribute(FIGMA_CAPTURE_TARGET_ATTRIBUTE, previousValue);
+      }
+    },
+  };
+}
+
+export function copyElementToFigma(target: Element) {
   if (captureInFlight) {
     throw new Error("A Figma capture is already in progress");
   }
+  if (!target.isConnected) {
+    throw new Error("The Figma capture target is not mounted");
+  }
 
+  const markedTarget = markCaptureTarget(target);
   setFigmaCaptureBusy(true);
-  const operation = performFigmaCopy(selector);
+  const operation = performFigmaCopy(markedTarget.selector);
   captureInFlight = operation.finally(() => {
+    markedTarget.restore();
     captureInFlight = null;
     setFigmaCaptureBusy(false);
   });

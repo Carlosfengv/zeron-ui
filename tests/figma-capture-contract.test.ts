@@ -11,14 +11,24 @@ describe("component preview Figma capture", () => {
   const captureToaster = source(
     "docs/components/content/FigmaCaptureToaster.tsx",
   );
+  const toastPage = source("docs/pages/components/toast/page.tsx");
   const providers = source("app/app-providers.tsx");
   const nextConfig = source("next.config.ts");
 
-  it("targets only the active preview content", () => {
-    expect(preview).toContain('data-figma-capture-id={previewId}');
-    expect(preview).toContain('copyElementToFigma(');
+  it("targets the rendered component instead of the preview canvas", () => {
+    expect(preview).toContain("resolveFigmaCaptureTarget(");
+    expect(preview).toContain("copyElementToFigma(captureTarget)");
+    expect(preview).toContain("loading={isFigmaCopying}");
+    expect(preview).not.toContain("data-figma-capture-id={previewId}");
+    expect(capture).toContain("preview.children.length === 1");
+    expect(capture).toContain("explicitTarget?: Element | null");
     expect(preview).toContain('{tab === 0 && (');
     expect(preview).toContain('t("copyToFigma")');
+  });
+
+  it("marks inline Toast stacks as complete capture targets", () => {
+    expect(toastPage.match(/data-figma-capture-target=""/g)).toHaveLength(2);
+    expect(toastPage).toContain('portal={false}');
   });
 
   it("keeps Figma feedback at the top without moving other toasts", () => {
