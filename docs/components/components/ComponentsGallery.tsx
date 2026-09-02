@@ -32,7 +32,6 @@ const copy = {
     all: "All",
     empty: "No components match the current search and filters.",
     filterByCategory: "Filter by category",
-    componentNavigation: "Component navigation",
     galleryDescription: "Browse components by the job they help you accomplish.",
     galleryTitle: "Find the right component",
     results: "{count} components",
@@ -42,7 +41,6 @@ const copy = {
     all: "全部",
     empty: "没有符合当前搜索和筛选条件的组件。",
     filterByCategory: "按类别筛选",
-    componentNavigation: "组件导航",
     galleryDescription: "按要完成的任务浏览组件。",
     galleryTitle: "找到合适的组件",
     results: "{count} 个组件",
@@ -165,7 +163,6 @@ function ComponentDirectorySidebar({
         </section>
         {navigationGroups.length > 0 && (
           <section className="mt-5 border-t border-border pt-5">
-            <p className="px-1 pb-1.5 text-label text-fg-muted">{text.componentNavigation}</p>
             <div className="flex flex-col gap-4">
               {navigationGroups.map((group) => (
                 <section key={group.section} aria-label={sectionLabels[language][group.section]}>
