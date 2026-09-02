@@ -68,7 +68,7 @@ describe("badge categorical colors", () => {
     "keeps the %s dark soft fill distinct and readable",
     (color, background) => {
       expect(badgeCategoricalTokens(color).soft.background).toContain(background);
-      expect(contrastRatio(background, "#31353B")).toBeGreaterThanOrEqual(1.5);
+      expect(contrastRatio(background, "#1F1F1F")).toBeGreaterThanOrEqual(1.5);
       expect(contrastRatio("#F9F9F9", background)).toBeGreaterThanOrEqual(4.5);
     },
   );

@@ -128,9 +128,9 @@ export const supportColorTokens = classify([
 ], "support");
 
 export const surfaceTokens = classify([
-  { name: "base", light: "#F6F8FB", dark: "#24252B", usage: "应用的最低承载面；用于页面和应用画布" },
-  { name: "raised", light: "#F0F3F8", dark: "#28292F", usage: "相对基底轻微抬升；用于工具区和低强调容器" },
-  { name: "floating", light: neutral[0], dark: "#31353B", usage: "脱离普通文档流；用于菜单、下拉菜单和弹出框" },
+  { name: "base", light: "#F6F8FB", dark: "#1B1B1B", usage: "应用的最低承载面；用于页面和应用画布" },
+  { name: "raised", light: "#F0F3F8", dark: "#292929", usage: "相对基底轻微抬升；用于工具区和低强调容器" },
+  { name: "floating", light: neutral[0], dark: neutralOptical[840], usage: "脱离普通文档流；用于菜单、下拉菜单和弹出框" },
   { name: "overlay", light: neutral[0], dark: "#373A41", usage: "位于遮罩或主要内容之上；用于对话框、抽屉和侧滑面板" },
   { name: "top", light: neutral[0], dark: "#3D4147", usage: "最高临时承载面；用于模态框内的下拉菜单和工具提示" },
 ], "surface");

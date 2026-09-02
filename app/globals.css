@@ -24,9 +24,9 @@
 :root,
 .light,
 .dark {
-  --surface-base: light-dark(#F6F8FB, #24252B);
-  --surface-raised: light-dark(#F0F3F8, #28292F);
-  --surface-floating: light-dark(#FFFFFF, #31353B);
+  --surface-base: light-dark(#F6F8FB, #1B1B1B);
+  --surface-raised: light-dark(#F0F3F8, #292929);
+  --surface-floating: light-dark(#FFFFFF, #1F1F1F);
   --surface-overlay: light-dark(#FFFFFF, #373A41);
   --surface-top: light-dark(#FFFFFF, #3D4147);
   --fg-default: light-dark(#00030A, #F9F9F9);

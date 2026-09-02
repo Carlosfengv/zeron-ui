@@ -76,6 +76,7 @@ describe("Empty contract", () => {
     for (const variant of [
       "general",
       "resources",
+      "preview",
       "search",
       "filter",
       "inbox",
@@ -84,6 +85,18 @@ describe("Empty contract", () => {
       expect(source).toContain(`| "${variant}"`);
     }
     expect(source).toContain('fill="var(--surface-raised)"');
+    expect(source).toContain('fill="var(--surface-floating)"');
+    expect(source).toContain('fill="var(--emphasis)"');
     expect(source).toContain('fill="var(--brand)"');
+    expect(source).toContain('? "0 0 208 96"');
+    expect(source).toContain('? "0 0 224 112"');
+    expect(source).toContain('? "0 0 72 80"');
+    expect(source).toContain('viewBox={viewBox}');
+    expect(source).toContain("const generalMaskId");
+    expect(source).toContain("const previewClipId");
+    expect(source).toContain('data-slot="empty-illustration-media"');
+    expect(source).toContain("matrix(0.3091312 -0.15753973");
+    expect(source).toContain("<foreignObject");
+    expect(source).toContain('stroke="var(--border-subtle)"');
   });
 });

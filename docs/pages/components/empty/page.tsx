@@ -13,6 +13,7 @@ import {
   type EmptyIllustrationVariant,
 } from "@zeron/ui/empty";
 import { Input } from "@zeron/ui/input";
+import { useIcon } from "@zeron/icons/context";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
@@ -25,7 +26,7 @@ import {
 } from "@zeron/ui/empty";
 
 <Empty reason="first-use" scope="page" align="start">
-  <EmptyMedia><EmptyIllustration variant="resources" /></EmptyMedia>
+  <EmptyMedia><EmptyIllustration /></EmptyMedia>
   <EmptyHeader>
     <EmptyTitle>No resources yet</EmptyTitle>
     <EmptyDescription>
@@ -40,7 +41,7 @@ import {
 </Empty>`;
 
 const searchCode = `<Empty reason="no-results" scope="section" announce>
-  <EmptyMedia><EmptyIllustration variant="search" /></EmptyMedia>
+  <EmptyMedia><EmptyIllustration /></EmptyMedia>
   <EmptyHeader>
     <EmptyTitle>No results for “invoice anomaly”</EmptyTitle>
     <EmptyDescription>Try another keyword or clear the search.</EmptyDescription>
@@ -82,6 +83,7 @@ const illustrationVariants: EmptyIllustrationVariant[] = [
 
 export default function EmptyDoc() {
   const t = useTranslations("empty");
+  const PreviewIcon = useIcon("image");
 
   const rootProps: PropDef[] = [
     {
@@ -123,7 +125,7 @@ export default function EmptyDoc() {
     { name: "EmptyContent", type: "div props", description: t("contentPart") },
     { name: "EmptyActions", type: "div props", description: t("actionsPart") },
     { name: "EmptyHelp", type: "div props", description: t("helpPart") },
-    { name: "EmptyIllustration", type: "6 built-in variants", description: t("illustrationPart") },
+    { name: "EmptyIllustration", type: "7 built-in variants", description: t("illustrationPart") },
   ];
 
   return (
@@ -152,7 +154,7 @@ export default function EmptyDoc() {
               className="min-h-[26rem]"
             >
               <EmptyMedia>
-                <EmptyIllustration variant="resources" />
+                <EmptyIllustration />
               </EmptyMedia>
               <EmptyHeader>
                 <EmptyTitle>{t("noResources")}</EmptyTitle>
@@ -174,7 +176,7 @@ export default function EmptyDoc() {
         <ComponentPreview code={searchCode} minHeightClass="min-h-[22rem]">
           <Empty reason="no-results" scope="section" announce>
             <EmptyMedia>
-              <EmptyIllustration variant="search" />
+              <EmptyIllustration />
             </EmptyMedia>
             <EmptyHeader>
               <EmptyTitle>{t("noSearchResults")}</EmptyTitle>
@@ -250,6 +252,14 @@ export default function EmptyDoc() {
               <span className="mt-1 text-label text-fg-muted">{t(`illustrationNames.${variant}`)}</span>
             </div>
           ))}
+          <div className="flex min-h-44 flex-col items-center justify-center bg-surface-floating p-4">
+            <EmptyIllustration
+              variant="preview"
+              media={<PreviewIcon aria-hidden />}
+              className="w-32"
+            />
+            <span className="mt-1 text-label text-fg-muted">{t("illustrationNames.preview")}</span>
+          </div>
         </div>
       </DocSection>
 

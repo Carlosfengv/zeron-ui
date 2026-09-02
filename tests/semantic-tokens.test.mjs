@@ -117,7 +117,7 @@ describe("semantic token generation", () => {
   it("keeps the raised surface aligned with the migrated theme", () => {
     expect(tokenByName(surfaceTokens, "raised")).toMatchObject({
       light: "#F0F3F8",
-      dark: "#28292F",
+      dark: "#292929",
     });
   });
 

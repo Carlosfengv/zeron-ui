@@ -28,10 +28,11 @@
     "noDocumentsDescription": "Upload a document to make it available to your workspace.",
     "uploadDocument": "Upload document",
     "illustrations": "Built-in illustrations",
-    "illustrationsBody": "Six quiet, theme-aware SVGs cover common zero-data contexts without requiring external image hosting.",
+    "illustrationsBody": "Seven quiet, theme-aware SVGs cover common zero-data contexts. The preview variant can perspective-map an icon or image onto its front card.",
     "illustrationNames": {
       "general": "General",
       "resources": "Resources",
+      "preview": "Preview",
       "search": "Search",
       "filter": "Filter",
       "inbox": "Inbox",
@@ -58,6 +59,6 @@
     "contentPart": "Optional search, upload, template, shortcut, or filled-state preview area.",
     "actionsPart": "Flexible action row for one primary and an optional secondary action.",
     "helpPart": "Tertiary documentation or support link.",
-    "illustrationPart": "Theme-aware general, resources, search, filter, inbox, and analytics SVG variants."
+    "illustrationPart": "Theme-aware general, resources, preview, search, filter, inbox, and analytics SVG variants. Preview accepts perspective-mapped media."
   }
 }

@@ -4,7 +4,9 @@ import {
   createContext,
   forwardRef,
   useContext,
+  useId,
   type ComponentPropsWithoutRef,
+  type ReactNode,
   type SVGProps,
 } from "react";
 import { cn } from "#system/utils";
@@ -325,83 +327,430 @@ EmptyHelp.displayName = "EmptyHelp";
 export type EmptyIllustrationVariant =
   | "general"
   | "resources"
+  | "preview"
   | "search"
   | "filter"
   | "inbox"
   | "analytics";
 
+export type EmptyIllustrationMediaFit = "contain" | "cover";
+
 type EmptyIllustrationAccessibility =
   | { decorative?: true; label?: never }
   | { decorative: false; label: string };
 
-export type EmptyIllustrationProps = Omit<
+type EmptyIllustrationBaseProps = Omit<
   SVGProps<SVGSVGElement>,
   "children"
-> & {
-  variant?: EmptyIllustrationVariant;
-} & EmptyIllustrationAccessibility;
+> & EmptyIllustrationAccessibility;
+
+type EmptyIllustrationStaticProps = EmptyIllustrationBaseProps & {
+  variant?: Exclude<EmptyIllustrationVariant, "preview">;
+  media?: never;
+  mediaClassName?: never;
+  mediaFit?: never;
+};
+
+type EmptyIllustrationPreviewProps = EmptyIllustrationBaseProps & {
+  variant: "preview";
+  /** Decorative icon or image rendered on the perspective-mapped front card. */
+  media: ReactNode;
+  /** Controls how an img element fills the perspective media plane. */
+  mediaFit?: EmptyIllustrationMediaFit;
+  /** Styles the normalized media plane before perspective mapping. */
+  mediaClassName?: string;
+};
+
+export type EmptyIllustrationProps =
+  | EmptyIllustrationStaticProps
+  | EmptyIllustrationPreviewProps;
+
+/** Exact vector geometry exported from Figma node 1:96. */
+const previewSidePath =
+  "M41.8059 2.09455C41.003 1.68616 39.9716 1.72092 38.8503 2.28853L7.93709 18.0426C5.39674 19.3369 3.33402 22.8949 3.33402 25.9822V63.6023C3.33402 65.3259 3.97086 66.5373 4.97452 67.0564L1.88741 65.4852C0.883753 64.973 0.246914 63.7549 0.246914 62.0313V24.4108C0.246914 21.3168 2.30963 17.7657 4.84998 16.4712L35.7632 0.71727C36.8914 0.142751 37.9227 0.114899 38.7187 0.523294L41.8059 2.09455Z";
+const previewFacePath =
+  "M38.7187 0.523253C39.7224 1.03555 40.3592 2.25392 40.3592 3.97748V41.5979C40.3592 44.692 38.2965 48.2428 35.7562 49.5372L4.84306 65.2915C3.71477 65.8661 2.68336 65.8936 1.88741 65.4852C0.883654 64.973 0.246914 63.7546 0.246914 62.031V24.4109C0.246914 21.3168 2.30963 17.7657 4.84998 16.4713L35.7631 0.717327C36.8914 0.142809 37.9228 0.114858 38.7187 0.523253Z";
 
 /** Theme-aware built-in illustrations. Uploaded images can use EmptyMedia directly. */
 function EmptyIllustration({
   variant = "general",
   decorative = true,
   label,
+  media,
+  mediaClassName,
+  mediaFit = "contain",
   className,
   ...props
 }: EmptyIllustrationProps) {
+  const illustrationId = useId().replace(/:/g, "");
+  const generalFadeId = `empty-general-fade-${illustrationId}`;
+  const generalMaskId = `empty-general-mask-${illustrationId}`;
+  const previewClipId = `empty-preview-clip-${illustrationId}`;
+  const viewBox =
+    variant === "general"
+      ? "0 0 208 96"
+      : variant === "resources"
+        ? "0 0 224 112"
+        : variant === "preview"
+          ? "0 0 72 80"
+          : "0 0 240 160";
+
   return (
     <svg
-      viewBox="0 0 240 160"
+      viewBox={viewBox}
       fill="none"
       role={decorative ? undefined : "img"}
       aria-hidden={decorative ? true : undefined}
       aria-label={decorative ? undefined : label}
       data-slot="empty-illustration"
       data-variant={variant}
+      data-media-fit={variant === "preview" ? mediaFit : undefined}
       className={cn("text-fg-subtle", className)}
       {...props}
     >
-      <path
-        d="M28 130.5H212"
-        stroke="var(--border-subtle)"
-        strokeDasharray="3 6"
-      />
       {variant === "general" && (
         <>
-          <rect
-            x="62"
-            y="35"
-            width="116"
-            height="78"
-            rx="13"
-            fill="var(--surface-raised)"
-            stroke="var(--border)"
-          />
-          <rect
-            x="75"
-            y="48"
-            width="90"
-            height="52"
-            rx="9"
-            fill="var(--surface-floating)"
-            stroke="var(--border)"
-          />
-          <circle cx="104" cy="74" r="3" fill="currentColor" />
-          <circle cx="120" cy="74" r="3" fill="currentColor" />
-          <circle cx="136" cy="74" r="3" fill="currentColor" />
-          <path d="M91 116H149" stroke="var(--border)" strokeLinecap="round" />
+          <defs>
+            <linearGradient
+              id={generalFadeId}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="96"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop offset="0.6667" stopColor="white" />
+              <stop offset="0.8333" stopColor="white" stopOpacity="0.4" />
+              <stop offset="1" stopColor="white" stopOpacity="0" />
+            </linearGradient>
+            <mask
+              id={generalMaskId}
+              maskUnits="userSpaceOnUse"
+              x="0"
+              y="0"
+              width="208"
+              height="96"
+            >
+              <rect
+                width="208"
+                height="96"
+                fill={`url(#${generalFadeId})`}
+              />
+            </mask>
+          </defs>
+          <g mask={`url(#${generalMaskId})`}>
+            <rect
+              x="24.25"
+              y="0.25"
+              width="159.5"
+              height="23.5"
+              rx="9.75"
+              fill="var(--surface-raised)"
+              fillOpacity="0.6"
+              stroke="var(--border-subtle)"
+              strokeOpacity="0.75"
+              strokeWidth="0.5"
+              vectorEffect="non-scaling-stroke"
+            />
+            <rect
+              x="12.25"
+              y="12.25"
+              width="183.5"
+              height="23.5"
+              rx="9.75"
+              fill="var(--surface-raised)"
+              fillOpacity="0.8"
+              stroke="var(--border-subtle)"
+              strokeOpacity="0.85"
+              strokeWidth="0.5"
+              vectorEffect="non-scaling-stroke"
+            />
+            <rect
+              x="0.25"
+              y="24.25"
+              width="207.5"
+              height="63.5"
+              rx="9.75"
+              fill="var(--surface-floating)"
+              stroke="var(--border)"
+              strokeOpacity="0.85"
+              strokeWidth="0.5"
+              vectorEffect="non-scaling-stroke"
+            />
+            <rect
+              x="16"
+              y="40"
+              width="32"
+              height="32"
+              rx="4"
+              fill="var(--emphasis)"
+            />
+            <rect
+              x="60"
+              y="44"
+              width="97.5"
+              height="10"
+              rx="4"
+              fill="var(--emphasis)"
+            />
+            <rect
+              x="60"
+              y="60"
+              width="65"
+              height="8"
+              rx="4"
+              fill="var(--emphasis)"
+              fillOpacity="0.6"
+            />
+          </g>
         </>
+      )}
+
+      {variant !== "general" &&
+        variant !== "resources" &&
+        variant !== "preview" && (
+        <path
+          d="M28 130.5H212"
+          stroke="var(--border-subtle)"
+          strokeDasharray="3 6"
+        />
       )}
 
       {variant === "resources" && (
         <>
-          <path d="M67 58L104 75M173 58L136 75M120 102V122" stroke="var(--border)" />
-          <rect x="39" y="37" width="56" height="40" rx="10" fill="var(--surface-raised)" stroke="var(--border)" />
-          <rect x="145" y="37" width="56" height="40" rx="10" fill="var(--surface-raised)" stroke="var(--border)" />
-          <rect x="88" y="62" width="64" height="48" rx="12" fill="var(--surface-floating)" stroke="var(--border)" />
-          <rect x="100" y="75" width="12" height="12" rx="3" fill="var(--brand)" />
-          <path d="M119 78H140M119 85H132" stroke="currentColor" strokeLinecap="round" />
-          <circle cx="120" cy="126" r="5" fill="var(--surface-floating)" stroke="var(--border)" />
+          <rect
+            x="24.25"
+            y="64.25"
+            width="175.5"
+            height="47.5"
+            rx="9.75"
+            fill="var(--surface-raised)"
+            fillOpacity="0.5"
+            stroke="var(--border-subtle)"
+            strokeOpacity="0.6"
+            strokeWidth="0.5"
+            vectorEffect="non-scaling-stroke"
+          />
+          <rect
+            x="36"
+            y="78"
+            width="20"
+            height="20"
+            rx="4"
+            fill="currentColor"
+            fillOpacity="0.1"
+          />
+          <rect
+            x="66"
+            y="78"
+            width="120"
+            height="8"
+            rx="4"
+            fill="currentColor"
+            fillOpacity="0.1"
+          />
+          <rect
+            x="66"
+            y="90"
+            width="80"
+            height="8"
+            rx="4"
+            fill="currentColor"
+            fillOpacity="0.08"
+          />
+          <rect
+            x="12.25"
+            y="48.25"
+            width="199.5"
+            height="47.5"
+            rx="9.75"
+            fill="var(--surface-raised)"
+            fillOpacity="0.7"
+            stroke="var(--border-subtle)"
+            strokeOpacity="0.75"
+            strokeWidth="0.5"
+            vectorEffect="non-scaling-stroke"
+          />
+          <rect
+            x="24"
+            y="62"
+            width="20"
+            height="20"
+            rx="4"
+            fill="currentColor"
+            fillOpacity="0.12"
+          />
+          <rect
+            x="54"
+            y="62"
+            width="144"
+            height="8"
+            rx="4"
+            fill="currentColor"
+            fillOpacity="0.12"
+          />
+          <rect
+            x="54"
+            y="74"
+            width="108"
+            height="8"
+            rx="4"
+            fill="currentColor"
+            fillOpacity="0.1"
+          />
+          <rect
+            x="0.25"
+            y="24.25"
+            width="223.5"
+            height="55.5"
+            rx="9.75"
+            fill="var(--surface-floating)"
+            stroke="var(--border)"
+            strokeOpacity="0.85"
+            strokeWidth="0.5"
+            vectorEffect="non-scaling-stroke"
+          />
+          <rect
+            x="14"
+            y="38"
+            width="28"
+            height="28"
+            rx="4"
+            fill="var(--emphasis)"
+          />
+          <rect
+            x="54"
+            y="40"
+            width="154"
+            height="10"
+            rx="4"
+            fill="var(--emphasis)"
+          />
+          <rect
+            x="54"
+            y="56"
+            width="92.398"
+            height="8"
+            rx="4"
+            fill="var(--emphasis)"
+            fillOpacity="0.7"
+          />
+        </>
+      )}
+
+      {variant === "preview" && (
+        <>
+          <defs>
+            <clipPath id={previewClipId} clipPathUnits="userSpaceOnUse">
+              <path
+                d={previewFacePath}
+                transform="translate(30.438 13.423)"
+              />
+            </clipPath>
+          </defs>
+
+          <g opacity="0.4">
+            <path
+              d={previewSidePath}
+              transform="translate(0.374 -0.071)"
+              fill="var(--surface-raised)"
+              stroke="currentColor"
+              strokeOpacity="0.333"
+              strokeWidth="0.493827"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+            />
+            <path
+              d={previewFacePath}
+              transform="translate(3.459 1.495)"
+              fill="var(--surface-floating)"
+              stroke="currentColor"
+              strokeOpacity="0.333"
+              strokeWidth="0.493827"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          </g>
+
+          <g opacity="0.6">
+            <path
+              d={previewSidePath}
+              transform="translate(13.852 5.889)"
+              fill="var(--surface-raised)"
+              stroke="currentColor"
+              strokeOpacity="0.333"
+              strokeWidth="0.493827"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+            />
+            <path
+              d={previewFacePath}
+              transform="translate(16.938 7.463)"
+              fill="var(--surface-floating)"
+              stroke="currentColor"
+              strokeOpacity="0.333"
+              strokeWidth="0.493827"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          </g>
+
+          <g opacity="0.8">
+            <path
+              d={previewSidePath}
+              transform="translate(27.352 11.857)"
+              fill="var(--surface-raised)"
+              stroke="currentColor"
+              strokeOpacity="0.5"
+              strokeWidth="0.493827"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+            />
+            <path
+              d={previewFacePath}
+              transform="translate(30.438 13.423)"
+              fill="var(--surface-floating)"
+            />
+            <g clipPath={`url(#${previewClipId})`}>
+              <foreignObject
+                width="100"
+                height="100"
+                transform="matrix(0.3091312 -0.15753973 -0.0000692 0.488202 35.28798 29.8943)"
+                pointerEvents="none"
+              >
+                <div
+                  aria-hidden="true"
+                  data-slot="empty-illustration-media"
+                  className={cn(
+                    "flex size-full items-center justify-center overflow-hidden text-fg-subtle",
+                    "[&>img]:size-full [&>svg]:size-12 [&>svg]:shrink-0",
+                    mediaFit === "cover"
+                      ? "[&>img]:object-cover"
+                      : "[&>img]:object-contain",
+                    mediaClassName
+                  )}
+                >
+                  {media}
+                </div>
+              </foreignObject>
+            </g>
+            <path
+              d={previewFacePath}
+              transform="translate(30.438 13.423)"
+              fill="none"
+              stroke="currentColor"
+              strokeOpacity="0.5"
+              strokeWidth="0.493827"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          </g>
         </>
       )}
 

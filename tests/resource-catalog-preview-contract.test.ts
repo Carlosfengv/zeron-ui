@@ -96,6 +96,22 @@ describe("Resource Catalog gallery preview", () => {
     );
   });
 
+  it("uses the raised surface for model and MCP item cards", () => {
+    expect(resourceCatalog).toContain(
+      'className="bg-surface-raised pb-0 transition-colors duration-fast hover:bg-hover"'
+    );
+  });
+
+  it("uses the default PageLayout surfaces for the marketplace sidebar and content area", () => {
+    expect(resourceCatalog).toContain(
+      'className="p-3"'
+    );
+    expect(resourceCatalog).toContain(
+      '<PageContent>'
+    );
+    expect(resourceCatalog).not.toContain('PageContent className="bg-surface-raised"');
+  });
+
   it("uses Empty for search, filter, and source-data zero states", () => {
     expect(resourceCatalog).toContain('from "@zeron/ui/empty"');
     expect(resourceCatalog).toContain("const hasSearchQuery = normalizedQuery.length > 0;");

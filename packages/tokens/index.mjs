@@ -1219,7 +1219,7 @@ const tokenData = {
     {
       "name": "base",
       "light": "#F6F8FB",
-      "dark": "#24252B",
+      "dark": "#1B1B1B",
       "usage": "应用的最低承载面；用于页面和应用画布",
       "classification": {
         "channel": "surface",
@@ -1229,7 +1229,7 @@ const tokenData = {
     {
       "name": "raised",
       "light": "#F0F3F8",
-      "dark": "#28292F",
+      "dark": "#292929",
       "usage": "相对基底轻微抬升；用于工具区和低强调容器",
       "classification": {
         "channel": "surface",
@@ -1239,7 +1239,7 @@ const tokenData = {
     {
       "name": "floating",
       "light": "#FFFFFF",
-      "dark": "#31353B",
+      "dark": "#1F1F1F",
       "usage": "脱离普通文档流；用于菜单、下拉菜单和弹出框",
       "classification": {
         "channel": "surface",

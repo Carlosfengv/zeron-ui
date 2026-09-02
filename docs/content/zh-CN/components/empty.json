@@ -28,10 +28,11 @@
     "noDocumentsDescription": "上传文档后，即可在当前工作区中使用。",
     "uploadDocument": "上传文档",
     "illustrations": "内置插画",
-    "illustrationsBody": "六种克制、主题自适应的 SVG 覆盖常见空状态，无需依赖外部图片托管。",
+    "illustrationsBody": "七种克制、主题自适应的 SVG 覆盖常见空状态。preview 变体可以将图标或图片透视映射到最前方卡片。",
     "illustrationNames": {
       "general": "通用",
       "resources": "资源",
+      "preview": "内容预览",
       "search": "搜索",
       "filter": "筛选",
       "inbox": "收件箱",
@@ -58,6 +59,6 @@
     "contentPart": "可选搜索、上传、模板、快捷键或完成态预览区域。",
     "actionsPart": "用于一个主要操作和可选次要操作的弹性操作区。",
     "helpPart": "三级文档或支持链接。",
-    "illustrationPart": "主题自适应的通用、资源、搜索、筛选、收件箱和数据分析 SVG。"
+    "illustrationPart": "主题自适应的通用、资源、内容预览、搜索、筛选、收件箱和数据分析 SVG；内容预览支持透视媒体。"
   }
 }
