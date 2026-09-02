@@ -356,9 +356,9 @@ const ComboboxTrigger = forwardRef<HTMLButtonElement, ComboboxTriggerProps>(
         data-variant={variant}
         {...props}
       >
-        <span className="min-w-0 flex-1 truncate text-left">{children}</span>
+        <span data-slot="combobox-trigger-value" className="min-w-0 flex-1 truncate text-left">{children}</span>
         {showIcon && (
-          <span className="shrink-0 text-fg-subtle transition-transform duration-fast group-data-[popup-open]:rotate-180">
+          <span data-slot="combobox-trigger-icon" className="shrink-0 text-fg-subtle transition-transform duration-fast group-data-[popup-open]:rotate-180">
             <ChevronDownIcon size={iconSize} />
           </span>
         )}
@@ -370,7 +370,7 @@ const ComboboxTrigger = forwardRef<HTMLButtonElement, ComboboxTriggerProps>(
 ComboboxTrigger.displayName = "ComboboxTrigger";
 
 function ComboboxValue(props: ComboboxPrimitive.Value.Props) {
-  return <ComboboxPrimitive.Value {...props} />;
+  return <ComboboxPrimitive.Value data-slot="combobox-value" {...props} />;
 }
 
 // ---------------------------------------------------------------------------

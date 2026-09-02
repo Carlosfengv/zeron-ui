@@ -1,6 +1,11 @@
 {
   "buttonGroup": {
     "description": "将相关操作连接为紧凑的横向或纵向控件，同时保留各按钮原有的操作语义。",
+    "anatomy": "结构",
+    "anatomyFigureLabel": "按钮组结构",
+    "anatomyPrimaryAction": "主要操作",
+    "anatomySeparator": "分隔线",
+    "anatomyMenuTrigger": "菜单触发器",
     "basic": "基础组合",
     "basicDescription": "连接属于同一个局部工具或命令族的操作。当普通表单操作具有不同优先级时，仍应保留间距。",
     "documentActions": "文档操作",

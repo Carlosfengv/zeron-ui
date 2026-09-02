@@ -6,6 +6,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { useTranslations } from "next-intl";
 
 const basicCode = `import { Switch } from "./components";
@@ -67,6 +68,19 @@ export default function SwitchDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-slot="switch"]'
+        code={basicCode}
+        component="Switch"
+        items={[
+          { label: { en: "Switch control", zh: "开关控件" }, target: '[data-slot="switch-control"]', side: "top" },
+          { label: { en: "Thumb", zh: "滑块" }, target: '[data-slot="switch-thumb"]', side: "bottom" },
+          { label: { en: "Label", zh: "文本标签" }, target: '[data-slot="switch-label"]', side: "top" },
+        ]}
+      >
+        <Switch label="Notifications" defaultChecked />
+      </AnatomySection>
 
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>

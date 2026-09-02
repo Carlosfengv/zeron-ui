@@ -1,6 +1,11 @@
 {
   "buttonGroup": {
     "description": "Connect related actions into a compact horizontal or vertical control without changing their button semantics.",
+    "anatomy": "Anatomy",
+    "anatomyFigureLabel": "Button group anatomy",
+    "anatomyPrimaryAction": "Primary action",
+    "anatomySeparator": "Separator",
+    "anatomyMenuTrigger": "Menu trigger",
     "basic": "Basic",
     "basicDescription": "Use connected buttons for actions that belong to one local tool or command family. Keep ordinary form actions separated when their priorities differ.",
     "documentActions": "Document actions",

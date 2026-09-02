@@ -7,6 +7,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { useTranslations } from "next-intl";
 
 // ---------------------------------------------------------------------------
@@ -356,6 +357,19 @@ export default function SliderDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-slot="slider-track"]'
+        code={basicCode}
+        component="Slider"
+        items={[
+          { label: { en: "Track", zh: "轨道" }, target: '[data-slot="slider-track"]', side: "top" },
+          { label: { en: "Selected range", zh: "已选范围" }, target: '[data-slot="slider-range"]', side: "bottom" },
+          { label: { en: "Thumb", zh: "滑块" }, target: '[data-slot="slider-thumb"]', side: "top" },
+        ]}
+      >
+        <div className="w-72 max-w-[70vw]"><Slider value={45} onChange={() => {}} /></div>
+      </AnatomySection>
 
       {/* ------------------------------------------------------------------ */}
       {/* Compact                                                              */}

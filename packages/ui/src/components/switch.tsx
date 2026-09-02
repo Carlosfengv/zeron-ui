@@ -226,6 +226,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
     return (
       <div
         ref={ref}
+        data-slot="switch"
         className={cn(
           "relative z-content flex items-center gap-2.5 px-3 py-2 cursor-pointer select-none touch-none",
           disabled && "opacity-50 pointer-events-none",
@@ -326,6 +327,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
               return (
                 <motion.span
                   {...rest}
+                  data-slot="switch-thumb"
                   className="absolute top-0 left-0 block rounded-full bg-fg-on-brand shadow-knob"
                   initial={false}
                   style={{
@@ -347,6 +349,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
         {/* Label */}
         <span
           id={labelId}
+          data-slot="switch-label"
           className={cn(
             "text-body transition-[color] duration-fast",
             checked ? "text-fg-default" : "text-fg-muted"

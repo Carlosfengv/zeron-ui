@@ -2,6 +2,11 @@
   "button": {
     "description": "Buttons trigger actions and move people through a task. Choose a variant by priority and intent, not color alone.",
     "playground": "Playground",
+    "anatomy": "Anatomy",
+    "anatomyFigureLabel": "Button anatomy",
+    "anatomyLeadingIcon": "Leading icon",
+    "anatomyLabel": "Label",
+    "anatomyTrailingIcon": "Trailing icon",
     "variants": "Variants",
     "choosingVariant": "Choosing a variant",
     "choosingVariantIntro": "Start with the action's priority in the current task, then choose the visual tone that matches its intent. Primary and Neutral are both high-emphasis actions; the difference is whether the action should carry the brand color.",

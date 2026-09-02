@@ -23,6 +23,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { useTranslations } from "next-intl";
 
 const frameworks = ["Next.js", "SvelteKit", "Nuxt", "Remix", "Astro"];
@@ -280,6 +281,21 @@ export default function ComboboxDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-slot="combobox-trigger"]'
+        code={basicCode}
+        component="Combobox"
+        items={[
+          { label: { en: "Trigger", zh: "触发器" }, target: '[data-slot="combobox-trigger"]', side: "bottom" },
+          { label: { en: "Selected value", zh: "已选值" }, target: '[data-slot="combobox-trigger-value"]', side: "top" },
+          { label: { en: "Disclosure icon", zh: "展开图标" }, target: '[data-slot="combobox-trigger-icon"]', side: "top" },
+        ]}
+      >
+        <Combobox items={frameworks} defaultValue="Next.js">
+          <ComboboxTrigger className="w-72 max-w-[70vw]"><ComboboxValue /></ComboboxTrigger>
+        </Combobox>
+      </AnatomySection>
 
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>

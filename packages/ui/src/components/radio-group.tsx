@@ -154,6 +154,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
 
     const content = (
       <div
+        data-slot="radio-group"
         ref={(node) => {
           (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
           if (typeof ref === "function") ref(node);
@@ -375,6 +376,7 @@ const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
 
     return (
       <div
+        data-slot="radio-item"
         ref={(node) => {
           (internalRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
           if (typeof ref === "function") ref(node);
@@ -432,6 +434,7 @@ const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
         />
 
         <span
+          data-slot="radio-item-label"
           data-label={label}
           className="inline-grid text-body after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-label)]"
         >

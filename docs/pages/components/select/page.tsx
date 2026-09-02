@@ -16,6 +16,7 @@ import { VariantPlayground } from "@docs/components/playground/variant-playgroun
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { AgentGuide } from "@docs/components/content/AgentGuide";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { useTranslations } from "next-intl";
 
 // ---------------------------------------------------------------------------
@@ -385,6 +386,22 @@ export default function SelectDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-slot="select-trigger"]'
+        code={basicCode}
+        component="Select"
+        items={[
+          { label: { en: "Trigger", zh: "触发器" }, target: '[data-slot="select-trigger"]', side: "bottom" },
+          { label: { en: "Selected value", zh: "已选值" }, target: '[data-slot="select-value"]', side: "top" },
+          { label: { en: "Disclosure icon", zh: "展开图标" }, target: '[data-slot="select-trigger-icon"]', side: "top" },
+        ]}
+      >
+        <Select defaultValue="apple">
+          <SelectTrigger className="w-72 max-w-[70vw]" placeholder="Select a fruit…" />
+          <SelectContent><SelectItem value="apple">Apple</SelectItem></SelectContent>
+        </Select>
+      </AnatomySection>
 
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>

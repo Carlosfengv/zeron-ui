@@ -15,6 +15,7 @@ import {
 } from "@zeron/ui/temporal-picker";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useTranslations } from "next-intl";
 
@@ -181,6 +182,19 @@ export default function TemporalPickerDoc() {
 
   return (
     <DocPage description={t("description")} slug="temporal-picker" title="Temporal Picker">
+      <AnatomySection
+        boundaryTarget='[data-slot="temporal-picker-trigger"]'
+        code={dateCode}
+        component="Temporal Picker"
+        items={[
+          { label: { en: "Calendar icon", zh: "日历图标" }, target: '[data-slot="button-leading-icon"]', side: "top" },
+          { label: { en: "Date value", zh: "日期值" }, target: '[data-slot="temporal-picker-value"]', side: "bottom" },
+          { label: { en: "Disclosure icon", zh: "展开图标" }, target: '[data-slot="button-trailing-icon"]', side: "top" },
+        ]}
+      >
+        <DatePicker placeholder="Select date" />
+      </AnatomySection>
+
       <DocSection title={t("timeSelection")}>
         <ComponentPreview align="top" code={timeCode} minHeightClass="min-h-[12rem]" padding="compact">
           <TimeSelectionDemo />

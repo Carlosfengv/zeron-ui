@@ -181,6 +181,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
 
     const actionElement = variant === "button" ? (
       <span
+        data-slot="input-copy-action"
         className={cn(
           "shrink-0 flex items-center gap-1.5 px-1.5 py-2 text-body transition-colors duration-fast",
           "text-fg-muted group-hover:text-fg-default", "font-normal"
@@ -276,6 +277,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
       </span>
     ) : (
       <span
+        data-slot="input-copy-action"
         className={cn(
           "shrink-0 px-1.5 py-2 transition-colors duration-fast",
           "text-fg-muted group-hover:text-fg-default",
@@ -287,6 +289,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
 
     const valueElement = (
       <span
+        data-slot="input-copy-value"
         className={cn(
           "flex-1 min-w-0 select-text truncate py-2 text-left font-mono text-body text-fg-default",
           align === "left" ? "pl-1 pr-1.5" : "pl-1.5 pr-0", "font-normal"
@@ -321,6 +324,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
                 : "Copy to clipboard"
         }
         aria-labelledby={label ? `${buttonId} ${labelId}` : undefined}
+        data-slot="input-copy-control"
         className={cn(
           "group flex w-full items-center rounded-xl bg-surface-base outline-none transition-all duration-fast",
           "focus-visible:ring-1 focus-visible:ring-focus-ring",
@@ -333,6 +337,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
     return (
       <div
         ref={ref}
+        data-slot="input-copy"
         className={cn(
           "flex flex-col gap-0.5",
           disabled && "opacity-50 pointer-events-none",
@@ -345,6 +350,7 @@ const InputCopy = forwardRef<HTMLDivElement, InputCopyProps>(
         {label && (
           <span
             id={labelId}
+            data-slot="input-copy-label"
             className={cn("text-body text-fg-muted", align === "left" ? "pl-1" : "pl-0", "font-normal")}
           >
             {label}

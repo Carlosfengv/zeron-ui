@@ -6,6 +6,7 @@ import { VariantPlayground } from "@docs/components/playground/variant-playgroun
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { AgentGuide } from "@docs/components/content/AgentGuide";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { useTranslations } from "next-intl";
 
 const basicCode = `import { Input } from "./components";
@@ -63,6 +64,17 @@ export default function InputDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-slot="input"]'
+        code={basicCode}
+        component="Input"
+        items={[
+          { label: { en: "Input control", zh: "输入控件" }, target: '[data-slot="input"]', side: "top" },
+        ]}
+      >
+        <Input className="w-72 max-w-[70vw]" value="you@example.com" readOnly aria-label="Email address" />
+      </AnatomySection>
 
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>

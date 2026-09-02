@@ -792,6 +792,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
       const motionX = index === 0 ? motionX0 : motionX1;
       return (
         <motion.span
+          data-slot="slider-thumb"
           key={`visual-thumb-${index}`}
           className="flex items-center justify-center pointer-events-none"
           style={{
@@ -838,6 +839,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
     return (
       <div
         ref={ref}
+        data-slot="slider"
         className={cn(
           "flex flex-col gap-0 w-full select-none touch-none overflow-visible",
           valuePosition === "left" || valuePosition === "right"
@@ -853,6 +855,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
 
         {/* Track area */}
         <div
+          data-slot="slider-track-area"
           className="relative flex-1 overflow-visible"
           style={{
             height: (valuePosition === "left" || valuePosition === "right")
@@ -952,6 +955,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
           {/* Visual track with pointer handlers */}
           <div
             ref={trackRef}
+            data-slot="slider-track-control"
             className="relative w-full cursor-ew-resize py-2"
             style={{ height: THUMB_SIZE + 16, opacity: ready ? 1 : 0 }}
             onPointerDown={handlePointerDown}
@@ -994,6 +998,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
 
             {/* Track background */}
             <motion.div
+              data-slot="slider-track"
               className={cn("absolute border border-border overflow-hidden rounded-full", trackClassName)}
               initial={false}
               animate={{
@@ -1011,6 +1016,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
               {/* Filled range */}
               {!hideFill && (
               <motion.div
+                data-slot="slider-range"
                 className={cn("absolute h-full", colorStyle.fillClassName, fillClassName)}
                 style={{
                   left: fillLeft,

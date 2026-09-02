@@ -2002,8 +2002,9 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
         // anchor, so the panel follows its trigger instead of detaching.
         modal={false}
       >
-        <div ref={ref} className="inline-flex">
+        <div ref={ref} className="inline-flex" data-slot="color-picker-popover">
           <Popover.Trigger
+            data-slot="color-picker-trigger"
             style={
               triggerShowRemove
                 ? {
@@ -2020,18 +2021,18 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
             )}
           >
             {triggerLabel && triggerLabelPosition === "left" && (
-              <span className="text-body text-fg-muted px-1 select-none">
+              <span data-slot="color-picker-trigger-label" className="text-body text-fg-muted px-1 select-none">
                 {triggerLabel}
               </span>
             )}
-            <ColorTile color={swatchColor} size={20} />
+            <span data-slot="color-picker-swatch"><ColorTile color={swatchColor} size={20} /></span>
             {triggerShowValue && (
-              <span className="text-body text-fg-default tabular-nums">
+              <span data-slot="color-picker-value" className="text-body text-fg-default tabular-nums">
                 {valueLabel}
               </span>
             )}
             {triggerLabel && triggerLabelPosition === "right" && (
-              <span className="text-body text-fg-muted px-1 select-none">
+              <span data-slot="color-picker-trigger-label" className="text-body text-fg-muted px-1 select-none">
                 {triggerLabel}
               </span>
             )}

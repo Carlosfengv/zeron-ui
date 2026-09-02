@@ -150,6 +150,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ? (children as ReactElement<{
             children?: ReactNode;
             className?: string;
+            "data-slot"?: string;
             style?: React.CSSProperties;
             ref?: React.Ref<HTMLButtonElement>;
           }>)
@@ -173,16 +174,19 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             dashed && "border-dashed"
           )}
         />
-        <span className="relative inline-flex items-center justify-center gap-[inherit]">
+        <span
+          data-slot="button-content"
+          className="relative inline-flex items-center justify-center gap-[inherit]"
+        >
           {loading ? (
             <>
               <span className="flex items-center justify-center gap-[inherit] opacity-0">
                 {LeadingIcon && !iconOnly && (
-                  <LeadingIcon size={iconSize} strokeWidth={2} />
+                  <LeadingIcon data-slot="button-leading-icon" size={iconSize} strokeWidth={2} />
                 )}
-                {label}
+                <span data-slot="button-label">{label}</span>
                 {TrailingIcon && !iconOnly && (
-                  <TrailingIcon size={iconSize} strokeWidth={2} />
+                  <TrailingIcon data-slot="button-trailing-icon" size={iconSize} strokeWidth={2} />
                 )}
               </span>
               <span className="absolute inset-0 flex items-center justify-center">
@@ -207,6 +211,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             </>
           ) : iconOnly ? (
             <span
+              data-slot="button-icon"
               className={cn(
                 "[&_svg]:stroke-[1.5] [&_svg]:transition-[stroke-width] [&_svg]:duration-fast group-hover:[&_svg]:stroke-[2]",
                 iconOnlyIconSizeClasses[resolvedSize]
@@ -218,14 +223,16 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             <>
               {LeadingIcon && (
                 <LeadingIcon
+                  data-slot="button-leading-icon"
                   size={iconSize}
                   strokeWidth={1.5}
                   className="transition-[stroke-width] duration-fast group-hover:stroke-[2]"
                 />
               )}
-              <span>{label}</span>
+              <span data-slot="button-label">{label}</span>
               {TrailingIcon && (
                 <TrailingIcon
+                  data-slot="button-trailing-icon"
                   size={iconSize}
                   strokeWidth={1.5}
                   className="transition-[stroke-width] duration-fast group-hover:stroke-[2]"
@@ -255,6 +262,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         asChildElement,
         {
           ...props,
+          "data-slot": "button",
           ref,
           className: cn(rootClassName, childProps.className),
           style: { ...style, ...childProps.style },
@@ -271,6 +279,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={rootClassName}
         disabled={disabled || loading}
         style={style}
+        data-slot="button"
         {...props}
       >
         {internals}

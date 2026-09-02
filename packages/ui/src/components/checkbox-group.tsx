@@ -104,6 +104,7 @@ const CheckboxGroup = forwardRef<HTMLDivElement, CheckboxGroupProps>(
     return (
       <CheckboxGroupContext.Provider value={{ registerItem, activeIndex }}>
         <div
+          data-slot="checkbox-group"
           ref={(node) => {
             (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
             if (typeof ref === "function") ref(node);
@@ -260,6 +261,7 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
 
     return (
       <div
+        data-slot="checkbox-group-item"
         ref={(node) => {
           (internalRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
           if (typeof ref === "function") ref(node);
@@ -325,6 +327,7 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
         )}
 
         <span
+          data-slot="checkbox-group-label"
           data-label={label}
           className="inline-grid min-w-0 flex-1 text-body after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-medium after:content-[attr(data-label)]"
         >
@@ -342,7 +345,7 @@ const CheckboxItem = forwardRef<HTMLDivElement, CheckboxItemProps>(
         </span>
 
         {trailing !== undefined && trailing !== null && (
-          <span className="shrink-0 text-label tabular-nums text-fg-muted">
+          <span data-slot="checkbox-group-trailing" className="shrink-0 text-label tabular-nums text-fg-muted">
             {trailing}
           </span>
         )}

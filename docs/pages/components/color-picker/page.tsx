@@ -5,6 +5,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { useTranslations } from "next-intl";
 import {
   ControlledColorPickerExample,
@@ -110,6 +111,19 @@ export default function ColorPickerDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-slot="color-picker-trigger"]'
+        code={popoverCode}
+        component="ColorPicker"
+        items={[
+          { label: { en: "Label", zh: "文本标签" }, target: '[data-slot="color-picker-trigger-label"]', side: "top" },
+          { label: { en: "Color swatch", zh: "颜色色块" }, target: '[data-slot="color-picker-swatch"]', side: "bottom" },
+          { label: { en: "Color value", zh: "颜色值" }, target: '[data-slot="color-picker-value"]', side: "top" },
+        ]}
+      >
+        <ColorPickerPopover triggerLabel="Fill" defaultValue="#6B97FF" />
+      </AnatomySection>
 
       <DocSection title={t("default")}>
         <ComponentPreview code={basicCode}>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { InputCopy } from "@zeron/ui/input-copy";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { AnatomyDiagram } from "@docs/components/content/AnatomyDiagram";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
@@ -59,6 +60,12 @@ const [copyCount, setCopyCount] = useState(0);
 
 <p>Copied {copyCount} times</p>`;
 
+const anatomyCode = `<InputCopy
+  label="Install command"
+  variant="button"
+  value="npx zeron-ui add input-copy"
+/>`;
+
 export default function InputCopyDoc() {
   const t = useTranslations("inputCopy");
   const [copyCount, setCopyCount] = useState(0);
@@ -100,6 +107,28 @@ export default function InputCopyDoc() {
             },
           ]}
         />
+      </DocSection>
+
+      <DocSection title={t("anatomy")}>
+        <ComponentPreview code={anatomyCode} padding="none" inspectable={false}>
+          <AnatomyDiagram
+            label={t("anatomyFigureLabel")}
+            boundaryTarget='[data-slot="input-copy-control"]'
+            items={[
+              { label: t("anatomyFieldLabel"), target: '[data-slot="input-copy-label"]', side: "top" },
+              { label: t("anatomyValue"), target: '[data-slot="input-copy-value"]', side: "bottom" },
+              { label: t("anatomyCopyAction"), target: '[data-slot="input-copy-action"]', side: "top" },
+              { label: t("anatomyControl"), target: '[data-slot="input-copy-control"]', side: "bottom" },
+            ]}
+          >
+            <InputCopy
+              className="w-72"
+              label="Install command"
+              variant="button"
+              value="npx zeron-ui add input-copy"
+            />
+          </AnatomyDiagram>
+        </ComponentPreview>
       </DocSection>
 
       <DocSection title={t("basic")}>

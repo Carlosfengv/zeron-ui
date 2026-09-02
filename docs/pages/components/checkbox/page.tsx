@@ -6,6 +6,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { useTranslations } from "next-intl";
 
 const basicCode = `import { Checkbox } from "./components/checkbox";
@@ -79,6 +80,22 @@ export default function CheckboxDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-anatomy="checkbox-field"]'
+        code={basicCode}
+        component="Checkbox"
+        items={[
+          { label: { en: "Checkbox", zh: "复选框" }, target: '[data-slot="checkbox"]', side: "top" },
+          { label: { en: "Indicator", zh: "选中标记" }, target: '[data-slot="checkbox-indicator"]', side: "bottom" },
+          { label: { en: "Label", zh: "文本标签" }, target: '[data-anatomy="checkbox-label"]', side: "top" },
+        ]}
+      >
+        <label data-anatomy="checkbox-field" className="flex items-center gap-2.5 px-2 py-1.5 text-body">
+          <Checkbox defaultChecked />
+          <span data-anatomy="checkbox-label">Remember this device</span>
+        </label>
+      </AnatomySection>
 
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>

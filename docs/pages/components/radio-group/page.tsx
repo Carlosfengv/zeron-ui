@@ -10,6 +10,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { useTranslations } from "next-intl";
 
 const basicCode = `import { RadioGroup, RadioGroupItem } from "./components/radio-group";
@@ -149,6 +150,24 @@ export default function RadioGroupDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-anatomy="radio-option"]'
+        code={basicCode}
+        component="RadioGroup"
+        items={[
+          { label: { en: "Group", zh: "单选组" }, target: '[data-slot="radio-group"]', side: "bottom" },
+          { label: { en: "Radio control", zh: "单选控件" }, target: '[data-slot="radio-group-item"]', side: "top" },
+          { label: { en: "Option label", zh: "选项标签" }, target: '[data-anatomy="radio-label"]', side: "top" },
+        ]}
+      >
+        <RadioGroup defaultValue="email" name="anatomy-notifications">
+          <label data-anatomy="radio-option" className="flex items-center gap-2.5 px-2 py-1.5">
+            <RadioGroupItem value="email" />
+            <span data-anatomy="radio-label">Email</span>
+          </label>
+        </RadioGroup>
+      </AnatomySection>
 
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>

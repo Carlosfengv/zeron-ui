@@ -13,6 +13,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { useTranslations } from "next-intl";
 
 const basicCode = `import {
@@ -160,6 +161,23 @@ export default function InputGroupDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-slot="input-group"]'
+        code={addonsCode}
+        component="InputGroup"
+        items={[
+          { label: { en: "Leading add-on", zh: "前置附加项" }, target: '[data-slot="input-group-addon"][data-align="inline-start"]', side: "top" },
+          { label: { en: "Input control", zh: "输入控件" }, target: '[data-slot="input-group-control"]', side: "bottom" },
+          { label: { en: "Trailing add-on", zh: "后置附加项" }, target: '[data-slot="input-group-addon"][data-align="inline-end"]', side: "top" },
+        ]}
+      >
+        <InputGroup className="w-80 max-w-[75vw]">
+          <InputGroupAddon><InputGroupText>https://</InputGroupText></InputGroupAddon>
+          <InputGroupInput value="example" readOnly />
+          <InputGroupAddon align="inline-end"><InputGroupText>.com</InputGroupText></InputGroupAddon>
+        </InputGroup>
+      </AnatomySection>
 
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>

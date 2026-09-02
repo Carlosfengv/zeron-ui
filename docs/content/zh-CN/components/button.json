@@ -2,6 +2,11 @@
   "button": {
     "description": "按钮用于触发操作并推动用户完成任务。应根据操作优先级和意图选择变体，而不是只看颜色。",
     "playground": "交互预览",
+    "anatomy": "结构",
+    "anatomyFigureLabel": "按钮结构",
+    "anatomyLeadingIcon": "前置图标",
+    "anatomyLabel": "文本标签",
+    "anatomyTrailingIcon": "后置图标",
     "variants": "变体",
     "choosingVariant": "选择变体",
     "choosingVariantIntro": "先判断操作在当前任务中的优先级，再选择与操作意图匹配的视觉语气。Primary 和 Neutral 都属于高强调操作，区别在于是否需要体现品牌色。",

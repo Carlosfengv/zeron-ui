@@ -6,6 +6,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { useTranslations } from "next-intl";
 
 const basicCode = `import { CheckboxGroup, CheckboxItem } from "./components";
@@ -80,6 +81,21 @@ export default function CheckboxGroupDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-slot="checkbox-group-item"]'
+        code={basicCode}
+        component="CheckboxGroup"
+        items={[
+          { label: { en: "Group", zh: "选项组" }, target: '[data-slot="checkbox-group"]', side: "top" },
+          { label: { en: "Checkbox", zh: "复选框" }, target: '[data-slot="checkbox"]', side: "bottom" },
+          { label: { en: "Option label", zh: "选项标签" }, target: '[data-slot="checkbox-group-label"]', side: "top" },
+        ]}
+      >
+        <CheckboxGroup checkedIndices={new Set([0])}>
+          <CheckboxItem index={0} label="Apples" checked onToggle={() => {}} />
+        </CheckboxGroup>
+      </AnatomySection>
 
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>

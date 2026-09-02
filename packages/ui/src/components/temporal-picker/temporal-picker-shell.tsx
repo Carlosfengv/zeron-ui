@@ -84,6 +84,7 @@ export const TemporalPickerShell = React.forwardRef<HTMLButtonElement, TemporalP
     <span className={cn("inline-flex min-w-0 items-center gap-2 px-2.5 text-body text-fg-muted", className)}>{summary}</span>
   ) : (
     <Button
+      data-slot="temporal-picker-trigger"
       ref={composedTriggerRef}
       active={isOpen}
       aria-describedby={ariaDescribedBy}
@@ -101,7 +102,7 @@ export const TemporalPickerShell = React.forwardRef<HTMLButtonElement, TemporalP
       type="button"
       variant="tertiary"
     >
-      <span className="min-w-0 truncate">{summary}</span>
+      <span data-slot="temporal-picker-value" className="min-w-0 truncate">{summary}</span>
     </Button>
   );
 

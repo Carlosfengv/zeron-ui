@@ -17,6 +17,7 @@ import {
 import { MenuItem } from "@zeron/ui/menu-item";
 import { Tooltip, TooltipProvider } from "@zeron/ui/tooltip";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { AnatomyDiagram } from "@docs/components/content/AnatomyDiagram";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
@@ -154,6 +155,14 @@ export default function ButtonGroupDoc() {
   <Button variant="tertiary" leadingIcon={Archive}>${t("archive")}</Button>
 </ButtonGroup>`;
 
+  const anatomyCode = `<ButtonGroup aria-label="${t("publishActions")}">
+  <Button>${t("publish")}</Button>
+  <ButtonGroupSeparator />
+  <Button iconOnly aria-label="${t("morePublishOptions")}">
+    <ChevronDown />
+  </Button>
+</ButtonGroup>`;
+
   return (
     <DocPage
       title="ButtonGroup"
@@ -168,6 +177,33 @@ export default function ButtonGroupDoc() {
             { value: "selection", label: "With addon", code: addonCode, preview: <ButtonGroup aria-label={t("selectionActions")}><ButtonGroupText>{t("threeSelected")}</ButtonGroupText><Button variant="tertiary" leadingIcon={Upload}>{t("export")}</Button></ButtonGroup> },
           ]}
         />
+      </DocSection>
+
+      <DocSection title={t("anatomy")}>
+        <ComponentPreview code={anatomyCode} padding="none" inspectable={false}>
+          <AnatomyDiagram
+            label={t("anatomyFigureLabel")}
+            boundaryTarget='[data-slot="button-group"]'
+            items={[
+              { label: t("anatomyPrimaryAction"), target: '[data-anatomy="primary-action"]', side: "top" },
+              { label: t("anatomySeparator"), target: '[data-slot="button-group-separator"]', side: "bottom" },
+              { label: t("anatomyMenuTrigger"), target: '[data-anatomy="menu-trigger"]', side: "top" },
+            ]}
+          >
+            <ButtonGroup aria-label={t("publishActions")}>
+              <Button data-anatomy="primary-action">{t("publish")}</Button>
+              <ButtonGroupSeparator className="bg-fg-on-brand/20" />
+              <Button
+                data-anatomy="menu-trigger"
+                variant="primary"
+                iconOnly
+                aria-label={t("morePublishOptions")}
+              >
+                <ChevronDown />
+              </Button>
+            </ButtonGroup>
+          </AnatomyDiagram>
+        </ComponentPreview>
       </DocSection>
 
       <DocSection title={t("basic")}>

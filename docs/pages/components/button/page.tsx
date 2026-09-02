@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useIcon } from "@zeron/icons/context";
 import { Button } from "@zeron/ui/button";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { AnatomyDiagram } from "@docs/components/content/AnatomyDiagram";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { AgentGuide } from "@docs/components/content/AgentGuide";
@@ -458,6 +459,9 @@ const Loader = useIcon("loader");
 
 // ${t("disabledState")}
 <Button disabled>Disabled</Button>`;
+  const anatomyCode = `<Button leadingIcon={Plus} trailingIcon={ArrowRight}>
+  ${t("anatomyLabel")}
+</Button>`;
 
   return (
     <DocPage
@@ -467,6 +471,24 @@ const Loader = useIcon("loader");
     >
       <DocSection title={t("playground")}>
         <ButtonPlayground />
+      </DocSection>
+
+      <DocSection title={t("anatomy")}>
+        <ComponentPreview code={anatomyCode} padding="none" inspectable={false}>
+          <AnatomyDiagram
+            label={t("anatomyFigureLabel")}
+            boundaryTarget='[data-slot="button"]'
+            items={[
+              { label: t("anatomyLeadingIcon"), target: '[data-slot="button-leading-icon"]', side: "top" },
+              { label: t("anatomyLabel"), target: '[data-slot="button-label"]', side: "bottom" },
+              { label: t("anatomyTrailingIcon"), target: '[data-slot="button-trailing-icon"]', side: "top" },
+            ]}
+          >
+            <Button leadingIcon={Plus} trailingIcon={ArrowRight}>
+              {t("anatomyLabel")}
+            </Button>
+          </AnatomyDiagram>
+        </ComponentPreview>
       </DocSection>
 
       <DocSection title={t("choosingVariant")}>

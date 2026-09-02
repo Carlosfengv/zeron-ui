@@ -317,22 +317,25 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
           )}
           {...props}
         >
-          <span className="flex min-w-0 flex-1 items-center gap-[inherit]">
+          <span data-slot="select-trigger-content" className="flex min-w-0 flex-1 items-center gap-[inherit]">
             {Icon && (
               <Icon
+                data-slot="select-leading-icon"
                 size={iconSize}
                 strokeWidth={1.5}
                 className="shrink-0 text-fg-subtle transition-[color,stroke-width] duration-fast group-hover:text-fg-default group-hover:stroke-[2]"
               />
             )}
-            {prefix && <span className="flex shrink-0 items-center gap-1.5 text-label text-fg-muted">{prefix}</span>}
+            {prefix && <span data-slot="select-prefix" className="flex shrink-0 items-center gap-1.5 text-label text-fg-muted">{prefix}</span>}
             <SelectPrimitive.Value
+              data-slot="select-value"
               placeholder={placeholder}
               className="min-w-0 flex-1 text-left truncate data-[placeholder]:text-fg-subtle"
             />
           </span>
 
           <svg
+            data-slot="select-trigger-icon"
             width={iconSize}
             height={iconSize}
             viewBox="0 0 24 24"

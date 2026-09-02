@@ -6,6 +6,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { useTranslations } from "next-intl";
 
 const basicCode = `import { Field, FieldDescription, FieldLabel, Textarea } from "./components";
@@ -53,6 +54,23 @@ export default function TextareaDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-slot="textarea"]'
+        code={basicCode}
+        component="Textarea"
+        items={[
+          { label: { en: "Field label", zh: "字段标签" }, target: '[data-slot="field-label"]', side: "top" },
+          { label: { en: "Text area", zh: "多行输入区" }, target: '[data-slot="textarea"]', side: "top" },
+          { label: { en: "Description", zh: "辅助说明" }, target: '[data-slot="field-description"]', side: "bottom" },
+        ]}
+      >
+        <Field name="anatomy-description" className="w-80 max-w-[75vw]">
+          <FieldLabel>Description</FieldLabel>
+          <Textarea rows={2} value="Provider notes" readOnly />
+          <FieldDescription>Up to 240 characters.</FieldDescription>
+        </Field>
+      </AnatomySection>
 
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>

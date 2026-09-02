@@ -14,6 +14,7 @@ import { Textarea } from "@zeron/ui/textarea";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
+import { AnatomySection } from "@docs/components/content/AnatomyDiagram";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useTranslations } from "next-intl";
 
@@ -95,6 +96,23 @@ export default function FieldDoc() {
           ]}
         />
       </DocSection>
+
+      <AnatomySection
+        boundaryTarget='[data-slot="input"]'
+        code={basicCode}
+        component="Field"
+        items={[
+          { label: { en: "Field label", zh: "字段标签" }, target: '[data-slot="field-label"]', side: "top" },
+          { label: { en: "Input control", zh: "输入控件" }, target: '[data-slot="input"]', side: "top" },
+          { label: { en: "Description", zh: "辅助说明" }, target: '[data-slot="field-description"]', side: "bottom" },
+        ]}
+      >
+        <Field name="anatomy-workspace" className="w-72 max-w-[70vw]">
+          <FieldLabel>Workspace name</FieldLabel>
+          <Input placeholder="Production" />
+          <FieldDescription>Shown to every team member.</FieldDescription>
+        </Field>
+      </AnatomySection>
 
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode}>
