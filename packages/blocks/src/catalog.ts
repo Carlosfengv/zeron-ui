@@ -1,5 +1,19 @@
 export const blockCatalog = [
   {
+    name: "login-01",
+    title: "Login",
+    description: "A card-based authentication block with credential and Apple or Google sign-in paths.",
+    categories: ["application", "authentication", "forms"],
+    dependencies: ["auth-layout", "button", "card", "field", "icon-context", "input", "separator", "@lobehub/icons"],
+  },
+  {
+    name: "signup-01",
+    title: "Signup",
+    description: "A surface-neutral account creation block with email and Apple or Google signup paths.",
+    categories: ["application", "authentication", "forms"],
+    dependencies: ["auth-layout", "button", "field", "icon-context", "input", "separator", "@lobehub/icons"],
+  },
+  {
     name: "availability-monitor-01",
     title: "Availability Monitor",
     description: "A routing-aware service availability block with summary metrics, a 72-hour status strip, and a 24-hour comparison chart.",

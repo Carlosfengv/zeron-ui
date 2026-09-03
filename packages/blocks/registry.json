@@ -3,6 +3,32 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "login-01",
+      "type": "registry:block",
+      "title": "Login",
+      "description": "A card-based authentication block with credential and Apple or Google sign-in paths.",
+      "categories": ["application", "authentication", "forms"],
+      "dependencies": ["tw-animate-css", "@lobehub/icons"],
+      "registryDependencies": ["auth-layout", "button", "card", "field", "icon-context", "input", "separator"],
+      "files": [
+        { "path": "packages/blocks/src/application/login-01/login-01.tsx", "type": "registry:component", "target": "components/blocks/login-01/login-01.tsx" },
+        { "path": "packages/blocks/src/application/login-01/index.ts", "type": "registry:component", "target": "components/blocks/login-01/index.ts" }
+      ]
+    },
+    {
+      "name": "signup-01",
+      "type": "registry:block",
+      "title": "Signup",
+      "description": "A surface-neutral account creation block with email and Apple or Google signup paths.",
+      "categories": ["application", "authentication", "forms"],
+      "dependencies": ["tw-animate-css", "@lobehub/icons"],
+      "registryDependencies": ["auth-layout", "button", "field", "icon-context", "input", "separator"],
+      "files": [
+        { "path": "packages/blocks/src/application/signup-01/signup-01.tsx", "type": "registry:component", "target": "components/blocks/signup-01/signup-01.tsx" },
+        { "path": "packages/blocks/src/application/signup-01/index.ts", "type": "registry:component", "target": "components/blocks/signup-01/index.ts" }
+      ]
+    },
+    {
       "name": "availability-monitor-01",
       "type": "registry:block",
       "title": "Availability Monitor",
