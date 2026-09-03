@@ -341,7 +341,7 @@ type EmptyIllustrationAccessibility =
 
 type EmptyIllustrationBaseProps = Omit<
   SVGProps<SVGSVGElement>,
-  "children"
+  "children" | "media"
 > & EmptyIllustrationAccessibility;
 
 type EmptyIllustrationStaticProps = EmptyIllustrationBaseProps & {

@@ -72,7 +72,7 @@ const customMediaCode = `<Empty reason="first-use" scope="section">
   <EmptyActions><Button>Upload document</Button></EmptyActions>
 </Empty>`;
 
-const illustrationVariants: EmptyIllustrationVariant[] = [
+const illustrationVariants: Exclude<EmptyIllustrationVariant, "preview">[] = [
   "general",
   "resources",
   "search",
