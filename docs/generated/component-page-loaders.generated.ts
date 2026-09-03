@@ -7,6 +7,7 @@ export const componentPageLoaders: Record<string, DocPageLoader> = {
   "components/alert": () => import("@docs/pages/components/alert/page"),
   "components/app-shell": () => import("@docs/pages/components/app-shell/page"),
   "components/ask-user-questions": () => import("@docs/pages/components/ask-user-questions/page"),
+  "components/auth-layout": () => import("@docs/pages/components/auth-layout/page"),
   "components/badge": () => import("@docs/pages/components/badge/page"),
   "components/badge-overflow": () => import("@docs/pages/components/badge-overflow/page"),
   "components/breadcrumb": () => import("@docs/pages/components/breadcrumb/page"),

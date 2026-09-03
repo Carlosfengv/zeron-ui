@@ -2302,6 +2302,27 @@
       ]
     },
     {
+      "name": "auth-layout",
+      "type": "registry:ui",
+      "title": "Auth Layout",
+      "description": "Composable full-height layout for centered authentication flows.",
+      "dependencies": [
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/auth-layout.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/auth-layout.tsx"
+        }
+      ]
+    },
+    {
       "name": "page-layout",
       "type": "registry:ui",
       "title": "Page Layout",
@@ -2578,6 +2599,77 @@
           "path": "packages/ui/src/components/top-nav.tsx",
           "type": "registry:ui",
           "target": "components/ui/top-nav.tsx"
+        }
+      ]
+    },
+    {
+      "name": "login-01",
+      "type": "registry:block",
+      "title": "Login",
+      "description": "A card-based authentication block with credential and Apple or Google sign-in paths.",
+      "categories": [
+        "application",
+        "authentication",
+        "forms"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/auth-layout.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/field.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/separator.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/login-01/login-01.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/login-01/login-01.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/login-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/login-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "signup-01",
+      "type": "registry:block",
+      "title": "Signup",
+      "description": "A surface-neutral account creation block with email and Apple or Google signup paths.",
+      "categories": [
+        "application",
+        "authentication",
+        "forms"
+      ],
+      "dependencies": [
+        "tw-animate-css",
+        "@lobehub/icons"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/auth-layout.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/field.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/separator.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/signup-01/signup-01.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/signup-01/signup-01.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/signup-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/signup-01/index.ts"
         }
       ]
     },

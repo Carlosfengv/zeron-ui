@@ -33,6 +33,16 @@ export interface ArtifactEntry {
  */
 export const artifactCatalog: readonly ArtifactEntry[] = [
   {
+    slug: "login-01", registryName: "login-01",
+    title: "Login", description: "A responsive authentication page with credential and provider sign-in paths.",
+    kind: "flow", product: "shared", domains: ["authentication", "account"], patterns: ["login", "form", "oauth"], searchTerms: ["login", "sign in", "authentication", "登录", "认证"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
+    slug: "signup-01", registryName: "signup-01",
+    title: "Signup", description: "A responsive account creation page with email and provider signup paths.",
+    kind: "flow", product: "shared", domains: ["authentication", "account"], patterns: ["signup", "form", "oauth"], searchTerms: ["signup", "register", "create account", "注册", "认证"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
     slug: "availability-monitor-01", registryName: "availability-monitor-01",
     title: "Availability Monitor", description: "A routing-aware service availability summary with a 72-hour status strip and 24-hour comparison chart.",
     kind: "block", product: "shared", domains: ["monitoring", "availability", "observability"], patterns: ["metrics", "status timeline", "line chart"], searchTerms: ["availability", "uptime", "routing", "monitoring", "可用性", "正常运行时间", "监控"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,

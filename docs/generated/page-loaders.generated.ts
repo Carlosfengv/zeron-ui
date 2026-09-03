@@ -6,6 +6,8 @@ export type DocPageModule = { default: ComponentType };
 export type DocPageLoader = () => Promise<DocPageModule>;
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "blocks/login-01": () => import("@docs/pages/blocks/login-01/page"),
+  "blocks/signup-01": () => import("@docs/pages/blocks/signup-01/page"),
   "blocks/availability-monitor-01": () => import("@docs/pages/blocks/availability-monitor-01/page"),
   "blocks/agent-trace-01": () => import("@docs/pages/blocks/agent-trace-01/page"),
   "blocks/agent-session-detail-01": () => import("@docs/pages/blocks/agent-session-detail-01/page"),
@@ -39,6 +41,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/alert": () => import("@docs/pages/components/alert/page"),
   "components/app-shell": () => import("@docs/pages/components/app-shell/page"),
   "components/ask-user-questions": () => import("@docs/pages/components/ask-user-questions/page"),
+  "components/auth-layout": () => import("@docs/pages/components/auth-layout/page"),
   "components/badge": () => import("@docs/pages/components/badge/page"),
   "components/badge-overflow": () => import("@docs/pages/components/badge-overflow/page"),
   "components/breadcrumb": () => import("@docs/pages/components/breadcrumb/page"),

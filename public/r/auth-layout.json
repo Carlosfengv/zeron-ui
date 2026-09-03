@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "auth-layout",
+  "type": "registry:ui",
+  "title": "Auth Layout",
+  "description": "Composable full-height layout for centered authentication flows.",
+  "dependencies": [
+    "class-variance-authority",
+    "tw-animate-css"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "packages/ui/src/components/auth-layout.tsx",
+      "content": "\"use client\";\nimport { forwardRef, type ComponentPropsWithoutRef, type Ref, } from \"react\";\nimport { cva, type VariantProps } from \"class-variance-authority\";\nimport { cn } from \"@lib/utils\";\n/** Width presets for common authentication flows. */\nexport type AuthLayoutSize = \"sm\" | \"md\" | \"lg\";\nconst authLayoutContentVariants = cva(\"m-auto flex w-full min-w-0 flex-col items-center gap-6\", {\n    variants: {\n        size: {\n            sm: \"max-w-sm\",\n            md: \"max-w-md\",\n            lg: \"max-w-xl\",\n        },\n    },\n    defaultVariants: {\n        size: \"sm\",\n    },\n});\nexport interface AuthLayoutProps extends ComponentPropsWithoutRef<\"main\"> {\n    /**\n     * Keep the primary `main` landmark for a standalone authentication page.\n     * Embedded previews or nested shells should set this to `false`.\n     * @default true\n     */\n    landmark?: boolean;\n}\nexport interface AuthLayoutContentProps extends ComponentPropsWithoutRef<\"div\">, VariantProps<typeof authLayoutContentVariants> {\n}\nexport type AuthLayoutHeaderProps = ComponentPropsWithoutRef<\"header\">;\nexport type AuthLayoutBodyProps = ComponentPropsWithoutRef<\"div\">;\nexport type AuthLayoutFooterProps = ComponentPropsWithoutRef<\"footer\">;\n/** Full-height, theme-aware frame shared by unauthenticated product flows. */\nconst AuthLayout = forwardRef<HTMLElement, AuthLayoutProps>(({ landmark = true, className, ...props }, ref) => {\n    const Root = landmark ? \"main\" : \"div\";\n    return (<Root ref={ref as Ref<HTMLDivElement>} data-slot=\"auth-layout\" className={cn(\"flex min-h-svh min-w-0 overflow-y-auto bg-surface-base p-4 sm:p-10\", className)} {...props}/>);\n});\nAuthLayout.displayName = \"AuthLayout\";\n/** Centered vertical stack that owns the authentication flow's maximum width. */\nconst AuthLayoutContent = forwardRef<HTMLDivElement, AuthLayoutContentProps>(({ size, className, ...props }, ref) => (<div ref={ref} data-slot=\"auth-layout-content\" data-size={size ?? \"sm\"} className={cn(authLayoutContentVariants({ size }), className)} {...props}/>));\nAuthLayoutContent.displayName = \"AuthLayoutContent\";\n/** Optional brand, product identity, or tenant context above the active flow. */\nconst AuthLayoutHeader = forwardRef<HTMLElement, AuthLayoutHeaderProps>(({ className, ...props }, ref) => (<header ref={ref} data-slot=\"auth-layout-header\" className={cn(\"flex w-full min-w-0 items-center justify-center\", className)} {...props}/>));\nAuthLayoutHeader.displayName = \"AuthLayoutHeader\";\n/** Surface-neutral region for a Card, form, or another authentication flow. */\nconst AuthLayoutBody = forwardRef<HTMLDivElement, AuthLayoutBodyProps>(({ className, ...props }, ref) => (<div ref={ref} data-slot=\"auth-layout-body\" className={cn(\"w-full min-w-0\", className)} {...props}/>));\nAuthLayoutBody.displayName = \"AuthLayoutBody\";\n/** Optional legal, help, locale, or secondary-navigation region. */\nconst AuthLayoutFooter = forwardRef<HTMLElement, AuthLayoutFooterProps>(({ className, ...props }, ref) => (<footer ref={ref} data-slot=\"auth-layout-footer\" className={cn(\"w-full min-w-0 px-4 text-center text-body text-fg-subtle\", className)} {...props}/>));\nAuthLayoutFooter.displayName = \"AuthLayoutFooter\";\nexport { AuthLayout, AuthLayoutBody, AuthLayoutContent, AuthLayoutFooter, AuthLayoutHeader, authLayoutContentVariants, };\n",
+      "type": "registry:ui",
+      "target": "components/ui/auth-layout.tsx"
+    }
+  ]
+}

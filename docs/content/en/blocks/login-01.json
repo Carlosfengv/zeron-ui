@@ -1,0 +1,10 @@
+{
+  "login01Block": {
+    "title": "Login",
+    "description": "A responsive login flow with credential, Apple, and Google entry points, composed from the existing authentication layout and form primitives.",
+    "guidance": "Authentication integration",
+    "guidanceBody": "Connect onSubmit to your credential sign-in endpoint and use onAppleLogin or onGoogleLogin for provider redirects. Supply pendingAction and errors when state is owned by your auth client, or return a promise from a callback to use the block's built-in loading state. Navigation destinations, default values, labels, and the brand mark are replaceable.",
+    "tokenStrategy": "Design-system mapping",
+    "tokenStrategyBody": "The block keeps the Figma information hierarchy while delegating control visuals to the existing design system. AuthLayout supplies the page frame; Button and Input use the shared large control size, and the provider actions use Button's tertiary variant with leadingIcon. The only block-specific frame treatment is the requested 0.5px border on this Login instance's AuthLayoutBody. Brand and provider marks come from the shared icon sources."
+  }
+}

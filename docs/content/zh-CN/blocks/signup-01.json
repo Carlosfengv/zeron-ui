@@ -1,0 +1,10 @@
+{
+  "signup01Block": {
+    "title": "注册",
+    "description": "在无卡片认证布局中提供邮箱、Apple 和 Google 三种入口的响应式账号创建流程。",
+    "guidance": "认证接入",
+    "guidanceBody": "将 onSubmit 接入邮箱注册或验证流程，将 onAppleSignup 与 onGoogleSignup 接入第三方认证跳转。外部管理认证状态时可传入 pendingAction 和 errors；回调返回 Promise 时也可使用内置 loading 状态。链接、文案、默认值与品牌标识均可替换。",
+    "tokenStrategy": "设计系统映射",
+    "tokenStrategyBody": "Block 保留设计稿的信息层级，并将控件视觉交给现有设计系统。AuthLayout 负责 Header、Body、Footer 的组合、居中与响应式宽度；Button 与 Input 使用共享的 large 控件尺寸，第三方入口使用 Button 的 tertiary variant 与 leadingIcon，不添加 Block 专属控件样式。品牌及第三方标识统一来自项目图标源。"
+  }
+}

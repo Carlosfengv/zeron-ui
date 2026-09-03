@@ -1,0 +1,10 @@
+{
+  "signup01Block": {
+    "title": "Signup",
+    "description": "A responsive account creation flow with email, Apple, and Google entry points on a surface-neutral authentication layout.",
+    "guidance": "Authentication integration",
+    "guidanceBody": "Connect onSubmit to your email registration or verification flow and use onAppleSignup or onGoogleSignup for provider redirects. Supply pendingAction and errors when state is controlled externally, or return a promise from a callback to use the built-in loading state. Links, copy, defaults, and the brand mark are replaceable.",
+    "tokenStrategy": "Design-system mapping",
+    "tokenStrategyBody": "The block preserves the Figma hierarchy while delegating control visuals to the existing design system. AuthLayout owns the Header, Body, and Footer composition, centering, and responsive width. Button and Input use the shared large control size, while provider actions use Button's tertiary variant with leadingIcon and no block-specific control styling. Brand and provider marks come from the shared icon sources."
+  }
+}

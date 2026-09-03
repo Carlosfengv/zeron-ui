@@ -1,0 +1,10 @@
+{
+  "login01Block": {
+    "title": "登录",
+    "description": "使用现有认证布局与表单组件组合的响应式登录流程，支持账号密码、Apple 和 Google 三种入口。",
+    "guidance": "认证接入",
+    "guidanceBody": "将 onSubmit 接入账号密码登录接口，将 onAppleLogin 与 onGoogleLogin 接入第三方认证跳转。认证客户端自行管理状态时可传入 pendingAction 和 errors；回调返回 Promise 时也可直接使用 Block 内置的 loading 状态。导航地址、默认值、文案与品牌标识均可替换。",
+    "tokenStrategy": "设计系统映射",
+    "tokenStrategyBody": "Block 保留设计稿的信息层级，并将控件视觉交给现有设计系统。AuthLayout 提供页面框架；Button 与 Input 使用共享的 large 控件尺寸，第三方入口使用 Button 的 tertiary variant 与 leadingIcon。唯一的 Block 专属框架处理，是按要求仅在 Login 实例的 AuthLayoutBody 上添加 0.5px 边框。品牌及第三方标识统一来自项目图标源。"
+  }
+}

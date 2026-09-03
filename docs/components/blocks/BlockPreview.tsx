@@ -47,6 +47,12 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "login-01": () => import("@zeron/blocks/login-01").then(({ Login01 }) => ({
+    default: () => <ResponsivePreview canvasHeight={600} canvasWidth={1024}><Login01 className="h-full min-h-0" landmark={false} /></ResponsivePreview>,
+  })),
+  "signup-01": () => import("@zeron/blocks/signup-01").then(({ Signup01 }) => ({
+    default: () => <ResponsivePreview canvasHeight={600} canvasWidth={1024}><Signup01 className="h-full min-h-0" landmark={false} /></ResponsivePreview>,
+  })),
   "availability-monitor-01": () => import("@zeron/blocks/availability-monitor-01").then(({ AvailabilityMonitor }) => ({
     default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1046}><div className="min-h-full bg-surface-base p-8"><AvailabilityMonitor /></div></ResponsivePreview>,
   })),

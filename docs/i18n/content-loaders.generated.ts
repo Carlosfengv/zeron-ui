@@ -13,6 +13,8 @@ const commonLoaders: Record<AppLocale, Loader> = {
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
     home: () => import("@docs/content/en/home.json"),
+    "blocks/login-01": () => import("@docs/content/en/blocks/login-01.json"),
+    "blocks/signup-01": () => import("@docs/content/en/blocks/signup-01.json"),
     "blocks/availability-monitor-01": () => import("@docs/content/en/blocks/availability-monitor-01.json"),
     "blocks/agent-trace-01": () => import("@docs/content/en/blocks/agent-trace-01.json"),
     "blocks/agent-session-detail-01": () => import("@docs/content/en/blocks/agent-session-detail-01.json"),
@@ -80,6 +82,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "components/container": () => import("@docs/content/en/components/container.json"),
     "components/thinking-steps": () => import("@docs/content/en/components/thinking-steps.json"),
     "components/ask-user-questions": () => import("@docs/content/en/components/ask-user-questions.json"),
+    "components/auth-layout": () => import("@docs/content/en/components/auth-layout.json"),
     "blocks/personal-settings-01": () => import("@docs/content/en/blocks/personal-settings-01.json"),
     "blocks/personal-model-usage-01": () => import("@docs/content/en/blocks/personal-model-usage-01.json"),
     "blocks/personal-usage-01": () => import("@docs/content/en/blocks/personal-usage-01.json"),
@@ -102,6 +105,8 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   },
   "zh-CN": {
     home: () => import("@docs/content/zh-CN/home.json"),
+    "blocks/login-01": () => import("@docs/content/zh-CN/blocks/login-01.json"),
+    "blocks/signup-01": () => import("@docs/content/zh-CN/blocks/signup-01.json"),
     "blocks/availability-monitor-01": () => import("@docs/content/zh-CN/blocks/availability-monitor-01.json"),
     "blocks/agent-trace-01": () => import("@docs/content/zh-CN/blocks/agent-trace-01.json"),
     "blocks/agent-session-detail-01": () => import("@docs/content/zh-CN/blocks/agent-session-detail-01.json"),
@@ -169,6 +174,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "components/container": () => import("@docs/content/zh-CN/components/container.json"),
     "components/thinking-steps": () => import("@docs/content/zh-CN/components/thinking-steps.json"),
     "components/ask-user-questions": () => import("@docs/content/zh-CN/components/ask-user-questions.json"),
+    "components/auth-layout": () => import("@docs/content/zh-CN/components/auth-layout.json"),
     "blocks/personal-settings-01": () => import("@docs/content/zh-CN/blocks/personal-settings-01.json"),
     "blocks/personal-model-usage-01": () => import("@docs/content/zh-CN/blocks/personal-model-usage-01.json"),
     "blocks/personal-usage-01": () => import("@docs/content/zh-CN/blocks/personal-usage-01.json"),
