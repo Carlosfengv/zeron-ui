@@ -2302,6 +2302,27 @@
       ]
     },
     {
+      "name": "auth-layout",
+      "type": "registry:ui",
+      "title": "Auth Layout",
+      "description": "Composable full-height layout for centered authentication flows.",
+      "dependencies": [
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/auth-layout.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/auth-layout.tsx"
+        }
+      ]
+    },
+    {
       "name": "page-layout",
       "type": "registry:ui",
       "title": "Page Layout",
