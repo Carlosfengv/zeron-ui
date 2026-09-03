@@ -36,6 +36,8 @@
     "s10": "Accessible label for the slider, also shown as prefix in the value display.",
     "s11": "Semantic color applied to the filled track and thumb. Defaults to brand.",
     "s12": "Disables all interaction.",
+    "s13": "In range mode, keeps the label accessible while hiding it inside the control.",
+    "s14": "In range mode, called once when pointer or keyboard interaction commits the value.",
     "c0": "Current selected value.",
     "c1": "Called when the value changes via click, drag, or keyboard.",
     "c2": "Minimum value.",
