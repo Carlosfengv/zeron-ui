@@ -344,14 +344,18 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     const emphasized = selected;
 
     // A standalone card (no group) is its own tile — always rounded + clipped.
-    // Inside a group, a separated tile carries its own rounding + clip only when
-    // it draws a visible frame; a borderless separated tile has no surface to
-    // hug, so it stays unclipped and its media reads as a plain square, and a
-    // card in a continuous block leans on the shared group frame for both.
+    // Separated cards also own their shape because Card now always paints a
+    // background surface; without rounding, that surface leaks past rounded
+    // children. A card in a continuous block still leans on the shared group
+    // frame for both its shape and clipping.
     const tileShape = !group
       ? cn("rounded-xl", "overflow-hidden")
-      : separated && outlined
-        ? cn("rounded-xl", "overflow-hidden border border-border-subtle")
+      : separated
+        ? cn(
+            "rounded-xl",
+            "overflow-hidden",
+            outlined && "border border-border-subtle"
+          )
         : "";
 
     // Stretched overlay makes the whole card the click target while keeping

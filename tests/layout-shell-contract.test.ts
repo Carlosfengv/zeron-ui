@@ -20,6 +20,7 @@ describe("shell and page-layout composition contract", () => {
   const localePath = source("docs/components/shell/site/locale-path.ts");
   const docsLayout = source("app/[locale]/docs/layout.tsx");
   const componentsGallery = source("docs/components/components/ComponentsGallery.tsx");
+  const card = source("packages/ui/src/components/card.tsx");
   const topNavBlock = source("packages/blocks/src/application/top-nav-app-shell-01/top-nav-app-shell.tsx");
   const zaiopsBlock = source("packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx");
 
@@ -48,7 +49,12 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("makes component gallery cards clickable across their full surface", () => {
-    expect(componentsGallery).toContain('<Card className="group min-w-0 pb-0" href={href} label={entry.name}>');
+    expect(componentsGallery).toContain('<Card className="group min-w-0 rounded-3xl bg-transparent pb-0" href={href} label={entry.name}>');
+  });
+
+  it("keeps painted cards rounded when they are separated from their group", () => {
+    expect(card).toContain(': separated\n        ? cn(');
+    expect(card).toContain('outlined && "border border-border-subtle"');
   });
 
   it("owns the base background at the shell while PageContent provides the floating surface", () => {

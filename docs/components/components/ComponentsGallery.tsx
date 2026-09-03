@@ -320,7 +320,7 @@ function ComponentCard({ entry, href, language }: { entry: DocEntry; href: strin
   const Icon = useIcon(entry.icon);
   const description = componentCardDescription(entry.slug, language, entry.description);
   return (
-    <Card className="group min-w-0 pb-0" href={href} label={entry.name}>
+    <Card className="group min-w-0 rounded-3xl bg-transparent pb-0" href={href} label={entry.name}>
       <Container className="h-full">
         <ContainerBody className="overflow-hidden overscroll-auto p-0">
           <CardHeader className="flex min-h-40 min-w-0 flex-1 flex-col">
