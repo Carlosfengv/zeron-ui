@@ -94,7 +94,7 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
                 {...rest}
                 className={cn(
                   container ? "absolute" : "fixed",
-                  "inset-0 z-popover bg-scrim"
+                  "inset-0 z-popover bg-scrim backdrop-blur-[2px]"
                 )}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: exiting ? 0 : 1 }}

@@ -9,8 +9,8 @@
   --surface-base: light-dark(#F6F8FB, #1B1B1B);
   --surface-raised: light-dark(#F0F3F8, #292929);
   --surface-floating: light-dark(#FFFFFF, #1F1F1F);
-  --surface-overlay: light-dark(#FFFFFF, #373A41);
-  --surface-top: light-dark(#FFFFFF, #3D4147);
+  --surface-overlay: light-dark(#FFFFFF, #292929);
+  --surface-top: light-dark(#FFFFFF, #404040);
   --fg-default: light-dark(#00030A, #F9F9F9);
   --fg-muted: light-dark(#00030AD9, #C7CBCE);
   --fg-subtle: light-dark(#00030A99, #B6BABC);
@@ -49,7 +49,7 @@
   --info-surface-raised: light-dark(#BFDBFE, #1D4ED8);
   --neutral-status-surface: light-dark(#F5F5F5, #262626);
   --neutral-status-surface-raised: light-dark(#E5E5E5, #404040);
-  --scrim: light-dark(rgb(0 0 0 / 0.4), rgb(0 0 0 / 0.8));
+  --scrim: light-dark(rgb(0 0 0 / 0.4), rgba(17, 17, 17, 0.60));
   --inverse-background: light-dark(#00030A, #DEE5EF);
   --inverse-background-hover: light-dark(#001033, #B6C6DF);
   --inverse-background-active: light-dark(#001748, #7994BF);

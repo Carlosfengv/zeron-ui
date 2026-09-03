@@ -403,7 +403,7 @@ const tokenData = {
     {
       "name": "scrim",
       "light": "rgb(0 0 0 / 0.4)",
-      "dark": "rgb(0 0 0 / 0.8)",
+      "dark": "rgba(17, 17, 17, 0.60)",
       "usage": "抽屉和对话框背后的遮罩层",
       "classification": {
         "channel": "fill",
@@ -980,7 +980,7 @@ const tokenData = {
     {
       "name": "scrim",
       "light": "rgb(0 0 0 / 0.4)",
-      "dark": "rgb(0 0 0 / 0.8)",
+      "dark": "rgba(17, 17, 17, 0.60)",
       "usage": "抽屉和对话框背后的遮罩层",
       "classification": {
         "channel": "fill",
@@ -1262,7 +1262,7 @@ const tokenData = {
     {
       "name": "overlay",
       "light": "#FFFFFF",
-      "dark": "#373A41",
+      "dark": "#292929",
       "usage": "位于遮罩或主要内容之上；用于对话框、抽屉和侧滑面板",
       "classification": {
         "channel": "surface",
@@ -1272,7 +1272,7 @@ const tokenData = {
     {
       "name": "top",
       "light": "#FFFFFF",
-      "dark": "#3D4147",
+      "dark": "#404040",
       "usage": "最高临时承载面；用于模态框内的下拉菜单和工具提示",
       "classification": {
         "channel": "surface",

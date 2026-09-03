@@ -41,6 +41,13 @@ describe("semantic color consumers", () => {
     expect(source).toContain("min-h-[60px] bg-card");
   });
 
+  it("uses the semantic scrim with a consistent backdrop blur", () => {
+    for (const file of ["dialog.tsx", "mobile-drawer.tsx"]) {
+      const source = read(join(UI_ROOT, file));
+      expect(source).toContain("bg-scrim backdrop-blur-[2px]");
+    }
+  });
+
   it("uses the primary-action foreground for primary button text", () => {
     const source = read(join(UI_ROOT, "button.tsx"));
     expect(source).toContain('primary: "text-fg-on-primary-action"');

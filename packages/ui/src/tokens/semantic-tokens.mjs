@@ -85,7 +85,7 @@ export const fillColorTokens = classify([
   { name: "info-surface-raised", light: info[200], dark: info[700], usage: "说明、提示和信息反馈内的次级强调背景；用于嵌套状态内容" },
   { name: "neutral-status-surface", light: neutral[100], dark: neutral[800], usage: "一般状态信息的低强调背景" },
   { name: "neutral-status-surface-raised", light: neutral[200], dark: neutral[700], usage: "一般状态信息内的次级强调背景；用于嵌套状态内容" },
-  { name: "scrim", light: "rgb(0 0 0 / 0.4)", dark: "rgb(0 0 0 / 0.8)", usage: "抽屉和对话框背后的遮罩层" },
+  { name: "scrim", light: "rgb(0 0 0 / 0.4)", dark: "rgba(17, 17, 17, 0.60)", usage: "抽屉和对话框背后的遮罩层" },
   { name: "inverse-background", light: "#00030A", dark: "#DEE5EF", usage: "工具提示和中性高强调操作的反色填充" },
   { name: "inverse-background-hover", light: "#001033", dark: "#B6C6DF", usage: "中性高强调操作的悬停状态；不跟随品牌主题色" },
   { name: "inverse-background-active", light: "#001748", dark: "#7994BF", usage: "中性高强调操作的按下或展开状态；不跟随品牌主题色" },
@@ -135,8 +135,8 @@ export const surfaceTokens = classify([
   { name: "base", light: "#F6F8FB", dark: "#1B1B1B", usage: "应用的最低承载面；用于页面和应用画布" },
   { name: "raised", light: "#F0F3F8", dark: "#292929", usage: "相对基底轻微抬升；用于工具区和低强调容器" },
   { name: "floating", light: neutral[0], dark: neutralOptical[840], usage: "脱离普通文档流；用于菜单、下拉菜单和弹出框" },
-  { name: "overlay", light: neutral[0], dark: "#373A41", usage: "位于遮罩或主要内容之上；用于对话框、抽屉和侧滑面板" },
-  { name: "top", light: neutral[0], dark: "#3D4147", usage: "最高临时承载面；用于模态框内的下拉菜单和工具提示" },
+  { name: "overlay", light: neutral[0], dark: "#292929", usage: "位于遮罩或主要内容之上；用于对话框、抽屉和侧滑面板" },
+  { name: "top", light: neutral[0], dark: neutral[700], usage: "最高临时承载面；用于模态框内的下拉菜单和工具提示" },
 ], "surface");
 
 const lightShadowColor = "rgb(0 0 0 / 0.06)";

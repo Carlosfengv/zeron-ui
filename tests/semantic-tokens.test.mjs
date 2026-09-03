@@ -133,6 +133,13 @@ describe("semantic token generation", () => {
     });
   });
 
+  it("uses a stronger neutral scrim in dark mode", () => {
+    expect(tokenByName(fillColorTokens, "scrim")).toMatchObject({
+      light: "rgb(0 0 0 / 0.4)",
+      dark: "rgba(17, 17, 17, 0.60)",
+    });
+  });
+
   it("does not publish retired compatibility color aliases", () => {
     const retiredNames = [
       "background", "foreground", "card-foreground", "muted-foreground",
