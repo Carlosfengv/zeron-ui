@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   PageBody,
   PageAside,
+  PageActions,
   PageColumns,
   PageContent,
+  PageContentHeader,
   PageDescription,
   PageHeader,
   PageHeaderContent,
@@ -17,6 +19,7 @@ import {
   PageSubnavList,
   PageTitle,
 } from "@zeron/ui/page-layout";
+import { Button } from "@zeron/ui/button";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
@@ -28,15 +31,37 @@ const compositionCode = `<PageLayout gutter="none" className="h-[32rem]">
     <PageHeaderContent icon={WorkspaceIcon}>...</PageHeaderContent>
   </PageHeader>
   <PageContent>
-    <PageSubnav aria-label="Project settings">
-      <PageSubnavList activeValue="overview">
-        <PageSubnavItem value="overview" icon={OverviewIcon}>Overview</PageSubnavItem>
-      </PageSubnavList>
-    </PageSubnav>
+    <PageContentHeader>
+      <PageSubnav aria-label="Project settings">
+        <PageSubnavList activeValue="overview">
+          <PageSubnavItem value="overview" icon={OverviewIcon}>Overview</PageSubnavItem>
+        </PageSubnavList>
+      </PageSubnav>
+      <PageActions>
+        <Button size="md">Invite member</Button>
+      </PageActions>
+    </PageContentHeader>
     <PageBody className="grid gap-3">
       <section>...</section>
       <aside>...</aside>
     </PageBody>
+  </PageContent>
+</PageLayout>`;
+
+const titleCompositionCode = `<PageLayout gutter="none" className="h-[32rem]">
+  <PageHeader>
+    <PageHeaderContent icon={WorkspaceIcon}>...</PageHeaderContent>
+  </PageHeader>
+  <PageContent>
+    <PageContentHeader>
+      <PageHeaderContent icon={ProjectIcon}>
+        <PageTitle className="text-body font-medium">Projects</PageTitle>
+      </PageHeaderContent>
+      <PageActions>
+        <Button leadingIcon={PlusIcon} size="md">New project</Button>
+      </PageActions>
+    </PageContentHeader>
+    <PageBody>...</PageBody>
   </PageContent>
 </PageLayout>`;
 
@@ -75,7 +100,7 @@ const previewSections = {
   },
 } as const;
 
-function PageSubnavPreview() {
+function PageSubnavPreview({ action }: { action?: ReactNode }) {
   const [activeSection, setActiveSection] = useState<keyof typeof previewSections>("overview");
   const section = previewSections[activeSection];
   const OverviewIcon = useIcon("home");
@@ -85,28 +110,51 @@ function PageSubnavPreview() {
 
   return (
     <PageContent>
-      <PageSubnav aria-label="Project settings">
-        <PageSubnavList activeValue={activeSection}>
-          {(Object.entries(previewSections) as [keyof typeof previewSections, (typeof previewSections)[keyof typeof previewSections]][]).map(([value, item]) => (
-            <PageSubnavItem
-              key={value}
-              value={value}
-              icon={icons[value]}
-              href={`#${value}`}
-              onClick={(event) => {
-                event.preventDefault();
-                setActiveSection(value);
-              }}
-            >
-              {item.label}
-            </PageSubnavItem>
-          ))}
-        </PageSubnavList>
-      </PageSubnav>
+      <PageContentHeader>
+        <PageSubnav aria-label="Project settings">
+          <PageSubnavList activeValue={activeSection}>
+            {(Object.entries(previewSections) as [keyof typeof previewSections, (typeof previewSections)[keyof typeof previewSections]][]).map(([value, item]) => (
+              <PageSubnavItem
+                key={value}
+                value={value}
+                icon={icons[value]}
+                href={`#${value}`}
+                onClick={(event) => {
+                  event.preventDefault();
+                  setActiveSection(value);
+                }}
+              >
+                {item.label}
+              </PageSubnavItem>
+            ))}
+          </PageSubnavList>
+        </PageSubnav>
+        {action && <PageActions>{action}</PageActions>}
+      </PageContentHeader>
       <PageBody className="grid gap-3">
         <section aria-live="polite" className="rounded-lg bg-muted p-4">
           <PageTitle className="text-title">{section.label}</PageTitle>
           <PageDescription>{section.description}</PageDescription>
+        </section>
+      </PageBody>
+    </PageContent>
+  );
+}
+
+function PageTitlePreview({ action }: { action?: ReactNode }) {
+  const ProjectIcon = useIcon("folder");
+
+  return (
+    <PageContent>
+      <PageContentHeader>
+        <PageHeaderContent icon={ProjectIcon}>
+          <PageTitle className="truncate text-body font-medium">Projects</PageTitle>
+        </PageHeaderContent>
+        {action && <PageActions>{action}</PageActions>}
+      </PageContentHeader>
+      <PageBody className="p-4">
+        <section className="rounded-lg bg-muted p-4">
+          <p className="text-body text-fg-muted">Manage projects directly without a secondary navigation level.</p>
         </section>
       </PageBody>
     </PageContent>
@@ -202,7 +250,17 @@ const props: PropDef[] = [
   {
     name: "PageContent",
     type: "div props",
-    description: "Fills the remaining layout height and stacks optional PageSubnav above its scrolling PageBody.",
+    description: "Fills the remaining layout height and stacks optional PageContentHeader above its scrolling PageBody.",
+  },
+  {
+    name: "PageContentHeader",
+    type: "div props",
+    description: "A fixed content bar that keeps tabs or an icon-title group left and optional PageActions right.",
+  },
+  {
+    name: "PageActions",
+    type: "div props",
+    description: "A wrapping action group whose placement is controlled by PageHeader or PageContentHeader.",
   },
   {
     name: "PageBody",
@@ -239,6 +297,7 @@ const props: PropDef[] = [
 
 export default function PageLayoutDoc() {
   const WorkspaceIcon = useIcon("home");
+  const PlusIcon = useIcon("plus");
 
   return (
     <DocPage
@@ -254,7 +313,13 @@ export default function PageLayoutDoc() {
               value: "subnav",
               label: "With subnavigation",
               code: compositionCode,
-              preview: <PageLayout gutter="none" className="h-[28rem]"><PageHeader><PageHeaderContent icon={WorkspaceIcon}><nav aria-label="Breadcrumb" className="text-body text-fg-muted">Workspace / Projects</nav></PageHeaderContent></PageHeader><PageSubnavPreview /></PageLayout>,
+              preview: <PageLayout gutter="none" className="h-[28rem]"><PageHeader><PageHeaderContent icon={WorkspaceIcon}><nav aria-label="Breadcrumb" className="text-body text-fg-muted">Workspace / Projects</nav></PageHeaderContent></PageHeader><PageSubnavPreview action={<Button size="md">Invite member</Button>} /></PageLayout>,
+            },
+            {
+              value: "title",
+              label: "With title",
+              code: titleCompositionCode,
+              preview: <PageLayout gutter="none" className="h-[22rem]"><PageHeader><PageHeaderContent icon={WorkspaceIcon}><nav aria-label="Breadcrumb" className="text-body text-fg-muted">Workspace</nav></PageHeaderContent></PageHeader><PageTitlePreview action={<Button leadingIcon={PlusIcon} size="md">New project</Button>} /></PageLayout>,
             },
             {
               value: "body-only",
@@ -286,7 +351,19 @@ export default function PageLayoutDoc() {
                 <nav aria-label="Breadcrumb" className="text-body text-fg-muted">Workspace / Projects</nav>
               </PageHeaderContent>
             </PageHeader>
-            <PageSubnavPreview />
+            <PageSubnavPreview action={<Button size="md">Invite member</Button>} />
+          </PageLayout>
+        </ComponentPreview>
+      </DocSection>
+      <DocSection title="Composition with title">
+        <ComponentPreview code={titleCompositionCode} padding="compact">
+          <PageLayout gutter="none" className="h-[22rem]">
+            <PageHeader>
+              <PageHeaderContent icon={WorkspaceIcon}>
+                <nav aria-label="Breadcrumb" className="text-body text-fg-muted">Workspace</nav>
+              </PageHeaderContent>
+            </PageHeader>
+            <PageTitlePreview action={<Button leadingIcon={PlusIcon} size="md">New project</Button>} />
           </PageLayout>
         </ComponentPreview>
       </DocSection>

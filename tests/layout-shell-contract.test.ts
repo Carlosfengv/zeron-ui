@@ -169,6 +169,17 @@ describe("shell and page-layout composition contract", () => {
     expect(pageLayout).toContain('"min-w-0 shrink-0 border-b border-border p-3"');
   });
 
+  it("composes content navigation or headings with optional end-aligned actions", () => {
+    expect(pageLayout).toContain('data-slot="page-content-header"');
+    expect(pageLayout).toContain('items-center justify-between');
+    expect(pageLayout).toContain('[&>_[data-slot=page-subnav]]:flex-1');
+    expect(pageLayout).toContain('[&>_[data-slot=page-subnav]]:border-0');
+    expect(pageLayout).toContain('[&>_[data-slot=page-actions]]:ms-auto');
+    expect(pageLayout).toContain('[&>_[data-slot=page-actions]]:justify-end');
+    expect(pageLayout).toContain('"flex shrink-0 flex-wrap items-center gap-2 max-sm:w-full"');
+    expect(pageLayout).toContain('PageContentHeader,');
+  });
+
   it("keeps PageSubnav as the only navigation landmark while reusing NavMenu", () => {
     expect(navMenu).toContain('as?: "nav" | "div";');
     expect(navMenu).toContain('as: Root = "nav",');
@@ -195,10 +206,14 @@ describe("shell and page-layout composition contract", () => {
 
   it("keeps the documentation preview interactive without changing route-navigation semantics", () => {
     const docs = source("docs/pages/components/page-layout/page.tsx");
-    expect(docs).toContain("function PageSubnavPreview()");
+    expect(docs).toContain("function PageSubnavPreview({ action }");
     expect(docs).toContain("event.preventDefault();");
     expect(docs).toContain("setActiveSection(value);");
     expect(docs).toContain('aria-live="polite"');
+    expect(docs).toContain('function PageTitlePreview({ action }');
+    expect(docs).toContain('<PageContentHeader>');
+    expect(docs).toContain('<PageActions>');
+    expect(docs).toContain('title="Composition with title"');
   });
 
   it("composes TopNav with a stacked AppShell and a body-only PageLayout", () => {

@@ -64,6 +64,7 @@ export interface PageSidebarProps extends ComponentPropsWithoutRef<"aside"> {
   width?: CSSProperties["width"];
 }
 export type PageContentProps = ComponentPropsWithoutRef<"div">;
+export type PageContentHeaderProps = ComponentPropsWithoutRef<"div">;
 export type PageBodyProps = ComponentPropsWithoutRef<"div">;
 export interface PageColumnsProps extends ComponentPropsWithoutRef<"div"> {
   /** Fixed desktop track width for the auxiliary column. Numeric values are interpreted as px. */
@@ -171,6 +172,22 @@ const PageContent = forwardRef<HTMLDivElement, PageContentProps>(({ className, .
 ));
 
 PageContent.displayName = "PageContent";
+
+const PageContentHeader = forwardRef<HTMLDivElement, PageContentHeaderProps>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-slot="page-content-header"
+    className={cn(
+      "flex min-w-0 shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border p-3",
+      "[&>_[data-slot=page-subnav]]:min-w-0 [&>_[data-slot=page-subnav]]:flex-1 [&>_[data-slot=page-subnav]]:border-0 [&>_[data-slot=page-subnav]]:p-0",
+      "[&>_[data-slot=page-actions]]:ms-auto [&>_[data-slot=page-actions]]:justify-end",
+      className
+    )}
+    {...props}
+  />
+));
+
+PageContentHeader.displayName = "PageContentHeader";
 
 const PageBody = forwardRef<HTMLDivElement, PageBodyProps>(({ className, ...props }, ref) => (
   <div
@@ -324,6 +341,7 @@ export {
   PageActions,
   PageSidebar,
   PageContent,
+  PageContentHeader,
   PageBody,
   PageColumns,
   PagePrimary,
