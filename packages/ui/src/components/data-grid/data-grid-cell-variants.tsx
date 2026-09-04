@@ -836,7 +836,7 @@ export function CheckboxCell<TData>({
       isSearchMatch={isSearchMatch}
       isActiveSearchMatch={isActiveSearchMatch}
       readOnly={readOnly}
-      className="flex size-full justify-center"
+      className="flex size-full items-center justify-center"
       onClick={onWrapperClick}
       onKeyDown={onWrapperKeyDown}
     >

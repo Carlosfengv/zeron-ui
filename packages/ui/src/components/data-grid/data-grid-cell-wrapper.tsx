@@ -175,7 +175,7 @@ export function DataGridCellWrapper<TData>({
       {...props}
       ref={composedRef}
       className={cn(
-        "size-full px-2 py-1.5 text-start text-body outline-none transition-colors duration-fast has-data-[slot=checkbox]:pt-2.5",
+        "size-full px-2 py-1.5 text-start text-body outline-none transition-colors duration-fast",
         {
           "ring-1 ring-inset ring-focus-ring":
             isFocused,

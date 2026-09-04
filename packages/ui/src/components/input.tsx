@@ -22,12 +22,20 @@ const inputSizeVariants = {
   xl: cn(controlSizeClasses.xl, controlFieldPaddingClasses.xl, "text-body"),
 } satisfies Record<ControlSize, string>;
 
+const fileInputLineHeightClasses = {
+  xs: "leading-5",
+  sm: "leading-6",
+  md: "leading-7",
+  lg: "leading-8",
+  xl: "leading-9",
+} satisfies Record<ControlSize, string>;
+
 const inputVariants = cva(
   [
     "flex w-full min-w-0 text-fg-default outline-none",
     "transition-[background-color,border-color,box-shadow,color] duration-fast",
     "selection:bg-selection selection:text-fg-default",
-    "file:mr-2 file:border-0 file:bg-transparent file:[font:inherit] file:text-fg-default",
+    "file:mr-2 file:inline-flex file:h-[calc(100%_-_2px)] file:items-center file:align-middle file:border-0 file:bg-transparent file:p-0 file:[font:inherit] file:text-fg-default",
     "placeholder:text-fg-subtle",
     "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
     "focus-visible:ring-1 focus-visible:ring-focus-ring",
@@ -68,7 +76,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <InputPrimitive
         ref={ref as Ref<HTMLElement>}
-        className={cn(inputVariants({ size, variant }), "rounded-lg", className)}
+        className={cn(
+          inputVariants({ size, variant }),
+          type === "file" && fileInputLineHeightClasses[size],
+          "rounded-lg",
+          className,
+        )}
         data-size={size}
         data-slot="input"
         data-variant={variant}

@@ -280,7 +280,7 @@ export function TimeRangeHistogram({
         </div>
         <ChartContainer
           className={cn(
-            "relative aspect-auto h-[68px] min-h-0 w-full [&_.recharts-layer]:!outline-none [&_.recharts-surface]:!outline-none [&_.recharts-tooltip-wrapper]:!z-tooltip [&_.recharts-wrapper]:!outline-none",
+            "relative aspect-auto h-[68px] min-h-0 w-full [&_.recharts-layer]:!outline-none [&_.recharts-surface]:!outline-none [&_.recharts-wrapper]:!outline-none",
             chartClassName,
           )}
           config={chartConfig}
@@ -301,6 +301,7 @@ export function TimeRangeHistogram({
               }
               cursor={{ fill: "var(--surface-raised)" }}
               isAnimationActive={false}
+              wrapperStyle={{ zIndex: "var(--layer-tooltip)" }}
             />
             {series.map((item) => (
               <Bar dataKey={item.dataKey} fill={`var(--color-${item.dataKey})`} key={item.dataKey} stackId="time-range-histogram">
