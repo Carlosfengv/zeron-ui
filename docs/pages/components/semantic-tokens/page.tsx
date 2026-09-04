@@ -453,7 +453,7 @@ export default function SemanticTokensPage() {
           <SectionDescription>
             Reference Color is the source material for semantic mapping. It is shown here for review and theme tuning only; components must use semantic roles rather than numbered color steps.
           </SectionDescription>
-          <div className="flex flex-col gap-3 border-y border-border py-4">
+          <div data-component-cover-source="true" className="flex flex-col gap-3 border-y border-border py-4">
             <PaletteScale name="Brand" scale={activeBrandTheme?.scale ?? {}} currentBrand />
             <PaletteScale name="Neutral" scale={numericScale(referenceColors.neutral)} />
             <PaletteScale name="Danger" scale={numericScale(referenceColors.danger)} />

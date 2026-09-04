@@ -96,6 +96,8 @@ interface ComponentPreviewProps {
   /** Explicit DOM target for Figma capture. Use for portaled components whose
    *  rendered layer is not a descendant of the preview content. */
   figmaCaptureTargetRef?: RefObject<Element | null>;
+  /** Marks this preview as the canonical static cover source for its component. */
+  coverSource?: boolean;
   children: ReactNode;
 }
 
@@ -115,6 +117,7 @@ export function ComponentPreview({
   allowScrollChaining = false,
   browserFrame = false,
   figmaCaptureTargetRef,
+  coverSource = false,
   children,
 }: ComponentPreviewProps) {
   const t = useTranslations("preview");
@@ -437,6 +440,7 @@ export function ComponentPreview({
         {tab === 0 ? (
           <div
             ref={previewRef}
+            data-component-cover-source={coverSource ? "true" : undefined}
             data-slot="component-preview-content"
             data-fullscreen={isFullscreen || undefined}
             className={cn(

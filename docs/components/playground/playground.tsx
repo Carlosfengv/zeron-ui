@@ -174,7 +174,7 @@ export function PlaygroundLayout({
   }, []);
 
   return (
-    <div ref={playgroundRef}>
+    <div ref={playgroundRef} data-component-cover-source="true">
       {preview}
       {mounted && inRail && (
         // Kept mounted so it can cross-fade (the same fade the side panels use)

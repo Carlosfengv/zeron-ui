@@ -156,7 +156,7 @@ export default function FilterQueryInputDoc() {
   return (
     <DocPage description={t("description")} slug="filter-query-input" title="FilterQueryInput">
       <DocSection title={t("playground")}>
-        <ComponentPreview code={basicCode} minHeightClass="min-h-[280px]" padding="compact">
+        <ComponentPreview code={basicCode} coverSource minHeightClass="min-h-[280px]" padding="compact">
           <InteractiveExample
             appliedFiltersLabel={t("appliedFilters")}
             loadExampleLabel={t("loadExample")}

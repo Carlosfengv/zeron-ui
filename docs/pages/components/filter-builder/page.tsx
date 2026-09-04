@@ -124,7 +124,7 @@ export default function FilterBuilderDoc() {
       title="FilterBuilder"
     >
       <DocSection title={t("playground")}>
-        <ComponentPreview code={basicCode} padding="compact">
+        <ComponentPreview code={basicCode} coverSource padding="compact">
           <InteractiveExample />
         </ComponentPreview>
       </DocSection>
