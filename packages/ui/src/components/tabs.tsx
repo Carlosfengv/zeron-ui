@@ -54,8 +54,27 @@ function useTabsList() {
 }
 
 export type TabsVariant = "pill" | "segment" | "underline";
-export type TabsColor = "brand" | "neutral";
+export type TabsColor = "brand" | "neutral" | "default";
 export type TabLabelVisibility = "all" | "active";
+
+const selectedSurfaceClasses: Record<TabsColor, string> = {
+  brand: "bg-brand",
+  neutral: "bg-inverse-background",
+  default: "border-[0.5px] border-border bg-surface-floating",
+};
+
+const underlineIndicatorClasses: Record<TabsColor, string> = {
+  brand: "bg-brand",
+  neutral: "bg-inverse-background",
+  // Underline keeps its linear geometry while using the default foreground tone.
+  default: "bg-fg-default",
+};
+
+const selectedForegroundClasses: Record<TabsColor, string> = {
+  brand: "text-fg-on-brand",
+  neutral: "text-fg-on-inverse",
+  default: "text-fg-default",
+};
 
 /**
  * A compact Badge configuration for a TabItem. Pass a number or text for the
@@ -89,7 +108,7 @@ interface TabsProps
   defaultValue?: string;
   /** Visual treatment. Pill preserves the original Tabs appearance. */
   variant?: TabsVariant;
-  /** Color treatment for the selected tab. Defaults to the current brand color. */
+  /** Visual treatment for the selected tab. Defaults to the current brand color. */
   color?: TabsColor;
 }
 
@@ -351,7 +370,9 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
             <motion.div
               className={cn(
                 "absolute pointer-events-none",
-                color === "neutral" ? "bg-inverse-background" : "bg-brand",
+                variant === "underline"
+                  ? underlineIndicatorClasses[color]
+                  : selectedSurfaceClasses[color],
                 variant !== "underline" && "rounded-lg"
               )}
               initial={false}
@@ -504,9 +525,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
           className={cn(
             "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",
             isSelected && variant !== "underline"
-              ? color === "neutral"
-                ? "text-fg-on-inverse"
-                : "text-fg-on-brand"
+              ? selectedForegroundClasses[color]
               : isActive
                 ? "text-fg-default"
                 : "text-fg-muted",
@@ -567,9 +586,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
             className={cn(
               "transition-[color,stroke-width] duration-fast",
               isSelected && variant !== "underline"
-                ? color === "neutral"
-                  ? "text-fg-on-inverse"
-                  : "text-fg-on-brand"
+                ? selectedForegroundClasses[color]
                 : isActive
                   ? "text-fg-default"
                   : "text-fg-muted"

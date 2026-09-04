@@ -119,7 +119,7 @@ const [value, setValue] = useState("library");
 
 const tabsProps: PropDef[] = [
   { name: "variant", type: '"pill" | "segment" | "underline"', default: '"pill"', description: "Visual treatment for the tab list." },
-  { name: "color", type: '"brand" | "neutral"', default: '"brand"', description: "Color treatment for the selected tab." },
+  { name: "color", type: '"brand" | "neutral" | "default"', default: '"brand"', description: "Visual treatment for the selected tab." },
   { name: "value", type: "string", description: "Controlled active tab value. Takes precedence over selectedIndex." },
   { name: "onValueChange", type: "(value: string) => void", description: "Called when the active tab changes." },
   { name: "selectedIndex", type: "number", description: "Index-based controlled alternative." },
@@ -222,7 +222,7 @@ function TabsPlayground() {
   const randomize = () => {
     const pick = <T,>(options: readonly T[]) => options[Math.floor(Math.random() * options.length)];
     setVariant(pick(["pill", "segment", "underline"] as const));
-    setColor(pick(["brand", "neutral"] as const));
+    setColor(pick(["brand", "neutral", "default"] as const));
     setLabelVisibility(pick(["all", "active"] as const));
     setActivationMode(pick(["automatic", "manual"] as const));
     setShowIcons(Math.random() > 0.2);
@@ -252,6 +252,7 @@ function TabsPlayground() {
             options={[
               { value: "brand", label: t("brand") },
               { value: "neutral", label: t("neutral") },
+              { value: "default", label: t("default") },
             ]}
           />
         </PlayField>
