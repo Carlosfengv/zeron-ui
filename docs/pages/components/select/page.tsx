@@ -11,6 +11,16 @@ import {
   SelectLabel,
   SelectSeparator,
 } from "@zeron/ui/select";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxTrigger,
+  ComboboxValue,
+} from "@zeron/ui/combobox";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
@@ -150,6 +160,66 @@ const Globe = useIcon("globe");
     <SelectItem value="utc+12">(UTC+12) Auckland</SelectItem>
   </SelectContent>
 </Select>`;
+
+const searchableFrameworks = [
+  "Next.js",
+  "React Router",
+  "Remix",
+  "Gatsby",
+  "Astro",
+  "SvelteKit",
+  "Nuxt",
+  "SolidStart",
+  "Qwik City",
+  "Angular",
+  "Vue",
+  "Svelte",
+  "SolidJS",
+  "Preact",
+  "Lit",
+  "Ember.js",
+  "RedwoodSDK",
+  "TanStack Start",
+];
+
+const searchableCode = `import { useState } from "react";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxTrigger,
+  ComboboxValue,
+} from "@zeron/ui/combobox";
+
+const frameworks = [
+  "Next.js", "React Router", "Remix", "Gatsby", "Astro", "SvelteKit",
+  "Nuxt", "SolidStart", "Qwik City", "Angular", "Vue", "Svelte",
+  "SolidJS", "Preact", "Lit", "Ember.js", "RedwoodSDK", "TanStack Start",
+];
+const [framework, setFramework] = useState<string | null>(null);
+
+<Combobox items={frameworks} value={framework} onValueChange={setFramework}>
+  <ComboboxTrigger aria-label="Select a framework">
+    <ComboboxValue placeholder="Select a framework…" />
+  </ComboboxTrigger>
+  <ComboboxContent>
+    <ComboboxInput
+      aria-label="Search frameworks"
+      className="mb-1"
+      placeholder="Search frameworks…"
+      showTrigger={false}
+    />
+    <ComboboxEmpty>No frameworks found.</ComboboxEmpty>
+    <ComboboxList className="max-h-56">
+      {(item) => (
+        <ComboboxItem key={item} value={item}>{item}</ComboboxItem>
+      )}
+    </ComboboxList>
+  </ComboboxContent>
+</Combobox>`;
 
 const errorCode = `import { Select, SelectTrigger, SelectContent, SelectItem } from "./components";
 
@@ -366,6 +436,7 @@ export default function SelectDoc() {
   const [theme, setTheme] = useState("system");
   const [timezone, setTimezone] = useState("");
   const [role, setRole] = useState("");
+  const [framework, setFramework] = useState<string | null>(null);
 
   const themeIcons: Record<string, IconComponent> = { light: Sun, dark: Moon, system: Monitor };
   const ThemeIcon = themeIcons[theme] ?? Monitor;
@@ -528,6 +599,35 @@ export default function SelectDoc() {
               <SelectItem value="utc+12">(UTC+12) Auckland</SelectItem>
             </SelectContent>
           </Select>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("searchable")}>
+        <p className="text-body text-fg-muted">{t("searchableHint")}</p>
+        <ComponentPreview code={searchableCode} minHeightClass="min-h-[240px]">
+          <Combobox
+            items={searchableFrameworks}
+            value={framework}
+            onValueChange={setFramework}
+          >
+            <ComboboxTrigger aria-label="Select a framework">
+              <ComboboxValue placeholder="Select a framework…" />
+            </ComboboxTrigger>
+            <ComboboxContent>
+              <ComboboxInput
+                aria-label="Search frameworks"
+                className="mb-1"
+                placeholder="Search frameworks…"
+                showTrigger={false}
+              />
+              <ComboboxEmpty>No frameworks found.</ComboboxEmpty>
+              <ComboboxList className="max-h-56">
+                {(item: string) => (
+                  <ComboboxItem key={item} value={item}>{item}</ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
         </ComponentPreview>
       </DocSection>
 

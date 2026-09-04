@@ -6,6 +6,8 @@
     "withIcons": "带图标",
     "groups": "分组",
     "scrollableList": "可滚动列表",
+    "searchable": "带搜索",
+    "searchableHint": "需要筛选选项时，使用 Combobox 的 Select 形态，在弹出层中组合搜索输入框与选项列表。",
     "errorState": "错误状态",
     "disabled": "禁用",
     "apiReference": "API 参考",

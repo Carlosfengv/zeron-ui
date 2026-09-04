@@ -6,6 +6,8 @@
     "withIcons": "With Icons",
     "groups": "Groups",
     "scrollableList": "Scrollable List",
+    "searchable": "Searchable",
+    "searchableHint": "When options need filtering, use the Select-style Combobox composition with a search input inside the popup.",
     "errorState": "Error State",
     "disabled": "Disabled",
     "apiReference": "API Reference",
