@@ -126,7 +126,7 @@ export function DataGridColumnHeader<TData, TValue>({
             <button
               type="button"
               className={cn(
-                "flex size-full items-center justify-between gap-2 p-2 text-body font-medium hover:bg-hover data-popup-open:bg-active [&_svg]:size-4",
+                "flex size-full items-center justify-between gap-2 p-2 text-body font-medium hover:bg-hover data-popup-open:bg-active",
                 isAnyColumnResizing && "pointer-events-none",
                 className,
               )}
@@ -146,7 +146,7 @@ export function DataGridColumnHeader<TData, TValue>({
                 )}
                 <span className="truncate">{label}</span>
               </div>
-              <ChevronDownIcon className="shrink-0 text-fg-muted" />
+              <ChevronDownIcon className="size-4 shrink-0 text-fg-muted" />
             </button>
           }
         />
