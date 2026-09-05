@@ -99,4 +99,10 @@ describe("Empty contract", () => {
     expect(source).toContain("<foreignObject");
     expect(source).toContain('stroke="var(--border-subtle)"');
   });
+
+  it("keeps page and section illustrations at a restrained default size", () => {
+    expect(source).toContain(
+      '"h-auto w-40 max-w-full [&_svg]:h-auto [&_svg]:w-full"'
+    );
+  });
 });

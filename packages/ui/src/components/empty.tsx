@@ -150,9 +150,9 @@ const EmptyMedia = forwardRef<HTMLDivElement, EmptyMediaProps>(
               : "size-10 [&_svg]:size-7"),
           variant === "illustration" &&
             (scope === "page"
-              ? "h-auto w-full max-w-60 [&_svg]:h-auto [&_svg]:w-full"
+              ? "h-auto w-40 max-w-full [&_svg]:h-auto [&_svg]:w-full"
               : scope === "section"
-                ? "h-auto w-full max-w-36 [&_svg]:h-auto [&_svg]:w-full"
+                ? "h-auto w-40 max-w-full [&_svg]:h-auto [&_svg]:w-full"
                 : "h-auto w-full max-w-16 [&_svg]:h-auto [&_svg]:w-full"),
           variant === "custom" &&
             "max-w-full overflow-hidden [&_img]:max-h-44 [&_img]:max-w-full [&_img]:object-contain",

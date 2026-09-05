@@ -72,17 +72,18 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const resolvedSize = size ?? "md";
 
     return (
       <InputPrimitive
         ref={ref as Ref<HTMLElement>}
         className={cn(
-          inputVariants({ size, variant }),
-          type === "file" && fileInputLineHeightClasses[size],
+          inputVariants({ size: resolvedSize, variant }),
+          type === "file" && fileInputLineHeightClasses[resolvedSize],
           "rounded-lg",
           className,
         )}
-        data-size={size}
+        data-size={resolvedSize}
         data-slot="input"
         data-variant={variant}
         type={type}

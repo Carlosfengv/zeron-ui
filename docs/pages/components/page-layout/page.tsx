@@ -55,7 +55,7 @@ const titleCompositionCode = `<PageLayout gutter="none" className="h-[32rem]">
   <PageContent>
     <PageContentHeader>
       <PageHeaderContent icon={ProjectIcon}>
-        <PageTitle className="text-body font-medium">Projects</PageTitle>
+        <PageTitle>Projects</PageTitle>
       </PageHeaderContent>
       <PageActions>
         <Button leadingIcon={PlusIcon} size="md">New project</Button>
@@ -148,7 +148,7 @@ function PageTitlePreview({ action }: { action?: ReactNode }) {
     <PageContent>
       <PageContentHeader>
         <PageHeaderContent icon={ProjectIcon}>
-          <PageTitle className="truncate text-body font-medium">Projects</PageTitle>
+          <PageTitle>Projects</PageTitle>
         </PageHeaderContent>
         {action && <PageActions>{action}</PageActions>}
       </PageContentHeader>

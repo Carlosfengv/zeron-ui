@@ -7,11 +7,21 @@ import {
   PageContentHeader,
   PageHeaderContent,
   PageSubnav,
+  PageTitle,
 } from "@zeron/ui/page-layout";
 
 afterEach(cleanup);
 
 describe("PageContentHeader composition", () => {
+  it("uses the compact body title style when no class name is supplied", () => {
+    render(<PageTitle>Projects</PageTitle>);
+
+    const title = screen.getByRole("heading", { name: "Projects" });
+
+    expect(title.className).toContain("text-body");
+    expect(title.className).toContain("font-medium");
+  });
+
   it("keeps actions outside the navigation landmark", () => {
     render(
       <PageContentHeader data-testid="content-header">
