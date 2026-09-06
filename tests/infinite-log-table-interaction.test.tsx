@@ -282,6 +282,7 @@ describe("InfiniteLogTable", () => {
     const records = createMockLogRecords({ days: 2 });
     render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} onStateChange={onStateChange} records={records} /></div>);
     await waitFor(() => expect(screen.getByRole("grid", { name: "HTTP request log table" })).toBeTruthy());
+    await screen.findByRole("slider", { name: "Request trend time range" });
 
     const timeRangeSelect = screen.getByRole("combobox", { name: "Time range" });
     fireEvent.click(timeRangeSelect);

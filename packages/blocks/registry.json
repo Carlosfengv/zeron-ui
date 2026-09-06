@@ -136,7 +136,7 @@
       "description": "An inspection report workspace with operations navigation, filtering, and report state actions.",
       "categories": ["application", "operations"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["badge", "button", "dialog", "dropdown", "icon-context", "input", "kbd", "menu-item", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "utils"],
+      "registryDependencies": ["badge", "button", "dialog", "dropdown", "icon-context", "input", "kbd", "menu-item", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "utils", "select"],
       "files": [
         { "path": "packages/blocks/src/application/inspection-report-list-01/inspection-report-list.tsx", "type": "registry:component", "target": "components/blocks/inspection-report-list-01/inspection-report-list.tsx" },
         { "path": "packages/blocks/src/application/inspection-report-list-01/index.ts", "type": "registry:component", "target": "components/blocks/inspection-report-list-01/index.ts" }
@@ -149,7 +149,7 @@
       "description": "A monitoring alert workspace with operations navigation, severity filters, resolution history, and contextual actions.",
       "categories": ["application", "operations", "monitoring"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["badge", "button", "button-group", "dialog", "dropdown", "icon-context", "input", "kbd", "menu-item", "nav-item", "nav-menu", "page-layout", "popover", "sidebar", "sidebar-identity-row", "utils"],
+      "registryDependencies": ["badge", "button", "button-group", "dialog", "dropdown", "icon-context", "input", "kbd", "menu-item", "nav-item", "nav-menu", "page-layout", "popover", "sidebar", "sidebar-identity-row", "utils", "select"],
       "files": [
         { "path": "packages/blocks/src/application/monitoring-alert-list-01/monitoring-alert-list.tsx", "type": "registry:component", "target": "components/blocks/monitoring-alert-list-01/monitoring-alert-list.tsx" },
         { "path": "packages/blocks/src/application/monitoring-alert-list-01/index.ts", "type": "registry:component", "target": "components/blocks/monitoring-alert-list-01/index.ts" }
@@ -174,13 +174,23 @@
       "title": "个人设置",
       "description": "A personal settings workspace for model services, API keys, credentials, profile details, usage, and call logs.",
       "categories": ["application", "settings"],
-      "dependencies": ["tw-animate-css", "@lobehub/icons", "recharts"],
-      "registryDependencies": ["app-shell", "badge", "button", "chart", "container", "detail-list", "field", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "select", "separator", "table", "tabs", "time-range-histogram", "top-nav", "utils"],
+      "dependencies": ["tw-animate-css", "@lobehub/icons", "recharts", "@tanstack/react-table", "@thesvg/icons"],
+      "registryDependencies": ["app-shell", "badge", "button", "chart", "container", "detail-list", "field", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "select", "separator", "table", "tabs", "time-range-histogram", "top-nav", "utils", "dialog", "dropdown", "data-table", "info-item", "menu-item", "metric-card", "sidebar-identity-row", "switch"],
       "files": [
         {
           "path": "packages/blocks/src/application/personal-settings-01/personal-settings.tsx",
           "type": "registry:component",
           "target": "components/blocks/personal-settings-01/personal-settings.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/personal-settings-01/personal-settings-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/personal-settings-01/personal-settings-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/personal-settings-01/personal-settings-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/personal-settings-01/personal-settings-demo-data.ts"
         },
         {
           "path": "packages/blocks/src/application/personal-settings-01/index.ts",
@@ -466,7 +476,7 @@
       "description": "An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation.",
       "categories": ["application", "operations"],
       "dependencies": ["tw-animate-css"],
-      "registryDependencies": ["button", "dropdown", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "icon-context", "utils"],
+      "registryDependencies": ["button", "dropdown", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "sidebar-account-menu", "icon-context", "utils", "badge", "dialog", "kbd", "metric-card", "table"],
       "files": [
         {
           "path": "packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx",
@@ -487,7 +497,7 @@
       "description": "A ZS Live Recovery protection-group list and detail workspace with recovery plans and Chinese pagination.",
       "categories": ["application", "operations", "tables"],
       "dependencies": ["tw-animate-css", "@tanstack/react-table"],
-      "registryDependencies": ["badge", "button", "checkbox", "detail-list", "icon-context", "input-group", "nav-item", "nav-menu", "select", "sidebar", "sidebar-identity-row", "table", "tabs", "utils"],
+      "registryDependencies": ["badge", "button", "checkbox", "detail-list", "icon-context", "input-group", "nav-item", "nav-menu", "select", "sidebar", "sidebar-identity-row", "table", "tabs", "utils", "data-table"],
       "files": [
         {
           "path": "packages/blocks/src/application/zlrlist/zlrlist.tsx",
@@ -523,7 +533,7 @@
       "description": "A schema-driven virtualized log explorer with inferred fields, dynamic filters, cursor pagination, Live tailing, and record detail.",
       "categories": ["application", "tables", "observability"],
       "dependencies": ["tw-animate-css", "@tanstack/react-table", "@tanstack/react-virtual"],
-      "registryDependencies": ["accordion", "alert", "badge", "button", "checkbox", "checkbox-group", "detail-list", "dialog", "dropdown", "empty", "field", "filter-query-input", "icon-context", "inline-notice", "input-group", "mobile-drawer", "resizable", "scroll-area", "select", "sortable-collection", "temporal-picker", "time-range-histogram", "utils"],
+      "registryDependencies": ["accordion", "alert", "badge", "button", "checkbox", "checkbox-group", "detail-list", "dialog", "dropdown", "empty", "field", "filter-query-input", "icon-context", "inline-notice", "input-group", "mobile-drawer", "resizable", "scroll-area", "select", "sortable-collection", "temporal-picker", "time-range-histogram", "utils", "slider"],
       "files": [
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-types.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-types.ts" },
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-data-source.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-data-source.ts" },
@@ -538,6 +548,7 @@
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-detail.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-detail.tsx" },
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-detail.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-generic-detail.tsx" },
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-filters.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-generic-filters.tsx" },
+        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-header-filter.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-header-filter.tsx" },
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-table-view.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-generic-table-view.tsx" },
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-query-adapter.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-query-adapter.ts" },
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-table-view.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-table-view.tsx" },

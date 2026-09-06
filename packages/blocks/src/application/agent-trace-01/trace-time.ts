@@ -1,5 +1,5 @@
 /** Stable defaults for a reusable component; consumers can opt into local presentation. */
-export const DEFAULT_TRACE_TIME_ZONE = "UTC";
+export const DEFAULT_TRACE_TIME_ZONE = "Asia/Shanghai";
 export const DEFAULT_TRACE_LOCALE = "en-US";
 
 export type TraceTimePrecision = "minute" | "millisecond";

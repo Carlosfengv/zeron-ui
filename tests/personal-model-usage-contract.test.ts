@@ -11,7 +11,7 @@ const registry = readFileSync(join(ROOT, "packages/blocks/registry.json"), "utf8
 describe("Personal model usage call-log contract", () => {
   it("keeps model usage and call logs available in the standalone block", () => {
     expect(standalone).toContain('enabledViews={["modelUsage", "callLogs"]}');
-    expect(settings).toContain('{ value: "callLogs", label: "调用日志"');
+    expect(settings).toContain('callLogs: { title: "调用日志"');
   });
 
   it("supports atomic-call and answer-level views", () => {
@@ -22,7 +22,7 @@ describe("Personal model usage call-log contract", () => {
   });
 
   it("uses DataTable framing, pagination, and dialog details", () => {
-    const callLogs = settings.slice(settings.indexOf("function CallLogDataTable"), settings.indexOf("function ModelUsageSettings"));
+    const callLogs = settings.slice(settings.indexOf("function CallLogDataTable"));
 
     expect(callLogs).toContain('className="overflow-hidden rounded-xl border border-border bg-surface-floating"');
     expect(callLogs).toContain('<div className="overflow-x-auto"><Table');
@@ -39,17 +39,17 @@ describe("Personal model usage call-log contract", () => {
     expect(callLogs).toContain('value={timeSelection}');
     expect(callLogs).toContain("isCallLogTimeInSelection(record.timestamp, timeSelection)");
     expect(callLogs).toContain("isCallLogTimeInSelection(run.timestamp, timeSelection)");
-    expect(callLogs).toContain("aggregateCallLogTrend(filteredTrendCalls)");
+    expect(callLogs).toContain("aggregateCallLogTrend(filteredTrendCalls, contextStart)");
     expect(callLogs).not.toContain("modelFactor");
     expect(timeRangeHistogram).toContain('<XAxis dataKey="label" hide />');
     expect(timeRangeHistogram).toContain('<BarChart accessibilityLayer={false} data={data}');
     expect(timeRangeHistogram).toContain('h-[68px] min-h-0');
-    expect(timeRangeHistogram).toContain('[&_.recharts-tooltip-wrapper]:!z-20');
+    expect(timeRangeHistogram).toContain('[&_.recharts-tooltip-wrapper]:!z-tooltip');
     expect(timeRangeHistogram).toContain('isAnimationActive={false}');
     expect(timeRangeHistogram).toContain('style={{ left: `${selectionLeft}%`, width: `${selectionWidth}%` }}');
     expect(timeRangeHistogram).toContain('focus-visible:ring-2 focus-visible:ring-focus-ring');
-    expect(settings).toContain("const callLogMockData = buildCallLogMockData()");
-    expect(settings).toContain("const callLogTrendBuckets = Array.from({ length: CALL_LOG_TIMELINE_BUCKETS }");
+    expect(settings).toContain("const defaultCallLogsData");
+    expect(settings).toContain("function aggregateCallLogTrend");
     expect(settings).toContain("bucketRecords.filter((record) => record.kind === \"model\").length");
     expect(settings).toContain("bucketRecords.filter((record) => record.kind === \"mcp\").length");
     expect(timeRangeHistogram).toContain('role="slider"');
@@ -62,7 +62,7 @@ describe("Personal model usage call-log contract", () => {
     expect(settings).toContain('{ dataKey: "model", label: "模型", color: "light-dark(var(--brand-active), var(--brand))"');
     expect(settings).toContain('{ dataKey: "mcp", label: "MCP", color: "light-dark(var(--brand), var(--brand-active))"');
     expect(settings).toContain("const CALL_LOG_TIMELINE_BUCKETS = 60");
-    expect(settings).toContain("start: callLogLatestTimestamp - 30 * DAY_IN_MS");
+    expect(settings).toContain("month: { end: latestTimestamp, label: \"最近 30 天\", start: latestTimestamp - 30 * DAY_IN_MS }");
     expect(callLogs).toContain('className="sticky left-0 z-content w-36 min-w-36 max-w-36 bg-surface-floating">时间');
     expect(callLogs).toContain('className="sticky left-36 z-content w-24 min-w-24 max-w-24 border-r border-border bg-surface-floating">事件类型');
     expect(callLogs).toContain('className="sticky right-0 z-content w-24 min-w-24 max-w-24 border-l border-border bg-surface-floating text-right">费用');

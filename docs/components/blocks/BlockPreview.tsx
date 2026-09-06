@@ -83,8 +83,8 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "service-management-01": () => import("@zeron/blocks/service-management-01").then(({ ServiceManagement }) => ({
     default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ServiceManagement className="h-full min-h-0" /></ResponsivePreview>,
   })),
-  "personal-settings-01": () => import("@zeron/blocks/personal-settings-01").then(({ PersonalSettings }) => ({
-    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalSettings /></ResponsivePreview>,
+  "personal-settings-01": () => import("@zeron/blocks/personal-settings-01").then(({ PersonalSettings, personalSettingsDemoData }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalSettings data={personalSettingsDemoData} /></ResponsivePreview>,
   })),
   "personal-model-usage-01": () => import("@zeron/blocks/personal-model-usage-01").then(({ PersonalModelUsage }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalModelUsage /></ResponsivePreview>,

@@ -1,4 +1,26 @@
-export const blockCatalog = [
+import blockCapabilities from "../block-capabilities.json";
+
+export type BlockFramework = "react" | "next";
+export type BlockInstallationKind = "data-block" | "template";
+
+export interface BlockCapability {
+  framework: BlockFramework;
+  kind: BlockInstallationKind;
+}
+
+const capabilities = blockCapabilities as Record<string, BlockCapability>;
+
+/**
+ * The Registry composer reads the same JSON manifest.  Keep installation
+ * boundaries here rather than maintaining a second docs-only classification.
+ */
+export function getBlockCapability(name: string): BlockCapability {
+  const capability = capabilities[name];
+  if (!capability) throw new Error(`Missing installation capability for Block: ${name}`);
+  return capability;
+}
+
+const blockCatalogEntries = [
   {
     name: "login-01",
     title: "Login",
@@ -190,3 +212,8 @@ export const blockCatalog = [
     dependencies: ["button", "checkbox", "dialog", "input-group", "mobile-drawer", "recharts", "@tanstack/react-table", "@tanstack/react-virtual"],
   },
 ] as const;
+
+export const blockCatalog = blockCatalogEntries.map((block) => ({
+  ...block,
+  installation: getBlockCapability(block.name),
+}));

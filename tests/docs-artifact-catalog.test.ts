@@ -5,12 +5,21 @@ import { docEntries } from "../docs/manifest";
 
 describe("business template catalog", () => {
   it("maps every current registry asset to one discoverable artifact", () => {
-    const registryNames = new Set(blockCatalog.map(({ name }) => name));
+    const blocksByRegistryName = new Map(blockCatalog.map((block) => [block.name, block]));
+    const registryNames = new Set(blocksByRegistryName.keys());
     const artifactRegistryNames = artifactCatalog.map(({ registryName }) => registryName);
 
     expect(artifactCatalog).toHaveLength(27);
     expect(new Set(artifactRegistryNames).size).toBe(artifactCatalog.length);
     expect(new Set(artifactRegistryNames)).toEqual(registryNames);
+    for (const artifact of artifactCatalog) {
+      expect(artifact.installation).toEqual(blocksByRegistryName.get(artifact.registryName)?.installation);
+    }
+  });
+
+  it("labels only data-capable Blocks as data blocks", () => {
+    expect(blockCatalog.filter((block) => block.installation.kind === "data-block").map((block) => block.name))
+      .toEqual(["file-manager-01", "resource-list-table-01", "infinite-log-table-01"]);
   });
 
   it("keeps every business template reachable through an existing detail page", () => {

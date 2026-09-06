@@ -46,6 +46,16 @@ const productLabels = {
   zh: { zaiops: "ZAIops", zlr: "ZLR", zentrix: "Zentrix", shared: "通用" },
 } as const;
 
+const installationKindLabels = {
+  en: { "data-block": "Data block", template: "Template" },
+  zh: { "data-block": "数据区块", template: "页面模板" },
+} as const;
+
+const frameworkLabels = {
+  en: { next: "Next.js", react: "React" },
+  zh: { next: "Next.js", react: "React" },
+} as const;
+
 const kindIcons: Record<ArtifactKind | "all", IconName> = {
   all: "square-library",
   block: "doc-card",
@@ -116,7 +126,7 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
     setQuery(searchParams.get("q") ?? "");
   }, [searchParams]);
   const templates = useMemo(() => artifactCatalog.filter((artifact) => {
-    const searchable = [artifact.title, artifact.description, artifact.kind, artifact.product, ...artifact.domains, ...artifact.patterns, ...artifact.searchTerms].join(" ").toLowerCase();
+    const searchable = [artifact.title, artifact.description, artifact.kind, artifact.product, artifact.installation.framework, artifact.installation.kind, ...artifact.domains, ...artifact.patterns, ...artifact.searchTerms].join(" ").toLowerCase();
     return (!kind || artifact.kind === kind)
       && (!product || artifact.product === product)
       && (!normalizedQuery || searchable.includes(normalizedQuery));
@@ -196,6 +206,8 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
                     <div className="flex items-center gap-1.5">
                       <Badge size="sm" variant="dot">{productLabels[language][artifact.product]}</Badge>
                       <Badge color="blue" size="sm">{kindLabels[language][artifact.kind]}</Badge>
+                      <Badge color={artifact.installation.kind === "data-block" ? "green" : "gray"} size="sm">{installationKindLabels[language][artifact.installation.kind]}</Badge>
+                      {artifact.installation.framework === "next" && <Badge color="purple" size="sm">{frameworkLabels[language].next}</Badge>}
                     </div>
                   </ContainerFooter>
                 </Container>

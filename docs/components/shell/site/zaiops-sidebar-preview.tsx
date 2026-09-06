@@ -329,7 +329,7 @@ function AccountMenuTrigger() {
       description="wei.feng@zstack.io"
       triggerTrailing={<More aria-hidden className="size-4" />}
       avatar={
-        <SidebarIdentityAvatar className="overflow-hidden rounded-[10px] bg-transparent p-0">
+        <SidebarIdentityAvatar className="overflow-hidden rounded-lg bg-transparent p-0">
           <Image alt="" className="size-full object-cover" height={32} src="/figma/zstack-account-menu/avatar.jpeg" width={32} />
         </SidebarIdentityAvatar>
       }

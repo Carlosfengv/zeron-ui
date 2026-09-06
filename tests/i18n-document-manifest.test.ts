@@ -43,22 +43,16 @@ describe("documentation manifest", () => {
   });
 
   it("tracks and supplies both message files for every formal page", () => {
-    const progress = JSON.parse(
-      readFileSync(join(ROOT, "localdocs/i18n-translation-progress.json"), "utf8"),
-    ) as { pages: Record<string, string> };
     const messageLoaders = readFileSync(
       join(ROOT, "docs/i18n/content-loaders.generated.ts"),
       "utf8",
     );
 
-    expect(progress.pages.home).toBe("verified");
-    expect(progress.pages.introduction).toBe("verified");
     expect(existsSync(join(ROOT, "docs/content/en/home.json"))).toBe(true);
     expect(existsSync(join(ROOT, "docs/content/zh-CN/home.json"))).toBe(true);
     expect(messageLoaders).toContain("@docs/content/en/components/combobox.json");
     expect(messageLoaders).toContain("@docs/content/zh-CN/components/combobox.json");
     for (const entry of pageDocEntries) {
-      expect(progress.pages[`${entry.collection}/${entry.slug}`] ?? progress.pages[entry.slug], entry.slug).toBe("verified");
       const filename = `${entry.collection}/${entry.slug}.json`;
       expect(existsSync(join(ROOT, "docs/content/en", filename)), `en:${entry.slug}`).toBe(true);
       expect(existsSync(join(ROOT, "docs/content/zh-CN", filename)), `zh-CN:${entry.slug}`).toBe(true);

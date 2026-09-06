@@ -1,3 +1,5 @@
+import { blockCatalog, type BlockCapability } from "@zeron/blocks/catalog";
+
 export const artifactKinds = ["block", "page", "flow", "prototype", "layout"] as const;
 export type ArtifactKind = (typeof artifactKinds)[number];
 
@@ -23,7 +25,17 @@ export interface ArtifactEntry {
   readiness: ArtifactReadiness;
   dataMode: ArtifactDataMode;
   devices: Array<"desktop" | "responsive" | "mobile">;
+  /** Mirrors the capability that is published in Registry metadata. */
+  installation: BlockCapability;
   featured?: boolean;
+}
+
+const capabilitiesByRegistryName = new Map<string, BlockCapability>(blockCatalog.map((block) => [block.name, block.installation]));
+
+function installationFor(registryName: string): BlockCapability {
+  const capability = capabilitiesByRegistryName.get(registryName);
+  if (!capability) throw new Error(`Missing installation capability for docs artifact: ${registryName}`);
+  return capability;
 }
 
 /**
@@ -31,7 +43,7 @@ export interface ArtifactEntry {
  * Registry item types remain `registry:block`; `kind` is only used for
  * discovery, documentation and progressive asset splitting.
  */
-export const artifactCatalog: readonly ArtifactEntry[] = [
+const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">> = [
   {
     slug: "login-01", registryName: "login-01",
     title: "Login", description: "A responsive authentication page with credential and provider sign-in paths.",
@@ -168,6 +180,11 @@ export const artifactCatalog: readonly ArtifactEntry[] = [
     kind: "prototype", product: "zlr", domains: ["recovery", "protection group"], patterns: ["workspace", "list-detail"], searchTerms: ["zlr", "protection group", "recovery", "保护组", "容灾", "列表详情"], readiness: "demo-only", dataMode: "mock", devices: ["desktop", "responsive"], featured: true,
   },
 ];
+
+export const artifactCatalog: readonly ArtifactEntry[] = artifactCatalogEntries.map((artifact) => ({
+  ...artifact,
+  installation: installationFor(artifact.registryName),
+}));
 
 export function getArtifact(slug: string) {
   return artifactCatalog.find((artifact) => artifact.slug === slug);

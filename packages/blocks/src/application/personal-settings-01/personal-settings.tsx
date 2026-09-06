@@ -36,79 +36,44 @@ import { TopNav, TopNavActions, TopNavBrand } from "@zeron/ui/top-nav";
 import { Switch } from "@zeron/ui/switch";
 import { type IconComponent, useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
+import { personalSettingsDemoData } from "./personal-settings-demo-data";
+import type {
+  PersonalSettingsActions,
+  PersonalSettingsApiKey,
+  PersonalSettingsCallLogsData,
+  PersonalSettingsCallLogRecord,
+  PersonalSettingsCallLogRun,
+  PersonalSettingsCredential,
+  PersonalSettingsData,
+  PersonalSettingsLabels,
+  PersonalSettingsLoadingState,
+  PersonalSettingsModelService,
+  PersonalSettingsModelUsageData,
+  PersonalSettingsModelUsageRecord,
+  PersonalSettingsOperationState,
+  PersonalSettingsPreferences,
+  PersonalSettingsProfileAction,
+  PersonalSettingsProfile,
+  PersonalSettingsStatus,
+  PersonalSettingsUsageData,
+  PersonalSettingsUsagePeriod,
+  PersonalSettingsUsageRank,
+  PersonalSettingsView,
+} from "./personal-settings-types";
 
-type SettingsView = "models" | "keys" | "credentials" | "profile" | "preferences" | "usage" | "modelUsage" | "callLogs";
-type ServiceStatus = "正常" | "已用尽" | "需要重新获取";
+type SettingsView = PersonalSettingsView;
+type ServiceStatus = PersonalSettingsStatus;
 type ActivityView = "tokens" | "messages";
-type UsagePeriod = "hour" | "day" | "week" | "month";
-type UsageRankIcon = "deepseek" | "openai" | "glm" | "jira" | "tool" | "message";
+type UsagePeriod = PersonalSettingsUsagePeriod;
 type ModelUsageRange = "day" | "week" | "month";
 type CallLogRange = ModelUsageRange | "custom";
 type CallLogView = "calls" | "runs";
 type CallLogKind = "model" | "mcp";
 type CallLogStatus = "success" | "degraded" | "failed";
 
-interface UsageRankRowData {
-  label: string;
-  value: string;
-  fill: string;
-  icon: UsageRankIcon;
-}
-
-interface ModelService {
-  id: string;
-  name: string;
-  endpoint: string;
-  provider: "glm" | "openai" | "deepseek";
-  models: readonly string[];
-  status: ServiceStatus;
-  usage: string;
-}
-
-const modelServices: readonly ModelService[] = [
-  { id: "default", name: "默认模型服务", endpoint: "https://api.zentrix.dev/v1", provider: "glm", models: ["gpt-4.1", "DeepSeek-v4-pro", "DeepSeek-v4-flash", "GLM-5-Turbo"], status: "正常", usage: "400 M" },
-  { id: "glm", name: "GLM 模型组", endpoint: "https://open.bigmodel.cn/api/paas/v4", provider: "glm", models: ["GLM-5-Turbo", "GLM-4.6"], status: "已用尽", usage: "800.2 M" },
-  { id: "deepseek", name: "DeepSeek Production", endpoint: "https://api.deepseek.com", provider: "deepseek", models: ["DeepSeek-v4-pro", "DeepSeek-v4-flash"], status: "需要重新获取", usage: "—" },
-];
-
-const apiKeys = [
-  { id: "key-live", name: "Production automation", value: "zx_live_••••••••C4hA", createdAt: "2026-08-10", lastUsed: "2 分钟前", status: "正常" as const },
-  { id: "key-dev", name: "Local development", value: "zx_dev_••••••••M2pQ", createdAt: "2026-07-26", lastUsed: "昨天", status: "正常" as const },
-  { id: "key-old", name: "Legacy integration", value: "zx_live_••••••••K9rD", createdAt: "2026-06-12", lastUsed: "30 天前", status: "需要重新获取" as const },
-  { id: "key-staging", name: "Staging gateway", value: "zx_test_••••••••R7vE", createdAt: "2026-08-05", lastUsed: "3 小时前", status: "正常" as const },
-  { id: "key-analytics", name: "Usage analytics", value: "zx_live_••••••••A9kL", createdAt: "2026-07-18", lastUsed: "4 天前", status: "正常" as const },
-  { id: "key-webhook", name: "Webhook delivery", value: "zx_live_••••••••W8sN", createdAt: "2026-07-11", lastUsed: "1 小时前", status: "正常" as const },
-  { id: "key-playground", name: "Team playground", value: "zx_dev_••••••••P6xQ", createdAt: "2026-07-02", lastUsed: "6 天前", status: "正常" as const },
-  { id: "key-embed", name: "Embed service", value: "zx_live_••••••••E2mB", createdAt: "2026-06-28", lastUsed: "昨天", status: "正常" as const },
-  { id: "key-agent", name: "Agent runtime", value: "zx_live_••••••••G5dT", createdAt: "2026-06-21", lastUsed: "刚刚", status: "正常" as const },
-  { id: "key-notebook", name: "Research notebook", value: "zx_dev_••••••••N1rC", createdAt: "2026-06-14", lastUsed: "12 天前", status: "正常" as const },
-  { id: "key-migration", name: "Migration worker", value: "zx_live_••••••••M3uF", createdAt: "2026-06-06", lastUsed: "45 天前", status: "需要重新获取" as const },
-  { id: "key-support", name: "Support console", value: "zx_live_••••••••S8pJ", createdAt: "2026-05-29", lastUsed: "2 天前", status: "正常" as const },
-  { id: "key-evaluation", name: "Evaluation suite", value: "zx_dev_••••••••V4hD", createdAt: "2026-05-17", lastUsed: "20 天前", status: "正常" as const },
-  { id: "key-archive", name: "Archive importer", value: "zx_live_••••••••H7qR", createdAt: "2026-04-30", lastUsed: "90 天前", status: "需要重新获取" as const },
-] as const;
+type UsageRankRowData = PersonalSettingsUsageRank;
 
 const accountBalance = "¥2,840.00";
-const availableModelServiceCount = modelServices.filter((service) => service.status === "正常").length;
-const availableApiKeyCount = apiKeys.filter((key) => key.status === "正常").length;
-
-const credentials = [
-  { id: "postgres", name: "Postgres Readonly", value: "DSN URL", brand: "postgresql" as const, status: "正常" as const },
-  { id: "github", name: "GitHub App", value: "App token", brand: "github" as const, status: "正常" as const },
-  { id: "slack", name: "Slack workspace", value: "Bot token", brand: "slack" as const, status: "需要重新获取" as const },
-  { id: "postgres-primary", name: "Postgres Primary", value: "DSN URL", brand: "postgresql" as const, status: "正常" as const },
-  { id: "github-deploy", name: "GitHub Deploy Bot", value: "Fine-grained token", brand: "github" as const, status: "正常" as const },
-  { id: "slack-alerts", name: "Slack Alerts", value: "Webhook URL", brand: "slack" as const, status: "正常" as const },
-  { id: "postgres-analytics", name: "Analytics Warehouse", value: "Connection string", brand: "postgresql" as const, status: "正常" as const },
-  { id: "github-issues", name: "GitHub Issues Sync", value: "App token", brand: "github" as const, status: "正常" as const },
-  { id: "slack-research", name: "Research Workspace", value: "Bot token", brand: "slack" as const, status: "正常" as const },
-  { id: "postgres-staging", name: "Postgres Staging", value: "DSN URL", brand: "postgresql" as const, status: "正常" as const },
-  { id: "github-actions", name: "GitHub Actions", value: "Installation token", brand: "github" as const, status: "需要重新获取" as const },
-  { id: "slack-ops", name: "Operations Slack", value: "Webhook URL", brand: "slack" as const, status: "正常" as const },
-  { id: "postgres-backup", name: "Backup Database", value: "Connection string", brand: "postgresql" as const, status: "正常" as const },
-  { id: "github-docs", name: "GitHub Docs Sync", value: "Fine-grained token", brand: "github" as const, status: "正常" as const },
-  { id: "slack-legacy", name: "Legacy Slack Bot", value: "Bot token", brand: "slack" as const, status: "需要重新获取" as const },
-] as const;
 
 const credentialBrandIcons = { github, postgresql, slack } as const;
 
@@ -198,6 +163,16 @@ const usageSummaries = [
   { value: "311.1 M", label: "总计" },
 ] as const;
 
+const defaultUsageData: PersonalSettingsUsageData = {
+  greeting: "👋 你好 Carlos，这是你与 Zentrix 一起记录协作的第 466 天",
+  metricsByPeriod: usageMetrics,
+  ranksByPeriod: usageRankData,
+  months: usageMonths,
+  tokenHeatmapActivity,
+  messageHeatmapActivity,
+  summaries: usageSummaries,
+};
+
 const modelUsageRangeOptions: readonly { label: string; value: ModelUsageRange }[] = [
   { label: "今天", value: "day" },
   { label: "最近 7 天", value: "week" },
@@ -220,16 +195,6 @@ const callLogContextStart = callLogLatestTimestamp - CALL_LOG_TIMELINE_BUCKETS *
 const callLogDateFormatter = new Intl.DateTimeFormat("zh-CN", { day: "numeric", month: "numeric", timeZone: "Asia/Shanghai" });
 const callLogDateTimeFormatter = new Intl.DateTimeFormat("zh-CN", { day: "numeric", hour: "2-digit", minute: "2-digit", month: "numeric", timeZone: "Asia/Shanghai" });
 
-const callLogTrendBuckets = Array.from({ length: CALL_LOG_TIMELINE_BUCKETS }, (_, index) => {
-  const start = callLogContextStart + index * DAY_IN_MS;
-  const end = start + DAY_IN_MS;
-  return {
-    end,
-    label: callLogDateFormatter.format(end),
-    start,
-  };
-});
-
 const attributionChartConfig = {
   amount: { label: "消费金额", color: "var(--brand)" },
 } satisfies ChartConfig;
@@ -246,50 +211,15 @@ const modelUsageRecords = [
   { id: "usage-07", date: "2026-08-03", apiKey: "dev-••M2pQ", service: "GLM 模型组", model: "GLM-5-Turbo", attribution: "平台工程部", calls: 612, inputTokens: 1.9, cachedTokens: 0.1, outputTokens: 0.5, amount: 21.76 },
 ] as const;
 
-type ModelUsageRecord = (typeof modelUsageRecords)[number];
+const defaultModelUsageData: PersonalSettingsModelUsageData = {
+  accountBalance,
+  records: modelUsageRecords,
+};
 
-const modelUsageFilterOptions = {
-  attributions: [...new Set(modelUsageRecords.map((record) => record.attribution))].map((value) => ({ label: value, value })),
-  models: [...new Set(modelUsageRecords.map((record) => record.model))].map((value) => ({ label: value, value })),
-  services: [...new Set(modelUsageRecords.map((record) => record.service))].map((value) => ({ label: value, value })),
-} as const;
+type ModelUsageRecord = PersonalSettingsModelUsageRecord;
 
-interface CallLogRecord {
-  id: string;
-  timestamp: number;
-  time: string;
-  kind: CallLogKind;
-  status: CallLogStatus;
-  code: string;
-  requested: string;
-  actual: string;
-  service: string;
-  attribution: string;
-  apiKey: string;
-  tokens?: number;
-  firstTokenMs?: number;
-  durationMs: number;
-  amount?: number;
-  runId: string;
-  summary: string;
-  operation?: "只读" | "外部写入";
-  upstreamId?: string;
-  detail?: string;
-}
-
-interface CallLogRun {
-  id: string;
-  timestamp: number;
-  time: string;
-  status: CallLogStatus;
-  prompt: string;
-  modelCalls: number;
-  mcpCalls: number;
-  tokens: number;
-  durationMs: number;
-  amount: number;
-  detail: string;
-}
+type CallLogRecord = PersonalSettingsCallLogRecord;
+type CallLogRun = PersonalSettingsCallLogRun;
 
 const callLogTimeFormatter = new Intl.DateTimeFormat("en-CA", { day: "2-digit", hour: "2-digit", hour12: false, minute: "2-digit", month: "2-digit", second: "2-digit", timeZone: "Asia/Shanghai" });
 
@@ -358,24 +288,29 @@ function buildCallLogMockData() {
 const callLogMockData = buildCallLogMockData();
 const callLogRecords: readonly CallLogRecord[] = callLogMockData.records;
 const callLogRuns: readonly CallLogRun[] = callLogMockData.runs;
-const callLogAttributionOptions = [...new Set(callLogRecords.map((record) => record.attribution))].map((value) => ({ label: value, value }));
-
-function aggregateCallLogTrend(records: readonly CallLogRecord[]) {
-  return callLogTrendBuckets.map((point) => {
-    const bucketRecords = records.filter((record) => record.timestamp >= point.start && record.timestamp < point.end);
+const defaultCallLogsData: PersonalSettingsCallLogsData = { records: callLogRecords, runs: callLogRuns };
+function aggregateCallLogTrend(records: readonly CallLogRecord[], contextStart: number) {
+  return Array.from({ length: CALL_LOG_TIMELINE_BUCKETS }, (_, index) => {
+    const start = contextStart + index * DAY_IN_MS;
+    const end = start + DAY_IN_MS;
+    const bucketRecords = records.filter((record) => record.timestamp >= start && record.timestamp < end);
     return {
-      ...point,
+      end,
+      label: callLogDateFormatter.format(end),
+      start,
       model: bucketRecords.filter((record) => record.kind === "model").length,
       mcp: bucketRecords.filter((record) => record.kind === "mcp").length,
     };
   });
 }
 
-const callLogQuickSelections: Record<ModelUsageRange, TimeRangeHistogramRange & { label: string }> = {
-  day: { end: callLogLatestTimestamp, label: "最近 24 小时", start: callLogLatestTimestamp - DAY_IN_MS },
-  week: { end: callLogLatestTimestamp, label: "最近 7 天", start: callLogLatestTimestamp - 7 * DAY_IN_MS },
-  month: { end: callLogLatestTimestamp, label: "最近 30 天", start: callLogLatestTimestamp - 30 * DAY_IN_MS },
-};
+function callLogQuickSelectionsFor(latestTimestamp: number): Record<ModelUsageRange, TimeRangeHistogramRange & { label: string }> {
+  return {
+    day: { end: latestTimestamp, label: "最近 24 小时", start: latestTimestamp - DAY_IN_MS },
+    week: { end: latestTimestamp, label: "最近 7 天", start: latestTimestamp - 7 * DAY_IN_MS },
+    month: { end: latestTimestamp, label: "最近 30 天", start: latestTimestamp - 30 * DAY_IN_MS },
+  };
+}
 
 function isCallLogTimeInSelection(timestamp: number, selection: TimeRangeHistogramRange) {
   return timestamp <= selection.end && timestamp >= selection.start;
@@ -390,13 +325,28 @@ const callLogStatusCopy: Record<CallLogStatus, { label: string }> = {
 export interface PersonalSettingsProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
   /** The first settings page rendered by the block. */
   defaultView?: SettingsView;
+  /** Controlled settings destination. Pair with onViewChange. */
+  view?: SettingsView;
+  onViewChange?: (view: SettingsView) => void;
   /** Keeps all non-current sidebar destinations visible but unavailable. */
   lockedNavigation?: boolean;
   /** Destinations that remain available when navigation is locked. */
   enabledViews?: readonly SettingsView[];
+  /** Replace the resource-management demo data with product data. */
+  data?: PersonalSettingsData;
+  /** Business operations. Controls without a corresponding handler are hidden. */
+  actions?: PersonalSettingsActions;
+  /** Pending and error state are owned by the product integration. */
+  operationState?: PersonalSettingsOperationState;
+  /** Loading states for externally fetched settings data. */
+  loading?: PersonalSettingsLoadingState;
+  /** Brand and account content can be supplied without coupling to an app shell. */
+  brand?: ReactNode;
+  account?: ReactNode;
+  labels?: PersonalSettingsLabels;
 }
 
-function ProviderMark({ provider }: { provider: ModelService["provider"] }) {
+function ProviderMark({ provider }: { provider: PersonalSettingsModelService["provider"] }) {
   const Icon = provider === "deepseek" ? DeepSeekColor : provider === "openai" ? OpenAIMono : ChatGLMColor;
   return <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-lg border-[0.5px] border-border bg-hover"><Icon size={24} /></span>;
 }
@@ -410,7 +360,7 @@ function ModelBadge({ model }: { model: string }) {
   return <Badge color="gray" size="sm"><span className="flex items-center gap-1"><ModelLogo model={model} /><span>{model}</span></span></Badge>;
 }
 
-function CredentialName({ credential }: { credential: (typeof credentials)[number] }) {
+function CredentialName({ credential }: { credential: PersonalSettingsCredential }) {
   return <div className="flex min-w-0 items-center gap-2"><span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg border-[0.5px] border-border bg-hover [&>svg]:block [&>svg]:size-5" dangerouslySetInnerHTML={{ __html: credentialBrandIcons[credential.brand].svg }} /><span className="truncate font-medium text-fg-default">{credential.name}</span></div>;
 }
 
@@ -423,13 +373,14 @@ function EmptyRows({ children }: { children: string }) {
   return <div className="flex min-h-40 items-center justify-center rounded-lg border border-dashed border-border bg-surface-raised px-4 text-body text-fg-muted">{children}</div>;
 }
 
-function RowActions({ items, label }: { items: readonly string[]; label: string }) {
+function RowActions<Action extends string>({ items, label, onAction, pending = false }: { items: readonly Action[]; label: string; onAction?: (action: Action) => void; pending?: boolean }) {
   const MoreIcon = useIcon("ellipsis");
-  return <DropdownMenu><DropdownTrigger render={<Button aria-label={`${label} 的操作`} type="button" variant="ghost" iconOnly><MoreIcon aria-hidden size={16} strokeWidth={1.5} /></Button>} /><DropdownContent align="end" className="w-32">{items.map((item, index) => <MenuItem index={index} key={item} label={item} onSelect={() => undefined} />)}</DropdownContent></DropdownMenu>;
+  if (!onAction) return null;
+  return <DropdownMenu><DropdownTrigger render={<Button aria-label={`${label} 的操作`} disabled={pending} type="button" variant="ghost" iconOnly><MoreIcon aria-hidden size={16} strokeWidth={1.5} /></Button>} /><DropdownContent align="end" className="w-32">{items.map((item, index) => <MenuItem index={index} key={item} label={item} onSelect={() => onAction(item)} />)}</DropdownContent></DropdownMenu>;
 }
 
 /** Personal account settings with model services, API keys, credentials, profile, and usage pages. */
-export function PersonalSettings({ className, defaultView = "keys", enabledViews, lockedNavigation = false, ...props }: PersonalSettingsProps) {
+export function PersonalSettings({ account, actions, brand, className, data, defaultView = "keys", enabledViews, labels, loading, lockedNavigation = false, onViewChange, operationState, view: controlledView, ...props }: PersonalSettingsProps) {
   const SearchIcon = useIcon("search");
   const ChevronDown = useIcon("chevron-down");
   const PlusIcon = useIcon("plus");
@@ -442,36 +393,45 @@ export function PersonalSettings({ className, defaultView = "keys", enabledViews
   const ClockIcon = useIcon("clock");
   const LibraryIcon = useIcon("square-library");
   const CallLogsIcon = useIcon("list");
-  const [view, setView] = useState<SettingsView>(defaultView);
+  const [uncontrolledView, setUncontrolledView] = useState<SettingsView>(defaultView);
   const [query, setQuery] = useState("");
-  const copy = viewCopy[view];
+  const view = controlledView ?? uncontrolledView;
+  const resourceData = {
+    apiKeys: data?.apiKeys ?? personalSettingsDemoData.apiKeys,
+    credentials: data?.credentials ?? personalSettingsDemoData.credentials,
+    modelServices: data?.modelServices ?? personalSettingsDemoData.modelServices,
+    profile: data?.profile ?? personalSettingsDemoData.profile,
+  };
+  const copy = { ...viewCopy[view], ...labels?.views?.[view] };
   const normalizedQuery = query.trim().toLowerCase();
-  const services = useMemo(() => modelServices.filter((service) => !normalizedQuery || `${service.name} ${service.endpoint} ${service.models.join(" ")}`.toLowerCase().includes(normalizedQuery)), [normalizedQuery]);
+  const services = useMemo(() => resourceData.modelServices.filter((service) => !normalizedQuery || `${service.name} ${service.endpoint} ${service.models.join(" ")}`.toLowerCase().includes(normalizedQuery)), [normalizedQuery, resourceData.modelServices]);
   const setSettingsView = (nextView: SettingsView) => {
-    setView(nextView);
+    if (controlledView === undefined) setUncontrolledView(nextView);
+    onViewChange?.(nextView);
     setQuery("");
   };
 
   return (
     <AppShell layout="stacked" className={cn("@container h-full min-h-[46rem] overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-base", className)} {...props}>
       <AppShellHeader className="static bg-surface-base">
-        <TopNav navigationAlign="left">
-          <TopNavBrand className="gap-3 text-fg-default"><strong className="text-heading font-bold leading-none">Zentrix</strong><span className="text-body font-medium">个人设置</span></TopNavBrand>
-          <TopNavActions><Button type="button" variant="ghost" trailingIcon={ChevronDown}><span className="flex items-center gap-2"><SidebarIdentityAvatar>C</SidebarIdentityAvatar><span>Carlos</span></span></Button></TopNavActions>
+          <TopNav navigationAlign="left">
+          <TopNavBrand className="gap-3 text-fg-default">{brand ?? <><strong className="text-heading font-bold leading-none">Zentrix</strong><span className="text-body font-medium">个人设置</span></>}</TopNavBrand>
+          <TopNavActions>{account ?? <Button type="button" variant="ghost" trailingIcon={ChevronDown}><span className="flex items-center gap-2"><SidebarIdentityAvatar>{resourceData.profile.avatarLabel ?? resourceData.profile.displayName.slice(0, 1)}</SidebarIdentityAvatar><span>{resourceData.profile.displayName}</span></span></Button>}</TopNavActions>
         </TopNav>
       </AppShellHeader>
 
       <AppShellMain landmark={false} className="min-h-0 overflow-hidden">
         <PageLayout size="full" className="h-full pt-0">
           <PageSidebar aria-label="个人设置导航" className="p-3">
-            <SettingsNavGroup activeView={view} enabledViews={lockedNavigation ? enabledViews ?? [view] : undefined} disabledViews={lockedNavigation ? [] : ["models"]} label="资源" items={[{ value: "models", label: "模型服务", icon: BrainIcon }, { value: "keys", label: "API keys", icon: LockIcon }, { value: "credentials", label: "凭证管理", icon: ShieldIcon }]} onChange={setSettingsView} />
-            <SettingsNavGroup activeView={view} className="mt-5" enabledViews={lockedNavigation ? enabledViews ?? [view] : undefined} disabledViews={lockedNavigation ? [] : ["usage", "modelUsage", "callLogs"]} label="个人设置" items={[{ value: "profile", label: "个人资料", icon: UserIcon }, { value: "preferences", label: "偏好设置", icon: SettingsIcon }, { value: "usage", label: "使用情况", icon: ClockIcon }, { value: "modelUsage", label: "模型用量", icon: LibraryIcon }, { value: "callLogs", label: "调用日志", icon: CallLogsIcon }]} onChange={setSettingsView} />
+            <SettingsNavGroup activeView={view} enabledViews={lockedNavigation ? enabledViews ?? [view] : undefined} disabledViews={lockedNavigation ? [] : ["models"]} label={labels?.resourceNavigation ?? "资源"} items={[{ value: "models", label: labels?.navigation?.models ?? "模型服务", icon: BrainIcon }, { value: "keys", label: labels?.navigation?.keys ?? "API keys", icon: LockIcon }, { value: "credentials", label: labels?.navigation?.credentials ?? "凭证管理", icon: ShieldIcon }]} onChange={setSettingsView} />
+            <SettingsNavGroup activeView={view} className="mt-5" enabledViews={lockedNavigation ? enabledViews ?? [view] : undefined} disabledViews={lockedNavigation ? [] : ["usage", "modelUsage", "callLogs"]} label={labels?.personalNavigation ?? "个人设置"} items={[{ value: "profile", label: labels?.navigation?.profile ?? "个人资料", icon: UserIcon }, { value: "preferences", label: labels?.navigation?.preferences ?? "偏好设置", icon: SettingsIcon }, { value: "usage", label: labels?.navigation?.usage ?? "使用情况", icon: ClockIcon }, { value: "modelUsage", label: labels?.navigation?.modelUsage ?? "模型用量", icon: LibraryIcon }, { value: "callLogs", label: labels?.navigation?.callLogs ?? "调用日志", icon: CallLogsIcon }]} onChange={setSettingsView} />
           </PageSidebar>
           <PageContent className="overflow-y-auto overscroll-contain">
             <PageBody className="flex-none overflow-visible p-4 sm:p-6">
               <section className="mx-auto w-full max-w-[960px]">
-                {view === "callLogs" ? <CallLogsSettings /> : view === "modelUsage" ? <ModelUsageSettings /> : view === "usage" ? <UsageSettings /> : <><header className="max-w-3xl"><h1 className="text-title font-semibold text-fg-default">{copy.title}</h1><p className="mt-1 text-label leading-5 text-fg-muted">{copy.description}</p></header>
-                <div className="mt-4">{view === "models" ? <div className="flex flex-col gap-2.5"><InputGroup className="w-full max-w-[450px] border-border hover:border-border" size="md"><InputGroupAddon className="pr-2"><SearchIcon aria-hidden size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput aria-label={copy.search} className="h-full min-h-0" onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} value={query} /></InputGroup><ModelServicesTable services={services} /></div> : view === "keys" ? <ApiKeysTable copyIcon={CopyIcon} plusIcon={PlusIcon} /> : view === "credentials" ? <CredentialsTable plusIcon={PlusIcon} /> : view === "preferences" ? <PreferencesSettings /> : <ProfileSettings />}</div></>}
+                {operationState?.error && <InlineNotice className="mb-4" tone="danger" variant="emphasized"><InlineNoticeContent>{operationState.error}</InlineNoticeContent></InlineNotice>}
+                {view === "callLogs" ? loading?.callLogs ? <EmptyRows>正在加载调用日志…</EmptyRows> : <CallLogsSettings data={data?.callLogs ?? defaultCallLogsData} /> : view === "modelUsage" ? loading?.modelUsage ? <EmptyRows>正在加载模型用量…</EmptyRows> : <ModelUsageSettings apiKeys={resourceData.apiKeys} data={data?.modelUsage ?? defaultModelUsageData} modelServices={resourceData.modelServices} /> : view === "usage" ? loading?.usage ? <EmptyRows>正在加载使用情况…</EmptyRows> : <UsageSettings data={data?.usage ?? defaultUsageData} /> : <><header className="max-w-3xl"><h1 className="text-title font-semibold text-fg-default">{copy.title}</h1><p className="mt-1 text-label leading-5 text-fg-muted">{copy.description}</p></header>
+                <div className="mt-4">{view === "models" ? <div className="flex flex-col gap-2.5"><InputGroup className="w-full max-w-[450px] border-border hover:border-border" size="md"><InputGroupAddon className="pr-2"><SearchIcon aria-hidden size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput aria-label={copy.search} className="h-full min-h-0" onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} value={query} /></InputGroup>{loading?.models ? <EmptyRows>正在加载模型服务…</EmptyRows> : <ModelServicesTable actions={actions} pending={operationState?.pending} services={services} />}</div> : view === "keys" ? loading?.keys ? <EmptyRows>正在加载 API key…</EmptyRows> : <ApiKeysTable actions={actions} apiKeys={resourceData.apiKeys} copyIcon={CopyIcon} pending={operationState?.pending} plusIcon={PlusIcon} /> : view === "credentials" ? loading?.credentials ? <EmptyRows>正在加载凭证…</EmptyRows> : <CredentialsTable actions={actions} credentials={resourceData.credentials} pending={operationState?.pending} plusIcon={PlusIcon} /> : view === "preferences" ? loading?.preferences ? <EmptyRows>正在加载偏好设置…</EmptyRows> : <PreferencesSettings actions={actions} preferences={data?.preferences ?? defaultPreferences} /> : loading?.profile ? <EmptyRows>正在加载个人资料…</EmptyRows> : <ProfileSettings actions={actions} pending={operationState?.pending} profile={resourceData.profile} />}</div></>}
               </section>
             </PageBody>
           </PageContent>
@@ -485,76 +445,98 @@ function SettingsNavGroup({ activeView, className, disabledViews = [], enabledVi
   return <section className={className}><p className="px-2 text-label text-fg-subtle">{label}</p><NavMenu as="div" activeValue={activeView} aria-label={label} className="mt-1" keyboardNavigation="roving">{items.map((item) => <NavItem disabled={enabledViews ? !enabledViews.includes(item.value) : disabledViews.includes(item.value)} key={item.value} value={item.value}><NavItemTrigger href={`#${item.value}`} onClick={(event) => { event.preventDefault(); onChange(item.value); }}><NavItemLeading className="group-data-[active=true]/nav-item:text-fg-brand"><item.icon aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading><NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>)}</NavMenu></section>;
 }
 
-function ModelServicesTable({ services }: { services: readonly ModelService[] }) {
-  if (!services.length) return <EmptyRows>没有找到匹配的模型服务。</EmptyRows>;
-  return <div className="overflow-x-auto rounded-lg border-[0.5px] border-border"><Table className="min-w-[840px]"><TableHeader><TableRow><TableHead className="w-[32%]">名称</TableHead><TableHead>可用模型</TableHead><TableHead className="w-28">状态</TableHead><TableHead className="w-28">用量&配额</TableHead><TableHead className="w-16 text-right"><span className="sr-only">操作</span></TableHead></TableRow></TableHeader><TableBody>{services.map((service, index) => { const visibleModels = service.models.slice(0, 2); const hiddenModels = service.models.slice(2); return <TableRow index={index} key={service.id}><TableCell><div className="flex items-center gap-2.5"><ProviderMark provider={service.provider} /><div className="min-w-0"><p className="truncate font-medium text-fg-default">{service.name}</p><p className="truncate text-label text-fg-muted">{service.endpoint}</p></div></div></TableCell><TableCell><div className="flex flex-wrap items-center gap-1">{visibleModels.map((model) => <ModelBadge key={model} model={model} />)}{hiddenModels.length > 0 && <DropdownMenu><DropdownTrigger render={<Button type="button" size="sm" variant="ghost" className="h-6 px-1.5 text-label">+{hiddenModels.length}</Button>} /><DropdownContent align="start" className="w-56 p-1">{hiddenModels.map((model) => <div className="flex h-control-md items-center gap-2 rounded-lg px-2 text-body text-fg-default" key={model}><ModelLogo model={model} size={16} /><span>{model}</span></div>)}</DropdownContent></DropdownMenu>}</div></TableCell><TableCell><StatusBadge status={service.status} /></TableCell><TableCell className="tabular-nums text-fg-muted">{service.usage}</TableCell><TableCell><div className="flex justify-end"><RowActions label={service.name} items={["编辑", "移除"]} /></div></TableCell></TableRow>; })}</TableBody></Table></div>;
+function isPending(pending: readonly string[] | undefined, key: string) {
+  return pending?.includes(key) ?? false;
 }
 
-function ApiKeysTable({ copyIcon: CopyIcon, plusIcon: PlusIcon }: { copyIcon: ReturnType<typeof useIcon>; plusIcon: ReturnType<typeof useIcon> }) {
-  // TanStack Table uses the data reference to detect source updates. Keeping
-  // this mock list stable prevents pagination from resetting on every render.
-  const data = useMemo(() => [...apiKeys], []);
-  const columns = useMemo<ColumnDef<(typeof apiKeys)[number], unknown>[]>(() => [
+function ModelServicesTable({ actions, pending, services }: { actions?: PersonalSettingsActions; pending?: readonly string[]; services: readonly PersonalSettingsModelService[] }) {
+  if (!services.length) return <EmptyRows>没有找到匹配的模型服务。</EmptyRows>;
+  return <div className="overflow-x-auto rounded-lg border-[0.5px] border-border"><Table className="min-w-[840px]"><TableHeader><TableRow><TableHead className="w-[32%]">名称</TableHead><TableHead>可用模型</TableHead><TableHead className="w-28">状态</TableHead><TableHead className="w-28">用量&配额</TableHead>{actions?.onModelServiceAction && <TableHead className="w-16 text-right"><span className="sr-only">操作</span></TableHead>}</TableRow></TableHeader><TableBody>{services.map((service, index) => { const visibleModels = service.models.slice(0, 2); const hiddenModels = service.models.slice(2); return <TableRow index={index} key={service.id}><TableCell><div className="flex items-center gap-2.5"><ProviderMark provider={service.provider} /><div className="min-w-0"><p className="truncate font-medium text-fg-default">{service.name}</p><p className="truncate text-label text-fg-muted">{service.endpoint}</p></div></div></TableCell><TableCell><div className="flex flex-wrap items-center gap-1">{visibleModels.map((model) => <ModelBadge key={model} model={model} />)}{hiddenModels.length > 0 && <DropdownMenu><DropdownTrigger render={<Button type="button" size="sm" variant="ghost" className="h-6 px-1.5 text-label">+{hiddenModels.length}</Button>} /><DropdownContent align="start" className="w-56 p-1">{hiddenModels.map((model) => <div className="flex h-control-md items-center gap-2 rounded-lg px-2 text-body text-fg-default" key={model}><ModelLogo model={model} size={16} /><span>{model}</span></div>)}</DropdownContent></DropdownMenu>}</div></TableCell><TableCell><StatusBadge status={service.status} /></TableCell><TableCell className="tabular-nums text-fg-muted">{service.usage}</TableCell>{actions?.onModelServiceAction && <TableCell><div className="flex justify-end"><RowActions label={service.name} items={["edit", "remove"] as const} onAction={(action) => actions.onModelServiceAction?.(service, action)} pending={isPending(pending, `model-service:${service.id}`)} /></div></TableCell>}</TableRow>; })}</TableBody></Table></div>;
+}
+
+function ApiKeysTable({ actions, apiKeys, copyIcon: CopyIcon, pending, plusIcon: PlusIcon }: { actions?: PersonalSettingsActions; apiKeys: readonly PersonalSettingsApiKey[]; copyIcon: ReturnType<typeof useIcon>; pending?: readonly string[]; plusIcon: ReturnType<typeof useIcon> }) {
+  // TanStack Table uses the data reference to detect source updates. Clone
+  // only when the integration supplies a new list, not on every render.
+  const data = useMemo(() => [...apiKeys], [apiKeys]);
+  const columns = useMemo<ColumnDef<PersonalSettingsApiKey, unknown>[]>(() => [
     { accessorKey: "name", header: ({ column }) => <DataTableColumnHeader column={column} label="名称" />, meta: { label: "名称", placeholder: "搜索 API key", variant: "text" }, cell: ({ row }) => <span className="font-medium text-fg-default">{row.original.name}</span> },
-    { accessorKey: "value", header: ({ column }) => <DataTableColumnHeader column={column} label="Key" />, cell: ({ row }) => <div className="flex items-center gap-1.5 font-mono text-label text-fg-muted"><span>{row.original.value}</span><Button aria-label={`复制 ${row.original.name}`} type="button" size="sm" variant="ghost" iconOnly><CopyIcon size={14} /></Button></div> },
+    { accessorKey: "value", header: ({ column }) => <DataTableColumnHeader column={column} label="Key" />, cell: ({ row }) => <div className="flex items-center gap-1.5 font-mono text-label text-fg-muted"><span>{row.original.value}</span>{actions?.onCopyApiKey && <Button aria-label={`复制 ${row.original.name}`} disabled={isPending(pending, `api-key:${row.original.id}:copy`)} onClick={() => actions.onCopyApiKey?.(row.original)} type="button" size="sm" variant="ghost" iconOnly><CopyIcon size={14} /></Button>}</div> },
     { accessorKey: "lastUsed", header: ({ column }) => <DataTableColumnHeader column={column} label="最后使用" />, cell: ({ row }) => <span className="text-fg-muted">{row.original.lastUsed}</span> },
     { accessorKey: "status", header: ({ column }) => <DataTableColumnHeader column={column} label="状态" />, cell: ({ row }) => <StatusBadge status={row.original.status} />, filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)), meta: { label: "状态", options: [{ label: "正常", value: "正常" }, { label: "需要重新获取", value: "需要重新获取" }], variant: "multiSelect" } },
-    { id: "actions", header: () => <span className="sr-only">操作</span>, cell: ({ row }) => <div className="flex justify-end"><RowActions label={row.original.name} items={["轮换", "撤销"]} /></div>, enableHiding: false, enableSorting: false, size: 56 },
-  ], [CopyIcon]);
+    ...(actions?.onApiKeyAction ? [{ id: "actions", header: () => <span className="sr-only">操作</span>, cell: ({ row }: { row: { original: PersonalSettingsApiKey } }) => <div className="flex justify-end"><RowActions label={row.original.name} items={["rotate", "revoke"] as const} onAction={(action) => actions.onApiKeyAction?.(row.original, action)} pending={isPending(pending, `api-key:${row.original.id}`)} /></div>, enableHiding: false, enableSorting: false, size: 56 }] : []),
+  ], [CopyIcon, actions, pending]);
   const { table } = useDataTable({ columns, data, getRowId: (key) => key.id, initialState: { columnPinning: { left: ["name"], right: ["actions"] }, pagination: { pageIndex: 0, pageSize: 10 } } });
 
-  return <DataTable className="gap-2.5 [&_[data-slot=data-table-pagination]]:px-2" emptyMessage="没有找到匹配的 API key。" table={table}><DataTableToolbar showViewOptions={false} table={table}><Button type="button" variant="tertiary" leadingIcon={PlusIcon}>创建 key</Button></DataTableToolbar></DataTable>;
+  return <DataTable className="gap-2.5 [&_[data-slot=data-table-pagination]]:px-2" emptyMessage="没有找到匹配的 API key。" table={table}><DataTableToolbar showViewOptions={false} table={table}>{actions?.onCreateApiKey && <Button disabled={isPending(pending, "api-key:create")} onClick={() => actions.onCreateApiKey?.()} type="button" variant="tertiary" leadingIcon={PlusIcon}>创建 key</Button>}</DataTableToolbar></DataTable>;
 }
 
-function CredentialsTable({ plusIcon: PlusIcon }: { plusIcon: ReturnType<typeof useIcon> }) {
-  // Match API keys: a stable source avoids an automatic pagination reset loop.
-  const data = useMemo(() => [...credentials], []);
-  const columns = useMemo<ColumnDef<(typeof credentials)[number], unknown>[]>(() => [
+function CredentialsTable({ actions, credentials, pending, plusIcon: PlusIcon }: { actions?: PersonalSettingsActions; credentials: readonly PersonalSettingsCredential[]; pending?: readonly string[]; plusIcon: ReturnType<typeof useIcon> }) {
+  // Match API keys: retain the supplied list until the integration replaces it.
+  const data = useMemo(() => [...credentials], [credentials]);
+  const columns = useMemo<ColumnDef<PersonalSettingsCredential, unknown>[]>(() => [
     { accessorKey: "name", header: ({ column }) => <DataTableColumnHeader column={column} label="名称" />, meta: { label: "名称", placeholder: "搜索凭证", variant: "text" }, cell: ({ row }) => <CredentialName credential={row.original} /> },
     { accessorKey: "value", header: ({ column }) => <DataTableColumnHeader column={column} label="类型" />, cell: ({ row }) => <span className="text-fg-muted">{row.original.value}</span> },
     { accessorKey: "status", header: ({ column }) => <DataTableColumnHeader column={column} label="状态" />, cell: ({ row }) => <StatusBadge status={row.original.status} />, filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)), meta: { label: "状态", options: [{ label: "正常", value: "正常" }, { label: "需要重新获取", value: "需要重新获取" }], variant: "multiSelect" } },
-    { id: "actions", header: () => <span className="sr-only">操作</span>, cell: ({ row }) => <div className="flex justify-end"><RowActions label={row.original.name} items={["编辑", "移除"]} /></div>, enableHiding: false, enableSorting: false, size: 56 },
-  ], []);
+    ...(actions?.onCredentialAction ? [{ id: "actions", header: () => <span className="sr-only">操作</span>, cell: ({ row }: { row: { original: PersonalSettingsCredential } }) => <div className="flex justify-end"><RowActions label={row.original.name} items={["edit", "remove"] as const} onAction={(action) => actions.onCredentialAction?.(row.original, action)} pending={isPending(pending, `credential:${row.original.id}`)} /></div>, enableHiding: false, enableSorting: false, size: 56 }] : []),
+  ], [actions, pending]);
   const { table } = useDataTable({ columns, data, getRowId: (credential) => credential.id, initialState: { columnPinning: { left: ["name"], right: ["actions"] }, pagination: { pageIndex: 0, pageSize: 10 } } });
 
-  return <DataTable className="gap-2.5 [&_[data-slot=data-table-pagination]]:px-2" emptyMessage="没有找到匹配的凭证。" table={table}><DataTableToolbar showViewOptions={false} table={table}><Button type="button" variant="tertiary" leadingIcon={PlusIcon}>添加凭证</Button></DataTableToolbar></DataTable>;
+  return <DataTable className="gap-2.5 [&_[data-slot=data-table-pagination]]:px-2" emptyMessage="没有找到匹配的凭证。" table={table}><DataTableToolbar showViewOptions={false} table={table}>{actions?.onCreateCredential && <Button disabled={isPending(pending, "credential:create")} onClick={() => actions.onCreateCredential?.()} type="button" variant="tertiary" leadingIcon={PlusIcon}>添加凭证</Button>}</DataTableToolbar></DataTable>;
 }
 
-type AccountAction = "email" | "password" | "verification" | "passkey" | "delete" | "logout-all" | "logout-device";
+type AccountAction = Exclude<PersonalSettingsProfileAction, "save-profile">;
 
-function PreferencesSettings() {
-  const [theme, setTheme] = useState("light");
-  const [highContrast, setHighContrast] = useState("system");
-  const [enterAddsLine, setEnterAddsLine] = useState(false);
-  const [language, setLanguage] = useState("zh-CN");
-  const [numberFormat, setNumberFormat] = useState("default");
-  const [textDirectionControls, setTextDirectionControls] = useState(false);
-  const [startWeekOnMonday, setStartWeekOnMonday] = useState(true);
-  const [dateFormat, setDateFormat] = useState("relative");
-  const [automaticTimeZone, setAutomaticTimeZone] = useState(true);
-  const [timeZone, setTimeZone] = useState("asia-shanghai");
+const defaultPreferences: PersonalSettingsPreferences = {
+  theme: "light",
+  highContrast: "system",
+  enterAddsLine: false,
+  language: "zh-CN",
+  numberFormat: "default",
+  textDirectionControls: false,
+  startWeekOnMonday: true,
+  dateFormat: "relative",
+  automaticTimeZone: true,
+  timeZone: "asia-shanghai",
+};
+
+function PreferencesSettings({ actions, preferences }: { actions?: PersonalSettingsActions; preferences: PersonalSettingsPreferences }) {
+  const update = <Key extends keyof PersonalSettingsPreferences>(key: Key, value: PersonalSettingsPreferences[Key]) => {
+    actions?.onPreferencesChange?.({ ...preferences, [key]: value });
+  };
+  const disabled = !actions?.onPreferencesChange;
+  const { automaticTimeZone, dateFormat, enterAddsLine, highContrast, language, numberFormat, startWeekOnMonday, textDirectionControls, theme, timeZone } = preferences;
+  const setTheme = (value: string) => update("theme", value);
+  const setHighContrast = (value: string) => update("highContrast", value);
+  const setEnterAddsLine = (value: boolean) => update("enterAddsLine", value);
+  const setLanguage = (value: string) => update("language", value);
+  const setNumberFormat = (value: string) => update("numberFormat", value);
+  const setTextDirectionControls = (value: boolean) => update("textDirectionControls", value);
+  const setStartWeekOnMonday = (value: boolean) => update("startWeekOnMonday", value);
+  const setDateFormat = (value: string) => update("dateFormat", value);
+  const setAutomaticTimeZone = (value: boolean) => update("automaticTimeZone", value);
+  const setTimeZone = (value: string) => update("timeZone", value);
 
   return <div className="w-full space-y-9">
     <SettingsSection title="外观">
       <InfoItemGroup>
-        <PreferenceInfoItem description="选择此设备上的 Zentrix 外观主题。" title="主题"><PreferenceSelect ariaLabel="主题" onChange={setTheme} options={[{ value: "light", label: "浅色" }, { value: "dark", label: "深色" }, { value: "system", label: "跟随系统" }]} value={theme} /></PreferenceInfoItem>
-        <PreferenceInfoItem badge="Beta" description="提高界面对比度，增强信息可见性。" title="高对比度"><PreferenceSelect ariaLabel="高对比度" onChange={setHighContrast} options={[{ value: "system", label: "跟随系统" }, { value: "on", label: "开启" }, { value: "off", label: "关闭" }]} value={highContrast} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="选择此设备上的 Zentrix 外观主题。" title="主题"><PreferenceSelect ariaLabel="主题" disabled={disabled} onChange={setTheme} options={[{ value: "light", label: "浅色" }, { value: "dark", label: "深色" }, { value: "system", label: "跟随系统" }]} value={theme} /></PreferenceInfoItem>
+        <PreferenceInfoItem badge="Beta" description="提高界面对比度，增强信息可见性。" title="高对比度"><PreferenceSelect ariaLabel="高对比度" disabled={disabled} onChange={setHighContrast} options={[{ value: "system", label: "跟随系统" }, { value: "on", label: "开启" }, { value: "off", label: "关闭" }]} value={highContrast} /></PreferenceInfoItem>
       </InfoItemGroup>
     </SettingsSection>
 
     <SettingsSection title="输入选项">
-      <InfoItemGroup><PreferenceInfoItem description="适用于聊天、评论和其他输入框。按 Cmd/Ctrl + Enter 发送内容。" title="使用 Enter 换行"><Switch checked={enterAddsLine} label={<span className="sr-only">使用 Enter 换行</span>} onCheckedChange={setEnterAddsLine} /></PreferenceInfoItem></InfoItemGroup>
+      <InfoItemGroup><PreferenceInfoItem description="适用于聊天、评论和其他输入框。按 Cmd/Ctrl + Enter 发送内容。" title="使用 Enter 换行"><Switch checked={enterAddsLine} disabled={disabled} label={<span className="sr-only">使用 Enter 换行</span>} onCheckedChange={setEnterAddsLine} /></PreferenceInfoItem></InfoItemGroup>
     </SettingsSection>
 
     <SettingsSection title="语言与时间">
       <InfoItemGroup>
-        <PreferenceInfoItem description="选择 Zentrix 的显示语言。" title="语言"><PreferenceSelect ariaLabel="语言" onChange={setLanguage} options={[{ value: "zh-CN", label: "简体中文" }, { value: "en-US", label: "English (US)" }, { value: "ja-JP", label: "日本語" }]} value={language} /></PreferenceInfoItem>
-        <PreferenceInfoItem description="选择数字和货币的显示方式；默认会使用语言设置。" title="数字格式"><PreferenceSelect ariaLabel="数字格式" onChange={setNumberFormat} options={[{ value: "default", label: "默认" }, { value: "zh-CN", label: "1,234.56" }, { value: "de-DE", label: "1.234,56" }]} value={numberFormat} /></PreferenceInfoItem>
-        <PreferenceInfoItem description="始终在编辑器中显示从左到右或从右到左的文字方向切换。" title="始终显示文字方向控制"><Switch checked={textDirectionControls} label={<span className="sr-only">始终显示文字方向控制</span>} onCheckedChange={setTextDirectionControls} /></PreferenceInfoItem>
-        <PreferenceInfoItem description="这会影响日历中一周的第一天。" title="每周从星期一开始"><Switch checked={startWeekOnMonday} label={<span className="sr-only">每周从星期一开始</span>} onCheckedChange={setStartWeekOnMonday} /></PreferenceInfoItem>
-        <PreferenceInfoItem description="设置新建 @日期 提及的默认显示格式。" title="日期格式"><PreferenceSelect ariaLabel="日期格式" onChange={setDateFormat} options={[{ value: "relative", label: "相对日期" }, { value: "standard", label: "2026-08-16" }, { value: "long", label: "2026 年 8 月 16 日" }]} value={dateFormat} /></PreferenceInfoItem>
-        <PreferenceInfoItem description="提醒、通知和邮件会根据你的当前时区送达。" title="根据位置自动设置时区"><Switch checked={automaticTimeZone} label={<span className="sr-only">根据位置自动设置时区</span>} onCheckedChange={setAutomaticTimeZone} /></PreferenceInfoItem>
-        <PreferenceInfoItem description="选择你所在的时区。" title="时区"><PreferenceSelect ariaLabel="时区" disabled={automaticTimeZone} onChange={setTimeZone} options={[{ value: "asia-shanghai", label: "GMT+8 · 上海" }, { value: "asia-tokyo", label: "GMT+9 · 东京" }, { value: "america-los-angeles", label: "GMT-7 · 洛杉矶" }]} value={timeZone} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="选择 Zentrix 的显示语言。" title="语言"><PreferenceSelect ariaLabel="语言" disabled={disabled} onChange={setLanguage} options={[{ value: "zh-CN", label: "简体中文" }, { value: "en-US", label: "English (US)" }, { value: "ja-JP", label: "日本語" }]} value={language} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="选择数字和货币的显示方式；默认会使用语言设置。" title="数字格式"><PreferenceSelect ariaLabel="数字格式" disabled={disabled} onChange={setNumberFormat} options={[{ value: "default", label: "默认" }, { value: "zh-CN", label: "1,234.56" }, { value: "de-DE", label: "1.234,56" }]} value={numberFormat} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="始终在编辑器中显示从左到右或从右到左的文字方向切换。" title="始终显示文字方向控制"><Switch checked={textDirectionControls} disabled={disabled} label={<span className="sr-only">始终显示文字方向控制</span>} onCheckedChange={setTextDirectionControls} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="这会影响日历中一周的第一天。" title="每周从星期一开始"><Switch checked={startWeekOnMonday} disabled={disabled} label={<span className="sr-only">每周从星期一开始</span>} onCheckedChange={setStartWeekOnMonday} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="设置新建 @日期 提及的默认显示格式。" title="日期格式"><PreferenceSelect ariaLabel="日期格式" disabled={disabled} onChange={setDateFormat} options={[{ value: "relative", label: "相对日期" }, { value: "standard", label: "2026-08-16" }, { value: "long", label: "2026 年 8 月 16 日" }]} value={dateFormat} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="提醒、通知和邮件会根据你的当前时区送达。" title="根据位置自动设置时区"><Switch checked={automaticTimeZone} disabled={disabled} label={<span className="sr-only">根据位置自动设置时区</span>} onCheckedChange={setAutomaticTimeZone} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="选择你所在的时区。" title="时区"><PreferenceSelect ariaLabel="时区" disabled={disabled || automaticTimeZone} onChange={setTimeZone} options={[{ value: "asia-shanghai", label: "GMT+8 · 上海" }, { value: "asia-tokyo", label: "GMT+9 · 东京" }, { value: "america-los-angeles", label: "GMT-7 · 洛杉矶" }]} value={timeZone} /></PreferenceInfoItem>
       </InfoItemGroup>
     </SettingsSection>
   </div>;
@@ -570,72 +552,69 @@ const accountActionCopy: Record<AccountAction, { title: string; description: str
   "logout-device": { title: "退出此设备", description: "该设备将需要重新验证身份后才能继续访问。", confirm: "退出设备" },
 };
 
-function ProfileSettings() {
-  const [preferredName, setPreferredName] = useState("Carlos");
-  const [email, setEmail] = useState("carlos@zentrix.dev");
+function ProfileSettings({ actions, pending, profile }: { actions?: PersonalSettingsActions; pending?: readonly string[]; profile: PersonalSettingsProfile }) {
+  const [preferredName, setPreferredName] = useState(profile.displayName);
+  const email = profile.email;
   const [emailDraft, setEmailDraft] = useState(email);
-  const [profileSaved, setProfileSaved] = useState(false);
-  const [supportAccess, setSupportAccess] = useState(false);
-  const [passwordAdded, setPasswordAdded] = useState(false);
-  const [verificationEnabled, setVerificationEnabled] = useState(false);
-  const [passkeyAdded, setPasskeyAdded] = useState(false);
-  const [accountDeleted, setAccountDeleted] = useState(false);
   const [accountAction, setAccountAction] = useState<AccountAction | null>(null);
   const [deviceToLogout, setDeviceToLogout] = useState<string | null>(null);
-  const [devices, setDevices] = useState([
-    { id: "current", name: "macOS", lastActive: "现在", location: "中国上海", current: true },
-    { id: "office", name: "macOS", lastActive: "今天 17:51", location: "中国上海", current: false },
-    { id: "travel", name: "macOS", lastActive: "7 月 16 日 12:57", location: "日本东京", current: false },
-  ]);
+  const devices = profile.devices ?? [];
   const actionCopy = accountAction ? accountActionCopy[accountAction] : accountActionCopy.email;
+  const profileAction = actions?.onProfileAction;
+
+  useEffect(() => {
+    setPreferredName(profile.displayName);
+    setEmailDraft(profile.email);
+  }, [profile.displayName, profile.email]);
 
   const openAccountAction = (action: AccountAction, deviceId?: string) => {
+    if (!profileAction) return;
     if (action === "email") setEmailDraft(email);
     setDeviceToLogout(deviceId ?? null);
     setAccountAction(action);
   };
 
-  const confirmAccountAction = () => {
-    if (accountAction === "email") setEmail(emailDraft);
-    if (accountAction === "password") setPasswordAdded(true);
-    if (accountAction === "verification") setVerificationEnabled(true);
-    if (accountAction === "passkey") setPasskeyAdded(true);
-    if (accountAction === "delete") setAccountDeleted(true);
-    if (accountAction === "logout-all") setDevices((current) => current.filter((device) => device.current));
-    if (accountAction === "logout-device" && deviceToLogout) setDevices((current) => current.filter((device) => device.id !== deviceToLogout));
-    setDeviceToLogout(null);
-    setAccountAction(null);
+  const confirmAccountAction = async () => {
+    if (!accountAction || !profileAction) return;
+    try {
+      await profileAction(accountAction, {
+        ...(accountAction === "email" ? { email: emailDraft } : {}),
+        ...(accountAction === "logout-device" ? { deviceId: deviceToLogout ?? undefined } : {}),
+      });
+      setDeviceToLogout(null);
+      setAccountAction(null);
+    } catch {
+      // The host owns the failure message through operationState.error.
+    }
   };
-
-  if (accountDeleted) return <div className="w-full rounded-lg border border-border bg-surface-raised px-5 py-10 text-center"><h2 className="text-title font-semibold text-fg-default">账户已删除</h2><p className="mt-2 text-body text-fg-muted">你的本地演示账户已被移除。</p></div>;
 
   return <div className="w-full space-y-9">
     <SettingsSection title="个人资料">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-        <SidebarIdentityAvatar className="size-[60px] text-title" tone="brand">C</SidebarIdentityAvatar>
-        <div className="w-full max-w-md"><label className="text-body font-medium text-fg-default" htmlFor="preferred-name">显示名称</label><InputGroup className="mt-2"><InputGroupInput id="preferred-name" onChange={(event) => { setPreferredName(event.target.value); setProfileSaved(false); }} value={preferredName} /></InputGroup></div>
-        <Button onClick={() => setProfileSaved(true)} type="button" variant="tertiary">保存</Button>
+        <SidebarIdentityAvatar className="size-[60px] text-title" tone="brand">{profile.avatarLabel ?? profile.displayName.slice(0, 1)}</SidebarIdentityAvatar>
+        <div className="w-full max-w-md"><label className="text-body font-medium text-fg-default" htmlFor="preferred-name">显示名称</label><InputGroup className="mt-2"><InputGroupInput id="preferred-name" onChange={(event) => setPreferredName(event.target.value)} value={preferredName} /></InputGroup></div>
+        {profileAction && <Button disabled={isPending(pending, "profile:save-profile")} onClick={() => profileAction("save-profile", { preferredName })} type="button" variant="tertiary">保存</Button>}
       </div>
-      <p className="mt-3 text-label text-fg-muted">{profileSaved ? "个人资料已保存。" : "此名称会显示在你的协作记录与公开资料中。"}</p>
+      <p className="mt-3 text-label text-fg-muted">此名称会显示在你的协作记录与公开资料中。</p>
     </SettingsSection>
 
     <SettingsSection title="账户安全">
       <InfoItemGroup>
-        <AccountInfoItem action="管理邮箱" description={email} grouped onAction={() => openAccountAction("email")} title="邮箱" />
-        <AccountInfoItem action={passwordAdded ? "已设置" : "添加密码"} description={passwordAdded ? "已设置密码，可使用邮箱和密码登录。" : "为账户设置密码。"} disabled={passwordAdded} grouped onAction={() => openAccountAction("password")} title="密码" />
-        <AccountInfoItem action={verificationEnabled ? "已开启" : "添加验证方式"} description="为账户增加一层安全保护。" disabled={verificationEnabled} grouped onAction={() => openAccountAction("verification")} title="两步验证" />
-        <AccountInfoItem action={passkeyAdded ? "已添加" : "添加通行密钥"} description="使用设备生物识别或屏幕锁定方式登录。" disabled={passkeyAdded} grouped onAction={() => openAccountAction("passkey")} title="通行密钥" />
+        <AccountInfoItem action="管理邮箱" description={email} grouped onAction={profileAction ? () => openAccountAction("email") : undefined} title="邮箱" />
+        <AccountInfoItem action="添加密码" description="为账户设置密码。" grouped onAction={profileAction ? () => openAccountAction("password") : undefined} title="密码" />
+        <AccountInfoItem action="添加验证方式" description="为账户增加一层安全保护。" grouped onAction={profileAction ? () => openAccountAction("verification") : undefined} title="两步验证" />
+        <AccountInfoItem action="添加通行密钥" description="使用设备生物识别或屏幕锁定方式登录。" grouped onAction={profileAction ? () => openAccountAction("passkey") : undefined} title="通行密钥" />
       </InfoItemGroup>
     </SettingsSection>
 
     <SettingsSection title="支持">
-      <InfoItemGroup><InfoItem className="min-h-[86px] px-4 py-3.5"><InfoItemContent><InfoItemTitle>支持访问</InfoItemTitle><InfoItemDescription>授权 Zentrix 支持团队临时访问你的账户，以协助排查问题或恢复内容；你可随时撤销。</InfoItemDescription></InfoItemContent><InfoItemTrailing><Switch checked={supportAccess} label={<span className="sr-only">支持访问</span>} onCheckedChange={setSupportAccess} /></InfoItemTrailing></InfoItem></InfoItemGroup>
-      <div className="mt-3"><AccountInfoItem action="删除账户" destructive description="永久删除账户后，你将无法再访问所属工作区与个人数据。" onAction={() => openAccountAction("delete")} title="删除我的账户" /></div>
+      <InfoItemGroup><InfoItem className="min-h-[86px] px-4 py-3.5"><InfoItemContent><InfoItemTitle>支持访问</InfoItemTitle><InfoItemDescription>授权 Zentrix 支持团队临时访问你的账户，以协助排查问题或恢复内容；实际权限状态由宿主应用提供。</InfoItemDescription></InfoItemContent></InfoItem></InfoItemGroup>
+      <div className="mt-3"><AccountInfoItem action="删除账户" destructive description="永久删除账户后，你将无法再访问所属工作区与个人数据。" onAction={profileAction ? () => openAccountAction("delete") : undefined} title="删除我的账户" /></div>
     </SettingsSection>
 
     <SettingsSection title="设备">
-      <div className="mb-3"><AccountInfoItem action="退出其他设备" destructive description="退出除当前设备以外的全部活跃会话。" onAction={() => openAccountAction("logout-all")} title="退出其他设备" /></div>
-      <div className="overflow-x-auto"><Table className="min-w-[620px]"><TableHeader><TableRow><TableHead>设备名称</TableHead><TableHead>最近活跃</TableHead><TableHead>位置</TableHead><TableHead className="w-24 text-right"><span className="sr-only">操作</span></TableHead></TableRow></TableHeader><TableBody>{devices.map((device, index) => <TableRow index={index} key={device.id}><TableCell className="font-medium text-fg-default">{device.name}{device.current && <span className="ml-2 text-label font-normal text-fg-brand">当前设备</span>}</TableCell><TableCell className="text-fg-muted">{device.lastActive}</TableCell><TableCell className="text-fg-muted">{device.location}</TableCell><TableCell><div className="flex justify-end">{!device.current && <Button onClick={() => openAccountAction("logout-device", device.id)} size="md" type="button" variant="tertiary">退出</Button>}</div></TableCell></TableRow>)}</TableBody></Table></div>
+      <div className="mb-3"><AccountInfoItem action="退出其他设备" destructive description="退出除当前设备以外的全部活跃会话。" onAction={profileAction ? () => openAccountAction("logout-all") : undefined} title="退出其他设备" /></div>
+      <div className="overflow-x-auto"><Table className="min-w-[620px]"><TableHeader><TableRow><TableHead>设备名称</TableHead><TableHead>最近活跃</TableHead><TableHead>位置</TableHead>{profileAction && <TableHead className="w-24 text-right"><span className="sr-only">操作</span></TableHead>}</TableRow></TableHeader><TableBody>{devices.map((device, index) => <TableRow index={index} key={device.id}><TableCell className="font-medium text-fg-default">{device.name}{device.current && <span className="ml-2 text-label font-normal text-fg-brand">当前设备</span>}</TableCell><TableCell className="text-fg-muted">{device.lastActive}</TableCell><TableCell className="text-fg-muted">{device.location}</TableCell>{profileAction && <TableCell><div className="flex justify-end">{!device.current && <Button disabled={isPending(pending, `profile:logout-device:${device.id}`)} onClick={() => openAccountAction("logout-device", device.id)} size="md" type="button" variant="tertiary">退出</Button>}</div></TableCell>}</TableRow>)}</TableBody></Table></div>
     </SettingsSection>
 
     <Dialog onOpenChange={(open) => { if (!open) { setAccountAction(null); setDeviceToLogout(null); } }} open={accountAction !== null}><DialogContent size="sm"><DialogHeader><DialogTitle>{actionCopy.title}</DialogTitle><DialogDescription>{actionCopy.description}</DialogDescription></DialogHeader>{accountAction === "email" && <div><label className="text-body font-medium text-fg-default" htmlFor="account-email">邮箱地址</label><InputGroup className="mt-2"><InputGroupInput id="account-email" onChange={(event) => setEmailDraft(event.target.value)} type="email" value={emailDraft} /></InputGroup></div>}{accountAction === "password" && <div><label className="text-body font-medium text-fg-default" htmlFor="account-password">新密码</label><InputGroup className="mt-2"><InputGroupInput id="account-password" placeholder="至少 8 位字符" type="password" /></InputGroup></div>}<DialogFooter><DialogClose render={<Button type="button" variant="ghost">取消</Button>} /><Button onClick={confirmAccountAction} type="button" variant={accountAction === "delete" || accountAction === "logout-all" || accountAction === "logout-device" ? "destructive" : "primary"}>{actionCopy.confirm}</Button></DialogFooter></DialogContent></Dialog>
@@ -654,8 +633,8 @@ function PreferenceSelect({ ariaLabel, disabled = false, onChange, options, valu
   return <Select disabled={disabled} onValueChange={onChange} size="md" value={value}><SelectTrigger aria-label={ariaLabel} className="min-w-32 max-w-56" /> <SelectContent>{options.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select>;
 }
 
-function AccountInfoItem({ action, description, destructive = false, disabled = false, grouped = false, onAction, title }: { action: string; description: string; destructive?: boolean; disabled?: boolean; grouped?: boolean; onAction: () => void; title: string }) {
-  return <InfoItem className={cn("min-h-[76px] px-4 py-3.5", !grouped && "rounded-lg border-[0.5px] border-border")}><InfoItemContent><InfoItemTitle>{title}</InfoItemTitle><InfoItemDescription>{description}</InfoItemDescription></InfoItemContent><InfoItemTrailing><Button disabled={disabled} onClick={onAction} size="md" type="button" variant={destructive ? "destructive" : "tertiary"}>{action}</Button></InfoItemTrailing></InfoItem>;
+function AccountInfoItem({ action, description, destructive = false, disabled = false, grouped = false, onAction, title }: { action: string; description: string; destructive?: boolean; disabled?: boolean; grouped?: boolean; onAction?: () => void; title: string }) {
+  return <InfoItem className={cn("min-h-[76px] px-4 py-3.5", !grouped && "rounded-lg border-[0.5px] border-border")}><InfoItemContent><InfoItemTitle>{title}</InfoItemTitle><InfoItemDescription>{description}</InfoItemDescription></InfoItemContent>{onAction && <InfoItemTrailing><Button disabled={disabled} onClick={onAction} size="md" type="button" variant={destructive ? "destructive" : "tertiary"}>{action}</Button></InfoItemTrailing>}</InfoItem>;
 }
 
 function formatCallDuration(durationMs: number) {
@@ -707,11 +686,24 @@ function CallRunDataTable({ onOpen, runs }: { onOpen: (run: CallLogRun) => void;
   return <div className="space-y-2"><div className="overflow-hidden rounded-xl border border-border bg-surface-floating"><div className="overflow-x-auto"><Table className="min-w-[1300px] text-label"><TableHeader className="[&_th]:whitespace-nowrap"><TableRow><TableHead className="sticky left-0 z-content w-36 min-w-36 max-w-36 bg-surface-floating">开始时间</TableHead><TableHead className="w-32">Run ID</TableHead><TableHead className="w-24">状态</TableHead><TableHead className="w-52 min-w-52 max-w-52">输入消息</TableHead><TableHead className="w-52 min-w-52 max-w-52">回答结果</TableHead><TableHead className="w-52 min-w-52 max-w-52">调用</TableHead><TableHead className="w-20 text-right">Token</TableHead><TableHead className="w-20 text-right">耗时</TableHead><TableHead className="w-14"><span className="sr-only">查看</span></TableHead><TableHead className="sticky right-0 z-content w-20 min-w-20 max-w-20 border-l border-border bg-surface-floating text-right">费用</TableHead></TableRow></TableHeader><TableBody>{pageRuns.length ? pageRuns.map((run, index) => <TableRow index={pageOffset + index} key={run.id}><TableCell className="sticky left-0 z-content w-36 min-w-36 max-w-36 whitespace-nowrap bg-surface-floating font-mono tabular-nums text-fg-muted group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]">{run.time}</TableCell><TableCell className="font-mono text-fg-muted">{run.id}</TableCell><TableCell><CallLogStatusBadge status={run.status} /></TableCell><TableCell className="w-52 min-w-52 max-w-52"><p className="truncate font-medium text-fg-default" title={run.prompt}>{run.prompt}</p></TableCell><TableCell className="w-52 min-w-52 max-w-52"><p className="truncate text-fg-muted" title={run.detail}>{run.detail}</p></TableCell><TableCell className="w-52 min-w-52 max-w-52 truncate"><span>MODEL {run.modelCalls}</span><span className="mx-1 text-fg-subtle">/</span><span>MCP {run.mcpCalls}</span></TableCell><TableCell className="text-right tabular-nums">{formatCallTokens(run.tokens)}</TableCell><TableCell className="text-right tabular-nums">{formatCallDuration(run.durationMs)}</TableCell><TableCell><Button aria-label={`检查 ${run.id}`} iconOnly onClick={() => onOpen(run)} size="sm" type="button" variant="ghost"><ArrowRightIcon aria-hidden size={16} strokeWidth={1.5} /></Button></TableCell><TableCell className="sticky right-0 z-content w-20 min-w-20 max-w-20 border-l border-border bg-surface-floating text-right font-medium tabular-nums group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]">¥{run.amount.toFixed(3)}</TableCell></TableRow>) : <TableRow><TableCell className="h-32 text-center text-fg-muted" colSpan={10}>没有找到匹配的回答日志。</TableCell></TableRow>}</TableBody></Table></div></div>{runs.length > 0 && <DataTablePagination className="px-2" pageSizeOptions={[10, 20, 50]} table={table} />}</div>;
 }
 
-function CallLogsSettings() {
+function CallLogsSettings({ data }: { data: PersonalSettingsCallLogsData }) {
   const SearchIcon = useIcon("search");
+  const callLogRecords = data.records;
+  const callLogRuns = data.runs;
+  const latestTimestamp = useMemo(() => {
+    const timestamps = [
+      ...callLogRecords.map((record) => record.timestamp),
+      ...callLogRuns.map((run) => run.timestamp),
+    ];
+
+    return timestamps.length ? Math.max(...timestamps) : callLogLatestTimestamp;
+  }, [callLogRecords, callLogRuns]);
+  const contextStart = latestTimestamp - CALL_LOG_TIMELINE_BUCKETS * DAY_IN_MS;
+  const quickSelections = useMemo(() => callLogQuickSelectionsFor(latestTimestamp), [latestTimestamp]);
+  const attributionOptions = useMemo(() => [...new Set(callLogRecords.map((record) => record.attribution))].map((value) => ({ label: value, value })), [callLogRecords]);
   const [view, setView] = useState<CallLogView>("calls");
   const [range, setRange] = useState<CallLogRange>("day");
-  const [timeSelection, setTimeSelection] = useState<TimeRangeHistogramRange>(callLogQuickSelections.day);
+  const [timeSelection, setTimeSelection] = useState<TimeRangeHistogramRange>(() => quickSelections.day);
   const [kind, setKind] = useState<"all" | CallLogKind>("all");
   const [status, setStatus] = useState<"all" | CallLogStatus>("all");
   const [attribution, setAttribution] = useState("all");
@@ -719,6 +711,10 @@ function CallLogsSettings() {
   const [selectedCallId, setSelectedCallId] = useState("");
   const [selectedRunId, setSelectedRunId] = useState("");
   const [detailOpen, setDetailOpen] = useState(false);
+  useEffect(() => {
+    setRange("day");
+    setTimeSelection(quickSelections.day);
+  }, [quickSelections]);
   const normalizedQuery = query.trim().toLowerCase();
   const filteredCalls = useMemo(() => callLogRecords.filter((record) => {
     const matchesQuery = !normalizedQuery || `${record.id} ${record.runId} ${record.requested} ${record.actual} ${record.service} ${record.attribution} ${record.apiKey} ${record.summary} ${record.upstreamId ?? ""}`.toLowerCase().includes(normalizedQuery);
@@ -741,16 +737,16 @@ function CallLogsSettings() {
     }).map((run) => run.id));
     return callLogRecords.filter((record) => visibleRunIds.has(record.runId));
   }, [attribution, kind, normalizedQuery, status, view]);
-  const trendPoints = useMemo(() => aggregateCallLogTrend(filteredTrendCalls), [filteredTrendCalls]);
-  const selectedRangeLabel = range === "custom" ? formatCallLogSelection(timeSelection) : callLogQuickSelections[range].label;
+  const trendPoints = useMemo(() => aggregateCallLogTrend(filteredTrendCalls, contextStart), [contextStart, filteredTrendCalls]);
+  const selectedRangeLabel = range === "custom" ? formatCallLogSelection(timeSelection) : quickSelections[range].label;
   const applyQuickRange = (nextRange: ModelUsageRange) => {
     setRange(nextRange);
-    setTimeSelection(callLogQuickSelections[nextRange]);
+    setTimeSelection(quickSelections[nextRange]);
   };
   const applyTimelineSelection = (nextSelection: TimeRangeHistogramRange) => {
     setTimeSelection(nextSelection);
-    const matchingRange = (Object.keys(callLogQuickSelections) as ModelUsageRange[]).find((key) => {
-      const quickSelection = callLogQuickSelections[key];
+    const matchingRange = (Object.keys(quickSelections) as ModelUsageRange[]).find((key) => {
+      const quickSelection = quickSelections[key];
       return quickSelection.start === nextSelection.start && quickSelection.end === nextSelection.end;
     });
     setRange(matchingRange ?? "custom");
@@ -761,7 +757,7 @@ function CallLogsSettings() {
   const openRun = (run: CallLogRun) => { setSelectedRunId(run.id); setSelectedCallId(""); setDetailOpen(true); };
 
   return <div className="space-y-4 py-1">
-    <header className="flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-heading font-semibold text-fg-default">调用日志</h1><p className="mt-1 text-label leading-5 text-fg-muted">逐次核对模型和 MCP 调用，并按回答查看完整执行链路。</p></div><Button onClick={() => undefined} type="button" variant="tertiary">导出记录</Button></header>
+    <header className="border-b border-border pb-5"><h1 className="text-heading font-semibold text-fg-default">调用日志</h1><p className="mt-1 text-label leading-5 text-fg-muted">逐次核对模型和 MCP 调用，并按回答查看完整执行链路。</p></header>
 
     <Tabs aria-label="调用日志视角" color="neutral" onValueChange={(value) => setView(value as CallLogView)} value={view} variant="segment"><TabsList><TabItem label="按调用" value="calls" /><TabItem label="按回答" value="runs" /></TabsList></Tabs>
 
@@ -769,11 +765,11 @@ function CallLogsSettings() {
       <UsageFilter label="时间范围" value={range} onChange={(value) => { if (value !== "custom") applyQuickRange(value as ModelUsageRange); }} options={[{ label: "最近 24 小时", value: "day" }, { label: "最近 7 天", value: "week" }, { label: "最近 30 天", value: "month" }, ...(range === "custom" ? [{ label: "自定义范围", value: "custom" }] : [])]} />
       {view === "calls" && <UsageFilter label="调用类型" value={kind} onChange={(value) => setKind(value as "all" | CallLogKind)} options={[{ label: "全部类型", value: "all" }, { label: "模型", value: "model" }, { label: "MCP", value: "mcp" }]} />}
       <UsageFilter label="状态" value={status} onChange={(value) => setStatus(value as "all" | CallLogStatus)} options={[{ label: "全部状态", value: "all" }, { label: "成功", value: "success" }, { label: "已降级", value: "degraded" }, { label: "失败", value: "failed" }]} />
-      <UsageFilter label="计费归属" value={attribution} onChange={setAttribution} options={[{ label: "全部计费归属", value: "all" }, ...callLogAttributionOptions]} />
+      <UsageFilter label="计费归属" value={attribution} onChange={setAttribution} options={[{ label: "全部计费归属", value: "all" }, ...attributionOptions]} />
       <InputGroup className="w-full border-border hover:border-border" size="md"><InputGroupAddon className="pr-2"><SearchIcon aria-hidden size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput aria-label="搜索调用日志" className="h-full min-h-0" onChange={(event) => setQuery(event.target.value)} placeholder={view === "calls" ? "搜索调用、Run ID 或模型" : "搜索问题或 Run ID"} value={query} /></InputGroup>
     </section>
 
-    <Container><ContainerHeader className="gap-4 overflow-x-auto px-4 py-2"><h2 className="shrink-0 text-body font-medium text-fg-default" id="call-trend-title">调用趋势</h2><div className="flex shrink-0 items-center gap-3 whitespace-nowrap text-label text-fg-subtle"><span className="flex items-center gap-1.5"><span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: "light-dark(var(--brand-active), var(--brand))" }} />模型</span><span className="flex items-center gap-1.5"><span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: "light-dark(var(--brand), var(--brand-active))" }} />MCP</span><span className="text-fg-muted">当前：{selectedRangeLabel}</span></div></ContainerHeader><ContainerBody className="p-3"><TimeRangeHistogram ariaLabel="调用趋势时间范围" aria-labelledby="call-trend-title" data={trendPoints} formatRange={formatCallLogSelection} formatValue={(value) => `${value.toLocaleString("zh-CN")} 次`} instruction="拖动选区可整体移动" onValueChange={applyTimelineSelection} rangeEndLabel={callLogDateFormatter.format(callLogLatestTimestamp)} rangeStartLabel={callLogDateFormatter.format(callLogContextStart)} series={callLogTrendSeries} value={timeSelection} /></ContainerBody></Container>
+    <Container><ContainerHeader className="gap-4 overflow-x-auto px-4 py-2"><h2 className="shrink-0 text-body font-medium text-fg-default" id="call-trend-title">调用趋势</h2><div className="flex shrink-0 items-center gap-3 whitespace-nowrap text-label text-fg-subtle"><span className="flex items-center gap-1.5"><span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: "light-dark(var(--brand-active), var(--brand))" }} />模型</span><span className="flex items-center gap-1.5"><span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: "light-dark(var(--brand), var(--brand-active))" }} />MCP</span><span className="text-fg-muted">当前：{selectedRangeLabel}</span></div></ContainerHeader><ContainerBody className="p-3"><TimeRangeHistogram ariaLabel="调用趋势时间范围" aria-labelledby="call-trend-title" data={trendPoints} formatRange={formatCallLogSelection} formatValue={(value) => `${value.toLocaleString("zh-CN")} 次`} instruction="拖动选区可整体移动" onValueChange={applyTimelineSelection} rangeEndLabel={callLogDateFormatter.format(latestTimestamp)} rangeStartLabel={callLogDateFormatter.format(contextStart)} series={callLogTrendSeries} value={timeSelection} /></ContainerBody></Container>
 
     {view === "calls" ? <>
       <div className="flex flex-wrap items-center gap-2 text-label text-fg-muted"><span className="mr-2">显示 {filteredCalls.length.toLocaleString("zh-CN")} 条</span><Badge color="red" size="sm" variant="strong">错误 {filteredCalls.filter((record) => record.status === "failed").length}</Badge><Badge color="amber" size="sm" variant="strong">降级 {filteredCalls.filter((record) => record.status === "degraded").length}</Badge><span className="ml-2 text-fg-subtle">按时间倒序</span></div>
@@ -800,20 +796,21 @@ function CallRunDetail({ run }: { run: CallLogRun }) {
   return <><DialogHeader><div className="flex flex-wrap items-center gap-2"><DialogTitle>回答链路</DialogTitle><CallLogStatusBadge status={run.status} /></div><DialogDescription className="font-mono">{run.time} · {run.id}</DialogDescription></DialogHeader><p className="mb-4 text-body text-fg-default">{run.prompt}</p><div className="mb-4 flex flex-wrap gap-x-4 gap-y-1 text-label text-fg-muted"><span>MODEL {run.modelCalls}</span><span>MCP {run.mcpCalls}</span><span>{formatCallTokens(run.tokens)} Token</span><span>{formatCallDuration(run.durationMs)}</span><span>¥{run.amount.toFixed(3)}</span></div><div className="overflow-x-auto border-y border-border-subtle"><Table className="min-w-[760px] text-label"><TableHeader><TableRow><TableHead className="w-14">#</TableHead><TableHead className="w-20">事件</TableHead><TableHead className="w-44">调用目标</TableHead><TableHead>事件摘要</TableHead><TableHead className="w-24">状态</TableHead><TableHead className="w-20">Code</TableHead><TableHead className="w-20 text-right">耗时</TableHead><TableHead className="w-20 text-right">费用</TableHead></TableRow></TableHeader><TableBody>{calls.map((record, index) => <TableRow index={index} key={record.id}><TableCell className="font-mono tabular-nums text-fg-muted">{String(index + 1).padStart(2, "0")}</TableCell><TableCell><CallLogKindBadge kind={record.kind} /></TableCell><TableCell><p className="font-medium text-fg-default">{record.requested}{record.requested !== record.actual ? ` → ${record.actual}` : ""}</p><p className="mt-0.5 text-fg-muted">{record.service}</p></TableCell><TableCell className="text-fg-muted">{record.summary}</TableCell><TableCell><CallLogStatusBadge status={record.status} /></TableCell><TableCell className="font-mono text-fg-muted">{record.code}</TableCell><TableCell className="text-right tabular-nums">{formatCallDuration(record.durationMs)}</TableCell><TableCell className="text-right tabular-nums">{record.amount === undefined ? "—" : `¥${record.amount.toFixed(3)}`}</TableCell></TableRow>)}</TableBody></Table></div></>;
 }
 
-function ModelUsageSettings() {
+function ModelUsageSettings({ apiKeys: availableApiKeys, data, modelServices }: { apiKeys: readonly PersonalSettingsApiKey[]; data: PersonalSettingsModelUsageData; modelServices: readonly PersonalSettingsModelService[] }) {
   const [range, setRange] = useState<ModelUsageRange>("month");
   const [service, setService] = useState("all");
   const [attribution, setAttribution] = useState("all");
   const [model, setModel] = useState("all");
   const [apiKey, setApiKey] = useState("all");
-  const services = [...new Set(modelUsageRecords.map((record) => record.service))];
-  const attributions = [...new Set(modelUsageRecords.map((record) => record.attribution))];
-  const models = [...new Set(modelUsageRecords.map((record) => record.model))];
-  const apiKeys = [...new Set(modelUsageRecords.map((record) => record.apiKey))];
-  const filteredRecords = useMemo(() => modelUsageRecords.filter((record) => {
+  const records = data.records;
+  const services = [...new Set(records.map((record) => record.service))];
+  const attributions = [...new Set(records.map((record) => record.attribution))];
+  const models = [...new Set(records.map((record) => record.model))];
+  const apiKeys = [...new Set(records.map((record) => record.apiKey))];
+  const filteredRecords = useMemo(() => records.filter((record) => {
     const withinRange = range === "month" ? true : range === "week" ? record.date >= "2026-08-13" : record.date === "2026-08-19";
     return withinRange && (service === "all" || record.service === service) && (attribution === "all" || record.attribution === attribution) && (model === "all" || record.model === model) && (apiKey === "all" || record.apiKey === apiKey);
-  }), [apiKey, attribution, model, range, service]);
+  }), [apiKey, attribution, model, range, records, service]);
   const totals = useMemo(() => filteredRecords.reduce((summary, record) => ({ amount: summary.amount + record.amount, calls: summary.calls + record.calls, inputTokens: summary.inputTokens + record.inputTokens, cachedTokens: summary.cachedTokens + record.cachedTokens, outputTokens: summary.outputTokens + record.outputTokens }), { amount: 0, calls: 0, inputTokens: 0, cachedTokens: 0, outputTokens: 0 }), [filteredRecords]);
   const attributionRows = useMemo(() => Array.from(filteredRecords.reduce((rows, record) => rows.set(record.attribution, (rows.get(record.attribution) ?? 0) + record.amount), new Map<string, number>())).sort(([, left], [, right]) => right - left), [filteredRecords]);
   const attributionChartData = useMemo(() => attributionRows.map(([label, amount], index) => ({ label, amount, fill: attributionChartColors[index % attributionChartColors.length] })), [attributionRows]);
@@ -828,9 +825,9 @@ function ModelUsageSettings() {
   }, [filteredRecords, range]);
 
   return <div className="space-y-4 py-1">
-    <header className="flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-heading font-semibold text-fg-default">模型用量</h1><p className="mt-1 text-label leading-5 text-fg-muted">按调用时的 API Key、模型服务授权与计费归属统计消费。</p></div><Button onClick={() => undefined} type="button" variant="tertiary">导出明细</Button></header>
+    <header className="border-b border-border pb-5"><h1 className="text-heading font-semibold text-fg-default">模型用量</h1><p className="mt-1 text-label leading-5 text-fg-muted">按调用时的 API Key、模型服务授权与计费归属统计消费。</p></header>
 
-    <section aria-label="账户资源概览" className="grid items-stretch gap-3 sm:grid-cols-3"><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">可用于模型调用</span>} label="账户余额" value={accountBalance} /><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">当前已授权且可调用</span>} label="可用模型服务" value={`${availableModelServiceCount} 个`} /><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">状态正常的调用 Key</span>} label="可用 API Key" value={`${availableApiKeyCount} 个`} /></section>
+    <section aria-label="账户资源概览" className="grid items-stretch gap-3 sm:grid-cols-3"><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">可用于模型调用</span>} label="账户余额" value={data.accountBalance} /><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">当前已授权且可调用</span>} label="可用模型服务" value={`${modelServices.filter((service) => service.status === "正常").length} 个`} /><MetricCard className={usageMetricCardClass} footer={<span className="text-fg-subtle">状态正常的调用 Key</span>} label="可用 API Key" value={`${availableApiKeys.filter((key) => key.status === "正常").length} 个`} /></section>
 
     <Separator />
 
@@ -851,37 +848,42 @@ function UsageFilter({ label, onChange, options, value }: { label: string; onCha
 
 function ModelUsageDetailsTable({ records }: { records: readonly ModelUsageRecord[] }) {
   const data = useMemo(() => [...records], [records]);
+  const filterOptions = useMemo(() => ({
+    attributions: [...new Set(records.map((record) => record.attribution))].map((value) => ({ label: value, value })),
+    models: [...new Set(records.map((record) => record.model))].map((value) => ({ label: value, value })),
+    services: [...new Set(records.map((record) => record.service))].map((value) => ({ label: value, value })),
+  }), [records]);
   const columns = useMemo<ColumnDef<ModelUsageRecord, unknown>[]>(() => [
     { accessorKey: "date", header: ({ column }) => <DataTableColumnHeader column={column} label="日期" />, cell: ({ row }) => <span className="tabular-nums text-fg-muted">{row.original.date.slice(5).replace("-", "/")}</span> },
     { accessorKey: "apiKey", header: ({ column }) => <DataTableColumnHeader column={column} label="API Key" />, meta: { label: "API Key", placeholder: "搜索 API Key", variant: "text" }, cell: ({ row }) => <span className="font-mono text-label text-fg-muted">{row.original.apiKey}</span> },
-    { accessorKey: "service", header: ({ column }) => <DataTableColumnHeader column={column} label="模型服务" />, filterFn: (row, id, value: string[]) => value.includes(String(row.getValue(id))), meta: { label: "模型服务", options: modelUsageFilterOptions.services, variant: "multiSelect" }, cell: ({ row }) => <span className="font-medium text-fg-default">{row.original.service}</span> },
-    { accessorKey: "model", header: ({ column }) => <DataTableColumnHeader column={column} label="模型" />, filterFn: (row, id, value: string[]) => value.includes(String(row.getValue(id))), meta: { label: "模型", options: modelUsageFilterOptions.models, variant: "multiSelect" }, cell: ({ row }) => <span className="flex items-center gap-1.5"><ModelLogo model={row.original.model} /><span>{row.original.model}</span></span> },
-    { accessorKey: "attribution", header: ({ column }) => <DataTableColumnHeader column={column} label="计费归属" />, filterFn: (row, id, value: string[]) => value.includes(String(row.getValue(id))), meta: { label: "计费归属", options: modelUsageFilterOptions.attributions, variant: "multiSelect" }, cell: ({ row }) => <span>{row.original.attribution}</span> },
+    { accessorKey: "service", header: ({ column }) => <DataTableColumnHeader column={column} label="模型服务" />, filterFn: (row, id, value: string[]) => value.includes(String(row.getValue(id))), meta: { label: "模型服务", options: filterOptions.services, variant: "multiSelect" }, cell: ({ row }) => <span className="font-medium text-fg-default">{row.original.service}</span> },
+    { accessorKey: "model", header: ({ column }) => <DataTableColumnHeader column={column} label="模型" />, filterFn: (row, id, value: string[]) => value.includes(String(row.getValue(id))), meta: { label: "模型", options: filterOptions.models, variant: "multiSelect" }, cell: ({ row }) => <span className="flex items-center gap-1.5"><ModelLogo model={row.original.model} /><span>{row.original.model}</span></span> },
+    { accessorKey: "attribution", header: ({ column }) => <DataTableColumnHeader column={column} label="计费归属" />, filterFn: (row, id, value: string[]) => value.includes(String(row.getValue(id))), meta: { label: "计费归属", options: filterOptions.attributions, variant: "multiSelect" }, cell: ({ row }) => <span>{row.original.attribution}</span> },
     { accessorKey: "calls", header: ({ column }) => <DataTableColumnHeader className="justify-end" column={column} label="调用次数" />, cell: ({ row }) => <span className="block text-right tabular-nums">{row.original.calls.toLocaleString("zh-CN")}</span> },
     { id: "tokens", accessorFn: (row) => row.inputTokens + row.cachedTokens + row.outputTokens, header: ({ column }) => <DataTableColumnHeader className="justify-end" column={column} label="Token" />, cell: ({ row }) => <span className="block text-right tabular-nums text-fg-muted">{(row.original.inputTokens + row.original.cachedTokens + row.original.outputTokens).toFixed(1)}M</span> },
     { accessorKey: "amount", header: ({ column }) => <DataTableColumnHeader className="justify-end" column={column} label="金额" />, cell: ({ row }) => <span className="block text-right font-medium tabular-nums text-fg-default">¥{row.original.amount.toFixed(2)}</span> },
-  ], []);
+  ], [filterOptions]);
   const { table } = useDataTable({ columns, data, getRowId: (record) => record.id, initialState: { pagination: { pageIndex: 0, pageSize: 5 }, sorting: [{ id: "date", desc: true }] } });
 
   return <DataTable className="mt-4 gap-2.5 [&_[data-slot=data-table-pagination]]:px-2" emptyMessage="当前筛选条件下没有模型调用。" table={table}><DataTableToolbar showViewOptions={false} table={table} /></DataTable>;
 }
 
-function UsageSettings() {
+function UsageSettings({ data }: { data: PersonalSettingsUsageData }) {
   const MessageIcon = useIcon("message-circle");
   const ToolIcon = useIcon("settings");
   const [activityView, setActivityView] = useState<ActivityView>("tokens");
   const [usagePeriod, setUsagePeriod] = useState<UsagePeriod>("week");
   const heatmapColor = ["bg-hover", "bg-brand/30", "bg-brand/60", "bg-brand"] as const;
-  const heatmapActivity = activityView === "tokens" ? tokenHeatmapActivity : messageHeatmapActivity;
+  const heatmapActivity = activityView === "tokens" ? data.tokenHeatmapActivity : data.messageHeatmapActivity;
   const selectedUsagePeriod = usagePeriodOptions.find((option) => option.value === usagePeriod)!;
   const rankRows = (rows: readonly UsageRankRowData[]) => rows.slice(0, 5).map((row) => ({ ...row, icon: row.icon === "deepseek" ? <DeepSeekColor size={16} /> : row.icon === "openai" ? <OpenAIMono size={15} /> : row.icon === "glm" ? <ChatGLMColor size={16} /> : row.icon === "jira" ? <span className="flex size-4 items-center justify-center rounded-sm bg-brand text-label font-bold text-fg-on-brand">J</span> : row.icon === "tool" ? <ToolIcon size={16} strokeWidth={1.5} /> : <MessageIcon size={16} strokeWidth={1.5} /> }));
 
   return <div className="space-y-5 py-1">
-    <header><h1 className="text-heading font-semibold text-fg-default">👋 你好 Carlos，这是你与 Zentrix 一起记录协作的第 466 天</h1></header>
+    <header><h1 className="text-heading font-semibold text-fg-default">{data.greeting}</h1></header>
 
-    <section aria-labelledby="usage-period-title"><div className="flex items-center"><div aria-label={`最近${selectedUsagePeriod.label}使用情况`} className="flex items-center text-body font-medium text-fg-default" id="usage-period-title" role="heading" aria-level={2}><span>最近</span><Select onValueChange={(value) => setUsagePeriod(value as UsagePeriod)} size="sm" value={usagePeriod}><SelectTrigger aria-label="使用情况周期" className="h-auto min-w-0 !border-0 rounded-md bg-surface-base px-1.5 py-1 text-body font-medium hover:bg-surface-base" variant="borderless" wrapperClassName="mx-1" /><SelectContent align="start">{usagePeriodOptions.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select><span>使用情况</span></div></div><div className="mt-3 grid items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-4">{usageMetrics[usagePeriod].map((metric) => <MetricCard className={usageMetricCardClass} footer={<span className={cn(metric.positive === true ? "text-fg-brand" : metric.positive === false ? "text-fg-muted" : "text-fg-subtle")}><span className="font-medium">{metric.change}</span> {metric.detail}</span>} key={metric.label} label={metric.label} value={metric.value} />)}</div></section>
+    <section aria-labelledby="usage-period-title"><div className="flex items-center"><div aria-label={`最近${selectedUsagePeriod.label}使用情况`} className="flex items-center text-body font-medium text-fg-default" id="usage-period-title" role="heading" aria-level={2}><span>最近</span><Select onValueChange={(value) => setUsagePeriod(value as UsagePeriod)} size="sm" value={usagePeriod}><SelectTrigger aria-label="使用情况周期" className="h-auto min-w-0 !border-0 rounded-md bg-surface-base px-1.5 py-1 text-body font-medium hover:bg-surface-base" variant="borderless" wrapperClassName="mx-1" /><SelectContent align="start">{usagePeriodOptions.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select><span>使用情况</span></div></div><div className="mt-3 grid items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-4">{data.metricsByPeriod[usagePeriod].map((metric) => <MetricCard className={usageMetricCardClass} footer={<span className={cn(metric.positive === true ? "text-fg-brand" : metric.positive === false ? "text-fg-muted" : "text-fg-subtle")}><span className="font-medium">{metric.change}</span> {metric.detail}</span>} key={metric.label} label={metric.label} value={metric.value} />)}</div></section>
 
-    <div className="grid gap-5 lg:grid-cols-3"><UsageRank title="模型使用率" subtitle={`模型 / ${selectedUsagePeriod.label}消息数`} rows={rankRows(usageRankData[usagePeriod].models)} /><UsageRank title="MCP 使用率" subtitle={`助手 / ${selectedUsagePeriod.label}话题数`} rows={rankRows(usageRankData[usagePeriod].mcp)} /><UsageRank title="话题内容量" subtitle={`话题 / ${selectedUsagePeriod.label}消息数`} rows={rankRows(usageRankData[usagePeriod].topics)} /></div>
+    <div className="grid gap-5 lg:grid-cols-3"><UsageRank title="模型使用率" subtitle={`模型 / ${selectedUsagePeriod.label}消息数`} rows={rankRows(data.ranksByPeriod[usagePeriod].models)} /><UsageRank title="MCP 使用率" subtitle={`助手 / ${selectedUsagePeriod.label}话题数`} rows={rankRows(data.ranksByPeriod[usagePeriod].mcp)} /><UsageRank title="话题内容量" subtitle={`话题 / ${selectedUsagePeriod.label}消息数`} rows={rankRows(data.ranksByPeriod[usagePeriod].topics)} /></div>
 
     <Separator />
 
@@ -896,9 +898,9 @@ function UsageSettings() {
         </Tabs>
       </ContainerHeader>
       <ContainerBody className="p-3 sm:p-4">
-        <section aria-labelledby="yearly-activity-title"><div className="overflow-x-auto pb-1"><div className="min-w-[720px]"><div className="grid grid-cols-12 gap-2">{usageMonths.map((month, monthIndex) => <div key={month}><p className="text-label text-fg-subtle">{month}</p><div className="mt-2 grid grid-flow-col grid-rows-7 gap-1">{Array.from({ length: 28 }, (_, index) => { const week = Math.floor(index / 7); const day = index % 7; const level = heatmapActivity[`${monthIndex}-${week}-${day}`] ?? 0; return <span aria-hidden className={cn("aspect-square rounded-[2px]", heatmapColor[level])} key={index} />; })}</div></div>)}</div></div></div><div className="mt-3 flex items-center justify-end gap-1.5 text-label text-fg-subtle"><span>较少</span>{heatmapColor.map((color, index) => <span aria-hidden className={cn("size-3 rounded-[2px]", color)} key={index} />)}<span>较多</span></div></section>
+        <section aria-labelledby="yearly-activity-title"><div className="overflow-x-auto pb-1"><div className="min-w-[720px]"><div className="grid grid-cols-12 gap-2">{data.months.map((month, monthIndex) => <div key={month}><p className="text-label text-fg-subtle">{month}</p><div className="mt-2 grid grid-flow-col grid-rows-7 gap-1">{Array.from({ length: 28 }, (_, index) => { const week = Math.floor(index / 7); const day = index % 7; const level = heatmapActivity[`${monthIndex}-${week}-${day}`] ?? 0; return <span aria-hidden className={cn("aspect-square rounded-[2px]", heatmapColor[level])} key={index} />; })}</div></div>)}</div></div></div><div className="mt-3 flex items-center justify-end gap-1.5 text-label text-fg-subtle"><span>较少</span>{heatmapColor.map((color, index) => <span aria-hidden className={cn("size-3 rounded-[2px]", color)} key={index} />)}<span>较多</span></div></section>
       </ContainerBody>
-      <ContainerFooter className="grid grid-cols-2 items-start justify-stretch gap-x-6 gap-y-3 px-4 py-3 sm:grid-cols-4">{usageSummaries.map((summary) => <div key={summary.label}><p className="text-body font-semibold tabular-nums text-fg-default">{summary.value}</p><p className="mt-0.5 text-label text-fg-muted">{summary.label}</p></div>)}</ContainerFooter>
+      <ContainerFooter className="grid grid-cols-2 items-start justify-stretch gap-x-6 gap-y-3 px-4 py-3 sm:grid-cols-4">{data.summaries.map((summary) => <div key={summary.label}><p className="text-body font-semibold tabular-nums text-fg-default">{summary.value}</p><p className="mt-0.5 text-label text-fg-muted">{summary.label}</p></div>)}</ContainerFooter>
     </Container>
   </div>;
 }

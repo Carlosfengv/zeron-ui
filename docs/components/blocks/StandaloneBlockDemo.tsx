@@ -10,7 +10,7 @@ import { MonitoringAlertList } from "@zeron/blocks/monitoring-alert-list-01";
 import { ServiceManagement } from "@zeron/blocks/service-management-01";
 import { McpDetail } from "@zeron/blocks/mcp-detail-01";
 import { ModelDetail } from "@zeron/blocks/model-detail-01";
-import { PersonalSettings } from "@zeron/blocks/personal-settings-01";
+import { PersonalSettings, personalSettingsDemoData } from "@zeron/blocks/personal-settings-01";
 import { PersonalModelUsage } from "@zeron/blocks/personal-model-usage-01";
 import { PersonalUsage } from "@zeron/blocks/personal-usage-01";
 import { ResourceSettings } from "@zeron/blocks/resource-settings-01";
@@ -67,7 +67,7 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
     case "model-detail-01":
       return <DetailBlockPreviewShell active="models"><ModelDetail /></DetailBlockPreviewShell>;
     case "personal-settings-01":
-      return <PersonalSettings />;
+      return <PersonalSettings data={personalSettingsDemoData} />;
     case "personal-model-usage-01":
       return <PersonalModelUsage />;
     case "personal-usage-01":
