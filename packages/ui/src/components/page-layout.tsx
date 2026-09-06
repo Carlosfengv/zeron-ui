@@ -101,7 +101,7 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({ size, gutter, 
 PageLayout.displayName = "PageLayout";
 
 const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(({ className, ...props }, ref) => (
-  <header ref={ref} data-slot="page-header" className={cn("flex shrink-0 min-w-0 flex-wrap items-start justify-between gap-2 py-1 px-3 max-sm:flex-col", className)} {...props} />
+  <header ref={ref} data-slot="page-header" className={cn("flex shrink-0 min-w-0 flex-wrap items-start justify-between gap-2 px-3 max-sm:flex-col", className)} {...props} />
 ));
 
 PageHeader.displayName = "PageHeader";
