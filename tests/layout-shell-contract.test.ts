@@ -19,6 +19,7 @@ describe("shell and page-layout composition contract", () => {
   const siteShell = source("docs/components/shell/site/site-shell.tsx");
   const localePath = source("docs/components/shell/site/locale-path.ts");
   const docsLayout = source("app/[locale]/docs/layout.tsx");
+  const localeLayout = source("app/[locale]/layout.tsx");
   const componentsGallery = source("docs/components/components/ComponentsGallery.tsx");
   const card = source("packages/ui/src/components/card.tsx");
   const topNavBlock = source("packages/blocks/src/application/top-nav-app-shell-01/top-nav-app-shell.tsx");
@@ -40,7 +41,7 @@ describe("shell and page-layout composition contract", () => {
     expect(docsLayout).not.toContain("max-w-[960px]");
     expect(componentsGallery).toContain('className="flex h-full min-h-0 w-full bg-surface-base"');
     expect(componentsGallery).not.toContain('className="flex h-[calc(100svh-3rem)] min-h-0 w-full bg-surface-base"');
-    expect(componentsGallery).toContain('className="overflow-hidden overscroll-auto p-0"');
+    expect(componentsGallery).toContain('className="overflow-hidden overscroll-auto bg-transparent p-0"');
   });
 
   it("normalizes both localized documentation paths before selecting a workspace layout", () => {
@@ -48,8 +49,18 @@ describe("shell and page-layout composition contract", () => {
     expect(localePath).toContain('return prefix ? pathname.slice(prefix.length) || "/" : pathname;');
   });
 
+  it("applies an explicit saved theme before the first stylesheet paint", () => {
+    expect(localeLayout).toContain('const themeBootstrapScript = `(() => {');
+    expect(localeLayout).toContain('window.localStorage.getItem("zeron-design.theme")');
+    expect(localeLayout).toContain('document.documentElement.classList.add(theme)');
+    expect(localeLayout).toContain('<html lang={locale} suppressHydrationWarning>');
+    expect(localeLayout).toContain('<script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />');
+  });
+
   it("makes component gallery cards clickable across their full surface", () => {
-    expect(componentsGallery).toContain('<Card className="group min-w-0 rounded-3xl bg-transparent pb-0" href={href} label={entry.name}>');
+    expect(componentsGallery).toContain('renderLink={(props) => <Link {...props} />}');
+    expect(card).toContain("renderLink?: (props:");
+    expect(card).toContain("renderLink?.({");
   });
 
   it("keeps painted cards rounded when they are separated from their group", () => {

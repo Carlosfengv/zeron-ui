@@ -8,6 +8,18 @@ import { AppProviders } from "@/app/app-providers";
 import { assertLocale } from "@/app/_i18n/locale";
 import { routing } from "@/app/_i18n/routing";
 
+// This runs before the stylesheet paints. Without it, a visitor who selected
+// light mode while their OS is dark receives the OS-dark CSS for one frame
+// before ThemeProvider restores the saved choice during hydration.
+const themeBootstrapScript = `(() => {
+  try {
+    const theme = window.localStorage.getItem("zeron-design.theme");
+    if (theme === "light" || theme === "dark") {
+      document.documentElement.classList.add(theme);
+    }
+  } catch {}
+})();`;
+
 type Props = Readonly<{
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -51,7 +63,10 @@ export default async function LocaleLayout({ children, params }: Props) {
   )).default;
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
+      </head>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AppProviders>{children}</AppProviders>

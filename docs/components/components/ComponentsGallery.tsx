@@ -428,7 +428,12 @@ export function ComponentsDetailWorkspace({ children }: { children: React.ReactN
 function ComponentCard({ coverTheme, entry, href, language }: { coverTheme: ComponentCoverTheme; entry: DocEntry; href: string; language: "en" | "zh" }) {
   const description = componentCardDescription(entry.slug, language, entry.description);
   return (
-    <Card className="group min-w-0 rounded-3xl bg-transparent pb-0" href={href} label={entry.name}>
+    <Card
+      className="group min-w-0 rounded-3xl bg-transparent pb-0"
+      href={href}
+      label={entry.name}
+      renderLink={(props) => <Link {...props} />}
+    >
       <Container className="h-full">
         <ContainerBody className="overflow-hidden overscroll-auto bg-transparent p-0">
           <div className="relative aspect-[8/5] min-h-40 overflow-hidden bg-surface-base">
