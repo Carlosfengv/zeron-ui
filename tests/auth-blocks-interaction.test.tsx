@@ -59,6 +59,15 @@ describe("authentication block interactions", () => {
         .querySelector('[data-slot="auth-layout-body"]')
         ?.classList.contains("border-[0.5px]")
     ).toBe(false);
+
+    for (const name of ["Continue with Apple", "Continue with Google"]) {
+      expect(
+        screen
+          .getByRole("button", { name })
+          .querySelector('[data-slot="button-background"]')
+          ?.classList.contains("bg-surface-floating")
+      ).toBe(true);
+    }
   });
 
   it("submits login credentials through the integration callback", async () => {

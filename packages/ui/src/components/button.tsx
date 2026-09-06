@@ -106,7 +106,7 @@ const bgVariants: Record<string, string> = {
   neutral: "bg-inverse-background group-hover:bg-inverse-background-hover group-active:bg-inverse-background-active",
   destructive: "bg-destructive group-hover:bg-destructive-hover group-active:bg-destructive-active",
   secondary: "bg-secondary-action group-hover:bg-secondary-action-hover group-active:bg-secondary-action-active",
-  tertiary: "border border-border bg-transparent group-hover:bg-hover group-active:bg-active",
+  tertiary: "border border-border bg-surface-floating group-hover:bg-hover group-active:bg-active",
   ghost: "bg-transparent group-hover:bg-hover group-active:bg-active",
 };
 
