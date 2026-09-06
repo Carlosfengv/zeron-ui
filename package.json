@@ -22,6 +22,10 @@
     "tokens:build": "node scripts/generate-semantic-tokens.mjs",
     "tokens:check": "node scripts/generate-semantic-tokens.mjs --check",
     "registry:build": "pnpm tokens:build && pnpm --filter @zeron/registry build",
+    "registry:release": "node scripts/create-registry-release.mjs",
+    "registry:check": "node packages/registry/scripts/registry-check.mjs",
+    "test:consumer:smoke": "node scripts/test-consumer-installs.mjs",
+    "test:consumer:all": "node scripts/test-consumer-installs.mjs --all",
     "cli:check": "pnpm --filter zeron-ui check",
     "cli:test": "pnpm --filter zeron-ui test"
   },

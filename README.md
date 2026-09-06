@@ -28,28 +28,34 @@ npx zeron-ui list
 npx zeron-ui add button --dry-run
 ```
 
-The Registry remains directly compatible with shadcn as a fallback:
+The supported installation path is the pinned `zeron-ui` CLI. It performs a
+write plan before invoking the installer, checks supported framework and React
+requirements, and preserves existing files unless `--overwrite` is explicit.
+Use `--path` only through `components.json` aliases: that flag is temporarily
+unsupported while custom output placement is validated.
 
-```bash
-npx shadcn@latest add https://zeron-ui.vercel.app/r/button.json
-```
+### Migrating from older Zeron CLI versions
+
+Older installers could rewrite source outside the requested component. Upgrade
+before installing again; the current CLI only post-processes files in its
+explicit plan. Existing projects without `.zeron/install-state.json` should
+run `npx zeron-ui doctor --check`, which reports the installation as unchecked
+rather than claiming it is healthy. Next-only Blocks are rejected outside
+Next.js, and template Blocks remain application skeletons rather than a
+drop-in business backend.
+
+Maintainers create an immutable Registry candidate with
+`pnpm registry:release --release-id <id>`. This preserves `/r/*.json` as the
+legacy endpoint while publishing the candidate under `/r/releases/<id>/` with
+its own dependency URLs and manifest hash.
 
 ### Use design tokens without installing components
 
-Install the standalone token package when a project only needs Zeron's semantic
-CSS variables and Tailwind v4 mappings:
-
-```bash
-pnpm add @zeron/tokens
-```
-
-Import it once from the global stylesheet:
-
-```css
-@import "@zeron/tokens/styles.css";
-```
-
-Use `semanticTokens` from `@zeron/tokens` for JavaScript or TypeScript tooling.
+`@zeron/tokens` is currently a workspace package used by this repository and
+the Registry build. It is not advertised as an independently installable npm
+package until a published version and its CSS, ESM, and type entrypoints have
+been verified from npm. Consumers should install `surfaces` through the Zeron
+Registry instead of relying on an unpublished package name.
 
 Dependencies resolve automatically. Font weight animations require the [Inter](https://fonts.google.com/specimen/Inter) variable font.
 

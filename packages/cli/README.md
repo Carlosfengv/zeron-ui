@@ -20,6 +20,16 @@ npx zeron-ui view button
 npx zeron-ui doctor
 ```
 
+`zeron-ui add` only writes files covered by its resolved Registry plan. It
+rejects `--path` for now; configure the target aliases in `components.json`
+instead. Use `--dry-run` to inspect the planned files first. Next-only Blocks
+are rejected outside a Next.js project, and React 19 is required for published
+Registry items.
+
+After a successful install, `zeron-ui doctor --check` verifies the local
+installation record and reports missing files. Older projects without a record
+are shown as unchecked rather than healthy.
+
 Zeron UI installs source code from the official Zeron Design Registry and uses
 the shadcn installation engine to resolve component files, package dependencies,
 shared utilities, CSS, and design tokens.
@@ -36,7 +46,7 @@ shared utilities, CSS, and design tokens.
 --cwd <dir>       Run against another project directory
 --overwrite       Replace existing component files
 --yes             Skip confirmation prompts
---path <dir>      Override the component output path
+--path <dir>      Temporarily unsupported; configure components.json instead
 --dry-run         Inspect resolved Registry items without writing
 --registry <url>  Use another Registry base URL
 ```

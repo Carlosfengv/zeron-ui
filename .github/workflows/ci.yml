@@ -35,8 +35,8 @@ jobs:
       - name: Test CLI
         run: pnpm cli:test
 
-      - name: Build
-        run: pnpm build
+      - name: Typecheck public source packages
+        run: pnpm --filter @zeron/ui typecheck && pnpm --filter @zeron/blocks typecheck
 
       # Rebuild the registry and fail if the committed public/r output has
       # drifted from the sources — public/r is what users install from.
@@ -47,3 +47,16 @@ jobs:
             echo "::error::public/r is stale — run 'pnpm registry:build' and commit the result"
             exit 1
           }
+          test -z "$(git ls-files --others --exclude-standard public/r)" || {
+            echo "::error::public/r contains generated files that are not committed"
+            exit 1
+          }
+
+      - name: Validate Registry closure
+        run: pnpm registry:check
+
+      - name: Install representative consumers
+        run: pnpm test:consumer:smoke
+
+      - name: Build
+        run: pnpm build

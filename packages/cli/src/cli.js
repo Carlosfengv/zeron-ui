@@ -1,4 +1,4 @@
-import { access, readFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import {
@@ -9,6 +9,7 @@ import {
 } from "./registry.js";
 import { runShadcn } from "./run-shadcn.js";
 import { resolveInstalledRegistryAliases } from "./resolve-registry-aliases.js";
+import { buildInstallPlan } from "./install-plan.js";
 
 const HELP = `zeron-ui
 
@@ -23,7 +24,7 @@ Options:
   --cwd <dir>       Target project directory. Default: current directory
   --overwrite       Replace files that already exist
   --yes             Skip confirmation prompts
-  --path <dir>      Override the component output path
+  --path <dir>      Temporarily unsupported; configure components.json instead
   --dry-run         Inspect resolved items without writing files
   --registry <url>  Registry base URL. Default: ${DEFAULT_REGISTRY_URL}
   --json            Emit JSON from list
@@ -37,6 +38,7 @@ const ARG_OPTIONS = {
   yes: { type: "boolean" },
   path: { type: "string" },
   "dry-run": { type: "boolean" },
+  check: { type: "boolean" },
   registry: { type: "string" },
   json: { type: "boolean" },
   help: { type: "boolean", short: "h" },
@@ -85,6 +87,71 @@ async function fileExists(filePath) {
   } catch {
     return false;
   }
+}
+
+function dependencyVersion(dependency) {
+  if (dependency.startsWith("@")) {
+    const marker = dependency.indexOf("@", dependency.indexOf("/") + 1);
+    return marker === -1 ? "" : dependency.slice(marker + 1);
+  }
+  return dependency.split("@").slice(1).join("@");
+}
+
+function major(version) {
+  const match = version.match(/\d+/);
+  return match ? Number(match[0]) : null;
+}
+
+function projectDependencies(packageJson) {
+  return {
+    ...(packageJson.dependencies ?? {}),
+    ...(packageJson.devDependencies ?? {}),
+    ...(packageJson.peerDependencies ?? {}),
+  };
+}
+
+function assertInstallCompatibility(plan, packageJson) {
+  const dependencies = projectDependencies(packageJson);
+  const nextItems = plan.requirements.filter((requirement) => requirement.framework === "next");
+  if (nextItems.length && !dependencies.next) {
+    throw new Error(`${nextItems.map((item) => item.name).join(", ")} requires Next.js; this project is not a supported Next consumer`);
+  }
+  const reactRequirements = plan.requirements.filter((requirement) => requirement.react);
+  if (reactRequirements.length && major(dependencies.react) !== 19) {
+    throw new Error(`Zeron Registry items require React 19; found ${dependencies.react ?? "no react dependency"}`);
+  }
+  for (const requirement of plan.requiredDependencies) {
+    const name = requirement.startsWith("@")
+      ? requirement.slice(0, requirement.indexOf("@", requirement.indexOf("/") + 1))
+      : requirement.split("@")[0];
+    const expectedMajor = major(dependencyVersion(requirement));
+    const installedMajor = major(dependencies[name] ?? "");
+    if (expectedMajor !== null && installedMajor !== null && expectedMajor !== installedMajor) {
+      throw new Error(`${name} ${dependencies[name]} conflicts with Registry requirement ${requirement}; no files were written`);
+    }
+  }
+}
+
+async function writeInstallState(cwd, plan) {
+  const stateDir = path.join(cwd, ".zeron");
+  const statePath = path.join(stateDir, "install-state.json");
+  let current = { version: 1, installations: [] };
+  try {
+    current = JSON.parse(await readFile(statePath, "utf8"));
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  const packageVersionValue = await packageVersion();
+  const record = {
+    items: plan.resolvedItems,
+    registryBase: plan.registryBase,
+    cliVersion: packageVersionValue,
+    files: plan.files.map((file) => path.relative(cwd, file.targetPath)),
+    dependencies: plan.requiredDependencies,
+  };
+  const installations = (current.installations ?? []).filter((entry) => entry.registryBase !== record.registryBase || entry.items.join(",") !== record.items.join(","));
+  await mkdir(stateDir, { recursive: true });
+  await writeFile(statePath, `${JSON.stringify({ version: 1, installations: [...installations, record] }, null, 2)}\n`);
 }
 
 async function assertProject(cwd, { requireConfig = true } = {}) {
@@ -140,18 +207,45 @@ export async function runCli(
   if (command === "add") {
     if (names.length === 0) throw new Error("missing component name. Example: zeron-ui add button");
     await assertProject(cwd);
+    if (values.path) {
+      throw new Error("--path is temporarily unsupported; configure component targets in components.json instead");
+    }
     const urls = names.map((name) => componentUrl(name, baseUrl));
+    const plan = await buildInstallPlan({
+      cwd,
+      names,
+      baseUrl,
+      overwrite: values.overwrite,
+      fetchImpl,
+    });
+    const project = JSON.parse(await readFile(path.join(cwd, "package.json"), "utf8"));
+    assertInstallCompatibility(plan, project);
+    if (plan.css?.requestedByTheme && !(await fileExists(plan.css.targetPath))) {
+      throw new Error(`Theme installation needs the configured CSS file ${path.relative(cwd, plan.css.targetPath)}; no files were written`);
+    }
 
     if (values["dry-run"]) {
-      stdout.write("Preview only; no files will be written.\n");
-      return runShadcnImpl(["view", ...urls, "--cwd", cwd], { cwd });
+      stdout.write(`${JSON.stringify({
+        requestedItems: plan.requestedItems,
+        resolvedItems: plan.resolvedItems,
+        files: plan.files.map(({ targetPath, existedBefore }) => ({ targetPath, existedBefore })),
+        css: plan.css && { targetPath: plan.css.targetPath, exists: await fileExists(plan.css.targetPath), requestedByTheme: plan.css.requestedByTheme },
+      }, null, 2)}\n`);
+      return 0;
     }
 
     const status = runShadcnImpl(
       ["add", ...urls, "--cwd", cwd, ...forwardSharedOptions(values, { includePath: true })],
       { cwd },
     );
-    if (status === 0) await resolveInstalledRegistryAliases(cwd);
+    if (status === 0) {
+      await resolveInstalledRegistryAliases(
+        cwd,
+        plan.files
+          .filter((file) => !file.existedBefore || values.overwrite),
+      );
+      await writeInstallState(cwd, plan);
+    }
     return status;
   }
 
@@ -179,22 +273,52 @@ export async function runCli(
   if (command === "doctor") {
     if (names.length > 0) throw new Error("doctor does not accept component names");
     const checks = [
-      [`Node.js ${process.versions.node}`, isSupportedNodeVersion()],
-      ["package.json", await fileExists(path.join(cwd, "package.json"))],
-      ["components.json", await fileExists(path.join(cwd, "components.json"))],
+      [`Node.js ${process.versions.node}`, isSupportedNodeVersion(), "pass"],
+      ["package.json", await fileExists(path.join(cwd, "package.json")), "pass"],
+      ["components.json", await fileExists(path.join(cwd, "components.json")), "pass"],
     ];
+
+    if (await fileExists(path.join(cwd, "components.json"))) {
+      try {
+        const config = JSON.parse(await readFile(path.join(cwd, "components.json"), "utf8"));
+        const aliases = config.aliases ?? {};
+        const validAliases = ["ui", "components", "lib", "hooks"].every((name) => typeof aliases[name] === "string");
+        checks.push(["components.json aliases", validAliases, validAliases ? "pass" : "fail"]);
+      } catch {
+        checks.push(["components.json aliases", false, "fail"]);
+      }
+    }
 
     try {
       const catalog = await fetchCatalog(baseUrl, fetchImpl);
-      checks.push([`Registry (${catalog.items.length} items)`, true]);
+      checks.push([`Registry (${catalog.items.length} items)`, true, "pass"]);
     } catch {
-      checks.push(["Registry", false]);
+      checks.push(["Registry", false, "fail"]);
     }
 
-    for (const [label, ok] of checks) {
-      stdout.write(`${ok ? "✓" : "✗"} ${label}\n`);
+    if (values.check) {
+      const statePath = path.join(cwd, ".zeron", "install-state.json");
+      try {
+        const state = JSON.parse(await readFile(statePath, "utf8"));
+        const files = state.installations?.flatMap((entry) => entry.files ?? []) ?? [];
+        const missing = [];
+        for (const file of files) if (!(await fileExists(path.join(cwd, file)))) missing.push(file);
+        checks.push(["recorded installation files", missing.length === 0, missing.length === 0 ? "pass" : "fail"]);
+        if (missing.length) stdout.write(`✗ missing: ${missing.join(", ")}\n`);
+      } catch (error) {
+        if (error?.code === "ENOENT") {
+          checks.push(["installation record", false, "unchecked"]);
+        } else {
+          checks.push(["installation record", false, "fail"]);
+        }
+      }
     }
-    return checks.every(([, ok]) => ok) ? 0 : 1;
+
+    for (const [label, ok, state] of checks) {
+      const marker = state === "unchecked" ? "?" : ok ? "✓" : "✗";
+      stdout.write(`${marker} ${label}\n`);
+    }
+    return checks.every(([, ok, state]) => ok && state !== "unchecked") ? 0 : 1;
   }
 
   throw new Error(`unknown command "${command}"`);

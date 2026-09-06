@@ -1,4 +1,4 @@
-import { lstat, mkdir, readdir, readFile, rename, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
 
@@ -20,110 +20,95 @@ function replacementFor(specifier, aliases) {
     return `${aliases[nested[2]]}${nested[3] ?? ""}`;
   }
 
+  // shadcn 3 occasionally resolves the Registry's `@lib/tokens/*` import
+  // relative to `components/ui`, producing a path that cannot exist in the
+  // planned consumer layout. This narrow normalization leaves all ordinary
+  // relative imports untouched.
+  const relativeTokens = /^(?:\.\.\/)+tokens\/(.+)$/.exec(specifier);
+  if (relativeTokens && typeof aliases.lib === "string") {
+    return `${aliases.lib}/tokens/${relativeTokens[1]}`;
+  }
+
   return specifier;
 }
 
-function updateSpecifier(factory, literal, aliases) {
-  const replacement = replacementFor(literal.text, aliases);
-  return replacement === literal.text ? literal : factory.createStringLiteral(replacement);
+function scriptKindFor(filename) {
+  if (/\.tsx$/i.test(filename)) return ts.ScriptKind.TSX;
+  if (/\.jsx$/i.test(filename)) return ts.ScriptKind.JSX;
+  if (/\.(?:[cm]?js)$/i.test(filename)) return ts.ScriptKind.JS;
+  return ts.ScriptKind.TS;
+}
+
+function isSourceFile(filename) {
+  return /\.(?:[cm]?[jt]sx?|mts|cts)$/i.test(filename);
+}
+
+function quotedReplacement(source, literal, replacement) {
+  const start = literal.getStart();
+  const quote = source[start];
+  const content = replacement
+    .replaceAll("\\", "\\\\")
+    .replaceAll(quote, `\\${quote}`);
+  return { start, end: literal.getEnd(), text: `${quote}${content}${quote}` };
 }
 
 export function resolveRegistryAliases(source, aliases, filename = "registry-item.tsx") {
   if (!Object.keys(aliases).some((key) => PLACEHOLDER_ALIASES.has(key))) return source;
-  const sourceFile = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-  const result = ts.transform(sourceFile, [
-    (context) => {
-      const { factory } = context;
-      const visit = (node) => {
-        if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
-          return factory.updateImportDeclaration(node, node.modifiers, node.importClause, updateSpecifier(factory, node.moduleSpecifier, aliases), node.attributes);
-        }
-        if (ts.isExportDeclaration(node) && node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier)) {
-          return factory.updateExportDeclaration(node, node.modifiers, node.isTypeOnly, node.exportClause, updateSpecifier(factory, node.moduleSpecifier, aliases), node.attributes);
-        }
-        if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument) && ts.isStringLiteral(node.argument.literal)) {
-          return factory.updateImportTypeNode(node, factory.updateLiteralTypeNode(node.argument, updateSpecifier(factory, node.argument.literal, aliases)), node.attributes, node.qualifier, node.typeArguments);
-        }
-        return ts.visitEachChild(node, visit, context);
-      };
-      return (file) => ts.visitNode(file, visit);
-    },
-  ]);
-  const output = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed }).printFile(result.transformed[0]);
-  result.dispose();
-  return output;
-}
-
-async function sourceFiles(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
-  const files = [];
-  for (const entry of entries) {
-    if (entry.name === "node_modules" || entry.name === ".next" || entry.name === ".git") continue;
-    const file = path.join(directory, entry.name);
-    if (entry.isDirectory()) files.push(...await sourceFiles(file));
-    else if (/\.(?:[cm]?tsx?|jsx?)$/.test(entry.name)) files.push(file);
+  // Registry closures can include assets alongside source files. Parsing an
+  // SVG (or another non-code asset) as TypeScript would make a safe install
+  // fail even though there are no module specifiers to rewrite.
+  if (!isSourceFile(filename)) return source;
+  const sourceFile = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, true, scriptKindFor(filename));
+  if (sourceFile.parseDiagnostics.length) {
+    throw new Error(`Cannot safely resolve registry aliases in ${filename}: source has syntax errors`);
   }
-  return files;
-}
 
-function importTargetDirectory(alias, imports) {
-  const target = imports?.[`${alias}/*`];
-  if (typeof target !== "string" || !target.startsWith("./")) return null;
-  return target.slice(2).replace(/\*.*$/, "").replace(/\/$/, "");
-}
+  const replacements = [];
+  const addReplacement = (literal) => {
+    const replacement = replacementFor(literal.text, aliases);
+    if (replacement !== literal.text) replacements.push(quotedReplacement(source, literal, replacement));
+  };
+  const visit = (node) => {
+    if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) addReplacement(node.moduleSpecifier);
+    else if (ts.isExportDeclaration(node) && node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier)) addReplacement(node.moduleSpecifier);
+    else if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument) && ts.isStringLiteral(node.argument.literal)) addReplacement(node.argument.literal);
+    else if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword && ts.isStringLiteral(node.arguments[0])) addReplacement(node.arguments[0]);
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
 
-async function exists(file) {
-  try {
-    await lstat(file);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function moveDirectoryContents(sourceDirectory, destinationDirectory) {
-  await mkdir(destinationDirectory, { recursive: true });
-  for (const entry of await readdir(sourceDirectory, { withFileTypes: true })) {
-    const source = path.join(sourceDirectory, entry.name);
-    const destination = path.join(destinationDirectory, entry.name);
-    if (entry.isDirectory()) {
-      await moveDirectoryContents(source, destination);
-    } else if (!await exists(destination)) {
-      await rename(source, destination);
-    }
-  }
-}
-
-async function moveMisplacedHashTargets(cwd, imports) {
-  for (const pattern of Object.keys(imports ?? {}).filter((key) => key.startsWith("#") && key.endsWith("/*"))) {
-    const alias = pattern.slice(0, -2);
-    const targetDirectory = importTargetDirectory(alias, imports);
-    if (!targetDirectory) continue;
-
-    const misplacedDirectory = path.join(cwd, alias);
-    try {
-      await readdir(misplacedDirectory, { withFileTypes: true });
-    } catch {
-      continue;
-    }
-
-    const destinationDirectory = path.join(cwd, targetDirectory);
-    await moveDirectoryContents(misplacedDirectory, destinationDirectory);
-  }
+  return replacements
+    .sort((left, right) => right.start - left.start)
+    .reduce((output, replacement) => `${output.slice(0, replacement.start)}${replacement.text}${output.slice(replacement.end)}`, source);
 }
 
 /** Resolve Registry placeholders after shadcn has written files using the consumer's own aliases. */
-export async function resolveInstalledRegistryAliases(cwd) {
+export async function resolveInstalledRegistryAliases(cwd, files) {
+  if (!Array.isArray(files)) throw new Error("Registry alias resolution requires an explicit install-plan file list");
   const config = JSON.parse(await readFile(path.join(cwd, "components.json"), "utf8"));
   const aliases = config.aliases ?? {};
   if (!Object.keys(aliases).some((key) => PLACEHOLDER_ALIASES.has(key))) return;
 
-  const packageJson = JSON.parse(await readFile(path.join(cwd, "package.json"), "utf8"));
-  await moveMisplacedHashTargets(cwd, packageJson.imports);
-
-  for (const file of await sourceFiles(cwd)) {
-    const input = await readFile(file, "utf8");
+  for (const planFile of files) {
+    const file = typeof planFile === "string" ? planFile : planFile.targetPath;
+    const relative = path.relative(cwd, file);
+    if (relative.startsWith("..") || path.isAbsolute(relative)) {
+      throw new Error(`Refusing to rewrite an install-plan file outside the project: ${file}`);
+    }
+    let input;
+    let wasMissing = false;
+    try {
+      input = await readFile(file, "utf8");
+    } catch (error) {
+      if (error?.code !== "ENOENT" || typeof planFile === "string" || typeof planFile.expectedContent !== "string") throw error;
+      // shadcn can omit a nested registry dependency when it decides an item
+      // has already been processed. The install plan is authoritative and
+      // contains the exact content that passed conflict checks, so materialize
+      // only that missing planned target—never scan or rewrite user files.
+      input = planFile.expectedContent;
+      wasMissing = true;
+    }
     const output = resolveRegistryAliases(input, aliases, file);
-    if (output !== input) await writeFile(file, output);
+    if (output !== input || wasMissing) await writeFile(file, output);
   }
 }
