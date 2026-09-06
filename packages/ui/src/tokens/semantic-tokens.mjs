@@ -53,9 +53,9 @@ export const foregroundColorTokens = classify([
   { name: "fg-success", light: "#176B3A", dark: "#9DE7B4", usage: "普通承载面上的成功、完成或正向结果文字和图标；不得用于高强调操作填充之上" },
   { name: "fg-info", light: "#004DAF", dark: "#A1D2FE", usage: "普通承载面上的说明、提示和信息文字与图标；不得用于信息填充之上" },
   { name: "fg-neutral-status", light: "#555B61", dark: "#C7CBCE", usage: "普通承载面上的中性状态文字和图标；不得用于高强调操作填充之上" },
-  { name: "fg-on-primary-action", light: "var(--fg-on-brand)", dark: neutral[0], usage: "主要按钮的文字和图标；浅色模式沿用品牌主题计算的前景色，深色模式保持白色" },
+  { name: "fg-on-primary-action", light: "var(--fg-on-brand)", dark: "var(--fg-on-brand)", usage: "主要按钮的文字和图标；始终沿用品牌主题计算的前景色" },
   { name: "fg-on-brand", light: neutral[0], dark: "#00040D", usage: "品牌色默认、悬停和按下填充上的文字与图标；须与对应填充配对使用" },
-  { name: "fg-on-danger", light: "var(--fg-on-brand)", dark: "var(--fg-on-brand)", usage: "危险操作默认、悬停和按下填充之上的文字与图标；复用 fg-on-brand 并须与对应填充配对使用" },
+  { name: "fg-on-danger", light: "#00040D", dark: "#00040D", usage: "危险操作默认、悬停和按下填充之上的文字与图标；独立于品牌主题并须与对应填充配对使用" },
   { name: "fg-on-inverse", light: neutral[0], dark: "#00040D", usage: "反色背景上的文字和图标；仅与反色填充配对使用" },
 ], "foreground");
 
@@ -222,12 +222,21 @@ export const typographyTokens = [
   { name: "heading", size: "1.5rem", px: 24, lineHeight: "2rem", linePx: 32, usage: "页面标题" },
 ];
 
-export const motionDurationTokens = [
-  { name: "fast", value: "80ms", usage: "图标、颜色和短距离状态反馈" },
-  { name: "moderate-exit", value: "120ms", usage: "中等层级的退出过渡" },
-  { name: "moderate", value: "160ms", usage: "控件状态与面板的默认过渡" },
-  { name: "slow", value: "240ms", usage: "较大内容区的进入过渡" },
+/**
+ * Canonical motion tiers. CSS duration utilities and the Framer Motion spring
+ * module are generated from these values, so their enter/exit timing cannot
+ * drift apart.
+ */
+export const motionTokens = [
+  { name: "fast", enterMs: 80, exitMs: 60, bounce: 0, usage: "图标、颜色和短距离状态反馈" },
+  { name: "moderate", enterMs: 160, exitMs: 120, bounce: 0, usage: "控件状态与面板的默认过渡" },
+  { name: "slow", enterMs: 240, exitMs: 160, bounce: 0.12, usage: "较大内容区的进入过渡" },
 ];
+
+export const motionDurationTokens = motionTokens.flatMap(({ enterMs, exitMs, name, usage }) => [
+  { name, value: `${enterMs}ms`, usage },
+  { name: `${name}-exit`, value: `${exitMs}ms`, usage: `${usage}的退出过渡` },
+]);
 
 export const fontTokens = {
   family: `"Inter", system-ui, sans-serif`,
@@ -273,6 +282,7 @@ export const semanticTokens = {
   surfaces: surfaceTokens,
   shadows: shadowTokens,
   typography: typographyTokens,
+  motion: motionTokens,
   motionDurations: motionDurationTokens,
   fonts: fontTokens,
   controlHeights: controlHeightTokens,

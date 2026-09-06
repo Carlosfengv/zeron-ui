@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   contrastRatio,
   deriveBrandTheme,
-  deriveBrandPalette,
   normalizeHex,
 } from "../docs/lib/brand-color";
 
@@ -14,16 +13,23 @@ describe("brand playground palette derivation", () => {
     expect(normalizeHex("rgba(0, 0, 0, .5)")).toBeNull();
   });
 
-  it.each(["#0060D2", "#7C3AED", "#DB2777", "#DC2626", "#EA580C", "#16A34A"])(
-    "derives accessible content for %s",
+  it.each(["#0060D2", "#7C3AED", "#16A34A", "#FDE047", "#111111", "#FAFAFA"])(
+    "derives an accessible theme bundle or explains why %s is rejected",
     (color) => {
-      const palette = deriveBrandPalette(color);
-      for (const fill of [palette.brand, palette.brandHover, palette.brandActive]) {
-        expect(contrastRatio(palette.fgOnBrand, fill)).toBeGreaterThanOrEqual(4.5);
-        expect(fill).toMatch(/^#[0-9A-F]{6}$/);
+      const result = deriveBrandTheme(color);
+      if (result.status === "rejected") {
+        expect(result.reasons).not.toHaveLength(0);
+        return;
       }
-      expect(contrastRatio(palette.fgBrandLight, "#FFFFFF")).toBeGreaterThanOrEqual(4.5);
-      expect(contrastRatio(palette.fgBrandDark, "#414141")).toBeGreaterThanOrEqual(4.5);
+
+      for (const mode of ["light", "dark"] as const) {
+        const semantic = result.bundle.semantic;
+        for (const fillName of ["brand", "brand-hover", "brand-active"] as const) {
+          const fill = semantic[fillName][mode];
+          expect(contrastRatio(semantic["fg-on-brand"][mode], fill)).toBeGreaterThanOrEqual(4.5);
+          expect(fill).toMatch(/^#[0-9A-F]{6}$/);
+        }
+      }
     }
   );
 

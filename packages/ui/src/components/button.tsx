@@ -17,7 +17,7 @@ import {
   controlSizeClasses,
   controlSizeRecipe,
   type ControlSize,
-} from "../tokens/control-size";
+} from "#tokens/control-size";
 
 const buttonSizeVariants = {
   xs: cn(controlSizeClasses.xs, controlButtonPaddingClasses.xs, "text-label gap-1"),

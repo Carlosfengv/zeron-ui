@@ -117,15 +117,23 @@ describe("semantic color consumers", () => {
     expect(dataTable).not.toContain("opacity: isPinned");
   });
 
-  it("uses border for input and table structure boundaries", () => {
+  it("uses input for static form-control boundaries and border for structure", () => {
     const input = read(join(UI_ROOT, "input.tsx"));
+    const textarea = read(join(UI_ROOT, "textarea.tsx"));
+    const select = read(join(UI_ROOT, "select.tsx"));
+    const combobox = read(join(UI_ROOT, "combobox.tsx"));
+    const inputGroup = read(join(UI_ROOT, "input-group.tsx"));
     const table = read(join(UI_ROOT, "table.tsx"));
     const dataTable = read(join(UI_ROOT, "data-table.tsx"));
     const dataGrid = read(join(UI_ROOT, "data-grid/data-grid.tsx"));
     const dataGridRow = read(join(UI_ROOT, "data-grid/data-grid-row.tsx"));
     const separator = read(join(UI_ROOT, "separator.tsx"));
 
-    expect(input).toContain("border border-border bg-transparent");
+    for (const source of [input, textarea, select, combobox, inputGroup]) {
+      expect(source).toContain("border border-input");
+      expect(source).toContain("hover:border-input-hover");
+    }
+    expect(input).not.toContain("border border-border bg-transparent");
     expect(table).toContain(
       "group/row relative z-content border-b transition-[border-color] duration-fast"
     );

@@ -95,8 +95,8 @@ const tokenData = {
     {
       "name": "fg-on-primary-action",
       "light": "var(--fg-on-brand)",
-      "dark": "#FFFFFF",
-      "usage": "主要按钮的文字和图标；浅色模式沿用品牌主题计算的前景色，深色模式保持白色",
+      "dark": "var(--fg-on-brand)",
+      "usage": "主要按钮的文字和图标；始终沿用品牌主题计算的前景色",
       "classification": {
         "channel": "foreground",
         "intent": "neutral"
@@ -114,9 +114,9 @@ const tokenData = {
     },
     {
       "name": "fg-on-danger",
-      "light": "var(--fg-on-brand)",
-      "dark": "var(--fg-on-brand)",
-      "usage": "危险操作默认、悬停和按下填充之上的文字与图标；复用 fg-on-brand 并须与对应填充配对使用",
+      "light": "#00040D",
+      "dark": "#00040D",
+      "usage": "危险操作默认、悬停和按下填充之上的文字与图标；独立于品牌主题并须与对应填充配对使用",
       "classification": {
         "channel": "foreground",
         "intent": "danger"
@@ -670,8 +670,8 @@ const tokenData = {
     {
       "name": "fg-on-primary-action",
       "light": "var(--fg-on-brand)",
-      "dark": "#FFFFFF",
-      "usage": "主要按钮的文字和图标；浅色模式沿用品牌主题计算的前景色，深色模式保持白色",
+      "dark": "var(--fg-on-brand)",
+      "usage": "主要按钮的文字和图标；始终沿用品牌主题计算的前景色",
       "classification": {
         "channel": "foreground",
         "intent": "neutral"
@@ -689,9 +689,9 @@ const tokenData = {
     },
     {
       "name": "fg-on-danger",
-      "light": "var(--fg-on-brand)",
-      "dark": "var(--fg-on-brand)",
-      "usage": "危险操作默认、悬停和按下填充之上的文字与图标；复用 fg-on-brand 并须与对应填充配对使用",
+      "light": "#00040D",
+      "dark": "#00040D",
+      "usage": "危险操作默认、悬停和按下填充之上的文字与图标；独立于品牌主题并须与对应填充配对使用",
       "classification": {
         "channel": "foreground",
         "intent": "danger"
@@ -1352,6 +1352,29 @@ const tokenData = {
       "usage": "页面标题"
     }
   ],
+  "motion": [
+    {
+      "name": "fast",
+      "enterMs": 80,
+      "exitMs": 60,
+      "bounce": 0,
+      "usage": "图标、颜色和短距离状态反馈"
+    },
+    {
+      "name": "moderate",
+      "enterMs": 160,
+      "exitMs": 120,
+      "bounce": 0,
+      "usage": "控件状态与面板的默认过渡"
+    },
+    {
+      "name": "slow",
+      "enterMs": 240,
+      "exitMs": 160,
+      "bounce": 0.12,
+      "usage": "较大内容区的进入过渡"
+    }
+  ],
   "motionDurations": [
     {
       "name": "fast",
@@ -1359,9 +1382,9 @@ const tokenData = {
       "usage": "图标、颜色和短距离状态反馈"
     },
     {
-      "name": "moderate-exit",
-      "value": "120ms",
-      "usage": "中等层级的退出过渡"
+      "name": "fast-exit",
+      "value": "60ms",
+      "usage": "图标、颜色和短距离状态反馈的退出过渡"
     },
     {
       "name": "moderate",
@@ -1369,9 +1392,19 @@ const tokenData = {
       "usage": "控件状态与面板的默认过渡"
     },
     {
+      "name": "moderate-exit",
+      "value": "120ms",
+      "usage": "控件状态与面板的默认过渡的退出过渡"
+    },
+    {
       "name": "slow",
       "value": "240ms",
       "usage": "较大内容区的进入过渡"
+    },
+    {
+      "name": "slow-exit",
+      "value": "160ms",
+      "usage": "较大内容区的进入过渡的退出过渡"
     }
   ],
   "fonts": {

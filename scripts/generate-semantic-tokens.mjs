@@ -12,6 +12,7 @@ import {
   shadowSupportTokens,
   shadowTokens,
   typographyTokens,
+  motionTokens,
   motionDurationTokens,
   fontTokens,
   controlHeightTokens,
@@ -26,6 +27,7 @@ const REGISTRY_PATH = `${ROOT}/packages/ui/registry.json`;
 const DOC_PATH = `${ROOT}/SEMANTIC-TOKENS.md`;
 const TOKEN_PACKAGE_CSS_PATH = `${ROOT}/packages/tokens/tokens.css`;
 const TOKEN_PACKAGE_JS_PATH = `${ROOT}/packages/tokens/index.mjs`;
+const SPRINGS_PATH = `${ROOT}/packages/ui/src/system/springs.ts`;
 const START = "/* BEGIN GENERATED SEMANTIC TOKENS — DO NOT EDIT */";
 const END = "/* END GENERATED SEMANTIC TOKENS */";
 
@@ -277,6 +279,30 @@ ${indentLines(layerClasses)}
 export function renderTokenPackageModule() {
   const data = JSON.stringify(semanticTokens, null, 2);
   return `// Generated from packages/ui/src/tokens/semantic-tokens.mjs. Do not edit.\n\nconst tokenData = ${data};\n\nexport const colors = tokenData.colors;\nexport const foregroundColorTokens = tokenData.foregrounds;\nexport const fillColorTokens = tokenData.fills;\nexport const boundaryColorTokens = tokenData.boundaries;\nexport const overlayColorTokens = tokenData.overlays;\nexport const supportColorTokens = tokenData.supportColors;\nexport const componentColorTokens = tokenData.componentColors;\nexport const surfaceTokens = tokenData.surfaces;\nexport const shadowTokens = tokenData.shadows;\nexport const typographyTokens = tokenData.typography;\nexport const motionDurationTokens = tokenData.motionDurations;\nexport const fontTokens = tokenData.fonts;\nexport const controlHeightTokens = tokenData.controlHeights;\nexport const badgeHeightTokens = tokenData.badgeHeights;\nexport const layerTokens = tokenData.layers;\nexport const semanticTokens = tokenData;\n\nexport default semanticTokens;\n`;
+}
+
+/** Generates the public Framer Motion helper from the canonical motion tiers. */
+export function renderSpringsModule() {
+  const tiers = motionTokens.map((tier) => `  ${tier.name}: {
+    type: "spring" as const,
+    duration: ${tier.enterMs / 1000},
+    bounce: ${tier.bounce},
+    exit: { duration: ${tier.exitMs / 1000} },
+  },`).join("\n");
+
+  return `// Generated from packages/ui/src/tokens/semantic-tokens.mjs. Do not edit.
+// CSS duration utilities and these Framer Motion tiers share one source.
+// Use spring.<tier> for entry and spring.<tier>.exit for dismissal.
+
+export const spring = {
+${tiers}
+} as const;
+
+// Fallback delay (ms) for deferred-unmount timers. The safety buffer keeps a
+// throttled/background tab from leaving an exited portal mounted forever.
+export const exitFallbackMs = (tier: { exit: { duration: number } }) =>
+  Math.round(tier.exit.duration * 1000) + 100;
+`;
 }
 
 const table = (headers, rows) => [
@@ -734,6 +760,7 @@ async function expectedArtifacts() {
     documentation: renderDocumentation(),
     tokenPackageCss: renderTokenPackageCss(),
     tokenPackageModule: renderTokenPackageModule(),
+    springs: renderSpringsModule(),
   };
 }
 
@@ -743,10 +770,17 @@ async function main() {
   const targets = [
     [GLOBALS_PATH, expected.globals],
     [REGISTRY_PATH, expected.registry],
-    [DOC_PATH, expected.documentation],
     [TOKEN_PACKAGE_CSS_PATH, expected.tokenPackageCss],
     [TOKEN_PACKAGE_JS_PATH, expected.tokenPackageModule],
+    [SPRINGS_PATH, expected.springs],
   ];
+
+  // The generated local reference is intentionally ignored. A fresh checkout
+  // must still be able to validate versioned build outputs, while an existing
+  // local copy remains checked so it cannot silently drift.
+  if (!check || await readFile(DOC_PATH, "utf8").then(() => true).catch(() => false)) {
+    targets.splice(2, 0, [DOC_PATH, expected.documentation]);
+  }
 
   if (check) {
     const stale = [];
@@ -766,6 +800,7 @@ async function main() {
   console.log("✓ generated packages/ui/registry.json semantic theme");
   console.log("✓ generated SEMANTIC-TOKENS.md");
   console.log("✓ generated @zeron/tokens CSS and JavaScript entrypoints");
+  console.log("✓ generated packages/ui Framer Motion tiers");
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {

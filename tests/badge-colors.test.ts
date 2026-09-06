@@ -4,30 +4,11 @@ import {
   badgeColors,
   type BadgeColor,
 } from "../packages/ui/src/components/badge-colors";
-import { contrastRatio } from "../packages/ui/src/system/brand-theme";
+import { contrastRatio } from "./helpers/token-contrast.mjs";
 
 const strong500Colors = {
   ...badgeColors,
   gray: "#737373",
-} satisfies Record<BadgeColor, string>;
-const strong50Foregrounds = {
-  gray: "#FAFAFA",
-  red: "#FEF2F2",
-  orange: "#FFF7ED",
-  amber: "#FFFBEB",
-  yellow: "#FEFCE8",
-  lime: "#F7FEE7",
-  green: "#F0FDF4",
-  emerald: "#ECFDF5",
-  teal: "#F0FDFA",
-  cyan: "#ECFEFF",
-  blue: "#EFF6FF",
-  indigo: "#EEF2FF",
-  violet: "#F5F3FF",
-  purple: "#FAF5FF",
-  fuchsia: "#FDF4FF",
-  pink: "#FDF2F8",
-  rose: "#FFF1F2",
 } satisfies Record<BadgeColor, string>;
 const softDarkColors = {
   gray: "#525252",
@@ -57,10 +38,12 @@ describe("badge categorical colors", () => {
     },
   );
 
-  it.each(Object.entries(strong50Foregrounds) as [BadgeColor, string][])(
-    "uses the 50 step for the %s strong foreground",
-    (color, foreground) => {
-      expect(badgeCategoricalTokens(color).strong.foreground).toBe(foreground);
+  it.each(Object.keys(strong500Colors) as BadgeColor[])(
+    "keeps the %s strong foreground readable against its actual fill",
+    (color) => {
+      const strong = badgeCategoricalTokens(color).strong;
+      expect(strong.foreground).toBe(color === "gray" ? "#FAFAFA" : "#00040D");
+      expect(contrastRatio(strong.foreground, strong.background)).toBeGreaterThanOrEqual(4.5);
     },
   );
 
