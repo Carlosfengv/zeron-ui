@@ -5,8 +5,8 @@
   "title": "Provider Create Form 1",
   "description": "A three-step workflow for provider details, credential verification, model discovery, and per-model availability.",
   "dependencies": [
-    "tw-animate-css",
-    "@lobehub/icons"
+    "tw-animate-css@^1.4.0",
+    "@lobehub/icons@^5.16.0"
   ],
   "registryDependencies": [
     "https://zeron-ui.vercel.app/r/alert.json",
@@ -39,6 +39,14 @@
       "target": "components/blocks/provider-create-form-01/index.ts"
     }
   ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "template"
+    }
+  },
   "categories": [
     "application",
     "forms"

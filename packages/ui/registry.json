@@ -91,9 +91,11 @@
           "text-heading": "var(--font-size-heading)",
           "text-heading--line-height": "var(--line-height-heading)",
           "duration-fast": "var(--motion-duration-fast)",
-          "duration-moderate-exit": "var(--motion-duration-moderate-exit)",
+          "duration-fast-exit": "var(--motion-duration-fast-exit)",
           "duration-moderate": "var(--motion-duration-moderate)",
+          "duration-moderate-exit": "var(--motion-duration-moderate-exit)",
           "duration-slow": "var(--motion-duration-slow)",
+          "duration-slow-exit": "var(--motion-duration-slow-exit)",
           "spacing-control-xs": "var(--control-height-xs)",
           "spacing-control-sm": "var(--control-height-sm)",
           "spacing-control-md": "var(--control-height-md)",
@@ -116,7 +118,7 @@
           "fg-neutral-status": "#555B61",
           "fg-on-primary-action": "var(--fg-on-brand)",
           "fg-on-brand": "#FFFFFF",
-          "fg-on-danger": "var(--fg-on-brand)",
+          "fg-on-danger": "#00040D",
           "fg-on-inverse": "#FFFFFF",
           "brand": "#0060D2",
           "warning": "#FA8801",
@@ -192,9 +194,11 @@
           "font-size-heading": "1.5rem",
           "line-height-heading": "2rem",
           "motion-duration-fast": "80ms",
-          "motion-duration-moderate-exit": "120ms",
+          "motion-duration-fast-exit": "60ms",
           "motion-duration-moderate": "160ms",
+          "motion-duration-moderate-exit": "120ms",
           "motion-duration-slow": "240ms",
+          "motion-duration-slow-exit": "160ms",
           "control-height-xs": "1.5rem",
           "control-height-sm": "1.75rem",
           "control-height-md": "2rem",
@@ -227,9 +231,9 @@
           "fg-success": "#9DE7B4",
           "fg-info": "#A1D2FE",
           "fg-neutral-status": "#C7CBCE",
-          "fg-on-primary-action": "#FFFFFF",
+          "fg-on-primary-action": "var(--fg-on-brand)",
           "fg-on-brand": "#00040D",
-          "fg-on-danger": "var(--fg-on-brand)",
+          "fg-on-danger": "#00040D",
           "fg-on-inverse": "#00040D",
           "brand": "#1483FD",
           "warning": "#FF9314",
@@ -305,9 +309,11 @@
           "font-size-heading": "1.5rem",
           "line-height-heading": "2rem",
           "motion-duration-fast": "80ms",
-          "motion-duration-moderate-exit": "120ms",
+          "motion-duration-fast-exit": "60ms",
           "motion-duration-moderate": "160ms",
+          "motion-duration-moderate-exit": "120ms",
           "motion-duration-slow": "240ms",
+          "motion-duration-slow-exit": "160ms",
           "control-height-xs": "1.5rem",
           "control-height-sm": "1.75rem",
           "control-height-md": "2rem",
@@ -571,6 +577,9 @@
       "type": "registry:hook",
       "title": "useMergeSplitBlocks",
       "description": "React hook + renderer for the selected-background merge/split animation. When one row bridges or splits two contiguous selected runs, their inner edges glide together (or apart) and swap to a single block, instead of one block spring-growing over the union.",
+      "dependencies": [
+        "framer-motion"
+      ],
       "registryDependencies": [
         "springs",
         "use-proximity-hover"
@@ -580,6 +589,19 @@
           "path": "packages/ui/src/hooks/use-merge-split.tsx",
           "type": "registry:hook",
           "target": "hooks/use-merge-split.tsx"
+        }
+      ]
+    },
+    {
+      "name": "compose-refs",
+      "type": "registry:lib",
+      "title": "Compose Refs",
+      "description": "Small ref-composition helper shared by installable interactive components.",
+      "files": [
+        {
+          "path": "packages/ui/src/system/compose-refs.ts",
+          "type": "registry:lib",
+          "target": "lib/compose-refs.ts"
         }
       ]
     },
@@ -735,18 +757,14 @@
         "surfaces",
         "utils",
         "popover",
-        "select"
+        "select",
+        "compose-refs"
       ],
       "files": [
         {
           "path": "packages/ui/src/components/badge-overflow.tsx",
           "type": "registry:ui",
           "target": "components/ui/badge-overflow.tsx"
-        },
-        {
-          "path": "packages/ui/src/system/compose-refs.ts",
-          "type": "registry:lib",
-          "target": "lib/compose-refs.ts"
         }
       ]
     },
@@ -762,7 +780,8 @@
       "registryDependencies": [
         "surfaces",
         "utils",
-        "icon-context"
+        "icon-context",
+        "dropdown"
       ],
       "files": [
         {
@@ -894,7 +913,9 @@
         "separator",
         "skeleton",
         "select",
-        "toast"
+        "toast",
+        "command",
+        "compose-refs"
       ],
       "files": [
         {
@@ -1021,11 +1042,6 @@
           "path": "packages/ui/src/system/filter-types.ts",
           "type": "registry:lib",
           "target": "lib/filter-types.ts"
-        },
-        {
-          "path": "packages/ui/src/system/compose-refs.ts",
-          "type": "registry:lib",
-          "target": "lib/compose-refs.ts"
         }
       ]
     },
@@ -1085,6 +1101,12 @@
       "type": "registry:lib",
       "title": "Filter Core",
       "description": "Headless, JSON-safe filter vocabulary shared by visual and text-query filter controls.",
+      "dependencies": [
+        "date-fns"
+      ],
+      "registryDependencies": [
+        "icon-context"
+      ],
       "files": [
         {
           "path": "packages/ui/src/system/filter-types.ts",
@@ -1118,7 +1140,8 @@
         "calendar",
         "input",
         "popover",
-        "filter-core"
+        "filter-core",
+        "temporal-picker"
       ],
       "files": [
         {
@@ -1273,7 +1296,8 @@
         "surfaces",
         "utils",
         "springs",
-        "icon-context"
+        "icon-context",
+        "tooltip"
       ],
       "files": [
         {
@@ -1568,7 +1592,8 @@
         "surfaces",
         "utils",
         "springs",
-        "icon-context"
+        "icon-context",
+        "tooltip"
       ],
       "files": [
         {
@@ -1612,7 +1637,8 @@
       "description": "Composable information row with an icon, title, supporting description, and a flexible trailing value, status, control, or compact detail.",
       "registryDependencies": [
         "surfaces",
-        "utils"
+        "utils",
+        "springs"
       ],
       "files": [
         {
@@ -1706,7 +1732,8 @@
         "surface-classes",
         "file-thumbnail",
         "button",
-        "tooltip"
+        "tooltip",
+        "container"
       ],
       "files": [
         {
@@ -1727,7 +1754,8 @@
       ],
       "registryDependencies": [
         "surfaces",
-        "utils"
+        "utils",
+        "springs"
       ],
       "files": [
         {
@@ -1986,7 +2014,8 @@
       ],
       "registryDependencies": [
         "surfaces",
-        "utils"
+        "utils",
+        "springs"
       ],
       "files": [
         {
@@ -2271,7 +2300,8 @@
         "use-proximity-hover",
         "elevated",
         "slider",
-        "portal-container-context"
+        "portal-container-context",
+        "tooltip"
       ],
       "files": [
         {
@@ -2335,7 +2365,9 @@
         "surfaces",
         "nav-item",
         "nav-menu",
-        "utils"
+        "utils",
+        "icon-context",
+        "button"
       ],
       "files": [
         {
@@ -2402,7 +2434,9 @@
         "surfaces",
         "utils",
         "tooltip",
-        "nav-menu"
+        "nav-menu",
+        "icon-context",
+        "button"
       ],
       "files": [
         {
@@ -2431,13 +2465,39 @@
         "icon-context",
         "button",
         "scroll-area",
-        "mobile-drawer"
+        "mobile-drawer",
+        "popover"
       ],
       "files": [
         {
           "path": "packages/ui/src/components/sidebar.tsx",
           "type": "registry:ui",
           "target": "components/ui/sidebar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sidebar-account-menu",
+      "type": "registry:ui",
+      "title": "Sidebar Account Menu",
+      "description": "Account switcher and action menu for the sidebar footer.",
+      "dependencies": [
+        "@base-ui/react",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "elevated",
+        "icon-context",
+        "dropdown",
+        "sidebar-identity-row"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/sidebar-account-menu.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/sidebar-account-menu.tsx"
         }
       ]
     },
@@ -2526,7 +2586,9 @@
         "popover",
         "mobile-drawer",
         "icon-context",
-        "use-touch-primary"
+        "use-touch-primary",
+        "compose-refs",
+        "scroll-area"
       ],
       "files": [
         {

@@ -37,5 +37,18 @@
       "type": "registry:lib",
       "target": "lib/icon-variants/duotone-rounded.tsx"
     }
-  ]
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui",
+      "optionalDependencies": [
+        "@hugeicons-pro/core-stroke-standard",
+        "@hugeicons-pro/core-bulk-rounded",
+        "@hugeicons-pro/core-duotone-rounded"
+      ]
+    }
+  }
 }

@@ -5,11 +5,12 @@
   "title": "Info Item",
   "description": "Composable information row with an icon, title, supporting description, and a flexible trailing value, status, control, or compact detail.",
   "dependencies": [
-    "tw-animate-css"
+    "tw-animate-css@^1.4.0"
   ],
   "registryDependencies": [
     "https://zeron-ui.vercel.app/r/surfaces.json",
-    "https://zeron-ui.vercel.app/r/utils.json"
+    "https://zeron-ui.vercel.app/r/utils.json",
+    "https://zeron-ui.vercel.app/r/springs.json"
   ],
   "files": [
     {
@@ -18,5 +19,13 @@
       "type": "registry:ui",
       "target": "components/ui/info-item.tsx"
     }
-  ]
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui"
+    }
+  }
 }

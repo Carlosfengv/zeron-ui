@@ -2,7 +2,12 @@ import { mkdtemp, readFile, writeFile, rm, access, mkdir } from "node:fs/promise
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { BASE_URL, depUrl, processRegistry } from "../packages/registry/scripts/postbuild.mjs";
+import {
+  BASE_URL,
+  depUrl,
+  pinRuntimeDependencies,
+  processRegistry,
+} from "../packages/registry/scripts/postbuild.mjs";
 
 describe("depUrl", () => {
   it("leaves default shadcn dependencies untouched", () => {
@@ -16,6 +21,21 @@ describe("depUrl", () => {
   });
 });
 
+describe("pinRuntimeDependencies", () => {
+  it("uses the owning package's declared compatibility range", () => {
+    const item = { dependencies: ["@tanstack/react-table", "tw-animate-css", "unknown-package"] };
+    pinRuntimeDependencies(item, {
+      "@tanstack/react-table": "^8.21.3",
+      "tw-animate-css": "^1.4.0",
+    });
+    expect(item.dependencies).toEqual([
+      "@tanstack/react-table@^8.21.3",
+      "tw-animate-css@^1.4.0",
+      "unknown-package",
+    ]);
+  });
+});
+
 describe("processRegistry pipeline", () => {
   let dir;
 
@@ -25,7 +45,8 @@ describe("processRegistry pipeline", () => {
 
   beforeEach(async () => {
     dir = await mkdtemp(join(tmpdir(), "registry-test-"));
-    await mkdir(join(dir, "obsolete-artifacts"));
+    await mkdir(join(dir, "releases", "candidate-01"), { recursive: true });
+    await writeFile(join(dir, "releases", "candidate-01", "registry.json"), "{\"snapshot\":true}\n");
     await write("registry.json", {
       items: [
         { name: "dialog", registryDependencies: ["button", "badge", "utils"] },
@@ -52,8 +73,9 @@ describe("processRegistry pipeline", () => {
     expect((await read("registry.json")).items[0].registryDependencies).toEqual(expected);
   });
 
-  it("removes stale nested artifact directories", async () => {
-    expect(await exists("obsolete-artifacts")).toBe(false);
+  it("preserves immutable nested release snapshots", async () => {
+    expect(await exists("releases/candidate-01/registry.json")).toBe(true);
+    expect(await readFile(join(dir, "releases", "candidate-01", "registry.json"), "utf8")).toContain("snapshot");
   });
 
   it("is idempotent", async () => {

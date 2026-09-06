@@ -9,6 +9,7 @@ import { pathToFileURL } from "node:url";
 import { transformRegistryImports } from "./transform-imports.mjs";
 
 const REGISTRY_DIR = new URL("../../../public/r", import.meta.url).pathname;
+const ROOT_DIR = new URL("../../..", import.meta.url).pathname;
 export const BASE_URL = process.env.ZERON_REGISTRY_BASE_URL ?? "https://zeron-ui.vercel.app/r";
 
 export function localItemNames(catalog) {
@@ -41,6 +42,32 @@ function addRuntimeDependencies(item) {
   }
 }
 
+async function dependencyVersions() {
+  const packagePaths = [
+    join(ROOT_DIR, "packages/ui/package.json"),
+    join(ROOT_DIR, "packages/blocks/package.json"),
+  ];
+  const manifests = await Promise.all(packagePaths.map(readJson));
+  const versions = {};
+  for (const manifest of manifests) {
+    for (const [name, version] of Object.entries(manifest.dependencies ?? {})) {
+      if (name.startsWith("@zeron/")) continue;
+      if (versions[name] && versions[name] !== version) {
+        throw new Error(`Incompatible Registry dependency range for ${name}: ${versions[name]} vs ${version}`);
+      }
+      versions[name] = version;
+    }
+  }
+  return versions;
+}
+
+export function pinRuntimeDependencies(item, versions) {
+  if (!Array.isArray(item.dependencies)) return;
+  item.dependencies = [...new Set(item.dependencies.map((dependency) => (
+    versions[dependency] ? `${dependency}@${versions[dependency]}` : dependency
+  )))];
+}
+
 async function readJson(path) {
   return JSON.parse(await readFile(path, "utf-8"));
 }
@@ -50,6 +77,7 @@ async function writeJson(path, data) {
 }
 
 export async function processRegistry(registryDir = REGISTRY_DIR) {
+  const versions = await dependencyVersions();
   const staleFiles = new Set(["font-weight.json", "shape-context.json"]);
   const initialFiles = await readdir(registryDir);
   await Promise.all(
@@ -58,13 +86,9 @@ export async function processRegistry(registryDir = REGISTRY_DIR) {
       .map((name) => rm(join(registryDir, name), { force: true }))
   );
   const files = initialFiles.filter((name) => !staleFiles.has(name));
-  // The single-backend registry emits only flat JSON files. Remove any stale
-  // nested artifact directory left by an earlier build.
-  await Promise.all(
-    files
-      .filter((name) => !name.endsWith(".json"))
-      .map((name) => rm(join(registryDir, name), { recursive: true, force: true }))
-  );
+  // `registryDir` can hold immutable release snapshots under `releases/`.
+  // Post-processing only owns the current flat JSON artifacts and must never
+  // recurse into, or remove, historical snapshots.
 
   const catalog = await readJson(join(registryDir, "registry.json"));
   const itemNames = localItemNames(catalog);
@@ -78,11 +102,13 @@ export async function processRegistry(registryDir = REGISTRY_DIR) {
         rewriteDeps(item, itemNames);
         rewriteImports(item);
         addRuntimeDependencies(item);
+        pinRuntimeDependencies(item, versions);
       }
     } else {
       rewriteDeps(data, itemNames);
       rewriteImports(data);
       addRuntimeDependencies(data);
+      pinRuntimeDependencies(data, versions);
     }
 
     await writeJson(filePath, data);
@@ -98,6 +124,7 @@ export async function processRegistry(registryDir = REGISTRY_DIR) {
     theme.$schema = "https://ui.shadcn.com/schema/registry-item.json";
     rewriteDeps(theme, itemNames);
     addRuntimeDependencies(theme);
+    pinRuntimeDependencies(theme, versions);
     await writeJson(join(registryDir, "surfaces.json"), theme);
     console.log("  ✓ surfaces.json");
   }

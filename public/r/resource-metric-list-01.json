@@ -5,7 +5,7 @@
   "title": "Resource Metric List 1",
   "description": "A compact resource inventory with status distribution bars for infrastructure health at a glance.",
   "dependencies": [
-    "tw-animate-css"
+    "tw-animate-css@^1.4.0"
   ],
   "registryDependencies": [
     "https://zeron-ui.vercel.app/r/detail-list.json",
@@ -61,6 +61,14 @@
       "target": "components/blocks/resource-metric-list-01/assets/storage.svg"
     }
   ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "template"
+    }
+  },
   "categories": [
     "application",
     "metrics"

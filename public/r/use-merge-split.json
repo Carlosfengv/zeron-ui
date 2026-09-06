@@ -4,6 +4,9 @@
   "type": "registry:hook",
   "title": "useMergeSplitBlocks",
   "description": "React hook + renderer for the selected-background merge/split animation. When one row bridges or splits two contiguous selected runs, their inner edges glide together (or apart) and swap to a single block, instead of one block spring-growing over the union.",
+  "dependencies": [
+    "framer-motion@^12.34.0"
+  ],
   "registryDependencies": [
     "https://zeron-ui.vercel.app/r/springs.json",
     "https://zeron-ui.vercel.app/r/use-proximity-hover.json"
@@ -15,5 +18,13 @@
       "type": "registry:hook",
       "target": "hooks/use-merge-split.tsx"
     }
-  ]
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui"
+    }
+  }
 }

@@ -5,9 +5,9 @@
   "title": "Textarea",
   "description": "Field-aware multiline text input with semantic variants, accessible validation, and resizable sizing.",
   "dependencies": [
-    "@base-ui/react",
-    "class-variance-authority",
-    "tw-animate-css"
+    "@base-ui/react@^1.4.1",
+    "class-variance-authority@^0.7.1",
+    "tw-animate-css@^1.4.0"
   ],
   "registryDependencies": [
     "https://zeron-ui.vercel.app/r/surfaces.json",
@@ -20,5 +20,13 @@
       "type": "registry:ui",
       "target": "components/ui/textarea.tsx"
     }
-  ]
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui"
+    }
+  }
 }

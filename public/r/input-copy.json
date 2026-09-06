@@ -5,14 +5,15 @@
   "title": "Input Copy",
   "description": "Read-only input with a copy-to-clipboard button and animated check feedback. Supports optional label and shape context.",
   "dependencies": [
-    "framer-motion",
-    "tw-animate-css"
+    "framer-motion@^12.34.0",
+    "tw-animate-css@^1.4.0"
   ],
   "registryDependencies": [
     "https://zeron-ui.vercel.app/r/surfaces.json",
     "https://zeron-ui.vercel.app/r/utils.json",
     "https://zeron-ui.vercel.app/r/springs.json",
-    "https://zeron-ui.vercel.app/r/icon-context.json"
+    "https://zeron-ui.vercel.app/r/icon-context.json",
+    "https://zeron-ui.vercel.app/r/tooltip.json"
   ],
   "files": [
     {
@@ -21,5 +22,13 @@
       "type": "registry:ui",
       "target": "components/ui/input-copy.tsx"
     }
-  ]
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui"
+    }
+  }
 }

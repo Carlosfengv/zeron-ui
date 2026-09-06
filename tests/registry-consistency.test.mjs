@@ -3,6 +3,7 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { BASE_URL } from "../packages/registry/scripts/postbuild.mjs";
+import { registryMetadata } from "../packages/registry/scripts/registry-metadata.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const uiRegistry = JSON.parse(readFileSync(join(ROOT, "packages/ui/registry.json"), "utf-8"));
@@ -99,6 +100,22 @@ describe("package Registry sources", () => {
       }
     }
   });
+
+  it("derives framework and installability metadata from the Registry source", () => {
+    const nextBlocks = new Set([
+      "login-01", "signup-01", "cluster-environment-detail-01", "cluster-environment-list-01",
+      "inspection-report-list-01", "monitoring-alert-list-01", "service-management-01",
+      "mcp-detail-01", "zaiops-operations-01", "zlrlist",
+    ]);
+    for (const item of registry.items) {
+      const metadata = registryMetadata(item);
+      expect(metadata).toMatchObject({ react: "^19.0.0", tailwind: "^4.0.0" });
+      expect(metadata.framework, item.name).toBe(nextBlocks.has(item.name) ? "next" : "react");
+      expect(["ui", "data-block", "template"], item.name).toContain(metadata.kind);
+    }
+    expect(registryMetadata(blocksRegistry.items.find((item) => item.name === "file-manager-01")).kind).toBe("data-block");
+    expect(registryMetadata(uiRegistry.items.find((item) => item.name === "pro-icon-provider")).optionalDependencies).toHaveLength(3);
+  });
 });
 
 describe("docs pages", () => {
@@ -165,7 +182,21 @@ describe("committed build output", () => {
 
   it("declares the Tailwind animation package injected by the theme installer", () => {
     const theme = JSON.parse(readFileSync(join(outDir, "surfaces.json"), "utf-8"));
-    expect(theme.dependencies).toContain("tw-animate-css");
+    expect(theme.dependencies).toContain("tw-animate-css@^1.4.0");
+  });
+
+  it("publishes framework metadata with every installable item", () => {
+    for (const rel of outputFiles(outDir)) {
+      const data = JSON.parse(readFileSync(join(outDir, rel), "utf-8"));
+      for (const item of Array.isArray(data.items) ? data.items : [data]) {
+        expect(item.meta?.zeron, `${rel}: ${item.name}`).toMatchObject({
+          framework: expect.any(String),
+          react: "^19.0.0",
+          tailwind: "^4.0.0",
+          kind: expect.any(String),
+        });
+      }
+    }
   });
 
   it("does not retain nested registry artifact directories", () => {

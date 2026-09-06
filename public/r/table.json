@@ -5,8 +5,8 @@
   "title": "Table",
   "description": "Animated semantic table primitives with proximity row hover and a composable Skeleton loading body.",
   "dependencies": [
-    "framer-motion",
-    "tw-animate-css"
+    "framer-motion@^12.34.0",
+    "tw-animate-css@^1.4.0"
   ],
   "registryDependencies": [
     "https://zeron-ui.vercel.app/r/surfaces.json",
@@ -22,5 +22,13 @@
       "type": "registry:ui",
       "target": "components/ui/table.tsx"
     }
-  ]
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui"
+    }
+  }
 }

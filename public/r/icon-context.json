@@ -5,8 +5,8 @@
   "title": "Icon Context",
   "description": "Named icon slots with a HugeIcons default set; swap any icon via IconProvider.",
   "dependencies": [
-    "@hugeicons/core-free-icons",
-    "@hugeicons/react"
+    "@hugeicons/core-free-icons@^4.1.1",
+    "@hugeicons/react@^1.1.6"
   ],
   "registryDependencies": [],
   "files": [
@@ -28,5 +28,13 @@
       "type": "registry:lib",
       "target": "lib/icon-catalog.ts"
     }
-  ]
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui"
+    }
+  }
 }

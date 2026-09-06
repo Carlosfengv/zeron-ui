@@ -4,6 +4,12 @@
   "type": "registry:lib",
   "title": "Filter Core",
   "description": "Headless, JSON-safe filter vocabulary shared by visual and text-query filter controls.",
+  "dependencies": [
+    "date-fns@^4.4.0"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/icon-context.json"
+  ],
   "files": [
     {
       "path": "packages/ui/src/system/filter-types.ts",
@@ -17,5 +23,13 @@
       "type": "registry:lib",
       "target": "lib/filter-core.ts"
     }
-  ]
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui"
+    }
+  }
 }

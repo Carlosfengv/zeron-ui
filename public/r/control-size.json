@@ -11,5 +11,13 @@
       "type": "registry:lib",
       "target": "lib/tokens/control-size.ts"
     }
-  ]
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui"
+    }
+  }
 }
