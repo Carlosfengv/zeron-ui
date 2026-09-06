@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
 } from "#components/popover";
 import { useIcon } from "#system/icon-context";
-import type { ControlSize } from "../../tokens/control-size";
+import type { ControlSize } from "#tokens/control-size";
 import { cn } from "#system/utils";
 import type { FilterField } from "./filter-types";
 

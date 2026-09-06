@@ -60,12 +60,12 @@ function CommandInput({ asChild, className, children, ...props }: CommandInputPr
   }
 
   return (
-    <div data-slot="command-input-wrapper" className="flex h-9 items-center gap-2 border-b px-3">
+    <div data-slot="command-input-wrapper" className="flex h-control-md items-center gap-2 border-b px-3">
       <SearchIcon className="size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
-          "flex h-10 w-full rounded-lg bg-transparent py-3 text-body outline-hidden placeholder:text-fg-muted disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-control-lg w-full rounded-lg bg-transparent py-3 text-body outline-hidden placeholder:text-fg-muted disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
         {...props}

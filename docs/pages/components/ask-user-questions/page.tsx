@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type ComponentProps, type ReactNode } from "react";
 import {
-  AskUserQuestions,
+  AskUserQuestions as AskUserQuestionsPrimitive,
   type AskUserAnswer,
   type AskUserQuestion,
 } from "@zeron/ui/ask-user-questions";
@@ -12,6 +12,24 @@ import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useIcon } from "@zeron/icons/context";
 import { useTranslations } from "next-intl";
+
+function AskUserQuestions(props: ComponentProps<typeof AskUserQuestionsPrimitive>) {
+  const t = useTranslations("askUser");
+  return (
+    <AskUserQuestionsPrimitive
+      {...props}
+      labels={{
+        noQuestions: t("noQuestions"),
+        otherPlaceholder: t("otherPlaceholder"),
+        answerPlaceholder: t("answerPlaceholder"),
+        skip: t("skip"),
+        next: t("next"),
+        finish: t("finish"),
+        ...props.labels,
+      }}
+    />
+  );
+}
 
 /**
  * Wraps a ComponentPreview with a Replay button that fully resets the demo.

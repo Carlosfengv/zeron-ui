@@ -12,7 +12,7 @@ import {
   controlFieldPaddingClasses,
   controlSizeClasses,
   type ControlSize,
-} from "../tokens/control-size";
+} from "#tokens/control-size";
 
 const inputSizeVariants = {
   xs: cn(controlSizeClasses.xs, controlFieldPaddingClasses.xs, "text-label"),
@@ -44,7 +44,7 @@ const inputVariants = cva(
   {
     variants: {
       variant: {
-        outline: "border border-border bg-transparent hover:border-input-hover hover:bg-hover",
+        outline: "border border-input bg-transparent hover:border-input-hover hover:bg-hover",
         secondary: "border border-transparent bg-emphasis shadow-none",
         ghost: "border border-transparent bg-transparent shadow-none",
       },

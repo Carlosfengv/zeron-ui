@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "#components/popover";
 import { cn } from "#system/utils";
-import type { ControlSize } from "../../tokens/control-size";
+import type { ControlSize } from "#tokens/control-size";
 import type {
   BuiltInFilterOperator,
   FilterBuilderMessages,

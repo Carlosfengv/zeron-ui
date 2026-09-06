@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import type { BuiltInFilterOperator, FilterClause, FilterField } from "#system/filter-core";
-import type { ControlSize } from "../../tokens/control-size";
+import type { ControlSize } from "#tokens/control-size";
 
 export type * from "#system/filter-core";
 

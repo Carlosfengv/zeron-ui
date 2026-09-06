@@ -30,7 +30,7 @@ import {
   controlSizeClasses,
   controlSizeRecipe,
   type ControlSize,
-} from "../tokens/control-size";
+} from "#tokens/control-size";
 
 // ---------------------------------------------------------------------------
 // Select context

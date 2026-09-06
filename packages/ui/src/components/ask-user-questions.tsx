@@ -23,7 +23,6 @@ import { useIcon } from "#system/icon-context";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 import { useMergeSplitBlocks, SelectionBackgrounds } from "#hooks/use-merge-split";
 import { Button } from "#components/button";
-import { useTranslations } from "next-intl";
 
 export interface AskUserOption {
   id?: string;
@@ -85,6 +84,24 @@ export interface AskUserAnswer {
   skipped?: boolean;
 }
 
+export interface AskUserQuestionsLabels {
+  noQuestions: string;
+  otherPlaceholder: string;
+  answerPlaceholder: string;
+  skip: string;
+  next: string;
+  finish: string;
+}
+
+export const defaultAskUserQuestionsLabels: AskUserQuestionsLabels = {
+  noQuestions: "No questions.",
+  otherPlaceholder: "Describe in your own words",
+  answerPlaceholder: "Type your answer…",
+  skip: "Skip",
+  next: "Continue",
+  finish: "Finish",
+};
+
 export interface AskUserQuestionsProps
   extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
   questions: AskUserQuestion[];
@@ -96,6 +113,8 @@ export interface AskUserQuestionsProps
   onAnswersChange?: (answers: Record<string, AskUserAnswer>) => void;
   onComplete?: (answers: Record<string, AskUserAnswer>) => void;
   onSkip?: (questionId: string, currentIndex: number) => void;
+  /** Localized copy for the component. Existing explicit labels win. */
+  labels?: Partial<AskUserQuestionsLabels>;
   skipLabel?: string;
 }
 
@@ -133,13 +152,14 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
       onAnswersChange,
       onComplete,
       onSkip,
+      labels,
       skipLabel,
       className,
       ...rest
     },
     ref
   ) {
-    const t = useTranslations("askUser");
+    const copy = { ...defaultAskUserQuestionsLabels, ...labels };
     // ── Controlled / uncontrolled state ──────────────────────────
     const [internalIndex, setInternalIndex] = useState(defaultCurrentIndex);
     const isIndexControlled = controlledIndex !== undefined;
@@ -725,7 +745,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
           )}
           {...rest}
         >
-          <p className="text-body text-fg-muted">{t("noQuestions")}</p>
+          <p className="text-body text-fg-muted">{copy.noQuestions}</p>
         </div>
       );
     }
@@ -1135,7 +1155,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
             topAlign={isOtherMultiline}
             chipPosition={question.chipPosition ?? "right"}
             ariaLabel={
-              question.otherPlaceholder ?? t("otherPlaceholder")
+              question.otherPlaceholder ?? copy.otherPlaceholder
             }
             showArrow={
               !isMulti &&
@@ -1163,10 +1183,10 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                 value={otherText}
                 placeholder={
                   question.otherPlaceholder ??
-                  t("otherPlaceholder")
+                  copy.otherPlaceholder
                 }
                 aria-label={
-                  question.otherPlaceholder ?? t("otherPlaceholder")
+                  question.otherPlaceholder ?? copy.otherPlaceholder
                 }
                 onChange={(e) => handleOtherChange(e.target.value)}
                 onKeyDown={(e) => {
@@ -1323,7 +1343,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                         ref={otherInputRef}
                         rows={1}
                         placeholder={
-                          question.freeTextPlaceholder ?? t("answerPlaceholder")
+                          question.freeTextPlaceholder ?? copy.answerPlaceholder
                         }
                         aria-labelledby={`${reactId}-${qId}-title`}
                         onKeyDown={(e) => {
@@ -1474,7 +1494,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                           // mobile where it's hidden, tighten for the icon on ≥sm.
                           className="pr-3 sm:pr-1.5"
                         >
-                            {skipLabel ?? t("skip")}
+                            {skipLabel ?? copy.skip}
                         </Button>
                       </motion.div>
                     )}
@@ -1510,7 +1530,7 @@ const AskUserQuestions = forwardRef<HTMLDivElement, AskUserQuestionsProps>(
                         >
                           <span className="inline-flex items-center gap-1.5">
                             {question.nextLabel ??
-                              (safeIndex >= total - 1 ? t("finish") : t("next"))}
+                              (safeIndex >= total - 1 ? copy.finish : copy.next)}
                             {/* Shortcut hint — replaces the trailing arrow. Sits
                                 inside the button so it dims with the disabled
                                 state. ⌘↵ on macOS, ⌃↵ elsewhere. Desktop-only:

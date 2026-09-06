@@ -25,12 +25,12 @@ describe("DataTable pagination contract", () => {
     expect(dataTableSource).toContain("resolvedPageSizeOptions.map((option) =>");
   });
 
-  it("keeps settings table mock data stable while pagination updates", () => {
+  it("keeps externally supplied settings table data stable while pagination updates", () => {
     expect(personalSettingsSource).toContain(
-      "const data = useMemo(() => [...apiKeys], []);"
+      "const data = useMemo(() => [...apiKeys], [apiKeys]);"
     );
     expect(personalSettingsSource).toContain(
-      "const data = useMemo(() => [...credentials], []);"
+      "const data = useMemo(() => [...credentials], [credentials]);"
     );
     expect(personalSettingsSource).not.toContain("data: [...apiKeys]");
     expect(personalSettingsSource).not.toContain("data: [...credentials]");

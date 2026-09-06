@@ -3,7 +3,7 @@
 import { Button } from "#components/button";
 import { ButtonGroup, ButtonGroupText } from "#components/button-group";
 import { useIcon } from "#system/icon-context";
-import type { ControlSize } from "../../tokens/control-size";
+import type { ControlSize } from "#tokens/control-size";
 import type {
   FilterBuilderMessages,
   FilterClause,

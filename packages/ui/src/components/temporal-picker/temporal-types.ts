@@ -1,5 +1,5 @@
 import type * as React from "react";
-import type { ControlSize } from "../../tokens/control-size";
+import type { ControlSize } from "#tokens/control-size";
 
 declare const isoDateBrand: unique symbol;
 declare const isoTimeBrand: unique symbol;

@@ -5,11 +5,19 @@ import { Button } from "#components/button";
 import { MobileDrawer } from "#components/mobile-drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "#components/popover";
 import { useTouchPrimary } from "#hooks/use-touch-primary";
-import { useComposedRefs } from "#system/compose-refs";
 import { useIcon } from "#system/icon-context";
 import { cn } from "#system/utils";
-import type { ControlSize } from "../../tokens/control-size";
+import type { ControlSize } from "#tokens/control-size";
 import type { TemporalPickerPresentation } from "./temporal-types";
+
+function useComposedRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCallback<T> {
+  return React.useCallback((node) => {
+    for (const ref of refs) {
+      if (typeof ref === "function") ref(node);
+      else if (ref) ref.current = node;
+    }
+  }, refs);
+}
 
 interface TemporalPickerShellProps {
   ariaDescribedBy?: string;
