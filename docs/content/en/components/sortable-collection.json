@@ -1,6 +1,8 @@
 {
   "sortableCollection": {
     "basic": "Basic",
+    "checkboxSelection": "Reorderable checkbox list",
+    "checkboxSelectionBody": "Combine controlled collection order with a checkbox action when items have an independent enabled or visible state, such as table columns.",
     "editing": "Inline editing",
     "editingBody": "Enable the edit action only where a product needs it. The editing callback owns the form and receives a close helper; sorting pauses until editing finishes.",
     "dragBehavior": "Reorder behavior and accessibility",

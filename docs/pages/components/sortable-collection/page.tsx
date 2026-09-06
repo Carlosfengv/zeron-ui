@@ -4,6 +4,7 @@ import { useState } from "react";
 import AnthropicMono from "@lobehub/icons/es/Anthropic/components/Mono";
 import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono";
 import { Button } from "@zeron/ui/button";
+import { Checkbox } from "@zeron/ui/checkbox";
 import { Input } from "@zeron/ui/input";
 import {
   SortableCollection,
@@ -84,10 +85,49 @@ const editingCode = `<SortableCollection
   )}
 />`;
 
+const checkboxCode = `"use client";
+
+import { useState } from "react";
+import { Checkbox } from "@zeron/ui/checkbox";
+import { SortableCollection } from "@zeron/ui/sortable-collection";
+
+const initialColumns = [
+  { id: "name", title: "Name", visible: true, removable: false },
+  { id: "status", title: "Status", visible: true, removable: false },
+  { id: "owner", title: "Owner", visible: false, removable: false },
+  { id: "updated", title: "Updated", visible: true, removable: false },
+];
+
+export function ColumnPreferences() {
+  const [columns, setColumns] = useState(initialColumns);
+
+  return (
+    <SortableCollection
+      dragHandlePosition="end"
+      items={columns}
+      onItemsChange={setColumns}
+      renderLeading={(item) => (
+        <Checkbox
+          aria-label={\`Show \${item.title} column\`}
+          checked={item.visible}
+          onCheckedChange={(checked) => setColumns((current) =>
+            current.map((column) => column.id === item.id
+              ? { ...column, visible: checked === true }
+              : column
+            )
+          )}
+        />
+      )}
+    />
+  );
+}`;
+
 const collectionProps: PropDef[] = [
   { name: "items", type: "T[]", description: "Controlled collection. Array order is the persisted priority order." },
   { name: "onItemsChange", type: "(items: T[]) => void", description: "Called after a reorder or removal. Use it to update the controlled array when handling onAdd." },
   { name: "onReorder", type: "(items: T[]) => void", description: "Optional reorder-only callback, useful for persistence or analytics." },
+  { name: "dragHandlePosition", type: '"start" | "end"', default: '"start"', description: "Places the reorder handle before or after the item content." },
+  { name: "renderLeading", type: "(item, context) => ReactNode", description: "Adds a control before the item label, such as a visibility checkbox." },
   { name: "addOptions", type: "SortableCollectionAddOption[]", default: "[]", description: "Catalog entries displayed from the bottom add button." },
   { name: "addLabel", type: "string", default: '"Add item"', description: "Visible label for the bottom add button." },
   { name: "onAdd", type: "(option) => void", description: "Called after a selectable catalog option is chosen. The consumer adds the item to its controlled array." },
@@ -103,7 +143,7 @@ const itemProps: PropDef[] = [
   { name: "id", type: "string", description: "Stable item identifier used for ordering and duplicate detection." },
   { name: "title", type: "ReactNode", description: "Primary inline label." },
   { name: "description", type: "ReactNode", description: "Optional supporting text, rendered on the same line as the title." },
-  { name: "leadingIcon", type: "ReactNode", description: "Optional icon or compact leading media after the drag handle." },
+  { name: "leadingIcon", type: "ReactNode", description: "Optional icon or compact media shown before the item label." },
   { name: "meta", type: "ReactNode", description: "Optional trailing metadata, such as badges or status." },
   { name: "draggable", type: "boolean", default: "true", description: "Disables reordering for this item when false." },
   { name: "removable", type: "boolean", default: "true", description: "Hides and disables the default remove action when false." },
@@ -165,6 +205,43 @@ function EditingExample() {
   );
 }
 
+type ColumnPreferenceItem = SortableCollectionItem & {
+  title: string;
+  visible: boolean;
+};
+
+const initialColumns: ColumnPreferenceItem[] = [
+  { id: "name", title: "Name", visible: true, removable: false },
+  { id: "status", title: "Status", visible: true, removable: false },
+  { id: "owner", title: "Owner", visible: false, removable: false },
+  { id: "updated", title: "Updated", visible: true, removable: false },
+];
+
+function CheckboxExample() {
+  const [columns, setColumns] = useState(initialColumns);
+
+  return (
+    <SortableCollection<ColumnPreferenceItem>
+      className="w-full max-w-md"
+      dragHandlePosition="end"
+      items={columns}
+      onItemsChange={setColumns}
+      renderLeading={(item) => (
+        <Checkbox
+          aria-label={`Show ${item.title} column`}
+          checked={item.visible}
+          onCheckedChange={(checked) => setColumns((current) =>
+            current.map((column) => column.id === item.id
+              ? { ...column, visible: checked === true }
+              : column
+            )
+          )}
+        />
+      )}
+    />
+  );
+}
+
 export default function SortableCollectionDoc() {
   const t = useTranslations("sortableCollection");
 
@@ -177,6 +254,13 @@ export default function SortableCollectionDoc() {
       <DocSection title={t("basic")}>
         <ComponentPreview code={basicCode} minHeightClass="min-h-[25rem]">
           <BasicExample />
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("checkboxSelection")}>
+        <p className="max-w-2xl text-body leading-6 text-fg-muted">{t("checkboxSelectionBody")}</p>
+        <ComponentPreview className="mt-3" code={checkboxCode} minHeightClass="min-h-[16rem]">
+          <CheckboxExample />
         </ComponentPreview>
       </DocSection>
 

@@ -290,7 +290,7 @@ export default function DataTableDoc() {
     <DocPage
       title="DataTable"
       slug="data-table"
-      description="Composable data table with sorting, filtering, pagination, selection, column visibility, and pinning."
+      description="Composable data table with sorting, filtering, pagination, selection, column visibility, drag reordering, and pinning."
     >
       <DocSection title="Playground">
         <VariantPlayground

@@ -4,6 +4,7 @@ import {
   type Column,
   type ColumnDef,
   type ColumnFiltersState,
+  type ColumnOrderState,
   type ColumnPinningState,
   flexRender,
   getCoreRowModel,
@@ -23,10 +24,8 @@ import {
 import * as React from "react";
 import { Badge } from "#components/badge";
 import { Button } from "#components/button";
-import {
-  CheckboxGroup,
-  CheckboxItem,
-} from "#components/checkbox-group";
+import { Checkbox } from "#components/checkbox";
+import { CheckboxGroup, CheckboxItem } from "#components/checkbox-group";
 import {
   DropdownContent,
   DropdownLabel,
@@ -56,6 +55,10 @@ import {
   SelectItem,
   SelectTrigger,
 } from "#components/select";
+import {
+  SortableCollection,
+  type SortableCollectionItem,
+} from "#components/sortable-collection";
 import {
   Table,
   TableBody,
@@ -100,6 +103,7 @@ export type UseDataTableProps<TData> = Omit<
   | "getPaginationRowModel"
   | "getSortedRowModel"
   | "onColumnFiltersChange"
+  | "onColumnOrderChange"
   | "onColumnPinningChange"
   | "onColumnVisibilityChange"
   | "onPaginationChange"
@@ -117,6 +121,9 @@ function useDataTable<TData>({
 }: UseDataTableProps<TData>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     initialState?.columnFilters ?? []
+  );
+  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(
+    initialState?.columnOrder ?? []
   );
   const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>(
     initialState?.columnPinning ?? {}
@@ -144,6 +151,7 @@ function useDataTable<TData>({
     getSortedRowModel: getSortedRowModel(),
     initialState,
     onColumnFiltersChange: setColumnFilters,
+    onColumnOrderChange: setColumnOrder,
     onColumnPinningChange: setColumnPinning,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
@@ -151,6 +159,7 @@ function useDataTable<TData>({
     onSortingChange: setSorting,
     state: {
       columnFilters,
+      columnOrder,
       columnPinning,
       columnVisibility,
       pagination,
@@ -897,22 +906,38 @@ function DataTableViewOptions<TData>({
 }: DataTableViewOptionsProps<TData>) {
   const [open, setOpen] = React.useState(false);
   const Settings = useIcon("settings");
-  const columns = React.useMemo(
-    () =>
-      table
-        .getAllColumns()
-        .filter(
-          (column) =>
-            typeof column.accessorFn !== "undefined" && column.getCanHide()
-        ),
-    [table]
+  const allLeafColumns = table.getAllLeafColumns();
+  const columns = allLeafColumns.filter(
+    (column) =>
+      typeof column.accessorFn !== "undefined" && column.getCanHide()
   );
 
   if (!columns.length) return null;
 
-  const checkedIndices = new Set(
-    columns.flatMap((column, index) => (column.getIsVisible() ? [index] : []))
-  );
+  const columnItems: SortableCollectionItem[] = columns.map((column) => ({
+    id: column.id,
+    title: column.columnDef.meta?.label ?? column.id,
+    description: column.getIsPinned() ? "Pinned" : undefined,
+    draggable: !column.getIsPinned(),
+    removable: false,
+  }));
+
+  const reorderColumns = (items: SortableCollectionItem[]) => {
+    const reorderedIds = items.flatMap((item) =>
+      table.getColumn(item.id)?.getIsPinned() ? [] : [item.id]
+    );
+    const reorderedSet = new Set(reorderedIds);
+    let reorderedIndex = 0;
+
+    // Preserve utility and pinned columns that are not reorderable here.
+    const nextOrder = allLeafColumns.map((column) =>
+      reorderedSet.has(column.id)
+        ? reorderedIds[reorderedIndex++]
+        : column.id
+    );
+
+    table.setColumnOrder(nextOrder);
+  };
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
@@ -920,36 +945,41 @@ function DataTableViewOptions<TData>({
         render={
           <Button
             active={open}
-            aria-label="Toggle columns"
+            aria-label="Customize columns"
             className={cn("shrink-0", className)}
-            leadingIcon={Settings}
+            iconOnly
             size="md"
             variant="tertiary"
           >
-            View
+            <Settings aria-hidden />
           </Button>
         }
       />
-      <PopoverContent align="end" className="w-48 p-1" sideOffset={4}>
-        <div className="px-2 py-1.5 text-label text-fg-muted">
-          Toggle columns
+      <PopoverContent align="end" className="w-64 p-1.5" sideOffset={4}>
+        <div className="px-1 pb-1.5 pt-0.5 text-label text-fg-muted">
+          Drag to reorder columns
         </div>
-        <div className="-mx-1 my-1" />
-        <CheckboxGroup
-          aria-label="Toggle columns"
-          checkedIndices={checkedIndices}
-          className="w-full"
-        >
-          {columns.map((column, index) => (
-            <CheckboxItem
-              checked={column.getIsVisible()}
-              index={index}
-              key={column.id}
-              label={column.columnDef.meta?.label ?? column.id}
-              onToggle={() => column.toggleVisibility(!column.getIsVisible())}
-            />
-          ))}
-        </CheckboxGroup>
+        <SortableCollection
+          aria-label="Reorder and toggle columns"
+          className="border-0 bg-transparent p-0 [&_[data-slot=sortable-collection-item]]:px-1 [&_[data-slot=sortable-collection-item]]:py-1"
+          dragHandlePosition="end"
+          items={columnItems}
+          onItemsChange={reorderColumns}
+          renderLeading={(item) => {
+            const column = table.getColumn(item.id);
+            if (!column) return null;
+
+            return (
+              <Checkbox
+                aria-label={`Show ${String(item.title)} column`}
+                checked={column.getIsVisible()}
+                onCheckedChange={(checked) =>
+                  column.toggleVisibility(checked === true)
+                }
+              />
+            );
+          }}
+        />
       </PopoverContent>
     </Popover>
   );

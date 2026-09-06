@@ -69,6 +69,10 @@ export interface SortableCollectionProps<T extends SortableCollectionItem>
   onAdd?: (option: SortableCollectionAddOption) => void;
   onRemove?: (item: T) => void;
   renderEditingContent?: (item: T, context: SortableCollectionEditContext) => ReactNode;
+  /** Places the reorder affordance before or after the item content. */
+  dragHandlePosition?: "start" | "end";
+  /** Renders a control before the item label, such as a visibility checkbox. */
+  renderLeading?: (item: T, context: SortableCollectionActionContext) => ReactNode;
   /** Keep the default trailing area minimal; products can opt into a pencil affordance. */
   showEditAction?: boolean;
   renderActions?: (item: T, context: SortableCollectionActionContext) => ReactNode;
@@ -100,6 +104,8 @@ function SortableCollection<T extends SortableCollectionItem>({
   onAdd,
   onRemove,
   renderEditingContent,
+  dragHandlePosition = "start",
+  renderLeading,
   showEditAction = false,
   renderActions,
   maxItems,
@@ -238,6 +244,25 @@ function SortableCollection<T extends SortableCollectionItem>({
             edit: () => canEdit && setEditingId(item.id),
             remove: () => remove(item),
           } satisfies SortableCollectionActionContext;
+          const dragHandle = (
+            <button
+              aria-label={`Reorder ${announceTitle(item)}`}
+              aria-pressed={keyboardDraggedId === item.id || undefined}
+              className={cn(
+                "grid size-6 shrink-0 place-items-center rounded-md text-fg-subtle outline-none transition-colors duration-fast focus-visible:ring-1 focus-visible:ring-focus-ring",
+                canDrag ? "touch-none cursor-grab hover:bg-hover hover:text-fg-default active:cursor-grabbing" : "cursor-not-allowed opacity-35",
+                dragging && "invisible"
+              )}
+              onKeyDown={(event) => handleKeyboardReorder(event, item)}
+              onPointerCancel={completeDrag}
+              onPointerDown={(event) => startPointerDrag(event, item)}
+              onPointerMove={movePointerDrag}
+              onPointerUp={finishPointerDrag}
+              type="button"
+            >
+              <HugeiconsIcon aria-hidden icon={DragDropHorizontalIcon} size={16} strokeWidth={1.5} />
+            </button>
+          );
 
           return (
             <motion.div
@@ -268,23 +293,12 @@ function SortableCollection<T extends SortableCollectionItem>({
                   transition={{ duration: reduceMotion ? 0 : 0.08 }}
                 />
               )}
-              <button
-                aria-label={`Reorder ${announceTitle(item)}`}
-                aria-pressed={keyboardDraggedId === item.id || undefined}
-                className={cn(
-                  "grid size-6 shrink-0 place-items-center rounded-md text-fg-subtle outline-none transition-colors duration-fast focus-visible:ring-1 focus-visible:ring-focus-ring",
-                  canDrag ? "touch-none cursor-grab hover:bg-hover hover:text-fg-default active:cursor-grabbing" : "cursor-not-allowed opacity-35",
-                  dragging && "invisible"
-                )}
-                onKeyDown={(event) => handleKeyboardReorder(event, item)}
-                onPointerCancel={completeDrag}
-                onPointerDown={(event) => startPointerDrag(event, item)}
-                onPointerMove={movePointerDrag}
-                onPointerUp={finishPointerDrag}
-                type="button"
-              >
-                <HugeiconsIcon aria-hidden icon={DragDropHorizontalIcon} size={16} strokeWidth={1.5} />
-              </button>
+              {dragHandlePosition === "start" && dragHandle}
+              {renderLeading && (
+                <div className={cn("flex shrink-0 items-center", dragging && "invisible")} data-slot="sortable-collection-leading-actions">
+                  {renderLeading(item, actionContext)}
+                </div>
+              )}
               {item.leadingIcon && <span className={cn("grid size-4 shrink-0 place-items-center text-fg-muted", dragging && "invisible")} data-slot="sortable-collection-icon">{item.leadingIcon}</span>}
               <div className={cn("min-w-0 flex-1", dragging && "invisible")} data-slot="sortable-collection-content">
                 <AnimatePresence initial={false} mode="wait">
@@ -310,6 +324,7 @@ function SortableCollection<T extends SortableCollectionItem>({
                   {item.removable !== false && <Button aria-label={`Remove ${announceTitle(item)}`} className="hover:text-fg-danger" iconOnly onClick={() => remove(item)} size="xs" type="button" variant="ghost"><HugeiconsIcon aria-hidden icon={Cancel01Icon} size={16} strokeWidth={1.5} /></Button>}
                 </div>
               )}
+              {dragHandlePosition === "end" && dragHandle}
             </motion.div>
           );
         })}
@@ -361,11 +376,12 @@ function SortableCollection<T extends SortableCollectionItem>({
               transform: `translate3d(${dragPreview.x - dragPreview.offsetX}px, ${dragPreview.y - dragPreview.offsetY}px, 0)`,
             }}
           >
-            <span className="grid size-6 shrink-0 place-items-center rounded-md text-fg-subtle"><HugeiconsIcon icon={DragDropHorizontalIcon} size={16} strokeWidth={1.5} /></span>
+            {dragHandlePosition === "start" && <span className="grid size-6 shrink-0 place-items-center rounded-md text-fg-subtle"><HugeiconsIcon icon={DragDropHorizontalIcon} size={16} strokeWidth={1.5} /></span>}
             {item.leadingIcon && <span className="grid size-4 shrink-0 place-items-center text-fg-muted">{item.leadingIcon}</span>}
             <span className="flex min-w-0 flex-1 items-baseline gap-1.5"><span className="min-w-0 truncate font-medium">{item.title}</span>{item.description && <span className="min-w-0 truncate text-label text-fg-subtle">{item.description}</span>}</span>
             {item.meta && <span className="flex shrink-0 items-center gap-1">{item.meta}</span>}
             {item.removable !== false && <HugeiconsIcon className="shrink-0 text-fg-subtle" icon={Cancel01Icon} size={16} strokeWidth={1.5} />}
+            {dragHandlePosition === "end" && <span className="grid size-6 shrink-0 place-items-center rounded-md text-fg-subtle"><HugeiconsIcon icon={DragDropHorizontalIcon} size={16} strokeWidth={1.5} /></span>}
           </div>,
           document.body
         );

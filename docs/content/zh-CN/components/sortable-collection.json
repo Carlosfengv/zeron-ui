@@ -1,6 +1,8 @@
 {
   "sortableCollection": {
     "basic": "基础用法",
+    "checkboxSelection": "可排序复选列表",
+    "checkboxSelectionBody": "当项目还具有独立的启用或显示状态时，可组合受控集合顺序与复选框操作，例如表格列配置。",
     "editing": "行内编辑",
     "editingBody": "仅在产品确有需要时开启编辑操作。编辑回调负责表单内容，并提供 close 方法；编辑期间会暂停排序。",
     "dragBehavior": "排序行为与无障碍",
