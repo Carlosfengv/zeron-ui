@@ -1,0 +1,7 @@
+interface:
+  display_name: "Zeron Page Builder"
+  short_description: "Build and adapt Zeron pages within component contracts"
+  default_prompt: "Use $zeron-page-builder to build or adapt this page with existing Zeron components, preserving their contracts while connecting the project's business behavior."
+
+policy:
+  allow_implicit_invocation: true
