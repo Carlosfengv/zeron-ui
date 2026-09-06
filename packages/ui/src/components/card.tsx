@@ -14,7 +14,6 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
@@ -253,6 +252,19 @@ interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, "onClick"> {
    *  Renders a stretched link when `href` is set, else a stretched button. */
   onClick?: () => void;
   href?: string;
+  /**
+   * Optional framework-specific link renderer. The default remains a native
+   * anchor so the component has no router dependency; applications can inject
+   * their router's Link to keep in-app navigation client-side.
+   */
+  renderLink?: (props: {
+    "aria-label"?: string;
+    className: string;
+    href: string;
+    onClick?: () => void;
+    rel?: string;
+    target?: string;
+  }) => ReactNode;
   external?: boolean;
   /** Accessible name for the stretched link/button when the whole card is
    *  clickable (the card's visible title isn't wired up automatically). */
@@ -272,6 +284,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     {
       onClick,
       href,
+      renderLink,
       external,
       label,
       selected = false,
@@ -365,7 +378,14 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     // activated by keyboard (pointer-events-none only blocks the mouse).
     const overlay = clickable && !disabled ? (
       href ? (
-        <Link
+        renderLink?.({
+          href,
+          onClick,
+          target: external ? "_blank" : undefined,
+          rel: external ? "noopener noreferrer" : undefined,
+          "aria-label": label,
+          className: "absolute inset-0 z-raised outline-none focus-visible:ring-1 focus-visible:ring-focus-ring rounded-[inherit]",
+        }) ?? <a
           href={href}
           onClick={onClick}
           target={external ? "_blank" : undefined}
@@ -884,15 +904,23 @@ function CardButton({
 
   if (href) {
     return (
-      <Link
+      <a
         href={href}
-        onClick={onClick}
+        onClick={(event) => {
+          if (disabled) {
+            event.preventDefault();
+            return;
+          }
+          onClick?.();
+        }}
         target={external ? "_blank" : undefined}
         rel={external ? "noopener noreferrer" : undefined}
+        aria-disabled={disabled || undefined}
+        tabIndex={disabled ? -1 : undefined}
         className={cn(classes, "font-medium")}
       >
         {inner}
-      </Link>
+      </a>
     );
   }
 
