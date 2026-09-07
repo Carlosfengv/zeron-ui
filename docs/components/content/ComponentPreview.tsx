@@ -9,7 +9,6 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import dynamic from "next/dynamic";
 import { useIcon } from "@zeron/icons/context";
 import { Tabs, TabsList, TabItem } from "@zeron/ui/tabs";
 import { Tooltip } from "@zeron/ui/tooltip";
@@ -18,6 +17,7 @@ import { Button } from "@zeron/ui/button";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { figmaCaptureToast } from "@docs/components/content/FigmaCaptureToaster";
+import { InspectOverlay } from "@docs/components/playground/InspectOverlay";
 import {
   copyElementToFigma,
   getFigmaCaptureBusy,
@@ -27,10 +27,6 @@ import {
 } from "@docs/lib/figma-capture";
 import { PortalContainerProvider } from "@zeron/ui/system/portal-container-context";
 import { cn } from "@zeron/ui/system/utils";
-
-const InspectOverlay = dynamic(() =>
-  import("@docs/components/playground/InspectOverlay").then((module) => module.InspectOverlay)
-);
 
 function FigmaIcon({ className }: { className?: string }) {
   return (

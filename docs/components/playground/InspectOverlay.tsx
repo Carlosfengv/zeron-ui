@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -262,7 +263,7 @@ export function InspectOverlay({
 
   // Track the frame's interior size (for the ruler span) and where the content
   // region sits within it (so only that region captures the pointer).
-  useEffect(() => {
+  useLayoutEffect(() => {
     const frame = frameRef.current;
     const content = contentRef.current;
     if (!frame || !content) return;
