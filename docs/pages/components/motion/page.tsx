@@ -74,6 +74,7 @@ const REFERENCE_TIERS = [
       { label: "Toast",                   slug: "/docs/components/toast" },
       { label: "Mobile drawer",           slug: null },
       { label: "Selection merge / split", slug: "/docs/components/checkbox-group" },
+      { label: "Tree branch expansion",   slug: "/docs/components/tree" },
     ],
   },
   {

@@ -57,6 +57,7 @@ export const componentPageLoaders: Record<string, DocPageLoader> = {
   "components/switch": () => import("@docs/pages/components/switch/page"),
   "components/table": () => import("@docs/pages/components/table/page"),
   "components/time-range-histogram": () => import("@docs/pages/components/time-range-histogram/page"),
+  "components/tree": () => import("@docs/pages/components/tree/page"),
   "components/temporal-picker": () => import("@docs/pages/components/temporal-picker/page"),
   "components/tabs": () => import("@docs/pages/components/tabs/page"),
   "components/textarea": () => import("@docs/pages/components/textarea/page"),

@@ -86,3 +86,65 @@ test("mobile: compact drawer restores the opening trigger after Escape", async (
   await expect(openNavigation).toBeFocused();
   expect(await openNavigation.evaluate((element) => element.matches(":focus-visible"))).toBe(true);
 });
+
+test("desktop: Tree keeps a roving focus stop and restores its branch ancestor", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium-desktop", "Desktop-only tree focus check");
+
+  await page.goto("/docs/components/tree");
+  const tree = page.getByRole("tree", { name: "Choose a category" });
+  const product = tree.getByRole("treeitem", { name: "Product" });
+  const designSystem = tree.getByRole("treeitem", { name: "Design system" });
+  const toggle = tree.getByRole("button", { name: "Collapse Product" });
+
+  await expect(toggle).toHaveAttribute("data-slot", "button");
+  await expect(toggle).toHaveAttribute("tabindex", "-1");
+
+  await product.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(designSystem).toBeFocused();
+  await page.keyboard.press("ArrowLeft");
+  await expect(product).toBeFocused();
+  await expect(designSystem).toBeHidden();
+});
+
+test("desktop: Tree row action opens a menu without selecting the node", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium-desktop", "Desktop-only tree action check");
+
+  await page.goto("/en/docs/components/tree");
+  const tree = page.getByRole("tree", { name: "Workspace hierarchy" });
+  const action = tree.getByRole("button", { name: "Node options: Public API" });
+  const row = action.locator('xpath=ancestor::*[@role="treeitem"]');
+
+  await action.click();
+  await expect(row).toHaveAttribute("aria-selected", "false");
+  await page.getByRole("menuitem", { name: "Rename" }).click();
+  await expect(page.getByText("Rename: Public API", { exact: true })).toBeVisible();
+  await expect(row).toHaveAttribute("aria-selected", "false");
+});
+
+test("desktop: metrics Tree searches real data and uses single selection", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium-desktop", "Desktop-only metrics tree check");
+
+  await page.goto("/en/docs/components/tree");
+  const tree = page.getByRole("tree", { name: "Real-time metrics catalog" });
+  const search = page.getByRole("textbox", { name: "Search 224 listed metrics" });
+
+  await expect(tree.locator('[data-slot="tree-check"]')).toHaveCount(0);
+  await expect(tree.locator('[data-slot="tree-icon"]').first()).toBeVisible();
+  await search.fill("k8s_node");
+  await expect(tree.getByRole("treeitem", { name: "节点", exact: true })).toBeVisible();
+  await search.fill("");
+
+  const cpuMetric = tree.getByRole("treeitem", { name: /CPU 平均使用率/ });
+  const memoryMetric = tree.getByRole("treeitem", { name: /内存使用百分比/ });
+  await cpuMetric.click();
+  await expect(cpuMetric).toHaveAttribute("aria-selected", "true");
+  await memoryMetric.click();
+  await expect(memoryMetric).toHaveAttribute("aria-selected", "true");
+  await expect(cpuMetric).toHaveAttribute("aria-selected", "false");
+
+  const action = tree.getByRole("button", { name: "Metric options: CPU 平均使用率" });
+  await action.click();
+  await page.getByRole("menuitem", { name: "Add to chart" }).click();
+  await expect(page.getByText("Add to chart: CPU 平均使用率", { exact: true })).toBeVisible();
+});

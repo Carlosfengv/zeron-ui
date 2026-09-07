@@ -1,0 +1,478 @@
+[
+  {
+    "id": "zstack-cloud",
+    "label": "ZStack Cloud",
+    "metricCount": 107,
+    "resources": [
+      {
+        "id": "cluster",
+        "label": "集群",
+        "metricCount": 6,
+        "groups": [
+          { "id": "cpu", "label": "CPU", "metrics": [{ "id": "average-usage", "label": "CPU 平均使用率", "unit": "percent", "aggregate": true }] },
+          { "id": "memory", "label": "内存", "metrics": [{ "id": "usage-percent", "label": "内存使用百分比", "unit": "percent", "aggregate": true }] },
+          { "id": "network", "label": "网络", "metrics": [
+            { "id": "transmit-rate", "label": "发送", "unit": "byte/s", "aggregate": true },
+            { "id": "receive-rate", "label": "接收", "unit": "byte/s", "aggregate": true }
+          ] },
+          { "id": "disk", "label": "磁盘", "metrics": [
+            { "id": "read-iops", "label": "读", "unit": "ops/s", "aggregate": true },
+            { "id": "write-iops", "label": "写", "unit": "ops/s", "aggregate": true }
+          ] }
+        ]
+      },
+      {
+        "id": "host",
+        "label": "物理机",
+        "metricCount": 30,
+        "groups": [
+          { "id": "cpu", "label": "CPU", "metrics": [
+            { "id": "average-usage", "label": "CPU 平均使用率" },
+            { "id": "per-core-usage", "label": "CPU 使用率（每核）", "dimensions": ["cpu"] },
+            { "id": "average-idle", "label": "平均 CPU 空闲率" },
+            { "id": "average-system", "label": "平均 CPU 系统进程使用率" },
+            { "id": "average-iowait", "label": "平均 CPU 等待 I/O 完成使用率" }
+          ] },
+          { "id": "memory", "label": "内存", "metrics": [
+            { "id": "usage-rate", "label": "内存使用率" },
+            { "id": "used", "label": "内存已用量" },
+            { "id": "free-rate", "label": "内存空闲率" },
+            { "id": "free", "label": "内存空闲量" },
+            { "id": "total", "label": "物理机总内存" }
+          ] },
+          { "id": "disk", "label": "磁盘", "metrics": [
+            { "id": "root-usage-rate", "label": "根磁盘使用率" },
+            { "id": "all-used-rate", "label": "全部磁盘已使用容量百分比" },
+            { "id": "all-used", "label": "全部磁盘已使用容量" },
+            { "id": "all-free-rate", "label": "全部磁盘剩余容量百分比" },
+            { "id": "all-free", "label": "全部磁盘剩余容量" },
+            { "id": "read-rate", "label": "磁盘读取速率" },
+            { "id": "write-rate", "label": "磁盘写入速率" },
+            { "id": "read-iops", "label": "磁盘读取 IOPS" },
+            { "id": "write-iops", "label": "磁盘写入 IOPS" }
+          ] },
+          { "id": "network", "label": "网络", "metrics": [
+            { "id": "in-traffic", "label": "入流量" },
+            { "id": "out-traffic", "label": "出流量" },
+            { "id": "in-packets", "label": "入包数" },
+            { "id": "out-packets", "label": "出包数" },
+            { "id": "in-drops", "label": "入丢包数" },
+            { "id": "out-drops", "label": "出丢包数" },
+            { "id": "all-nic-in-errors", "label": "全部网卡入错误数" },
+            { "id": "all-nic-out-errors", "label": "全部网卡出错误数" }
+          ] },
+          { "id": "gpu", "label": "GPU", "metrics": [
+            { "id": "usage-rate", "label": "GPU 使用率" },
+            { "id": "memory-usage-rate", "label": "GPU 显存使用率" },
+            { "id": "temperature", "label": "GPU 温度" }
+          ] }
+        ]
+      },
+      {
+        "id": "l3-network",
+        "type": "l3_network",
+        "label": "三层网络",
+        "metricCount": 4,
+        "groups": [{ "id": "ip-address", "label": "IP 地址", "metrics": [
+          { "id": "available-count", "label": "可用 IP 数" },
+          { "id": "used-count", "label": "已用 IP 数" },
+          { "id": "available-rate", "label": "可用 IP 百分比" },
+          { "id": "used-rate", "label": "已用 IP 百分比" }
+        ] }]
+      },
+      {
+        "id": "vm",
+        "label": "云主机",
+        "metricCount": 24,
+        "groups": [
+          { "id": "cpu", "label": "CPU", "metrics": [
+            { "id": "average-usage", "label": "CPU 平均使用率" },
+            { "id": "per-core-usage", "label": "CPU 使用率（每核）", "dimensions": ["cpu"] },
+            { "id": "idle-rate", "label": "CPU 空闲率" }
+          ] },
+          { "id": "memory", "label": "内存", "metrics": [
+            { "id": "usage-rate", "label": "内存使用率" },
+            { "id": "used", "label": "内存已用量" },
+            { "id": "free-rate", "label": "内存空闲率" },
+            { "id": "free", "label": "内存空闲量" }
+          ] },
+          { "id": "disk", "label": "磁盘", "metrics": [
+            { "id": "usage-rate", "label": "磁盘使用率" },
+            { "id": "all-used", "label": "全部磁盘已使用容量" },
+            { "id": "all-free", "label": "全部磁盘剩余容量" },
+            { "id": "all-free-rate", "label": "全部磁盘剩余容量百分比" },
+            { "id": "read-rate", "label": "磁盘读取速率" },
+            { "id": "write-rate", "label": "磁盘写入速率" },
+            { "id": "read-iops", "label": "磁盘读取 IOPS" },
+            { "id": "write-iops", "label": "磁盘写入 IOPS" }
+          ] },
+          { "id": "network", "label": "网络", "metrics": [
+            { "id": "in-traffic", "label": "入流量" },
+            { "id": "out-traffic", "label": "出流量" },
+            { "id": "in-packets", "label": "入包数" },
+            { "id": "out-packets", "label": "出包数" },
+            { "id": "all-nic-in-errors", "label": "全部网卡入错误数" },
+            { "id": "all-nic-out-errors", "label": "全部网卡出错误数" }
+          ] },
+          { "id": "gpu", "label": "GPU", "metrics": [
+            { "id": "usage-rate", "label": "GPU 使用率" },
+            { "id": "memory-usage-rate", "label": "GPU 显存使用率" },
+            { "id": "temperature", "label": "GPU 温度" }
+          ] }
+        ]
+      },
+      {
+        "id": "volume",
+        "label": "云盘",
+        "metricCount": 1,
+        "groups": [{ "id": "capacity", "label": "容量", "metrics": [{ "id": "usage-rate", "label": "云盘使用容量百分比" }] }]
+      },
+      {
+        "id": "primary-storage",
+        "type": "primary_storage",
+        "label": "主存储",
+        "metricCount": 7,
+        "groups": [
+          { "id": "usage-rate", "label": "使用率", "metrics": [
+            { "id": "used-rate", "label": "已用容量百分比" },
+            { "id": "available-rate", "label": "可用容量百分比" }
+          ] },
+          { "id": "capacity", "label": "容量大小", "metrics": [
+            { "id": "physical-total", "label": "物理总容量" },
+            { "id": "physical-available", "label": "物理可用容量" },
+            { "id": "total", "label": "总容量" },
+            { "id": "used", "label": "已用容量" },
+            { "id": "available", "label": "可用容量" }
+          ] }
+        ]
+      },
+      {
+        "id": "backup-storage",
+        "type": "backup_storage",
+        "label": "镜像服务器",
+        "metricCount": 15,
+        "groups": [
+          { "id": "cpu", "label": "CPU", "metrics": [
+            { "id": "average-usage", "label": "平均 CPU 使用率" },
+            { "id": "all-usage", "label": "全部 CPU 使用率" },
+            { "id": "usage", "label": "CPU 使用率", "dimensions": ["CPUNum"] }
+          ] },
+          { "id": "memory", "label": "内存", "metrics": [
+            { "id": "used-rate", "label": "内存使用百分比" },
+            { "id": "used", "label": "内存使用容量" },
+            { "id": "unused-rate", "label": "内存未使用百分比" },
+            { "id": "unused", "label": "内存未使用容量" }
+          ] },
+          { "id": "storage", "label": "存储", "metrics": [
+            { "id": "used", "label": "已用容量" },
+            { "id": "available", "label": "可用容量" },
+            { "id": "used-rate", "label": "已用容量百分比" },
+            { "id": "available-rate", "label": "可用容量百分比" }
+          ] },
+          { "id": "disk-io", "label": "磁盘 I/O", "metrics": [
+            { "id": "read-rate", "label": "读取速度" },
+            { "id": "write-rate", "label": "写入速度" },
+            { "id": "read-iops", "label": "读取 IOPS" },
+            { "id": "write-iops", "label": "写入 IOPS" }
+          ] }
+        ]
+      },
+      {
+        "id": "load-balancer",
+        "type": "load_balancer",
+        "label": "负载均衡",
+        "metricCount": 11,
+        "groups": [
+          { "id": "health", "label": "健康状态", "metrics": [
+            { "id": "load-balancer-status", "label": "负载均衡器状态" },
+            { "id": "backend-status", "label": "后端服务器状态" }
+          ] },
+          { "id": "connections", "label": "连接", "metrics": [
+            { "id": "current-sessions", "label": "当前会话数" },
+            { "id": "concurrent-sessions", "label": "并发会话数" },
+            { "id": "new-sessions-rate", "label": "每秒新建会话数" }
+          ] },
+          { "id": "traffic", "label": "流量", "metrics": [
+            { "id": "in", "label": "入方向流量" },
+            { "id": "out", "label": "出方向流量" }
+          ] },
+          { "id": "http-response", "label": "HTTP 响应", "metrics": [
+            { "id": "2xx", "label": "2xx 响应数" },
+            { "id": "3xx", "label": "3xx 响应数" },
+            { "id": "4xx", "label": "4xx 响应数" },
+            { "id": "5xx", "label": "5xx 响应数" }
+          ] }
+        ]
+      },
+      {
+        "id": "vrouter",
+        "label": "VPC 路由器",
+        "metricCount": 5,
+        "groups": [
+          { "id": "cpu", "label": "CPU", "metrics": [
+            { "id": "average-usage", "label": "CPU 平均使用率" },
+            { "id": "os-average-usage", "label": "OS CPU 平均使用率" }
+          ] },
+          { "id": "memory", "label": "内存", "metrics": [{ "id": "usage-rate", "label": "内存使用率" }] },
+          { "id": "network", "label": "网络", "metrics": [
+            { "id": "in-total", "label": "入站总流量" },
+            { "id": "out-total", "label": "出站总流量" }
+          ] }
+        ]
+      },
+      {
+        "id": "port-group",
+        "type": "port_group",
+        "label": "分布式端口组",
+        "metricCount": 4,
+        "groups": [{ "id": "ip-address", "label": "IP 地址", "metrics": [
+          { "id": "available-count", "label": "可用 IP 数" },
+          { "id": "used-count", "label": "已用 IP 数" },
+          { "id": "available-rate", "label": "可用 IP 百分比" },
+          { "id": "used-rate", "label": "已用 IP 百分比" }
+        ] }]
+      }
+    ]
+  },
+  {
+    "id": "zaku",
+    "label": "Zaku",
+    "metricCount": 35,
+    "resources": [
+      {
+        "id": "k8s-cluster", "type": "k8s_cluster", "label": "集群", "metricCount": 2,
+        "groups": [{ "id": "resource-utilization", "label": "资源利用率", "metrics": [
+          { "id": "cpu", "label": "CPU 利用率" },
+          { "id": "memory", "label": "内存利用率" }
+        ] }]
+      },
+      {
+        "id": "k8s-node", "type": "k8s_node", "label": "节点", "metricCount": 12,
+        "groups": [
+          { "id": "cpu", "label": "CPU", "metrics": [
+            { "id": "usage-rate", "label": "CPU 使用率", "dimensions": ["mode"] },
+            { "id": "core-count", "label": "CPU 核数" },
+            { "id": "load-1m", "label": "1 分钟负载" },
+            { "id": "load-5m", "label": "5 分钟负载" },
+            { "id": "load-15m", "label": "15 分钟负载" }
+          ] },
+          { "id": "memory", "label": "内存", "metrics": [
+            { "id": "available", "label": "可用内存" },
+            { "id": "total", "label": "总内存" }
+          ] },
+          { "id": "disk", "label": "磁盘", "metrics": [
+            { "id": "available", "label": "可用空间" },
+            { "id": "total", "label": "总空间" },
+            { "id": "io-time", "label": "磁盘 I/O 时间" }
+          ] },
+          { "id": "network", "label": "网络", "metrics": [
+            { "id": "receive-rate", "label": "接收速率", "dimensions": ["device"] },
+            { "id": "transmit-rate", "label": "发送速率", "dimensions": ["device"] }
+          ] }
+        ]
+      },
+      {
+        "id": "k8s-namespace", "type": "k8s_namespace", "label": "命名空间", "metricCount": 6,
+        "groups": [
+          { "id": "cpu", "label": "CPU", "metrics": [{ "id": "usage-rate", "label": "CPU 使用率", "dimensions": ["container"] }] },
+          { "id": "memory", "label": "内存", "metrics": [
+            { "id": "usage", "label": "内存使用量" },
+            { "id": "working-set", "label": "工作集内存" },
+            { "id": "oom-rate", "label": "OOM 事件速率" }
+          ] },
+          { "id": "network", "label": "网络", "metrics": [
+            { "id": "in-throughput", "label": "入站吞吐" },
+            { "id": "out-throughput", "label": "出站吞吐" }
+          ] }
+        ]
+      },
+      {
+        "id": "k8s-pod", "type": "k8s_pod", "label": "容器组", "metricCount": 4,
+        "groups": [{ "id": "runtime", "label": "运行状态", "metrics": [
+          { "id": "phase", "label": "Pod 阶段", "dimensions": ["phase"] },
+          { "id": "container-restarts-24h", "label": "容器重启（24h）", "dimensions": ["container"] },
+          { "id": "last-termination-reason", "label": "上次终止原因", "dimensions": ["reason"] },
+          { "id": "container-termination-reason", "label": "容器终止原因", "dimensions": ["reason"] }
+        ] }]
+      },
+      {
+        "id": "k8s-deployment", "type": "k8s_deployment", "label": "无状态负载", "metricCount": 3,
+        "groups": [{ "id": "health", "label": "健康", "metrics": [
+          { "id": "current-replicas", "label": "当前副本数" },
+          { "id": "desired-replicas", "label": "期望副本数" },
+          { "id": "unavailable-replicas", "label": "不可用副本数" }
+        ] }]
+      },
+      {
+        "id": "k8s-statefulset", "type": "k8s_statefulset", "label": "有状态负载", "metricCount": 3,
+        "groups": [{ "id": "health", "label": "健康", "metrics": [
+          { "id": "ready-replicas", "label": "就绪副本数" },
+          { "id": "replicas", "label": "副本数" },
+          { "id": "updated-replicas", "label": "已更新副本数" }
+        ] }]
+      },
+      {
+        "id": "k8s-pvc", "type": "k8s_pvc", "label": "数据卷", "metricCount": 5,
+        "groups": [
+          { "id": "storage", "label": "存储", "metrics": [
+            { "id": "used", "label": "已用空间" },
+            { "id": "total", "label": "总容量" },
+            { "id": "available", "label": "可用空间" }
+          ] },
+          { "id": "inode", "label": "inode", "metrics": [
+            { "id": "used", "label": "已用 inode" },
+            { "id": "total", "label": "总 inode" }
+          ] }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "zbs",
+    "label": "ZBS",
+    "metricCount": 94,
+    "listedMetricCount": 82,
+    "resources": [
+      {
+        "id": "storage-cluster", "type": "storage_cluster", "label": "存储集群", "metricCount": 27,
+        "groups": [
+          { "id": "health", "label": "健康状态", "metrics": [
+            { "id": "cluster-health", "label": "集群健康状态" },
+            { "id": "health-check", "label": "健康检查状态" },
+            { "id": "health-check-exclude-osd-offline", "label": "健康检查（排除 OSD 离线）" },
+            { "id": "node-online", "label": "节点在线状态" },
+            { "id": "monitor-clock-offset", "label": "监控节点时钟偏移" },
+            { "id": "slow-operations", "label": "慢操作数" }
+          ] },
+          { "id": "capacity", "label": "容量", "metrics": [
+            { "id": "total", "label": "集群总容量" },
+            { "id": "available-raw", "label": "集群可用裸容量" },
+            { "id": "used-raw", "label": "集群已用裸容量" }
+          ] },
+          { "id": "io-performance", "label": "I/O 性能", "metrics": [
+            { "id": "read-rate", "label": "读取速率" },
+            { "id": "write-rate", "label": "写入速率" },
+            { "id": "read-iops", "label": "读取 IOPS" },
+            { "id": "write-iops", "label": "写入 IOPS" },
+            { "id": "read-latency", "label": "读延迟" },
+            { "id": "write-latency", "label": "写延迟" },
+            { "id": "read-total-24h", "label": "24h 读取总量" },
+            { "id": "write-total-24h", "label": "24h 写入总量" }
+          ] },
+          { "id": "osd-overview", "label": "OSD 概览", "metrics": [
+            { "id": "online-count", "label": "在线存储数据盘数量" },
+            { "id": "offline-count", "label": "离线存储数据盘数量" },
+            { "id": "joined-count", "label": "已加入集群的存储数据盘数量" },
+            { "id": "not-joined-count", "label": "未加入集群的存储数据盘数量" }
+          ] },
+          { "id": "recovery", "label": "恢复", "metrics": [
+            { "id": "object-rate", "label": "恢复对象速率" },
+            { "id": "data-rate", "label": "恢复数据速率" },
+            { "id": "operation-rate", "label": "恢复操作速率" }
+          ] },
+          { "id": "monitor", "label": "存储监控节点", "metrics": [
+            { "id": "quorum-count", "label": "仲裁数" },
+            { "id": "even-quorum-count", "label": "偶数仲裁数" },
+            { "id": "quorum-status", "label": "仲裁状态" }
+          ] }
+        ]
+      },
+      {
+        "id": "storage-host", "type": "storage_host", "label": "存储节点", "metricCount": 25,
+        "groups": [
+          { "id": "cpu", "label": "CPU", "metrics": [
+            { "id": "usage-rate", "label": "CPU 使用率" },
+            { "id": "load-1m", "label": "1 分钟负载" },
+            { "id": "load-5m", "label": "5 分钟负载" },
+            { "id": "load-15m", "label": "15 分钟负载" }
+          ] },
+          { "id": "memory", "label": "内存", "metrics": [{ "id": "usage-rate", "label": "内存使用率" }] },
+          { "id": "disk-io", "label": "磁盘 I/O", "metrics": [
+            { "id": "utilization", "label": "磁盘利用率", "dimensions": ["device"] },
+            { "id": "read-rate", "label": "读速率", "dimensions": ["device"] },
+            { "id": "write-rate", "label": "写速率", "dimensions": ["device"] },
+            { "id": "read-iops", "label": "读 IOPS", "dimensions": ["device"] },
+            { "id": "write-iops", "label": "写 IOPS", "dimensions": ["device"] },
+            { "id": "read-latency", "label": "读延迟", "dimensions": ["device"] },
+            { "id": "write-latency", "label": "写延迟", "dimensions": ["device"] }
+          ] },
+          { "id": "network", "label": "网络", "metrics": [
+            { "id": "in-rate", "label": "入速率", "dimensions": ["device"] },
+            { "id": "out-rate", "label": "出速率", "dimensions": ["device"] },
+            { "id": "in-bandwidth-utilization", "label": "入带宽利用率", "dimensions": ["device"] },
+            { "id": "out-bandwidth-utilization", "label": "出带宽利用率", "dimensions": ["device"] },
+            { "id": "in-packet-rate", "label": "入包速率", "dimensions": ["device"] },
+            { "id": "out-packet-rate", "label": "出包速率", "dimensions": ["device"] },
+            { "id": "in-drop-rate", "label": "入丢包速率", "dimensions": ["device"] },
+            { "id": "out-drop-rate", "label": "出丢包速率", "dimensions": ["device"] },
+            { "id": "in-error-rate", "label": "入错误速率", "dimensions": ["device"] },
+            { "id": "out-error-rate", "label": "出错误速率", "dimensions": ["device"] }
+          ] },
+          { "id": "service", "label": "服务", "metrics": [
+            { "id": "status", "label": "服务状态", "dimensions": ["name"] },
+            { "id": "cpu-usage-rate", "label": "服务 CPU 使用率", "dimensions": ["name"] },
+            { "id": "memory-usage-rate", "label": "服务内存使用率", "dimensions": ["name"] }
+          ] }
+        ]
+      },
+      {
+        "id": "storage-pool", "type": "storage_pool", "label": "存储池", "metricCount": 20,
+        "groups": [
+          { "id": "capacity", "label": "容量", "metrics": [
+            { "id": "used", "label": "已用容量", "dimensions": ["name"] },
+            { "id": "usage-rate", "label": "使用率", "dimensions": ["name"] },
+            { "id": "max-available", "label": "最大可用容量", "dimensions": ["name"] },
+            { "id": "raw", "label": "裸容量", "dimensions": ["name"] },
+            { "id": "raw-data-used", "label": "裸数据已用", "dimensions": ["name"] },
+            { "id": "raw-data-usage-rate", "label": "裸数据使用率", "dimensions": ["name"] },
+            { "id": "raw-data-free", "label": "裸数据剩余", "dimensions": ["name"] }
+          ] },
+          { "id": "io-performance", "label": "I/O 性能", "metrics": [
+            { "id": "read-rate", "label": "读速率", "dimensions": ["name"] },
+            { "id": "write-rate", "label": "写速率", "dimensions": ["name"] },
+            { "id": "read-iops", "label": "读 IOPS", "dimensions": ["name"] },
+            { "id": "write-iops", "label": "写 IOPS", "dimensions": ["name"] },
+            { "id": "read-latency", "label": "读延迟", "dimensions": ["name"] },
+            { "id": "write-latency", "label": "写延迟", "dimensions": ["name"] },
+            { "id": "cumulative-read", "label": "累计读取量", "dimensions": ["name"] },
+            { "id": "cumulative-write", "label": "累计写入量", "dimensions": ["name"] }
+          ] },
+          { "id": "health-recovery", "label": "健康与恢复", "metrics": [
+            { "id": "health", "label": "健康状态", "dimensions": ["name"] },
+            { "id": "degraded", "label": "降级状态", "dimensions": ["name"] },
+            { "id": "recovery-data-rate", "label": "恢复数据速率", "dimensions": ["name"] },
+            { "id": "recovery-object-rate", "label": "恢复对象速率", "dimensions": ["name"] },
+            { "id": "recovery-operation-rate", "label": "恢复操作速率", "dimensions": ["name"] }
+          ] }
+        ]
+      },
+      {
+        "id": "physical-disk", "type": "physical_disk", "label": "物理磁盘", "metricCount": 2,
+        "groups": [{ "id": "smart-health", "label": "SMART 健康", "metrics": [
+          { "id": "status", "label": "磁盘 SMART 状态", "dimensions": ["hostUuid"] },
+          { "id": "total-written", "label": "磁盘写入总量", "dimensions": ["hostUuid"] }
+        ] }]
+      },
+      {
+        "id": "ceph-osd", "type": "ceph_osd", "label": "存储数据盘", "metricCount": 14, "listedMetricCount": 2, "partial": true,
+        "groups": [
+          { "id": "status", "label": "状态", "metrics": [
+            { "id": "online", "label": "在线状态", "dimensions": ["ceph_daemon"] },
+            { "id": "joined", "label": "集群加入状态", "dimensions": ["ceph_daemon"] }
+          ] }
+        ]
+      },
+      {
+        "id": "ceph-rbd", "type": "ceph_rbd", "label": "块存储卷", "metricCount": 6,
+        "groups": [{ "id": "io-performance", "label": "I/O 性能", "metrics": [
+          { "id": "read-rate", "label": "读速率", "dimensions": ["image"] },
+          { "id": "write-rate", "label": "写速率", "dimensions": ["image"] },
+          { "id": "read-iops", "label": "读 IOPS", "dimensions": ["image"] },
+          { "id": "write-iops", "label": "写 IOPS", "dimensions": ["image"] },
+          { "id": "read-latency", "label": "读延迟", "dimensions": ["image"] },
+          { "id": "write-latency", "label": "写延迟", "dimensions": ["image"] }
+        ] }]
+      }
+    ]
+  }
+]

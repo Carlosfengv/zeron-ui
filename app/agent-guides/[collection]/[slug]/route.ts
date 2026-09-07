@@ -29,6 +29,11 @@ const guideLoaders: Record<string, () => Promise<string>> = {
       join(process.cwd(), "docs/agent-guides/components/select.md"),
       "utf8",
     ),
+  "components/tree.md": () =>
+    readFile(
+      join(process.cwd(), "docs/agent-guides/components/tree.md"),
+      "utf8",
+    ),
 };
 
 export async function GET(
