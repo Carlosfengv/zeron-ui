@@ -719,6 +719,28 @@
       ]
     },
     {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "Image and fallback primitives for people, agents, and accounts, with status badges, three sizes, and overlapping group composition.",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/avatar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/avatar.tsx"
+        }
+      ]
+    },
+    {
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",

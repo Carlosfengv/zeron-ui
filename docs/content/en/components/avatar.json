@@ -1,0 +1,29 @@
+{
+  "avatar": {
+    "description": "An image with a fallback for representing a person, agent, or account, with optional status and group composition.",
+    "basic": "Basic",
+    "userDetails": "Avatar with user details and badge",
+    "badge": "Status badge",
+    "group": "Avatar group",
+    "sizes": "Sizes",
+    "fallback": "Fallback and loading delay",
+    "accessibility": "Accessibility",
+    "accessibilityBody": "Give meaningful profile images an alt text that identifies the person; use an empty alt when the nearby text already provides the same name. Initials remain readable fallback content. When a badge communicates presence or another status, include a visually hidden label or expose the same status in adjacent text. Label group counts so screen readers hear what the number represents.",
+    "apiReference": "API Reference",
+    "online": "Online",
+    "moreMembers": "{count} more members",
+    "sizeProp": "Sets the root, fallback text, badge, and group-count dimensions.",
+    "classNameProp": "Adds classes to the component while preserving its default styling.",
+    "renderProp": "Replaces the root element through Base UI render composition.",
+    "srcProp": "Image source passed to the underlying image element.",
+    "altProp": "Accessible alternative text for the image.",
+    "loadingStatusProp": "Runs when the image loading state changes.",
+    "delayProp": "Waits this many milliseconds before showing the fallback.",
+    "compositionClassNameProp": "Adds classes and native element props to the composition helper.",
+    "detailsAvatarProp": "Avatar content rendered before the user details.",
+    "detailsNameProp": "Primary user or account label.",
+    "detailsDescriptionProp": "Optional secondary detail, such as a role or email address.",
+    "detailsBadgeProp": "Optional content beside the name, typically a Badge.",
+    "detailsSizeProp": "Controls the spacing, typography, and nested avatar size."
+  }
+}

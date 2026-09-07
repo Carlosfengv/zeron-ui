@@ -5,6 +5,7 @@ import { DocPager } from "@docs/components/navigation/DocPager";
 import { InstallCommand } from "@docs/components/content/InstallCommand";
 
 const BASE_UI_BACKED_SLUGS = new Set([
+  "avatar",
   "color-picker",
   "ask-user-questions",
   "input-group",
