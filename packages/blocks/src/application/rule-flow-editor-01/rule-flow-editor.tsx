@@ -1246,10 +1246,10 @@ export function RuleFlowEditor({
   const branchTop =
     conditionTop + (nodeHeights.conditions ?? estimatedNodeHeight) + 112;
   const compactErrorTop = branchTop + actionRowGap;
-  const compactUnmatchedTop = compactErrorTop + actionRowGap;
-  const desktopUnmatchedTop = errorBranchVisible
-    ? branchTop + actionRowGap
-    : branchTop;
+  const compactUnmatchedTop = errorBranchVisible
+    ? compactErrorTop + actionRowGap
+    : branchTop + actionRowGap;
+  const desktopUnmatchedTop = conditionTop;
 
   const matchedOptions = actions.filter(
     (action) => !action.branches || action.branches.includes("matched"),
@@ -1457,7 +1457,17 @@ export function RuleFlowEditor({
       );
       const left = centerX - nodeWidth / 2;
       const right = centerX + nodeWidth / 2;
+      const height = nodeHeights[node.id] ?? estimatedNodeHeight;
       let top = Math.max(canvasPadding, node.position.y);
+
+      if (!compactLayout && node.id === "unmatched-end") {
+        const conditionVisualTop = tops.get("conditions");
+        if (conditionVisualTop !== undefined) {
+          top =
+            conditionVisualTop +
+            ((nodeHeights.conditions ?? estimatedNodeHeight) - height) / 2;
+        }
+      }
 
       for (const previous of placed) {
         const overlapsHorizontally =
@@ -1468,13 +1478,12 @@ export function RuleFlowEditor({
         }
       }
 
-      const height = nodeHeights[node.id] ?? estimatedNodeHeight;
       tops.set(node.id, top);
       placed.push({ left, right, top, bottom: top + height });
     }
 
     return tops;
-  }, [canvasNodes, drawingWidth, nodeHeights, nodeWidthFor]);
+  }, [canvasNodes, compactLayout, drawingWidth, nodeHeights, nodeWidthFor]);
 
   const placedNode = useCallback(
     (node: CanvasNode) => {
@@ -1656,6 +1665,7 @@ export function RuleFlowEditor({
     const exceptionNode = nodeById.get("error-actions");
     const exception = exceptionNode ? placedNode(exceptionNode) : null;
     const sourceHeight = nodeHeights[fromNode.id] ?? estimatedNodeHeight;
+    const targetHeight = nodeHeights[toNode.id] ?? estimatedNodeHeight;
     const startsFromConditionBottomCenter =
       edge.branch === "error" && edge.from === "conditions";
     const startsFromConditionRightCenter =
@@ -1671,9 +1681,16 @@ export function RuleFlowEditor({
         : from.top + sourceHeight,
     };
     const end = {
-      x: to.centerX - to.nodeWidth / 2 + edgeAnchorInset,
-      y: to.top + kindLabelOffset,
+      x:
+        startsFromConditionRightCenter
+          ? to.centerX - to.nodeWidth / 2
+          : to.centerX - to.nodeWidth / 2 + edgeAnchorInset,
+      y: startsFromConditionRightCenter
+        ? to.top + targetHeight / 2
+        : to.top + kindLabelOffset,
     };
+    const routesUnmatchedDirectly =
+      startsFromConditionRightCenter && !compactLayout;
     const routesAroundCompactCards =
       compactLayout &&
       edge.from === "conditions" &&
@@ -1699,7 +1716,9 @@ export function RuleFlowEditor({
     );
     const turnY = start.y + verticalDirection * turnDistance;
     const compactApproachY = end.y - verticalDirection * 24;
-    const path = startsFromConditionRightCenter
+    const path = routesUnmatchedDirectly
+      ? `M ${start.x} ${start.y} H ${end.x}`
+      : startsFromConditionRightCenter
       ? `M ${start.x} ${start.y} H ${railX} V ${end.y} H ${end.x}`
       : routesAroundCompactCards
         ? `M ${start.x} ${start.y} V ${turnY} H ${railX} V ${compactApproachY} H ${end.x} V ${end.y}`
@@ -1710,8 +1729,10 @@ export function RuleFlowEditor({
       {
         edge,
         path,
-        labelX: startsFromConditionRightCenter
-          ? (start.x + railX) / 2
+        labelX: routesUnmatchedDirectly
+          ? (start.x + end.x) / 2
+          : startsFromConditionRightCenter
+            ? (start.x + railX) / 2
           : isVertical
             ? start.x
             : (start.x + end.x) / 2,

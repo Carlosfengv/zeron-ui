@@ -28,7 +28,7 @@ An empty rule renders the primary instructional skeleton first:
 3. Configure and reorder matched actions inside one card in the left-aligned primary lane.
 4. Show the fixed unmatched endpoint: “结束——不执行本规则.”
 
-Exception handling is optional and hidden by default. The user can reveal it from the condition card; configured policy values always keep it visible directly to the right of the matched-action card with a fixed 24px gap. The unmatched endpoint remains in the far-right lane below it, so the exception card sits spatially between the matched-action and unmatched cards. One card groups `matched-result` policies above `execution-failure` policies. Its rows follow the condition/action one-line rhythm and are not sortable. In compact layouts the same three cards stack as matched actions, exception handling, then unmatched.
+Exception handling is optional and hidden by default. The user can reveal it from the condition card; configured policy values always keep it visible directly to the right of the matched-action card with a fixed 24px gap. The unmatched endpoint stays in the far-right lane aligned horizontally with the condition card. One card groups `matched-result` policies above `execution-failure` policies. Its rows follow the condition/action one-line rhythm and are not sortable. In compact layouts the result cards stack as matched actions, exception handling, then unmatched.
 
 Skeleton cards do not add values automatically. A newly added condition starts with empty field, operator, and value selections.
 
@@ -40,7 +40,7 @@ Matched-action rows keep the canonical `SortableCollectionItem` surface, padding
 
 ## Composition boundaries
 
-The canvas and SVG connectors are block-owned visualization code. The primary connector attaches 24px from each card's left edge. The unmatched connector leaves from the condition card's right-side midpoint. The exception branch starts at the horizontal center of the condition card's bottom edge and approaches the exception card near its left edge. Aligned primary cards use a straight vertical segment, while branches use orthogonal vertical and horizontal segments with 90-degree turns. Cards, badges, buttons, selects, icons, focus treatments, surfaces, and shadows come from Zeron components and semantic tokens. Controls use the standard 32px `md` size. Card borders remain 0.5px and selected cards retain the floating surface fill.
+The canvas and SVG connectors are block-owned visualization code. The primary connector attaches 24px from each card's left edge. In wide layouts, the unmatched connector is one horizontal line from the condition card's right-side midpoint to the unmatched card's left-side midpoint. The exception branch starts at the horizontal center of the condition card's bottom edge and approaches the exception card near its left edge with 90-degree turns. Cards, badges, buttons, selects, icons, focus treatments, surfaces, and shadows come from Zeron components and semantic tokens. Controls use the standard 32px `md` size. Card borders remain 0.5px and selected cards retain the floating surface fill.
 
 Select popups render through a Portal. Keep `data-flow-control` on popup content so portaled pointer events cannot be captured by card dragging.
 

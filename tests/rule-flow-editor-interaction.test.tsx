@@ -114,7 +114,7 @@ describe("RuleFlowEditor", () => {
     expect(nodeLeft(actionTitle)).toBe(16);
   });
 
-  it("routes connectors from their branch anchors with orthogonal segments", () => {
+  it("uses a direct unmatched connector and orthogonal primary branches", () => {
     const { container } = render(<RuleFlowEditor value={configuredFlow} />);
     const primaryPath = container.querySelector<SVGPathElement>(
       '[data-edge-id="conditions-matched"]',
@@ -129,14 +129,14 @@ describe("RuleFlowEditor", () => {
     expect(primaryPath?.getAttribute("d")).toMatch(/^M 40 .+ V /);
     expect(primaryPath?.getAttribute("d")).not.toContain(" C ");
     expect(branchPath?.getAttribute("d")).toMatch(/^M 636 248 H /);
-    expect(branchPath?.getAttribute("d")).toContain(" H 1032 V ");
-    expect(branchPath?.getAttribute("d")).toContain(" V ");
+    expect(branchPath?.getAttribute("d")).toMatch(/ H 732$/);
+    expect(branchPath?.getAttribute("d")).not.toContain(" V ");
     expect(branchPath?.getAttribute("d")).not.toContain(" C ");
     expect(errorPath?.getAttribute("d")).toMatch(/^M 326 .+ V /);
     expect(errorPath?.getAttribute("d")).toContain(" H ");
   });
 
-  it("places the exception card between matched actions and the unmatched lane", () => {
+  it("places unmatched beside conditions and exceptions beside matched actions", () => {
     render(<RuleFlowEditor value={configuredFlow} />);
 
     const nodeBox = (element: HTMLElement) => {
@@ -152,13 +152,14 @@ describe("RuleFlowEditor", () => {
       };
     };
     const matched = nodeBox(screen.getByText("拒绝本次调用"));
+    const condition = nodeBox(screen.getByText("满足以下全部条件"));
     const exception = nodeBox(screen.getByText("检测服务不可用时"));
     const unmatched = nodeBox(screen.getByText("结束——不执行本规则"));
 
     expect(exception.left - (matched.left + matched.width)).toBe(24);
     expect(exception.left).toBeLessThan(unmatched.left);
     expect(exception.top).toBe(matched.top);
-    expect(unmatched.top).toBeGreaterThan(exception.top);
+    expect(unmatched.top).toBe(condition.top);
   });
 
   it("groups matched actions in one card and persists their sorted order", () => {
