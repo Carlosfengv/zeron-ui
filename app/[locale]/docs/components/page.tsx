@@ -12,7 +12,10 @@ function ComponentsGalleryLoading() {
         <div className="rounded-xl border border-border bg-surface-floating p-5">
           <Skeleton className="h-7 w-48" />
           <Skeleton className="mt-3 h-4 w-full max-w-xl" />
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div
+            className="mt-8 grid gap-4"
+            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, max(17rem, calc((100% - 3rem) / 4))), 1fr))" }}
+          >
             {Array.from({ length: 6 }, (_, index) => <Skeleton className="aspect-[8/5] rounded-3xl" key={index} />)}
           </div>
         </div>

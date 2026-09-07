@@ -362,7 +362,12 @@ export function ComponentsGallery({ localePrefix = "" }: { localePrefix?: string
                       <h2 id={`component-group-${group.section}-title`} className="text-title font-semibold text-fg-default">{sectionLabels[language][group.section]}</h2>
                       <span className="text-label text-fg-muted">{group.entries.length}</span>
                     </header>
-                    <CardGroup className="gap-4" columns={3} separated style={{ gridTemplateColumns: "repeat(auto-fill, minmax(17rem, 1fr))" }}>
+                    <CardGroup
+                      className="gap-4"
+                      columns={4}
+                      separated
+                      style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, max(17rem, calc((100% - 3rem) / 4))), 1fr))" }}
+                    >
                       {group.entries.map((entry) => <ComponentCard key={entry.slug} coverTheme={coverTheme} entry={entry} href={`${localePrefix}/docs/components/${entry.slug}`} language={language} />)}
                     </CardGroup>
                   </section>
@@ -437,7 +442,7 @@ function ComponentCard({ coverTheme, entry, href, language }: { coverTheme: Comp
       <Container className="h-full">
         <ContainerBody className="overflow-hidden overscroll-auto bg-transparent p-0">
           <div className="relative aspect-[8/5] min-h-40 overflow-hidden bg-surface-base">
-            <Image alt="" className="object-contain p-2 transition-transform duration-moderate group-hover/card:scale-[1.025]" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={componentCoverSrc(entry.slug, coverTheme)} />
+            <Image alt="" className="object-contain p-2 transition-transform duration-moderate group-hover/card:scale-[1.025]" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 25vw" src={componentCoverSrc(entry.slug, coverTheme)} />
           </div>
         </ContainerBody>
         <ContainerFooter className="min-h-20 flex-col items-start gap-1 py-3">
