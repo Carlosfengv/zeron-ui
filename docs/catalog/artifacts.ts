@@ -145,6 +145,11 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
     kind: "block", product: "shared", domains: ["resource", "operations"], patterns: ["data table", "filter", "bulk action"], searchTerms: ["resource", "list", "table", "filter", "资源", "表格", "筛选"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
   },
   {
+    slug: "member-department-01", registryName: "member-department-01",
+    title: "Member & Department", description: "A department-scoped member directory with account status filters and responsive organization navigation.",
+    kind: "block", product: "shared", domains: ["organization", "member management"], patterns: ["department tree", "data table", "filter"], searchTerms: ["member", "department", "organization", "account status", "成员", "部门", "组织架构"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
     slug: "infinite-log-table-01", registryName: "infinite-log-table-01",
     title: "Infinite Log Table", description: "A schema-driven virtualized log explorer with dynamic fields and filters, seek pagination, Live tailing, and record detail.",
     kind: "block", product: "shared", domains: ["observability", "monitoring"], patterns: ["infinite table", "log explorer", "live tail"], searchTerms: ["log", "infinite", "cursor", "schema", "日志", "观测", "字段", "筛选"], readiness: "copy-ready", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,

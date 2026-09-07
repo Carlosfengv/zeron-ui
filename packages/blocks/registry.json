@@ -527,6 +527,21 @@
       ]
     },
     {
+      "name": "member-department-01",
+      "type": "registry:block",
+      "title": "成员与部门",
+      "description": "A department-scoped member directory with search, account-status filtering, pagination, and responsive organization navigation.",
+      "categories": ["application", "organization", "tables"],
+      "dependencies": ["tw-animate-css", "@tanstack/react-table"],
+      "registryDependencies": ["avatar", "badge", "button", "data-table", "icon-context", "input-group", "member-tree", "mobile-drawer", "page-layout", "tabs", "utils"],
+      "files": [
+        { "path": "packages/blocks/src/application/member-department-01/member-department-types.ts", "type": "registry:component", "target": "components/blocks/member-department-01/member-department-types.ts" },
+        { "path": "packages/blocks/src/application/member-department-01/member-department-demo-data.ts", "type": "registry:component", "target": "components/blocks/member-department-01/member-department-demo-data.ts" },
+        { "path": "packages/blocks/src/application/member-department-01/member-department.tsx", "type": "registry:component", "target": "components/blocks/member-department-01/member-department.tsx" },
+        { "path": "packages/blocks/src/application/member-department-01/index.ts", "type": "registry:component", "target": "components/blocks/member-department-01/index.ts" }
+      ]
+    },
+    {
       "name": "infinite-log-table-01",
       "type": "registry:block",
       "title": "Infinite Log Table",

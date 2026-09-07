@@ -25,6 +25,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "blocks/resource-catalog-01": () => import("@docs/pages/blocks/resource-catalog-01/page"),
   "blocks/resource-details-01": () => import("@docs/pages/blocks/resource-details-01/page"),
   "blocks/resource-list-table-01": () => import("@docs/pages/blocks/resource-list-table-01/page"),
+  "blocks/member-department-01": () => import("@docs/pages/blocks/member-department-01/page"),
   "blocks/infinite-log-table-01": () => import("@docs/pages/blocks/infinite-log-table-01/page"),
   "blocks/file-manager-01": () => import("@docs/pages/blocks/file-manager-01/page"),
   "blocks/resource-metric-list-01": () => import("@docs/pages/blocks/resource-metric-list-01/page"),

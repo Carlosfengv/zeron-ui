@@ -1,0 +1,10 @@
+{
+  "memberDepartmentBlock": {
+    "title": "成员与部门",
+    "description": "带部门范围、搜索、账号状态筛选、分页和响应式组织导航的成员目录。",
+    "integrationTitle": "数据接入",
+    "integrationBody": "通过 members 和 departments 替换内置成员目录与组织树。Block 自己维护搜索、状态筛选、部门范围、分页和移动端抽屉等短暂界面状态；使用 onCreateMember、onCreateDepartment、onMemberOpen 和 onDepartmentSelect 接入业务动作。",
+    "scopeTitle": "当前范围",
+    "scopeBody": "首版实现 Figma 中的“成员”工作区。部门管理和已离职成员视图保留为明确的集成边界，不会用占位页面伪装完成；外围的后台导航仍由宿主应用管理。"
+  }
+}

@@ -9,7 +9,7 @@ describe("business template catalog", () => {
     const registryNames = new Set(blocksByRegistryName.keys());
     const artifactRegistryNames = artifactCatalog.map(({ registryName }) => registryName);
 
-    expect(artifactCatalog).toHaveLength(27);
+    expect(artifactCatalog).toHaveLength(28);
     expect(new Set(artifactRegistryNames).size).toBe(artifactCatalog.length);
     expect(new Set(artifactRegistryNames)).toEqual(registryNames);
     for (const artifact of artifactCatalog) {
@@ -19,7 +19,7 @@ describe("business template catalog", () => {
 
   it("labels only data-capable Blocks as data blocks", () => {
     expect(blockCatalog.filter((block) => block.installation.kind === "data-block").map((block) => block.name))
-      .toEqual(["file-manager-01", "resource-list-table-01", "infinite-log-table-01"]);
+      .toEqual(["file-manager-01", "resource-list-table-01", "member-department-01", "infinite-log-table-01"]);
   });
 
   it("keeps every business template reachable through an existing detail page", () => {

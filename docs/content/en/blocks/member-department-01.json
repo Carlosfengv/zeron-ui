@@ -1,0 +1,10 @@
+{
+  "memberDepartmentBlock": {
+    "title": "Member & Department",
+    "description": "A department-scoped member directory with search, account-status filtering, pagination, and responsive organization navigation.",
+    "integrationTitle": "Data integration",
+    "integrationBody": "Pass members and departments to replace the included directory and organization tree. The block owns transient search, status filters, department scoping, pagination, and the mobile drawer. Use onCreateMember, onCreateDepartment, onMemberOpen, and onDepartmentSelect to connect product actions.",
+    "scopeTitle": "Current scope",
+    "scopeBody": "The initial block implements the Members workspace from the Figma design. Department administration and the departed-member view remain explicit integration seams; they are not represented as placeholder screens. The surrounding application sidebar stays owned by the host shell."
+  }
+}

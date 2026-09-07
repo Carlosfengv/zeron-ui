@@ -170,6 +170,13 @@ const blockCatalogEntries = [
     dependencies: ["data-table", "info-item", "badge", "checkbox", "button", "input-group"],
   },
   {
+    name: "member-department-01",
+    title: "成员与部门",
+    description: "A department-scoped member directory with search, account-status filtering, pagination, and responsive organization navigation.",
+    categories: ["application", "organization", "tables"],
+    dependencies: ["avatar", "badge", "button", "data-table", "input-group", "member-tree", "mobile-drawer", "page-layout", "tabs"],
+  },
+  {
     name: "resource-metric-list-01",
     title: "Resource Metric List 1",
     description: "A compact resource inventory with status distribution bars for infrastructure health at a glance.",

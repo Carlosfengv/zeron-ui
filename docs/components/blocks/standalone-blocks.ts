@@ -18,6 +18,7 @@ export const standaloneBlockSlugs = [
   "resource-catalog-01",
   "resource-details-01",
   "resource-list-table-01",
+  "member-department-01",
   "infinite-log-table-01",
   "file-manager-01",
   "resource-metric-list-01",
