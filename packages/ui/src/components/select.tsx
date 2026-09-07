@@ -377,6 +377,8 @@ interface SelectContentProps
   sideOffset?: number;
   alignOffset?: number;
   alignItemWithTrigger?: boolean;
+  /** Render the popup at its final visual state without an entry tween. */
+  animated?: boolean;
 }
 
 const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
@@ -389,6 +391,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
       sideOffset = 6,
       alignOffset = 0,
       alignItemWithTrigger = false,
+      animated = true,
       ...popupProps
     },
     ref
@@ -396,6 +399,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
     const portalContainer = usePortalContainer();
     const { open, value, actionsRef } = useSelectContext();
     const containerRef = useRef<HTMLDivElement>(null);
+    const hasOpenedRef = useRef(false);
 
     const {
       activeIndex,
@@ -419,11 +423,18 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
     // animation callbacks can stall. The popup exits with spring.fast, so the
     // fallback tracks that tier's exit duration plus a safety buffer.
     useEffect(() => {
-      if (open) return;
-      const id = setTimeout(
-        () => actionsRef.current?.unmount(),
-        exitFallbackMs(spring.fast)
-      );
+      if (open) {
+        hasOpenedRef.current = true;
+        return;
+      }
+      // Base UI force-mounts the popup immediately before the first open so it
+      // can position the menu. Do not interpret that preparation render as a
+      // close, otherwise an immediate popup is torn down during its own click.
+      if (!hasOpenedRef.current) return;
+      const id = setTimeout(() => {
+        actionsRef.current?.unmount();
+        hasOpenedRef.current = false;
+      }, exitFallbackMs(spring.fast));
       return () => clearTimeout(id);
     }, [open, actionsRef]);
 
@@ -506,18 +517,27 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
           className="z-popover outline-none"
         >
           <motion.div
-            initial={{ opacity: 0, y: -4, scaleY: 0.96 }}
+            initial={animated ? { opacity: 0, y: -4, scaleY: 0.96 } : false}
             animate={
               open
                 ? { opacity: 1, y: 0, scaleY: 1 }
                 : { opacity: 0, y: -4, scaleY: 0.96 }
             }
-            transition={open ? spring.fast : spring.fast.exit}
+            transition={
+              open && !animated
+                ? { duration: 0 }
+                : open
+                  ? spring.fast
+                  : spring.fast.exit
+            }
             style={{ transformOrigin: "top center" }}
             // Base UI defers unmount while actionsRef is set; release it once
-            // the exit spring has finished so the close animation fully plays.
+            // the exit spring has finished so pointer selection can complete.
             onAnimationComplete={() => {
-              if (!open) actionsRef.current?.unmount();
+              if (!open) {
+                actionsRef.current?.unmount();
+                hasOpenedRef.current = false;
+              }
             }}
           >
             <SelectContentContext.Provider value={contentCtx}>

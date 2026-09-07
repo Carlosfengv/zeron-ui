@@ -1,0 +1,8 @@
+{
+  "ruleFlowEditorBlock": {
+    "title": "Rule Flow Editor",
+    "description": "Define an empty-first traffic rule with a left-aligned AND-to-action primary flow and an optional exception branch on the right.",
+    "guidance": "Data integration",
+    "guidanceBody": "Pass value and onValueChange to persist the rule definition and layout. Supply triggers, fields, operators, actions, and errorActions from your business schema. Conditions are always combined with AND. Matched actions form the sortable left-side primary flow. Exception handling is hidden initially and opens as one non-sortable card on the right, grouped into matched results and execution failures. Unmatched traffic follows a fixed endpoint and does not execute the rule. The default value contains no sample selections, and readOnly keeps configured flow branches inspectable without mutation controls."
+  }
+}

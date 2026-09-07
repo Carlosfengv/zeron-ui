@@ -73,6 +73,8 @@ export interface SortableCollectionProps<T extends SortableCollectionItem>
   dragHandlePosition?: "start" | "end";
   /** Renders a control before the item label, such as a visibility checkbox. */
   renderLeading?: (item: T, context: SortableCollectionActionContext) => ReactNode;
+  /** Replaces the default title and description presentation with product content. */
+  renderContent?: (item: T, context: SortableCollectionActionContext) => ReactNode;
   /** Keep the default trailing area minimal; products can opt into a pencil affordance. */
   showEditAction?: boolean;
   renderActions?: (item: T, context: SortableCollectionActionContext) => ReactNode;
@@ -106,6 +108,7 @@ function SortableCollection<T extends SortableCollectionItem>({
   renderEditingContent,
   dragHandlePosition = "start",
   renderLeading,
+  renderContent,
   showEditAction = false,
   renderActions,
   maxItems,
@@ -308,10 +311,12 @@ function SortableCollection<T extends SortableCollectionItem>({
                     </motion.div>
                   ) : (
                     <motion.div key="display" initial={reduceMotion ? false : { opacity: 0, y: 2 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? undefined : { opacity: 0, y: -2 }} transition={{ duration: reduceMotion ? 0 : 0.12 }} className="min-w-0">
-                      <div className="flex min-w-0 items-baseline gap-1.5">
-                        <span className="min-w-0 truncate font-medium text-fg-default">{item.title}</span>
-                        {item.description && <span className="min-w-0 truncate text-label text-fg-subtle">{item.description}</span>}
-                      </div>
+                      {renderContent ? renderContent(item, actionContext) : (
+                        <div className="flex min-w-0 items-baseline gap-1.5">
+                          <span className="min-w-0 truncate font-medium text-fg-default">{item.title}</span>
+                          {item.description && <span className="min-w-0 truncate text-label text-fg-subtle">{item.description}</span>}
+                        </div>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>

@@ -5,11 +5,13 @@ import { docEntries } from "../docs/manifest";
 
 describe("business template catalog", () => {
   it("maps every current registry asset to one discoverable artifact", () => {
-    const blocksByRegistryName = new Map(blockCatalog.map((block) => [block.name, block]));
+    const blocksByRegistryName = new Map<string, (typeof blockCatalog)[number]>(
+      blockCatalog.map((block) => [block.name, block]),
+    );
     const registryNames = new Set(blocksByRegistryName.keys());
     const artifactRegistryNames = artifactCatalog.map(({ registryName }) => registryName);
 
-    expect(artifactCatalog).toHaveLength(28);
+    expect(artifactCatalog).toHaveLength(29);
     expect(new Set(artifactRegistryNames).size).toBe(artifactCatalog.length);
     expect(new Set(artifactRegistryNames)).toEqual(registryNames);
     for (const artifact of artifactCatalog) {
@@ -19,7 +21,7 @@ describe("business template catalog", () => {
 
   it("labels only data-capable Blocks as data blocks", () => {
     expect(blockCatalog.filter((block) => block.installation.kind === "data-block").map((block) => block.name))
-      .toEqual(["file-manager-01", "resource-list-table-01", "member-department-01", "infinite-log-table-01"]);
+      .toEqual(["file-manager-01", "rule-flow-editor-01", "resource-list-table-01", "member-department-01", "infinite-log-table-01"]);
   });
 
   it("keeps every business template reachable through an existing detail page", () => {

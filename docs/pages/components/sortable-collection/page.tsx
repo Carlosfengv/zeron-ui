@@ -128,6 +128,7 @@ const collectionProps: PropDef[] = [
   { name: "onReorder", type: "(items: T[]) => void", description: "Optional reorder-only callback, useful for persistence or analytics." },
   { name: "dragHandlePosition", type: '"start" | "end"', default: '"start"', description: "Places the reorder handle before or after the item content." },
   { name: "renderLeading", type: "(item, context) => ReactNode", description: "Adds a control before the item label, such as a visibility checkbox." },
+  { name: "renderContent", type: "(item, context) => ReactNode", description: "Replaces the default title and description layout with product-owned row content." },
   { name: "addOptions", type: "SortableCollectionAddOption[]", default: "[]", description: "Catalog entries displayed from the bottom add button." },
   { name: "addLabel", type: "string", default: '"Add item"', description: "Visible label for the bottom add button." },
   { name: "onAdd", type: "(option) => void", description: "Called after a selectable catalog option is chosen. The consumer adds the item to its controlled array." },

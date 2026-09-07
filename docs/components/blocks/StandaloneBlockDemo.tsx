@@ -15,6 +15,7 @@ import { PersonalModelUsage } from "@zeron/blocks/personal-model-usage-01";
 import { PersonalUsage } from "@zeron/blocks/personal-usage-01";
 import { ResourceSettings } from "@zeron/blocks/resource-settings-01";
 import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
+import { RuleFlowEditor } from "@zeron/blocks/rule-flow-editor-01";
 import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
 import { ResourceDetails } from "@zeron/blocks/resource-details-01";
 import { ResourceListTable } from "@zeron/blocks/resource-list-table-01";
@@ -77,6 +78,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <ResourceSettings />;
     case "provider-create-form-01":
       return <div className="h-full bg-surface-base"><ProviderCreateForm /></div>;
+    case "rule-flow-editor-01":
+      return <div className="h-full min-h-0 overflow-hidden bg-surface-raised p-3 sm:p-6"><RuleFlowEditor /></div>;
     case "resource-catalog-01":
       return <ResourceCatalog />;
     case "resource-details-01":

@@ -19,6 +19,7 @@ export const blockPageLoaders: Record<string, DocPageLoader> = {
   "blocks/personal-settings-01": () => import("@docs/pages/blocks/personal-settings-01/page"),
   "blocks/personal-usage-01": () => import("@docs/pages/blocks/personal-usage-01/page"),
   "blocks/provider-create-form-01": () => import("@docs/pages/blocks/provider-create-form-01/page"),
+  "blocks/rule-flow-editor-01": () => import("@docs/pages/blocks/rule-flow-editor-01/page"),
   "blocks/resource-catalog-01": () => import("@docs/pages/blocks/resource-catalog-01/page"),
   "blocks/resource-details-01": () => import("@docs/pages/blocks/resource-details-01/page"),
   "blocks/resource-list-table-01": () => import("@docs/pages/blocks/resource-list-table-01/page"),

@@ -90,6 +90,20 @@
       ]
     },
     {
+      "name": "rule-flow-editor-01",
+      "type": "registry:block",
+      "title": "Rule Flow Editor",
+      "description": "A controlled rule canvas for arranging triggers, conditions, and actions with editable condition clauses.",
+      "categories": ["application", "forms", "workflow"],
+      "dependencies": ["tw-animate-css"],
+      "registryDependencies": ["badge", "button", "card", "icon-context", "input", "select", "sortable-collection", "utils"],
+      "files": [
+        { "path": "packages/blocks/src/application/rule-flow-editor-01/rule-flow-types.ts", "type": "registry:component", "target": "components/blocks/rule-flow-editor-01/rule-flow-types.ts" },
+        { "path": "packages/blocks/src/application/rule-flow-editor-01/rule-flow-editor.tsx", "type": "registry:component", "target": "components/blocks/rule-flow-editor-01/rule-flow-editor.tsx" },
+        { "path": "packages/blocks/src/application/rule-flow-editor-01/index.ts", "type": "registry:component", "target": "components/blocks/rule-flow-editor-01/index.ts" }
+      ]
+    },
+    {
       "name": "agent-session-detail-01",
       "type": "registry:block",
       "title": "Agent Session Detail",

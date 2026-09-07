@@ -156,6 +156,13 @@ const blockCatalogEntries = [
     dependencies: ["field", "input", "textarea", "select", "switch", "stepper", "container", "alert", "badge", "detail-list", "button", "toast", "@lobehub/icons"],
   },
   {
+    name: "rule-flow-editor-01",
+    title: "Rule Flow Editor",
+    description: "A controlled rule canvas for arranging triggers, conditions, and actions with editable condition clauses.",
+    categories: ["application", "forms", "workflow"],
+    dependencies: ["badge", "button", "card", "icon-context", "input", "select", "sortable-collection"],
+  },
+  {
     name: "resource-details-01",
     title: "Resource Details",
     description: "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",

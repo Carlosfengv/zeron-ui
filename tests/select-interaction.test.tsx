@@ -91,4 +91,18 @@ describe("Select item discovery", () => {
       true
     );
   });
+
+  it("supports an immediately rendered popup for dense editing surfaces", () => {
+    render(
+      <Select defaultOpen defaultValue="all">
+        <SelectTrigger aria-label="即时来源" />
+        <SelectContent animated={false}>
+          <SelectItem value="all">全部来源</SelectItem>
+        </SelectContent>
+      </Select>
+    );
+
+    expect(screen.getByRole("listbox")).toBeTruthy();
+    expect(screen.getByRole("option", { name: "全部来源" })).toBeTruthy();
+  });
 });

@@ -98,6 +98,9 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "provider-create-form-01": () => import("@zeron/blocks/provider-create-form-01").then(({ ProviderCreateForm }) => ({
     default: () => <ResponsivePreview canvasHeight={760} canvasWidth={960}><ProviderCreateForm /></ResponsivePreview>,
   })),
+  "rule-flow-editor-01": () => import("@zeron/blocks/rule-flow-editor-01").then(({ RuleFlowEditor }) => ({
+    default: () => <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><div className="h-full p-6"><RuleFlowEditor /></div></ResponsivePreview>,
+  })),
   "resource-catalog-01": () => import("@zeron/blocks/resource-catalog-01").then(({ ResourceCatalog }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1560}><ResourceCatalog /></ResponsivePreview>,
   })),

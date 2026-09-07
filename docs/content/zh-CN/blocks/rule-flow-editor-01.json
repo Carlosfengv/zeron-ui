@@ -1,0 +1,8 @@
+{
+  "ruleFlowEditorBlock": {
+    "title": "规则流程编辑器",
+    "description": "从空状态开始配置流量规则，优先呈现左对齐的 AND 条件与命中动作主链路，并按需展开右侧异常分支。",
+    "guidance": "数据接入",
+    "guidanceBody": "通过 value 和 onValueChange 持久化规则定义与布局，并通过 triggers、fields、operators、actions 和 errorActions 接入业务 schema。条件固定使用 AND；命中动作位于左侧主链路并支持排序；异常处理默认隐藏，在右侧统一 Card 中按“命中后的结果”和“执行失败时”分组配置且不参与排序；未命中流量沿固定结束节点退出，不执行本规则。默认值不包含任何演示选择，readOnly 模式会保留已配置流程并隐藏修改入口。"
+  }
+}

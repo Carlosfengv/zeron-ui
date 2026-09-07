@@ -74,6 +74,7 @@ Select 是 compound component。必须保持以下基本结构：
 - 选项文案应互斥且使用相同语法结构。
 - 当前选中项由组件提供 checkmark 与背景反馈，不要在 item 内重复添加选中图标。
 - Trigger 中的长值会截断；确保完整值能从上下文、选项列表或辅助说明中理解。
+- `SelectContent` 默认保留快速入场动画；在规则编辑器等高密度、连续编辑界面中，可设置 `animated={false}` 让弹层在挂载首帧直接显示。该选项只跳过入场 tween，不改变 Portal、定位、关闭生命周期或键盘行为。
 
 ## Validation and accessibility
 
@@ -173,6 +174,6 @@ Agent 优先关注：
 - Select：`value`、`defaultValue`、`onValueChange`、`open`、`onOpenChange`、`disabled`、`name`、`required`、`size`、`itemDensity`。
 - SelectTrigger：`variant`、`icon`、`prefix`、`placeholder`、`error`。
 - SelectItem：`value`、`label`、`textValue`、`icon`、`disabled`。
-- SelectContent：`side`、`align`、`sideOffset`、`alignOffset`。
+- SelectContent：`side`、`align`、`sideOffset`、`alignOffset`、`animated`。
 
 完整类型以 `source` 指向的实现为准。
