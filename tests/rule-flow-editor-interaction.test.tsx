@@ -139,6 +139,7 @@ describe("RuleFlowEditor", () => {
     ].map(nodeBadge);
 
     for (const badge of attachedBadges) {
+      expect(badge.className).toContain("ml-3");
       expect(badge.className).toContain("rounded-bl-none");
       expect(badge.className).toContain("rounded-br-none");
       expect(badge.parentElement?.className).toContain("gap-0");
@@ -147,6 +148,7 @@ describe("RuleFlowEditor", () => {
     const triggerBadge = nodeBadge(
       screen.getByLabelText("移动进入服务的请求"),
     );
+    expect(triggerBadge.className).not.toContain("ml-3");
     expect(triggerBadge.className).not.toContain("rounded-bl-none");
     expect(triggerBadge.parentElement?.className).toContain("gap-1.5");
   });

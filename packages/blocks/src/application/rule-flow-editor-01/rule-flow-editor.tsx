@@ -1891,7 +1891,7 @@ export function RuleFlowEditor({
               <Badge
                 className={
                   attachedFlowBadge
-                    ? "rounded-bl-none rounded-br-none"
+                    ? "ml-3 rounded-bl-none rounded-br-none"
                     : undefined
                 }
                 color={primaryFlowBadge ? primaryFlowBadgeColor : meta.color}
