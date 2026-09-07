@@ -7,23 +7,23 @@
 const strongBadgeInk = "#00040D";
 
 const categoricalPalette = {
-  gray: { dot: "#A3A3A3", light: "#E5E5E5", dark: "#525252", strong: "#737373", onStrong: "#FAFAFA" },
-  red: { dot: "#EF4444", light: "#F8DFDF", dark: "#B91C1C", strong: "#EF4444", onStrong: strongBadgeInk },
-  orange: { dot: "#F97316", light: "#FAE6D8", dark: "#9A3412", strong: "#F97316", onStrong: strongBadgeInk },
-  amber: { dot: "#F59E0B", light: "#F9ECD6", dark: "#92400E", strong: "#F59E0B", onStrong: strongBadgeInk },
-  yellow: { dot: "#EAB308", light: "#F8EFD6", dark: "#854D0E", strong: "#EAB308", onStrong: strongBadgeInk },
-  lime: { dot: "#84CC16", light: "#E8F3D8", dark: "#3F6212", strong: "#84CC16", onStrong: strongBadgeInk },
-  green: { dot: "#22C55E", light: "#DAF2E3", dark: "#166534", strong: "#22C55E", onStrong: strongBadgeInk },
-  emerald: { dot: "#10B981", light: "#D7F0E8", dark: "#065F46", strong: "#10B981", onStrong: strongBadgeInk },
-  teal: { dot: "#14B8A6", light: "#D8F0ED", dark: "#115E59", strong: "#14B8A6", onStrong: strongBadgeInk },
-  cyan: { dot: "#06B6D4", light: "#D5F0F4", dark: "#155E75", strong: "#06B6D4", onStrong: strongBadgeInk },
-  blue: { dot: "#3B82F6", light: "#DDE8F9", dark: "#1D4ED8", strong: "#3B82F6", onStrong: strongBadgeInk },
-  indigo: { dot: "#6366F1", light: "#E3E4F9", dark: "#4338CA", strong: "#6366F1", onStrong: strongBadgeInk },
-  violet: { dot: "#8B5CF6", light: "#E9E2F9", dark: "#6D28D9", strong: "#8B5CF6", onStrong: strongBadgeInk },
-  purple: { dot: "#A855F7", light: "#EEE1FA", dark: "#7E22CE", strong: "#A855F7", onStrong: strongBadgeInk },
-  fuchsia: { dot: "#D946EF", light: "#F5DFF8", dark: "#A21CAF", strong: "#D946EF", onStrong: strongBadgeInk },
-  pink: { dot: "#EC4899", light: "#F8DFEB", dark: "#9D174D", strong: "#EC4899", onStrong: strongBadgeInk },
-  rose: { dot: "#F43F5E", light: "#F9DEE3", dark: "#9F1239", strong: "#F43F5E", onStrong: strongBadgeInk },
+  gray: { dot: "#A3A3A3", softLight: "#E5E5E5", softDark: "#3E3E3E", strongLight: "#525252", strongDark: "#A3A3A3", strongInkLight: "#FAFAFA" },
+  red: { dot: "#EF4444", softLight: "#F8DFDF", softDark: "#7B1D1D", strongLight: "#DC2626", strongDark: "#F87171", strongInkLight: "#FEF2F2" },
+  orange: { dot: "#F97316", softLight: "#FAE6D8", softDark: "#692C17", strongLight: "#EA580C", strongDark: "#FB923C", strongInkLight: "#FFF7ED" },
+  amber: { dot: "#F59E0B", softLight: "#F9ECD6", softDark: "#643315", strongLight: "#D97706", strongDark: "#FBBF24", strongInkLight: "#FFFBEB" },
+  yellow: { dot: "#EAB308", softLight: "#F8EFD6", softDark: "#5C3B15", strongLight: "#CA8A04", strongDark: "#FACC15", strongInkLight: "#FEFCE8" },
+  lime: { dot: "#84CC16", softLight: "#E8F3D8", softDark: "#324717", strongLight: "#65A30D", strongDark: "#A3E635", strongInkLight: "#F7FEE7" },
+  green: { dot: "#22C55E", softLight: "#DAF2E3", softDark: "#1A492C", strongLight: "#16A34A", strongDark: "#4ADE80", strongInkLight: "#F0FDF4" },
+  emerald: { dot: "#10B981", softLight: "#D7F0E8", softDark: "#104536", strongLight: "#059669", strongDark: "#34D399", strongInkLight: "#ECFDF5" },
+  teal: { dot: "#14B8A6", softLight: "#D8F0ED", softDark: "#174542", strongLight: "#0D9488", strongDark: "#2DD4BF", strongInkLight: "#F0FDFA" },
+  cyan: { dot: "#06B6D4", softLight: "#D5F0F4", softDark: "#194553", strongLight: "#0891B2", strongDark: "#22D3EE", strongInkLight: "#ECFEFF" },
+  blue: { dot: "#3B82F6", softLight: "#DDE8F9", softDark: "#1E3B8E", strongLight: "#2563EB", strongDark: "#60A5FA", strongInkLight: "#EFF6FF" },
+  indigo: { dot: "#6366F1", softLight: "#E3E4F9", softDark: "#382F95", strongLight: "#4F46E5", strongDark: "#818CF8", strongInkLight: "#EEF2FF" },
+  violet: { dot: "#8B5CF6", softLight: "#E9E2F9", softDark: "#4E248F", strongLight: "#7C3AED", strongDark: "#A78BFA", strongInkLight: "#F5F3FF" },
+  purple: { dot: "#A855F7", softLight: "#EEE1FA", softDark: "#582188", strongLight: "#9333EA", strongDark: "#C084FC", strongInkLight: "#FAF5FF" },
+  fuchsia: { dot: "#D946EF", softLight: "#F5DFF8", softDark: "#6E1D75", strongLight: "#C026D3", strongDark: "#E879F9", strongInkLight: "#FDF4FF" },
+  pink: { dot: "#EC4899", softLight: "#F8DFEB", softDark: "#77183F", strongLight: "#DB2777", strongDark: "#F472B6", strongInkLight: "#FDF2F8" },
+  rose: { dot: "#F43F5E", softLight: "#F9DEE3", softDark: "#791432", strongLight: "#E11D48", strongDark: "#FB7185", strongInkLight: "#FFF1F2" },
 } as const;
 
 export type BadgeColor = keyof typeof categoricalPalette;
@@ -71,12 +71,12 @@ export function badgeCategoricalTokens(color: BadgeColorInput) {
   return {
     soft: {
       foreground: "var(--fg-default)",
-      background: `light-dark(${palette.light}, ${palette.dark})`,
+      background: `light-dark(${palette.softLight}, ${palette.softDark})`,
       border: "transparent",
     },
     strong: {
-      foreground: palette.onStrong,
-      background: palette.strong,
+      foreground: `light-dark(${palette.strongInkLight}, ${strongBadgeInk})`,
+      background: `light-dark(${palette.strongLight}, ${palette.strongDark})`,
       border: "transparent",
     },
     dot: color === "gray" ? "var(--fg-muted)" : palette.dot,
