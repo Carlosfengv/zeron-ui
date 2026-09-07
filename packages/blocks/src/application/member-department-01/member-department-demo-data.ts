@@ -1,5 +1,8 @@
 import type { OrganizationNode } from "@zeron/ui/member-tree";
-import type { MemberDepartmentMember } from "./member-department-types";
+import type {
+  MemberDepartmentDepartment,
+  MemberDepartmentMember,
+} from "./member-department-types";
 
 const avatar = "/sample-avatar.png";
 
@@ -46,3 +49,63 @@ export const defaultMemberDepartmentTree = [
     ],
   },
 ] as const satisfies readonly OrganizationNode[];
+
+export const defaultMemberDepartmentDirectory = [
+  {
+    id: "research-and-development",
+    name: "研发中心",
+    owner: {
+      name: "User",
+      email: "user@zstack.io",
+      avatarUrl: avatar,
+    },
+    status: "active",
+    children: [
+      { id: "platform", name: "平台组", status: "active" },
+      { id: "quality", name: "测试组", status: "active" },
+      { id: "frontend", name: "前端组", status: "active" },
+      { id: "backend", name: "后端组", status: "active" },
+    ],
+  },
+  {
+    id: "people",
+    name: "人力资源",
+    owner: { name: "User", email: "user@zstack.io" },
+    status: "active",
+    children: [
+      { id: "recruiting", name: "招聘组", status: "active" },
+      { id: "people-partner", name: "人力伙伴组", status: "active" },
+    ],
+  },
+  {
+    id: "finance",
+    name: "财务",
+    owner: { name: "User", email: "user@zstack.io" },
+    status: "active",
+    children: [
+      { id: "accounting", name: "会计组", status: "active" },
+      { id: "financial-planning", name: "财务规划组", status: "active" },
+    ],
+  },
+  {
+    id: "international-sales",
+    name: "国际销售",
+    owner: { name: "User", email: "user@zstack.io" },
+    status: "active",
+    children: [
+      { id: "apac-sales", name: "亚太销售组", status: "active" },
+      { id: "emea-sales", name: "欧洲销售组", status: "active" },
+    ],
+  },
+  {
+    id: "domestic-sales",
+    name: "国内销售",
+    owner: { name: "User", email: "user@zstack.io" },
+    status: "active",
+    children: [
+      { id: "east-sales", name: "华东销售组", status: "active" },
+      { id: "south-sales", name: "华南销售组", status: "active" },
+      { id: "north-sales", name: "华北销售组", status: "active" },
+    ],
+  },
+] as const satisfies readonly MemberDepartmentDepartment[];

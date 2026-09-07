@@ -258,6 +258,8 @@ const loadingCode = `import { DataTable } from "@zeron/ui/data-table";
 
 const dataTableProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "table", type: "Table<TData>", description: t("table") },
+  { name: "activeRowId", type: "string | null", description: t("activeRowId") },
+  { name: "onRowActivate", type: "(row: Row<TData>) => void", description: t("onRowActivate") },
   { name: "children", type: "ReactNode", description: t("children") },
   { name: "actionBar", type: "ReactNode", description: t("actionBar") },
   { name: "emptyState", type: "ReactNode", description: t("emptyStateContent") },

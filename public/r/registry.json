@@ -4876,7 +4876,7 @@
       "name": "member-department-01",
       "type": "registry:block",
       "title": "成员与部门",
-      "description": "A department-scoped member directory with search, account-status filtering, pagination, and responsive organization navigation.",
+      "description": "A member directory and expandable department workspace with search, account-status filters, and responsive organization details.",
       "categories": [
         "application",
         "organization",
@@ -4890,6 +4890,7 @@
         "https://zeron-ui.vercel.app/r/avatar.json",
         "https://zeron-ui.vercel.app/r/badge.json",
         "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/checkbox.json",
         "https://zeron-ui.vercel.app/r/data-table.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/input-group.json",
@@ -4906,9 +4907,19 @@
           "target": "components/blocks/member-department-01/member-department-types.ts"
         },
         {
+          "path": "packages/blocks/src/application/member-department-01/member-department-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/member-department-01/member-department-data.ts"
+        },
+        {
           "path": "packages/blocks/src/application/member-department-01/member-department-demo-data.ts",
           "type": "registry:component",
           "target": "components/blocks/member-department-01/member-department-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/member-department-01/department-directory.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/member-department-01/department-directory.tsx"
         },
         {
           "path": "packages/blocks/src/application/member-department-01/member-department.tsx",

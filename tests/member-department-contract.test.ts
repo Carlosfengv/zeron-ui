@@ -17,6 +17,14 @@ const packageJson = JSON.parse(
 const registry = JSON.parse(
   readFileSync(join(ROOT, "packages/blocks/registry.json"), "utf8")
 );
+const standaloneDemo = readFileSync(
+  join(ROOT, "docs/components/blocks/StandaloneBlockDemo.tsx"),
+  "utf8"
+);
+const dataTableSource = readFileSync(
+  join(ROOT, "packages/ui/src/components/data-table.tsx"),
+  "utf8"
+);
 
 describe("Member & Department block contract", () => {
   it("is publicly exported as a data block with every implementation file", () => {
@@ -30,11 +38,11 @@ describe("Member & Department block contract", () => {
       type: "registry:block",
       dependencies: ["tw-animate-css", "@tanstack/react-table"],
       registryDependencies: [
-        "avatar", "badge", "button", "data-table", "icon-context",
+        "avatar", "badge", "button", "checkbox", "data-table", "icon-context",
         "input-group", "member-tree", "mobile-drawer", "page-layout", "tabs", "utils",
       ],
     });
-    expect(item.files).toHaveLength(4);
+    expect(item.files).toHaveLength(6);
   });
 
   it("uses existing primitives and exposes replaceable data and actions", () => {
@@ -45,6 +53,10 @@ describe("Member & Department block contract", () => {
     expect(source).toContain("<MobileDrawer");
     expect(types).toContain("members?: readonly MemberDepartmentMember[]");
     expect(types).toContain("departments?: readonly OrganizationNode[]");
+    expect(types).toContain("departmentDirectory?: readonly MemberDepartmentDepartment[]");
+    expect(types).toContain("MemberDepartmentCountedDepartment");
+    expect(types).toContain("onDepartmentExpand?:");
+    expect(types).toContain("onViewChange?: (view: MemberDepartmentView) => void");
     expect(types).toContain("onMemberOpen?: (member: MemberDepartmentMember) => void");
     expect(source).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
   });
@@ -57,5 +69,52 @@ describe("Member & Department block contract", () => {
     expect(source).toContain('variant: "multiSelect"');
     expect(source).toContain("table.setPageIndex(0)");
     expect(source).toContain("isDepartmentDrawerOpen");
+  });
+
+  it("uses the shared table and layout primitives for the expandable department workspace", () => {
+    const departmentSource = readFileSync(
+      join(ROOT, "packages/blocks/src/application/member-department-01/department-directory.tsx"),
+      "utf8"
+    );
+    expect(departmentSource).toContain("getExpandedRowModel");
+    expect(departmentSource).toContain(
+      "() => calculateDepartmentMemberCounts(departments, members)"
+    );
+    expect(departmentSource).toContain("const getSubRows = useCallback(");
+    expect(departmentSource).toContain("data: tableData");
+    expect(departmentSource).toContain("getSubRows,");
+    expect(departmentSource).toContain(
+      "activeRowId={selectedDepartmentId}"
+    );
+    expect(departmentSource).toContain(
+      "onRowActivate={(row) => openDepartment(row.original)}"
+    );
+    expect(departmentSource).toContain("<PageColumns");
+    expect(departmentSource).toContain(
+      "<PageContentHeader>{navigation}</PageContentHeader>"
+    );
+    expect(departmentSource).toContain('grid-rows-[minmax(0,1fr)]');
+    expect(departmentSource).toContain("<MemberTree");
+    expect(departmentSource).toContain("<MobileDrawer");
+    expect(departmentSource).not.toContain('variant="strong"');
+    expect(departmentSource).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
+    expect(dataTableSource).toContain("activeRowId?: string | null;");
+    expect(dataTableSource).toContain(
+      "onRowActivate?: (row: Row<TData>) => void;"
+    );
+    expect(dataTableSource).toContain("isInteractiveRowTarget(event.target)");
+  });
+
+  it("uses the project Tabs component without block-specific tab styling", () => {
+    expect(source).toContain("<TabsList>");
+    expect(source).not.toMatch(/<TabsList[^>]*className/);
+  });
+
+  it("renders from the standalone control-panel route", () => {
+    expect(standaloneDemo).toContain(
+      'import { MemberDepartment } from "@zeron/blocks/member-department-01";'
+    );
+    expect(standaloneDemo).toContain('case "member-department-01":');
+    expect(standaloneDemo).toContain("<MemberDepartment className=\"h-full\" />");
   });
 });

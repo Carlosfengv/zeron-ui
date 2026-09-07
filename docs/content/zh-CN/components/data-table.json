@@ -8,6 +8,8 @@
     "loadingStateDescription": "Skeleton 行替换表体时，表头、列宽、固定列位置、分页区域和当前页高度保持稳定。",
     "apiReference": "API 参考",
     "table": "由 useDataTable 返回的 TanStack 表格实例。",
+    "activeRowId": "作为当前活动行高亮显示的 TanStack 行 ID。",
+    "onRowActivate": "通过指针、Enter 或空格激活行，且不会拦截行内控件。",
     "children": "在表格上方渲染的可选工具栏或自定义内容。",
     "actionBar": "选中一条或多条筛选结果时显示的操作。",
     "emptyStateContent": "当前行模型没有数据时显示的自定义 Empty 组合。",

@@ -27,10 +27,13 @@ import { TabItem, Tabs, TabsList } from "@zeron/ui/tabs";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
 import {
+  defaultMemberDepartmentDirectory,
   defaultMemberDepartmentMembers,
   defaultMemberDepartmentTree,
 } from "./member-department-demo-data";
+import { DepartmentDirectory } from "./department-directory";
 import type {
+  MemberDepartmentView,
   MemberDepartmentLabels,
   MemberDepartmentMember,
   MemberDepartmentProps,
@@ -53,6 +56,15 @@ const defaultLabels: MemberDepartmentLabels = {
   phone: "手机号",
   status: "账号状态",
   department: "部门",
+  departmentName: "部门名称",
+  departmentOwner: "负责人",
+  departmentMemberCount: "成员人数",
+  departmentDetails: "部门详情",
+  departmentMembers: "部门成员",
+  openDepartmentDetails: "打开部门详情",
+  departmentSearchPlaceholder: "搜索",
+  departmentMemberSearchPlaceholder: "搜索",
+  addMember: "添加成员",
   active: "正常",
   invited: "待激活",
   suspended: "已停用",
@@ -206,6 +218,8 @@ function DepartmentTreePanel({
 export function MemberDepartment({
   "aria-label": ariaLabel,
   className,
+  defaultView = "members",
+  departmentDirectory = defaultMemberDepartmentDirectory,
   departments = defaultMemberDepartmentTree,
   isLoading = false,
   labels: providedLabels,
@@ -213,7 +227,11 @@ export function MemberDepartment({
   onCreateDepartment,
   onCreateMember,
   onDepartmentSelect,
+  onDepartmentExpand,
+  onDepartmentOpen,
   onMemberOpen,
+  onViewChange,
+  view: controlledView,
   ...props
 }: MemberDepartmentProps) {
   const SearchIcon = useIcon("search");
@@ -226,6 +244,8 @@ export function MemberDepartment({
   );
   const [selectedDepartmentKey, setSelectedDepartmentKey] = useState<string | null>(null);
   const [isDepartmentDrawerOpen, setIsDepartmentDrawerOpen] = useState(false);
+  const [uncontrolledView, setUncontrolledView] = useState<MemberDepartmentView>(defaultView);
+  const view = controlledView ?? uncontrolledView;
   const selectedDepartment = useMemo(
     () => selectedDepartmentKey
       ? findDepartmentByKey(departments, selectedDepartmentKey)
@@ -338,6 +358,41 @@ export function MemberDepartment({
     />
   );
 
+  const handleViewChange = (nextView: string) => {
+    if (nextView !== "members" && nextView !== "departments") return;
+    if (!controlledView) setUncontrolledView(nextView);
+    onViewChange?.(nextView);
+  };
+
+  if (view === "departments") {
+    return (
+      <section
+        aria-label={ariaLabel ?? labels.ariaLabel}
+        className={cn("h-full min-h-0 w-full", className)}
+        {...props}
+      >
+        <DepartmentDirectory
+          departments={departmentDirectory}
+          isLoading={isLoading}
+          labels={labels}
+          members={members}
+          navigation={(
+              <Tabs color="neutral" onValueChange={handleViewChange} value={view} variant="pill">
+                <TabsList>
+                  <TabItem icon={UsersIcon} label={labels.memberTab} value="members" />
+                  <TabItem label={labels.departmentTab} value="departments" />
+                  <TabItem disabled label={labels.departedTab} value="departed" />
+                </TabsList>
+              </Tabs>
+          )}
+          onCreateMember={onCreateMember}
+          onDepartmentExpand={onDepartmentExpand}
+          onDepartmentOpen={onDepartmentOpen}
+        />
+      </section>
+    );
+  }
+
   return (
     <section
       aria-label={ariaLabel ?? labels.ariaLabel}
@@ -347,10 +402,10 @@ export function MemberDepartment({
       <PageLayout gutter="none" size="full">
         <PageContent>
           <PageContentHeader>
-            <Tabs color="neutral" defaultValue="members" variant="pill">
+            <Tabs color="neutral" onValueChange={handleViewChange} value={view} variant="pill">
               <TabsList>
                 <TabItem icon={UsersIcon} label={labels.memberTab} value="members" />
-                <TabItem disabled label={labels.departmentTab} value="departments" />
+                <TabItem label={labels.departmentTab} value="departments" />
                 <TabItem disabled label={labels.departedTab} value="departed" />
               </TabsList>
             </Tabs>

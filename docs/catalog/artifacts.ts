@@ -146,7 +146,7 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
   },
   {
     slug: "member-department-01", registryName: "member-department-01",
-    title: "Member & Department", description: "A department-scoped member directory with account status filters and responsive organization navigation.",
+    title: "Member & Department", description: "A member directory and expandable department workspace with account status filters and responsive organization details.",
     kind: "block", product: "shared", domains: ["organization", "member management"], patterns: ["department tree", "data table", "filter"], searchTerms: ["member", "department", "organization", "account status", "成员", "部门", "组织架构"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
   },
   {

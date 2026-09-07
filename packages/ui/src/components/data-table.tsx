@@ -14,6 +14,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   type PaginationState,
+  type Row,
   type RowSelectionState,
   type SortingState,
   type Table as TanstackTable,
@@ -172,6 +173,8 @@ function useDataTable<TData>({
 }
 
 export type DataTableProps<TData> = React.ComponentProps<"div"> & {
+  /** Highlights the row whose TanStack id matches this value. */
+  activeRowId?: string | null;
   actionBar?: React.ReactNode;
   /** Replaces the built-in empty state when the current row model has no rows. */
   emptyState?: React.ReactNode;
@@ -183,6 +186,8 @@ export type DataTableProps<TData> = React.ComponentProps<"div"> & {
   loadingMessage?: React.ReactNode;
   /** Number of placeholder rows shown while loading. Defaults to the current page size. */
   loadingRowCount?: number;
+  /** Activates a row by pointer or keyboard while preserving nested controls. */
+  onRowActivate?: (row: Row<TData>) => void;
   /** Customizes a loading cell when its final shape is not text-like. */
   renderLoadingCell?: (
     context: DataTableLoadingCellContext<TData>
@@ -206,7 +211,19 @@ const initialHorizontalScrollEdges: HorizontalScrollEdges = {
   canScrollRight: false,
 };
 
+function isInteractiveRowTarget(target: EventTarget | null) {
+  return (
+    target instanceof Element &&
+    Boolean(
+      target.closest(
+        "a,button,input,select,textarea,[role=button],[role=checkbox],[role=link]"
+      )
+    )
+  );
+}
+
 function DataTable<TData>({
+  activeRowId,
   actionBar,
   children,
   className,
@@ -215,6 +232,7 @@ function DataTable<TData>({
   isLoading = false,
   loadingMessage = "Loading data.",
   loadingRowCount,
+  onRowActivate,
   renderLoadingCell,
   table,
   "aria-busy": ariaBusy,
@@ -346,37 +364,63 @@ function DataTable<TData>({
             ) : (
               <TableBody>
                 {table.getRowModel().rows.length ? (
-                  table.getRowModel().rows.map((row, rowIndex) => (
-                    <TableRow
-                      data-state={row.getIsSelected() ? "selected" : undefined}
-                      index={rowIndex}
-                      key={row.id}
-                      className="data-[state=selected]:bg-selection"
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          className={cn(
-                            "align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block",
-                            cell.column.getIsPinned() &&
-                              "group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]"
-                          )}
-                          key={cell.id}
-                          style={getCommonPinningStyles(cell.column, {
-                            backgroundImage: row.getIsSelected()
-                              ? "linear-gradient(var(--selection), var(--selection))"
-                              : undefined,
-                            showLeftShadow: scrollEdges.canScrollLeft,
-                            showRightShadow: scrollEdges.canScrollRight,
-                          })}
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
+                  table.getRowModel().rows.map((row, rowIndex) => {
+                    const isActive = row.id === activeRowId;
+                    const activateRow = () => onRowActivate?.(row);
+
+                    return (
+                      <TableRow
+                        aria-selected={isActive || undefined}
+                        className={cn(
+                          "data-[state=selected]:bg-selection",
+                          onRowActivate &&
+                            "cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
+                        )}
+                        data-state={
+                          row.getIsSelected() || isActive
+                            ? "selected"
+                            : undefined
+                        }
+                        index={rowIndex}
+                        key={row.id}
+                        onClick={(event) => {
+                          if (isInteractiveRowTarget(event.target)) return;
+                          activateRow();
+                        }}
+                        onKeyDown={(event) => {
+                          if (isInteractiveRowTarget(event.target)) return;
+                          if (event.key !== "Enter" && event.key !== " ") return;
+                          event.preventDefault();
+                          activateRow();
+                        }}
+                        tabIndex={onRowActivate ? 0 : undefined}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell
+                            className={cn(
+                              "align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block",
+                              cell.column.getIsPinned() &&
+                                "group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]"
+                            )}
+                            key={cell.id}
+                            style={getCommonPinningStyles(cell.column, {
+                              backgroundImage:
+                                row.getIsSelected() || isActive
+                                  ? "linear-gradient(var(--selection), var(--selection))"
+                                  : undefined,
+                              showLeftShadow: scrollEdges.canScrollLeft,
+                              showRightShadow: scrollEdges.canScrollRight,
+                            })}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })
                 ) : (
                   <TableRow>
                     <TableCell

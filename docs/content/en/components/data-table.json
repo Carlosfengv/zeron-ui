@@ -8,6 +8,8 @@
     "loadingStateDescription": "Headers, column widths, pinned positioning, pagination, and the current page height remain stable while Skeleton rows replace the table body.",
     "apiReference": "API Reference",
     "table": "TanStack table instance returned by useDataTable.",
+    "activeRowId": "TanStack row id highlighted as the current active row.",
+    "onRowActivate": "Activates a row by pointer, Enter, or Space without intercepting nested controls.",
     "children": "Optional toolbar or custom content rendered above the table.",
     "actionBar": "Selection actions shown when one or more filtered rows are selected.",
     "emptyStateContent": "Custom Empty composition shown when the current row model has no rows.",

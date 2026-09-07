@@ -7,6 +7,37 @@ export type MemberDepartmentStatus =
   | "suspended"
   | "departed";
 
+export type MemberDepartmentView = "members" | "departments";
+
+export type MemberDepartmentDepartmentStatus = "active" | "disabled";
+
+export interface MemberDepartmentOwner {
+  name: string;
+  email: string;
+  avatarUrl?: string;
+}
+
+/** A department row. Children are rendered by the Department view's expandable table. */
+export interface MemberDepartmentDepartment {
+  /** Stable identifier shared by the department table, member records, and callbacks. */
+  id: string;
+  name: string;
+  /** @deprecated Counts are derived from `members`; supplied values are ignored. */
+  memberCount?: number;
+  owner?: MemberDepartmentOwner;
+  status: MemberDepartmentDepartmentStatus;
+  children?: readonly MemberDepartmentDepartment[];
+}
+
+export type MemberDepartmentCountedDepartment = Omit<
+  MemberDepartmentDepartment,
+  "children" | "memberCount"
+> & {
+  /** Computed total of non-departed direct and descendant members. */
+  memberCount: number;
+  children?: readonly MemberDepartmentCountedDepartment[];
+};
+
 export interface MemberDepartmentMember {
   /** Stable identifier used for table rows and action callbacks. */
   id: string;
@@ -39,6 +70,15 @@ export interface MemberDepartmentLabels {
   phone: string;
   status: string;
   department: string;
+  departmentName: string;
+  departmentOwner: string;
+  departmentMemberCount: string;
+  departmentDetails: string;
+  departmentMembers: string;
+  openDepartmentDetails: string;
+  departmentSearchPlaceholder: string;
+  departmentMemberSearchPlaceholder: string;
+  addMember: string;
   active: string;
   invited: string;
   suspended: string;
@@ -52,6 +92,12 @@ export interface MemberDepartmentProps
   members?: readonly MemberDepartmentMember[];
   /** Replaces the department hierarchy used to scope the member table. */
   departments?: readonly OrganizationNode[];
+  /** Replaces the expandable department directory and its details panel. */
+  departmentDirectory?: readonly MemberDepartmentDepartment[];
+  /** Controls the visible workspace. The departed-member view remains outside this block's scope. */
+  view?: MemberDepartmentView;
+  /** Initial workspace when `view` is uncontrolled. */
+  defaultView?: MemberDepartmentView;
   /** Overrides block copy for localization or product terminology. */
   labels?: Partial<MemberDepartmentLabels>;
   /** Shows the shared table loading state while member data is being fetched. */
@@ -60,4 +106,10 @@ export interface MemberDepartmentProps
   onCreateDepartment?: () => void;
   onMemberOpen?: (member: MemberDepartmentMember) => void;
   onDepartmentSelect?: (departmentId: string | null) => void;
+  onDepartmentOpen?: (department: MemberDepartmentCountedDepartment) => void;
+  onDepartmentExpand?: (
+    department: MemberDepartmentCountedDepartment,
+    expanded: boolean
+  ) => void;
+  onViewChange?: (view: MemberDepartmentView) => void;
 }
