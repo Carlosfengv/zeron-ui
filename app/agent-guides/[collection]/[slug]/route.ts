@@ -19,6 +19,11 @@ const guideLoaders: Record<string, () => Promise<string>> = {
       join(process.cwd(), "docs/agent-guides/components/button.md"),
       "utf8",
     ),
+  "components/avatar.md": () =>
+    readFile(
+      join(process.cwd(), "docs/agent-guides/components/avatar.md"),
+      "utf8",
+    ),
   "components/input.md": () =>
     readFile(
       join(process.cwd(), "docs/agent-guides/components/input.md"),
