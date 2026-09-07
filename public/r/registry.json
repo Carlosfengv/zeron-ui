@@ -879,7 +879,7 @@
       "name": "avatar",
       "type": "registry:ui",
       "title": "Avatar",
-      "description": "Image and fallback primitives for people, agents, and accounts, with status badges, three sizes, and overlapping group composition.",
+      "description": "Circle and rounded image or fallback primitives for people, agents, and accounts, with status badges, three sizes, overlapping groups, and compact user details.",
       "dependencies": [
         "@base-ui/react@^1.4.1",
         "class-variance-authority@^0.7.1",

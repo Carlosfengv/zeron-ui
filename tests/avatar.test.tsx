@@ -27,12 +27,42 @@ describe("Avatar", () => {
     );
 
     expect(screen.getByText("CN").getAttribute("data-slot")).toBe("avatar-fallback");
+    expect(screen.getByText("CN").classList.contains("absolute")).toBe(true);
+    expect(screen.getByText("CN").classList.contains("inset-0")).toBe(true);
     expect(ref.current?.getAttribute("data-slot")).toBe("avatar");
     expect(ref.current?.getAttribute("data-size")).toBe("lg");
     expect(ref.current?.classList.contains("avatar-test")).toBe(true);
   });
 
-  it("forwards image attributes and composes a labelled badge", () => {
+  it("supports circle and rounded shapes", () => {
+    render(
+      <>
+        <Avatar data-testid="circle">
+          <AvatarFallback>C</AvatarFallback>
+        </Avatar>
+        <Avatar data-testid="rounded" shape="rounded">
+          <AvatarFallback>R</AvatarFallback>
+        </Avatar>
+      </>
+    );
+
+    const circle = screen.getByTestId("circle");
+    const rounded = screen.getByTestId("rounded");
+
+    expect(circle.getAttribute("data-shape")).toBe("circle");
+    expect(circle.classList.contains("rounded-full")).toBe(true);
+    expect(circle.classList.contains("after:rounded-full")).toBe(true);
+    expect(rounded.getAttribute("data-shape")).toBe("rounded");
+    expect(rounded.classList.contains("rounded-xl")).toBe(true);
+    expect(rounded.classList.contains("after:rounded-xl")).toBe(true);
+    expect(
+      screen
+        .getByText("R")
+        .classList.contains("group-data-[shape=rounded]/avatar:rounded-xl")
+    ).toBe(true);
+  });
+
+  it("composes a labelled badge", () => {
     render(
       <Avatar>
         <AvatarImage src="/profile.png" alt="Chen Ning" />
@@ -46,14 +76,14 @@ describe("Avatar", () => {
 
   it("renders grouped avatars and an accessible overflow count", () => {
     render(
-      <AvatarGroup aria-label="Project members">
+      <AvatarGroup role="group" aria-label="Project members">
         <Avatar><AvatarFallback>CN</AvatarFallback></Avatar>
         <Avatar><AvatarFallback>ER</AvatarFallback></Avatar>
         <AvatarGroupCount aria-label="3 more members">+3</AvatarGroupCount>
       </AvatarGroup>
     );
 
-    expect(screen.getByLabelText("Project members").getAttribute("data-slot")).toBe("avatar-group");
+    expect(screen.getByRole("group", { name: "Project members" }).getAttribute("data-slot")).toBe("avatar-group");
     expect(screen.getByLabelText("3 more members").textContent).toBe("+3");
   });
 
@@ -63,7 +93,6 @@ describe("Avatar", () => {
     render(
       <AvatarWithDetails
         ref={ref}
-        size="lg"
         avatar={<Avatar><AvatarFallback>AJ</AvatarFallback></Avatar>}
         name="Alex Johnson"
         description="Founder & CEO"
@@ -72,9 +101,12 @@ describe("Avatar", () => {
     );
 
     expect(ref.current?.getAttribute("data-slot")).toBe("avatar-with-details");
-    expect(ref.current?.getAttribute("data-size")).toBe("lg");
+    expect(ref.current?.classList.contains("gap-2.5")).toBe(true);
+    expect(ref.current?.querySelector('[data-slot="avatar"]')?.classList.contains("size-8")).toBe(true);
     expect(screen.getByText("Alex Johnson").getAttribute("data-slot")).toBe("avatar-with-details-name");
+    expect(screen.getByText("Alex Johnson").classList.contains("text-body")).toBe(true);
     expect(screen.getByText("Founder & CEO").getAttribute("data-slot")).toBe("avatar-with-details-description");
+    expect(screen.getByText("Founder & CEO").classList.contains("text-label")).toBe(true);
     expect(screen.getByText("Pro").parentElement?.getAttribute("data-slot")).toBe("avatar-with-details-badge");
   });
 });

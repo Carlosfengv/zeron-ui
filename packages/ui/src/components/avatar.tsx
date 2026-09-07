@@ -10,7 +10,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "#system/utils";
 
 const avatarVariants = cva(
-  "group/avatar relative flex shrink-0 rounded-full select-none after:pointer-events-none after:absolute after:inset-0 after:rounded-full after:border after:border-border",
+  "group/avatar relative flex shrink-0 select-none after:pointer-events-none after:absolute after:inset-0 after:border after:border-border",
   {
     variants: {
       size: {
@@ -18,19 +18,26 @@ const avatarVariants = cva(
         default: "size-8",
         lg: "size-10",
       },
+      shape: {
+        circle: "rounded-full after:rounded-full",
+        rounded: "rounded-xl after:rounded-xl",
+      },
     },
     defaultVariants: {
       size: "default",
+      shape: "circle",
     },
   }
 );
 
 type AvatarSize = NonNullable<VariantProps<typeof avatarVariants>["size"]>;
+type AvatarShape = NonNullable<VariantProps<typeof avatarVariants>["shape"]>;
 
 interface AvatarProps
   extends Omit<AvatarPrimitive.Root.Props, "className" | "ref"> {
   className?: string;
   size?: AvatarSize;
+  shape?: AvatarShape;
 }
 
 interface AvatarImageProps
@@ -46,7 +53,6 @@ interface AvatarFallbackProps
 type AvatarBadgeProps = ComponentPropsWithoutRef<"span">;
 type AvatarGroupProps = ComponentPropsWithoutRef<"div">;
 type AvatarGroupCountProps = ComponentPropsWithoutRef<"div">;
-type AvatarWithDetailsSize = "default" | "lg";
 
 interface AvatarWithDetailsProps
   extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
@@ -58,17 +64,16 @@ interface AvatarWithDetailsProps
   description?: ReactNode;
   /** Optional trailing content beside the name, typically a `Badge`. */
   badge?: ReactNode;
-  /** Controls the spacing, typography, and nested avatar size. */
-  size?: AvatarWithDetailsSize;
 }
 
 const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
-  ({ className, size = "default", ...props }, ref) => (
+  ({ className, size = "default", shape = "circle", ...props }, ref) => (
     <AvatarPrimitive.Root
       ref={ref}
       data-slot="avatar"
       data-size={size}
-      className={cn(avatarVariants({ size }), className)}
+      data-shape={shape}
+      className={cn(avatarVariants({ size, shape }), className)}
       {...props}
     />
   )
@@ -81,7 +86,11 @@ const AvatarImage = forwardRef<HTMLImageElement, AvatarImageProps>(
     <AvatarPrimitive.Image
       ref={ref}
       data-slot="avatar-image"
-      className={cn("aspect-square size-full rounded-full object-cover", className)}
+      className={cn(
+        "absolute inset-0 aspect-square size-full object-cover group-data-[shape=circle]/avatar:rounded-full group-data-[shape=rounded]/avatar:rounded-xl",
+        "data-[loading]:invisible data-[error]:invisible",
+        className
+      )}
       {...props}
     />
   )
@@ -95,7 +104,7 @@ const AvatarFallback = forwardRef<HTMLSpanElement, AvatarFallbackProps>(
       ref={ref}
       data-slot="avatar-fallback"
       className={cn(
-        "flex size-full items-center justify-center rounded-full bg-muted text-label text-fg-muted group-data-[size=lg]/avatar:text-body",
+        "absolute inset-0 flex size-full items-center justify-center bg-muted text-label text-fg-muted group-data-[shape=circle]/avatar:rounded-full group-data-[shape=rounded]/avatar:rounded-xl group-data-[size=lg]/avatar:text-body",
         className
       )}
       {...props}
@@ -158,26 +167,13 @@ AvatarGroupCount.displayName = "AvatarGroupCount";
 
 const AvatarWithDetails = forwardRef<HTMLDivElement, AvatarWithDetailsProps>(
   (
-    {
-      avatar,
-      name,
-      description,
-      badge,
-      size = "default",
-      className,
-      ...props
-    },
+    { avatar, name, description, badge, className, ...props },
     ref
   ) => (
     <div
       ref={ref}
       data-slot="avatar-with-details"
-      data-size={size}
-      className={cn(
-        "group/avatar-with-details flex min-w-0 items-center gap-3",
-        size === "lg" && "gap-3.5 [&_[data-slot=avatar]]:size-16",
-        className
-      )}
+      className={cn("flex min-w-0 items-center gap-2.5", className)}
       {...props}
     >
       <div data-slot="avatar-with-details-avatar" className="shrink-0">
@@ -190,7 +186,7 @@ const AvatarWithDetails = forwardRef<HTMLDivElement, AvatarWithDetailsProps>(
         <div className="flex min-w-0 items-center gap-1.5">
           <div
             data-slot="avatar-with-details-name"
-            className="min-w-0 truncate text-body font-semibold leading-5 text-fg-default group-data-[size=lg]/avatar-with-details:text-title group-data-[size=lg]/avatar-with-details:leading-7"
+            className="min-w-0 truncate text-body font-semibold leading-5 text-fg-default"
           >
             {name}
           </div>
@@ -203,7 +199,7 @@ const AvatarWithDetails = forwardRef<HTMLDivElement, AvatarWithDetailsProps>(
         {description != null ? (
           <div
             data-slot="avatar-with-details-description"
-            className="mt-0.5 min-w-0 truncate text-label leading-5 text-fg-muted group-data-[size=lg]/avatar-with-details:text-body group-data-[size=lg]/avatar-with-details:leading-6"
+            className="mt-0.5 min-w-0 truncate text-label leading-4 text-fg-muted"
           >
             {description}
           </div>
@@ -232,7 +228,7 @@ export type {
   AvatarGroupProps,
   AvatarImageProps,
   AvatarProps,
+  AvatarShape,
   AvatarSize,
   AvatarWithDetailsProps,
-  AvatarWithDetailsSize,
 };
