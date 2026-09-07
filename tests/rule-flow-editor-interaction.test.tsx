@@ -109,13 +109,11 @@ describe("RuleFlowEditor", () => {
       return Number.parseFloat(node!.style.left) -
         Number.parseFloat(node!.style.width) / 2;
     };
-    const triggerHandle = screen.getByRole("button", {
-      name: "移动进入服务的请求",
-    });
+    const triggerCard = screen.getByLabelText("移动进入服务的请求");
     const conditionTitle = screen.getByText("满足以下全部条件");
     const actionTitle = screen.getByText("拒绝本次调用");
 
-    expect(nodeLeft(triggerHandle)).toBe(16);
+    expect(nodeLeft(triggerCard)).toBe(16);
     expect(nodeLeft(conditionTitle)).toBe(16);
     expect(nodeLeft(actionTitle)).toBe(16);
     expect(nodeBadge(conditionTitle).style.backgroundColor).toBe("var(--brand)");
@@ -147,7 +145,7 @@ describe("RuleFlowEditor", () => {
     }
 
     const triggerBadge = nodeBadge(
-      screen.getByRole("button", { name: "移动进入服务的请求" }),
+      screen.getByLabelText("移动进入服务的请求"),
     );
     expect(triggerBadge.className).not.toContain("rounded-bl-none");
     expect(triggerBadge.parentElement?.className).toContain("gap-1.5");
@@ -372,10 +370,9 @@ describe("RuleFlowEditor", () => {
       />,
     );
 
-    fireEvent.keyDown(
-      screen.getByRole("button", { name: "移动进入服务的请求" }),
-      { key: "ArrowRight" },
-    );
+    fireEvent.keyDown(screen.getByLabelText("移动进入服务的请求"), {
+      key: "ArrowRight",
+    });
 
     expect(onSelectedNodeIdChange).toHaveBeenCalledWith("trigger");
     const next = onValueChange.mock.calls[0][0] as RuleFlowValue;
@@ -383,6 +380,13 @@ describe("RuleFlowEditor", () => {
     expect(next.layout?.nodePositions.trigger.x).toBeLessThan(0.3);
     expect(next.trigger).toEqual(configuredFlow.trigger);
     expect(next.conditions).toEqual(configuredFlow.conditions);
+  });
+
+  it("does not render top-right node action buttons", () => {
+    const { container } = render(<RuleFlowEditor value={configuredFlow} />);
+
+    expect(container.querySelector("[data-slot=card-action]")).toBeNull();
+    expect(screen.queryByRole("button", { name: /移动/ })).toBeNull();
   });
 
   it("moves the condition group by dragging its card header", () => {

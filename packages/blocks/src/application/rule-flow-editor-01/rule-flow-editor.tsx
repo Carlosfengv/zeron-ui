@@ -15,7 +15,6 @@ import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -1166,7 +1165,6 @@ export function RuleFlowEditor({
   const TriggerIcon = useIcon("play");
   const ConditionIcon = useIcon("list-checks");
   const ActionIcon = useIcon("rocket");
-  const MoveIcon = useIcon("doc-motion");
 
   useEffect(() => {
     flowRef.current = flow;
@@ -1566,8 +1564,7 @@ export function RuleFlowEditor({
     (node: CanvasNode) => (event: PointerEvent<HTMLElement>) => {
       if (readOnly || !node.draggable) return;
       const target = event.target as HTMLElement;
-      const explicitHandle = target.closest("[data-flow-drag-handle]");
-      if (target.closest("[data-flow-control]") && !explicitHandle) return;
+      if (target.closest("[data-flow-control]")) return;
       if (
         event.pointerType === "touch" &&
         !target.closest("[data-flow-drag-region]")
@@ -1628,8 +1625,9 @@ export function RuleFlowEditor({
   };
 
   const moveNodeWithKeyboard =
-    (node: CanvasNode) => (event: KeyboardEvent<HTMLButtonElement>) => {
+    (node: CanvasNode) => (event: KeyboardEvent<HTMLDivElement>) => {
       if (
+        event.target !== event.currentTarget ||
         readOnly ||
         !node.draggable ||
         !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(
@@ -1903,6 +1901,9 @@ export function RuleFlowEditor({
                 {meta.badge}
               </Badge>
               <Card
+                aria-label={
+                  node.draggable ? labels.moveNode(node.title) : undefined
+                }
                 className={cn(
                   "w-full border-[0.5px] bg-surface-floating shadow-raised transition-[border-color,box-shadow,opacity] duration-fast [&_[data-flow-control]]:cursor-auto [&_[data-flow-control]]:select-text",
                   node.draggable &&
@@ -1925,11 +1926,13 @@ export function RuleFlowEditor({
                     : undefined
                 }
                 onLostPointerCapture={endDrag}
+                onKeyDown={moveNodeWithKeyboard(node)}
                 onPointerCancel={endDrag}
                 onPointerDown={beginDrag(node)}
                 onPointerMove={continueDrag}
                 onPointerUp={endDrag}
                 selected={selected}
+                tabIndex={!readOnly && node.draggable ? 0 : undefined}
               >
                 <CardHeader
                   className="touch-none gap-y-0 px-3 pt-3"
@@ -1955,28 +1958,6 @@ export function RuleFlowEditor({
                       )}
                     </span>
                   </div>
-                  {!readOnly &&
-                    node.draggable &&
-                    node.kind !== "condition" && (
-                      <CardAction
-                        className="flex items-center gap-1"
-                        data-flow-control
-                      >
-                        <Button
-                          aria-label={labels.moveNode(node.title)}
-                          className="cursor-grab touch-none active:cursor-grabbing"
-                          data-flow-drag-handle
-                          iconOnly
-                          onKeyDown={moveNodeWithKeyboard(node)}
-                          size="md"
-                          title={labels.moveNode(node.title)}
-                          type="button"
-                          variant="ghost"
-                        >
-                          <MoveIcon aria-hidden size={15} />
-                        </Button>
-                      </CardAction>
-                    )}
                 </CardHeader>
 
                 {node.kind === "trigger" && (
