@@ -1915,7 +1915,9 @@ export function RuleFlowEditor({
                       )}
                     </span>
                   </div>
-                  {!readOnly && node.draggable && (
+                  {!readOnly &&
+                    node.draggable &&
+                    node.kind !== "condition" && (
                       <CardAction
                         className="flex items-center gap-1"
                         data-flow-control

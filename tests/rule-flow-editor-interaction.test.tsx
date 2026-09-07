@@ -349,6 +349,9 @@ describe("RuleFlowEditor", () => {
     const onValueChange = vi.fn();
     render(<RuleFlowEditor onValueChange={onValueChange} value={configuredFlow} />);
 
+    expect(
+      screen.queryByRole("button", { name: "移动满足以下全部条件" }),
+    ).toBeNull();
     const title = screen.getByText("满足以下全部条件");
     const card = title.closest<HTMLElement>("[data-slot=card]");
     expect(card).not.toBeNull();
