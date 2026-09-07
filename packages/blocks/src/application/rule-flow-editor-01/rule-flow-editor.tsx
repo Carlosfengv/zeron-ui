@@ -1864,6 +1864,7 @@ export function RuleFlowEditor({
           const meta = kindMeta[node.kind];
           const primaryFlowBadge =
             node.kind === "condition" || node.kind === "matched-actions";
+          const attachedFlowBadge = node.kind !== "trigger";
           const selected = selectedNodeId === node.id;
           const cardDisabled =
             (node.kind === "condition" && !flow.trigger) ||
@@ -1872,7 +1873,10 @@ export function RuleFlowEditor({
 
           return (
             <div
-              className="absolute flex -translate-x-1/2 flex-col items-start gap-1.5"
+              className={cn(
+                "absolute flex -translate-x-1/2 flex-col items-start",
+                attachedFlowBadge ? "gap-0" : "gap-1.5",
+              )}
               key={node.id}
               onFocusCapture={() => selectNode(node.id)}
               ref={(element) => {
@@ -1887,6 +1891,11 @@ export function RuleFlowEditor({
               }}
             >
               <Badge
+                className={
+                  attachedFlowBadge
+                    ? "rounded-bl-none rounded-br-none"
+                    : undefined
+                }
                 color={primaryFlowBadge ? primaryFlowBadgeColor : meta.color}
                 size="sm"
                 variant={primaryFlowBadge ? "strong" : "solid"}

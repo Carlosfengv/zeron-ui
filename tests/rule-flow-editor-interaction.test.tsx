@@ -124,6 +124,35 @@ describe("RuleFlowEditor", () => {
     expect(nodeBadge(actionTitle).style.color).toBe("var(--fg-on-brand)");
   });
 
+  it("attaches non-trigger flow badges flush to their cards", () => {
+    render(<RuleFlowEditor value={configuredFlow} />);
+
+    const nodeBadge = (element: HTMLElement) => {
+      const card = element.closest<HTMLElement>("[data-slot=card]");
+      const badge = card?.parentElement?.firstElementChild as HTMLElement | null;
+      expect(badge).not.toBeNull();
+      return badge!;
+    };
+    const attachedBadges = [
+      screen.getByText("满足以下全部条件"),
+      screen.getByText("拒绝本次调用"),
+      screen.getByText("检测服务不可用时"),
+      screen.getByText("结束——不执行本规则"),
+    ].map(nodeBadge);
+
+    for (const badge of attachedBadges) {
+      expect(badge.className).toContain("rounded-bl-none");
+      expect(badge.className).toContain("rounded-br-none");
+      expect(badge.parentElement?.className).toContain("gap-0");
+    }
+
+    const triggerBadge = nodeBadge(
+      screen.getByRole("button", { name: "移动进入服务的请求" }),
+    );
+    expect(triggerBadge.className).not.toContain("rounded-bl-none");
+    expect(triggerBadge.parentElement?.className).toContain("gap-1.5");
+  });
+
   it("uses a direct unmatched connector and orthogonal primary branches", () => {
     const { container } = render(<RuleFlowEditor value={configuredFlow} />);
     const primaryPath = container.querySelector<SVGPathElement>(
