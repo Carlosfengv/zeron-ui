@@ -748,6 +748,14 @@ export function updateRegistry(registry) {
       ...new Set([...(component.registryDependencies ?? []), controlSizeName]),
     ];
   }
+
+  const tree = registry.items.find((entry) => entry.name === "tree");
+  if (tree) {
+    tree.dependencies = [...new Set([...(tree.dependencies ?? []), "framer-motion"])];
+    tree.registryDependencies = [
+      ...new Set([...(tree.registryDependencies ?? []), "springs"]),
+    ];
+  }
   return registry;
 }
 

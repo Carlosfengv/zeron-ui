@@ -206,6 +206,24 @@ async function verifyNextBuild({ consumer, component }) {
       'export default function Page() { return <AskUserQuestions questions={[{ id: "verified", title: "Install verified?", options: [{ title: "Yes" }, { title: "No" }] }]} />; }',
       '',
     ].join("\n"),
+    tree: [
+      'import { Tree } from "@/components/ui/tree";',
+      '',
+      'export default function Page() { return <Tree aria-label="Install verified" items={[{ key: "verified", label: "Install verified" }]} selectionMode="single" />; }',
+      '',
+    ].join("\n"),
+    "member-tree": [
+      'import { MemberTree } from "@/components/ui/member-tree";',
+      '',
+      'export default function Page() { return <MemberTree aria-label="Install verified" items={[{ key: "member:verified", type: "member", memberId: "verified", label: "Install verified" }]} />; }',
+      '',
+    ].join("\n"),
+    "file-tree": [
+      'import { FileTree } from "@/components/ui/file-tree";',
+      '',
+      'export default function Page() { return <FileTree aria-label="Install verified" items={[{ key: "file:verified", type: "file", label: "Install verified.txt", extension: "txt" }]} />; }',
+      '',
+    ].join("\n"),
     "personal-settings-01": [
       'import { PersonalSettings, personalSettingsDemoData } from "@/components/blocks/personal-settings-01";',
       '',
@@ -274,6 +292,27 @@ async function installViteComponent({ consumer, component, tarball }) {
       'import { AskUserQuestions } from "@/src/components/ui/ask-user-questions";',
       'import "./index.css";',
       'createRoot(document.getElementById("root")!).render(<AskUserQuestions questions={[{ id: "verified", title: "Install verified?", options: [{ title: "Yes" }, { title: "No" }] }]} />);',
+      '',
+    ].join("\n"),
+    tree: [
+      'import { createRoot } from "react-dom/client";',
+      'import { Tree } from "@/src/components/ui/tree";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<Tree aria-label="Install verified" items={[{ key: "verified", label: "Install verified" }]} selectionMode="single" />);',
+      '',
+    ].join("\n"),
+    "member-tree": [
+      'import { createRoot } from "react-dom/client";',
+      'import { MemberTree } from "@/src/components/ui/member-tree";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<MemberTree aria-label="Install verified" items={[{ key: "member:verified", type: "member", memberId: "verified", label: "Install verified" }]} />);',
+      '',
+    ].join("\n"),
+    "file-tree": [
+      'import { createRoot } from "react-dom/client";',
+      'import { FileTree } from "@/src/components/ui/file-tree";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<FileTree aria-label="Install verified" items={[{ key: "file:verified", type: "file", label: "Install verified.txt", extension: "txt" }]} />);',
       '',
     ].join("\n"),
   };

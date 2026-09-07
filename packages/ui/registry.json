@@ -2640,6 +2640,92 @@
       ]
     },
     {
+      "name": "tree",
+      "type": "registry:ui",
+      "title": "Tree",
+      "description": "Accessible hierarchical display with controlled expansion, single or multiple selection, cascade checkboxes, search filtering, and keyboard navigation.",
+      "dependencies": [
+        "tw-animate-css",
+        "framer-motion"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "button",
+        "utils",
+        "icon-context",
+        "springs"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/tree/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/tree/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/tree/tree.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/tree/tree.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/tree/tree-types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/tree/tree-types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/tree/tree-model.ts",
+          "type": "registry:ui",
+          "target": "components/ui/tree/tree-model.ts"
+        },
+        {
+          "path": "packages/ui/src/components/tree/tree-selection.ts",
+          "type": "registry:ui",
+          "target": "components/ui/tree/tree-selection.ts"
+        }
+      ]
+    },
+    {
+      "name": "member-tree",
+      "type": "registry:ui",
+      "title": "Member Tree",
+      "description": "Organization-focused Tree with department and member rendering, typed selection, and member-only cascade selection.",
+      "registryDependencies": [
+        "surfaces",
+        "tree",
+        "icon-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/member-tree.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/member-tree.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
+      "name": "file-tree",
+      "type": "registry:ui",
+      "title": "File Tree",
+      "description": "File and folder Tree with file-type icons, file-extension restrictions, and file-only cascade selection.",
+      "registryDependencies": [
+        "surfaces",
+        "tree",
+        "icon-context"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/file-tree.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/file-tree.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "top-nav",
       "type": "registry:ui",
       "title": "Top Nav",
