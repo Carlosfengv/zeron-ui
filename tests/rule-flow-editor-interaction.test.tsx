@@ -96,6 +96,12 @@ describe("RuleFlowEditor", () => {
   it("aligns the left edges of every card in the primary flow", () => {
     render(<RuleFlowEditor value={configuredFlow} />);
 
+    const nodeBadge = (element: HTMLElement) => {
+      const card = element.closest<HTMLElement>("[data-slot=card]");
+      const badge = card?.parentElement?.firstElementChild as HTMLElement | null;
+      expect(badge).not.toBeNull();
+      return badge!;
+    };
     const nodeLeft = (element: HTMLElement) => {
       const card = element.closest<HTMLElement>("[data-slot=card]");
       const node = card?.parentElement;
@@ -112,6 +118,10 @@ describe("RuleFlowEditor", () => {
     expect(nodeLeft(triggerHandle)).toBe(16);
     expect(nodeLeft(conditionTitle)).toBe(16);
     expect(nodeLeft(actionTitle)).toBe(16);
+    expect(nodeBadge(conditionTitle).style.backgroundColor).toBe("var(--brand)");
+    expect(nodeBadge(conditionTitle).style.color).toBe("var(--fg-on-brand)");
+    expect(nodeBadge(actionTitle).style.backgroundColor).toBe("var(--brand)");
+    expect(nodeBadge(actionTitle).style.color).toBe("var(--fg-on-brand)");
   });
 
   it("uses a direct unmatched connector and orthogonal primary branches", () => {

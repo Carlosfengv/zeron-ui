@@ -64,6 +64,10 @@ const primaryCardWidth = 620;
 const exceptionCardWidth = 360;
 const unmatchedCardWidth = 292;
 const branchCardGap = 24;
+const primaryFlowBadgeColor = {
+  base: "var(--brand)",
+  onStrong: "var(--fg-on-brand)",
+} as const;
 
 export const defaultRuleFlowTriggers: readonly RuleFlowTriggerOption[] = [
   {
@@ -1858,6 +1862,8 @@ export function RuleFlowEditor({
         {canvasNodes.map((node) => {
           const { centerX, nodeWidth, top } = placedNode(node);
           const meta = kindMeta[node.kind];
+          const primaryFlowBadge =
+            node.kind === "condition" || node.kind === "matched-actions";
           const selected = selectedNodeId === node.id;
           const cardDisabled =
             (node.kind === "condition" && !flow.trigger) ||
@@ -1880,7 +1886,11 @@ export function RuleFlowEditor({
                 zIndex: selected ? 2 : 1,
               }}
             >
-              <Badge color={meta.color} size="sm">
+              <Badge
+                color={primaryFlowBadge ? primaryFlowBadgeColor : meta.color}
+                size="sm"
+                variant={primaryFlowBadge ? "strong" : "solid"}
+              >
                 {meta.badge}
               </Badge>
               <Card
