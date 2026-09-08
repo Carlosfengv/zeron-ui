@@ -24,7 +24,7 @@ export default async function BlockDemoPage({ params }: Props) {
   if (!isStandaloneBlockSlug(slug)) notFound();
 
   return (
-    <main className="h-svh w-screen overflow-hidden bg-surface-base">
+    <main className="fixed inset-0 overflow-hidden bg-surface-base">
       <StandaloneBlockDemo slug={slug} />
     </main>
   );

@@ -16,7 +16,7 @@ describe("standalone block demos", () => {
   it("gives every registered block a dedicated, static standalone route", () => {
     expect(route).toContain("export const dynamicParams = false;");
     expect(route).toContain("standaloneBlockSlugs.map");
-    expect(route).toContain('className="h-svh w-screen overflow-hidden bg-surface-base"');
+    expect(route).toContain('className="fixed inset-0 overflow-hidden bg-surface-base"');
     expect(slugs).toContain('"resource-catalog-01"');
     expect(slugs).toContain('"zlrlist"');
     expect(demo).toContain('case "resource-catalog-01"');
