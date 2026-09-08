@@ -78,6 +78,13 @@ const blockCatalogEntries = [
     dependencies: ["page-layout", "breadcrumb", "tabs", "table", "input-copy", "card", "badge", "button"],
   },
   {
+    name: "model-detail-02",
+    title: "Model Analytics Detail",
+    description: "A complete model analytics page with providers, pricing, performance, uptime, benchmarks, apps, activity, and FAQ.",
+    categories: ["application", "details", "analytics"],
+    dependencies: ["availability-monitor-01", "accordion", "badge", "breadcrumb", "button", "card", "chart", "checkbox", "data-table", "icon-context", "info-item", "metric-card", "page-layout", "select", "tabs", "tooltip", "recharts"],
+  },
+  {
     name: "cluster-environment-detail-01",
     title: "集群环境详情",
     description: "An inspection-report workspace that combines environment context, resource health, and incident follow-up.",

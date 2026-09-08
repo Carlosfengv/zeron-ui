@@ -7,6 +7,7 @@
   "agent-session-detail-01": { "framework": "react", "kind": "template" },
   "mcp-detail-01": { "framework": "next", "kind": "template" },
   "model-detail-01": { "framework": "react", "kind": "template" },
+  "model-detail-02": { "framework": "react", "kind": "template" },
   "cluster-environment-detail-01": { "framework": "next", "kind": "template" },
   "cluster-environment-list-01": { "framework": "next", "kind": "template" },
   "inspection-report-list-01": { "framework": "next", "kind": "template" },

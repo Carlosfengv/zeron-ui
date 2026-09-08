@@ -312,6 +312,20 @@
       ]
     },
     {
+      "name": "model-detail-02",
+      "type": "registry:block",
+      "title": "Model Analytics Detail",
+      "description": "A model analytics page with providers, pricing, performance, uptime, benchmarks, apps, activity, and FAQ.",
+      "categories": ["application", "details", "analytics"],
+      "dependencies": ["recharts", "tw-animate-css", "@lobehub/icons"],
+      "registryDependencies": ["availability-monitor-01", "accordion", "app-shell", "badge", "breadcrumb", "button", "card", "chart", "checkbox", "container", "data-table", "icon-context", "info-item", "metric-card", "nav-item", "nav-menu", "page-layout", "select", "tabs", "tooltip", "top-nav", "utils"],
+      "files": [
+        { "path": "packages/blocks/src/application/model-detail-02/model-detail-02-data.ts", "type": "registry:component", "target": "components/blocks/model-detail-02/model-detail-02-data.ts" },
+        { "path": "packages/blocks/src/application/model-detail-02/model-detail-02.tsx", "type": "registry:component", "target": "components/blocks/model-detail-02/model-detail-02.tsx" },
+        { "path": "packages/blocks/src/application/model-detail-02/index.ts", "type": "registry:component", "target": "components/blocks/model-detail-02/index.ts" }
+      ]
+    },
+    {
       "name": "provider-create-form-01",
       "type": "registry:block",
       "title": "Provider Create Form 1",
