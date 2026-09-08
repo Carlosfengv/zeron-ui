@@ -38,7 +38,7 @@
         "recharts",
         "tw-animate-css"
       ],
-      "registryDependencies": ["button", "chart", "container", "icon-context", "status-overview", "tooltip", "utils"],
+      "registryDependencies": ["button", "card", "chart", "container", "metric-card", "status-overview", "utils"],
       "files": [
         {
           "path": "packages/blocks/src/application/availability-monitor-01/availability-monitor.tsx",
