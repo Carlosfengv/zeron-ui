@@ -1,0 +1,13 @@
+{
+  "modelAnalyticsDetailBlock": {
+    "title": "模型分析详情",
+    "description": "完整呈现供应商路由、价格、性能、可用性、基准测试、应用用量、活动与 FAQ 的模型页面。",
+    "props": "Props",
+    "dataBoundary": "数据边界",
+    "dataBoundaryBody": "预览内置 GPT-6 Astra 的抓取快照。使用方可以替换完整数据对象而无需改变页面结构，区块运行时不会请求 OpenRouter。",
+    "composition": "组件组合",
+    "compositionBody": "页面使用 Zeron 的 PageLayout、Card、Table、Select、Tabs、Accordion、InfoItem、MetricCard 与共享 shadcn Chart 封装，不复刻 OpenRouter 的视觉样式。",
+    "responsive": "响应式行为",
+    "responsiveBody": "低于 lg 时分区侧栏转为横向子导航；指标与图表降为单列，宽表格只在各自卡片内部横向滚动。"
+  }
+}

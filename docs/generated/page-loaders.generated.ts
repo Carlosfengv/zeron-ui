@@ -18,6 +18,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "blocks/service-management-01": () => import("@docs/pages/blocks/service-management-01/page"),
   "blocks/mcp-detail-01": () => import("@docs/pages/blocks/mcp-detail-01/page"),
   "blocks/model-detail-01": () => import("@docs/pages/blocks/model-detail-01/page"),
+  "blocks/model-detail-02": () => import("@docs/pages/blocks/model-detail-02/page"),
   "blocks/personal-model-usage-01": () => import("@docs/pages/blocks/personal-model-usage-01/page"),
   "blocks/personal-settings-01": () => import("@docs/pages/blocks/personal-settings-01/page"),
   "blocks/personal-usage-01": () => import("@docs/pages/blocks/personal-usage-01/page"),

@@ -1,0 +1,13 @@
+{
+  "modelAnalyticsDetailBlock": {
+    "title": "Model Analytics Detail",
+    "description": "A complete model page with provider routing, pricing, performance, uptime, benchmarks, app usage, activity, and FAQ.",
+    "props": "Props",
+    "dataBoundary": "Data boundary",
+    "dataBoundaryBody": "The preview ships a captured GPT-6 Astra snapshot. Consumers can replace the complete data object without changing the page composition, and the block never calls OpenRouter at runtime.",
+    "composition": "Composition",
+    "compositionBody": "The page uses Zeron PageLayout, Cards, Tables, Selects, Tabs, Accordion, InfoItems, MetricCards, and the shared shadcn Chart wrapper. It intentionally does not copy OpenRouter's visual styling.",
+    "responsive": "Responsive behavior",
+    "responsiveBody": "The section sidebar becomes a horizontal sub-navigation below lg. Metrics and charts reduce to one column, while wide tables keep horizontal scrolling inside their own cards."
+  }
+}

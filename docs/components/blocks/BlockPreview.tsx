@@ -68,6 +68,9 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "model-detail-01": () => import("@zeron/blocks/model-detail-01").then(({ ModelDetail }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1320}><ModelDetail /></ResponsivePreview>,
   })),
+  "model-detail-02": () => import("@zeron/blocks/model-detail-02").then(({ ModelDetail02 }) => ({
+    default: () => <ResponsivePreview canvasHeight={960} canvasWidth={1440}><ModelDetail02 className="h-full min-h-0" /></ResponsivePreview>,
+  })),
   "cluster-environment-detail-01": () => import("@zeron/blocks/cluster-environment-detail-01").then(({ ClusterEnvironmentDetail }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ClusterEnvironmentDetail /></ResponsivePreview>,
   })),

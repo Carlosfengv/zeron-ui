@@ -11,6 +11,7 @@ export const standaloneBlockSlugs = [
   "service-management-01",
   "mcp-detail-01",
   "model-detail-01",
+  "model-detail-02",
   "personal-settings-01",
   "personal-model-usage-01",
   "personal-usage-01",
