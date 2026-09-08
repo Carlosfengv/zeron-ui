@@ -87,7 +87,7 @@ const dashboardCode = `const dashboardCardClass =
 
 const props: PropDef[] = [
   { name: "label", type: "string", description: "The metric being measured." },
-  { name: "value", type: "string | number", description: "The primary metric result." },
+  { name: "value", type: "ReactNode", description: "The primary metric result, including text, numbers, or inline visual content." },
   { name: "unit", type: "string", description: "A separately formatted unit displayed with the primary value." },
   { name: "meta", type: "string", description: "Optional context such as sample size, token count, or update time." },
   { name: "footer", type: "ReactNode", description: "Optional supporting content below the metric value, such as a period-over-period comparison." },

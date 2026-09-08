@@ -43,6 +43,7 @@ describe("MetricCard contract", () => {
   });
 
   it("supports all documented content modes and accessible whole-card interaction", () => {
+    expect(source).toContain("value: ReactNode");
     expect(source).toContain('type: "none"');
     expect(source).toContain('type: "breakdown"');
     expect(source).toContain('type: "visualization"');

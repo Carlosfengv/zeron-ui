@@ -30,6 +30,15 @@ describe("PageLayout columns contract", () => {
     expect(pageLayout).not.toContain('data-slot="page-aside" className={cn("min-w-0 order-');
   });
 
+  it("supports a left aside without changing the default right-side layout", () => {
+    expect(pageLayout).toContain('export type PageColumnsAsideSide = "left" | "right"');
+    expect(pageLayout).toContain('asideSide?: PageColumnsAsideSide');
+    expect(pageLayout).toContain('asideSide = "right"');
+    expect(pageLayout).toContain('pageColumnsBreakpointClasses[columnsAt][asideSide]');
+    expect(pageLayout).toContain('lg:[&:has(>_[data-slot=page-aside])]:grid-cols-[var(--page-aside-width)_minmax(0,1fr)]');
+    expect(pageLayout).toContain('xl:[&:has(>_[data-slot=page-aside])]:grid-cols-[var(--page-aside-width)_minmax(0,1fr)]');
+  });
+
   it("uses a local width variable and normalizes numeric widths", () => {
     expect(pageLayout).toContain('"--page-aside-width": toCssDimension(asideWidth)');
     expect(pageLayout).toContain('typeof value === "number" ? `${value}px` : value');

@@ -52,7 +52,7 @@ export interface MetricCardProps
   /** Describes the measurement, for example "Completion rate". */
   label: string;
   /** The primary metric result. Units are rendered separately for consistent formatting. */
-  value: string | number;
+  value: ReactNode;
   unit?: string;
   /** Supporting context such as sample size, token count, or update time. */
   meta?: string;

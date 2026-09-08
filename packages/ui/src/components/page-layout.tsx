@@ -19,6 +19,7 @@ export type PageLayoutSize = "sm" | "md" | "lg" | "full";
 export type PageLayoutGutter = "default" | "none";
 export type PageSubnavLabelVisibility = "all" | "active";
 export type PageColumnsBreakpoint = "lg" | "xl";
+export type PageColumnsAsideSide = "left" | "right";
 
 const pageLayoutVariants = cva(
   [
@@ -71,6 +72,8 @@ export interface PageColumnsProps extends ComponentPropsWithoutRef<"div"> {
   asideWidth?: CSSProperties["width"];
   /** Breakpoint at which the primary and auxiliary columns become a grid. */
   columnsAt?: PageColumnsBreakpoint;
+  /** Side occupied by PageAside once columns are expanded. */
+  asideSide?: PageColumnsAsideSide;
 }
 export type PagePrimaryProps = ComponentPropsWithoutRef<"div">;
 export type PageAsideProps = ComponentPropsWithoutRef<"aside">;
@@ -209,21 +212,42 @@ const PageBody = forwardRef<HTMLDivElement, PageBodyProps>(({ className, ...prop
 
 PageBody.displayName = "PageBody";
 
-const pageColumnsBreakpointClasses: Record<PageColumnsBreakpoint, readonly string[]> = {
-  lg: [
-    "lg:[&:has(>_[data-slot=page-aside])]:grid-cols-[minmax(0,1fr)_var(--page-aside-width)]",
-    "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:col-start-1",
-    "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:row-start-1",
-    "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:col-start-2",
-    "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:row-start-1",
-  ],
-  xl: [
-    "xl:[&:has(>_[data-slot=page-aside])]:grid-cols-[minmax(0,1fr)_var(--page-aside-width)]",
-    "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:col-start-1",
-    "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:row-start-1",
-    "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:col-start-2",
-    "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:row-start-1",
-  ],
+const pageColumnsBreakpointClasses: Record<
+  PageColumnsBreakpoint,
+  Record<PageColumnsAsideSide, readonly string[]>
+> = {
+  lg: {
+    left: [
+      "lg:[&:has(>_[data-slot=page-aside])]:grid-cols-[var(--page-aside-width)_minmax(0,1fr)]",
+      "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:col-start-1",
+      "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:row-start-1",
+      "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:col-start-2",
+      "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:row-start-1",
+    ],
+    right: [
+      "lg:[&:has(>_[data-slot=page-aside])]:grid-cols-[minmax(0,1fr)_var(--page-aside-width)]",
+      "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:col-start-1",
+      "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:row-start-1",
+      "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:col-start-2",
+      "lg:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:row-start-1",
+    ],
+  },
+  xl: {
+    left: [
+      "xl:[&:has(>_[data-slot=page-aside])]:grid-cols-[var(--page-aside-width)_minmax(0,1fr)]",
+      "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:col-start-1",
+      "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:row-start-1",
+      "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:col-start-2",
+      "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:row-start-1",
+    ],
+    right: [
+      "xl:[&:has(>_[data-slot=page-aside])]:grid-cols-[minmax(0,1fr)_var(--page-aside-width)]",
+      "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:col-start-1",
+      "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-primary]]:row-start-1",
+      "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:col-start-2",
+      "xl:[&:has(>_[data-slot=page-aside])>_[data-slot=page-aside]]:row-start-1",
+    ],
+  },
 };
 
 function toCssDimension(value: CSSProperties["width"]) {
@@ -231,13 +255,13 @@ function toCssDimension(value: CSSProperties["width"]) {
 }
 
 const PageColumns = forwardRef<HTMLDivElement, PageColumnsProps>(
-  ({ asideWidth = "25rem", columnsAt = "lg", className, style, ...props }, ref) => (
+  ({ asideWidth = "25rem", columnsAt = "lg", asideSide = "right", className, style, ...props }, ref) => (
     <div
       ref={ref}
       data-slot="page-columns"
       className={cn(
         "grid min-w-0 grid-cols-1 items-start gap-5",
-        pageColumnsBreakpointClasses[columnsAt],
+        pageColumnsBreakpointClasses[columnsAt][asideSide],
         className
       )}
       style={{ "--page-aside-width": toCssDimension(asideWidth), ...style } as CSSProperties}

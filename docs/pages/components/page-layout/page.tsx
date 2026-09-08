@@ -269,9 +269,9 @@ const props: PropDef[] = [
   },
   {
     name: "PageColumns",
-    type: 'div props & { asideWidth?: CSSProperties["width"]; columnsAt?: "lg" | "xl" }',
-    default: 'asideWidth: "25rem", columnsAt: "lg"',
-    description: "A PageBody-local grid. On collapse it keeps DOM order; when expanded PagePrimary is always left and PageAside is right.",
+    type: 'div props & { asideWidth?: CSSProperties["width"]; columnsAt?: "lg" | "xl"; asideSide?: "left" | "right" }',
+    default: 'asideWidth: "25rem", columnsAt: "lg", asideSide: "right"',
+    description: "A PageBody-local grid. On collapse it keeps DOM order; when expanded asideSide positions PageAside beside PagePrimary.",
   },
   {
     name: "PagePrimary / PageAside",
