@@ -6,7 +6,12 @@ import { Badge } from "../packages/ui/src/components/badge";
 import { BadgeOverflow } from "../packages/ui/src/components/badge-overflow";
 import { Button } from "../packages/ui/src/components/button";
 import { CardTitle } from "../packages/ui/src/components/card";
-import { NavItemLabel } from "../packages/ui/src/components/nav-item";
+import {
+  NavItemDescription,
+  NavItemLabel,
+  NavItemLeading,
+  NavItemTrailing,
+} from "../packages/ui/src/components/nav-item";
 import { TabItem, Tabs, TabsList } from "../packages/ui/src/components/tabs";
 
 class ResizeObserverStub {
@@ -95,6 +100,23 @@ describe("single-DOM-text components", () => {
       </NavItemLabel>
     );
     expect(screen.getAllByText("New")).toHaveLength(1);
+  });
+
+  it("uses the default foreground only for a NavItem label and leading icon", () => {
+    render(
+      <>
+        <NavItemLeading data-testid="leading" />
+        <NavItemLabel>Projects</NavItemLabel>
+        <NavItemDescription data-testid="description" />
+        <NavItemTrailing data-testid="trailing" />
+      </>
+    );
+
+    expect(screen.getByTestId("leading").className).toContain("text-fg-default");
+    expect(screen.getByText("Projects").parentElement?.className).toContain("text-fg-default");
+    expect(screen.getByTestId("description").className).toContain("font-normal");
+    expect(screen.getByTestId("description").className).toContain("text-fg-muted");
+    expect(screen.getByTestId("trailing").className).toContain("text-fg-muted");
   });
 
   it("unmounts BadgeOverflow's measurement copies before text can be queried", () => {

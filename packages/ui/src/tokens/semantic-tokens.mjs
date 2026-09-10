@@ -45,7 +45,7 @@ function classify(tokens, channel) {
 
 export const foregroundColorTokens = classify([
   { name: "fg-default", light: "#00030A", dark: "#F9F9F9", usage: "普通承载面上的默认标题、正文、表单值和主要图标" },
-  { name: "fg-muted", light: "#00030AD9", dark: "#C7CBCE", usage: "普通承载面上的辅助说明、标签、元数据和次要图标" },
+  { name: "fg-muted", light: "#00030ABF", dark: "#F9F9F9BF", usage: "普通承载面上的辅助说明、标签、元数据和次要图标" },
   { name: "fg-subtle", light: "#00030A99", dark: "#B6BABC", usage: "普通承载面上的占位文字、时间戳、快捷键提示和低强调图标" },
   { name: "fg-brand", light: "#0060D2", dark: "#72B9FE", usage: "普通承载面上的品牌色链接、文字和图标；不得用于品牌色填充之上" },
   { name: "fg-danger", light: "#B0140C", dark: "#FEBEAC", usage: "普通承载面上的错误、失败或危险文字和图标；不得用于危险操作填充之上" },

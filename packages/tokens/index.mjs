@@ -14,8 +14,8 @@ const tokenData = {
     },
     {
       "name": "fg-muted",
-      "light": "#00030AD9",
-      "dark": "#C7CBCE",
+      "light": "#00030ABF",
+      "dark": "#F9F9F9BF",
       "usage": "普通承载面上的辅助说明、标签、元数据和次要图标",
       "classification": {
         "channel": "foreground",
@@ -589,8 +589,8 @@ const tokenData = {
     },
     {
       "name": "fg-muted",
-      "light": "#00030AD9",
-      "dark": "#C7CBCE",
+      "light": "#00030ABF",
+      "dark": "#F9F9F9BF",
       "usage": "普通承载面上的辅助说明、标签、元数据和次要图标",
       "classification": {
         "channel": "foreground",

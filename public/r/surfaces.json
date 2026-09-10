@@ -103,7 +103,7 @@
     "light": {
       "font-family-sans": "\"Inter\", system-ui, sans-serif",
       "fg-default": "#00030A",
-      "fg-muted": "#00030AD9",
+      "fg-muted": "#00030ABF",
       "fg-subtle": "#00030A99",
       "fg-brand": "#0060D2",
       "fg-danger": "#B0140C",
@@ -218,7 +218,7 @@
     "dark": {
       "font-family-sans": "\"Inter\", system-ui, sans-serif",
       "fg-default": "#F9F9F9",
-      "fg-muted": "#C7CBCE",
+      "fg-muted": "#F9F9F9BF",
       "fg-subtle": "#B6BABC",
       "fg-brand": "#72B9FE",
       "fg-danger": "#FEBEAC",

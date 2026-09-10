@@ -178,18 +178,23 @@ NavItemTrigger.displayName = "NavItemTrigger";
 export type NavItemLeadingProps = ComponentPropsWithoutRef<"span">;
 
 const NavItemLeading = forwardRef<HTMLSpanElement, NavItemLeadingProps>(
-  ({ className, ...props }, ref) => (
-    <span
-      ref={ref}
-      data-slot="nav-item-leading"
-      className={cn(
-        "flex size-4 shrink-0 items-center justify-center text-fg-muted transition-colors duration-fast",
-        "group-data-[active=true]/nav-item:text-fg-default",
-        className
-      )}
-      {...props}
-    />
-  )
+  ({ className, ...props }, ref) => {
+    const navMenu = useNavMenuOptional();
+
+    return (
+      <span
+        ref={ref}
+        data-slot="nav-item-leading"
+        className={cn(
+          "flex size-4 shrink-0 items-center justify-center text-fg-default transition-colors duration-fast",
+          navMenu?.variant === "segment" &&
+            "group-data-[active=true]/nav-item:text-fg-on-brand",
+          className
+        )}
+        {...props}
+      />
+    );
+  }
 );
 
 NavItemLeading.displayName = "NavItemLeading";
@@ -216,6 +221,7 @@ export type NavItemLabelProps = ComponentPropsWithoutRef<"span">;
 
 const NavItemLabel = forwardRef<HTMLSpanElement, NavItemLabelProps>(
   ({ className, children, ...props }, ref) => {
+    const navMenu = useNavMenuOptional();
     const reservedLabel =
       typeof children === "string" || typeof children === "number"
         ? String(children)
@@ -226,7 +232,9 @@ const NavItemLabel = forwardRef<HTMLSpanElement, NavItemLabelProps>(
         ref={ref}
         data-slot="nav-item-label"
         className={cn(
-          "inline-grid min-w-0 max-w-full",
+          "inline-grid min-w-0 max-w-full text-fg-default",
+          navMenu?.variant === "segment" &&
+            "group-data-[active=true]/nav-item:text-fg-on-brand",
           reservedLabel !== undefined &&
             "after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:truncate after:font-semibold after:content-[attr(data-label)]",
           className
@@ -248,7 +256,7 @@ export type NavItemDescriptionProps = ComponentPropsWithoutRef<"span">;
 
 const NavItemDescription = forwardRef<HTMLSpanElement, NavItemDescriptionProps>(
   ({ className, ...props }, ref) => (
-    <span ref={ref} data-slot="nav-item-description" className={cn("min-w-0 truncate text-label text-fg-muted", className)} {...props} />
+    <span ref={ref} data-slot="nav-item-description" className={cn("min-w-0 truncate text-label font-normal text-fg-muted", className)} {...props} />
   )
 );
 
