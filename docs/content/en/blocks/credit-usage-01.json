@@ -1,0 +1,14 @@
+{
+  "creditUsageBlock": {
+    "title": "Credit Usage",
+    "description": "A responsive credit-cycle card with model attribution, projected depletion, automatic fallback, and plan actions.",
+    "composition": "Component mapping",
+    "compositionBody": "The block composes Card, Badge, pill Tabs, Switch, Button, InlineNotice, and the shared icon context. Its segmented usage bar is a small block-owned visualization driven by semantic model colors.",
+    "dataContract": "Data integration",
+    "dataContractBody": "Pass the plan allowance plus current and optional previous cycle models. Use provider for the built-in OpenAI, Claude, and Gemini marks, or logo for a private model's real brand asset. The block normalizes invalid credits, derives totals and percentages, and exposes full-sentence formatters for localization, while the host owns billing data, dates, routes, mutations, and pending or error state.",
+    "behavior": "Interaction model",
+    "behaviorBody": "Cycle selection and automatic switching support controlled and uncontrolled use. Set-limit and upgrade controls appear only when their callbacks exist, so every visible action remains functional.",
+    "limitFeedback": "Limit controls opened.",
+    "upgradeFeedback": "Upgrade flow opened."
+  }
+}

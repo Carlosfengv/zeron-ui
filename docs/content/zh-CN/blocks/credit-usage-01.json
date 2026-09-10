@@ -1,0 +1,14 @@
+{
+  "creditUsageBlock": {
+    "title": "额度使用情况",
+    "description": "一个响应式额度周期卡片，包含模型归因、预计耗尽提示、自动切换和套餐操作。",
+    "composition": "组件映射",
+    "compositionBody": "该 Block 组合 Card、Badge、胶囊 Tabs、Switch、Button、InlineNotice 与共享图标上下文。分段用量条是 Block 自有的小型可视化，并复用语义化模型颜色。",
+    "dataContract": "数据接入",
+    "dataContractBody": "传入套餐总额度、当前周期及可选的上一周期模型数据。通过 provider 使用内置的 OpenAI、Claude 和 Gemini 标识，私有模型则通过 logo 传入真实品牌资源。Block 会归一化异常额度、推导合计和百分比，并提供完整句子格式化接口；宿主负责账单数据、日期、路由、变更请求以及等待或错误状态。",
+    "behavior": "交互模型",
+    "behaviorBody": "周期选择和自动切换同时支持受控与非受控模式。只有提供回调时才显示设置上限和升级操作，确保每个可见按钮都可以工作。",
+    "limitFeedback": "已打开额度上限设置。",
+    "upgradeFeedback": "已打开套餐升级流程。"
+  }
+}

@@ -19,6 +19,11 @@ import { ModelDetail } from "@zeron/blocks/model-detail-01";
 import { ModelDetail02 } from "@zeron/blocks/model-detail-02";
 import { PersonalSettings, personalSettingsDemoData } from "@zeron/blocks/personal-settings-01";
 import { PersonalModelUsage } from "@zeron/blocks/personal-model-usage-01";
+import {
+  CreditUsage,
+  creditUsageDemoData,
+  type CreditUsageCycle,
+} from "@zeron/blocks/credit-usage-01";
 import { PersonalUsage } from "@zeron/blocks/personal-usage-01";
 import { ResourceSettings } from "@zeron/blocks/resource-settings-01";
 import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
@@ -85,6 +90,33 @@ function AiGatewayOverviewDemo() {
   );
 }
 
+function CreditUsageDemo() {
+  const [cycle, setCycle] = useState<CreditUsageCycle>("current");
+  const [autoSwitchEnabled, setAutoSwitchEnabled] = useState(true);
+  const [feedback, setFeedback] = useState<string | null>(null);
+
+  return (
+    <div className="flex h-full w-full items-center justify-center overflow-auto bg-surface-base p-4 sm:p-8">
+      <div className="w-full max-w-[520px]">
+        <CreditUsage
+          actions={{
+            onAutoSwitchChange: setAutoSwitchEnabled,
+            onCycleChange: setCycle,
+            onSetLimit: () => setFeedback("Limit controls opened."),
+            onUpgrade: () => setFeedback("Upgrade flow opened."),
+          }}
+          autoSwitchEnabled={autoSwitchEnabled}
+          cycle={cycle}
+          data={creditUsageDemoData}
+        />
+        <p aria-live="polite" className="mt-3 min-h-5 text-center text-caption text-fg-muted">
+          {feedback}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
     case "login-01":
@@ -121,6 +153,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <PersonalSettings data={personalSettingsDemoData} />;
     case "personal-model-usage-01":
       return <PersonalModelUsage />;
+    case "credit-usage-01":
+      return <CreditUsageDemo />;
     case "personal-usage-01":
       return <PersonalUsage />;
     case "resource-settings-01":

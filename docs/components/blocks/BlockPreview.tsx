@@ -133,6 +133,30 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "personal-model-usage-01": () => import("@zeron/blocks/personal-model-usage-01").then(({ PersonalModelUsage }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalModelUsage /></ResponsivePreview>,
   })),
+  "credit-usage-01": () => import("@zeron/blocks/credit-usage-01").then(({ CreditUsage, creditUsageDemoData }) => ({
+    default: function CreditUsagePreview() {
+      const [cycle, setCycle] = useState<"current" | "previous">("current");
+      const [autoSwitchEnabled, setAutoSwitchEnabled] = useState(true);
+
+      return (
+        <ResponsivePreview canvasHeight={820} canvasWidth={1080}>
+          <div className="flex min-h-full items-center justify-center bg-surface-base p-10">
+            <CreditUsage
+              actions={{
+                onAutoSwitchChange: setAutoSwitchEnabled,
+                onCycleChange: setCycle,
+                onSetLimit: () => undefined,
+                onUpgrade: () => undefined,
+              }}
+              autoSwitchEnabled={autoSwitchEnabled}
+              cycle={cycle}
+              data={creditUsageDemoData}
+            />
+          </div>
+        </ResponsivePreview>
+      );
+    },
+  })),
   "personal-usage-01": () => import("@zeron/blocks/personal-usage-01").then(({ PersonalUsage }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalUsage /></ResponsivePreview>,
   })),
