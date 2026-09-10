@@ -35,6 +35,7 @@ describe("ResourceListPage MCP views", () => {
   it("shows MCP mock data and switches to category management", () => {
     const onSectionChange = vi.fn();
     render(<ResourceListPage onSectionChange={onSectionChange} />);
+    const tabList = screen.getByRole("tablist");
 
     expect(
       screen.getByRole("tab", { name: "MCP 列表" }).getAttribute("aria-selected")
@@ -48,6 +49,7 @@ describe("ResourceListPage MCP views", () => {
     expect(
       screen.getByRole("tab", { name: "分类管理" }).getAttribute("aria-selected")
     ).toBe("true");
+    expect(screen.getByRole("tablist")).toBe(tabList);
     expect(screen.getByRole("region", { name: "MCP 分类列表" })).toBeTruthy();
     expect(screen.getByText("销售")).toBeTruthy();
     expect(screen.getByRole("row", { name: /办公协同 7/ })).toBeTruthy();

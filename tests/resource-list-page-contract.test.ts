@@ -89,13 +89,18 @@ describe("Resource List Page 1 block contract", () => {
       /<SidebarTrigger[\s\S]*?className="hidden shrink-0 group-data-\[state=collapsed\]\/sidebar:inline-flex"[\s\S]*?icon=\{[\s\S]*?<SidebarIdentityAvatar className="rounded-lg" tone="brand">[\s\S]*?Z[\s\S]*?<\/SidebarIdentityAvatar>[\s\S]*?label="展开管理后台导航"[\s\S]*?\/>/
     );
     expect(source).toContain('aria-label="MCP 资源管理"');
-    expect(source).toContain("<PageContentHeader>{sectionTabs}</PageContentHeader>");
+    expect(categorySource).toContain(
+      "<PageContentHeader>{navigation}</PageContentHeader>"
+    );
+    expect(source).toContain(
+      'active={section === "categories" && !sectionContent?.categories}'
+    );
     expect(source).toContain('variant="pill"');
     expect(source).toContain('const CategoryIcon = useIcon("folder")');
     expect(source).toContain('icon={item === "mcp" ? McpIcon : CategoryIcon}');
     expect(source).toContain('label={sectionLabels[item]}');
     expect(source).not.toContain("<PageSubnav");
-    expect(source).toContain('<PageBody className="max-w-none p-3"');
+    expect(categorySource).toContain('<PageBody className="max-w-none p-3"');
     expect(source).toContain("<ResourceListTable");
     expect(source).toContain('preset="mcp"');
     expect(categorySource).toContain('preset="category"');

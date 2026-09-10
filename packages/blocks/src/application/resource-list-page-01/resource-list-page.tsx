@@ -2,9 +2,6 @@
 
 import { type ReactNode, useState } from "react";
 import {
-  PageBody,
-  PageContent,
-  PageContentHeader,
   PageHeader,
   PageHeaderContent,
   PageLayout,
@@ -304,63 +301,57 @@ export function ResourceListPage({
             </PageHeaderContent>
           </PageHeader>
 
-          {section === "categories" && !sectionContent?.categories ? (
-            <CategoryManagement
-              applicationsByCategory={categoryApplications}
-              canCreateCategory={canCreateCategory}
-              canRemoveApplication={canRemoveCategoryApplication}
-              categories={visibleCategories}
-              dataMode={categoryDataMode}
-              defaultSelectedCategoryId={defaultSelectedCategoryId}
-              detailsState={categoryDetailsState}
-              key={workspace.id}
-              labels={categoryLabels}
-              navigation={sectionTabs}
-              onCategoryOpen={onCategoryOpen}
-              onCreateCategory={handleCreateCategory}
-              onRemoveApplication={handleRemoveCategoryApplication}
-              onRetryApplications={onRetryCategoryApplications}
-              resources={visibleResources}
-              selectedCategoryId={selectedCategoryId}
-              tableProps={categoryTableProps}
-              workspaceId={workspace.id}
-            />
-          ) : (
-            <PageContent>
-              <PageContentHeader>{sectionTabs}</PageContentHeader>
-              <PageBody className="max-w-none p-3">
-                {section === "mcp" ? (
-                  sectionContent?.mcp ?? (
-                    <ResourceListTable
-                      {...tableProps}
-                      key={workspace.id}
-                      labels={{
-                        ariaLabel: "MCP 列表",
-                        create: "添加应用",
-                        draft: "草稿",
-                        enabled: "已发布",
-                        empty: "暂无 MCP 应用",
-                        searchPlaceholder: "搜索",
-                        statusFilter: "状态",
-                        ...tableProps?.labels,
-                      }}
-                      onCreate={canCreateMcp ? handleCreateMcp : undefined}
-                      onEdit={onEdit}
-                      onRefresh={onRefresh}
-                      preset="mcp"
-                      renderBulkActions={renderBulkActions}
-                      resources={visibleResources}
-                      showCreateAction={canCreateMcp}
-                      showRefreshAction={false}
-                      surface="plain"
-                    />
-                  )
-                ) : (
-                  sectionContent?.categories
-                )}
-              </PageBody>
-            </PageContent>
-          )}
+          <CategoryManagement
+            active={section === "categories" && !sectionContent?.categories}
+            applicationsByCategory={categoryApplications}
+            canCreateCategory={canCreateCategory}
+            canRemoveApplication={canRemoveCategoryApplication}
+            categories={visibleCategories}
+            dataMode={categoryDataMode}
+            defaultSelectedCategoryId={defaultSelectedCategoryId}
+            detailsState={categoryDetailsState}
+            key={workspace.id}
+            labels={categoryLabels}
+            navigation={sectionTabs}
+            onCategoryOpen={onCategoryOpen}
+            onCreateCategory={handleCreateCategory}
+            onRemoveApplication={handleRemoveCategoryApplication}
+            onRetryApplications={onRetryCategoryApplications}
+            resources={visibleResources}
+            selectedCategoryId={selectedCategoryId}
+            tableProps={categoryTableProps}
+            workspaceId={workspace.id}
+          >
+            {section === "mcp" ? (
+              sectionContent?.mcp ?? (
+                <ResourceListTable
+                  {...tableProps}
+                  key={workspace.id}
+                  labels={{
+                    ariaLabel: "MCP 列表",
+                    create: "添加应用",
+                    draft: "草稿",
+                    enabled: "已发布",
+                    empty: "暂无 MCP 应用",
+                    searchPlaceholder: "搜索",
+                    statusFilter: "状态",
+                    ...tableProps?.labels,
+                  }}
+                  onCreate={canCreateMcp ? handleCreateMcp : undefined}
+                  onEdit={onEdit}
+                  onRefresh={onRefresh}
+                  preset="mcp"
+                  renderBulkActions={renderBulkActions}
+                  resources={visibleResources}
+                  showCreateAction={canCreateMcp}
+                  showRefreshAction={false}
+                  surface="plain"
+                />
+              )
+            ) : (
+              sectionContent?.categories
+            )}
+          </CategoryManagement>
         </PageLayout>
       )}
     </ResourceWorkspaceShell>

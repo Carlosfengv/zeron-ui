@@ -90,10 +90,12 @@ const defaultLabels: ResourceCategoryManagementLabels = {
 };
 
 export interface CategoryManagementProps {
+  active: boolean;
   applicationsByCategory?: ResourceCategoryApplicationMap;
   canCreateCategory?: boolean;
   canRemoveApplication?: boolean;
   categories: readonly ResourceListItem[];
+  children: ReactNode;
   dataMode?: ResourceCategoryDataMode;
   defaultSelectedCategoryId?: string | null;
   detailsState?: ResourceCategoryDetailsState;
@@ -257,10 +259,12 @@ function CategoryDetails({
 }
 
 export function CategoryManagement({
+  active,
   applicationsByCategory,
   canCreateCategory = true,
   canRemoveApplication = true,
   categories,
+  children,
   dataMode = "client",
   defaultSelectedCategoryId,
   detailsState,
@@ -352,6 +356,7 @@ export function CategoryManagement({
 
   useEffect(() => {
     if (
+      !active ||
       !selectedCategory ||
       lastNotifiedCategoryId.current === selectedCategory.id
     ) {
@@ -359,7 +364,13 @@ export function CategoryManagement({
     }
     lastNotifiedCategoryId.current = selectedCategory.id;
     onCategoryOpen?.(selectedCategory);
-  }, [onCategoryOpen, selectedCategory]);
+  }, [active, onCategoryOpen, selectedCategory]);
+
+  useEffect(() => {
+    if (active) return;
+    lastNotifiedCategoryId.current = null;
+    setIsDetailsDrawerOpen(false);
+  }, [active]);
 
   useEffect(() => setMutationError(undefined), [selectedCategoryId]);
 
@@ -429,57 +440,65 @@ export function CategoryManagement({
           <PageContent>
             <PageContentHeader>{navigation}</PageContentHeader>
             <PageBody className="max-w-none p-3">
-              <ResourceListTable
-                {...tableProps}
-                activeRowId={selectedCategoryId}
-                key={`${workspaceId}-categories`}
-                labels={{
-                  ariaLabel: labels.ariaLabel,
-                  create: labels.create,
-                  empty: labels.empty,
-                  itemCount: labels.itemCount,
-                  searchPlaceholder: labels.searchPlaceholder,
-                  ...tableProps?.labels,
-                }}
-                onCreate={canCreateCategory ? onCreateCategory : undefined}
-                onRowActivate={openCategory}
-                preset="category"
-                resources={categoryRows}
-                showCreateAction={canCreateCategory}
-                showRefreshAction={tableProps?.showRefreshAction ?? false}
-                surface="plain"
-                toolbarTrailing={
-                  <Button
-                    aria-label={labels.openDetails}
-                    className="xl:hidden"
-                    disabled={!selectedCategory}
-                    iconOnly
-                    onClick={() => setIsDetailsDrawerOpen(true)}
-                    ref={detailsTriggerRef}
-                    size="md"
-                    type="button"
-                    variant="tertiary"
-                  >
-                    <DetailsIcon />
-                  </Button>
-                }
-              />
+              {active ? (
+                <ResourceListTable
+                  {...tableProps}
+                  activeRowId={selectedCategoryId}
+                  key={`${workspaceId}-categories`}
+                  labels={{
+                    ariaLabel: labels.ariaLabel,
+                    create: labels.create,
+                    empty: labels.empty,
+                    itemCount: labels.itemCount,
+                    searchPlaceholder: labels.searchPlaceholder,
+                    ...tableProps?.labels,
+                  }}
+                  onCreate={canCreateCategory ? onCreateCategory : undefined}
+                  onRowActivate={openCategory}
+                  preset="category"
+                  resources={categoryRows}
+                  showCreateAction={canCreateCategory}
+                  showRefreshAction={tableProps?.showRefreshAction ?? false}
+                  surface="plain"
+                  toolbarTrailing={
+                    <Button
+                      aria-label={labels.openDetails}
+                      className="xl:hidden"
+                      disabled={!selectedCategory}
+                      iconOnly
+                      onClick={() => setIsDetailsDrawerOpen(true)}
+                      ref={detailsTriggerRef}
+                      size="md"
+                      type="button"
+                      variant="tertiary"
+                    >
+                      <DetailsIcon />
+                    </Button>
+                  }
+                />
+              ) : (
+                children
+              )}
             </PageBody>
           </PageContent>
         </PagePrimary>
-        <PageAside className="hidden h-full min-h-0 xl:flex">
-          <PageContent>{details}</PageContent>
-        </PageAside>
+        {active ? (
+          <PageAside className="hidden h-full min-h-0 xl:flex">
+            <PageContent>{details}</PageContent>
+          </PageAside>
+        ) : null}
       </PageColumns>
-      <MobileDrawer
-        ariaLabel="分类详情"
-        onClose={() => setIsDetailsDrawerOpen(false)}
-        open={isDetailsDrawerOpen}
-        side="end"
-        triggerRef={detailsTriggerRef}
-      >
-        {details}
-      </MobileDrawer>
+      {active ? (
+        <MobileDrawer
+          ariaLabel="分类详情"
+          onClose={() => setIsDetailsDrawerOpen(false)}
+          open={isDetailsDrawerOpen}
+          side="end"
+          triggerRef={detailsTriggerRef}
+        >
+          {details}
+        </MobileDrawer>
+      ) : null}
     </>
   );
 }
