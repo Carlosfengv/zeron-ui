@@ -1,0 +1,8 @@
+{
+  "resourceDetailPageBlock": {
+    "title": "Resource Detail Page",
+    "description": "A full-width generic resource detail page with shared navigation, editable metadata, protection settings, tabs, and Markdown content.",
+    "guidance": "Layout boundary",
+    "guidanceBody": "The application sidebar is shared with Resource List Page through one workspace shell. The detail body has no maximum-width constraint; its 25rem metadata rail stays on the left while the primary content consumes the remaining width. Replace example data and connect mutations through the component callbacks."
+  }
+}

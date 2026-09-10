@@ -10,6 +10,13 @@ const source = readFileSync(
   ),
   "utf8"
 );
+const shellSource = readFileSync(
+  join(
+    ROOT,
+    "packages/blocks/src/application/resource-workspace-shell-01/resource-workspace-shell.tsx"
+  ),
+  "utf8"
+);
 const packageJson = JSON.parse(
   readFileSync(join(ROOT, "packages/blocks/package.json"), "utf8")
 );
@@ -32,52 +39,73 @@ describe("Resource List Page 1 block contract", () => {
       registryDependencies: expect.arrayContaining([
         "page-layout",
         "resource-list-table-01",
-        "sidebar",
-        "sidebar-account-menu",
-        "sidebar-identity-row",
-        "dropdown",
-        "menu-item",
-        "nav-menu",
+        "resource-workspace-shell-01",
       ]),
     });
     expect(item.files).toHaveLength(2);
   });
 
-  it("owns the application Sidebar and composes the resource page preset", () => {
-    expect(source).toContain('<SidebarProvider defaultOpen breakpointBehavior="collapse">');
-    expect(source).toContain('collapsible="icon"');
-    expect(source).toContain("<SidebarGroupTrigger>Workspace</SidebarGroupTrigger>");
-    expect(source).toContain("<SidebarGroupTrigger>Manage</SidebarGroupTrigger>");
-    expect(source).toContain("<DropdownMenu>");
-    expect(source).toContain('primary={workspace.name}');
-    expect(source).toContain('checked={item.id === workspace.id}');
-    expect(source).toContain(
-      "group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-leading]]:flex-none"
+  it("shares the application Sidebar and composes the resource page preset", () => {
+    expect(source).toContain("<ResourceWorkspaceShell");
+    expect(shellSource).toContain(
+      '<SidebarProvider defaultOpen breakpointBehavior="collapse">'
     );
-    expect(source).toContain("<SidebarAccountMenu");
-    expect(source).toContain('primary={accountName}');
-    expect(source).toContain('description={accountEmail}');
-    expect(source).toMatch(
-      /<SidebarTrigger\s+className="shrink-0"\s+label="Toggle resource sidebar"\s+\/>/
+    expect(shellSource).toContain('collapsible="icon"');
+    expect(shellSource).toContain('width="280px"');
+    expect(shellSource).toContain('{ value: "ai-distribution", label: "AI 能力分发" }');
+    expect(shellSource).toContain('{ value: "ai-governance", label: "AI 安全治理" }');
+    expect(shellSource).toContain('{ value: "organization", label: "组织与成员" }');
+    expect(shellSource).toContain('{ value: "infrastructure", label: "基础设施" }');
+    expect(shellSource).toContain("<SidebarGroupLabel>{group.label}</SidebarGroupLabel>");
+    expect(shellSource).toContain("<DropdownMenu>");
+    expect(shellSource).toContain(
+      '<SidebarHeader className="space-y-1 px-2 py-1.5">'
+    );
+    expect(shellSource).toContain(
+      '<div className="flex min-w-0 items-center gap-1">'
+    );
+    expect(shellSource).toContain('primary={workspace.name}');
+    expect(shellSource).toContain('trailing={<ChevronDown aria-hidden className="size-4" />}');
+    expect(shellSource).toContain('Z\n                      </SidebarIdentityAvatar>');
+    expect(shellSource).toContain('checked={item.id === workspace.id}');
+    expect(shellSource).toContain("<SidebarAccountMenu");
+    expect(shellSource).toContain('primary={accountName}');
+    expect(shellSource).toContain('description={accountEmail}');
+    expect(shellSource).toMatch(
+      /<SidebarTrigger\s+className="shrink-0 group-data-\[state=collapsed\]\/sidebar:hidden"\s+label="收起管理后台导航"\s+size="xs"\s+\/>/
+    );
+    expect(shellSource).toMatch(
+      /<SidebarTrigger[\s\S]*?className="hidden shrink-0 group-data-\[state=collapsed\]\/sidebar:inline-flex"[\s\S]*?icon=\{[\s\S]*?<SidebarIdentityAvatar className="rounded-lg" tone="brand">[\s\S]*?Z[\s\S]*?<\/SidebarIdentityAvatar>[\s\S]*?label="展开管理后台导航"[\s\S]*?\/>/
     );
     expect(source).toContain("<PageSubnav");
     expect(source).toContain('<PageBody className="max-w-[1620px] p-4"');
     expect(source).toContain("<ResourceListTable");
     expect(source).toContain('surface="plain"');
     expect(source).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
+    expect(shellSource).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
   });
 
   it("keeps data, navigation, and business actions replaceable", () => {
     expect(source).toContain("resources?: readonly ResourceListItem[]");
-    expect(source).toContain("navigation?: readonly ResourceListPageNavigationItem[]");
     expect(source).toContain(
-      "workspaces?: readonly (ResourceListPageWorkspace | string)[]"
+      'extends Omit<ResourceWorkspaceShellProps, "children">'
     );
-    expect(source).toContain("onWorkspaceChange?: (workspaceId: string) => void");
-    expect(source).toContain("workspaceId?: string");
-    expect(source).toContain("onNavigationSelect?: (value: string) => void");
-    expect(source).toContain("onAccountAction?: (action: ResourceListPageAccountAction) => void");
-    expect(source).toContain("accountSections?: SidebarAccountMenuSection[]");
+    expect(shellSource).toContain(
+      "navigation?: readonly ResourceWorkspaceNavigationItem[]"
+    );
+    expect(shellSource).toContain(
+      "navigationGroups?: readonly ResourceWorkspaceNavigationGroup[]"
+    );
+    expect(shellSource).toContain(
+      "workspaces?: readonly (ResourceWorkspace | string)[]"
+    );
+    expect(shellSource).toContain("onWorkspaceChange?: (workspaceId: string) => void");
+    expect(shellSource).toContain("workspaceId?: string");
+    expect(shellSource).toContain("onNavigationSelect?: (value: string) => void");
+    expect(shellSource).toContain(
+      "onAccountAction?: (action: ResourceWorkspaceAccountAction) => void"
+    );
+    expect(shellSource).toContain("accountSections?: SidebarAccountMenuSection[]");
     expect(source).toContain("onSectionChange?: (value: ResourceListPageSection) => void");
     expect(source).toContain("onCreate?: () => void");
     expect(source).toContain("onEdit?: (resource: ResourceListItem) => void");
@@ -87,7 +115,7 @@ describe("Resource List Page 1 block contract", () => {
     expect(source).toContain(
       "sectionContent?: Partial<Record<ResourceListPageSection, ReactNode>>"
     );
-    expect(source).toContain("href={item.href ?? `#${item.value}`}");
-    expect(source).toContain("key={currentWorkspace.id}");
+    expect(shellSource).toContain("href={item.href ?? `#${item.value}`}");
+    expect(source).toContain("key={workspace.id}");
   });
 });

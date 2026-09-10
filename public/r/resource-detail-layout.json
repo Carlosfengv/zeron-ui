@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "resource-detail-layout",
+  "type": "registry:ui",
+  "title": "Resource Detail Layout",
+  "description": "Full-width resource detail preset with record navigation, summary actions, tabs, and a responsive primary-with-aside body.",
+  "dependencies": [
+    "tw-animate-css@^1.4.0"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/surfaces.json",
+    "https://zeron-ui.vercel.app/r/page-layout.json"
+  ],
+  "files": [
+    {
+      "path": "packages/ui/src/components/resource-detail-layout.tsx",
+      "content": "\"use client\";\nimport { forwardRef, type ReactNode } from \"react\";\nimport { PageActions, PageAside, PageBody, PageColumns, PageContent, PageContentHeader, PageDescription, PageHeader, PageHeaderContent, PageLayout, PagePrimary, PageTitle, type PageColumnsProps, type ResourcePageLayoutProps, } from \"@ui/page-layout\";\nimport { cn } from \"@lib/utils\";\nexport interface ResourceDetailLayoutProps extends ResourcePageLayoutProps {\n    /** Breadcrumbs or other page-level navigation rendered above the content surface. */\n    navigation?: ReactNode;\n    /** Controls for closing the detail or moving between adjacent records. */\n    recordNavigation?: ReactNode;\n    /** Resource logo or icon rendered before the title. */\n    leading?: ReactNode;\n    /** Status rendered beside the page title and outside the h1. */\n    status?: ReactNode;\n    /** Page-level resource actions. */\n    actions?: ReactNode;\n    /** Route navigation or a TabsList supplied by the caller. */\n    tabs?: ReactNode;\n    /** Auxiliary resource facts. */\n    aside?: ReactNode;\n    /** Accessible name required when aside is present. */\n    asideLabel?: string;\n    asideWidth?: PageColumnsProps[\"asideWidth\"];\n    asideSide?: PageColumnsProps[\"asideSide\"];\n    columnsAt?: PageColumnsProps[\"columnsAt\"];\n    /**\n     * `columns` gives the primary and aside panes independent desktop scrolling.\n     * Stacked responsive layouts continue to use the shared body scroller.\n     */\n    scrollMode?: \"body\" | \"columns\";\n}\nconst independentColumnScrollClasses = {\n    lg: {\n        body: \"lg:overflow-hidden\",\n        columns: \"lg:h-full lg:min-h-0 lg:grid-rows-[minmax(0,1fr)] lg:items-stretch\",\n        pane: \"lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain\",\n    },\n    xl: {\n        body: \"xl:overflow-hidden\",\n        columns: \"xl:h-full xl:min-h-0 xl:grid-rows-[minmax(0,1fr)] xl:items-stretch\",\n        pane: \"xl:min-h-0 xl:overflow-y-auto xl:overscroll-contain\",\n    },\n} as const;\n/**\n * A full-width detail-page preset with fixed context controls and caller-selected\n * body or desktop-column scrolling. Business state and mutations remain caller-owned.\n */\nconst ResourceDetailLayout = forwardRef<HTMLDivElement, ResourceDetailLayoutProps>(({ actions, aside, asideLabel, asideSide = \"right\", asideWidth = \"20rem\", children, columnsAt = \"xl\", description, gutter = \"default\", leading, navigation, recordNavigation, scrollMode = \"body\", size = \"full\", status, tabs, title, ...props }, ref) => {\n    const columnScroll = scrollMode === \"columns\"\n        ? independentColumnScrollClasses[columnsAt]\n        : undefined;\n    return (<PageLayout ref={ref} gutter={gutter} size={size} {...props}>\n        {navigation && (<PageHeader className=\"px-0\">\n            <PageHeaderContent>{navigation}</PageHeaderContent>\n          </PageHeader>)}\n\n        <PageContent className=\"rounded-2xl\">\n          {recordNavigation && (<PageContentHeader className=\"justify-start p-0\" data-slot=\"resource-detail-navigation\">\n              {recordNavigation}\n            </PageContentHeader>)}\n\n          <header data-slot=\"resource-detail-summary\" className=\"flex min-w-0 shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border p-3 max-sm:items-start\">\n            <div className=\"flex min-w-0 items-center gap-2\">\n              {leading && (<div data-slot=\"resource-detail-leading\" className=\"flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border-[0.5px] border-border bg-muted p-1\">\n                  {leading}\n                </div>)}\n              <div className=\"min-w-0\">\n                <div className=\"flex min-w-0 flex-wrap items-center gap-1.5\">\n                  <PageTitle>{title}</PageTitle>\n                  {status}\n                </div>\n                {description && (<PageDescription className=\"mt-0 max-w-none truncate text-label\">\n                    {description}\n                  </PageDescription>)}\n              </div>\n            </div>\n            {actions && <PageActions>{actions}</PageActions>}\n          </header>\n\n          {tabs && (<div data-slot=\"resource-detail-tabs\" className=\"min-w-0 shrink-0 overflow-x-auto px-3 py-1.5\">\n              {tabs}\n            </div>)}\n\n          <PageBody className={cn(\"max-w-none p-3\", columnScroll?.body)}>\n            <PageColumns asideSide={asideSide} asideWidth={asideWidth} columnsAt={columnsAt} className={cn(\"gap-3\", columnScroll?.columns)}>\n              <PagePrimary className={columnScroll?.pane}>\n                {children}\n              </PagePrimary>\n              {aside && (<PageAside aria-label={asideLabel} className={columnScroll?.pane}>\n                  {aside}\n                </PageAside>)}\n            </PageColumns>\n          </PageBody>\n        </PageContent>\n      </PageLayout>);\n});\nResourceDetailLayout.displayName = \"ResourceDetailLayout\";\nexport { ResourceDetailLayout };\n",
+      "type": "registry:ui",
+      "target": "components/ui/resource-detail-layout.tsx"
+    }
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui"
+    }
+  }
+}

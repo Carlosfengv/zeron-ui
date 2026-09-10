@@ -19,6 +19,7 @@ export const standaloneBlockSlugs = [
   "rule-flow-editor-01",
   "resource-catalog-01",
   "resource-details-01",
+  "resource-detail-page-01",
   "resource-list-page-01",
   "resource-list-table-01",
   "member-department-01",

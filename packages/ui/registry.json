@@ -2426,6 +2426,26 @@
       ]
     },
     {
+      "name": "resource-detail-layout",
+      "type": "registry:ui",
+      "title": "Resource Detail Layout",
+      "description": "Full-width resource detail preset with record navigation, summary actions, tabs, and a responsive primary-with-aside body.",
+      "registryDependencies": [
+        "surfaces",
+        "page-layout"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/resource-detail-layout.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/resource-detail-layout.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "container",
       "type": "registry:ui",
       "title": "Container",

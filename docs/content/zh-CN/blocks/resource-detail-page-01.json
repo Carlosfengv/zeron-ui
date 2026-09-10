@@ -1,0 +1,8 @@
+{
+  "resourceDetailPageBlock": {
+    "title": "通用详情页",
+    "description": "基于共享资源工作区外壳的全宽通用资源详情页，包含属性编辑、防护设置、Tab 与 Markdown 正文。",
+    "guidance": "布局边界",
+    "guidanceBody": "应用左侧栏通过同一个工作区外壳与 Resource List Page 共享。详情正文不设置最大宽度；25rem 属性栏位于左侧，主内容使用剩余空间。接入时替换示例数据，并通过组件回调连接业务修改操作。"
+  }
+}

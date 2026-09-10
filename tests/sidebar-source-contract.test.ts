@@ -70,8 +70,12 @@ describe("sidebar implementation contract", () => {
   });
 
   it("uses the 36px control size for the standard collapse trigger", () => {
+    expect(sidebar).toContain("icon?: ReactNode;");
     expect(sidebar).toMatch(
       /const SidebarTrigger[\s\S]*?iconOnly[\s\S]*?size="lg"/
+    );
+    expect(sidebar).toContain(
+      '{icon ?? <Icon aria-hidden="true" size={16} strokeWidth={1.5} />}'
     );
     expect(sidebar.match(/<Icon aria-hidden="true" size=\{16\} strokeWidth=\{1\.5\} \/>/g)).toHaveLength(2);
     expect(sidebarDocs).toContain(

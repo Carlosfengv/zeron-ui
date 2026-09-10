@@ -402,11 +402,13 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
 Sidebar.displayName = "Sidebar";
 
 export interface SidebarTriggerProps extends Omit<ComponentPropsWithoutRef<typeof Button>, "children"> {
+  /** Replaces the default state-aware menu, collapse, or expand icon. */
+  icon?: ReactNode;
   label?: string;
 }
 
 const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
-  ({ label = "Toggle sidebar", onClick, ...props }, forwardedRef) => {
+  ({ icon, label = "Toggle sidebar", onClick, ...props }, forwardedRef) => {
     const { breakpointBehavior, isMobile, mobileOpen, state, toggle, setActiveTrigger } = useSidebar();
     const MenuIcon = useIcon("menu");
     const CollapseIcon = useIcon("layout-align-right");
@@ -431,7 +433,7 @@ const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
         }}
         {...props}
       >
-        <Icon aria-hidden="true" size={16} strokeWidth={1.5} />
+        {icon ?? <Icon aria-hidden="true" size={16} strokeWidth={1.5} />}
       </Button>
     );
   }

@@ -172,6 +172,7 @@
       "agent-session-detail-01": "A session detail workspace with agent navigation, session switching, and an embedded execution trace.",
       "resource-catalog-01": "A responsive model and MCP marketplace with search, sorting, page-local filters, and resource cards.",
       "mcp-detail-01": "An MCP resource detail page with safe connection generation and a minimal tool test panel.",
+      "resource-detail-page-01": "A full-width generic resource detail page with shared navigation, editable metadata, and protection settings.",
       "model-detail-01": "A model detail page with API-key handoff, code samples, benchmark data, and endpoint information.",
       "model-detail-02": "A complete model analytics page with providers, pricing, performance, uptime, benchmarks, apps, activity, and FAQ.",
       "resource-details-01": "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",

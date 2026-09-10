@@ -71,6 +71,13 @@ const blockCatalogEntries = [
     dependencies: ["page-layout", "breadcrumb", "tabs", "select", "textarea", "input-copy", "inline-notice", "card", "badge", "button"],
   },
   {
+    name: "resource-detail-page-01",
+    title: "Resource Detail Page",
+    description: "A full-width generic resource detail page with shared navigation, editable metadata, protection settings, and caller-owned tab content.",
+    categories: ["application", "resources", "details", "navigation"],
+    dependencies: ["resource-detail-layout", "resource-workspace-shell-01", "detail-list", "tabs", "switch", "badge", "button", "dropdown", "menu-item", "select", "react-markdown"],
+  },
+  {
     name: "model-detail-01",
     title: "模型详情",
     description: "A model detail page with API-key handoff, runnable code samples, benchmarks, and endpoint information.",
@@ -181,7 +188,7 @@ const blockCatalogEntries = [
     title: "Resource List Page",
     description: "The standard Sidebar Basic application layout with its project overview replaced by a controlled resource DataTable.",
     categories: ["application", "resources", "tables", "navigation"],
-    dependencies: ["resource-list-table-01", "page-layout", "sidebar", "sidebar-account-menu", "sidebar-identity-row", "dropdown", "menu-item", "nav-menu", "nav-item"],
+    dependencies: ["resource-list-table-01", "resource-workspace-shell-01", "page-layout"],
   },
   {
     name: "resource-list-table-01",

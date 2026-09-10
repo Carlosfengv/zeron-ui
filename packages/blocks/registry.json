@@ -405,13 +405,34 @@
       ]
     },
     {
+      "name": "resource-workspace-shell-01",
+      "type": "registry:component",
+      "title": "Resource Workspace Shell 1",
+      "description": "Shared Sidebar Basic workspace shell for resource list and detail pages.",
+      "categories": ["application", "resources", "navigation"],
+      "dependencies": ["tw-animate-css"],
+      "registryDependencies": ["dropdown", "icon-context", "menu-item", "nav-item", "nav-menu", "sidebar", "sidebar-account-menu", "sidebar-identity-row", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-workspace-shell-01/resource-workspace-shell.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-workspace-shell-01/resource-workspace-shell.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-workspace-shell-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-workspace-shell-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "resource-list-page-01",
       "type": "registry:block",
       "title": "Resource List Page 1",
       "description": "The standard Sidebar Basic application layout with its project overview replaced by a controlled resource DataTable.",
       "categories": ["application", "resources", "tables", "navigation"],
       "dependencies": ["tw-animate-css", "@tanstack/react-table"],
-      "registryDependencies": ["dropdown", "icon-context", "menu-item", "nav-item", "nav-menu", "page-layout", "resource-list-table-01", "sidebar", "sidebar-account-menu", "sidebar-identity-row", "utils"],
+      "registryDependencies": ["icon-context", "page-layout", "resource-list-table-01", "resource-workspace-shell-01"],
       "files": [
         {
           "path": "packages/blocks/src/application/resource-list-page-01/resource-list-page.tsx",
@@ -422,6 +443,47 @@
           "path": "packages/blocks/src/application/resource-list-page-01/index.ts",
           "type": "registry:component",
           "target": "components/blocks/resource-list-page-01/index.ts"
+        }
+      ]
+    },
+    {
+      "name": "resource-detail-page-01",
+      "type": "registry:block",
+      "title": "Resource Detail Page 1",
+      "description": "A full-width generic resource detail page with shared navigation, editable metadata, protection settings, and caller-owned tab content.",
+      "categories": ["application", "resources", "details", "navigation"],
+      "dependencies": ["tw-animate-css", "react-markdown", "remark-breaks", "remark-gfm"],
+      "registryDependencies": ["badge", "button", "detail-list", "dropdown", "icon-context", "menu-item", "resource-detail-layout", "resource-workspace-shell-01", "select", "switch", "tabs", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-detail-page-01/resource-detail-page-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-detail-page-01/resource-detail-page-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-detail-page-01/resource-detail-page.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-detail-page-01/resource-detail-page.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-detail-page-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-detail-page-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-detail-page-01/assets.d.ts",
+          "type": "registry:file",
+          "target": "components/blocks/resource-detail-page-01/assets.d.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-detail-page-01/mcp-market.svg",
+          "type": "registry:file",
+          "target": "components/blocks/resource-detail-page-01/mcp-market.svg"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-detail-page-01/feishu.svg",
+          "type": "registry:file",
+          "target": "components/blocks/resource-detail-page-01/feishu.svg"
         }
       ]
     },

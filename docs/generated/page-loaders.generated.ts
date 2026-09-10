@@ -17,6 +17,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "blocks/monitoring-alert-list-01": () => import("@docs/pages/blocks/monitoring-alert-list-01/page"),
   "blocks/service-management-01": () => import("@docs/pages/blocks/service-management-01/page"),
   "blocks/mcp-detail-01": () => import("@docs/pages/blocks/mcp-detail-01/page"),
+  "blocks/resource-detail-page-01": () => import("@docs/pages/blocks/resource-detail-page-01/page"),
   "blocks/model-detail-01": () => import("@docs/pages/blocks/model-detail-01/page"),
   "blocks/model-detail-02": () => import("@docs/pages/blocks/model-detail-02/page"),
   "blocks/personal-model-usage-01": () => import("@docs/pages/blocks/personal-model-usage-01/page"),

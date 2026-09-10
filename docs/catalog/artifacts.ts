@@ -135,6 +135,11 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
     kind: "page", product: "zentrix", domains: ["mcp", "integration"], patterns: ["detail", "connection"], searchTerms: ["mcp", "detail", "connection", "工具", "连接", "详情"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"],
   },
   {
+    slug: "resource-detail-page-01", registryName: "resource-detail-page-01",
+    title: "Resource Detail Page", description: "A full-width generic resource detail page with shared navigation, editable metadata and protection settings.",
+    kind: "page", product: "zentrix", domains: ["resource management"], patterns: ["detail", "sidebar", "metadata", "tabs"], searchTerms: ["detail", "resource", "sidebar", "generic", "详情", "资源", "侧边栏", "通用"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
+  },
+  {
     slug: "model-detail-01", registryName: "model-detail-01",
     title: "Model Detail", description: "A model detail page with API-key handoff, samples, benchmark data and endpoint information.",
     kind: "page", product: "zentrix", domains: ["model", "integration"], patterns: ["detail", "api reference"], searchTerms: ["model", "api key", "endpoint", "模型", "详情", "接口"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"],

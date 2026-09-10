@@ -19,6 +19,10 @@ import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
 import { RuleFlowEditor } from "@zeron/blocks/rule-flow-editor-01";
 import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
 import { ResourceDetails } from "@zeron/blocks/resource-details-01";
+import {
+  defaultResourceDetailPageData,
+  ResourceDetailPage,
+} from "@zeron/blocks/resource-detail-page-01";
 import { ResourceListPage } from "@zeron/blocks/resource-list-page-01";
 import {
   defaultResourceListItems,
@@ -91,6 +95,13 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <ResourceCatalog />;
     case "resource-details-01":
       return <div className={`${centeredDemoClass} items-start`}><ResourceDetails /></div>;
+    case "resource-detail-page-01":
+      return (
+        <ResourceDetailPage
+          className="h-full min-h-0"
+          data={defaultResourceDetailPageData}
+        />
+      );
     case "resource-list-page-01":
       return <ResourceListPage className="h-full min-h-0" resources={defaultResourceListItems} />;
     case "resource-list-table-01":

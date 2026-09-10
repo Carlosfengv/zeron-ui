@@ -23,6 +23,8 @@
     "./resource-settings-01": "./src/application/resource-settings-01/index.ts",
     "./resource-details-01": "./src/application/resource-details-01/index.ts",
     "./resource-list-page-01": "./src/application/resource-list-page-01/index.ts",
+    "./resource-workspace-shell-01": "./src/application/resource-workspace-shell-01/index.ts",
+    "./resource-detail-page-01": "./src/application/resource-detail-page-01/index.ts",
     "./resource-list-table-01": "./src/application/resource-list-table-01/index.ts",
     "./member-department-01": "./src/application/member-department-01/index.ts",
     "./resource-metric-list-01": "./src/application/resource-metric-list-01/index.ts",
