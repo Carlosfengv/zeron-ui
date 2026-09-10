@@ -6,6 +6,8 @@ import TokenSquareIcon from "@hugeicons-pro/core-duotone-rounded/TokenSquareIcon
 import ScrollVerticalIcon from "@hugeicons-pro/core-duotone-rounded/ScrollVerticalIcon";
 import Motion01Icon from "@hugeicons-pro/core-duotone-rounded/Motion01Icon";
 import BrowserIcon from "@hugeicons-pro/core-duotone-rounded/BrowserIcon";
+import LayoutAlignLeftIcon from "@hugeicons-pro/core-duotone-rounded/LayoutAlignLeftIcon";
+import LayoutAlignRightIcon from "@hugeicons-pro/core-duotone-rounded/LayoutAlignRightIcon";
 import LayoutThreeColumnIcon from "@hugeicons-pro/core-duotone-rounded/LayoutThreeColumnIcon";
 import SidebarLeftIcon from "@hugeicons-pro/core-duotone-rounded/SidebarLeftIcon";
 import SidebarTopIcon from "@hugeicons-pro/core-duotone-rounded/SidebarTopIcon";
@@ -124,6 +126,8 @@ export const duotoneRoundedIcons = createIconMap(
   ScrollVerticalIcon,
   Motion01Icon,
   BrowserIcon,
+  LayoutAlignLeftIcon,
+  LayoutAlignRightIcon,
   LayoutThreeColumnIcon,
   SidebarLeftIcon,
   SidebarTopIcon,

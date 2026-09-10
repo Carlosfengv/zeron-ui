@@ -49,6 +49,8 @@ export interface SidebarAccountMenuProps {
   avatar?: ReactNode;
   className?: string;
   description: ReactNode;
+  menuAlign?: "start" | "center" | "end";
+  menuAlignOffset?: number;
   menuClassName?: string;
   primary: ReactNode;
   sections: SidebarAccountMenuSection[];
@@ -123,6 +125,8 @@ export function SidebarAccountMenu({
   avatar,
   className,
   description,
+  menuAlign = "start",
+  menuAlignOffset,
   menuClassName,
   primary,
   sections,
@@ -149,7 +153,8 @@ export function SidebarAccountMenu({
       />
       <DropdownContent
         side="top"
-        align="center"
+        align={menuAlign}
+        alignOffset={menuAlignOffset}
         className={cn("!w-[264px] !min-w-[264px] !max-w-[264px]", menuClassName)}
       >
         <div className="px-1.5 py-1">

@@ -6,6 +6,14 @@ import { join } from "node:path";
 // file tracer conservatively include the entire project directory, including
 // .next/cache, which can make the Vercel function several gigabytes large.
 const guideLoaders: Record<string, () => Promise<string>> = {
+  "blocks/resource-list-page-01.md": () =>
+    readFile(
+      join(
+        process.cwd(),
+        "docs/agent-guides/blocks/resource-list-page-01.md",
+      ),
+      "utf8",
+    ),
   "blocks/infinite-log-table-01.md": () =>
     readFile(
       join(
@@ -37,6 +45,14 @@ const guideLoaders: Record<string, () => Promise<string>> = {
   "components/tree.md": () =>
     readFile(
       join(process.cwd(), "docs/agent-guides/components/tree.md"),
+      "utf8",
+    ),
+  "components/resource-list-layout.md": () =>
+    readFile(
+      join(
+        process.cwd(),
+        "docs/agent-guides/components/resource-list-layout.md",
+      ),
       "utf8",
     ),
 };

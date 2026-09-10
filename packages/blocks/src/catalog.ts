@@ -177,6 +177,13 @@ const blockCatalogEntries = [
     dependencies: ["detail-list", "switch", "badge"],
   },
   {
+    name: "resource-list-page-01",
+    title: "Resource List Page",
+    description: "The standard Sidebar Basic application layout with its project overview replaced by a controlled resource DataTable.",
+    categories: ["application", "resources", "tables", "navigation"],
+    dependencies: ["resource-list-table-01", "page-layout", "sidebar", "sidebar-account-menu", "sidebar-identity-row", "dropdown", "menu-item", "nav-menu", "nav-item"],
+  },
+  {
     name: "resource-list-table-01",
     title: "Resource List Table 1",
     description: "A searchable, selectable resource inventory with status filtering and reusable row actions.",

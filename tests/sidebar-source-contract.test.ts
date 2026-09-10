@@ -63,6 +63,30 @@ describe("sidebar implementation contract", () => {
     expect(sidebar).toContain("{...props}");
   });
 
+  it("centers header controls within the icon-collapsed rail", () => {
+    expect(sidebar).toContain(
+      '"shrink-0 p-3 group-data-[state=collapsed]/sidebar:p-1.5"'
+    );
+  });
+
+  it("uses the 36px control size for the standard collapse trigger", () => {
+    expect(sidebar).toMatch(
+      /const SidebarTrigger[\s\S]*?iconOnly[\s\S]*?size="lg"/
+    );
+    expect(sidebar.match(/<Icon aria-hidden="true" size=\{16\} strokeWidth=\{1\.5\} \/>/g)).toHaveLength(2);
+    expect(sidebarDocs).toContain(
+      '<SidebarTrigger className="shrink-0" label="Toggle preview sidebar" />'
+    );
+  });
+
+  it("animates desktop collapse and expansion while respecting reduced motion", () => {
+    expect(sidebar).toContain("const sidebarTransition = reduceMotion ? { duration: 0 } : spring.moderate;");
+    expect(sidebar).toContain('data-slot="sidebar-gap"');
+    expect(sidebar).toContain("animate={{ width: offcanvas ? 0 : panelWidth }}");
+    expect(sidebar).toContain("width: panelWidth,");
+    expect(sidebar.match(/transition=\{sidebarTransition\}/g)).toHaveLength(2);
+  });
+
   it("inherits the shell background while preserving semantic nesting and floating separation", () => {
     expect(sidebar).toContain("const surface = variant === \"floating\" ? resolveSurface(parentSurface, \"raised\") : parentSurface;");
     expect(sidebar).toContain("{mobile ? children : <SurfaceProvider role={surface}>{children}</SurfaceProvider>}");
@@ -111,10 +135,19 @@ describe("sidebar implementation contract", () => {
     expect(identityRow).toContain('min-h-control-lg h-auto justify-start gap-1.5 px-0.5 py-2');
     expect(identityRow).toContain('[&>span.relative>span]:w-full');
     expect(zaiopsPreview).toContain("<SidebarAccountMenu");
+    expect(sidebarDocs).toContain("<SidebarAccountMenu");
+    expect(sidebarDocs).toContain('primary={workspace}');
+    expect(sidebarDocs).toContain('onSelect={() => setWorkspace(name)}');
+    expect(sidebarDocs).toContain('group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content-row]]:justify-center');
+    expect(sidebarDocs).toContain('group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-leading]]:flex-none');
+    expect(sidebarDocs).toContain('primary="Carlos Feng"');
+    expect(sidebarDocs).toContain('description="wei.feng@zstack.io"');
     expect(zaiopsPreview).toContain('triggerTrailing={<More aria-hidden className="size-4" />}');
     expect(zaiopsPreview).toContain('alignOffset={20}');
     expect(zaiopsPreview).toContain('className="!w-60 !min-w-60 !max-w-60"');
     expect(accountMenu).toContain('side="top"');
+    expect(accountMenu).toContain('menuAlign = "start"');
+    expect(accountMenu).toContain('align={menuAlign}');
     expect(accountMenu).toContain('!w-[264px] !min-w-[264px] !max-w-[264px]');
     expect(accountMenu).toContain('data-proximity-index={index}');
     expect(accountMenu).toContain('item={item} index={index}');
@@ -139,8 +172,10 @@ describe("sidebar implementation contract", () => {
     expect(sidebar).toContain('state === "collapsed" && collapsedBehavior === "offcanvas"');
     expect(sidebar).toContain('<Popover trigger="hover"');
     expect(sidebar).toContain("toggle();");
-    expect(sidebar).toContain('useIcon("chevrons-right")');
-    expect(sidebar).toContain('useIcon("chevrons-left")');
+    expect(sidebar).toContain('const CollapseIcon = useIcon("layout-align-right");');
+    expect(sidebar).toContain('const ExpandIcon = useIcon("layout-align-left");');
+    expect(sidebar).not.toContain('useIcon("chevrons-right")');
+    expect(sidebar).not.toContain('useIcon("chevrons-left")');
     expect(sidebar).toContain("iconOnly");
     expect(sidebar).toContain('size="sm"');
     expect(sidebar).toContain('variant="tertiary"');

@@ -6,6 +6,8 @@ import TokenSquareIcon from "@hugeicons-pro/core-bulk-rounded/TokenSquareIcon";
 import ScrollVerticalIcon from "@hugeicons-pro/core-bulk-rounded/ScrollVerticalIcon";
 import Motion01Icon from "@hugeicons-pro/core-bulk-rounded/Motion01Icon";
 import BrowserIcon from "@hugeicons-pro/core-bulk-rounded/BrowserIcon";
+import LayoutAlignLeftIcon from "@hugeicons-pro/core-bulk-rounded/LayoutAlignLeftIcon";
+import LayoutAlignRightIcon from "@hugeicons-pro/core-bulk-rounded/LayoutAlignRightIcon";
 import LayoutThreeColumnIcon from "@hugeicons-pro/core-bulk-rounded/LayoutThreeColumnIcon";
 import SidebarLeftIcon from "@hugeicons-pro/core-bulk-rounded/SidebarLeftIcon";
 import SidebarTopIcon from "@hugeicons-pro/core-bulk-rounded/SidebarTopIcon";
@@ -124,6 +126,8 @@ export const bulkRoundedIcons = createIconMap(
   ScrollVerticalIcon,
   Motion01Icon,
   BrowserIcon,
+  LayoutAlignLeftIcon,
+  LayoutAlignRightIcon,
   LayoutThreeColumnIcon,
   SidebarLeftIcon,
   SidebarTopIcon,

@@ -150,6 +150,11 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
     kind: "block", product: "shared", domains: ["resource", "monitoring"], patterns: ["detail", "metadata"], searchTerms: ["resource", "details", "metadata", "资源", "详情", "配置"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"],
   },
   {
+    slug: "resource-list-page-01", registryName: "resource-list-page-01",
+    title: "Resource List Page", description: "The standard Sidebar Basic application layout with its project overview replaced by a controlled resource DataTable.",
+    kind: "page", product: "shared", domains: ["resource", "operations"], patterns: ["sidebar", "data table", "filter", "bulk action"], searchTerms: ["resource", "list", "page", "sidebar", "资源", "列表", "页面", "侧边栏"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
     slug: "resource-list-table-01", registryName: "resource-list-table-01",
     title: "Resource List Table", description: "A searchable, selectable resource inventory with status filters and reusable row actions.",
     kind: "block", product: "shared", domains: ["resource", "operations"], patterns: ["data table", "filter", "bulk action"], searchTerms: ["resource", "list", "table", "filter", "资源", "表格", "筛选"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,

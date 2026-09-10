@@ -50,6 +50,8 @@ import InboxIcon from "@hugeicons/core-free-icons/InboxIcon";
 import LibraryIcon from "@hugeicons/core-free-icons/LibraryIcon";
 import Link01Icon from "@hugeicons/core-free-icons/Link01Icon";
 import Loading01Icon from "@hugeicons/core-free-icons/Loading01Icon";
+import LayoutAlignLeftIcon from "@hugeicons/core-free-icons/LayoutAlignLeftIcon";
+import LayoutAlignRightIcon from "@hugeicons/core-free-icons/LayoutAlignRightIcon";
 import ListViewIcon from "@hugeicons/core-free-icons/ListViewIcon";
 import LockIcon from "@hugeicons/core-free-icons/LockIcon";
 import Mail01Icon from "@hugeicons/core-free-icons/Mail01Icon";
@@ -184,6 +186,7 @@ export type IconName =
   | "doc-input-message"
   | "doc-thinking-indicator"
   | "doc-thinking-steps"
+  | "layout-align-left" | "layout-align-right"
   | "chevron-left" | "chevron-right" | "chevron-down" | "chevron-up"
   | "chevrons-left" | "chevrons-right" | "chevrons-up-down"
   | "circle-plus" | "circle-x" | "eye-off" | "ellipsis"
@@ -296,6 +299,8 @@ export const defaultIcons = createIconMap({
   LibraryIcon,
   Link01Icon,
   Loading01Icon,
+  LayoutAlignLeftIcon,
+  LayoutAlignRightIcon,
   ListViewIcon,
   LockIcon,
   Mail01Icon,

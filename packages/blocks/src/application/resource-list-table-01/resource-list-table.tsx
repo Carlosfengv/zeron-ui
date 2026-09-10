@@ -1,6 +1,10 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import {
+  type ColumnDef,
+  type ColumnFiltersState,
+  functionalUpdate,
+} from "@tanstack/react-table";
 import {
   type ComponentPropsWithoutRef,
   type ReactNode,
@@ -80,14 +84,38 @@ export interface ResourceListTableBulkActionContext {
   clearSelection: () => void;
 }
 
+export interface ResourceListTableQueryState {
+  search: string;
+  statuses: readonly ResourceListStatus[];
+  pageIndex: number;
+  pageSize: number;
+}
+
 export interface ResourceListTableProps
   extends Omit<ComponentPropsWithoutRef<"section">, "children"> {
   /** Replaces the complete inventory without changing the table composition. */
   resources?: readonly ResourceListItem[];
+  /** Shows the DataTable skeleton while data is being requested. */
+  isLoading?: boolean;
+  /** Message announced to assistive technology while data is loading. */
+  loadingMessage?: ReactNode;
+  /** Replaces the standard empty state. It can also represent a load error. */
+  emptyState?: ReactNode;
   /** Overrides the block-specific copy for localization or domain wording. */
   labels?: Partial<ResourceListTableLabels>;
   /** Optional content rendered after the standard toolbar actions. */
   toolbarTrailing?: ReactNode;
+  /** Controls whether the block owns a framed surface or inherits its page surface. */
+  surface?: "framed" | "plain";
+  /** Keeps the create action in the block unless the surrounding page owns it. */
+  showCreateAction?: boolean;
+  /** Controls the standard refresh action independently from its handler. */
+  showRefreshAction?: boolean;
+  /** Enables controlled server-side search, filtering, and pagination. */
+  queryState?: ResourceListTableQueryState;
+  /** Total number of server-side matches when queryState is controlled. */
+  totalRowCount?: number;
+  onQueryStateChange?: (queryState: ResourceListTableQueryState) => void;
   /** Replaces the standard toolbar while one or more rows are selected. */
   renderBulkActions?: (
     context: ResourceListTableBulkActionContext
@@ -310,12 +338,21 @@ function statusFilter(
 export function ResourceListTable({
   "aria-label": ariaLabel,
   className,
+  emptyState,
+  isLoading = false,
   labels: providedLabels,
+  loadingMessage,
   onCreate,
   onEdit,
+  onQueryStateChange,
   onRefresh,
+  queryState,
   renderBulkActions,
-  resources = defaultResourceListItems,
+  resources = [],
+  showCreateAction = true,
+  showRefreshAction = true,
+  surface = "framed",
+  totalRowCount,
   toolbarTrailing,
   ...props
 }: ResourceListTableProps) {
@@ -336,6 +373,7 @@ export function ResourceListTable({
         header: ({ table }) => (
           <Checkbox
             aria-label={labels.selectAll}
+            className="mx-auto"
             checked={
               table.getIsAllPageRowsSelected()
                 ? true
@@ -351,13 +389,16 @@ export function ResourceListTable({
         cell: ({ row }) => (
           <Checkbox
             aria-label={`${labels.selectResource}${row.original.name}`}
+            className="mx-auto"
             checked={row.getIsSelected()}
             onCheckedChange={(checked) => row.toggleSelected(Boolean(checked))}
           />
         ),
         enableHiding: false,
         enableSorting: false,
-        size: 52,
+        maxSize: 44,
+        minSize: 44,
+        size: 44,
       },
       {
         accessorKey: "name",
@@ -431,10 +472,10 @@ export function ResourceListTable({
           <div className="flex justify-end">
             <Button
               aria-label={`${labels.edit}${row.original.name}`}
-              className="px-2 text-fg-brand underline underline-offset-2"
+              disabled={!onEdit}
               onClick={() => onEdit?.(row.original)}
               size="sm"
-              variant="ghost"
+              variant="tertiary"
             >
               {labels.edit}
             </Button>
@@ -448,6 +489,16 @@ export function ResourceListTable({
     [StatusIcon, labels, onEdit]
   );
   const data = useMemo(() => [...resources], [resources]);
+  const controlledColumnFilters = useMemo<ColumnFiltersState | undefined>(() => {
+    if (!queryState) return undefined;
+
+    const filters: ColumnFiltersState = [];
+    if (queryState.search) filters.push({ id: "name", value: queryState.search });
+    if (queryState.statuses.length > 0) {
+      filters.push({ id: "status", value: [...queryState.statuses] });
+    }
+    return filters;
+  }, [queryState]);
   const [isTableMounted, setIsTableMounted] = useState(false);
 
   useEffect(() => {
@@ -455,7 +506,7 @@ export function ResourceListTable({
   }, []);
 
   const { table } = useDataTable({
-    autoResetPageIndex: isTableMounted,
+    autoResetPageIndex: queryState ? false : isTableMounted,
     columns,
     data,
     enableRowSelection: true,
@@ -464,6 +515,50 @@ export function ResourceListTable({
       columnPinning: { left: ["select", "name"], right: ["actions"] },
       pagination: { pageIndex: 0, pageSize: 10 },
     },
+    manualFiltering: Boolean(queryState),
+    manualPagination: Boolean(queryState),
+    onColumnFiltersChange:
+      queryState && onQueryStateChange
+        ? (updater) => {
+            const nextFilters = functionalUpdate(
+              updater,
+              controlledColumnFilters ?? []
+            );
+            const search =
+              (nextFilters.find((filter) => filter.id === "name")
+                ?.value as string | undefined) ?? "";
+            const statuses =
+              (nextFilters.find((filter) => filter.id === "status")
+                ?.value as ResourceListStatus[] | undefined) ?? [];
+
+            onQueryStateChange({
+              ...queryState,
+              pageIndex: 0,
+              search,
+              statuses,
+            });
+          }
+        : undefined,
+    onPaginationChange:
+      queryState && onQueryStateChange
+        ? (updater) => {
+            const nextPagination = functionalUpdate(updater, {
+              pageIndex: queryState.pageIndex,
+              pageSize: queryState.pageSize,
+            });
+            onQueryStateChange({ ...queryState, ...nextPagination });
+          }
+        : undefined,
+    rowCount: queryState ? (totalRowCount ?? resources.length) : undefined,
+    state: queryState
+      ? {
+          columnFilters: controlledColumnFilters,
+          pagination: {
+            pageIndex: queryState.pageIndex,
+            pageSize: queryState.pageSize,
+          },
+        }
+      : undefined,
   });
   const nameColumn = table.getColumn("name");
   const statusColumn = table.getColumn("status");
@@ -478,7 +573,9 @@ export function ResourceListTable({
     <section
       aria-label={ariaLabel ?? labels.ariaLabel}
       className={cn(
-        "mx-auto w-full max-w-[1620px] rounded-xl border-[0.5px] border-border bg-surface-floating p-3",
+        surface === "framed"
+          ? "mx-auto w-full max-w-[1620px] rounded-xl border-[0.5px] border-border bg-surface-floating p-3"
+          : "min-w-0 w-full",
         className
       )}
       {...props}
@@ -486,6 +583,9 @@ export function ResourceListTable({
       <DataTable
         className="gap-2.5 [&_[data-slot=data-table-pagination]]:px-2"
         emptyMessage={labels.empty}
+        emptyState={emptyState}
+        isLoading={isLoading}
+        loadingMessage={loadingMessage}
         table={table}
       >
         <div
@@ -558,23 +658,29 @@ export function ResourceListTable({
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
-                <Button
-                  aria-label={labels.refresh}
-                  onClick={onRefresh}
-                  iconOnly
-                  size="md"
-                  variant="tertiary"
-                >
-                  <RefreshIcon />
-                </Button>
-                <Button
-                  leadingIcon={PlusIcon}
-                  onClick={onCreate}
-                  size="md"
-                  variant="primary"
-                >
-                  {labels.create}
-                </Button>
+                {showRefreshAction && (
+                  <Button
+                    aria-label={labels.refresh}
+                    disabled={!onRefresh}
+                    onClick={onRefresh}
+                    iconOnly
+                    size="md"
+                    variant="tertiary"
+                  >
+                    <RefreshIcon />
+                  </Button>
+                )}
+                {showCreateAction && (
+                  <Button
+                    disabled={!onCreate}
+                    leadingIcon={PlusIcon}
+                    onClick={onCreate}
+                    size="md"
+                    variant="primary"
+                  >
+                    {labels.create}
+                  </Button>
+                )}
                 {toolbarTrailing}
               </div>
             </>

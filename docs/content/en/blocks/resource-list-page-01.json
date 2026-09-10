@@ -1,0 +1,8 @@
+{
+  "resourceListPageBlock": {
+    "title": "Resource List Page",
+    "description": "The standard Sidebar Basic application layout with its project overview replaced by a controlled resource DataTable.",
+    "guidance": "Integration boundary",
+    "guidanceBody": "Connect resources and action callbacks to your application, then replace the example navigation values and project sections with real routes. Use stable workspace IDs, and pass loading, server-query, and table configuration through tableProps. The Block preserves the Sidebar Basic shell and swaps only the overview content for ResourceListTable."
+  }
+}

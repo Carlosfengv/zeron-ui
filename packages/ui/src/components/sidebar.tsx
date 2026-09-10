@@ -282,11 +282,12 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
     const resolvedAriaLabel = ariaLabel ?? mobileLabel ?? "Navigation";
     const visualState: SidebarState = collapsible === "none" ? "expanded" : state;
     const panelWidth = visualState === "collapsed" && collapsible === "icon"
-      ? "var(--sidebar-width-collapsed)"
-      : "var(--sidebar-width)";
+      ? collapsedWidth
+      : width;
     const offcanvas = visualState === "collapsed" && collapsible === "offcanvas";
     const physicalLeft = (side === "start") === (dir !== "rtl");
     const offcanvasX = physicalLeft ? "-100%" : "100%";
+    const sidebarTransition = reduceMotion ? { duration: 0 } : spring.moderate;
     const rootStyle = {
       ...style,
       "--sidebar-width": width,
@@ -369,22 +370,27 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
         dir={dir}
         {...props}
       >
-        <div
+        <motion.div
           aria-hidden="true"
           data-slot="sidebar-gap"
           className="h-full"
-          style={{ width: offcanvas ? 0 : panelWidth }}
+          initial={false}
+          animate={{ width: offcanvas ? 0 : panelWidth }}
+          transition={sidebarTransition}
         />
         <motion.div
           data-slot="sidebar-panel-wrapper"
           className={cn(
-            "absolute inset-y-0 w-[var(--sidebar-panel-width)]",
+            "absolute inset-y-0 overflow-hidden",
             physicalLeft ? "left-0" : "right-0"
           )}
-          style={{ "--sidebar-panel-width": panelWidth } as CSSProperties}
           initial={false}
-          animate={{ x: offcanvas ? offcanvasX : 0, opacity: offcanvas ? 0 : 1 }}
-          transition={reduceMotion ? { duration: 0 } : spring.moderate}
+          animate={{
+            width: panelWidth,
+            x: offcanvas ? offcanvasX : 0,
+            opacity: offcanvas ? 0 : 1,
+          }}
+          transition={sidebarTransition}
         >
           {renderPanel(false)}
         </motion.div>
@@ -403,8 +409,8 @@ const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
   ({ label = "Toggle sidebar", onClick, ...props }, forwardedRef) => {
     const { breakpointBehavior, isMobile, mobileOpen, state, toggle, setActiveTrigger } = useSidebar();
     const MenuIcon = useIcon("menu");
-    const CollapseIcon = useIcon("chevrons-left");
-    const ExpandIcon = useIcon("chevrons-right");
+    const CollapseIcon = useIcon("layout-align-right");
+    const ExpandIcon = useIcon("layout-align-left");
     const compactDrawer = breakpointBehavior === "drawer" && isMobile;
     const Icon = compactDrawer ? MenuIcon : state === "collapsed" ? ExpandIcon : CollapseIcon;
     return (
@@ -412,7 +418,7 @@ const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
         ref={forwardedRef}
         variant="ghost"
         iconOnly
-        size="md"
+        size="lg"
         aria-label={label}
         onClick={(event) => {
           onClick?.(event);
@@ -425,7 +431,7 @@ const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
         }}
         {...props}
       >
-        <Icon aria-hidden="true" strokeWidth={1.5} />
+        <Icon aria-hidden="true" size={16} strokeWidth={1.5} />
       </Button>
     );
   }
@@ -472,7 +478,7 @@ const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTrig
     const { breakpointBehavior, isBreakpointCollapsed, isMobile, state, toggle } = useSidebar();
     const [open, setOpen] = useState(false);
     const MenuIcon = useIcon("menu");
-    const ExpandIcon = useIcon("chevrons-right");
+    const ExpandIcon = useIcon("layout-align-left");
     const supportsBreakpointCollapse = breakpointBehavior === "collapse" && collapsedBehavior === "offcanvas";
     const visible = state === "collapsed" && collapsedBehavior === "offcanvas" && (!isMobile || supportsBreakpointCollapse);
     const opensMenuOnClick = isBreakpointCollapsed || clickBehavior === "menu";
@@ -510,7 +516,7 @@ const SidebarFloatingTrigger = forwardRef<HTMLButtonElement, SidebarFloatingTrig
               }}
               {...props}
             >
-              <Icon aria-hidden="true" strokeWidth={1.5} />
+              <Icon aria-hidden="true" size={16} strokeWidth={1.5} />
             </Button>
           }
         />
@@ -579,7 +585,12 @@ export type SidebarGroupContentProps = ComponentPropsWithoutRef<typeof Collapsib
 export type SidebarSeparatorProps = ComponentPropsWithoutRef<"hr">;
 
 const SidebarHeader = forwardRef<HTMLDivElement, SidebarHeaderProps>(({ className, ...props }, ref) => (
-  <div ref={ref} data-slot="sidebar-header" className={cn("shrink-0 p-3", className)} {...props} />
+  <div
+    ref={ref}
+    data-slot="sidebar-header"
+    className={cn("shrink-0 p-3 group-data-[state=collapsed]/sidebar:p-1.5", className)}
+    {...props}
+  />
 ));
 SidebarHeader.displayName = "SidebarHeader";
 

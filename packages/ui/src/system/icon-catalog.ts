@@ -14,6 +14,8 @@ export interface IconDefinitions {
   ScrollVerticalIcon: unknown;
   Motion01Icon: unknown;
   BrowserIcon: unknown;
+  LayoutAlignLeftIcon: unknown;
+  LayoutAlignRightIcon: unknown;
   LayoutThreeColumnIcon: unknown;
   SidebarLeftIcon: unknown;
   SidebarTopIcon: unknown;
@@ -174,6 +176,8 @@ export function createIconMap(
     "doc-input-message": createHugeIcon(icons.MessageEdit01Icon, options),
     "doc-thinking-indicator": createHugeIcon(icons.AiBrain03Icon, options),
     "doc-thinking-steps": createHugeIcon(icons.LeftToRightListNumberIcon, options),
+    "layout-align-left": createHugeIcon(icons.LayoutAlignLeftIcon, options),
+    "layout-align-right": createHugeIcon(icons.LayoutAlignRightIcon, options),
     "chevron-left": createHugeIcon(icons.ArrowLeft01Icon, options),
     "chevron-right": createHugeIcon(icons.ArrowRight01Icon, options),
     "chevron-down": createHugeIcon(icons.ArrowDown01Icon, options),

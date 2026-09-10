@@ -19,6 +19,7 @@ import {
   type SortingState,
   type Table as TanstackTable,
   type TableOptions,
+  type TableState,
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table";
@@ -114,10 +115,27 @@ export type UseDataTableProps<TData> = Omit<
 > & {
   columns: ColumnDef<TData, unknown>[];
   initialState?: TableOptions<TData>["initialState"];
+  /** Optionally controls one or more table-state slices from the caller. */
+  state?: Partial<TableState>;
+  onColumnFiltersChange?: TableOptions<TData>["onColumnFiltersChange"];
+  onColumnOrderChange?: TableOptions<TData>["onColumnOrderChange"];
+  onColumnPinningChange?: TableOptions<TData>["onColumnPinningChange"];
+  onColumnVisibilityChange?: TableOptions<TData>["onColumnVisibilityChange"];
+  onPaginationChange?: TableOptions<TData>["onPaginationChange"];
+  onRowSelectionChange?: TableOptions<TData>["onRowSelectionChange"];
+  onSortingChange?: TableOptions<TData>["onSortingChange"];
 };
 
 function useDataTable<TData>({
   initialState,
+  state: controlledState,
+  onColumnFiltersChange,
+  onColumnOrderChange,
+  onColumnPinningChange,
+  onColumnVisibilityChange,
+  onPaginationChange,
+  onRowSelectionChange,
+  onSortingChange,
   ...options
 }: UseDataTableProps<TData>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -151,21 +169,51 @@ function useDataTable<TData>({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     initialState,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnOrderChange: setColumnOrder,
-    onColumnPinningChange: setColumnPinning,
-    onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
+    onColumnFiltersChange: (updater) => {
+      if (controlledState?.columnFilters === undefined) {
+        setColumnFilters(updater);
+      }
+      onColumnFiltersChange?.(updater);
+    },
+    onColumnOrderChange: (updater) => {
+      if (controlledState?.columnOrder === undefined) setColumnOrder(updater);
+      onColumnOrderChange?.(updater);
+    },
+    onColumnPinningChange: (updater) => {
+      if (controlledState?.columnPinning === undefined) {
+        setColumnPinning(updater);
+      }
+      onColumnPinningChange?.(updater);
+    },
+    onColumnVisibilityChange: (updater) => {
+      if (controlledState?.columnVisibility === undefined) {
+        setColumnVisibility(updater);
+      }
+      onColumnVisibilityChange?.(updater);
+    },
+    onPaginationChange: (updater) => {
+      if (controlledState?.pagination === undefined) setPagination(updater);
+      onPaginationChange?.(updater);
+    },
+    onRowSelectionChange: (updater) => {
+      if (controlledState?.rowSelection === undefined) {
+        setRowSelection(updater);
+      }
+      onRowSelectionChange?.(updater);
+    },
+    onSortingChange: (updater) => {
+      if (controlledState?.sorting === undefined) setSorting(updater);
+      onSortingChange?.(updater);
+    },
     state: {
-      columnFilters,
-      columnOrder,
-      columnPinning,
-      columnVisibility,
-      pagination,
-      rowSelection,
-      sorting,
+      columnFilters: controlledState?.columnFilters ?? columnFilters,
+      columnOrder: controlledState?.columnOrder ?? columnOrder,
+      columnPinning: controlledState?.columnPinning ?? columnPinning,
+      columnVisibility:
+        controlledState?.columnVisibility ?? columnVisibility,
+      pagination: controlledState?.pagination ?? pagination,
+      rowSelection: controlledState?.rowSelection ?? rowSelection,
+      sorting: controlledState?.sorting ?? sorting,
     },
   });
 

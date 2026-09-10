@@ -52,6 +52,17 @@ const pageLayoutVariants = cva(
 );
 
 export interface PageLayoutProps extends ComponentPropsWithoutRef<"div">, VariantProps<typeof pageLayoutVariants> {}
+export interface ResourcePageLayoutProps
+  extends Omit<
+    PageLayoutProps,
+    "title" | "children" | "dangerouslySetInnerHTML"
+  > {
+  /** Non-empty page title rendered as the layout's single h1. */
+  title: string;
+  /** Supporting copy rendered below the page title. */
+  description?: ReactNode;
+  children: ReactNode;
+}
 export type PageHeaderProps = ComponentPropsWithoutRef<"header">;
 export interface PageHeaderContentProps extends ComponentPropsWithoutRef<"div"> {
   /** Optional decorative icon rendered before the header content. */

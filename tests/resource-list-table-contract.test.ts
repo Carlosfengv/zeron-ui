@@ -70,6 +70,16 @@ describe("Resource List Table 1 block contract", () => {
       "context: ResourceListTableBulkActionContext"
     );
     expect(source).toContain("onEdit?: (resource: ResourceListItem) => void");
+    expect(source).toContain('surface?: "framed" | "plain"');
+    expect(source).toContain("showCreateAction?: boolean");
+    expect(source).toContain("isLoading?: boolean");
+    expect(source).toContain("queryState?: ResourceListTableQueryState");
+    expect(source).toContain(
+      "onQueryStateChange?: (queryState: ResourceListTableQueryState) => void"
+    );
+    expect(source).toContain('surface = "framed"');
+    expect(source).toContain("showCreateAction = true");
+    expect(source).toContain("resources = []");
     expect(source).toContain('name: "平台基础信息"');
     expect(source).toContain('id: "platform.mn.basic"');
     expect(source).toContain('failurePolicy: "失败后继续并记录异常"');
@@ -81,10 +91,20 @@ describe("Resource List Table 1 block contract", () => {
     expect(source).toContain("statusFilter");
     expect(source).toContain("enableRowSelection: true");
     expect(source).toContain("toggleAllPageRowsSelected");
+    expect(source).toMatch(
+      /id: "select",[\s\S]*?maxSize: 44,[\s\S]*?minSize: 44,[\s\S]*?size: 44,/
+    );
+    expect(source.match(/className="mx-auto"/g)).toHaveLength(2);
     expect(source).toContain("DataTableFacetedFilter");
     expect(source).toContain('variant: "multiSelect"');
     expect(source).toContain("multiple");
+    expect(source).toContain("manualFiltering: Boolean(queryState)");
+    expect(source).toContain("manualPagination: Boolean(queryState)");
+    expect(source).toContain("rowCount: queryState ?");
     expect(source).toContain("filterIcon: StatusIcon");
+    expect(source).toMatch(
+      /id: "actions",[\s\S]*?size="sm"[\s\S]*?variant="tertiary"/
+    );
     expect(source).toMatch(/table\s*\.getSelectedRowModel\(\)/);
     expect(source).toContain("table.resetRowSelection()");
     expect(source).toContain('data-slot="resource-list-bulk-actions"');
@@ -96,6 +116,9 @@ describe("Resource List Table 1 block contract", () => {
       /aria-label=\{labels\.refresh\}[\s\S]*?onClick=\{onRefresh\}[\s\S]*?iconOnly[\s\S]*?size="md"[\s\S]*?variant="tertiary"/
     );
     expect(source).toMatch(/onClick=\{onCreate\}[\s\S]*?size="md"/);
+    expect(source).toContain("{showCreateAction && (");
+    expect(source).toContain('surface === "framed"');
+    expect(source).toContain(': "min-w-0 w-full"');
     expect(source).toContain("aria-label={ariaLabel ?? labels.ariaLabel}");
   });
 });

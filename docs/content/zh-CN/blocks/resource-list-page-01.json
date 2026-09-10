@@ -1,0 +1,8 @@
+{
+  "resourceListPageBlock": {
+    "title": "基础资源列表页",
+    "description": "沿用 Sidebar Basic 标准应用布局，并将 Project overview 替换为受控资源 DataTable。",
+    "guidance": "接入边界",
+    "guidanceBody": "将资源数据和操作回调接入业务，并把示例导航与项目分区替换成真实路由。Workspace 推荐使用稳定 ID；加载状态、服务端查询和表格配置通过 tableProps 接入。该 Block 保留 Sidebar Basic 外壳，只把 overview 内容替换为 ResourceListTable。"
+  }
+}

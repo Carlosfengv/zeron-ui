@@ -4,6 +4,10 @@ import { useState } from "react";
 import { Sidebar, SidebarContent, SidebarFloatingTrigger, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupTrigger, SidebarHeader, SidebarProvider, SidebarTrigger, type SidebarCollapsible } from "@zeron/ui/sidebar";
 import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@zeron/ui/nav-item";
 import { NavMenu } from "@zeron/ui/nav-menu";
+import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
+import { MenuItem } from "@zeron/ui/menu-item";
+import { SidebarAccountMenu, type SidebarAccountMenuSection } from "@zeron/ui/sidebar-account-menu";
+import { SidebarIdentityAvatar, SidebarIdentityRow } from "@zeron/ui/sidebar-identity-row";
 import { PageBody, PageContent, PageHeader, PageHeaderContent, PageLayout, PageSubnav, PageSubnavItem, PageSubnavList, PageTitle } from "@zeron/ui/page-layout";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
@@ -15,7 +19,13 @@ import { useIcon } from "@zeron/icons/context";
 const code = `<SidebarProvider defaultOpen breakpointBehavior="collapse">
   <div className="flex h-96 w-full min-w-0 overflow-hidden">
     <Sidebar collapsible="icon">
-      <SidebarHeader>...</SidebarHeader>
+      <SidebarHeader>
+        <DropdownMenu>
+          <DropdownTrigger render={<SidebarIdentityRow as="button" primary={workspace} />} />
+          <DropdownContent>...</DropdownContent>
+        </DropdownMenu>
+        <SidebarTrigger />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup collapsible defaultOpen>
           <SidebarGroupTrigger>Workspace</SidebarGroupTrigger>
@@ -24,7 +34,13 @@ const code = `<SidebarProvider defaultOpen breakpointBehavior="collapse">
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>...</SidebarFooter>
+      <SidebarFooter>
+        <SidebarAccountMenu
+          primary="Carlos Feng"
+          description="wei.feng@zstack.io"
+          sections={accountSections}
+        />
+      </SidebarFooter>
     </Sidebar>
     <PageLayout className="h-full min-w-0 flex-1">
       <PageHeader>...</PageHeader>
@@ -383,10 +399,24 @@ const floatingTriggerProps: PropDef[] = [
 ];
 
 export default function SidebarDoc() {
+  const workspaceOptions = ["Carlos’s workspace", "Design workspace", "Engineering workspace"];
+  const [workspace, setWorkspace] = useState(workspaceOptions[0]);
   const Project = useIcon("file");
   const Team = useIcon("users");
   const Activity = useIcon("clock");
   const Settings = useIcon("settings");
+  const Profile = useIcon("user");
+  const More = useIcon("ellipsis");
+  const ChevronDown = useIcon("chevron-down");
+  const accountSections: SidebarAccountMenuSection[] = [
+    {
+      items: [
+        { id: "profile", label: "Profile", icon: Profile },
+        { id: "settings", label: "Settings", icon: Settings },
+      ],
+    },
+    { items: [{ id: "sign-out", label: "Sign out" }] },
+  ];
 
   return <DocPage title="Sidebar" slug="sidebar" description="A responsive navigation rail that becomes a focus-managed drawer on compact screens.">
     <DocSection title="Playground">
@@ -397,9 +427,37 @@ export default function SidebarDoc() {
         <SidebarProvider defaultOpen breakpointBehavior="collapse">
           <div className="flex h-96 w-full min-w-0 overflow-hidden bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
             <Sidebar collapsible="icon" className="relative !h-full">
-              <SidebarHeader className="flex items-center justify-between">
-                <span className="px-2 text-label group-data-[state=collapsed]/sidebar:hidden">Zeron</span>
-                <SidebarTrigger label="Toggle preview sidebar" />
+              <SidebarHeader className="flex flex-row items-center gap-1 group-data-[state=collapsed]/sidebar:flex-col">
+                <DropdownMenu>
+                  <DropdownTrigger
+                    render={
+                      <SidebarIdentityRow
+                        as="button"
+                        className="min-w-0 group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:px-0 group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content-row]]:justify-center group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-leading]]:flex-none group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content]]:hidden group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-trailing]]:hidden"
+                        leading={<SidebarIdentityAvatar className="rounded-lg" tone="brand">W</SidebarIdentityAvatar>}
+                        primary={workspace}
+                        trailing={<ChevronDown aria-hidden className="size-4" />}
+                        trailingPlacement="edge"
+                      />
+                    }
+                  />
+                  <DropdownContent
+                    align="start"
+                    checkedIndex={workspaceOptions.indexOf(workspace)}
+                    className="!w-60 !min-w-60 !max-w-60"
+                  >
+                    {workspaceOptions.map((name, index) => (
+                      <MenuItem
+                        checked={name === workspace}
+                        index={index}
+                        key={name}
+                        label={name}
+                        onSelect={() => setWorkspace(name)}
+                      />
+                    ))}
+                  </DropdownContent>
+                </DropdownMenu>
+                <SidebarTrigger className="shrink-0" label="Toggle preview sidebar" />
               </SidebarHeader>
               <SidebarContent>
                 <SidebarGroup collapsible defaultOpen>
@@ -441,7 +499,15 @@ export default function SidebarDoc() {
                   </SidebarGroupContent>
                 </SidebarGroup>
               </SidebarContent>
-              <SidebarFooter className="text-label text-fg-muted">v0.1</SidebarFooter>
+              <SidebarFooter className="group-data-[state=collapsed]/sidebar:p-2">
+                <SidebarAccountMenu
+                  className="group-data-[state=collapsed]/sidebar:px-0 group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content]]:hidden group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-trailing]]:hidden"
+                  description="wei.feng@zstack.io"
+                  primary="Carlos Feng"
+                  sections={accountSections}
+                  triggerTrailing={<More aria-hidden className="size-4" />}
+                />
+              </SidebarFooter>
             </Sidebar>
             <SidebarPageLayoutPreview />
           </div>

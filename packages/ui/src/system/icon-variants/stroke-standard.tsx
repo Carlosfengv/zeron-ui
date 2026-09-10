@@ -6,6 +6,8 @@ import TokenSquareIcon from "@hugeicons-pro/core-stroke-standard/TokenSquareIcon
 import ScrollVerticalIcon from "@hugeicons-pro/core-stroke-standard/ScrollVerticalIcon";
 import Motion01Icon from "@hugeicons-pro/core-stroke-standard/Motion01Icon";
 import BrowserIcon from "@hugeicons-pro/core-stroke-standard/BrowserIcon";
+import LayoutAlignLeftIcon from "@hugeicons-pro/core-stroke-standard/LayoutAlignLeftIcon";
+import LayoutAlignRightIcon from "@hugeicons-pro/core-stroke-standard/LayoutAlignRightIcon";
 import LayoutThreeColumnIcon from "@hugeicons-pro/core-stroke-standard/LayoutThreeColumnIcon";
 import SidebarLeftIcon from "@hugeicons-pro/core-stroke-standard/SidebarLeftIcon";
 import SidebarTopIcon from "@hugeicons-pro/core-stroke-standard/SidebarTopIcon";
@@ -124,6 +126,8 @@ export const strokeStandardIcons = createIconMap(
   ScrollVerticalIcon,
   Motion01Icon,
   BrowserIcon,
+  LayoutAlignLeftIcon,
+  LayoutAlignRightIcon,
   LayoutThreeColumnIcon,
   SidebarLeftIcon,
   SidebarTopIcon,

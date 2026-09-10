@@ -8,4 +8,5 @@ export type {
   ResourceListStatus,
   ResourceListTableLabels,
   ResourceListTableProps,
+  ResourceListTableQueryState,
 } from "./resource-list-table";

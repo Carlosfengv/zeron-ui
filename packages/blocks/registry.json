@@ -405,6 +405,27 @@
       ]
     },
     {
+      "name": "resource-list-page-01",
+      "type": "registry:block",
+      "title": "Resource List Page 1",
+      "description": "The standard Sidebar Basic application layout with its project overview replaced by a controlled resource DataTable.",
+      "categories": ["application", "resources", "tables", "navigation"],
+      "dependencies": ["tw-animate-css", "@tanstack/react-table"],
+      "registryDependencies": ["dropdown", "icon-context", "menu-item", "nav-item", "nav-menu", "page-layout", "resource-list-table-01", "sidebar", "sidebar-account-menu", "sidebar-identity-row", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-list-page-01/resource-list-page.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-list-page-01/resource-list-page.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-list-page-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-list-page-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "resource-metric-list-01",
       "type": "registry:block",
       "title": "Resource Metric List 1",

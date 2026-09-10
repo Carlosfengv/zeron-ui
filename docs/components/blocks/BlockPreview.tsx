@@ -110,11 +110,26 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "resource-details-01": () => import("@zeron/blocks/resource-details-01").then(({ ResourceDetails }) => ({
     default: () => <ResponsivePreview canvasHeight={520} canvasWidth={400}><ResourceDetails /></ResponsivePreview>,
   })),
+  "resource-list-page-01": () => Promise.all([
+    import("@zeron/blocks/resource-list-page-01"),
+    import("@zeron/blocks/resource-list-table-01"),
+  ]).then(([{ ResourceListPage }, { defaultResourceListItems }]) => ({
+    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ResourceListPage className="h-full min-h-0" resources={defaultResourceListItems} /></ResponsivePreview>,
+  })),
   "resource-metric-list-01": () => import("@zeron/blocks/resource-metric-list-01").then(({ ResourceMetricList }) => ({
     default: () => <ResponsivePreview canvasHeight={560} canvasWidth={700}><ResourceMetricList /></ResponsivePreview>,
   })),
-  "resource-list-table-01": () => import("@zeron/blocks/resource-list-table-01").then(({ ResourceListTable }) => ({
-    default: () => <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><ResourceListTable /></ResponsivePreview>,
+  "resource-list-table-01": () => import("@zeron/blocks/resource-list-table-01").then(({ defaultResourceListItems, ResourceListTable }) => ({
+    default: () => <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><ResourceListTable resources={defaultResourceListItems} /></ResponsivePreview>,
+  })),
+  "member-department-01": () => import("@zeron/blocks/member-department-01").then(({ MemberDepartment }) => ({
+    default: () => (
+      <ResponsivePreview canvasHeight={810} canvasWidth={1440} surface="bg-surface-raised">
+        <div className="h-full bg-surface-raised p-3">
+          <MemberDepartment className="h-full" defaultView="departments" />
+        </div>
+      </ResponsivePreview>
+    ),
   })),
   "infinite-log-table-01": () => import("@zeron/blocks/infinite-log-table-01").then(({ InfiniteLogTable }) => ({
     default: () => <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><InfiniteLogTable className="h-full rounded-none border-0" /></ResponsivePreview>,

@@ -507,6 +507,11 @@
           "path": "packages/ui/src/system/icon-catalog.ts",
           "type": "registry:lib",
           "target": "lib/icon-catalog.ts"
+        },
+        {
+          "path": "types/hugeicons.d.ts",
+          "type": "registry:lib",
+          "target": "lib/hugeicons.d.ts"
         }
       ]
     },
@@ -2398,6 +2403,26 @@
           "type": "registry:ui",
           "target": "components/ui/page-layout.tsx"
         }
+      ]
+    },
+    {
+      "name": "resource-list-layout",
+      "type": "registry:ui",
+      "title": "Resource List Layout",
+      "description": "Full-height resource list and inventory page preset with a single title, optional toolbar and summary, a scrolling body, and caller-owned pagination.",
+      "registryDependencies": [
+        "surfaces",
+        "page-layout"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/resource-list-layout.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/resource-list-layout.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
       ]
     },
     {
