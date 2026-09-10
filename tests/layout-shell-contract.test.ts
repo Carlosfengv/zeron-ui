@@ -211,6 +211,11 @@ describe("shell and page-layout composition contract", () => {
     expect(pageLayout).toContain('<NavItem value={value} active={active} className="py-0">');
   });
 
+  it("uses medium weight for active NavMenu items", () => {
+    expect(navItem).toContain('"data-[active=true]:font-medium"');
+    expect(navItem).toContain("group-data-[active=true]/nav-item:font-medium");
+  });
+
   it("keeps collapsed Sidebar navigation items at the 36px control size", () => {
     expect(navItem).toContain("group-data-[state=collapsed]/sidebar:size-control-lg");
     expect(navItem).not.toContain("group-data-[state=collapsed]/sidebar:size-8");

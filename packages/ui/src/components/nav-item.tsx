@@ -155,8 +155,9 @@ const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
             "group-data-[state=collapsed]/sidebar:h-full group-data-[state=collapsed]/sidebar:w-full group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:px-0",
             "cursor-pointer text-fg-muted transition-[color,border-color] duration-fast",
             "hover:text-fg-default focus-visible:text-fg-default",
+            "data-[active=true]:font-medium",
             variant === "segment"
-              ? "data-[active=true]:font-semibold data-[active=true]:text-fg-on-brand"
+              ? "data-[active=true]:text-fg-on-brand"
               : "data-[active=true]:text-fg-default",
             !navMenu && "focus-visible:ring-1 focus-visible:ring-focus-ring",
             variant !== "underline" && "rounded-lg",
@@ -233,7 +234,7 @@ const NavItemLabel = forwardRef<HTMLSpanElement, NavItemLabelProps>(
         {...props}
         data-label={reservedLabel}
       >
-        <span className="col-start-1 row-start-1 truncate font-normal text-inherit transition-[font-weight] duration-fast motion-reduce:transition-none group-data-[active=true]/nav-item:font-semibold">
+        <span className="col-start-1 row-start-1 truncate font-normal text-inherit transition-[font-weight] duration-fast motion-reduce:transition-none group-data-[active=true]/nav-item:font-medium">
           {children}
         </span>
       </span>
