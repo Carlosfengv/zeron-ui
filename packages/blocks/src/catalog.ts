@@ -199,10 +199,10 @@ const blockCatalogEntries = [
   },
   {
     name: "resource-list-page-01",
-    title: "Resource List Page",
-    description: "The standard Sidebar Basic application layout with its project overview replaced by a controlled resource DataTable.",
+    title: "MCP Resource List Page",
+    description: "A Sidebar workspace for managing MCP applications and categories with design-system-native tabs, filters, and tables.",
     categories: ["application", "resources", "tables", "navigation"],
-    dependencies: ["resource-list-table-01", "resource-workspace-shell-01", "page-layout"],
+    dependencies: ["resource-list-table-01", "resource-workspace-shell-01", "page-layout", "tabs"],
   },
   {
     name: "resource-list-table-01",

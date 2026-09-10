@@ -43,9 +43,54 @@ describe("ResourceListTable integration states", () => {
     });
 
     expect(onQueryStateChange).toHaveBeenCalledWith({
+      categoryIds: [],
       pageIndex: 0,
       pageSize: 10,
       search: "database",
+      statuses: [],
+    });
+  });
+
+  it("forwards category filters in server-side MCP mode", () => {
+    const onQueryStateChange = vi.fn();
+
+    render(
+      <ResourceListTable
+        onQueryStateChange={onQueryStateChange}
+        preset="mcp"
+        queryState={{
+          categoryIds: [],
+          pageIndex: 2,
+          pageSize: 10,
+          search: "",
+          sorting: [],
+          statuses: [],
+        }}
+        resources={[
+          {
+            category: "代码开发",
+            categoryId: "developer-tools",
+            description: "浏览器自动化",
+            id: "web-access",
+            name: "Web Access",
+            status: "enabled",
+          },
+        ]}
+        showCreateAction={false}
+        showRefreshAction={false}
+        totalRowCount={42}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "分类" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: /代码开发/ }));
+
+    expect(onQueryStateChange).toHaveBeenCalledWith({
+      categoryIds: ["developer-tools"],
+      pageIndex: 0,
+      pageSize: 10,
+      search: "",
+      sorting: [],
       statuses: [],
     });
   });

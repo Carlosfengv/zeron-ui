@@ -1,8 +1,8 @@
 {
   "resourceListPageBlock": {
     "title": "基础资源列表页",
-    "description": "沿用 Sidebar Basic 标准应用布局，并将 Project overview 替换为受控资源 DataTable。",
+    "description": "参考 Zentirx MCP 管理设计，以现有 Zeron 组件组合 MCP 列表与分类管理。",
     "guidance": "接入边界",
-    "guidanceBody": "将资源数据和操作回调接入业务，并把示例导航与项目分区替换成真实路由。Workspace 推荐使用稳定 ID；加载状态、服务端查询和表格配置通过 tableProps 接入。该 Block 保留 Sidebar Basic 外壳，只把 overview 内容替换为 ResourceListTable。"
+    "guidanceBody": "真实业务使用 controlled 模式，以稳定 categoryId 关联 MCP 和分类；服务端分页使用 remote 分类模式，并分别接入分类数量、详情加载、错误重试、权限和异步移除。分类管理复用 Zeron 的 PageColumns、PageAside 和 MobileDrawer，实现与成员部门页一致的响应式右侧详情布局。"
   }
 }

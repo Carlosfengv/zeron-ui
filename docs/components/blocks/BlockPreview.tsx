@@ -161,11 +161,8 @@ const previewLoaders: Record<string, PreviewLoader> = {
       </ResponsivePreview>
     ),
   })),
-  "resource-list-page-01": () => Promise.all([
-    import("@zeron/blocks/resource-list-page-01"),
-    import("@zeron/blocks/resource-list-table-01"),
-  ]).then(([{ ResourceListPage }, { defaultResourceListItems }]) => ({
-    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ResourceListPage className="h-full min-h-0" resources={defaultResourceListItems} /></ResponsivePreview>,
+  "resource-list-page-01": () => import("@zeron/blocks/resource-list-page-01").then(({ ResourceListPage }) => ({
+    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ResourceListPage className="h-full min-h-0" /></ResponsivePreview>,
   })),
   "resource-metric-list-01": () => import("@zeron/blocks/resource-metric-list-01").then(({ ResourceMetricList }) => ({
     default: () => <ResponsivePreview canvasHeight={560} canvasWidth={700}><ResourceMetricList /></ResponsivePreview>,

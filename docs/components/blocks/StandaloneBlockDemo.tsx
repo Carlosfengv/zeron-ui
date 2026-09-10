@@ -141,7 +141,7 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
         />
       );
     case "resource-list-page-01":
-      return <ResourceListPage className="h-full min-h-0" resources={defaultResourceListItems} />;
+      return <ResourceListPage className="h-full min-h-0" />;
     case "resource-list-table-01":
       return <div className="h-full overflow-auto bg-surface-raised p-3 sm:p-6"><ResourceListTable resources={defaultResourceListItems} /></div>;
     case "member-department-01":

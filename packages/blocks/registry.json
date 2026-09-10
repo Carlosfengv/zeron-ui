@@ -448,7 +448,7 @@
       "title": "Resource List Table 1",
       "description": "A searchable, selectable resource inventory with status filtering and reusable row actions.",
       "categories": ["application", "tables"],
-      "dependencies": ["tw-animate-css", "@tanstack/react-table"],
+      "dependencies": ["tw-animate-css", "@tanstack/react-table", "@thesvg/icons"],
       "registryDependencies": ["badge", "button", "checkbox", "data-table", "info-item", "input-group", "icon-context", "utils"],
       "files": [
         {
@@ -487,12 +487,17 @@
     {
       "name": "resource-list-page-01",
       "type": "registry:block",
-      "title": "Resource List Page 1",
-      "description": "The standard Sidebar Basic application layout with its project overview replaced by a controlled resource DataTable.",
+      "title": "MCP Resource List Page",
+      "description": "A Sidebar workspace for managing MCP applications and categories with design-system-native tabs, filters, and tables.",
       "categories": ["application", "resources", "tables", "navigation"],
       "dependencies": ["tw-animate-css", "@tanstack/react-table"],
-      "registryDependencies": ["icon-context", "page-layout", "resource-list-table-01", "resource-workspace-shell-01"],
+      "registryDependencies": ["button", "icon-context", "info-item", "inline-notice", "input-group", "mobile-drawer", "page-layout", "resource-list-table-01", "resource-workspace-shell-01", "separator", "tabs"],
       "files": [
+        {
+          "path": "packages/blocks/src/application/resource-list-page-01/category-management.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-list-page-01/category-management.tsx"
+        },
         {
           "path": "packages/blocks/src/application/resource-list-page-01/resource-list-page.tsx",
           "type": "registry:component",

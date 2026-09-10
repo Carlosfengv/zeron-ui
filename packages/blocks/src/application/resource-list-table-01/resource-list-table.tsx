@@ -4,7 +4,31 @@ import {
   type ColumnDef,
   type ColumnFiltersState,
   functionalUpdate,
+  type SortingState,
 } from "@tanstack/react-table";
+import bytedance from "@thesvg/icons/bytedance";
+import canva from "@thesvg/icons/canva";
+import chrome from "@thesvg/icons/chrome";
+import confluence from "@thesvg/icons/confluence";
+import dropbox from "@thesvg/icons/dropbox";
+import figma from "@thesvg/icons/figma";
+import github from "@thesvg/icons/github";
+import gitlab from "@thesvg/icons/gitlab";
+import googleCloud from "@thesvg/icons/google-cloud";
+import googleSlides from "@thesvg/icons/google-slides";
+import hubspot from "@thesvg/icons/hubspot";
+import jira from "@thesvg/icons/jira";
+import linear from "@thesvg/icons/linear";
+import microsoftDynamicsSales from "@thesvg/icons/microsoft-dynamics-365-sales";
+import microsoftWord from "@thesvg/icons/microsoft-word";
+import notion from "@thesvg/icons/notion";
+import salesforce from "@thesvg/icons/salesforce";
+import shopify from "@thesvg/icons/shopify";
+import slack from "@thesvg/icons/slack";
+import stripe from "@thesvg/icons/stripe";
+import tencent from "@thesvg/icons/tencent";
+import wechat from "@thesvg/icons/wechat";
+import zoom from "@thesvg/icons/zoom";
 import {
   type ComponentPropsWithoutRef,
   type ReactNode,
@@ -26,6 +50,7 @@ import {
   InfoItemDescription,
   InfoItemLeading,
   InfoItemTitle,
+  InfoItemTrailing,
 } from "@zeron/ui/info-item";
 import {
   InputGroup,
@@ -39,6 +64,31 @@ import {
 import { cn } from "@zeron/ui/system/utils";
 
 export type ResourceListStatus = "enabled" | "draft";
+export type ResourceListTablePreset = "resource" | "mcp" | "category";
+export type ResourceListBrandIcon =
+  | "bytedance"
+  | "canva"
+  | "chrome"
+  | "confluence"
+  | "dropbox"
+  | "figma"
+  | "github"
+  | "gitlab"
+  | "google-cloud"
+  | "google-slides"
+  | "hubspot"
+  | "jira"
+  | "linear"
+  | "microsoft-dynamics-sales"
+  | "microsoft-word"
+  | "notion"
+  | "salesforce"
+  | "shopify"
+  | "slack"
+  | "stripe"
+  | "tencent"
+  | "wechat"
+  | "zoom";
 
 export interface ResourceListItem {
   /** Stable identifier used for row selection and React rendering. */
@@ -46,9 +96,17 @@ export interface ResourceListItem {
   name: string;
   description: string;
   status: ResourceListStatus;
-  version: string;
-  type: string;
-  failurePolicy: string;
+  version?: string;
+  type?: string;
+  failurePolicy?: string;
+  /** Stable category relation. Prefer this over matching the localized label. */
+  categoryId?: string;
+  /** Localized category label shown in the MCP table. */
+  category?: string;
+  visibility?: string;
+  itemCount?: number;
+  /** Uses a brand mark supplied by the existing @thesvg/icons dependency. */
+  brandIcon?: ResourceListBrandIcon;
   /** Uses an icon that is already provided by the Zeron icon system. */
   iconName?: IconName;
 }
@@ -71,6 +129,10 @@ export interface ResourceListTableLabels {
   version: string;
   type: string;
   failurePolicy: string;
+  category: string;
+  categoryFilter: string;
+  visibility: string;
+  itemCount: string;
   actions: string;
   edit: string;
   enabled: string;
@@ -87,6 +149,8 @@ export interface ResourceListTableBulkActionContext {
 export interface ResourceListTableQueryState {
   search: string;
   statuses: readonly ResourceListStatus[];
+  categoryIds?: readonly string[];
+  sorting?: SortingState;
   pageIndex: number;
   pageSize: number;
 }
@@ -107,6 +171,8 @@ export interface ResourceListTableProps
   toolbarTrailing?: ReactNode;
   /** Controls whether the block owns a framed surface or inherits its page surface. */
   surface?: "framed" | "plain";
+  /** Selects the existing table composition for resources, MCP apps, or categories. */
+  preset?: ResourceListTablePreset;
   /** Keeps the create action in the block unless the surrounding page owns it. */
   showCreateAction?: boolean;
   /** Controls the standard refresh action independently from its handler. */
@@ -116,6 +182,10 @@ export interface ResourceListTableProps
   /** Total number of server-side matches when queryState is controlled. */
   totalRowCount?: number;
   onQueryStateChange?: (queryState: ResourceListTableQueryState) => void;
+  /** Highlights the active row for master-detail compositions. */
+  activeRowId?: string | null;
+  /** Activates a resource row without taking over nested controls. */
+  onRowActivate?: (resource: ResourceListItem) => void;
   /** Replaces the standard toolbar while one or more rows are selected. */
   renderBulkActions?: (
     context: ResourceListTableBulkActionContext
@@ -143,6 +213,10 @@ const defaultLabels: ResourceListTableLabels = {
   version: "版本",
   type: "类型",
   failurePolicy: "失败策略",
+  category: "分类",
+  categoryFilter: "分类",
+  visibility: "可见范围",
+  itemCount: "MCP 数量",
   actions: "操作",
   edit: "编辑",
   enabled: "已启用",
@@ -273,6 +347,288 @@ export const defaultResourceListItems = [
   },
 ] as const satisfies readonly ResourceListItem[];
 
+const defaultMcpCategoryIdByName = {
+  办公协同: "collaboration",
+  代码开发: "developer-tools",
+  创意设计: "content",
+  销售: "sales",
+} as const;
+
+export const defaultMcpResourceListItems = ([
+  {
+    id: "feishu-suite",
+    name: "飞书套件",
+    description: "飞书/Lark 全能套件，覆盖消息、文档、表格、日历、任务与 Wiki",
+    status: "enabled",
+    category: "办公协同",
+    visibility: "所有用户",
+    brandIcon: "bytedance",
+    iconName: "message-circle",
+  },
+  {
+    id: "tencent-docs",
+    name: "腾讯文档",
+    description: "在线创建、编辑和管理文档、表格与演示内容",
+    status: "enabled",
+    category: "办公协同",
+    visibility: "所有用户",
+    brandIcon: "tencent",
+    iconName: "file-text",
+  },
+  {
+    id: "wechat-work",
+    name: "企业微信套件",
+    description: "连接客户、群聊、日程、会议与通讯录等企业协作能力",
+    status: "enabled",
+    category: "办公协同",
+    visibility: "所有用户",
+    brandIcon: "wechat",
+    iconName: "users",
+  },
+  {
+    id: "slack",
+    name: "Slack",
+    description: "连接频道、消息和工作流，协助团队同步项目进展",
+    status: "enabled",
+    category: "办公协同",
+    visibility: "组织成员",
+    brandIcon: "slack",
+    iconName: "message-circle",
+  },
+  {
+    id: "notion",
+    name: "Notion",
+    description: "检索团队知识库并创建、更新页面和数据库内容",
+    status: "enabled",
+    category: "办公协同",
+    visibility: "组织成员",
+    brandIcon: "notion",
+    iconName: "file-text",
+  },
+  {
+    id: "zoom",
+    name: "Zoom",
+    description: "创建视频会议、查询日程并整理会议记录",
+    status: "draft",
+    category: "办公协同",
+    visibility: "组织成员",
+    brandIcon: "zoom",
+    iconName: "calendar",
+  },
+  {
+    id: "confluence",
+    name: "Confluence",
+    description: "检索公司的项目文档、规范与团队知识库",
+    status: "enabled",
+    category: "办公协同",
+    visibility: "所有用户",
+    brandIcon: "confluence",
+    iconName: "file-text",
+  },
+  {
+    id: "web-access",
+    name: "Web Access（浏览器自动化）",
+    description: "连接浏览器并执行网页检索、登录态操作与批量任务",
+    status: "enabled",
+    category: "代码开发",
+    visibility: "所有用户",
+    brandIcon: "chrome",
+    iconName: "globe",
+  },
+  {
+    id: "gitlab",
+    name: "GitLab",
+    description: "查询代码仓库、合并请求、流水线和发布状态",
+    status: "enabled",
+    category: "代码开发",
+    visibility: "所有用户",
+    brandIcon: "gitlab",
+    iconName: "square-library",
+  },
+  {
+    id: "github",
+    name: "GitHub",
+    description: "管理仓库、Issue、Pull Request 与代码评审流程",
+    status: "enabled",
+    category: "代码开发",
+    visibility: "组织成员",
+    brandIcon: "github",
+    iconName: "square-library",
+  },
+  {
+    id: "jira",
+    name: "Jira",
+    description: "查询和更新研发任务、迭代计划与缺陷状态",
+    status: "enabled",
+    category: "代码开发",
+    visibility: "所有用户",
+    brandIcon: "jira",
+    iconName: "list-checks",
+  },
+  {
+    id: "linear",
+    name: "Linear",
+    description: "管理产品需求、开发任务和团队项目进度",
+    status: "draft",
+    category: "代码开发",
+    visibility: "组织成员",
+    brandIcon: "linear",
+    iconName: "list-checks",
+  },
+  {
+    id: "google-cloud",
+    name: "Google Cloud",
+    description: "查询云资源、日志、告警和服务运行状态",
+    status: "enabled",
+    category: "代码开发",
+    visibility: "管理员",
+    brandIcon: "google-cloud",
+    iconName: "globe",
+  },
+  {
+    id: "figma",
+    name: "Figma",
+    description: "读取设计稿、组件变量和页面结构并辅助设计交付",
+    status: "enabled",
+    category: "创意设计",
+    visibility: "所有用户",
+    brandIcon: "figma",
+    iconName: "pencil",
+  },
+  {
+    id: "canva",
+    name: "Canva",
+    description: "创建并管理社交媒体、演示和营销视觉内容",
+    status: "enabled",
+    category: "创意设计",
+    visibility: "组织成员",
+    brandIcon: "canva",
+    iconName: "pencil",
+  },
+  {
+    id: "word-generator",
+    name: "Word 文档生成",
+    description: "生成、排版并导出规范化 Word 文档",
+    status: "enabled",
+    category: "创意设计",
+    visibility: "组织成员",
+    brandIcon: "microsoft-word",
+    iconName: "file-text",
+  },
+  {
+    id: "google-slides",
+    name: "Google Slides",
+    description: "生成和编辑在线演示文稿、版式与演讲备注",
+    status: "draft",
+    category: "创意设计",
+    visibility: "组织成员",
+    brandIcon: "google-slides",
+    iconName: "file-text",
+  },
+  {
+    id: "dropbox",
+    name: "Dropbox",
+    description: "检索、整理和共享团队创意资产与交付文件",
+    status: "enabled",
+    category: "创意设计",
+    visibility: "所有用户",
+    brandIcon: "dropbox",
+    iconName: "folder",
+  },
+  {
+    id: "salesforce",
+    name: "Salesforce",
+    description: "查询客户、联系人、商机和销售活动记录",
+    status: "enabled",
+    category: "销售",
+    visibility: "所有用户",
+    brandIcon: "salesforce",
+    iconName: "users",
+  },
+  {
+    id: "hubspot",
+    name: "HubSpot",
+    description: "管理线索、营销活动、客户跟进和销售管道",
+    status: "enabled",
+    category: "销售",
+    visibility: "组织成员",
+    brandIcon: "hubspot",
+    iconName: "users",
+  },
+  {
+    id: "shopify",
+    name: "Shopify",
+    description: "查询商品、客户、订单和在线商店经营数据",
+    status: "enabled",
+    category: "销售",
+    visibility: "组织成员",
+    brandIcon: "shopify",
+    iconName: "square-library",
+  },
+  {
+    id: "stripe",
+    name: "Stripe",
+    description: "查询支付、订阅、发票和客户交易状态",
+    status: "draft",
+    category: "销售",
+    visibility: "管理员",
+    brandIcon: "stripe",
+    iconName: "shield",
+  },
+  {
+    id: "dynamics-sales",
+    name: "Dynamics 365 Sales",
+    description: "管理企业客户关系、销售预测和商机协作流程",
+    status: "enabled",
+    category: "销售",
+    visibility: "组织成员",
+    brandIcon: "microsoft-dynamics-sales",
+    iconName: "users",
+  },
+] as const).map((resource) => ({
+  ...resource,
+  categoryId: defaultMcpCategoryIdByName[resource.category],
+})) satisfies readonly ResourceListItem[];
+
+export const defaultMcpCategoryItems = [
+  {
+    id: "collaboration",
+    name: "办公协同",
+    description: "消息、文档、日历与企业协作工具",
+    status: "enabled",
+    visibility: "所有用户",
+    itemCount: 7,
+    iconName: "users",
+  },
+  {
+    id: "developer-tools",
+    name: "代码开发",
+    description: "代码、浏览器自动化与研发流程能力",
+    status: "enabled",
+    visibility: "所有用户",
+    itemCount: 6,
+    iconName: "square-library",
+  },
+  {
+    id: "content",
+    name: "创意设计",
+    description: "文档生成、编辑和多媒体内容处理",
+    status: "enabled",
+    visibility: "组织成员",
+    itemCount: 5,
+    iconName: "pencil",
+  },
+  {
+    id: "sales",
+    name: "销售",
+    description: "客户沟通、销售协作与商机管理工具",
+    status: "enabled",
+    visibility: "组织成员",
+    itemCount: 5,
+    iconName: "users",
+  },
+] as const satisfies readonly ResourceListItem[];
+
 const statusPresentation: Record<
   ResourceListStatus,
   { badgeStatus: BadgeStatus; className: string }
@@ -284,26 +640,74 @@ const statusPresentation: Record<
   },
 };
 
-function ResourceLeading({ iconName }: { iconName: IconName }) {
-  const Icon = useIcon(iconName);
+const resourceBrandIcons = {
+  bytedance,
+  canva,
+  chrome,
+  confluence,
+  dropbox,
+  figma,
+  github,
+  gitlab,
+  "google-cloud": googleCloud,
+  "google-slides": googleSlides,
+  hubspot,
+  jira,
+  linear,
+  "microsoft-dynamics-sales": microsoftDynamicsSales,
+  "microsoft-word": microsoftWord,
+  notion,
+  salesforce,
+  shopify,
+  slack,
+  stripe,
+  tencent,
+  wechat,
+  zoom,
+} satisfies Record<ResourceListBrandIcon, { svg: string }>;
+
+function ResourceLeading({ resource }: { resource: ResourceListItem }) {
+  const Icon = useIcon(resource.iconName ?? "brain");
+  const brandIcon = resource.brandIcon
+    ? resourceBrandIcons[resource.brandIcon]
+    : undefined;
 
   return (
-    <InfoItemLeading className="bg-info-surface text-fg-brand">
-      <Icon aria-hidden="true" size={20} strokeWidth={1.5} />
+    <InfoItemLeading className="border-[0.5px] border-border bg-surface-overlay text-fg-brand">
+      {brandIcon ? (
+        <span
+          aria-hidden
+          className="[&>svg]:block [&>svg]:size-5"
+          dangerouslySetInnerHTML={{ __html: brandIcon.svg }}
+        />
+      ) : (
+        <Icon aria-hidden="true" size={20} strokeWidth={1.5} />
+      )}
     </InfoItemLeading>
   );
 }
 
-function ResourceIdentity({ resource }: { resource: ResourceListItem }) {
+export function ResourceListItemIdentity({
+  resource,
+  showDescription = true,
+  trailing,
+}: {
+  resource: ResourceListItem;
+  showDescription?: boolean;
+  trailing?: ReactNode;
+}) {
   return (
     <InfoItem className="gap-2.5 p-0">
-      <ResourceLeading iconName={resource.iconName ?? "brain"} />
+      <ResourceLeading resource={resource} />
       <InfoItemContent>
         <InfoItemTitle className="truncate">{resource.name}</InfoItemTitle>
-        <InfoItemDescription className="truncate">
-          {resource.description}
-        </InfoItemDescription>
+        {showDescription ? (
+          <InfoItemDescription className="truncate">
+            {resource.description}
+          </InfoItemDescription>
+        ) : null}
       </InfoItemContent>
+      {trailing ? <InfoItemTrailing>{trailing}</InfoItemTrailing> : null}
     </InfoItem>
   );
 }
@@ -337,6 +741,7 @@ function statusFilter(
 /** A searchable, selectable resource inventory composed from existing Zeron UI primitives. */
 export function ResourceListTable({
   "aria-label": ariaLabel,
+  activeRowId,
   className,
   emptyState,
   isLoading = false,
@@ -346,9 +751,11 @@ export function ResourceListTable({
   onEdit,
   onQueryStateChange,
   onRefresh,
+  onRowActivate,
   queryState,
   renderBulkActions,
   resources = [],
+  preset = "resource",
   showCreateAction = true,
   showRefreshAction = true,
   surface = "framed",
@@ -360,14 +767,116 @@ export function ResourceListTable({
   const RefreshIcon = useIcon("rotate-ccw");
   const PlusIcon = useIcon("plus");
   const StatusIcon = useIcon("dot");
+  const CategoryIcon = useIcon("folder");
   const XIcon = useIcon("x");
   const labels = useMemo(
     () => ({ ...defaultLabels, ...providedLabels }),
     [providedLabels]
   );
 
-  const columns = useMemo<ColumnDef<ResourceListItem, unknown>[]>(
-    () => [
+  const columns = useMemo<ColumnDef<ResourceListItem, unknown>[]>(() => {
+    const nameColumn: ColumnDef<ResourceListItem, unknown> = {
+      accessorKey: "name",
+      header: labels.name,
+      cell: ({ row }) => (
+        <ResourceListItemIdentity
+          resource={row.original}
+          showDescription={preset !== "category"}
+        />
+      ),
+      filterFn: resourceSearchFilter,
+      meta: { label: labels.name },
+    };
+    const statusColumn: ColumnDef<ResourceListItem, unknown> = {
+      accessorKey: "status",
+      header: labels.status,
+      cell: ({ row }) => {
+        const status = row.original.status;
+        return preset === "resource" ? (
+          <Badge
+            className={statusPresentation[status].className}
+            size="sm"
+            status={statusPresentation[status].badgeStatus}
+            variant="dot"
+          >
+            {labels[status]}
+          </Badge>
+        ) : (
+          <Badge
+            color={status === "enabled" ? "blue" : "gray"}
+            size="sm"
+            variant="strong"
+          >
+            {labels[status]}
+          </Badge>
+        );
+      },
+      filterFn: statusFilter,
+      meta: {
+        filterIcon: StatusIcon,
+        label: labels.statusFilter,
+        options: [
+          { label: labels.enabled, value: "enabled" },
+          { label: labels.draft, value: "draft" },
+        ],
+        variant: "multiSelect",
+      },
+      size: 120,
+    };
+
+    if (preset === "mcp") {
+      const categoryOptions = Array.from(
+        new Map(
+          resources.flatMap((resource) => {
+            const value = resource.categoryId ?? resource.category;
+            if (!value) return [];
+            return [
+              [
+                value,
+                { label: resource.category ?? value, value },
+              ] as const,
+            ];
+          })
+        ).values()
+      );
+
+      return [
+        nameColumn,
+        {
+          accessorFn: (resource) => resource.categoryId ?? resource.category,
+          id: "category",
+          header: labels.category,
+          cell: ({ row }) =>
+            row.original.category ?? row.original.categoryId ?? "—",
+          filterFn: statusFilter,
+          meta: {
+            filterIcon: CategoryIcon,
+            label: labels.categoryFilter,
+            options: categoryOptions,
+            variant: "multiSelect",
+          },
+        },
+        statusColumn,
+        {
+          accessorKey: "visibility",
+          header: labels.visibility,
+          meta: { label: labels.visibility },
+        },
+      ];
+    }
+
+    if (preset === "category") {
+      return [
+        nameColumn,
+        {
+          accessorKey: "itemCount",
+          header: labels.itemCount,
+          meta: { label: labels.itemCount },
+        },
+      ];
+    }
+
+    return [
       {
         id: "select",
         header: ({ table }) => (
@@ -400,14 +909,7 @@ export function ResourceListTable({
         minSize: 44,
         size: 44,
       },
-      {
-        accessorKey: "name",
-        header: labels.name,
-        cell: ({ row }) => <ResourceIdentity resource={row.original} />,
-        filterFn: resourceSearchFilter,
-        meta: { label: labels.name },
-        size: 287,
-      },
+      nameColumn,
       {
         accessorKey: "id",
         header: labels.identifier,
@@ -419,34 +921,7 @@ export function ResourceListTable({
         meta: { label: labels.identifier },
         size: 240,
       },
-      {
-        accessorKey: "status",
-        header: labels.status,
-        cell: ({ row }) => {
-          const status = row.original.status;
-          return (
-            <Badge
-              className={statusPresentation[status].className}
-              size="sm"
-              status={statusPresentation[status].badgeStatus}
-              variant="dot"
-            >
-              {labels[status]}
-            </Badge>
-          );
-        },
-        filterFn: statusFilter,
-        meta: {
-          filterIcon: StatusIcon,
-          label: labels.statusFilter,
-          options: [
-            { label: labels.enabled, value: "enabled" },
-            { label: labels.draft, value: "draft" },
-          ],
-          variant: "multiSelect",
-        },
-        size: 120,
-      },
+      statusColumn,
       {
         accessorKey: "version",
         header: labels.version,
@@ -485,20 +960,26 @@ export function ResourceListTable({
         enableSorting: false,
         size: 120,
       },
-    ],
-    [StatusIcon, labels, onEdit]
-  );
+    ];
+  }, [CategoryIcon, StatusIcon, labels, onEdit, preset, resources]);
   const data = useMemo(() => [...resources], [resources]);
   const controlledColumnFilters = useMemo<ColumnFiltersState | undefined>(() => {
     if (!queryState) return undefined;
 
     const filters: ColumnFiltersState = [];
     if (queryState.search) filters.push({ id: "name", value: queryState.search });
+    if (queryState.categoryIds?.length) {
+      filters.push({ id: "category", value: [...queryState.categoryIds] });
+    }
     if (queryState.statuses.length > 0) {
       filters.push({ id: "status", value: [...queryState.statuses] });
     }
     return filters;
   }, [queryState]);
+  const controlledSorting = useMemo<SortingState | undefined>(
+    () => (queryState ? [...(queryState.sorting ?? [])] : undefined),
+    [queryState]
+  );
   const [isTableMounted, setIsTableMounted] = useState(false);
 
   useEffect(() => {
@@ -509,14 +990,18 @@ export function ResourceListTable({
     autoResetPageIndex: queryState ? false : isTableMounted,
     columns,
     data,
-    enableRowSelection: true,
+    enableRowSelection: preset === "resource",
     getRowId: (resource) => resource.id,
     initialState: {
-      columnPinning: { left: ["select", "name"], right: ["actions"] },
+      columnPinning:
+        preset === "resource"
+          ? { left: ["select", "name"], right: ["actions"] }
+          : { left: ["name"] },
       pagination: { pageIndex: 0, pageSize: 10 },
     },
     manualFiltering: Boolean(queryState),
     manualPagination: Boolean(queryState),
+    manualSorting: Boolean(queryState),
     onColumnFiltersChange:
       queryState && onQueryStateChange
         ? (updater) => {
@@ -530,9 +1015,13 @@ export function ResourceListTable({
             const statuses =
               (nextFilters.find((filter) => filter.id === "status")
                 ?.value as ResourceListStatus[] | undefined) ?? [];
+            const categoryIds =
+              (nextFilters.find((filter) => filter.id === "category")
+                ?.value as string[] | undefined) ?? [];
 
             onQueryStateChange({
               ...queryState,
+              categoryIds,
               pageIndex: 0,
               search,
               statuses,
@@ -549,6 +1038,20 @@ export function ResourceListTable({
             onQueryStateChange({ ...queryState, ...nextPagination });
           }
         : undefined,
+    onSortingChange:
+      queryState && onQueryStateChange
+        ? (updater) => {
+            const sorting = functionalUpdate(
+              updater,
+              controlledSorting ?? []
+            );
+            onQueryStateChange({
+              ...queryState,
+              pageIndex: 0,
+              sorting,
+            });
+          }
+        : undefined,
     rowCount: queryState ? (totalRowCount ?? resources.length) : undefined,
     state: queryState
       ? {
@@ -557,16 +1060,23 @@ export function ResourceListTable({
             pageIndex: queryState.pageIndex,
             pageSize: queryState.pageSize,
           },
+          sorting: controlledSorting,
         }
       : undefined,
   });
   const nameColumn = table.getColumn("name");
-  const statusColumn = table.getColumn("status");
+  const categoryColumn = table
+    .getAllLeafColumns()
+    .find((column) => column.id === "category");
+  const statusColumn = table
+    .getAllLeafColumns()
+    .find((column) => column.id === "status");
   const selectedResources = table
     .getSelectedRowModel()
     .flatRows.map((row) => row.original);
   const selectedCount = selectedResources.length;
-  const showBulkToolbar = selectedCount > 0 && Boolean(renderBulkActions);
+  const showBulkToolbar =
+    preset === "resource" && selectedCount > 0 && Boolean(renderBulkActions);
   const clearSelection = () => table.resetRowSelection();
 
   return (
@@ -574,18 +1084,22 @@ export function ResourceListTable({
       aria-label={ariaLabel ?? labels.ariaLabel}
       className={cn(
         surface === "framed"
-          ? "mx-auto w-full max-w-[1620px] rounded-xl border-[0.5px] border-border bg-surface-floating p-3"
+          ? "mx-auto w-full max-w-screen-2xl rounded-xl border border-border bg-surface-floating p-3"
           : "min-w-0 w-full",
         className
       )}
       {...props}
     >
       <DataTable
+        activeRowId={activeRowId}
         className="gap-2.5 [&_[data-slot=data-table-pagination]]:px-2"
         emptyMessage={labels.empty}
         emptyState={emptyState}
         isLoading={isLoading}
         loadingMessage={loadingMessage}
+        onRowActivate={
+          onRowActivate ? (row) => onRowActivate(row.original) : undefined
+        }
         table={table}
       >
         <div
@@ -630,7 +1144,7 @@ export function ResourceListTable({
             <>
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
                 <InputGroup
-                  className="w-full max-w-[450px] border-border hover:border-border"
+                  className="w-full max-w-md border-border hover:border-border"
                   size="md"
                 >
                   <InputGroupAddon className="pr-2">
@@ -646,7 +1160,16 @@ export function ResourceListTable({
                     value={(nameColumn?.getFilterValue() as string) ?? ""}
                   />
                 </InputGroup>
-                {statusColumn && (
+                {preset === "mcp" && categoryColumn && (
+                  <DataTableFacetedFilter
+                    column={categoryColumn}
+                    icon={categoryColumn.columnDef.meta?.filterIcon}
+                    multiple
+                    options={categoryColumn.columnDef.meta?.options ?? []}
+                    title={labels.categoryFilter}
+                  />
+                )}
+                {preset !== "category" && statusColumn && (
                   <DataTableFacetedFilter
                     column={statusColumn}
                     icon={statusColumn.columnDef.meta?.filterIcon}

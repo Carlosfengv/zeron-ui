@@ -1,8 +1,8 @@
 {
   "resourceListPageBlock": {
-    "title": "Resource List Page",
-    "description": "The standard Sidebar Basic application layout with its project overview replaced by a controlled resource DataTable.",
+    "title": "MCP Resource List Page",
+    "description": "A Sidebar workspace that follows the Zentirx MCP management design with application and category tabs.",
     "guidance": "Integration boundary",
-    "guidanceBody": "Connect resources and action callbacks to your application, then replace the example navigation values and project sections with real routes. Use stable workspace IDs, and pass loading, server-query, and table configuration through tableProps. The Block preserves the Sidebar Basic shell and swaps only the overview content for ResourceListTable."
+    "guidanceBody": "Use controlled mode in production and relate MCPs to categories through a stable categoryId. Server-paginated integrations use remote category mode with authoritative counts, detail loading, retry, permissions, and asynchronous removal. Category management reuses Zeron PageColumns, PageAside, and MobileDrawer for the same responsive right-detail layout as the member department page."
   }
 }
