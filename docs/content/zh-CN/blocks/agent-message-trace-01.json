@@ -1,0 +1,10 @@
+{
+  "agentMessageTraceBlock": {
+    "title": "Agent Message Trace 1",
+    "description": "用于检查单条消息调用链的自适应工作区，包含虚拟化时间线和可调整尺寸的 Span 详情面板。",
+    "dataTitle": "数据契约",
+    "dataBody": "传入包含稳定 id、parentId、相对开始时间、数值时长、类型、状态、输入输出、属性和事件的扁平 Span。Block 会自行派生层级、时间线几何、选中状态和详情内容，不要求后端返回预格式化展示数据。",
+    "performanceTitle": "大数据 Trace",
+    "performanceBody": "组件采用固定行高虚拟化、共享时间网格和受控展开状态。类型过滤会保留匹配节点的父链，避免调用上下文丢失。"
+  }
+}

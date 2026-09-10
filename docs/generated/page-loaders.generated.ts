@@ -10,6 +10,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "blocks/signup-01": () => import("@docs/pages/blocks/signup-01/page"),
   "blocks/availability-monitor-01": () => import("@docs/pages/blocks/availability-monitor-01/page"),
   "blocks/ai-gateway-overview-01": () => import("@docs/pages/blocks/ai-gateway-overview-01/page"),
+  "blocks/agent-message-trace-01": () => import("@docs/pages/blocks/agent-message-trace-01/page"),
   "blocks/agent-trace-01": () => import("@docs/pages/blocks/agent-trace-01/page"),
   "blocks/agent-session-detail-01": () => import("@docs/pages/blocks/agent-session-detail-01/page"),
   "blocks/cluster-environment-detail-01": () => import("@docs/pages/blocks/cluster-environment-detail-01/page"),

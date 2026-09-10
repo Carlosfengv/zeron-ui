@@ -3805,6 +3805,82 @@
       }
     },
     {
+      "name": "agent-message-trace-01",
+      "type": "registry:block",
+      "title": "Agent Message Trace",
+      "description": "A responsive, resizable agent message trace workspace with a virtualized timeline and span inspector.",
+      "categories": [
+        "application",
+        "agent",
+        "observability"
+      ],
+      "dependencies": [
+        "@tanstack/react-virtual@^3.14.9",
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/detail-list.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/input-copy.json",
+        "https://zeron-ui.vercel.app/r/resizable.json",
+        "https://zeron-ui.vercel.app/r/scroll-area.json",
+        "https://zeron-ui.vercel.app/r/skeleton.json",
+        "https://zeron-ui.vercel.app/r/switch.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-model.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace-model.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-inspector.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace-inspector.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-workspace.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace-workspace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "agent-trace-01",
       "type": "registry:block",
       "title": "Agent Trace",

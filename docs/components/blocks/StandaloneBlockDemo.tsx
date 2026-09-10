@@ -42,6 +42,7 @@ import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
 import { TopNavAppShell } from "@zeron/blocks/top-nav-app-shell-01";
 import { ZaiopsOperations } from "@zeron/blocks/zaiops-operations-01";
 import { ZlrWorkspace } from "@zeron/blocks/zlrlist";
+import { AgentMessageTrace, agentMessageTraceDemoData } from "@zeron/blocks/agent-message-trace-01";
 import { AgentTrace } from "@zeron/blocks/agent-trace-01";
 import { AgentSessionDetail } from "@zeron/blocks/agent-session-detail-01";
 import { Button } from "@zeron/ui/button";
@@ -94,6 +95,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <div className="h-full overflow-auto bg-surface-base p-4 sm:p-8"><AvailabilityMonitor className="mx-auto" /></div>;
     case "ai-gateway-overview-01":
       return <AiGatewayOverviewDemo />;
+    case "agent-message-trace-01":
+      return <AgentMessageTrace className="h-full w-full rounded-none" data={agentMessageTraceDemoData} nowOffsetMs={154_000} />;
     case "agent-trace-01":
       return <AgentTrace className="h-full min-h-0 rounded-none border-0" />;
     case "agent-session-detail-01":

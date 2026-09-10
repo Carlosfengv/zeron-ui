@@ -57,6 +57,13 @@ const blockCatalogEntries = [
     dependencies: ["button", "dialog", "input", "select", "tabs", "@tanstack/react-virtual"],
   },
   {
+    name: "agent-message-trace-01",
+    title: "Agent Message Trace",
+    description: "A responsive, resizable agent trace workspace with a virtualized timeline and span inspector.",
+    categories: ["application", "agent", "observability"],
+    dependencies: ["badge", "button", "detail-list", "empty", "input-copy", "resizable", "scroll-area", "switch", "tabs", "@tanstack/react-virtual"],
+  },
+  {
     name: "agent-trace-01",
     title: "Agent Trace",
     description: "A turn-aware trace viewer that projects agent messages, tool calls, and results from uploaded JSON.",

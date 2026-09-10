@@ -108,6 +108,24 @@
       ]
     },
     {
+      "name": "agent-message-trace-01",
+      "type": "registry:block",
+      "title": "Agent Message Trace",
+      "description": "A responsive, resizable agent message trace workspace with a virtualized timeline and span inspector.",
+      "categories": ["application", "agent", "observability"],
+      "dependencies": ["@tanstack/react-virtual", "tw-animate-css"],
+      "registryDependencies": ["badge", "button", "detail-list", "empty", "icon-context", "inline-notice", "input-copy", "resizable", "scroll-area", "skeleton", "switch", "tabs", "tooltip", "utils"],
+      "files": [
+        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-types.ts", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace-types.ts" },
+        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-model.ts", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace-model.ts" },
+        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-demo-data.ts", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace-demo-data.ts" },
+        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace.tsx", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace.tsx" },
+        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-inspector.tsx", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace-inspector.tsx" },
+        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-workspace.tsx", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace-workspace.tsx" },
+        { "path": "packages/blocks/src/application/agent-message-trace-01/index.ts", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/index.ts" }
+      ]
+    },
+    {
       "name": "agent-trace-01",
       "type": "registry:block",
       "title": "Agent Trace",

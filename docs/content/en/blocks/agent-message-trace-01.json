@@ -1,0 +1,10 @@
+{
+  "agentMessageTraceBlock": {
+    "title": "Agent Message Trace 1",
+    "description": "A responsive trace workspace with a virtualized call timeline and a resizable span inspector.",
+    "dataTitle": "Data contract",
+    "dataBody": "Pass flat spans with stable ids, parentId relationships, relative start offsets, numeric durations, kinds, statuses, payloads, attributes, and events. The Block derives hierarchy, timeline geometry, selection, and inspector content without preformatted display values.",
+    "performanceTitle": "Large traces",
+    "performanceBody": "Rows use fixed-height virtualization, shared timeline grid lines, and controlled disclosure state. Filtering retains matching ancestors so the call path remains understandable."
+  }
+}

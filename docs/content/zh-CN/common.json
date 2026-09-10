@@ -169,6 +169,7 @@
       "provider-create-form-01": "包含凭证验证、模型发现、逐模型启停与最终确认的三步模型服务商配置流程。",
       "availability-monitor-01": "展示汇总指标、72 小时状态条和 24 小时路由对比趋势的服务可用性 Block。",
       "ai-gateway-overview-01": "包含响应式导航，以及流量、费用、Token、延迟、稳定性、服务商和操作分析的完整 AI 网关业务模板。",
+      "agent-message-trace-01": "包含虚拟化时间线和可调整尺寸 Span 详情面板的自适应 Agent 调用链工作区。",
       "agent-trace-01": "支持本地上传 JSON 和查看原始记录的、按轮次组织的 Agent 执行轨迹。",
       "agent-session-detail-01": "包含智能体导航、会话切换与内嵌执行轨迹的会话详情工作区。",
       "resource-catalog-01": "支持搜索、排序、页面内筛选和资源卡片的响应式模型广场与 MCP 广场。",
