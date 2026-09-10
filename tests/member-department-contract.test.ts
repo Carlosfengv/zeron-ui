@@ -25,6 +25,10 @@ const dataTableSource = readFileSync(
   join(ROOT, "packages/ui/src/components/data-table.tsx"),
   "utf8"
 );
+const blockPreviewSource = readFileSync(
+  join(ROOT, "docs/components/blocks/BlockPreview.tsx"),
+  "utf8"
+);
 
 describe("Member & Department block contract", () => {
   it("is publicly exported as a data block with every implementation file", () => {
@@ -116,5 +120,12 @@ describe("Member & Department block contract", () => {
     );
     expect(standaloneDemo).toContain('case "member-department-01":');
     expect(standaloneDemo).toContain("<MemberDepartment className=\"h-full\" />");
+  });
+
+  it("renders a real department workspace on its catalog cover", () => {
+    expect(blockPreviewSource).toContain(
+      '"member-department-01": () => import("@zeron/blocks/member-department-01")'
+    );
+    expect(blockPreviewSource).toContain('defaultView="departments"');
   });
 });
