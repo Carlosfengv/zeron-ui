@@ -1,0 +1,12 @@
+{
+  "aiGatewayOverviewBlock": {
+    "title": "AI 网关总览 1",
+    "description": "包含响应式导航，以及流量、费用、Token、延迟、稳定性、服务商和操作分析的完整 AI 网关业务模板。",
+    "composition": "组件映射",
+    "compositionBody": "页面由共享的 280px Sidebar、NavMenu、PageLayout、Tabs、MetricCard、Card、Empty、InlineNotice 和 shadcn Chart 封装组合而成。桌面端常驻侧边栏，低于桌面断点时切换为抽屉导航。",
+    "dataContract": "数据接入",
+    "dataContractBody": "传入原始请求数、整数 costMicros、Token 汇总、毫秒延迟、服务商聚合、直方图区间、指标序列、慢操作和用户数据。格式化由 Block 完成，时间范围、刷新、重试和行跳转由调用方控制。",
+    "states": "运行状态",
+    "statesBody": "首次无数据时使用 loading；更新时使用 refreshing 并保留现有图表；已有数据但刷新失败时使用 error 展示非破坏性提示。null 表示不可用，0 仍是有效观测值。"
+  }
+}

@@ -60,6 +60,11 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
     kind: "block", product: "shared", domains: ["monitoring", "availability", "observability"], patterns: ["metrics", "status timeline", "line chart"], searchTerms: ["availability", "uptime", "routing", "monitoring", "可用性", "正常运行时间", "监控"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
   },
   {
+    slug: "ai-gateway-overview-01", registryName: "ai-gateway-overview-01",
+    title: "AI Gateway Overview", description: "A complete AI gateway workspace with responsive navigation and analytics for traffic, spend, tokens, latency, reliability and provider usage.",
+    kind: "block", product: "zentrix", domains: ["ai gateway", "analytics", "observability"], patterns: ["sidebar", "dashboard", "metrics", "charts", "histogram"], searchTerms: ["gateway", "sidebar", "navigation", "requests", "cost", "tokens", "latency", "provider", "AI 网关", "侧边栏", "费用", "延迟"], readiness: "copy-ready", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
     slug: "agent-trace-01", registryName: "agent-trace-01",
     title: "Agent Trace", description: "A turn-aware agent execution trace with local JSON upload and raw-record inspection.",
     kind: "block", product: "shared", domains: ["ai agent", "observability"], patterns: ["trace", "timeline", "debugging"], searchTerms: ["agent", "trace", "tool call", "message", "轨迹", "调用链", "消息"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,

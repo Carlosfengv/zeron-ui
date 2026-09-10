@@ -51,6 +51,10 @@ export interface MetricCardProps
   extends Omit<ComponentPropsWithoutRef<"div">, "children" | "content" | "onClick"> {
   /** Describes the measurement, for example "Completion rate". */
   label: string;
+  /** Optional content displayed before the label, such as a metric icon. */
+  leading?: ReactNode;
+  /** Applies project-owned typography or spacing to the public label element. */
+  labelClassName?: string;
   /** The primary metric result. Units are rendered separately for consistent formatting. */
   value: ReactNode;
   unit?: string;
@@ -307,6 +311,8 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
   (
     {
       label,
+      leading,
+      labelClassName,
       value,
       unit,
       meta,
@@ -359,9 +365,19 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
         )}
 
         <div className="relative z-content flex min-w-0 flex-col">
-          <span data-slot="metric-card-label" className="truncate text-body text-fg-muted">
-            {label}
-          </span>
+          <div data-slot="metric-card-label-row" className="flex min-w-0 items-center gap-2">
+            {leading ? (
+              <span data-slot="metric-card-leading" className="flex shrink-0 items-center justify-center">
+                {leading}
+              </span>
+            ) : null}
+            <span
+              data-slot="metric-card-label"
+              className={cn("min-w-0 truncate text-body text-fg-muted", labelClassName)}
+            >
+              {label}
+            </span>
+          </div>
 
           <div data-slot="metric-card-value-row" className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
             {loading ? (

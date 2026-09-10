@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 import type { FileManagerItem } from "@zeron/blocks/file-manager-01";
 
 const fileManagerPreviewItems: FileManagerItem[] = [
@@ -55,6 +55,36 @@ const previewLoaders: Record<string, PreviewLoader> = {
   })),
   "availability-monitor-01": () => import("@zeron/blocks/availability-monitor-01").then(({ AvailabilityMonitor }) => ({
     default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1046}><div className="min-h-full bg-surface-base p-8"><AvailabilityMonitor /></div></ResponsivePreview>,
+  })),
+  "ai-gateway-overview-01": () => import("@zeron/blocks/ai-gateway-overview-01").then(({ AiGatewayOverview, createAiGatewayOverviewDemoData }) => ({
+    default: function AiGatewayOverviewPreview() {
+      const [range, setRange] = useState<"1d" | "7d" | "30d" | "90d">("30d");
+      const [refreshCount, setRefreshCount] = useState(0);
+      const data = useMemo(() => {
+        const next = createAiGatewayOverviewDemoData(range);
+        return {
+          ...next,
+          window: {
+            ...next.window,
+            generatedAt: new Date(Date.parse(next.window.generatedAt) + refreshCount * 1000).toISOString(),
+          },
+        };
+      }, [range, refreshCount]);
+
+      return (
+        <ResponsivePreview canvasHeight={1200} canvasWidth={1728}>
+          <AiGatewayOverview
+            actions={{
+              onRangeChange: setRange,
+              onRefresh: () => setRefreshCount((value) => value + 1),
+            }}
+            className="h-full min-h-0"
+            data={data}
+            range={range}
+          />
+        </ResponsivePreview>
+      );
+    },
   })),
   "agent-trace-01": () => import("@zeron/blocks/agent-trace-01").then(({ AgentTrace }) => ({
     default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1160}><AgentTrace className="h-full min-h-0 rounded-none border-0" /></ResponsivePreview>,

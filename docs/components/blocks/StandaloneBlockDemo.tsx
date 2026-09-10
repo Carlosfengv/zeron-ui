@@ -1,8 +1,14 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { Login01 } from "@zeron/blocks/login-01";
 import { Signup01 } from "@zeron/blocks/signup-01";
 import { AvailabilityMonitor } from "@zeron/blocks/availability-monitor-01";
+import {
+  AiGatewayOverview,
+  createAiGatewayOverviewDemoData,
+  type AiGatewayOverviewRange,
+} from "@zeron/blocks/ai-gateway-overview-01";
 import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
 import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
 import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";
@@ -51,6 +57,33 @@ const fileManagerDemoItems: FileManagerItem[] = [
   { id: "roadmap", kind: "file", name: "Roadmap.xlsx", parentId: null, extension: "xlsx", size: 645_000, modifiedAt: "2026-08-19" },
 ];
 
+function AiGatewayOverviewDemo() {
+  const [range, setRange] = useState<AiGatewayOverviewRange>("30d");
+  const [refreshCount, setRefreshCount] = useState(0);
+  const data = useMemo(() => {
+    const next = createAiGatewayOverviewDemoData(range);
+    return {
+      ...next,
+      window: {
+        ...next.window,
+        generatedAt: new Date(Date.parse(next.window.generatedAt) + refreshCount * 1000).toISOString(),
+      },
+    };
+  }, [range, refreshCount]);
+
+  return (
+    <AiGatewayOverview
+      actions={{
+        onRangeChange: setRange,
+        onRefresh: () => setRefreshCount((value) => value + 1),
+      }}
+      className="h-full min-h-0"
+      data={data}
+      range={range}
+    />
+  );
+}
+
 export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
     case "login-01":
@@ -59,6 +92,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <Signup01 />;
     case "availability-monitor-01":
       return <div className="h-full overflow-auto bg-surface-base p-4 sm:p-8"><AvailabilityMonitor className="mx-auto" /></div>;
+    case "ai-gateway-overview-01":
+      return <AiGatewayOverviewDemo />;
     case "agent-trace-01":
       return <AgentTrace className="h-full min-h-0 rounded-none border-0" />;
     case "agent-session-detail-01":

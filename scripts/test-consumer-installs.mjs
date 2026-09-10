@@ -226,6 +226,16 @@ async function verifyNextBuild({ consumer, component }) {
       'export default function Page() { return <main style={{ height: "100svh" }}><ResourceListPage className="min-h-0" /></main>; }',
       '',
     ].join("\n"),
+    "ai-gateway-overview-01": [
+      'import { AiGatewayOverview, createAiGatewayOverviewDemoData } from "@/components/blocks/ai-gateway-overview-01";',
+      '',
+      'const data = createAiGatewayOverviewDemoData("30d");',
+      '',
+      'export default function Page() {',
+      '  return <main style={{ height: "100svh" }}><AiGatewayOverview data={data} range="30d" sidebar={false} /></main>;',
+      '}',
+      '',
+    ].join("\n"),
     "resource-list-table-01": [
       'import { ResourceListTable } from "@/components/blocks/resource-list-table-01";',
       '',

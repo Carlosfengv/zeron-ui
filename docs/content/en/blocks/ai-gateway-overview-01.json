@@ -1,0 +1,12 @@
+{
+  "aiGatewayOverviewBlock": {
+    "title": "AI Gateway Overview 1",
+    "description": "A complete AI gateway workspace with responsive navigation and analytics for traffic, spend, tokens, latency, reliability, providers, and operations.",
+    "composition": "Component mapping",
+    "compositionBody": "The page combines the shared 280px Sidebar, NavMenu, PageLayout, Tabs, MetricCard, Card, Empty, InlineNotice, and shadcn Chart wrapper. The sidebar remains persistent on desktop and becomes a drawer below the desktop breakpoint.",
+    "dataContract": "Data integration",
+    "dataContractBody": "Pass raw counts, integer costMicros, token totals, latency milliseconds, provider aggregates, histogram buckets, metric series, operations, and users. Formatting stays inside the block, while range changes, refresh, retry, and row navigation remain caller-owned actions.",
+    "states": "Runtime states",
+    "statesBody": "Use loading when no data is available, refreshing to retain the current dashboard while updating, and error with existing data for a non-destructive inline warning. Null values mean unavailable; zero remains a valid observation."
+  }
+}

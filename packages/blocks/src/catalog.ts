@@ -43,6 +43,13 @@ const blockCatalogEntries = [
     dependencies: ["button", "chart", "container", "icon-context", "status-overview", "tooltip", "recharts"],
   },
   {
+    name: "ai-gateway-overview-01",
+    title: "AI Gateway Overview",
+    description: "A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations.",
+    categories: ["application", "analytics", "observability"],
+    dependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "recharts"],
+  },
+  {
     name: "file-manager-01",
     title: "File Manager",
     description: "A token-native, storage-agnostic file-management workspace with icon, list, and Finder-style column views.",

@@ -2,6 +2,7 @@
   "login-01": { "framework": "next", "kind": "template" },
   "signup-01": { "framework": "next", "kind": "template" },
   "availability-monitor-01": { "framework": "react", "kind": "template" },
+  "ai-gateway-overview-01": { "framework": "react", "kind": "data-block" },
   "file-manager-01": { "framework": "react", "kind": "data-block" },
   "agent-trace-01": { "framework": "react", "kind": "template" },
   "agent-session-detail-01": { "framework": "react", "kind": "template" },

@@ -53,6 +53,47 @@
       ]
     },
     {
+      "name": "ai-gateway-overview-01",
+      "type": "registry:block",
+      "title": "AI Gateway Overview",
+      "description": "A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations.",
+      "categories": ["application", "analytics", "observability"],
+      "dependencies": ["recharts", "tw-animate-css"],
+      "registryDependencies": ["badge", "button", "card", "chart", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-overview-01/ai-gateway-overview-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-overview-01/ai-gateway-overview-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-overview-01/ai-gateway-overview-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-charts.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-overview-01/ai-gateway-overview-charts.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-overview-01/ai-gateway-overview.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-overview-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-overview-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "file-manager-01",
       "type": "registry:block",
       "title": "File Manager",

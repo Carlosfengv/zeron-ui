@@ -44,6 +44,9 @@ describe("MetricCard contract", () => {
 
   it("supports all documented content modes and accessible whole-card interaction", () => {
     expect(source).toContain("value: ReactNode");
+    expect(source).toContain("leading?: ReactNode");
+    expect(source).toContain("labelClassName?: string");
+    expect(source).toContain('data-slot="metric-card-leading"');
     expect(source).toContain('type: "none"');
     expect(source).toContain('type: "breakdown"');
     expect(source).toContain('type: "visualization"');
