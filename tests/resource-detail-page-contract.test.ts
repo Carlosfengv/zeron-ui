@@ -14,6 +14,10 @@ const layoutSource = readFileSync(
   join(ROOT, "packages/ui/src/components/resource-detail-layout.tsx"),
   "utf8"
 );
+const blockPreviewSource = readFileSync(
+  join(ROOT, "docs/components/blocks/BlockPreview.tsx"),
+  "utf8"
+);
 const packageJson = JSON.parse(
   readFileSync(join(ROOT, "packages/blocks/package.json"), "utf8")
 );
@@ -119,5 +123,15 @@ describe("Resource Detail Page 1 block contract", () => {
     );
     expect(source).toContain("disabled={!onEdit}");
     expect(source).toContain("disabled={!onClose}");
+  });
+
+  it("renders the real detail workspace on its catalog cover", () => {
+    expect(blockPreviewSource).toContain(
+      '"resource-detail-page-01": () => import("@zeron/blocks/resource-detail-page-01")'
+    );
+    expect(blockPreviewSource).toContain(
+      "<ResponsivePreview canvasHeight={900} canvasWidth={1440}>"
+    );
+    expect(blockPreviewSource).toContain("data={defaultResourceDetailPageData}");
   });
 });
