@@ -18,6 +18,7 @@
   "service-management-01": { "framework": "next", "kind": "template" },
   "personal-settings-01": { "framework": "react", "kind": "template" },
   "personal-model-usage-01": { "framework": "react", "kind": "template" },
+  "credit-usage-01": { "framework": "react", "kind": "data-block" },
   "personal-usage-01": { "framework": "react", "kind": "template" },
   "resource-settings-01": { "framework": "react", "kind": "template" },
   "model-mcp-marketplace-01": { "framework": "react", "kind": "template" },

@@ -286,6 +286,21 @@
       ]
     },
     {
+      "name": "credit-usage-01",
+      "type": "registry:block",
+      "title": "Credit Usage",
+      "description": "A compact credit-cycle summary with model attribution, depletion guidance, and plan controls.",
+      "categories": ["application", "settings", "analytics"],
+      "dependencies": ["@lobehub/icons", "tw-animate-css"],
+      "registryDependencies": ["badge", "button", "card", "icon-context", "inline-notice", "switch", "tabs", "utils"],
+      "files": [
+        { "path": "packages/blocks/src/application/credit-usage-01/credit-usage-types.ts", "type": "registry:component", "target": "components/blocks/credit-usage-01/credit-usage-types.ts" },
+        { "path": "packages/blocks/src/application/credit-usage-01/credit-usage-demo-data.ts", "type": "registry:component", "target": "components/blocks/credit-usage-01/credit-usage-demo-data.ts" },
+        { "path": "packages/blocks/src/application/credit-usage-01/credit-usage.tsx", "type": "registry:component", "target": "components/blocks/credit-usage-01/credit-usage.tsx" },
+        { "path": "packages/blocks/src/application/credit-usage-01/index.ts", "type": "registry:component", "target": "components/blocks/credit-usage-01/index.ts" }
+      ]
+    },
+    {
       "name": "personal-usage-01",
       "type": "registry:block",
       "title": "个人使用情况",

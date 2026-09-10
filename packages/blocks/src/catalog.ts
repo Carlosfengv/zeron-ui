@@ -155,6 +155,13 @@ const blockCatalogEntries = [
     dependencies: ["personal-settings-01"],
   },
   {
+    name: "credit-usage-01",
+    title: "Credit Usage",
+    description: "A compact credit-cycle summary with model attribution, depletion guidance, and plan controls.",
+    categories: ["application", "settings", "analytics"],
+    dependencies: ["badge", "button", "card", "icon-context", "inline-notice", "switch", "tabs", "@lobehub/icons"],
+  },
+  {
     name: "personal-usage-01",
     title: "个人使用情况",
     description: "A standalone personal activity dashboard with contextual read-only settings navigation.",
