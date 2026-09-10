@@ -77,7 +77,11 @@ describe("Resource List Page 1 block contract", () => {
     expect(shellSource).toMatch(
       /<SidebarTrigger[\s\S]*?className="hidden shrink-0 group-data-\[state=collapsed\]\/sidebar:inline-flex"[\s\S]*?icon=\{[\s\S]*?<SidebarIdentityAvatar className="rounded-lg" tone="brand">[\s\S]*?Z[\s\S]*?<\/SidebarIdentityAvatar>[\s\S]*?label="展开管理后台导航"[\s\S]*?\/>/
     );
-    expect(source).toContain("<PageSubnav");
+    expect(source).toMatch(
+      /<PageContentHeader>\s*<PageSubnav aria-label="Resource sections">/
+    );
+    expect(source).toContain("<PageSubnavList activeValue={section}>");
+    expect(source).not.toMatch(/<PageSubnav[\s\S]*?<PageTitle/);
     expect(source).toContain('<PageBody className="max-w-[1620px] p-4"');
     expect(source).toContain("<ResourceListTable");
     expect(source).toContain('surface="plain"');

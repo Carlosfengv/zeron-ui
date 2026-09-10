@@ -4,13 +4,13 @@ import { type ReactNode, useState } from "react";
 import {
   PageBody,
   PageContent,
+  PageContentHeader,
   PageHeader,
   PageHeaderContent,
   PageLayout,
   PageSubnav,
   PageSubnavItem,
   PageSubnavList,
-  PageTitle,
 } from "@zeron/ui/page-layout";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import {
@@ -185,27 +185,27 @@ export function ResourceListPage({
           </PageHeader>
 
           <PageContent>
-            <PageSubnav>
-              <PageTitle className="px-3 py-2">Resources</PageTitle>
-              <PageSubnavList aria-label="Resource sections">
-                {(Object.keys(sectionLabels) as ResourceListPageSection[]).map(
-                  (item) => (
-                    <PageSubnavItem
-                      active={section === item}
-                      href={sectionHrefs?.[item] ?? `#${item}`}
-                      key={item}
-                      onClick={(event) => {
-                        if (!sectionHrefs?.[item]) event.preventDefault();
-                        handleSectionChange(item);
-                      }}
-                      value={item}
-                    >
-                      {sectionLabels[item]}
-                    </PageSubnavItem>
-                  )
-                )}
-              </PageSubnavList>
-            </PageSubnav>
+            <PageContentHeader>
+              <PageSubnav aria-label="Resource sections">
+                <PageSubnavList activeValue={section}>
+                  {(Object.keys(sectionLabels) as ResourceListPageSection[]).map(
+                    (item) => (
+                      <PageSubnavItem
+                        href={sectionHrefs?.[item] ?? `#${item}`}
+                        key={item}
+                        onClick={(event) => {
+                          if (!sectionHrefs?.[item]) event.preventDefault();
+                          handleSectionChange(item);
+                        }}
+                        value={item}
+                      >
+                        {sectionLabels[item]}
+                      </PageSubnavItem>
+                    )
+                  )}
+                </PageSubnavList>
+              </PageSubnav>
+            </PageContentHeader>
 
             <PageBody className="max-w-[1620px] p-4">
               {section === "overview" ? (

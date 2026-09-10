@@ -72,7 +72,7 @@ import { ResourceListPage } from "@zeron/blocks/resource-list-page-01";
 
 省略 `queryState` 时，表格按完整客户端数据集执行本地搜索、筛选和分页。传入 `queryState` 后，搜索、状态筛选与分页改由业务数据层处理；查询条件变化会通过 `onQueryStateChange` 返回，筛选变化会把 `pageIndex` 重置为 `0`。
 
-Block 保留 Sidebar Basic demo 顶部的 Workspace 切换 dropdown、Workspace / Manage 分组、底部个人账户 dropdown、`collapsible="icon"` 行为、页头面包屑与 `PageSubnav`。Overview 内的 `ResourceListTable` 使用 `surface="plain"`，表格自身拥有创建、搜索、筛选、选择、刷新和分页操作。
+Block 保留 Sidebar Basic demo 顶部的 Workspace 切换 dropdown、Workspace / Manage 分组、底部个人账户 dropdown、`collapsible="icon"` 行为、页头面包屑与 `PageContentHeader > PageSubnav` 组合。Overview 内的 `ResourceListTable` 使用 `surface="plain"`，表格自身拥有创建、搜索、筛选、选择、刷新和分页操作。
 
 右侧 `PageLayout` 保持全宽，其内部 `PageBody` 默认居中并限制为 `max-w-[1620px]`；较窄视口仍占满 Sidebar 之外的可用宽度。
 
