@@ -1,0 +1,12 @@
+{
+  "aiGatewaySessionListBlock": {
+    "title": "AI Gateway Session List 1",
+    "description": "A responsive AI gateway session inventory with the same sidebar as AI Gateway Overview 1, controlled filters, usage formatting, and native DataTable pagination.",
+    "composition": "Component mapping",
+    "compositionBody": "The page reuses the shared AI Gateway Overview 1 Sidebar. Inside PageBody it follows the section, DataTable, toolbar, spacing, and native pagination composition from resource-list-table-01, using InputGroup, DataTableFacetedFilter, Checkbox, Badge, Empty, InlineNotice, and Button. Pagination supports page size, current page, and first, previous, next, and last page controls through the public DataTable contract without internal slot styling. Hosts with the same shell can set the sidebar prop to false.",
+    "dataContract": "Data integration",
+    "dataContractBody": "Pass page items, total matches, authoritative facet counts, generatedAt, ISO lastActiveAt and createdAt timestamps, input and output token counts, and integer costMicros. Query is the single source of pagination state. The demo includes 13 sessions and filterable WorkBuddy, Codex, and Claude Code agents. Session cells show only the last-activity value on the second line, without a label: relative minutes, hours, or days through seven days, then YYYY年 M月D日 HH:mm:ss. The final column uses the same exact date-time format. dateTimeFormatter and renderModelLogo support product-specific display adapters. The host owns querying and routes; the block owns display formatting and controlled query intents.",
+    "states": "Runtime states",
+    "statesBody": "Loading uses aligned table skeletons, refreshing retains current rows while disabling search, filters, and pagination, empty states distinguish no data from no matches, and errors can preserve stale data with an optional retry action."
+  }
+}

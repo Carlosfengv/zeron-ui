@@ -11,7 +11,7 @@ describe("business template catalog", () => {
     const registryNames = new Set(blocksByRegistryName.keys());
     const artifactRegistryNames = artifactCatalog.map(({ registryName }) => registryName);
 
-    expect(artifactCatalog).toHaveLength(35);
+    expect(artifactCatalog).toHaveLength(36);
     expect(new Set(artifactRegistryNames).size).toBe(artifactCatalog.length);
     expect(new Set(artifactRegistryNames)).toEqual(registryNames);
     for (const artifact of artifactCatalog) {
@@ -21,7 +21,7 @@ describe("business template catalog", () => {
 
   it("labels only data-capable Blocks as data blocks", () => {
     expect(blockCatalog.filter((block) => block.installation.kind === "data-block").map((block) => block.name))
-      .toEqual(["ai-gateway-overview-01", "file-manager-01", "agent-message-trace-01", "credit-usage-01", "rule-flow-editor-01", "resource-list-table-01", "member-department-01", "infinite-log-table-01"]);
+      .toEqual(["ai-gateway-overview-01", "ai-gateway-session-list-01", "file-manager-01", "agent-message-trace-01", "credit-usage-01", "rule-flow-editor-01", "resource-list-table-01", "member-department-01", "infinite-log-table-01"]);
   });
 
   it("keeps every business template reachable through an existing detail page", () => {

@@ -50,6 +50,13 @@ const blockCatalogEntries = [
     dependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "recharts"],
   },
   {
+    name: "ai-gateway-session-list-01",
+    title: "AI Gateway Session List",
+    description: "A controlled AI gateway session workspace with shared navigation, entity filters, outcome filtering, compact usage formatting, and pagination.",
+    categories: ["application", "tables", "observability"],
+    dependencies: ["badge", "button", "checkbox", "data-table", "empty", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "@lobehub/icons", "@tanstack/react-table"],
+  },
+  {
     name: "file-manager-01",
     title: "File Manager",
     description: "A token-native, storage-agnostic file-management workspace with icon, list, and Finder-style column views.",

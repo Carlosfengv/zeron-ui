@@ -17,6 +17,7 @@
     "isLoading": "Replaces data and empty rows with a column-aligned Skeleton body.",
     "loadingMessage": "Accessible status announced while the table is loading.",
     "loadingRowCount": "Number of placeholder rows shown while loading. Defaults to the current page size.",
+    "paginationProps": "Configures the built-in pagination region, including disabled state, labels, page-size options, and outer layout props.",
     "renderLoadingCell": "Customizes a loading cell using its row index, column index, and TanStack column.",
     "data": "Rows supplied to TanStack Table.",
     "columns": "Column definitions, headers, cells, and filter metadata.",
@@ -24,7 +25,7 @@
     "options": "Other TanStack Table options, including row selection and custom filter functions.",
     "label": "Readable column label used by filters and view options.",
     "variant": "Toolbar filter generated for this column.",
-    "filterOptions": "Options for select and multi-select filters.",
+    "filterOptions": "Options for select and multi-select filters. Each option may provide an authoritative count for server-side facets.",
     "placeholder": "Placeholder for text and number filters.",
     "unit": "Optional suffix displayed inside a number filter."
   }

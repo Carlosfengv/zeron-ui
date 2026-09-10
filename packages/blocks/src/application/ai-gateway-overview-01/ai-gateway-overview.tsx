@@ -1,6 +1,6 @@
 "use client";
 
-import type { MouseEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Card, CardContent, CardHeader } from "@zeron/ui/card";
@@ -16,14 +16,6 @@ import {
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
 import { MetricCard } from "@zeron/ui/metric-card";
 import {
-  NavItem,
-  NavItemContent,
-  NavItemLabel,
-  NavItemLeading,
-  NavItemTrigger,
-} from "@zeron/ui/nav-item";
-import { NavMenu } from "@zeron/ui/nav-menu";
-import {
   PageActions,
   PageBody,
   PageContent,
@@ -33,26 +25,15 @@ import {
   PageLayout,
   PageTitle,
 } from "@zeron/ui/page-layout";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
-} from "@zeron/ui/sidebar";
-import {
-  SidebarIdentityAvatar,
-  SidebarIdentityRow,
-} from "@zeron/ui/sidebar-identity-row";
+import { SidebarProvider, SidebarTrigger } from "@zeron/ui/sidebar";
 import { Skeleton } from "@zeron/ui/skeleton";
 import { TabItem, Tabs, TabsList } from "@zeron/ui/tabs";
 import { useIcon, type IconName } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
+import {
+  AiGatewayWorkspaceSidebar,
+  resolveAiGatewaySidebarConfig,
+} from "../ai-gateway-workspace-sidebar";
 import {
   CostBarChart,
   ErrorRateChart,
@@ -71,9 +52,6 @@ import type {
   AiGatewayOverviewProps,
   AiGatewayOverviewRange,
   AiGatewayProviderUsage,
-  AiGatewaySidebarConfig,
-  AiGatewaySidebarNavigationItem,
-  AiGatewaySidebarOptions,
   AiGatewaySlowOperation,
   AiGatewayTopUser,
 } from "./ai-gateway-overview-types";
@@ -120,162 +98,6 @@ const rangeLabels: Record<AiGatewayOverviewRange, string> = {
   "30d": "30d",
   "90d": "90d",
 };
-
-export const defaultAiGatewaySidebarConfig = {
-  ariaLabel: "AI gateway navigation",
-  activeItem: "overview",
-  workspace: {
-    name: "Carlos’s test",
-  },
-  groups: [
-    {
-      id: "overview",
-      items: [
-        { id: "overview", label: "Overview", iconName: "home", href: "#overview" },
-      ],
-    },
-    {
-      id: "observability",
-      label: "AI capability observability",
-      items: [
-        { id: "traces", label: "Traces", iconName: "list", href: "#traces" },
-        { id: "sessions", label: "Sessions", iconName: "message-circle", href: "#sessions" },
-        { id: "logs", label: "Logs", iconName: "file-text", href: "#logs" },
-        { id: "mcp", label: "MCP", iconName: "brain", href: "#mcp" },
-      ],
-    },
-    {
-      id: "config",
-      label: "Config",
-      items: [
-        { id: "setup", label: "Setup", iconName: "globe", href: "#setup" },
-        { id: "api-keys", label: "API keys", iconName: "lock", href: "#api-keys" },
-        { id: "settings", label: "Settings", iconName: "settings", href: "#settings" },
-      ],
-    },
-  ],
-  account: {
-    name: "carlos",
-    description: "wei.feng@zstack.io",
-    avatarLabel: "C",
-  },
-} as const satisfies AiGatewaySidebarConfig;
-
-function resolveSidebarConfig(
-  options: AiGatewaySidebarOptions | false | undefined,
-): AiGatewaySidebarConfig | null {
-  if (options === false) return null;
-
-  return {
-    ...defaultAiGatewaySidebarConfig,
-    ...options,
-    workspace: {
-      ...defaultAiGatewaySidebarConfig.workspace,
-      ...options?.workspace,
-    },
-    groups: options?.groups ?? defaultAiGatewaySidebarConfig.groups,
-    account: {
-      ...defaultAiGatewaySidebarConfig.account,
-      ...options?.account,
-    },
-  };
-}
-
-function GatewayNavigationItem({
-  item,
-  onSelect,
-}: {
-  item: AiGatewaySidebarNavigationItem;
-  onSelect?: (itemId: string, event: MouseEvent<HTMLAnchorElement>) => void;
-}) {
-  const Icon = useIcon(item.iconName);
-  const { closeMobile } = useSidebar();
-
-  return (
-    <NavItem value={item.id}>
-      <NavItemTrigger
-        className="px-2"
-        href={item.href ?? `#${item.id}`}
-        onClick={(event) => {
-          onSelect?.(item.id, event);
-          closeMobile();
-        }}
-        tooltip={item.label}
-      >
-        <NavItemLeading>
-          <Icon aria-hidden size={16} strokeWidth={1.5} />
-        </NavItemLeading>
-        <NavItemContent>
-          <NavItemLabel>{item.label}</NavItemLabel>
-        </NavItemContent>
-      </NavItemTrigger>
-    </NavItem>
-  );
-}
-
-function GatewaySidebarNavigation({
-  config,
-  onAccountSelect,
-  onNavigationSelect,
-  onWorkspaceSelect,
-}: {
-  config: AiGatewaySidebarConfig;
-  onAccountSelect?: () => void;
-  onNavigationSelect?: (itemId: string, event: MouseEvent<HTMLAnchorElement>) => void;
-  onWorkspaceSelect?: () => void;
-}) {
-  const WorkspaceIcon = useIcon("rocket");
-  const SwitchIcon = useIcon("chevrons-up-down");
-  const MoreIcon = useIcon("ellipsis");
-
-  return (
-    <>
-      <SidebarHeader className="px-2 py-1.5">
-        <SidebarIdentityRow
-          as={onWorkspaceSelect ? "button" : "div"}
-          className="px-1.5"
-          leading={
-            <SidebarIdentityAvatar className="rounded-xl bg-inverse-background text-fg-on-inverse">
-              {config.workspace.avatarLabel ? config.workspace.avatarLabel : <WorkspaceIcon aria-hidden size={16} strokeWidth={1.5} />}
-            </SidebarIdentityAvatar>
-          }
-          onClick={onWorkspaceSelect}
-          primary={config.workspace.name}
-          trailing={onWorkspaceSelect ? <SwitchIcon aria-hidden size={14} strokeWidth={1.5} /> : undefined}
-          trailingPlacement="edge"
-        />
-      </SidebarHeader>
-
-      <SidebarContent contentClassName="gap-3 px-2 py-1">
-        {config.groups.map((group) => (
-          <SidebarGroup key={group.id}>
-            {group.label ? <SidebarGroupLabel>{group.label}</SidebarGroupLabel> : null}
-            <SidebarGroupContent>
-              <NavMenu activeValue={config.activeItem} aria-label={group.label ?? config.ariaLabel} keyboardNavigation="roving">
-                {group.items.map((item) => (
-                  <GatewayNavigationItem item={item} key={item.id} onSelect={onNavigationSelect} />
-                ))}
-              </NavMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
-      </SidebarContent>
-
-      <SidebarFooter className="px-2 py-1.5">
-        <SidebarIdentityRow
-          as={onAccountSelect ? "button" : "div"}
-          className="px-1.5"
-          description={config.account.description}
-          leading={<SidebarIdentityAvatar>{config.account.avatarLabel ?? config.account.name.slice(0, 1)}</SidebarIdentityAvatar>}
-          onClick={onAccountSelect}
-          primary={config.account.name}
-          trailing={onAccountSelect ? <MoreIcon aria-hidden size={16} strokeWidth={1.5} /> : undefined}
-          trailingPlacement="edge"
-        />
-      </SidebarFooter>
-    </>
-  );
-}
 
 function formatter(locale: string, options?: Intl.NumberFormatOptions) {
   return new Intl.NumberFormat(locale, options);
@@ -506,7 +328,7 @@ export function AiGatewayOverview({
   const labels = { ...defaultLabels, ...labelsProp };
   const RefreshIcon = useIcon("rotate-ccw");
   const OverviewIcon = useIcon("home");
-  const sidebarConfig = resolveSidebarConfig(sidebarProp);
+  const sidebarConfig = resolveAiGatewaySidebarConfig(sidebarProp);
   const resolvedTimeZone = timeZone ?? data?.window.timeZone ?? "UTC";
   const compact = formatter(locale, { notation: "compact", maximumFractionDigits: 1 });
   const percent = formatter(locale, { style: "percent", maximumFractionDigits: 1 });
@@ -658,20 +480,7 @@ export function AiGatewayOverview({
       {...props}
     >
       {sidebarConfig ? (
-        <Sidebar
-          ariaLabel={sidebarConfig.ariaLabel}
-          className="relative !h-full"
-          collapsible="offcanvas"
-          mobileWidth="min(280px, calc(100vw - 24px))"
-          width="280px"
-        >
-          <GatewaySidebarNavigation
-            config={sidebarConfig}
-            onAccountSelect={actions?.onAccountSelect}
-            onNavigationSelect={actions?.onNavigationSelect}
-            onWorkspaceSelect={actions?.onWorkspaceSelect}
-          />
-        </Sidebar>
+        <AiGatewayWorkspaceSidebar actions={actions} config={sidebarConfig} />
       ) : null}
 
       <PageLayout

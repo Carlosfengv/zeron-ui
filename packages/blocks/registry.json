@@ -62,6 +62,16 @@
       "registryDependencies": ["badge", "button", "card", "chart", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils"],
       "files": [
         {
+          "path": "packages/blocks/src/application/ai-gateway-workspace-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-workspace-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-workspace-sidebar.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-workspace-sidebar.tsx"
+        },
+        {
           "path": "packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-types.ts",
           "type": "registry:component",
           "target": "components/blocks/ai-gateway-overview-01/ai-gateway-overview-types.ts"
@@ -105,6 +115,23 @@
         { "path": "packages/blocks/src/application/file-manager-01/file-manager.tsx", "type": "registry:component", "target": "components/blocks/file-manager-01/file-manager.tsx" },
         { "path": "packages/blocks/src/application/file-manager-01/file-manager-types.ts", "type": "registry:component", "target": "components/blocks/file-manager-01/file-manager-types.ts" },
         { "path": "packages/blocks/src/application/file-manager-01/index.ts", "type": "registry:component", "target": "components/blocks/file-manager-01/index.ts" }
+      ]
+    },
+    {
+      "name": "ai-gateway-session-list-01",
+      "type": "registry:block",
+      "title": "AI Gateway Session List",
+      "description": "A controlled AI gateway session workspace with shared navigation, entity filters, outcome filtering, compact usage formatting, and pagination.",
+      "categories": ["application", "tables", "observability"],
+      "dependencies": ["@tanstack/react-table", "tw-animate-css", "@lobehub/icons"],
+      "registryDependencies": ["badge", "button", "checkbox", "data-table", "empty", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "utils"],
+      "files": [
+        { "path": "packages/blocks/src/application/ai-gateway-workspace-types.ts", "type": "registry:component", "target": "components/blocks/ai-gateway-workspace-types.ts" },
+        { "path": "packages/blocks/src/application/ai-gateway-workspace-sidebar.tsx", "type": "registry:component", "target": "components/blocks/ai-gateway-workspace-sidebar.tsx" },
+        { "path": "packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list-types.ts", "type": "registry:component", "target": "components/blocks/ai-gateway-session-list-01/ai-gateway-session-list-types.ts" },
+        { "path": "packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list-demo-data.ts", "type": "registry:component", "target": "components/blocks/ai-gateway-session-list-01/ai-gateway-session-list-demo-data.ts" },
+        { "path": "packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list.tsx", "type": "registry:component", "target": "components/blocks/ai-gateway-session-list-01/ai-gateway-session-list.tsx" },
+        { "path": "packages/blocks/src/application/ai-gateway-session-list-01/index.ts", "type": "registry:component", "target": "components/blocks/ai-gateway-session-list-01/index.ts" }
       ]
     },
     {

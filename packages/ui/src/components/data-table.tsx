@@ -84,9 +84,31 @@ export type DataTableColumnMeta = {
 };
 
 export type DataTableFilterOption = {
+  /** Optional authoritative count, for example from a server-side facet response. */
+  count?: number;
   icon?: IconComponent;
   label: string;
   value: string;
+};
+
+export type DataTablePaginationLabels = {
+  firstPage: string;
+  lastPage: string;
+  nextPage: string;
+  pageSummary: (page: number, pageCount: number) => React.ReactNode;
+  previousPage: string;
+  rowsPerPage: string;
+  selectedRows: (selected: number, total: number) => React.ReactNode;
+};
+
+const defaultDataTablePaginationLabels: DataTablePaginationLabels = {
+  firstPage: "Go to first page",
+  lastPage: "Go to last page",
+  nextPage: "Go to next page",
+  pageSummary: (page, pageCount) => `Page ${page} of ${pageCount}`,
+  previousPage: "Go to previous page",
+  rowsPerPage: "Rows per page",
+  selectedRows: (selected, total) => `${selected} of ${total} row(s) selected.`,
 };
 
 declare module "@tanstack/react-table" {
@@ -236,6 +258,8 @@ export type DataTableProps<TData> = React.ComponentProps<"div"> & {
   loadingRowCount?: number;
   /** Activates a row by pointer or keyboard while preserving nested controls. */
   onRowActivate?: (row: Row<TData>) => void;
+  /** Configures the built-in pagination region through its public contract. */
+  paginationProps?: Omit<DataTablePaginationProps<TData>, "table">;
   /** Customizes a loading cell when its final shape is not text-like. */
   renderLoadingCell?: (
     context: DataTableLoadingCellContext<TData>
@@ -281,6 +305,7 @@ function DataTable<TData>({
   loadingMessage = "Loading data.",
   loadingRowCount,
   onRowActivate,
+  paginationProps,
   renderLoadingCell,
   table,
   "aria-busy": ariaBusy,
@@ -523,7 +548,7 @@ function DataTable<TData>({
         </div>
       </div>
       <div className="flex flex-col gap-2.5">
-        <DataTablePagination table={table} />
+        <DataTablePagination {...paginationProps} table={table} />
         {!isLoading && actionBar &&
           table.getFilteredSelectedRowModel().rows.length > 0 &&
           actionBar}
@@ -745,6 +770,7 @@ function DataTableToolbarFilter<TData>({
 
 export type DataTableFacetedFilterProps<TData, TValue> = {
   column: Column<TData, TValue>;
+  disabled?: boolean;
   icon?: IconComponent;
   multiple?: boolean;
   options: DataTableFilterOption[];
@@ -753,6 +779,7 @@ export type DataTableFacetedFilterProps<TData, TValue> = {
 
 function DataTableFacetedFilter<TData, TValue>({
   column,
+  disabled = false,
   icon: FilterIcon,
   multiple = false,
   options,
@@ -806,6 +833,7 @@ function DataTableFacetedFilter<TData, TValue>({
             }
             className="shrink-0"
             dashed={!hasSelectedOptions}
+            disabled={disabled}
             leadingIcon={LeadingIcon}
             size="md"
             variant="tertiary"
@@ -847,7 +875,11 @@ function DataTableFacetedFilter<TData, TValue>({
               key={option.value}
               label={option.label}
               onToggle={() => toggleOption(option)}
-              trailing={column.getFacetedUniqueValues().get(option.value) ?? 0}
+              trailing={
+                option.count ??
+                column.getFacetedUniqueValues().get(option.value) ??
+                0
+              }
             />
           ))}
         </CheckboxGroup>
@@ -870,12 +902,16 @@ function DataTableFacetedFilter<TData, TValue>({
 }
 
 export type DataTablePaginationProps<TData> = React.ComponentProps<"div"> & {
+  disabled?: boolean;
+  labels?: Partial<DataTablePaginationLabels>;
   pageSizeOptions?: number[];
   table: TanstackTable<TData>;
 };
 
 function DataTablePagination<TData>({
   className,
+  disabled = false,
+  labels: providedLabels,
   pageSizeOptions = [10, 20, 30, 40, 50],
   table,
   ...props
@@ -891,11 +927,16 @@ function DataTablePagination<TData>({
   const resolvedPageSizeOptions = pageSizeOptions.includes(pageSize)
     ? pageSizeOptions
     : [...pageSizeOptions, pageSize].sort((left, right) => left - right);
+  const labels = {
+    ...defaultDataTablePaginationLabels,
+    ...providedLabels,
+  };
+  const pageCount = Math.max(table.getPageCount(), 1);
 
   return (
     <div
       className={cn(
-        "flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 text-body sm:flex-row sm:gap-8",
+        "flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto px-2 py-1 text-body sm:flex-row sm:gap-8",
         !hasSelectionCheckbox && "sm:justify-end",
         className
       )}
@@ -904,21 +945,24 @@ function DataTablePagination<TData>({
     >
       {hasSelectionCheckbox && (
         <div className="flex-1 whitespace-nowrap text-fg-muted">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {labels.selectedRows(
+            table.getFilteredSelectedRowModel().rows.length,
+            table.getFilteredRowModel().rows.length
+          )}
         </div>
       )}
       <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
         <div className="flex items-center gap-2 whitespace-nowrap">
-          <span className="text-label text-fg-default">Rows per page</span>
+          <span className="text-label text-fg-default">{labels.rowsPerPage}</span>
           <Select
+            disabled={disabled}
             itemDensity="compact"
             onValueChange={(value) => table.setPageSize(Number(value))}
             size="sm"
             value={`${pageSize}`}
           >
             <SelectTrigger
-              aria-label="Rows per page"
+              aria-label={labels.rowsPerPage}
               className="min-w-18 w-18 px-2 text-label"
               placeholder={`${pageSize}`}
             />
@@ -935,14 +979,16 @@ function DataTablePagination<TData>({
           </Select>
         </div>
         <div className="whitespace-nowrap text-label tabular-nums text-fg-default">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {Math.max(table.getPageCount(), 1)}
+          {labels.pageSummary(
+            table.getState().pagination.pageIndex + 1,
+            pageCount
+          )}
         </div>
         <div className="flex items-center gap-1.5">
           <Button
-            aria-label="Go to first page"
+            aria-label={labels.firstPage}
             className="hidden lg:inline-flex"
-            disabled={!table.getCanPreviousPage()}
+            disabled={disabled || !table.getCanPreviousPage()}
             onClick={() => table.setPageIndex(0)}
             iconOnly
             size="sm"
@@ -951,8 +997,8 @@ function DataTablePagination<TData>({
             <ChevronsLeft />
           </Button>
           <Button
-            aria-label="Go to previous page"
-            disabled={!table.getCanPreviousPage()}
+            aria-label={labels.previousPage}
+            disabled={disabled || !table.getCanPreviousPage()}
             onClick={() => table.previousPage()}
             iconOnly
             size="sm"
@@ -961,8 +1007,8 @@ function DataTablePagination<TData>({
             <ChevronLeft />
           </Button>
           <Button
-            aria-label="Go to next page"
-            disabled={!table.getCanNextPage()}
+            aria-label={labels.nextPage}
+            disabled={disabled || !table.getCanNextPage()}
             onClick={() => table.nextPage()}
             iconOnly
             size="sm"
@@ -971,10 +1017,10 @@ function DataTablePagination<TData>({
             <ChevronRight />
           </Button>
           <Button
-            aria-label="Go to last page"
+            aria-label={labels.lastPage}
             className="hidden lg:inline-flex"
-            disabled={!table.getCanNextPage()}
-            onClick={() => table.setPageIndex(Math.max(table.getPageCount() - 1, 0))}
+            disabled={disabled || !table.getCanNextPage()}
+            onClick={() => table.setPageIndex(pageCount - 1)}
             iconOnly
             size="sm"
             variant="tertiary"

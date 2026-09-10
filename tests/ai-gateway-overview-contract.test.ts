@@ -8,6 +8,8 @@ const charts = readFileSync(join(ROOT, "packages/blocks/src/application/ai-gatew
 const dataAdapter = readFileSync(join(ROOT, "packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-data.ts"), "utf8");
 const types = readFileSync(join(ROOT, "packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-types.ts"), "utf8");
 const blockIndex = readFileSync(join(ROOT, "packages/blocks/src/application/ai-gateway-overview-01/index.ts"), "utf8");
+const workspaceSidebar = readFileSync(join(ROOT, "packages/blocks/src/application/ai-gateway-workspace-sidebar.tsx"), "utf8");
+const workspaceTypes = readFileSync(join(ROOT, "packages/blocks/src/application/ai-gateway-workspace-types.ts"), "utf8");
 const registry = JSON.parse(readFileSync(join(ROOT, "packages/blocks/registry.json"), "utf8"));
 const capabilities = JSON.parse(readFileSync(join(ROOT, "packages/blocks/block-capabilities.json"), "utf8"));
 
@@ -20,7 +22,7 @@ describe("AiGatewayOverview contract", () => {
       dependencies: ["recharts", "tw-animate-css"],
       registryDependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils"],
     });
-    expect(item.files).toHaveLength(6);
+    expect(item.files).toHaveLength(8);
     expect(blockIndex).toContain("AiGatewayOverview");
     expect(blockIndex).toContain("createAiGatewayOverviewDemoData");
     expect(blockIndex).toContain("parseAiGatewayOverviewData");
@@ -31,8 +33,8 @@ describe("AiGatewayOverview contract", () => {
     expect(source).toContain('from "@zeron/ui/page-layout"');
     expect(source).toContain('from "@zeron/ui/metric-card"');
     expect(source).toContain('from "@zeron/ui/card"');
-    expect(source).toContain('from "@zeron/ui/nav-item"');
-    expect(source).toContain('from "@zeron/ui/nav-menu"');
+    expect(workspaceSidebar).toContain('from "@zeron/ui/nav-item"');
+    expect(workspaceSidebar).toContain('from "@zeron/ui/nav-menu"');
     expect(source).toContain('from "@zeron/ui/sidebar"');
     expect(source).toContain('from "@zeron/ui/tabs"');
     expect(source).toContain('availableRanges = ["1d", "7d", "30d", "90d"]');
@@ -50,7 +52,7 @@ describe("AiGatewayOverview contract", () => {
     expect(metricSeriesChart).not.toContain(" hide ");
     expect(source).toContain("return sidebarConfig ? (");
     expect(source).toContain('<SidebarProvider breakpointBehavior="drawer">');
-    expect(source).toContain('width="280px"');
+    expect(workspaceSidebar).toContain('width="280px"');
     expect(source).toContain("<PageLayout");
     expect(source).toContain(
       '<PageContent className="overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl">',
@@ -79,8 +81,8 @@ describe("AiGatewayOverview contract", () => {
     expect(types).toContain("onRangeChange?:");
     expect(types).toContain("onRefresh?:");
     expect(types).toContain("onProviderSelect?:");
-    expect(types).toContain("onNavigationSelect?:");
-    expect(types).toContain("event: MouseEvent<HTMLAnchorElement>");
+    expect(workspaceTypes).toContain("onNavigationSelect?:");
+    expect(workspaceTypes).toContain("event: MouseEvent<HTMLAnchorElement>");
     expect(types).toContain("sidebar?: AiGatewaySidebarOptions | false");
     expect(source).toContain('status === "refreshing"');
     expect(source).toContain('status === "error"');

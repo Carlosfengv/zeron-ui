@@ -86,6 +86,18 @@ const previewLoaders: Record<string, PreviewLoader> = {
       );
     },
   })),
+  "ai-gateway-session-list-01": () => import("@zeron/blocks/ai-gateway-session-list-01").then(({ AiGatewaySessionList, aiGatewaySessionListDemoData, aiGatewaySessionListDemoQuery }) => ({
+    default: () => (
+      <ResponsivePreview canvasHeight={760} canvasWidth={1440}>
+        <AiGatewaySessionList
+          className="h-full min-h-0"
+          data={aiGatewaySessionListDemoData}
+          now={aiGatewaySessionListDemoData.generatedAt}
+          query={aiGatewaySessionListDemoQuery}
+        />
+      </ResponsivePreview>
+    ),
+  })),
   "agent-message-trace-01": () => import("@zeron/blocks/agent-message-trace-01").then(({ AgentMessageTrace, agentMessageTraceDemoData }) => ({
     default: () => (
       <div className="h-[min(720px,80vh)] min-h-[420px] w-full bg-surface-base p-3 sm:p-6">

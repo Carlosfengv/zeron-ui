@@ -1,5 +1,17 @@
-import type { ComponentPropsWithoutRef, MouseEvent } from "react";
-import type { IconName } from "@zeron/ui/system/icon-context";
+import type { ComponentPropsWithoutRef } from "react";
+import type {
+  AiGatewaySidebarActions,
+  AiGatewaySidebarOptions,
+} from "../ai-gateway-workspace-types";
+
+export type {
+  AiGatewaySidebarActions,
+  AiGatewaySidebarConfig,
+  AiGatewaySidebarIdentity,
+  AiGatewaySidebarNavigationGroup,
+  AiGatewaySidebarNavigationItem,
+  AiGatewaySidebarOptions,
+} from "../ai-gateway-workspace-types";
 
 export type AiGatewayOverviewRange = "1d" | "7d" | "30d" | "90d";
 
@@ -130,49 +142,13 @@ export interface AiGatewayOverviewLabels {
   peakPerDay: string;
 }
 
-export interface AiGatewayOverviewActions {
+export interface AiGatewayOverviewActions extends AiGatewaySidebarActions {
   onRangeChange?: (range: AiGatewayOverviewRange) => void;
   onRefresh?: () => void;
   onRetry?: () => void;
   onProviderSelect?: (providerId: string) => void;
   onOperationSelect?: (operationId: string) => void;
   onUserSelect?: (userId: string) => void;
-  onNavigationSelect?: (itemId: string, event: MouseEvent<HTMLAnchorElement>) => void;
-  onWorkspaceSelect?: () => void;
-  onAccountSelect?: () => void;
-}
-
-export interface AiGatewaySidebarNavigationItem {
-  id: string;
-  label: string;
-  iconName: IconName;
-  href?: string;
-}
-
-export interface AiGatewaySidebarNavigationGroup {
-  id: string;
-  label?: string;
-  items: readonly AiGatewaySidebarNavigationItem[];
-}
-
-export interface AiGatewaySidebarIdentity {
-  name: string;
-  description?: string;
-  avatarLabel?: string;
-}
-
-export interface AiGatewaySidebarConfig {
-  ariaLabel: string;
-  activeItem: string;
-  workspace: AiGatewaySidebarIdentity;
-  groups: readonly AiGatewaySidebarNavigationGroup[];
-  account: AiGatewaySidebarIdentity;
-}
-
-export interface AiGatewaySidebarOptions
-  extends Partial<Omit<AiGatewaySidebarConfig, "workspace" | "account">> {
-  workspace?: Partial<AiGatewaySidebarIdentity>;
-  account?: Partial<AiGatewaySidebarIdentity>;
 }
 
 export interface AiGatewayOverviewProps

@@ -65,6 +65,11 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
     kind: "block", product: "zentrix", domains: ["ai gateway", "analytics", "observability"], patterns: ["sidebar", "dashboard", "metrics", "charts", "histogram"], searchTerms: ["gateway", "sidebar", "navigation", "requests", "cost", "tokens", "latency", "provider", "AI 网关", "侧边栏", "费用", "延迟"], readiness: "copy-ready", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
   },
   {
+    slug: "ai-gateway-session-list-01", registryName: "ai-gateway-session-list-01",
+    title: "AI Gateway Session List", description: "A filterable session workspace with shared AI gateway navigation, outcomes, models, tokens, cost, and recent activity.",
+    kind: "page", product: "zentrix", domains: ["ai gateway", "observability"], patterns: ["sidebar", "data table", "filter", "pagination"], searchTerms: ["gateway", "sidebar", "session", "trace", "tokens", "cost", "网关", "侧边栏", "会话", "筛选"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
     slug: "agent-message-trace-01", registryName: "agent-message-trace-01",
     title: "Agent Message Trace", description: "A responsive, resizable agent trace workspace with a virtualized timeline and span inspector.",
     kind: "block", product: "zentrix", domains: ["ai agent", "observability"], patterns: ["tree timeline", "virtualized trace", "resizable inspector", "tool calls"], searchTerms: ["agent", "message", "trace", "span", "tool call", "timeline", "inspector", "智能体", "消息", "调用链", "工具调用"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,

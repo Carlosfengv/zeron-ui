@@ -1,0 +1,12 @@
+{
+  "aiGatewaySessionListBlock": {
+    "title": "AI 网关 Session 列表 1",
+    "description": "包含与 AI Gateway Overview 1 一致侧栏的响应式 Session 列表，支持受控搜索、实体筛选、仅错误筛选、用量格式化和 DataTable 原生分页。",
+    "composition": "组件映射",
+    "compositionBody": "页面复用 AI Gateway Overview 1 的共享 Sidebar；PageBody 内部采用 resource-list-table-01 的 section、DataTable、工具栏、间距和原生分页结构，并由 InputGroup、DataTableFacetedFilter、Checkbox、Badge、Empty、InlineNotice 和 Button 组合。分页通过 DataTable 公共契约支持每页条数、当前页以及首页、上一页、下一页和末页操作，不使用内部 slot 样式覆盖。已有相同外壳的宿主可将 sidebar 属性设为 false。",
+    "dataContract": "数据接入",
+    "dataContractBody": "传入当前页数据、筛选后总数、服务端权威 facet count、generatedAt、ISO lastActiveAt 和 createdAt 时间、输入和输出 Token，以及整数 costMicros；query 是分页状态的唯一数据源。Demo 提供 13 条 Session，并可按 WorkBuddy、Codex 和 Claude Code 筛选。Session 第一列第二行仅显示最近活跃时间值，不显示标签：7 天内按分钟、小时或天显示，严格超过 7 天改为 YYYY年 M月D日 HH:mm:ss；末列使用相同格式显示具体创建时间。dateTimeFormatter 和 renderModelLogo 可接入产品自己的展示适配。宿主负责查询和路由，Block 负责显示格式化并上报受控查询意图。",
+    "states": "运行状态",
+    "statesBody": "首次加载使用列对齐骨架；刷新保留旧行并禁用搜索、筛选和分页；空状态区分全局无数据和筛选无结果；错误状态可保留旧数据并提供可选重试。"
+  }
+}

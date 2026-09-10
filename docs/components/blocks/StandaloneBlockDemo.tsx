@@ -9,6 +9,12 @@ import {
   createAiGatewayOverviewDemoData,
   type AiGatewayOverviewRange,
 } from "@zeron/blocks/ai-gateway-overview-01";
+import {
+  AiGatewaySessionList,
+  aiGatewaySessionListDemoQuery,
+  createAiGatewaySessionListDemoData,
+  type AiGatewaySessionListQuery,
+} from "@zeron/blocks/ai-gateway-session-list-01";
 import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
 import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
 import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";
@@ -90,6 +96,23 @@ function AiGatewayOverviewDemo() {
   );
 }
 
+function AiGatewaySessionListDemo() {
+  const [query, setQuery] = useState<AiGatewaySessionListQuery>(() => ({
+    ...aiGatewaySessionListDemoQuery,
+  }));
+  const data = useMemo(() => createAiGatewaySessionListDemoData(query), [query]);
+
+  return (
+    <AiGatewaySessionList
+      actions={{ onQueryChange: setQuery }}
+      className="h-full min-h-0"
+      data={data}
+      now={data.generatedAt}
+      query={query}
+    />
+  );
+}
+
 function CreditUsageDemo() {
   const [cycle, setCycle] = useState<CreditUsageCycle>("current");
   const [autoSwitchEnabled, setAutoSwitchEnabled] = useState(true);
@@ -127,6 +150,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <div className="h-full overflow-auto bg-surface-base p-4 sm:p-8"><AvailabilityMonitor className="mx-auto" /></div>;
     case "ai-gateway-overview-01":
       return <AiGatewayOverviewDemo />;
+    case "ai-gateway-session-list-01":
+      return <AiGatewaySessionListDemo />;
     case "agent-message-trace-01":
       return <AgentMessageTrace className="h-full w-full rounded-none" data={agentMessageTraceDemoData} nowOffsetMs={154_000} />;
     case "agent-trace-01":

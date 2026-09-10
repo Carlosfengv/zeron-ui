@@ -17,6 +17,7 @@
     "isLoading": "使用按列对齐的 Skeleton 表体替换数据行和空状态。",
     "loadingMessage": "表格加载时播报的无障碍状态消息。",
     "loadingRowCount": "加载期间显示的占位行数量，默认使用当前每页数量。",
+    "paginationProps": "配置内置分页区域，包括禁用状态、文案、每页选项和外层布局属性。",
     "renderLoadingCell": "通过行索引、列索引和 TanStack 列自定义加载单元格。",
     "data": "提供给 TanStack Table 的行数据。",
     "columns": "列定义、表头、单元格和筛选元数据。",
@@ -24,7 +25,7 @@
     "options": "其他 TanStack Table 选项，包括行选择和自定义筛选函数。",
     "label": "筛选器和视图选项使用的易读列标签。",
     "variant": "为该列生成的工具栏筛选器。",
-    "filterOptions": "选择和多选筛选器的选项。",
+    "filterOptions": "选择和多选筛选器的选项；每个选项可以提供服务端 facet 的权威数量。",
     "placeholder": "文本和数字筛选器的占位符。",
     "unit": "显示在数字筛选器中的可选后缀。"
   }

@@ -3,6 +3,7 @@
   "signup-01": { "framework": "next", "kind": "template" },
   "availability-monitor-01": { "framework": "react", "kind": "template" },
   "ai-gateway-overview-01": { "framework": "react", "kind": "data-block" },
+  "ai-gateway-session-list-01": { "framework": "react", "kind": "data-block" },
   "file-manager-01": { "framework": "react", "kind": "data-block" },
   "agent-message-trace-01": { "framework": "react", "kind": "data-block" },
   "agent-trace-01": { "framework": "react", "kind": "template" },

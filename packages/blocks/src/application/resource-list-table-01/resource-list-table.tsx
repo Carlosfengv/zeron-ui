@@ -1092,7 +1092,7 @@ export function ResourceListTable({
     >
       <DataTable
         activeRowId={activeRowId}
-        className="gap-2.5 [&_[data-slot=data-table-pagination]]:px-2"
+        className="gap-2.5"
         emptyMessage={labels.empty}
         emptyState={emptyState}
         isLoading={isLoading}

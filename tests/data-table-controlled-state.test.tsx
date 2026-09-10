@@ -7,7 +7,11 @@ import {
 } from "@tanstack/react-table";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { useDataTable } from "../packages/ui/src/components/data-table";
+import {
+  DataTableFacetedFilter,
+  DataTablePagination,
+  useDataTable,
+} from "../packages/ui/src/components/data-table";
 
 afterEach(cleanup);
 
@@ -41,6 +45,43 @@ function ControlledTable({
   );
 }
 
+function PaginationControls({ disabled = false }: { disabled?: boolean }) {
+  const { table } = useDataTable({
+    columns,
+    data: [{ name: "Atlas" }],
+    manualPagination: true,
+    rowCount: 30,
+    state: { pagination: { pageIndex: 0, pageSize: 10 } },
+  });
+
+  return (
+    <DataTablePagination
+      disabled={disabled}
+      labels={{
+        nextPage: "下一页",
+        pageSummary: (page, pageCount) => `第 ${page} 页，共 ${pageCount} 页`,
+        rowsPerPage: "每页行数",
+      }}
+      table={table}
+    />
+  );
+}
+
+function ServerFacet() {
+  const { table } = useDataTable({
+    columns: [{ accessorKey: "name", header: "Name" }],
+    data: [{ name: "Atlas" }],
+  });
+
+  return (
+    <DataTableFacetedFilter
+      column={table.getColumn("name")!}
+      options={[{ count: 99, label: "Atlas", value: "Atlas" }]}
+      title="Teams"
+    />
+  );
+}
+
 describe("useDataTable controlled state", () => {
   it("keeps a controlled slice external and forwards its updater", () => {
     const onPaginationChange = vi.fn();
@@ -67,5 +108,23 @@ describe("useDataTable controlled state", () => {
       />
     );
     expect(screen.getByRole("button").textContent).toBe("Page 2");
+  });
+
+  it("disables and localizes the built-in pagination controls", () => {
+    render(<PaginationControls disabled />);
+
+    expect(screen.getByText("第 1 页，共 3 页")).toBeTruthy();
+    expect(screen.getByText("每页行数")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "下一页" })).toHaveProperty(
+      "disabled",
+      true,
+    );
+  });
+
+  it("renders an authoritative server facet count", () => {
+    render(<ServerFacet />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Teams" }));
+    expect(screen.getByText("99")).toBeTruthy();
   });
 });

@@ -1,7 +1,5 @@
-export {
-  AiGatewayOverview,
-  defaultAiGatewaySidebarConfig,
-} from "./ai-gateway-overview";
+export { AiGatewayOverview } from "./ai-gateway-overview";
+export { defaultAiGatewaySidebarConfig } from "../ai-gateway-workspace-sidebar";
 export {
   aiGatewayOverviewDemoData,
   createAiGatewayOverviewDemoData,

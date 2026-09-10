@@ -33,6 +33,13 @@ describe("DataTable faceted-filter contract", () => {
     expect(exampleSource).toContain("filterIcon: StatusIcon");
   });
 
+  it("prefers an authoritative option count for server-side facets", () => {
+    expect(dataTableSource).toContain("count?: number");
+    expect(dataTableSource).toContain(
+      "option.count ??\n                column.getFacetedUniqueValues().get(option.value) ??",
+    );
+  });
+
   it("uses the default 32px control size for text and number toolbar filters", () => {
     expect(dataTableSource).toMatch(
       /inputMode="numeric"[\s\S]*?size="md"[\s\S]*?type="number"/

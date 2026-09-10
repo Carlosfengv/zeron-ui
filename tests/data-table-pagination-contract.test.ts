@@ -25,6 +25,14 @@ describe("DataTable pagination contract", () => {
     expect(dataTableSource).toContain("resolvedPageSizeOptions.map((option) =>");
   });
 
+  it("supports disabled and localized pagination through public props", () => {
+    expect(dataTableSource).toContain("disabled?: boolean");
+    expect(dataTableSource).toContain("labels?: Partial<DataTablePaginationLabels>");
+    expect(dataTableSource).toContain("disabled={disabled || !table.getCanNextPage()}");
+    expect(dataTableSource).toContain("{labels.pageSummary(");
+    expect(dataTableSource).toContain("px-2 py-1 text-body");
+  });
+
   it("keeps externally supplied settings table data stable while pagination updates", () => {
     expect(personalSettingsSource).toContain(
       "const data = useMemo(() => [...apiKeys], [apiKeys]);"

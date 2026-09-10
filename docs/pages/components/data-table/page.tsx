@@ -267,6 +267,7 @@ const dataTableProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "isLoading", type: "boolean", default: "false", description: t("isLoading") },
   { name: "loadingMessage", type: "ReactNode", default: '"Loading data."', description: t("loadingMessage") },
   { name: "loadingRowCount", type: "number", default: "Current page size", description: t("loadingRowCount") },
+  { name: "paginationProps", type: "Omit<DataTablePaginationProps<TData>, \"table\">", description: t("paginationProps") },
   { name: "renderLoadingCell", type: "(context) => ReactNode", description: t("renderLoadingCell") },
 ];
 
