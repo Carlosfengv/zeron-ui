@@ -20,7 +20,7 @@ describe("AiGatewayOverview contract", () => {
     expect(capabilities["ai-gateway-overview-01"]).toEqual({ framework: "react", kind: "data-block" });
     expect(item).toMatchObject({
       dependencies: ["recharts", "tw-animate-css"],
-      registryDependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils"],
+      registryDependencies: ["badge", "button", "card", "chart", "container", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils"],
     });
     expect(item.files).toHaveLength(8);
     expect(blockIndex).toContain("AiGatewayOverview");
@@ -33,6 +33,9 @@ describe("AiGatewayOverview contract", () => {
     expect(source).toContain('from "@zeron/ui/page-layout"');
     expect(source).toContain('from "@zeron/ui/metric-card"');
     expect(source).toContain('from "@zeron/ui/card"');
+    expect(source).toContain('from "@zeron/ui/container"');
+    expect(source.match(/<ContainerHeader className="py-1\.5">/g)).toHaveLength(4);
+    expect(source.match(/<ContainerBody>/g)).toHaveLength(4);
     expect(workspaceSidebar).toContain('from "@zeron/ui/nav-item"');
     expect(workspaceSidebar).toContain('from "@zeron/ui/nav-menu"');
     expect(source).toContain('from "@zeron/ui/sidebar"');
@@ -63,6 +66,8 @@ describe("AiGatewayOverview contract", () => {
     expect(source).toContain('<div className="grid gap-4 pb-20" id="overview">');
     expect(source).toContain('<RefreshIcon aria-hidden />');
     expect(source).toContain('sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]');
+    expect(source).toContain('contentClassName="px-2 pt-2"');
+    expect(source).toContain('className="grid min-w-0 gap-2 lg:grid-cols-2 xl:grid-cols-3"');
     expect(source).toContain('labelClassName="text-label font-medium"');
     expect(source).toContain("leading={");
     expect(source).not.toContain("[&_[data-slot=metric-card-label]]");

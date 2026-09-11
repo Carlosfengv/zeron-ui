@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Card, CardContent, CardHeader } from "@zeron/ui/card";
+import { Container, ContainerBody, ContainerHeader } from "@zeron/ui/container";
 import {
   Empty,
   EmptyActions,
@@ -106,11 +107,13 @@ function formatter(locale: string, options?: Intl.NumberFormatOptions) {
 function DashboardCard({
   children,
   className,
+  contentClassName,
   description,
   title,
 }: {
   children: ReactNode;
   className?: string;
+  contentClassName?: string;
   description?: ReactNode;
   title: string;
 }) {
@@ -120,7 +123,7 @@ function DashboardCard({
         <h2 className="text-body font-medium text-fg-default">{title}</h2>
         {description ? <div className="text-label text-fg-muted">{description}</div> : null}
       </CardHeader>
-      <CardContent className="min-w-0 px-4 pt-4">{children}</CardContent>
+      <CardContent className={cn("min-w-0 px-4 pt-4", contentClassName)}>{children}</CardContent>
     </Card>
   );
 }
@@ -433,35 +436,55 @@ export function AiGatewayOverview({
         </DashboardCard>
       </div>
 
-      <DashboardCard description={labels.metricSeriesDescription} title={labels.metricSeries}>
-        <div className="grid min-w-0 gap-3 lg:grid-cols-2 xl:grid-cols-3">
+      <DashboardCard contentClassName="px-2 pt-2" description={labels.metricSeriesDescription} title={labels.metricSeries}>
+        <div className="grid min-w-0 gap-2 lg:grid-cols-2 xl:grid-cols-3">
           {data.metrics.map((metric) => <MetricPanel key={metric.id} locale={locale} metric={metric} timeZone={resolvedTimeZone} />)}
         </div>
       </DashboardCard>
 
       <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
-        <DashboardCard title={labels.latencyDistribution}>
-          <LatencyDistributionChart
-            buckets={data.latencyDistribution}
-            percentiles={{ p50: data.summary.p50LatencyMs, p95: data.summary.p95LatencyMs, p99: data.summary.p99LatencyMs }}
-            requestLabel={labels.requests}
-          />
-        </DashboardCard>
-        <DashboardCard title={labels.costByProvider}>
-          <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center">
-            <ProviderCostDonut className="h-44" data={data.providers} formatCost={formatCost} />
-            <ProviderCostList formatCost={formatCost} onSelect={actions?.onProviderSelect} providers={data.providers} />
-          </div>
-        </DashboardCard>
+        <Container>
+          <ContainerHeader className="py-1.5">
+            <h2 className="text-body font-medium text-fg-default">{labels.latencyDistribution}</h2>
+          </ContainerHeader>
+          <ContainerBody>
+            <LatencyDistributionChart
+              buckets={data.latencyDistribution}
+              percentiles={{ p50: data.summary.p50LatencyMs, p95: data.summary.p95LatencyMs, p99: data.summary.p99LatencyMs }}
+              requestLabel={labels.requests}
+            />
+          </ContainerBody>
+        </Container>
+        <Container>
+          <ContainerHeader className="py-1.5">
+            <h2 className="text-body font-medium text-fg-default">{labels.costByProvider}</h2>
+          </ContainerHeader>
+          <ContainerBody>
+            <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center">
+              <ProviderCostDonut className="h-44" data={data.providers} formatCost={formatCost} />
+              <ProviderCostList formatCost={formatCost} onSelect={actions?.onProviderSelect} providers={data.providers} />
+            </div>
+          </ContainerBody>
+        </Container>
       </div>
 
       <div className="grid min-w-0 gap-4 xl:grid-cols-2">
-        <DashboardCard title={labels.slowestOperations}>
-          <OperationsList formatLatency={formatLatency} onSelect={actions?.onOperationSelect} operations={data.slowestOperations} />
-        </DashboardCard>
-        <DashboardCard title={labels.topUsers}>
-          <UsersList labels={labels} onSelect={actions?.onUserSelect} users={data.topUsers} />
-        </DashboardCard>
+        <Container>
+          <ContainerHeader className="py-1.5">
+            <h2 className="text-body font-medium text-fg-default">{labels.slowestOperations}</h2>
+          </ContainerHeader>
+          <ContainerBody>
+            <OperationsList formatLatency={formatLatency} onSelect={actions?.onOperationSelect} operations={data.slowestOperations} />
+          </ContainerBody>
+        </Container>
+        <Container>
+          <ContainerHeader className="py-1.5">
+            <h2 className="text-body font-medium text-fg-default">{labels.topUsers}</h2>
+          </ContainerHeader>
+          <ContainerBody>
+            <UsersList labels={labels} onSelect={actions?.onUserSelect} users={data.topUsers} />
+          </ContainerBody>
+        </Container>
       </div>
     </div>
   ) : (
