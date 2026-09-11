@@ -78,7 +78,7 @@ export default async function UpdatesPage({ params }: { params: Promise<{ locale
   setRequestLocale(locale);
   const language = locale === "en" ? "en" : "zh";
   const text = copy[language];
-  const commits = readCommitHistory();
+  const commits = await readCommitHistory();
   const groups = groupCommits(commits);
 
   return (

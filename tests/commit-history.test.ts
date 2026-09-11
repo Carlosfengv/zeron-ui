@@ -1,7 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
-import { parseCommitHistory, readCommitHistory } from "../docs/lib/commit-history.server";
+import { describe, expect, it, vi } from "vitest";
+import {
+  parseCommitHistory,
+  parseGitHubCommitHistory,
+  readCommitHistory,
+} from "../docs/lib/commit-history.server";
 
 describe("updates commit history", () => {
   it("parses commit records in newest-first order", () => {
@@ -28,8 +32,54 @@ describe("updates commit history", () => {
     ]);
   });
 
-  it("reads the current repository history", () => {
-    const commits = readCommitHistory(process.cwd(), 3);
+  it("maps GitHub commits and keeps only the subject line", () => {
+    expect(parseGitHubCommitHistory([
+      {
+        sha: "abc123456789",
+        commit: {
+          author: { date: "2026-09-11T06:46:44Z", name: "Carlos" },
+          committer: { date: "2026-09-11T07:00:00Z", name: "GitHub" },
+          message: "feat: add updates\n\nLong description",
+        },
+      },
+    ])).toEqual([
+      {
+        id: "abc123456789",
+        shortId: "abc1234",
+        committedAt: "2026-09-11T07:00:00Z",
+        author: "Carlos",
+        message: "feat: add updates",
+      },
+    ]);
+  });
+
+  it("loads the deployed revision from GitHub", async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify([
+      {
+        sha: "abc123456789",
+        commit: {
+          author: { date: "2026-09-11T06:46:44Z", name: "Carlos" },
+          committer: { date: "2026-09-11T07:00:00Z", name: "GitHub" },
+          message: "feat: add updates",
+        },
+      },
+    ])));
+
+    const commits = await readCommitHistory("/missing", 100, {
+      VERCEL_GIT_COMMIT_SHA: "abc123456789",
+      VERCEL_GIT_REPO_OWNER: "Carlosfengv",
+      VERCEL_GIT_REPO_SLUG: "zeron-ui",
+    }, fetchMock);
+
+    expect(commits).toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("sha=abc123456789");
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("per_page=100");
+  });
+
+  it("falls back to the current repository history", async () => {
+    const unavailableFetch = vi.fn(async () => new Response(null, { status: 503 }));
+    const commits = await readCommitHistory(process.cwd(), 3, {}, unavailableFetch);
     expect(commits).toHaveLength(3);
     expect(commits[0]?.id).toMatch(/^[a-f0-9]{40}$/);
   });
