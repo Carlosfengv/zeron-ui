@@ -328,11 +328,11 @@ Next.js 会在生产环境中自动预取进入视口的 `<Link>`；对静态路
 4. Chrome Performance 录制冷启动与以下切换：
    - `/docs` → `/docs/components`；
    - `/docs/components` → `/docs/blocks`；
-   - `/docs/blocks` → `/guides`；
+   - `/docs/blocks` → `/docs/components`；
    - `/docs/components/button` → 下一个组件详情；
 5. 检查 Long Tasks、Script Evaluation、Recalculate Style、Layout、React commit；
 6. React Profiler 对比 Header、Sidebar、Gallery 的 render/commit 次数；
-7. Network 检查 TopNav 三个链接的预取时序及是否下载无关 Block/详情 chunk；
+7. Network 检查 TopNav 两个链接的预取时序及是否下载无关 Block/详情 chunk；
 8. 用 Playwright 增加以下回归断言：
    - 首屏 HTML/首次 paint 阶段 Header 存在；
    - 路由切换过程中 Header 不卸载；

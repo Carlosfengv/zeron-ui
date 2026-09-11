@@ -8,10 +8,8 @@ export const config = {
     "/",
     "/docs/:path*",
     "/block-demo/:path*",
-    "/guides/:path*",
     "/(en|zh-cn)",
     "/(en|zh-cn)/docs/:path*",
     "/(en|zh-cn)/block-demo/:path*",
-    "/(en|zh-cn)/guides/:path*",
   ],
 };

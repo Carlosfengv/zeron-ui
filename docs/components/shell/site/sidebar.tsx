@@ -96,14 +96,14 @@ function DocsSidebarContent({ localePrefix = "" }: Pick<DocsSidebarProps, "local
 
   return (
     <>
-      {currentPathname !== "/guides" && collection === "blocks" && relatedTemplates.length > 0 && section(
+      {collection === "blocks" && relatedTemplates.length > 0 && section(
         "related-templates",
         relatedTemplatesLabel,
         relatedTemplates.length,
         relatedTemplatesLabel,
         relatedTemplates.map((item) => <SiteNavItem key={item.slug} href={localizePathname(pathnameOf(item), localePrefix)} label={item.name} icon={item.icon} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />),
       )}
-      {currentPathname !== "/guides" && collection !== "blocks" && sections.map((definition) => {
+      {collection !== "blocks" && sections.map((definition) => {
         const entries = docEntries.filter((entry) => entry.collection === collection && entry.section === definition.id);
         const label = t.has(definition.navigationKey) ? t(definition.navigationKey) : definition.id;
         return section(definition.id, label, entries.length, label, entries.map((item) => <SiteNavItem key={item.slug} href={localizePathname(pathnameOf(item), localePrefix)} label={item.name} icon={item.icon} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />));

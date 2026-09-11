@@ -90,19 +90,16 @@ function DocsPrimaryNavigation({
   const themeActionLabel = isEnglish
     ? nextTheme === "dark" ? "Switch to dark mode" : "Switch to light mode"
     : nextTheme === "dark" ? "切换至深色模式" : "切换至浅色模式";
-  const activePath = currentPathname === "/guides"
-      ? localizePathname("/guides", localePrefix)
-      : currentPathname.startsWith("/docs/blocks")
-        ? localizePathname("/docs/blocks", localePrefix)
-        : currentPathname.startsWith("/docs/components")
-          ? localizePathname("/docs/components", localePrefix)
-          : currentPathname === "/docs"
-            ? localizePathname("/docs", localePrefix)
-            : null;
+  const activePath = currentPathname.startsWith("/docs/blocks")
+    ? localizePathname("/docs/blocks", localePrefix)
+    : currentPathname.startsWith("/docs/components")
+      ? localizePathname("/docs/components", localePrefix)
+      : currentPathname === "/docs"
+        ? localizePathname("/docs", localePrefix)
+        : null;
   const items = [
     { href: localizePathname("/docs/blocks", localePrefix), label: t("businessTemplates") },
     { href: localizePathname("/docs/components", localePrefix), label: t("componentsEntry") },
-    { href: localizePathname("/guides", localePrefix), label: t("guides") },
   ];
   const languageActionLabel = isEnglish ? "切换至中文" : "Switch to English";
   const languageLabel = isEnglish ? "中" : "EN";
@@ -189,9 +186,8 @@ function DocsShellContent({ children }: { children: ReactNode }) {
   const { closeMobile } = useSidebar();
   const localePrefix = localePrefixFromPathname(pathname);
   const currentPathname = internalPathname(pathname);
-  const isLocalizedDocumentation = currentPathname === "/guides" || currentPathname === "/docs" || currentPathname.startsWith("/docs/");
+  const isLocalizedDocumentation = currentPathname === "/docs" || currentPathname.startsWith("/docs/");
   const isBlocksWorkspace = currentPathname === "/docs/blocks" || currentPathname.startsWith("/docs/blocks/");
-  const isGuidesWorkspace = currentPathname === "/guides";
   const isComponentsDetail = currentPathname.startsWith("/docs/components/");
   const isComponentsWorkspace = currentPathname === "/docs/components" || isComponentsDetail;
   const hasDocumentationSidebar = currentPathname === "/docs" || currentPathname.startsWith("/docs/icons");
@@ -235,7 +231,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
         <AppShellMain className={isComponentsWorkspace ? "flex min-h-0 overflow-hidden [&:has([data-docs-workspace=blocks])>aside]:hidden" : "flex min-h-0 [&:has([data-docs-workspace=blocks])>aside]:hidden"}>
           {hasDocumentationSidebar && <AppShellSidebar><DocsSidebar localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} /></AppShellSidebar>}
           <div className="min-h-0 min-w-0 flex-1">{children}</div>
-          {!isBlocksWorkspace && !isGuidesWorkspace && currentPathname !== "/docs/components" && !isComponentsDetail && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
+          {!isBlocksWorkspace && currentPathname !== "/docs/components" && !isComponentsDetail && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
         </AppShellMain>
       </AppShell>
     </RightRailProvider>
