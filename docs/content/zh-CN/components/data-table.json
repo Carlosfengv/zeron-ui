@@ -1,6 +1,8 @@
 {
   "dataTable": {
     "projectDirectory": "项目目录",
+    "bulkSelection": "选中与批量操作",
+    "bulkSelectionDescription": "选中一行或多行后，顶部的搜索和筛选会替换为当前选中数量及可用的批量操作。清空选择后会恢复筛选工具栏，并保留原有筛选状态。",
     "pinnedColumns": "固定列",
     "pinnedColumnsDescription": "水平滚动可查看前两列固定在左侧，Budget 固定在右侧。",
     "emptyState": "空状态",

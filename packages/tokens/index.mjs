@@ -94,19 +94,39 @@ const tokenData = {
     },
     {
       "name": "fg-on-primary-action",
-      "light": "var(--fg-on-brand)",
-      "dark": "var(--fg-on-brand)",
-      "usage": "主要按钮的文字和图标；始终沿用品牌主题计算的前景色",
+      "light": "#FFFFFF",
+      "dark": "#FFFFFF",
+      "usage": "主要操作默认、悬停和按下填充上的文字与图标；默认主题固定为白色，自定义品牌主题可按对比度重新计算",
+      "classification": {
+        "channel": "foreground",
+        "intent": "brand"
+      }
+    },
+    {
+      "name": "fg-on-neutral-action",
+      "light": "#FFFFFF",
+      "dark": "#FFFFFF",
+      "usage": "中性高强调操作默认、悬停和按下填充上的白色文字与图标",
       "classification": {
         "channel": "foreground",
         "intent": "neutral"
       }
     },
     {
+      "name": "fg-on-destructive-action",
+      "light": "#FFFFFF",
+      "dark": "#FFFFFF",
+      "usage": "危险操作默认、悬停和按下填充上的白色文字与图标；独立于品牌主题",
+      "classification": {
+        "channel": "foreground",
+        "intent": "danger"
+      }
+    },
+    {
       "name": "fg-on-brand",
       "light": "#FFFFFF",
       "dark": "#00040D",
-      "usage": "品牌色默认、悬停和按下填充上的文字与图标；须与对应填充配对使用",
+      "usage": "品牌色填充上的文字与图标；须与品牌主题计算的填充配对使用",
       "classification": {
         "channel": "foreground",
         "intent": "brand"
@@ -116,7 +136,7 @@ const tokenData = {
       "name": "fg-on-danger",
       "light": "#00040D",
       "dark": "#00040D",
-      "usage": "危险操作默认、悬停和按下填充之上的文字与图标；独立于品牌主题并须与对应填充配对使用",
+      "usage": "通用危险强调填充上的文字与图标；不得替代危险操作专用前景色",
       "classification": {
         "channel": "foreground",
         "intent": "danger"
@@ -136,7 +156,7 @@ const tokenData = {
       "name": "brand",
       "light": "#0060D2",
       "dark": "#1483FD",
-      "usage": "主要操作和明确的选中标记",
+      "usage": "品牌表达和明确的选中标记；按钮应使用 primary-action",
       "classification": {
         "channel": "fill",
         "intent": "brand"
@@ -183,6 +203,114 @@ const tokenData = {
       "classification": {
         "channel": "fill",
         "intent": "brand",
+        "variant": {
+          "interaction": "active"
+        }
+      }
+    },
+    {
+      "name": "primary-action",
+      "light": "#0060D2",
+      "dark": "#0060D2",
+      "usage": "主要操作的默认填充；默认主题与白色前景配对",
+      "classification": {
+        "channel": "fill",
+        "intent": "brand"
+      }
+    },
+    {
+      "name": "primary-action-hover",
+      "light": "#004DAF",
+      "dark": "#004DAF",
+      "usage": "主要操作的悬停填充；自定义品牌主题可重新计算",
+      "classification": {
+        "channel": "fill",
+        "intent": "brand",
+        "variant": {
+          "interaction": "hover"
+        }
+      }
+    },
+    {
+      "name": "primary-action-active",
+      "light": "#003B8B",
+      "dark": "#003B8B",
+      "usage": "主要操作的按下或展开填充；自定义品牌主题可重新计算",
+      "classification": {
+        "channel": "fill",
+        "intent": "brand",
+        "variant": {
+          "interaction": "active"
+        }
+      }
+    },
+    {
+      "name": "neutral-action",
+      "light": "#00030A",
+      "dark": "#737373",
+      "usage": "中性高强调操作的默认填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "neutral"
+      }
+    },
+    {
+      "name": "neutral-action-hover",
+      "light": "#001033",
+      "dark": "#525252",
+      "usage": "中性高强调操作的悬停填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "neutral",
+        "variant": {
+          "interaction": "hover"
+        }
+      }
+    },
+    {
+      "name": "neutral-action-active",
+      "light": "#001748",
+      "dark": "#404040",
+      "usage": "中性高强调操作的按下或展开填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "neutral",
+        "variant": {
+          "interaction": "active"
+        }
+      }
+    },
+    {
+      "name": "destructive-action",
+      "light": "#DC2626",
+      "dark": "#DC2626",
+      "usage": "危险操作的默认填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "danger"
+      }
+    },
+    {
+      "name": "destructive-action-hover",
+      "light": "#B91C1C",
+      "dark": "#B91C1C",
+      "usage": "危险操作的悬停填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "danger",
+        "variant": {
+          "interaction": "hover"
+        }
+      }
+    },
+    {
+      "name": "destructive-action-active",
+      "light": "#991B1B",
+      "dark": "#991B1B",
+      "usage": "危险操作的按下填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "danger",
         "variant": {
           "interaction": "active"
         }
@@ -258,7 +386,7 @@ const tokenData = {
       "name": "destructive",
       "light": "#F73920",
       "dark": "#FC4932",
-      "usage": "错误、删除和危险操作填充",
+      "usage": "错误、删除和危险状态的高强调填充；按钮应使用 destructive-action",
       "classification": {
         "channel": "fill",
         "intent": "danger"
@@ -268,7 +396,7 @@ const tokenData = {
       "name": "destructive-hover",
       "light": "#F9654B",
       "dark": "#FD725B",
-      "usage": "危险操作填充的悬停状态；须与 fg-on-danger 保持可读对比度",
+      "usage": "通用危险强调填充的悬停状态；须与 fg-on-danger 保持可读对比度",
       "classification": {
         "channel": "fill",
         "intent": "danger",
@@ -281,7 +409,7 @@ const tokenData = {
       "name": "destructive-active",
       "light": "#FA8F78",
       "dark": "#FD9983",
-      "usage": "危险操作填充的按下状态；须与 fg-on-danger 保持可读对比度",
+      "usage": "通用危险强调填充的按下状态；须与 fg-on-danger 保持可读对比度",
       "classification": {
         "channel": "fill",
         "intent": "danger",
@@ -414,7 +542,7 @@ const tokenData = {
       "name": "inverse-background",
       "light": "#00030A",
       "dark": "#DEE5EF",
-      "usage": "工具提示和中性高强调操作的反色填充",
+      "usage": "工具提示和反色内容的默认填充；按钮应使用 neutral-action",
       "classification": {
         "channel": "fill",
         "intent": "inverse"
@@ -424,7 +552,7 @@ const tokenData = {
       "name": "inverse-background-hover",
       "light": "#001033",
       "dark": "#B6C6DF",
-      "usage": "中性高强调操作的悬停状态；不跟随品牌主题色",
+      "usage": "反色内容的悬停状态；不跟随品牌主题色",
       "classification": {
         "channel": "fill",
         "intent": "inverse",
@@ -437,7 +565,7 @@ const tokenData = {
       "name": "inverse-background-active",
       "light": "#001748",
       "dark": "#7994BF",
-      "usage": "中性高强调操作的按下或展开状态；不跟随品牌主题色",
+      "usage": "反色内容的按下或展开状态；不跟随品牌主题色",
       "classification": {
         "channel": "fill",
         "intent": "inverse",
@@ -669,19 +797,39 @@ const tokenData = {
     },
     {
       "name": "fg-on-primary-action",
-      "light": "var(--fg-on-brand)",
-      "dark": "var(--fg-on-brand)",
-      "usage": "主要按钮的文字和图标；始终沿用品牌主题计算的前景色",
+      "light": "#FFFFFF",
+      "dark": "#FFFFFF",
+      "usage": "主要操作默认、悬停和按下填充上的文字与图标；默认主题固定为白色，自定义品牌主题可按对比度重新计算",
+      "classification": {
+        "channel": "foreground",
+        "intent": "brand"
+      }
+    },
+    {
+      "name": "fg-on-neutral-action",
+      "light": "#FFFFFF",
+      "dark": "#FFFFFF",
+      "usage": "中性高强调操作默认、悬停和按下填充上的白色文字与图标",
       "classification": {
         "channel": "foreground",
         "intent": "neutral"
       }
     },
     {
+      "name": "fg-on-destructive-action",
+      "light": "#FFFFFF",
+      "dark": "#FFFFFF",
+      "usage": "危险操作默认、悬停和按下填充上的白色文字与图标；独立于品牌主题",
+      "classification": {
+        "channel": "foreground",
+        "intent": "danger"
+      }
+    },
+    {
       "name": "fg-on-brand",
       "light": "#FFFFFF",
       "dark": "#00040D",
-      "usage": "品牌色默认、悬停和按下填充上的文字与图标；须与对应填充配对使用",
+      "usage": "品牌色填充上的文字与图标；须与品牌主题计算的填充配对使用",
       "classification": {
         "channel": "foreground",
         "intent": "brand"
@@ -691,7 +839,7 @@ const tokenData = {
       "name": "fg-on-danger",
       "light": "#00040D",
       "dark": "#00040D",
-      "usage": "危险操作默认、悬停和按下填充之上的文字与图标；独立于品牌主题并须与对应填充配对使用",
+      "usage": "通用危险强调填充上的文字与图标；不得替代危险操作专用前景色",
       "classification": {
         "channel": "foreground",
         "intent": "danger"
@@ -713,7 +861,7 @@ const tokenData = {
       "name": "brand",
       "light": "#0060D2",
       "dark": "#1483FD",
-      "usage": "主要操作和明确的选中标记",
+      "usage": "品牌表达和明确的选中标记；按钮应使用 primary-action",
       "classification": {
         "channel": "fill",
         "intent": "brand"
@@ -760,6 +908,114 @@ const tokenData = {
       "classification": {
         "channel": "fill",
         "intent": "brand",
+        "variant": {
+          "interaction": "active"
+        }
+      }
+    },
+    {
+      "name": "primary-action",
+      "light": "#0060D2",
+      "dark": "#0060D2",
+      "usage": "主要操作的默认填充；默认主题与白色前景配对",
+      "classification": {
+        "channel": "fill",
+        "intent": "brand"
+      }
+    },
+    {
+      "name": "primary-action-hover",
+      "light": "#004DAF",
+      "dark": "#004DAF",
+      "usage": "主要操作的悬停填充；自定义品牌主题可重新计算",
+      "classification": {
+        "channel": "fill",
+        "intent": "brand",
+        "variant": {
+          "interaction": "hover"
+        }
+      }
+    },
+    {
+      "name": "primary-action-active",
+      "light": "#003B8B",
+      "dark": "#003B8B",
+      "usage": "主要操作的按下或展开填充；自定义品牌主题可重新计算",
+      "classification": {
+        "channel": "fill",
+        "intent": "brand",
+        "variant": {
+          "interaction": "active"
+        }
+      }
+    },
+    {
+      "name": "neutral-action",
+      "light": "#00030A",
+      "dark": "#737373",
+      "usage": "中性高强调操作的默认填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "neutral"
+      }
+    },
+    {
+      "name": "neutral-action-hover",
+      "light": "#001033",
+      "dark": "#525252",
+      "usage": "中性高强调操作的悬停填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "neutral",
+        "variant": {
+          "interaction": "hover"
+        }
+      }
+    },
+    {
+      "name": "neutral-action-active",
+      "light": "#001748",
+      "dark": "#404040",
+      "usage": "中性高强调操作的按下或展开填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "neutral",
+        "variant": {
+          "interaction": "active"
+        }
+      }
+    },
+    {
+      "name": "destructive-action",
+      "light": "#DC2626",
+      "dark": "#DC2626",
+      "usage": "危险操作的默认填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "danger"
+      }
+    },
+    {
+      "name": "destructive-action-hover",
+      "light": "#B91C1C",
+      "dark": "#B91C1C",
+      "usage": "危险操作的悬停填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "danger",
+        "variant": {
+          "interaction": "hover"
+        }
+      }
+    },
+    {
+      "name": "destructive-action-active",
+      "light": "#991B1B",
+      "dark": "#991B1B",
+      "usage": "危险操作的按下填充",
+      "classification": {
+        "channel": "fill",
+        "intent": "danger",
         "variant": {
           "interaction": "active"
         }
@@ -835,7 +1091,7 @@ const tokenData = {
       "name": "destructive",
       "light": "#F73920",
       "dark": "#FC4932",
-      "usage": "错误、删除和危险操作填充",
+      "usage": "错误、删除和危险状态的高强调填充；按钮应使用 destructive-action",
       "classification": {
         "channel": "fill",
         "intent": "danger"
@@ -845,7 +1101,7 @@ const tokenData = {
       "name": "destructive-hover",
       "light": "#F9654B",
       "dark": "#FD725B",
-      "usage": "危险操作填充的悬停状态；须与 fg-on-danger 保持可读对比度",
+      "usage": "通用危险强调填充的悬停状态；须与 fg-on-danger 保持可读对比度",
       "classification": {
         "channel": "fill",
         "intent": "danger",
@@ -858,7 +1114,7 @@ const tokenData = {
       "name": "destructive-active",
       "light": "#FA8F78",
       "dark": "#FD9983",
-      "usage": "危险操作填充的按下状态；须与 fg-on-danger 保持可读对比度",
+      "usage": "通用危险强调填充的按下状态；须与 fg-on-danger 保持可读对比度",
       "classification": {
         "channel": "fill",
         "intent": "danger",
@@ -991,7 +1247,7 @@ const tokenData = {
       "name": "inverse-background",
       "light": "#00030A",
       "dark": "#DEE5EF",
-      "usage": "工具提示和中性高强调操作的反色填充",
+      "usage": "工具提示和反色内容的默认填充；按钮应使用 neutral-action",
       "classification": {
         "channel": "fill",
         "intent": "inverse"
@@ -1001,7 +1257,7 @@ const tokenData = {
       "name": "inverse-background-hover",
       "light": "#001033",
       "dark": "#B6C6DF",
-      "usage": "中性高强调操作的悬停状态；不跟随品牌主题色",
+      "usage": "反色内容的悬停状态；不跟随品牌主题色",
       "classification": {
         "channel": "fill",
         "intent": "inverse",
@@ -1014,7 +1270,7 @@ const tokenData = {
       "name": "inverse-background-active",
       "light": "#001748",
       "dark": "#7994BF",
-      "usage": "中性高强调操作的按下或展开状态；不跟随品牌主题色",
+      "usage": "反色内容的按下或展开状态；不跟随品牌主题色",
       "classification": {
         "channel": "fill",
         "intent": "inverse",

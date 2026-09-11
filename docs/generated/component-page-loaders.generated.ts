@@ -42,7 +42,6 @@ export const componentPageLoaders: Record<string, DocPageLoader> = {
   "components/motion": () => import("@docs/pages/components/motion/page"),
   "components/nav-menu": () => import("@docs/pages/components/nav-menu/page"),
   "components/page-layout": () => import("@docs/pages/components/page-layout/page"),
-  "components/resource-list-layout": () => import("@docs/pages/components/resource-list-layout/page"),
   "components/popover": () => import("@docs/pages/components/popover/page"),
   "components/radio-group": () => import("@docs/pages/components/radio-group/page"),
   "components/resizable": () => import("@docs/pages/components/resizable/page"),

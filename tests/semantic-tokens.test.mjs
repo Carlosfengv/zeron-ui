@@ -215,7 +215,9 @@ describe("semantic token generation", () => {
 
   it("keeps filled actions paired with accessible on-colors", () => {
     const pairs = [
-      ["fg-on-primary-action", ["brand", "brand-hover", "brand-active"]],
+      ["fg-on-primary-action", ["primary-action", "primary-action-hover", "primary-action-active"]],
+      ["fg-on-neutral-action", ["neutral-action", "neutral-action-hover", "neutral-action-active"]],
+      ["fg-on-destructive-action", ["destructive-action", "destructive-action-hover", "destructive-action-active"]],
       ["fg-on-brand", ["brand", "brand-hover", "brand-active"]],
       ["fg-on-danger", ["destructive", "destructive-hover", "destructive-active"]],
       ["fg-default", ["secondary-action", "secondary-action-hover", "secondary-action-active"]],
@@ -240,21 +242,43 @@ describe("semantic token generation", () => {
     }
   });
 
+  it("uses white foregrounds for default strong actions in both modes", () => {
+    for (const mode of ["light", "dark"]) {
+      for (const name of ["fg-on-primary-action", "fg-on-neutral-action", "fg-on-destructive-action"]) {
+        expect(resolveColorValue(tokenByName(foregroundColorTokens, name)[mode], mode)).toBe("#FFFFFF");
+      }
+    }
+  });
+
+  it("keeps button action fills independent from generic semantic fills", () => {
+    expect(tokenByName(fillColorTokens, "primary-action").dark)
+      .not.toBe(tokenByName(fillColorTokens, "brand").dark);
+    expect(tokenByName(fillColorTokens, "neutral-action").dark)
+      .not.toBe(tokenByName(fillColorTokens, "inverse-background").dark);
+    expect(tokenByName(fillColorTokens, "destructive-action").dark)
+      .not.toBe(tokenByName(fillColorTokens, "destructive").dark);
+  });
+
   it("keeps danger action ink independent from the brand theme", () => {
     const customBrand = {
       brand: { light: "#7C3AED", dark: "#FDE047" },
       "brand-hover": { light: "#6D28D9", dark: "#FACC15" },
       "brand-active": { light: "#5B21B6", dark: "#EAB308" },
       "fg-on-brand": { light: "#FFFFFF", dark: "#00040D" },
+      "primary-action": { light: "#7C3AED", dark: "#7132D5" },
+      "primary-action-hover": { light: "#6D28D9", dark: "#6127B7" },
+      "primary-action-active": { light: "#5B21B6", dark: "#52219B" },
+      "fg-on-primary-action": { light: "#FFFFFF", dark: "#FFFFFF" },
     };
 
     for (const mode of ["light", "dark"]) {
       expect(resolveColorValue("var(--fg-on-primary-action)", mode, customBrand))
-        .toBe(customBrand["fg-on-brand"][mode]);
-      expect(resolveColorValue("var(--fg-on-danger)", mode, customBrand)).toBe("#00040D");
-      for (const name of ["destructive", "destructive-hover", "destructive-active"]) {
+        .toBe(customBrand["fg-on-primary-action"][mode]);
+      expect(resolveColorValue("var(--fg-on-destructive-action)", mode, customBrand))
+        .toBe("#FFFFFF");
+      for (const name of ["destructive-action", "destructive-action-hover", "destructive-action-active"]) {
         expect(contrastRatio(
-          resolveColorValue("var(--fg-on-danger)", mode, customBrand),
+          resolveColorValue("var(--fg-on-destructive-action)", mode, customBrand),
           resolveColorValue(tokenByName(fillColorTokens, name)[mode], mode, customBrand),
         )).toBeGreaterThanOrEqual(4.5);
       }
@@ -359,6 +383,8 @@ describe("semantic token generation", () => {
       "fg-info",
       "fg-neutral-status",
       "fg-on-primary-action",
+      "fg-on-neutral-action",
+      "fg-on-destructive-action",
       "fg-on-brand",
       "fg-on-danger",
       "fg-on-inverse",
@@ -366,7 +392,7 @@ describe("semantic token generation", () => {
 
     expect(
       foregroundColorTokens.find(({ name }) => name === "fg-on-primary-action")
-    ).toMatchObject({ light: "var(--fg-on-brand)", dark: "var(--fg-on-brand)" });
+    ).toMatchObject({ light: "#FFFFFF", dark: "#FFFFFF" });
 
     const generated = [
       renderGlobalsBlock(),

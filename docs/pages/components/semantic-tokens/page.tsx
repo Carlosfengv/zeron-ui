@@ -344,8 +344,11 @@ export default function SemanticTokensPage() {
   const boundaryRows = colorRows(boundaryColorTokens);
   const supportRows = colorRows(supportColorTokens);
   const actionFillRows = tokenRows(fillColorTokens, [
-    "brand", "brand-hover", "brand-active",
+    "primary-action", "primary-action-hover", "primary-action-active",
+    "neutral-action", "neutral-action-hover", "neutral-action-active",
     "secondary-action", "secondary-action-hover", "secondary-action-active",
+    "destructive-action", "destructive-action-hover", "destructive-action-active",
+    "brand", "brand-hover", "brand-active",
     "destructive", "destructive-hover", "destructive-active",
     "inverse-background", "inverse-background-hover", "inverse-background-active",
   ]);
@@ -361,8 +364,11 @@ export default function SemanticTokensPage() {
     ...tokenRows(foregroundColorTokens, ["fg-danger", "fg-warning", "fg-success", "fg-info", "fg-neutral-status"]),
     ...tokenRows(boundaryColorTokens, ["danger-border", "warning-border", "success-border", "info-border", "neutral-status-border"]),
   ];
-  const runtimeBrandRows: TokenRow[] = ["brand", "brand-hover", "brand-active", "fg-brand", "fg-on-brand"].map((name) => {
-    const values = activeBrandTheme?.semantic[name as "brand" | "brand-hover" | "brand-active" | "fg-brand" | "fg-on-brand"];
+  const runtimeBrandRows: TokenRow[] = [
+    "brand", "brand-hover", "brand-active", "fg-brand", "fg-on-brand",
+    "primary-action", "primary-action-hover", "primary-action-active", "fg-on-primary-action",
+  ].map((name) => {
+    const values = activeBrandTheme?.semantic[name as keyof NonNullable<typeof activeBrandTheme>["semantic"]];
     const token = [...fillColorTokens, ...foregroundColorTokens].find((candidate) => candidate.name === name);
     return {
       token: `--${name}`,
@@ -468,9 +474,10 @@ export default function SemanticTokensPage() {
         <DocSection title={t("commonRecipes")}>
           <SectionDescription>{t("commonRecipesBody")}</SectionDescription>
           <RecipeTable rows={[
-            { scenario: t("primaryAction"), tokens: "brand + fg-on-brand" },
+            { scenario: t("primaryAction"), tokens: "primary-action + fg-on-primary-action" },
+            { scenario: t("neutralAction"), tokens: "neutral-action + fg-on-neutral-action" },
             { scenario: t("secondaryAction"), tokens: "secondary-action + fg-default" },
-            { scenario: t("dangerAction"), tokens: "destructive + fg-on-danger" },
+            { scenario: t("dangerAction"), tokens: "destructive-action + fg-on-destructive-action" },
             { scenario: t("dangerAlert"), tokens: "danger-surface + fg-danger + danger-border" },
             { scenario: t("warningAlert"), tokens: "warning-surface + fg-warning + warning-border" },
             { scenario: t("successAlert"), tokens: "success-surface + fg-success + success-border" },

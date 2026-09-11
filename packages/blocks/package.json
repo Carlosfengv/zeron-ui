@@ -25,7 +25,6 @@
     "./personal-settings-01": "./src/application/personal-settings-01/index.ts",
     "./personal-usage-01": "./src/application/personal-usage-01/index.ts",
     "./resource-settings-01": "./src/application/resource-settings-01/index.ts",
-    "./resource-details-01": "./src/application/resource-details-01/index.ts",
     "./resource-list-page-01": "./src/application/resource-list-page-01/index.ts",
     "./resource-workspace-shell-01": "./src/application/resource-workspace-shell-01/index.ts",
     "./resource-detail-page-01": "./src/application/resource-detail-page-01/index.ts",

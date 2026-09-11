@@ -21,6 +21,8 @@
           "color-fg-info": "var(--fg-info)",
           "color-fg-neutral-status": "var(--fg-neutral-status)",
           "color-fg-on-primary-action": "var(--fg-on-primary-action)",
+          "color-fg-on-neutral-action": "var(--fg-on-neutral-action)",
+          "color-fg-on-destructive-action": "var(--fg-on-destructive-action)",
           "color-fg-on-brand": "var(--fg-on-brand)",
           "color-fg-on-danger": "var(--fg-on-danger)",
           "color-fg-on-inverse": "var(--fg-on-inverse)",
@@ -29,6 +31,15 @@
           "color-neutral": "var(--neutral)",
           "color-brand-hover": "var(--brand-hover)",
           "color-brand-active": "var(--brand-active)",
+          "color-primary-action": "var(--primary-action)",
+          "color-primary-action-hover": "var(--primary-action-hover)",
+          "color-primary-action-active": "var(--primary-action-active)",
+          "color-neutral-action": "var(--neutral-action)",
+          "color-neutral-action-hover": "var(--neutral-action-hover)",
+          "color-neutral-action-active": "var(--neutral-action-active)",
+          "color-destructive-action": "var(--destructive-action)",
+          "color-destructive-action-hover": "var(--destructive-action-hover)",
+          "color-destructive-action-active": "var(--destructive-action-active)",
           "color-muted": "var(--muted)",
           "color-secondary-action": "var(--secondary-action)",
           "color-secondary-action-hover": "var(--secondary-action-hover)",
@@ -116,7 +127,9 @@
           "fg-success": "#176B3A",
           "fg-info": "#004DAF",
           "fg-neutral-status": "#555B61",
-          "fg-on-primary-action": "var(--fg-on-brand)",
+          "fg-on-primary-action": "#FFFFFF",
+          "fg-on-neutral-action": "#FFFFFF",
+          "fg-on-destructive-action": "#FFFFFF",
           "fg-on-brand": "#FFFFFF",
           "fg-on-danger": "#00040D",
           "fg-on-inverse": "#FFFFFF",
@@ -125,6 +138,15 @@
           "neutral": "#6B7075",
           "brand-hover": "#004DAF",
           "brand-active": "#003B8B",
+          "primary-action": "#0060D2",
+          "primary-action-hover": "#004DAF",
+          "primary-action-active": "#003B8B",
+          "neutral-action": "#00030A",
+          "neutral-action-hover": "#001033",
+          "neutral-action-active": "#001748",
+          "destructive-action": "#DC2626",
+          "destructive-action-hover": "#B91C1C",
+          "destructive-action-active": "#991B1B",
           "muted": "#F6F8FB",
           "secondary-action": "#F6F8FB",
           "secondary-action-hover": "#F1F4F9",
@@ -231,7 +253,9 @@
           "fg-success": "#9DE7B4",
           "fg-info": "#A1D2FE",
           "fg-neutral-status": "#C7CBCE",
-          "fg-on-primary-action": "var(--fg-on-brand)",
+          "fg-on-primary-action": "#FFFFFF",
+          "fg-on-neutral-action": "#FFFFFF",
+          "fg-on-destructive-action": "#FFFFFF",
           "fg-on-brand": "#00040D",
           "fg-on-danger": "#00040D",
           "fg-on-inverse": "#00040D",
@@ -240,6 +264,15 @@
           "neutral": "#8B9095",
           "brand-hover": "#439FFD",
           "brand-active": "#72B9FE",
+          "primary-action": "#0060D2",
+          "primary-action-hover": "#004DAF",
+          "primary-action-active": "#003B8B",
+          "neutral-action": "#737373",
+          "neutral-action-hover": "#525252",
+          "neutral-action-active": "#404040",
+          "destructive-action": "#DC2626",
+          "destructive-action-hover": "#B91C1C",
+          "destructive-action-active": "#991B1B",
           "muted": "#2F3136",
           "secondary-action": "#2F3136",
           "secondary-action-hover": "#42444A",
@@ -3019,34 +3052,6 @@
       }
     },
     {
-      "name": "resource-list-layout",
-      "type": "registry:ui",
-      "title": "Resource List Layout",
-      "description": "Full-height resource list and inventory page preset with a single title, optional toolbar and summary, a scrolling body, and caller-owned pagination.",
-      "registryDependencies": [
-        "https://zeron-ui.vercel.app/r/surfaces.json",
-        "https://zeron-ui.vercel.app/r/page-layout.json"
-      ],
-      "files": [
-        {
-          "path": "packages/ui/src/components/resource-list-layout.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/resource-list-layout.tsx"
-        }
-      ],
-      "dependencies": [
-        "tw-animate-css@^1.4.0"
-      ],
-      "meta": {
-        "zeron": {
-          "framework": "react",
-          "react": "^19.0.0",
-          "tailwind": "^4.0.0",
-          "kind": "ui"
-        }
-      }
-    },
-    {
       "name": "resource-detail-layout",
       "type": "registry:ui",
       "title": "Resource Detail Layout",
@@ -4976,45 +4981,6 @@
           "path": "packages/blocks/src/application/provider-create-form-01/index.ts",
           "type": "registry:component",
           "target": "components/blocks/provider-create-form-01/index.ts"
-        }
-      ],
-      "meta": {
-        "zeron": {
-          "framework": "react",
-          "react": "^19.0.0",
-          "tailwind": "^4.0.0",
-          "kind": "template"
-        }
-      }
-    },
-    {
-      "name": "resource-details-01",
-      "type": "registry:block",
-      "title": "Resource Details",
-      "description": "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",
-      "categories": [
-        "application",
-        "details"
-      ],
-      "dependencies": [
-        "tw-animate-css@^1.4.0"
-      ],
-      "registryDependencies": [
-        "https://zeron-ui.vercel.app/r/badge.json",
-        "https://zeron-ui.vercel.app/r/detail-list.json",
-        "https://zeron-ui.vercel.app/r/switch.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
-      ],
-      "files": [
-        {
-          "path": "packages/blocks/src/application/resource-details-01/resource-details.tsx",
-          "type": "registry:component",
-          "target": "components/blocks/resource-details-01/resource-details.tsx"
-        },
-        {
-          "path": "packages/blocks/src/application/resource-details-01/index.ts",
-          "type": "registry:component",
-          "target": "components/blocks/resource-details-01/index.ts"
         }
       ],
       "meta": {

@@ -16,6 +16,7 @@ const { neutral, danger, warning, info } = referenceColors;
 const { optical: neutralOptical } = neutral;
 
 function intentFor(name) {
+  if (name.includes("primary-action")) return "brand";
   if (name.includes("brand")) return "brand";
   if (name.includes("danger") || name.includes("destructive")) return "danger";
   if (name.includes("warning")) return "warning";
@@ -53,27 +54,38 @@ export const foregroundColorTokens = classify([
   { name: "fg-success", light: "#176B3A", dark: "#9DE7B4", usage: "普通承载面上的成功、完成或正向结果文字和图标；不得用于高强调操作填充之上" },
   { name: "fg-info", light: "#004DAF", dark: "#A1D2FE", usage: "普通承载面上的说明、提示和信息文字与图标；不得用于信息填充之上" },
   { name: "fg-neutral-status", light: "#555B61", dark: "#C7CBCE", usage: "普通承载面上的中性状态文字和图标；不得用于高强调操作填充之上" },
-  { name: "fg-on-primary-action", light: "var(--fg-on-brand)", dark: "var(--fg-on-brand)", usage: "主要按钮的文字和图标；始终沿用品牌主题计算的前景色" },
-  { name: "fg-on-brand", light: neutral[0], dark: "#00040D", usage: "品牌色默认、悬停和按下填充上的文字与图标；须与对应填充配对使用" },
-  { name: "fg-on-danger", light: "#00040D", dark: "#00040D", usage: "危险操作默认、悬停和按下填充之上的文字与图标；独立于品牌主题并须与对应填充配对使用" },
+  { name: "fg-on-primary-action", light: neutral[0], dark: neutral[0], usage: "主要操作默认、悬停和按下填充上的文字与图标；默认主题固定为白色，自定义品牌主题可按对比度重新计算" },
+  { name: "fg-on-neutral-action", light: neutral[0], dark: neutral[0], usage: "中性高强调操作默认、悬停和按下填充上的白色文字与图标" },
+  { name: "fg-on-destructive-action", light: neutral[0], dark: neutral[0], usage: "危险操作默认、悬停和按下填充上的白色文字与图标；独立于品牌主题" },
+  { name: "fg-on-brand", light: neutral[0], dark: "#00040D", usage: "品牌色填充上的文字与图标；须与品牌主题计算的填充配对使用" },
+  { name: "fg-on-danger", light: "#00040D", dark: "#00040D", usage: "通用危险强调填充上的文字与图标；不得替代危险操作专用前景色" },
   { name: "fg-on-inverse", light: neutral[0], dark: "#00040D", usage: "反色背景上的文字和图标；仅与反色填充配对使用" },
 ], "foreground");
 
 export const fillColorTokens = classify([
-  { name: "brand", light: "#0060D2", dark: "#1483FD", usage: "主要操作和明确的选中标记" },
+  { name: "brand", light: "#0060D2", dark: "#1483FD", usage: "品牌表达和明确的选中标记；按钮应使用 primary-action" },
   { name: "warning", light: "#FA8801", dark: "#FF9314", usage: "告警、警告和需突出可视化状态的高强调填充" },
   { name: "neutral", light: "#6B7075", dark: "#8B9095", usage: "未知、一般状态和低强调可视化状态的填充" },
   { name: "brand-hover", light: "#004DAF", dark: "#439FFD", usage: "品牌色填充的悬停状态；须与 fg-on-brand 保持可读对比度" },
   { name: "brand-active", light: "#003B8B", dark: "#72B9FE", usage: "品牌色填充的按下或展开状态；须与 fg-on-brand 保持可读对比度" },
+  { name: "primary-action", light: "#0060D2", dark: "#0060D2", usage: "主要操作的默认填充；默认主题与白色前景配对" },
+  { name: "primary-action-hover", light: "#004DAF", dark: "#004DAF", usage: "主要操作的悬停填充；自定义品牌主题可重新计算" },
+  { name: "primary-action-active", light: "#003B8B", dark: "#003B8B", usage: "主要操作的按下或展开填充；自定义品牌主题可重新计算" },
+  { name: "neutral-action", light: "#00030A", dark: neutral[500], usage: "中性高强调操作的默认填充" },
+  { name: "neutral-action-hover", light: "#001033", dark: neutral[600], usage: "中性高强调操作的悬停填充" },
+  { name: "neutral-action-active", light: "#001748", dark: neutral[700], usage: "中性高强调操作的按下或展开填充" },
+  { name: "destructive-action", light: danger[600], dark: danger[600], usage: "危险操作的默认填充" },
+  { name: "destructive-action-hover", light: danger[700], dark: danger[700], usage: "危险操作的悬停填充" },
+  { name: "destructive-action-active", light: danger[800], dark: danger[800], usage: "危险操作的按下填充" },
   { name: "muted", light: "#F6F8FB", dark: "#2F3136", usage: "弱化容器、轨道和次要区域" },
   { name: "secondary-action", light: "#F6F8FB", dark: "#2F3136", usage: "次要操作的默认填充" },
   { name: "secondary-action-hover", light: "#F1F4F9", dark: "#42444A", usage: "次要操作的悬停填充" },
   { name: "secondary-action-active", light: "#EAEEF5", dark: "#585B62", usage: "次要操作的按下或展开填充" },
   { name: "emphasis", light: "#F1F4F9", dark: "#42444A", usage: "低强调度的静态强调容器" },
   { name: "selection", light: "rgb(234 238 245 / 0.4)", dark: "rgb(88 91 98 / 0.16)", usage: "持久选中状态背景" },
-  { name: "destructive", light: "#F73920", dark: "#FC4932", usage: "错误、删除和危险操作填充" },
-  { name: "destructive-hover", light: "#F9654B", dark: "#FD725B", usage: "危险操作填充的悬停状态；须与 fg-on-danger 保持可读对比度" },
-  { name: "destructive-active", light: "#FA8F78", dark: "#FD9983", usage: "危险操作填充的按下状态；须与 fg-on-danger 保持可读对比度" },
+  { name: "destructive", light: "#F73920", dark: "#FC4932", usage: "错误、删除和危险状态的高强调填充；按钮应使用 destructive-action" },
+  { name: "destructive-hover", light: "#F9654B", dark: "#FD725B", usage: "通用危险强调填充的悬停状态；须与 fg-on-danger 保持可读对比度" },
+  { name: "destructive-active", light: "#FA8F78", dark: "#FD9983", usage: "通用危险强调填充的按下状态；须与 fg-on-danger 保持可读对比度" },
   { name: "danger-surface-subtle", light: danger[50], dark: danger[900], usage: "错误、失败和风险状态的最低强调背景；用于大面积状态容器" },
   { name: "danger-surface", light: danger[100], dark: danger[800], usage: "错误、失败和风险信息的低强调背景" },
   { name: "danger-surface-raised", light: danger[200], dark: danger[700], usage: "错误、失败和风险信息内的次级强调背景；用于嵌套告警内容" },
@@ -86,9 +98,9 @@ export const fillColorTokens = classify([
   { name: "neutral-status-surface", light: neutral[100], dark: neutral[800], usage: "一般状态信息的低强调背景" },
   { name: "neutral-status-surface-raised", light: neutral[200], dark: neutral[700], usage: "一般状态信息内的次级强调背景；用于嵌套状态内容" },
   { name: "scrim", light: "rgb(0 0 0 / 0.4)", dark: "rgba(17, 17, 17, 0.60)", usage: "抽屉和对话框背后的遮罩层" },
-  { name: "inverse-background", light: "#00030A", dark: "#DEE5EF", usage: "工具提示和中性高强调操作的反色填充" },
-  { name: "inverse-background-hover", light: "#001033", dark: "#B6C6DF", usage: "中性高强调操作的悬停状态；不跟随品牌主题色" },
-  { name: "inverse-background-active", light: "#001748", dark: "#7994BF", usage: "中性高强调操作的按下或展开状态；不跟随品牌主题色" },
+  { name: "inverse-background", light: "#00030A", dark: "#DEE5EF", usage: "工具提示和反色内容的默认填充；按钮应使用 neutral-action" },
+  { name: "inverse-background-hover", light: "#001033", dark: "#B6C6DF", usage: "反色内容的悬停状态；不跟随品牌主题色" },
+  { name: "inverse-background-active", light: "#001748", dark: "#7994BF", usage: "反色内容的按下或展开状态；不跟随品牌主题色" },
 ], "fill");
 
 export const boundaryColorTokens = classify([

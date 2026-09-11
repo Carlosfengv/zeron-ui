@@ -29,15 +29,15 @@ First decide whether the request is a complete page or an embedded content regio
 For a complete page, prefer an already matching full-page block when that block owns the required title, navigation, surface, and scrolling behavior. Otherwise select an available resource preset by the page's primary task:
 
 - Start a generic resource-management page with responsive application navigation: `resource-list-page-01`.
-- Browse, search, filter, or act on multiple objects: `ResourceListLayout`.
+- Browse, search, filter, or act on multiple objects inside an existing host: compose `PageLayout` with a matching list block or `DataTable`.
 - Inspect one identified object: use `ResourceDetailLayout` only when the installed version exports it; otherwise compose the current `PageLayout` primitives.
 - Add one object in a single-page form: use `ResourceCreateLayout` only when the installed version exports it; otherwise compose the current `PageLayout` primitives.
 
 Do not import a planned preset that is absent from the installed version. Multi-step creation, authentication, master-detail workspaces, and embedded cards need their matching block or the base layout primitives instead.
 
-After selecting a page preset, choose the list, detail, or form content and assign each visible region one owner. `ResourceListTable` owns its own toolbar and pagination. When placing it in `ResourceListLayout`, omit the layout's `toolbar` and `pagination`, use `surface="plain"`, and set `showCreateAction={false}` when the page header owns creation.
+After selecting a page structure, choose the list, detail, or form content and assign each visible region one owner. `ResourceListTable` owns its toolbar and pagination. Place it directly in `PageBody`, use `surface="plain"`, and set `showCreateAction={false}` when `PageContentHeader` owns creation.
 
-`resource-list-page-01` uses the standard Sidebar Basic shell and replaces its overview content with `ResourceListTable`. Do not place it inside another application shell. In an application that already has navigation, use `ResourceListLayout` or `ResourceListTable` directly instead.
+`resource-list-page-01` uses the standard Sidebar Basic shell and replaces its overview content with `ResourceListTable`. Do not place it inside another application shell. In an application that already has navigation, compose `PageLayout` with `ResourceListTable` or place the table directly in the host's existing `PageBody`.
 
 ## Decide whether a block fits
 

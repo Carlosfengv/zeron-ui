@@ -1,6 +1,8 @@
 {
   "dataTable": {
     "projectDirectory": "Project Directory",
+    "bulkSelection": "Selection and Bulk Actions",
+    "bulkSelectionDescription": "Selecting one or more rows replaces the search and filters with the current selection count and its available bulk actions. Clear the selection to restore the filter toolbar without losing its state.",
     "pinnedColumns": "Pinned Columns",
     "pinnedColumnsDescription": "Scroll horizontally to see the first two columns remain fixed on the left and Budget remain fixed on the right.",
     "emptyState": "Empty State",

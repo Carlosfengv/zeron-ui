@@ -436,10 +436,13 @@ ${table(["CSS 令牌", "浅色", "深色", "分类", "用途"], fillRows)}
 合法的高对比填充配对：
 
 \`\`\`text
-brand              + fg-on-brand
-destructive        + fg-on-danger
+primary-action     + fg-on-primary-action
+neutral-action     + fg-on-neutral-action
+destructive-action + fg-on-destructive-action
 secondary-action   + fg-default
-inverse-background + fg-on-inverse
+brand               + fg-on-brand
+destructive         + fg-on-danger
+inverse-background  + fg-on-inverse
 \`\`\`
 
 状态信息不使用高强调操作填充：错误状态组合 \`danger-surface + fg-danger + danger-border\`；
@@ -447,7 +450,9 @@ inverse-background + fg-on-inverse
 \`success-surface + fg-success + success-border\`。
 
 \`brand\` 与 \`focus-ring\` 是两个独立语义。运行时修改品牌色不得同时修改焦点环。
-自定义品牌色时，必须以完整配色包的方式覆盖 \`brand / brand-hover / brand-active / fg-on-brand / fg-brand\`；
+自定义品牌色时，必须同时覆盖品牌表达配色包
+\`brand / brand-hover / brand-active / fg-on-brand / fg-brand\` 与主要操作配色包
+\`primary-action / primary-action-hover / primary-action-active / fg-on-primary-action\`；
 运行时派生结果也必须写入绝对十六进制颜色，不依赖浏览器混色。
 
 ## 边界颜色
@@ -653,7 +658,7 @@ ${table(["CSS 令牌", "CSS 类", "值", "用途"], layerRows)}
 以下示例展示完成承载面与阴影语义迁移后的目标 API：
 
 \`\`\`tsx
-<button className="h-control-md rounded-lg px-4 text-body bg-brand text-fg-on-brand">
+<button className="h-control-md rounded-lg px-4 text-body bg-primary-action text-fg-on-primary-action">
   保存更改
 </button>
 

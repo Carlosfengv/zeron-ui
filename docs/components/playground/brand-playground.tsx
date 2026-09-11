@@ -54,6 +54,10 @@ function BrandPlaygroundProvider({ children }: { children: ReactNode }) {
       root.style.removeProperty("--brand-active");
       root.style.removeProperty("--fg-on-brand");
       root.style.removeProperty("--fg-brand");
+      root.style.removeProperty("--primary-action");
+      root.style.removeProperty("--primary-action-hover");
+      root.style.removeProperty("--primary-action-active");
+      root.style.removeProperty("--fg-on-primary-action");
       return;
     }
 

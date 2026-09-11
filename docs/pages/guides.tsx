@@ -105,7 +105,7 @@ const copy = {
       items: [
         ["Account settings", "Manage profiles, credentials, model access, and account actions.", "/docs/blocks/personal-settings-01", "Prototype"],
         ["Monitoring and logs", "Explore live records with search, filters, schemas, and cursor loading.", "/docs/blocks/infinite-log-table-01", "Data block"],
-        ["Resource details", "Present status, metadata, metrics, and contextual actions for one resource.", "/docs/blocks/resource-details-01", "Block"],
+        ["Resource details", "Present status, metadata, metrics, and contextual actions for one resource.", "/docs/components/detail-list", "Component"],
         ["Application frame", "Start a product area with navigation and a responsive content region.", "/docs/blocks/top-nav-app-shell-01", "Layout"],
       ],
     },
@@ -197,7 +197,7 @@ const copy = {
       items: [
         ["账户与个人设置", "管理资料、凭证、模型权限与账户操作。", "/docs/blocks/personal-settings-01", "原型"],
         ["监控与日志", "通过搜索、筛选、Schema 和游标加载查看实时记录。", "/docs/blocks/infinite-log-table-01", "数据区块"],
-        ["资源详情", "展示单个资源的状态、元数据、指标与上下文操作。", "/docs/blocks/resource-details-01", "区块"],
+        ["资源详情", "展示单个资源的状态、元数据、指标与上下文操作。", "/docs/components/detail-list", "组件"],
         ["应用框架", "用导航与响应式内容区域建立新的产品空间。", "/docs/blocks/top-nav-app-shell-01", "布局"],
       ],
     },

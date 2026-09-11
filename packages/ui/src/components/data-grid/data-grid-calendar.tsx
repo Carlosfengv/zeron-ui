@@ -224,9 +224,9 @@ function CalendarDayButton({
       className={cn(
         "relative z-10 flex aspect-square w-full min-w-(--cell-size) cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-label font-normal leading-none outline-none select-none transition-colors duration-fast hover:bg-hover disabled:pointer-events-none",
         "focus-visible:ring-1 focus-visible:ring-focus-ring group-data-[focused=true]/day:ring-1 group-data-[focused=true]/day:ring-focus-ring",
-        "data-[selected-single=true]:bg-brand data-[selected-single=true]:text-fg-on-primary-action data-[selected-single=true]:hover:bg-brand-hover",
-        "data-[range-start=true]:rounded-lg data-[range-start=true]:bg-brand data-[range-start=true]:text-fg-on-primary-action data-[range-start=true]:hover:bg-brand-hover",
-        "data-[range-end=true]:rounded-lg data-[range-end=true]:bg-brand data-[range-end=true]:text-fg-on-primary-action data-[range-end=true]:hover:bg-brand-hover",
+        "data-[selected-single=true]:bg-brand data-[selected-single=true]:text-fg-on-brand data-[selected-single=true]:hover:bg-brand-hover",
+        "data-[range-start=true]:rounded-lg data-[range-start=true]:bg-brand data-[range-start=true]:text-fg-on-brand data-[range-start=true]:hover:bg-brand-hover",
+        "data-[range-end=true]:rounded-lg data-[range-end=true]:bg-brand data-[range-end=true]:text-fg-on-brand data-[range-end=true]:hover:bg-brand-hover",
         "data-[range-middle=true]:rounded-none data-[range-middle=true]:text-fg-brand data-[range-middle=true]:hover:bg-transparent",
         className,
       )}

@@ -205,13 +205,6 @@ const blockCatalogEntries = [
     dependencies: ["badge", "button", "card", "icon-context", "input", "select", "sortable-collection"],
   },
   {
-    name: "resource-details-01",
-    title: "Resource Details",
-    description: "A grouped resource metadata panel with health, configuration, usage, and API compatibility details.",
-    categories: ["application", "details"],
-    dependencies: ["detail-list", "switch", "badge"],
-  },
-  {
     name: "resource-list-page-01",
     title: "MCP Resource List Page",
     description: "A Sidebar workspace for managing MCP applications and categories with design-system-native tabs, filters, and tables.",

@@ -10,6 +10,7 @@ import {
   LoadingProjectsTable,
   PinnedProjectsTable,
   ProjectsTable,
+  SelectedProjectsTable,
 } from "./data-table-examples";
 
 const exampleCode = `import type { ColumnDef } from "@tanstack/react-table";
@@ -57,6 +58,85 @@ function ProjectsTable() {
   return (
     <DataTable table={table}>
       <DataTableToolbar table={table} />
+    </DataTable>
+  );
+}`;
+
+const selectionCode = `import { Button } from "@zeron/ui/button";
+import {
+  DataTable,
+  DataTableToolbar,
+  useDataTable,
+} from "@zeron/ui/data-table";
+
+const initialRowSelection = {
+  "PRJ-101": true,
+  "PRJ-102": true,
+  "PRJ-103": true,
+};
+
+function SelectedProjectsTable() {
+  const { table } = useDataTable({
+    columns,
+    data: projects,
+    enableRowSelection: true,
+    getRowId: (row) => row.id,
+    initialState: {
+      pagination: { pageIndex: 0, pageSize: 10 },
+      rowSelection: initialRowSelection,
+    },
+  });
+  const selectedRows = table.getSelectedRowModel().rows;
+
+  return (
+    <DataTable table={table}>
+      {selectedRows.length > 0 ? (
+        <div
+          aria-label="Bulk actions for selected projects"
+          className="flex flex-wrap items-center justify-between gap-2 p-1"
+          role="toolbar"
+        >
+          <div className="flex items-center gap-1">
+            <span>
+              {selectedRows.length}{" "}
+              {selectedRows.length === 1 ? "project" : "projects"} selected
+            </span>
+            <Button
+              aria-label="Clear project selection"
+              onClick={() => table.resetRowSelection(true)}
+              variant="ghost"
+            >
+              Clear
+            </Button>
+          </div>
+          <div
+            aria-label="Selected project actions"
+            className="flex flex-row items-center gap-1.5"
+            role="group"
+          >
+            <Button
+              onClick={() => changeProjectStatus(selectedRows)}
+              variant="tertiary"
+            >
+              Change status
+            </Button>
+            <Button
+              onClick={() => exportProjects(selectedRows)}
+              variant="tertiary"
+            >
+              Export
+            </Button>
+            <Button
+              onClick={() => archiveProjects(selectedRows)}
+              variant="destructive"
+            >
+              Archive
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <DataTableToolbar table={table} />
+      )}
     </DataTable>
   );
 }`;
@@ -299,6 +379,7 @@ export default function DataTableDoc() {
         <VariantPlayground
           variants={[
             { value: "directory", label: "Project directory", code: exampleCode, preview: <div className="w-full"><ProjectsTable /></div> },
+            { value: "selection", label: "Selection & bulk actions", code: selectionCode, preview: <div className="w-full"><SelectedProjectsTable /></div> },
             { value: "pinned", label: "Pinned columns", code: pinnedColumnsCode, preview: <div className="w-full"><PinnedProjectsTable /></div> },
             { value: "loading", label: "Loading", code: loadingCode, preview: <div className="w-full"><LoadingProjectsTable /></div> },
             { value: "empty", label: "Empty state", code: emptyStateCode, preview: <div className="w-full"><EmptyProjectsTable /></div> },
@@ -310,6 +391,17 @@ export default function DataTableDoc() {
         <ComponentPreview code={exampleCode}>
           <div className="w-full">
             <ProjectsTable />
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("bulkSelection")}>
+        <p className="text-body text-fg-muted">
+          {t("bulkSelectionDescription")}
+        </p>
+        <ComponentPreview code={selectionCode}>
+          <div className="w-full">
+            <SelectedProjectsTable />
           </div>
         </ComponentPreview>
       </DocSection>

@@ -184,9 +184,6 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "resource-catalog-01": () => import("@zeron/blocks/resource-catalog-01").then(({ ResourceCatalog }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1560}><ResourceCatalog /></ResponsivePreview>,
   })),
-  "resource-details-01": () => import("@zeron/blocks/resource-details-01").then(({ ResourceDetails }) => ({
-    default: () => <ResponsivePreview canvasHeight={520} canvasWidth={400}><ResourceDetails /></ResponsivePreview>,
-  })),
   "resource-detail-page-01": () => import("@zeron/blocks/resource-detail-page-01").then(({ defaultResourceDetailPageData, ResourceDetailPage }) => ({
     default: () => (
       <ResponsivePreview canvasHeight={900} canvasWidth={1440}>

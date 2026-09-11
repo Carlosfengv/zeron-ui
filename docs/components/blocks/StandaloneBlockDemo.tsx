@@ -35,7 +35,6 @@ import { ResourceSettings } from "@zeron/blocks/resource-settings-01";
 import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
 import { RuleFlowEditor } from "@zeron/blocks/rule-flow-editor-01";
 import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
-import { ResourceDetails } from "@zeron/blocks/resource-details-01";
 import {
   defaultResourceDetailPageData,
   ResourceDetailPage,
@@ -190,8 +189,6 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <div className="h-full min-h-0 overflow-hidden bg-surface-raised p-3 sm:p-6"><RuleFlowEditor /></div>;
     case "resource-catalog-01":
       return <ResourceCatalog />;
-    case "resource-details-01":
-      return <div className={`${centeredDemoClass} items-start`}><ResourceDetails /></div>;
     case "resource-detail-page-01":
       return (
         <ResourceDetailPage

@@ -25,7 +25,6 @@
   "model-mcp-marketplace-01": { "framework": "react", "kind": "template" },
   "provider-create-form-01": { "framework": "react", "kind": "template" },
   "rule-flow-editor-01": { "framework": "react", "kind": "data-block" },
-  "resource-details-01": { "framework": "react", "kind": "template" },
   "resource-list-page-01": { "framework": "react", "kind": "template" },
   "resource-list-table-01": { "framework": "react", "kind": "data-block" },
   "member-department-01": { "framework": "react", "kind": "data-block" },

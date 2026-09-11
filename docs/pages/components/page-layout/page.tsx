@@ -20,6 +20,10 @@ import {
   PageTitle,
 } from "@zeron/ui/page-layout";
 import { Button } from "@zeron/ui/button";
+import {
+  defaultResourceListItems,
+  ResourceListTable,
+} from "@zeron/blocks/resource-list-table-01";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
@@ -70,6 +74,60 @@ const bodyOnlyCode = `<PageLayout gutter="none" className="h-[32rem]">
     <PageBody>...</PageBody>
   </PageContent>
 </PageLayout>`;
+
+const resourceListCode = `import { ResourceListTable } from "@zeron/blocks/resource-list-table-01";
+import type { ResourceListItem } from "@zeron/blocks/resource-list-table-01";
+import { Button } from "@zeron/ui/button";
+import {
+  PageActions,
+  PageBody,
+  PageContent,
+  PageContentHeader,
+  PageHeader,
+  PageHeaderContent,
+  PageLayout,
+  PageTitle,
+} from "@zeron/ui/page-layout";
+
+interface ResourcesRouteProps {
+  resources: readonly ResourceListItem[];
+  onCreate: () => void;
+  onEdit: (resource: ResourceListItem) => void;
+  onRefresh: () => void;
+}
+
+export function ResourcesRoute({ resources, onCreate, onEdit, onRefresh }: ResourcesRouteProps) {
+  return (
+    <PageLayout gutter="none" className="h-full">
+      <PageHeader>
+        <PageHeaderContent>
+          <nav aria-label="Breadcrumb">Workspace / Resources</nav>
+        </PageHeaderContent>
+      </PageHeader>
+      <PageContent>
+        <PageContentHeader>
+          <PageHeaderContent>
+            <PageTitle>Resources</PageTitle>
+          </PageHeaderContent>
+          <PageActions>
+            <Button onClick={onCreate}>Create resource</Button>
+          </PageActions>
+        </PageContentHeader>
+
+        {/* Add PageSubnav before PageBody only when the route has peer views. */}
+        <PageBody className="max-w-none p-3">
+          <ResourceListTable
+            resources={resources}
+            surface="plain"
+            showCreateAction={false}
+            onEdit={onEdit}
+            onRefresh={onRefresh}
+          />
+        </PageBody>
+      </PageContent>
+    </PageLayout>
+  );
+}`;
 
 const sidebarCode = `<PageLayout className="h-[32rem]">
   <PageSidebar width="200px" aria-label="Catalog filters">
@@ -212,6 +270,49 @@ function PageColumnsPreview() {
               <p className="mt-1 text-body text-fg-muted">On desktop this stays in the first grid column, regardless of the Aside-first DOM order.</p>
             </PagePrimary>
           </PageColumns>
+        </PageBody>
+      </PageContent>
+    </PageLayout>
+  );
+}
+
+function ResourceListPagePreview() {
+  const [message, setMessage] = useState("Ready");
+
+  return (
+    <PageLayout gutter="none" className="h-[38rem]">
+      <PageHeader>
+        <PageHeaderContent>
+          <nav aria-label="Breadcrumb" className="text-body text-fg-muted">
+            Workspace / Resources
+          </nav>
+        </PageHeaderContent>
+      </PageHeader>
+      <PageContent>
+        <PageContentHeader>
+          <PageHeaderContent>
+            <PageTitle>Resources</PageTitle>
+          </PageHeaderContent>
+          <PageActions>
+            <Button
+              onClick={() => setMessage("Create flow opened")}
+              type="button"
+            >
+              Create resource
+            </Button>
+          </PageActions>
+        </PageContentHeader>
+        <PageBody className="max-w-none p-3">
+          <p aria-live="polite" className="mb-3 text-label text-fg-muted">
+            {message}
+          </p>
+          <ResourceListTable
+            onEdit={(resource) => setMessage(`Opened ${resource.name}`)}
+            onRefresh={() => setMessage("Resources refreshed")}
+            resources={defaultResourceListItems}
+            showCreateAction={false}
+            surface="plain"
+          />
         </PageBody>
       </PageContent>
     </PageLayout>
@@ -365,6 +466,14 @@ export default function PageLayoutDoc() {
             </PageHeader>
             <PageTitlePreview action={<Button leadingIcon={PlusIcon} size="md">New project</Button>} />
           </PageLayout>
+        </ComponentPreview>
+      </DocSection>
+      <DocSection title="Resource list page">
+        <p className="text-body text-fg-muted">
+          Keep route context and optional subnavigation in PageLayout, then place the resource list inside PageBody. ResourceListTable owns its toolbar, result states, and pagination.
+        </p>
+        <ComponentPreview code={resourceListCode} padding="none" minHeightClass="min-h-[660px]" align="top" fullScreenable>
+          <ResourceListPagePreview />
         </ComponentPreview>
       </DocSection>
       <DocSection title="Body only">

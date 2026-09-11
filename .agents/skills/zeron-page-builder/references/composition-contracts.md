@@ -51,18 +51,13 @@ The current `PageTitle` applies a compact default style when no custom class is 
 
 ## Resource list pages
 
-`ResourceListLayout` is the complete-page preset for browsing and managing a collection. It composes `PageLayout` with one page header and one content surface. Its fixed order is title/actions, optional toolbar, scrolling summary and results, then optional caller-owned pagination.
-
 For a copy-ready full application page, `resource-list-page-01` reuses the standard Sidebar Basic shell and places the `resource-list-table-01` data block in its overview `PageBody`. Use that Block when no existing application shell is present; do not nest it inside another shell.
 
-- The host owns the application shell and bounded height; the preset does not create `AppShell`, `main`, or viewport height.
-- The layout owns the single h1 and page-level actions. The result component must not add another page title or duplicate create action.
-- The `toolbar` and `pagination` slots stay outside `PageBody`; `summary` and `children` scroll together inside it.
-- A child that already owns a toolbar or pagination keeps those regions. Omit the matching layout slots instead of hiding duplicate controls with CSS.
-- `ResourceListTable` uses `surface="plain"` inside this page surface and can set `showCreateAction={false}` when creation belongs in the page header.
-- The default page width is `size="full"`, the default gutter is `default`, and the inner `PageBody` uses `max-w-[1620px]` with `p-3` and `gap-3`.
-
-Use the base `PageLayout` family for unbounded document pages or for structures that do not match this ownership model.
+- In an existing Sidebar Basic host, keep page context in `PageHeader`, add `PageSubnav` only when the route has peer views, and render the resource list inside the existing `PageBody`.
+- `PageBody` remains the page's single vertical scroll owner. A table or grid may own local horizontal overflow.
+- `ResourceListTable` and `DataTable` own their toolbar, result states, selection, and pagination. Do not recreate those regions at the page-layout level.
+- When `PageContentHeader` owns the create action, set `showCreateAction={false}` on `ResourceListTable` so the page has one primary entry point.
+- Use `surface="plain"` when a list block is already inside the `PageContent` surface.
 
 ## Container and surfaces
 

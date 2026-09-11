@@ -29,6 +29,11 @@ describe("brand playground palette derivation", () => {
           expect(contrastRatio(semantic["fg-on-brand"][mode], fill)).toBeGreaterThanOrEqual(4.5);
           expect(fill).toMatch(/^#[0-9A-F]{6}$/);
         }
+        for (const fillName of ["primary-action", "primary-action-hover", "primary-action-active"] as const) {
+          const fill = semantic[fillName][mode];
+          expect(contrastRatio(semantic["fg-on-primary-action"][mode], fill)).toBeGreaterThanOrEqual(4.5);
+          expect(fill).toMatch(/^#[0-9A-F]{6}$/);
+        }
       }
     }
   );
@@ -40,7 +45,10 @@ describe("brand playground palette derivation", () => {
 
     expect(result.bundle.scale).toMatchObject({ 50: expect.any(String), 500: "#7C3AED", 950: expect.any(String) });
     expect(Object.keys(result.bundle.scale)).toHaveLength(11);
-    for (const name of ["brand", "brand-hover", "brand-active", "fg-brand", "fg-on-brand"] as const) {
+    for (const name of [
+      "brand", "brand-hover", "brand-active", "fg-brand", "fg-on-brand",
+      "primary-action", "primary-action-hover", "primary-action-active", "fg-on-primary-action",
+    ] as const) {
       expect(result.bundle.semantic[name]).toMatchObject({ light: expect.stringMatching(/^#[0-9A-F]{6}$/), dark: expect.stringMatching(/^#[0-9A-F]{6}$/) });
     }
   });

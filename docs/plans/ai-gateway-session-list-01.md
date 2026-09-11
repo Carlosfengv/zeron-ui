@@ -57,7 +57,7 @@ ai-gateway-session-list-01
 - `PageLayout` 负责页面宽度和内容区域；
 - `PageBody` 使用 `max-w-none p-3`，是唯一主纵向滚动区；
 - `DataTable` 只处理表格横向 overflow；
-- toolbar 与 pagination 属于 session 列表表面，不再使用 `ResourceListLayout` 的同名 slot；
+- toolbar 与 pagination 属于 session 列表表面，由 `DataTable` 组合统一拥有；
 - 根节点不创建 `AppShell`、`main` 或固定 viewport height。
 - `PageBody` 下复用 `resource-list-table-01` 的 `section > DataTable > toolbar` 结构以及对应的 InputGroup、DataTable 和工具栏布局类，不另建一套视觉规则。
 

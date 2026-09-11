@@ -29,7 +29,7 @@ related:
 
 ## Do not use when
 
-- 项目已经有应用级 Sidebar：保留现有宿主，只使用 `ResourceListLayout` 或 `ResourceListTable`。
+- 项目已经有应用级 Sidebar：保留现有宿主，在现有 `PageBody` 中直接使用 `ResourceListTable`，或用 `PageLayout` 与 `DataTable` 重新组合。
 - 只需要嵌入式表格：使用 `resource-list-table-01`。
 - 导航模型、列表交互或响应式结构与此 Block 明显不同：从布局和基础组件重新组合。
 

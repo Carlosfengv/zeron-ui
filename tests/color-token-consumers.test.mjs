@@ -48,9 +48,20 @@ describe("semantic color consumers", () => {
     }
   });
 
-  it("uses the primary-action foreground for primary button text", () => {
+  it("keeps strong button variants on dedicated action token bundles", () => {
     const source = read(join(UI_ROOT, "button.tsx"));
     expect(source).toContain('primary: "text-fg-on-primary-action"');
+    expect(source).toContain('neutral: "text-fg-on-neutral-action"');
+    expect(source).toContain('destructive: "text-fg-on-destructive-action"');
+    expect(source).toContain("bg-primary-action group-hover:bg-primary-action-hover group-active:bg-primary-action-active");
+    expect(source).toContain("bg-neutral-action group-hover:bg-neutral-action-hover group-active:bg-neutral-action-active");
+    expect(source).toContain("bg-destructive-action group-hover:bg-destructive-action-hover group-active:bg-destructive-action-active");
+  });
+
+  it("keeps brand selection foregrounds independent from primary actions", () => {
+    const source = read(join(UI_ROOT, "data-grid/data-grid-calendar.tsx"));
+    expect(source).toContain("data-[selected-single=true]:text-fg-on-brand");
+    expect(source).not.toContain("text-fg-on-primary-action");
   });
 
   it("uses a semantic half-pixel boundary on switches", () => {

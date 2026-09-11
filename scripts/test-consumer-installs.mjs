@@ -212,14 +212,6 @@ async function verifyNextBuild({ consumer, component }) {
       'export default function Page() { return <Tree aria-label="Install verified" items={[{ key: "verified", label: "Install verified" }]} selectionMode="single" />; }',
       '',
     ].join("\n"),
-    "resource-list-layout": [
-      'import { ResourceListLayout } from "@/components/ui/resource-list-layout";',
-      '',
-      'export default function Page() {',
-      '  return <div style={{ height: 640 }}><ResourceListLayout title="Resources" actions={<button type="button">Create</button>} toolbar={<input aria-label="Search resources" />} pagination={<button type="button">Next</button>}><p>Install verified</p></ResourceListLayout></div>;',
-      '}',
-      '',
-    ].join("\n"),
     "resource-list-page-01": [
       'import { ResourceListPage } from "@/components/blocks/resource-list-page-01";',
       '',
@@ -329,13 +321,6 @@ async function installViteComponent({ consumer, component, tarball }) {
       'import { Tree } from "@/src/components/ui/tree";',
       'import "./index.css";',
       'createRoot(document.getElementById("root")!).render(<Tree aria-label="Install verified" items={[{ key: "verified", label: "Install verified" }]} selectionMode="single" />);',
-      '',
-    ].join("\n"),
-    "resource-list-layout": [
-      'import { createRoot } from "react-dom/client";',
-      'import { ResourceListLayout } from "@/src/components/ui/resource-list-layout";',
-      'import "./index.css";',
-      'createRoot(document.getElementById("root")!).render(<div style={{ height: 640 }}><ResourceListLayout title="Resources" actions={<button type="button">Create</button>} toolbar={<input aria-label="Search resources" />} pagination={<button type="button">Next</button>}><p>Install verified</p></ResourceListLayout></div>);',
       '',
     ].join("\n"),
     "resource-list-page-01": [

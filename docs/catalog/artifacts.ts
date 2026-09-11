@@ -170,11 +170,6 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
     kind: "page", product: "zentrix", domains: ["model", "analytics", "monitoring"], patterns: ["detail", "dashboard", "charts", "local navigation"], searchTerms: ["model analytics", "provider", "pricing", "uptime", "benchmark", "模型分析", "供应商", "价格", "可用性"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
   },
   {
-    slug: "resource-details-01", registryName: "resource-details-01",
-    title: "Resource Details", description: "A grouped metadata panel for health, configuration, usage and API compatibility.",
-    kind: "block", product: "shared", domains: ["resource", "monitoring"], patterns: ["detail", "metadata"], searchTerms: ["resource", "details", "metadata", "资源", "详情", "配置"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"],
-  },
-  {
     slug: "resource-list-page-01", registryName: "resource-list-page-01",
     title: "Resource List Page", description: "The standard Sidebar Basic application layout with its project overview replaced by a controlled resource DataTable.",
     kind: "page", product: "shared", domains: ["resource", "operations"], patterns: ["sidebar", "data table", "filter", "bulk action"], searchTerms: ["resource", "list", "page", "sidebar", "资源", "列表", "页面", "侧边栏"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,

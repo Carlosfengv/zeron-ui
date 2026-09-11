@@ -18,7 +18,16 @@ const MIN_CONTROL_CONTRAST = 3;
 export type BrandScaleStep = (typeof STEPS)[number];
 export type BrandReferenceScale = Record<BrandScaleStep, string>;
 export type ThemeModeValue = { light: string; dark: string };
-export type BrandSemanticName = "brand" | "brand-hover" | "brand-active" | "fg-brand" | "fg-on-brand";
+export type BrandSemanticName =
+  | "brand"
+  | "brand-hover"
+  | "brand-active"
+  | "fg-brand"
+  | "fg-on-brand"
+  | "primary-action"
+  | "primary-action-hover"
+  | "primary-action-active"
+  | "fg-on-primary-action";
 
 export interface BrandThemeBundle {
   seed: string;
@@ -214,14 +223,38 @@ export function deriveBrandTheme(value: string): BrandDerivationResult {
       "brand-hover": { light: light.hover, dark: dark.hover },
       "brand-active": { light: light.active, dark: dark.active },
       "fg-on-brand": { light: light.foreground, dark: dark.foreground },
+      "primary-action": { light: light.fill, dark: dark.fill },
+      "primary-action-hover": { light: light.hover, dark: dark.hover },
+      "primary-action-active": { light: light.active, dark: dark.active },
+      "fg-on-primary-action": { light: light.foreground, dark: dark.foreground },
       "fg-brand": {
         light: ensureTextContrast(light.fill, LIGHT_TEXT_SURFACE, "#000000"),
         dark: ensureTextContrast(dark.fill, DARK_TEXT_SURFACE, "#FFFFFF"),
       },
     },
     mapping: {
-      light: { brand: light.step, "brand-hover": light.step, "brand-active": light.step, "fg-brand": light.step, "fg-on-brand": "computed-ink" },
-      dark: { brand: dark.step, "brand-hover": dark.step, "brand-active": dark.step, "fg-brand": dark.step, "fg-on-brand": "computed-ink" },
+      light: {
+        brand: light.step,
+        "brand-hover": light.step,
+        "brand-active": light.step,
+        "fg-brand": light.step,
+        "fg-on-brand": "computed-ink",
+        "primary-action": light.step,
+        "primary-action-hover": light.step,
+        "primary-action-active": light.step,
+        "fg-on-primary-action": "computed-ink",
+      },
+      dark: {
+        brand: dark.step,
+        "brand-hover": dark.step,
+        "brand-active": dark.step,
+        "fg-brand": dark.step,
+        "fg-on-brand": "computed-ink",
+        "primary-action": dark.step,
+        "primary-action-hover": dark.step,
+        "primary-action-active": dark.step,
+        "fg-on-primary-action": "computed-ink",
+      },
     },
   };
   const changes = [...generated.changes];
