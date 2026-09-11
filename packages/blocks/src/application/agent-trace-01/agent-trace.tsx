@@ -7,17 +7,27 @@ import AnthropicMono from "@lobehub/icons/es/Anthropic/components/Mono";
 import DeepSeekColor from "@lobehub/icons/es/DeepSeek/components/Color";
 import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono";
 import { Badge, type BadgeColor } from "@zeron/ui/badge";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@zeron/ui/breadcrumb";
 import { Button } from "@zeron/ui/button";
 import { DetailList, DetailListItem, DetailListLabel, DetailListSeparator, DetailListValue } from "@zeron/ui/detail-list";
 import { Input } from "@zeron/ui/input";
-import { PageBody, PageContent, PageHeader, PageHeaderContent, PageLayout, PageTitle } from "@zeron/ui/page-layout";
+import { PageBody, PageContent, PageHeader, PageLayout } from "@zeron/ui/page-layout";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@zeron/ui/resizable";
 import { ScrollArea } from "@zeron/ui/scroll-area";
+import { SidebarProvider, SidebarTrigger } from "@zeron/ui/sidebar";
 import { useIcon, type IconComponentProps, type IconName } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@zeron/ui/table";
 import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
 import { Tooltip } from "@zeron/ui/tooltip";
+import {
+  AiGatewayWorkspaceSidebar,
+  resolveAiGatewaySidebarConfig,
+} from "../ai-gateway-workspace-sidebar";
+import type {
+  AiGatewaySidebarActions,
+  AiGatewaySidebarOptions,
+} from "../ai-gateway-workspace-types";
 import { defaultAgentTracePayload } from "./session-default";
 import { projectAgentTranscript } from "./stream-projection";
 import { expandAgentTraceEntries, parseAgentTracePayload } from "./trace-jsonl";
@@ -98,6 +108,10 @@ export interface AgentTraceProps extends Omit<ComponentPropsWithoutRef<"section"
   chatFooter?: ReactNode;
   /** Renders only the trace workspace so it can live inside an application detail page. */
   layout?: "standalone" | "embedded";
+  /** Configures the shared AI gateway navigation in standalone mode. Pass `false` to omit it. */
+  sidebar?: AiGatewaySidebarOptions | false;
+  /** Handles navigation, workspace, and account actions from the shared sidebar. */
+  sidebarActions?: AiGatewaySidebarActions;
   /** IANA timezone used for every recorded timestamp. */
   timeZone?: string;
   /** Locale used for every recorded timestamp. */
@@ -779,7 +793,9 @@ export function AgentTrace({
   timeZone = DEFAULT_TRACE_TIME_ZONE,
   locale = DEFAULT_TRACE_LOCALE,
   onDataChange,
-  title = "Trajectory",
+  sidebar: sidebarProp,
+  sidebarActions,
+  title = "介绍一下你自己",
   ...props
 }: AgentTraceProps) {
   const [localData, setLocalData] = useState<unknown>(defaultAgentTracePayload);
@@ -795,6 +811,8 @@ export function AgentTrace({
   const [activeDisplayControl, setActiveDisplayControl] = useState<TraceDisplayControl>("duration");
   const [replayIndex, setReplayIndex] = useState<number | null>(null);
   const desktopLayout = useDesktopLayout();
+  const SessionsIcon = useIcon("message-circle");
+  const sidebarConfig = resolveAiGatewaySidebarConfig(sidebarProp, "sessions");
   const inputRef = useRef<HTMLInputElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const pointerStart = useRef<number | null>(null);
@@ -884,7 +902,7 @@ export function AgentTrace({
             </TabPanel>
             <TabPanel value="trace" className="flex min-h-0 flex-1 flex-col [&_[role=tab]_*]:!font-normal">
               <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-raised px-3 py-2">
-                <Tabs value={activeDisplayControl} onValueChange={(value) => setActiveDisplayControl(value as TraceDisplayControl)} variant="segment" color="neutral" aria-label="Trace display controls">
+                <Tabs value={activeDisplayControl} onValueChange={(value) => setActiveDisplayControl(value as TraceDisplayControl)} variant="segment" color="default" aria-label="Trace display controls">
                   <TabsList labelVisibility="active" className="my-0">
                     <TabItem value="duration" icon={DurationTabIcon} label="Duration" onClick={() => setDurationMode((current) => !current)} />
                     <TabItem value="turns" icon={TurnsTabIcon} label="Turns" onClick={() => setCollapsedTurns(allTurnsCollapsed ? new Set() : new Set(turns.map((turn) => turn.id)))} />
@@ -961,12 +979,33 @@ export function AgentTrace({
     return <section className={cn("flex min-h-0 min-w-0 flex-1 flex-col", className)} {...props}>{workspace}</section>;
   }
 
-  return <PageLayout className={cn("min-h-[42rem]", className)} {...props}>
-    <PageHeader>
-      <PageHeaderContent>
-        <PageTitle className="truncate text-body font-semibold">{title}</PageTitle>
-      </PageHeaderContent>
-    </PageHeader>
-    <PageContent>{workspace}</PageContent>
-  </PageLayout>;
+  const content = <section className={cn("flex h-full min-h-[42rem] min-w-0 overflow-hidden bg-surface-base", className)} {...props}>
+    {sidebarConfig ? <AiGatewayWorkspaceSidebar actions={sidebarActions} config={sidebarConfig} /> : null}
+    <PageLayout size="full">
+      <PageHeader>
+        <div className="flex h-full min-w-0 items-center gap-2">
+          {sidebarConfig ? <div className="xl:hidden"><SidebarTrigger label="Open AI gateway navigation" size="xs" /></div> : null}
+          <Breadcrumb className="min-w-0">
+            <BreadcrumbList className="flex-nowrap">
+              <BreadcrumbItem>
+                <BreadcrumbLink className="inline-flex items-center gap-1.5" href="#sessions">
+                  <SessionsIcon aria-hidden size={16} strokeWidth={1.5} />
+                  <span>Session</span>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem className="min-w-0">
+                <BreadcrumbPage className="truncate">{title}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </PageHeader>
+      <PageContent>{workspace}</PageContent>
+    </PageLayout>
+  </section>;
+
+  return sidebarConfig
+    ? <SidebarProvider breakpointBehavior="drawer">{content}</SidebarProvider>
+    : content;
 }

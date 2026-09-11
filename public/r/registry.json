@@ -3971,7 +3971,7 @@
       "name": "agent-trace-01",
       "type": "registry:block",
       "title": "Agent Trace",
-      "description": "A turn-aware trace viewer that projects agent messages, tool calls, and results from uploaded JSON.",
+      "description": "A turn-aware AI gateway trace workspace with shared navigation that projects agent messages, tool calls, and results from uploaded JSON.",
       "categories": [
         "application",
         "agent",
@@ -3986,14 +3986,19 @@
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/breadcrumb.json",
         "https://zeron-ui.vercel.app/r/button.json",
         "https://zeron-ui.vercel.app/r/chat-message.json",
         "https://zeron-ui.vercel.app/r/detail-list.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
         "https://zeron-ui.vercel.app/r/page-layout.json",
         "https://zeron-ui.vercel.app/r/resizable.json",
         "https://zeron-ui.vercel.app/r/scroll-area.json",
+        "https://zeron-ui.vercel.app/r/sidebar.json",
+        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
         "https://zeron-ui.vercel.app/r/table.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
         "https://zeron-ui.vercel.app/r/thinking-indicator.json",
@@ -4001,6 +4006,16 @@
         "https://zeron-ui.vercel.app/r/utils.json"
       ],
       "files": [
+        {
+          "path": "packages/blocks/src/application/ai-gateway-workspace-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-workspace-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-workspace-sidebar.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-workspace-sidebar.tsx"
+        },
         {
           "path": "packages/blocks/src/application/agent-trace-01/agent-trace.tsx",
           "type": "registry:component",

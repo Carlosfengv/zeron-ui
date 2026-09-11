@@ -18,7 +18,7 @@ import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { InstallCommand } from "@docs/components/content/InstallCommand";
 import { DocPager } from "@docs/components/navigation/DocPager";
 import { docEntries } from "@docs/manifest";
-import { getArtifact } from "@docs/catalog/artifacts";
+import { artifactProductLabels, getArtifact } from "@docs/catalog/artifacts";
 import {
   localePrefixFromPathname,
   localizePathname,
@@ -116,7 +116,7 @@ export function BlockDetailPage({
               <div className="pb-6">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge color="blue">{kindLabel}</Badge>
-                  {artifact && <Badge variant="dot">{artifact.product}</Badge>}
+                  {artifact && <Badge variant="dot">{artifactProductLabels[isChinese ? "zh" : "en"][artifact.product]}</Badge>}
                   <Badge variant="dot">{readinessLabel}</Badge>
                   <Badge variant="dot">{dataModeLabel}</Badge>
                 </div>

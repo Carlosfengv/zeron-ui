@@ -36,6 +36,12 @@ describe("business template catalog", () => {
     }
   });
 
+  it("groups the Zenfuse observability blocks under the Zenfuse product", () => {
+    expect(artifactProducts).toContain("zenfuse");
+    expect(artifactCatalog.filter(({ product }) => product === "zenfuse").map(({ slug }) => slug))
+      .toEqual(["ai-gateway-overview-01", "agent-message-trace-01", "agent-trace-01"]);
+  });
+
   it("groups application shells under the Layout type", () => {
     expect(artifactCatalog.filter((artifact) => artifact.kind === "layout").map((artifact) => artifact.slug))
       .toEqual(["top-nav-app-shell-01", "zaiops-operations-01"]);

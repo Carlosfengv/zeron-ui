@@ -73,9 +73,9 @@ const blockCatalogEntries = [
   {
     name: "agent-trace-01",
     title: "Agent Trace",
-    description: "A turn-aware trace viewer that projects agent messages, tool calls, and results from uploaded JSON.",
+    description: "A turn-aware AI gateway trace workspace with shared navigation that projects agent messages, tool calls, and results from uploaded JSON.",
     categories: ["application", "agent", "observability"],
-    dependencies: ["badge", "button", "detail-list", "@lobehub/icons"],
+    dependencies: ["badge", "breadcrumb", "button", "detail-list", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "@lobehub/icons"],
   },
   {
     name: "agent-session-detail-01",

@@ -11,7 +11,7 @@ import { NavMenu } from "@zeron/ui/nav-menu";
 import { PageBody, PageContent, PageLayout, PageSidebar } from "@zeron/ui/page-layout";
 import { useIcon, type IconName } from "@zeron/icons/context";
 import { BlockPreview } from "@docs/components/blocks/BlockPreview";
-import { artifactCatalog, artifactKinds, artifactProducts, type ArtifactKind, type ArtifactProduct } from "@docs/catalog/artifacts";
+import { artifactCatalog, artifactKinds, artifactProductLabels, artifactProducts, type ArtifactKind, type ArtifactProduct } from "@docs/catalog/artifacts";
 
 const copy = {
   en: {
@@ -39,11 +39,6 @@ const copy = {
 const kindLabels = {
   en: { block: "Block", page: "Page", flow: "Flow", prototype: "Prototype", layout: "Layout" },
   zh: { block: "区块", page: "页面", flow: "流程", prototype: "原型", layout: "布局" },
-} as const;
-
-const productLabels = {
-  en: { zaiops: "ZAIops", zlr: "ZLR", zentrix: "Zentrix", shared: "Shared" },
-  zh: { zaiops: "ZAIops", zlr: "ZLR", zentrix: "Zentrix", shared: "通用" },
 } as const;
 
 const installationKindLabels = {
@@ -142,7 +137,7 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
   const activeFilterLabel = [
     normalizedQuery ? `“${query.trim()}”` : null,
     kind ? kindLabels[language][kind] : null,
-    product ? productLabels[language][product] : null,
+    product ? artifactProductLabels[language][product] : null,
   ].filter(Boolean).join(" · ") || text.all;
 
   return (
@@ -165,7 +160,7 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
               <p className="px-1 pb-1.5 text-label text-fg-muted">{text.filterByProduct}</p>
               <NavMenu activeValue={product ?? "all"} aria-label={text.filterByProduct} className="max-lg:[&_[data-slot=nav-list]]:flex-row max-lg:[&_[data-slot=nav-list]]:flex-wrap" keyboardNavigation="roving">
                 <FilterNavItem active={product === null} count={artifactCatalog.length} label={text.all} onSelect={() => { setProduct(null); updateUrl(kind, null, query); }} value="all" />
-                {artifactProducts.map((item) => <FilterNavItem key={item} active={product === item} count={productCounts.get(item) ?? 0} label={productLabels[language][item]} onSelect={() => { setProduct(item); updateUrl(kind, item, query); }} value={item} />)}
+                {artifactProducts.map((item) => <FilterNavItem key={item} active={product === item} count={productCounts.get(item) ?? 0} label={artifactProductLabels[language][item]} onSelect={() => { setProduct(item); updateUrl(kind, item, query); }} value={item} />)}
               </NavMenu>
             </section>
           </div>
@@ -204,7 +199,7 @@ export function BlocksGallery({ localePrefix = "" }: { localePrefix?: string }) 
                   <ContainerFooter className="justify-between px-3 py-3">
                     <span className="text-body font-medium text-fg-muted transition-colors group-hover:text-fg-brand group-focus-within:text-fg-brand">{artifact.title}</span>
                     <div className="flex items-center gap-1.5">
-                      <Badge size="sm" variant="dot">{productLabels[language][artifact.product]}</Badge>
+                      <Badge size="sm" variant="dot">{artifactProductLabels[language][artifact.product]}</Badge>
                       <Badge color="blue" size="sm">{kindLabels[language][artifact.kind]}</Badge>
                       <Badge color={artifact.installation.kind === "data-block" ? "green" : "gray"} size="sm">{installationKindLabels[language][artifact.installation.kind]}</Badge>
                       {artifact.installation.framework === "next" && <Badge color="purple" size="sm">{frameworkLabels[language].next}</Badge>}

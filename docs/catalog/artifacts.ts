@@ -3,8 +3,13 @@ import { blockCatalog, type BlockCapability } from "@zeron/blocks/catalog";
 export const artifactKinds = ["block", "page", "flow", "prototype", "layout"] as const;
 export type ArtifactKind = (typeof artifactKinds)[number];
 
-export const artifactProducts = ["zaiops", "zlr", "zentrix", "shared"] as const;
+export const artifactProducts = ["zenfuse", "zaiops", "zlr", "zentrix", "shared"] as const;
 export type ArtifactProduct = (typeof artifactProducts)[number];
+
+export const artifactProductLabels: Record<"en" | "zh", Record<ArtifactProduct, string>> = {
+  en: { zenfuse: "Zenfuse", zaiops: "ZAIops", zlr: "ZLR", zentrix: "Zentrix", shared: "Shared" },
+  zh: { zenfuse: "Zenfuse", zaiops: "ZAIops", zlr: "ZLR", zentrix: "Zentrix", shared: "通用" },
+};
 
 export const artifactReadiness = ["copy-ready", "adapter-required", "demo-only"] as const;
 export type ArtifactReadiness = (typeof artifactReadiness)[number];
@@ -62,7 +67,7 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
   {
     slug: "ai-gateway-overview-01", registryName: "ai-gateway-overview-01",
     title: "AI Gateway Overview", description: "A complete AI gateway workspace with responsive navigation and analytics for traffic, spend, tokens, latency, reliability and provider usage.",
-    kind: "block", product: "zentrix", domains: ["ai gateway", "analytics", "observability"], patterns: ["sidebar", "dashboard", "metrics", "charts", "histogram"], searchTerms: ["gateway", "sidebar", "navigation", "requests", "cost", "tokens", "latency", "provider", "AI 网关", "侧边栏", "费用", "延迟"], readiness: "copy-ready", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
+    kind: "block", product: "zenfuse", domains: ["ai gateway", "analytics", "observability"], patterns: ["sidebar", "dashboard", "metrics", "charts", "histogram"], searchTerms: ["gateway", "sidebar", "navigation", "requests", "cost", "tokens", "latency", "provider", "AI 网关", "侧边栏", "费用", "延迟"], readiness: "copy-ready", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
   },
   {
     slug: "ai-gateway-session-list-01", registryName: "ai-gateway-session-list-01",
@@ -72,12 +77,12 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
   {
     slug: "agent-message-trace-01", registryName: "agent-message-trace-01",
     title: "Agent Message Trace", description: "A responsive, resizable agent trace workspace with a virtualized timeline and span inspector.",
-    kind: "block", product: "zentrix", domains: ["ai agent", "observability"], patterns: ["tree timeline", "virtualized trace", "resizable inspector", "tool calls"], searchTerms: ["agent", "message", "trace", "span", "tool call", "timeline", "inspector", "智能体", "消息", "调用链", "工具调用"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
+    kind: "block", product: "zenfuse", domains: ["ai agent", "observability"], patterns: ["tree timeline", "virtualized trace", "resizable inspector", "tool calls"], searchTerms: ["agent", "message", "trace", "span", "tool call", "timeline", "inspector", "智能体", "消息", "调用链", "工具调用"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
   },
   {
     slug: "agent-trace-01", registryName: "agent-trace-01",
     title: "Agent Trace", description: "A turn-aware agent execution trace with local JSON upload and raw-record inspection.",
-    kind: "block", product: "shared", domains: ["ai agent", "observability"], patterns: ["trace", "timeline", "debugging"], searchTerms: ["agent", "trace", "tool call", "message", "轨迹", "调用链", "消息"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
+    kind: "block", product: "zenfuse", domains: ["ai agent", "observability"], patterns: ["trace", "timeline", "debugging"], searchTerms: ["agent", "trace", "tool call", "message", "轨迹", "调用链", "消息"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
   },
   {
     slug: "agent-session-detail-01", registryName: "agent-session-detail-01",
