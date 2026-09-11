@@ -35,6 +35,17 @@ function GitHubMark() {
   );
 }
 
+const versionCommitId = process.env.NEXT_PUBLIC_VERSION_COMMIT_ID ?? "development";
+const versionCommitMessage = process.env.NEXT_PUBLIC_VERSION_COMMIT_MESSAGE ?? "Development build";
+const versionUpdatedAt = process.env.NEXT_PUBLIC_VERSION_UPDATED_AT ?? "";
+
+function formatCommitTimestamp(timestamp: string) {
+  const match = timestamp.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(?::\d{2}(?:\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/);
+  if (!match) return timestamp;
+  const [, date, time, offset] = match;
+  return `${date} ${time} ${offset === "Z" ? "UTC" : `UTC${offset}`}`;
+}
+
 interface LocaleSwitchLinkProps {
   alternateLocalePrefix: string;
   currentPathname: string;
@@ -94,17 +105,25 @@ function DocsPrimaryNavigation({
     ? localizePathname("/docs/blocks", localePrefix)
     : currentPathname.startsWith("/docs/components")
       ? localizePathname("/docs/components", localePrefix)
-      : currentPathname === "/docs"
-        ? localizePathname("/docs", localePrefix)
-        : null;
+      : currentPathname === "/updates"
+        ? localizePathname("/updates", localePrefix)
+        : currentPathname === "/docs"
+          ? localizePathname("/docs", localePrefix)
+          : null;
   const items = [
     { href: localizePathname("/docs/blocks", localePrefix), label: t("businessTemplates") },
     { href: localizePathname("/docs/components", localePrefix), label: t("componentsEntry") },
+    { href: localizePathname("/updates", localePrefix), label: localePrefix === "/en" ? "Updates" : "更新日志" },
   ];
   const languageActionLabel = isEnglish ? "切换至中文" : "Switch to English";
   const languageLabel = isEnglish ? "中" : "EN";
   const alternateLocalePrefix = isEnglish ? "" : "/en";
   const brandLabel = isEnglish ? "Brand" : "品牌色";
+  const shortCommitId = versionCommitId.slice(0, 7);
+  const versionActionLabel = isEnglish
+    ? `Open GitHub repository at commit ${shortCommitId}`
+    : `打开 GitHub 仓库，当前版本 ${shortCommitId}`;
+  const updatedLabel = isEnglish ? "Updated" : "更新时间";
 
   return (
     <TopNav navigationAlign="left" className="w-full gap-2 border-0 px-4 sm:px-6">
@@ -150,9 +169,26 @@ function DocsPrimaryNavigation({
             {theme === "dark" ? <SunIcon aria-hidden="true" size={16} strokeWidth={1.5} /> : <MoonIcon aria-hidden="true" size={16} strokeWidth={1.5} />}
           </Button>
         </Tooltip>
-        <Tooltip content="GitHub" side="bottom">
-          <Button asChild aria-label="Open GitHub repository" iconOnly size="sm" variant="ghost">
-            <a href="https://github.com/Carlosfengv/zeron-ui" rel="noreferrer" target="_blank"><GitHubMark /></a>
+        <Tooltip
+          className="max-w-80 px-3 py-2"
+          content={
+            <div>
+              <p className="whitespace-pre-wrap break-words">{versionCommitMessage}</p>
+              <p className="mt-1 flex flex-wrap gap-x-2 font-normal opacity-75">
+                <span>{updatedLabel}</span>
+                <time dateTime={versionUpdatedAt}>{formatCommitTimestamp(versionUpdatedAt)}</time>
+              </p>
+            </div>
+          }
+          side="bottom"
+        >
+          <Button asChild aria-label={versionActionLabel} size="sm" variant="ghost">
+            <a href="https://github.com/Carlosfengv/zeron-ui" rel="noreferrer" target="_blank">
+              <span className="inline-flex items-center gap-1">
+                <GitHubMark />
+                <span className="font-mono tabular-nums max-sm:hidden">{shortCommitId}</span>
+              </span>
+            </a>
           </Button>
         </Tooltip>
         <Tooltip content={languageActionLabel} side="bottom">
@@ -190,6 +226,8 @@ function DocsShellContent({ children }: { children: ReactNode }) {
   const isBlocksWorkspace = currentPathname === "/docs/blocks" || currentPathname.startsWith("/docs/blocks/");
   const isComponentsDetail = currentPathname.startsWith("/docs/components/");
   const isComponentsWorkspace = currentPathname === "/docs/components" || isComponentsDetail;
+  const isUpdatesPage = currentPathname === "/updates";
+  const isBoundedWorkspace = isComponentsWorkspace || isUpdatesPage;
   const hasDocumentationSidebar = currentPathname === "/docs" || currentPathname.startsWith("/docs/icons");
   const expectedIndexRef = useRef(pageOrderFor(currentPathname).indexOf(currentPathname));
 
@@ -220,7 +258,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
 
   return (
     <RightRailProvider>
-      <AppShell layout="stacked" className={isComponentsWorkspace ? "h-svh overflow-hidden" : undefined}>
+      <AppShell layout="stacked" className={isBoundedWorkspace ? "h-svh overflow-hidden" : undefined}>
         <AppShellHeader className="border-b border-border bg-surface-base">
           <DocsPrimaryNavigation
             currentPathname={currentPathname}
@@ -228,10 +266,10 @@ function DocsShellContent({ children }: { children: ReactNode }) {
             showSidebarTrigger={hasDocumentationSidebar}
           />
         </AppShellHeader>
-        <AppShellMain className={isComponentsWorkspace ? "flex min-h-0 overflow-hidden [&:has([data-docs-workspace=blocks])>aside]:hidden" : "flex min-h-0 [&:has([data-docs-workspace=blocks])>aside]:hidden"}>
+        <AppShellMain className={isBoundedWorkspace ? "flex min-h-0 overflow-hidden [&:has([data-docs-workspace=blocks])>aside]:hidden" : "flex min-h-0 [&:has([data-docs-workspace=blocks])>aside]:hidden"}>
           {hasDocumentationSidebar && <AppShellSidebar><DocsSidebar localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} /></AppShellSidebar>}
-          <div className="min-h-0 min-w-0 flex-1">{children}</div>
-          {!isBlocksWorkspace && currentPathname !== "/docs/components" && !isComponentsDetail && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
+          <div className={isBoundedWorkspace ? "h-full min-h-0 min-w-0 flex-1" : "min-h-0 min-w-0 flex-1"}>{children}</div>
+          {!isBlocksWorkspace && !isComponentsWorkspace && !isUpdatesPage && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
         </AppShellMain>
       </AppShell>
     </RightRailProvider>

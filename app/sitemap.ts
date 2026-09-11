@@ -5,7 +5,7 @@ import { localizedUrl } from "@docs/seo/locale";
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
 
-  const paths = ["/", "/docs", ...pageDocEntries.map(pathnameOf)];
+  const paths = ["/", "/docs", "/updates", ...pageDocEntries.map(pathnameOf)];
 
   return paths.flatMap((pathname) =>
     (["en", "zh-CN"] as const).map((locale) => ({

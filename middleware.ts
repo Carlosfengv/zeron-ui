@@ -7,9 +7,11 @@ export const config = {
   matcher: [
     "/",
     "/docs/:path*",
+    "/updates",
     "/block-demo/:path*",
     "/(en|zh-cn)",
     "/(en|zh-cn)/docs/:path*",
+    "/(en|zh-cn)/updates",
     "/(en|zh-cn)/block-demo/:path*",
   ],
 };

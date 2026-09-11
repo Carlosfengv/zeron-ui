@@ -1,8 +1,16 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import { legacyDocRedirects, pathnameOf } from "./docs/manifest";
+import { resolveBuildVersion } from "./docs/components/shell/site/build-version.server";
+
+const buildVersion = resolveBuildVersion();
 
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_VERSION_COMMIT_ID: buildVersion.commitId,
+    NEXT_PUBLIC_VERSION_COMMIT_MESSAGE: buildVersion.commitMessage,
+    NEXT_PUBLIC_VERSION_UPDATED_AT: buildVersion.updatedAt,
+  },
   transpilePackages: ["@zeron/ui", "@zeron/blocks", "@zeron/icons"],
   // Keep production builds below Vercel's memory limit. This trades a small
   // amount of compilation time for a lower Webpack peak-memory footprint.
