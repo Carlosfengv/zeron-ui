@@ -1,6 +1,7 @@
 "use client";
 
-import { Tooltip } from "@zeron/ui/tooltip";
+import { useState } from "react";
+import { Tooltip, TooltipPortalContainer } from "@zeron/ui/tooltip";
 import { Button } from "@zeron/ui/button";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
@@ -16,6 +17,12 @@ const basicCode = `import { Tooltip } from "./components";
 
 <Tooltip content="Save your changes">
   <button>Hover me</button>
+</Tooltip>`;
+
+const alwaysVisibleCode = `import { Tooltip } from "./components";
+
+<Tooltip content="Always visible" forceOpen>
+  <button>Copy to Figma</button>
 </Tooltip>`;
 
 const placementCode = `import { Tooltip } from "./components";
@@ -77,11 +84,35 @@ const tooltipProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
     description: t("delayDuration"),
   },
   {
+    name: "forceOpen",
+    type: "boolean",
+    description: t("forceOpen"),
+  },
+  {
     name: "className",
     type: "string",
     description: t("className"),
   },
 ];
+
+function AlwaysVisibleTooltipDemo() {
+  const [captureContainer, setCaptureContainer] =
+    useState<HTMLDivElement | null>(null);
+
+  return (
+    <div
+      ref={setCaptureContainer}
+      data-figma-capture-target=""
+      className="relative flex min-h-24 min-w-48 items-center justify-center"
+    >
+      <TooltipPortalContainer value={captureContainer}>
+        <Tooltip content="Always visible" forceOpen>
+          <Button>Copy to Figma</Button>
+        </Tooltip>
+      </TooltipPortalContainer>
+    </div>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Page
@@ -126,6 +157,12 @@ export default function TooltipDoc() {
           <Tooltip content="Save your changes">
             <Button>Hover me</Button>
           </Tooltip>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("alwaysVisible")}>
+        <ComponentPreview code={alwaysVisibleCode}>
+          <AlwaysVisibleTooltipDemo />
         </ComponentPreview>
       </DocSection>
 

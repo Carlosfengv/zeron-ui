@@ -12,6 +12,7 @@ describe("component preview Figma capture", () => {
     "docs/components/content/FigmaCaptureToaster.tsx",
   );
   const toastPage = source("docs/pages/components/toast/page.tsx");
+  const tooltipPage = source("docs/pages/components/tooltip/page.tsx");
   const providers = source("app/app-providers.tsx");
   const nextConfig = source("next.config.ts");
 
@@ -29,6 +30,14 @@ describe("component preview Figma capture", () => {
   it("marks inline Toast stacks as complete capture targets", () => {
     expect(toastPage.match(/data-figma-capture-target=""/g)).toHaveLength(2);
     expect(toastPage).toContain('portal={false}');
+  });
+
+  it("mounts the always-visible Tooltip portal inside its capture target", () => {
+    expect(tooltipPage).toContain('data-figma-capture-target=""');
+    expect(tooltipPage).toContain("ref={setCaptureContainer}");
+    expect(tooltipPage).toContain(
+      "<TooltipPortalContainer value={captureContainer}>",
+    );
   });
 
   it("keeps Figma feedback at the top without moving other toasts", () => {
