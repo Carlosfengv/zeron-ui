@@ -3,7 +3,7 @@ import "server-only";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { DocPageLoader } from "@docs/generated/page-loader-types";
-import { contentKeyOf, getDocEntry, pathnameOf, type DocCollection } from "@docs/manifest";
+import { contentKeyOf, docEntries, getDocEntry, pageKeyOf, pathnameOf, type DocCollection } from "@docs/manifest";
 import { PageMessages } from "@docs/i18n/page-provider";
 import { localeAlternates } from "@docs/seo/locale";
 import type { AppLocale } from "@/app/_i18n/routing";
@@ -12,9 +12,9 @@ export function generateDocStaticParamsForCollection(
   collection: DocCollection,
   pageLoaders: Record<string, DocPageLoader>,
 ) {
-  return Object.keys(pageLoaders)
-    .filter((key) => key.startsWith(`${collection}/`))
-    .map((key) => ({ slug: key.slice(collection.length + 1) }));
+  return docEntries
+    .filter((entry) => entry.collection === collection && pageLoaders[pageKeyOf(entry)])
+    .map(({ slug }) => ({ slug }));
 }
 
 export async function generateDocMetadata({
@@ -54,7 +54,7 @@ export async function renderDocPage({
   pageLoaders: Record<string, DocPageLoader>;
 }) {
   const entry = getDocEntry(collection, slug);
-  const loader = pageLoaders[`${collection}/${slug}`];
+  const loader = entry && pageLoaders[pageKeyOf(entry)];
   if (!entry || !loader) notFound();
 
   const Page = (await loader()).default;

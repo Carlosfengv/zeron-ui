@@ -3,17 +3,30 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   collectionDefinitions,
+  contentKeyOf,
   detailDocEntries,
   legacyDocRedirects,
   pageDocEntries,
+  pageKeyOf,
   pathnameOf,
 } from "../docs/manifest";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 
 describe("documentation manifest", () => {
+  it("ships the new collection labels in the messages actually loaded by the site shell", () => {
+    for (const locale of ["en", "zh-CN"]) {
+      const common = JSON.parse(readFileSync(join(ROOT, "docs/content", locale, "common.json"), "utf8"));
+      const slim = JSON.parse(readFileSync(join(ROOT, "docs/content", locale, "common-slim.json"), "utf8"));
+      for (const key of ["blocks", "pages"]) {
+        expect(slim.navigation[key]).toBeTruthy();
+        expect(slim.navigation[key]).toBe(common.navigation[key]);
+      }
+    }
+  });
+
   it("defines the complete public documentation surface exactly once", () => {
-    expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "icons"]);
+    expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
     expect(pageDocEntries).toHaveLength(103);
     expect(detailDocEntries).toHaveLength(103);
     expect(legacyDocRedirects).toHaveLength(65);
@@ -34,11 +47,12 @@ describe("documentation manifest", () => {
   it("uses one generic route and a generated page-loader map for every formal detail page", () => {
     expect(existsSync(join(ROOT, "app/[locale]/docs/components/[slug]/page.tsx"))).toBe(true);
     expect(existsSync(join(ROOT, "app/[locale]/docs/blocks/[slug]/page.tsx"))).toBe(true);
+    expect(existsSync(join(ROOT, "app/[locale]/docs/pages/[slug]/page.tsx"))).toBe(true);
     expect(existsSync(join(ROOT, "app/[locale]/docs/icons/[slug]/page.tsx"))).toBe(true);
     const loaders = readFileSync(join(ROOT, "docs/generated/page-loaders.generated.ts"), "utf8");
     for (const entry of detailDocEntries) {
-      expect(loaders).toContain(`\"${entry.collection}/${entry.slug}\"`);
-      expect(existsSync(join(ROOT, "docs/pages", entry.collection, entry.slug, "page.tsx")), entry.slug).toBe(true);
+      expect(loaders).toContain(`\"${pageKeyOf(entry)}\"`);
+      expect(existsSync(join(ROOT, "docs/pages", pageKeyOf(entry), "page.tsx")), entry.slug).toBe(true);
     }
   });
 
@@ -53,7 +67,7 @@ describe("documentation manifest", () => {
     expect(messageLoaders).toContain("@docs/content/en/components/combobox.json");
     expect(messageLoaders).toContain("@docs/content/zh-CN/components/combobox.json");
     for (const entry of pageDocEntries) {
-      const filename = `${entry.collection}/${entry.slug}.json`;
+      const filename = `${contentKeyOf(entry)}.json`;
       expect(existsSync(join(ROOT, "docs/content/en", filename)), `en:${entry.slug}`).toBe(true);
       expect(existsSync(join(ROOT, "docs/content/zh-CN", filename)), `zh-CN:${entry.slug}`).toBe(true);
     }

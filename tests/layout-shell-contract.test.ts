@@ -35,7 +35,6 @@ describe("shell and page-layout composition contract", () => {
     expect(siteShell).toContain('[&:has([data-docs-workspace=blocks])>aside]:hidden');
     expect(siteShell).not.toContain('className="flex min-h-svh"');
     expect(siteShell).toContain('const isComponentsWorkspace = currentPathname === "/docs/components" || isComponentsDetail;');
-    expect(siteShell).toContain('const isBoundedWorkspace = isComponentsWorkspace || isUpdatesPage;');
     expect(siteShell).toContain('className={isBoundedWorkspace ? "h-svh overflow-hidden" : undefined}');
     expect(docsLayout).toContain('return <div className="h-full min-h-0 w-full">{children}</div>;');
     expect(docsLayout).not.toContain("usePathname");

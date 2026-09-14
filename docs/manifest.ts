@@ -1,6 +1,7 @@
 import type { IconName } from "@zeron/icons/context";
+import { artifactCollectionFor } from "./catalog/artifact-collections";
 
-export const docCollections = ["components", "blocks", "icons"] as const;
+export const docCollections = ["components", "blocks", "pages", "icons"] as const;
 export type DocCollection = (typeof docCollections)[number];
 
 export const docSections = [
@@ -19,6 +20,7 @@ export interface DocCollectionDefinition {
 export const collectionDefinitions: readonly DocCollectionDefinition[] = [
   { id: "components", order: 100, navigationKey: "components" },
   { id: "blocks", order: 200, navigationKey: "blocks" },
+  { id: "pages", order: 250, navigationKey: "pages" },
   { id: "icons", order: 300, navigationKey: "icons" },
 ];
 
@@ -40,6 +42,7 @@ export const sectionDefinitions: readonly DocSectionDefinition[] = [
   { id: "overlay", collection: "components", order: 800, navigationKey: "overlay" },
   { id: "ai-agent", collection: "components", order: 900, navigationKey: "aiAgent" },
   { id: "application", collection: "blocks", order: 100, navigationKey: "application" },
+  { id: "application", collection: "pages", order: 100, navigationKey: "application" },
   { id: "overview", collection: "icons", order: 100, navigationKey: "overview" },
   { id: "usage", collection: "icons", order: 200, navigationKey: "usage" },
   { id: "catalog", collection: "icons", order: 300, navigationKey: "catalog" },
@@ -50,6 +53,8 @@ export interface DocEntry {
   slug: string;
   collection: DocCollection;
   section: DocSection;
+  /** Existing source/message locations can stay stable when public URLs change. */
+  sourceCollection?: Exclude<DocCollection, "pages">;
   name: string;
   icon: IconName;
   description?: string;
@@ -76,7 +81,8 @@ const entry = (value: Omit<DocEntry, "collection" | "indexable" | "order"> & { o
 
 const blockEntry = (value: Omit<DocEntry, "collection" | "indexable" | "order"> & { order?: number }): DocEntry => ({
   ...value,
-  collection: "blocks",
+  collection: artifactCollectionFor(value.slug),
+  sourceCollection: "blocks",
   indexable: true,
   order: value.order ?? 100,
 });
@@ -204,16 +210,20 @@ export const legacyDocRedirects: readonly DocLegacyRedirect[] = [
 export const pageDocEntries = docEntries;
 export const detailDocEntries = docEntries;
 
+export const legacyBlockRedirects = docEntries
+  .filter((entry) => entry.collection === "pages" && entry.sourceCollection === "blocks")
+  .map((entry) => ({ source: `/docs/blocks/${entry.slug}`, destination: pathnameOf(entry) }));
+
 export function pathnameOf(entry: Pick<DocEntry, "collection" | "slug">) {
   return `/docs/${entry.collection}/${entry.slug}` as const;
 }
 
-export function contentKeyOf(entry: Pick<DocEntry, "collection" | "slug">) {
-  return `${entry.collection}/${entry.slug}` as const;
+export function contentKeyOf(entry: Pick<DocEntry, "collection" | "sourceCollection" | "slug">) {
+  return `${entry.sourceCollection ?? entry.collection}/${entry.slug}` as const;
 }
 
-export function pageKeyOf(entry: Pick<DocEntry, "collection" | "slug">) {
-  return `${entry.collection}/${entry.slug}` as const;
+export function pageKeyOf(entry: Pick<DocEntry, "collection" | "sourceCollection" | "slug">) {
+  return `${entry.sourceCollection ?? entry.collection}/${entry.slug}` as const;
 }
 
 export function getDocEntry(collection: string, slug: string) {

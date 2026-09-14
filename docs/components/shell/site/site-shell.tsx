@@ -23,7 +23,7 @@ import { internalPathname, localePrefixFromPathname, localizePathname } from "@d
 
 function pageOrderFor(pathname: string) {
   const collection = pathname.split("/")[2] as DocCollection | undefined;
-  if (collection !== "components" && collection !== "blocks" && collection !== "icons") return ["/docs"];
+  if (collection !== "components" && collection !== "blocks" && collection !== "pages" && collection !== "icons") return ["/docs"];
   return [`/docs/${collection}`, ...docEntries.filter((entry) => entry.collection === collection).map((entry) => `/docs/${entry.collection}/${entry.slug}`)];
 }
 
@@ -101,8 +101,10 @@ function DocsPrimaryNavigation({
   const themeActionLabel = isEnglish
     ? nextTheme === "dark" ? "Switch to dark mode" : "Switch to light mode"
     : nextTheme === "dark" ? "切换至深色模式" : "切换至浅色模式";
-  const activePath = currentPathname.startsWith("/docs/blocks")
-    ? localizePathname("/docs/blocks", localePrefix)
+  const activePath = currentPathname.startsWith("/docs/pages")
+    ? localizePathname("/docs/pages", localePrefix)
+    : currentPathname.startsWith("/docs/blocks")
+      ? localizePathname("/docs/blocks", localePrefix)
     : currentPathname.startsWith("/docs/components")
       ? localizePathname("/docs/components", localePrefix)
       : currentPathname === "/updates"
@@ -111,8 +113,9 @@ function DocsPrimaryNavigation({
           ? localizePathname("/docs", localePrefix)
           : null;
   const items = [
-    { href: localizePathname("/docs/blocks", localePrefix), label: t("businessTemplates") },
     { href: localizePathname("/docs/components", localePrefix), label: t("componentsEntry") },
+    { href: localizePathname("/docs/blocks", localePrefix), label: t("blocks") },
+    { href: localizePathname("/docs/pages", localePrefix), label: t("pages") },
     { href: localizePathname("/updates", localePrefix), label: localePrefix === "/en" ? "Updates" : "更新日志" },
   ];
   const languageActionLabel = isEnglish ? "切换至中文" : "Switch to English";
@@ -126,14 +129,14 @@ function DocsPrimaryNavigation({
   const updatedLabel = isEnglish ? "Updated" : "更新时间";
 
   return (
-    <TopNav navigationAlign="left" className="w-full gap-2 border-0 px-4 sm:px-6">
-      <TopNavBrand className="shrink-0 px-0 pr-3 text-title font-semibold tracking-tight text-fg-default sm:pr-8">
+    <TopNav navigationAlign="left" className="w-full gap-2 border-0 px-4 max-sm:grid-cols-[minmax(0,1fr)_auto] max-sm:gap-y-0 sm:px-6">
+      <TopNavBrand className="shrink-0 px-0 pr-3 text-title font-semibold tracking-tight text-fg-default max-sm:col-start-1 max-sm:row-start-1 max-sm:min-h-12 sm:pr-8">
         <Link aria-label="Zeron Design" href={localizePathname("/docs/blocks", localePrefix)}>
           <span className="sm:hidden">ZD</span>
           <span className="max-sm:hidden">Zeron Design</span>
         </Link>
       </TopNavBrand>
-      <TopNavNavigation className="min-w-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <TopNavNavigation className="min-w-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-sm:col-span-2 max-sm:col-start-1 max-sm:row-start-2">
         <NavMenu
           as="div"
           aria-label={t("main")}
@@ -152,7 +155,7 @@ function DocsPrimaryNavigation({
           ))}
         </NavMenu>
       </TopNavNavigation>
-      <TopNavActions className="gap-1 px-0">
+      <TopNavActions className="gap-1 px-0 max-sm:col-start-2 max-sm:row-start-1">
         <Tooltip content={brandLabel} side="bottom">
           <ColorPickerPopover
             format="hex"
@@ -223,11 +226,13 @@ function DocsShellContent({ children }: { children: ReactNode }) {
   const localePrefix = localePrefixFromPathname(pathname);
   const currentPathname = internalPathname(pathname);
   const isLocalizedDocumentation = currentPathname === "/docs" || currentPathname.startsWith("/docs/");
-  const isBlocksWorkspace = currentPathname === "/docs/blocks" || currentPathname.startsWith("/docs/blocks/");
+  const isArtifactWorkspace = currentPathname === "/docs/blocks" || currentPathname.startsWith("/docs/blocks/")
+    || currentPathname === "/docs/pages" || currentPathname.startsWith("/docs/pages/");
   const isComponentsDetail = currentPathname.startsWith("/docs/components/");
   const isComponentsWorkspace = currentPathname === "/docs/components" || isComponentsDetail;
   const isUpdatesPage = currentPathname === "/updates";
-  const isBoundedWorkspace = isComponentsWorkspace || isUpdatesPage;
+  const isArtifactGallery = currentPathname === "/docs/blocks" || currentPathname === "/docs/pages";
+  const isBoundedWorkspace = isComponentsWorkspace || isUpdatesPage || isArtifactGallery;
   const hasDocumentationSidebar = currentPathname === "/docs" || currentPathname.startsWith("/docs/icons");
   const expectedIndexRef = useRef(pageOrderFor(currentPathname).indexOf(currentPathname));
 
@@ -238,6 +243,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
       if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
       if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
       const target = event.target as HTMLElement;
@@ -254,12 +260,12 @@ function DocsShellContent({ children }: { children: ReactNode }) {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [localePrefix, router]);
+  }, [currentPathname, localePrefix, router]);
 
   return (
     <RightRailProvider>
       <AppShell layout="stacked" className={isBoundedWorkspace ? "h-svh overflow-hidden" : undefined}>
-        <AppShellHeader className="border-b border-border bg-surface-base">
+        <AppShellHeader className="shrink-0 border-b border-border bg-surface-base">
           <DocsPrimaryNavigation
             currentPathname={currentPathname}
             localePrefix={localePrefix}
@@ -269,7 +275,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
         <AppShellMain className={isBoundedWorkspace ? "flex min-h-0 overflow-hidden [&:has([data-docs-workspace=blocks])>aside]:hidden" : "flex min-h-0 [&:has([data-docs-workspace=blocks])>aside]:hidden"}>
           {hasDocumentationSidebar && <AppShellSidebar><DocsSidebar localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} /></AppShellSidebar>}
           <div className={isBoundedWorkspace ? "h-full min-h-0 min-w-0 flex-1" : "min-h-0 min-w-0 flex-1"}>{children}</div>
-          {!isBlocksWorkspace && !isComponentsWorkspace && !isUpdatesPage && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
+          {!isArtifactWorkspace && !isComponentsWorkspace && !isUpdatesPage && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
         </AppShellMain>
       </AppShell>
     </RightRailProvider>

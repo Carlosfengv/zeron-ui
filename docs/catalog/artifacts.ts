@@ -1,4 +1,5 @@
 import { blockCatalog, type BlockCapability } from "@zeron/blocks/catalog";
+import { artifactCollectionFor, type ArtifactCollection } from "./artifact-collections";
 
 export const artifactKinds = ["block", "page", "flow", "prototype", "layout"] as const;
 export type ArtifactKind = (typeof artifactKinds)[number];
@@ -23,6 +24,7 @@ export interface ArtifactEntry {
   title: string;
   description: string;
   kind: ArtifactKind;
+  collection: ArtifactCollection;
   product: ArtifactProduct;
   domains: string[];
   patterns: string[];
@@ -48,7 +50,7 @@ function installationFor(registryName: string): BlockCapability {
  * Registry item types remain `registry:block`; `kind` is only used for
  * discovery, documentation and progressive asset splitting.
  */
-const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">> = [
+const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation" | "collection">> = [
   {
     slug: "login-01", registryName: "login-01",
     title: "Login", description: "A responsive authentication page with credential and provider sign-in paths.",
@@ -67,7 +69,7 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
   {
     slug: "ai-gateway-overview-01", registryName: "ai-gateway-overview-01",
     title: "AI Gateway Overview", description: "A complete AI gateway workspace with responsive navigation and analytics for traffic, spend, tokens, latency, reliability and provider usage.",
-    kind: "block", product: "zenfuse", domains: ["ai gateway", "analytics", "observability"], patterns: ["sidebar", "dashboard", "metrics", "charts", "histogram"], searchTerms: ["gateway", "sidebar", "navigation", "requests", "cost", "tokens", "latency", "provider", "AI 网关", "侧边栏", "费用", "延迟"], readiness: "copy-ready", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
+    kind: "page", product: "zenfuse", domains: ["ai gateway", "analytics", "observability"], patterns: ["sidebar", "dashboard", "metrics", "charts", "histogram"], searchTerms: ["gateway", "sidebar", "navigation", "requests", "cost", "tokens", "latency", "provider", "AI 网关", "侧边栏", "费用", "延迟"], readiness: "copy-ready", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
   },
   {
     slug: "ai-gateway-session-list-01", registryName: "ai-gateway-session-list-01",
@@ -82,7 +84,7 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
   {
     slug: "agent-trace-01", registryName: "agent-trace-01",
     title: "Agent Trace", description: "A turn-aware agent execution trace with local JSON upload and raw-record inspection.",
-    kind: "block", product: "zenfuse", domains: ["ai agent", "observability"], patterns: ["trace", "timeline", "debugging"], searchTerms: ["agent", "trace", "tool call", "message", "轨迹", "调用链", "消息"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
+    kind: "page", product: "zenfuse", domains: ["ai agent", "observability"], patterns: ["trace", "timeline", "debugging"], searchTerms: ["agent", "trace", "tool call", "message", "轨迹", "调用链", "消息"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
   },
   {
     slug: "agent-session-detail-01", registryName: "agent-session-detail-01",
@@ -192,7 +194,7 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
   {
     slug: "infinite-log-table-01", registryName: "infinite-log-table-01",
     title: "Infinite Log Table", description: "A schema-driven virtualized log explorer with dynamic fields and filters, seek pagination, Live tailing, and record detail.",
-    kind: "block", product: "shared", domains: ["observability", "monitoring"], patterns: ["infinite table", "log explorer", "live tail"], searchTerms: ["log", "infinite", "cursor", "schema", "日志", "观测", "字段", "筛选"], readiness: "copy-ready", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
+    kind: "page", product: "shared", domains: ["observability", "monitoring"], patterns: ["infinite table", "log explorer", "live tail"], searchTerms: ["log", "infinite", "cursor", "schema", "日志", "观测", "字段", "筛选"], readiness: "copy-ready", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
   },
   {
     slug: "file-manager-01", registryName: "file-manager-01",
@@ -216,8 +218,8 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
   },
   {
     slug: "zaiops-operations-01", registryName: "zaiops-operations-01",
-    title: "ZAIops Operations Shell", description: "An operations workspace shell with responsive sidebar, organization switcher and grouped navigation.",
-    kind: "layout", product: "zaiops", domains: ["operations", "navigation"], patterns: ["sidebar", "shell"], searchTerms: ["zaiops", "operations", "layout", "sidebar", "运维", "侧边栏", "工作台", "布局"], readiness: "copy-ready", dataMode: "static", devices: ["desktop", "responsive"], featured: true,
+    title: "ZAIops Operations", description: "An operations home page with environment overview, responsive sidebar and organization switching.",
+    kind: "page", product: "zaiops", domains: ["operations", "navigation"], patterns: ["sidebar", "dashboard"], searchTerms: ["zaiops", "operations", "layout", "sidebar", "运维", "侧边栏", "工作台", "布局"], readiness: "copy-ready", dataMode: "static", devices: ["desktop", "responsive"], featured: true,
   },
   {
     slug: "zlrlist", registryName: "zlrlist",
@@ -228,6 +230,7 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation">>
 
 export const artifactCatalog: readonly ArtifactEntry[] = artifactCatalogEntries.map((artifact) => ({
   ...artifact,
+  collection: artifactCollectionFor(artifact.slug),
   installation: installationFor(artifact.registryName),
 }));
 

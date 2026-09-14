@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { getArtifact } from "../docs/catalog/artifacts";
+import { artifactPathname } from "../docs/catalog/artifact-collections";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const blockPreview = readFileSync(
@@ -36,7 +38,7 @@ describe("Resource Catalog gallery preview", () => {
     expect(blockPreview).toContain('container.clientWidth / canvasWidth');
   });
 
-  it("keeps the documentation route while using the marketplace installation name", () => {
+  it("keeps the documentation slug and marketplace installation name in the Pages collection", () => {
     expect(blockCatalog).toContain('name: "model-mcp-marketplace-01"');
     expect(blockCatalog).toContain('slug: "resource-catalog-01"');
     expect(blockRegistry).toContain('"name": "model-mcp-marketplace-01"');
@@ -49,7 +51,8 @@ describe("Resource Catalog gallery preview", () => {
     expect(blocksGallery).toContain('className="overflow-hidden overscroll-auto p-1"');
     expect(blocksGallery).toContain('<div className="pointer-events-none">');
     expect(blocksGallery).toContain('aria-label={artifact.title}');
-    expect(blocksGallery).toContain('href={`${localePrefix}/docs/blocks/${artifact.slug}`}');
+    expect(artifactPathname("resource-catalog-01")).toBe("/docs/pages/resource-catalog-01");
+    expect(getArtifact("resource-catalog-01")?.registryName).toBe("model-mcp-marketplace-01");
     expect(blocksGallery).toContain('className="grid grid-cols-1 gap-4 xl:grid-cols-2"');
   });
 

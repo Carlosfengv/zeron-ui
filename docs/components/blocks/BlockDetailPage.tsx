@@ -51,12 +51,13 @@ export function BlockDetailPage({
   const previewText = useTranslations("preview");
   const artifact = getArtifact(slug);
   const isChinese = localePrefix !== "/en";
-  const collectionLabel = isChinese ? "业务模板" : "Business templates";
-  const entries = docEntries.filter((entry) => entry.collection === "blocks");
+  const collection = artifact?.collection ?? "blocks";
+  const collectionLabel = collection === "pages" ? (isChinese ? "页面" : "Pages") : (isChinese ? "区块" : "Blocks");
+  const entries = docEntries.filter((entry) => entry.collection === collection);
   const currentIndex = entries.findIndex((entry) => entry.slug === slug);
   const prev = currentIndex > 0
     ? entries[currentIndex - 1]
-    : { slug: "", name: collectionLabel, collection: "blocks" as const, pathname: "/docs/blocks" };
+    : { slug: "", name: collectionLabel, collection, pathname: `/docs/${collection}` };
   const next = currentIndex >= 0 && currentIndex < entries.length - 1
     ? entries[currentIndex + 1]
     : null;
@@ -72,7 +73,7 @@ export function BlockDetailPage({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink render={<Link href={localizePathname("/docs/blocks", localePrefix)} />}>
+                <BreadcrumbLink render={<Link href={localizePathname(`/docs/${collection}`, localePrefix)} />}>
                   {collectionLabel}
                 </BreadcrumbLink>
               </BreadcrumbItem>

@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
-import { legacyDocRedirects, pathnameOf } from "./docs/manifest";
+import { legacyBlockRedirects, legacyDocRedirects, pathnameOf } from "./docs/manifest";
 import { resolveBuildVersion } from "./docs/components/shell/site/build-version.server";
 
 const buildVersion = resolveBuildVersion();
@@ -29,13 +29,21 @@ const nextConfig: NextConfig = {
   },
   outputFileTracingRoot: process.cwd(),
   async redirects() {
-    return legacyDocRedirects.flatMap(({ legacySlug, destination }) => {
-      const pathname = pathnameOf(destination);
-      return [
-        { source: `/docs/${legacySlug}`, destination: pathname, permanent: true },
-        { source: `/zh-cn/docs/${legacySlug}`, destination: `/zh-cn${pathname}`, permanent: true },
-      ];
-    });
+    return [
+      ...legacyDocRedirects.flatMap(({ legacySlug, destination }) => {
+        const pathname = pathnameOf(destination);
+        return [
+          { source: `/docs/${legacySlug}`, destination: pathname, permanent: true },
+          { source: `/zh-cn/docs/${legacySlug}`, destination: `/zh-cn${pathname}`, permanent: true },
+        ];
+      }),
+      ...legacyBlockRedirects.flatMap(({ source, destination }) =>
+        ["", "/en", "/zh-cn"].map((prefix) => ({
+          source: `${prefix}${source}`,
+          destination: `${prefix === "/en" ? prefix : ""}${destination}`,
+          permanent: true,
+        }))),
+    ];
   },
   async rewrites() {
     return [

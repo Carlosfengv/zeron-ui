@@ -74,17 +74,20 @@ function DocsSidebarContent({ localePrefix = "" }: Pick<DocsSidebarProps, "local
   const currentPathname = internalPathname(pathname);
   const activePath = localizePathname(currentPathname, localePrefix);
   const pathCollection = currentPathname.split("/")[2];
-  const collection: DocCollection = pathCollection === "blocks" || pathCollection === "icons" ? pathCollection : "components";
+  const collection: DocCollection = pathCollection === "blocks" || pathCollection === "pages" || pathCollection === "icons" ? pathCollection : "components";
+  const isArtifactCollection = collection === "blocks" || collection === "pages";
   const sections = sectionDefinitions.filter((definition) => definition.collection === collection);
-  const currentArtifact = collection === "blocks" ? artifactCatalog.find(({ slug }) => currentPathname.endsWith(`/${slug}`)) : undefined;
+  const currentArtifact = isArtifactCollection ? artifactCatalog.find(({ slug }) => currentPathname.endsWith(`/${slug}`)) : undefined;
   const relatedTemplates = currentArtifact
     ? artifactCatalog
-      .filter((artifact) => artifact.kind === currentArtifact.kind && artifact.slug !== currentArtifact.slug)
-      .map((artifact) => docEntries.find((entry) => entry.collection === "blocks" && entry.slug === artifact.slug))
+      .filter((artifact) => artifact.collection === collection && artifact.kind === currentArtifact.kind && artifact.slug !== currentArtifact.slug)
+      .map((artifact) => docEntries.find((entry) => entry.collection === collection && entry.slug === artifact.slug))
       .filter((entry): entry is (typeof docEntries)[number] => Boolean(entry))
       .slice(0, 5)
     : [];
-  const relatedTemplatesLabel = localePrefix === "/en" ? "Related templates" : "相关业务模板";
+  const relatedTemplatesLabel = collection === "pages"
+    ? (localePrefix === "/en" ? "Related pages" : "相关页面")
+    : (localePrefix === "/en" ? "Related blocks" : "相关区块");
   const section = (key: string, label: string, count: number, ariaLabel: string, children: ReactNode) => (
     <section key={key}>
       <p className="flex items-center gap-2 px-1 pb-1.5 text-label text-fg-muted">
@@ -96,14 +99,14 @@ function DocsSidebarContent({ localePrefix = "" }: Pick<DocsSidebarProps, "local
 
   return (
     <>
-      {collection === "blocks" && relatedTemplates.length > 0 && section(
+      {isArtifactCollection && relatedTemplates.length > 0 && section(
         "related-templates",
         relatedTemplatesLabel,
         relatedTemplates.length,
         relatedTemplatesLabel,
         relatedTemplates.map((item) => <SiteNavItem key={item.slug} href={localizePathname(pathnameOf(item), localePrefix)} label={item.name} icon={item.icon} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />),
       )}
-      {collection !== "blocks" && sections.map((definition) => {
+      {!isArtifactCollection && sections.map((definition) => {
         const entries = docEntries.filter((entry) => entry.collection === collection && entry.section === definition.id);
         const label = t.has(definition.navigationKey) ? t(definition.navigationKey) : definition.id;
         return section(definition.id, label, entries.length, label, entries.map((item) => <SiteNavItem key={item.slug} href={localizePathname(pathnameOf(item), localePrefix)} label={item.name} icon={item.icon} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />));
