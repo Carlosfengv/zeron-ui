@@ -66,6 +66,7 @@
     "disabled": "禁用",
     "buttonLabel": "按钮标签",
     "visualStyle": "控制按钮的强调层级和视觉语气。具体用法请参阅“选择变体”。",
+    "toneDescription": "在不改变按钮层级的前提下应用语义状态色。warning 仅用于需要警告语气的低强调状态操作。",
     "buttonSize": "按钮的尺寸。",
     "loadingDescription": "显示加载指示器并禁用按钮。",
     "activeDescription": "强制显示按下／按住状态，例如按钮打开的下拉菜单或浮层正在显示时。",

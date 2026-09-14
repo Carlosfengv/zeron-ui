@@ -58,4 +58,15 @@ describe("Switch interactions", () => {
     expect(screen.getByText("true")).toBeTruthy();
     expect(onChange).toHaveBeenCalledTimes(1);
   });
+
+  it("can visually hide its label without removing the accessible name", () => {
+    const { container } = render(
+      <Switch label="启用规则" labelVisibility="sr-only" />
+    );
+
+    expect(screen.getByRole("switch", { name: "启用规则" })).toBeTruthy();
+    expect(
+      container.querySelector('[data-slot="switch-label"]')?.classList.contains("sr-only")
+    ).toBe(true);
+  });
 });

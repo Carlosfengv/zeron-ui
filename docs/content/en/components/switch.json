@@ -4,6 +4,7 @@
     "disabled": "Disabled",
     "apiReference": "API Reference",
     "label": "Text label displayed next to the switch.",
+    "labelVisibility": "Controls label visibility. sr-only preserves the accessible name while visually hiding the label in compact layouts.",
     "checked": "Whether the switch is on.",
     "defaultChecked": "Initial state when the switch is uncontrolled.",
     "onCheckedChange": "Called with the next checked state.",

@@ -12,7 +12,7 @@ describe("business template catalog", () => {
     const registryNames = new Set(blocksByRegistryName.keys());
     const artifactRegistryNames = artifactCatalog.map(({ registryName }) => registryName);
 
-    expect(artifactCatalog).toHaveLength(35);
+    expect(artifactCatalog).toHaveLength(36);
     expect(new Set(artifactRegistryNames).size).toBe(artifactCatalog.length);
     expect(new Set(artifactRegistryNames)).toEqual(registryNames);
     for (const artifact of artifactCatalog) {
@@ -40,7 +40,7 @@ describe("business template catalog", () => {
   it("separates full pages from embeddable blocks without losing or duplicating assets", () => {
     const pages = artifactCatalog.filter(({ collection }) => collection === "pages");
     const blocks = artifactCatalog.filter(({ collection }) => collection === "blocks");
-    expect(pages).toHaveLength(25);
+    expect(pages).toHaveLength(26);
     expect(blocks).toHaveLength(10);
     expect(new Set(pages.map(({ slug }) => slug))).toEqual(new Set(pageArtifactSlugs));
     expect(blocks.some(({ slug }) => pageArtifactSlugs.includes(slug as typeof pageArtifactSlugs[number]))).toBe(false);
@@ -56,7 +56,7 @@ describe("business template catalog", () => {
   });
 
   it("redirects every moved page while retaining source messages and registry installation names", () => {
-    expect(legacyBlockRedirects).toHaveLength(25);
+    expect(legacyBlockRedirects).toHaveLength(26);
     for (const slug of pageArtifactSlugs) {
       const entry = getDocEntry("pages", slug)!;
       expect(contentKeyOf(entry)).toBe(`blocks/${slug}`);

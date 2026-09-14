@@ -1,0 +1,10 @@
+{
+  "trafficRulesBlock": {
+    "title": "流量规则 1",
+    "description": "用于管理流量规则、全局限额与执行流程的响应式网关工作区。",
+    "interactionTitle": "交互模型",
+    "interactionBody": "该区块在同一受控工作区内覆盖清单、详情、新建、编辑、历史记录与二次确认流程，并适配响应式导航。",
+    "guidanceTitle": "数据接入",
+    "guidanceBody": "使用业务数据替换示例规则与限额，并将保存、启停、排序和删除等状态变更接入应用服务；适配时继续遵循 Zeron 组件契约与语义化样式令牌。"
+  }
+}

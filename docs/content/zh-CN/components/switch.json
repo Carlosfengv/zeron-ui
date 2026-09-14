@@ -4,6 +4,7 @@
     "disabled": "禁用状态",
     "apiReference": "API 参考",
     "label": "显示在开关旁的文本标签。",
+    "labelVisibility": "控制标签是否可见。sr-only 会保留可访问名称，同时在紧凑布局中视觉隐藏标签。",
     "checked": "开关是否处于开启状态。",
     "defaultChecked": "非受控模式下的初始开关状态。",
     "onCheckedChange": "状态变化时携带最新选中值调用。",

@@ -99,7 +99,11 @@ interface ButtonProps
    *  external open piece of UI (a popover, dropdown, etc.) so it reads as
    *  engaged while the menu is showing. */
   active?: boolean;
+  /** Applies a semantic status tone without changing the button hierarchy. */
+  tone?: ButtonTone;
 }
+
+type ButtonTone = "default" | "warning";
 
 const bgVariants: Record<string, string> = {
   primary: "bg-primary-action group-hover:bg-primary-action-hover group-active:bg-primary-action-active",
@@ -132,6 +136,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       trailingIcon: TrailingIcon,
       dashed = false,
       active = false,
+      tone = "default",
       disabled,
       children,
       style,
@@ -151,6 +156,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             children?: ReactNode;
             className?: string;
             "data-slot"?: string;
+            "data-tone"?: ButtonTone;
             style?: React.CSSProperties;
             ref?: React.Ref<HTMLButtonElement>;
           }>)
@@ -159,9 +165,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const resolvedSize = (size ?? "md") as ControlSize;
     const iconSize = controlSizeRecipe[resolvedSize].icon;
     const spinnerSizeClass = spinnerSizeClasses[resolvedSize];
-    const bgClass = active
-      ? activeBgVariants[variant ?? "primary"]
-      : bgVariants[variant ?? "primary"];
+    const bgClass = tone === "warning"
+      ? active
+        ? "border-0 bg-[color-mix(in_srgb,var(--warning-surface)_65%,var(--warning-border))]"
+        : "border-0 bg-warning-surface group-hover:bg-[color-mix(in_srgb,var(--warning-surface)_80%,var(--warning-border))] group-active:bg-[color-mix(in_srgb,var(--warning-surface)_65%,var(--warning-border))]"
+      : active
+        ? activeBgVariants[variant ?? "primary"]
+        : bgVariants[variant ?? "primary"];
 
     const internals = (
       <>
@@ -253,6 +263,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         iconRight: !iconOnly && !!TrailingIcon,
       }),
       "rounded-lg",
+      tone === "warning" && "text-fg-warning",
       className
     );
 
@@ -263,6 +274,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {
           ...props,
           "data-slot": "button",
+          "data-tone": tone === "default" ? undefined : tone,
           ref,
           className: cn(rootClassName, childProps.className),
           style: { ...style, ...childProps.style },
@@ -280,6 +292,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         style={style}
         data-slot="button"
+        data-tone={tone === "default" ? undefined : tone}
         {...props}
       >
         {internals}
@@ -291,4 +304,4 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 export { Button, buttonVariants };
-export type { ButtonProps };
+export type { ButtonProps, ButtonTone };

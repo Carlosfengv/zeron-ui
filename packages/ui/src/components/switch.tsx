@@ -18,6 +18,8 @@ import { spring } from "#system/springs";
 
 interface SwitchProps extends Omit<HTMLAttributes<HTMLDivElement>, "defaultChecked" | "onChange"> {
   label: ReactNode;
+  /** Keeps the accessible label while visually hiding it in compact layouts. */
+  labelVisibility?: SwitchLabelVisibility;
   checked?: boolean;
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
@@ -34,6 +36,8 @@ interface SwitchProps extends Omit<HTMLAttributes<HTMLDivElement>, "defaultCheck
   uncheckedValue?: string;
   thumbTransition?: Transition;
 }
+
+type SwitchLabelVisibility = "visible" | "sr-only";
 
 const TRACK_WIDTH = 34;
 const TRACK_HEIGHT = 20;
@@ -53,6 +57,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
   (
     {
       label,
+      labelVisibility = "visible",
       checked: checkedProp,
       defaultChecked = false,
       onCheckedChange,
@@ -352,6 +357,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
           data-slot="switch-label"
           className={cn(
             "text-body transition-[color] duration-fast",
+            labelVisibility === "sr-only" && "sr-only",
             checked ? "text-fg-default" : "text-fg-muted"
           )}
         >
@@ -365,4 +371,4 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
 Switch.displayName = "Switch";
 
 export { Switch };
-export type { SwitchProps };
+export type { SwitchProps, SwitchLabelVisibility };

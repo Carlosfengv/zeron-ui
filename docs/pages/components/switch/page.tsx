@@ -31,6 +31,7 @@ export default function SwitchDoc() {
   const t = useTranslations("switch");
   const switchProps: PropDef[] = [
     { name: "label", type: "React.ReactNode", description: t("label") },
+    { name: "labelVisibility", type: '"visible" | "sr-only"', default: '"visible"', description: t("labelVisibility") },
     { name: "checked", type: "boolean", description: t("checked") },
     { name: "defaultChecked", type: "boolean", default: "false", description: t("defaultChecked") },
     { name: "onCheckedChange", type: "(checked: boolean) => void", description: t("onCheckedChange") },
