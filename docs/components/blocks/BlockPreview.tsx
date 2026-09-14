@@ -141,6 +141,9 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "service-management-01": () => import("@zeron/blocks/service-management-01").then(({ ServiceManagement }) => ({
     default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ServiceManagement className="h-full min-h-0" /></ResponsivePreview>,
   })),
+  "traffic-rules-01": () => import("@zeron/blocks/traffic-rules-01").then(({ TrafficRules }) => ({
+    default: () => <ResponsivePreview canvasHeight={810} canvasWidth={1440}><TrafficRules className="h-full min-h-0" /></ResponsivePreview>,
+  })),
   "personal-settings-01": () => import("@zeron/blocks/personal-settings-01").then(({ PersonalSettings, personalSettingsDemoData }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalSettings data={personalSettingsDemoData} /></ResponsivePreview>,
   })),

@@ -1,8 +1,14 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { blockCatalog } from "@zeron/blocks/catalog";
 import { artifactCatalog, artifactKinds, artifactProducts, artifactReadiness } from "../docs/catalog/artifacts";
 import { contentKeyOf, getDocEntry, legacyBlockRedirects, pathnameOf } from "../docs/manifest";
 import { artifactPathname, pageArtifactSlugs } from "../docs/catalog/artifact-collections";
+
+const blockPreviewSource = readFileSync(
+  new URL("../docs/components/blocks/BlockPreview.tsx", import.meta.url),
+  "utf8",
+);
 
 describe("business template catalog", () => {
   it("maps every current registry asset to one discoverable artifact", () => {
@@ -34,6 +40,14 @@ describe("business template catalog", () => {
       expect(artifactProducts).toContain(artifact.product);
       expect(artifactReadiness).toContain(artifact.readiness);
       expect(artifact.searchTerms.length, artifact.slug).toBeGreaterThan(0);
+    }
+  });
+
+  it("provides a gallery cover loader for every discoverable artifact", () => {
+    for (const artifact of artifactCatalog) {
+      expect(blockPreviewSource, artifact.slug).toContain(
+        `import("@zeron/blocks/${artifact.slug}")`,
+      );
     }
   });
 
