@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "#components/popover";
 import { useTouchPrimary } from "#hooks/use-touch-primary";
 import { useIcon } from "#system/icon-context";
 import { cn } from "#system/utils";
-import type { ControlSize } from "#tokens/control-size";
+import { controlSizeRecipe, type ControlSize } from "#tokens/control-size";
 import type { TemporalPickerPresentation } from "./temporal-types";
 
 function useComposedRefs<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCallback<T> {
@@ -85,8 +85,8 @@ export const TemporalPickerShell = React.forwardRef<HTMLButtonElement, TemporalP
   const composedTriggerRef = useComposedRefs(triggerRef, forwardedRef, internalTriggerRef);
   const Calendar = useIcon("calendar");
   const Clock = useIcon("clock");
-  const ChevronDown = useIcon("chevron-down");
   const Icon = icon === "clock" ? Clock : Calendar;
+  const iconSize = controlSizeRecipe[size].icon;
   const resolvedPresentation = useResolvedPresentation(presentation, isOpen);
   const trigger = readOnly ? (
     <span className={cn("inline-flex min-w-0 items-center gap-2 px-2.5 text-body text-fg-muted", className)}>{summary}</span>
@@ -100,17 +100,39 @@ export const TemporalPickerShell = React.forwardRef<HTMLButtonElement, TemporalP
       aria-haspopup="dialog"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
-      className={cn("min-w-0 max-w-full justify-between", className)}
+      className={cn(
+        "min-w-0 max-w-full justify-between",
+        "[&_[data-slot=button-content]]:w-full",
+        "[&_[data-slot=button-label]]:min-w-0 [&_[data-slot=button-label]]:flex-1",
+        "aria-expanded:[&_[data-slot=temporal-picker-chevron]]:rotate-180",
+        className,
+      )}
       disabled={disabled}
       id={triggerId}
       leadingIcon={Icon}
       onClick={onRequestOpen}
       size={size}
-      trailingIcon={ChevronDown}
       type="button"
       variant="tertiary"
     >
-      <span data-slot="temporal-picker-value" className="min-w-0 truncate">{summary}</span>
+      <span className="flex min-w-0 w-full items-center gap-1.5">
+        <span data-slot="temporal-picker-value" className="min-w-0 flex-1 truncate text-left">{summary}</span>
+        <svg
+          aria-hidden
+          data-slot="temporal-picker-chevron"
+          width={iconSize}
+          height={iconSize}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="shrink-0 text-fg-subtle transition-[color,transform] duration-fast group-hover:text-fg-default"
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </span>
     </Button>
   );
 

@@ -7,6 +7,15 @@
 @source "../packages/ui/src";
 @source "../packages/blocks/src";
 
+/* Drag-and-drop insertion cue for sortable rule rows. */
+tr.rule-drag-before {
+  box-shadow: inset 0 2px #0878ff;
+}
+
+tr.rule-drag-after {
+  box-shadow: inset 0 -2px #0878ff;
+}
+
 /* BEGIN GENERATED SEMANTIC TOKENS — DO NOT EDIT */
 /* Generated from packages/ui/src/tokens/semantic-tokens.mjs by scripts/generate-semantic-tokens.mjs. */
 

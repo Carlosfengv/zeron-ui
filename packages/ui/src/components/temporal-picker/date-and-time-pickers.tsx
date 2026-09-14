@@ -176,7 +176,7 @@ export function PresetList<TValue>({
 export function pickerCalendarFormatters(locale: string) {
   return {
     formatCaption: (date: Date) => new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(date),
-    formatDay: (date: Date) => new Intl.DateTimeFormat(locale, { day: "numeric" }).format(date),
+    formatDay: (date: Date) => String(date.getDate()),
     formatMonthDropdown: (date: Date) => new Intl.DateTimeFormat(locale, { month: "long" }).format(date),
     formatWeekdayName: (date: Date) => new Intl.DateTimeFormat(locale, { weekday: "short" }).format(date),
     formatYearDropdown: (date: Date) => new Intl.DateTimeFormat(locale, { year: "numeric" }).format(date),

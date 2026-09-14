@@ -40,6 +40,7 @@
     "./inspection-report-list-01": "./src/application/inspection-report-list-01/index.ts",
     "./monitoring-alert-list-01": "./src/application/monitoring-alert-list-01/index.ts",
     "./service-management-01": "./src/application/service-management-01/index.ts",
+    "./traffic-rules-01": "./src/application/traffic-rules-01/index.ts",
     "./infinite-log-table-01": "./src/application/infinite-log-table-01/index.ts"
   },
   "scripts": {

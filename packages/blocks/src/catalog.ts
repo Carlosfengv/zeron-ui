@@ -148,6 +148,13 @@ const blockCatalogEntries = [
     dependencies: ["page-layout", "sidebar", "nav-menu", "nav-item", "data-table", "tabs", "badge", "button", "dialog", "dropdown", "kbd"],
   },
   {
+    name: "traffic-rules-01",
+    title: "流量规则",
+    description: "A responsive traffic-rule management console with grouped administration navigation, rule search, status, and row actions.",
+    categories: ["application", "gateway", "tables"],
+    dependencies: ["button", "checkbox", "icon-context"],
+  },
+  {
     name: "personal-settings-01",
     title: "个人设置",
     description: "A personal settings workspace for model services, API keys, credentials, profile details, usage, and call logs.",

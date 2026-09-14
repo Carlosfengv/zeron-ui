@@ -1,0 +1,51 @@
+.page { color: #20242b; }
+.name { display: flex; min-width: 0; flex: 1; align-items: center; gap: 12px; }
+.name h1 { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 600; }
+.readOnly { border-radius: 4px; padding: 4px 8px; background: #f2f4f7; color: #626c7a; font-size: 12px; white-space: nowrap; }
+.topActions { display: flex; align-items: center; gap: 8px; }
+.flow { min-width: 600px; padding: 40px 24px 112px; }
+.fields { display: flex; flex-direction: column; gap: 0; }
+.fields > div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; padding: 10px 0; border-bottom: 1px solid #edf0f4; }
+.fields > div:first-child { padding-top: 0; }
+.fields > div:last-child { padding-bottom: 0; border-bottom: 0; }
+.fields dt { color: #667181; line-height: 20px; }
+.fields dd { min-width: 0; color: #303945; line-height: 20px; overflow-wrap: anywhere; }
+.sectionHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; color: #505967; font-weight: 500; }
+.rowList { overflow: hidden; border: 1px solid #e4e7ed; border-radius: 8px; background: #fff; }
+.summaryRow, .windowRow { display: grid; min-height: 44px; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #e8ecf1; }
+.summaryRow:last-child, .windowRow:last-child { border-bottom: 0; }
+.summaryRow { grid-template-columns: 24px minmax(88px, .7fr) minmax(0, 1.6fr); }
+.summaryRow strong, .windowRow strong { color: #303945; font-weight: 500; }
+.summaryRow > span:last-child, .windowRow > span { min-width: 0; color: #667181; overflow-wrap: anywhere; }
+.logic { display: grid; width: 24px; height: 24px; place-items: center; border: 1px solid #dfe4eb; border-radius: 6px; color: #697485; font-size: 10px; }
+.windowRow { grid-template-columns: 100px minmax(0, 1fr) minmax(0, 1fr); }
+.temporary { margin-top: 16px; border-radius: 8px; padding: 12px; background: #f1f3f9; color: #505967; }
+.temporary > div { display: flex; justify-content: space-between; gap: 16px; }
+.temporary strong { color: #303945; font-weight: 500; }
+.temporary p { margin-top: 8px; color: #667181; line-height: 20px; }
+.temporaryOff { background: #f7f8fa; color: #78808b; }
+.result { color: #39674d; line-height: 22px; overflow-wrap: anywhere; }
+.help { margin-top: 8px; color: #7b8491; line-height: 20px; }
+.infoPanel { display: flex; width: 360px; min-height: 0; flex-shrink: 0; flex-direction: column; overflow: hidden; border: 1px solid #dfe3e8; border-radius: 12px; background: #fff; }
+.infoHeader { display: flex; min-height: 48px; flex-shrink: 0; align-items: center; padding: 8px 16px; border-bottom: 1px solid #e1e5eb; }
+.infoHeader h2 { font-size: 14px; font-weight: 600; }
+.infoBody { min-height: 0; overflow-y: auto; padding: 20px; scrollbar-width: thin; scrollbar-color: #c9cfd8 transparent; }
+.infoSection + .infoSection { margin-top: 24px; padding-top: 24px; border-top: 1px solid #e8ecf1; }
+.infoSection h3 { margin-bottom: 12px; color: #303945; font-size: 13px; font-weight: 500; }
+.statusRow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; color: #667181; font-size: 12px; }
+.statusControls { display: flex; align-items: center; gap: 12px; }
+.stateNote { margin-top: 12px; border-radius: 8px; padding: 12px; background: #f3f5f7; color: #667181; font-size: 12px; line-height: 20px; }
+.paragraph { color: #505b6d; font-size: 13px; line-height: 22px; overflow-wrap: anywhere; }
+.breakValue { overflow-wrap: anywhere; }
+@media (min-width: 1600px) { .infoPanel { width: 400px; } }
+@media (max-width: 1100px) { .infoPanel { width: 320px; } }
+@media (max-width: 900px) { .infoPanel { display: none; } }
+@media (max-width: 600px) {
+  .name { gap: 8px; }
+  .readOnly { display: none; }
+  .topActions { grid-column: 1 / -1; justify-content: flex-end; }
+  .flow { min-width: 360px; padding: 24px 12px 96px; }
+  .fields > div { grid-template-columns: 96px minmax(0, 1fr); gap: 12px; }
+  .summaryRow { grid-template-columns: 24px 80px minmax(0, 1fr); }
+  .windowRow { grid-template-columns: 80px minmax(0, 1fr) minmax(0, 1fr); }
+}
