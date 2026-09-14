@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests",
-  testMatch: "i18n-navigation.e2e.ts",
+  testMatch: ["i18n-navigation.e2e.ts", "docs-collections.e2e.ts"],
   timeout: 45_000,
   workers: 1,
   use: {
