@@ -64,6 +64,7 @@ related:
 - `iconOnly` 按钮的 child 应是单个图标，并提供 `aria-label`；装饰性图标添加 `aria-hidden`。
 - `dashed` 主要表达尚未添加的项目或未激活的筛选器，通常与有边界的低强调变体搭配。
 - `active` 只表示按钮控制的外部界面仍处于打开或按住状态，例如 Dropdown 正在显示；不要把它当作业务选中状态的通用替代。
+- `tone="warning"` 只为低强调的状态操作增加警告语气，不改变操作层级；通常与 `variant="tertiary"` 一起使用，例如“配置异常”。
 
 ## State behavior
 
@@ -125,4 +126,4 @@ const Refresh = useIcon("rotate-ccw");
 
 ## API anchors
 
-Agent 只需优先关注：`variant`、`size`、`loading`、`disabled`、`active`、`iconOnly`、`leadingIcon`、`trailingIcon`、`dashed`、`asChild`。完整类型以 `source` 指向的实现为准。
+Agent 只需优先关注：`variant`、`tone`、`size`、`loading`、`disabled`、`active`、`iconOnly`、`leadingIcon`、`trailingIcon`、`dashed`、`asChild`。完整类型以 `source` 指向的实现为准。

@@ -22,8 +22,8 @@ export function TableFooter({ bordered = true, selected = 0, showSelection = fal
   });
 
   return (
-    <div className={bordered ? "border-t border-black/[0.10] px-3 py-2" : "mt-1 px-1 py-2"}>
-      <DataTablePagination className="p-0 text-[12px]" pageSizeOptions={[10, 20, 50]} table={table} />
+    <div className={bordered ? "border-t border-border px-3 py-2" : "mt-1 px-1 py-2"}>
+      <DataTablePagination className="p-0 text-label" pageSizeOptions={[10, 20, 50]} table={table} />
     </div>
   );
 }

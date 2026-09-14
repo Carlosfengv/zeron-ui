@@ -66,6 +66,7 @@
     "disabled": "Disabled",
     "buttonLabel": "Button label",
     "visualStyle": "Controls the button's emphasis and visual tone. See Choosing a variant for usage guidance.",
+    "toneDescription": "Applies a semantic status tone without changing hierarchy. Use warning only for low-emphasis status actions that need warning treatment.",
     "buttonSize": "Size of the button.",
     "loadingDescription": "Shows a spinner and disables the button.",
     "activeDescription": "Forces the pressed/held visual — e.g. while a dropdown or popover the button opened is showing.",

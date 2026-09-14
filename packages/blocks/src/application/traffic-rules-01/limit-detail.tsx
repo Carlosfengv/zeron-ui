@@ -5,13 +5,14 @@ import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
 import { MenuItem } from "@zeron/ui/menu-item";
+import { PageActions, PageBody, PageContent, PageContentHeader } from "@zeron/ui/page-layout";
 import { Switch } from "@zeron/ui/switch";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { PortalContainerProvider } from "@zeron/ui/system/portal-container-context";
 import { cn } from "@zeron/ui/system/utils";
 import type { GlobalLimit } from "./traffic-types";
 import { FlowConnector, WorkflowNode } from "./workflow-node";
-import { WorkflowZoomSelect } from "./workflow-zoom-select";
+import { WorkflowCanvasToolbar } from "./workflow-canvas-toolbar";
 import flowStyles from "./rule-workflow.module.css";
 import styles from "./limit-detail.module.css";
 
@@ -65,10 +66,12 @@ function LimitInfo({ limit, onToggle }: { limit: GlobalLimit; onToggle: () => vo
 }
 
 export function LimitDetailView({ limit, onBack, onDelete, onEdit, onHistory, onToggle }: { limit: GlobalLimit; onBack: () => void; onDelete: () => void; onEdit: () => void; onHistory: () => void; onToggle: () => void }) {
-  const ArrowLeft = useIcon("arrow-left");
+  const Close = useIcon("x");
   const Gauge = useIcon("clock");
   const Edit = useIcon("pencil");
   const More = useIcon("ellipsis");
+  const Collapse = useIcon("chevron-up");
+  const Expand = useIcon("chevron-down");
   const [expanded, setExpanded] = useState(nodeIds);
   const [zoom, setZoom] = useState(100);
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
@@ -77,20 +80,20 @@ export function LimitDetailView({ limit, onBack, onDelete, onEdit, onHistory, on
   const toggle = (id: string) => setExpanded((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
   const overview = () => { setExpanded([]); setZoom(100); canvasRef.current?.scrollTo({ top: 0, left: 0 }); };
 
-  return <div className={cn(flowStyles.workspace, styles.page)} ref={setPortalContainer} role="region" aria-label="全局限额详情">
+  return <PageContent className={cn("relative", styles.page)} ref={setPortalContainer} role="region" aria-label="全局限额详情">
     <PortalContainerProvider value={portalContainer}>
-      <header className={flowStyles.topbar}>
-        <Button aria-label="返回全局限额" leadingIcon={ArrowLeft} onClick={onBack} size="sm" variant="ghost">返回</Button>
-        <div className={styles.name}><h1 title={limit.name || "未命名限额"}>{limit.name || "未命名限额"}</h1><Badge color={limit.enabled ? "green" : "red"} size="sm" variant="dot">{limit.enabled ? "已启用" : "已停用"}</Badge><span className={styles.readOnly}>只读</span></div>
-        <div className={styles.topActions}>
-          <DropdownMenu><DropdownTrigger render={<Button aria-label="更多限额操作" iconOnly size="md" variant="ghost"><More /></Button>} /><DropdownContent align="end" className="w-40"><MenuItem index={0} label="修改记录" onSelect={onHistory} /><MenuItem className="text-fg-danger" index={1} label="删除限额" onSelect={onDelete} /></DropdownContent></DropdownMenu>
+      <PageContentHeader>
+        <Button aria-label="返回全局限额" iconOnly onClick={onBack} type="button" variant="tertiary"><Close aria-hidden /></Button>
+        <div className={styles.name}><h1 title={limit.name || "未命名限额"}>{limit.name || "未命名限额"}</h1><Badge color={limit.enabled ? "green" : "red"} size="sm" variant="strong">{limit.enabled ? "已启用" : "已停用"}</Badge><span className={styles.readOnly}>只读</span></div>
+        <PageActions className={styles.topActions}>
           <Button leadingIcon={Edit} onClick={onEdit} size="md" variant="primary">编辑限额</Button>
-        </div>
-      </header>
-      <div className={flowStyles.body}>
+          <DropdownMenu><DropdownTrigger render={<Button aria-label="更多限额操作" iconOnly size="md" variant="ghost"><More /></Button>} /><DropdownContent align="end" className="w-40"><MenuItem index={0} label="修改记录" onSelect={onHistory} /><MenuItem className="text-fg-danger" index={1} label="删除限额" onSelect={onDelete} /></DropdownContent></DropdownMenu>
+        </PageActions>
+      </PageContentHeader>
+      <PageBody className="flex max-w-none gap-2 overflow-hidden bg-surface-raised !p-2 [background-image:radial-gradient(var(--border)_1px,transparent_1px)] [background-position:center] [background-size:22px_22px]">
         <section className={flowStyles.canvasPanel} aria-label="全局限额详情流程">
-          <header className={flowStyles.toolbar}><div className={flowStyles.toolbarTitle}><Gauge aria-hidden className="size-4 text-fg-subtle" /><strong>限额流程</strong><span className={flowStyles.toolbarHint}>从计数对象到超限结果，看清限额如何生效</span></div><Button onClick={() => setExpanded(expanded.length ? [] : nodeIds)} size="sm" variant="ghost">{expanded.length ? "收起节点" : "展开节点"}</Button></header>
-          <div className={flowStyles.canvasFrame}>
+          <header className={flowStyles.toolbar}><div className={flowStyles.toolbarTitle}><Gauge aria-hidden className="size-4 text-fg-subtle" /><strong>限额流程</strong><span className={flowStyles.toolbarHint}>从计数对象到超限结果，看清限额如何生效</span></div><Button leadingIcon={expanded.length ? Collapse : Expand} onClick={() => setExpanded(expanded.length ? [] : nodeIds)} size="sm" variant="ghost">{expanded.length ? "收起节点" : "展开节点"}</Button></header>
+          <div className={`${flowStyles.canvasFrame} relative flex min-h-0 flex-1 flex-col`}>
             <div aria-label="只读限额流程画布，可横向和纵向滚动" className={flowStyles.canvas} ref={canvasRef} role="region" tabIndex={0}>
               <div className={cn(flowStyles.flow, styles.flow)} style={{ zoom: zoom / 100 } as CSSProperties}>
                 <WorkflowNode description={`${limit.limitType} · ${limit.dimension}`} expanded={expanded.includes("start")} footer={<>节点输出 <code>request_count</code></>} icon="globe" id="start" onToggle={() => toggle("start")} title="请求计数入口">
@@ -114,11 +117,11 @@ export function LimitDetailView({ limit, onBack, onDelete, onEdit, onHistory, on
                 <WorkflowNode description={resultText(limit)} expanded={expanded.includes("result")} footer={<>节点输出 <code>gateway_response</code></>} icon="check-square" id="result" onToggle={() => toggle("result")} title="处理结果" tone="green"><p className={styles.result}>{resultText(limit)}</p><p className={styles.help}>未达到限额时，请求不受影响，继续执行后续网关路由。</p></WorkflowNode>
               </div>
             </div>
-            <div className={flowStyles.canvasControls}><WorkflowZoomSelect ariaLabel="限额详情画布缩放" onChange={setZoom} value={zoom} /><span className="h-4 border-r border-border" /><Button onClick={overview} size="sm" variant="ghost">流程总览</Button></div>
+            <WorkflowCanvasToolbar ariaLabel="限额详情画布缩放" className="absolute bottom-5 right-5 max-[600px]:bottom-3 max-[600px]:right-3" onOverview={overview} onZoomChange={setZoom} zoom={zoom} />
           </div>
         </section>
         <LimitInfo limit={limit} onToggle={onToggle} />
-      </div>
+      </PageBody>
     </PortalContainerProvider>
-  </div>;
+  </PageContent>;
 }

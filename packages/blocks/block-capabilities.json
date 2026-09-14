@@ -17,7 +17,7 @@
   "inspection-report-list-01": { "framework": "next", "kind": "template" },
   "monitoring-alert-list-01": { "framework": "next", "kind": "template" },
   "service-management-01": { "framework": "next", "kind": "template" },
-  "traffic-rules-01": { "framework": "next", "kind": "template" },
+  "traffic-rules-01": { "framework": "react", "kind": "template" },
   "personal-settings-01": { "framework": "react", "kind": "template" },
   "personal-model-usage-01": { "framework": "react", "kind": "template" },
   "credit-usage-01": { "framework": "react", "kind": "data-block" },

@@ -62,6 +62,8 @@ describe("form field primitives contract", () => {
     expect(switchSource).toContain("name?: string");
     expect(switchSource).toContain("required?: boolean");
     expect(switchSource).toContain("uncheckedValue?: string");
+    expect(switchSource).toContain('type SwitchLabelVisibility = "visible" | "sr-only"');
+    expect(switchSource).toContain('labelVisibility === "sr-only" && "sr-only"');
   });
 
   it("uses semantic styles without literal colors", () => {

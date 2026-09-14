@@ -1,9 +1,12 @@
 "use client";
 
 import { Fragment, useCallback, useRef, useState, type CSSProperties } from "react";
+import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
 import { Input } from "@zeron/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
+import { Tooltip } from "@zeron/ui/tooltip";
 import { useIcon, type IconName } from "@zeron/ui/system/icon-context";
 import { PortalContainerProvider } from "@zeron/ui/system/portal-container-context";
 import { ActionParameters, AddConditionPanel, ConditionEditor } from "./rule-form";
@@ -39,15 +42,10 @@ function WorkflowSelect({ label, value, options, onChange }: { label: string; va
 }
 
 function DiscardDialog({ onKeep, onDiscard }: { onKeep: () => void; onDiscard: () => void }) {
-  const ref = useDialogFocus(true, onKeep);
-  return <div className={styles.exitBackdrop}><div ref={ref} role="alertdialog" aria-modal="true" aria-labelledby="discard-rule-title" aria-describedby="discard-rule-description" tabIndex={-1} className={styles.exitDialog}>
-    <h3 id="discard-rule-title">退出规则编辑？</h3><p id="discard-rule-description">本次修改尚未保存，退出后将丢失这些修改。</p>
-    <div className={styles.exitActions}><Button onClick={onKeep} variant="tertiary">继续编辑</Button><Button onClick={onDiscard} variant="destructive">放弃修改</Button></div>
-  </div></div>;
+  return <Dialog onOpenChange={(open) => { if (!open) onKeep(); }} open><DialogContent size="sm"><DialogHeader><DialogTitle>退出规则编辑？</DialogTitle><DialogDescription>本次修改尚未保存，退出后将丢失这些修改。</DialogDescription></DialogHeader><DialogFooter><Button onClick={onKeep} variant="tertiary">继续编辑</Button><Button onClick={onDiscard} variant="destructive">放弃修改</Button></DialogFooter></DialogContent></Dialog>;
 }
 
 export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleFormValue; onSave: (rule: RuleFormValue) => void; onCancel: () => void }) {
-  const ArrowLeft = useIcon("arrow-left");
   const Workflow = useIcon("doc-stepper");
   const Check = useIcon("check");
   const Play = useIcon("play");
@@ -67,7 +65,6 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
   const [previewTab, setPreviewTab] = useState<"test" | "check">("test");
   const [discardOpen, setDiscardOpen] = useState(false);
   const [showIssues, setShowIssues] = useState(false);
-  const [notice, setNotice] = useState("");
   const [zoom, setZoom] = useState(100);
   const canvasRef = useRef<HTMLDivElement>(null);
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
@@ -94,7 +91,6 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
       actions: [...patch.actions.filter((action) => action.phase === "before"), ...patch.actions.filter((action) => action.phase === "after")],
     } : patch;
     setHistory((current) => ({ past: [...current.past.slice(-49), current.present], present: { ...current.present, ...normalizedPatch }, future: [] }));
-    setNotice("");
   };
   const toggle = (id: string) => setExpanded((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]);
   const issueFor = (id: string) => showIssues ? issues.find((issue) => issue.nodeId === id)?.message : undefined;
@@ -115,7 +111,6 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
   const checkConfiguration = () => {
     setShowIssues(true); openPreview("check");
     if (issues.length) focusNode(issues[0]!.nodeId);
-    setNotice(issues.length ? `还有 ${issues.length} 项配置需要完善` : "配置检查通过，可以试运行或保存规则");
   };
   const save = () => {
     if (issues.length) { checkConfiguration(); return; }
@@ -142,13 +137,13 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
   };
   const actionPicker = addingAction ? <div className={styles.actionPicker} aria-label="选择要插入的处置动作">
     <div className={styles.pickerHeading}><strong>添加处置动作</strong><Button aria-label="关闭动作选择" iconOnly variant="ghost" size="sm" onClick={() => setAddingAction(null)}><X /></Button></div>
-    <p className="mb-3 text-[12px] text-fg-subtle">同阶段动作插入此处，跨阶段动作归入对应的执行阶段。</p>
-    <div className={styles.pickerItems}>{actionTypes.map((type) => <button type="button" key={type} onClick={() => insertAction(type)}><Plus className="size-4 shrink-0 text-[#8d66c4]" /><span>{type}</span></button>)}</div>
+    <p className="mb-3 text-label text-fg-subtle">同阶段动作插入此处，跨阶段动作归入对应的执行阶段。</p>
+    <div className={styles.pickerItems}>{actionTypes.map((type) => <button type="button" key={type} onClick={() => insertAction(type)}><Plus className="size-4 shrink-0 text-fg-brand" /><span>{type}</span></button>)}</div>
   </div> : null;
 
   return <div className={styles.workspace} ref={attachDialog} role="dialog" aria-modal="true" aria-labelledby="workflow-title" tabIndex={-1}><PortalContainerProvider value={portalContainer}>
-    <header className={styles.topbar}>
-      <Button onClick={requestExit} variant="ghost" leadingIcon={ArrowLeft} size="sm" aria-label="返回规则清单">返回</Button>
+    <header className={`${styles.topbar} ${styles.editorTopbar}`}>
+      <Button aria-label={initial ? "关闭规则编辑" : "关闭规则创建"} iconOnly onClick={requestExit} type="button" variant="tertiary"><X aria-hidden /></Button>
       <div className={styles.heading}>
         <h1 id="workflow-title" className="sr-only">{initial ? "编辑流量规则" : "新建流量规则"}</h1>
         <Input aria-label="规则名称" className={styles.titleInput} title={draft.name || "未命名规则"} variant="ghost" value={draft.name} placeholder="未命名规则" onChange={(event) => update({ name: event.target.value })} />
@@ -156,10 +151,10 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
       </div>
       <div className={styles.topActions}>
         <span className={styles.savedState}>{dirty ? "有未保存的修改" : initial ? "已保存" : "尚未保存"}</span>
-        <Button onClick={checkConfiguration} variant="ghost" leadingIcon={Check} size="sm">检查配置</Button>
+        {issues.length ? <Button aria-label={`配置异常，共 ${issues.length} 项，跳转到第一处`} onClick={checkConfiguration} size="md" tone="warning" type="button" variant="tertiary"><span className="inline-flex items-center gap-1.5"><span>配置异常</span><Badge aria-hidden size="sm" status="warning">{issues.length}</Badge></span></Button> : <span className="inline-flex h-control-md items-center gap-1.5 rounded-lg px-2 text-body text-fg-default"><Check aria-hidden className="size-4 text-fg-brand" />配置正常</span>}
         <Button onClick={() => openPreview("test")} variant="tertiary" leadingIcon={Play} size="md">试运行</Button>
         <Button onClick={requestExit} variant="tertiary" size="md">取消</Button>
-        <Button onClick={save} variant="primary" size="md">保存规则</Button>
+        {issues.length ? <Tooltip content={`还有 ${issues.length} 项配置需要完善`}><span aria-label={`保存规则不可用，还有 ${issues.length} 项配置需要完善`} className="inline-flex" tabIndex={0}><Button disabled onClick={save} variant="primary" size="md">保存规则</Button></span></Tooltip> : <Button onClick={save} variant="primary" size="md">保存规则</Button>}
       </div>
     </header>
     <div className={styles.body}>
@@ -173,7 +168,7 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
             <Button size="sm" variant="ghost" onClick={() => setExpanded(expanded.length ? [] : ["start", "conditions", ...actions.map((action) => action.id), "result", "fallback"])}>{expanded.length ? "收起节点" : "展开节点"}</Button>
           </div>
         </div>
-        <div className={styles.canvasFrame}>
+        <div className={`${styles.canvasFrame} relative flex min-h-0 flex-1 flex-col`}>
           <p className={styles.canvasPanHint}>左右滑动画布查看分支</p>
           <div className={styles.canvas} ref={canvasRef} tabIndex={0} aria-label="流程画布，可横向和纵向滚动">
             <div className={styles.flow} style={{ zoom: zoom / 100 } as CSSProperties}>
@@ -195,8 +190,8 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
                 {addingCondition ? <AddConditionPanel onClose={() => setAddingCondition(false)} onAdd={(kind) => { const condition = createCondition(kind); update({conditions:[...draft.conditions,condition]}); setEditingCondition(condition.id); setAddingCondition(false); }} /> : <Button leadingIcon={Plus} variant="ghost" size="sm" onClick={() => setAddingCondition(true)}>添加条件</Button>}
               </WorkflowNode>
               </WorkflowConditionBranch>
-              {actionGroups.map((group) => <section key={group.phase} className={styles.actionGroup} aria-label={`处置动作：${group.title}`} data-expanded={group.items.some(({ action }) => expanded.includes(action.id))}>
-                <h2 className={styles.phaseHeading}>处置动作 · {group.title}</h2>
+              {actionGroups.map((group) => <section key={group.phase} className={`${styles.actionGroup} flex w-full flex-col items-center`} aria-label={`处置动作：${group.title}`} data-expanded={group.items.some(({ action }) => expanded.includes(action.id))}>
+                <h2 className={`${styles.phaseHeading} mb-3 w-[336px] max-w-full text-label font-medium leading-5 text-fg-muted`}>处置动作 · {group.title}</h2>
                 {group.items.map(({ action, index }) => <Fragment key={action.id}>
                 <WorkflowNode id={action.id} title={action.type} description={actionDescription(action)} icon={actionIcon(action)} tone="purple" expanded={expanded.includes(action.id)} onToggle={() => toggle(action.id)} issue={issueFor(action.id)} footer={<>执行阶段 <code>{action.phase === "before" ? "before_upstream" : "after_response"}</code></>} tools={<div className={styles.actionTools}>
                   <Button aria-label={`上移动作：${action.type}`} title="上移" iconOnly size="xs" variant="ghost" disabled={index === 0 || actions[index - 1]?.phase !== action.phase} onClick={() => moveAction(action.id,-1)}><WorkflowMoveUpIcon /></Button>
@@ -220,7 +215,7 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
                 <p className={styles.help}>条件不满足时，{ruleSkipExplanation}。</p>
                 <Button className="mt-3" variant="tertiary" size="sm" leadingIcon={Play} onClick={() => openPreview("test")}>用示例请求验证结果</Button>
               </WorkflowNode>
-              <div className="mt-8 w-full max-w-[552px] border-t border-dashed border-[#d8dfe8] pt-6 flex flex-col items-center">
+              <div className="mt-8 w-full max-w-[552px] border-t border-dashed border-border pt-6 flex flex-col items-center">
                 <WorkflowNode id="fallback" title="异常处理" description={`组件不可用时${draft.fallback === "allow" ? "放行，继续网关路由" : "拒绝本次调用"}`} icon="shield" tone="amber" expanded={expanded.includes("fallback")} onToggle={() => toggle("fallback")} issue={issueFor("fallback")}>
                   <label className={styles.fieldLabel}>组件不可用时<WorkflowSelect label="组件不可用时" value={draft.fallback} options={[{value:"allow",label:"放行，继续网关路由"},{value:"reject",label:"拒绝本次调用"}]} onChange={(fallback)=>update({fallback:fallback as "allow"|"reject"})} /></label>
                   <p className={styles.help}>仅在执行组件不可用时触发。内容检测命中、触发限额时，按对应动作中设置的策略处理。</p>
@@ -231,9 +226,8 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
           <div className={styles.canvasControls}><WorkflowZoomSelect ariaLabel="画布缩放" value={zoom} onChange={setZoom} /><span className="h-4 border-r border-border" /><Button variant="ghost" size="sm" onClick={()=>{setZoom(100);setExpanded([]);canvasRef.current?.scrollTo({top:0,left:0});}}>流程总览</Button></div>
         </div>
       </section>
-      {showPreview ? <aside className={styles.preview}><WorkflowPreview tab={previewTab} onTabChange={setPreviewTab} draft={draft} onClose={()=>setShowPreview(false)} onFocusNode={focusFromPreview} /></aside> : null}
+      {showPreview ? <aside className={styles.preview}><WorkflowPreview closeButtonClassName="hidden max-[900px]:inline-flex" tab={previewTab} onTabChange={setPreviewTab} draft={draft} onClose={() => setShowPreview(false)} onFocusNode={focusFromPreview} /></aside> : null}
     </div>
-    {notice ? <div className={styles.notice} role="status"><span>{notice}</span><button className="ml-4 cursor-pointer" aria-label="关闭配置提示" onClick={()=>setNotice("")}><X className="size-3" /></button></div> : null}
     {discardOpen ? <DiscardDialog onKeep={()=>setDiscardOpen(false)} onDiscard={onCancel} /> : null}
   </PortalContainerProvider></div>;
 }

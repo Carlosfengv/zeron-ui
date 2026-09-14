@@ -4462,6 +4462,180 @@
       }
     },
     {
+      "name": "traffic-rules-01",
+      "type": "registry:block",
+      "title": "流量规则",
+      "description": "A responsive gateway workspace for managing traffic rules, global limits, request validation, and execution workflows.",
+      "categories": [
+        "application",
+        "gateway",
+        "tables"
+      ],
+      "dependencies": [
+        "tw-animate-css@^1.4.0",
+        "@hugeicons/core-free-icons@^4.1.1",
+        "@tanstack/react-table@^8.21.3"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/checkbox.json",
+        "https://zeron-ui.vercel.app/r/data-table.json",
+        "https://zeron-ui.vercel.app/r/detail-list.json",
+        "https://zeron-ui.vercel.app/r/dialog.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/menu-item.json",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/portal-container-context.json",
+        "https://zeron-ui.vercel.app/r/radio-group.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/sidebar.json",
+        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
+        "https://zeron-ui.vercel.app/r/switch.json",
+        "https://zeron-ui.vercel.app/r/table.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/temporal-picker.json",
+        "https://zeron-ui.vercel.app/r/textarea.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/gateway-policy-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/gateway-policy-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/limit-detail.module.css",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/limit-detail.module.css"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/limit-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/limit-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/limit-form.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/limit-form.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/limit-workflow.module.css",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/limit-workflow.module.css"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-config.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-config.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-detail-model.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-detail-model.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-form.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-form.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-workflow-summary.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-workflow-summary.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-workflow.module.css",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-workflow.module.css"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-workflow.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-workflow.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/table-footer.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/table-footer.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/traffic-rules-v2.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/traffic-rules-v2.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/traffic-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/traffic-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/use-dialog-focus.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/use-dialog-focus.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-canvas-toolbar.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-canvas-toolbar.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-model.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-model.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-move-icon.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-move-icon.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-node.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-node.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-preview.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-preview.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-styles.d.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-styles.d.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-zoom-select.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-zoom-select.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "template"
+        }
+      }
+    },
+    {
       "name": "personal-settings-01",
       "type": "registry:block",
       "title": "个人设置",

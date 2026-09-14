@@ -9,6 +9,7 @@ import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
 import { conditionSummary, definitionMap, type ConditionItem, type RuleWorkflowDraft } from "./rule-config";
+import styles from "./rule-workflow.module.css";
 import { createWorkflowSamples, simulateWorkflow, validateWorkflow, workflowSampleHint } from "./workflow-model";
 
 type Scenario = "normal" | "unavailable" | "sensitive" | "quota";
@@ -62,12 +63,12 @@ function RunResult({ result, onFocusNode }: { result: Simulation; onFocusNode: (
         <Badge size="sm" status={cannotEvaluate ? "warning" : result.matched ? "success" : "neutral"} variant="dot">
           {cannotEvaluate ? "请求事实待完善" : result.matched ? "规则命中" : "规则未命中"}
         </Badge>
-        <p className="break-words text-[14px] leading-5 text-fg-default">{result.outcome}</p>
+        <p className="break-words text-body leading-5 text-fg-default">{result.outcome}</p>
       </div>
 
       {result.checks.length > 0 ? (
         <div>
-          <h4 className="mb-2 text-[12px] font-medium text-fg-subtle">条件求值</h4>
+          <h4 className="mb-2 text-label font-medium text-fg-subtle">条件求值</h4>
           <div className="divide-y divide-border-subtle">
             {result.checks.map((check) => (
               <button
@@ -79,13 +80,13 @@ function RunResult({ result, onFocusNode }: { result: Simulation; onFocusNode: (
               >
                 {check.matched ? <Check aria-hidden className="mt-1 size-4 shrink-0 text-fg-success" /> : <Blocked aria-hidden className="mt-1 size-4 shrink-0 text-fg-warning" />}
                 <span className="min-w-0 flex-1">
-                  <span className="flex items-start justify-between gap-2 text-[12px] leading-5">
+                  <span className="flex items-start justify-between gap-2 text-label leading-5">
                     <span className="font-medium text-fg-default">{check.label}</span>
                     <span className={cn("shrink-0", check.matched ? "text-fg-success" : "text-fg-warning")}>{check.error ? "无法判断" : check.matched ? "匹配" : "不匹配"}</span>
                   </span>
-                  <span className="mt-1 block break-words text-[12px] leading-4 text-fg-subtle">实际：{check.actual || "空值"}</span>
-                  <span className="mt-1 block break-words text-[12px] leading-4 text-fg-subtle">预期：{check.expected}</span>
-                  {check.error ? <span className="mt-1 block break-words text-[12px] leading-4 text-fg-warning">{check.error}</span> : null}
+                  <span className="mt-1 block break-words text-label leading-4 text-fg-subtle">实际：{check.actual || "空值"}</span>
+                  <span className="mt-1 block break-words text-label leading-4 text-fg-subtle">预期：{check.expected}</span>
+                  {check.error ? <span className="mt-1 block break-words text-label leading-4 text-fg-warning">{check.error}</span> : null}
                 </span>
               </button>
             ))}
@@ -95,8 +96,8 @@ function RunResult({ result, onFocusNode }: { result: Simulation; onFocusNode: (
 
       <div>
         <div className="mb-2 flex items-center justify-between gap-2">
-          <h4 className="text-[12px] font-medium text-fg-subtle">执行轨迹</h4>
-          <span className="text-[12px] text-fg-subtle">点击定位节点</span>
+          <h4 className="text-label font-medium text-fg-subtle">执行轨迹</h4>
+          <span className="text-label text-fg-subtle">点击定位节点</span>
         </div>
         <ol className="space-y-1">
           {result.steps.map((step, index) => {
@@ -108,11 +109,11 @@ function RunResult({ result, onFocusNode }: { result: Simulation; onFocusNode: (
                 <button className={cn("flex w-full items-start gap-3 rounded-lg p-2 text-left", focusClass)} onClick={() => onFocusNode(step.id)} type="button">
                   <StatusIcon aria-hidden className={cn("mt-1 size-4 shrink-0", step.status === "success" ? "text-fg-success" : step.status === "blocked" ? "text-fg-danger" : "text-fg-subtle")} />
                   <span className="min-w-0 flex-1">
-                    <span className="flex items-start justify-between gap-2 text-[12px] leading-5">
+                    <span className="flex items-start justify-between gap-2 text-label leading-5">
                       <span className="font-medium text-fg-default">{step.label}</span>
                       <span className="shrink-0 text-fg-subtle">{statusLabel}</span>
                     </span>
-                    <span className="mt-1 block break-words text-[12px] leading-4 text-fg-subtle">{step.detail}</span>
+                    <span className="mt-1 block break-words text-label leading-4 text-fg-subtle">{step.detail}</span>
                   </span>
                   <Arrow aria-hidden className="mt-1 size-4 shrink-0 text-fg-subtle" />
                 </button>
@@ -142,18 +143,18 @@ function ConfigurationCheck({ draft, onFocusNode }: { draft: RuleWorkflowDraft; 
     <div className="space-y-5 p-4">
       <div className="space-y-2">
         <Badge size="sm" status={issues.length ? "warning" : "success"} variant="dot">{issues.length ? `${issues.length} 项待完善` : "配置检查通过"}</Badge>
-        <p className="text-[12px] leading-5 text-fg-subtle">{issues.length ? "点击问题，定位并完善对应节点的配置。" : "必填配置已完整，可切换到试运行验证请求走向。"}</p>
+        <p className="text-label leading-5 text-fg-subtle">{issues.length ? "点击问题，定位并完善对应节点的配置。" : "必填配置已完整，可切换到试运行验证请求走向。"}</p>
       </div>
 
       {issues.length > 0 ? (
         <section aria-label="待完善配置">
-          <h3 className="mb-2 text-[12px] font-medium text-fg-default">待完善</h3>
-          <div className="divide-y divide-border-subtle">
+          <h3 className="mb-2 text-label font-medium text-fg-default">待完善</h3>
+          <div className="flex flex-col gap-1">
             {issues.map((issue, index) => (
-              <button className={cn("flex w-full items-start gap-2 rounded-lg p-3 text-left", focusClass)} key={`${issue.nodeId}-${index}`} onClick={() => onFocusNode(issue.nodeId)} type="button">
-                <Info aria-hidden className="mt-1 size-4 shrink-0 text-fg-warning" />
-                <span className="min-w-0 flex-1 break-words text-[12px] leading-5 text-fg-default">{issue.message}</span>
-                <Arrow aria-hidden className="mt-1 size-4 shrink-0 text-fg-subtle" />
+              <button className={cn("flex w-full items-center gap-2 rounded-lg border-[0.5px] border-border bg-warning-surface p-3 text-left shadow-none", focusClass, styles.configurationIssueItem)} key={`${issue.nodeId}-${index}`} onClick={() => onFocusNode(issue.nodeId)} type="button">
+                <Info aria-hidden className="size-4 shrink-0 text-fg-warning" />
+                <span className="min-w-0 flex-1 break-words text-label leading-5 text-fg-default">{issue.message}</span>
+                <Arrow aria-hidden className="size-4 shrink-0 text-fg-subtle" />
               </button>
             ))}
           </div>
@@ -162,14 +163,14 @@ function ConfigurationCheck({ draft, onFocusNode }: { draft: RuleWorkflowDraft; 
 
       {completed.length > 0 ? (
         <section aria-label="已完成配置">
-          <h3 className="mb-2 text-[12px] font-medium text-fg-default">已完成</h3>
-          <div className="divide-y divide-border-subtle">
+          <h3 className="mb-2 text-label font-medium text-fg-default">已完成</h3>
+          <div className="flex flex-col gap-1">
             {completed.map((item) => (
-              <button className={cn("flex w-full items-start gap-2 rounded-lg p-3 text-left", focusClass)} key={item.nodeId} onClick={() => onFocusNode(item.nodeId)} type="button">
+              <button className={cn("flex w-full items-start gap-2 rounded-lg border border-border p-3 text-left shadow-none", focusClass)} key={item.nodeId} onClick={() => onFocusNode(item.nodeId)} type="button">
                 <Check aria-hidden className="mt-1 size-4 shrink-0 text-fg-success" />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[12px] font-medium leading-5 text-fg-default">{item.label}</span>
-                  <span className="mt-1 block break-words text-[12px] leading-4 text-fg-subtle">{item.detail}</span>
+                  <span className="block text-label font-medium leading-5 text-fg-default">{item.label}</span>
+                  <span className="mt-1 block break-words text-label leading-4 text-fg-subtle">{item.detail}</span>
                 </span>
                 <Arrow aria-hidden className="mt-1 size-4 shrink-0 text-fg-subtle" />
               </button>
@@ -181,7 +182,7 @@ function ConfigurationCheck({ draft, onFocusNode }: { draft: RuleWorkflowDraft; 
   );
 }
 
-export function WorkflowPreview({ draft, tab, onTabChange, onClose, onFocusNode }: { draft: RuleWorkflowDraft; tab: "test" | "check"; onTabChange: (tab: "test" | "check") => void; onClose: () => void; onFocusNode: (nodeId: string) => void }) {
+export function WorkflowPreview({ draft, tab, onTabChange, onClose, onFocusNode, closeButtonClassName }: { draft: RuleWorkflowDraft; tab: "test" | "check"; onTabChange: (tab: "test" | "check") => void; onClose?: () => void; onFocusNode: (nodeId: string) => void; closeButtonClassName?: string }) {
   const Close = useIcon("x");
   const Play = useIcon("play");
   const Refresh = useIcon("rotate-ccw");
@@ -218,10 +219,10 @@ export function WorkflowPreview({ draft, tab, onTabChange, onClose, onFocusNode 
   };
 
   return (
-    <aside aria-label="调试与预览" className="flex h-full min-h-0 w-full flex-col overflow-hidden border-l border-border bg-white text-fg-default">
+    <aside aria-label="调试与预览" className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-surface-floating text-fg-default">
       <header className="flex h-14 shrink-0 items-center justify-between gap-3 px-4">
-        <h2 className="text-[14px] font-semibold">调试与预览</h2>
-        <Button aria-label="关闭调试与预览" iconOnly onClick={onClose} size="md" type="button" variant="ghost"><Close /></Button>
+        <h2 className="text-body font-semibold">调试与预览</h2>
+        {onClose ? <Button aria-label="关闭调试与预览" className={closeButtonClassName} iconOnly onClick={onClose} size="md" type="button" variant="tertiary"><Close /></Button> : null}
       </header>
 
       <Tabs className="flex min-h-0 flex-1 flex-col" color="brand" onValueChange={(value) => onTabChange(value === "check" ? "check" : "test")} value={tab === "test" ? "run" : "check"} variant="underline">
@@ -234,10 +235,10 @@ export function WorkflowPreview({ draft, tab, onTabChange, onClose, onFocusNode 
 
         <TabPanel className="min-h-0 flex-1 overflow-y-auto overscroll-contain" value="run">
           <div className="space-y-4 p-4">
-            <p className="text-[12px] leading-5 text-fg-subtle">使用示例请求在本地模拟规则，检查条件与动作走向。</p>
+            <p className="text-label leading-5 text-fg-subtle">使用示例请求在本地模拟规则，检查条件与动作走向。</p>
             <section aria-labelledby={`${fieldId}-facts-title`}>
               <div className="mb-2 flex items-center justify-between gap-2">
-                <h3 className="text-[12px] font-medium" id={`${fieldId}-facts-title`}>请求事实</h3>
+                <h3 className="text-label font-medium" id={`${fieldId}-facts-title`}>请求事实</h3>
                 <Button onClick={() => setSamples(createWorkflowSamples(draft))} size="sm" type="button" variant="ghost">示例请求</Button>
               </div>
               {draft.conditions.length ? (
@@ -245,8 +246,8 @@ export function WorkflowPreview({ draft, tab, onTabChange, onClose, onFocusNode 
                   {draft.conditions.map((condition, index) => (
                     <div key={condition.id}>
                       <div className="mb-1 flex min-h-6 items-center justify-between gap-2">
-                        <label className="min-w-0 break-words text-[12px] leading-4 text-fg-muted" htmlFor={`${fieldId}-fact-${index}`}>{sampleLabel(condition)}</label>
-                        {Object.hasOwn(requestSamples, condition.id) ? <Button aria-label={`不提供${sampleLabel(condition)}`} onClick={() => changeSample(condition, undefined)} size="xs" type="button" variant="ghost">不提供</Button> : <span className="shrink-0 text-[12px] text-fg-subtle">未提供</span>}
+                        <label className="min-w-0 break-words text-label leading-4 text-fg-muted" htmlFor={`${fieldId}-fact-${index}`}>{sampleLabel(condition)}</label>
+                        {Object.hasOwn(requestSamples, condition.id) ? <Button aria-label={`不提供${sampleLabel(condition)}`} onClick={() => changeSample(condition, undefined)} size="xs" type="button" variant="ghost">不提供</Button> : <span className="shrink-0 text-label text-fg-subtle">未提供</span>}
                       </div>
                       <Input
                         autoComplete="off"
@@ -260,11 +261,11 @@ export function WorkflowPreview({ draft, tab, onTabChange, onClose, onFocusNode 
                     </div>
                   ))}
                 </div>
-              ) : <p className="rounded-lg bg-surface-base p-3 text-[12px] leading-5 text-fg-subtle">在画布中添加条件后，可填写对应的请求事实。</p>}
+              ) : <p className="rounded-lg bg-surface-base p-3 text-label leading-5 text-fg-subtle">在画布中添加条件后，可填写对应的请求事实。</p>}
             </section>
 
             <div>
-              <label className="mb-1 block text-[12px] leading-4 text-fg-muted" htmlFor={`${fieldId}-scenario`}>模拟情景</label>
+              <label className="mb-1 block text-label leading-4 text-fg-muted" htmlFor={`${fieldId}-scenario`}>模拟情景</label>
               <Select itemDensity="compact" onValueChange={(value) => setScenario(value as Scenario)} size="md" value={scenario}>
                 <SelectTrigger aria-label="模拟情景" className="w-full" id={`${fieldId}-scenario`} />
                 <SelectContent>{scenarios.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
@@ -272,16 +273,16 @@ export function WorkflowPreview({ draft, tab, onTabChange, onClose, onFocusNode 
             </div>
 
             <Button className="w-full" leadingIcon={Play} onClick={runTest} size="md" type="button" variant="primary">运行测试</Button>
-            {issues.length ? <button className={cn("w-full rounded-lg text-left text-[12px] leading-5 text-fg-warning", focusClass)} onClick={() => onTabChange("check")} type="button">还有 {issues.length} 项配置待完善，查看配置检查</button> : null}
+            {issues.length ? <button className={cn("w-full rounded-lg text-left text-label leading-5 text-fg-warning", focusClass)} onClick={() => onTabChange("check")} type="button">还有 {issues.length} 项配置待完善，查看配置检查</button> : null}
           </div>
 
           <section aria-label="运行结果" aria-live="polite" className="border-t border-border p-4">
-            <h3 className="mb-3 text-[12px] font-medium">运行结果</h3>
+            <h3 className="mb-3 text-label font-medium">运行结果</h3>
             {result ? <RunResult onFocusNode={onFocusNode} result={result} /> : (
               <div className="flex min-h-36 flex-col items-center justify-center gap-2 px-4 py-6 text-center">
                 {lastRun ? <Refresh aria-hidden className="mb-1 size-6 text-fg-subtle" /> : <Play aria-hidden className="mb-1 size-6 text-fg-subtle" />}
-                <p className="text-[14px] font-medium">{lastRun ? "请重新运行测试" : "等待试运行"}</p>
-                <p className="max-w-[248px] text-[12px] leading-5 text-fg-subtle">{lastRun ? configChanged ? "配置已更改，请重新运行以查看最新结果。" : "请求事实或模拟情景已更改，运行后更新结果。" : "填写请求事实或载入示例请求，运行后查看条件命中与执行轨迹。"}</p>
+                <p className="text-body font-medium">{lastRun ? "请重新运行测试" : "等待试运行"}</p>
+                <p className="max-w-[248px] text-label leading-5 text-fg-subtle">{lastRun ? configChanged ? "配置已更改，请重新运行以查看最新结果。" : "请求事实或模拟情景已更改，运行后更新结果。" : "填写请求事实或载入示例请求，运行后查看条件命中与执行轨迹。"}</p>
               </div>
             )}
           </section>

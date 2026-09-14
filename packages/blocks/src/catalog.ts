@@ -152,7 +152,7 @@ const blockCatalogEntries = [
     title: "流量规则",
     description: "A responsive traffic-rule management console with grouped administration navigation, rule search, status, and row actions.",
     categories: ["application", "gateway", "tables"],
-    dependencies: ["button", "checkbox", "icon-context"],
+    dependencies: ["badge", "button", "checkbox", "data-table", "dialog", "dropdown", "input", "menu-item", "nav-item", "nav-menu", "page-layout", "portal-container-context", "radio-group", "select", "sidebar", "sidebar-identity-row", "switch", "table", "tabs", "temporal-picker", "textarea", "tooltip", "icon-context", "@hugeicons/core-free-icons", "@tanstack/react-table"],
   },
   {
     name: "personal-settings-01",

@@ -5,11 +5,13 @@ import {
   useState,
   type FormEvent,
 } from "react";
+import { Button } from "@zeron/ui/button";
+import { Dialog, DialogContent } from "@zeron/ui/dialog";
+import { Input } from "@zeron/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
 import { Tooltip } from "@zeron/ui/tooltip";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
-import { useDialogFocus } from "./use-dialog-focus";
 import {
   capabilityIds,
   gatewayModels,
@@ -39,15 +41,6 @@ import {
 } from "./rule-config";
 
 export type { RuleFormValue } from "./rule-config";
-
-const fieldClass =
-  "h-9 w-full rounded-lg border border-black/[0.12] bg-white px-2.5 text-[13px] text-[#00030a] outline-none transition-[border-color,box-shadow] placeholder:text-black/35 hover:border-black/25 focus:border-focus-ring focus:ring-1 focus:ring-focus-ring";
-const primaryClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-[#00030a] px-3 text-[14px] text-white transition-colors hover:bg-[#20242b] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-40";
-const secondaryClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-black/[0.12] bg-white px-3 text-[14px] transition-colors hover:border-black/20 hover:bg-[#f6f8fb] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring";
-const iconButtonClass =
-  "grid size-8 shrink-0 place-items-center rounded-lg text-black/45 transition-colors hover:bg-black/[0.05] hover:text-black/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring disabled:cursor-not-allowed disabled:opacity-25";
 
 type SelectFieldOption = string | { label: string; value: string };
 
@@ -95,13 +88,13 @@ function SectionHeading({
   return (
     <div className="mb-3 flex items-start justify-between gap-4">
       <div>
-        <h3 className="text-[14px] font-semibold leading-5">
-          {title} {required ? <span className="text-[#b0140c]">*</span> : null}
+        <h3 className="text-body font-semibold leading-5">
+          {title} {required ? <span className="text-fg-danger">*</span> : null}
         </h3>
-        <p className="mt-0.5 text-[12px] leading-5 text-black/50">{description}</p>
+        <p className="mt-0.5 text-label leading-5 text-fg-subtle">{description}</p>
       </div>
       {count !== undefined ? (
-        <span className="mt-0.5 shrink-0 rounded-md bg-[#eef4ff] px-2 py-1 text-[11px] font-medium text-[#075fce]">
+        <span className="mt-0.5 shrink-0 rounded-md bg-info-surface px-2 py-1 text-label font-medium text-fg-brand">
           {count} 项
         </span>
       ) : null}
@@ -135,11 +128,11 @@ function ValueControl({
   }
 
   return (
-    <input
+    <Input
       aria-label={ariaLabel}
-      className={fieldClass}
       onChange={(event) => onChange(event.target.value)}
       placeholder={placeholder}
+      size="md"
       value={value}
     />
   );
@@ -156,8 +149,8 @@ export function ConditionEditor({
   const needsSecondary = Boolean(definition.secondaryLabel && condition.operator !== "存在");
 
   return (
-    <div className="grid gap-3 border-t border-black/[0.08] bg-[#fbfcfe] px-4 py-4 sm:grid-cols-[132px_minmax(0,1fr)]">
-      <label className="block text-[11px] font-medium text-black/55">
+    <div className="grid gap-3 border-t border-border-subtle bg-surface-floating px-4 py-4 sm:grid-cols-[132px_minmax(0,1fr)]">
+      <label className="block text-label font-medium text-fg-subtle">
         运算符
         <SelectField
           ariaLabel={`${definition.label}运算符`}
@@ -168,7 +161,7 @@ export function ConditionEditor({
         />
       </label>
       <div className={cn("grid gap-3", needsSecondary && "md:grid-cols-2")}>
-        <label className="block text-[11px] font-medium text-black/55">
+        <label className="block text-label font-medium text-fg-subtle">
           {definition.primaryLabel}
           <span className="mt-1 block">
             <ValueControl
@@ -181,7 +174,7 @@ export function ConditionEditor({
           </span>
         </label>
         {needsSecondary ? (
-          <label className="block text-[11px] font-medium text-black/55">
+          <label className="block text-label font-medium text-fg-subtle">
             {definition.secondaryLabel}
             <span className="mt-1 block">
               <ValueControl
@@ -218,28 +211,30 @@ function ConditionRow({
   const complete = conditionComplete(condition);
 
   return (
-    <div className={cn("border-t border-black/[0.08] first:border-t-0", editing && "bg-[#fbfcfe]")}>
+    <div className={cn("border-t border-border-subtle first:border-t-0", editing && "bg-surface-floating")}>
       <div className="flex min-h-12 items-stretch gap-1 px-2 py-1.5 sm:px-3">
         <button
           aria-expanded={editing}
-          className="grid min-w-0 flex-1 items-center gap-1 rounded-lg px-2 py-1.5 text-left hover:bg-black/[0.025] sm:grid-cols-[136px_minmax(0,1fr)_20px] sm:gap-3"
+          className="grid min-w-0 flex-1 items-center gap-1 rounded-lg px-2 py-1.5 text-left hover:bg-hover sm:grid-cols-[136px_minmax(0,1fr)_20px] sm:gap-3"
           onClick={onEdit}
           type="button"
         >
-          <span className="text-[12px] font-medium text-[#00030a]">{definition.label}</span>
-          <span className={cn("min-w-0 truncate text-[12px]", complete ? "text-black/60" : "text-[#9a5b00]")}>
+          <span className="text-label font-medium text-fg-default">{definition.label}</span>
+          <span className={cn("min-w-0 truncate text-label", complete ? "text-fg-muted" : "text-fg-warning")}>
             {conditionSummary(condition)}
           </span>
-          <Chevron className={cn("hidden size-4 text-black/35 transition-transform sm:block", editing && "rotate-180")} />
+          <Chevron className={cn("hidden size-4 text-fg-subtle transition-transform sm:block", editing && "rotate-180")} />
         </button>
-        <button
+        <Button
           aria-label={`删除条件：${definition.label}`}
-          className={iconButtonClass}
+          iconOnly
           onClick={onRemove}
+          size="sm"
           type="button"
+          variant="ghost"
         >
           <Trash className="size-4" />
-        </button>
+        </Button>
       </div>
       {editing ? <ConditionEditor condition={condition} onChange={onChange} /> : null}
     </div>
@@ -269,30 +264,30 @@ function ConditionGroup({
   const GroupIcon = useIcon(group.icon);
 
   return (
-    <section className="overflow-hidden rounded-xl border border-black/[0.10] bg-white">
+    <section className="overflow-hidden rounded-xl border border-border bg-surface-floating">
       <button
         aria-expanded={open}
-        className="flex min-h-14 w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-[#fbfcfe]"
+        className="flex min-h-14 w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-surface-floating"
         onClick={onOpenChange}
         type="button"
       >
-        <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#eef3fb] text-[#29486d]">
+        <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-info-surface text-fg-info">
           <GroupIcon className="size-4" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="flex items-center gap-2 text-[13px] font-semibold">
+          <span className="flex items-center gap-2 text-body font-semibold">
             {group.label}
-            <span className="rounded-md bg-black/[0.045] px-1.5 py-0.5 text-[10px] font-medium text-black/50">
+            <span className="rounded-md bg-emphasis px-1.5 py-0.5 text-label font-medium text-fg-subtle">
               {conditions.length}
             </span>
           </span>
-          <span className="block truncate text-[11px] leading-4 text-black/45">{group.description}</span>
+          <span className="block truncate text-label leading-4 text-fg-subtle">{group.description}</span>
         </span>
-        <Chevron className={cn("size-4 text-black/35 transition-transform", open && "rotate-180")} />
+        <Chevron className={cn("size-4 text-fg-subtle transition-transform", open && "rotate-180")} />
       </button>
       {open ? (
         conditions.length ? (
-          <div className="border-t border-black/[0.08]">
+          <div className="border-t border-border-subtle">
             {conditions.map((condition) => (
               <ConditionRow
                 condition={condition}
@@ -305,7 +300,7 @@ function ConditionGroup({
             ))}
           </div>
         ) : (
-          <p className="border-t border-black/[0.08] px-4 py-3 text-[12px] text-black/45">本组尚未添加条件</p>
+          <p className="border-t border-border-subtle px-4 py-3 text-label text-fg-subtle">本组尚未添加条件</p>
         )
       ) : null}
     </section>
@@ -331,22 +326,22 @@ export function AddConditionPanel({
   }, [query]);
 
   return (
-    <div className="rounded-xl border border-[#0878ff]/25 bg-white p-3 shadow-[0_12px_30px_rgba(22,48,82,0.10)]">
+    <div className="rounded-xl border border-info-border bg-surface-floating p-3 shadow-floating">
       <div className="flex items-center gap-2">
-        <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-black/[0.12] px-2.5 focus-within:border-focus-ring focus-within:ring-1 focus-within:ring-focus-ring">
-          <Search className="size-4 shrink-0 text-black/35" />
+        <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-border px-2.5 focus-within:border-focus-ring focus-within:ring-1 focus-within:ring-focus-ring">
+          <Search className="size-4 shrink-0 text-fg-subtle" />
           <span className="sr-only">搜索条件</span>
           <input
             autoFocus
-            className="min-w-0 flex-1 bg-transparent text-[13px] outline-none placeholder:text-black/35"
+            className="min-w-0 flex-1 bg-transparent text-body outline-none placeholder:text-fg-subtle"
             onChange={(event) => setQuery(event.target.value)}
             placeholder="搜索条件，例如请求头、模型或 CIDR"
             value={query}
           />
         </label>
-        <button aria-label="关闭条件选择" className={iconButtonClass} onClick={onClose} type="button">
+        <Button aria-label="关闭条件选择" iconOnly onClick={onClose} size="sm" type="button" variant="ghost">
           <X className="size-4" />
-        </button>
+        </Button>
       </div>
       {visibleDefinitions.length ? (
         <div className="mt-3 grid gap-1 sm:grid-cols-2">
@@ -355,10 +350,10 @@ export function AddConditionPanel({
             const optionClass = "flex min-h-14 items-center gap-3 rounded-lg px-3 py-2 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring";
             const optionContent = <>
               <span className="min-w-0 flex-1">
-                <span className="block text-[12px] font-medium">{definition.label}</span>
-                <span className="block truncate text-[11px] text-black/45">{definition.description}</span>
+                <span className="block text-label font-medium">{definition.label}</span>
+                <span className="block truncate text-label text-fg-subtle">{definition.description}</span>
               </span>
-              <span className="shrink-0 rounded-md bg-black/[0.045] px-1.5 py-0.5 text-[10px] text-black/50">
+              <span className="shrink-0 rounded-md bg-emphasis px-1.5 py-0.5 text-label text-fg-subtle">
                 {definition.kind === "traffic-label" ? "仅存量" : group.label}
               </span>
             </>;
@@ -379,7 +374,7 @@ export function AddConditionPanel({
             }
             return (
               <button
-                className={cn(optionClass, "hover:bg-[#f1f3f9]")}
+                className={cn(optionClass, "hover:bg-surface-raised")}
                 key={definition.kind}
                 onClick={() => onAdd(definition.kind)}
                 type="button"
@@ -390,7 +385,7 @@ export function AddConditionPanel({
           })}
         </div>
       ) : (
-        <p className="py-6 text-center text-[12px] text-black/45">没有找到匹配的条件</p>
+        <p className="py-6 text-center text-label text-fg-subtle">没有找到匹配的条件</p>
       )}
     </div>
   );
@@ -485,7 +480,7 @@ export function ActionParameters({
   if (action.type === "挂载插件") return <ValueControl ariaLabel="插件绑定 ID" onChange={(primary) => onChange({ ...action, primary })} placeholder="例如 plugin-binding-audit" value={action.primary ?? ""} />;
   if (action.type === "状态码映射") return <div className="grid gap-2 sm:grid-cols-2"><ValueControl ariaLabel="上游状态码" onChange={(primary) => onChange({ ...action, primary })} placeholder="例如 502,503,504" value={action.primary ?? ""} /><ValueControl ariaLabel="返回状态码" onChange={(secondary) => onChange({ ...action, secondary })} placeholder="例如 503" value={action.secondary ?? ""} /></div>;
   if (action.type === "镜像复制") return <div className="grid gap-2 sm:grid-cols-2"><ValueControl ariaLabel="镜像目标端点" onChange={(primary) => onChange({ ...action, primary })} options={[...capabilityIds]} placeholder="请选择能力端点" value={action.primary ?? ""} /><ValueControl ariaLabel="采样比例" onChange={(secondary) => onChange({ ...action, secondary })} placeholder="1–100%" value={action.secondary ?? ""} /></div>;
-  if (action.type === "跳过意图识别") return <p className="text-[11px] leading-5 text-black/45">保存为 intentRecognition = disabled；仅允许路径、模型名和模型服务条件。</p>;
+  if (action.type === "跳过意图识别") return <p className="text-label leading-5 text-fg-subtle">保存为 intentRecognition = disabled；仅允许路径、模型名和模型服务条件。</p>;
   if (action.type === "失败姿态") return <ValueControl ariaLabel="失败姿态" onChange={(primary) => onChange({ ...action, primary })} options={["deny", "allow"]} placeholder="请选择失败姿态" value={action.primary ?? ""} />;
 
   return (
@@ -519,10 +514,10 @@ function ActionRow({
   const Trash = useIcon("trash");
 
   return (
-    <div className="grid gap-3 border-t border-black/[0.08] px-3 py-3 first:border-t-0 sm:grid-cols-[40px_minmax(170px,0.8fr)_minmax(240px,1.2fr)_32px] sm:items-center">
+    <div className="grid gap-3 border-t border-border-subtle px-3 py-3 first:border-t-0 sm:grid-cols-[40px_minmax(170px,0.8fr)_minmax(240px,1.2fr)_32px] sm:items-center">
       <div className="hidden grid-cols-2 gap-0.5 sm:grid sm:grid-cols-1">
-        <button aria-label="上移动作" className="grid size-5 place-items-center rounded text-black/35 hover:bg-black/5 hover:text-black/70 disabled:opacity-20" disabled={!canMoveUp} onClick={() => onMove(-1)} type="button"><ArrowUp className="size-3" /></button>
-        <button aria-label="下移动作" className="grid size-5 place-items-center rounded text-black/35 hover:bg-black/5 hover:text-black/70 disabled:opacity-20" disabled={!canMoveDown} onClick={() => onMove(1)} type="button"><ArrowDown className="size-3" /></button>
+        <Button aria-label="上移动作" disabled={!canMoveUp} iconOnly onClick={() => onMove(-1)} size="xs" type="button" variant="ghost"><ArrowUp className="size-3" /></Button>
+        <Button aria-label="下移动作" disabled={!canMoveDown} iconOnly onClick={() => onMove(1)} size="xs" type="button" variant="ghost"><ArrowDown className="size-3" /></Button>
       </div>
       <SelectField
         ariaLabel="动作类型"
@@ -539,7 +534,7 @@ function ActionRow({
         value={action.type}
       />
       <ActionParameters action={action} onChange={onChange} />
-      <button aria-label={`删除动作：${action.type}`} className={iconButtonClass} onClick={onRemove} type="button"><Trash className="size-4" /></button>
+      <Button aria-label={`删除动作：${action.type}`} iconOnly onClick={onRemove} size="sm" type="button" variant="ghost"><Trash className="size-4" /></Button>
     </div>
   );
 }
@@ -558,15 +553,15 @@ function ActionGroup({
   onRemove: (id: string) => void;
 }) {
   return (
-    <section className="overflow-hidden rounded-xl border border-black/[0.10] bg-white">
-      <header className="flex min-h-11 items-center justify-between bg-[#f6f8fb] px-4 py-2">
+    <section className="overflow-hidden rounded-xl border border-border bg-surface-floating">
+      <header className="flex min-h-11 items-center justify-between bg-surface-raised px-4 py-2">
         <div>
-          <h4 className="text-[12px] font-semibold">{label}</h4>
-          <p className="text-[10px] leading-4 text-black/45">
+          <h4 className="text-label font-semibold">{label}</h4>
+          <p className="text-label leading-4 text-fg-subtle">
             {label === "转发前执行" ? "在目标模型服务收到请求前" : "在网关收到上游响应后"}
           </p>
         </div>
-        <span className="text-[11px] tabular-nums text-black/45">{actions.length} 项</span>
+        <span className="text-label tabular-nums text-fg-subtle">{actions.length} 项</span>
       </header>
       {actions.length ? (
         <div>
@@ -583,7 +578,7 @@ function ActionGroup({
           ))}
         </div>
       ) : (
-        <p className="px-4 py-3 text-[12px] text-black/45">此阶段没有动作</p>
+        <p className="px-4 py-3 text-label text-fg-subtle">此阶段没有动作</p>
       )}
     </section>
   );
@@ -599,12 +594,12 @@ function RuleSectionNav({ modal }: { modal?: boolean }) {
   ];
 
   return (
-    <aside className={cn("hidden self-stretch border-r border-black/[0.08] bg-[#f7f9fc] lg:block", modal ? "w-[176px]" : "w-[196px]")}>
+    <aside className={cn("hidden self-stretch border-r border-border-subtle bg-surface-raised lg:block", modal ? "w-[176px]" : "w-[196px]")}>
       <nav aria-label="规则表单章节" className="sticky top-0 space-y-1 p-4">
-        <p className="mb-2 px-2 text-[11px] font-medium text-black/40">规则配置</p>
+        <p className="mb-2 px-2 text-label font-medium text-fg-subtle">规则配置</p>
         {items.map((item, index) => (
-          <a className="flex h-9 items-center gap-2 rounded-lg px-2 text-[12px] text-black/60 hover:bg-white hover:text-black" href={item.href} key={item.href}>
-            <span className={cn("grid size-5 place-items-center rounded-md text-[10px] font-semibold", index === 1 ? "bg-[#0878ff] text-white" : "bg-white text-black/45")}>
+          <a className="flex h-9 items-center gap-2 rounded-lg px-2 text-label text-fg-muted hover:bg-surface-floating hover:text-fg-default" href={item.href} key={item.href}>
+            <span className={cn("grid size-5 place-items-center rounded-md text-label font-semibold", index === 1 ? "bg-brand text-fg-on-brand" : "bg-surface-floating text-fg-subtle")}>
               {index === 0 ? <Check className="size-3" /> : index + 1}
             </span>
             {item.label}
@@ -672,13 +667,14 @@ function RuleFormContent({
     <div className="min-w-0 flex-1 space-y-8 p-4 sm:p-6">
       <section id="rule-basic" className="scroll-mt-4">
         <SectionHeading description="使用能说明规则意图的名称，方便后续检索与审计。" required title="基本信息" />
-        <label className="block text-[12px] font-medium">
-          规则名称 <span className="text-[#b0140c]">*</span>
-          <input
-            className={cn(fieldClass, "mt-1.5")}
+        <label className="block text-label font-medium">
+          规则名称 <span className="text-fg-danger">*</span>
+          <Input
+            className="mt-1.5"
             onChange={(event) => onNameChange(event.target.value)}
             placeholder="例如：生产环境高优先级流量"
             required
+            size="md"
             value={name}
           />
         </label>
@@ -691,12 +687,12 @@ function RuleFormContent({
           required
           title="条件因子"
         />
-        <div className="mb-3 flex flex-col gap-3 rounded-xl border border-black/[0.08] bg-[#f6f8fb] px-4 py-3 sm:flex-row sm:items-center">
+        <div className="mb-3 flex flex-col gap-3 rounded-xl border border-border-subtle bg-surface-raised px-4 py-3 sm:flex-row sm:items-center">
           <div className="min-w-0 flex-1">
-            <p className="text-[12px] font-medium">条件关系</p>
-            <p className="mt-0.5 text-[11px] text-black/45">请求需要满足这里定义的判断方式</p>
+            <p className="text-label font-medium">条件关系</p>
+            <p className="mt-0.5 text-label text-fg-subtle">请求需要满足这里定义的判断方式</p>
           </div>
-          <p className="text-[12px] leading-5 text-black/45">全部条件均需满足（AND）</p>
+          <p className="text-label leading-5 text-fg-subtle">全部条件均需满足（AND）</p>
         </div>
         <div className="space-y-3">
           {conditionGroups.map((group) => (
@@ -728,9 +724,7 @@ function RuleFormContent({
               onClose={() => onAddPanelOpenChange(false)}
             />
           ) : (
-            <button className={secondaryClass} onClick={() => onAddPanelOpenChange(true)} type="button">
-              <Plus className="size-4" />添加条件
-            </button>
+            <Button leadingIcon={Plus} onClick={() => onAddPanelOpenChange(true)} size="sm" type="button" variant="tertiary">添加条件</Button>
           )}
         </div>
       </section>
@@ -745,28 +739,30 @@ function RuleFormContent({
         <div className="space-y-3">
           <ActionGroup actions={beforeActions} label="转发前执行" onChange={updateAction} onMove={moveAction} onRemove={(id) => onActionsChange(actions.filter((action) => action.id !== id))} />
           <ActionGroup actions={afterActions} label="收到响应后执行" onChange={updateAction} onMove={moveAction} onRemove={(id) => onActionsChange(actions.filter((action) => action.id !== id))} />
-          <button
-            className={secondaryClass}
+          <Button
+            leadingIcon={Plus}
             onClick={() => onActionsChange([
               ...actions,
               { id: newId("action"), type: "拒绝本次调用", phase: "before" },
             ])}
+            size="sm"
             type="button"
+            variant="tertiary"
           >
-            <Plus className="size-4" />添加动作
-          </button>
+            添加动作
+          </Button>
         </div>
       </section>
 
       <section id="rule-exceptions" className="scroll-mt-4">
         <SectionHeading description="未命中和下游不可用时，使用稳定且可预期的兜底行为。" title="异常处理" />
-        <div className="overflow-hidden rounded-xl border border-black/[0.10] bg-white">
-          <div className="grid gap-1 border-b border-black/[0.08] px-4 py-3 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-4">
-            <span className="text-[12px] font-medium">条件不满足时</span>
-            <span className="text-[12px] text-black/55">不做处理，交由下一条规则继续判定</span>
+        <div className="overflow-hidden rounded-xl border border-border bg-surface-floating">
+          <div className="grid gap-1 border-b border-border-subtle px-4 py-3 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-4">
+            <span className="text-label font-medium">条件不满足时</span>
+            <span className="text-label text-fg-subtle">不做处理，交由下一条规则继续判定</span>
           </div>
-          <div className="grid gap-3 bg-[#fbfcfe] px-4 py-3 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-4">
-            <span className="text-[12px] font-medium">组件不可用时</span>
+          <div className="grid gap-3 bg-surface-floating px-4 py-3 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center sm:gap-4">
+            <span className="text-label font-medium">组件不可用时</span>
             <SelectField ariaLabel="组件不可用时的处理方式" defaultValue="放行" options={["放行", "拒绝本次调用", "转到兜底模型服务"]} />
           </div>
         </div>
@@ -787,7 +783,6 @@ export function RuleForm({
   onSave: (rule: RuleFormValue) => void;
 }) {
   const ArrowLeft = useIcon("arrow-left");
-  const X = useIcon("x");
   const [name, setName] = useState(initial?.name ?? "");
   const [conditions, setConditions] = useState<ConditionItem[]>(() => hydrateConditions(initial));
   const [actions, setActions] = useState<ActionItem[]>(() => hydrateActions(initial));
@@ -798,8 +793,6 @@ export function RuleForm({
     identity: true,
     model: true,
   });
-  const dialogRef = useDialogFocus(Boolean(modal), onCancel);
-
   const canSave = Boolean(name.trim() && conditions.length > 0 && actions.length > 0);
 
   const submit = (event: FormEvent) => {
@@ -822,31 +815,29 @@ export function RuleForm({
   const content = (
     <form
       className={cn(
-        "flex min-h-0 flex-col bg-white",
+        "flex min-h-0 flex-col bg-surface-floating",
         modal ? "max-h-[calc(100svh-32px)]" : "min-h-[calc(100svh-56px)]",
       )}
       onSubmit={submit}
     >
-      <header className="flex min-h-[68px] shrink-0 items-center justify-between gap-4 border-b border-black/[0.10] px-4 py-3 sm:px-6">
+      <header className="flex min-h-[68px] shrink-0 items-center justify-between gap-4 border-b border-border px-4 py-3 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
           {!modal ? (
-            <button aria-label="返回规则详情" className={iconButtonClass} onClick={onCancel} type="button">
+            <Button aria-label="返回规则详情" iconOnly onClick={onCancel} size="sm" type="button" variant="ghost">
               <ArrowLeft className="size-4" />
-            </button>
+            </Button>
           ) : null}
           <div className="min-w-0">
-            <h2 className="truncate text-[17px] font-semibold leading-6" id="rule-form-title">{modal ? "新建规则" : `编辑 ${initial?.name}`}</h2>
-            <p className="truncate text-[11px] leading-4 text-black/45">将请求事实组合成一条清晰、可审计的流量规则</p>
+            <h2 className="truncate text-title font-semibold leading-6" id="rule-form-title">{modal ? "新建规则" : `编辑 ${initial?.name}`}</h2>
+            <p className="truncate text-label leading-4 text-fg-subtle">将请求事实组合成一条清晰、可审计的流量规则</p>
           </div>
         </div>
-        {modal ? (
-          <button aria-label="关闭" className={iconButtonClass} onClick={onCancel} type="button"><X className="size-4" /></button>
-        ) : (
+        {!modal ? (
           <div className="flex shrink-0 gap-2">
-            <button className={secondaryClass} onClick={onCancel} type="button">取消</button>
-            <button className={primaryClass} disabled={!canSave} type="submit">保存</button>
+            <Button onClick={onCancel} size="sm" type="button" variant="tertiary">取消</Button>
+            <Button disabled={!canSave} size="sm" type="submit" variant="neutral">保存</Button>
           </div>
-        )}
+        ) : null}
       </header>
       <div className="flex min-h-0 flex-1 overflow-y-auto scroll-smooth">
         <RuleSectionNav modal={modal} />
@@ -866,31 +857,20 @@ export function RuleForm({
         />
       </div>
       {modal ? (
-        <footer className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-black/[0.10] bg-white px-4 py-3 sm:px-6">
-          <p className="text-[11px] text-black/45">
+        <footer className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-border bg-surface-floating px-4 py-3 sm:px-6">
+          <p className="text-label text-fg-subtle">
             已添加 {conditions.length} 个条件 · {actions.length} 个动作
           </p>
           <div className="flex gap-2">
-            <button className={secondaryClass} onClick={onCancel} type="button">取消</button>
-            <button className={cn(primaryClass, "bg-[#0060d2] px-5 hover:bg-[#0757b8]")} disabled={!canSave} type="submit">保存规则</button>
+            <Button onClick={onCancel} size="sm" type="button" variant="tertiary">取消</Button>
+            <Button className="px-5" disabled={!canSave} size="sm" type="submit">保存规则</Button>
           </div>
         </footer>
       ) : null}
     </form>
   );
 
-  if (!modal) return <section className="min-h-[calc(100svh-56px)] overflow-hidden rounded-t-2xl border-[0.5px] border-black/[0.12] bg-white">{content}</section>;
+  if (!modal) return <section className="min-h-[calc(100svh-56px)] overflow-hidden rounded-t-2xl border-[0.5px] border-border bg-surface-floating">{content}</section>;
 
-  return (
-    <div
-      className="fixed inset-0 z-[60] grid place-items-center bg-[#00040d]/60 p-4"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onCancel();
-      }}
-    >
-      <div aria-labelledby="rule-form-title" aria-modal="true" className="w-full max-w-[960px] overflow-hidden rounded-2xl bg-white shadow-[0_24px_72px_rgba(0,0,0,0.24)]" ref={dialogRef} role="dialog" tabIndex={-1}>
-        {content}
-      </div>
-    </div>
-  );
+  return <Dialog onOpenChange={(open) => { if (!open) onCancel(); }} open><DialogContent aria-labelledby="rule-form-title" className="!max-w-[960px] overflow-hidden !p-0">{content}</DialogContent></Dialog>;
 }

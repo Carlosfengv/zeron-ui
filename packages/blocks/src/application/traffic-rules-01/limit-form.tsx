@@ -4,12 +4,14 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Checkbox } from "@zeron/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
 import { Input } from "@zeron/ui/input";
 import { RadioGroup, RadioGroupItem } from "@zeron/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
 import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
 import { Textarea } from "@zeron/ui/textarea";
 import { DateTimePicker, instantToZonedDateTime, parseISODateTime } from "@zeron/ui/temporal-picker";
+import { Tooltip } from "@zeron/ui/tooltip";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { PortalContainerProvider } from "@zeron/ui/system/portal-container-context";
 import { cn } from "@zeron/ui/system/utils";
@@ -235,12 +237,11 @@ function limitResult(value: GlobalLimit) {
   return `${windows}${temporary}；任一窗口超限后返回 429 TRAFFIC_RATE_LIMITED，并附带 Retry-After。`;
 }
 
-function LimitPreview({ issues, onClose, onFocusNode, onTabChange, tab, value }: { issues: LimitIssue[]; onClose: () => void; onFocusNode: (id: string) => void; onTabChange: (tab: "test" | "check") => void; tab: "test" | "check"; value: GlobalLimit }) {
+function LimitPreview({ issues, onFocusNode, onTabChange, tab, value }: { issues: LimitIssue[]; onFocusNode: (id: string) => void; onTabChange: (tab: "test" | "check") => void; tab: "test" | "check"; value: GlobalLimit }) {
   const Check = useIcon("check");
   const Checklist = useIcon("list-checks");
   const Info = useIcon("doc-info-item");
   const Play = useIcon("play");
-  const X = useIcon("x");
   const [scenario, setScenario] = useState<"within" | "exceeded">("within");
   const [result, setResult] = useState<"within" | "exceeded" | null>(null);
   const runTest = () => {
@@ -251,7 +252,7 @@ function LimitPreview({ issues, onClose, onFocusNode, onTabChange, tab, value }:
     setResult(scenario);
   };
   return <div className={styles.previewPanel}>
-    <header className={styles.previewHeader}><div><h2>调试与预览</h2><p>验证限额配置与超限结果</p></div><Button aria-label="关闭调试与预览" iconOnly onClick={onClose} size="sm" variant="ghost"><X /></Button></header>
+    <header className={styles.previewHeader}><h2>调试与预览</h2></header>
     <Tabs className={styles.previewTabs} color="brand" onValueChange={(next) => onTabChange(next === "check" ? "check" : "test")} value={tab === "test" ? "run" : "check"} variant="underline">
       <div className={styles.previewTabList}><TabsList aria-label="限额调试工具" className="w-full"><TabItem className="flex-1 justify-center" icon={Play} label="试运行" value="run" /><TabItem badge={issues.length ? { children: issues.length, status: "warning" } : undefined} className="flex-1 justify-center" icon={Checklist} label="配置检查" value="check" /></TabsList></div>
       <TabPanel className={styles.previewScroll} value="run">
@@ -290,11 +291,11 @@ function LimitPreview({ issues, onClose, onFocusNode, onTabChange, tab, value }:
 }
 
 function DiscardDialog({ onDiscard, onKeep }: { onDiscard: () => void; onKeep: () => void }) {
-  return <div className={flowStyles.exitBackdrop} role="presentation"><div aria-labelledby="discard-limit-title" aria-modal="true" className={flowStyles.exitDialog} role="dialog"><h3 id="discard-limit-title">退出限额编辑？</h3><p>本次修改尚未保存，退出后将丢失这些修改。</p><div className={flowStyles.exitActions}><Button onClick={onKeep} variant="tertiary">继续编辑</Button><Button onClick={onDiscard} variant="destructive">放弃修改</Button></div></div></div>;
+  return <Dialog onOpenChange={(open) => { if (!open) onKeep(); }} open><DialogContent size="sm"><DialogHeader><DialogTitle>退出限额编辑？</DialogTitle><DialogDescription>本次修改尚未保存，退出后将丢失这些修改。</DialogDescription></DialogHeader><DialogFooter><Button onClick={onKeep} variant="tertiary">继续编辑</Button><Button onClick={onDiscard} variant="destructive">放弃修改</Button></DialogFooter></DialogContent></Dialog>;
 }
 
 export function LimitForm({ initial, onCancel, onSave }: { initial?: GlobalLimit; onCancel: () => void; onSave: (limit: GlobalLimit) => void }) {
-  const ArrowLeft = useIcon("arrow-left");
+  const Close = useIcon("x");
   const Check = useIcon("check");
   const Gauge = useIcon("clock");
   const Play = useIcon("play");
@@ -306,7 +307,6 @@ export function LimitForm({ initial, onCancel, onSave }: { initial?: GlobalLimit
   const [previewOpen, setPreviewOpen] = useState(true);
   const [previewTab, setPreviewTab] = useState<"test" | "check">("test");
   const [discardOpen, setDiscardOpen] = useState(false);
-  const [notice, setNotice] = useState("");
   const [zoom, setZoom] = useState(100);
   const [compact, setCompact] = useState(() => typeof window !== "undefined" && window.innerWidth <= 900);
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
@@ -329,7 +329,7 @@ export function LimitForm({ initial, onCancel, onSave }: { initial?: GlobalLimit
     return () => media.removeEventListener("change", update);
   }, []);
 
-  const patchValue = (patch: Partial<GlobalLimit>) => { setValue((current) => ({ ...current, ...patch })); setNotice(""); };
+  const patchValue = (patch: Partial<GlobalLimit>) => { setValue((current) => ({ ...current, ...patch })); };
   const toggle = (id: string) => setExpanded((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
   const issueFor = (id: string) => showIssues ? issues.find((issue) => issue.nodeId === id)?.message : undefined;
   const focusNode = (id: string) => {
@@ -341,7 +341,7 @@ export function LimitForm({ initial, onCancel, onSave }: { initial?: GlobalLimit
     setShowIssues(true);
     setPreviewOpen(true);
     setPreviewTab("check");
-    setNotice(issues.length ? `还有 ${issues.length} 项配置需要完善` : "配置检查通过，可以保存限额");
+    if (issues.length) focusNode(issues[0]!.nodeId);
   };
   const openTest = () => {
     setPreviewOpen(true);
@@ -353,10 +353,10 @@ export function LimitForm({ initial, onCancel, onSave }: { initial?: GlobalLimit
   return <div className={flowStyles.workspace} ref={attachDialog} role="dialog" aria-modal="true" aria-labelledby="limit-workflow-title" tabIndex={-1}>
     <PortalContainerProvider value={portalContainer}>
       <form className={styles.form} onSubmit={submit}>
-        <header className={flowStyles.topbar}>
-          <Button aria-label="返回全局限额" leadingIcon={ArrowLeft} onClick={requestExit} size="sm" type="button" variant="ghost">返回</Button>
+        <header className={`${flowStyles.topbar} ${flowStyles.editorTopbar}`}>
+          <Button aria-label={initial ? "关闭限额编辑" : "关闭限额创建"} iconOnly onClick={requestExit} type="button" variant="tertiary"><Close aria-hidden /></Button>
           <div className={flowStyles.heading}><h1 className="sr-only" id="limit-workflow-title">{initial ? "编辑全局限额" : "新建全局限额"}</h1><Input aria-label="限额名称" className={flowStyles.titleInput} onChange={(event) => patchValue({ name: event.target.value })} placeholder="未命名限额" title={value.name || "未命名限额"} value={value.name} variant="ghost" /><span className={flowStyles.draftLabel}>{initial ? "编辑中" : "草稿"}</span></div>
-          <div className={flowStyles.topActions}><span className={flowStyles.savedState}>{dirty ? "有未保存的修改" : initial ? "已保存" : "尚未保存"}</span><Button leadingIcon={Check} onClick={checkConfiguration} size="sm" type="button" variant="ghost">检查配置</Button><Button active={previewOpen && previewTab === "test"} leadingIcon={Play} onClick={openTest} size="md" type="button" variant="tertiary">试运行</Button><Button onClick={requestExit} size="md" type="button" variant="tertiary">取消</Button><Button size="md" type="submit" variant="primary">保存限额</Button></div>
+          <div className={flowStyles.topActions}><span className={flowStyles.savedState}>{dirty ? "有未保存的修改" : initial ? "已保存" : "尚未保存"}</span>{issues.length ? <Button aria-label={`配置异常，共 ${issues.length} 项，跳转到第一处`} onClick={checkConfiguration} size="md" tone="warning" type="button" variant="tertiary"><span className="inline-flex items-center gap-1.5"><span>配置异常</span><Badge aria-hidden size="sm" status="warning">{issues.length}</Badge></span></Button> : <span className="inline-flex h-control-md items-center gap-1.5 rounded-lg px-2 text-body text-fg-default"><Check aria-hidden className="size-4 text-fg-brand" />配置正常</span>}<Button active={previewOpen && previewTab === "test"} leadingIcon={Play} onClick={openTest} size="md" type="button" variant="tertiary">试运行</Button><Button onClick={requestExit} size="md" type="button" variant="tertiary">取消</Button>{issues.length ? <Tooltip content={`还有 ${issues.length} 项配置需要完善`}><span aria-label={`保存限额不可用，还有 ${issues.length} 项配置需要完善`} className="inline-flex" tabIndex={0}><Button disabled size="md" type="submit" variant="primary">保存限额</Button></span></Tooltip> : <Button size="md" type="submit" variant="primary">保存限额</Button>}</div>
         </header>
         <div className={flowStyles.body}>
           <section aria-label="全局限额编排画布" className={flowStyles.canvasPanel}>
@@ -373,7 +373,7 @@ export function LimitForm({ initial, onCancel, onSave }: { initial?: GlobalLimit
                   </WorkflowNode>
                   <FlowConnector><span>按窗口累计用量</span></FlowConnector>
                   <WorkflowNode description={value.windows.length ? value.windows.map((item) => `每${item.unit} ${item.count} 次`).join(" · ") : "尚未配置限额窗口"} expanded={expanded.includes("windows")} footer={<>节点输出 <code>quota_exceeded: boolean</code><span className="ml-auto">{value.windows.length} 个窗口</span></>} icon="clock" id="windows" issue={issueFor("windows")} onToggle={() => toggle("windows")} title="限额窗口" tone="purple">
-                    <div className={styles.fields}><div><FieldLabel required>时间窗口</FieldLabel><WindowRows onChange={(windows) => patchValue({ windows })} windows={value.windows} /></div><label className={styles.checkboxRow}><Checkbox checked={value.temporaryEnabled} className="data-checked:border-[#00030a] data-checked:bg-[#00030a]" onCheckedChange={(checked) => patchValue({ temporaryEnabled: Boolean(checked) })} />启用临时阈值</label>{value.temporaryEnabled ? <TemporaryThresholdFields onChange={patchValue} value={value} /> : null}</div>
+                    <div className={styles.fields}><div><FieldLabel required>时间窗口</FieldLabel><WindowRows onChange={(windows) => patchValue({ windows })} windows={value.windows} /></div><label className={styles.checkboxRow}><Checkbox checked={value.temporaryEnabled} onCheckedChange={(checked) => patchValue({ temporaryEnabled: Boolean(checked) })} />启用临时阈值</label>{value.temporaryEnabled ? <TemporaryThresholdFields onChange={patchValue} value={value} /> : null}</div>
                   </WorkflowNode>
                   <FlowConnector><span>超限时执行</span></FlowConnector>
                   <WorkflowNode description={actionTitle(value.action)} expanded={expanded.includes("action")} footer={<>执行条件 <code>quota_exceeded = true</code></>} icon="shield" id="action" issue={issueFor("action")} onToggle={() => toggle("action")} title="超限处置" tone="amber"><ActionFields onChange={patchValue} value={value} /></WorkflowNode>
@@ -384,10 +384,9 @@ export function LimitForm({ initial, onCancel, onSave }: { initial?: GlobalLimit
               <div className={flowStyles.canvasControls}><WorkflowZoomSelect ariaLabel="限额画布缩放" onChange={setZoom} value={zoom} /><span className="h-4 border-r border-border" /><Button onClick={overview} size="sm" type="button" variant="ghost">流程总览</Button></div>
             </div>
           </section>
-          {previewOpen ? <><button aria-label="关闭调试与预览" className={styles.previewBackdrop} onClick={() => setPreviewOpen(false)} tabIndex={-1} type="button" /><aside aria-label="调试与预览" aria-modal={compact || undefined} className={flowStyles.preview} ref={panelRef} role={compact ? "dialog" : "complementary"}><LimitPreview issues={issues} onClose={() => setPreviewOpen(false)} onFocusNode={focusNode} onTabChange={setPreviewTab} tab={previewTab} value={value} /></aside></> : null}
+          {previewOpen ? <><button aria-label="关闭调试与预览" className={styles.previewBackdrop} onClick={() => setPreviewOpen(false)} tabIndex={-1} type="button" /><aside aria-label="调试与预览" aria-modal={compact || undefined} className={flowStyles.preview} ref={panelRef} role={compact ? "dialog" : "complementary"}><LimitPreview issues={issues} onFocusNode={focusNode} onTabChange={setPreviewTab} tab={previewTab} value={value} /></aside></> : null}
         </div>
       </form>
-      {notice ? <div className={flowStyles.notice} role="status"><span>{notice}</span></div> : null}
       {discardOpen ? <DiscardDialog onDiscard={onCancel} onKeep={() => setDiscardOpen(false)} /> : null}
     </PortalContainerProvider>
   </div>;

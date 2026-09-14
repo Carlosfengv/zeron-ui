@@ -17,7 +17,7 @@ export function WorkflowZoomSelect({
     <Select itemDensity="compact" onValueChange={(next) => onChange(Number(next))} size="sm" value={String(value)}>
       <SelectTrigger
         aria-label={ariaLabel}
-        className="min-w-[68px] border-transparent bg-transparent px-2 text-[12px] text-fg-muted shadow-none hover:border-transparent hover:bg-hover"
+        className="min-w-[68px] border-transparent bg-transparent px-2 text-label text-fg-muted shadow-none hover:border-transparent hover:bg-hover"
       />
       <SelectContent align="end">
         {zoomLevels.map((level) => <SelectItem key={level} value={String(level)}>{level}%</SelectItem>)}

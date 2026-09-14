@@ -58,6 +58,15 @@ describe("semantic color consumers", () => {
     expect(source).toContain("bg-destructive-action group-hover:bg-destructive-action-hover group-active:bg-destructive-action-active");
   });
 
+  it("offers a semantic warning tone without adding a hierarchy variant", () => {
+    const source = read(join(UI_ROOT, "button.tsx"));
+    expect(source).toContain('type ButtonTone = "default" | "warning"');
+    expect(source).toContain("bg-warning-surface");
+    expect(source).toContain("text-fg-warning");
+    expect(source).toContain("var(--warning-border)");
+    expect(source).not.toContain('warning: "text-');
+  });
+
   it("keeps brand selection foregrounds independent from primary actions", () => {
     const source = read(join(UI_ROOT, "data-grid/data-grid-calendar.tsx"));
     expect(source).toContain("data-[selected-single=true]:text-fg-on-brand");

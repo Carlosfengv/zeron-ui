@@ -24,6 +24,7 @@ import {
 function getButtonProps(t: ReturnType<typeof useTranslations>): PropDef[] {
   return [
     { name: "variant", type: '"primary" | "neutral" | "destructive" | "secondary" | "tertiary" | "ghost"', default: '"primary"', description: t("visualStyle") },
+    { name: "tone", type: '"default" | "warning"', default: '"default"', description: t("toneDescription") },
     { name: "size", type: '"xs" | "sm" | "md" | "lg" | "xl"', default: '"md"', description: t("buttonSize") },
     { name: "iconOnly", type: "boolean", default: "false", description: t("iconOnly") },
     { name: "loading", type: "boolean", default: "false", description: t("loadingDescription") },

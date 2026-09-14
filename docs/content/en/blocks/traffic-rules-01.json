@@ -1,0 +1,10 @@
+{
+  "trafficRulesBlock": {
+    "title": "Traffic Rules 1",
+    "description": "A responsive gateway workspace for managing traffic rules, global limits, and execution workflows.",
+    "interactionTitle": "Interaction model",
+    "interactionBody": "The block keeps list, detail, create, edit, history, and confirmation flows in one controlled workspace with responsive navigation.",
+    "guidanceTitle": "Data integration",
+    "guidanceBody": "Replace the demo rules and limits with domain data, and connect the exposed save, toggle, reorder, and delete transitions to application services. Preserve the Zeron component contracts and semantic tokens when adapting the workflow."
+  }
+}

@@ -127,6 +127,11 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation" |
     kind: "page", product: "zaiops", domains: ["operations", "service", "support"], patterns: ["workspace", "list", "status"], searchTerms: ["service", "authorization", "operation", "服务", "授权", "操作记录"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"], featured: true,
   },
   {
+    slug: "traffic-rules-01", registryName: "traffic-rules-01",
+    title: "Traffic Rules", description: "A gateway policy workspace for traffic rules, global limits, request validation, and execution workflows.",
+    kind: "page", product: "zentrix", domains: ["gateway", "routing", "policy"], patterns: ["workspace", "rule builder", "table", "validation"], searchTerms: ["traffic", "rule", "routing", "limit", "流量规则", "路由", "限额"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
     slug: "personal-settings-01", registryName: "personal-settings-01",
     title: "Personal Settings", description: "A multi-view settings workspace for model services, API keys, credentials and usage.",
     kind: "prototype", product: "shared", domains: ["settings", "account"], patterns: ["settings", "sidebar"], searchTerms: ["settings", "api key", "account", "个人设置", "凭证"], readiness: "demo-only", dataMode: "mock", devices: ["desktop", "responsive"], featured: true,

@@ -1,31 +1,43 @@
 "use client";
 
-import Image from "next/image";
-import { useMemo, useState, type ComponentPropsWithoutRef, type DragEvent, type ReactNode } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useMemo, useState, type ComponentPropsWithoutRef, type DragEvent } from "react";
 import { Button } from "@zeron/ui/button";
 import { Checkbox as ZeronCheckbox } from "@zeron/ui/checkbox";
+import { DataTable, useDataTable } from "@zeron/ui/data-table";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
+import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
 import { Input } from "@zeron/ui/input";
-import { TabItem, Tabs, TabsList } from "@zeron/ui/tabs";
+import { MenuItem } from "@zeron/ui/menu-item";
+import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@zeron/ui/nav-item";
+import { NavMenu } from "@zeron/ui/nav-menu";
+import { PageActions, PageBody, PageContent, PageContentHeader, PageHeader, PageHeaderContent, PageLayout, PageSubnav, PageSubnavItem, PageSubnavList } from "@zeron/ui/page-layout";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarProvider, SidebarTrigger } from "@zeron/ui/sidebar";
+import { SidebarIdentityAvatar, SidebarIdentityRow } from "@zeron/ui/sidebar-identity-row";
+import { Switch } from "@zeron/ui/switch";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@zeron/ui/table";
 import { useIcon, type IconName } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
+import { Tooltip } from "@zeron/ui/tooltip";
 import { LimitForm } from "./limit-form";
 import type { RuleFormValue } from "./rule-config";
 import { RuleWorkflow } from "./rule-workflow";
 import { RuleDetailView } from "./rule-detail";
 import { LimitDetailView } from "./limit-detail";
-import { RuleValidation } from "./rule-validation";
 import { TableFooter } from "./table-footer";
 import type { GlobalLimit } from "./traffic-types";
-import { useDialogFocus } from "./use-dialog-focus";
 
 type Rule = RuleFormValue;
 type Tab = "rules" | "limits";
-type Page = "list" | "rule-detail" | "rule-edit" | "rule-history" | "validate" | "limit-create" | "limit-detail" | "limit-edit" | "limit-history";
+type Page = "list" | "rule-detail" | "rule-edit" | "limit-create" | "limit-detail" | "limit-edit";
+type HistoryTarget = "rule" | "limit";
+type HistoryRecord = { action: string; id: string; log: string; time: string };
 type ConfirmAction = { action: "delete" | "enable" | "disable"; ids: string[]; target: "rule" | "limit" } | null;
 
 function Checkbox(props: ComponentPropsWithoutRef<typeof ZeronCheckbox>) {
   const alignWithRows = props["aria-label"] === "选择全部规则";
-  return <ZeronCheckbox {...props} className={cn("data-checked:border-[#00030a] data-checked:bg-[#00030a] data-indeterminate:border-[#00030a] data-indeterminate:bg-[#00030a]", alignWithRows && "sm:-translate-x-1.5", props.className)} />;
+  return <ZeronCheckbox {...props} className={cn(alignWithRows && "sm:-translate-x-1.5", props.className)} />;
 }
 
 const initialRules: Rule[] = [
@@ -42,56 +54,47 @@ const initialLimits: GlobalLimit[] = [
 
 const navigationGroups: Array<{ label: string; items: Array<{ label: string; icon: IconName; active?: boolean }> }> = [
   { label: "概览", items: [{ label: "概览", icon: "home" }] },
-  { label: "搭建", items: [{ label: "技能", icon: "brain" }, { label: "MCP 服务", icon: "square-library" }, { label: "外部 Agent", icon: "user" }, { label: "模型服务", icon: "message-circle" }, { label: "模型供应商", icon: "doc-surfaces" }, { label: "插件", icon: "settings" }, { label: "外部注册中心", icon: "list" }] },
-  { label: "组织与权限", items: [{ label: "SSO 配置", icon: "lock" }, { label: "账号与会话安全", icon: "shield" }, { label: "成员与部门", icon: "users" }, { label: "职能组", icon: "square-library" }] },
-  { label: "护栏", items: [{ label: "护栏", icon: "shield" }, { label: "威胁情报", icon: "monitor" }] },
   { label: "路由策略", items: [{ label: "流量规则", icon: "list-checks", active: true }, { label: "命中事件", icon: "inbox" }] },
-  { label: "运行与排障", items: [{ label: "日志管理", icon: "file-text" }, { label: "运行时", icon: "monitor" }] },
-  { label: "告警与处置", items: [{ label: "告警规则", icon: "bell" }] },
-  { label: "审计与合规", items: [{ label: "操作审计", icon: "check-square" }] },
-  { label: "系统设置", items: [{ label: "授权许可", icon: "lock" }, { label: "品牌", icon: "palette" }, { label: "SMTP 配置", icon: "mail" }] },
 ];
 
-function NavItem({ active, icon, label }: { active?: boolean; icon: IconName; label: string }) {
+function NavigationItem({ icon, label }: { active?: boolean; icon: IconName; label: string }) {
   const Icon = useIcon(icon);
-  return <button className={cn("flex h-9 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-left text-[14px] outline-none transition-colors hover:bg-white/70 focus-visible:ring-1 focus-visible:ring-focus-ring", active && "bg-[#e4e8f0] font-medium")} type="button"><Icon aria-hidden className="size-4 shrink-0" strokeWidth={1.6} /><span className="truncate">{label}</span></button>;
+  return <NavItem value={label}><NavItemTrigger className="px-2" render={<button type="button" />} tooltip={label}><NavItemLeading><Icon aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading><NavItemContent><NavItemLabel>{label}</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>;
 }
 
-function SidebarContent() {
-  const ArrowLeft = useIcon("arrow-left");
+function TrafficRulesNavigation() {
+  const ProductIcon = useIcon("shield");
   const More = useIcon("ellipsis");
   return <>
-    <div className="flex h-[60px] shrink-0 items-center gap-2 px-3"><div className="size-8 overflow-hidden rounded-lg border border-black/10 bg-white"><Image alt="Zentirx Evaluation" className="size-full object-cover" height={32} src="/figma/traffic-rules-01/zentrix-evaluation.png" width={32} /></div><div className="leading-[18px]"><div className="text-[14px] font-semibold">管理后台</div><div className="text-[12px] text-black/45">内部</div></div></div>
-    <div className="shrink-0 px-3 pb-2"><button className="flex h-9 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-[14px] outline-none hover:bg-white/70 focus-visible:ring-1 focus-visible:ring-focus-ring" type="button"><span className="grid size-5 place-items-center rounded-full bg-[#00030a] text-white"><ArrowLeft className="size-3" /></span>返回工作台</button></div>
-    <nav aria-label="管理后台导航" className="min-h-0 flex-1 overflow-y-auto px-3 pb-3 [scrollbar-color:rgba(0,3,10,.2)_transparent] [scrollbar-width:thin]">{navigationGroups.map((group) => <section className="mb-2" key={group.label}><h2 className="h-8 px-2 py-1 text-[12px] font-normal leading-6 text-black/40">{group.label}</h2><div className="space-y-0.5">{group.items.map((item) => <NavItem key={item.label} {...item} />)}</div></section>)}</nav>
-    <button className="mx-1 mb-1 flex h-[59px] shrink-0 cursor-pointer items-center gap-2 rounded-xl px-2 text-left outline-none hover:bg-white/70 focus-visible:ring-1 focus-visible:ring-focus-ring" type="button"><span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#e4e8f0] text-[12px]">AD</span><span className="min-w-0 flex-1"><span className="block text-[14px] font-medium">admin</span><span className="block truncate text-[12px] text-black/45">admin@zstack.io</span></span><More className="size-4 text-black/45" /></button>
+    <SidebarHeader className="px-2 py-1.5"><SidebarIdentityRow leading={<span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand text-fg-on-brand"><ProductIcon aria-hidden className="size-4" /></span>} primary="管理后台" description="内部" /></SidebarHeader>
+    <SidebarContent contentClassName="gap-2 px-2 py-1">{navigationGroups.map((group) => <SidebarGroup key={group.label}><SidebarGroupLabel>{group.label}</SidebarGroupLabel><SidebarGroupContent><NavMenu activeValue={group.items.find((item) => item.active)?.label ?? null} aria-label={group.label} keyboardNavigation="roving">{group.items.map((item) => <NavigationItem key={item.label} {...item} />)}</NavMenu></SidebarGroupContent></SidebarGroup>)}</SidebarContent>
+    <SidebarFooter className="px-2 py-1.5"><SidebarIdentityRow description="admin@zstack.io" leading={<SidebarIdentityAvatar>AD</SidebarIdentityAvatar>} primary="admin" trailing={<More aria-hidden size={16} strokeWidth={1.5} />} trailingPlacement="edge" /></SidebarFooter>
   </>;
 }
 
-function AdminSidebar({ mobileOpen, onClose }: { mobileOpen: boolean; onClose: () => void }) {
-  return <><aside className="hidden h-full w-[252px] shrink-0 flex-col overflow-hidden bg-[#f1f3f9] min-[760px]:flex"><SidebarContent /></aside>{mobileOpen ? <div className="fixed inset-0 z-[80] min-[760px]:hidden"><button aria-label="关闭导航" className="absolute inset-0 bg-black/40" onClick={onClose} type="button" /><aside className="relative flex h-full w-[252px] flex-col bg-[#f1f3f9] shadow-[12px_0_32px_rgba(0,0,0,.18)]"><SidebarContent /></aside></div> : null}</>;
+function AdminSidebar() {
+  return <Sidebar ariaLabel="管理后台导航" className="relative h-full" collapsible="offcanvas" mobileWidth="min(252px, calc(100vw - 24px))" width="252px"><TrafficRulesNavigation /></Sidebar>;
 }
 
-function Status({ enabled }: { enabled: boolean }) {
-  return <span className="inline-flex h-6 items-center gap-1.5 rounded-lg border border-black/[0.10] px-2.5 text-[12px] font-medium"><span className={cn("size-[7px] rounded-full", enabled ? "bg-[#1fca68]" : "bg-[#ff416c]")} />{enabled ? "已启用" : "已停用"}</span>;
-}
-
-function PageCard({ children, className }: { children: ReactNode; className?: string }) {
-  return <section className={cn("min-h-[calc(100svh-56px)] overflow-hidden rounded-t-2xl border-[0.5px] border-black/[0.12] bg-white", className)}>{children}</section>;
-}
-
-function BackHeader({ children, onBack, actions }: { children: ReactNode; onBack: () => void; actions?: ReactNode }) {
-  const ArrowLeft = useIcon("arrow-left");
-  return <header className="flex min-h-14 flex-wrap items-center justify-between gap-2 border-b border-black/[0.10] px-4 py-2 sm:px-5"><div className="flex min-w-0 items-center gap-2"><Button aria-label="返回" iconOnly onClick={onBack} size="md" type="button" variant="secondary"><ArrowLeft /></Button>{children}</div>{actions ? <div className="flex flex-wrap items-center justify-end gap-2">{actions}</div> : null}</header>;
+function RuleStatusSwitch({ rule, onAction }: { rule: Rule; onAction: (action: NonNullable<ConfirmAction>) => void }) {
+  return <Switch checked={rule.enabled} className="w-fit gap-0 p-0" label={`启用${rule.name}`} labelVisibility="sr-only" onCheckedChange={(checked) => onAction({ action: checked ? "enable" : "disable", ids: [rule.id], target: "rule" })} />;
 }
 
 function EmptyTableState({ description, onCreate, title }: { description: string; onCreate: () => void; title: string }) {
-  return <div className="grid min-h-[280px] place-items-center px-4 py-10"><div className="flex max-w-[480px] flex-col items-center text-center"><Image alt="" height={92} src="/figma/traffic-rules-01/empty-rules.png" width={200} /><p className="mt-2 text-[14px] font-medium">{title}</p><p className="mt-1 text-[12px] leading-5 text-black/50">{description}</p><Button className="mt-3" onClick={onCreate} size="sm" type="button" variant="neutral">{title.includes("限额") ? "新增限额" : "新建规则"}</Button></div></div>;
+  const EmptyIcon = useIcon("doc-data-table");
+  return <div className="grid min-h-[280px] place-items-center px-4 py-10"><div className="flex max-w-[480px] flex-col items-center text-center"><span className="grid size-16 place-items-center rounded-2xl bg-surface-raised text-fg-muted"><EmptyIcon aria-hidden className="size-7" /></span><p className="mt-3 text-body font-medium">{title}</p><p className="mt-1 text-label leading-5 text-fg-subtle">{description}</p><Button className="mt-3" onClick={onCreate} size="sm" type="button" variant={title.includes("限额") ? "neutral" : "primary"}>{title.includes("限额") ? "新增限额" : "新建规则"}</Button></div></div>;
+}
+
+function RuleActions({ rule, onAction, onMove, canMoveUp, canMoveDown }: { rule: Rule; onAction: (action: NonNullable<ConfirmAction>) => void; onMove: (direction: -1 | 1) => void; canMoveUp: boolean; canMoveDown: boolean }) {
+  const More = useIcon("ellipsis");
+  return <div className="flex items-center justify-end whitespace-nowrap"><DropdownMenu><DropdownTrigger render={<Button aria-label={`${rule.name} 更多操作`} iconOnly type="button" variant="tertiary"><More /></Button>} /><DropdownContent align="end" className="w-32"><MenuItem disabled={!canMoveUp} index={0} label="上移" onSelect={() => onMove(-1)} /><MenuItem disabled={!canMoveDown} index={1} label="下移" onSelect={() => onMove(1)} /><MenuItem className="text-fg-danger" index={2} label="删除规则" onSelect={() => onAction({ action: "delete", ids: [rule.id], target: "rule" })} /></DropdownContent></DropdownMenu></div>;
+}
+
+function RuleNameButton({ rule, onDetail, className }: { rule: Rule; onDetail: (rule: Rule) => void; className?: string }) {
+  return <button aria-label={`查看${rule.name}详情`} className={cn("cursor-pointer truncate text-left font-medium text-fg-brand underline decoration-current/35 underline-offset-2 outline-none hover:decoration-current focus-visible:ring-1 focus-visible:ring-focus-ring", className)} onClick={() => onDetail(rule)} title={rule.name} type="button">{rule.name}</button>;
 }
 
 function RulesTable({ rules, selected, onSelectedChange, onAction, onDetail, onReorder }: { rules: Rule[]; selected: Set<string>; onSelectedChange: (next: Set<string>) => void; onAction: (action: NonNullable<ConfirmAction>) => void; onDetail: (rule: Rule) => void; onReorder: (rules: Rule[]) => void }) {
-  const More = useIcon("ellipsis");
-  const [menuId, setMenuId] = useState<string | null>(null);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<{ id: string; placement: "before" | "after" } | null>(null);
   const clearDragState = () => {
@@ -148,25 +151,34 @@ function RulesTable({ rules, selected, onSelectedChange, onAction, onDetail, onR
     clearDragState();
   };
   const allSelected = rules.length > 0 && rules.every((rule) => selected.has(rule.id));
-  return <div className="overflow-visible rounded-xl border border-black/[0.12] bg-white"><div className="sm:hidden"><div className="flex h-10 items-center gap-2 border-b border-black/[0.10] px-3 text-[12px] text-black/55"><Checkbox aria-label="选择全部规则" checked={allSelected} onCheckedChange={(checked) => onSelectedChange(checked ? new Set(rules.map((rule) => rule.id)) : new Set())} /><span>选择全部</span><span className="ml-auto tabular-nums">{rules.length} 条</span></div>{rules.map((rule) => <article className="relative space-y-3 border-b border-black/[0.10] p-3 last:border-b-0" key={rule.id}><div className="flex items-center gap-2"><Checkbox aria-label={`选择${rule.name}`} checked={selected.has(rule.id)} onCheckedChange={(checked) => { const next = new Set(selected); if (checked) next.add(rule.id); else next.delete(rule.id); onSelectedChange(next); }} /><span className="grid size-6 shrink-0 place-items-center rounded-md bg-[#f1f3f9] text-[11px] font-medium tabular-nums">{rule.priority}</span><p className="min-w-0 flex-1 truncate text-[13px] font-medium">{rule.name}</p><Status enabled={rule.enabled} /></div><p className="flex min-w-0 items-center gap-1.5 pl-8 text-[12px]"><span className="max-w-[45%] truncate rounded-md bg-[#f1f3f9] px-2 py-0.5">{rule.matcher}</span><span className="text-black/30">→</span><span className="truncate">{rule.actions[0] || "继续路由"}</span></p><div className="flex items-center justify-end gap-3 text-[13px]"><button className="cursor-pointer hover:underline" onClick={() => onAction({ action: rule.enabled ? "disable" : "enable", ids: [rule.id], target: "rule" })} type="button">{rule.enabled ? "停用" : "启用"}</button><button className="cursor-pointer hover:underline" onClick={() => onDetail(rule)} type="button">详情</button><Button aria-label="更多规则操作" active={menuId === `mobile-${rule.id}`} iconOnly onClick={() => setMenuId((current) => current === `mobile-${rule.id}` ? null : `mobile-${rule.id}`)} size="sm" type="button" variant="ghost"><More /></Button></div>{menuId === `mobile-${rule.id}` ? <div className="absolute bottom-11 right-3 z-20 w-32 rounded-lg border border-black/[0.10] bg-white p-1 shadow-[0_10px_28px_rgba(0,0,0,.14)]"><button className="flex h-8 w-full items-center rounded-md px-2 text-left text-[12px] text-[#d92b16] hover:bg-[#fff0ed]" onClick={() => { setMenuId(null); onAction({ action: "delete", ids: [rule.id], target: "rule" }); }} type="button">删除规则</button></div> : null}</article>)}</div><div className="hidden overflow-x-auto sm:block"><table className="w-full min-w-[900px] table-fixed border-collapse text-left text-[12px] text-[#00030ad9]"><colgroup><col className="w-[58px]" /><col className="w-[66px]" /><col /><col className="w-[420px]" /><col className="w-[140px]" /><col className="w-[122px]" /></colgroup><thead className="text-[14px] text-[#00030a]"><tr className="h-9 border-b border-black/[0.12]"><th className="pl-9 pr-2 font-normal"><Checkbox aria-label="选择全部规则" checked={allSelected} onCheckedChange={(checked) => onSelectedChange(checked ? new Set(rules.map((rule) => rule.id)) : new Set())} /></th><th className="px-3 font-normal">优先级</th><th className="px-3 font-normal">规则名称</th><th className="px-3 font-normal">匹配条件与动作</th><th className="px-3 font-normal">状态</th><th className="px-3 font-normal">操作</th></tr></thead><tbody>{rules.map((rule) => <tr draggable onDragEnd={clearDragState} onDragOver={(event) => handleDragOver(event, rule.id)} onDragStart={(event) => handleDragStart(event, rule.id)} onDrop={(event) => { event.preventDefault(); reorder(rule.id, getPlacement(event)); }} className={cn("h-12 border-b border-black/[0.12] transition-colors hover:bg-black/[0.02] last:border-b-0", draggedId === rule.id && "opacity-50", dropTarget?.id === rule.id && dropTarget.placement === "before" && "rule-drag-before", dropTarget?.id === rule.id && dropTarget.placement === "after" && "rule-drag-after")} key={rule.id}><td className="px-2"><div className="flex items-center gap-2"><span aria-label="拖动调整规则优先级" className="grid size-4 cursor-grab grid-cols-2 content-center gap-[2px] px-[3px] text-black/30" role="img">{Array.from({ length: 6 }, (_, index) => <span className="size-[2px] rounded-full bg-current" key={index} />)}</span><Checkbox aria-label={`选择${rule.name}`} checked={selected.has(rule.id)} onCheckedChange={(checked) => { const next = new Set(selected); if (checked) next.add(rule.id); else next.delete(rule.id); onSelectedChange(next); }} /></div></td><td className="px-3 font-medium tabular-nums">{rule.priority}</td><td className="truncate px-3" title={rule.name}>{rule.name}</td><td className="px-3"><div className="flex min-w-0 items-center gap-1.5"><span className="max-w-[250px] truncate rounded-md bg-[#f1f3f9] px-2 py-0.5">{rule.matcher}</span><span className="text-black/30">→</span><span className="truncate">{rule.actions[0] || "继续路由"}</span></div></td><td className="px-3"><Status enabled={rule.enabled} /></td><td className="relative px-3"><div className="flex items-center gap-3 whitespace-nowrap text-[14px]"><button className="cursor-pointer outline-none hover:underline focus-visible:ring-1 focus-visible:ring-focus-ring" onClick={() => onAction({ action: rule.enabled ? "disable" : "enable", ids: [rule.id], target: "rule" })} type="button">{rule.enabled ? "停用" : "启用"}</button><button className="cursor-pointer outline-none hover:underline focus-visible:ring-1 focus-visible:ring-focus-ring" onClick={() => onDetail(rule)} type="button">详情</button><Button aria-label="更多规则操作" active={menuId === rule.id} iconOnly onClick={() => setMenuId((current) => current === rule.id ? null : rule.id)} size="sm" type="button" variant="ghost"><More /></Button></div>{menuId === rule.id ? <div className="absolute right-2 top-10 z-20 w-32 rounded-lg border border-black/[0.10] bg-white p-1 shadow-[0_10px_28px_rgba(0,0,0,.14)]"><button className="flex h-8 w-full items-center rounded-md px-2 text-left text-[12px] text-[#d92b16] hover:bg-[#fff0ed]" onClick={() => { setMenuId(null); onAction({ action: "delete", ids: [rule.id], target: "rule" }); }} type="button">删除规则</button></div> : null}</td></tr>)}</tbody></table></div></div>;
+  const toggleSelection = (rule: Rule, checked: boolean) => {
+    const next = new Set(selected);
+    if (checked) next.add(rule.id);
+    else next.delete(rule.id);
+    onSelectedChange(next);
+  };
+  const moveRule = (id: string, direction: -1 | 1) => {
+    const from = rules.findIndex((rule) => rule.id === id);
+    const to = from + direction;
+    if (from < 0 || to < 0 || to >= rules.length) return;
+    const next = [...rules];
+    [next[from], next[to]] = [next[to]!, next[from]!];
+    onReorder(next.map((rule, index) => ({ ...rule, priority: (index + 1) * 10 })));
+  };
+  return <div className="overflow-visible rounded-xl border border-border bg-surface-floating"><div className="sm:hidden"><div className="flex h-10 items-center gap-2 border-b border-border px-3 text-label text-fg-subtle"><Checkbox aria-label="选择全部规则" checked={allSelected} onCheckedChange={(checked) => onSelectedChange(checked ? new Set(rules.map((rule) => rule.id)) : new Set())} /><span>选择全部</span><span className="ml-auto tabular-nums">{rules.length} 条</span></div>{rules.map((rule, index) => <article className="space-y-3 border-b border-border p-3 last:border-b-0" key={rule.id}><div className="flex items-center gap-2"><Checkbox aria-label={`选择${rule.name}`} checked={selected.has(rule.id)} onCheckedChange={(checked) => toggleSelection(rule, Boolean(checked))} /><span className="grid size-6 shrink-0 place-items-center rounded-md bg-surface-raised text-label font-medium tabular-nums">{rule.priority}</span><RuleStatusSwitch onAction={onAction} rule={rule} /><RuleNameButton className="min-w-0 flex-1 text-body" onDetail={onDetail} rule={rule} /></div><p className="flex min-w-0 items-center gap-1.5 pl-8 text-label"><span className="max-w-[45%] truncate rounded-md bg-surface-raised px-2 py-0.5">{rule.matcher}</span><span className="text-fg-subtle">→</span><span className="truncate">{rule.actions[0] || "继续路由"}</span></p><RuleActions canMoveDown={index < rules.length - 1} canMoveUp={index > 0} onAction={onAction} onMove={(direction) => moveRule(rule.id, direction)} rule={rule} /></article>)}</div><div className="hidden overflow-x-auto sm:block"><Table className="min-w-[900px] table-fixed"><colgroup><col className="w-[58px]" /><col className="w-[66px]" /><col className="w-[100px]" /><col /><col className="w-[420px]" /><col className="w-[72px]" /></colgroup><TableHeader><TableRow><TableHead className="pl-9 pr-2"><Checkbox aria-label="选择全部规则" checked={allSelected} onCheckedChange={(checked) => onSelectedChange(checked ? new Set(rules.map((rule) => rule.id)) : new Set())} /></TableHead><TableHead>优先级</TableHead><TableHead>状态</TableHead><TableHead>规则名称</TableHead><TableHead>匹配条件与动作</TableHead><TableHead>操作</TableHead></TableRow></TableHeader><TableBody>{rules.map((rule, index) => <TableRow draggable index={index} onDragEnd={clearDragState} onDragOver={(event) => handleDragOver(event, rule.id)} onDragStart={(event) => handleDragStart(event, rule.id)} onDrop={(event) => { event.preventDefault(); reorder(rule.id, getPlacement(event)); }} className={cn("h-12", draggedId === rule.id && "opacity-50", dropTarget?.id === rule.id && dropTarget.placement === "before" && "shadow-[inset_0_2px_var(--brand)]", dropTarget?.id === rule.id && dropTarget.placement === "after" && "shadow-[inset_0_-2px_var(--brand)]")} key={rule.id}><TableCell className="px-2"><div className="flex items-center gap-2"><span aria-label="拖动调整规则优先级" className="grid size-4 cursor-grab grid-cols-2 content-center gap-[2px] px-[3px] text-fg-subtle" role="img">{Array.from({ length: 6 }, (_, dotIndex) => <span className="size-[2px] rounded-full bg-current" key={dotIndex} />)}</span><Checkbox aria-label={`选择${rule.name}`} checked={selected.has(rule.id)} onCheckedChange={(checked) => toggleSelection(rule, Boolean(checked))} /></div></TableCell><TableCell className="font-medium tabular-nums">{rule.priority}</TableCell><TableCell><RuleStatusSwitch onAction={onAction} rule={rule} /></TableCell><TableCell><RuleNameButton className="block max-w-full" onDetail={onDetail} rule={rule} /></TableCell><TableCell><div className="flex min-w-0 items-center gap-1.5"><span className="max-w-[250px] truncate rounded-md bg-surface-raised px-2 py-0.5">{rule.matcher}</span><span className="text-fg-subtle">→</span><span className="truncate">{rule.actions[0] || "继续路由"}</span></div></TableCell><TableCell><RuleActions canMoveDown={index < rules.length - 1} canMoveUp={index > 0} onAction={onAction} onMove={(direction) => moveRule(rule.id, direction)} rule={rule} /></TableCell></TableRow>)}</TableBody></Table></div></div>;
 }
 
 function ConfirmDialog({ action, onCancel, onConfirm }: { action: NonNullable<ConfirmAction>; onCancel: () => void; onConfirm: () => void }) {
-  const X = useIcon("x");
-  const dialogRef = useDialogFocus(true, onCancel);
   const noun = action.target === "rule" ? "规则" : "限额";
   const verb = action.action === "delete" ? "删除" : action.action === "enable" ? "启用" : "停用";
-  return <div className="fixed inset-0 z-[90] grid place-items-center bg-[#00040d]/60 p-4"><div aria-modal="true" className="relative w-full max-w-[400px] rounded-xl bg-white p-6 shadow-[0_24px_72px_rgba(0,0,0,.24)]" ref={dialogRef} role="dialog" tabIndex={-1}><Button aria-label="关闭" className="absolute right-3 top-3" iconOnly onClick={onCancel} size="sm" type="button" variant="ghost"><X /></Button><h2 className="pr-8 text-[18px] font-semibold leading-[26px]">{verb}所选{noun}</h2><p className="mt-1.5 text-[14px] leading-5 text-black/65">{action.action === "delete" ? `删除后将无法再使用所选${noun}，请确认是否继续。` : `所选${noun}将被${verb}，新的状态会立即用于后续请求。`}</p><div className="mt-6 flex justify-end gap-2"><Button onClick={onCancel} size="sm" type="button" variant="tertiary">取消</Button><Button onClick={onConfirm} size="sm" type="button" variant={action.action === "enable" ? "neutral" : "destructive"}>{verb}</Button></div></div></div>;
+  return <Dialog onOpenChange={(open) => { if (!open) onCancel(); }} open><DialogContent size="sm"><DialogHeader><DialogTitle>{verb}所选{noun}</DialogTitle><DialogDescription>{action.action === "delete" ? `删除后将无法再使用所选${noun}，请确认是否继续。` : `所选${noun}将被${verb}，新的状态会立即用于后续请求。`}</DialogDescription></DialogHeader><DialogFooter><Button onClick={onCancel} size="sm" type="button" variant="tertiary">取消</Button><Button onClick={onConfirm} size="sm" type="button" variant={action.action === "enable" ? "neutral" : "destructive"}>{verb}</Button></DialogFooter></DialogContent></Dialog>;
 }
 
-function RuleList({ rules, onRulesChange, onCreate, onOpen, onValidate }: { rules: Rule[]; onRulesChange: (rules: Rule[]) => void; onCreate: () => void; onOpen: (rule: Rule) => void; onValidate: () => void }) {
+function RuleList({ rules, onRulesChange, onCreate, onOpen }: { rules: Rule[]; onRulesChange: (rules: Rule[]) => void; onCreate: () => void; onOpen: (rule: Rule) => void }) {
   const Search = useIcon("search");
-  const Filter = useIcon("plus");
-  const Check = useIcon("check");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(new Set<string>());
   const [statusFilter, setStatusFilter] = useState<"all" | "enabled" | "disabled">("all");
-  const [filterOpen, setFilterOpen] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmAction>(null);
   const visible = useMemo(() => rules.filter((rule) => `${rule.name} ${rule.id} ${rule.matcher}`.toLowerCase().includes(query.toLowerCase()) && (statusFilter === "all" || rule.enabled === (statusFilter === "enabled"))), [query, rules, statusFilter]);
   const applyReorder = (nextVisible: Rule[]) => {
@@ -177,40 +189,72 @@ function RuleList({ rules, onRulesChange, onCreate, onOpen, onValidate }: { rule
   };
   const applyConfirm = () => { if (!confirm) return; if (confirm.action === "delete") onRulesChange(rules.filter((rule) => !confirm.ids.includes(rule.id))); else onRulesChange(rules.map((rule) => confirm.ids.includes(rule.id) ? { ...rule, enabled: confirm.action === "enable" } : rule)); setSelected(new Set()); setConfirm(null); };
   return <>
-    <div className="mb-5 flex flex-wrap items-center gap-2">
+    <div className="mb-3 flex flex-wrap items-center gap-2">
       <label className="relative w-full sm:w-72">
         <span className="sr-only">搜索规则</span>
-        <Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 text-black/45" />
+        <Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 text-fg-subtle" />
         <Input className="pl-8" onChange={(event) => setQuery(event.target.value)} placeholder="按规则名、规则 ID 或目标模型搜索" size="md" value={query} />
       </label>
-      <div className="relative">
-        <Button active={filterOpen} className="px-3" dashed leadingIcon={Filter} onClick={() => setFilterOpen((current) => !current)} size="md" type="button" variant="tertiary">筛选</Button>
-        {filterOpen ? <div className="absolute left-0 top-11 z-20 w-40 rounded-lg border border-black/[0.10] bg-white p-1 shadow-[0_10px_28px_rgba(0,0,0,.14)]">{(["all", "enabled", "disabled"] as const).map((value) => <button className={cn("flex h-8 w-full items-center justify-between rounded-md px-2 text-left text-[12px] hover:bg-[#f1f3f9]", statusFilter === value && "font-medium")} key={value} onClick={() => { setStatusFilter(value); setFilterOpen(false); }} type="button"><span>{value === "all" ? "全部状态" : value === "enabled" ? "已启用" : "已停用"}</span>{statusFilter === value ? <Check className="size-3.5" /> : null}</button>)}</div> : null}
-      </div>
-      <span className="ml-auto text-[12px] tabular-nums">{visible.length} / 500 条</span>
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        {selected.size > 0 ? <>
-          <Button onClick={() => setConfirm({ action: "delete", ids: [...selected], target: "rule" })} size="md" type="button" variant="tertiary">删除所选</Button>
+      <Select itemDensity="compact" onValueChange={(value) => setStatusFilter(value as "all" | "enabled" | "disabled")} size="md" value={statusFilter}>
+        <SelectTrigger aria-label="筛选规则状态" className="w-36" />
+        <SelectContent>
+          <SelectItem value="all">全部状态</SelectItem>
+          <SelectItem value="enabled">已启用</SelectItem>
+          <SelectItem value="disabled">已停用</SelectItem>
+        </SelectContent>
+      </Select>
+      <span className="ml-auto text-label tabular-nums">{visible.length} / 500 条</span>
+      {selected.size > 0 ? <div className="flex flex-wrap items-center justify-end gap-2">
+          <Button onClick={() => setConfirm({ action: "delete", ids: [...selected], target: "rule" })} size="md" type="button" variant="destructive">删除所选</Button>
           <Button onClick={() => setConfirm({ action: "disable", ids: [...selected], target: "rule" })} size="md" type="button" variant="tertiary">停用所选</Button>
           <Button onClick={() => setConfirm({ action: "enable", ids: [...selected], target: "rule" })} size="md" type="button" variant="tertiary">启用所选</Button>
-        </> : <Button onClick={onValidate} size="md" type="button" variant="tertiary">验证规则</Button>}
-        <Button onClick={onCreate} size="md" type="button" variant="neutral">新建规则</Button>
-      </div>
+      </div> : null}
     </div>
-    {visible.length ? <RulesTable onAction={setConfirm} onDetail={onOpen} onReorder={applyReorder} onSelectedChange={setSelected} rules={visible} selected={selected} /> : <div className="rounded-xl border border-black/[0.12]"><div className="hidden h-9 grid-cols-[58px_66px_1fr_420px_140px_122px] border-b border-black/[0.12] text-[14px] sm:grid"><span /><span className="px-3 py-2">优先级</span><span className="px-3 py-2">规则名称</span><span className="px-3 py-2">匹配条件与动作</span><span className="px-3 py-2">状态</span><span className="px-3 py-2">操作</span></div><EmptyTableState description="所有请求都会继续按网关既有选路执行。" onCreate={onCreate} title={rules.length ? "没有找到符合条件的规则" : "还没有任何规则"} /></div>}
+    {visible.length ? <RulesTable onAction={setConfirm} onDetail={onOpen} onReorder={applyReorder} onSelectedChange={setSelected} rules={visible} selected={selected} /> : <div className="rounded-xl border border-border"><div className="hidden h-9 grid-cols-[58px_66px_100px_1fr_420px_72px] border-b border-border text-body sm:grid"><span /><span className="px-3 py-2">优先级</span><span className="px-3 py-2">状态</span><span className="px-3 py-2">规则名称</span><span className="px-3 py-2">匹配条件与动作</span><span className="px-3 py-2">操作</span></div><EmptyTableState description="所有请求都会继续按网关既有选路执行。" onCreate={onCreate} title={rules.length ? "没有找到符合条件的规则" : "还没有任何规则"} /></div>}
     {confirm ? <ConfirmDialog action={confirm} onCancel={() => setConfirm(null)} onConfirm={applyConfirm} /> : null}
   </>;
 }
 
 
-function Avatar() { return <span className="grid size-6 shrink-0 place-items-center rounded-md bg-[#e4e8f0] text-[10px]">AD</span>; }
+function Avatar() { return <span className="grid size-6 shrink-0 place-items-center rounded-md bg-emphasis text-label">AD</span>; }
 
-function RuleHistory({ rule, onBack }: { rule: Rule; onBack: () => void }) {
+function ChangeHistoryDialog({ objectName, onOpenChange, open, records, restorable = false }: { objectName: string; onOpenChange: (open: boolean) => void; open: boolean; records: HistoryRecord[]; restorable?: boolean }) {
+  const Restore = useIcon("rotate-ccw");
   const Search = useIcon("search");
   const [query, setQuery] = useState("");
   const [restored, setRestored] = useState<string | null>(null);
-  const records = [{ id: "v2", time: "9月3日 10:02:11", action: "修改", log: "更新请求路径与处置动作" }, { id: "v1", time: "9月2日 18:31:42", action: "新增", log: "创建规则并设为停用" }].filter((record) => `${record.action} ${record.log} ${rule.name}`.toLowerCase().includes(query.toLowerCase()));
-  return <PageCard><BackHeader onBack={onBack}><strong className="truncate text-[14px]">{rule.name} 的修改记录</strong></BackHeader><div className="p-4 sm:p-5">{restored ? <div className="mb-3 rounded-lg bg-[#e4f7eb] px-3 py-2 text-[12px] text-[#08783e]">已恢复到 {restored} 版本</div> : null}<label className="relative block w-full sm:w-[448px]"><span className="sr-only">搜索修改记录</span><Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 text-black/45" /><Input className="pl-8" onChange={(event) => setQuery(event.target.value)} placeholder="搜索" size="sm" value={query} /></label><div className="mt-5 overflow-hidden rounded-xl border border-black/[0.12]"><div className="overflow-x-auto"><table className="w-full min-w-[900px] text-left text-[12px]"><thead><tr className="h-9 border-b border-black/[0.12]">{["时间", "用户", "操作", "对象", "日志", "状态", "操作"].map((heading, index) => <th className="px-3 text-[14px] font-normal" key={`${heading}-${index}`}>{heading}</th>)}</tr></thead><tbody>{records.map((record) => <tr className="h-12 border-b border-black/[0.10] last:border-0" key={record.id}><td className="px-3 tabular-nums">{record.time}</td><td className="px-3"><span className="flex items-center gap-2"><Avatar /><span><span className="block">admin</span><span className="block text-black/45">admin@zstack.io</span></span></span></td><td className="px-3">{record.action}</td><td className="px-3">{rule.name}</td><td className="px-3">{record.log}</td><td className="px-3"><Status enabled /></td><td className="px-3"><button className="cursor-pointer hover:underline" onClick={() => setRestored(record.id)} type="button">回到这一版</button></td></tr>)}</tbody></table></div><TableFooter total={records.length} /></div></div></PageCard>;
+  const visibleRecords = useMemo(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase();
+    if (!normalizedQuery) return records;
+    return records.filter((record) => [record.time, record.action, record.log, objectName, "admin", "admin@zstack.io"].some((value) => value.toLocaleLowerCase().includes(normalizedQuery)));
+  }, [objectName, query, records]);
+  const columns = useMemo<ColumnDef<HistoryRecord, unknown>[]>(() => {
+    const baseColumns: ColumnDef<HistoryRecord, unknown>[] = [
+      { accessorKey: "time", cell: ({ row }) => <span className="whitespace-nowrap tabular-nums">{row.original.time}</span>, header: "时间" },
+      { id: "user", cell: () => <span className="flex min-w-44 items-center gap-2"><Avatar /><span><span className="block">admin</span><span className="block text-fg-subtle">admin@zstack.io</span></span></span>, header: "用户" },
+      { accessorKey: "action", header: "操作" },
+      { id: "object", cell: () => <span className="block min-w-44 max-w-64 truncate" title={objectName}>{objectName}</span>, header: "对象" },
+      { accessorKey: "log", cell: ({ row }) => <span className="block min-w-52">{row.original.log}</span>, header: "日志" },
+    ];
+    if (restorable) {
+      baseColumns.push({ id: "actions", cell: ({ row }) => <Tooltip content="回到这一版"><Button aria-label="回到这一版" disabled={restored === row.original.id} iconOnly onClick={() => setRestored(row.original.id)} type="button" variant="tertiary"><Restore aria-hidden /></Button></Tooltip>, header: "操作" });
+    }
+    return baseColumns;
+  }, [Restore, objectName, restorable, restored]);
+  const { table } = useDataTable({ columns, data: visibleRecords, getRowId: (record) => record.id, initialState: { pagination: { pageIndex: 0, pageSize: 10 } } });
+  return <Dialog onOpenChange={onOpenChange} open={open}>
+    <DialogContent className="flex max-h-[calc(100vh-2rem)] max-w-[1120px] flex-col overflow-hidden p-0" size="lg">
+      <DialogHeader className="mb-0 shrink-0 px-5 pb-3 pt-5 pr-14">
+        <DialogTitle>修改记录</DialogTitle>
+        <DialogDescription className="truncate">{objectName}</DialogDescription>
+      </DialogHeader>
+      <div className="min-h-0 overflow-y-auto px-5 pb-5">
+        {restored ? <div className="mb-3 rounded-lg bg-success-surface px-3 py-2 text-label text-fg-success">已恢复到 {restored} 版本</div> : null}
+        <div className="mb-3 p-px"><label className="relative block w-full sm:w-72"><span className="sr-only">搜索修改记录</span><Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 text-fg-subtle" /><Input className="pl-8" onChange={(event) => setQuery(event.target.value)} placeholder="搜索修改记录" size="md" value={query} /></label></div>
+        <DataTable className="[&_table]:min-w-[960px]" emptyMessage="没有找到匹配的修改记录。" paginationProps={{ labels: { firstPage: "第一页", lastPage: "最后一页", nextPage: "下一页", pageSummary: (page, pageCount) => `第 ${page} / ${pageCount} 页`, previousPage: "上一页", rowsPerPage: "每页行数" }, pageSizeOptions: [10, 20, 50] }} table={table} />
+      </div>
+    </DialogContent>
+  </Dialog>;
 }
 
 function limitSentence(limit: GlobalLimit, compact = false) {
@@ -222,28 +266,39 @@ function limitSentence(limit: GlobalLimit, compact = false) {
   return `当 ${condition?.field || "所有请求"}${condition ? `${condition.operator} ${visibleValue}` : ""} 时 → 限速至 ${windows}、${action}`;
 }
 
-function LimitSummary({ limit, compact = false, showName = true }: { limit: GlobalLimit; compact?: boolean; showName?: boolean }) {
-  return <div className="min-w-0">{showName ? <p className={cn("text-[14px] font-medium leading-5", !limit.name && "sr-only")}>{limit.name || "未命名限额"}</p> : null}<p className={cn("text-[14px] leading-5", showName && limit.name && "mt-1", compact ? "max-w-[660px]" : "max-w-none")}>{limitSentence(limit, compact)}</p><div className="mt-2 space-y-0.5 text-[12px] leading-4 text-black/45">{limit.windows.map((windowItem) => <p key={windowItem.id}>基线 {windowItem.unit}: 频次 {windowItem.count} / 突发 {windowItem.burst}</p>)}</div></div>;
+function LimitSummary({ limit, compact = false }: { limit: GlobalLimit; compact?: boolean }) {
+  return <div className="min-w-0"><p className={cn("mt-1 text-body leading-5", compact ? "max-w-[660px]" : "max-w-none")}>{limitSentence(limit, compact)}</p><div className="mt-2 space-y-0.5 text-label leading-4 text-fg-subtle">{limit.windows.map((windowItem) => <p key={windowItem.id}>基线 {windowItem.unit}: 频次 {windowItem.count} / 突发 {windowItem.burst}</p>)}</div></div>;
+}
+
+function LimitStatusSwitch({ limit, onToggle }: { limit: GlobalLimit; onToggle: (limit: GlobalLimit) => void }) {
+  return <Switch checked={limit.enabled} className="w-fit gap-0 p-0" label={`启用${limit.name || "未命名限额"}`} labelVisibility="sr-only" onCheckedChange={(checked) => { if (checked !== limit.enabled) onToggle(limit); }} />;
+}
+
+function LimitNameButton({ limit, onDetail }: { limit: GlobalLimit; onDetail: (limit: GlobalLimit) => void }) {
+  const name = limit.name || "未命名限额";
+  return <button aria-label={`查看${name}详情`} className="block max-w-full cursor-pointer truncate text-left text-body font-medium text-fg-brand underline decoration-current/35 underline-offset-2 outline-none hover:decoration-current focus-visible:ring-1 focus-visible:ring-focus-ring" onClick={() => onDetail(limit)} title={name} type="button">{name}</button>;
+}
+
+function LimitActions({ limit, onDelete }: { limit: GlobalLimit; onDelete: (limit: GlobalLimit) => void }) {
+  const More = useIcon("ellipsis");
+  return <div className="flex items-center justify-end whitespace-nowrap"><DropdownMenu><DropdownTrigger render={<Button aria-label={`${limit.name || "未命名限额"} 更多操作`} iconOnly type="button" variant="tertiary"><More /></Button>} /><DropdownContent align="end" className="w-32"><MenuItem className="text-fg-danger" index={0} label="删除限额" onSelect={() => onDelete(limit)} /></DropdownContent></DropdownMenu></div>;
 }
 
 function LimitsList({ limits, onCreate, onDelete, onOpen, onToggle }: { limits: GlobalLimit[]; onCreate: () => void; onDelete: (limit: GlobalLimit) => void; onOpen: (limit: GlobalLimit) => void; onToggle: (limit: GlobalLimit) => void }) {
-  const Filter = useIcon("plus");
-  const More = useIcon("ellipsis");
-  const Check = useIcon("check");
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [enabledOnly, setEnabledOnly] = useState(false);
-  const visible = enabledOnly ? limits.filter((limit) => limit.enabled) : limits;
+  const [statusFilter, setStatusFilter] = useState<"all" | "enabled">("all");
+  const visible = statusFilter === "enabled" ? limits.filter((limit) => limit.enabled) : limits;
   return <>
-    <div className="mb-5 flex items-center justify-between gap-2">
-      <div className="relative">
-        <Button active={filterOpen} dashed leadingIcon={Filter} onClick={() => setFilterOpen((current) => !current)} size="md" type="button" variant="tertiary">筛选</Button>
-        {filterOpen ? <div className="absolute left-0 top-11 z-20 w-40 rounded-lg border border-black/[0.10] bg-white p-1 shadow-[0_10px_28px_rgba(0,0,0,.14)]"><button className="flex h-8 w-full items-center justify-between rounded-md px-2 text-left text-[12px] hover:bg-[#f1f3f9]" onClick={() => { setEnabledOnly(false); setFilterOpen(false); }} type="button">全部限额{!enabledOnly ? <Check className="size-3.5" /> : null}</button><button className="flex h-8 w-full items-center justify-between rounded-md px-2 text-left text-[12px] hover:bg-[#f1f3f9]" onClick={() => { setEnabledOnly(true); setFilterOpen(false); }} type="button">仅已生效{enabledOnly ? <Check className="size-3.5" /> : null}</button></div> : null}
-      </div>
-      <Button onClick={onCreate} size="md" type="button" variant="neutral">新增限额</Button>
+    <div className="mb-3 flex items-center gap-2">
+      <Select itemDensity="compact" onValueChange={(value) => setStatusFilter(value as "all" | "enabled")} size="md" value={statusFilter}>
+        <SelectTrigger aria-label="筛选全局限额" className="w-36" />
+        <SelectContent>
+          <SelectItem value="all">全部限额</SelectItem>
+          <SelectItem value="enabled">仅已生效</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
-    <div className="overflow-hidden rounded-xl border border-black/[0.12]">
-      <div className="overflow-x-auto"><table className="w-full min-w-[900px] table-fixed text-left text-[14px]"><colgroup><col /><col className="w-[140px]" /><col className="w-[140px]" /><col className="w-[140px]" /></colgroup><thead><tr className="h-9 border-b border-black/[0.12]"><th className="px-3 font-normal">全局限额</th><th className="px-3 font-normal">来源</th><th className="px-3 font-normal">状态</th><th className="px-3 font-normal">操作</th></tr></thead><tbody>{visible.map((limit) => <tr className="border-b border-black/[0.10] align-middle transition-colors hover:bg-black/[0.02] last:border-0" key={limit.id}><td className="px-3 py-4"><LimitSummary compact limit={limit} /></td><td className="px-3 py-4">租户策略</td><td className="px-3 py-4"><Status enabled={limit.enabled} /></td><td className="relative px-3 py-4"><div className="flex items-center gap-3 whitespace-nowrap"><button className="cursor-pointer outline-none hover:underline focus-visible:ring-1 focus-visible:ring-focus-ring" onClick={() => onToggle(limit)} type="button">{limit.enabled ? "停用" : "启用"}</button><button className="cursor-pointer outline-none hover:underline focus-visible:ring-1 focus-visible:ring-focus-ring" onClick={() => onOpen(limit)} type="button">详情</button><Button aria-label="更多限额操作" active={activeMenu === limit.id} iconOnly onClick={() => setActiveMenu((current) => current === limit.id ? null : limit.id)} size="sm" type="button" variant="ghost"><More /></Button></div>{activeMenu === limit.id ? <div className="absolute right-3 top-12 z-20 w-32 rounded-lg border border-black/[0.10] bg-white p-1 shadow-[0_10px_28px_rgba(0,0,0,.14)]"><button className="flex h-8 w-full items-center rounded-md px-2 text-left text-[12px] text-[#d92b16] hover:bg-[#fff0ed]" onClick={() => { setActiveMenu(null); onDelete(limit); }} type="button">删除限额</button></div> : null}</td></tr>)}</tbody></table></div>
+    <div className="overflow-hidden rounded-xl border border-border">
+      <div className="overflow-x-auto"><Table className="min-w-[900px] table-fixed"><colgroup><col className="w-[100px]" /><col /><col className="w-[140px]" /><col className="w-[72px]" /></colgroup><TableHeader><TableRow><TableHead>状态</TableHead><TableHead>全局限额</TableHead><TableHead>来源</TableHead><TableHead>操作</TableHead></TableRow></TableHeader><TableBody>{visible.map((limit, index) => <TableRow index={index} key={limit.id}><TableCell className="py-4"><LimitStatusSwitch limit={limit} onToggle={onToggle} /></TableCell><TableCell className="py-4"><LimitNameButton limit={limit} onDetail={onOpen} /><LimitSummary compact limit={limit} /></TableCell><TableCell className="py-4">租户策略</TableCell><TableCell className="py-4"><LimitActions limit={limit} onDelete={onDelete} /></TableCell></TableRow>)}</TableBody></Table></div>
       {!visible.length ? <EmptyTableState description="创建限额后，可以按策略集、主体、能力或端点等真实计数维度限制请求。" onCreate={onCreate} title="还没有任何全局限额" /> : null}
     </div>
     {visible.length ? <TableFooter bordered={false} total={visible.length} /> : null}
@@ -254,46 +309,24 @@ function LimitDetail({ limit, onBack, onDelete, onEdit, onHistory, onToggle }: {
   return <LimitDetailView limit={limit} onBack={onBack} onDelete={onDelete} onEdit={onEdit} onHistory={onHistory} onToggle={onToggle} />;
 }
 
-function LimitHistory({ limit, onBack }: { limit: GlobalLimit; onBack: () => void }) {
-  const Search = useIcon("search");
-  const [query, setQuery] = useState("");
-  const records = [{ id: "limit-v2", time: "9月3日 10:12:31", action: "修改", log: "更新基线分钟阈值" }, { id: "limit-v1", time: "9月3日 09:54:20", action: "新增", log: "创建全局限额" }].filter((record) => `${record.action} ${record.log}`.toLowerCase().includes(query.toLowerCase()));
-  return <PageCard><BackHeader onBack={onBack}><strong className="truncate text-[14px]">{limit.name || "未命名限额"} 的修改记录</strong></BackHeader><div className="p-4 sm:p-5"><label className="relative block w-full sm:w-[448px]"><span className="sr-only">搜索修改记录</span><Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 text-black/45" /><Input className="pl-8" onChange={(event) => setQuery(event.target.value)} placeholder="搜索" size="sm" value={query} /></label><div className="mt-5 overflow-hidden rounded-xl border border-black/[0.12]"><div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left text-[12px]"><thead><tr className="h-9 border-b border-black/[0.12]">{["时间", "用户", "操作", "日志", "状态"].map((heading) => <th className="px-3 text-[14px] font-normal" key={heading}>{heading}</th>)}</tr></thead><tbody>{records.map((record) => <tr className="h-12 border-b border-black/[0.10] last:border-0" key={record.id}><td className="px-3 tabular-nums">{record.time}</td><td className="px-3"><span className="flex items-center gap-2"><Avatar /><span>admin</span></span></td><td className="px-3">{record.action}</td><td className="px-3">{record.log}</td><td className="px-3"><Status enabled /></td></tr>)}</tbody></table></div><TableFooter total={records.length} /></div></div></PageCard>;
-}
-
 export type TrafficRulesProps = Omit<ComponentPropsWithoutRef<"div">, "children">;
 
 function TrafficRulesContent({ className, ...props }: TrafficRulesProps) {
-  const Menu = useIcon("menu");
+  const FeatureIcon = useIcon("list-checks");
   const [rules, setRules] = useState(initialRules);
   const [limits, setLimits] = useState(initialLimits);
   const [tab, setTab] = useState<Tab>("rules");
   const [page, setPage] = useState<Page>("list");
   const [activeRule, setActiveRule] = useState<Rule | null>(null);
   const [activeLimit, setActiveLimit] = useState<GlobalLimit | null>(null);
+  const [historyTarget, setHistoryTarget] = useState<HistoryTarget | null>(null);
   const [createRuleOpen, setCreateRuleOpen] = useState(false);
-  const [mobileNav, setMobileNav] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmAction>(null);
   const openRule = (rule: Rule) => { setActiveRule(rule); setPage("rule-detail"); };
   const openLimit = (limit: GlobalLimit) => { setActiveLimit(limit); setPage("limit-detail"); };
   const updateRule = (next: Rule) => { setRules((current) => current.map((rule) => rule.id === next.id ? next : rule)); setActiveRule(next); };
   const updateLimit = (next: GlobalLimit) => { setLimits((current) => current.map((limit) => limit.id === next.id ? next : limit)); setActiveLimit(next); };
   const applyConfirm = () => { if (!confirm) return; if (confirm.target === "rule") { if (confirm.action === "delete") { setRules((current) => current.filter((rule) => !confirm.ids.includes(rule.id))); setActiveRule(null); setPage("list"); } else { const enabled = confirm.action === "enable"; setRules((current) => current.map((rule) => confirm.ids.includes(rule.id) ? { ...rule, enabled } : rule)); if (activeRule) setActiveRule({ ...activeRule, enabled }); } } else if (confirm.action === "delete") { setLimits((current) => current.filter((limit) => !confirm.ids.includes(limit.id))); setActiveLimit(null); setPage("list"); } else { const enabled = confirm.action === "enable"; setLimits((current) => current.map((limit) => confirm.ids.includes(limit.id) ? { ...limit, enabled } : limit)); if (activeLimit && confirm.ids.includes(activeLimit.id)) setActiveLimit({ ...activeLimit, enabled }); } setConfirm(null); };
-  if (page === "rule-detail" && activeRule) {
-    return <div className={cn("h-full w-full", className)} {...props}>
-      <RuleDetailView
-        key={activeRule.id}
-        rule={activeRule}
-        onBack={() => setPage("list")}
-        onEdit={() => setPage("rule-edit")}
-        onHistory={() => setPage("rule-history")}
-        onValidate={() => setPage("validate")}
-        onToggle={() => setConfirm({ action: activeRule.enabled ? "disable" : "enable", ids: [activeRule.id], target: "rule" })}
-        onDelete={() => setConfirm({ action: "delete", ids: [activeRule.id], target: "rule" })}
-      />
-      {confirm ? <ConfirmDialog action={confirm} onCancel={() => setConfirm(null)} onConfirm={applyConfirm} /> : null}
-    </div>;
-  }
   if (page === "limit-create") {
     return <div className={cn("h-full w-full", className)} {...props}>
       <LimitForm
@@ -318,8 +351,56 @@ function TrafficRulesContent({ className, ...props }: TrafficRulesProps) {
       />
     </div>;
   }
-  const breadcrumb = page === "list" ? "流量规则" : page === "validate" ? "流量规则 › 验证规则" : page.includes("history") ? `流量规则 › ${page.startsWith("limit") ? "全局限额" : "规则详情"} › 修改记录` : page.startsWith("limit") ? "流量规则 › 全局限额 › 限额详情" : "流量规则 › 规则详情";
-  return <div className={cn("flex h-full min-h-[620px] w-full overflow-hidden bg-[#f1f3f9] text-[#00030a] selection:bg-[#0878ff]/20", className)} {...props}><AdminSidebar mobileOpen={mobileNav} onClose={() => setMobileNav(false)} /><main className="min-w-0 flex-1 overflow-auto px-3 pt-4 min-[760px]:pl-0 min-[760px]:pr-3 min-[760px]:pt-2.5"><div className="w-full"><div className="mb-2 flex min-h-[22px] items-center gap-2 text-[12px] text-black/45 sm:text-[14px]"><Button aria-label="打开导航" className="min-[760px]:hidden" iconOnly onClick={() => setMobileNav(true)} size="sm" type="button" variant="secondary"><Menu /></Button><span>路由策略</span><span>›</span><span className="truncate text-black/70">{breadcrumb}</span><h1 className="sr-only">{page.includes("history") ? "修改记录" : "流量规则"}</h1></div>{page === "rule-edit" && activeRule ? <RuleWorkflow initial={activeRule} onCancel={() => setPage("rule-detail")} onSave={(rule) => { updateRule(rule); setPage("rule-detail"); }} /> : null}{page === "rule-history" && activeRule ? <RuleHistory onBack={() => setPage("rule-detail")} rule={activeRule} /> : null}{page === "validate" ? <RuleValidation onBack={() => setPage("list")} /> : null}{page === "limit-detail" && activeLimit ? <LimitDetail limit={activeLimit} onBack={() => setPage("list")} onDelete={() => setConfirm({ action: "delete", ids: [activeLimit.id], target: "limit" })} onEdit={() => setPage("limit-edit")} onHistory={() => setPage("limit-history")} onToggle={() => setConfirm({ action: activeLimit.enabled ? "disable" : "enable", ids: [activeLimit.id], target: "limit" })} /> : null}{page === "limit-history" && activeLimit ? <LimitHistory limit={activeLimit} onBack={() => setPage("limit-detail")} /> : null}{page === "list" ? <PageCard className="px-4 pt-5 sm:px-5"><Tabs color="default" onValueChange={(value) => setTab(value as Tab)} value={tab} variant="pill"><TabsList><TabItem label="规则清单" value="rules" /><TabItem label="全局限额" value="limits" /></TabsList></Tabs><div className="mt-5">{tab === "rules" ? <RuleList onCreate={() => setCreateRuleOpen(true)} onOpen={openRule} onRulesChange={setRules} onValidate={() => setPage("validate")} rules={rules} /> : <LimitsList limits={limits} onCreate={() => setPage("limit-create")} onDelete={(limit) => setConfirm({ action: "delete", ids: [limit.id], target: "limit" })} onOpen={openLimit} onToggle={(limit) => setConfirm({ action: limit.enabled ? "disable" : "enable", ids: [limit.id], target: "limit" })} />}</div></PageCard> : null}</div></main>{createRuleOpen ? <RuleWorkflow onCancel={() => setCreateRuleOpen(false)} onSave={(rule) => { setRules((current) => [...current, { ...rule, priority: current.length + 1 }]); setCreateRuleOpen(false); }} /> : null}{confirm ? <ConfirmDialog action={confirm} onCancel={() => setConfirm(null)} onConfirm={applyConfirm} /> : null}</div>;
+  const breadcrumb = page === "list" ? "流量规则" : page.startsWith("limit") ? "流量规则 › 全局限额 › 限额详情" : "流量规则 › 规则详情";
+  return <SidebarProvider breakpointBehavior="drawer">
+    <div className={cn("flex h-full min-h-[620px] w-full overflow-hidden bg-surface-base text-fg-default selection:bg-selection", className)} {...props}>
+      <AdminSidebar />
+      <PageLayout className="h-full min-w-0 flex-1">
+        <PageHeader className="h-control-sm py-0 max-sm:flex-row">
+          <div className="flex h-full min-w-0 items-center gap-2">
+            <SidebarTrigger className="shrink-0 xl:hidden" label="打开管理后台导航" size="sm" />
+            <PageHeaderContent className="h-full">
+              <nav aria-label="当前位置" className="flex min-w-0 items-center gap-2 text-body text-fg-subtle">
+                <span className="inline-flex shrink-0 items-center gap-1.5"><FeatureIcon aria-hidden size={16} strokeWidth={1.5} /><span>路由策略</span></span><span aria-hidden>›</span><span className="truncate text-fg-default">{breadcrumb}</span>
+              </nav>
+              <h1 className="sr-only">流量规则</h1>
+            </PageHeaderContent>
+          </div>
+        </PageHeader>
+        {page === "rule-detail" && activeRule ? <RuleDetailView
+          key={activeRule.id}
+          rule={activeRule}
+          onBack={() => setPage("list")}
+          onEdit={() => setPage("rule-edit")}
+          onHistory={() => setHistoryTarget("rule")}
+          onToggle={() => setConfirm({ action: activeRule.enabled ? "disable" : "enable", ids: [activeRule.id], target: "rule" })}
+          onDelete={() => setConfirm({ action: "delete", ids: [activeRule.id], target: "rule" })}
+        /> : null}
+        {page === "rule-edit" && activeRule ? <RuleWorkflow initial={activeRule} onCancel={() => setPage("rule-detail")} onSave={(rule) => { updateRule(rule); setPage("rule-detail"); }} /> : null}
+        {page === "limit-detail" && activeLimit ? <LimitDetail limit={activeLimit} onBack={() => setPage("list")} onDelete={() => setConfirm({ action: "delete", ids: [activeLimit.id], target: "limit" })} onEdit={() => setPage("limit-edit")} onHistory={() => setHistoryTarget("limit")} onToggle={() => setConfirm({ action: activeLimit.enabled ? "disable" : "enable", ids: [activeLimit.id], target: "limit" })} /> : null}
+        {page === "list" ? <PageContent>
+          <PageContentHeader>
+            <PageSubnav aria-label="流量规则视图">
+              <PageSubnavList activeValue={tab}>
+                <PageSubnavItem href="#rules" onClick={(event) => { event.preventDefault(); setTab("rules"); }} value="rules">规则清单</PageSubnavItem>
+                <PageSubnavItem href="#limits" onClick={(event) => { event.preventDefault(); setTab("limits"); }} value="limits">全局限额</PageSubnavItem>
+              </PageSubnavList>
+            </PageSubnav>
+            <PageActions>
+              {tab === "rules" ? <Button onClick={() => setCreateRuleOpen(true)} type="button" variant="primary">新建规则</Button> : <Button onClick={() => setPage("limit-create")} type="button" variant="neutral">新增限额</Button>}
+            </PageActions>
+          </PageContentHeader>
+          <PageBody className="max-w-none p-4">
+            {tab === "rules" ? <RuleList onCreate={() => setCreateRuleOpen(true)} onOpen={openRule} onRulesChange={setRules} rules={rules} /> : <LimitsList limits={limits} onCreate={() => setPage("limit-create")} onDelete={(limit) => setConfirm({ action: "delete", ids: [limit.id], target: "limit" })} onOpen={openLimit} onToggle={(limit) => setConfirm({ action: limit.enabled ? "disable" : "enable", ids: [limit.id], target: "limit" })} />}
+          </PageBody>
+        </PageContent> : null}
+      </PageLayout>
+      {createRuleOpen ? <RuleWorkflow onCancel={() => setCreateRuleOpen(false)} onSave={(rule) => { setRules((current) => [...current, { ...rule, priority: current.length + 1 }]); setCreateRuleOpen(false); }} /> : null}
+      {historyTarget === "rule" && activeRule ? <ChangeHistoryDialog objectName={activeRule.name} onOpenChange={(open) => { if (!open) setHistoryTarget(null); }} open records={[{ id: "v2", time: "9月3日 10:02:11", action: "修改", log: "更新请求路径与处置动作" }, { id: "v1", time: "9月2日 18:31:42", action: "新增", log: "创建规则并设为停用" }]} restorable /> : null}
+      {historyTarget === "limit" && activeLimit ? <ChangeHistoryDialog objectName={activeLimit.name || "未命名限额"} onOpenChange={(open) => { if (!open) setHistoryTarget(null); }} open records={[{ id: "limit-v2", time: "9月3日 10:12:31", action: "修改", log: "更新基线分钟阈值" }, { id: "limit-v1", time: "9月3日 09:54:20", action: "新增", log: "创建全局限额" }]} /> : null}
+      {confirm ? <ConfirmDialog action={confirm} onCancel={() => setConfirm(null)} onConfirm={applyConfirm} /> : null}
+    </div>
+  </SidebarProvider>;
 }
 
 export function TrafficRules(props: TrafficRulesProps) {
