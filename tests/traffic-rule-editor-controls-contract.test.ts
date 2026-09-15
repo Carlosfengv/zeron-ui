@@ -35,6 +35,10 @@ const ruleDetail = readFileSync(
   join(ROOT, "packages/blocks/src/application/traffic-rules-01/rule-detail.tsx"),
   "utf8"
 );
+const ruleForm = readFileSync(
+  join(ROOT, "packages/blocks/src/application/traffic-rules-01/rule-form.tsx"),
+  "utf8"
+);
 const limitDetail = readFileSync(
   join(ROOT, "packages/blocks/src/application/traffic-rules-01/limit-detail.tsx"),
   "utf8"
@@ -62,6 +66,14 @@ describe("traffic rule editor header controls", () => {
     expect(limitDetail).toContain('aria-label="返回全局限额" iconOnly onClick={onBack} type="button" variant="tertiary"><Close aria-hidden />');
     expect(limitDetail).not.toContain('leadingIcon={ArrowLeft}');
     expect(limitDetail).not.toContain('>返回</Button>');
+  });
+
+  it("uses the default md size for dialog action buttons", () => {
+    expect(trafficRules).toContain('<DialogFooter><Button onClick={onCancel} type="button" variant="tertiary">取消</Button><Button onClick={onConfirm} type="button"');
+    expect(ruleWorkflow).toContain('<DialogFooter><Button onClick={onKeep} variant="tertiary">继续编辑</Button><Button onClick={onDiscard} variant="destructive">放弃修改</Button>');
+    expect(limitForm).toContain('<DialogFooter><Button onClick={onKeep} variant="tertiary">继续编辑</Button><Button onClick={onDiscard} variant="destructive">放弃修改</Button>');
+    expect(ruleForm).toContain('<Button onClick={onCancel} type="button" variant="tertiary">取消</Button>');
+    expect(ruleForm).toContain('<Button className="px-5" disabled={!canSave} type="submit">保存规则</Button>');
   });
 
   it("places the limit detail more action at the far right", () => {
@@ -141,6 +153,12 @@ describe("traffic rule editor header controls", () => {
     expect(trafficRules).toContain("<LimitNameButton limit={limit} onDetail={onOpen} />");
     expect(trafficRules).not.toContain('variant="tertiary">详情</Button>');
     expect(trafficRules).toContain("<LimitActions limit={limit} onDelete={onDelete} />");
+  });
+
+  it("uses a primary button for creating a global limit", () => {
+    expect(trafficRules).toContain('onClick={() => setPage("limit-create")} type="button" variant="primary">新增限额</Button>');
+    expect(trafficRules).toContain('size="sm" type="button" variant="primary">{title.includes("限额") ? "新增限额" : "新建规则"}</Button>');
+    expect(trafficRules).not.toContain('variant="neutral">新增限额</Button>');
   });
 
   it("uses public component APIs instead of overriding internal selection slots", () => {

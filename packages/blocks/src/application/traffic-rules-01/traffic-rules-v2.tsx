@@ -82,7 +82,7 @@ function RuleStatusSwitch({ rule, onAction }: { rule: Rule; onAction: (action: N
 
 function EmptyTableState({ description, onCreate, title }: { description: string; onCreate: () => void; title: string }) {
   const EmptyIcon = useIcon("doc-data-table");
-  return <div className="grid min-h-[280px] place-items-center px-4 py-10"><div className="flex max-w-[480px] flex-col items-center text-center"><span className="grid size-16 place-items-center rounded-2xl bg-surface-raised text-fg-muted"><EmptyIcon aria-hidden className="size-7" /></span><p className="mt-3 text-body font-medium">{title}</p><p className="mt-1 text-label leading-5 text-fg-subtle">{description}</p><Button className="mt-3" onClick={onCreate} size="sm" type="button" variant={title.includes("限额") ? "neutral" : "primary"}>{title.includes("限额") ? "新增限额" : "新建规则"}</Button></div></div>;
+  return <div className="grid min-h-[280px] place-items-center px-4 py-10"><div className="flex max-w-[480px] flex-col items-center text-center"><span className="grid size-16 place-items-center rounded-2xl bg-surface-raised text-fg-muted"><EmptyIcon aria-hidden className="size-7" /></span><p className="mt-3 text-body font-medium">{title}</p><p className="mt-1 text-label leading-5 text-fg-subtle">{description}</p><Button className="mt-3" onClick={onCreate} size="sm" type="button" variant="primary">{title.includes("限额") ? "新增限额" : "新建规则"}</Button></div></div>;
 }
 
 function RuleActions({ rule, onAction, onMove, canMoveUp, canMoveDown }: { rule: Rule; onAction: (action: NonNullable<ConfirmAction>) => void; onMove: (direction: -1 | 1) => void; canMoveUp: boolean; canMoveDown: boolean }) {
@@ -171,7 +171,7 @@ function RulesTable({ rules, selected, onSelectedChange, onAction, onDetail, onR
 function ConfirmDialog({ action, onCancel, onConfirm }: { action: NonNullable<ConfirmAction>; onCancel: () => void; onConfirm: () => void }) {
   const noun = action.target === "rule" ? "规则" : "限额";
   const verb = action.action === "delete" ? "删除" : action.action === "enable" ? "启用" : "停用";
-  return <Dialog onOpenChange={(open) => { if (!open) onCancel(); }} open><DialogContent size="sm"><DialogHeader><DialogTitle>{verb}所选{noun}</DialogTitle><DialogDescription>{action.action === "delete" ? `删除后将无法再使用所选${noun}，请确认是否继续。` : `所选${noun}将被${verb}，新的状态会立即用于后续请求。`}</DialogDescription></DialogHeader><DialogFooter><Button onClick={onCancel} size="sm" type="button" variant="tertiary">取消</Button><Button onClick={onConfirm} size="sm" type="button" variant={action.action === "enable" ? "neutral" : "destructive"}>{verb}</Button></DialogFooter></DialogContent></Dialog>;
+  return <Dialog onOpenChange={(open) => { if (!open) onCancel(); }} open><DialogContent size="sm"><DialogHeader><DialogTitle>{verb}所选{noun}</DialogTitle><DialogDescription>{action.action === "delete" ? `删除后将无法再使用所选${noun}，请确认是否继续。` : `所选${noun}将被${verb}，新的状态会立即用于后续请求。`}</DialogDescription></DialogHeader><DialogFooter><Button onClick={onCancel} type="button" variant="tertiary">取消</Button><Button onClick={onConfirm} type="button" variant={action.action === "enable" ? "neutral" : "destructive"}>{verb}</Button></DialogFooter></DialogContent></Dialog>;
 }
 
 function RuleList({ rules, onRulesChange, onCreate, onOpen }: { rules: Rule[]; onRulesChange: (rules: Rule[]) => void; onCreate: () => void; onOpen: (rule: Rule) => void }) {
@@ -387,7 +387,7 @@ function TrafficRulesContent({ className, ...props }: TrafficRulesProps) {
               </PageSubnavList>
             </PageSubnav>
             <PageActions>
-              {tab === "rules" ? <Button onClick={() => setCreateRuleOpen(true)} type="button" variant="primary">新建规则</Button> : <Button onClick={() => setPage("limit-create")} type="button" variant="neutral">新增限额</Button>}
+              {tab === "rules" ? <Button onClick={() => setCreateRuleOpen(true)} type="button" variant="primary">新建规则</Button> : <Button onClick={() => setPage("limit-create")} type="button" variant="primary">新增限额</Button>}
             </PageActions>
           </PageContentHeader>
           <PageBody className="max-w-none p-4">

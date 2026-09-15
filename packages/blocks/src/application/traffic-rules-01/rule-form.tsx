@@ -862,8 +862,8 @@ export function RuleForm({
             已添加 {conditions.length} 个条件 · {actions.length} 个动作
           </p>
           <div className="flex gap-2">
-            <Button onClick={onCancel} size="sm" type="button" variant="tertiary">取消</Button>
-            <Button className="px-5" disabled={!canSave} size="sm" type="submit">保存规则</Button>
+            <Button onClick={onCancel} type="button" variant="tertiary">取消</Button>
+            <Button className="px-5" disabled={!canSave} type="submit">保存规则</Button>
           </div>
         </footer>
       ) : null}
