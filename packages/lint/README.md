@@ -71,5 +71,3 @@ The factory exports its contracts and derived token vocabularies for inspection.
 - `no-restyle` does not prove correct surface nesting, scroll ownership, responsive behavior, accessibility or visual fidelity. Existing browser and contract tests remain necessary.
 - `no-restyle` cannot correlate a class with a component's runtime `variant`, `active`, `asChild`, or nested selector target. Zeron therefore enforces deterministic size ownership and leaves public presentation to semantic-color, focus, token, and runtime checks.
 - The upstream class collector is internal. Future Zeron rules should use supported APIs or a separately tested collector instead of deep-importing private files.
-
-See [the analysis](../../docs/plans/zeron-design-lint.md) and [the remediation plan](../../docs/plans/zeron-design-lint-remediation-plan.md).
