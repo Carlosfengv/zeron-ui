@@ -50,7 +50,13 @@ describe("focus modality contract", () => {
   });
 
   it("gates the NavMenu moving indicator to visible primary focus", () => {
-    expect(navMenu).toContain('[data-slot="nav-item-trigger"]:focus-visible');
+    expect(navMenu).toContain("const keyboardModalityRef = useRef(false);");
+    expect(navMenu).toContain('document.addEventListener("keydown", handleKeyDown, true);');
+    expect(navMenu).toContain('document.addEventListener("pointerdown", handlePointerDown, true);');
+    expect(navMenu).toContain("isPrimaryTrigger &&");
+    expect(navMenu).toContain(
+      '(keyboardModalityRef.current || target.matches(":focus-visible"))'
+    );
     expect(navMenu).toContain("onPointerDownCapture={(event) => {");
     expect(navMenu).toContain("if (trigger) setFocusedId(null);");
   });

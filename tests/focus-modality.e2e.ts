@@ -50,7 +50,7 @@ test("desktop: compounds and previews follow focus-visible semantics", async ({ 
 test("desktop: NavMenu gives its moving indicator only to a visible primary trigger", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium-desktop", "Desktop-only focus checks");
 
-  await page.goto("/docs/components/nav-menu");
+  await page.goto("/docs/components/nav-menu", { waitUntil: "networkidle" });
 
   const nav = page.getByRole("navigation", { name: "Preview navigation" });
   const projects = nav.getByRole("link", { name: "Projects" });
@@ -76,7 +76,7 @@ test("desktop: NavMenu gives its moving indicator only to a visible primary trig
 test("mobile: compact drawer restores the opening trigger after Escape", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium-mobile", "Compact drawer requires a mobile viewport");
 
-  await page.goto("/docs/components/button");
+  await page.goto("/en/docs");
   const openNavigation = page.getByRole("button", { name: "Open navigation" });
 
   await openNavigation.click();
@@ -104,6 +104,7 @@ test("desktop: Tree keeps a roving focus stop and restores its branch ancestor",
   await expect(designSystem).toBeFocused();
   await page.keyboard.press("ArrowLeft");
   await expect(product).toBeFocused();
+  await page.keyboard.press("ArrowLeft");
   await expect(designSystem).toBeHidden();
 });
 

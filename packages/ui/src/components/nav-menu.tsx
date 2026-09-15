@@ -89,6 +89,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
   ) => {
     const containerRef = useRef<HTMLElement | null>(null);
     const itemMapRef = useRef(new Map<string, NavItemRegistration>());
+    const keyboardModalityRef = useRef(false);
     const [items, setItems] = useState<Map<string, NavItemRegistration>>(
       () => new Map()
     );
@@ -142,6 +143,24 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
       return () => observer.disconnect();
     }, [orderedItems, remeasure]);
 
+    useEffect(() => {
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (!event.altKey && !event.ctrlKey && !event.metaKey) {
+          keyboardModalityRef.current = true;
+        }
+      };
+      const handlePointerDown = () => {
+        keyboardModalityRef.current = false;
+      };
+
+      document.addEventListener("keydown", handleKeyDown, true);
+      document.addEventListener("pointerdown", handlePointerDown, true);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown, true);
+        document.removeEventListener("pointerdown", handlePointerDown, true);
+      };
+    }, []);
+
     const rovingTabStopId = activeId ?? orderedItems.find((item) => !item.disabled)?.id ?? null;
     const activeIndex = activeId ? orderedItems.findIndex((item) => item.id === activeId) : -1;
     const focusIndex = focusedId ? orderedItems.findIndex((item) => item.id === focusedId) : -1;
@@ -190,11 +209,20 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
             const id = target
               .closest<HTMLElement>("[data-nav-item-id]")
               ?.dataset.navItemId;
+            const syncFocusedId = () => {
+              const isPrimaryTrigger = target.matches(
+                '[data-slot="nav-item-trigger"]'
+              );
+              const isVisiblePrimaryFocus =
+                isPrimaryTrigger &&
+                (keyboardModalityRef.current || target.matches(":focus-visible"));
+              setFocusedId(isVisiblePrimaryFocus ? id ?? null : null);
+            };
 
-            const isVisiblePrimaryFocus = target.matches(
-              '[data-slot="nav-item-trigger"]:focus-visible'
-            );
-            setFocusedId(isVisiblePrimaryFocus ? id ?? null : null);
+            syncFocusedId();
+            window.requestAnimationFrame(() => {
+              if (document.activeElement === target) syncFocusedId();
+            });
             onFocusCapture?.(event);
           }}
           onBlurCapture={(event) => {
