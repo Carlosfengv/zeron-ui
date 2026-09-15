@@ -433,7 +433,7 @@
   cursor: pointer;
   align-items: center;
   gap: 8px;
-  border: .5px solid var(--border);
+  border: var(--border-width-hairline) solid var(--border);
   border-radius: 8px;
   background: var(--warning-surface);
   padding: 10px;

@@ -104,4 +104,12 @@ export default [
     ],
     "flow-editor-transitions",
   ),
+  reviewedArbitraryValues(
+    ["packages/blocks/src/application/traffic-rules-01/traffic-rules-v2.tsx"],
+    [
+      "shadow-[inset_0_2px_var(--brand)]",
+      "shadow-[inset_0_-2px_var(--brand)]",
+    ],
+    "traffic-rule-drop-position",
+  ),
 ];

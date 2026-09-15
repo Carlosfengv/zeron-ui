@@ -48,6 +48,9 @@
 .node[data-tone="green"] { --node-tint: var(--success-surface); --node-accent: var(--fg-success); }
 .node[data-tone="amber"] { --node-tint: var(--warning-surface-subtle); --node-accent: var(--fg-warning); }
 .nodeExpanded { width: var(--expanded-node-width); border-color: color-mix(in srgb, var(--node-accent) 40%, var(--border)); }
+.nodeTint { background: var(--node-tint); }
+.nodeTitleButton:hover strong { color: var(--node-accent); }
+.nodeIcon { background: var(--node-tint); color: var(--node-accent); }
 .connector { height: 40px; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .connectorInteractive { height: 56px; }
 .connectorWithLabel { height: 80px; }
@@ -95,7 +98,7 @@
 .result strong { color: var(--fg-default); font-weight: 500; }
 .fallback { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; color: var(--fg-subtle); font-size: var(--font-size-label); }
 .canvasControls { position: absolute; right: 20px; bottom: 20px; display: flex; gap: 4px; align-items: center; padding: 4px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-floating); box-shadow: var(--shadow-floating); }
-.preview { width: 360px; flex-shrink: 0; background: var(--surface-floating); overflow: hidden; border: .5px solid var(--border); border-radius: 12px; }
+.preview { width: 360px; flex-shrink: 0; background: var(--surface-floating); overflow: hidden; border: var(--border-width-hairline) solid var(--border); border-radius: 12px; }
 @media (min-width: 1600px) { .preview { width: 400px; } }
 @container rule-canvas (max-width: 840px) { .flow { --expanded-node-width: 480px; } }
 @container rule-canvas (max-width: 744px) { .flow { --expanded-node-width: 440px; } }

@@ -19,6 +19,19 @@
 
 本阶段不发布 npm 包，不重写 lint 引擎，不整体替换动画库，也不新增与实际需求无关的设计 token。
 
+### 1.1 实施结果
+
+截至 2026-09-15，本方案的 P0–P3 已完成：
+
+- 全量设计检查由基线的 1,491 条诊断降至 0，检查范围覆盖 `app`、`docs/pages`、`packages/ui/src` 和 `packages/blocks/src`。
+- `hairline` 已进入 token 元数据、CSS/JavaScript/类型导出、Tailwind 主题、类名合并器与 Registry；源码中的 0.5px 边框工具类已迁移为 `border-hairline`，CSS module 使用 `var(--border-width-hairline)`。
+- 六种语义时长已映射到 Tailwind 的 `--transition-duration-*` 命名空间；`tw-animate-css` 已接入根应用与 Registry 安装流程。
+- `@zeron/lint`、独立 ESLint 配置、CI 门禁和 builder skill 验证闭环已经启用。
+- Registry 共 128 个条目通过闭包检查；Next/Vite、npm/pnpm 的消费者安装矩阵验证了依赖、CSS 导入、重复安装和生产构建。
+- 完整单元/契约测试为 132 个文件、812 个用例通过；CLI 24 个用例、UI/Blocks 类型检查、生产构建和 Chromium 桌面/移动端焦点回归通过。
+
+浏览器产物中 `.border-hairline` 的声明值为 `.5px`，`duration-fast` 的计算值为 `0.08s`，`animate-in` 解析为 `enter`。Chromium 会把普通元素边框的 used/computed width 量化为 `1px`，DPR 1/2 均如此；因此 `hairline` 保证统一的设计意图和 CSS 声明，不承诺所有浏览器将普通 border 呈现为半个 CSS 像素。
+
 ## 2. 审计基线与问题分类
 
 基线来自本工作区的 `output/design-lint.json`：扫描 477 个文件，140 个文件有报告，共 1,491 条错误级诊断。该文件是本地产物，不作为必须提交的源文件。
@@ -293,7 +306,7 @@ shadcn 当前手动安装文档明确要求安装并导入 `tw-animate-css`；�
 
 ## 9. 需要修改的文件与产物
 
-以下均为后续实施范围；本轮只新增本方案文档。
+以下范围已按本方案完成实施。
 
 | 文件或范围 | 计划变更 |
 | --- | --- |
@@ -404,12 +417,12 @@ pnpm build
 
 最终完成条件：
 
-- [ ] `hairline` 已成为可消费、可分发、可合并的正式 token。
-- [ ] 六种 `duration-*` 使用正确映射，数值继续来自现有 motion 数据。
-- [ ] CSS 进出场动画在仓库和安装后的项目均实际生效。
-- [ ] 未定义名称已迁移；阴影误报已修复；SVG、状态标记等例外有明确范围。
-- [ ] 组件契约符合真实 API，全部纳入治理范围的设计诊断已解决。
-- [ ] 真实编译、类名合并、单元测试、安装测试和关键浏览器回归通过。
-- [ ] builder 使用相同规范，全量设计检查进入 CI，检查器无发现/编译降级。
+- [x] `hairline` 已成为可消费、可分发、可合并的正式 token。
+- [x] 六种 `duration-*` 使用正确映射，数值继续来自现有 motion 数据。
+- [x] CSS 进出场动画在仓库和安装后的项目均实际生效。
+- [x] 未定义名称已迁移；阴影误报已修复；SVG、状态标记等例外有明确范围。
+- [x] 组件契约符合真实 API，全部纳入治理范围的设计诊断已解决。
+- [x] 真实编译、类名合并、单元测试、安装测试和关键浏览器回归通过。
+- [x] builder 使用相同规范，全量设计检查进入 CI，检查器无发现/编译降级。
 
 达到以上条件后，再单独评估发布 lint 包、扩展 token 用途检查和更严格动态样式规则。本轮不把这些后续能力作为修复现有问题的前置条件。

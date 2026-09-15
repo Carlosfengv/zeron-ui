@@ -863,14 +863,14 @@ export function RuleForm({
           </p>
           <div className="flex gap-2">
             <Button onClick={onCancel} type="button" variant="tertiary">取消</Button>
-            <Button className="px-5" disabled={!canSave} type="submit">保存规则</Button>
+            <Button disabled={!canSave} type="submit">保存规则</Button>
           </div>
         </footer>
       ) : null}
     </form>
   );
 
-  if (!modal) return <section className="min-h-[calc(100svh-56px)] overflow-hidden rounded-t-2xl border-[0.5px] border-border bg-surface-floating">{content}</section>;
+  if (!modal) return <section className="min-h-[calc(100svh-56px)] overflow-hidden rounded-t-2xl border-hairline border-border bg-surface-floating">{content}</section>;
 
   return <Dialog onOpenChange={(open) => { if (!open) onCancel(); }} open><DialogContent aria-labelledby="rule-form-title" className="!max-w-[960px] overflow-hidden !p-0">{content}</DialogContent></Dialog>;
 }

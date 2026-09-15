@@ -50,7 +50,7 @@ function RuleInfo({ rule, detail, onToggle, onLocate }: {
 }) {
   return <div className="flex h-full min-h-0 flex-col">
     <header className="flex min-h-12 shrink-0 items-center px-4 py-2"><h2 className="text-body font-semibold">规则信息</h2></header>
-    <div className="min-h-0 overflow-y-auto p-3 pt-0 [scrollbar-color:var(--scrollbar-thumb)_transparent] [scrollbar-width:thin] [&_h3]:mb-3 [&_h3]:text-body [&_h3]:font-medium [&_h3]:leading-5 [&_h3]:text-fg-default [&>section+section]:mt-6 [&>section+section]:border-t [&>section+section]:border-border-subtle [&>section+section]:pt-6">
+    <div className="min-h-0 overflow-y-auto p-3 pt-0 [&_h3]:mb-3 [&_h3]:text-body [&_h3]:font-medium [&_h3]:leading-5 [&_h3]:text-fg-default [&>section+section]:mt-6 [&>section+section]:border-t [&>section+section]:border-border-subtle [&>section+section]:pt-6">
       <section>
         <DetailList className="w-full max-w-none">
           <DetailListItem><DetailListLabel>规则名称</DetailListLabel><DetailListValue>{rule.name || "未命名规则"}</DetailListValue></DetailListItem>
@@ -174,7 +174,7 @@ export function RuleDetailView({ rule, onBack, onEdit, onHistory, onDelete, onTo
           </header>
           <div className={`${flowStyles.canvasFrame} relative flex min-h-0 flex-1 flex-col`}>
             <p className={flowStyles.canvasPanHint}>左右滑动画布查看分支</p>
-            <div className="min-h-0 flex-1 overflow-auto overscroll-contain [scrollbar-color:var(--scrollbar-thumb)_transparent] [scrollbar-width:thin] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-focus-ring" ref={canvasRef} role="region" aria-label="只读流程画布，可横向和纵向滚动" tabIndex={0}>
+            <div className={flowStyles.canvas} ref={canvasRef} role="region" aria-label="只读流程画布，可横向和纵向滚动" tabIndex={0}>
               <div className={flowStyles.flow} style={{ zoom: zoom / 100 } as CSSProperties}>
                 <RuleWorkflowSummary detail={detail} enabled={rule.enabled} expanded={expanded} onToggle={toggle} />
               </div>
@@ -186,7 +186,7 @@ export function RuleDetailView({ rule, onBack, onEdit, onHistory, onDelete, onTo
           </div>
         </section>
         <div className="flex min-h-0 shrink-0 p-2 max-[900px]:contents">
-          <div className="h-full w-[360px] shrink-0 overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-floating min-[1600px]:w-[400px] max-[1100px]:w-[320px] max-[900px]:absolute max-[900px]:bottom-2 max-[900px]:right-2 max-[900px]:top-[72px] max-[900px]:z-[4] max-[900px]:h-auto max-[900px]:shadow-floating max-[600px]:inset-x-1 max-[600px]:bottom-1 max-[600px]:top-[116px] max-[600px]:w-auto" ref={panelRef} role={compact && panel === "test" ? "dialog" : "complementary"} aria-modal={compact && panel === "test" ? true : undefined} aria-label={panel === "info" ? "规则信息面板" : "规则试运行面板"}>
+          <div className="h-full w-[360px] shrink-0 overflow-hidden rounded-xl border-hairline border-border bg-surface-floating min-[1600px]:w-[400px] max-[1100px]:w-[320px] max-[900px]:absolute max-[900px]:bottom-2 max-[900px]:right-2 max-[900px]:top-[72px] max-[900px]:z-[4] max-[900px]:h-auto max-[900px]:shadow-floating max-[600px]:inset-x-1 max-[600px]:bottom-1 max-[600px]:top-[116px] max-[600px]:w-auto" ref={panelRef} role={compact && panel === "test" ? "dialog" : "complementary"} aria-modal={compact && panel === "test" ? true : undefined} aria-label={panel === "info" ? "规则信息面板" : "规则试运行面板"}>
             {panel === "info" ? <RuleInfo rule={rule} detail={detail} onToggle={onToggle} onLocate={locate} /> : rule.workflow ? <WorkflowPreview draft={rule.workflow} tab={previewTab} onTabChange={setPreviewTab} onClose={() => setPanel("info")} onFocusNode={locate} /> : null}
           </div>
         </div>

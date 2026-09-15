@@ -151,7 +151,7 @@ function ConfigurationCheck({ draft, onFocusNode }: { draft: RuleWorkflowDraft; 
           <h3 className="mb-2 text-label font-medium text-fg-default">待完善</h3>
           <div className="flex flex-col gap-1">
             {issues.map((issue, index) => (
-              <button className={cn("flex w-full items-center gap-2 rounded-lg border-[0.5px] border-border bg-warning-surface p-3 text-left shadow-none", focusClass, styles.configurationIssueItem)} key={`${issue.nodeId}-${index}`} onClick={() => onFocusNode(issue.nodeId)} type="button">
+              <button className={cn("flex w-full items-center gap-2 rounded-lg border-hairline border-border bg-warning-surface p-3 text-left shadow-none", focusClass, styles.configurationIssueItem)} key={`${issue.nodeId}-${index}`} onClick={() => onFocusNode(issue.nodeId)} type="button">
                 <Info aria-hidden className="size-4 shrink-0 text-fg-warning" />
                 <span className="min-w-0 flex-1 break-words text-label leading-5 text-fg-default">{issue.message}</span>
                 <Arrow aria-hidden className="size-4 shrink-0 text-fg-subtle" />

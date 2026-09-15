@@ -4,7 +4,7 @@
 
 可以实现。当前最合适的路线是 **复用 `@shadcn/lint` 的分析引擎，维护 Zeron 的规则配置，再逐步补充 Zeron 特有的语义检查**。
 
-本次已完成私有 workspace 包 `packages/lint`、独立检查配置 `eslint.design.config.mjs` 和 `pnpm lint:design`。它是可运行的初版配置适配层，没有重写引擎，也没有发布 npm 包。现有页面尚未完成规则迁移，新命令暂不作为默认 CI 门禁。
+本次已完成私有 workspace 包 `packages/lint`、独立检查配置 `eslint.design.config.mjs` 和 `pnpm lint:design`。它复用上游引擎，没有重写引擎，也没有发布 npm 包。后续治理已将全量设计诊断降至 0，并把新命令接入默认 CI；完整实施结果见[治理方案](./zeron-design-lint-remediation-plan.md)。
 
 研究日期：2026-09-15。上游源码版本：[`53de86f`](https://github.com/shadcn-ui/lint/tree/53de86f0e7dcc341a9cb45c383a9f2c454d1e958)。实测 npm 版本：`@shadcn/lint@0.1.0`。
 

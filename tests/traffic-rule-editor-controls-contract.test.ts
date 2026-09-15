@@ -73,7 +73,7 @@ describe("traffic rule editor header controls", () => {
     expect(ruleWorkflow).toContain('<DialogFooter><Button onClick={onKeep} variant="tertiary">继续编辑</Button><Button onClick={onDiscard} variant="destructive">放弃修改</Button>');
     expect(limitForm).toContain('<DialogFooter><Button onClick={onKeep} variant="tertiary">继续编辑</Button><Button onClick={onDiscard} variant="destructive">放弃修改</Button>');
     expect(ruleForm).toContain('<Button onClick={onCancel} type="button" variant="tertiary">取消</Button>');
-    expect(ruleForm).toContain('<Button className="px-5" disabled={!canSave} type="submit">保存规则</Button>');
+    expect(ruleForm).toContain('<Button disabled={!canSave} type="submit">保存规则</Button>');
   });
 
   it("places the limit detail more action at the far right", () => {
@@ -86,7 +86,7 @@ describe("traffic rule editor header controls", () => {
   });
 
   it("uses a half-pixel preview border with a narrow-screen editor close button", () => {
-    expect(ruleWorkflowStyles).toContain("border: .5px solid var(--border)");
+    expect(ruleWorkflowStyles).toContain("border: var(--border-width-hairline) solid var(--border)");
     expect(ruleWorkflow).toContain('closeButtonClassName="hidden max-[900px]:inline-flex"');
     expect(ruleWorkflow).toContain("onClose={() => setShowPreview(false)}");
     expect(workflowPreview).toContain("onClose?: () => void");
@@ -104,12 +104,12 @@ describe("traffic rule editor header controls", () => {
   });
 
   it("uses warning surfaces with unchanged borders for shadowless configuration issue items", () => {
-    expect(workflowPreview).toContain('flex w-full items-center gap-2 rounded-lg border-[0.5px] border-border bg-warning-surface p-3 text-left shadow-none');
+    expect(workflowPreview).toContain('flex w-full items-center gap-2 rounded-lg border-hairline border-border bg-warning-surface p-3 text-left shadow-none');
     expect(workflowPreview).toContain('<Info aria-hidden className="size-4 shrink-0 text-fg-warning" />');
     expect(workflowPreview).toContain('<Arrow aria-hidden className="size-4 shrink-0 text-fg-subtle" />');
     expect(workflowPreview).toContain("focusClass, styles.configurationIssueItem");
     expect(ruleWorkflowStyles).toContain(".configurationIssueItem.configurationIssueItem:hover { background: color-mix(in srgb, var(--warning-surface) 80%, var(--warning-border)); }");
-    expect(limitWorkflowStyles).toMatch(/\.issueList button \{[\s\S]*border: \.5px solid var\(--border\);[\s\S]*background: var\(--warning-surface\);[\s\S]*box-shadow: none;/);
+    expect(limitWorkflowStyles).toMatch(/\.issueList button \{[\s\S]*border: var\(--border-width-hairline\) solid var\(--border\);[\s\S]*background: var\(--warning-surface\);[\s\S]*box-shadow: none;/);
     expect(limitWorkflowStyles).toMatch(/\.issueList button \{[\s\S]*align-items: center;/);
     expect(limitWorkflowStyles).toMatch(/\.issueList button:hover \{\s*background: color-mix\(in srgb, var\(--warning-surface\) 80%, var\(--warning-border\)\);/);
   });
