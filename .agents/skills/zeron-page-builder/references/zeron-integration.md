@@ -82,6 +82,8 @@ Retain required root providers already present in the project. Use the installed
 
 Use the project's verified Zeron token or surface entrypoint. Do not recommend an external package solely because it exists as a workspace package. Confirm that a package and its CSS, JavaScript, and type entrypoints are actually published before giving a consumer install command.
 
+The current Registry theme installs `tw-animate-css`, adds one CSS import, and provides the Zeron theme variables. Verify the import and dependency after installation rather than adding another import manually. Repeated authorized installs must leave only one import. Token-only consumers can use `@zeron/tokens` without loading the animation stylesheet.
+
 Optional paid icon packages require the user's explicit choice and credentials. Never copy tokens or private icon definitions into project files.
 
 Theme coexistence must account for portals. A wrapper around page content does not automatically theme a dialog or popover rendered elsewhere in the DOM; use the component system's actual portal and provider support.

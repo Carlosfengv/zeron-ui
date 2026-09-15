@@ -30,3 +30,28 @@ describe("cn semantic typography merging", () => {
     );
   });
 });
+
+describe("cn semantic border and motion merging", () => {
+  it("keeps a hairline width alongside a semantic border color", () => {
+    expect(cn("border-hairline", "border-border")).toBe(
+      "border-hairline border-border"
+    );
+    expect(cn("border-t-hairline", "border-t-border")).toBe(
+      "border-t-hairline border-t-border"
+    );
+  });
+
+  it("lets later widths override earlier widths", () => {
+    expect(cn("border-hairline", "border-2")).toBe("border-2");
+    expect(cn("border-2", "border-hairline")).toBe("border-hairline");
+    expect(cn("sm:border-l-hairline", "sm:border-l-2")).toBe("sm:border-l-2");
+  });
+
+  it("lets later semantic and native durations override each other", () => {
+    expect(cn("duration-fast", "duration-300")).toBe("duration-300");
+    expect(cn("duration-300", "duration-fast")).toBe("duration-fast");
+    expect(cn("data-open:duration-moderate", "data-open:duration-slow")).toBe(
+      "data-open:duration-slow"
+    );
+  });
+});

@@ -263,7 +263,7 @@ export function ComponentPreview({
         className={cn(
           "relative flex w-full flex-col gap-0 duration-moderate ease-out has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-inset has-[:focus-visible]:ring-fg-default/40",
           browserFrame
-            ? "overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-floating shadow-control"
+            ? "overflow-hidden rounded-xl border-hairline border-border bg-surface-floating shadow-control"
             : "rounded-3xl bg-surface-raised p-2",
           fill && "h-full min-h-0",
           isFullscreen && "h-svh w-screen rounded-none",
@@ -429,7 +429,7 @@ export function ComponentPreview({
       <div
         className={cn(
           "overflow-hidden",
-          browserFrame ? "rounded-none border-0" : "rounded-2xl border-[0.5px] border-border",
+          browserFrame ? "rounded-none border-0" : "rounded-2xl border-hairline border-border",
           (isFullscreen || fill) && "flex min-h-0 flex-1 flex-col",
         )}
       >

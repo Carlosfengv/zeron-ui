@@ -270,7 +270,7 @@ export default function QuillPage() {
             Q3 Planning
           </h1>
           <div className="mb-6 mt-2 flex items-center gap-2 text-label text-fg-muted">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-label text-white">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand text-label text-fg-on-brand">
               DK
             </span>
             Dana Kim · edited just now

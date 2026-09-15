@@ -98,7 +98,7 @@ export default function TimeRangeHistogramDoc() {
               <div className="flex flex-wrap items-center gap-3 text-label text-fg-muted">
                 {series.map((item) => (
                   <span className="flex items-center gap-1.5" key={item.dataKey}>
-                    <span aria-hidden className="size-2 rounded-[2px]" style={{ background: item.color }} />
+                    <span aria-hidden className="size-2 rounded-xs" style={{ background: item.color }} />
                     {item.label}
                   </span>
                 ))}

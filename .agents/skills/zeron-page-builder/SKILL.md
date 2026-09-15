@@ -20,6 +20,8 @@ Read [Zeron integration](references/zeron-integration.md) when resolving install
 
 Discover components from the current source catalogs or the consumer's matching Registry release. Use the installed version's public exports and types to verify APIs. Do not infer consumer imports from workspace examples or assume the newest guide describes an older installation.
 
+When design lint is configured, read its active component contracts and file scope before choosing styling overrides. Use the installed component API to interpret those policies; a linter's suggested prop or token is not proof that it exists or fits the product intent.
+
 If a matching guide is unavailable, inspect the actual source and applicable shared rules. Continue work that can be grounded safely and identify missing evidence. Resolve unknown file ownership before replacing existing files.
 
 ## Model and select
@@ -57,6 +59,8 @@ Template business files can be edited for the product; their managed dependencie
 
 Use `className` or `style` only within the selected component's customization contract. External layout adjustments and scoped business styles can be appropriate. Preserve internal semantic colors, focus, disabled and loading behavior, interaction feedback, and surface relationships. Use the library's existing token and spacing systems.
 
+Use `border-hairline` and its directional forms for intentional 0.5px dividers. Keep ordinary control borders and focus indicators at their component-defined width. For CSS transitions, use the semantic `duration-fast`, `duration-moderate`, or `duration-slow` tier and the corresponding `*-exit` tier when the exit is shorter. A duration class still needs a transition property or an animation utility. Preserve existing JavaScript spring ownership, and use `motion-reduce:*` when a nonessential CSS animation should stop.
+
 For a consumer install, use the verified Zeron CLI and the project's actual aliases. Inspect the plan when files, dependencies, or theme changes are material. Installation conflicts need a concrete resolution; do not silently overwrite, duplicate a primitive under a new name, or bypass required installation processing.
 
 If public capabilities cannot satisfy the request, identify the attempted components, missing capability, and smallest viable business implementation or library change. Complete independent work. Ask only for a missing decision that changes scope or authorizes an otherwise unapproved action; do not turn routine adapters into approval gates.
@@ -66,6 +70,8 @@ Replace demo data and actions with the requested integration. If external servic
 ## Verify and hand off
 
 Read [Verification](references/verification.md) before selecting checks. Discover which verification commands actually exist; do not assume a proposed CLI checker or MCP is installed.
+
+Use the [design-lint feedback loop](references/verification.md#design-lint-feedback-loop) when the target project has Zeron design lint. Check the affected files, repair task-introduced violations through public APIs and semantic tokens, then recheck. Keep pre-existing findings separate and retain runtime verification; a clean static check does not establish correct layout or interaction.
 
 Review the diff for changes to managed files, duplicated primitives, internal style overrides, and changes outside the requested scope. Run available usage checks and the narrowest meaningful type, build, or interaction checks. When the page can run, exercise the primary flow and relevant states at representative narrow and wide widths.
 

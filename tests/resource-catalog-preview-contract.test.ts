@@ -58,7 +58,7 @@ describe("Resource Catalog gallery preview", () => {
 
   it("uses a wider content area and four cards on wide displays", () => {
     expect(resourceCatalog).toContain(
-      '<PageBody className="max-w-[1620px] p-4 sm:px-[18px] sm:py-5">'
+      '<PageBody className="max-w-[1620px] p-4 sm:px-4.5 sm:py-5">'
     );
     expect(resourceCatalog).toContain('window.matchMedia("(min-width: 1536px)")');
     expect(resourceCatalog).toContain('return 4;');

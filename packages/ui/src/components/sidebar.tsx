@@ -303,7 +303,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
           "flex h-full min-h-0 flex-col overflow-hidden",
           !mobile && variant === "sidebar" && cn(
             "border-border-subtle",
-            side === "start" ? "border-e-[0.5px]" : "border-s-[0.5px]"
+            side === "start" ? "border-e-hairline" : "border-s-hairline"
           ),
           !mobile && variant === "floating" && cn(
             "m-2 h-[calc(100%-1rem)] border border-border-subtle",

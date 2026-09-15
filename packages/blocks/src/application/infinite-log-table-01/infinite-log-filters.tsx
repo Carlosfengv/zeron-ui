@@ -70,6 +70,8 @@ function toDateTimeRangeValue(timeRange?: InfiniteLogFilterState["timeRange"]): 
 }
 
 function latestTimelineTime(metadata?: InfiniteLogMetadata) {
+  const latestRecord = Date.parse(metadata?.timeline?.latestTimestamp ?? "");
+  if (Number.isFinite(latestRecord)) return new Date(latestRecord);
   const latest = Math.max(
     ...((metadata?.timeline?.buckets ?? [])
       .map((bucket) => Date.parse(bucket.end))

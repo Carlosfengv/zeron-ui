@@ -542,7 +542,7 @@ export function QueuedChatDemo({
                       setTapExpanded(false);
                     }}
                     aria-label="Collapse queued messages"
-                    className={`absolute bottom-0 left-0 flex items-center justify-center text-fg-muted outline-none hover:text-fg-default focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)] rounded-lg`}
+                    className={`absolute bottom-0 left-0 flex items-center justify-center text-fg-muted outline-none hover:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring rounded-lg`}
                     style={{ height: CARD_H, width: 40 }}
                   >
                     <ChevronDownIcon size={18} strokeWidth={2} />
@@ -692,7 +692,7 @@ export function QueuedChatDemo({
                               editQueuedMsg(item);
                             }}
                             aria-label={`Edit queued message: ${item.text}`}
-                            className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-fg-muted outline-none hover:bg-hover hover:text-fg-default focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]`}
+                            className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-fg-muted outline-none hover:bg-hover hover:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring`}
                           >
                             <PencilIcon size={14} strokeWidth={2} />
                           </button>
@@ -706,7 +706,7 @@ export function QueuedChatDemo({
                               removeQueuedMsg(item);
                             }}
                             aria-label={`Remove queued message: ${item.text}`}
-                            className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-fg-muted outline-none hover:bg-hover hover:text-fg-default focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]`}
+                            className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-fg-muted outline-none hover:bg-hover hover:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring`}
                           >
                             <XIcon size={14} strokeWidth={2.5} />
                           </button>

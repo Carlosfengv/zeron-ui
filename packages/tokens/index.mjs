@@ -1663,6 +1663,13 @@ const tokenData = {
       "usage": "较大内容区的进入过渡的退出过渡"
     }
   ],
+  "borderWidths": [
+    {
+      "name": "hairline",
+      "value": "0.5px",
+      "usage": "细分隔线与轻量边界；不替代控件强调边框和焦点指示器"
+    }
+  ],
   "fonts": {
     "family": "\"Inter\", system-ui, sans-serif"
   },
@@ -1793,6 +1800,7 @@ export const surfaceTokens = tokenData.surfaces;
 export const shadowTokens = tokenData.shadows;
 export const typographyTokens = tokenData.typography;
 export const motionDurationTokens = tokenData.motionDurations;
+export const borderWidthTokens = tokenData.borderWidths;
 export const fontTokens = tokenData.fonts;
 export const controlHeightTokens = tokenData.controlHeights;
 export const badgeHeightTokens = tokenData.badgeHeights;

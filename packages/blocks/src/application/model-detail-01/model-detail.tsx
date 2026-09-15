@@ -37,7 +37,7 @@ export interface ModelDetailProps extends Omit<ComponentPropsWithoutRef<"div">, 
 
 function AgentButtons({ model, onAgentSelect }: { model: ModelDetailData; onAgentSelect?: (agentId: string) => void }) {
   if (!model.agents.length) return null;
-  return <div className="mt-3 flex flex-wrap items-center gap-3 p-1" aria-label="兼容 Agent">{model.agents.map((agent) => <Tooltip key={agent.id} content={agent.name} side="top"><Button type="button" size="xl" variant="ghost" iconOnly className="size-10 !p-1 border border-border bg-transparent leading-none" onClick={() => onAgentSelect?.(agent.id)} aria-label={`在 ${agent.name} 中使用`}>{agent.logo && <span aria-hidden className="inline-flex size-8 shrink-0 items-center justify-center align-middle leading-none [&>svg]:block [&>svg]:size-8 [&>img]:block">{agent.logo}</span>}</Button></Tooltip>)}</div>;
+  return <div className="mt-3 flex flex-wrap items-center gap-3 p-1" aria-label="兼容 Agent">{model.agents.map((agent) => <Tooltip key={agent.id} content={agent.name} side="top"><Button type="button" size="xl" variant="ghost" iconOnly className="border border-border bg-transparent leading-none" onClick={() => onAgentSelect?.(agent.id)} aria-label={`在 ${agent.name} 中使用`}>{agent.logo && <span aria-hidden className="inline-flex size-8 shrink-0 items-center justify-center align-middle leading-none [&>svg]:block [&>svg]:size-8 [&>img]:block">{agent.logo}</span>}</Button></Tooltip>)}</div>;
 }
 
 function resolveLanguage(model: ModelDetailData, defaultLanguage?: ModelCodeLanguage) {

@@ -154,7 +154,7 @@ const agentSessionsCode = `const agents = [
             <NavItemContent><NavItemLabel>{session.title}</NavItemLabel></NavItemContent>
           </NavItemTrigger>
           <span className="relative mr-1 flex h-8 min-w-11 items-center justify-end">
-            {session.badge ?? <span className="text-[10px] text-fg-subtle">{session.updatedAt}</span>}
+            {session.badge ?? <span className="text-label text-fg-subtle">{session.updatedAt}</span>}
             <DropdownMenu>
               <DropdownTrigger render={<NavItemAction className="absolute right-0 mr-0 size-6 opacity-0 group-hover/nav-item:opacity-100 group-focus-within/nav-item:opacity-100" />} />
               <DropdownContent align="end"><MenuItem index={0} label="重命名" /></DropdownContent>
@@ -448,7 +448,7 @@ function AgentSessionsDemo() {
                     <span className="flex min-w-0 items-center gap-1">
                       <Image
                         alt=""
-                        className="size-5 shrink-0 rounded-md border-[0.5px] border-border object-cover"
+                        className="size-5 shrink-0 rounded-md border-hairline border-border object-cover"
                         height={20}
                         src="/figma/nav-menu-agent-avatar.png"
                         width={20}
@@ -462,7 +462,7 @@ function AgentSessionsDemo() {
                         render={
                           <Button
                             aria-label={`${agent.name} 更多操作`}
-                            className="absolute right-6 top-1 size-6 text-fg-muted"
+                            className="absolute right-6 top-1 text-fg-muted"
                             iconOnly
                             size="xs"
                             type="button"
@@ -506,13 +506,13 @@ function AgentSessionsDemo() {
                               <Badge
                                 size="sm"
                                 status={session.badgeStatus}
-                                className="h-5 rounded px-1 text-[10px] leading-5 transition-opacity group-hover/nav-item:opacity-0 group-focus-within/nav-item:opacity-0"
+                                className="h-5 rounded px-1 text-label leading-5 transition-opacity group-hover/nav-item:opacity-0 group-focus-within/nav-item:opacity-0"
                                 style={session.badgeStatus ? undefined : { backgroundColor: "var(--inverse-background)", color: "var(--fg-on-inverse)" }}
                               >
                                 {session.badge}
                               </Badge>
                             ) : (
-                              <span className="whitespace-nowrap text-[10px] text-fg-subtle transition-opacity group-hover/nav-item:opacity-0 group-focus-within/nav-item:opacity-0">
+                              <span className="whitespace-nowrap text-label text-fg-subtle transition-opacity group-hover/nav-item:opacity-0 group-focus-within/nav-item:opacity-0">
                                 {session.updatedAt}
                               </span>
                             )}

@@ -19,7 +19,7 @@ describe("Tabs selected color contract", () => {
     expect(tabs).toContain('brand: "bg-brand"');
     expect(tabs).toContain('neutral: "bg-inverse-background"');
     expect(tabs).toContain(
-      'default: "border-[0.5px] border-border bg-surface-floating"'
+      'default: "border-hairline border-border bg-surface-floating"'
     );
     expect(tabs).toContain('brand: "text-fg-on-brand"');
     expect(tabs).toContain('neutral: "text-fg-on-inverse"');

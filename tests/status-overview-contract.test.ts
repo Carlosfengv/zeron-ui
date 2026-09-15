@@ -28,7 +28,7 @@ describe("StatusOverview contract", () => {
   });
 
   it("uses the documented semantic colors, surface recipe, and empty-state texture", () => {
-    expect(source).toContain("rounded-xl border-[0.5px] border-border bg-surface-floating p-3");
+    expect(source).toContain("rounded-xl border-hairline border-border bg-surface-floating p-3");
     expect(source).toContain("bg-success-border");
     expect(source).toContain("bg-warning-border");
     expect(source).toContain("bg-danger-border");

@@ -102,7 +102,7 @@ export function PlaygroundPanel({
 
   return (
     <SurfaceProvider role="floating">
-      <div className="w-full rounded-lg border-[0.5px] border-border-subtle bg-surface-floating p-4">
+      <div className="w-full rounded-lg border-hairline border-border-subtle bg-surface-floating p-4">
         <div className="flex items-center justify-between px-1 pb-2 pt-2">
           <h2
             className="text-title text-fg-default leading-none font-semibold"

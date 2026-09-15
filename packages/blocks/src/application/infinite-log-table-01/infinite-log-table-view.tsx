@@ -613,7 +613,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                     <Checkbox aria-label="Select all loaded logs" checked={allLoadedSelected ? true : someLoadedSelected ? "indeterminate" : false} onCheckedChange={onToggleAllLoaded} />
                   ) : field && !headerFilter ? (
                     <div className="flex min-w-0 flex-1 items-center">
-                      <Button className={cn("-ml-2 min-w-0 flex-1 whitespace-nowrap px-2", headerTitleClassName)} leadingIcon={infiniteLogFieldIcons[column]} onClick={() => updateSort(column)} size="sm" trailingIcon={SortIcon} type="button" variant="ghost">
+                      <Button className={cn("-ml-2 min-w-0 flex-1 whitespace-nowrap", headerTitleClassName)} leadingIcon={infiniteLogFieldIcons[column]} onClick={() => updateSort(column)} size="sm" trailingIcon={SortIcon} type="button" variant="ghost">
                         {getColumnLabel(column, labels)}
                       </Button>
                     </div>
@@ -630,7 +630,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                   {column !== "select" && (
                     <div
                       aria-label={`Resize ${getColumnLabel(column, labels)} column`}
-                      className={cn("absolute inset-y-0 right-0 w-1 cursor-col-resize touch-none bg-transparent hover:bg-border-strong", table.getColumn(column)?.getIsResizing() && "bg-focus-ring")}
+                      className={cn("absolute inset-y-0 right-0 w-1 cursor-col-resize touch-none bg-transparent hover:bg-input-hover", table.getColumn(column)?.getIsResizing() && "bg-focus-ring")}
                       onDoubleClick={() => table.getColumn(column)?.resetSize()}
                       onMouseDown={header?.getResizeHandler()}
                       onTouchStart={header?.getResizeHandler()}
@@ -675,9 +675,9 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                     style={{ gridTemplateColumns, height: `${virtualRow.size}px`, top: `${virtualRow.start}px` }}
                   >
                     <div aria-colspan={visibleColumns.length} className="sticky left-0 flex h-full w-full max-w-[100vw] justify-self-start items-center gap-2 px-3" role="gridcell" style={{ gridColumn: "1 / -1" }}>
-                      <span aria-hidden className="h-px w-6 shrink-0 bg-border-strong" />
+                      <span aria-hidden className="h-px w-6 shrink-0 bg-border" />
                       <span aria-live="polite" className="whitespace-nowrap text-label font-medium text-fg-default">{label}</span>
-                      <span aria-hidden className="h-px min-w-8 flex-1 bg-border-strong" />
+                      <span aria-hidden className="h-px min-w-8 flex-1 bg-border" />
                     </div>
                   </div>
                 );

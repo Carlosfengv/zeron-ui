@@ -115,7 +115,7 @@ function CreditBar({
           aria-hidden="true"
           className={cn(
             "h-full min-w-0 transition-[flex-grow] duration-slow motion-reduce:transition-none",
-            index > 0 && "border-l-[3px] border-surface-floating",
+            index > 0 && "border-l-3 border-surface-floating",
           )}
           key={model.id}
           style={{
@@ -128,7 +128,7 @@ function CreditBar({
       {remaining > 0 && (
         <span
           aria-hidden="true"
-          className="h-full min-w-0 border-l-[3px] border-surface-floating bg-info-surface"
+          className="h-full min-w-0 border-l-3 border-surface-floating bg-info-surface"
           style={{ flexBasis: 0, flexGrow: remaining / denominator }}
         />
       )}
@@ -235,7 +235,7 @@ function CyclePanel({
         </div>
 
         {data.projection && (
-          <p className="mt-3 flex items-center gap-2 text-caption">
+          <p className="mt-3 flex items-center gap-2 text-label">
             <TrendIcon
               aria-hidden="true"
               className="shrink-0 rotate-45 text-fg-warning"
@@ -329,7 +329,7 @@ export function CreditUsage({
   return (
     <Card
       className={cn(
-        "@container w-full max-w-[520px] overflow-hidden rounded-2xl border-[0.5px] border-border bg-surface-floating pb-0 shadow-raised",
+        "@container w-full max-w-[520px] overflow-hidden rounded-2xl border-hairline border-border bg-surface-floating pb-0 shadow-raised",
         className,
       )}
       {...props}
@@ -394,7 +394,7 @@ export function CreditUsage({
             <h2 className="text-body font-medium text-fg-default">
               {autoSwitchTitle}
             </h2>
-            <p className="mt-0.5 text-caption text-fg-subtle">
+            <p className="mt-0.5 text-label text-fg-subtle">
               {data.autoSwitch.description ?? labels.autoSwitchDescription}
             </p>
           </div>

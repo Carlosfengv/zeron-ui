@@ -123,7 +123,7 @@ const ResourceDetailLayout = forwardRef<
               {leading && (
                 <div
                   data-slot="resource-detail-leading"
-                  className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border-[0.5px] border-border bg-muted p-1"
+                  className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border-hairline border-border bg-muted p-1"
                 >
                   {leading}
                 </div>

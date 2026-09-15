@@ -349,7 +349,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
         aria-busy={loading || undefined}
         className={cn(
           "group/metric-card relative flex h-auto min-h-0 self-start min-w-0 flex-col",
-          "rounded-xl border-[0.5px] border-border bg-surface-floating p-3",
+          "rounded-xl border-hairline border-border bg-surface-floating p-3",
           interactive && "cursor-pointer transition-colors duration-fast hover:bg-hover",
           className
         )}
@@ -421,7 +421,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
             <div
               role="separator"
               data-slot="metric-card-separator"
-              className="relative h-2 w-full before:absolute before:inset-x-0 before:top-1/2 before:border-t-[0.5px] before:border-border"
+              className="relative h-2 w-full before:absolute before:inset-x-0 before:top-1/2 before:border-t-hairline before:border-border"
             />
           )}
 

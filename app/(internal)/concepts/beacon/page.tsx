@@ -82,11 +82,11 @@ const BACKLOG: Issue[] = [
   { key: "ENG-154", title: "Keyboard-only triage flow", status: "todo", priority: "medium", assignee: "SL" },
 ];
 
-const ASSIGNEE_COLOR: Record<string, string> = {
-  DK: "bg-blue-500",
-  MR: "bg-violet-500",
-  AJ: "bg-emerald-500",
-  SL: "bg-rose-500",
+const ASSIGNEE_STYLE: Record<string, string> = {
+  DK: "bg-brand text-fg-on-brand",
+  MR: "bg-info-surface text-fg-info",
+  AJ: "bg-success-surface text-fg-success",
+  SL: "bg-danger-surface text-fg-danger",
 };
 
 const PRIORITY_FILTER = [
@@ -102,9 +102,10 @@ const PRIORITY_FILTER = [
 function Avatar({ initials }: { initials: string }) {
   return (
     <span
-      className={cn(`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-label text-white ${
-                        ASSIGNEE_COLOR[initials] ?? "bg-neutral-500"
-                      }`, "font-semibold")}
+      className={cn(
+        "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-label font-semibold",
+        ASSIGNEE_STYLE[initials] ?? "bg-neutral-status-surface text-fg-neutral-status",
+      )}
     >
       {initials}
     </span>
@@ -331,7 +332,7 @@ function TriagePanel({
 
       {state === "done" && (
         <div className="flex items-center gap-2 text-body text-fg-default">
-          <Check size={16} className="text-emerald-500" />
+          <Check size={16} className="text-fg-success" />
           Applied 3 changes · re-ranked the Active view.
         </div>
       )}

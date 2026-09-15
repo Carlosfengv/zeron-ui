@@ -539,7 +539,7 @@ function TreePlayground() {
       <PlayDivider />
       <PlaySection label={t("playgroundDataAndState")} />
       <PlayField label={t("playgroundFilter")}>
-        <input aria-label={t("playgroundFilter")} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("searchPlaceholder")} className="h-7 w-28 rounded-md border border-input bg-surface px-2 text-label outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" />
+        <input aria-label={t("playgroundFilter")} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("searchPlaceholder")} className="h-7 w-28 rounded-md border border-input bg-surface-floating px-2 text-label outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" />
       </PlayField>
       <PlayField label={t("playgroundStatus")}>
         <PlaySelect value={status} onChange={(value) => setStatus(value as PlaygroundStatus)} options={[{ value: "ready", label: t("playgroundReady") }, { value: "loading", label: t("playgroundLoading") }, { value: "error", label: t("playgroundError") }]} />
@@ -698,7 +698,7 @@ export default function TreeDoc() {
               value={metricQuery}
               onChange={(event) => setMetricQuery(event.target.value)}
               placeholder={t("metricCatalogSearchPlaceholder")}
-              className="h-control-md rounded-lg border border-input bg-surface px-3 text-body outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              className="h-control-md rounded-lg border border-input bg-surface-floating px-3 text-body outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
             />
             <Tree
               aria-label={t("metricCatalogAriaLabel")}
@@ -841,7 +841,7 @@ export default function TreeDoc() {
         <ComponentPreview code={`<Tree query={query} expandedKeys={expandedKeys} selectedKeys={selectedKeys} onExpandedChange={setExpandedKeys} onSelectionChange={setSelectedKeys} />`}>
           <div className="flex w-full max-w-md flex-col gap-3">
             <label className="text-label text-fg-muted" htmlFor="tree-search">{t("searchLabel")}</label>
-            <input id="tree-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("searchPlaceholder")} className="h-control-md rounded-lg border border-input bg-surface px-3 text-body outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" />
+            <input id="tree-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("searchPlaceholder")} className="h-control-md rounded-lg border border-input bg-surface-floating px-3 text-body outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" />
             <Tree
               aria-label="Controlled workspace tree"
               items={richItems}

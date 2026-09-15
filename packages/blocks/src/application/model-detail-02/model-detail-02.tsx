@@ -368,6 +368,7 @@ function ProviderLogo({ name }: { name: string }) {
   return <Logo aria-hidden className="shrink-0" size={16} />;
 }
 
+/* eslint-disable shadcn/no-raw-colors -- The embedded OMP mark keeps its audited brand artwork colors. */
 function OmpLogo() {
   return (
     <svg aria-hidden className="size-4 shrink-0" viewBox="0 0 64 64">
@@ -383,6 +384,7 @@ function OmpLogo() {
     </svg>
   );
 }
+/* eslint-enable shadcn/no-raw-colors */
 
 function AppLogo({ id }: { id: string }) {
   const FallbackIcon = useIcon("rocket");

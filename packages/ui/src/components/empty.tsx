@@ -372,6 +372,7 @@ const previewFacePath =
   "M38.7187 0.523253C39.7224 1.03555 40.3592 2.25392 40.3592 3.97748V41.5979C40.3592 44.692 38.2965 48.2428 35.7562 49.5372L4.84306 65.2915C3.71477 65.8661 2.68336 65.8936 1.88741 65.4852C0.883654 64.973 0.246914 63.7546 0.246914 62.031V24.4109C0.246914 21.3168 2.30963 17.7657 4.84998 16.4713L35.7631 0.717327C36.8914 0.142809 37.9228 0.114858 38.7187 0.523253Z";
 
 /** Theme-aware built-in illustrations. Uploaded images can use EmptyMedia directly. */
+/* eslint-disable shadcn/no-raw-colors -- White stops are luminance constants for the SVG mask, not theme colors. */
 function EmptyIllustration({
   variant = "general",
   decorative = true,
@@ -798,6 +799,7 @@ function EmptyIllustration({
     </svg>
   );
 }
+/* eslint-enable shadcn/no-raw-colors */
 
 export {
   Empty,

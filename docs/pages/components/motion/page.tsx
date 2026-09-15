@@ -153,7 +153,7 @@ function SpringReferenceSection() {
             aria-label={`Play ${key} enter then exit`}
             className={cn(
               "flex h-7 cursor-pointer items-center rounded-full bg-muted px-0.5 outline-none",
-              "focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
+              "focus-visible:ring-1 focus-visible:ring-focus-ring",
               trackWidth,
               atEnds[i] ? "justify-end" : "justify-start"
             )}
@@ -242,7 +242,7 @@ function SpringTokensDemo() {
               onClick={() => setAtEnd((v) => !v)}
               aria-label={`Run the ${key} spring`}
               className={cn(
-                "flex h-10 w-full cursor-pointer items-center rounded-full bg-muted px-1 outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
+                "flex h-10 w-full cursor-pointer items-center rounded-full bg-muted px-1 outline-none focus-visible:ring-1 focus-visible:ring-focus-ring",
                 atEnd ? "justify-end" : "justify-start"
               )}
             >

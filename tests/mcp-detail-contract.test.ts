@@ -52,7 +52,7 @@ describe("MCP detail block contract", () => {
     expect(source).toContain("content={agent.name}");
     expect(source).toContain("size=\"xl\" iconOnly");
     expect(source).toContain("gap-3 p-1");
-    expect(source).toContain("size-10 !p-1 border border-border bg-transparent leading-none");
+    expect(source).toContain('variant="ghost" size="xl" iconOnly className="border border-border bg-transparent leading-none"');
     expect(source).toContain("items-center justify-center align-middle leading-none");
     expect(registry).toContain('"tooltip"');
     expect(registry).toContain('"dependencies": ["tw-animate-css", "@lobehub/icons", "@thesvg/icons"]');

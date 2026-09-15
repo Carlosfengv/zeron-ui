@@ -124,11 +124,11 @@ function FileThumbnail({ file, size, className }: FileThumbnailProps) {
         // Circular spinner while we wait for the preview to be ready.
         // Used for both images (brief URL-creation gap) and PDFs (longer
         // pdfjs render). The thin ring is mostly subtle (border-border)
-        // with one quadrant accented (border-t-muted-foreground) so the
+        // with one quadrant accented (border-t-fg-muted) so the
         // `animate-spin` rotation reads as a moving arc.
         <div className="absolute inset-0 flex items-center justify-center">
           <div
-            className="w-6 h-6 rounded-full border-2 border-border border-t-muted-foreground animate-spin"
+            className="w-6 h-6 rounded-full border-2 border-border border-t-fg-muted animate-spin"
             aria-label="Loading preview"
             role="status"
           />

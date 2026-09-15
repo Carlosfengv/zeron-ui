@@ -184,7 +184,7 @@ function PlatformShortcutHint() {
 
 function ClusterEnvironmentSearchTrigger({ onOpen }: { onOpen: () => void }) {
   const Search = useIcon("search");
-  return <Button aria-keyshortcuts="Meta+K Control+K" className="h-control-lg w-full justify-start px-1.5" onClick={onOpen} size="lg" type="button" variant="ghost"><span className="flex w-full min-w-0 items-center gap-1"><Search aria-hidden className="size-4 shrink-0" strokeWidth={1.5} /><span>搜索</span><PlatformShortcutHint /></span></Button>;
+  return <Button aria-keyshortcuts="Meta+K Control+K" className="w-full justify-start" onClick={onOpen} size="lg" type="button" variant="ghost"><span className="flex w-full min-w-0 items-center gap-1"><Search aria-hidden className="size-4 shrink-0" strokeWidth={1.5} /><span>搜索</span><PlatformShortcutHint /></span></Button>;
 }
 
 interface ClusterEnvironmentNavigationPanelProps {
@@ -227,7 +227,7 @@ function ClusterEnvironmentNavigationPanel({ organization, onOrganizationChange,
       <SidebarGroup><SidebarGroupContent><NavMenu activeValue={clusterEnvironmentHref} aria-label="主要导航" keyboardNavigation="roving">{primary.map(renderItem)}</NavMenu></SidebarGroupContent></SidebarGroup>
       <SidebarGroup><SidebarGroupLabel>我的服务</SidebarGroupLabel><SidebarGroupContent><NavMenu activeValue={null} aria-label="我的服务" keyboardNavigation="roving">{services.map(renderItem)}</NavMenu></SidebarGroupContent></SidebarGroup>
       <SidebarGroup>
-        <div className="flex items-center justify-between px-1.5 pb-1"><SidebarGroupLabel className="p-0">诊断会话</SidebarGroupLabel><Button className="h-auto px-0 text-label text-fg-brand underline underline-offset-2" size="xs" type="button" variant="ghost">新建会话</Button></div>
+        <div className="flex items-center justify-between px-1.5 pb-1"><SidebarGroupLabel className="p-0">诊断会话</SidebarGroupLabel><Button size="xs" type="button" variant="link">新建会话</Button></div>
         <NavMenu activeValue={null} aria-label="诊断会话" keyboardNavigation="roving">{["使用 specialist-network - 新会话", "在使用率最高的那台设备上…"].map((session) => <NavItem key={session} value={session}><NavItemTrigger className="px-1.5" onClick={(event) => event.preventDefault()} render={<a href="#diagnostic-sessions" />}><NavItemLeading><Chat aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading><NavItemContent><NavItemLabel>{session}</NavItemLabel></NavItemContent></NavItemTrigger><span className="relative me-1 flex h-control-md w-8 shrink-0 items-center justify-end"><span className="whitespace-nowrap text-label text-fg-subtle transition-opacity group-hover/nav-item:opacity-0 group-focus-within/nav-item:opacity-0">2分钟</span><DropdownMenu><DropdownTrigger render={<Button aria-label={`${session} 更多操作`} className="pointer-events-none absolute right-0 opacity-0 group-hover/nav-item:pointer-events-auto group-hover/nav-item:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100" iconOnly size="xs" type="button" variant="ghost"><More aria-hidden size={16} strokeWidth={1.5} /></Button>} /><DropdownContent align="end" className="w-36"><MenuItem index={0} label="重命名会话" onSelect={() => undefined} /><MenuItem index={1} label="删除会话" onSelect={() => undefined} /></DropdownContent></DropdownMenu></span></NavItem>)}</NavMenu>
       </SidebarGroup>
     </SidebarContent>
@@ -254,14 +254,14 @@ function PageLayout({ children, className, ...props }: ComponentPropsWithoutRef<
 
   return <SidebarProvider breakpointBehavior="collapse"><div className={cn("flex h-full min-h-[44rem] min-w-0 w-full overflow-hidden bg-surface-base", className)} {...props}>
     <Sidebar ariaLabel="操作导航" className="relative h-full" collapsible="offcanvas" mobileWidth="min(260px, calc(100vw - 24px))" width="260px"><ClusterEnvironmentNavigationPanel {...navigationPanelProps} onSearchOpen={() => setSearchOpen(true)} showSidebarTrigger /></Sidebar>
-    <BasePageLayout className="h-full min-w-0 flex-1"><PageHeader className="h-control-sm py-0 max-sm:flex-row"><div className="flex h-full min-w-0 items-center gap-2"><SidebarFloatingTrigger className="shrink-0" collapsedBehavior="offcanvas" contentClassName="h-[min(36rem,calc(100svh-4rem))] w-[260px] max-w-[calc(100vw-12px)] rounded-xl p-0" label="展开操作导航" menuLabel="打开操作导航菜单" renderContent={({ close }) => <ClusterEnvironmentNavigationPanel {...navigationPanelProps} onNavigate={close} onSearchOpen={() => { close(); setSearchOpen(true); }} />} size="xs" surfaceClassName="border-[0.5px] border-border-subtle" surfaceShadow="floating-drop" /><PageHeaderContent className="h-full" icon={List}><Breadcrumb><BreadcrumbList><BreadcrumbItem><BreadcrumbPage>集群环境</BreadcrumbPage></BreadcrumbItem><BreadcrumbSeparator /><BreadcrumbItem><BreadcrumbPage>金融核心环境</BreadcrumbPage></BreadcrumbItem></BreadcrumbList></Breadcrumb></PageHeaderContent></div></PageHeader>{content}</BasePageLayout>
+    <BasePageLayout className="h-full min-w-0 flex-1"><PageHeader className="h-control-sm py-0 max-sm:flex-row"><div className="flex h-full min-w-0 items-center gap-2"><SidebarFloatingTrigger className="shrink-0" collapsedBehavior="offcanvas" contentClassName="h-[min(36rem,calc(100svh-4rem))] w-[260px] max-w-[calc(100vw-12px)] rounded-xl p-0" label="展开操作导航" menuLabel="打开操作导航菜单" renderContent={({ close }) => <ClusterEnvironmentNavigationPanel {...navigationPanelProps} onNavigate={close} onSearchOpen={() => { close(); setSearchOpen(true); }} />} size="xs" surfaceClassName="border-hairline border-border-subtle" surfaceShadow="floating-drop" /><PageHeaderContent className="h-full" icon={List}><Breadcrumb><BreadcrumbList><BreadcrumbItem><BreadcrumbPage>集群环境</BreadcrumbPage></BreadcrumbItem><BreadcrumbSeparator /><BreadcrumbItem><BreadcrumbPage>金融核心环境</BreadcrumbPage></BreadcrumbItem></BreadcrumbList></Breadcrumb></PageHeaderContent></div></PageHeader>{content}</BasePageLayout>
   </div><Dialog onOpenChange={setSearchOpen} open={searchOpen}><DialogContent size="sm"><DialogHeader><DialogTitle>搜索 ZAIops</DialogTitle><DialogDescription>搜索会话、集群环境、巡检报告和服务记录。</DialogDescription></DialogHeader><div className="rounded-lg border border-border-subtle px-3 py-2 text-body text-fg-subtle">输入关键词开始搜索…</div></DialogContent></Dialog></SidebarProvider>;
 }
 
 function EnvironmentHero({ environment, onAskAI, onRefresh, onRunInspection }: { environment: ClusterEnvironmentSummary; onAskAI?: () => void; onRefresh?: () => void; onRunInspection?: () => void }) {
   const Library = useIcon("square-library");
   const Clock = useIcon("clock");
-  return <Card className="overflow-hidden rounded-xl border-[0.5px] border-border bg-[linear-gradient(160deg,var(--info-surface)_-80%,var(--surface-floating)_52%)] p-3">
+  return <Card className="overflow-hidden rounded-xl border-hairline border-border bg-[linear-gradient(160deg,var(--info-surface)_-80%,var(--surface-floating)_52%)] p-3">
     <CardContent className="flex min-w-0 flex-col gap-2 p-0">
       <div className="flex min-w-0 items-center gap-2.5 px-2.5 py-2">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-hover text-fg-brand"><Library size={20} strokeWidth={1.5} /></span>
@@ -275,7 +275,7 @@ function EnvironmentHero({ environment, onAskAI, onRefresh, onRunInspection }: {
 }
 
 function ScoreStrip({ items }: { items: readonly HealthScoreItem[] }) {
-  return <div className="grid overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-floating sm:grid-cols-2 xl:grid-cols-5">{items.map((item) => <MetricCard key={item.label} label={item.label} value={item.score} footer={<span className={cn(item.tone === "attention" && "inline-flex rounded bg-warning-surface px-1 text-fg-warning")}>{item.status}</span>} className="min-h-[108px] self-stretch rounded-none border-0 border-b-[0.5px] border-border bg-transparent p-3 [&_[data-slot=metric-card-value-row]>span]:text-fg-brand last:border-b-0 sm:even:border-l-[0.5px] xl:border-b-0 xl:border-l-[0.5px] xl:first:border-l-0" />)}</div>;
+  return <div className="grid overflow-hidden rounded-xl border-hairline border-border bg-surface-floating sm:grid-cols-2 xl:grid-cols-5">{items.map((item) => <MetricCard key={item.label} label={item.label} value={item.score} footer={<span className={cn(item.tone === "attention" && "inline-flex rounded bg-warning-surface px-1 text-fg-warning")}>{item.status}</span>} className="min-h-[108px] self-stretch rounded-none border-0 border-b-hairline border-border bg-transparent p-3 [&_[data-slot=metric-card-value-row]>span]:text-fg-brand last:border-b-0 sm:even:border-l-hairline xl:border-b-0 xl:border-l-hairline xl:first:border-l-0" />)}</div>;
 }
 
 function ResolutionRecords({ records }: { records: readonly IncidentResolutionRecord[] }) {
@@ -315,7 +315,7 @@ function Incidents({ incidents, total, onAskAI, onMute, onResolve, onSelect }: {
       },
       {
         accessorKey: "resourceName",
-        cell: ({ row }) => onSelect ? <Button className="-mx-2 h-auto min-h-0 justify-start px-2 py-1 text-left font-medium" onClick={() => onSelect(row.original)} size="sm" variant="ghost"><span className="block">{row.original.resourceName}</span><span className="block text-label font-normal text-fg-subtle">{row.original.resourceType}</span></Button> : <div><p className="font-medium text-fg-default">{row.original.resourceName}</p><p className="text-label text-fg-subtle">{row.original.resourceType}</p></div>,
+        cell: ({ row }) => onSelect ? <Button className="-mx-2 justify-start text-left font-medium" contentSized onClick={() => onSelect(row.original)} size="sm" variant="ghost"><span className="block">{row.original.resourceName}</span><span className="block text-label font-normal text-fg-subtle">{row.original.resourceType}</span></Button> : <div><p className="font-medium text-fg-default">{row.original.resourceName}</p><p className="text-label text-fg-subtle">{row.original.resourceType}</p></div>,
         filterFn: (row, _id, value: string) => {
           const query = String(value ?? "").trim().toLocaleLowerCase();
           return !query || [row.original.resourceName, row.original.resourceType, row.original.title, row.original.description].some((text) => text.toLocaleLowerCase().includes(query));

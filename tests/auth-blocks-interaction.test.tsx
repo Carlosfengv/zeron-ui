@@ -37,7 +37,7 @@ describe("authentication block interactions", () => {
     expect(
       container
         .querySelector('[data-slot="auth-layout-body"]')
-        ?.classList.contains("border-[0.5px]")
+        ?.classList.contains("border-hairline")
     ).toBe(true);
 
     for (const name of ["Login with Apple", "Login with Google"]) {
@@ -57,7 +57,7 @@ describe("authentication block interactions", () => {
     expect(
       container
         .querySelector('[data-slot="auth-layout-body"]')
-        ?.classList.contains("border-[0.5px]")
+        ?.classList.contains("border-hairline")
     ).toBe(false);
 
     for (const name of ["Continue with Apple", "Continue with Google"]) {

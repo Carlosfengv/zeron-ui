@@ -376,7 +376,7 @@ export function ResourceCatalog({ kind = "model", items, onKindChange, onResourc
           </PageSidebar>
 
           <PageContent>
-            <PageBody className="max-w-[1620px] p-4 sm:px-[18px] sm:py-5">
+            <PageBody className="max-w-[1620px] p-4 sm:px-4.5 sm:py-5">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-label text-fg-muted">{activeFilterLabel}</p>

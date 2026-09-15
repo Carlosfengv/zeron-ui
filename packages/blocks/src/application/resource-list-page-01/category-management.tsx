@@ -170,7 +170,7 @@ function CategoryDetails({
       className="flex h-full min-h-0 flex-col"
     >
       <div className="p-3">
-        <InfoItemLeading className="border-[0.5px] border-border bg-surface-overlay text-fg-brand">
+        <InfoItemLeading className="border-hairline border-border bg-surface-overlay text-fg-brand">
           <CategoryIcon aria-hidden size={20} strokeWidth={1.5} />
         </InfoItemLeading>
         <h2 className="mt-3 truncate text-body font-medium text-fg-default">

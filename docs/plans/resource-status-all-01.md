@@ -33,7 +33,7 @@ Figma 节点的自然尺寸为 `701 × 249 px`，结构如下：
 | 外层卡片 | `Card` + `CardContent` | 使用现有 Card 组合，不新增 Surface/Card 组件 |
 | 类名合并 | `cn` | 复用 `@zeron/ui/system/utils` |
 | 卡片背景 | `bg-surface-floating` | 对应项目浮动内容承载面，并自动适配暗色模式 |
-| 外框 | `border-[0.5px] border-border` | 使用现有边界语义 token |
+| 外框 | `border-hairline border-border` | 使用现有边界语义 token |
 | 圆角 | `rounded-xl` | 对应设计稿 `12px` |
 | 主要文字 | `text-fg-default` | 标题、中央总数 |
 | 次要文字 | `text-fg-muted` | 右侧标签和状态值 |

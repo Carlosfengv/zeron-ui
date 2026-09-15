@@ -1,0 +1,20 @@
+{
+  "name": "@zeron/lint",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Zeron Design policies for the shadcn Tailwind linter.",
+  "type": "module",
+  "exports": {
+    ".": "./index.mjs"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "dependencies": {
+    "@zeron/tokens": "workspace:*",
+    "@shadcn/lint": "0.1.0"
+  },
+  "peerDependencies": {
+    "eslint": ">=9.30.0"
+  }
+}

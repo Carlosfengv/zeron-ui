@@ -95,7 +95,7 @@ describe("updates commit history", () => {
 
   it("bounds the updates workspace so PageContent owns overflow scrolling", () => {
     const source = fs.readFileSync(path.join(process.cwd(), "docs/components/shell/site/site-shell.tsx"), "utf8");
-    expect(source).toContain("const isBoundedWorkspace = isComponentsWorkspace || isUpdatesPage;");
+    expect(source).toContain("const isBoundedWorkspace = isComponentsWorkspace || isUpdatesPage || isArtifactGallery;");
     expect(source).toContain('isBoundedWorkspace ? "h-svh overflow-hidden"');
     expect(source).toContain('isBoundedWorkspace ? "h-full min-h-0 min-w-0 flex-1"');
   });

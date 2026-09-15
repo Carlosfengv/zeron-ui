@@ -94,7 +94,7 @@ export function AgentMessageTrace({
         orientation={horizontal ? "horizontal" : "vertical"}
       >
         <ResizablePanel
-          className="overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-floating"
+          className="overflow-hidden rounded-xl border-hairline border-border bg-surface-floating"
           defaultSize={horizontal ? undefined : "60%"}
           id={`agent-message-trace-timeline-${horizontal ? "horizontal" : "vertical"}`}
           minSize={horizontal ? "30rem" : "10rem"}
@@ -122,7 +122,7 @@ export function AgentMessageTrace({
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel
-          className="overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-floating"
+          className="overflow-hidden rounded-xl border-hairline border-border bg-surface-floating"
           defaultSize={horizontal ? inspectorDefaultSize : "40%"}
           groupResizeBehavior={horizontal ? "preserve-pixel-size" : "preserve-relative-size"}
           id={`agent-message-trace-inspector-${horizontal ? "horizontal" : "vertical"}`}

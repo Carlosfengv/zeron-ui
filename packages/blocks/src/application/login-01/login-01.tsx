@@ -179,7 +179,7 @@ export function Login01({
           </Link>
         </AuthLayoutHeader>
 
-        <AuthLayoutBody className="border-[0.5px] border-border">
+        <AuthLayoutBody className="border-hairline border-border">
           <form onSubmit={handleSubmit}>
             <Card className="w-full">
               <CardHeader className="items-center text-center">

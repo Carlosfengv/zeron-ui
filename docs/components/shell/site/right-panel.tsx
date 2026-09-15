@@ -167,7 +167,7 @@ export function RightPanel({
     <div className={className}>
       <div className="flex flex-col gap-3">
         {showSettings && (
-          <aside className="rounded-lg border-[0.5px] border-border-subtle bg-surface-floating p-4">
+          <aside className="rounded-lg border-hairline border-border-subtle bg-surface-floating p-4">
             <SurfaceProvider role="floating">
               <div className="pl-1 pt-2 pb-2">
                 <h2

@@ -55,7 +55,7 @@ export function ChartTooltipContent({ active, className, hideIndicator = false, 
   const config = useChartConfig();
   if (!active || !payload?.length) return null;
 
-  return <div className={cn("grid min-w-36 gap-1.5 rounded-lg border-[0.5px] border-border bg-surface-floating px-3 py-2 text-label shadow-floating", className)}><p className="font-medium text-fg-default">{labelFormatter ? labelFormatter(label ?? "") : label}</p><div className="grid gap-1.5">{payload.filter((item) => item.type !== "none").map((item) => {
+  return <div className={cn("grid min-w-36 gap-1.5 rounded-lg border-hairline border-border bg-surface-floating px-3 py-2 text-label shadow-floating", className)}><p className="font-medium text-fg-default">{labelFormatter ? labelFormatter(label ?? "") : label}</p><div className="grid gap-1.5">{payload.filter((item) => item.type !== "none").map((item) => {
     const key = String(item.dataKey ?? item.name ?? "value");
     const itemConfig = config[key];
     const color = item.color ?? `var(--color-${key})`;

@@ -444,7 +444,7 @@ export default function SemanticTokensPage() {
     >
       <div className="-mt-2 flex flex-col gap-8">
         <section className="border-y border-border py-5">
-          <p className="text-label uppercase tracking-[0.14em] text-fg-subtle">{t("quickStart")}</p>
+          <p className="text-label uppercase tracking-widest text-fg-subtle">{t("quickStart")}</p>
           <p className="mt-2 max-w-[68ch] text-body leading-relaxed text-fg-default">{t("quickStartBody")}</p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             <ChoiceCard title={t("backgroundsChoice")} body={t("backgroundsChoiceBody")} token="surface/*" />

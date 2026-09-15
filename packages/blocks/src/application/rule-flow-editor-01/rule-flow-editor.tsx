@@ -1905,7 +1905,7 @@ export function RuleFlowEditor({
                   node.draggable ? labels.moveNode(node.title) : undefined
                 }
                 className={cn(
-                  "w-full border-[0.5px] bg-surface-floating shadow-raised transition-[border-color,box-shadow,opacity] duration-fast [&_[data-flow-control]]:cursor-auto [&_[data-flow-control]]:select-text",
+                  "w-full border-hairline bg-surface-floating shadow-raised transition-[border-color,box-shadow,opacity] duration-fast [&_[data-flow-control]]:cursor-auto [&_[data-flow-control]]:select-text",
                   node.draggable &&
                     !readOnly &&
                     "cursor-grab select-none active:cursor-grabbing",

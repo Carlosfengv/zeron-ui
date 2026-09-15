@@ -82,9 +82,9 @@ describe("authentication blocks", () => {
     }
     expect(login.match(/size="lg"/g)).toHaveLength(5);
     expect(signup.match(/size="lg"/g)).toHaveLength(4);
-    expect(login).toContain('<AuthLayoutBody className="border-[0.5px] border-border">');
+    expect(login).toContain('<AuthLayoutBody className="border-hairline border-border">');
     expect(signup).toContain("<AuthLayoutBody>");
-    expect(signup).not.toContain("border-[0.5px]");
+    expect(signup).not.toContain("border-hairline");
     expect(login).toContain('variant="neutral"');
     expect(signup).not.toContain('variant="neutral"');
   });

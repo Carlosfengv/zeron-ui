@@ -104,7 +104,7 @@ const pageIconCode = `const FileIcon = useIcon("file");
 
 <BreadcrumbPage
   icon={
-    <span className="flex size-full items-center justify-center border-[0.5px] border-border bg-surface-raised text-fg-default">
+    <span className="flex size-full items-center justify-center border-hairline border-border bg-surface-raised text-fg-default">
       <FileIcon size={14} strokeWidth={1.5} />
     </span>
   }
@@ -332,7 +332,7 @@ export default function BreadcrumbDoc() {
               <BreadcrumbItem>
                 <BreadcrumbPage
                   icon={
-                    <span className="flex size-full items-center justify-center border-[0.5px] border-border bg-surface-raised text-fg-default">
+                    <span className="flex size-full items-center justify-center border-hairline border-border bg-surface-raised text-fg-default">
                       <FileIcon size={14} strokeWidth={1.5} />
                     </span>
                   }

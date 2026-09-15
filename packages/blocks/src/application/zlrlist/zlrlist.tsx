@@ -247,7 +247,7 @@ export function ZlrNavigation({ onNavigate }: { onNavigate?: (value: string) => 
         <SidebarIdentityRow
           className="group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content-row]]:justify-center group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-leading]]:flex-none group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content]]:hidden group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-trailing]]:hidden"
           primary="admin"
-          leading={<SidebarIdentityAvatar className="bg-lime-600 text-fg-on-brand">a</SidebarIdentityAvatar>}
+          leading={<SidebarIdentityAvatar className="bg-brand text-fg-on-brand">a</SidebarIdentityAvatar>}
           trailing={<Settings aria-hidden="true" size={16} strokeWidth={1.5} />}
           trailingPlacement="edge"
         />
@@ -392,7 +392,7 @@ export function ZlrList({
               </Tabs>
               <div className="flex min-h-0 flex-1 flex-col p-3">
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <InputGroup className="h-8 max-w-[450px] rounded-lg" size="sm">
+                  <InputGroup className="max-w-[450px]" size="md">
                     <InputGroupAddon><Search aria-hidden="true" size={16} strokeWidth={1.5} /></InputGroupAddon>
                     <InputGroupInput aria-label="搜索保护组" onChange={(event) => nameColumn?.setFilterValue(event.target.value)} placeholder="搜索" value={(nameColumn?.getFilterValue() as string) ?? ""} />
                   </InputGroup>
@@ -429,7 +429,7 @@ export function ZlrList({
                 <footer className="mt-1 flex min-h-9 items-center justify-end gap-3 px-3 py-1 text-label text-fg-muted">
                   <span>每页行数</span>
                   <Select itemDensity="compact" onValueChange={(value) => table.setPageSize(Number(value))} size="sm" value={`${table.getState().pagination.pageSize}`}>
-                    <SelectTrigger aria-label="每页行数" className="h-7 w-[70px] min-w-[70px] rounded-lg px-2 text-body" />
+                    <SelectTrigger aria-label="每页行数" className="w-[70px] min-w-[70px]" />
                     <SelectContent>{[10, 20, 30, 40].map((size) => <SelectItem key={size} value={`${size}`}>{size}</SelectItem>)}</SelectContent>
                   </Select>
                   <span>第 {pageIndex + 1} 页，共 {pageCount} 页</span>

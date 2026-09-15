@@ -336,7 +336,7 @@ function TimelineCell({
         <span
           aria-hidden
           className={cn(
-            "absolute top-1/2 h-3.5 -translate-y-1/2 rounded-[3px]",
+            "absolute top-1/2 h-3.5 -translate-y-1/2 rounded-sm",
             "ring-offset-1 ring-offset-surface-floating",
             selected && "ring-1 ring-fg-default",
             span.status === "running" && "animate-pulse motion-reduce:animate-none",

@@ -27,7 +27,7 @@ describe("MetricCard contract", () => {
   });
 
   it("uses the project surface, boundary, typography, and state tokens", () => {
-    expect(source).toContain("rounded-xl border-[0.5px] border-border bg-surface-floating p-3");
+    expect(source).toContain("rounded-xl border-hairline border-border bg-surface-floating p-3");
     expect(source).toContain("text-body text-fg-muted");
     expect(source).toContain("text-heading font-semibold tabular-nums");
     expect(source).toContain("text-fg-success");
@@ -54,7 +54,7 @@ describe("MetricCard contract", () => {
     expect(source).toContain("separator = false");
     expect(source).toContain('data-slot="metric-card-separator"');
     expect(source).toContain('role="separator"');
-    expect(source).toContain("before:border-t-[0.5px] before:border-border");
+    expect(source).toContain("before:border-t-hairline before:border-border");
     expect(source).toContain("interactive?: boolean");
     expect(source).toContain('role="list"');
     expect(source).toContain('role="img"');

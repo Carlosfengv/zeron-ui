@@ -239,7 +239,7 @@ function ResourceMetadataPanel({
                 render={
                   <Button
                     aria-label={labels.categoryAction}
-                    className="h-auto min-h-control-sm max-w-full px-1.5 py-1"
+                    className="max-w-full" contentSized
                     size="sm"
                     trailingIcon={ChevronDown}
                     type="button"
@@ -415,7 +415,7 @@ function ProtectionValue({
 
 function MarkdownContent({ markdown }: { markdown: string }) {
   return (
-    <article className="min-w-0 rounded-xl border-[0.5px] border-border bg-surface-floating px-5 py-4 text-body leading-6 text-fg-muted">
+    <article className="min-w-0 rounded-xl border-hairline border-border bg-surface-floating px-5 py-4 text-body leading-6 text-fg-muted">
       <ReactMarkdown
         components={markdownComponents}
         remarkPlugins={[remarkGfm, remarkBreaks]}
@@ -434,7 +434,7 @@ function EmptySection({
   label: string;
 }) {
   return (
-    <section className="flex min-h-64 flex-col items-center justify-center rounded-xl border-[0.5px] border-border bg-surface-floating px-6 py-12 text-center">
+    <section className="flex min-h-64 flex-col items-center justify-center rounded-xl border-hairline border-border bg-surface-floating px-6 py-12 text-center">
       <p className="text-title font-semibold text-fg-default">{label}</p>
       <p className="mt-1 text-body text-fg-muted">{description}</p>
     </section>

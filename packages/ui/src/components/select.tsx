@@ -282,6 +282,8 @@ interface SelectTriggerProps
   placeholder?: ReactNode;
   error?: string;
   wrapperClassName?: string;
+  /** Uses content-driven height for compact inline selectors. */
+  contentSized?: boolean;
 }
 
 const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
@@ -294,6 +296,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
       placeholder = "Select…",
       error,
       wrapperClassName,
+      contentSized = false,
       ...props
     },
     ref
@@ -312,6 +315,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
           className={cn(
             triggerVariants({ variant, size }),
             "rounded-lg",
+            contentSized && "h-auto min-h-0 px-1.5 py-1",
             error && "border-danger-border hover:border-danger-border",
             className
           )}

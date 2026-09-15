@@ -13,7 +13,7 @@ const DetailList = forwardRef<HTMLDivElement, DetailListProps>(
       role="list"
       data-slot="detail-list"
       className={cn(
-        "flex min-w-0 flex-col gap-1 overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-floating p-3",
+        "flex min-w-0 flex-col gap-1 overflow-hidden rounded-xl border-hairline border-border bg-surface-floating p-3",
         className
       )}
       {...props}

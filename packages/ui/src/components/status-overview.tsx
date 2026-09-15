@@ -355,7 +355,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
       data-state={state}
       data-view={content.type}
       className={cn(
-        "flex min-w-0 flex-col rounded-xl border-[0.5px] border-border bg-surface-floating p-3",
+        "flex min-w-0 flex-col rounded-xl border-hairline border-border bg-surface-floating p-3",
         className,
       )}
     >

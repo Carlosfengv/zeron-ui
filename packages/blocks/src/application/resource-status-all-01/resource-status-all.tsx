@@ -206,7 +206,7 @@ export function ResourceStatusAll({
     <Card
       aria-label={ariaLabel}
       className={cn(
-        "w-full max-w-[701px] min-h-0 overflow-hidden rounded-xl border-[0.5px] border-border bg-surface-floating p-0",
+        "w-full max-w-[701px] min-h-0 overflow-hidden rounded-xl border-hairline border-border bg-surface-floating p-0",
         className
       )}
       {...props}

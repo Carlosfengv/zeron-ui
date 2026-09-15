@@ -400,7 +400,7 @@ export function FilterQueryInput({
           }} sideOffset={6}>
             <CommandList {...slotProps?.list} className={cn(classNames?.list, slotProps?.list?.className)} label={messages.filters}>
               {(loading || (query.optionLoading && !hasVisibleOptions)) && (slots?.loading ? <slots.loading {...slotProps?.loading} state={query} /> : <CommandLoading>{messages.loadingOptions}</CommandLoading>)}
-              {queryError && <div className="px-2 py-1.5 text-label text-danger-fg" role="alert">{queryError}</div>}
+              {queryError && <div className="px-2 py-1.5 text-label text-fg-danger" role="alert">{queryError}</div>}
               {query.suggestions.length > 0 ? (
                 suggestionGroups.map(([heading, suggestions]) => (
                   <CommandGroup className={classNames?.group} heading={heading} key={heading}>

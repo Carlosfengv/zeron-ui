@@ -38,7 +38,7 @@ export function CreditUsageBlockDocClient({ code }: { code: string }) {
               cycle={cycle}
               data={creditUsageDemoData}
             />
-            <p aria-live="polite" className="mt-3 min-h-5 text-center text-caption text-fg-muted">
+            <p aria-live="polite" className="mt-3 min-h-5 text-center text-label text-fg-muted">
               {feedback}
             </p>
           </div>

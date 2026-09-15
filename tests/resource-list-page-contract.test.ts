@@ -114,7 +114,7 @@ describe("Resource List Page 1 block contract", () => {
     expect(categorySource).toContain("<MobileDrawer");
     expect(categorySource).toContain('side="end"');
     expect(categorySource).toContain(
-      'className="border-[0.5px] border-border bg-surface-overlay text-fg-brand"'
+      'className="border-hairline border-border bg-surface-overlay text-fg-brand"'
     );
     expect(categorySource).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
   });

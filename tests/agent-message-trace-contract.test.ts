@@ -62,7 +62,7 @@ describe("AgentMessageTrace block contract", () => {
     expect(workspaceSource).toContain("HORIZONTAL_BREAKPOINT = 900");
     expect(workspaceSource).toContain("preserve-pixel-size");
     expect(workspaceSource).toContain('className="gap-2"');
-    expect(workspaceSource.match(/className="overflow-hidden rounded-xl border-\[0\.5px\] border-border bg-surface-floating"/g)).toHaveLength(2);
+    expect(workspaceSource.match(/className="overflow-hidden rounded-xl border-hairline border-border bg-surface-floating"/g)).toHaveLength(2);
   });
 
   it("uses project detail, tabs, scrolling, and copy components for the inspector", () => {

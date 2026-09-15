@@ -150,6 +150,8 @@ export interface InfiniteLogTimelineBucket {
 
 export interface InfiniteLogTimeline {
   buckets: readonly InfiniteLogTimelineBucket[];
+  /** Latest record represented by the timeline, used to anchor recent presets. */
+  latestTimestamp?: string;
 }
 
 export interface InfiniteLogMetadata {

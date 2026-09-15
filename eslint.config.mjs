@@ -1,10 +1,11 @@
 import tsParser from "@typescript-eslint/parser";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import nextPlugin from "@next/eslint-plugin-next";
+import { plugin as shadcnPlugin } from "@shadcn/lint";
 
 // Tailwind utilities reserved for the Zeron Design token system.
 const SHADCN_RESERVED_REGEX =
-  "\\b(bg|text|border|ring|hover:bg|hover:text|focus-visible:ring|focus:ring)-(primary|secondary|popover|primary-foreground|secondary-foreground|popover-foreground|destructive-foreground)(\\/[0-9]+)?\\b";
+  "\\b(bg|text|border|ring|hover:bg|hover:text|focus-visible:ring|focus:ring)-(primary|secondary|popover|primary-foreground|secondary-foreground|popover-foreground|destructive-foreground)(\\/[0-9]+)?(?![\\w-])";
 
 // Focus indicators must ride the --focus-ring token so every click area
 // shows the same ring (see the @layer base :focus-visible fallback in
@@ -52,6 +53,9 @@ const shadcnRestrictedRules = {
 const componentColorRules = {
   "no-restricted-syntax": [
     "error",
+    // Flat config replaces rule options rather than appending them. Retain
+    // reserved-token and focus checks inside the component directory too.
+    ...shadcnRestrictedRules["no-restricted-syntax"].slice(1),
     {
       selector: `Literal[value=/${COMPONENT_PALETTE_REGEX}/]`,
       message: COMPONENT_PALETTE_MESSAGE,
@@ -100,6 +104,7 @@ export default [
     plugins: {
       "@typescript-eslint": tsPlugin,
       "@next/next": nextPlugin,
+      shadcn: shadcnPlugin,
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
@@ -142,6 +147,21 @@ export default [
   {
     files: ["**/*.{ts,tsx}"],
     rules: shadcnRestrictedRules,
+  },
+  {
+    // These files contain reviewed SVG color constants with narrow inline
+    // disables. Keep the rule active here so the exceptions stay auditable
+    // under both the regular and design ESLint entrypoints.
+    files: [
+      "packages/ui/src/components/empty.tsx",
+      "packages/blocks/src/application/model-detail-02/model-detail-02.tsx",
+    ],
+    rules: {
+      "shadcn/no-raw-colors": [
+        "error",
+        { allow: ["text-label", "text-body", "text-title", "text-heading"] },
+      ],
+    },
   },
   {
     files: ["packages/ui/src/components/**/*.{ts,tsx}"],

@@ -302,7 +302,7 @@ const Switch = forwardRef<HTMLDivElement, SwitchProps>(
           uncheckedValue={uncheckedValue}
           tabIndex={0}
           className={cn(
-            "relative shrink-0 rounded-full border-[0.5px] border-border outline-none cursor-pointer",
+            "relative shrink-0 rounded-full border-hairline border-border outline-none cursor-pointer",
             "transition-colors duration-fast",
             "focus-visible:ring-1 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
           )}

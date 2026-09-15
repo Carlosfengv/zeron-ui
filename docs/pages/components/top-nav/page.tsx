@@ -222,7 +222,7 @@ function ZentrixTopNav({
         </NavMenu>
       </TopNavNavigation>
       <TopNavActions className="min-w-0 justify-end">
-        <Button type="button" size="md" variant="neutral" className="px-2">登录</Button>
+        <Button type="button" size="md" variant="neutral">登录</Button>
       </TopNavActions>
     </TopNav>
   );
@@ -280,7 +280,7 @@ function TopNavAppShellPlayground() {
                   <PageContent>
                     <PageBody>
                       <section aria-live="polite" className="p-5 sm:p-6">
-                        <p className="text-caption text-fg-muted">{section.eyebrow}</p>
+                        <p className="text-label text-fg-muted">{section.eyebrow}</p>
                         <h2 className="mt-1 text-title text-fg-default">{section.title}</h2>
                         <p className="mt-2 max-w-lg text-body text-fg-muted">{section.description}</p>
                       </section>

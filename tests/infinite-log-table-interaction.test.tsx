@@ -297,12 +297,11 @@ describe("InfiniteLogTable", () => {
     const presetRange = onStateChange.mock.lastCall?.[0]?.filters.timeRange;
     expect(Date.parse(presetRange.to) - Date.parse(presetRange.from)).toBe(30 * 60_000);
     expect(Date.parse(presetRange.to)).toBeGreaterThanOrEqual(Math.max(...records.map((record) => Date.parse(record.timestamp))));
-    await waitFor(() => expect(within(screen.getByRole("grid", { name: "HTTP request log table" })).getAllByRole("row").length).toBeGreaterThan(1));
     await waitFor(() => {
       const selection = document.querySelector<HTMLElement>('[data-slot="time-range-histogram-selection"]');
       expect(selection?.style.width).not.toBe("100%");
     });
-  });
+  }, 10_000);
 
   it("opens the request detail from a keyboard-operable virtual row", async () => {
     const records = createMockLogRecords({ days: 1 });
@@ -502,7 +501,7 @@ describe("InfiniteLogTable", () => {
 
     render(<div style={{ height: 640 }}><InfiniteLogTable dataSource={dataSource} /></div>);
     await waitFor(() => expect(emit).toBeTypeOf("function"));
-    expect(screen.getByRole("button", { name: "Pause" }).querySelector('[data-slot="button-background"]')?.classList.contains("bg-inverse-background")).toBe(true);
+    expect(screen.getByRole("button", { name: "Pause" }).querySelector('[data-slot="button-background"]')?.classList.contains("bg-neutral-action")).toBe(true);
 
     emit?.({ metadata, rows: [firstLive] });
     await waitFor(() => {

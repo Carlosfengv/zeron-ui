@@ -61,10 +61,10 @@ const barCode = `<MetricCard
   }}
 />`;
 
-const dashboardCardClass = "w-full self-stretch rounded-lg border-[0.5px] border-border bg-surface-floating px-3 py-2";
+const dashboardCardClass = "w-full self-stretch rounded-lg border-hairline border-border bg-surface-floating px-3 py-2";
 
 const dashboardCode = `const dashboardCardClass =
-  "w-full self-stretch rounded-lg border-[0.5px] border-border bg-surface-floating px-3 py-2";
+  "w-full self-stretch rounded-lg border-hairline border-border bg-surface-floating px-3 py-2";
 
 <div className="w-full">
   <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">

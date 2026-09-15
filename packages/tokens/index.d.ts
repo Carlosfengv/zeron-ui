@@ -37,6 +37,7 @@ export const surfaceTokens: readonly ColorToken[];
 export const shadowTokens: readonly ColorToken[];
 export const typographyTokens: readonly TypographyToken[];
 export const motionDurationTokens: readonly ValueToken[];
+export const borderWidthTokens: readonly ValueToken[];
 export const fontTokens: { readonly family: string };
 export const controlHeightTokens: readonly ValueToken[];
 export const badgeHeightTokens: readonly ValueToken[];
@@ -54,6 +55,7 @@ export const semanticTokens: {
   readonly shadows: readonly ColorToken[];
   readonly typography: readonly TypographyToken[];
   readonly motionDurations: readonly ValueToken[];
+  readonly borderWidths: readonly ValueToken[];
   readonly fonts: { readonly family: string };
   readonly controlHeights: readonly ValueToken[];
   readonly badgeHeights: readonly ValueToken[];

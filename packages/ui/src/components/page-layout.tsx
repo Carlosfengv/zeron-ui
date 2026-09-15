@@ -170,8 +170,8 @@ const PageSidebar = forwardRef<HTMLElement, PageSidebarProps>(
       data-slot="page-sidebar"
       className={cn(
         "min-h-0 w-[var(--page-sidebar-width)] shrink-0 overflow-y-auto overscroll-contain",
-        "border-[0.5px] border-border border-r-0 bg-surface-floating rounded-l-xl",
-        "max-lg:w-full max-lg:rounded-t-xl max-lg:rounded-b-none max-lg:border-r-[0.5px] max-lg:border-b-0",
+        "border-hairline border-border border-r-0 bg-surface-floating rounded-l-xl",
+        "max-lg:w-full max-lg:rounded-t-xl max-lg:rounded-b-none max-lg:border-r-hairline max-lg:border-b-0",
         className
       )}
       style={{ "--page-sidebar-width": width, ...style } as CSSProperties}
@@ -187,7 +187,7 @@ const PageContent = forwardRef<HTMLDivElement, PageContentProps>(({ className, .
     ref={ref}
     data-slot="page-content"
     className={cn(
-      "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-[0.5px] border-border bg-surface-floating rounded-xl",
+      "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-hairline border-border bg-surface-floating rounded-xl",
       className
     )}
     {...props}

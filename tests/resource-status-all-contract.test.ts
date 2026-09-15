@@ -37,7 +37,7 @@ describe("Resource Status All 1 block contract", () => {
     expect(source).toContain('max-w-[701px]');
     expect(source).toContain('size-48');
     expect(source).toContain('rounded-xl');
-    expect(source).toContain('border-[0.5px] border-border');
+    expect(source).toContain('border-hairline border-border');
     expect(source).toContain('var(--brand)');
     expect(source).toContain('var(--warning)');
     expect(source).toContain('var(--destructive)');

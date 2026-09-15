@@ -81,7 +81,7 @@ function MemberAvatar({ avatarUrl, label, User }: { avatarUrl?: string; label: s
     // eslint-disable-next-line @next/next/no-img-element
     return <img aria-hidden src={avatarUrl} alt="" className="size-5 shrink-0 rounded-full object-cover" onError={() => setFailed(true)} />;
   }
-  return initial ? <span aria-hidden className="grid size-5 shrink-0 place-items-center rounded-full bg-muted text-[10px] font-medium text-fg-muted">{initial}</span>
+  return initial ? <span aria-hidden className="grid size-5 shrink-0 place-items-center rounded-full bg-muted text-label font-medium text-fg-muted">{initial}</span>
     : <span aria-hidden className="grid size-5 shrink-0 place-items-center text-fg-muted"><User size={16} /></span>;
 }
 

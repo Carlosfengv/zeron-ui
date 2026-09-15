@@ -60,7 +60,7 @@ export type TabLabelVisibility = "all" | "active";
 const selectedSurfaceClasses: Record<TabsColor, string> = {
   brand: "bg-brand",
   neutral: "bg-inverse-background",
-  default: "border-[0.5px] border-border bg-surface-floating",
+  default: "border-hairline border-border bg-surface-floating",
 };
 
 const underlineIndicatorClasses: Record<TabsColor, string> = {

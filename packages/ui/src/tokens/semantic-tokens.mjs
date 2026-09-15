@@ -250,6 +250,14 @@ export const motionDurationTokens = motionTokens.flatMap(({ enterMs, exitMs, nam
   { name: `${name}-exit`, value: `${exitMs}ms`, usage: `${usage}的退出过渡` },
 ]);
 
+export const borderWidthTokens = [
+  {
+    name: "hairline",
+    value: "0.5px",
+    usage: "细分隔线与轻量边界；不替代控件强调边框和焦点指示器",
+  },
+];
+
 export const fontTokens = {
   family: `"Inter", system-ui, sans-serif`,
 };
@@ -296,6 +304,7 @@ export const semanticTokens = {
   typography: typographyTokens,
   motion: motionTokens,
   motionDurations: motionDurationTokens,
+  borderWidths: borderWidthTokens,
   fonts: fontTokens,
   controlHeights: controlHeightTokens,
   badgeHeights: badgeHeightTokens,

@@ -57,6 +57,7 @@ const buttonVariants = cva(
         secondary: "text-fg-default",
         tertiary: "text-fg-default",
         ghost: "text-fg-muted hover:text-fg-default",
+        link: "text-fg-brand underline underline-offset-2",
       },
       size: buttonSizeVariants,
       iconOnly: { true: "aspect-square p-0" },
@@ -101,6 +102,8 @@ interface ButtonProps
   active?: boolean;
   /** Applies a semantic status tone without changing the button hierarchy. */
   tone?: ButtonTone;
+  /** Uses content-driven height and padding for multi-line or inline actions. */
+  contentSized?: boolean;
 }
 
 type ButtonTone = "default" | "warning";
@@ -112,6 +115,7 @@ const bgVariants: Record<string, string> = {
   secondary: "bg-secondary-action group-hover:bg-secondary-action-hover group-active:bg-secondary-action-active",
   tertiary: "border border-border bg-surface-floating group-hover:bg-hover group-active:bg-active",
   ghost: "bg-transparent group-hover:bg-hover group-active:bg-active",
+  link: "bg-transparent",
 };
 
 const activeBgVariants: Record<string, string> = {
@@ -121,6 +125,7 @@ const activeBgVariants: Record<string, string> = {
   secondary: "bg-secondary-action-active",
   tertiary: "border border-border bg-active",
   ghost: "bg-active",
+  link: "bg-transparent",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -137,6 +142,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       dashed = false,
       active = false,
       tone = "default",
+      contentSized = false,
       disabled,
       children,
       style,
@@ -264,6 +270,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       }),
       "rounded-lg",
       tone === "warning" && "text-fg-warning",
+      contentSized && "h-auto min-h-control-sm px-1.5 py-1",
+      variant === "link" && "h-auto min-h-0 px-0 py-0",
       className
     );
 

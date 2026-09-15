@@ -18,7 +18,7 @@ function MessageActions({ from }: { from: "user" | "assistant" }) {
   const CopyIcon = useIcon("copy");
   const SecondIcon = useIcon(from === "user" ? "pencil" : "rotate-ccw");
   const btn = cn(
-    "inline-flex size-6 items-center justify-center text-fg-muted/60 hover:text-fg-default hover:bg-hover transition-colors duration-100 cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--focus-ring,#6B97FF)]",
+    "inline-flex size-6 items-center justify-center text-fg-muted/60 hover:text-fg-default hover:bg-hover transition-colors duration-100 cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-focus-ring",
     "rounded-lg"
   );
   return (

@@ -77,7 +77,7 @@ describe("shell and page-layout composition contract", () => {
   it("owns the base background at the shell while PageContent provides the floating surface", () => {
     expect(appShell).toContain('"min-h-svh min-w-0 bg-surface-base"');
     expect(pageLayout).toContain(
-      '"flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-[0.5px] border-border bg-surface-floating rounded-xl"'
+      '"flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-hairline border-border bg-surface-floating rounded-xl"'
     );
     expect(pageLayout).not.toContain(
       'cva("mx-auto flex h-full w-full min-h-0 min-w-0 flex-col bg-surface-'
@@ -88,7 +88,7 @@ describe("shell and page-layout composition contract", () => {
     expect(docsSidebar).toContain('<SurfaceProvider role="floating">');
     expect(docsSidebar).toContain('className="bg-surface-floating"');
     expect(rightPanel).toContain(
-      'className="rounded-lg border-[0.5px] border-border-subtle bg-surface-floating p-4"'
+      'className="rounded-lg border-hairline border-border-subtle bg-surface-floating p-4"'
     );
     expect(rightPanel).toContain('<SurfaceProvider role="floating">');
     expect(rightPanel).not.toContain(
@@ -99,7 +99,7 @@ describe("shell and page-layout composition contract", () => {
   it("matches playground controls to the documentation settings card", () => {
     expect(playground).toContain('<SurfaceProvider role="floating">');
     expect(playground).toContain(
-      'className="w-full rounded-lg border-[0.5px] border-border-subtle bg-surface-floating p-4"'
+      'className="w-full rounded-lg border-hairline border-border-subtle bg-surface-floating p-4"'
     );
     expect(playground).not.toContain('<SurfaceProvider role="raised">');
     expect(playground).not.toContain(
@@ -331,7 +331,7 @@ describe("shell and page-layout composition contract", () => {
     expect(docs).toContain('label: "首页"');
     expect(docs).toContain('label: "模型广场"');
     expect(docs).toContain('label: "MCP 广场"');
-    expect(docs).toContain('<Button type="button" size="md" variant="neutral" className="px-2">登录</Button>');
+    expect(docs).toContain('<Button type="button" size="md" variant="neutral">登录</Button>');
     expect(docs).toContain('<ComponentPreview code={code} padding="none">');
     expect(docs).not.toMatch(/#[\da-fA-F]{3,8}\b/);
   });

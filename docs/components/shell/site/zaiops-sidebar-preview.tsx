@@ -545,7 +545,7 @@ export function ZaiopsSidebarPreview({ className }: { className?: string }) {
                   menuLabel="打开侧边栏菜单"
                   className="shrink-0"
                   contentClassName="h-[min(42rem,calc(100svh-6rem))] w-[260px] max-w-[calc(100vw-12px)] rounded-xl p-0"
-                  surfaceClassName="border-[0.5px] border-border-subtle"
+                  surfaceClassName="border-hairline border-border-subtle"
                   surfaceShadow="floating-drop"
                   renderContent={({ close }) => (
                     <ZaiopsNavigationPanel

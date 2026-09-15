@@ -8,7 +8,7 @@
  */
 
 import { createServer } from "node:http";
-import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { execFile as execFileCallback } from "node:child_process";
@@ -158,6 +158,11 @@ async function installWithCli({ consumer, component, manager, tarball }) {
   const env = { ...process.env, XDG_CACHE_HOME: join(work, "cache") };
   if (manager === "npm") {
     await command("npm", ["exec", "--yes", "--package", tarball, "--", "zeron-ui", ...args], { env });
+    await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
+    if (component === "button") {
+      await command("npm", ["exec", "--yes", "--package", tarball, "--", "zeron-ui", ...args, "--overwrite"], { env });
+      await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
+    }
     await assertBusinessSourceUntouched(consumer, component);
     await command("npx", ["tsc", "--noEmit"], { cwd: consumer });
     await verifyNextBuild({ consumer, component });
@@ -168,6 +173,11 @@ async function installWithCli({ consumer, component, manager, tarball }) {
   // fixture instead; no workspace package is linked.
   await command("pnpm", ["add", "--save-dev", "--ignore-scripts", tarball], { cwd: consumer, env });
   await command("pnpm", ["exec", "zeron-ui", ...args], { cwd: consumer, env });
+  await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
+  if (component === "button") {
+    await command("pnpm", ["exec", "zeron-ui", ...args, "--overwrite"], { cwd: consumer, env });
+    await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
+  }
   await assertBusinessSourceUntouched(consumer, component);
   await command("pnpm", ["exec", "tsc", "--noEmit"], { cwd: consumer });
   await verifyNextBuild({ consumer, component });
@@ -176,6 +186,45 @@ async function installWithCli({ consumer, component, manager, tarball }) {
   }
   if (!(await exists(join(consumer, "pnpm-lock.yaml")))) {
     throw new Error(`${component}: pnpm consumer did not create pnpm-lock.yaml`);
+  }
+}
+
+async function assertThemeInstallation({ consumer, cssPath, component }) {
+  const css = await readFile(join(consumer, cssPath), "utf8");
+  const animationImports = css.match(/@import\s+["']tw-animate-css["'];/g) ?? [];
+  if (animationImports.length !== 1) {
+    throw new Error(`${component}: expected one tw-animate-css import in ${cssPath}, found ${animationImports.length}`);
+  }
+  for (const token of ["--border-width-hairline", "--transition-duration-fast"]) {
+    if (!css.includes(token)) throw new Error(`${component}: ${cssPath} is missing ${token}`);
+  }
+  const manifest = JSON.parse(await readFile(join(consumer, "package.json"), "utf8"));
+  if (!(manifest.dependencies?.["tw-animate-css"] ?? manifest.devDependencies?.["tw-animate-css"])) {
+    throw new Error(`${component}: tw-animate-css was not recorded in package.json`);
+  }
+  if (!(await exists(join(consumer, "lib", "tailwind-merge-tokens.ts"))) &&
+      !(await exists(join(consumer, "src", "lib", "tailwind-merge-tokens.ts")))) {
+    throw new Error(`${component}: generated Tailwind merge token names were not installed`);
+  }
+}
+
+async function readCssTree(directory) {
+  const chunks = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) chunks.push(await readCssTree(path));
+    else if (entry.name.endsWith(".css")) chunks.push(await readFile(path, "utf8"));
+  }
+  return chunks.join("\n");
+}
+
+async function assertCompiledUtilities(directory, component) {
+  if (component !== "button") return;
+  const css = await readCssTree(directory);
+  for (const className of ["border-hairline", "duration-fast", "animate-in", "fade-in"]) {
+    if (!css.includes(`.${className}`)) {
+      throw new Error(`${component}: built CSS is missing .${className}`);
+    }
   }
 }
 
@@ -191,7 +240,7 @@ async function verifyNextBuild({ consumer, component }) {
     button: [
       'import { Button } from "@/components/ui/button";',
       '',
-      'export default function Page() { return <Button>Install verified</Button>; }',
+      'export default function Page() { return <Button className="border-hairline border-border animate-in fade-in duration-fast">Install verified</Button>; }',
       '',
     ].join("\n"),
     card: [
@@ -265,10 +314,11 @@ async function verifyNextBuild({ consumer, component }) {
   if (!source) return;
   await writeFile(join(consumer, "app", "page.tsx"), source);
   await command("npx", ["next", "build"], { cwd: consumer });
+  await assertCompiledUtilities(join(consumer, ".next", "static", "css"), component);
 }
 
-async function runNpmCli({ consumer, component, tarball }) {
-  const args = ["add", component, "--yes", "--cwd", consumer, "--registry", baseUrl];
+async function runNpmCli({ consumer, component, tarball, overwrite = false }) {
+  const args = ["add", component, "--yes", "--cwd", consumer, "--registry", baseUrl, ...(overwrite ? ["--overwrite"] : [])];
   await command("npm", ["exec", "--yes", "--package", tarball, "--", "zeron-ui", ...args], {
     env: { ...process.env, XDG_CACHE_HOME: join(work, "cache") },
   });
@@ -294,12 +344,17 @@ async function assertViteRejectsNextBlock({ consumer, tarball }) {
 
 async function installViteComponent({ consumer, component, tarball }) {
   await runNpmCli({ consumer, component, tarball });
+  await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
+  if (component === "button") {
+    await runNpmCli({ consumer, component, tarball, overwrite: true });
+    await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
+  }
   const examples = {
     button: [
       'import { createRoot } from "react-dom/client";',
       'import { Button } from "@/src/components/ui/button";',
       'import "./index.css";',
-      'createRoot(document.getElementById("root")!).render(<Button>Install verified</Button>);',
+      'createRoot(document.getElementById("root")!).render(<Button className="border-hairline border-border animate-in fade-in duration-fast">Install verified</Button>);',
       '',
     ].join("\n"),
     card: [
@@ -357,6 +412,7 @@ async function installViteComponent({ consumer, component, tarball }) {
   await writeFile(join(consumer, "src", "main.tsx"), source);
   await command("npx", ["tsc", "--noEmit"], { cwd: consumer });
   await command("npm", ["run", "build"], { cwd: consumer });
+  await assertCompiledUtilities(join(consumer, "dist", "assets"), component);
 }
 
 const work = await mkdtemp(join(tmpdir(), "zeron-consumer-"));

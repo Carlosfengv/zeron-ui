@@ -406,7 +406,7 @@ const Toast = memo(function Toast({
         <div
           className={cn(
             surfaceClasses(surface),
-            "relative overflow-hidden rounded-xl border-[0.5px] border-border p-3",
+            "relative overflow-hidden rounded-xl border-hairline border-border p-3",
             classNames?.surface,
           )}
         >

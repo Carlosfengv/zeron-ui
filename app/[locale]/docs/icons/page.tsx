@@ -12,7 +12,7 @@ export default async function IconsCollectionPage({ params }: { params: Promise<
   return (
     <section aria-labelledby="collection-title" className="mx-auto mt-12 w-full max-w-5xl px-6 py-20 sm:py-28 lg:mt-0">
       <p className="text-label text-fg-muted">Documentation</p>
-      <h1 id="collection-title" className="mt-2 text-display font-semibold text-fg-default">icons</h1>
+      <h1 id="collection-title" className="mt-2 text-heading font-semibold text-fg-default">icons</h1>
       <ul className="mt-10 grid gap-3 sm:grid-cols-2">
         {entries.map((entry) => (
           <li key={entry.slug}>

@@ -76,7 +76,7 @@ describe("semantic color consumers", () => {
   it("uses a semantic half-pixel boundary on switches", () => {
     const source = read(join(UI_ROOT, "switch.tsx"));
 
-    expect(source).toContain("border-[0.5px] border-border");
+    expect(source).toContain("border-hairline border-border");
   });
 
   it("does not use retired compatibility color names", () => {

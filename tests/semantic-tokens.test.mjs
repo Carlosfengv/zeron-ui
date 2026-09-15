@@ -1,12 +1,14 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { compile } from "tailwindcss";
 import {
   registryCssRules,
   registryCssVars,
   renderDocumentation,
   renderGlobalsBlock,
   renderSpringsModule,
+  renderTailwindMergeTokensModule,
   renderTokenPackageCss,
   renderTokenPackageModule,
 } from "../scripts/generate-semantic-tokens.mjs";
@@ -16,6 +18,7 @@ import {
   fillColorTokens,
   boundaryColorTokens,
   componentColorTokens,
+  borderWidthTokens,
   motionTokens,
   supportColorTokens,
   semanticTokens,
@@ -83,6 +86,59 @@ describe("semantic token generation", () => {
       expect(renderSpringsModule()).toContain(`duration: ${tier.enterMs / 1000}`);
       expect(renderSpringsModule()).toContain(`exit: { duration: ${tier.exitMs / 1000} }`);
     }
+    const { theme } = registryCssVars();
+    expect(theme).not.toHaveProperty("duration-fast");
+    expect(theme).toMatchObject({
+      "transition-duration-fast": "var(--motion-duration-fast)",
+      "transition-duration-moderate-exit": "var(--motion-duration-moderate-exit)",
+    });
+  });
+
+  it("generates the class-merger token names from the same metadata", () => {
+    expect(read("packages/ui/src/system/tailwind-merge-tokens.ts"))
+      .toBe(renderTailwindMergeTokensModule());
+    for (const token of borderWidthTokens) {
+      expect(renderTailwindMergeTokensModule()).toContain(`\"${token.name}\"`);
+    }
+    for (const token of motionTokens.flatMap(({ name }) => [name, `${name}-exit`])) {
+      expect(renderTailwindMergeTokensModule()).toContain(`\"${token}\"`);
+    }
+  });
+
+  it("generates native Tailwind utilities for semantic durations and hairline borders", async () => {
+    expect(borderWidthTokens).toEqual([
+      expect.objectContaining({ name: "hairline", value: "0.5px" }),
+    ]);
+    expect(semanticTokens.borderWidths).toBe(borderWidthTokens);
+
+    const { theme } = registryCssVars();
+    const themeCss = Object.entries(theme)
+      .map(([name, value]) => `--${name}: ${value};`)
+      .join("\n");
+    const compiler = await compile(`@theme { ${themeCss} }\n@tailwind utilities;`);
+    const css = compiler.build([
+      "border-hairline",
+      "border-t-hairline",
+      "border-x-hairline",
+      "hover:border-hairline",
+      "duration-fast",
+      "duration-moderate-exit",
+    ]);
+
+    expect(css).toContain(".border-hairline");
+    expect(css).toContain("border-width: var(--border-width-hairline)");
+    expect(css).toContain(".border-t-hairline");
+    expect(css).toContain("border-top-width: var(--border-width-hairline)");
+    expect(css).toContain(".border-x-hairline");
+    expect(css).toContain(".duration-fast");
+    expect(css).toContain("transition-duration: var(--transition-duration-fast)");
+    expect(css).toContain(".duration-moderate-exit");
+  });
+
+  it("loads the shared CSS animation utilities at the application entry", () => {
+    const styles = read("app/globals.css");
+    expect(styles).toContain('@import "tailwindcss" source(none);\n@import "tw-animate-css";');
+    expect(read("package.json")).toContain('"tw-animate-css": "^1.4.0"');
   });
 
   it("sets a 14px document default without changing the rem-based type scale", () => {

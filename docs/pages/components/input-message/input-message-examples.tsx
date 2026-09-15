@@ -562,7 +562,7 @@ function AgentComposerDemo() {
   return (
     <div className="w-full max-w-[768px]">
       <InputMessage
-        composerClassName="shadow-[0_3px_8px_rgb(37_40_46_/_0.1)]"
+        composerClassName="shadow-floating-drop"
         value={value}
         onValueChange={setValue}
         onSend={() => {
@@ -592,7 +592,7 @@ function AgentComposerDemo() {
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="rounded-xl bg-[rgba(217,119,87,0.12)] text-fg-default"
+                    className="rounded-xl bg-hover text-fg-default"
                     trailingIcon={ChevronDownIcon}
                   >
                     <ClaudeCode size={16} />

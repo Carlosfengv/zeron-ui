@@ -29,7 +29,7 @@
       "target": "lib/icon-catalog.ts"
     },
     {
-      "path": "types/hugeicons.d.ts",
+      "path": "packages/ui/src/system/hugeicons.d.ts",
       "content": "declare module \"@hugeicons/core-free-icons/*\" {\n    const icon: unknown;\n    export default icon;\n}\n// The Pro provider is shipped as an optional Registry item. Keep its source\n// type-checkable without forcing private, licensed packages into the public\n// site's dependency graph.\ndeclare module \"@hugeicons-pro/core-stroke-standard/*\" {\n    const icon: unknown;\n    export default icon;\n}\ndeclare module \"@hugeicons-pro/core-bulk-rounded/*\" {\n    const icon: unknown;\n    export default icon;\n}\ndeclare module \"@hugeicons-pro/core-duotone-rounded/*\" {\n    const icon: unknown;\n    export default icon;\n}\n",
       "type": "registry:lib",
       "target": "lib/hugeicons.d.ts"

@@ -122,6 +122,7 @@
   --motion-duration-moderate-exit: 120ms;
   --motion-duration-slow: 240ms;
   --motion-duration-slow-exit: 160ms;
+  --border-width-hairline: 0.5px;
   --control-height-xs: 1.5rem;
   --control-height-sm: 1.75rem;
   --control-height-md: 2rem;
@@ -267,12 +268,13 @@
   --text-title--line-height: var(--line-height-title);
   --text-heading: var(--font-size-heading);
   --text-heading--line-height: var(--line-height-heading);
-  --duration-fast: var(--motion-duration-fast);
-  --duration-fast-exit: var(--motion-duration-fast-exit);
-  --duration-moderate: var(--motion-duration-moderate);
-  --duration-moderate-exit: var(--motion-duration-moderate-exit);
-  --duration-slow: var(--motion-duration-slow);
-  --duration-slow-exit: var(--motion-duration-slow-exit);
+  --transition-duration-fast: var(--motion-duration-fast);
+  --transition-duration-fast-exit: var(--motion-duration-fast-exit);
+  --transition-duration-moderate: var(--motion-duration-moderate);
+  --transition-duration-moderate-exit: var(--motion-duration-moderate-exit);
+  --transition-duration-slow: var(--motion-duration-slow);
+  --transition-duration-slow-exit: var(--motion-duration-slow-exit);
+  --border-width-hairline: 0.5px;
   --spacing-control-xs: var(--control-height-xs);
   --spacing-control-sm: var(--control-height-sm);
   --spacing-control-md: var(--control-height-md);

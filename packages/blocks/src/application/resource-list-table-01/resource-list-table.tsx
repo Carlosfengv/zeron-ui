@@ -673,7 +673,7 @@ function ResourceLeading({ resource }: { resource: ResourceListItem }) {
     : undefined;
 
   return (
-    <InfoItemLeading className="border-[0.5px] border-border bg-surface-overlay text-fg-brand">
+    <InfoItemLeading className="border-hairline border-border bg-surface-overlay text-fg-brand">
       {brandIcon ? (
         <span
           aria-hidden

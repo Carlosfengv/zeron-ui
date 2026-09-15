@@ -351,6 +351,7 @@ function createTimeline<TRecord extends InfiniteLogBaseRecord>(records: readonly
   }
 
   return {
+    latestTimestamp: new Date(latest).toISOString(),
     buckets: buckets.map((bucket) => ({
       start: new Date(bucket.start).toISOString(),
       end: new Date(bucket.end).toISOString(),

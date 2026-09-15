@@ -56,7 +56,7 @@ describe("Resource List Table 1 block contract", () => {
     expect(source).not.toContain("shadow-raised");
     expect(source).toContain("border-border");
     expect(source).toContain(
-      'className="border-[0.5px] border-border bg-surface-overlay text-fg-brand"'
+      'className="border-hairline border-border bg-surface-overlay text-fg-brand"'
     );
     expect(source).toContain("text-fg-brand");
     expect(source).toContain("mx-auto w-full max-w-screen-2xl");

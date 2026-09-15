@@ -79,7 +79,7 @@ function AgentButtons({ service, onAgentSelect }: Pick<McpDetailProps, "onAgentS
     <div className="mt-3 flex flex-wrap items-center gap-3 p-1" aria-label="兼容 Agent">
       {service.agents.map((agent) => (
         <Tooltip key={agent.id} content={agent.name} side="top">
-          <Button type="button" variant="ghost" size="xl" iconOnly className="size-10 !p-1 border border-border bg-transparent leading-none" onClick={() => onAgentSelect?.(agent.id)} aria-label={`配置到 ${agent.name}`}>
+          <Button type="button" variant="ghost" size="xl" iconOnly className="border border-border bg-transparent leading-none" onClick={() => onAgentSelect?.(agent.id)} aria-label={`配置到 ${agent.name}`}>
             {agent.logo && <span aria-hidden className="inline-flex size-8 shrink-0 items-center justify-center align-middle leading-none [&>svg]:block [&>svg]:size-8 [&>img]:block">{agent.logo}</span>}
           </Button>
         </Tooltip>

@@ -159,7 +159,7 @@ function SetupDemo() {
   return (
     <ComponentPreview code={setupCode} minHeightClass="min-h-[280px]">
       <div className="grid w-full max-w-3xl items-stretch gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center">
-        <div className="flex min-h-36 flex-col justify-between rounded-xl border-[0.5px] border-border bg-surface-raised p-4">
+        <div className="flex min-h-36 flex-col justify-between rounded-xl border-hairline border-border bg-surface-raised p-4">
           <div>
             <div className="flex items-center justify-between gap-3">
               <span className="text-label font-semibold text-fg-brand">
@@ -188,7 +188,7 @@ function SetupDemo() {
           →
         </span>
 
-        <div className="flex min-h-36 flex-col justify-between rounded-xl border-[0.5px] border-border bg-surface-raised p-4">
+        <div className="flex min-h-36 flex-col justify-between rounded-xl border-hairline border-border bg-surface-raised p-4">
           <div>
             <div className="flex items-center justify-between gap-3">
               <span className="text-label font-semibold text-fg-brand">

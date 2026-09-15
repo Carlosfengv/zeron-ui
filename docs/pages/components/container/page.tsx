@@ -175,7 +175,7 @@ export default function ContainerDoc() {
               <Button size="sm">Manage</Button>
             </ContainerHeader>
             <ContainerBody className="p-0">
-              <InfoItemGroup className="min-h-full rounded-[0.875rem] border-0 bg-transparent">
+              <InfoItemGroup className="min-h-full rounded-xl border-0 bg-transparent">
                 {resourceItems.map((item) => {
                   const Icon = icons[item.id];
                   return (
@@ -222,7 +222,7 @@ export default function ContainerDoc() {
         <ComponentPreview code={maxHeightCode} padding="compact" className="mt-4">
           <Container className="w-full max-w-xl">
             <ContainerBody maxHeight="12rem" className="p-0">
-              <InfoItemGroup className="rounded-[0.875rem] border-0 bg-transparent">
+              <InfoItemGroup className="rounded-xl border-0 bg-transparent">
                 {resourceItems.map((item) => {
                   const Icon = icons[item.id];
                   return (

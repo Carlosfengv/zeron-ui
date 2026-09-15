@@ -41,7 +41,7 @@ export function TopNavAppShell({
     <AppShell
       layout="stacked"
       className={cn(
-        "@container h-full w-full min-h-0 min-w-0 flex-1 self-stretch overflow-hidden border-[0.5px] border-border bg-surface-base",
+        "@container h-full w-full min-h-0 min-w-0 flex-1 self-stretch overflow-hidden border-hairline border-border bg-surface-base",
         className
       )}
     >
