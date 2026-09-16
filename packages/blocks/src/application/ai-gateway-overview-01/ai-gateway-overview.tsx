@@ -118,7 +118,7 @@ function DashboardCard({
   title: string;
 }) {
   return (
-    <Card className={cn("min-w-0 rounded-2xl bg-hover pb-4", className)}>
+    <Card className={cn("min-w-0 rounded-2xl bg-hover pb-2", className)}>
       <CardHeader className="gap-1 px-4 pt-4">
         <h2 className="text-body font-medium text-fg-default">{title}</h2>
         {description ? <div className="text-label text-fg-muted">{description}</div> : null}
