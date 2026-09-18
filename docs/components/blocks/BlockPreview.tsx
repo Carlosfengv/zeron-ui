@@ -144,8 +144,8 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "traffic-rules-01": () => import("@zeron/blocks/traffic-rules-01").then(({ TrafficRules }) => ({
     default: () => <ResponsivePreview canvasHeight={810} canvasWidth={1440}><TrafficRules className="h-full min-h-0" /></ResponsivePreview>,
   })),
-  "personal-settings-01": () => import("@zeron/blocks/personal-settings-01").then(({ PersonalSettings, personalSettingsDemoData }) => ({
-    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalSettings data={personalSettingsDemoData} /></ResponsivePreview>,
+  "personal-settings-01": () => import("./AccountBlocksDemo").then(({ PersonalSettingsDemo: PersonalSettings }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalSettings /></ResponsivePreview>,
   })),
   "personal-model-usage-01": () => import("@zeron/blocks/personal-model-usage-01").then(({ PersonalModelUsage }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalModelUsage /></ResponsivePreview>,
@@ -235,7 +235,8 @@ const previewLoaders: Record<string, PreviewLoader> = {
       </ResponsivePreview>
     ),
   })),
-  "zaiops-operations-01": () => import("@zeron/blocks/zaiops-operations-01").then(({ ZaiopsOperations }) => ({
+  "user-account-01": () => import("./AccountBlocksDemo").then(({ UserAccountDemo }) => ({ default: () => <div className="aspect-video w-full"><UserAccountDemo /></div> })),
+  "zaiops-operations-01": () => import("./AccountBlocksDemo").then(({ ZaiopsOperationsDemo: ZaiopsOperations }) => ({
     default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ZaiopsOperations className="h-full min-h-0" /></ResponsivePreview>,
   })),
   zlrlist: () => import("@zeron/blocks/zlrlist").then(({ ZlrList }) => ({

@@ -138,7 +138,7 @@ describe("sidebar implementation contract", () => {
     expect(identityRow).toContain('trailingPlacement === "edge" && "ms-auto"');
     expect(identityRow).toContain('min-h-control-lg h-auto justify-start gap-1.5 px-0.5 py-2');
     expect(identityRow).toContain('[&>span.relative>span]:w-full');
-    expect(zaiopsPreview).toContain("<SidebarAccountMenu");
+    expect(zaiopsPreview).toContain("<UserAccountDemo");
     expect(sidebarDocs).toContain("<SidebarAccountMenu");
     expect(sidebarDocs).toContain('primary={workspace}');
     expect(sidebarDocs).toContain('onSelect={() => setWorkspace(name)}');
@@ -146,7 +146,6 @@ describe("sidebar implementation contract", () => {
     expect(sidebarDocs).toContain('group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-leading]]:flex-none');
     expect(sidebarDocs).toContain('primary="Carlos Feng"');
     expect(sidebarDocs).toContain('description="wei.feng@zstack.io"');
-    expect(zaiopsPreview).toContain('triggerTrailing={<More aria-hidden className="size-4" />}');
     expect(zaiopsPreview).toContain('alignOffset={20}');
     expect(zaiopsPreview).toContain('className="!w-60 !min-w-60 !max-w-60"');
     expect(accountMenu).toContain('menuSide = "top"');

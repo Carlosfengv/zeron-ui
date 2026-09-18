@@ -51,6 +51,7 @@ function installationFor(registryName: string): BlockCapability {
  * discovery, documentation and progressive asset splitting.
  */
 const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation" | "collection">> = [
+  { slug: "user-account-01", registryName: "user-account-01", title: "User Account", description: "Controlled appearance, language, settings, notifications and sign-out entry points.", kind: "block", product: "shared", domains: ["account"], patterns: ["menu", "dialog"], searchTerms: ["User Account", "用户账号", "账号", "通知"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true },
   {
     slug: "login-01", registryName: "login-01",
     title: "Login", description: "A responsive authentication page with credential and provider sign-in paths.",

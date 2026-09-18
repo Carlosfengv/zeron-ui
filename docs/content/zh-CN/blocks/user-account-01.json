@@ -1,0 +1,10 @@
+{
+  "userAccountBlock": {
+    "title": "用户账号",
+    "description": "统一登录用户的主题、语言、个人设置、通知和登出入口。",
+    "integrationTitle": "接入应用",
+    "integrationBody": "传入登录用户、受控主题与语言、支持的语言列表及真实业务回调。账号菜单和个人设置共享同一份偏好状态。Block 不创建会话，也不自行修改路由。放在侧栏底部，或通过 menuSide=\"bottom\" 用于顶部账号入口。",
+    "statesTitle": "操作状态与扩展",
+    "statesBody": "没有回调的功能隐藏。异步操作防止重复提交，失败时展示错误。多个入口通过 pendingAction 和 error 共享操作状态。extraSections 添加业务菜单，labels 配置所有内置文案。本预览中的通知和个人设置为静态菜单项，点击不跳转、不打开内容，也不关闭菜单。本预览使用演示会话，退出不会操作真实账号。"
+  }
+}

@@ -24,7 +24,6 @@ import { TrafficRules } from "@zeron/blocks/traffic-rules-01";
 import { McpDetail } from "@zeron/blocks/mcp-detail-01";
 import { ModelDetail } from "@zeron/blocks/model-detail-01";
 import { ModelDetail02 } from "@zeron/blocks/model-detail-02";
-import { PersonalSettings, personalSettingsDemoData } from "@zeron/blocks/personal-settings-01";
 import { PersonalModelUsage } from "@zeron/blocks/personal-model-usage-01";
 import {
   CreditUsage,
@@ -51,7 +50,7 @@ import { FileManager, type FileManagerItem } from "@zeron/blocks/file-manager-01
 import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
 import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
 import { TopNavAppShell } from "@zeron/blocks/top-nav-app-shell-01";
-import { ZaiopsOperations } from "@zeron/blocks/zaiops-operations-01";
+import { ZaiopsOperationsDemo, PersonalSettingsDemo, UserAccountDemo } from "./AccountBlocksDemo";
 import { ZlrWorkspace } from "@zeron/blocks/zlrlist";
 import { AgentMessageTrace, agentMessageTraceDemoData } from "@zeron/blocks/agent-message-trace-01";
 import { AgentTrace } from "@zeron/blocks/agent-trace-01";
@@ -177,7 +176,7 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
     case "model-detail-02":
       return <ModelDetail02 className="h-full min-h-0" />;
     case "personal-settings-01":
-      return <PersonalSettings data={personalSettingsDemoData} />;
+      return <PersonalSettingsDemo />;
     case "personal-model-usage-01":
       return <PersonalModelUsage />;
     case "credit-usage-01":
@@ -234,8 +233,10 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
           </section>
         </TopNavAppShell>
       );
+    case "user-account-01":
+      return <div className={centeredDemoClass}><UserAccountDemo /></div>;
     case "zaiops-operations-01":
-      return <ZaiopsOperations />;
+      return <ZaiopsOperationsDemo />;
     case "zlrlist":
       return <ZlrWorkspace />;
   }

@@ -1,0 +1,10 @@
+{
+  "userAccountBlock": {
+    "title": "User Account",
+    "description": "Controlled appearance, language, settings, notifications and sign-out entry points.",
+    "integrationTitle": "Integration",
+    "integrationBody": "Supply user data, controlled theme and locale values, supported languages and real application callbacks. Use the same preference store in the account menu and personal settings. The block does not create sessions or change routes itself. Render it in a sidebar footer, or set menuSide to bottom for a header.",
+    "statesTitle": "Actions and extension",
+    "statesBody": "Missing actions are hidden. Promise callbacks prevent duplicate submissions and show failures. Share pendingAction and error when rendering multiple entrances. extraSections adds business menu groups; labels localizes all built-in copy. In this preview, Notifications and Personal settings are static items: clicking them does not navigate, open content or close the menu. This preview uses a demo session; signing out does not end a real session."
+  }
+}

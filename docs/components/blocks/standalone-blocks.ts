@@ -33,6 +33,7 @@ export const standaloneBlockSlugs = [
   "resource-status-all-01",
   "resource-settings-01",
   "top-nav-app-shell-01",
+  "user-account-01",
   "zaiops-operations-01",
   "zlrlist",
 ] as const;

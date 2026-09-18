@@ -13,6 +13,7 @@ const commonLoaders: Record<AppLocale, Loader> = {
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
     home: () => import("@docs/content/en/home.json"),
+    "blocks/user-account-01": () => import("@docs/content/en/blocks/user-account-01.json"),
     "blocks/login-01": () => import("@docs/content/en/blocks/login-01.json"),
     "blocks/signup-01": () => import("@docs/content/en/blocks/signup-01.json"),
     "blocks/availability-monitor-01": () => import("@docs/content/en/blocks/availability-monitor-01.json"),
@@ -116,6 +117,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   },
   "zh-CN": {
     home: () => import("@docs/content/zh-CN/home.json"),
+    "blocks/user-account-01": () => import("@docs/content/zh-CN/blocks/user-account-01.json"),
     "blocks/login-01": () => import("@docs/content/zh-CN/blocks/login-01.json"),
     "blocks/signup-01": () => import("@docs/content/zh-CN/blocks/signup-01.json"),
     "blocks/availability-monitor-01": () => import("@docs/content/zh-CN/blocks/availability-monitor-01.json"),
