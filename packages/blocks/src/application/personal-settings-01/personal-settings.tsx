@@ -9,6 +9,7 @@ import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono";
 import github from "@thesvg/icons/github";
 import postgresql from "@thesvg/icons/postgresql";
 import slack from "@thesvg/icons/slack";
+import { UserAccount } from "../user-account-01";
 import { AppShell, AppShellHeader, AppShellMain } from "@zeron/ui/app-shell";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
@@ -344,6 +345,7 @@ export interface PersonalSettingsProps extends Omit<ComponentPropsWithoutRef<"di
   brand?: ReactNode;
   account?: ReactNode;
   labels?: PersonalSettingsLabels;
+  localeOptions?: readonly { value: string; label: string }[];
 }
 
 function ProviderMark({ provider }: { provider: PersonalSettingsModelService["provider"] }) {
@@ -380,9 +382,8 @@ function RowActions<Action extends string>({ items, label, onAction, pending = f
 }
 
 /** Personal account settings with model services, API keys, credentials, profile, and usage pages. */
-export function PersonalSettings({ account, actions, brand, className, data, defaultView = "keys", enabledViews, labels, loading, lockedNavigation = false, onViewChange, operationState, view: controlledView, ...props }: PersonalSettingsProps) {
+export function PersonalSettings({ account, actions, brand, className, data, defaultView = "keys", enabledViews, labels, loading, localeOptions, lockedNavigation = false, onViewChange, operationState, view: controlledView, ...props }: PersonalSettingsProps) {
   const SearchIcon = useIcon("search");
-  const ChevronDown = useIcon("chevron-down");
   const PlusIcon = useIcon("plus");
   const CopyIcon = useIcon("copy");
   const BrainIcon = useIcon("brain");
@@ -402,6 +403,7 @@ export function PersonalSettings({ account, actions, brand, className, data, def
     modelServices: data?.modelServices ?? personalSettingsDemoData.modelServices,
     profile: data?.profile ?? personalSettingsDemoData.profile,
   };
+  const canOpenView = (nextView: SettingsView) => !lockedNavigation || (enabledViews ?? [view]).includes(nextView);
   const copy = { ...viewCopy[view], ...labels?.views?.[view] };
   const normalizedQuery = query.trim().toLowerCase();
   const services = useMemo(() => resourceData.modelServices.filter((service) => !normalizedQuery || `${service.name} ${service.endpoint} ${service.models.join(" ")}`.toLowerCase().includes(normalizedQuery)), [normalizedQuery, resourceData.modelServices]);
@@ -416,7 +418,7 @@ export function PersonalSettings({ account, actions, brand, className, data, def
       <AppShellHeader className="static bg-surface-base">
           <TopNav navigationAlign="left">
           <TopNavBrand className="gap-3 text-fg-default">{brand ?? <><strong className="text-heading font-bold leading-none">Zentrix</strong><span className="text-body font-medium">个人设置</span></>}</TopNavBrand>
-          <TopNavActions>{account ?? <Button type="button" variant="ghost" trailingIcon={ChevronDown}><span className="flex items-center gap-2"><SidebarIdentityAvatar>{resourceData.profile.avatarLabel ?? resourceData.profile.displayName.slice(0, 1)}</SidebarIdentityAvatar><span>{resourceData.profile.displayName}</span></span></Button>}</TopNavActions>
+          <TopNavActions>{account ?? <UserAccount menuSide="bottom" user={{ name: resourceData.profile.displayName, email: resourceData.profile.email }} onOpenSettings={canOpenView("profile") ? () => setSettingsView("profile") : undefined} extraSections={canOpenView("preferences") ? [{ items: [{ id: "preferences", label: labels?.navigation?.preferences ?? "偏好设置", onSelect: () => setSettingsView("preferences") }] }] : []} />}</TopNavActions>
         </TopNav>
       </AppShellHeader>
 
@@ -431,7 +433,7 @@ export function PersonalSettings({ account, actions, brand, className, data, def
               <section className="mx-auto w-full max-w-[960px]">
                 {operationState?.error && <InlineNotice className="mb-4" tone="danger" variant="emphasized"><InlineNoticeContent>{operationState.error}</InlineNoticeContent></InlineNotice>}
                 {view === "callLogs" ? loading?.callLogs ? <EmptyRows>正在加载调用日志…</EmptyRows> : <CallLogsSettings data={data?.callLogs ?? defaultCallLogsData} /> : view === "modelUsage" ? loading?.modelUsage ? <EmptyRows>正在加载模型用量…</EmptyRows> : <ModelUsageSettings apiKeys={resourceData.apiKeys} data={data?.modelUsage ?? defaultModelUsageData} modelServices={resourceData.modelServices} /> : view === "usage" ? loading?.usage ? <EmptyRows>正在加载使用情况…</EmptyRows> : <UsageSettings data={data?.usage ?? defaultUsageData} /> : <><header className="max-w-3xl"><h1 className="text-title font-semibold text-fg-default">{copy.title}</h1><p className="mt-1 text-label leading-5 text-fg-muted">{copy.description}</p></header>
-                <div className="mt-4">{view === "models" ? <div className="flex flex-col gap-2.5"><InputGroup className="w-full max-w-[450px] border-border hover:border-border" size="md"><InputGroupAddon className="pr-2"><SearchIcon aria-hidden size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput aria-label={copy.search} className="h-full min-h-0" onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} value={query} /></InputGroup>{loading?.models ? <EmptyRows>正在加载模型服务…</EmptyRows> : <ModelServicesTable actions={actions} pending={operationState?.pending} services={services} />}</div> : view === "keys" ? loading?.keys ? <EmptyRows>正在加载 API key…</EmptyRows> : <ApiKeysTable actions={actions} apiKeys={resourceData.apiKeys} copyIcon={CopyIcon} pending={operationState?.pending} plusIcon={PlusIcon} /> : view === "credentials" ? loading?.credentials ? <EmptyRows>正在加载凭证…</EmptyRows> : <CredentialsTable actions={actions} credentials={resourceData.credentials} pending={operationState?.pending} plusIcon={PlusIcon} /> : view === "preferences" ? loading?.preferences ? <EmptyRows>正在加载偏好设置…</EmptyRows> : <PreferencesSettings actions={actions} preferences={data?.preferences ?? defaultPreferences} /> : loading?.profile ? <EmptyRows>正在加载个人资料…</EmptyRows> : <ProfileSettings actions={actions} pending={operationState?.pending} profile={resourceData.profile} />}</div></>}
+                <div className="mt-4">{view === "models" ? <div className="flex flex-col gap-2.5"><InputGroup className="w-full max-w-[450px] border-border hover:border-border" size="md"><InputGroupAddon className="pr-2"><SearchIcon aria-hidden size={16} strokeWidth={1.5} /></InputGroupAddon><InputGroupInput aria-label={copy.search} className="h-full min-h-0" onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} value={query} /></InputGroup>{loading?.models ? <EmptyRows>正在加载模型服务…</EmptyRows> : <ModelServicesTable actions={actions} pending={operationState?.pending} services={services} />}</div> : view === "keys" ? loading?.keys ? <EmptyRows>正在加载 API key…</EmptyRows> : <ApiKeysTable actions={actions} apiKeys={resourceData.apiKeys} copyIcon={CopyIcon} pending={operationState?.pending} plusIcon={PlusIcon} /> : view === "credentials" ? loading?.credentials ? <EmptyRows>正在加载凭证…</EmptyRows> : <CredentialsTable actions={actions} credentials={resourceData.credentials} pending={operationState?.pending} plusIcon={PlusIcon} /> : view === "preferences" ? loading?.preferences ? <EmptyRows>正在加载偏好设置…</EmptyRows> : <PreferencesSettings actions={actions} localeOptions={localeOptions} preferences={data?.preferences ?? defaultPreferences} /> : loading?.profile ? <EmptyRows>正在加载个人资料…</EmptyRows> : <ProfileSettings actions={actions} pending={operationState?.pending} profile={resourceData.profile} />}</div></>}
               </section>
             </PageBody>
           </PageContent>
@@ -499,7 +501,9 @@ const defaultPreferences: PersonalSettingsPreferences = {
   timeZone: "asia-shanghai",
 };
 
-function PreferencesSettings({ actions, preferences }: { actions?: PersonalSettingsActions; preferences: PersonalSettingsPreferences }) {
+export { defaultPreferences as personalSettingsDefaultPreferences };
+
+function PreferencesSettings({ actions, preferences, localeOptions }: { actions?: PersonalSettingsActions; preferences: PersonalSettingsPreferences; localeOptions?: readonly { value: string; label: string }[] }) {
   const update = <Key extends keyof PersonalSettingsPreferences>(key: Key, value: PersonalSettingsPreferences[Key]) => {
     actions?.onPreferencesChange?.({ ...preferences, [key]: value });
   };
@@ -530,7 +534,7 @@ function PreferencesSettings({ actions, preferences }: { actions?: PersonalSetti
 
     <SettingsSection title="语言与时间">
       <InfoItemGroup>
-        <PreferenceInfoItem description="选择 Zentrix 的显示语言。" title="语言"><PreferenceSelect ariaLabel="语言" disabled={disabled} onChange={setLanguage} options={[{ value: "zh-CN", label: "简体中文" }, { value: "en-US", label: "English (US)" }, { value: "ja-JP", label: "日本語" }]} value={language} /></PreferenceInfoItem>
+        <PreferenceInfoItem description="选择 Zentrix 的显示语言。" title="语言"><PreferenceSelect ariaLabel="语言" disabled={disabled} onChange={setLanguage} options={[...(localeOptions ?? [{ value: "zh-CN", label: "简体中文" }, { value: "en-US", label: "English (US)" }, { value: "ja-JP", label: "日本語" }])]} value={language} /></PreferenceInfoItem>
         <PreferenceInfoItem description="选择数字和货币的显示方式；默认会使用语言设置。" title="数字格式"><PreferenceSelect ariaLabel="数字格式" disabled={disabled} onChange={setNumberFormat} options={[{ value: "default", label: "默认" }, { value: "zh-CN", label: "1,234.56" }, { value: "de-DE", label: "1.234,56" }]} value={numberFormat} /></PreferenceInfoItem>
         <PreferenceInfoItem description="始终在编辑器中显示从左到右或从右到左的文字方向切换。" title="始终显示文字方向控制"><Switch checked={textDirectionControls} disabled={disabled} label={<span className="sr-only">始终显示文字方向控制</span>} onCheckedChange={setTextDirectionControls} /></PreferenceInfoItem>
         <PreferenceInfoItem description="这会影响日历中一周的第一天。" title="每周从星期一开始"><Switch checked={startWeekOnMonday} disabled={disabled} label={<span className="sr-only">每周从星期一开始</span>} onCheckedChange={setStartWeekOnMonday} /></PreferenceInfoItem>

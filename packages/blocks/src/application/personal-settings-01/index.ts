@@ -1,4 +1,4 @@
-export { PersonalSettings } from "./personal-settings";
+export { PersonalSettings, personalSettingsDefaultPreferences } from "./personal-settings";
 export { personalSettingsDemoData } from "./personal-settings-demo-data";
 export type { PersonalSettingsProps } from "./personal-settings";
 export type {

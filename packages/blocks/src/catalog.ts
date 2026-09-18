@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "user-account-01", title: "User Account", description: "Controlled account actions and preferences.", categories: ["application", "account"], dependencies: ["sidebar-account-menu", "icon-context"] },
   {
     name: "login-01",
     title: "Login",
@@ -159,7 +160,7 @@ const blockCatalogEntries = [
     title: "个人设置",
     description: "A personal settings workspace for model services, API keys, credentials, profile details, usage, and call logs.",
     categories: ["application", "settings"],
-    dependencies: ["app-shell", "top-nav", "page-layout", "nav-menu", "nav-item", "input-group", "table", "field", "badge", "button", "detail-list", "inline-notice", "@lobehub/icons"],
+    dependencies: ["user-account-01", "app-shell", "top-nav", "page-layout", "nav-menu", "nav-item", "input-group", "table", "field", "badge", "button", "detail-list", "inline-notice", "@lobehub/icons"],
   },
   {
     name: "personal-model-usage-01",
@@ -258,7 +259,7 @@ const blockCatalogEntries = [
     title: "ZAIops Operations",
     description: "An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation.",
     categories: ["application", "operations"],
-    dependencies: ["sidebar", "page-layout", "nav-menu", "nav-item"],
+    dependencies: ["user-account-01", "sidebar", "page-layout", "nav-menu", "nav-item"],
   },
   {
     name: "zlrlist",

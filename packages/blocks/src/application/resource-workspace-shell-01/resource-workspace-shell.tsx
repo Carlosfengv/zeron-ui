@@ -20,10 +20,8 @@ import {
   NavItemTrigger,
 } from "@zeron/ui/nav-item";
 import { NavMenu } from "@zeron/ui/nav-menu";
-import {
-  SidebarAccountMenu,
-  type SidebarAccountMenuSection,
-} from "@zeron/ui/sidebar-account-menu";
+import type { SidebarAccountMenuSection } from "@zeron/ui/sidebar-account-menu";
+import { UserAccount, type UserAccountProps } from "../user-account-01";
 import {
   SidebarIdentityAvatar,
   SidebarIdentityRow,
@@ -88,6 +86,7 @@ export interface ResourceWorkspaceShellProps
   workspaceAvatar?: ReactNode;
   accountName?: string;
   accountEmail?: string;
+  account?: UserAccountProps;
   accountAvatar?: ReactNode;
   accountSections?: SidebarAccountMenuSection[];
   navigation?: readonly ResourceWorkspaceNavigationItem[];
@@ -250,6 +249,7 @@ function NavigationItems({
 }
 
 function ResourceWorkspaceNavigation({
+  account,
   accountAvatar,
   accountEmail,
   accountName,
@@ -264,6 +264,7 @@ function ResourceWorkspaceNavigation({
   workspaceAvatar,
   workspaces,
 }: {
+  account?: UserAccountProps;
   accountAvatar?: ReactNode;
   accountEmail: string;
   accountName: string;
@@ -279,7 +280,6 @@ function ResourceWorkspaceNavigation({
   workspaces: readonly ResourceWorkspace[];
 }) {
   const ChevronDown = useIcon("chevron-down");
-  const MoreIcon = useIcon("ellipsis");
   const ProfileIcon = useIcon("user");
   const SettingsIcon = useIcon("settings");
   const resolvedNavigationGroups = [...navigationGroups];
@@ -422,13 +422,11 @@ function ResourceWorkspaceNavigation({
       </SidebarContent>
 
       <SidebarFooter className="p-2">
-        <SidebarAccountMenu
-          avatar={accountAvatar}
-          className="group-data-[state=collapsed]/sidebar:px-0 group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content]]:hidden group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-trailing]]:hidden"
-          description={accountEmail}
-          primary={accountName}
-          sections={resolvedAccountSections}
-          triggerTrailing={<MoreIcon aria-hidden className="size-4" />}
+        <UserAccount
+          user={{ name: accountName, email: accountEmail, avatar: accountAvatar }}
+          extraSections={account ? account.extraSections : accountSections ?? (onAccountAction ? resolvedAccountSections : [])}
+          {...account}
+          className={cn("group-data-[state=collapsed]/sidebar:px-0 group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content]]:hidden group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-trailing]]:hidden", account?.className)}
         />
       </SidebarFooter>
     </>
@@ -437,6 +435,7 @@ function ResourceWorkspaceNavigation({
 
 /** Shared Sidebar Basic workspace shell used by resource list and detail pages. */
 export function ResourceWorkspaceShell({
+  account,
   accountAvatar,
   accountEmail = "wei.feng@zstack.io",
   accountName = "carlos",
@@ -509,6 +508,7 @@ export function ResourceWorkspaceShell({
           width="280px"
         >
           <ResourceWorkspaceNavigation
+            account={account}
             accountAvatar={accountAvatar}
             accountEmail={accountEmail}
             accountName={accountName}

@@ -237,6 +237,11 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "user-account-01": [
+      "'use client';",
+      "import { UserAccount } from \"@/components/blocks/user-account-01\";",
+      "export default function Page() { return <UserAccount user={{ name: \"Install verified\" }} theme=\"dark\" onThemeChange={() => undefined} onSignOut={async () => undefined} />; }",
+    ].join("\n"),
     button: [
       'import { Button } from "@/components/ui/button";',
       '',
@@ -350,6 +355,12 @@ async function installViteComponent({ consumer, component, tarball }) {
     await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
   }
   const examples = {
+    "user-account-01": [
+      "import { createRoot } from \"react-dom/client\";",
+      "import { UserAccount } from \"@/src/components/blocks/user-account-01\";",
+      "import \"./index.css\";",
+      "createRoot(document.getElementById(\"root\")!).render(<UserAccount user={{ name: \"Install verified\" }} theme=\"dark\" onThemeChange={() => undefined} onSignOut={async () => undefined} />);",
+    ].join("\n"),
     button: [
       'import { createRoot } from "react-dom/client";',
       'import { Button } from "@/src/components/ui/button";',

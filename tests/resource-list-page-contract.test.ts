@@ -79,9 +79,8 @@ describe("Resource List Page 1 block contract", () => {
     expect(shellSource).toContain('trailing={<ChevronDown aria-hidden className="size-4" />}');
     expect(shellSource).toContain('Z\n                      </SidebarIdentityAvatar>');
     expect(shellSource).toContain('checked={item.id === workspace.id}');
-    expect(shellSource).toContain("<SidebarAccountMenu");
-    expect(shellSource).toContain('primary={accountName}');
-    expect(shellSource).toContain('description={accountEmail}');
+    expect(shellSource).toContain("<UserAccount");
+    expect(shellSource).toContain('user={{ name: accountName, email: accountEmail, avatar: accountAvatar }}');
     expect(shellSource).toMatch(
       /<SidebarTrigger\s+className="shrink-0 group-data-\[state=collapsed\]\/sidebar:hidden"\s+label="收起管理后台导航"\s+size="xs"\s+\/>/
     );

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "user-account-01",
+  "type": "registry:block",
+  "title": "User Account",
+  "description": "Controlled account actions and preferences.",
+  "dependencies": [],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/sidebar-account-menu.json",
+    "https://zeron-ui.vercel.app/r/icon-context.json"
+  ],
+  "files": [
+    {
+      "path": "packages/blocks/src/application/user-account-01/user-account.tsx",
+      "content": "\"use client\";\nimport { useRef, useState, type ReactNode } from \"react\";\nimport { SidebarAccountMenu, type SidebarAccountMenuProps, type SidebarAccountMenuSection } from \"@ui/sidebar-account-menu\";\nimport { useIcon } from \"@lib/icon-context\";\nexport type UserAccountTheme = \"system\" | \"light\" | \"dark\";\nexport interface UserAccountLabels {\n    theme: string;\n    light: string;\n    dark: string;\n    system: string;\n    language: string;\n    settings: string;\n    notifications: string;\n    signOut: string;\n    working: string;\n    actionError: string;\n}\nexport interface UserAccountProps {\n    user: {\n        name: string;\n        email?: string;\n        avatar?: ReactNode;\n    };\n    theme?: UserAccountTheme;\n    onThemeChange?: (theme: UserAccountTheme) => void | Promise<void>;\n    locale?: string;\n    localeOptions?: readonly {\n        value: string;\n        label: string;\n    }[];\n    onLocaleChange?: (locale: string) => void | Promise<void>;\n    onOpenSettings?: () => void;\n    onSignOut?: () => void | Promise<void>;\n    /** Optional application-owned notification action; the block does not supply a notification panel. */\n    notifications?: {\n        unreadCount: number;\n        onOpen: () => void;\n    };\n    extraSections?: SidebarAccountMenuSection[];\n    /** External pending/error state can be shared by multiple account entrances. */\n    pendingAction?: string | null;\n    error?: string | null;\n    labels?: Partial<UserAccountLabels>;\n    className?: string;\n    menuSide?: SidebarAccountMenuProps[\"menuSide\"];\n    open?: boolean;\n    onOpenChange?: (open: boolean) => void;\n}\nconst defaultLabels: UserAccountLabels = {\n    theme: \"主题\", light: \"浅色\", dark: \"深色\", system: \"跟随系统\", language: \"语言\",\n    settings: \"个人设置\", notifications: \"通知\", signOut: \"退出登录\", working: \"处理中…\",\n    actionError: \"操作失败，请重试。\",\n};\n/** Controlled account preferences and application actions; no auth, storage or routing assumptions. */\nexport function UserAccount({ user, theme, onThemeChange, locale, localeOptions, onLocaleChange, onOpenSettings, onSignOut, notifications, extraSections = [], pendingAction, error, labels, className, menuSide, open, onOpenChange }: UserAccountProps) {\n    const copy = { ...defaultLabels, ...labels };\n    const [localPending, setLocalPending] = useState<string | null>(null);\n    const [localError, setLocalError] = useState<string | null>(null);\n    const inFlight = useRef(false);\n    const busy = Boolean(pendingAction || localPending);\n    const ThemeIcon = useIcon(\"sun\");\n    const LanguageIcon = useIcon(\"globe\");\n    const SettingsIcon = useIcon(\"settings\");\n    const BellIcon = useIcon(\"bell\");\n    const MoreIcon = useIcon(\"ellipsis\");\n    const ChevronRight = useIcon(\"chevron-right\");\n    const run = async (action: string, callback: () => void | Promise<void>) => {\n        if (inFlight.current || pendingAction)\n            return;\n        inFlight.current = true;\n        setLocalPending(action);\n        setLocalError(null);\n        try {\n            await callback();\n        }\n        catch {\n            setLocalError(copy.actionError);\n        }\n        finally {\n            inFlight.current = false;\n            setLocalPending(null);\n        }\n    };\n    const preferences: SidebarAccountMenuSection = { items: [] };\n    if (theme && onThemeChange)\n        preferences.items.push({\n            id: \"theme\", label: copy.theme, icon: ThemeIcon, disabled: busy,\n            trailing: <ChevronRight aria-hidden className=\"size-4\"/>,\n            submenu: { value: theme, options: [\n                    { value: \"system\", label: copy.system }, { value: \"light\", label: copy.light }, { value: \"dark\", label: copy.dark },\n                ], onValueChange: (value) => { if (value === \"system\" || value === \"light\" || value === \"dark\")\n                    void run(\"theme\", () => onThemeChange(value)); } },\n        });\n    if (locale && localeOptions?.length && onLocaleChange)\n        preferences.items.push({\n            id: \"language\", label: copy.language, icon: LanguageIcon, disabled: busy,\n            trailing: <ChevronRight aria-hidden className=\"size-4\"/>,\n            submenu: { value: locale, options: [...localeOptions], onValueChange: (value) => { void run(\"locale\", () => onLocaleChange(value)); } },\n        });\n    const destinations: SidebarAccountMenuSection = { items: [] };\n    if (notifications)\n        destinations.items.push({\n            id: \"notifications\", label: copy.notifications, icon: BellIcon, onSelect: notifications.onOpen,\n            trailing: notifications.unreadCount > 0 ? <span className=\"text-label tabular-nums text-fg-brand\">{notifications.unreadCount > 99 ? \"99+\" : notifications.unreadCount}</span> : undefined,\n        });\n    if (onOpenSettings)\n        destinations.items.push({ id: \"settings\", label: copy.settings, icon: SettingsIcon, onSelect: onOpenSettings });\n    const sections = [preferences, destinations, ...extraSections];\n    if (onSignOut)\n        sections.push({ items: [{ id: \"sign-out\", label: copy.signOut, disabled: busy, closeOnClick: false, onSelect: () => { void run(\"sign-out\", onSignOut); } }] });\n    const visibleSections = sections.filter((section) => section.items.length).map((section) => ({\n        ...section, items: section.items.map((item) => ({ ...item, disabled: busy || item.disabled })),\n    }));\n    return <div className=\"min-w-0\" aria-busy={busy}>\n    <SidebarAccountMenu primary={user.name} description={user.email} avatar={user.avatar} sections={visibleSections} className={className} menuSide={menuSide} open={open} onOpenChange={onOpenChange} triggerTrailing={<MoreIcon aria-hidden className=\"size-4\"/>}/>\n    {busy && <p role=\"status\" className=\"px-2 py-1 text-label text-fg-muted\">{copy.working}</p>}\n    {(error || localError) && <p role=\"alert\" className=\"px-2 py-1 text-label text-fg-danger\">{error || localError}</p>}\n  </div>;\n}\n",
+      "type": "registry:component",
+      "target": "components/blocks/user-account-01/user-account.tsx"
+    },
+    {
+      "path": "packages/blocks/src/application/user-account-01/index.ts",
+      "content": "export { UserAccount } from \"./user-account\";\nexport type { UserAccountProps, UserAccountLabels, UserAccountTheme } from \"./user-account\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/user-account-01/index.ts"
+    }
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "data-block"
+    }
+  },
+  "categories": [
+    "application",
+    "account"
+  ]
+}

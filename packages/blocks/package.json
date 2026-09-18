@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./user-account-01": "./src/application/user-account-01/index.ts",
     "./catalog": "./src/catalog.ts",
     "./login-01": "./src/application/login-01/index.ts",
     "./signup-01": "./src/application/signup-01/index.ts",

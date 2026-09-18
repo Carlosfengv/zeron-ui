@@ -3,6 +3,33 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "user-account-01",
+      "type": "registry:block",
+      "title": "User Account",
+      "description": "Controlled account actions and preferences.",
+      "categories": [
+        "application",
+        "account"
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "sidebar-account-menu",
+        "icon-context"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/user-account-01/user-account.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/user-account-01/user-account.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/user-account-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/user-account-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "login-01",
       "type": "registry:block",
       "title": "Login",
@@ -312,7 +339,7 @@
       "description": "A personal settings workspace for model services, API keys, credentials, profile details, usage, and call logs.",
       "categories": ["application", "settings"],
       "dependencies": ["tw-animate-css", "@lobehub/icons", "recharts", "@tanstack/react-table", "@thesvg/icons"],
-      "registryDependencies": ["app-shell", "badge", "button", "chart", "container", "detail-list", "field", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "select", "separator", "table", "tabs", "time-range-histogram", "top-nav", "utils", "dialog", "dropdown", "data-table", "info-item", "menu-item", "metric-card", "sidebar-identity-row", "switch"],
+      "registryDependencies": ["user-account-01", "app-shell", "badge", "button", "chart", "container", "detail-list", "field", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "select", "separator", "table", "tabs", "time-range-histogram", "top-nav", "utils", "dialog", "dropdown", "data-table", "info-item", "menu-item", "metric-card", "sidebar-identity-row", "switch"],
       "files": [
         {
           "path": "packages/blocks/src/application/personal-settings-01/personal-settings.tsx",
@@ -528,7 +555,7 @@
       "description": "Shared Sidebar Basic workspace shell for resource list and detail pages.",
       "categories": ["application", "resources", "navigation"],
       "dependencies": ["tw-animate-css"],
-      "registryDependencies": ["dropdown", "icon-context", "menu-item", "nav-item", "nav-menu", "sidebar", "sidebar-account-menu", "sidebar-identity-row", "utils"],
+      "registryDependencies": ["user-account-01", "dropdown", "icon-context", "menu-item", "nav-item", "nav-menu", "sidebar", "sidebar-account-menu", "sidebar-identity-row", "utils"],
       "files": [
         {
           "path": "packages/blocks/src/application/resource-workspace-shell-01/resource-workspace-shell.tsx",
@@ -709,7 +736,7 @@
       "description": "An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation.",
       "categories": ["application", "operations"],
       "dependencies": ["tw-animate-css"],
-      "registryDependencies": ["button", "dropdown", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "sidebar-account-menu", "icon-context", "utils", "badge", "dialog", "kbd", "metric-card", "table"],
+      "registryDependencies": ["user-account-01", "button", "dropdown", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "sidebar-account-menu", "icon-context", "utils", "badge", "dialog", "kbd", "metric-card", "table"],
       "files": [
         {
           "path": "packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx",

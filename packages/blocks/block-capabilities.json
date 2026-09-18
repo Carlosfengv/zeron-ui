@@ -1,4 +1,5 @@
 {
+  "user-account-01": { "framework": "react", "kind": "data-block" },
   "login-01": { "framework": "next", "kind": "template" },
   "signup-01": { "framework": "next", "kind": "template" },
   "availability-monitor-01": { "framework": "react", "kind": "template" },
