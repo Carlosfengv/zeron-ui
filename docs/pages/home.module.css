@@ -1,0 +1,10 @@
+/* Display sizes derive from the project's existing heading token. */
+.heroTitle {
+  font-size: clamp(calc(var(--font-size-heading) * 1.5), 5vw, calc(var(--font-size-heading) * 2.5));
+  line-height: 1.15;
+}
+
+.sectionTitle {
+  font-size: clamp(var(--font-size-heading), 3vw, calc(var(--font-size-heading) * 1.5));
+  line-height: 1.25;
+}

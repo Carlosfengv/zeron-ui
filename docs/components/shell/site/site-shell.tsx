@@ -101,7 +101,9 @@ function DocsPrimaryNavigation({
   const themeActionLabel = isEnglish
     ? nextTheme === "dark" ? "Switch to dark mode" : "Switch to light mode"
     : nextTheme === "dark" ? "切换至深色模式" : "切换至浅色模式";
-  const activePath = currentPathname.startsWith("/docs/pages")
+  const activePath = currentPathname === "/"
+    ? localizePathname("/", localePrefix)
+    : currentPathname.startsWith("/docs/pages")
     ? localizePathname("/docs/pages", localePrefix)
     : currentPathname.startsWith("/docs/blocks")
       ? localizePathname("/docs/blocks", localePrefix)
@@ -113,6 +115,7 @@ function DocsPrimaryNavigation({
           ? localizePathname("/docs", localePrefix)
           : null;
   const items = [
+    { href: localizePathname("/", localePrefix), label: t("home") },
     { href: localizePathname("/docs/components", localePrefix), label: t("componentsEntry") },
     { href: localizePathname("/docs/blocks", localePrefix), label: t("blocks") },
     { href: localizePathname("/docs/pages", localePrefix), label: t("pages") },
@@ -131,7 +134,7 @@ function DocsPrimaryNavigation({
   return (
     <TopNav navigationAlign="left" className="w-full gap-2 border-0 px-4 max-sm:grid-cols-[minmax(0,1fr)_auto] max-sm:gap-y-0 sm:px-6">
       <TopNavBrand className="shrink-0 px-0 pr-3 text-title font-semibold tracking-tight text-fg-default max-sm:col-start-1 max-sm:row-start-1 max-sm:min-h-12 sm:pr-8">
-        <Link aria-label="Zeron Design" href={localizePathname("/docs/blocks", localePrefix)}>
+        <Link aria-label="Zeron Design" href={localizePathname("/", localePrefix)}>
           <span className="sm:hidden">ZD</span>
           <span className="max-sm:hidden">Zeron Design</span>
         </Link>
@@ -225,6 +228,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
   const { closeMobile } = useSidebar();
   const localePrefix = localePrefixFromPathname(pathname);
   const currentPathname = internalPathname(pathname);
+  const isHomePage = currentPathname === "/";
   const isLocalizedDocumentation = currentPathname === "/docs" || currentPathname.startsWith("/docs/");
   const isArtifactWorkspace = currentPathname === "/docs/blocks" || currentPathname.startsWith("/docs/blocks/")
     || currentPathname === "/docs/pages" || currentPathname.startsWith("/docs/pages/");
@@ -275,7 +279,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
         <AppShellMain className={isBoundedWorkspace ? "flex min-h-0 overflow-hidden [&:has([data-docs-workspace=blocks])>aside]:hidden" : "flex min-h-0 [&:has([data-docs-workspace=blocks])>aside]:hidden"}>
           {hasDocumentationSidebar && <AppShellSidebar><DocsSidebar localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} /></AppShellSidebar>}
           <div className={isBoundedWorkspace ? "h-full min-h-0 min-w-0 flex-1" : "min-h-0 min-w-0 flex-1"}>{children}</div>
-          {!isArtifactWorkspace && !isComponentsWorkspace && !isUpdatesPage && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
+          {!isHomePage && !isArtifactWorkspace && !isComponentsWorkspace && !isUpdatesPage && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
         </AppShellMain>
       </AppShell>
     </RightRailProvider>

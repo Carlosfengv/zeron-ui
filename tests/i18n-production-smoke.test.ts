@@ -42,6 +42,19 @@ describe("i18n production smoke", () => {
     try {
       await waitForServer(server);
 
+      for (const [url, locale] of [["/", "zh-CN"], ["/en", "en"]]) {
+        const home = await fetch(`${origin}${url}`, { redirect: "manual" });
+        const html = await home.text();
+        expect(home.status).toBe(200);
+        expect(html).toContain(`<html lang="${locale}"`);
+        expect(html).toContain('id="install"');
+        expect(html).toContain('id="skills"');
+        expect(html).toContain('id="capabilities-title"');
+        expect(html).toContain('href="https://www.npmjs.com/package/zeron-ui"');
+        expect(html).toContain('href="/skills/install.md"');
+        expect(html).toContain(`rel="canonical" href="https://zeron-ui.vercel.app${url === "/" ? "" : url}"`);
+      }
+
       const chinese = await fetch(`${origin}/docs/components/button`);
       const chineseHtml = await chinese.text();
       expect(chinese.status).toBe(200);

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { routing } from "../app/_i18n/routing";
@@ -11,7 +11,6 @@ describe("i18n routing", () => {
     const rootPage = join(ROOT, "app/[locale]/page.tsx");
 
     expect(existsSync(rootPage)).toBe(true);
-    expect(readFileSync(rootPage, "utf8")).toContain('href: "/docs/blocks"');
   });
 
   it("keeps Chinese canonical paths unprefixed and prefixes English paths", () => {

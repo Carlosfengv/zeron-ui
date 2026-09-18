@@ -4,6 +4,7 @@
     "description": "Open Source UI components created by Zeron Design"
   },
   "navigation": {
+    "home": "Home",
     "main": "Main navigation",
     "system": "System navigation",
     "foundations": "Foundations",

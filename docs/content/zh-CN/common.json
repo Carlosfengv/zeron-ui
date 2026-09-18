@@ -4,6 +4,7 @@
     "description": "由 Zeron Design 打造的开源 UI 组件"
   },
   "navigation": {
+    "home": "首页",
     "main": "主导航",
     "system": "系统导航",
     "foundations": "基础",

@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import ts from "typescript";
 import { blockCatalog } from "@zeron/blocks/catalog";
 import { artifactCatalog, artifactKinds, artifactProducts, artifactReadiness } from "../docs/catalog/artifacts";
 import { contentKeyOf, getDocEntry, legacyBlockRedirects, pathnameOf } from "../docs/manifest";
@@ -18,7 +19,7 @@ describe("business template catalog", () => {
     const registryNames = new Set(blocksByRegistryName.keys());
     const artifactRegistryNames = artifactCatalog.map(({ registryName }) => registryName);
 
-    expect(artifactCatalog).toHaveLength(36);
+    expect(artifactCatalog).toHaveLength(37);
     expect(new Set(artifactRegistryNames).size).toBe(artifactCatalog.length);
     expect(new Set(artifactRegistryNames)).toEqual(registryNames);
     for (const artifact of artifactCatalog) {
@@ -28,7 +29,7 @@ describe("business template catalog", () => {
 
   it("labels only data-capable Blocks as data blocks", () => {
     expect(blockCatalog.filter((block) => block.installation.kind === "data-block").map((block) => block.name))
-      .toEqual(["ai-gateway-overview-01", "ai-gateway-session-list-01", "file-manager-01", "agent-message-trace-01", "credit-usage-01", "rule-flow-editor-01", "resource-list-table-01", "member-department-01", "infinite-log-table-01"]);
+      .toEqual(["user-account-01", "ai-gateway-overview-01", "ai-gateway-session-list-01", "file-manager-01", "agent-message-trace-01", "credit-usage-01", "rule-flow-editor-01", "resource-list-table-01", "member-department-01", "infinite-log-table-01"]);
   });
 
   it("keeps every business template reachable through an existing detail page", () => {
@@ -44,10 +45,27 @@ describe("business template catalog", () => {
   });
 
   it("provides a gallery cover loader for every discoverable artifact", () => {
+    // A cover can load a local adapter (e.g. controlled account settings),
+    // rather than importing the registry module directly in this file.
+    const source = ts.createSourceFile("BlockPreview.tsx", blockPreviewSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+    const loaders = new Map<string, ts.Expression>();
+    function visit(node: ts.Node) {
+      if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === "previewLoaders"
+        && node.initializer && ts.isObjectLiteralExpression(node.initializer)) {
+        for (const property of node.initializer.properties) {
+          if (ts.isPropertyAssignment(property) && (ts.isStringLiteral(property.name) || ts.isIdentifier(property.name))) {
+            loaders.set(property.name.text, property.initializer);
+          }
+        }
+      }
+      ts.forEachChild(node, visit);
+    }
+    visit(source);
     for (const artifact of artifactCatalog) {
-      expect(blockPreviewSource, artifact.slug).toContain(
-        `import("@zeron/blocks/${artifact.slug}")`,
-      );
+      const loader = loaders.get(artifact.slug);
+      expect(loader, artifact.slug).toBeDefined();
+      expect(loader && ts.isArrowFunction(loader), artifact.slug).toBe(true);
+      expect(loader?.getText(source), artifact.slug).toContain("import(");
     }
   });
 
@@ -55,7 +73,7 @@ describe("business template catalog", () => {
     const pages = artifactCatalog.filter(({ collection }) => collection === "pages");
     const blocks = artifactCatalog.filter(({ collection }) => collection === "blocks");
     expect(pages).toHaveLength(26);
-    expect(blocks).toHaveLength(10);
+    expect(blocks).toHaveLength(11);
     expect(new Set(pages.map(({ slug }) => slug))).toEqual(new Set(pageArtifactSlugs));
     expect(blocks.some(({ slug }) => pageArtifactSlugs.includes(slug as typeof pageArtifactSlugs[number]))).toBe(false);
     expect(getDocEntry("pages", "resource-list-page-01")).toBeDefined();

@@ -1,5 +1,83 @@
 {
   "home": {
+    "openSource": "Open source",
+    "tryPrompt": "Give your agent a real task",
+    "showcase": {
+      "title": "Interactive preview",
+      "live": "Real components. Try them.",
+      "heading": "Details you can see. Interactions you can feel.",
+      "description": "From inputs and switches to button feedback, every interaction shares one design language. Compose those details into your next product interface.",
+      "components": "Refined UI primitives",
+      "layouts": "Composable layouts and product blocks",
+      "agents": "Agent skills that understand Zeron",
+      "settings": "Workspace settings",
+      "demo": "Demo",
+      "name": "Workspace name",
+      "notifications": "Email notifications",
+      "on": "Enabled",
+      "off": "Disabled",
+      "save": "Save preview",
+      "reset": "Reset",
+      "saved": "Settings for “{name}” saved in this preview.",
+      "local": "Try typing, toggling and saving. Changes apply only to this preview."
+    },
+    "closing": {
+      "title": "Your next interface starts here.",
+      "description": "Install a component, compose a page, or let your agent help you take the next step."
+    },
+    "eyebrow": "Components, layouts & agent skills",
+    "title": "From the first component\nto your next product interface.",
+    "description": "Build with Zeron's React components and layouts. Let your coding agent assemble pages or migrate an existing UI, with your business behavior intact.",
+    "getStarted": "Start building",
+    "useSkills": "Install agent skills",
+    "browseBlocks": "Explore blocks",
+    "skillsSection": "Work with your agent",
+    "footer": "Open source. Built for real products.",
+    "release": {
+      "title": "Latest npm release",
+      "unavailable": "Version unavailable",
+      "prerelease": "Prerelease",
+      "package": "CLI package",
+      "published": "Published",
+      "source": "From npm's latest tag. Refreshed hourly; the website and skills have their own release cycle.",
+      "fallback": "npm is temporarily unavailable. Commands use @latest and can be retried when npm is reachable. You can also check the package page.",
+      "npm": "View on npm",
+      "updates": "Project updates"
+    },
+    "install": {
+      "eyebrow": "Install Zeron UI",
+      "title": "Two steps to your first component.",
+      "description": "Run these commands in your React 19 / Tailwind 4 project. The CLI adds component source and its dependencies to your project, ready to import from your configured aliases.",
+      "components": "Browse components",
+      "docs": "Read the guide",
+      "terminal": "In your project directory",
+      "initialize": "1. Initialize your project",
+      "initializeHint": "Skip this step if components.json already exists. Check compatibility before introducing Zeron.",
+      "add": "2. Add a component",
+      "addHint": "Replace button with the component or block you need. Preserve local modifications when resolving file conflicts."
+    },
+    "capabilities": {
+      "eyebrow": "Choose a skill",
+      "title": "One for building. One for migrating.",
+      "description": "After installing both skills, give your agent a concrete task. Start with one page or define the full migration scope.",
+      "boundary": "Skills guide your agent; they are not an automatic migration engine. Framework upgrades and unsupported components need separate decisions. Next-only blocks require Next.js.",
+      "builder": {
+        "description": "For a new page or an improvement to an existing one.",
+        "first": "Select suitable blocks, page layouts and components from Zeron.",
+        "second": "Connect real data, routes, forms and business actions through public component APIs.",
+        "third": "Check responsive layouts, theme behavior, interaction states and available project checks.",
+        "prompt": "Use $zeron-page-builder to build a settings page in this project. Check compatibility and introduce Zeron UI as needed. Reuse its components and layouts, connect real business data, and verify mobile and desktop behavior.",
+        "copy": "Copy page-building prompt"
+      },
+      "migration": {
+        "description": "For replacing an existing UI system with Zeron.",
+        "first": "Inventory the agreed scope and map old components to direct replacements, adaptations or gaps.",
+        "second": "Migrate components, layout and theme in batches while preserving routes, permissions and behavior.",
+        "third": "Check remaining legacy UI, exercise key flows, and report completion and unresolved gaps honestly.",
+        "prompt": "Use $swap-to-zeronui to migrate this project's UI to Zeron UI. Inspect the current stack and migration scope first. Preserve routes, requests, validation and permissions; migrate in verifiable batches and report any unsupported capabilities.",
+        "copy": "Copy migration prompt"
+      }
+    },
     "tagline": "Refined UI components with satisfying hover.",
     "learnMore": "Learn more",
     "seeDemo": "See demo",

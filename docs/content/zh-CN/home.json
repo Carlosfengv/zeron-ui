@@ -1,5 +1,83 @@
 {
   "home": {
+    "openSource": "开源组件",
+    "tryPrompt": "给 Agent 一个具体任务",
+    "showcase": {
+      "title": "交互预览",
+      "live": "真实组件，可直接操作",
+      "heading": "看得到的细节，感受得到的交互。",
+      "description": "从输入、切换到按钮反馈，使用同一套组件语言。将这些细节组合起来，就是你的下一个产品界面。",
+      "components": "精致的基础组件",
+      "layouts": "可组合的布局与业务区块",
+      "agents": "理解 Zeron 的 Agent 技能",
+      "settings": "工作区设置",
+      "demo": "示例",
+      "name": "工作区名称",
+      "notifications": "邮件通知",
+      "on": "已开启",
+      "off": "已关闭",
+      "save": "保存预览",
+      "reset": "重置",
+      "saved": "已在此预览中保存“{name}”的设置。",
+      "local": "试试输入、切换和保存。所有更改仅在此预览中生效。"
+    },
+    "closing": {
+      "title": "你的下一个界面，从这里开始。",
+      "description": "安装一个组件，组合一个页面，或让 Agent 帮你迈出下一步。"
+    },
+    "eyebrow": "组件、布局与 Agent 技能",
+    "title": "从第一个组件，\n到完整的产品界面。",
+    "description": "使用 Zeron 的 React 组件与布局构建产品。让编程 Agent 帮你组合页面，或迁移现有 UI，同时保留真实业务能力。",
+    "getStarted": "开始构建",
+    "useSkills": "安装 Agent 技能",
+    "browseBlocks": "浏览区块",
+    "skillsSection": "与 Agent 一起构建",
+    "footer": "开源，面向真实产品。",
+    "release": {
+      "title": "npm 最新版本",
+      "unavailable": "暂未获取版本",
+      "prerelease": "预发布版",
+      "package": "CLI 包名",
+      "published": "发布时间",
+      "source": "读取 npm 的 latest 标签，每小时刷新。官网与技能包按各自的周期更新。",
+      "fallback": "暂时无法连接 npm，仍提供 @latest 安装命令，可在连接恢复后使用，也可前往包页面确认版本。",
+      "npm": "在 npm 查看",
+      "updates": "项目更新"
+    },
+    "install": {
+      "eyebrow": "安装 Zeron UI",
+      "title": "两步，开始使用第一个组件。",
+      "description": "在 React 19 / Tailwind 4 项目中运行以下命令。CLI 会将组件源码及所需依赖接入项目，你可以通过项目配置的别名导入使用。",
+      "components": "浏览组件",
+      "docs": "阅读接入指南",
+      "terminal": "在你的项目目录中执行",
+      "initialize": "1. 初始化项目",
+      "initializeHint": "已有 components.json 时可跳过。引入 Zeron 前，请先确认技术栈兼容性。",
+      "add": "2. 安装组件",
+      "addHint": "将 button 替换为所需组件或区块名称。处理同名文件冲突时，请保留已有的本地修改。"
+    },
+    "capabilities": {
+      "eyebrow": "选择适合的技能",
+      "title": "构建新页面，或迁移现有界面。",
+      "description": "安装两个技能后，给 Agent 一个具体任务。你可以从一个页面开始，也可以明确完整迁移范围。",
+      "boundary": "技能为 Agent 提供工作规范，不是自动迁移引擎。框架升级和不支持的组件能力需要单独判断，Next 专用区块需要 Next.js 环境。",
+      "builder": {
+        "description": "适合新页面实现与已有页面适配。",
+        "first": "选择适合业务任务的 Zeron 区块、页面布局与组件。",
+        "second": "通过公开组件 API 接入真实数据、路由、表单和业务操作。",
+        "third": "检查响应式布局、主题、交互状态及项目已有的验证项。",
+        "prompt": "使用 $zeron-page-builder，为当前项目构建一个设置页面。先检查兼容性，按需接入 Zeron UI。复用现有组件和布局，连接真实业务数据，并验证移动端和桌面端的交互。",
+        "copy": "复制页面构建提示词"
+      },
+      "migration": {
+        "description": "适合将已有 UI 体系逐步替换为 Zeron。",
+        "first": "盘点迁移范围，将旧组件映射为直接替换、适配组合或能力缺口。",
+        "second": "分批迁移控件、布局与主题，保留路由、权限和业务行为。",
+        "third": "检查旧 UI 残留，验证主要流程，明确报告完成情况与待解决问题。",
+        "prompt": "使用 $swap-to-zeronui，将当前项目的 UI 迁移到 Zeron UI。先检查技术栈并盘点迁移范围。保留路由、请求、校验和权限，分批替换并验证主要流程，明确报告不支持的能力。",
+        "copy": "复制迁移提示词"
+      }
+    },
     "tagline": "精致的 UI 组件，带来恰到好处的悬停反馈。",
     "learnMore": "了解更多",
     "seeDemo": "查看演示",

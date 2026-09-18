@@ -59,6 +59,59 @@ Registry instead of relying on an unpublished package name.
 
 Dependencies resolve automatically. Font weight animations require the [Inter](https://fonts.google.com/specimen/Inter) variable font.
 
+## Migrate an existing application
+
+The repository includes a paired `swap-to-zeronui` and `zeron-page-builder`
+skill workflow for migrating existing React UI while retaining business behavior.
+It inventories the agreed scope, maps old APIs, installs Zeron components,
+adapts callers and verifies cleanup and product flows. It reports capability gaps
+and accepted exceptions instead of claiming an unconditional full replacement.
+
+### Install skills from the website
+
+The localized homepage (`/` and `/en`) covers component installation, agent skill
+installation, capability summaries and copyable usage prompts. Its release panel
+reads the npm `zeron-ui` latest tag with hourly revalidation, labels prereleases,
+and uses the verified version in CLI commands. Registry failures show an explicit
+unavailable state and `@latest` commands instead of presenting a local version as
+published. The homepage shares the existing site shell and Zeron components.
+
+The introduction page includes a bilingual **Copy install prompt** section at
+`/docs#skills` (English: `/en/docs#skills`). After deploying this version, an agent
+with network and file access can read `https://zeron-ui.vercel.app/skills/install.md`
+and install both skills into a project that does not yet use Zeron UI.
+
+The entrypoint links a versioned manifest and ZIP containing both complete skill
+directories. Agents verify archive/file hashes, preserve differing local skills,
+and install skills without modifying the application. Migration is a subsequent
+user request. Other agents must use their own supported skill directory.
+
+`pnpm skills:build` generates the website assets in `public/skills/`. Both `pnpm dev`
+and `pnpm build` run it automatically. Generated downloads are not committed; a
+website deployment is required before the public URL serves this implementation.
+The manifest version is the archive's SHA-256. A retained guide can refer to an
+older release; if unavailable after deployment, fetch the current guide again.
+
+For an offline or local transfer, bundle both skills with their references:
+
+```sh
+pnpm skills:bundle --output /path/to/new/zeron-migration-bundle
+```
+
+Copy both generated skill directories together into the target project's
+`.agents/skills/`, resolving any existing skill versions before replacing them.
+Then ask: “Use $swap-to-zeronui to migrate this application's UI to Zeron while
+preserving its business behavior.” Check the installed CLI's help for optional
+`swap scan` and `swap check` support; new source commands are documented in the
+[CLI README](packages/cli/README.md#migration-inspection-local-development).
+
+The first workflow targets React 19, Tailwind 4, Next App Router or Vite React,
+and inspected shadcn-style/custom React sources. Framework upgrades, arbitrary
+third-party component parity and a production backend are outside that promise.
+See the [implementation plan](docs/plans/2026-09-18-swap-to-zeronui-plan.md)
+for phase status and validation boundaries. No npm release is implied by local
+source availability.
+
 ## Icons
 
 Components render icons through named slots with HugeIcons Stroke Rounded defaults. To use another icon library, wrap your app in the installed `IconProvider` and override any slot; names you leave out keep their HugeIcons default:
