@@ -460,7 +460,7 @@ export function AiGatewayOverview({
             <h2 className="text-body font-medium text-fg-default">{labels.costByProvider}</h2>
           </ContainerHeader>
           <ContainerBody>
-            <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center">
+            <div className="grid h-full min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center">
               <ProviderCostDonut className="h-44" data={data.providers} formatCost={formatCost} />
               <ProviderCostList formatCost={formatCost} onSelect={actions?.onProviderSelect} providers={data.providers} />
             </div>
