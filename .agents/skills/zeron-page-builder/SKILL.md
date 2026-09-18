@@ -7,6 +7,8 @@ description: Create or adapt working product pages with Zeron blocks, layouts, a
 
 Deliver the requested working page or change. Preserve the user's scope, product behavior, stack, routes, and explicit visual direction. Make routine implementation choices without asking again for decisions already supplied.
 
+For an explicit migration of an existing design system, use the paired [Swap to Zeron UI](../swap-to-zeronui/SKILL.md) workflow when available. It owns scope, inventory, cleanup and completion evidence; this skill supplies component contracts. Full migration may replace the existing shell/theme implementation while preserving navigation and business behavior. Ordinary page work still preserves the host shell.
+
 ## Ground the work
 
 Read the target project's instructions and relevant implementation. Identify:

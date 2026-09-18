@@ -38,6 +38,12 @@ jobs:
       - name: Test CLI
         run: pnpm cli:test
 
+      - name: Bundle paired migration skills
+        run: pnpm skills:bundle
+
+      - name: Build public skill downloads
+        run: pnpm skills:build
+
       - name: Typecheck public source packages
         run: pnpm --filter @zeron/ui typecheck && pnpm --filter @zeron/blocks typecheck
 
@@ -60,6 +66,20 @@ jobs:
 
       - name: Install representative consumers
         run: pnpm test:consumer:smoke
+
+      - name: Install migration test browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Migrate representative consumers
+        run: pnpm test:consumer:migrations
+
+      - name: Upload migration evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-evidence
+          path: output/swap-validation
+          if-no-files-found: ignore
 
       - name: Build
         run: pnpm build

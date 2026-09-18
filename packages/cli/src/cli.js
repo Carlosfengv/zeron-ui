@@ -19,6 +19,8 @@ Usage:
   zeron-ui list [options]
   zeron-ui view <component...> [options]
   zeron-ui doctor [options]
+  zeron-ui swap scan [--cwd <dir>] [--json]
+  zeron-ui swap check --plan <file> [--cwd <dir>] [--json]
 
 Options:
   --cwd <dir>       Target project directory. Default: current directory
@@ -28,6 +30,7 @@ Options:
   --dry-run         Inspect resolved items without writing files
   --registry <url>  Registry base URL. Default: ${DEFAULT_REGISTRY_URL}
   --json            Emit JSON from list
+  --plan <file>     Project-relative migration plan for swap check
   -h, --help        Show help
   -v, --version     Show version
 `;
@@ -41,6 +44,7 @@ const ARG_OPTIONS = {
   check: { type: "boolean" },
   registry: { type: "string" },
   json: { type: "boolean" },
+  plan: { type: "string" },
   help: { type: "boolean", short: "h" },
   version: { type: "boolean", short: "v" },
 };
@@ -190,6 +194,26 @@ export async function runCli(
   }
 
   const cwd = targetCwd(values.cwd, processCwd);
+  if (command === "swap") {
+    if (names.length !== 1 || !["scan", "check"].includes(names[0])) throw new Error("Usage: zeron-ui swap scan | swap check --plan <file>");
+    if (values.overwrite || values.yes || values.path || values["dry-run"] || values.registry || values.check || (names[0] === "scan" && values.plan)) throw new Error("swap scan/check are read-only and do not accept installation options");
+    const { scanProject } = await import("./swap/scan.js");
+    let result;
+    let exitCode;
+    if (names[0] === "scan") {
+      result = await scanProject(cwd);
+      exitCode = result.status === "passed" ? 0 : 2;
+    } else {
+      if (!values.plan) throw new Error("swap check requires --plan <project-relative file>");
+      const { readProjectFile } = await import("./swap/project.js");
+      const { checkMigration } = await import("./swap/check.js");
+      result = await checkMigration(cwd, JSON.parse((await readProjectFile(cwd, values.plan)).toString("utf8")));
+      exitCode = result.exitCode;
+    }
+    stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    return exitCode;
+  }
+  if (values.plan) throw new Error("--plan is only supported by swap check");
   const baseUrl = registryUrl(values.registry, env);
 
   if (command === "init") {

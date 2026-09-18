@@ -8,8 +8,8 @@
     "url": "git+https://github.com/Carlosfengv/zeron-ui.git"
   },
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
+    "dev": "pnpm skills:build && next dev --turbopack",
+    "build": "pnpm skills:build && next build",
     "covers:generate": "node scripts/generate-component-covers.mjs",
     "start": "next start",
     "lint": "eslint app docs scripts tests packages eslint.config.mjs eslint.design.config.mjs vitest.config.mts next.config.ts postcss.config.mjs --max-warnings=0",
@@ -28,7 +28,10 @@
     "test:consumer:smoke": "node scripts/test-consumer-installs.mjs",
     "test:consumer:all": "node scripts/test-consumer-installs.mjs --all",
     "cli:check": "pnpm --filter zeron-ui check",
-    "cli:test": "pnpm --filter zeron-ui test"
+    "cli:test": "pnpm --filter zeron-ui test",
+    "skills:bundle": "node scripts/package-migration-skills.mjs",
+    "skills:build": "node scripts/build-skill-distribution.mjs",
+    "test:consumer:migrations": "node scripts/test-consumer-migrations.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -79,6 +82,7 @@
     "@typescript-eslint/parser": "8.56.0",
     "eslint": "^9.39.1",
     "eslint-config-next": "^15.3.1",
+    "fflate": "0.8.2",
     "jsdom": "^30.0.1",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",

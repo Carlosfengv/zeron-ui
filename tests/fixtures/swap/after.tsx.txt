@@ -1,0 +1,40 @@
+"use client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { AppShell, AppShellHeader, AppShellMain } from "@/components/ui/app-shell";
+import { PageLayout, PageHeader, PageTitle, PageContent, PageBody } from "@/components/ui/page-layout";
+import { TopNav, TopNavBrand, TopNavNavigation, TopNavActions } from "@/components/ui/top-nav";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { InlineNotice } from "@/components/ui/inline-notice";
+import { useWorkspace } from "./domain";
+
+export default function Workspace() {
+  const state = useWorkspace();
+  return <AppShell layout="stacked">
+    <AppShellHeader><TopNav navigationAlign="left"><TopNavBrand className="hidden sm:flex">Workspace</TopNavBrand><TopNavNavigation><nav aria-label="Workspace" className="flex gap-3"><a href="#members">Members</a><a href="#settings">Settings</a></nav></TopNavNavigation><TopNavActions><Button variant="ghost" onClick={() => state.setDark(!state.dark)}>Toggle theme</Button></TopNavActions></TopNav></AppShellHeader>
+    <AppShellMain><PageLayout size="md"><PageContent>
+      <PageHeader><PageTitle id="members" className="text-heading">Workspace members</PageTitle></PageHeader>
+      <PageBody><div className="space-y-4 p-4">
+        {state.loading ? <p role="status">Loading members</p> : <Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Role</TableHead></TableRow></TableHeader><TableBody>{state.members.map((member) => <TableRow key={member.id}><TableCell>{member.name}</TableCell><TableCell>{member.role}</TableCell></TableRow>)}</TableBody></Table>}
+        <div className="flex flex-wrap items-center gap-2"><p>Page {state.page}</p><Button variant="secondary" disabled={state.page === 1} onClick={() => state.setPage(state.page - 1)}>Previous</Button><Button variant="secondary" onClick={() => state.setPage(state.page + 1)}>Next</Button><Button disabled variant="destructive">Delete workspace</Button></div>
+        <Dialog open={state.open} onOpenChange={state.setOpen}>
+          <DialogTrigger render={<Button id="settings" />}>Edit settings</DialogTrigger>
+          <DialogContent><DialogTitle>Workspace settings</DialogTitle><DialogDescription>Update your member profile and notifications.</DialogDescription>
+            <form noValidate className="space-y-4" onSubmit={(event) => { event.preventDefault(); void state.save(); }}>
+              <div className="space-y-1"><label htmlFor="member-name">Name</label><Input id="member-name" value={state.name} onChange={(event) => state.setName(event.target.value)} /></div>
+              <div className="space-y-1"><label id="member-role-label">Role</label><Select value={state.role} onValueChange={state.setRole}><SelectTrigger aria-labelledby="member-role-label" /><SelectContent><SelectItem value="viewer">Viewer</SelectItem><SelectItem value="admin">Admin</SelectItem></SelectContent></Select></div>
+              <Switch label="Notifications" checked={state.notifications} onCheckedChange={state.setNotifications} />
+              {state.error && <InlineNotice variant="emphasized" tone="danger" role="alert">{state.error}</InlineNotice>}
+              <div className="flex gap-2"><Button type="submit" loading={state.saving}>Save changes</Button><Button type="button" variant="secondary" onClick={() => state.setOpen(false)}>Cancel</Button></div>
+            </form>
+          </DialogContent>
+        </Dialog>
+        {state.error && !state.open && <InlineNotice variant="emphasized" tone="danger" role="alert">{state.error}</InlineNotice>}
+        {state.saved && <InlineNotice variant="emphasized" tone="success" role="status">Settings saved</InlineNotice>}
+      </div></PageBody>
+    </PageContent></PageLayout></AppShellMain>
+  </AppShell>;
+}

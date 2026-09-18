@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import ts from "typescript";
 import { componentUrl, normalizeRegistryUrl } from "./registry.js";
 import { resolveRegistryAliases } from "./resolve-registry-aliases.js";
 
@@ -23,8 +24,20 @@ async function readIfPresent(file) {
   }
 }
 
-function importDirectory(alias, imports) {
-  if (!alias.startsWith("#")) return alias.replace(/^@\//, "");
+function importDirectory(alias, imports, cwd, compilerOptions) {
+  if (!alias.startsWith("#")) {
+    const paths = compilerOptions?.paths ?? {};
+    const match = Object.entries(paths).sort(([a], [b]) => b.length - a.length).find(([pattern]) => pattern.endsWith("/*") ? alias === pattern.slice(0, -2) || alias.startsWith(pattern.slice(0, -1)) : alias === pattern);
+    if (match) {
+      const [pattern, targets] = match;
+      if (targets.length !== 1) throw new Error(`Ambiguous installation alias: ${alias}`);
+      const suffix = pattern.endsWith("/*") ? alias.slice(pattern.length - 1) : "";
+      const base = compilerOptions.baseUrl ?? compilerOptions.pathsBasePath ?? cwd;
+      return path.relative(cwd, path.resolve(base, targets[0].replace("*", suffix)));
+    }
+    if (compilerOptions) throw new Error(`Cannot resolve installation alias ${alias} from project paths`);
+    return alias.replace(/^@\//, "");
+  }
   const match = Object.entries(imports ?? {}).find(([key, value]) => (
     key.endsWith("/*") && typeof value === "string" && (alias === key.slice(0, -2) || alias.startsWith(key.slice(0, -1)))
   ));
@@ -34,14 +47,14 @@ function importDirectory(alias, imports) {
   return target.replace("*", suffix).replace(/^\.\//, "").replace(/\/$/, "");
 }
 
-function targetPathFor(file, { cwd, aliases, imports }) {
+function targetPathFor(file, { cwd, aliases, imports, compilerOptions }) {
   const prefix = TARGET_PREFIXES.find(([candidate]) => file.target.startsWith(candidate));
   if (!prefix) throw new Error(`Unsupported Registry target: ${file.target}`);
   const [sourcePrefix, aliasName, targetPrefix] = prefix;
   const configuredAlias = aliases[aliasName];
   if (typeof configuredAlias !== "string") throw new Error(`components.json is missing aliases.${aliasName} for ${file.target}`);
   const suffix = `${targetPrefix}${file.target.slice(sourcePrefix.length)}`;
-  const directory = importDirectory(configuredAlias, imports);
+  const directory = importDirectory(configuredAlias, imports, cwd, compilerOptions);
   const target = path.resolve(cwd, directory, suffix);
   const relative = path.relative(cwd, target);
   if (relative.startsWith("..") || path.isAbsolute(relative)) {
@@ -79,6 +92,15 @@ function dependencyName(dependency) {
 export async function buildInstallPlan({ cwd, names, baseUrl, overwrite = false, fetchImpl = fetch }) {
   const config = JSON.parse(await readFile(path.join(cwd, "components.json"), "utf8"));
   const packageJson = JSON.parse(await readFile(path.join(cwd, "package.json"), "utf8"));
+  const configPath = ["tsconfig.json", "jsconfig.json"].map((file) => path.join(cwd, file)).find(ts.sys.fileExists);
+  let compilerOptions;
+  if (configPath) {
+    const parsed = ts.getParsedCommandLineOfConfigFile(configPath, {}, { ...ts.sys, onUnRecoverableConfigFileDiagnostic: (d) => { throw new Error(ts.flattenDiagnosticMessageText(d.messageText, " ")); } });
+    const errors = parsed?.errors.filter((d) => d.code !== 18003) ?? [];
+    if (!parsed || errors.length) throw new Error("Cannot resolve installation aliases from project configuration");
+    compilerOptions = parsed.options;
+  }
+  const isSrcDir = ts.sys.directoryExists(path.join(cwd, "src"));
   const normalizedBaseUrl = normalizeRegistryUrl(baseUrl);
   const items = [];
   const visiting = [];
@@ -104,7 +126,12 @@ export async function buildInstallPlan({ cwd, names, baseUrl, overwrite = false,
     for (const file of item.files ?? []) {
       if (typeof file.content !== "string") continue;
       if (typeof file.target !== "string") throw new Error(`Registry item ${item.name} has a file without a target`);
-      const targetPath = targetPathFor(file, { cwd, aliases: config.aliases ?? {}, imports: packageJson.imports });
+      const targetPath = targetPathFor(file, { cwd, aliases: config.aliases ?? {}, imports: packageJson.imports, compilerOptions });
+      // Pinned shadcn 3 honors explicit Registry targets before aliases and
+      // prefixes src when that directory exists. Reject disagreement before
+      // any CSS/dependency/file mutation rather than writing a second UI tree.
+      const installerPath = path.resolve(cwd, isSrcDir ? "src" : "", file.target.replace("src/", ""));
+      if (targetPath !== installerPath) throw new Error(`Unsupported installation layout for ${file.target}: aliases resolve to ${path.relative(cwd, targetPath)}, but the pinned installer would write ${path.relative(cwd, installerPath)}. Align aliases with the existing root/src layout before installing; no files were written.`);
       const expectedContent = resolveRegistryAliases(file.content, config.aliases ?? {}, targetPath);
       const previous = fileByTarget.get(targetPath);
       if (previous && previous.expectedContent !== expectedContent) {

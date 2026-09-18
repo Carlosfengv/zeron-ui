@@ -4,6 +4,7 @@ import { docOrder } from "@docs/lib/components";
 import { useTranslations } from "next-intl";
 import { InstallCommand } from "@docs/components/content/InstallCommand";
 import { IntroPager } from "@docs/components/navigation/IntroPager";
+import { SkillInstall } from "@docs/components/content/SkillInstall";
 
 export default function DocsIndex() {
   const t = useTranslations("introduction");
@@ -84,6 +85,9 @@ export default function DocsIndex() {
       </section>
 
       <hr className="border-border-subtle my-8" />
+      <SkillInstall />
+
+      <hr className="border-border-subtle my-8" />
       <div className="flex flex-col gap-3 mb-4">
         <h2
           className="text-title text-fg-default leading-none font-semibold"
@@ -108,7 +112,9 @@ export default function DocsIndex() {
         <p className="text-body text-fg-muted">
           {t("registry")}
         </p>
-        <InstallCommand value="npx shadcn@latest add https://zeron-ui.vercel.app/r/button.json" compact />
+        <div className="max-w-full overflow-x-auto">
+          <InstallCommand value="npx shadcn@latest add https://zeron-ui.vercel.app/r/button.json" compact />
+        </div>
         <p className="text-body text-fg-muted">
           {t("dependencies")}
         </p>

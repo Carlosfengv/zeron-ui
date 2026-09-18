@@ -1,0 +1,6 @@
+interface:
+  display_name: "Swap to Zeron UI"
+  short_description: "Migrate existing UI to Zeron with verification"
+  default_prompt: "Use $swap-to-zeronui to migrate this application's UI to Zeron while preserving its business behavior and verifying the complete scope."
+policy:
+  allow_implicit_invocation: true

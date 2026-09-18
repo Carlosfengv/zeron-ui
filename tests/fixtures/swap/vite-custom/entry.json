@@ -1,0 +1,6 @@
+{
+  "framework": "vite",
+  "routeEntries": ["src/main.tsx"],
+  "routes": ["/", "/#members", "/#settings"],
+  "source": "Custom React controls with onPress/primary Button API; native form and modal"
+}

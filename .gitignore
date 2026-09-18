@@ -70,3 +70,6 @@ ZERON_UI_RELEASE_GUIDE.md
 
 # generated Registry composition
 /packages/registry/registry.composed.json
+
+# generated agent skill distribution (rebuilt by dev/build)
+/public/skills/

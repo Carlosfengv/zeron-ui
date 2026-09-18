@@ -1,0 +1,42 @@
+import { useEffect, useState } from "react";
+
+export interface Member { id: string; name: string; role: string }
+
+export function useWorkspace() {
+  const [page, setPage] = useState(1);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("Ada");
+  const [role, setRole] = useState("viewer");
+  const [notifications, setNotifications] = useState(true);
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [dark, setDark] = useState(false);
+  useEffect(() => { document.documentElement.classList.toggle("dark", dark); }, [dark]);
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError("");
+    fetch(`/api/members?page=${page}&limit=2`, { signal: controller.signal })
+      .then((response) => { if (!response.ok) throw new Error("Could not load members"); return response.json(); })
+      .then((data) => setMembers(data.items))
+      .catch((reason) => { if (reason.name !== "AbortError") setError(reason.message); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [page]);
+  async function save() {
+    if (!name.trim()) { setError("Name is required"); return; }
+    setError("");
+    setSaving(true);
+    try {
+      const response = await fetch("/api/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.trim(), role, notifications }) });
+      if (!response.ok) throw new Error("Could not save settings");
+      setSaved(true);
+      setOpen(false);
+    } catch (reason) { setError(reason instanceof Error ? reason.message : "Save failed"); }
+    finally { setSaving(false); }
+  }
+  return { page, setPage, members, loading, error, open, setOpen, name, setName, role, setRole, notifications, setNotifications, saved, saving, save, dark, setDark };
+}

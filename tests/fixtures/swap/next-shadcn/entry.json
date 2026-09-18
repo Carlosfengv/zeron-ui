@@ -1,0 +1,6 @@
+{
+  "framework": "next",
+  "routeEntries": ["app/page.tsx", "app/layout.tsx"],
+  "routes": ["/", "/#members", "/#settings"],
+  "source": "Locally customized shadcn-style default/outline Button; native form and modal"
+}

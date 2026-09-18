@@ -16,6 +16,21 @@
     "installAny": "Install any component:",
     "registry": "Or use the shadcn-compatible Registry directly:",
     "dependencies": "Dependencies and shared utilities are resolved automatically. Font weight animations require the Inter variable font.",
+    "skills": {
+      "title": "Use Zeron with your coding agent",
+      "description": "Copy this prompt into your project's coding agent to install both Zeron skills. Your project does not need Zeron UI installed yet.",
+      "builder": "Build product pages with Zeron components, layouts and real business data.",
+      "migration": "Migrate an existing UI while preserving routes, permissions and business behavior.",
+      "prompt": "Read {url} and install both zeron-page-builder and swap-to-zeronui in this project's supported skill directory. Download all supporting files, verify the installation and tell me how to invoke the skills. Preserve local changes if a skill already exists. Install skills only; do not start modifying the application.",
+      "copy": "Copy install prompt",
+      "copied": "Prompt copied",
+      "download": "Download both skills",
+      "guide": "Installation guide",
+      "hint": "Use an agent with network and file access. Codex project installs use .agents/skills/; other agents may use a different location.",
+      "copyError": "Could not copy automatically. Select and copy the prompt above.",
+      "copySuccess": "Copied. Paste the prompt into your project's coding agent.",
+      "next": "After installation, ask for $zeron-page-builder to build a page or $swap-to-zeronui to migrate your UI. Zeron components target React 19 and Tailwind 4; the agent checks compatibility before setup."
+    },
     "iconsTitle": "Icons",
     "iconsBody": "Components render named icon slots with HugeIcons defaults. The shared icon provider remains available for product-specific overrides, while the documentation site ships only the HugeIcons implementation."
   }

@@ -51,21 +51,21 @@ describe("Resource Detail Page Registry installation", () => {
       expect.arrayContaining([
         resolve(
           CONSUMER,
-          "components/blocks/resource-detail-page-01/resource-detail-page.tsx"
+          "src/components/blocks/resource-detail-page-01/resource-detail-page.tsx"
         ),
         resolve(
           CONSUMER,
-          "components/blocks/resource-detail-page-01/resource-detail-page-data.ts"
+          "src/components/blocks/resource-detail-page-01/resource-detail-page-data.ts"
         ),
         resolve(
           CONSUMER,
-          "components/blocks/resource-detail-page-01/feishu.svg"
+          "src/components/blocks/resource-detail-page-01/feishu.svg"
         ),
         resolve(
           CONSUMER,
-          "components/blocks/resource-workspace-shell-01/resource-workspace-shell.tsx"
+          "src/components/blocks/resource-workspace-shell-01/resource-workspace-shell.tsx"
         ),
-        resolve(CONSUMER, "components/ui/resource-detail-layout.tsx"),
+        resolve(CONSUMER, "src/components/ui/resource-detail-layout.tsx"),
       ])
     );
 

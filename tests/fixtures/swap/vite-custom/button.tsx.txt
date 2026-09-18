@@ -1,0 +1,3 @@
+import type { ButtonHTMLAttributes } from "react";
+type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & { primary?: boolean; onPress?: () => void };
+export function Button({ primary = true, onPress, ...props }: Props) { return <button className={primary ? "legacy-button" : "legacy-outline"} onClick={onPress} {...props} />; }

@@ -16,6 +16,21 @@
     "installAny": "安装任意组件：",
     "registry": "或者直接使用兼容 shadcn 的 Registry：",
     "dependencies": "依赖项和共享工具会自动解析。字体粗细动画需要 Inter 可变字体。",
+    "skills": {
+      "title": "让编程 Agent 使用 Zeron",
+      "description": "将这段提示词复制到项目的编程 Agent，即可安装两个 Zeron 技能。项目无需提前安装 Zeron UI。",
+      "builder": "使用 Zeron 组件和布局，结合真实业务数据构建产品页面。",
+      "migration": "迁移现有界面，同时保留路由、权限和业务行为。",
+      "prompt": "请读取 {url}，将 zeron-page-builder 和 swap-to-zeronui 两个技能安装到当前项目适用的技能目录。下载完整配套文件，验证安装结果，并告诉我如何调用。如果已有同名技能，请保留本地修改。本次只安装技能，不开始修改应用。",
+      "copy": "复制安装提示词",
+      "copied": "已复制提示词",
+      "download": "下载两个技能",
+      "guide": "安装说明",
+      "hint": "请使用具有联网和文件访问能力的 Agent。Codex 项目安装目录为 .agents/skills/，其他 Agent 的目录可能不同。",
+      "copyError": "未能自动复制，请选中上方提示词手动复制。",
+      "copySuccess": "已复制，请粘贴到当前项目的编程 Agent 中。",
+      "next": "安装后，使用 $zeron-page-builder 构建页面，或使用 $swap-to-zeronui 迁移界面。Zeron 组件面向 React 19 和 Tailwind 4，Agent 会在接入前检查兼容性。"
+    },
     "iconsTitle": "图标",
     "iconsBody": "组件通过 HugeIcons 默认值渲染具名图标槽位。共享图标 Provider 仍可用于产品级覆盖，而文档站仅包含 HugeIcons 实现。"
   }

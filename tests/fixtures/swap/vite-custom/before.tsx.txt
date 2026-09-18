@@ -1,0 +1,30 @@
+"use client";
+import { Button } from "@/components/ui/button";
+import { useWorkspace } from "./domain";
+
+export default function Workspace() {
+  const state = useWorkspace();
+  return <main className="legacy-shell">
+    <nav aria-label="Workspace"><a href="#members">Members</a><a href="#settings">Settings</a></nav>
+    <Button primary={false} onPress={() => state.setDark(!state.dark)}>Toggle theme</Button>
+    <h1 id="members">Workspace members</h1>
+    {state.loading ? <p role="status">Loading members</p> : <table><thead><tr><th>Name</th><th>Role</th></tr></thead><tbody>{state.members.map((member) => <tr key={member.id}><td>{member.name}</td><td>{member.role}</td></tr>)}</tbody></table>}
+    <p>Page {state.page}</p>
+    <Button primary={false} disabled={state.page === 1} onPress={() => state.setPage(state.page - 1)}>Previous</Button>
+    <Button primary={false} onPress={() => state.setPage(state.page + 1)}>Next</Button>
+    <Button disabled>Delete workspace</Button>
+    <Button id="settings" onPress={() => state.setOpen(true)}>Edit settings</Button>
+    {state.open && <section role="dialog" aria-label="Workspace settings" className="legacy-modal">
+      <h2>Workspace settings</h2>
+      <form noValidate onSubmit={(event) => { event.preventDefault(); void state.save(); }}>
+        <label htmlFor="member-name">Name</label><input id="member-name" value={state.name} onChange={(event) => state.setName(event.target.value)} />
+        <label htmlFor="member-role">Role</label><select id="member-role" value={state.role} onChange={(event) => state.setRole(event.target.value)}><option value="viewer">Viewer</option><option value="admin">Admin</option></select>
+        <label><input type="checkbox" checked={state.notifications} onChange={(event) => state.setNotifications(event.target.checked)} />Notifications</label>
+        <Button type="submit" disabled={state.saving}>Save changes</Button>
+        <Button type="button" primary={false} onPress={() => state.setOpen(false)}>Cancel</Button>
+      </form>
+    </section>}
+    {state.error && <p role="alert">{state.error}</p>}
+    {state.saved && <p role="status">Settings saved</p>}
+  </main>;
+}
