@@ -27,6 +27,7 @@ export interface SidebarAccountMenuItem {
   trailing?: ReactNode;
   onSelect?: () => void;
   closeOnClick?: boolean;
+  disabled?: boolean;
   submenu?: SidebarAccountMenuSubmenu;
 }
 
@@ -55,6 +56,9 @@ export interface SidebarAccountMenuProps {
   primary: ReactNode;
   sections: SidebarAccountMenuSection[];
   triggerTrailing?: ReactNode;
+  menuSide?: "top" | "bottom";
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 function SidebarAccountSubmenu({
@@ -79,12 +83,13 @@ function SidebarAccountSubmenu({
   return (
     <Menu.SubmenuRoot>
       <Menu.SubmenuTrigger
+        disabled={item.disabled}
         label={item.label}
         render={
           <div
             ref={triggerRef}
             data-proximity-index={index}
-            className="relative z-content flex h-control-md shrink-0 items-center gap-2 rounded-lg px-2 outline-none transition-colors data-[highlighted]:bg-hover data-[highlighted]:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring"
+            className="relative z-content flex h-control-md shrink-0 items-center gap-2 rounded-lg px-2 outline-none transition-colors data-[disabled]:opacity-50 data-[highlighted]:bg-hover data-[highlighted]:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring"
           />
         }
       >
@@ -103,6 +108,7 @@ function SidebarAccountSubmenu({
                     key={option.value}
                     value={option.value}
                     label={option.label}
+                    disabled={item.disabled}
                     closeOnClick
                     onClick={() => submenu.onValueChange(option.value)}
                     render={<div className={cn("flex h-control-md items-center gap-2 rounded-lg px-2 outline-none transition-colors data-[highlighted]:bg-hover focus-visible:ring-1 focus-visible:ring-focus-ring", checked ? "text-fg-default" : "text-fg-muted")} />}
@@ -120,7 +126,7 @@ function SidebarAccountSubmenu({
   );
 }
 
-/** Account control for a sidebar footer with a grouped, upward-opening menu. */
+/** Grouped account menu; opens upward by default and supports header placement. */
 export function SidebarAccountMenu({
   avatar,
   className,
@@ -131,12 +137,15 @@ export function SidebarAccountMenu({
   primary,
   sections,
   triggerTrailing,
+  menuSide = "top",
+  open,
+  onOpenChange,
 }: SidebarAccountMenuProps) {
   const accountAvatar = avatar ?? <SidebarIdentityAvatar>{String(primary).slice(0, 2)}</SidebarIdentityAvatar>;
   let itemIndex = 0;
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownTrigger
         render={
           <SidebarIdentityRow
@@ -147,12 +156,12 @@ export function SidebarAccountMenu({
             trailingPlacement="edge"
             leading={accountAvatar}
             trailing={triggerTrailing}
-            className={className}
+            className={cn("px-[calc(var(--spacing)*1.6)]", className)}
           />
         }
       />
       <DropdownContent
-        side="top"
+        side={menuSide}
         align={menuAlign}
         alignOffset={menuAlignOffset}
         className={cn("!w-[264px] !min-w-[264px] !max-w-[264px]", menuClassName)}
@@ -183,6 +192,7 @@ export function SidebarAccountMenu({
                   leading={item.leading}
                   trailing={item.trailing}
                   closeOnClick={item.closeOnClick}
+                  disabled={item.disabled}
                   onSelect={item.onSelect}
                 />
               );

@@ -149,7 +149,8 @@ describe("sidebar implementation contract", () => {
     expect(zaiopsPreview).toContain('triggerTrailing={<More aria-hidden className="size-4" />}');
     expect(zaiopsPreview).toContain('alignOffset={20}');
     expect(zaiopsPreview).toContain('className="!w-60 !min-w-60 !max-w-60"');
-    expect(accountMenu).toContain('side="top"');
+    expect(accountMenu).toContain('menuSide = "top"');
+    expect(accountMenu).toContain('side={menuSide}');
     expect(accountMenu).toContain('menuAlign = "start"');
     expect(accountMenu).toContain('align={menuAlign}');
     expect(accountMenu).toContain('!w-[264px] !min-w-[264px] !max-w-[264px]');
