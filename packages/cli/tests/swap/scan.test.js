@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readFile, symlink, writeFile } from "node:fs/promises";
+import { readFile, rm, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { scanProject } from "../../src/swap/scan.js";
 import { runCli } from "../../src/cli.js";
@@ -42,6 +42,53 @@ test("Vite routing needs a route inventory; source symlinks are never silently t
   const scan = await scanProject(cwd);
   assert.ok(scan.unknowns.some((u) => u.code === "route-inventory"));
   assert.ok(scan.unknowns.some((u) => u.code === "source-symlink"));
+});
+
+test("Vite pages and app directories do not imply Next routing", async (t) => {
+  const cwd = await fixture(t, {
+    "package.json": '{"devDependencies":{"vite":"8","tailwindcss":"4"},"dependencies":{"react":"19"}}',
+    "pages/Home.tsx": "export default () => <div/>;",
+    "src/pages/Models.tsx": "export default () => <div/>;",
+    "src/app/page.tsx": "export default () => <div/>;",
+  });
+  const scan = await scanProject(cwd);
+  assert.equal(scan.project.framework, "vite");
+  assert.deepEqual(scan.routes, []);
+  assert.deepEqual(scan.unknowns.map((u) => u.code), ["route-inventory"]);
+  assert.equal(scan.status, "unchecked");
+});
+
+for (const prefix of ["", "src/"]) {
+  test(`Next ${prefix}pages remain unsupported alongside App Router entries`, async (t) => {
+    const cwd = await fixture(t, {
+      [`${prefix}pages/index.tsx`]: "export default () => <div/>;",
+      [`${prefix}app/settings/page.tsx`]: "export default () => <div/>;",
+    });
+    const scan = await scanProject(cwd);
+    assert.ok(scan.routes.includes(`${prefix}app/settings/page.tsx`));
+    assert.ok(scan.unknowns.some((u) => u.code === "unsupported-router" && u.file === `${prefix}pages/index.tsx`));
+    assert.equal(scan.status, "unchecked");
+  });
+}
+
+test("Next without App Router entries still requires a supported router", async (t) => {
+  const cwd = await fixture(t, { "pages/index.tsx": "export default () => <div/>;" });
+  await rm(path.join(cwd, "app"), { recursive: true });
+  const scan = await scanProject(cwd);
+  assert.deepEqual(scan.routes, []);
+  assert.ok(scan.unknowns.some((u) => u.code === "unsupported-router" && u.file === "package.json"));
+});
+
+test("unknown frameworks are not classified as Next by directory names", async (t) => {
+  const cwd = await fixture(t, {
+    "package.json": '{"dependencies":{"react":"19","tailwindcss":"4"}}',
+    "src/pages/Home.tsx": "export default () => <div/>;",
+  });
+  const scan = await scanProject(cwd);
+  assert.equal(scan.project.framework, "unknown");
+  assert.deepEqual(scan.routes, []);
+  assert.deepEqual(scan.unknowns.map((u) => u.code), ["unsupported-project"]);
+  assert.equal(scan.status, "unchecked");
 });
 
 test("CLI prints machine-readable scan facts and rejects write options", async (t) => {

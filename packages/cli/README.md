@@ -73,7 +73,9 @@ node packages/cli/src/index.js swap check --cwd /path/to/app --plan .zeron/migra
 `scan` inventories source imports (including re-exports), JSX, CSS tokens and
 Next App Router files. It resolves installed React/Tailwind versions and reports
 unknown dynamic references, prop spreads and unsupported project configurations.
-Vite route discovery requires explicit review. It skips hidden, public, generated
+Next filesystem routing rules apply only to projects detected as Next; Vite
+`pages` and `app` directories do not imply Next routes. Vite route discovery still
+requires explicit review. It skips hidden, public, generated
 and dependency directories and reports source symlinks instead of following them.
 Neither command writes files, installs dependencies or executes project code.
 
@@ -83,6 +85,19 @@ and incomplete mappings. All paths are relative to the selected application;
 evidence paths cannot escape it, including through symlinks. Scope roots are
 paths rather than globs. Shared consumers outside the selected scope are reported
 separately. Full-app scope also checks selected old direct dependencies.
+
+Plan status is a required declaration, not proof of completion. `pending`,
+`migrating` and `partial` produce a `plan-incomplete` diagnostic and a partial
+result even if every recorded check passes. After reviewing the entire frozen
+scope, reconcile mappings, remaining adapters, checks and the report before
+declaring `status: "complete"` and running the final check. This declaration also
+applies when all remaining divergences have recorded user acceptance; the result
+will still be `with-exceptions`. A complete declaration with failed or unchecked
+work produces `plan-status-conflict` and remains partial. The checker never edits
+the plan. It checks structured records, not the meaning of report prose.
+
+Track retained old-API adapters with source file/module/text selectors as well as
+old package names. Removing a dependency alone does not prove adapter cleanup.
 
 Both helpers emit JSON, with or without `--json`. Scan exits 0 when analysis is
 complete, 2 when compatibility or parsing needs attention, and 1 on operational

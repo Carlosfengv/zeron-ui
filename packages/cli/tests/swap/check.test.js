@@ -3,6 +3,8 @@ import test from "node:test";
 import { mkdir, readFile, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { checkMigration } from "../../src/swap/check.js";
+import { runCli } from "../../src/cli.js";
+import { scanProject } from "../../src/swap/scan.js";
 import { hash } from "../../src/swap/project.js";
 import { scopeDigest, validatePlan, verifyEvidence } from "../../src/swap/state.js";
 import { fixture, validPlan } from "./helpers.js";
@@ -15,6 +17,67 @@ test("requires real current evidence instead of the complete label", async (t) =
   const result = await checkMigration(cwd, plan);
   assert.equal(result.exitCode, 2);
   assert.equal(result.completionStatus, "partial");
+  assert.ok(result.diagnostics.some((d) => d.code === "plan-status-conflict"));
+});
+
+for (const status of ["pending", "migrating", "partial"]) {
+  test(`does not upgrade a ${status} plan when all recorded checks pass`, async (t) => {
+    const cwd = await fixture(t);
+    const plan = await validPlan(cwd);
+    plan.status = status;
+    const before = structuredClone(plan);
+    const result = await checkMigration(cwd, plan);
+    assert.equal(result.staticStatus, "unchecked");
+    assert.equal(result.completionStatus, "partial");
+    assert.equal(result.exitCode, 2);
+    assert.ok(result.diagnostics.some((d) => d.code === "plan-incomplete" && d.detail.includes(status)));
+    assert.deepEqual(plan, before);
+  });
+}
+
+test("a complete label cannot hide pending mappings or capability gaps", async (t) => {
+  const cwd = await fixture(t);
+  for (const change of [{ state: "pending" }, { state: "migrated" }, { state: "blocked" }, { strategy: "gap" }, { targets: [] }]) {
+    const plan = await validPlan(cwd);
+    Object.assign(plan.mappings[0], change);
+    const result = await checkMigration(cwd, plan);
+    assert.equal(result.exitCode, 2);
+    assert.equal(result.completionStatus, "partial");
+    assert.ok(result.diagnostics.some((d) => d.code === "mapping-pending"));
+    assert.ok(result.diagnostics.some((d) => d.code === "plan-status-conflict"));
+  }
+});
+
+test("removing Vite router false positives does not complete a declared partial migration", async (t) => {
+  const cwd = await fixture(t, {
+    "package.json": '{"devDependencies":{"vite":"8","tailwindcss":"4"},"dependencies":{"react":"19"}}',
+    "src/pages/Models.tsx": "export default () => <div/>;",
+  });
+  const plan = await validPlan(cwd);
+  plan.status = "partial";
+  plan.scope.routes = ["src/pages/Models.tsx"];
+  plan.scope.digest = scopeDigest(plan.scope);
+  const scan = await scanProject(cwd);
+  plan.unknownResolutions = scan.unknowns.filter((u) => u.code === "route-inventory").map((u) => ({ id: u.id, reason: "Reviewed router and model route", evidence: plan.baseline.evidence }));
+  const planPath = ".zeron/plan.json";
+  const input = JSON.stringify(plan);
+  await writeFile(path.join(cwd, planPath), input);
+  let output = "";
+  const exitCode = await runCli(["swap", "check", "--cwd", cwd, "--plan", planPath, "--json"], { stdout: { write: (s) => { output += s; } } });
+  const result = JSON.parse(output);
+  assert.equal(exitCode, 2);
+  assert.equal(result.completionStatus, "partial");
+  assert.deepEqual(result.diagnostics.map((d) => d.code), ["plan-incomplete"]);
+  assert.equal(await readFile(path.join(cwd, planPath), "utf8"), input);
+
+  plan.status = "complete";
+  const completed = await checkMigration(cwd, plan);
+  assert.equal(completed.exitCode, 0);
+  assert.equal(completed.completionStatus, "complete");
+  plan.unknownResolutions = [];
+  const unreviewed = await checkMigration(cwd, plan);
+  assert.equal(unreviewed.completionStatus, "partial");
+  assert.ok(unreviewed.diagnostics.some((d) => d.code === "route-inventory"));
 });
 
 test("finds remaining old imports via re-export and old CSS even with verified state", async (t) => {
@@ -22,6 +85,20 @@ test("finds remaining old imports via re-export and old CSS even with verified s
   const result = await checkMigration(cwd, await validPlan(cwd));
   assert.equal(result.exitCode, 1);
   assert.ok(result.diagnostics.some((d) => d.code === "residual" && d.detail.includes("old-ui/button") && d.detail.includes("--legacy-brand")));
+  assert.ok(result.diagnostics.some((d) => d.code === "plan-status-conflict"));
+});
+
+test("tracks retained legacy adapters after old package imports are removed", async (t) => {
+  const cwd = await fixture(t, {
+    "src/project-ui.tsx": "export { Button } from './new-button';",
+    "app/page.tsx": "import { Button } from '../src/project-ui'; export default () => <Button/>;",
+  });
+  const plan = await validPlan(cwd);
+  plan.mappings[0].source.files.push("src/project-ui.tsx");
+  const result = await checkMigration(cwd, plan);
+  assert.equal(result.completionStatus, "partial");
+  assert.equal(result.exitCode, 1);
+  assert.ok(result.diagnostics.some((d) => d.code === "residual" && d.detail.includes("src/project-ui.tsx")));
 });
 
 test("detects package CSS imports including url syntax", async (t) => {
@@ -93,8 +170,14 @@ test("accepted exceptions never produce a complete result or waive failed checks
   plan.mappings[0].strategy = "gap";
   plan.exceptions = [{ mappingId: "button", reason: "Retained by user", acceptance: plan.baseline.evidence }];
   assert.equal((await checkMigration(cwd, plan)).completionStatus, "with-exceptions");
+  plan.status = "partial";
+  assert.equal((await checkMigration(cwd, plan)).completionStatus, "partial");
+  plan.status = "complete";
   plan.checks[0].status = "failed";
-  assert.equal((await checkMigration(cwd, plan)).exitCode, 1);
+  const result = await checkMigration(cwd, plan);
+  assert.equal(result.exitCode, 1);
+  assert.equal(result.completionStatus, "partial");
+  assert.ok(result.diagnostics.some((d) => d.code === "plan-status-conflict"));
 });
 
 test("validates schema, IDs, scope digest and path boundaries", async (t) => {

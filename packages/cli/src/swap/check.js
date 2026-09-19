@@ -79,6 +79,13 @@ export async function checkMigration(cwd, plan) {
       if (!later && actual !== expected) add("unchecked", "batch-drift", file.path);
     }
   }
+  // The declared workflow state is a gate, never proof of completion. Keep this
+  // command read-only so a passing scan cannot silently close unfinished work.
+  if (plan.status !== "complete") {
+    add("unchecked", "plan-incomplete", `Plan declares status=${plan.status}. Reconcile remaining work, adapter exits and scope-wide evidence before declaring complete; accepted exceptions must be recorded separately.`);
+  } else if (diagnostics.some((d) => d.severity === "failed" || d.severity === "unchecked")) {
+    add("unchecked", "plan-status-conflict", "Plan declares complete but verification found failed or unchecked work. Resolve the diagnostics or update the plan and report to partial; the complete label does not waive any gate.");
+  }
   const failed = diagnostics.some((d) => d.severity === "failed");
   const unchecked = diagnostics.some((d) => d.severity === "unchecked");
   return {

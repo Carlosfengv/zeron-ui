@@ -24,8 +24,10 @@ export async function scanProject(cwd) {
       continue;
     }
     if (!/\.[cm]?[jt]sx?$/.test(file) || file.endsWith(".d.ts")) continue;
-    if (/^(?:src\/)?app\/(?:.*\/)?(?:page|layout|loading|error|not-found|default)\.[jt]sx?$/.test(file)) routes.push(file);
-    if (/^(?:src\/)?pages\//.test(file)) unknowns.push({ code: "unsupported-router", file, line: 0, detail: "Next Pages Router is outside the initial validated scope." });
+    if (project.framework === "next") {
+      if (/^(?:src\/)?app\/(?:.*\/)?(?:page|layout|loading|error|not-found|default)\.[jt]sx?$/.test(file)) routes.push(file);
+      if (/^(?:src\/)?pages\//.test(file)) unknowns.push({ code: "unsupported-router", file, line: 0, detail: "Next Pages Router is outside the initial validated scope." });
+    }
     const ast = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
     for (const diagnostic of ast.parseDiagnostics) unknowns.push({ code: "parse", file, line: 0, detail: ts.flattenDiagnosticMessageText(diagnostic.messageText, " ") });
     const lineOf = (node) => ast.getLineAndCharacterOfPosition(node.getStart(ast)).line + 1;
