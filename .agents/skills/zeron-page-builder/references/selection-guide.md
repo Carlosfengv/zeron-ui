@@ -4,7 +4,7 @@ Use this reference after discovering the current catalog and actual component re
 
 ## Start with the host and task
 
-Preserve the surrounding application's shell, routing, data flow, and theme. Determine whether the requested change is a full application region, a page inside an existing shell, or an embedded section.
+Preserve routing, data flow and explicit product constraints. Determine whether this is ordinary page work, a scoped migration or a full design-system migration. Preserve the surrounding shell/theme for ordinary work and outside a scoped migration. For full migration, reassess the shell/theme against Zeron contracts instead of preserving the old implementation by default.
 
 | Need | Start with | Common supporting pieces |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ Use no application shell for an embedded region, authentication, focused wizard,
 
 ## Choose a resource page preset
 
-First decide whether the request is a complete page or an embedded content region. Reuse the existing host shell in either case.
+First decide whether the request is a complete page or an embedded content region. Reuse the selected host shell; replace an old shell only when the migration scope includes it.
 
 For a complete page, prefer an already matching full-page block when that block owns the required title, navigation, surface, and scrolling behavior. Otherwise select an available resource preset by the page's primary task:
 
@@ -47,11 +47,23 @@ A block is a good starting point when its core user task, section hierarchy, res
 - Recompose from primitives when the block's main task, navigation model, or responsive structure conflicts with the requirement.
 - Do not edit mock arrays inside a block and present that as a real data integration.
 
+For migrations, keep one selection row per meaningful in-scope region (including account controls and important overlays), not per primitive. For a small ordinary edit, a concise rationale is sufficient.
+
+| Region / mapping ID | Required capabilities and states | Candidate and pinned source/version | Framework / public API fit | Adoption | Rejection reason or gap | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| Account | Current user, language, sign-out, pending/error | Matching account block at target release | Verify user data, controlled locale, callbacks and navigation context | Public API integration | None if compatible | Actual identity, switch, failure/retry and sign-out checks |
+
+Prefer a matching block, then official layouts/semantic components, then project business composition. Content, field names or data-source differences normally need adaptation. Reject a candidate for a verified core-task mismatch, incompatible interaction model, missing extension point, substantive framework requirement or explicit user constraint; “easier to write ourselves” is not sufficient. A catalog with no matching block is also a valid finding when the inspected release and required capability are recorded.
+
+Record the region's target header/surface/scroll owners as part of adoption so final review can compare the decision with the rendered result. Do not add registration, social login, notifications or theme switching merely because a template includes them. Account placement follows the project's established navigation requirements; no universal corner or sidebar position is required.
+
 Check the Registry capability for the installed version:
 
 - A `template` is an application starting point. Its project-specific business files may be edited, while installed primitives and shared systems remain managed.
 - A `data-block` should expose a documented data or behavior contract. Use it only when that contract fits; do not reach inside to bypass it.
 - This classification is at item level. Apply file ownership separately when dependencies are shared.
+
+For an eligible cross-framework template, follow [template porting](project-adaptation.md#port-a-template-across-frameworks). Do not treat a framework label as permission either to force-install its closure or to skip evaluation of reusable official structure.
 
 When combining blocks, choose one structural owner. Remove duplicate shells, titles, breadcrumbs, toolbars, and scroll containers. Reuse the secondary block's public content region or rebuild that region from its public dependencies.
 

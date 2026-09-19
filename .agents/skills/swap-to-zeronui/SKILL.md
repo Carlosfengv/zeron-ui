@@ -5,13 +5,13 @@ description: Migrate an existing React application's UI to Zeron while preservin
 
 # Swap to Zeron UI
 
-Migrate the user's specified application region and prove what was replaced. Preserve routes, data, permissions, validation and product behavior. Full migration allows replacing the existing shell and theme implementation; it does not authorize framework upgrades, business redesign, publication or unrelated changes.
+Migrate the user's specified application region and prove what was replaced. Preserve routes, data, permissions, validation and product behavior. Establish the mode from the request: scoped migration replaces only the agreed region; full design-system migration prefers Zeron structure, interactions and styling over old UI implementations, including the shell and theme. Neither authorizes framework upgrades, business redesign, publication or unrelated changes.
 
 Read [scope and completion](references/scope-and-completion.md) first. Use the paired [Zeron Page Builder](../zeron-page-builder/SKILL.md) for component selection, public APIs and layout contracts. Both skill directories must be distributed together. If the paired skill is missing, locate it; do not invent its contracts or silently use a different design system.
 
 ## Establish the migration
 
-- Inspect project instructions, current edits, actual installed React/Tailwind versions, framework, aliases, theme, providers and existing component sources. Target React 19 and Tailwind 4; Next-only blocks cannot be used in Vite.
+- Inspect project instructions, current edits, actual installed React/Tailwind versions, framework, aliases, theme, providers and existing component sources. Target React 19 and Tailwind 4. Do not install Next-only blocks into Vite; evaluate eligible template porting through the builder's [project adaptation](../zeron-page-builder/references/project-adaptation.md#port-a-template-across-frameworks) procedure.
 - Freeze the target routes/files and the impact on shared consumers. For Vite, explicitly discover the router; entry files alone do not establish route coverage.
 - Record baseline checks and representative screenshots before editing. Preserve pre-existing changes and failures.
 - Pin CLI and Registry sources. A hash of an arbitrary existing component is not an official baseline.
@@ -21,11 +21,11 @@ Read [scope and completion](references/scope-and-completion.md) first. Use the p
 
 Read [migration workflow](references/migration-workflow.md) before writes. For shadcn-style sources, read the [source profile](references/source-profiles/shadcn.md), then verify local modifications and installed target APIs.
 
-Classify each task as direct, adapt, compose or gap. Trace all callers, including re-exports and shared wrappers. Preserve real integrations; do not replace them with block demos. Inspect hidden states and overlays as well as visible pages.
+Select by semantic region before mapping individual controls. Follow the builder's [selection guide](../zeron-page-builder/references/selection-guide.md) and record candidates, pinned source, public API fit, adoption and reasons for rejecting a matching block. Classify each task as direct, adapt, compose or gap. Trace all callers, including re-exports and shared wrappers. Preserve real integrations; do not replace them with block demos or add unsupported product features. Inspect hidden states and overlays as well as visible pages.
 
 Reuse the supported installer and inspect the full dependency closure. A same-name file is not API compatibility. Resolve every conflict in a batch before using `--overwrite`; migrate affected callers with it. Public Zeron primitives remain managed; business adaptations belong in project compositions.
 
-Follow dependency order in verifiable batches. Replace the old shell when requested while preserving navigation behavior. Keep one layout/scroll owner and verify portal theme context. Track temporary bridges and remove them before claiming complete migration.
+Follow dependency order in verifiable batches. Replace the old shell when requested while preserving navigation behavior. Keep one layout/scroll owner and verify portal theme context. Track callers and exit conditions for temporary old-API bridges; remove them before claiming complete migration. Retain project compositions for domain or framework responsibilities, not solely to preserve an old design system's generic API.
 
 Continue routine decisions already authorized by the task. Ask only for an unresolved product choice, broader scope or otherwise unauthorized action; finish independent work first. If capabilities are missing, record the exact requirement and smallest viable resolution without inventing props or silently dropping functionality.
 
@@ -33,6 +33,8 @@ Continue routine decisions already authorized by the task. Ask only for an unres
 
 Read [verification and recovery](references/verification-and-recovery.md). Re-scan after cleanup; inspect old imports, styles, providers, direct dependencies and shared consumers. Typecheck, build and exercise the affected business flows, narrow/wide layouts, keyboard focus and overlays.
 
-Use scan/check only if the installed CLI exposes them. They are read-only aids, not migration engines or proofs of business equivalence. A passing static check never substitutes for runtime evidence. Unknown routes, unresolved references, missing provenance and stale checks prevent a complete result.
+Record installation/provenance, functional regression, design contracts and browser verification separately. Installed files and passing functional tests do not prove Zeron adoption. Verify selected layouts in the rendered DOM and review remaining CSS and adapters by responsibility. Use the [evidence procedure](references/verification-and-recovery.md#bind-reports-and-attachments) to bind reports and attachments without changing the plan schema.
+
+Use scan/check only if the installed CLI exposes them. They are read-only aids, not migration engines or proofs of business equivalence. A passing static check never substitutes for runtime evidence. Unknown routes, unresolved references, missing provenance and stale checks prevent a complete result. Preserve original tool failures, including false positives; report manual findings separately.
 
 Deliver the [report](assets/report-template.md) with actual counts and one of: **complete and verified**, **migrated with accepted exceptions**, or **partial / awaiting verification**. Keep the result proportional to the task, link evidence and state remaining actions. Do not publish, deploy or claim a universal migration success rate.

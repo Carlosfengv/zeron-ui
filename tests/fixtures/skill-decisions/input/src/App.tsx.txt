@@ -1,0 +1,16 @@
+import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { WorkspacePage } from "./WorkspacePage";
+import { LoginPage } from "./LoginPage";
+
+export default function App() {
+  return <Routes>
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="*" element={<div className="legacy-shell">
+      <aside className="legacy-navigation"><strong>Workspace</strong><nav aria-label="Primary"><Link to="/resources">Resources</Link><Link to="/login">Sign in</Link></nav></aside>
+      <main className="legacy-main"><Routes>
+        <Route path="/resources" element={<WorkspacePage />} />
+        <Route path="*" element={<Navigate to="/resources" replace />} />
+      </Routes></main>
+    </div>} />
+  </Routes>;
+}

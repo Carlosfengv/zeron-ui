@@ -4,6 +4,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { unzipSync } from "fflate";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { buildSkillDistribution } from "../scripts/build-skill-distribution.mjs";
 
@@ -67,6 +69,15 @@ describe("public skill distribution", () => {
     }
     expect(await readFile(path.join(project, "package.json"), "utf8")).toBe(originalPackage);
     expect((await readdir(project)).sort()).toEqual([".agents", "package.json"]);
+    // The distributed helper runs with Node alone in this dependency-free project.
+    const evidencePath = path.join(project, "evidence-index.json");
+    await writeFile(evidencePath, JSON.stringify({ formatVersion: 1, files: [{ path: "package.json", sha256: hash(originalPackage) }] }));
+    const verifier = path.join(destination, "swap-to-zeronui/scripts/verify-evidence.mjs");
+    const args = [verifier, "--cwd", project, "--index", "evidence-index.json"];
+    const execute = promisify(execFile);
+    expect(JSON.parse((await execute(process.execPath, args)).stdout).status).toBe("passed");
+    await writeFile(path.join(project, "package.json"), "{}");
+    await expect(execute(process.execPath, args)).rejects.toMatchObject({ code: 1 });
   });
 
   it("rebuilds reproducibly without requiring an empty output directory", async () => {

@@ -30,7 +30,7 @@ If a matching guide is unavailable, inspect the actual source and applicable sha
 
 Establish the primary task, page archetype, content hierarchy, navigation scope, relevant states, and responsive behavior. Keep this proportional to the requested change; a small edit does not require a separate planning artifact.
 
-Read [Selection guide](references/selection-guide.md) when choosing blocks and components. Preserve an existing host shell, then prefer:
+Read [Selection guide](references/selection-guide.md) when choosing blocks and components. Preserve the host shell for ordinary page work and outside a scoped migration; for an authorized full migration, reassess it against Zeron's layout contracts. Select each relevant semantic region in this order:
 
 1. A block whose core task, information structure, and public integration points fit.
 2. Appropriate page layouts and semantic components for the remaining regions.
@@ -38,13 +38,15 @@ Read [Selection guide](references/selection-guide.md) when choosing blocks and c
 
 A business composition may reuse several existing components without representing a library gap. Reimplementing an existing primitive's appearance and interactions requires a different justification.
 
+For migration, record the region's required states, candidate source/version, integration fit, adoption and any concrete reason for rejecting a matching block. Different business fields or text usually call for adaptation. Do not introduce demo-only product capabilities to fit a block.
+
 Read the selected items' agent guides where available. Compare template and configurable data-block capabilities before editing. Use source types to verify every proposed prop, slot, render function, and callback.
 
 ## Respect layout ownership
 
 Read [Composition contracts](references/composition-contracts.md) when building or changing page structure.
 
-- Use the existing shell or one suitable `AppShell` for the application region.
+- Use the scope-appropriate host or one suitable `AppShell` for the application region; avoid adding a second shell when a selected block already owns it.
 - Let page-layout components own their documented width, gutter, header, content, and column behavior.
 - Use `Container` for a cohesive surface region when needed; it is not a required wrapper for every page.
 - Preserve direct DOM-child relationships required by layout selectors. Check what wrappers actually render.
@@ -57,7 +59,7 @@ Read [Project adaptation](references/project-adaptation.md) when connecting busi
 
 In consumer projects, preserve managed UI, layout, and shared-system implementations. Adapt through existing props and slots, controlled state, data and route adapters, business compositions, and documented theme or icon providers. Do not assume every component exposes the same extension points.
 
-Template business files can be edited for the product; their managed dependencies remain protected. Apply ownership per file, including shared dependencies. In the source repository, user-authorized library changes belong in canonical sources and their associated contracts and Registry artifacts.
+Template business files can be edited for the product; their managed dependencies remain protected. Apply ownership per file, including shared dependencies. For a cross-framework template, follow [template porting](references/project-adaptation.md#port-a-template-across-frameworks); a port is project-owned adaptation, not proof that the original block supports that framework. In the source repository, user-authorized library changes belong in canonical sources and their associated contracts and Registry artifacts.
 
 Use `className` or `style` only within the selected component's customization contract. External layout adjustments and scoped business styles can be appropriate. Preserve internal semantic colors, focus, disabled and loading behavior, interaction feedback, and surface relationships. Use the library's existing token and spacing systems.
 
@@ -79,6 +81,6 @@ Review the diff for changes to managed files, duplicated primitives, internal st
 
 In the source repository, regenerate Registry artifacts when canonical Registry content changes. In consumer projects, verify installed paths and dependencies rather than relying on the source repository's successful build.
 
-Report what passed, failed, or could not be checked, including the affected scope. A missing baseline or unavailable browser is not a passing result. Do not reset component baselines or add policy exceptions to make checks pass.
+Report installation/provenance, functional regression, design contracts and browser findings separately, including scope and uncovered states. An installed but unused dependency is not itself a violation; an unfulfilled region-selection decision is. A missing baseline or unavailable browser is not a passing result. Do not reset component baselines or add policy exceptions to make checks pass.
 
 Hand off the selected layout and components with reasons, business adaptations, changed files, verification evidence, and any capability or external-integration gaps. Keep the handoff concise and proportional to the task.

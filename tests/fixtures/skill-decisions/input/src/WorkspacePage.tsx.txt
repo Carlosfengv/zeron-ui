@@ -1,0 +1,24 @@
+import { useEffect, useState } from "react";
+export function WorkspacePage() {
+  const [rows, setRows] = useState<{ id: string; name: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true); setError(false);
+    fetch("/api/resources", { signal: controller.signal }).then((response) => {
+      if (!response.ok) throw new Error("Load failed");
+      return response.json();
+    }).then(setRows).catch(() => {
+      if (!controller.signal.aborted) setError(true);
+    }).finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [attempt]);
+  return <section>
+    <header className="legacy-page-header"><h1>Resources</h1><p>Your provisioned resources</p></header>
+    <div className="legacy-surface">
+      {loading ? <p role="status">Loading…</p> : error ? <div role="alert">Could not load resources.<button onClick={() => setAttempt(attempt + 1)}>Retry</button></div> : rows.length ? <ul>{rows.map((row) => <li key={row.id}>{row.name}</li>)}</ul> : <p>No resources yet.</p>}
+    </div>
+  </section>;
+}

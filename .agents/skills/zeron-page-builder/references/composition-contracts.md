@@ -18,7 +18,7 @@ These responsibilities guide selection; they are not a mandatory nesting templat
 
 ## AppShell
 
-`AppShell` supports sidebar and stacked application layouts. Its child components represent the sidebar, header, and main region. Use one shell for one application region and reuse an existing host shell when present.
+`AppShell` supports sidebar and stacked application layouts. Its child components represent the sidebar, header, and main region. Use one shell for one application region; preserve an existing host for ordinary work, or replace it when authorized by full migration scope.
 
 The current source uses direct-child `data-slot` selectors to place header, main, and sidebar tracks. A real DOM wrapper between the shell and these parts can change the layout. A React Fragment does not create a DOM node, so judge the rendered structure rather than JSX indentation alone.
 
@@ -88,3 +88,17 @@ Use `min-h-0` and `min-w-0` where the established layout needs children to shrin
 - Confirm overlays use the correct portal and theme context and remain visible above surfaces.
 
 Use browser evidence when available. Source inspection alone cannot prove computed layout, portal placement, or interaction behavior.
+
+## Check selection against the rendered page
+
+For each selected region, record its public layout components, direct DOM-child/slot relationship, bounded-height ancestor and intended vertical/horizontal scroll owner. Compare those decisions with the final DOM and computed layout at representative widths, including long content and short viewports. If a matching block already owns these responsibilities, reuse its structure instead of wrapping it in a second page layout.
+
+| Case | Contract judgment |
+| --- | --- |
+| Plan selects `PageLayout` for a workspace, but only `AppShellMain` padding/overflow is used and there is no justified alternative | Failed adoption; installation or import presence is not sufficient. |
+| `PageLayout` is installed transitively but the route correctly uses an auth layout | No violation from unused installation alone. |
+| A route-aware project header wraps official header/title/actions and adds domain breadcrumbs | Valid business/framework composition if rendered structure and styling obey the installed contract. |
+| A DOM wrapper separates compound parts needed by a direct-child selector | Failed structure even if JSX includes the expected names; a Fragment alone adds no DOM wrapper. |
+| Page body owns vertical scrolling while a table owns horizontal overflow | Valid when height constraints, keyboard access and narrow layout are verified. |
+
+Authentication, independent terminals and immersive workspaces can have different layout owners. Do not require every route to render `PageLayout`; fail an unfulfilled selection or actual contract violation, not a component-count heuristic.

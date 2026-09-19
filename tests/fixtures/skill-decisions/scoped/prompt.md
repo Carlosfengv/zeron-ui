@@ -1,0 +1,1 @@
+Use the installed Zeron page-builder skill to replace only the `/resources` page UI with Zeron components and appropriate page layout. Preserve the surrounding navigation, the `/login` page, resource fetching and error/retry behavior. Keep the existing application stack. Implement the change and report the actual verification and any remaining gaps.

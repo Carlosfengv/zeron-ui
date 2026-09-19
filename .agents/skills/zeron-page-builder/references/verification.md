@@ -53,7 +53,9 @@ Design lint does not check every token's semantic use, direct-child layout relat
 
 The current `@zeron/lint` adapter is a private workspace package. A copied builder skill does not install or activate it in a consumer project. If design lint is absent there, use available checks and report it as `unchecked`; integrate it only when that setup is in scope, preserving the host's ESLint configuration. Do not suggest installing an unpublished package from npm.
 
-## Verify three layers
+## Record four independent dimensions
+
+Keep installation/provenance, functional regression, design contracts and browser verification as separate results. Each needs its checked scope, outcome, evidence and uncovered states. In migration, map them to the existing plan check kinds (`provenance`, `behavior`, `contract`, `visual`) alongside typecheck/build/cleanup/scope review; do not invent schema fields. Static review, browser tests with fixtures and real-backend checks must be labeled distinctly.
 
 ### Installation and provenance
 
@@ -75,13 +77,26 @@ Review the change for:
 
 Distinguish pre-existing differences from changes made for the current task. A similar component name is not sufficient evidence of duplication; trace import source and responsibility.
 
-### Runtime and product behavior
+Compare each region-selection record with the actual implementation. Check reasons for rejecting matching blocks, template-port provenance, layout/scroll ownership, old-API adapter exit conditions and retained CSS responsibilities. An unused installed dependency is not a failure by itself; an unimplemented selected layout without a justified replacement is.
+
+### Functional regression
 
 Run the narrowest relevant type, build, and interaction checks, then broaden only when the risk or project convention requires it.
 
-When a page can run, verify the primary interaction and relevant loading, empty, error, disabled, permission, overflow, and retry states. Check representative narrow and wide widths, long labels, keyboard focus, responsive navigation, scroll ownership, and overlays where they are part of the change.
+Verify primary interactions and relevant loading, empty, error, disabled, permission and retry states, including data/query values, submission, validation and user outcomes. Record when unavailable services limit this to mocks or local wiring.
+
+### Browser verification
+
+When a page can run, inspect representative narrow and wide widths, long labels, keyboard focus, responsive navigation, scroll ownership and overlays where they are part of the change. Compare final rendered structure and styling responsibilities to the selected version's contracts, rather than assuming no console errors or the presence of screenshots establishes conformity.
 
 Static source checks do not establish computed layout, contrast, portal placement, or keyboard behavior. Browser evidence is needed for those claims.
+
+Examples of independent outcomes:
+
+- Form tests pass, but a custom header and global CSS replace the selected official page layout: behavior may pass; contract fails.
+- A screenshot exists but no target-layout comparison or keyboard check occurred: report exactly what was inspected; those missing browser checks stay unchecked.
+- An account menu uses official callbacks but renders a hardcoded identity: adopting the block does not satisfy the real-user requirement.
+- CLI mistakes Vite `src/pages` for Next Pages Router: retain its original non-passing result and add the framework evidence; do not rename business directories, alter tool output or report the CLI passed.
 
 ## Result states
 

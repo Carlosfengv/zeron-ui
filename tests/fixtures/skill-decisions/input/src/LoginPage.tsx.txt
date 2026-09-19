@@ -1,0 +1,29 @@
+import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+export function LoginPage() {
+  const navigate = useNavigate();
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (pending) return;
+    const data = new FormData(event.currentTarget);
+    const username = String(data.get("username") ?? "").trim();
+    const password = String(data.get("password") ?? "");
+    if (!username || !password) { setError("Username and password are required."); return; }
+    setPending(true); setError("");
+    try {
+      const response = await fetch("/api/session", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password }) });
+      if (!response.ok) throw new Error("Could not sign in.");
+      navigate("/resources");
+    } catch { setError("Could not sign in."); }
+    finally { setPending(false); }
+  }
+  return <main className="legacy-login"><section className="legacy-brand"><h1>Workspace</h1><p>Manage your resources.</p></section><form className="legacy-login-form" onSubmit={submit} noValidate>
+    <h2>Sign in</h2>
+    <label>Username<input name="username" autoComplete="username" disabled={pending} /></label>
+    <label>Password<input name="password" type="password" autoComplete="current-password" disabled={pending} /></label>
+    {error && <p role="alert">{error}</p>}
+    <button disabled={pending}>{pending ? "Signing in…" : "Sign in"}</button>
+  </form></main>;
+}

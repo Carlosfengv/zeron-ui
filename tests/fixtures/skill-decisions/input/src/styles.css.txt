@@ -1,0 +1,17 @@
+@import "tailwindcss";
+body { margin: 0; font-family: sans-serif; background: #eef1f7; color: #172342; }
+button, input { font: inherit; padding: 8px; border: 1px solid #8291b0; border-radius: 4px; }
+button { cursor: pointer; }
+button:disabled { cursor: wait; }
+.legacy-shell { display: grid; grid-template-columns: 200px minmax(0, 1fr); height: 100svh; }
+.legacy-navigation { padding: 24px; background: #172342; color: white; }
+.legacy-navigation nav { display: grid; gap: 16px; margin-top: 24px; }
+.legacy-main { padding: 32px; overflow-y: auto; }
+.legacy-page-header { margin-bottom: 28px; }
+.legacy-page-header h1 { font-size: 28px; }
+.legacy-surface { padding: 28px; background: white; border-radius: 14px; box-shadow: 0 8px 24px #17234220; }
+.legacy-login { display: grid; grid-template-columns: 1fr 1fr; min-height: 100svh; }
+.legacy-brand { padding: 48px; background: #172342; color: white; }
+.legacy-login-form { align-self: center; display: grid; gap: 16px; padding: 32px; }
+.legacy-login-form label { display: grid; gap: 8px; }
+@media (max-width: 600px) { .legacy-shell, .legacy-login { grid-template-columns: 1fr; } .legacy-shell { height: auto; } .legacy-main { padding: 16px; } }

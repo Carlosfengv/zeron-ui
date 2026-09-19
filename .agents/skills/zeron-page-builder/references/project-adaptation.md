@@ -15,6 +15,19 @@ Item classification and file ownership are different. A template may install man
 
 In the Zeron source repository, an explicitly authorized primitive change is library work. Edit the canonical source and associated guide, tests, Registry metadata, and generated artifacts required by that repository.
 
+## Port a template across frameworks
+
+An incompatible Registry item must not be installed unchanged. A project-owned port can be appropriate when its editable template differs only in links, route entrypoints, fields or business wiring. First inspect the pinned Registry metadata, actual source, dependency closure and file ownership; item-level `template` metadata does not make its dependencies editable.
+
+1. Prefer an available same-framework block or framework-independent public API. If the candidate relies on server components, server actions or another substantive framework capability, record the gap and use compatible official layout composition; do not describe that as direct block adoption.
+2. Preserve the eligible template's downloaded source and release/hash as provenance. Identify only its editable business files and which imports must change. Do not change the item's framework metadata or add a fake Next dependency to defeat compatibility checks.
+3. Use the supported installer to preview and install the compatible managed dependencies as separate Registry items at the pinned source. Inspect their entire closure, aliases, CSS and required packages. If any required dependency remains incompatible, stop this port and record the gap or choose another compatible composition.
+4. Create adapted template files in a project-owned location, outside managed UI/data-block cores. Rewrite source/workspace imports to the actual installed consumer aliases, replace framework-only links/entrypoints, and connect the existing product flow. Keep applicable official layout, component and default styling responsibilities. Do not manually copy managed dependencies or edit install-state to claim the port is an official installation.
+5. Remove unsupported demo actions and their unused dependencies. Keep existing validation, pending/error states, accessibility and outcomes. For example, an email login template adapted to username/password needs changes to names, types, autocomplete, validation and submission values, not just its visible label.
+6. Record source release and source-file hashes, port paths, changed framework imports/dependencies, business differences and verification. Verify the port's consumer build and interaction; keep managed dependency provenance separate from the intentionally edited template. Do not put the port under an unchanged-managed-file baseline.
+
+For a Next login template whose only framework import is `next/link`, a Vite port may install compatible `AuthLayout`, `Card`, `Field` and its other required public dependencies, then adapt only the template source. Use the project's router or ordinary links as appropriate. Remove unsupported social login, signup and legal links rather than creating product features or dead destinations. If the examined release has additional framework requirements, reassess instead of applying this example mechanically.
+
 ## Adapt in this order
 
 1. Existing props, variants, sizes, controlled state, and events.
@@ -27,6 +40,8 @@ In the Zeron source repository, an explicitly authorized primitive change is lib
 Verify that every extension point exists in the installed types or source. Do not infer a generic `asChild`, slot, render prop, or class contract from another component.
 
 Avoid a universal wrapper around all Zeron components. A wrapper is useful when it represents a repeated business concept or connects a project framework; otherwise it obscures the public API and creates an extra styling layer.
+
+During migration, a temporary old-API adapter needs a caller inventory, remaining blocker, target Zeron API and exit condition. Full migration removes wrappers whose only role is retaining an old design system's generic props, variants or interactions. A domain-specific filter or router-aware header can remain. A headless data/state engine can remain when needed, but does not justify recreating an existing Table, Stepper or Select interface.
 
 ## Data and business behavior
 
@@ -62,6 +77,8 @@ Use the selected component's own agent guide when available. Common principles a
 - Establishing a second palette, shadow, radius, spacing, or icon system for the same Zeron area.
 
 Do not ban all `className`, inline style, native elements, or Tailwind arbitrary values. Some layout APIs intentionally accept concrete dimensions. Judge the property against the component's responsibility and documented customization surface.
+
+Trace remaining CSS to actual callers, including old authentication panels, headers, navigation and surfaces. Remove unused old rules; document the responsibility of retained visualization, terminal and domain styles. Absence of old package prefixes does not prove the old visual system is gone.
 
 ## Theme and icon adaptation
 
