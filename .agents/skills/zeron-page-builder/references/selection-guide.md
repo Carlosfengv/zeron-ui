@@ -11,7 +11,7 @@ Preserve routing, data flow and explicit product constraints. Determine whether 
 | Multi-section workspace without an existing shell | `AppShell` with `Sidebar` | `NavMenu`, `NavItem`, `PageLayout`, mobile drawer behavior |
 | Lightweight product with a few peer destinations | stacked `AppShell` with `TopNav` | `NavMenu`, `PageLayout`, search, cards, badges |
 | Detail or inspection page inside a host | `PageLayout` | breadcrumb, content header, tabs, detail lists, optional aside |
-| Searchable inventory | matching list block or `DataTable` | filters, input, badges, selection, row actions, pagination |
+| Searchable inventory | `PageLayout` and `DataTable` under the resource-list structure contract | search, faceted filters, identity/status cells, selection, row actions, pagination |
 | Dense editable dataset | `DataGrid` | toolbar, search, validation, selection, pinned columns |
 | Operational overview | matching dashboard or metrics block | metric cards, charts, status summaries, resource lists |
 | Settings | matching settings block or `PageLayout` | local navigation, field controls, save and error feedback |
@@ -22,22 +22,19 @@ Preserve routing, data flow and explicit product constraints. Determine whether 
 
 Use no application shell for an embedded region, authentication, focused wizard, or page whose host already supplies it. Never nest two full application shells for the same region.
 
-## Choose a resource page preset
+## Choose a resource page structure
 
 First decide whether the request is a complete page or an embedded content region. Reuse the selected host shell; replace an old shell only when the migration scope includes it.
 
-For a complete page, prefer an already matching full-page block when that block owns the required title, navigation, surface, and scrolling behavior. Otherwise select an available resource preset by the page's primary task:
+Choose public layout and content components by the page's primary task:
 
-- Start a generic resource-management page with responsive application navigation: `resource-list-page-01`.
-- Browse, search, filter, or act on multiple objects inside an existing host: compose `PageLayout` with a matching list block or `DataTable`.
+- Browse, search, filter or manage multiple objects: follow the [resource-list structure contract](resource-list-structure.md). Full pages compose page header/content/body with DataTable, toolbar and pagination; embedded lists reuse the host layout. Add public navigation only when required by scope.
 - Inspect one identified object: use `ResourceDetailLayout` only when the installed version exports it; otherwise compose the current `PageLayout` primitives.
 - Add one object in a single-page form: use `ResourceCreateLayout` only when the installed version exports it; otherwise compose the current `PageLayout` primitives.
 
 Do not import a planned preset that is absent from the installed version. Multi-step creation, authentication, master-detail workspaces, and embedded cards need their matching block or the base layout primitives instead.
 
-After selecting a page structure, choose the list, detail, or form content and assign each visible region one owner. `ResourceListTable` owns its toolbar and pagination. Place it directly in `PageBody`, use `surface="plain"`, and set `showCreateAction={false}` when `PageContentHeader` owns creation.
-
-`resource-list-page-01` uses the standard Sidebar Basic shell and replaces its overview content with `ResourceListTable`. Do not place it inside another application shell. In an application that already has navigation, compose `PageLayout` with `ResourceListTable` or place the table directly in the host's existing `PageBody`.
+Within the requested region, assign each responsibility one owner: page context and peer navigation when building a page, search/filter/actions with the table, one pagination region and a scope-appropriate scroll owner. A named list block is optional. Do not inherit an example's MCP/category tabs, fields, status enum or business actions unless they belong to the product.
 
 ## Decide whether a block fits
 
@@ -54,6 +51,8 @@ For migrations, keep one selection row per meaningful in-scope region (including
 | Account | Current user, language, sign-out, pending/error | Matching account block at target release | Verify user data, controlled locale, callbacks and navigation context | Public API integration | None if compatible | Actual identity, switch, failure/retry and sign-out checks |
 
 Prefer a matching block, then official layouts/semantic components, then project business composition. Content, field names or data-source differences normally need adaptation. Reject a candidate for a verified core-task mismatch, incompatible interaction model, missing extension point, substantive framework requirement or explicit user constraint; “easier to write ourselves” is not sufficient. A catalog with no matching block is also a valid finding when the inspected release and required capability are recorded.
+
+For standard resource lists, the component-level contract above is the selection target. Choosing public page and DataTable components that satisfy it does not require proving a named block inadequate. Record the chosen structure and integration; retain the no-primitive-duplication and evidence requirements.
 
 Record the region's target header/surface/scroll owners as part of adoption so final review can compare the decision with the rendered result. Do not add registration, social login, notifications or theme switching merely because a template includes them. Account placement follows the project's established navigation requirements; no universal corner or sidebar position is required.
 
@@ -84,7 +83,7 @@ When combining blocks, choose one structural owner. Remove duplicate shells, tit
 - `Table`: mostly static tabular presentation.
 - `DataGrid`: spreadsheet-like editing, range selection, or very large datasets.
 - `DetailList` and `InfoItem`: label-value facts and inspection metadata.
-- `MetricCard` and charts: quantities that support a decision, not decorative dashboards.
+- `MetricCard` and charts: quantities that support a decision, not decorative dashboards. For chart selection, use the [chart rules](charts.md): prefer shadcn Chart / Recharts compositions through Zeron Chart, mapped to the existing data and interaction requirements.
 - `InlineNotice`, alert, and toast: contextual guidance, prominent status, and transient confirmation respectively.
 - `Badge`: compact status or category; critical meaning requires more than color.
 - `Button`: an immediate action. Choose its variant by intent and priority.

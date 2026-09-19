@@ -23,9 +23,15 @@ Read [migration workflow](references/migration-workflow.md) before writes. For s
 
 Select by semantic region before mapping individual controls. Follow the builder's [selection guide](../zeron-page-builder/references/selection-guide.md) and record candidates, pinned source, public API fit, adoption and reasons for rejecting a matching block. Classify each task as direct, adapt, compose or gap. Trace all callers, including re-exports and shared wrappers. Preserve real integrations; do not replace them with block demos or add unsupported product features. Inspect hidden states and overlays as well as visible pages.
 
+For standard resource lists, follow the builder's [component-level structure contract](../zeron-page-builder/references/resource-list-structure.md). Public component composition is a first choice without a named-block requirement; embedded lists preserve their host.
+
+For in-scope charts, follow the builder's [chart rules](../zeron-page-builder/references/charts.md): prefer shadcn Chart / Recharts through Zeron Chart, record per-chart mappings, and preserve data and required interactions. Unsupported capabilities remain explicit gaps or accepted exceptions.
+
 Reuse the supported installer and inspect the full dependency closure. A same-name file is not API compatibility. Resolve every conflict in a batch before using `--overwrite`; migrate affected callers with it. Public Zeron primitives remain managed; business adaptations belong in project compositions.
 
 Follow dependency order in verifiable batches. Replace the old shell when requested while preserving navigation behavior. Keep one layout/scroll owner and verify portal theme context. Track callers and exit conditions for temporary old-API bridges; remove them before claiming complete migration. Retain project compositions for domain or framework responsibilities, not solely to preserve an old design system's generic API.
+
+Apply the builder's [control composition rules](../zeron-page-builder/references/control-composition.md) during replacement: Zeron size/variant and icon slots take precedence over legacy geometry and styles; preserve only justified public customization and shared styles still needed outside scope.
 
 Continue routine decisions already authorized by the task. Ask only for an unresolved product choice, broader scope or otherwise unauthorized action; finish independent work first. If capabilities are missing, record the exact requirement and smallest viable resolution without inventing props or silently dropping functionality.
 
@@ -35,6 +41,10 @@ Read [verification and recovery](references/verification-and-recovery.md). Re-sc
 
 Record installation/provenance, functional regression, design contracts and browser verification separately. Installed files and passing functional tests do not prove Zeron adoption. Verify selected layouts in the rendered DOM and review remaining CSS and adapters by responsibility. Use the [evidence procedure](references/verification-and-recovery.md#bind-reports-and-attachments) to bind reports and attachments without changing the plan schema.
 
+Use the control reference's browser acceptance gate on replaced controls and shared-adapter callers. Unintended icon/text stacking, clipping or broken state styling fails acceptance; missing browser evidence stays unchecked.
+
 Use scan/check only if the installed CLI exposes them. They are read-only aids, not migration engines or proofs of business equivalence. A passing static check never substitutes for runtime evidence. Unknown routes, unresolved references, missing provenance and stale checks prevent a complete result. Preserve original tool failures, including false positives; report manual findings separately.
+
+Reconcile plan status, mapping states, scope-wide checks and report conclusions using the [completion reconciliation](references/verification-and-recovery.md#reconcile-completion) procedure. A reviewed subset cannot pass an entire migration's contract or cleanup gate. Remaining generic adapters and capability gaps must appear in plan mappings, not only report prose.
 
 Deliver the [report](assets/report-template.md) with actual counts and one of: **complete and verified**, **migrated with accepted exceptions**, or **partial / awaiting verification**. Keep the result proportional to the task, link evidence and state remaining actions. Do not publish, deploy or claim a universal migration success rate.

@@ -57,6 +57,8 @@ The current `@zeron/lint` adapter is a private workspace package. A copied build
 
 Keep installation/provenance, functional regression, design contracts and browser verification as separate results. Each needs its checked scope, outcome, evidence and uncovered states. In migration, map them to the existing plan check kinds (`provenance`, `behavior`, `contract`, `visual`) alongside typecheck/build/cleanup/scope review; do not invent schema fields. Static review, browser tests with fixtures and real-backend checks must be labeled distinctly.
 
+Passing checks on selected pages do not pass a whole migration's aggregate checks. Keep required but unreviewed coverage unchecked and known violations failed; reconcile remaining adapters/capability gaps with plan mappings and the final report before declaring completion.
+
 ### Installation and provenance
 
 Confirm the planned or installed files, aliases, dependency versions, required providers, Registry source, and known compatibility requirements. A missing or old installation record is `unchecked`, not healthy.
@@ -79,6 +81,12 @@ Distinguish pre-existing differences from changes made for the current task. A s
 
 Compare each region-selection record with the actual implementation. Check reasons for rejecting matching blocks, template-port provenance, layout/scroll ownership, old-API adapter exit conditions and retained CSS responsibilities. An unused installed dependency is not a failure by itself; an unimplemented selected layout without a justified replacement is.
 
+For charts, apply the [chart verification checklist](charts.md#verify-the-replacement): compare data/axis/tooltip semantics, exercise preserved interactions and inspect responsive rendering. A plausible-looking chart is not proof that values, aggregation, units or drilldown behavior survived replacement.
+
+For controls, apply the [composition and visual acceptance gate](control-composition.md#required-browser-acceptance). Verify real icon/label structure, alignment, sizing, overflow and state feedback across affected callers. Standard buttons with accidentally stacked icons/text fail contract acceptance even if functional tests pass.
+
+For standard resource lists, apply the [structure and integration acceptance checks](resource-list-structure.md#migration-evidence-and-acceptance): verify one owner for each region, real search/filter/pagination semantics, stable selection and permission-aware CRUD. A named block import is neither required nor evidence that those checks passed.
+
 ### Functional regression
 
 Run the narrowest relevant type, build, and interaction checks, then broaden only when the risk or project convention requires it.
@@ -96,7 +104,7 @@ Examples of independent outcomes:
 - Form tests pass, but a custom header and global CSS replace the selected official page layout: behavior may pass; contract fails.
 - A screenshot exists but no target-layout comparison or keyboard check occurred: report exactly what was inspected; those missing browser checks stay unchecked.
 - An account menu uses official callbacks but renders a hardcoded identity: adopting the block does not satisfy the real-user requirement.
-- CLI mistakes Vite `src/pages` for Next Pages Router: retain its original non-passing result and add the framework evidence; do not rename business directories, alter tool output or report the CLI passed.
+- An older CLI mistakes Vite `src/pages` for Next Pages Router: retain its original non-passing result and add the framework evidence. Recheck with a fixed CLI when available, recording the version and new result; do not rename business directories or treat remaining migration work as completed merely because the false positive is gone.
 
 ## Result states
 

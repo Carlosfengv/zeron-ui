@@ -43,6 +43,8 @@ Avoid a universal wrapper around all Zeron components. A wrapper is useful when 
 
 During migration, a temporary old-API adapter needs a caller inventory, remaining blocker, target Zeron API and exit condition. Full migration removes wrappers whose only role is retaining an old design system's generic props, variants or interactions. A domain-specific filter or router-aware header can remain. A headless data/state engine can remain when needed, but does not justify recreating an existing Table, Stepper or Select interface.
 
+Adapter correctness includes rendered structure and styling. In particular, forwarding an old `icon` node next to text in Zeron Button children can nest both inside its label and stack them. Follow the [control composition rules](control-composition.md) and verify the affected callers in-browser; matching events and TypeScript types is insufficient.
+
 ## Data and business behavior
 
 Replace sample data and no-op handlers with the requested behavior. For a block, identify its supported integration mode before editing:
@@ -85,6 +87,8 @@ Trace remaining CSS to actual callers, including old authentication panels, head
 Use semantic tokens rather than fixed visual values when the token expresses the purpose. Keep foreground and background state pairs together, including hover, active, disabled, and dark mode. Do not duplicate the repository's brand-contrast derivation in project code.
 
 Use the installed IconProvider and named icon slots for library controls. Replace project-specific content icons through the provider or documented component prop. Do not introduce paid icon definitions without the user's explicit choice and credentials.
+
+During replacement, old icon sizes, stroke values, control dimensions and visual classes do not take precedence over Zeron. Apply the [control/icon geometry rules](control-composition.md#zeron-owns-migrated-control-and-icon-geometry): remove legacy overrides, honor slot-supplied props and verify computed styles at the selected Zeron size. Preserve intrinsic artwork geometry and documented business-layout needs separately from old control styling.
 
 When Zeron coexists with another theme, define the intended scope and inspect:
 

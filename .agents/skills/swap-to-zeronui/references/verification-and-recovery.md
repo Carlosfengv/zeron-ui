@@ -12,6 +12,19 @@ Evidence must correspond to the latest scan snapshot and include a readable log,
 
 Report routes reviewed/total, verified mappings/total and critical flows passed/total. List residual, unknown and exception counts. If the denominator is uncertain, explain the missing scope without a completion percentage.
 
+## Reconcile completion
+
+Before binding final evidence, compare the report's remaining-work list against plan mappings and the frozen scope:
+
+- Every retained generic old-API adapter or missing capability inside scope needs a mapping and traceable source selectors. Split completed and unfinished responsibilities; do not mark a broad mapping verified because one resource page passed. Keep real business compositions separate from temporary legacy bridges.
+- Each plan check covers its required area across the frozen scope. A subset may have a passing result in the report, but missing required coverage leaves the aggregate check unchecked; a known violation makes it failed. In particular, unaccepted generic adapter residue cannot pass full cleanup, and a known unsatisfied design contract cannot pass contract review. Independent type/build/behavior checks may still pass.
+- Keep `status` pending/migrating/partial while required work remains. Only after mappings, coverage, adapter exits and evidence are reconciled may it be declared complete for final checking. With schema version 1, this declaration also covers a finished migration with explicitly accepted divergences; the CLI distinguishes that result as `with-exceptions`. Never change the label alone to clear a diagnostic.
+- `plan-incomplete` prevents a non-complete declaration from being silently upgraded; `plan-status-conflict` means a complete declaration disagrees with failed/unchecked verification. Resolve the underlying work or correct the plan and report. Tool fixes that remove false positives do not remove remaining migration obligations.
+
+The CLI cannot infer undisclosed adapters or contradictions in free-form Markdown. Reconcile those manually; valid attachment hashes only establish file integrity. Updating a report requires rebinding its evidence/index hashes, and relevant source changes still require fresh snapshot-bound checks.
+
+These diagnostics describe the updated CLI implementation; older pinned versions may omit them or misclassify Vite directories. Record the actual CLI version and raw output. Apply the same manual reconciliation regardless of version, and do not treat an older CLI's optimistic result as completion evidence. Recheck with a fixed version when available without discarding the original result.
+
 ## Bind reports and attachments
 
 `swap check` validates only the directly referenced evidence file's hash. It does not traverse Markdown links or certify their content. When a check relies on separate region maps, template diffs, logs or screenshots, bind all of them in an evidence index and validate it separately. A self-contained evidence file with no supporting attachments can still use a direct plan reference.

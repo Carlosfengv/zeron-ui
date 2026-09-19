@@ -30,7 +30,7 @@ If a matching guide is unavailable, inspect the actual source and applicable sha
 
 Establish the primary task, page archetype, content hierarchy, navigation scope, relevant states, and responsive behavior. Keep this proportional to the requested change; a small edit does not require a separate planning artifact.
 
-Read [Selection guide](references/selection-guide.md) when choosing blocks and components. Preserve the host shell for ordinary page work and outside a scoped migration; for an authorized full migration, reassess it against Zeron's layout contracts. Select each relevant semantic region in this order:
+Read [Selection guide](references/selection-guide.md) when choosing blocks and components. Preserve the host shell for ordinary page work and outside a scoped migration; for an authorized full migration, reassess it against Zeron's layout contracts. For standard resource lists, prefer the component-level structure below. For other semantic regions, select in this order:
 
 1. A block whose core task, information structure, and public integration points fit.
 2. Appropriate page layouts and semantic components for the remaining regions.
@@ -38,9 +38,13 @@ Read [Selection guide](references/selection-guide.md) when choosing blocks and c
 
 A business composition may reuse several existing components without representing a library gap. Reimplementing an existing primitive's appearance and interactions requires a different justification.
 
+For standard resource lists, follow the [resource-list structure contract](references/resource-list-structure.md). Public page/DataTable composition is a first choice; no named block or rejection rationale is required. Embedded lists reuse the host layout and apply only the relevant table/toolbar rules.
+
 For migration, record the region's required states, candidate source/version, integration fit, adoption and any concrete reason for rejecting a matching block. Different business fields or text usually call for adaptation. Do not introduce demo-only product capabilities to fit a block.
 
 Read the selected items' agent guides where available. Compare template and configurable data-block capabilities before editing. Use source types to verify every proposed prop, slot, render function, and callback.
+
+For chart work, follow [Chart selection and migration](references/charts.md): use shadcn Chart / Recharts compositions through Zeron Chart, preserving data and required interactions within installed public APIs.
 
 ## Respect layout ownership
 
@@ -57,11 +61,15 @@ Read [Composition contracts](references/composition-contracts.md) when building 
 
 Read [Project adaptation](references/project-adaptation.md) when connecting business behavior, changing templates or themes, or handling a capability gap.
 
+For migrated controls, follow [Control composition and visual acceptance](references/control-composition.md): use public icon slots, remove legacy geometry overrides and verify rendered alignment and state styling. Working callbacks do not establish correct presentation.
+
 In consumer projects, preserve managed UI, layout, and shared-system implementations. Adapt through existing props and slots, controlled state, data and route adapters, business compositions, and documented theme or icon providers. Do not assume every component exposes the same extension points.
 
 Template business files can be edited for the product; their managed dependencies remain protected. Apply ownership per file, including shared dependencies. For a cross-framework template, follow [template porting](references/project-adaptation.md#port-a-template-across-frameworks); a port is project-owned adaptation, not proof that the original block supports that framework. In the source repository, user-authorized library changes belong in canonical sources and their associated contracts and Registry artifacts.
 
 Use `className` or `style` only within the selected component's customization contract. External layout adjustments and scoped business styles can be appropriate. Preserve internal semantic colors, focus, disabled and loading behavior, interaction feedback, and surface relationships. Use the library's existing token and spacing systems.
+
+When replacing old UI, Zeron's public size/variant and icon-slot rules take precedence over legacy styling. Retain only justified product customization within public boundaries, and inspect remaining consumers before removing shared CSS. Detailed geometry and adapter rules live in the control reference above.
 
 Use `border-hairline` and its directional forms for intentional 0.5px dividers. Keep ordinary control borders and focus indicators at their component-defined width. For CSS transitions, use the semantic `duration-fast`, `duration-moderate`, or `duration-slow` tier and the corresponding `*-exit` tier when the exit is shorter. A duration class still needs a transition property or an animation utility. Preserve existing JavaScript spring ownership, and use `motion-reduce:*` when a nonessential CSS animation should stop.
 

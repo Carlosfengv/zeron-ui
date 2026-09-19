@@ -51,13 +51,13 @@ The current `PageTitle` applies a compact default style when no custom class is 
 
 ## Resource list pages
 
-For a copy-ready full application page, `resource-list-page-01` reuses the standard Sidebar Basic shell and places the `resource-list-table-01` data block in its overview `PageBody`. Use that Block when no existing application shell is present; do not nest it inside another shell.
+Follow the [resource-list structure contract](resource-list-structure.md), which specifies public components and ownership rather than a required named block/page.
 
-- In an existing Sidebar Basic host, keep page context in `PageHeader`, add `PageSubnav` only when the route has peer views, and render the resource list inside the existing `PageBody`.
-- `PageBody` remains the page's single vertical scroll owner. A table or grid may own local horizontal overflow.
-- `ResourceListTable` and `DataTable` own their toolbar, result states, selection, and pagination. Do not recreate those regions at the page-layout level.
-- When `PageContentHeader` owns the create action, set `showCreateAction={false}` on `ResourceListTable` so the page has one primary entry point.
-- Use `surface="plain"` when a list block is already inside the `PageContent` surface.
+- Keep context in `PageHeader`, peer navigation in an optional `PageContentHeader`, and the table region in `PageContent > PageBody`.
+- Keep one application shell and one page-body vertical scroll owner; DataTable owns local horizontal table overflow and its built-in pagination.
+- Supply one standard or selection-mode toolbar through DataTable's public composition. Do not duplicate search, filtering, selection actions or pagination at the page level.
+- Use one create entry point and no extra project Card/Container frame around a table already inside `PageContent`; preserve the installed DataTable's own border and surface.
+- For actual master-detail requirements, use `PageColumns` with direct `PagePrimary`/`PageAside` children and an appropriate mobile detail presentation. A normal list does not need an empty aside or demo tabs.
 
 ## Container and surfaces
 
