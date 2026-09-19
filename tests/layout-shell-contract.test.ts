@@ -58,7 +58,7 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("makes component gallery cards clickable across their full surface", () => {
-    expect(componentsGallery).toContain('renderLink={(props) => <Link {...props} />}');
+    expect(componentsGallery).toContain('renderLink={(props) => <IntentPrefetchLink {...props} />}');
     expect(card).toContain("renderLink?: (props:");
     expect(card).toContain("renderLink?.({");
   });

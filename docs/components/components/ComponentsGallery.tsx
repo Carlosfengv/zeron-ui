@@ -17,6 +17,7 @@ import { RightPanel } from "@docs/components/shell/site/right-panel";
 import { componentCardDescription } from "@docs/components/components/component-card-copy";
 import { componentCoverSrc, type ComponentCoverTheme } from "@docs/lib/component-covers";
 import { useThemeContext } from "@zeron/ui/system/theme-context";
+import { IntentPrefetchLink } from "@docs/components/shell/site/intent-prefetch-link";
 
 const componentSections = [
   "foundations",
@@ -437,7 +438,7 @@ function ComponentCard({ coverTheme, entry, href, language }: { coverTheme: Comp
       className="group min-w-0 rounded-3xl bg-transparent pb-0"
       href={href}
       label={entry.name}
-      renderLink={(props) => <Link {...props} />}
+      renderLink={(props) => <IntentPrefetchLink {...props} />}
     >
       <Container className="h-full">
         <ContainerBody className="overflow-hidden overscroll-auto bg-transparent p-0">

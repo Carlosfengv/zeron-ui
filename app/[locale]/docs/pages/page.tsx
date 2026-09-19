@@ -4,6 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 import { BlocksGallery } from "@docs/components/blocks/BlocksGallery";
 import { localeAlternates } from "@docs/seo/locale";
 import { assertLocale } from "@/app/_i18n/locale";
+import { GalleryLoading } from "@docs/components/shell/site/gallery-loading";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -28,7 +29,7 @@ export default async function PagesCollectionPage({ params }: Props) {
 
   return (
     <div className="h-full min-h-0 w-full">
-      <Suspense fallback={<div aria-busy="true" className="h-full bg-surface-base" />}>
+      <Suspense fallback={<GalleryLoading />}>
         <BlocksGallery collection="pages" localePrefix={locale === "en" ? "/en" : ""} />
       </Suspense>
     </div>

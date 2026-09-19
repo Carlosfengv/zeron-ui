@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { startTransition, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 import type { FileManagerItem } from "@zeron/blocks/file-manager-01";
 
 const fileManagerPreviewItems: FileManagerItem[] = [
@@ -262,11 +262,12 @@ function usePreviewVisibility() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry?.isIntersecting) return;
-        setIsVisible(true);
-        observer.disconnect();
+        if (!entry) return;
+        // Keep offscreen demos unmounted: their effects and live updates are
+        // unnecessary in a non-interactive gallery thumbnail.
+        startTransition(() => setIsVisible(entry.isIntersecting));
       },
-      { rootMargin: "480px 0px" },
+      { rootMargin: "0px" },
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -284,12 +285,14 @@ export function BlockPreview({ name }: { name: string }) {
     if (!isVisible || !loader || Preview) return;
     let cancelled = false;
     void loader().then((module) => {
-      if (!cancelled) setPreview(() => module.default);
+      // Several cached imports can resolve together. Let React interrupt their
+      // rendering when the visitor clicks a primary navigation link.
+      if (!cancelled) startTransition(() => setPreview(() => module.default));
     });
     return () => {
       cancelled = true;
     };
   }, [Preview, isVisible, loader]);
 
-  return <div ref={ref} className="w-full">{Preview ? <Preview /> : <PreviewPlaceholder />}</div>;
+  return <div ref={ref} className="w-full">{isVisible && Preview ? <Preview /> : <PreviewPlaceholder />}</div>;
 }

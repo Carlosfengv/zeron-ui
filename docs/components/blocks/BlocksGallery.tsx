@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Badge } from "@zeron/ui/badge";
 import { Input } from "@zeron/ui/input";
@@ -11,6 +10,7 @@ import { NavMenu } from "@zeron/ui/nav-menu";
 import { PageBody, PageContent, PageLayout, PageSidebar } from "@zeron/ui/page-layout";
 import { useIcon, type IconName } from "@zeron/icons/context";
 import { BlockPreview } from "@docs/components/blocks/BlockPreview";
+import { IntentPrefetchLink } from "@docs/components/shell/site/intent-prefetch-link";
 import { artifactCatalog, artifactKinds, artifactProductLabels, artifactProducts, type ArtifactKind, type ArtifactProduct } from "@docs/catalog/artifacts";
 import { artifactPathname, type ArtifactCollection } from "@docs/catalog/artifact-collections";
 
@@ -190,7 +190,7 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
               {artifacts.map((artifact) => (
                 <Container key={artifact.slug} className="group relative min-w-0 cursor-pointer overflow-hidden transition-colors duration-fast hover:bg-hover">
-                  <Link
+                  <IntentPrefetchLink
                     aria-label={artifact.title}
                     className="absolute inset-0 z-raised rounded-[inherit] outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
                     href={`${localePrefix}${artifactPathname(artifact.slug)}`}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useRef, type ReactNode } from "react";
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AppShell, AppShellHeader, AppShellMain, AppShellSidebar } from "@zeron/ui/app-shell";
@@ -82,6 +82,17 @@ function LocaleSwitchLinkFallback({
   );
 }
 
+function PrimaryNavigationLabel({ label, loadingLabel }: { label: string; loadingLabel: string }) {
+  const { pending } = useLinkStatus();
+
+  return (
+    <NavItemContent className={pending ? "opacity-60" : undefined}>
+      <NavItemLabel>{label}</NavItemLabel>
+      <span className="sr-only" role="status">{pending ? loadingLabel : ""}</span>
+    </NavItemContent>
+  );
+}
+
 function DocsPrimaryNavigation({
   localePrefix,
   currentPathname,
@@ -151,8 +162,9 @@ function DocsPrimaryNavigation({
         >
           {items.map((item) => (
             <NavItem key={item.href} value={item.href} className="shrink-0">
-              <NavItemTrigger render={<Link href={item.href} prefetch={false} />}>
-                <NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent>
+              {/* Only the five primary destinations are fully prefetched. */}
+              <NavItemTrigger render={<Link href={item.href} prefetch />}>
+                <PrimaryNavigationLabel label={item.label} loadingLabel={isEnglish ? "Loading page…" : "正在加载页面…"} />
               </NavItemTrigger>
             </NavItem>
           ))}
