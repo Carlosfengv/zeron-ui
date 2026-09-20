@@ -56,6 +56,13 @@
       "add": "2. Add a component",
       "addHint": "Replace button with the component or block you need. Preserve local modifications when resolving file conflicts."
     },
+    "aiDocs": {
+      "title": "Help your AI understand Zeron",
+      "description": "AI docs introduce the components, design tokens, and API references. Skills guide the development workflow. Share llms.txt with your agent to give it the library context first.",
+      "prompt": "Read {url} first, then follow the relevant component and API documentation to build the page I need with Zeron UI. Reuse existing components, layouts, and semantic tokens, and verify APIs against the version installed in this project.",
+      "copy": "Copy AI docs prompt",
+      "open": "Open AI docs"
+    },
     "capabilities": {
       "eyebrow": "Choose a skill",
       "title": "One for building. One for migrating.",

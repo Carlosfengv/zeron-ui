@@ -4,6 +4,8 @@ Refined UI components with satisfying hover. Built on [shadcn/ui](https://ui.sha
 
 [Live docs & demos](https://zeron-ui.vercel.app) | [Browse components](https://zeron-ui.vercel.app/docs)
 
+AI assistants can start with [llms.txt](https://zeron-ui.vercel.app/llms.txt) for installation, semantic tokens, the complete documentation catalog, and component API guidance. Its source is [`public/llms.txt`](public/llms.txt); keep the index aligned with `docs/manifest.ts` and the published agent-guide routes when documentation changes.
+
 ## Install
 
 Initialize shadcn in a project that does not already have a `components.json`:

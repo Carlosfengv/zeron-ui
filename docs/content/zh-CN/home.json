@@ -56,6 +56,13 @@
       "add": "2. 安装组件",
       "addHint": "将 button 替换为所需组件或区块名称。处理同名文件冲突时，请保留已有的本地修改。"
     },
+    "aiDocs": {
+      "title": "让 AI 先了解 Zeron",
+      "description": "AI 文档介绍组件、样式变量和 API，Skills 引导具体的开发流程。把 llms.txt 发给 Agent，让它先了解组件库，再开始构建。",
+      "prompt": "请先阅读 {url}，再根据任务查阅相关组件和 API 文档，使用 Zeron UI 完成我需要的页面。优先复用现有组件、布局和语义样式变量，并以当前项目安装版本的 API 为准。",
+      "copy": "复制 AI 文档提示词",
+      "open": "查看 AI 文档"
+    },
     "capabilities": {
       "eyebrow": "选择适合的技能",
       "title": "构建新页面，或迁移现有界面。",

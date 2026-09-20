@@ -131,6 +131,21 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
               <p className="mt-4 text-label leading-relaxed text-fg-muted">{skills("next")}</p>
             </PageAside>
           </PageColumns>
+          <section id="ai-docs" aria-labelledby="ai-docs-title" className="mt-10 scroll-mt-32 border-t-hairline border-border-subtle pt-8 sm:scroll-mt-20">
+            <PageColumns asideWidth="34rem">
+              <PagePrimary>
+                <div className="flex max-w-md flex-col items-start gap-3 lg:pr-8">
+                  <h3 id="ai-docs-title" className="text-heading font-semibold text-fg-default">{t("aiDocs.title")}</h3>
+                  <p className="text-body leading-relaxed text-fg-muted">{t("aiDocs.description")}</p>
+                </div>
+              </PagePrimary>
+              <PageAside>
+                <CopyPrompt value={t("aiDocs.prompt", { url: "https://zeron-ui.vercel.app/llms.txt" })} label={t("aiDocs.copy")}>
+                  <Button variant="secondary" asChild trailingIcon={ArrowRight}><a href="/llms.txt">{t("aiDocs.open")}</a></Button>
+                </CopyPrompt>
+              </PageAside>
+            </PageColumns>
+          </section>
         </section>
 
         <section className="flex flex-col items-center gap-5 rounded-3xl bg-surface-raised px-6 py-12 text-center sm:py-16">
