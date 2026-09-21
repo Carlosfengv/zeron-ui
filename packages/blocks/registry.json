@@ -528,6 +528,35 @@
       ]
     },
     {
+      "name": "filter-rule-builder-01",
+      "type": "registry:block",
+      "title": "Filter Rule Builder",
+      "description": "A controlled filter workspace with presets, readable rule summaries, and validated draft editing.",
+      "categories": ["application", "forms", "filters"],
+      "dependencies": ["tw-animate-css"],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "card",
+        "combobox",
+        "container",
+        "field",
+        "filter-core",
+        "icon-context",
+        "inline-notice",
+        "input",
+        "input-group",
+        "select",
+        "utils"
+      ],
+      "files": [
+        { "path": "packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder-types.ts", "type": "registry:component", "target": "components/blocks/filter-rule-builder-01/filter-rule-builder-types.ts" },
+        { "path": "packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder-demo-data.ts", "type": "registry:component", "target": "components/blocks/filter-rule-builder-01/filter-rule-builder-demo-data.ts" },
+        { "path": "packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder.tsx", "type": "registry:component", "target": "components/blocks/filter-rule-builder-01/filter-rule-builder.tsx" },
+        { "path": "packages/blocks/src/application/filter-rule-builder-01/index.ts", "type": "registry:component", "target": "components/blocks/filter-rule-builder-01/index.ts" }
+      ]
+    },
+    {
       "name": "resource-list-table-01",
       "type": "registry:block",
       "title": "Resource List Table 1",

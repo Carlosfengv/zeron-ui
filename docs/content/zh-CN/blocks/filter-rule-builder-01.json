@@ -1,0 +1,15 @@
+{
+  "filterRuleBuilderBlock": {
+    "title": "筛选规则编辑器",
+    "description": "支持预设、可读规则摘要、草稿校验以及应用与恢复操作的受控筛选工作区。",
+    "dataContract": "数据契约",
+    "dataContractBody": "传入具有稳定 ID 的 FilterField 定义和 FilterClause 数据。字段负责提供操作符、选项、数值范围、分类颜色和可选单位。通过 value 与 onValueChange 受控编辑，并仅在 onApply 中持久化结果。",
+    "behavior": "交互行为",
+    "behaviorBody": "预设会替换当前编辑中的规则集合。草稿在“添加规则”成功前保持独立；若仍有草稿，应用操作会要求先添加或取消。取消会恢复最近一次已应用值，数值范围与必填值会在加入规则前校验。",
+    "composition": "组件组合",
+    "compositionBody": "Container 负责固定头部、滚动内容区与底部操作。规则摘要使用 Card 和 Badge；草稿编辑使用 Field、Select、多选 Combobox、InputGroup 与 Button。所有弹层继续使用 Zeron 的 Portal、焦点和键盘行为。",
+    "ready": "可继续编辑草稿，或应用当前筛选条件。",
+    "applied": "已应用 {count} 条筛选条件。",
+    "cancelled": "已取消修改并恢复 {count} 条筛选条件。"
+  }
+}

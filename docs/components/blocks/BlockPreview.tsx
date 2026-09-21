@@ -183,6 +183,22 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "provider-create-form-01": () => import("@zeron/blocks/provider-create-form-01").then(({ ProviderCreateForm }) => ({
     default: () => <ResponsivePreview canvasHeight={760} canvasWidth={960}><ProviderCreateForm /></ResponsivePreview>,
   })),
+  "filter-rule-builder-01": () => import("@zeron/blocks/filter-rule-builder-01").then(({ FilterRuleBuilder, filterRuleBuilderDemoDraft, filterRuleBuilderDemoFields, filterRuleBuilderDemoPresets, filterRuleBuilderDemoValue }) => ({
+    default: () => (
+      <ResponsivePreview canvasHeight={820} canvasWidth={1040}>
+        <div className="min-h-full bg-surface-base p-8">
+          <FilterRuleBuilder
+            defaultDraft={filterRuleBuilderDemoDraft}
+            defaultValue={filterRuleBuilderDemoValue}
+            fields={filterRuleBuilderDemoFields}
+            maxBodyHeight={620}
+            presets={filterRuleBuilderDemoPresets}
+            resultCount={128}
+          />
+        </div>
+      </ResponsivePreview>
+    ),
+  })),
   "rule-flow-editor-01": () => import("@zeron/blocks/rule-flow-editor-01").then(({ RuleFlowEditor }) => ({
     default: () => <ResponsivePreview canvasHeight={700} canvasWidth={1120} surface="bg-surface-raised"><div className="h-full p-6"><RuleFlowEditor /></div></ResponsivePreview>,
   })),

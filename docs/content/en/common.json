@@ -168,6 +168,7 @@
       "catalog": "Searchable names generated from the free icon provider's actual exports.",
       "providers": "Free and licensed icon styles, plus the boundary for optional Pro packages.",
       "provider-create-form-01": "A three-step provider setup workflow with credential verification, model discovery, per-model availability, and final review.",
+      "filter-rule-builder-01": "A controlled filter workspace with presets, readable rule summaries, and validated draft editing.",
       "availability-monitor-01": "A routing-aware service availability block with summary metrics, a 72-hour status strip, and a 24-hour comparison chart.",
       "ai-gateway-overview-01": "A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations.",
       "agent-message-trace-01": "A responsive, resizable agent trace workspace with a virtualized timeline and span inspector.",

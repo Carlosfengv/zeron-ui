@@ -206,6 +206,13 @@ const blockCatalogEntries = [
     dependencies: ["field", "input", "textarea", "select", "switch", "stepper", "container", "alert", "badge", "detail-list", "button", "toast", "@lobehub/icons"],
   },
   {
+    name: "filter-rule-builder-01",
+    title: "Filter Rule Builder",
+    description: "A controlled filter workspace with presets, readable rule summaries, and validated draft editing.",
+    categories: ["application", "forms", "filters"],
+    dependencies: ["badge", "button", "card", "combobox", "container", "field", "filter-core", "icon-context", "inline-notice", "input", "input-group", "select"],
+  },
+  {
     name: "rule-flow-editor-01",
     title: "Rule Flow Editor",
     description: "A controlled rule canvas for arranging triggers, conditions, and actions with editable condition clauses.",

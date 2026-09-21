@@ -1,0 +1,15 @@
+{
+  "filterRuleBuilderBlock": {
+    "title": "Filter Rule Builder",
+    "description": "A controlled filter workspace with presets, readable rule summaries, validated drafting, and apply or restore actions.",
+    "dataContract": "Data contract",
+    "dataContractBody": "Provide stable FilterField definitions and FilterClause values. Fields own their operator list, options, number limits, categorical color, and optional unit. Use value and onValueChange for controlled editing, then persist only from onApply.",
+    "behavior": "Behavior",
+    "behaviorBody": "Presets replace the current working set. A draft stays separate until Add rule succeeds, and Apply asks the user to finish or cancel that draft. Cancel restores the most recently applied value. Number limits and required values are validated before insertion.",
+    "composition": "Composition",
+    "compositionBody": "Container owns the fixed header, scrollable body, and footer. Rule summaries use Card and Badge; draft controls use Field, Select, multi-select Combobox, InputGroup, and Button. Popups retain Zeron portal, focus, and keyboard behavior.",
+    "ready": "Draft a rule or apply the current filter set.",
+    "applied": "{count, plural, one {# filter applied.} other {# filters applied.}}",
+    "cancelled": "Changes cancelled. {count, plural, one {# filter restored.} other {# filters restored.}}"
+  }
+}

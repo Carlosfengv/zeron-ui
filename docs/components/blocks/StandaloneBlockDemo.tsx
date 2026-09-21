@@ -33,6 +33,13 @@ import {
 import { PersonalUsage } from "@zeron/blocks/personal-usage-01";
 import { ResourceSettings } from "@zeron/blocks/resource-settings-01";
 import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
+import {
+  FilterRuleBuilder,
+  filterRuleBuilderDemoDraft,
+  filterRuleBuilderDemoFields,
+  filterRuleBuilderDemoPresets,
+  filterRuleBuilderDemoValue,
+} from "@zeron/blocks/filter-rule-builder-01";
 import { RuleFlowEditor } from "@zeron/blocks/rule-flow-editor-01";
 import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
 import {
@@ -139,6 +146,27 @@ function CreditUsageDemo() {
   );
 }
 
+function FilterRuleBuilderDemo() {
+  const [feedback, setFeedback] = useState("Draft a rule or apply the current filter set.");
+
+  return (
+    <div className="flex h-full w-full items-start justify-center overflow-auto bg-surface-base p-4 sm:p-8">
+      <div className="w-full max-w-3xl">
+        <FilterRuleBuilder
+          defaultDraft={filterRuleBuilderDemoDraft}
+          defaultValue={filterRuleBuilderDemoValue}
+          fields={filterRuleBuilderDemoFields}
+          onApply={(filters) => setFeedback(`${filters.length} filters applied.`)}
+          onCancel={(filters) => setFeedback(`Changes cancelled. ${filters.length} filters restored.`)}
+          presets={filterRuleBuilderDemoPresets}
+          resultCount={128}
+        />
+        <p aria-live="polite" className="mt-3 min-h-5 text-center text-caption text-fg-muted">{feedback}</p>
+      </div>
+    </div>
+  );
+}
+
 export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
     case "login-01":
@@ -187,6 +215,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <ResourceSettings />;
     case "provider-create-form-01":
       return <div className="h-full bg-surface-base"><ProviderCreateForm /></div>;
+    case "filter-rule-builder-01":
+      return <FilterRuleBuilderDemo />;
     case "rule-flow-editor-01":
       return <div className="h-full min-h-0 overflow-hidden bg-surface-raised p-3 sm:p-6"><RuleFlowEditor /></div>;
     case "resource-catalog-01":

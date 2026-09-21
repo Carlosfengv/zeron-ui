@@ -98,6 +98,11 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation" |
     kind: "flow", product: "zentrix", domains: ["model provider", "configuration"], patterns: ["wizard", "validation"], searchTerms: ["provider", "create", "模型服务商", "创建流程"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,
   },
   {
+    slug: "filter-rule-builder-01", registryName: "filter-rule-builder-01",
+    title: "Filter Rule Builder", description: "A controlled filter workspace with presets, readable rule summaries and validated draft editing.",
+    kind: "block", product: "shared", domains: ["filtering", "rules", "search"], patterns: ["filter builder", "condition editor", "presets"], searchTerms: ["filter", "rule", "condition", "preset", "筛选", "规则", "条件", "预设"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
     slug: "rule-flow-editor-01", registryName: "rule-flow-editor-01",
     title: "Rule Flow Editor", description: "A controlled visual rule editor with draggable trigger, condition, and action nodes.",
     kind: "flow", product: "shared", domains: ["automation", "rules", "workflow"], patterns: ["flowchart", "condition builder", "node editor"], searchTerms: ["rule", "workflow", "flowchart", "condition", "规则", "流程图", "条件"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive"], featured: true,

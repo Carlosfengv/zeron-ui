@@ -30,6 +30,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "blocks/personal-settings-01": () => import("@docs/pages/blocks/personal-settings-01/page"),
   "blocks/personal-usage-01": () => import("@docs/pages/blocks/personal-usage-01/page"),
   "blocks/provider-create-form-01": () => import("@docs/pages/blocks/provider-create-form-01/page"),
+  "blocks/filter-rule-builder-01": () => import("@docs/pages/blocks/filter-rule-builder-01/page"),
   "blocks/rule-flow-editor-01": () => import("@docs/pages/blocks/rule-flow-editor-01/page"),
   "blocks/resource-catalog-01": () => import("@docs/pages/blocks/resource-catalog-01/page"),
   "blocks/resource-list-page-01": () => import("@docs/pages/blocks/resource-list-page-01/page"),
