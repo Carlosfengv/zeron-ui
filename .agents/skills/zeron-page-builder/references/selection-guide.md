@@ -29,7 +29,7 @@ First decide whether the request is a complete page or an embedded content regio
 Choose public layout and content components by the page's primary task:
 
 - Browse, search, filter or manage multiple objects: follow the [resource-list structure contract](resource-list-structure.md). Full pages compose page header/content/body with DataTable, toolbar and pagination; embedded lists reuse the host layout. Add public navigation only when required by scope.
-- Inspect one identified object: use `ResourceDetailLayout` only when the installed version exports it; otherwise compose the current `PageLayout` primitives.
+- Inspect one identified object: evaluate the installed `ResourceDetailLayout` and its public slots using the [detail header contract](page-header-contracts.md#compose-the-detail-header). If unavailable or incompatible, compose installed primitives with a recorded reason; keep path, record navigation, summary and tabs distinct.
 - Add one object in a single-page form: use `ResourceCreateLayout` only when the installed version exports it; otherwise compose the current `PageLayout` primitives.
 
 Do not import a planned preset that is absent from the installed version. Multi-step creation, authentication, master-detail workspaces, and embedded cards need their matching block or the base layout primitives instead.

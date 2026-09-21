@@ -25,6 +25,8 @@ Select by semantic region before mapping individual controls. Follow the builder
 
 For standard resource lists, follow the builder's [component-level structure contract](../zeron-page-builder/references/resource-list-structure.md). Public component composition is a first choice without a named-block requirement; embedded lists preserve their host.
 
+For list/detail headers, apply the builder's [page header contracts](../zeron-page-builder/references/page-header-contracts.md). Record component sources and region owners, migrate legacy header wrappers through public composition, and verify the rendered header against the selected structure. A PageLayout import alone does not satisfy header adoption.
+
 For in-scope charts, follow the builder's [chart rules](../zeron-page-builder/references/charts.md): prefer shadcn Chart / Recharts through Zeron Chart, record per-chart mappings, and preserve data and required interactions. Unsupported capabilities remain explicit gaps or accepted exceptions.
 
 Reuse the supported installer and inspect the full dependency closure. A same-name file is not API compatibility. Resolve every conflict in a batch before using `--overwrite`; migrate affected callers with it. Public Zeron primitives remain managed; business adaptations belong in project compositions.

@@ -17,6 +17,8 @@ For in-scope charts, attach an inventory keyed to mapping IDs: old renderer/file
 
 For standard resource lists, record the base-component hierarchy and region owners, domain columns/IDs, query mode/totals, selection scope and CRUD/permission integration. Verify the structural contract rather than requiring a particular block/page name.
 
+For affected list/detail headers, record component sources and the owners of path/context, title or resource summary, description/status, record navigation, tabs and actions. Identify host-owned or absent regions. Link DOM/browser evidence for grouping, duplicate prevention, long titles, narrow-layout action reflow and real navigation/action behavior; unused PageLayout imports do not establish adoption.
+
 ## Template ports and adapter exits
 
 | Port | Source release/files/hashes | Project-owned files and changes | Framework imports/dependencies replaced | Managed dependency provenance | Verification |

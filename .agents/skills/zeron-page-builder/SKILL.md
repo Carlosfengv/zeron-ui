@@ -50,6 +50,8 @@ For chart work, follow [Chart selection and migration](references/charts.md): us
 
 Read [Composition contracts](references/composition-contracts.md) when building or changing page structure.
 
+For list/detail headers, read [Page header contracts](references/page-header-contracts.md). Select path, title/summary, navigation and action owners explicitly; respect title/description grouping and the installed layout's slots rather than recreating a generic header.
+
 - Use the scope-appropriate host or one suitable `AppShell` for the application region; avoid adding a second shell when a selected block already owns it.
 - Let page-layout components own their documented width, gutter, header, content, and column behavior.
 - Use `Container` for a cohesive surface region when needed; it is not a required wrapper for every page.

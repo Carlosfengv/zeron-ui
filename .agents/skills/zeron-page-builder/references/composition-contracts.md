@@ -41,13 +41,13 @@ Use the public controls instead of duplicating the same page max-width, padding,
 
 `PageLayout` detects `PageSidebar` and `PageContent` through direct-child slots. `PageColumns` similarly expects `PagePrimary` and `PageAside` as direct rendered children for its column selectors. Avoid extra DOM wrappers around these structural parts.
 
-Choose the correct header level:
+Choose the correct header level using the shared [list/detail header contracts](page-header-contracts.md):
 
-- `PageHeader` holds page-level title, description, and actions.
+- `PageHeader` holds outer page context: path/navigation or the page title group and actions, according to the selected structure. A detail layout may own the resource title in an inner summary instead.
 - `PageContentHeader` holds controls or navigation belonging to the content surface.
 - `PageSubnav` remains a navigation landmark; sibling actions belong in `PageActions` rather than inside it.
 
-The current `PageTitle` applies a compact default style when no custom class is supplied and a heading style when a class is supplied. Inspect the installed version before styling it; do not add a class solely for positioning without considering that behavior.
+The header reference defines `PageHeaderContent` text grouping, `PageTitle` styling behavior, detail-layout slots and acceptance checks. Do not flatten a detail summary into a list header or add another header around an existing owner.
 
 ## Resource list pages
 

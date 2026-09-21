@@ -12,7 +12,7 @@ Apply the full page hierarchy only when the page layout is in scope. A list embe
 One existing or scope-authorized application shell
 └─ PageLayout
    ├─ PageHeader
-   │  ├─ PageHeaderContent: breadcrumb and/or PageTitle / PageDescription
+   │  ├─ PageHeaderContent: path-only content OR an explicit title/description text group
    │  └─ PageActions: optional page-level actions
    └─ PageContent
       ├─ PageContentHeader: optional peer Tabs or navigation
@@ -23,6 +23,8 @@ One existing or scope-authorized application shell
             ├─ Rows / loading / empty or error presentation
             └─ Built-in pagination
 ```
+
+Follow [page header contracts](page-header-contracts.md#compose-the-list-header) for this choice. `PageHeaderContent` is a horizontal row; title and description need a text-group wrapper. Do not add a title to a path-only header or place table query controls in the page header merely to fill the outline.
 
 - Reuse the existing host for scoped work. Full migration may replace it through public shell/navigation components, but never nest a second application shell around the list.
 - Use `PageLayout` for page width/gutter, `PageHeader` for context, `PageContent` for the bordered content surface and `PageBody` for its vertical scrolling. Preserve their installed direct-child/slot contracts. Allow the list to use available content width through supported layout controls; do not copy old max-width, margin or padding systems.

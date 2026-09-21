@@ -81,6 +81,8 @@ Distinguish pre-existing differences from changes made for the current task. A s
 
 Compare each region-selection record with the actual implementation. Check reasons for rejecting matching blocks, template-port provenance, layout/scroll ownership, old-API adapter exit conditions and retained CSS responsibilities. An unused installed dependency is not a failure by itself; an unimplemented selected layout without a justified replacement is.
 
+For list/detail headers, apply [header acceptance](page-header-contracts.md#header-acceptance): trace actual component sources, compare region ownership and slot composition, and inspect long titles, action reflow and navigation in-browser. Header adoption requires more than importing PageLayout.
+
 For charts, apply the [chart verification checklist](charts.md#verify-the-replacement): compare data/axis/tooltip semantics, exercise preserved interactions and inspect responsive rendering. A plausible-looking chart is not proof that values, aggregation, units or drilldown behavior survived replacement.
 
 For controls, apply the [composition and visual acceptance gate](control-composition.md#required-browser-acceptance). Verify real icon/label structure, alignment, sizing, overflow and state feedback across affected callers. Standard buttons with accidentally stacked icons/text fail contract acceptance even if functional tests pass.
