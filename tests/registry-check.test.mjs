@@ -26,4 +26,24 @@ describe("Registry closure checker", () => {
     ]);
     expect(errors).toEqual([]);
   });
+
+  it("accepts a type-only import supplied by its DefinitelyTyped package", () => {
+    const errors = checkRegistry([{
+      name: "code-engine",
+      meta: metadata,
+      dependencies: ["@types/hast@^3.0.4"],
+      files: [{ path: "types.ts", target: "lib/code-engine/types.ts", content: 'import type { Element } from "hast"; export type Node = Element;' }],
+    }]);
+    expect(errors).toEqual([]);
+  });
+
+  it("does not treat a type package as a runtime dependency", () => {
+    const errors = checkRegistry([{
+      name: "code-engine",
+      meta: metadata,
+      dependencies: ["@types/hast@^3.0.4"],
+      files: [{ path: "runtime.ts", target: "lib/code-engine/runtime.ts", content: 'import { value } from "hast"; export { value };' }],
+    }]);
+    expect(errors).toContain("code-engine: lib/code-engine/runtime.ts imports hast but hast is not declared in its closure dependencies");
+  });
 });

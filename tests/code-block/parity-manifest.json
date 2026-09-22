@@ -1,0 +1,21 @@
+{
+  "features": [
+    { "id": "F01", "name": "single-file", "api": "CodeBlock", "status": "passed", "evidence": ["tests/code-block/core.test.ts", "docs/pages/components/code-block/page.tsx"] },
+    { "id": "F02", "name": "highlighting-and-themes", "api": "CodeBlock", "status": "passed", "evidence": ["tests/code-block/core.test.ts", "tests/code-block.e2e.ts"] },
+    { "id": "F03", "name": "file-diff", "api": "CodeDiff", "status": "passed", "evidence": ["tests/code-block/core.test.ts", "docs/pages/components/code-block/page.tsx"] },
+    { "id": "F04", "name": "patch", "api": "CodePatch", "status": "passed", "evidence": ["tests/code-block/core.test.ts", "docs/pages/components/code-block/page.tsx"] },
+    { "id": "F05", "name": "hunk-expansion", "api": "CodeDiff", "status": "passed", "evidence": ["tests/code-block.e2e.ts", "packages/ui/src/system/code-engine/renderers/DiffHunksRenderer.ts"] },
+    { "id": "F06", "name": "line-and-token-interaction", "api": "CodeBlock", "status": "passed", "evidence": ["tests/code-block.e2e.ts", "packages/ui/src/system/code-engine/managers/InteractionManager.ts"] },
+    { "id": "F07", "name": "annotations-and-headers", "api": "CodeBlock", "status": "passed", "evidence": ["tests/code-block.e2e.ts", "packages/ui/src/system/code-engine/react/utils/renderFileChildren.tsx"] },
+    { "id": "F08", "name": "accept-reject", "api": "diffAcceptRejectHunk", "status": "passed", "evidence": ["tests/code-block/core.test.ts"] },
+    { "id": "F09", "name": "conflict-resolution", "api": "CodeConflict", "status": "passed", "evidence": ["tests/code-block/core.test.ts", "docs/pages/components/code-block/page.tsx"] },
+    { "id": "F10", "name": "multi-file-virtualization", "api": "CodeView", "status": "passed", "evidence": ["tests/code-block/core.test.ts", "tests/code-block.e2e.ts"] },
+    { "id": "F11", "name": "worker", "api": "CodeWorkerProvider", "status": "passed", "evidence": ["tests/code-block-worker.test.tsx", "scripts/test-consumer-installs.mjs"] },
+    { "id": "F12", "name": "ssr", "api": "preloadCode", "status": "passed", "evidence": ["tests/code-block/core.test.ts", "scripts/test-consumer-installs.mjs"] },
+    { "id": "F13", "name": "streaming", "api": "CodeStream", "status": "passed", "evidence": ["tests/code-block.e2e.ts", "docs/pages/components/code-block/page.tsx"] },
+    { "id": "F14", "name": "editing", "api": "CodeEditProvider", "status": "passed", "evidence": ["tests/code-block.e2e.ts", "docs/pages/components/code-block/page.tsx"] },
+    { "id": "F15", "name": "editor-extensions", "api": "Editor", "status": "passed", "evidence": ["tests/code-block/editor-extensions.test.ts", "tests/code-block.e2e.ts"] },
+    { "id": "F16", "name": "zeron-product-shell", "api": "CodeBlockToolbar", "status": "passed", "evidence": ["tests/code-block.e2e.ts", "packages/ui/src/components/code-block/code-block-toolbar.tsx"] },
+    { "id": "F17", "name": "accessibility-and-responsive", "api": "CodeBlock", "status": "passed", "evidence": ["tests/code-block.e2e.ts", "packages/ui/src/system/code-engine/styles/base.css"] }
+  ]
+}
