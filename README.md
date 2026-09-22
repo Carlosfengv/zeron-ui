@@ -19,6 +19,7 @@ Install one or more components:
 ```bash
 npx zeron-ui add button
 npx zeron-ui add button dialog popover
+npx zeron-ui add code-block
 ```
 
 The Zeron CLI installs from the live Registry and delegates file placement,

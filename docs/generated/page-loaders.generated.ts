@@ -65,6 +65,7 @@ export const pageLoaders: Record<string, DocPageLoader> = {
   "components/checkbox-group": () => import("@docs/pages/components/checkbox-group/page"),
   "components/color-picker": () => import("@docs/pages/components/color-picker/page"),
   "components/combobox": () => import("@docs/pages/components/combobox/page"),
+  "components/code-block": () => import("@docs/pages/components/code-block/page"),
   "components/container": () => import("@docs/pages/components/container/page"),
   "components/data-grid": () => import("@docs/pages/components/data-grid/page"),
   "components/data-table": () => import("@docs/pages/components/data-table/page"),

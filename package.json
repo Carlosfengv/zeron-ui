@@ -19,6 +19,7 @@
     "test:i18n:production": "pnpm build && vitest run --config vitest.config.mts tests/i18n-production-smoke.test.ts",
     "test:i18n:e2e": "pnpm build && playwright test --config playwright.config.ts",
     "test:focus:e2e": "pnpm build && playwright test --config playwright.focus.config.ts",
+    "test:code-block:e2e": "pnpm build && playwright test --config playwright.code-block.config.ts",
     "test:i18n:payload": "pnpm build && node scripts/check-i18n-client-payload.mjs",
     "tokens:build": "node scripts/generate-semantic-tokens.mjs",
     "tokens:check": "node scripts/generate-semantic-tokens.mjs --check",

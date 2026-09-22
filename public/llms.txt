@@ -88,6 +88,7 @@ Use semantic tokens by purpose. Let the theme supply light/dark values, and use 
 - [Badge](https://zeron-ui.vercel.app/en/docs/components/badge): Compact label with categorical colors, custom recipes, semantic statuses, and soft, strong, or dot variants.
 - [BadgeOverflow](https://zeron-ui.vercel.app/en/docs/components/badge-overflow): Responsive badge list that collapses hidden items into an overflow count.
 - [DataGrid](https://zeron-ui.vercel.app/en/docs/components/data-grid): Virtualized spreadsheet grid with inline editing, range selection, search, copy and paste, and pinned columns.
+- [CodeBlock](https://zeron-ui.vercel.app/en/docs/components/code-block): Source-owned code display, diff, patch, merge conflict, streaming, Worker, SSR, and editing components.
 - [DataTable](https://zeron-ui.vercel.app/en/docs/components/data-table): TanStack data table with sorting, filters, pagination, selection, visibility, and pinning.
 - [FilterBuilder](https://zeron-ui.vercel.app/en/docs/components/filter-builder): Composable typed filters for complex data views, with text, number, option, boolean, date, async, and custom editors.
 - [FilterQueryInput](https://zeron-ui.vercel.app/en/docs/components/filter-query-input): Structured cmdk query input with configurable fields, aliases, codecs, and portable filter clauses.
@@ -189,6 +190,7 @@ Component pages above contain usage and API references where available. Read exa
 - [Input guide](https://zeron-ui.vercel.app/agent-guides/components/input.md): Variants, control sizes, validation, and form integration.
 - [Select guide](https://zeron-ui.vercel.app/agent-guides/components/select.md): Value selection, sizes, icons, states, and composition.
 - [Tree guide](https://zeron-ui.vercel.app/agent-guides/components/tree.md): Hierarchy, selection, expansion, and tree interaction contracts.
+- [CodeBlock guide](https://zeron-ui.vercel.app/agent-guides/components/code-block.md): Code data, diff, Worker, streaming, SSR, editing, and accessibility contracts.
 - [Resource List Page guide](https://zeron-ui.vercel.app/agent-guides/blocks/resource-list-page-01.md): Page composition, navigation, filters, and table integration.
 - [Infinite Log Table guide](https://zeron-ui.vercel.app/agent-guides/blocks/infinite-log-table-01.md): Schema-driven columns, filters, cursor pagination, and live data.
 
