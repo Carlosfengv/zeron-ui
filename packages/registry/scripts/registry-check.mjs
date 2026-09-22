@@ -47,18 +47,25 @@ function moduleSpecifiers(source, filename) {
   const scriptKind = filename.endsWith(".tsx") || filename.endsWith(".jsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
   const file = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, true, scriptKind);
   const specifiers = [];
-  const addLiteral = (node) => {
-    if (node && ts.isStringLiteralLike(node)) specifiers.push(node.text);
+  const addLiteral = (node, typeOnly = false) => {
+    if (node && ts.isStringLiteralLike(node)) specifiers.push({ specifier: node.text, typeOnly });
   };
   const visit = (node) => {
-    if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) addLiteral(node.moduleSpecifier);
-    if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument)) addLiteral(node.argument.literal);
+    if (ts.isImportDeclaration(node)) addLiteral(node.moduleSpecifier, node.importClause?.isTypeOnly === true);
+    if (ts.isExportDeclaration(node)) addLiteral(node.moduleSpecifier, node.isTypeOnly);
+    if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument)) addLiteral(node.argument.literal, true);
     if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) addLiteral(node.arguments[0]);
     if (ts.isNewExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "URL") addLiteral(node.arguments?.[0]);
     ts.forEachChild(node, visit);
   };
   visit(file);
   return specifiers;
+}
+
+function typePackageName(packageName) {
+  if (!packageName.startsWith("@")) return `@types/${packageName}`;
+  const [scope, name] = packageName.slice(1).split("/");
+  return scope && name ? `@types/${scope}__${name}` : null;
 }
 
 function targetKeys(target) {
@@ -158,7 +165,7 @@ export function checkRegistry(items, { scope = "all" } = {}) {
     }
 
     for (const file of files.values()) {
-      for (const specifier of moduleSpecifiers(file.content, file.target)) {
+      for (const { specifier, typeOnly } of moduleSpecifiers(file.content, file.target)) {
         const internalTarget = resolveInternalTarget(file.target, specifier);
         if (internalTarget) {
           const resolved = [...targetKeys(internalTarget)].some((key) => targetIndex.has(key));
@@ -174,6 +181,7 @@ export function checkRegistry(items, { scope = "all" } = {}) {
         const pkg = packageName(specifier);
         if (HOST_DEPENDENCIES.has(pkg)) continue;
         if (pkg === "next" && item.meta?.zeron?.framework === "next") continue;
+        if (typeOnly && dependencies.has(typePackageName(pkg))) continue;
         if (!dependencies.has(pkg) && !optional.has(pkg)) {
           errors.push(`${item.name}: ${file.target} imports ${specifier} but ${pkg} is not declared in its closure dependencies`);
         }

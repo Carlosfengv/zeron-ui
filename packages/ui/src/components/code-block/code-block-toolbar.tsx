@@ -1,0 +1,103 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+import { Button } from '#components/button';
+import { Tooltip } from '#components/tooltip';
+import { useIcon } from '#system/icon-context';
+import { cn } from '#system/utils';
+
+import type { CodeBlockMessages } from './code-block-messages';
+
+export interface CodeBlockToolbarProps {
+  filename?: string;
+  contents: string;
+  overflow: 'scroll' | 'wrap';
+  messages: CodeBlockMessages;
+  className?: string;
+  onOverflowChange?(overflow: 'scroll' | 'wrap'): void;
+  onCopy?(contents: string): void;
+  onCopyError?(error: unknown): void;
+}
+
+export function CodeBlockToolbar({
+  filename,
+  contents,
+  overflow,
+  messages,
+  className,
+  onOverflowChange,
+  onCopy,
+  onCopyError,
+}: CodeBlockToolbarProps): React.JSX.Element {
+  const CopyIcon = useIcon('copy');
+  const WrapIcon = useIcon('baseline');
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle');
+
+  useEffect(() => {
+    if (copyState === 'idle') return;
+    const timeout = window.setTimeout(() => setCopyState('idle'), 1600);
+    return () => window.clearTimeout(timeout);
+  }, [copyState]);
+
+  const copyLabel =
+    copyState === 'copied'
+      ? messages.copied
+      : copyState === 'failed'
+        ? messages.copyFailed
+        : messages.copy;
+  const wrapLabel = overflow === 'wrap' ? messages.scroll : messages.wrap;
+
+  async function copyContents(): Promise<void> {
+    try {
+      if (navigator.clipboard == null) {
+        throw new Error('Clipboard API is unavailable');
+      }
+      await navigator.clipboard.writeText(contents);
+      setCopyState('copied');
+      onCopy?.(contents);
+    } catch (error) {
+      setCopyState('failed');
+      onCopyError?.(error);
+    }
+  }
+
+  return (
+    <div
+      className={cn(
+        'flex min-h-9 items-center gap-2 border-b border-border bg-surface-subtle px-2',
+        className
+      )}
+    >
+      <span className="min-w-0 flex-1 truncate text-label font-medium text-fg-default">
+        {filename}
+      </span>
+      <Tooltip content={wrapLabel}>
+        <Button
+          type="button"
+          size="xs"
+          variant="ghost"
+          iconOnly
+          active={overflow === 'wrap'}
+          aria-label={wrapLabel}
+          aria-pressed={overflow === 'wrap'}
+          onClick={() => onOverflowChange?.(overflow === 'wrap' ? 'scroll' : 'wrap')}
+        >
+          <WrapIcon aria-hidden />
+        </Button>
+      </Tooltip>
+      <Tooltip content={copyLabel} forceOpen={copyState !== 'idle'}>
+        <Button
+          type="button"
+          size="xs"
+          variant="ghost"
+          iconOnly
+          aria-label={copyLabel}
+          onClick={() => void copyContents()}
+        >
+          <CopyIcon aria-hidden />
+        </Button>
+      </Tooltip>
+    </div>
+  );
+}

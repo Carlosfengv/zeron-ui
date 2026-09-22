@@ -22,9 +22,9 @@ const registryItems = JSON.parse(await readFile(join(REGISTRY_DIR, "registry.jso
 const allRegistryItems = registryItems.map((item) => item.name).filter((name) => typeof name === "string");
 const components = process.env.ZERON_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? (all
   ? allRegistryItems
-  : ["button", "card", "ask-user-questions", "infinite-log-table-01"]);
+  : ["button", "card", "ask-user-questions", "code-block", "infinite-log-table-01"]);
 const packageManagers = process.env.ZERON_CONSUMER_PACKAGE_MANAGERS?.split(",").filter(Boolean) ?? ["npm", "pnpm"];
-const viteComponents = process.env.ZERON_VITE_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? ["button", "card", "ask-user-questions"];
+const viteComponents = process.env.ZERON_VITE_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? ["button", "card", "ask-user-questions", "code-block"];
 const BUSINESS_SOURCE = "export const identity = <T>(value: T): T => value;\n";
 
 if (packageManagers.some((manager) => !["npm", "pnpm"].includes(manager))) {
@@ -260,6 +260,18 @@ async function verifyNextBuild({ consumer, component }) {
       'export default function Page() { return <AskUserQuestions questions={[{ id: "verified", title: "Install verified?", options: [{ title: "Yes" }, { title: "No" }] }]} />; }',
       '',
     ].join("\n"),
+    "code-block": [
+      'import { CodeBlock } from "@/components/ui/code-block";',
+      'import { CodeEditProvider } from "@/components/ui/code-block/edit";',
+      'import { preloadCode } from "@/components/ui/code-block/server";',
+      'import { CodeWorkerProvider } from "@/components/ui/code-block/worker";',
+      '',
+      'export default async function Page() {',
+      '  const code = await preloadCode({ file: { name: "verified.ts", contents: "export const verified = true;", lang: "typescript" } });',
+      '  return <CodeWorkerProvider poolSize={1}><CodeEditProvider><CodeBlock {...code} /></CodeEditProvider></CodeWorkerProvider>;',
+      '}',
+      '',
+    ].join("\n"),
     tree: [
       'import { Tree } from "@/components/ui/tree";',
       '',
@@ -380,6 +392,17 @@ async function installViteComponent({ consumer, component, tarball }) {
       'import { AskUserQuestions } from "@/src/components/ui/ask-user-questions";',
       'import "./index.css";',
       'createRoot(document.getElementById("root")!).render(<AskUserQuestions questions={[{ id: "verified", title: "Install verified?", options: [{ title: "Yes" }, { title: "No" }] }]} />);',
+      '',
+    ].join("\n"),
+    "code-block": [
+      'import { createRoot } from "react-dom/client";',
+      'import { CodeBlock } from "@/src/components/ui/code-block";',
+      'import { CodeEditProvider } from "@/src/components/ui/code-block/edit";',
+      'import { CodeWorkerProvider } from "@/src/components/ui/code-block/worker";',
+      'import "./index.css";',
+      '',
+      'const file = { name: "verified.ts", contents: "export const verified = true;", lang: "typescript" as const };',
+      'createRoot(document.getElementById("root")!).render(<CodeWorkerProvider poolSize={1}><CodeEditProvider><CodeBlock file={file} /></CodeEditProvider></CodeWorkerProvider>);',
       '',
     ].join("\n"),
     tree: [

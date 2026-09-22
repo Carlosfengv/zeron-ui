@@ -6,6 +6,7 @@ strictDepBuilds: true
 onlyBuiltDependencies:
   - "@parcel/watcher"
   - "@swc/core"
+  - esbuild
   - msw
   - sharp
   - unrs-resolver

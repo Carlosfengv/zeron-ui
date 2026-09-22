@@ -86,6 +86,7 @@ export default [
       "next-env.d.ts",
       "node_modules/**",
       "output/**",
+      "packages/ui/src/system/code-engine/worker/worker.js",
       "public/r/**",
     ],
   },

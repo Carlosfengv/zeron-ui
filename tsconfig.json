@@ -31,6 +31,18 @@
       ],
       "@/app/*": [
         "./app/*"
+      ],
+      "#components/*": [
+        "./packages/ui/src/components/*"
+      ],
+      "#hooks/*": [
+        "./packages/ui/src/hooks/*"
+      ],
+      "#system/*": [
+        "./packages/ui/src/system/*"
+      ],
+      "#tokens/*": [
+        "./packages/ui/src/tokens/*"
       ]
     }
   },

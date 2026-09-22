@@ -3584,6 +3584,1359 @@
       }
     },
     {
+      "name": "code-engine",
+      "type": "registry:lib",
+      "title": "Code Engine",
+      "description": "Rendering, highlighting, diff, streaming, editing, SSR, theme, and Worker runtime used by Code Block.",
+      "dependencies": [
+        "@shikijs/themes@4.4.3",
+        "@shikijs/transformers@4.4.3",
+        "@types/hast@3.0.5",
+        "diff@9.0.0",
+        "hast-util-to-html@9.0.5",
+        "lru_map@0.4.1",
+        "shiki@4.4.3"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/system/code-engine/components/CodeView.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/components/CodeView.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/components/File.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/components/File.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/components/FileDiff.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/components/FileDiff.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/components/FileStream.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/components/FileStream.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/components/UnresolvedFile.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/components/UnresolvedFile.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/components/VirtualizedFile.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/components/VirtualizedFile.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/components/VirtualizedFileDiff.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/components/VirtualizedFileDiff.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/components/Virtualizer.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/components/Virtualizer.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/components/VirtulizerDevelopment.d.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/components/VirtulizerDevelopment.d.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/components/web-components.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/components/web-components.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/constants.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/constants.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/core.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/core.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/edit/index.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/edit/index.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/EditStateManager.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/EditStateManager.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/cloneRetainedDiffSessionSnapshot.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/cloneRetainedDiffSessionSnapshot.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/command.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/command.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/editPrediction.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/editPrediction.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/editStack.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/editStack.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/editor.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/editor.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/languages.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/languages.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/lineAnnotations.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/lineAnnotations.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/marker.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/marker.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/matchBrackets.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/matchBrackets.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/pieceTable.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/pieceTable.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/platform.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/platform.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/popover.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/popover.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/searchPanel.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/searchPanel.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/selection.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/selection.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/selectionAction.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/selectionAction.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/sprite.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/sprite.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/textDocument.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/textDocument.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/textDocumentChangeTransaction.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/textDocumentChangeTransaction.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/textMeasure.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/textMeasure.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/tokenizer.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/tokenizer.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/types.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/types.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/editor/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/editor/utils.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/languages/areLanguagesAttached.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/languages/areLanguagesAttached.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/languages/attachResolvedLanguages.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/languages/attachResolvedLanguages.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/languages/cleanUpResolvedLanguages.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/languages/cleanUpResolvedLanguages.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/languages/constants.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/languages/constants.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/languages/getResolvedLanguages.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/languages/getResolvedLanguages.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/languages/getResolvedOrResolveLanguage.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/languages/getResolvedOrResolveLanguage.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/languages/hasResolvedLanguages.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/languages/hasResolvedLanguages.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/languages/registerCustomLanguage.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/languages/registerCustomLanguage.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/languages/resolveLanguage.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/languages/resolveLanguage.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/languages/resolveLanguages.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/languages/resolveLanguages.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/shared_highlighter.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/shared_highlighter.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/areThemesAttached.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/areThemesAttached.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/attachResolvedThemes.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/attachResolvedThemes.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/cleanUpResolvedThemes.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/cleanUpResolvedThemes.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/constants.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/constants.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/getResolvedOrResolveTheme.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/getResolvedOrResolveTheme.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/getResolvedThemes.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/getResolvedThemes.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/hasResolvedThemes.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/hasResolvedThemes.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/registerCustomCSSVariableTheme.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/registerCustomCSSVariableTheme.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/registerCustomTheme.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/registerCustomTheme.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/resolveTheme.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/resolveTheme.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/resolveThemes.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/resolveThemes.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/themeResolution.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/themeResolution.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/highlighter/themes/themeResolver.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/highlighter/themes/themeResolver.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/index.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/index.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/managers/InteractionManager.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/managers/InteractionManager.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/managers/ResizeManager.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/managers/ResizeManager.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/managers/ScrollSyncManager.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/managers/ScrollSyncManager.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/managers/UniversalRenderingManager.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/managers/UniversalRenderingManager.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/CodeView.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/CodeView.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/EditContext.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/EditContext.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/File.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/File.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/FileDiff.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/FileDiff.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/MultiFileDiff.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/MultiFileDiff.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/PatchDiff.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/PatchDiff.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/UnresolvedFile.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/UnresolvedFile.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/Virtualizer.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/Virtualizer.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/WorkerPoolContext.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/WorkerPoolContext.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/constants.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/constants.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/index.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/index.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/jsx.d.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/jsx.d.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/types.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/types.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/utils/assignRef.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/utils/assignRef.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/utils/renderDiffChildren.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/utils/renderDiffChildren.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/utils/renderFileChildren.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/utils/renderFileChildren.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/utils/templateRender.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/utils/templateRender.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/utils/useFileDiffInstance.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/utils/useFileDiffInstance.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/utils/useFileInstance.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/utils/useFileInstance.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/utils/useStableCallback.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/utils/useStableCallback.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/react/utils/useUnresolvedFileInstance.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/react/utils/useUnresolvedFileInstance.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/renderers/DiffHunksRenderer.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/renderers/DiffHunksRenderer.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/renderers/FileRenderer.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/renderers/FileRenderer.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/renderers/UnresolvedFileHunksRenderer.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/renderers/UnresolvedFileHunksRenderer.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/shiki-stream/index.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/shiki-stream/index.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/shiki-stream/stream.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/shiki-stream/stream.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/shiki-stream/tokenizer.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/shiki-stream/tokenizer.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/shiki-stream/types.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/shiki-stream/types.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/sprite.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/sprite.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/ssr/FileDiffReact.tsx",
+          "type": "registry:lib",
+          "target": "lib/code-engine/ssr/FileDiffReact.tsx"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/ssr/index.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/ssr/index.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/ssr/preloadDiffs.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/ssr/preloadDiffs.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/ssr/preloadFile.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/ssr/preloadFile.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/ssr/preloadPatchFile.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/ssr/preloadPatchFile.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/ssr/renderHTML.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/ssr/renderHTML.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/string-import.d.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/string-import.d.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/styles/base-css.generated.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/styles/base-css.generated.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/styles/base.css",
+          "type": "registry:lib",
+          "target": "lib/code-engine/styles/base.css"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/styles/editor-css.generated.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/styles/editor-css.generated.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/styles/editor.css",
+          "type": "registry:lib",
+          "target": "lib/code-engine/styles/editor.css"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/themes/pierre-dark-protanopia-deuteranopia.json",
+          "type": "registry:lib",
+          "target": "lib/code-engine/themes/pierre-dark-protanopia-deuteranopia.json"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/themes/pierre-dark-soft.json",
+          "type": "registry:lib",
+          "target": "lib/code-engine/themes/pierre-dark-soft.json"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/themes/pierre-dark-tritanopia.json",
+          "type": "registry:lib",
+          "target": "lib/code-engine/themes/pierre-dark-tritanopia.json"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/themes/pierre-dark-vibrant.json",
+          "type": "registry:lib",
+          "target": "lib/code-engine/themes/pierre-dark-vibrant.json"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/themes/pierre-dark.json",
+          "type": "registry:lib",
+          "target": "lib/code-engine/themes/pierre-dark.json"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/themes/pierre-light-protanopia-deuteranopia.json",
+          "type": "registry:lib",
+          "target": "lib/code-engine/themes/pierre-light-protanopia-deuteranopia.json"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/themes/pierre-light-soft.json",
+          "type": "registry:lib",
+          "target": "lib/code-engine/themes/pierre-light-soft.json"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/themes/pierre-light-tritanopia.json",
+          "type": "registry:lib",
+          "target": "lib/code-engine/themes/pierre-light-tritanopia.json"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/themes/pierre-light-vibrant.json",
+          "type": "registry:lib",
+          "target": "lib/code-engine/themes/pierre-light-vibrant.json"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/themes/pierre-light.json",
+          "type": "registry:lib",
+          "target": "lib/code-engine/themes/pierre-light.json"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/collections/pierre.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/collections/pierre.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/collections/shiki.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/collections/shiki.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/color.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/color.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/index.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/index.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/modules/color.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/modules/color.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/modules/createTheme.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/modules/createTheme.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/modules/createThemeCatalog.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/modules/createThemeCatalog.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/modules/createThemeCollection.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/modules/createThemeCollection.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/modules/createThemeController.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/modules/createThemeController.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/modules/createThemeResolver.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/modules/createThemeResolver.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/modules/normalizeThemeColors.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/modules/normalizeThemeColors.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/modules/types.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/modules/types.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/modules/unwrapDefault.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/modules/unwrapDefault.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/react.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/react.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/theming/themes.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/theming/themes.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/types.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/types.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/annotationHelpers.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/annotationHelpers.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/appendItems.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/appendItems.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/applyLineTextWithNewline.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/applyLineTextWithNewline.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areDiffLineAnnotationsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areDiffLineAnnotationsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areDiffRenderOptionsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areDiffRenderOptionsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areDiffTargetsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areDiffTargetsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areFileRenderOptionsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areFileRenderOptionsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areFileTargetsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areFileTargetsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areFilesEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areFilesEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areHunkDataEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areHunkDataEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areLineAnnotationsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areLineAnnotationsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areManagedSnapshotsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areManagedSnapshotsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areMergeConflictActionsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areMergeConflictActionsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areObjectsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areObjectsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areOptionsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areOptionsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/arePrePropertiesEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/arePrePropertiesEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areRenderRangesEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areRenderRangesEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areSelectionPointsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areSelectionPointsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areSelectionsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areSelectionsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areThemesEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areThemesEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areVirtualWindowSpecsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areVirtualWindowSpecsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/areWorkerStatsEqual.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/areWorkerStatsEqual.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/awaitWithTimeout.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/awaitWithTimeout.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/cleanLastNewline.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/cleanLastNewline.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/cloneFileDiffMetadata.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/cloneFileDiffMetadata.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/composeCacheKey.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/composeCacheKey.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/computeEstimatedDiffHeights.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/computeEstimatedDiffHeights.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/computeFileOffsets.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/computeFileOffsets.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/computeVirtualFileMetrics.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/computeVirtualFileMetrics.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createAnnotationElement.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createAnnotationElement.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createAnnotationWrapperNode.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createAnnotationWrapperNode.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createCodeViewHeaderFooterHostElement.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createCodeViewHeaderFooterHostElement.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createContentColumn.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createContentColumn.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createEmptyRowBuffer.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createEmptyRowBuffer.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createFileHeaderElement.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createFileHeaderElement.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createGutterUtilityContentNode.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createGutterUtilityContentNode.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createGutterUtilityElement.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createGutterUtilityElement.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createNoNewlineElement.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createNoNewlineElement.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createPreElement.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createPreElement.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createRowNodes.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createRowNodes.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createSeparator.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createSeparator.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createSpanNodeFromToken.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createSpanNodeFromToken.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createStyleElement.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createStyleElement.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createTransformerWithState.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createTransformerWithState.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createUnsafeCSSStyleNode.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createUnsafeCSSStyleNode.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/createWindowFromScrollPosition.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/createWindowFromScrollPosition.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/cssWrappers.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/cssWrappers.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/detachString.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/detachString.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/diffAcceptRejectHunk.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/diffAcceptRejectHunk.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/editSessionAnnotations.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/editSessionAnnotations.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/editSessionHunks.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/editSessionHunks.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/formatCSSVariablePrefix.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/formatCSSVariablePrefix.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getDiffFileInput.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getDiffFileInput.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getDiffHunksRendererOptions.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getDiffHunksRendererOptions.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getFileRendererOptions.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getFileRendererOptions.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getFiletypeFromFileName.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getFiletypeFromFileName.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getHighlighterOptions.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getHighlighterOptions.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getHighlighterThemeStyles.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getHighlighterThemeStyles.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getHunkSeparatorSlotName.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getHunkSeparatorSlotName.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getHunkSideBoundaries.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getHunkSideBoundaries.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getIconForType.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getIconForType.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getLineAnnotationName.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getLineAnnotationName.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getLineEndingType.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getLineEndingType.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getLineNodes.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getLineNodes.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getMergeConflictActionSlotName.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getMergeConflictActionSlotName.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getMergeConflictLineTypes.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getMergeConflictLineTypes.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getOrCreateCodeNode.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getOrCreateCodeNode.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getSingularPatch.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getSingularPatch.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getThemes.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getThemes.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/getTotalLineCountFromHunks.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/getTotalLineCountFromHunks.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/guardWebKitScrollDuringRebuild.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/guardWebKitScrollDuringRebuild.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/hast_utils.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/hast_utils.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/hostTheme.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/hostTheme.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/hydratePartialDiff.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/hydratePartialDiff.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/includesFileAnnotations.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/includesFileAnnotations.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/isDefaultRenderRange.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/isDefaultRenderRange.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/isDiffPlainText.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/isDiffPlainText.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/isFilePlainText.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/isFilePlainText.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/isGutterUtilityPath.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/isGutterUtilityPath.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/isStyleNode.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/isStyleNode.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/isWorkerContext.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/isWorkerContext.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/iterateOverDiff.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/iterateOverDiff.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/lineAnnotationIdentity.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/lineAnnotationIdentity.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/normalizeDiffResolution.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/normalizeDiffResolution.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/parseDiffDecorations.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/parseDiffDecorations.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/parseDiffFromFile.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/parseDiffFromFile.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/parseLineType.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/parseLineType.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/parseMergeConflictDiffFromFile.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/parseMergeConflictDiffFromFile.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/parsePatchFiles.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/parsePatchFiles.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/parseQuotedDiffFileName.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/parseQuotedDiffFileName.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/platform.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/platform.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/prefersReducedMotion.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/prefersReducedMotion.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/prerenderHTMLIfNecessary.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/prerenderHTMLIfNecessary.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/processLine.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/processLine.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/realignChangeContent.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/realignChangeContent.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/renderDiffWithHighlighter.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/renderDiffWithHighlighter.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/renderFileWithHighlighter.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/renderFileWithHighlighter.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/resolveConflict.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/resolveConflict.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/resolveRegion.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/resolveRegion.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/roundToDevicePixel.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/roundToDevicePixel.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/scrollbarGutter.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/scrollbarGutter.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/setLanguageOverride.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/setLanguageOverride.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/setWrapperNodeProps.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/setWrapperNodeProps.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/shouldUseTokenTransformer.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/shouldUseTokenTransformer.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/splitFileContents.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/splitFileContents.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/trimPatchContext.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/trimPatchContext.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/updateDiffHunks.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/updateDiffHunks.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/virtualDiffLayout.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/virtualDiffLayout.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/utils/wrapTokenFragments.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/wrapTokenFragments.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/worker/WorkerPoolManager.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/worker/WorkerPoolManager.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/worker/index.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/worker/index.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/worker/types.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/worker/types.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/worker/worker-factory.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/worker/worker-factory.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/worker/worker-portable.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/worker/worker-portable.ts"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/worker/worker.js",
+          "type": "registry:lib",
+          "target": "lib/code-engine/worker/worker.js"
+        },
+        {
+          "path": "packages/ui/src/system/code-engine/worker/worker.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/worker/worker.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "code-block",
+      "type": "registry:ui",
+      "title": "Code Block",
+      "description": "Code display, diff, patch, conflict, streaming, Worker, SSR, and editing components.",
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/code-engine.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/code-block/code-block-messages.ts",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-block-messages.ts"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/code-block-theme.ts",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-block-theme.ts"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/code-block-toolbar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-block-toolbar.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/code-block-types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-block-types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/code-block.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-block.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/code-conflict.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-conflict.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/code-diff.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-diff.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/code-patch.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-patch.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/code-view.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-view.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/edit.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/edit.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/server.ts",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/server.ts"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/stream.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/stream.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/worker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/worker.tsx"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
       "name": "user-account-01",
       "type": "registry:block",
       "title": "User Account",

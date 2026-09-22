@@ -8,8 +8,8 @@
     "url": "git+https://github.com/Carlosfengv/zeron-ui.git"
   },
   "scripts": {
-    "dev": "pnpm skills:build && next dev --turbopack",
-    "build": "pnpm skills:build && next build",
+    "dev": "pnpm skills:build && pnpm code-engine:build && next dev --turbopack",
+    "build": "pnpm skills:build && pnpm code-engine:check && next build",
     "covers:generate": "node scripts/generate-component-covers.mjs",
     "start": "next start",
     "lint": "eslint app docs scripts tests packages eslint.config.mjs eslint.design.config.mjs vitest.config.mts next.config.ts postcss.config.mjs --max-warnings=0",
@@ -22,7 +22,7 @@
     "test:i18n:payload": "pnpm build && node scripts/check-i18n-client-payload.mjs",
     "tokens:build": "node scripts/generate-semantic-tokens.mjs",
     "tokens:check": "node scripts/generate-semantic-tokens.mjs --check",
-    "registry:build": "pnpm tokens:build && pnpm --filter @zeron/registry build",
+    "registry:build": "pnpm tokens:build && pnpm code-engine:build && pnpm --filter @zeron/registry build",
     "registry:release": "node scripts/create-registry-release.mjs",
     "registry:check": "node packages/registry/scripts/registry-check.mjs",
     "test:consumer:smoke": "node scripts/test-consumer-installs.mjs",
@@ -31,7 +31,9 @@
     "cli:test": "pnpm --filter zeron-ui test",
     "skills:bundle": "node scripts/package-migration-skills.mjs",
     "skills:build": "node scripts/build-skill-distribution.mjs",
-    "test:consumer:migrations": "node scripts/test-consumer-migrations.mjs"
+    "test:consumer:migrations": "node scripts/test-consumer-migrations.mjs",
+    "code-engine:build": "node scripts/build-code-engine-assets.mjs",
+    "code-engine:check": "node scripts/build-code-engine-assets.mjs --check"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -80,12 +82,23 @@
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "8.56.0",
     "@typescript-eslint/parser": "8.56.0",
+    "autoprefixer": "10.4.22",
+    "esbuild": "0.27.7",
     "eslint": "^9.39.1",
     "eslint-config-next": "^15.3.1",
     "fflate": "0.8.2",
     "jsdom": "^30.0.1",
+    "lightningcss": "1.32.0",
+    "postcss": "8.5.6",
+    "postcss-calc": "10.1.1",
+    "postcss-nesting": "14.0.0",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "vitest": "^4.1.10"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/hast": "3.0.5"
+    }
   }
 }

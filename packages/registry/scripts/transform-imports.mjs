@@ -24,8 +24,21 @@ function rewriteLiteral(factory, literal) {
   return replacement === literal.text ? literal : factory.createStringLiteral(replacement);
 }
 
+function scriptKindFor(filename) {
+  if (/\.tsx$/i.test(filename)) return ts.ScriptKind.TSX;
+  if (/\.jsx$/i.test(filename)) return ts.ScriptKind.JSX;
+  if (/\.(?:[cm]?js)$/i.test(filename)) return ts.ScriptKind.JS;
+  return ts.ScriptKind.TS;
+}
+
 export function transformRegistryImports(source, filename = "registry-item.tsx") {
-  const sourceFile = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const sourceFile = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, true, scriptKindFor(filename));
+  if (sourceFile.parseDiagnostics.length > 0) {
+    const message = sourceFile.parseDiagnostics
+      .map((diagnostic) => ts.flattenDiagnosticMessageText(diagnostic.messageText, " "))
+      .join("; ");
+    throw new Error(`Cannot transform Registry imports in ${filename}: ${message}`);
+  }
   const result = ts.transform(sourceFile, [
     (context) => {
       const { factory } = context;
@@ -56,6 +69,19 @@ export function transformRegistryImports(source, filename = "registry-item.tsx")
             node.attributes,
             node.qualifier,
             node.typeArguments,
+          );
+        }
+        if (
+          ts.isCallExpression(node)
+          && node.expression.kind === ts.SyntaxKind.ImportKeyword
+          && node.arguments.length === 1
+          && ts.isStringLiteral(node.arguments[0])
+        ) {
+          return factory.updateCallExpression(
+            node,
+            node.expression,
+            node.typeArguments,
+            [rewriteLiteral(factory, node.arguments[0])],
           );
         }
         return ts.visitEachChild(node, visit, context);
