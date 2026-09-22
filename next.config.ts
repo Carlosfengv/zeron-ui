@@ -30,6 +30,16 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   async redirects() {
     return [
+      ...[
+        { source: "/docs/blocks", destination: "/docs/pages" },
+        { source: "/en/docs/blocks", destination: "/en/docs/pages" },
+        { source: "/zh-cn/docs/blocks", destination: "/docs/pages" },
+      ].map(({ source, destination }) => ({
+        source,
+        has: [{ type: "query" as const, key: "kind", value: "(?:page|prototype)" }],
+        destination,
+        permanent: false,
+      })),
       ...legacyDocRedirects.flatMap(({ legacySlug, destination }) => {
         const pathname = pathnameOf(destination);
         return [

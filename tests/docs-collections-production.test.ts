@@ -70,7 +70,7 @@ describe("documentation collections in production", () => {
         }
       }
 
-      expect((await fetch(`${origin}/docs/pages/resource-list-table-01`)).status).toBe(404);
+      expect((await fetch(`${origin}/en/docs/pages/resource-list-table-01`)).status).toBe(404);
       const legacyFilter = await fetch(`${origin}/en/docs/blocks?kind=page&q=resource`, { redirect: "manual" });
       expect(legacyFilter.status).toBe(307);
       expect(legacyFilter.headers.get("location")).toBe("/en/docs/pages?kind=page&q=resource");
