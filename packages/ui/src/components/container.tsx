@@ -66,7 +66,7 @@ const ContainerBody = forwardRef<HTMLDivElement, ContainerBodyProps>(
         ref={ref}
         data-slot="container-body"
         className={cn(
-          "min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain rounded-2xl border-hairline border-border bg-surface-floating p-4",
+          "min-h-0 min-w-0 flex-1 overflow-auto overscroll-auto rounded-2xl border-hairline border-border bg-surface-floating p-4",
           className
         )}
         style={maxHeight === undefined ? style : { ...style, maxHeight }}
