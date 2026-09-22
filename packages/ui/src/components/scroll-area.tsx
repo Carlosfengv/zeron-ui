@@ -27,6 +27,8 @@ type Orientation = "vertical" | "horizontal" | "both";
 
 interface ScrollAreaProps extends ComponentPropsWithoutRef<"div"> {
   viewportClassName?: string;
+  /** Class applied to the presentation layer that directly wraps the content. */
+  contentClassName?: string;
   /** Which axes get scrollbars. Defaults to `"vertical"`. */
   orientation?: Orientation;
 }
@@ -40,6 +42,7 @@ const ScrollArea = forwardRef<
       className,
       children,
       viewportClassName,
+      contentClassName,
       orientation = "vertical",
       ...props
     },
@@ -69,7 +72,7 @@ const ScrollArea = forwardRef<
               )}
               tabIndex={0}
             >
-              {children}
+              {contentClassName ? <div className={contentClassName} role="presentation">{children}</div> : children}
             </div>
           </div>
         ) : (
@@ -85,7 +88,7 @@ const ScrollArea = forwardRef<
             >
               {/* Content gives Base UI an intrinsic size to measure
                   horizontal overflow against. */}
-              <ScrollAreaPrimitive.Content>
+              <ScrollAreaPrimitive.Content className={contentClassName}>
                 {children}
               </ScrollAreaPrimitive.Content>
             </ScrollAreaPrimitive.Viewport>

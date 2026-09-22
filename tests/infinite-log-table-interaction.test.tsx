@@ -64,6 +64,22 @@ Object.defineProperty(HTMLElement.prototype, "releasePointerCapture", {
 afterEach(cleanup);
 
 describe("InfiniteLogTable", () => {
+  it("can hide selection while keeping rows keyboard operable", async () => {
+    const records = [
+      { id: "job-1", timestamp: "2026-08-22T00:00:00.000Z", service: "billing" },
+    ];
+    render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} enableSelection={false} records={records} /></div>);
+
+    const grid = await screen.findByRole("grid", { name: "Log table" });
+    expect(within(grid).queryByRole("checkbox", { name: "Select all loaded logs" })).toBeNull();
+    expect(within(grid).queryByRole("checkbox", { name: /Select job-1/ })).toBeNull();
+    const row = within(grid).getByText("billing").closest<HTMLElement>('[role="row"]')!;
+    fireEvent.keyDown(row, { key: "Enter" });
+    expect(await screen.findByRole("complementary", { name: /job-1 details/i })).toBeTruthy();
+    expect(row.getAttribute("aria-selected")).toBe("true");
+    expect(row.classList.contains("bg-selection")).toBe(true);
+  });
+
   it("derives generic columns and filters from arbitrary log data", async () => {
     const records = [
       { id: "job-1", timestamp: "2026-08-22T00:00:00.000Z", service: "billing", event: "invoice.created", duration: 18, successful: true },
@@ -132,7 +148,7 @@ describe("InfiniteLogTable", () => {
     expect(timelineSlider).toBeTruthy();
     expect(timelineSlider.closest("section")?.parentElement?.classList.contains("z-action")).toBe(true);
     expect(timelineSlider.querySelector("[data-chart]")?.className).toContain("[&_.recharts-tooltip-wrapper]:!z-tooltip");
-    expect(screen.getByText("Live").closest("button")?.hasAttribute("disabled")).toBe(true);
+    expect(screen.queryByText("Live")).toBeNull();
     expect(document.querySelectorAll('[role="row"]').length).toBeLessThan(90);
     const firstLogRow = screen.getAllByRole("checkbox", { name: /Select req_/ })[0]?.closest<HTMLElement>('[role="row"]');
     expect(firstLogRow?.style.height).toBe("32px");
@@ -316,6 +332,7 @@ describe("InfiniteLogTable", () => {
     expect(detail.classList.contains("w-full")).toBe(true);
     expect(row.getAttribute("aria-selected")).toBe("true");
     expect(row.hasAttribute("data-detail-active")).toBe(true);
+    expect(row.classList.contains("bg-selection")).toBe(true);
     expect(row.classList.contains("shadow-[inset_2px_0_0_var(--brand)]")).toBe(true);
     const detailPanel = detail.closest<HTMLElement>('[data-slot="resizable-panel"]');
     expect(detailPanel?.classList.contains("size-full")).toBe(true);

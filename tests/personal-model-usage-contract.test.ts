@@ -41,8 +41,8 @@ describe("Personal model usage call-log contract", () => {
     expect(callLogs).toContain("isCallLogTimeInSelection(run.timestamp, timeSelection)");
     expect(callLogs).toContain("aggregateCallLogTrend(filteredTrendCalls, contextStart)");
     expect(callLogs).not.toContain("modelFactor");
-    expect(timeRangeHistogram).toContain('<XAxis dataKey="label" hide />');
-    expect(timeRangeHistogram).toContain('<BarChart accessibilityLayer={false} data={data}');
+    expect(timeRangeHistogram).toContain('<XAxis dataKey="label" height={0} hide />');
+    expect(timeRangeHistogram).toContain('<BarChart accessibilityLayer={false} barCategoryGap={0} data={chartData}');
     expect(timeRangeHistogram).toContain('h-[68px] min-h-0');
     expect(timeRangeHistogram).toContain('[&_.recharts-tooltip-wrapper]:!z-tooltip');
     expect(timeRangeHistogram).toContain('isAnimationActive={false}');

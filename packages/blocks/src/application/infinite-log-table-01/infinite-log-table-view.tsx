@@ -144,6 +144,7 @@ function ColumnHeaderIcon({ column }: { column: Exclude<ColumnId, "select"> }) {
 interface InfiniteLogTableViewProps {
   tableId: string;
   activeRecordId?: string;
+  enableSelection: boolean;
   rows: readonly InfiniteLogRecord[];
   metadata?: InfiniteLogMetadata;
   filters: InfiniteLogFilters;
@@ -160,6 +161,7 @@ interface InfiniteLogTableViewProps {
   error?: unknown;
   liveBoundary?: InfiniteLogLiveBoundary;
   pendingLiveCount: number;
+  summaryContent?: React.ReactNode;
   redactRecord?: (record: InfiniteLogRecord) => InfiniteLogRecord;
   onSortChange: (sort?: InfiniteLogSort) => void;
   onFiltersChange: (filters: InfiniteLogFilters) => void;
@@ -179,6 +181,7 @@ interface InfiniteLogTableViewProps {
 export const InfiniteLogTableView = memo(function InfiniteLogTableView({
   tableId,
   activeRecordId,
+  enableSelection,
   rows,
   metadata,
   filters,
@@ -195,6 +198,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
   error,
   liveBoundary,
   pendingLiveCount,
+  summaryContent,
   redactRecord = redactInfiniteLogRecord,
   onSortChange,
   onFiltersChange,
@@ -282,7 +286,9 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
     columnResizeMode: "onChange",
     state: { columnOrder, columnVisibility, columnSizing },
   });
-  const visibleColumns = table.getVisibleLeafColumns().map((column) => column.id as ColumnId);
+  const visibleColumns = table.getVisibleLeafColumns()
+    .map((column) => column.id as ColumnId)
+    .filter((column) => enableSelection || column !== "select");
   const firstDataColumn = visibleColumns.find((column) => column !== "select");
   const fluidColumn = visibleColumns.includes("pathname")
     ? "pathname"
@@ -514,7 +520,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
     <section aria-label="HTTP request log results" className="relative flex min-h-0 flex-1 flex-col overflow-hidden border-t border-border-subtle bg-surface-floating">
       <div className="flex min-h-control-lg items-center justify-between gap-2 border-b border-border-subtle bg-surface-raised px-3 py-1.5">
         <span aria-live="polite" className="text-label text-fg-muted">
-          {metadata ? labels.filteredCount(metadata.filteredCount, metadata.totalCount) : loading ? "Loading logs…" : labels.noResults}
+          {summaryContent ?? (metadata ? labels.filteredCount(metadata.filteredCount, metadata.totalCount) : loading ? "Loading logs…" : labels.noResults)}
         </span>
         {updating && <span className="text-label text-fg-subtle" role="status">Updating results…</span>}
         <DropdownMenu onOpenChange={setColumnsOpen} open={columnsOpen}>
@@ -558,6 +564,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
           </div>
           <TimeRangeHistogram
             ariaLabel={labels.timelineAriaLabel}
+            barSize={4}
             chartClassName="h-14"
             data={timelineData}
             formatRange={formatTimelineRange}
@@ -567,6 +574,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
             rangeEndLabel={timelineDateFormatter.format(timelineData.at(-1)!.end)}
             rangeStartLabel={timelineDateFormatter.format(timelineData[0]!.start)}
             series={timelineSeries}
+            targetBarGap={4}
             value={timelineValue}
           />
         </div>
@@ -603,7 +611,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                   className={cn(
                     "relative flex h-full min-w-0 items-center border-e border-border-subtle px-3 last:border-e-0",
                     column === "select" && "sticky left-0 z-control justify-center bg-surface-floating px-0",
-                    column === firstDataColumn && "sticky left-[44px] z-control bg-surface-floating shadow-[1px_0_0_var(--border-subtle)]",
+                    column === firstDataColumn && ["sticky z-control bg-surface-floating shadow-[1px_0_0_var(--border-subtle)]", enableSelection ? "left-[44px]" : "left-0"],
                   )}
                   data-sticky-column={column === "select" || column === firstDataColumn ? column : undefined}
                   key={column}
@@ -695,7 +703,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                   className={cn(
                     "group/log-row absolute left-0 grid min-w-full cursor-pointer border-b border-border-subtle/70 text-left outline-none transition-colors hover:bg-hover focus-visible:z-raised focus-visible:bg-selection focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring",
                     isNewLiveRecord && [newLiveRowBackgroundClassName, newLiveRowHoverClassName],
-                    isActiveRecord && "z-content shadow-[inset_2px_0_0_var(--brand)]",
+                    isActiveRecord && "z-content bg-selection hover:bg-selection shadow-[inset_2px_0_0_var(--brand)]",
                   )}
                   data-detail-active={isActiveRecord ? "" : undefined}
                   data-live-new={isNewLiveRecord ? "" : undefined}
@@ -718,8 +726,8 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
                         (column === "select" || column === firstDataColumn) && [
                           "sticky z-content",
                           isNewLiveRecord ? stickyNewLiveCellInteractionClassName : stickyCellInteractionClassName,
-                          column === "select" ? "left-0 justify-center px-0" : "left-[44px] shadow-[1px_0_0_var(--border-subtle)]",
-                          isNewLiveRecord ? newLiveRowBackgroundClassName : "bg-surface-floating",
+                          column === "select" ? "left-0 justify-center px-0" : cn(enableSelection ? "left-[44px]" : "left-0", "shadow-[1px_0_0_var(--border-subtle)]"),
+                          isActiveRecord ? "bg-selection" : isNewLiveRecord ? newLiveRowBackgroundClassName : "bg-surface-floating",
                           column === "select" && isActiveRecord && "shadow-[inset_2px_0_0_var(--brand)]",
                         ],
                       )}
@@ -740,7 +748,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
         </div>
       </div>
 
-      {selectedIds.size > 0 && (
+      {enableSelection && selectedIds.size > 0 && (
         <div aria-label="Selected log actions" className="absolute bottom-3 left-1/2 z-action flex items-center gap-2 rounded-xl border border-border bg-surface-overlay px-3 py-2 -translate-x-1/2">
           <span className="text-label text-fg-default">{labels.selectedCount(selectedIds.size)}</span>
           <Button iconOnly onClick={() => void copySelected()} size="sm" type="button" variant="ghost" aria-label={copied ? labels.copied : labels.copySelected}><Copy aria-hidden /></Button>

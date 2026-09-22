@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, type ComponentPropsWithoutRef, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentPropsWithoutRef, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { Bar, BarChart, Cell, XAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "#components/chart";
 import { cn } from "#system/utils";
@@ -59,6 +59,10 @@ export interface TimeRangeHistogramProps
   disabled?: boolean;
   /** Class applied to the fixed-height chart container. */
   chartClassName?: string;
+  /** Fixed width of each rendered bar in CSS pixels. */
+  barSize?: number;
+  /** Target visual gap between adjacent bars in CSS pixels. */
+  targetBarGap?: number;
 }
 
 function normalizeSelection(startIndex: number, endIndex: number): BucketSelection {
@@ -107,6 +111,30 @@ function rangeForSelection(
   };
 }
 
+function compactBuckets(
+  data: readonly TimeRangeHistogramDatum[],
+  series: readonly TimeRangeHistogramSeries[],
+  targetCount: number,
+): readonly TimeRangeHistogramDatum[] {
+  if (targetCount <= 0 || data.length <= targetCount) return data;
+  return Array.from({ length: targetCount }, (_, index) => {
+    const startIndex = Math.floor(index * data.length / targetCount);
+    const endIndex = Math.max(startIndex + 1, Math.floor((index + 1) * data.length / targetCount));
+    const group = data.slice(startIndex, endIndex);
+    const first = group[0]!;
+    const last = group.at(-1)!;
+    return {
+      start: first.start,
+      end: last.end,
+      label: first.label,
+      ...Object.fromEntries(series.map((item) => [
+        item.dataKey,
+        group.reduce((sum, bucket) => sum + Number(bucket[item.dataKey] ?? 0), 0),
+      ])),
+    };
+  });
+}
+
 export function TimeRangeHistogram({
   ariaLabel,
   data,
@@ -121,6 +149,8 @@ export function TimeRangeHistogram({
   emptyContent,
   disabled = false,
   chartClassName,
+  barSize,
+  targetBarGap,
   className,
   ...props
 }: TimeRangeHistogramProps) {
@@ -129,12 +159,32 @@ export function TimeRangeHistogram({
   const dragMode = useRef<DragMode | null>(null);
   const dragOriginSelection = useRef<BucketSelection | null>(null);
   const [draftSelection, setDraftSelection] = useState<BucketSelection | null>(null);
-  const selection = useMemo(() => selectionForRange(data, value), [data, value]);
+  const [chartWidth, setChartWidth] = useState(0);
+  useEffect(() => {
+    const element = interactionRef.current;
+    if (!element) return;
+    const updateWidth = (width = element.getBoundingClientRect().width) => {
+      setChartWidth((current) => current === width ? current : width);
+    };
+    updateWidth();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver((entries) => updateWidth(entries[0]?.contentRect.width));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  const targetBucketCount = barSize && targetBarGap !== undefined && chartWidth > 0
+    ? Math.max(1, Math.floor(chartWidth / (barSize + targetBarGap)))
+    : data.length;
+  const chartData = useMemo(
+    () => compactBuckets(data, series, targetBucketCount),
+    [data, series, targetBucketCount],
+  );
+  const selection = useMemo(() => selectionForRange(chartData, value), [chartData, value]);
   const activeSelection = draftSelection ?? selection;
-  const activeRange = rangeForSelection(data, activeSelection);
+  const activeRange = rangeForSelection(chartData, activeSelection);
   const selectionLabel = formatRange
     ? formatRange(activeRange)
-    : `${data[activeSelection.startIndex]?.label ?? ""} – ${data[activeSelection.endIndex]?.label ?? ""}`;
+    : `${chartData[activeSelection.startIndex]?.label ?? ""} – ${chartData[activeSelection.endIndex]?.label ?? ""}`;
   const chartConfig = useMemo<ChartConfig>(
     () => Object.fromEntries(series.map((item) => [item.dataKey, { label: item.label, color: item.color }])),
     [series],
@@ -152,7 +202,7 @@ export function TimeRangeHistogram({
     const bounds = interactionRef.current?.getBoundingClientRect();
     if (!bounds?.width) return 0;
     const position = Math.min(0.9999, Math.max(0, (clientX - bounds.left) / bounds.width));
-    return Math.floor(position * data.length);
+    return Math.floor(position * chartData.length);
   };
   const getSelectionAtIndex = (index: number) => {
     const origin = dragOriginSelection.current;
@@ -165,7 +215,7 @@ export function TimeRangeHistogram({
     if (dragMode.current === "move" && dragStartIndex.current !== null && origin) {
       const selectionWidth = origin.endIndex - origin.startIndex;
       const nextStartIndex = Math.min(
-        data.length - selectionWidth - 1,
+        chartData.length - selectionWidth - 1,
         Math.max(0, origin.startIndex + index - dragStartIndex.current),
       );
       return { startIndex: nextStartIndex, endIndex: nextStartIndex + selectionWidth };
@@ -178,8 +228,8 @@ export function TimeRangeHistogram({
     const index = getIndexAtPointer(event.clientX);
     const bounds = interactionRef.current?.getBoundingClientRect();
     const pointerOffset = bounds ? event.clientX - bounds.left : 0;
-    const startBoundaryOffset = bounds ? selection.startIndex / data.length * bounds.width : 0;
-    const endBoundaryOffset = bounds ? (selection.endIndex + 1) / data.length * bounds.width : 0;
+    const startBoundaryOffset = bounds ? selection.startIndex / chartData.length * bounds.width : 0;
+    const endBoundaryOffset = bounds ? (selection.endIndex + 1) / chartData.length * bounds.width : 0;
     const boundaryHitRadius = event.pointerType === "touch" ? 12 : 8;
     const startBoundaryDistance = Math.abs(pointerOffset - startBoundaryOffset);
     const endBoundaryDistance = Math.abs(pointerOffset - endBoundaryOffset);
@@ -187,7 +237,7 @@ export function TimeRangeHistogram({
       Math.min(startBoundaryDistance, endBoundaryDistance) <= boundaryHitRadius
         ? startBoundaryDistance <= endBoundaryDistance ? "resize-start" : "resize-end"
         : null;
-    const selectionCoversAllBuckets = selection.startIndex === 0 && selection.endIndex === data.length - 1;
+    const selectionCoversAllBuckets = selection.startIndex === 0 && selection.endIndex === chartData.length - 1;
     const moveExistingSelection =
       !selectionCoversAllBuckets &&
       index >= selection.startIndex &&
@@ -216,12 +266,12 @@ export function TimeRangeHistogram({
     if (disabled || dragStartIndex.current === null) return;
     const nextSelection = getSelectionAtIndex(getIndexAtPointer(event.clientX));
     resetPointerInteraction(event);
-    onValueChange(rangeForSelection(data, nextSelection));
+    onValueChange(rangeForSelection(chartData, nextSelection));
   };
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (disabled) return;
     const selectionWidth = selection.endIndex - selection.startIndex;
-    const maximumStart = data.length - selectionWidth - 1;
+    const maximumStart = chartData.length - selectionWidth - 1;
     let startIndex = selection.startIndex;
     if (event.key === "ArrowLeft") startIndex = Math.max(0, startIndex - 1);
     else if (event.key === "ArrowRight") startIndex = Math.min(maximumStart, startIndex + 1);
@@ -231,13 +281,13 @@ export function TimeRangeHistogram({
     else if (event.key === "End") startIndex = maximumStart;
     else return;
     event.preventDefault();
-    onValueChange(rangeForSelection(data, {
+    onValueChange(rangeForSelection(chartData, {
       startIndex,
       endIndex: startIndex + selectionWidth,
     }));
   };
-  const selectionLeft = activeSelection.startIndex / data.length * 100;
-  const selectionWidth = (activeSelection.endIndex - activeSelection.startIndex + 1) / data.length * 100;
+  const selectionLeft = activeSelection.startIndex / chartData.length * 100;
+  const selectionWidth = (activeSelection.endIndex - activeSelection.startIndex + 1) / chartData.length * 100;
   const isSelectedIndex = (index: number) => index >= activeSelection.startIndex && index <= activeSelection.endIndex;
 
   return (
@@ -246,7 +296,7 @@ export function TimeRangeHistogram({
         aria-disabled={disabled || undefined}
         aria-label={ariaLabel}
         aria-orientation="horizontal"
-        aria-valuemax={data.length}
+        aria-valuemax={chartData.length}
         aria-valuemin={1}
         aria-valuenow={activeSelection.startIndex + 1}
         aria-valuetext={selectionLabel}
@@ -285,8 +335,8 @@ export function TimeRangeHistogram({
           )}
           config={chartConfig}
         >
-          <BarChart accessibilityLayer={false} data={data} margin={{ bottom: 4, left: 0, right: 0, top: 20 }}>
-            <XAxis dataKey="label" hide />
+          <BarChart accessibilityLayer={false} barCategoryGap={0} data={chartData} margin={{ bottom: 0, left: 0, right: 0, top: 0 }}>
+            <XAxis dataKey="label" height={0} hide />
             <ChartTooltip
               content={
                 <ChartTooltipContent
@@ -304,8 +354,8 @@ export function TimeRangeHistogram({
               wrapperStyle={{ zIndex: "var(--layer-tooltip)" }}
             />
             {series.map((item) => (
-              <Bar dataKey={item.dataKey} fill={`var(--color-${item.dataKey})`} key={item.dataKey} stackId="time-range-histogram">
-                {data.map((bucket, index) => (
+              <Bar barSize={barSize} dataKey={item.dataKey} fill={`var(--color-${item.dataKey})`} key={item.dataKey} stackId="time-range-histogram">
+                {chartData.map((bucket, index) => (
                   <Cell
                     fill={isSelectedIndex(index) ? `var(--color-${item.dataKey})` : item.inactiveColor ?? "var(--surface-raised)"}
                     key={`${item.dataKey}-${bucket.start}`}

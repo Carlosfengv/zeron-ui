@@ -50,6 +50,7 @@ export type {
   InfiniteLogTableProps,
   InfiniteLogTableState,
   InfiniteLogToolbarContext,
+  InfiniteLogWorkspaceContext,
   InfiniteLogSubscriber,
   LogMethod,
   LogTiming,

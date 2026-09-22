@@ -299,11 +299,18 @@ export interface InfiniteLogCommandContext {
   updateState: (updater: InfiniteLogStateUpdater) => void;
 }
 
-export interface InfiniteLogToolbarContext<TRecord extends InfiniteLogBaseRecord = InfiniteLogRecord> extends InfiniteLogCommandContext {
+export interface InfiniteLogWorkspaceContext<TRecord extends InfiniteLogBaseRecord = InfiniteLogRecord> extends InfiniteLogCommandContext {
+  loadedRecords: readonly TRecord[];
+  metadata?: InfiniteLogMetadata;
+}
+
+export interface InfiniteLogToolbarContext<TRecord extends InfiniteLogBaseRecord = InfiniteLogRecord> extends InfiniteLogWorkspaceContext<TRecord> {
   selectedRecords: readonly TRecord[];
   refresh: () => void;
   clearSelection: () => void;
   loading: boolean;
+  atTop: boolean;
+  detailOpen: boolean;
 }
 
 export interface InfiniteLogErrorContext {
@@ -324,10 +331,13 @@ export interface InfiniteLogTableProps<TRecord extends InfiniteLogBaseRecord = I
   pageSize?: number;
   maxLiveRows?: number;
   enableLive?: boolean;
+  enableSelection?: boolean;
   locale?: string;
   timeZone?: string;
   labels?: Partial<InfiniteLogTableLabels>;
   commandSlot?: (context: InfiniteLogCommandContext) => ReactNode;
+  filtersSlot?: (context: InfiniteLogWorkspaceContext<TRecord>) => ReactNode;
+  summarySlot?: (context: InfiniteLogWorkspaceContext<TRecord>) => ReactNode;
   toolbarActions?: (context: InfiniteLogToolbarContext<TRecord>) => ReactNode;
   footerSlot?: ReactNode;
   emptyState?: (context: InfiniteLogCommandContext) => ReactNode;

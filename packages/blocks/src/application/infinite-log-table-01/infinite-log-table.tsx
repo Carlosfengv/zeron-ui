@@ -141,10 +141,13 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
   pageSize = 40,
   maxLiveRows = 2_000,
   enableLive = true,
+  enableSelection = true,
   locale = "en-US",
   timeZone = "UTC",
   labels: labelsProp,
   commandSlot,
+  filtersSlot,
+  summarySlot,
   toolbarActions,
   footerSlot,
   emptyState,
@@ -258,30 +261,45 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
   );
   const genericMetadata = useMemo(() => {
     if (!genericMode) return controller.metadata;
+    if (!records) return controller.metadata;
     const inferred = createInfiniteLogMetadata(controller.rows, state.filters, fields);
     return controller.metadata
       ? { ...inferred, ...controller.metadata, fieldFacets: controller.metadata.fieldFacets ?? inferred.fieldFacets }
       : inferred;
-  }, [controller.metadata, controller.rows, fields, genericMode, state.filters]);
+  }, [controller.metadata, controller.rows, fields, genericMode, records, state.filters]);
   const liveAvailable = enableLive && !records && isInfiniteLogLiveDataSource(dataSource);
   const liveActive = controller.liveEligible;
   const selectedRecords = useMemo(
     () => controller.rows.filter((record) => selectedIds.has(record.id)).map(redactRecord),
     [controller.rows, redactRecord, selectedIds],
   );
+  const loadedRecords = useMemo(
+    () => controller.rows.map(redactRecord),
+    [controller.rows, redactRecord],
+  );
   const commandContext = useMemo<InfiniteLogCommandContext>(
     () => ({ state, updateState }),
     [state, updateState],
   );
-  const toolbarContext = useMemo<InfiniteLogToolbarContext<TRecord>>(
+  const workspaceContext = useMemo(
     () => ({
       ...commandContext,
+      loadedRecords,
+      metadata: genericMode ? genericMetadata : controller.metadata,
+    }),
+    [commandContext, controller.metadata, genericMetadata, genericMode, loadedRecords],
+  );
+  const toolbarContext = useMemo<InfiniteLogToolbarContext<TRecord>>(
+    () => ({
+      ...workspaceContext,
+      atTop: controller.atTop,
       clearSelection,
+      detailOpen,
       loading: controller.loading || controller.refreshing,
       refresh: controller.refresh,
       selectedRecords,
     }),
-    [clearSelection, commandContext, controller.loading, controller.refresh, controller.refreshing, selectedRecords],
+    [clearSelection, controller.atTop, controller.loading, controller.refresh, controller.refreshing, detailOpen, selectedRecords, workspaceContext],
   );
 
   const updateSort = useCallback((sort: typeof state.sort) => {
@@ -368,6 +386,7 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
 
   const tableView = genericMode ? <GenericInfiniteLogTableView
     activeRecordId={activeRecordId}
+    enableSelection={enableSelection}
     error={controller.error}
     errorContent={errorContent}
     fetchingMore={controller.fetchingMore}
@@ -392,6 +411,7 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
     onToggleRecord={toggleRecord}
     emptyContent={emptyContent}
     pendingLiveCount={controller.pendingLiveCount}
+    summaryContent={summarySlot?.(workspaceContext)}
     redactRecord={redactRecord}
     rows={controller.rows}
     selectedIds={selectedIds}
@@ -402,6 +422,7 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
     updating={controller.refreshing}
   /> : <InfiniteLogTableView
     activeRecordId={activeRecordId}
+    enableSelection={enableSelection}
     error={controller.error}
     errorContent={errorContent}
     fetchingMore={controller.fetchingMore}
@@ -425,6 +446,7 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
     onToggleRecord={toggleRecord as unknown as (record: InfiniteLogRecord) => void}
     emptyContent={emptyContent}
     pendingLiveCount={controller.pendingLiveCount}
+    summaryContent={summarySlot?.(workspaceContext)}
     redactRecord={redactRecord as unknown as (record: InfiniteLogRecord) => InfiniteLogRecord}
     rows={controller.rows as unknown as readonly InfiniteLogRecord[]}
     selectedIds={selectedIds}
@@ -469,8 +491,8 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
       {...sectionProps}
       className={cn("relative flex h-full min-h-0 w-full overflow-hidden border border-border bg-surface-base", className)}
     >
-      <div className="hidden min-h-0 w-64 shrink-0 border-e border-border-subtle lg:flex">
-        {genericMode ? (
+      <div className="hidden min-h-0 w-64 shrink-0 border-e border-border-subtle bg-surface-floating lg:flex [&>*]:w-full">
+        {filtersSlot ? filtersSlot(workspaceContext) : genericMode ? (
           <GenericInfiniteLogFilters fields={fields} filters={filterDraft} labels={labels} locale={locale} metadata={genericMetadata} onChange={updateFilters} timeZone={timeZone} />
         ) : (
           <InfiniteLogFilters filters={filterDraft} labels={labels} locale={locale} metadata={controller.metadata} onChange={updateFilters} timeZone={timeZone} />
@@ -479,7 +501,7 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex flex-nowrap items-center gap-2 border-b border-border-subtle bg-surface-base px-3 py-2">
-          <Button aria-label={filtersOpen ? labels.hideFilters : labels.showFilters} className="lg:hidden" iconOnly onClick={() => setFiltersOpen(true)} ref={filterTrigger} size="sm" type="button" variant="ghost"><Settings aria-hidden /></Button>
+          <Button aria-label={filtersOpen ? labels.hideFilters : labels.showFilters} className="lg:hidden" iconOnly onClick={() => setFiltersOpen(true)} ref={filterTrigger} size="md" type="button" variant="ghost"><Settings aria-hidden /></Button>
           {commandSlot ? commandSlot(commandContext) : genericMode ? (
             <InputGroup className="min-w-0" size="md">
               <InputGroupAddon><Search aria-hidden /></InputGroupAddon>
@@ -508,11 +530,13 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
             />
           )}
           <div className="ml-auto flex shrink-0 items-center gap-1">
-            <Button aria-label={labels.refresh} disabled={controller.refreshing} iconOnly onClick={controller.refresh} size="sm" type="button" variant="tertiary"><Refresh aria-hidden /></Button>
-            <Button aria-describedby={!liveAvailable ? "infinite-log-live-unavailable" : undefined} className="shrink-0 whitespace-nowrap" disabled={!liveAvailable} leadingIcon={liveActive ? Pause : Play} onClick={toggleLive} size="sm" type="button" variant={liveActive ? "neutral" : "primary"}>
-              {liveActive ? labels.pauseLive : labels.live}
-            </Button>
-            {!liveAvailable && <span className="sr-only" id="infinite-log-live-unavailable">{labels.liveUnavailable}</span>}
+            <Button aria-label={labels.refresh} disabled={controller.refreshing} iconOnly onClick={controller.refresh} size="md" type="button" variant="tertiary"><Refresh aria-hidden /></Button>
+            {enableLive && <>
+              <Button aria-describedby={!liveAvailable ? "infinite-log-live-unavailable" : undefined} className="shrink-0 whitespace-nowrap" disabled={!liveAvailable} leadingIcon={liveActive ? Pause : Play} onClick={toggleLive} size="md" type="button" variant={liveActive ? "neutral" : "primary"}>
+                {liveActive ? labels.pauseLive : labels.live}
+              </Button>
+              {!liveAvailable && <span className="sr-only" id="infinite-log-live-unavailable">{labels.liveUnavailable}</span>}
+            </>}
             {toolbarActions?.(toolbarContext)}
           </div>
         </header>
@@ -554,8 +578,8 @@ export function InfiniteLogTable<TRecord extends InfiniteLogBaseRecord = Infinit
         side="start"
         triggerRef={filterTrigger}
       >
-        <div className="h-full w-full bg-surface-base">
-          {genericMode ? (
+        <div className="h-full w-full bg-surface-floating">
+          {filtersSlot ? filtersSlot(workspaceContext) : genericMode ? (
             <GenericInfiniteLogFilters fields={fields} filters={filterDraft} labels={labels} locale={locale} metadata={genericMetadata} onChange={updateFilters} timeZone={timeZone} />
           ) : (
             <InfiniteLogFilters filters={filterDraft} labels={labels} locale={locale} metadata={controller.metadata} onChange={updateFilters} timeZone={timeZone} />

@@ -336,6 +336,7 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
     liveEligible,
     liveBoundary,
     pendingLiveCount: pendingLiveRows.length,
+    atTop,
     loadMore,
     refresh,
     retry,

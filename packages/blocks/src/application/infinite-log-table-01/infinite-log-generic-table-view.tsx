@@ -39,6 +39,7 @@ interface ColumnItem extends SortableCollectionItem {
 interface GenericInfiniteLogTableViewProps<TRecord extends InfiniteLogBaseRecord> {
   tableId: string;
   activeRecordId?: string;
+  enableSelection: boolean;
   rows: readonly TRecord[];
   fields: readonly InfiniteLogField<TRecord>[];
   metadata?: InfiniteLogMetadata;
@@ -56,6 +57,7 @@ interface GenericInfiniteLogTableViewProps<TRecord extends InfiniteLogBaseRecord
   error?: unknown;
   liveBoundary?: InfiniteLogLiveBoundary;
   pendingLiveCount: number;
+  summaryContent?: ReactNode;
   redactRecord: (record: TRecord) => TRecord;
   onSortChange: (sort?: InfiniteLogSort) => void;
   onFiltersChange: (filters: InfiniteLogFilters) => void;
@@ -111,6 +113,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
 >({
   tableId: _tableId,
   activeRecordId,
+  enableSelection,
   rows,
   fields,
   metadata,
@@ -128,6 +131,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
   error,
   liveBoundary,
   pendingLiveCount,
+  summaryContent,
   redactRecord,
   onSortChange,
   onFiltersChange,
@@ -189,7 +193,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
   });
   const visibleFields = table.getVisibleLeafColumns().map((column) => fieldById.get(column.id)).filter((field): field is InfiniteLogField<TRecord> => Boolean(field));
   const fluidFieldId = visibleFields.at(-1)?.id;
-  const gridTemplateColumns = `44px ${visibleFields.map((field) => {
+  const gridTemplateColumns = `${enableSelection ? "44px " : ""}${visibleFields.map((field) => {
     const size = table.getColumn(field.id)?.getSize() ?? field.width ?? 180;
     return field.id === fluidFieldId ? `minmax(${size}px, 1fr)` : `${size}px`;
   }).join(" ")}`;
@@ -201,7 +205,11 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
   const timelineDateFormatter = useMemo(() => new Intl.DateTimeFormat(locale, {
     day: "2-digit", hour: "2-digit", hour12: false, minute: "2-digit", month: "short", timeZone,
   }), [locale, timeZone]);
-  const seriesKeys = useMemo(() => [...new Set((metadata?.timeline?.buckets ?? []).flatMap((bucket) => Object.keys(bucket.counts)))], [metadata?.timeline?.buckets]);
+  const seriesKeys = useMemo(() => {
+    const buckets = metadata?.timeline?.buckets ?? [];
+    const keys = [...new Set(buckets.flatMap((bucket) => Object.keys(bucket.counts)))];
+    return keys.length > 0 ? keys : buckets.length > 0 ? ["records"] : [];
+  }, [metadata?.timeline?.buckets]);
   const series = useMemo<readonly TimeRangeHistogramSeries[]>(() => seriesKeys.map((key, index) => ({
     dataKey: key,
     label: key === "records" ? "Records" : key,
@@ -212,7 +220,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
     const start = Date.parse(bucket.start);
     const end = Date.parse(bucket.end);
     return Number.isFinite(start) && Number.isFinite(end) && end > start
-      ? [{ start, end, label: `${timelineDateFormatter.format(start)} – ${timelineDateFormatter.format(end)}`, ...bucket.counts }]
+      ? [{ start, end, label: `${timelineDateFormatter.format(start)} – ${timelineDateFormatter.format(end)}`, ...(Object.keys(bucket.counts).length > 0 ? bucket.counts : { records: 0 }) }]
       : [];
   }), [metadata?.timeline?.buckets, timelineDateFormatter]);
   const timelineValue = useMemo<TimeRangeHistogramRange>(() => {
@@ -301,7 +309,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
   return (
     <section aria-label="Log results" className="relative flex min-h-0 flex-1 flex-col overflow-hidden border-t border-border-subtle bg-surface-floating">
       <div className="flex min-h-control-lg items-center justify-between gap-2 border-b border-border-subtle bg-surface-raised px-3 py-1.5">
-        <span aria-live="polite" className="text-label text-fg-muted">{metadata ? labels.filteredCount(metadata.filteredCount, metadata.totalCount) : loading ? "Loading logs…" : labels.noResults}</span>
+        <span aria-live="polite" className="text-label text-fg-muted">{summaryContent ?? (metadata ? labels.filteredCount(metadata.filteredCount, metadata.totalCount) : loading ? "Loading logs…" : labels.noResults)}</span>
         {updating && <span className="text-label text-fg-subtle" role="status">Updating results…</span>}
         <DropdownMenu onOpenChange={setColumnsOpen} open={columnsOpen}>
           <DropdownTrigger render={<Button active={columnsOpen} aria-label="Customize columns" leadingIcon={Columns} size="sm" type="button" variant="ghost">Columns</Button>} />
@@ -322,6 +330,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
           <div className="mb-1 flex items-center gap-4"><span className="text-label font-medium text-fg-default">{labels.requestTrend}</span></div>
           <TimeRangeHistogram
             ariaLabel={labels.timelineAriaLabel}
+            barSize={4}
             chartClassName="h-14"
             data={timelineData}
             formatRange={(range) => `${timelineDateFormatter.format(range.start)} – ${timelineDateFormatter.format(range.end)}`}
@@ -331,6 +340,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
             rangeEndLabel={timelineDateFormatter.format(timelineData.at(-1)!.end)}
             rangeStartLabel={timelineDateFormatter.format(timelineData[0]!.start)}
             series={series}
+            targetBarGap={4}
             value={timelineValue}
           />
         </div>
@@ -338,16 +348,16 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
 
       {pendingLiveCount > 0 && <div className="absolute left-1/2 top-14 z-action -translate-x-1/2"><Button onClick={() => { onApplyPending(); requestAnimationFrame(() => viewportRef.current?.scrollTo({ top: 0, behavior: "smooth" })); }} size="sm" type="button" variant="secondary">{labels.newRecords(pendingLiveCount)}</Button></div>}
 
-      <div aria-colcount={visibleFields.length + 1} aria-busy={loading || updating || undefined} aria-label="Log table" aria-rowcount={(metadata?.filteredCount ?? rows.length) + 1} className="relative min-h-0 flex-1 overflow-x-auto overflow-y-auto overscroll-x-contain focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" onScroll={() => onAtTopChange((viewportRef.current?.scrollTop ?? 0) < 8)} ref={viewportRef} role="grid" tabIndex={0}>
+      <div aria-colcount={visibleFields.length + (enableSelection ? 1 : 0)} aria-busy={loading || updating || undefined} aria-label="Log table" aria-rowcount={(metadata?.filteredCount ?? rows.length) + 1} className="relative min-h-0 flex-1 overflow-x-auto overflow-y-auto overscroll-x-contain focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" onScroll={() => onAtTopChange((viewportRef.current?.scrollTop ?? 0) < 8)} ref={viewportRef} role="grid" tabIndex={0}>
         <div className="sticky top-0 z-raised grid h-control-md min-w-max border-b border-border bg-surface-floating" role="row" style={{ gridTemplateColumns }}>
-          <div className="sticky left-0 z-control flex items-center justify-center border-e border-border-subtle bg-surface-floating" data-sticky-column="select" role="columnheader"><Checkbox aria-label="Select all loaded logs" checked={allSelected ? true : someSelected ? "indeterminate" : false} onCheckedChange={onToggleAllLoaded} /></div>
+          {enableSelection && <div className="sticky left-0 z-control flex items-center justify-center border-e border-border-subtle bg-surface-floating" data-sticky-column="select" role="columnheader"><Checkbox aria-label="Select all loaded logs" checked={allSelected ? true : someSelected ? "indeterminate" : false} onCheckedChange={onToggleAllLoaded} /></div>}
           {visibleFields.map((field, index) => {
             const direction = sort?.field === field.id ? sort.direction : undefined;
             const SortIcon = direction === "asc" ? ChevronUp : direction === "desc" ? ChevronDown : ChevronsUpDown;
             const header = table.getFlatHeaders().find((candidate) => candidate.column.id === field.id);
             const headerFilter = renderHeaderFilter(field);
             return (
-              <div aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field.sortable ? "none" : undefined} className={cn("relative flex h-full min-w-0 items-center border-e border-border-subtle px-3", index === 0 && "sticky left-[44px] z-control bg-surface-floating shadow-[1px_0_0_var(--border-subtle)]")} data-sticky-column={index === 0 ? field.id : undefined} key={field.id} role="columnheader">
+              <div aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : field.sortable ? "none" : undefined} className={cn("relative flex h-full min-w-0 items-center border-e border-border-subtle px-3", index === 0 && ["sticky z-control bg-surface-floating shadow-[1px_0_0_var(--border-subtle)]", enableSelection ? "left-[44px]" : "left-0"])} data-sticky-column={index === 0 ? field.id : undefined} key={field.id} role="columnheader">
                 <div className="flex min-w-0 flex-1 items-center">
                   {field.sortable && !headerFilter ? <Button className="-ml-2 min-w-0 flex-1 whitespace-nowrap text-body font-medium text-fg-default" onClick={() => onSortChange(sort?.field === field.id ? { field: field.id, direction: sort.direction === "desc" ? "asc" : "desc" } : { field: field.id, direction: "desc" })} size="sm" trailingIcon={SortIcon} type="button" variant="ghost">{field.label ?? field.id}</Button> : <span className="flex min-w-0 flex-1 items-center gap-1.5 truncate text-body font-medium text-fg-default">{field.label ?? field.id}{field.sortable && !headerFilter && <SortIcon aria-hidden className="size-3.5 shrink-0 text-fg-muted" />}</span>}
                   {headerFilter}
@@ -363,16 +373,16 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
             {renderedRows.map((virtualRow) => {
               if (hasLiveBoundary && virtualRow.index === liveBoundaryRecordIndex) {
                 const label = labels.newRecordsAbove(liveBoundaryRecordIndex);
-                return <div aria-label={label} aria-rowindex={virtualRow.index + 2} className="absolute left-0 grid min-w-full items-center border-y border-border bg-surface-raised" key={`boundary:${liveBoundary?.recordId}`} role="row" style={{ gridTemplateColumns, height: `${virtualRow.size}px`, top: `${virtualRow.start}px` }}><div aria-colspan={visibleFields.length + 1} className="sticky left-0 flex h-full w-full max-w-[100vw] justify-self-start items-center px-3" role="gridcell" style={{ gridColumn: "1 / -1" }}>{label}</div></div>;
+                return <div aria-label={label} aria-rowindex={virtualRow.index + 2} className="absolute left-0 grid min-w-full items-center border-y border-border bg-surface-raised" key={`boundary:${liveBoundary?.recordId}`} role="row" style={{ gridTemplateColumns, height: `${virtualRow.size}px`, top: `${virtualRow.start}px` }}><div aria-colspan={visibleFields.length + (enableSelection ? 1 : 0)} className="sticky left-0 flex h-full w-full max-w-[100vw] justify-self-start items-center px-3" role="gridcell" style={{ gridColumn: "1 / -1" }}>{label}</div></div>;
               }
               const recordIndex = recordIndexForVirtualIndex(virtualRow.index);
               const record = recordIndex === null ? undefined : rows[recordIndex];
               if (!record) return null;
               const isActiveRecord = activeRecordId === record.id;
               return (
-                <div aria-rowindex={virtualRow.index + 2} aria-selected={isActiveRecord || undefined} className={cn("group/log-row absolute left-0 grid min-w-full cursor-pointer border-b border-border-subtle/70 outline-none transition-colors hover:bg-hover focus-visible:bg-selection focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring", isActiveRecord && "z-content shadow-[inset_2px_0_0_var(--brand)]")} data-detail-active={isActiveRecord ? "" : undefined} key={record.id} onClick={(event) => onOpenRecord(record, event.currentTarget)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onOpenRecord(record, event.currentTarget); } }} role="row" style={{ gridTemplateColumns, height: `${virtualRow.size}px`, transform: `translateY(${virtualRow.start}px)` }} tabIndex={0}>
-                  <div className={cn("sticky left-0 z-content flex items-center justify-center border-e border-border-subtle bg-surface-floating", stickyCellInteractionClassName, isActiveRecord && "shadow-[inset_2px_0_0_var(--brand)]")} data-sticky-column="select" role="gridcell"><Checkbox aria-label={`Select ${record.id}`} checked={selectedIds.has(record.id)} onCheckedChange={() => onToggleRecord(record)} onClick={(event) => event.stopPropagation()} /></div>
-                  {visibleFields.map((field, index) => <div className={cn("flex min-w-0 items-center overflow-hidden border-e border-border-subtle px-3", index === 0 && ["sticky left-[44px] z-content bg-surface-floating shadow-[1px_0_0_var(--border-subtle)]", stickyCellInteractionClassName])} data-sticky-column={index === 0 ? field.id : undefined} key={field.id} role="gridcell">{renderValue(field, record, locale, timeZone)}</div>)}
+                <div aria-rowindex={virtualRow.index + 2} aria-selected={isActiveRecord || undefined} className={cn("group/log-row absolute left-0 grid min-w-full cursor-pointer border-b border-border-subtle/70 outline-none transition-colors hover:bg-hover focus-visible:bg-selection focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring", isActiveRecord && "z-content bg-selection hover:bg-selection shadow-[inset_2px_0_0_var(--brand)]")} data-detail-active={isActiveRecord ? "" : undefined} key={record.id} onClick={(event) => onOpenRecord(record, event.currentTarget)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onOpenRecord(record, event.currentTarget); } }} role="row" style={{ gridTemplateColumns, height: `${virtualRow.size}px`, transform: `translateY(${virtualRow.start}px)` }} tabIndex={0}>
+                  {enableSelection && <div className={cn("sticky left-0 z-content flex items-center justify-center border-e border-border-subtle", stickyCellInteractionClassName, isActiveRecord ? "bg-selection shadow-[inset_2px_0_0_var(--brand)]" : "bg-surface-floating")} data-sticky-column="select" role="gridcell"><Checkbox aria-label={`Select ${record.id}`} checked={selectedIds.has(record.id)} onCheckedChange={() => onToggleRecord(record)} onClick={(event) => event.stopPropagation()} /></div>}
+                  {visibleFields.map((field, index) => <div className={cn("flex min-w-0 items-center overflow-hidden border-e border-border-subtle px-3", index === 0 && ["sticky z-content shadow-[1px_0_0_var(--border-subtle)]", enableSelection ? "left-[44px]" : "left-0", stickyCellInteractionClassName, isActiveRecord ? "bg-selection" : "bg-surface-floating"])} data-sticky-column={index === 0 ? field.id : undefined} key={field.id} role="gridcell">{renderValue(field, record, locale, timeZone)}</div>)}
                 </div>
               );
             })}
@@ -381,7 +391,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
         <div className="flex min-h-control-lg items-center justify-center gap-2 border-t border-border-subtle p-2">{Boolean(error) && rows.length > 0 && <InlineNotice tone="danger" variant="emphasized"><InlineNoticeContent>Could not load more logs.</InlineNoticeContent></InlineNotice>}{hasNextPage ? <Button disabled={fetchingMore} onClick={onLoadMore} size="sm" type="button" variant="tertiary">{fetchingMore ? "Loading…" : labels.loadMore}</Button> : rows.length > 0 ? <span className="text-label text-fg-subtle">{labels.noMoreRows}</span> : null}</div>
       </div>
 
-      {selectedIds.size > 0 && <div aria-label="Selected log actions" className="absolute bottom-3 left-1/2 z-action flex -translate-x-1/2 items-center gap-2 rounded-xl border border-border bg-surface-overlay px-3 py-2"><span className="text-label text-fg-default">{labels.selectedCount(selectedIds.size)}</span><Button aria-label={copied ? labels.copied : labels.copySelected} iconOnly onClick={() => void copySelected()} size="sm" type="button" variant="ghost"><Copy aria-hidden /></Button><Button onClick={onClearSelection} size="sm" type="button" variant="tertiary">{labels.clear}</Button><Check aria-hidden className="size-3.5 text-fg-success" /></div>}
+      {enableSelection && selectedIds.size > 0 && <div aria-label="Selected log actions" className="absolute bottom-3 left-1/2 z-action flex -translate-x-1/2 items-center gap-2 rounded-xl border border-border bg-surface-overlay px-3 py-2"><span className="text-label text-fg-default">{labels.selectedCount(selectedIds.size)}</span><Button aria-label={copied ? labels.copied : labels.copySelected} iconOnly onClick={() => void copySelected()} size="sm" type="button" variant="ghost"><Copy aria-hidden /></Button><Button onClick={onClearSelection} size="sm" type="button" variant="tertiary">{labels.clear}</Button><Check aria-hidden className="size-3.5 text-fg-success" /></div>}
     </section>
   );
 }) as <TRecord extends InfiniteLogBaseRecord>(props: GenericInfiniteLogTableViewProps<TRecord>) => ReactNode;
