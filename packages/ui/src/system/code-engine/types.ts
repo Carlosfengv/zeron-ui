@@ -419,6 +419,15 @@ export type LineDiffTypes = 'word-alt' | 'word' | 'char' | 'none';
 
 export type DiffIndicators = 'classic' | 'bars' | 'none';
 
+export type CodeHighlightState = {
+  fileName: string;
+  language: string;
+} & (
+  | { status: 'loading' | 'ready' }
+  | { status: 'plain'; reason: 'text' | 'empty' | 'size-limit' }
+  | { status: 'error'; reason: 'load-or-render' | 'timeout'; error: unknown }
+);
+
 export interface BaseCodeOptions {
   theme?: DiffsThemeNames | ThemesType;
   disableLineNumbers?: boolean;

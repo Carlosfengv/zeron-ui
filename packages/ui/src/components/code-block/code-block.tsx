@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 
 import { File } from '#system/code-engine/react/File';
+import type { CodeHighlightState } from '#system/code-engine/types';
+import { useStableCallback } from '#system/code-engine/react/utils/useStableCallback';
 import { cn } from '#system/utils';
 
 import { resolveCodeBlockMessages } from './code-block-messages';
@@ -23,8 +25,24 @@ export function CodeBlock<LAnnotation = undefined, Caret = undefined>({
   file,
   options,
   renderCustomHeader,
+  highlightFeedback = true,
+  highlightRetryKey,
+  onHighlightStateChange,
   ...props
 }: CodeBlockProps<LAnnotation, Caret>): React.JSX.Element {
+  const [highlightState, setHighlightState] = useState<CodeHighlightState>();
+  const [showHighlightLoading, setShowHighlightLoading] = useState(false);
+  const [retryAttempt, setRetryAttempt] = useState(0);
+  const handleHighlight = useStableCallback((state: CodeHighlightState) => {
+    setHighlightState(state);
+    onHighlightStateChange?.(state);
+  });
+  useEffect(() => {
+    setShowHighlightLoading(false);
+    if (highlightState?.status !== 'loading') return;
+    const timer = window.setTimeout(() => setShowHighlightLoading(true), 200);
+    return () => window.clearTimeout(timer);
+  }, [highlightState]);
   const [overflow, setOverflow] = useState<'scroll' | 'wrap'>(
     options?.overflow ?? 'scroll'
   );
@@ -45,6 +63,13 @@ export function CodeBlock<LAnnotation = undefined, Caret = undefined>({
             messages={resolvedMessages}
             onCopy={onCopy}
             onCopyError={onCopyError}
+            highlightState={highlightFeedback ? highlightState : undefined}
+            showHighlightLoading={
+              highlightFeedback &&
+              highlightState?.status === 'loading' &&
+              showHighlightLoading
+            }
+            onHighlightRetry={() => setRetryAttempt((attempt) => attempt + 1)}
             onOverflowChange={(nextOverflow) => {
               setOverflow(nextOverflow);
               onOverflowChange?.(nextOverflow);
@@ -56,6 +81,8 @@ export function CodeBlock<LAnnotation = undefined, Caret = undefined>({
   return (
     <File
       {...props}
+      highlightRetryKey={JSON.stringify([highlightRetryKey, retryAttempt])}
+      onHighlightStateChange={handleHighlight}
       file={file}
       options={{ ...options, overflow }}
       renderCustomHeader={toolbarRenderer}

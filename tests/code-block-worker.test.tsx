@@ -2,11 +2,11 @@
 
 import { useEffect } from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react';
-import { afterEach, describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
 import { CodeWorkerProvider } from '@zeron/ui/code-block/worker';
 import { useWorkerPool } from '../packages/ui/src/system/code-engine/react';
-import type { WorkerPoolManager } from '../packages/ui/src/system/code-engine/worker';
+import { WorkerPoolManager } from '../packages/ui/src/system/code-engine/worker';
 
 class MockWorker {
   readonly listeners = new Map<string, Set<EventListener>>();
@@ -100,4 +100,30 @@ describe('CodeWorkerProvider', () => {
     result.unmount();
     expect(workersB[0]?.terminated).toBe(true);
   });
+});
+
+test('reports language resolution failures to the attached renderer', async () => {
+  const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const manager = new WorkerPoolManager(
+    { workerFactory: () => new MockWorker() as unknown as Worker, poolSize: 1 },
+    {}
+  );
+  const onHighlightError = vi.fn();
+  try {
+    await manager.initialize();
+    manager.highlightFileAST(
+      { __id: 'failure-test', onHighlightSuccess: vi.fn(), onHighlightError },
+      {
+        name: 'bad.example',
+        lang: 'nonexistent-worker-language',
+        contents: 'hello',
+      }
+    );
+    await waitFor(() =>
+      expect(onHighlightError).toHaveBeenCalledWith(expect.any(Error))
+    );
+  } finally {
+    manager.terminate();
+    errors.mockRestore();
+  }
 });

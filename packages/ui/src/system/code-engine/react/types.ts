@@ -13,6 +13,7 @@ import type {
 import type { EditorOptions } from '../edit';
 import type { GetHoveredLineResult } from '../managers/InteractionManager';
 import type {
+  CodeHighlightState,
   DiffLineAnnotation,
   FileContents,
   FileDiffMetadata,
@@ -75,6 +76,12 @@ export interface DiffBasePropsReact<LAnnotation, Caret> {
 }
 
 export interface FileProps<LAnnotation, Caret> {
+  /** Called after the corresponding content has been committed to the DOM. */
+  onHighlightStateChange?(state: CodeHighlightState): void;
+  /** Async highlight deadline, in milliseconds. Defaults to 15000; 0 disables it. */
+  highlightTimeoutMs?: number;
+  /** Change this value to retry a failed highlight without remounting. */
+  highlightRetryKey?: string | number;
   file: FileContents;
   options?: FileOptions<LAnnotation, Caret>;
   /** Whether this surface has an active edit session. */

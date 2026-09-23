@@ -18,6 +18,7 @@ import { VirtualizedFile } from '../../components/VirtualizedFile';
 import type { Editor, EditorChangeEvent, EditorOptions } from '../../edit';
 import type { GetHoveredLineResult } from '../../managers/InteractionManager';
 import type {
+  CodeHighlightState,
   FileContents,
   LineAnnotation,
   SelectedLineRange,
@@ -47,6 +48,9 @@ interface AcceptedCompletion<LAnnotation> {
 }
 
 interface UseFileInstanceProps<LAnnotation, Caret> {
+  onHighlightStateChange?(state: CodeHighlightState): void;
+  highlightTimeoutMs?: number;
+  highlightRetryKey?: string | number;
   file: FileContents;
   options: FileOptions<LAnnotation, Caret> | undefined;
   editorOptions: EditorOptions<'file', LAnnotation, Caret> | undefined;
@@ -70,6 +74,9 @@ interface UseFileInstanceReturn<LAnnotation> {
 }
 
 export function useFileInstance<LAnnotation, Caret>({
+  onHighlightStateChange,
+  highlightTimeoutMs,
+  highlightRetryKey,
   file,
   options,
   editorOptions,
@@ -88,6 +95,11 @@ export function useFileInstance<LAnnotation, Caret>({
   LAnnotation,
   Caret
 >): UseFileInstanceReturn<LAnnotation> {
+  const onHighlight = useStableCallback((state: CodeHighlightState) =>
+    onHighlightStateChange?.(state)
+  );
+  const unsubscribeHighlight = useRef<(() => void) | null>(null);
+  const previousRetryKey = useRef(highlightRetryKey);
   const simpleVirtualizer = useVirtualizer();
   const controlledSelection = selectedLines !== undefined;
   const poolManager = useContext(WorkerPoolContext);
@@ -168,6 +180,9 @@ export function useFileInstance<LAnnotation, Caret>({
       if (edit && disposeEditorRef.current == null) {
         disposeEditorRef.current = applyEdit(instanceRef.current, getEditor);
       }
+      instanceRef.current.setHighlightTimeout(highlightTimeoutMs);
+      unsubscribeHighlight.current =
+        instanceRef.current.subscribeHighlightState(onHighlight);
       void instanceRef.current.hydrate({
         file,
         fileContainer: node,
@@ -178,6 +193,8 @@ export function useFileInstance<LAnnotation, Caret>({
       if (instanceRef.current == null) {
         throw new Error('File: A File instance should exist when unmounting');
       }
+      unsubscribeHighlight.current?.();
+      unsubscribeHighlight.current = null;
       instanceRef.current.cleanUp();
       instanceRef.current = null;
       disposeEditorRef.current = null;
@@ -202,6 +219,7 @@ export function useFileInstance<LAnnotation, Caret>({
       newOptions !== undefined &&
       !areOptionsEqual(instance.options, newOptions);
     instance.setOptions(newOptions);
+    instance.setHighlightTimeout(highlightTimeoutMs);
     // Detach editor before rendering if required
     if (!edit && disposeEditorRef.current != null) {
       const { current: disposeEditor } = disposeEditorRef;
@@ -218,6 +236,10 @@ export function useFileInstance<LAnnotation, Caret>({
       lineAnnotations: resolved.lineAnnotations,
       forceRender,
     });
+    if (previousRetryKey.current !== highlightRetryKey) {
+      previousRetryKey.current = highlightRetryKey;
+      instance.retryHighlight();
+    }
     if (selectedLines !== undefined) {
       instance.setSelectedLines(selectedLines);
     }
@@ -228,8 +250,7 @@ export function useFileInstance<LAnnotation, Caret>({
   });
 
   const getHoveredLine = useCallback(():
-    | GetHoveredLineResult<'file'>
-    | undefined => {
+    GetHoveredLineResult<'file'> | undefined => {
     return instanceRef.current?.getHoveredLine();
   }, []);
   const getAnnotationSlotName = useCallback(
@@ -296,8 +317,7 @@ function mergeFileOptions<LAnnotation, Caret>({
   onEditChange,
   onEditComplete,
 }: MergeFileOptionsProps<LAnnotation, Caret>):
-  | FileOptions<LAnnotation, Caret>
-  | undefined {
+  FileOptions<LAnnotation, Caret> | undefined {
   const needsReactOverrides =
     controlledSelection ||
     hasGutterRenderUtility ||

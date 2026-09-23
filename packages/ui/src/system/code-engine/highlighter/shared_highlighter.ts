@@ -52,9 +52,17 @@ export async function getSharedHighlighter({
         : createJavaScriptRegexEngine(),
   }) as Promise<DiffsHighlighter>;
 
-  const instance = isHighlighterLoading(highlighter)
-    ? await highlighter
-    : highlighter;
+  const initializing = highlighter;
+  let instance: DiffsHighlighter;
+  try {
+    instance = isHighlighterLoading(initializing)
+      ? await initializing
+      : initializing;
+  } catch (error) {
+    // A failed initialization must not poison every subsequent attempt.
+    if (highlighter === initializing) highlighter = undefined;
+    throw error;
+  }
   highlighter = instance;
 
   const languageLoaders: Promise<ResolvedLanguage>[] = [];

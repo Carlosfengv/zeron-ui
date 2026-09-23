@@ -39,6 +39,7 @@ import {
 import type {
   AppliedThemeStyleCache,
   BaseCodeOptions,
+  CodeHighlightState,
   DiffLineAnnotation,
   DiffsHighlighter,
   FileContents,
@@ -231,6 +232,38 @@ export class File<LAnnotation = undefined, Caret = undefined> {
   protected headerPrefix: HTMLElement | undefined;
   protected headerFilenameSuffix: HTMLElement | undefined;
   protected headerMetadata: HTMLElement | undefined;
+
+  private highlightListeners = new Set<(state: CodeHighlightState) => void>();
+  private emittedHighlightState: CodeHighlightState | undefined;
+
+  public subscribeHighlightState(
+    listener: (state: CodeHighlightState) => void
+  ): () => void {
+    this.highlightListeners.add(listener);
+    if (this.emittedHighlightState != null)
+      listener(this.emittedHighlightState);
+    return () => {
+      this.highlightListeners.delete(listener);
+    };
+  }
+
+  public setHighlightTimeout(timeout = 15_000): void {
+    this.fileRenderer.highlightTimeoutMs = timeout;
+  }
+
+  public retryHighlight(): void {
+    if (this.fileRenderer.retryHighlight()) this.rerender();
+  }
+
+  private emitHighlightState(): void {
+    const state = this.fileRenderer.getHighlightState();
+    if (state == null) return;
+    this.fileContainer?.setAttribute('data-highlight-state', state.status);
+    this.pre?.setAttribute('aria-busy', String(state.status === 'loading'));
+    if (state === this.emittedHighlightState) return;
+    this.emittedHighlightState = state;
+    for (const listener of this.highlightListeners) listener(state);
+  }
 
   protected fileRenderer: FileRenderer<LAnnotation>;
   protected resizeManager: ResizeManager;
@@ -649,6 +682,8 @@ export class File<LAnnotation = undefined, Caret = undefined> {
       this.editSession = undefined;
       this.renderedFile = undefined;
     }
+    this.emittedHighlightState = undefined;
+    if (!recycle) this.highlightListeners.clear();
     this.enabled = false;
   }
 
@@ -1293,6 +1328,7 @@ export class File<LAnnotation = undefined, Caret = undefined> {
       return;
     }
 
+    this.emitHighlightState();
     const phase: PostRenderPhase = this.mounted ? 'update' : 'mount';
     this.mounted = true;
     onPostRender?.(fileContainer, this, phase);

@@ -22,4 +22,7 @@ export interface CodeBlockProductProps {
 export type CodeBlockProps<LAnnotation = undefined, Caret = undefined> =
   FileProps<LAnnotation, Caret> &
     CodeBlockPresentationProps &
-    CodeBlockProductProps;
+    CodeBlockProductProps & {
+      /** Hide built-in feedback while retaining highlight state notifications. */
+      highlightFeedback?: boolean;
+    };

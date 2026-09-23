@@ -1026,6 +1026,9 @@ export class WorkerPoolManager {
       }
       this.executeTask(availableWorker, task);
     } catch (error) {
+      // Language resolution can fail before a request reaches the worker.
+      // Notify attached renderers as well as explicit cache-prime callers.
+      this.notifyHighlightError(task, error);
       this.rejectRenderTaskCallbacks(task, normalizeWorkerError(error));
       this.cleanWorkerAndTask(availableWorker, task);
       this.queueBroadcastStateChanges();

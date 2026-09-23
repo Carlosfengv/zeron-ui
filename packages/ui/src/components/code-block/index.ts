@@ -24,6 +24,7 @@ export type {
   CodeBlockThemeMode,
 } from './code-block-theme';
 export type {
+  CodeHighlightState,
   DiffLineAnnotation,
   FileContents as CodeFile,
   FileDiffMetadata as CodeFileDiff,

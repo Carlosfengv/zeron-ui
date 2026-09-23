@@ -4006,6 +4006,11 @@
           "target": "lib/code-engine/utils/renderFileWithHighlighter.ts"
         },
         {
+          "path": "packages/ui/src/system/code-engine/utils/renderPlainFile.ts",
+          "type": "registry:lib",
+          "target": "lib/code-engine/utils/renderPlainFile.ts"
+        },
+        {
           "path": "packages/ui/src/system/code-engine/utils/resolveConflict.ts",
           "type": "registry:lib",
           "target": "lib/code-engine/utils/resolveConflict.ts"

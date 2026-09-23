@@ -20,6 +20,9 @@ export type { FileOptions } from './types';
 
 export function File<LAnnotation = undefined, Caret = undefined>({
   file,
+  onHighlightStateChange,
+  highlightTimeoutMs,
+  highlightRetryKey,
   lineAnnotations,
   selectedLines,
   options,
@@ -41,6 +44,9 @@ export function File<LAnnotation = undefined, Caret = undefined>({
   onEditComplete,
 }: FileProps<LAnnotation, Caret>): React.JSX.Element {
   const { ref, getHoveredLine, getAnnotationSlotName } = useFileInstance({
+    onHighlightStateChange,
+    highlightTimeoutMs,
+    highlightRetryKey,
     file,
     options,
     editorOptions,

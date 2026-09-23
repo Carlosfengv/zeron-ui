@@ -13,9 +13,9 @@ import {
   getSharedHighlighter,
 } from '../highlighter/shared_highlighter';
 import { areThemesAttached } from '../highlighter/themes/areThemesAttached';
-import { hasResolvedThemes } from '../highlighter/themes/hasResolvedThemes';
 import type {
   BaseCodeOptions,
+  CodeHighlightState,
   DiffsHighlighter,
   FileContents,
   FileHeaderRenderMode,
@@ -40,7 +40,6 @@ import { createPreElement } from '../utils/createPreElement';
 import { getFiletypeFromFileName } from '../utils/getFiletypeFromFileName';
 import { getHighlighterOptions } from '../utils/getHighlighterOptions';
 import { getLineAnnotationName } from '../utils/getLineAnnotationName';
-import { getThemes } from '../utils/getThemes';
 import {
   createGutterGap,
   createGutterItem,
@@ -56,7 +55,9 @@ import {
 import { isDefaultRenderRange } from '../utils/isDefaultRenderRange';
 import { isFilePlainText } from '../utils/isFilePlainText';
 import { renderFileWithHighlighter } from '../utils/renderFileWithHighlighter';
+import { renderPlainFile } from '../utils/renderPlainFile';
 import type { WorkerPoolManager } from '../worker';
+import type { FileRendererInstance } from '../worker/types';
 
 type AnnotationLineMap<LAnnotation> = Record<
   number,
@@ -77,6 +78,18 @@ interface FileRenderCache extends RenderedFileASTCache {
   // hydrate() describes DOM that already exists, even when no reusable AST
   // was available for that server-rendered content.
   hydrated?: boolean;
+}
+
+interface HighlightTask {
+  file: FileContents;
+  options: RenderFileOptions;
+  state: CodeHighlightState;
+  started: boolean;
+  settled: boolean;
+  timeoutMs: number;
+  plainReason: 'text' | 'empty' | 'size-limit' | undefined;
+  timer?: ReturnType<typeof setTimeout>;
+  worker?: FileRendererInstance;
 }
 
 export interface FileRenderResult {
@@ -119,6 +132,128 @@ export class FileRenderer<LAnnotation = undefined> {
   readonly __id: string = `file-renderer:${++instanceId}`;
 
   private highlighter: DiffsHighlighter | undefined;
+  private highlightTask: HighlightTask | undefined;
+  public highlightTimeoutMs = 15_000;
+
+  public getHighlightState(): CodeHighlightState | undefined {
+    return this.highlightTask?.state;
+  }
+
+  private clearHighlightTask(): void {
+    const task = this.highlightTask;
+    this.highlightTask = undefined;
+    if (task?.timer != null) clearTimeout(task.timer);
+    if (task?.worker != null) this.workerManager?.cleanUpTasks(task.worker);
+  }
+
+  public retryHighlight(): boolean {
+    if (this.highlightTask?.state.status !== 'error') return false;
+    this.clearHighlightTask();
+    this.pendingHighlightResult = undefined;
+    return true;
+  }
+
+  private ensureHighlightTask(
+    file: FileContents,
+    options: RenderFileOptions,
+    plainReason: HighlightTask['plainReason']
+  ): HighlightTask {
+    const previous = this.highlightTask;
+    if (
+      previous != null &&
+      previous.plainReason === plainReason &&
+      areFileTargetsEqual(previous.file, file) &&
+      areFileRenderOptionsEqual(previous.options, options)
+    )
+      return previous;
+    this.clearHighlightTask();
+    const base = {
+      fileName: file.name,
+      language: file.lang ?? getFiletypeFromFileName(file.name),
+    };
+    return (this.highlightTask = {
+      file: { ...file },
+      options,
+      started: false,
+      settled: false,
+      timeoutMs:
+        Number.isFinite(this.highlightTimeoutMs) && this.highlightTimeoutMs >= 0
+          ? this.highlightTimeoutMs
+          : 15_000,
+      plainReason,
+      state:
+        plainReason == null
+          ? { ...base, status: 'loading' }
+          : { ...base, status: 'plain', reason: plainReason },
+    });
+  }
+
+  private failHighlight(
+    task: HighlightTask,
+    error: unknown,
+    reason: 'load-or-render' | 'timeout' = 'load-or-render'
+  ): void {
+    if (this.highlightTask !== task || task.settled) return;
+    task.settled = true;
+    if (task.timer != null) clearTimeout(task.timer);
+    // Hydrated markup remains usable even if rebuilding its local AST fails.
+    if (task.state.status !== 'ready') {
+      task.state = {
+        fileName: task.file.name,
+        language: task.file.lang ?? getFiletypeFromFileName(task.file.name),
+        status: 'error',
+        reason,
+        error,
+      };
+    }
+    if (task.worker != null) this.workerManager?.cleanUpTasks(task.worker);
+    this.scheduleRenderUpdate();
+  }
+
+  private scheduleRenderUpdate(): void {
+    const task = this.highlightTask;
+    queueMicrotask(() => {
+      if (this.highlightTask === task) this.onRenderUpdate?.();
+    });
+  }
+
+  private startHighlight(task: HighlightTask, worker: boolean): void {
+    if (task.started || task.settled) return;
+    task.started = true;
+    const timeout = task.timeoutMs;
+    if (timeout > 0 && task.timer == null)
+      task.timer = setTimeout(
+        () =>
+          this.failHighlight(
+            task,
+            new Error('Syntax highlighting timed out'),
+            'timeout'
+          ),
+        timeout
+      );
+    const succeed = (result: ThemedFileResult, options: RenderFileOptions) => {
+      if (this.highlightTask !== task || task.settled) return;
+      task.settled = true;
+      if (task.timer != null) clearTimeout(task.timer);
+      this.applyHighlightResult(task.file, result, options);
+    };
+    if (worker && this.workerManager != null) {
+      // A per-attempt subscriber gives worker callbacks an immutable identity,
+      // including A -> B -> A and retries of the same file.
+      task.worker = {
+        __id: `${this.__id}:highlight`,
+        onHighlightSuccess: (_file, result, options) =>
+          succeed(result, options),
+        onHighlightError: (error) => this.failHighlight(task, error),
+      };
+      this.workerManager.highlightFileAST(task.worker, task.file);
+    } else {
+      void this.asyncHighlight(task.file).then(
+        ({ result, options }) => succeed(result, options),
+        (error: unknown) => this.failHighlight(task, error)
+      );
+    }
+  }
   // The latest file requested by the component. The render cache may
   // intentionally keep displaying an older highlighted file while this one
   // is highlighted in the background.
@@ -202,6 +337,7 @@ export class FileRenderer<LAnnotation = undefined> {
     const { editSessionActive: wasAlreadyActive, renderCache } = this;
     this.editSessionActive = true;
     if (!wasAlreadyActive) {
+      this.clearHighlightTask();
       this.pendingHighlightResult = undefined;
     }
 
@@ -309,6 +445,7 @@ export class FileRenderer<LAnnotation = undefined> {
   }
 
   public clearRenderCache(): void {
+    this.clearHighlightTask();
     this.pendingStructuralRows = undefined;
     this.renderCache = undefined;
     this.pendingHighlightResult = undefined;
@@ -335,20 +472,8 @@ export class FileRenderer<LAnnotation = undefined> {
       // FIXME(amadeus): Add support for renderRanges
       renderRange: undefined,
     };
-    if (
-      !this.editSessionActive &&
-      this.workerManager?.isWorkingPool() === true
-    ) {
-      if (this.renderCache.result == null && !massiveFile) {
-        // We should only kick off a preload of the AST if we have a WorkerPool
-        this.workerManager.highlightFileAST(this, file);
-      }
-    }
-    // Lets attempt to get the highlighter/languages ready immediately
-    else if (this.highlighter == null) {
-      this.computedLang = file.lang ?? getFiletypeFromFileName(file.name);
-      void this.initializeHighlighter();
-    }
+    // Start tracked background work while preserving hydrated markup.
+    this.renderFile(file);
   }
 
   private getLocalHighlightTheme(): RenderFileOptions['theme'] {
@@ -444,6 +569,8 @@ export class FileRenderer<LAnnotation = undefined> {
     options: RenderFileOptions,
     forcePlainText: boolean
   ): boolean {
+    // Read-only surfaces can always install the current file's plain fallback.
+    if (!this.editSessionActive) return true;
     const { renderCache } = this;
     if (renderCache == null || areFileTargetsEqual(renderCache.file, file)) {
       return true;
@@ -686,6 +813,7 @@ export class FileRenderer<LAnnotation = undefined> {
   ): FileRenderResult | undefined {
     this.file = file;
     if (file == null) {
+      this.clearHighlightTask();
       this.pendingHighlightResult = undefined;
       return undefined;
     }
@@ -713,6 +841,39 @@ export class FileRenderer<LAnnotation = undefined> {
       !hasContent ||
       isFilePlainText(file) ||
       isFileMassive(lines.length, this.getTokenizeMaxLength());
+    const plainReason = !hasContent
+      ? 'empty'
+      : isFilePlainText(file)
+        ? 'text'
+        : forcePlainText
+          ? 'size-limit'
+          : undefined;
+    const task = this.ensureHighlightTask(file, options, plainReason);
+    // A failed worker pool falls back to the main thread using the same target.
+    if (
+      task.worker != null &&
+      this.workerManager?.isWorkingPool() !== true &&
+      !task.settled
+    ) {
+      this.workerManager?.cleanUpTasks(task.worker);
+      task.worker = undefined;
+      task.started = false;
+    }
+    const preserveHydratedContent =
+      this.renderCache.hydrated === true &&
+      !forcePlainText &&
+      this.renderCache.result == null &&
+      this.renderCache.highlighted &&
+      areFileTargetsEqual(file, this.renderCache.file) &&
+      areFileRenderOptionsEqual(options, this.renderCache.options) &&
+      isDefaultRenderRange(renderRange);
+    if (preserveHydratedContent && task.state.status === 'loading') {
+      task.state = {
+        fileName: file.name,
+        language: file.lang ?? getFiletypeFromFileName(file.name),
+        status: 'ready',
+      };
+    }
     const canRenderFile = this.canRenderFile(file, options, forcePlainText);
     const newContent = !areFileTargetsEqual(file, this.renderCache.file);
     const newRenderRange = !areRenderRangesEqual(
@@ -723,14 +884,6 @@ export class FileRenderer<LAnnotation = undefined> {
       !this.editSessionActive &&
       this.workerManager?.isWorkingPool() === true
     ) {
-      // Hydration has highlighted DOM but no local AST. Keep that DOM until
-      // its corresponding worker result is ready.
-      const preserveHydratedContent =
-        this.renderCache.result == null &&
-        this.renderCache.highlighted &&
-        !forcePlainText &&
-        !newContent &&
-        isDefaultRenderRange(renderRange);
       if (
         canRenderFile &&
         !preserveHydratedContent &&
@@ -762,7 +915,7 @@ export class FileRenderer<LAnnotation = undefined> {
         hasContent &&
         (!this.renderCache.highlighted || forceHighlight)
       ) {
-        this.workerManager.highlightFileAST(this, file);
+        this.startHighlight(task, true);
       }
     } else {
       this.computedLang = file.lang ?? getFiletypeFromFileName(file.name);
@@ -779,6 +932,8 @@ export class FileRenderer<LAnnotation = undefined> {
       // an async job to get the highlighted AST
       if (
         canRenderFile &&
+        !preserveHydratedContent &&
+        task.state.status !== 'error' &&
         this.highlighter != null &&
         hasThemes &&
         (forceHighlight ||
@@ -786,28 +941,74 @@ export class FileRenderer<LAnnotation = undefined> {
           (!this.renderCache.highlighted && canHighlight) ||
           this.renderCache.result == null)
       ) {
-        const { result, options } = this.renderFileWithHighlighter(
-          file,
-          this.highlighter,
-          forcePlainText || !hasLangs
-        );
-        this.renderCache = {
-          file,
-          options,
-          highlighted: canHighlight,
-          result,
-          renderRange: undefined,
-        };
+        try {
+          const { result, options } = this.renderFileWithHighlighter(
+            file,
+            this.highlighter,
+            forcePlainText || !hasLangs
+          );
+          this.renderCache = {
+            file,
+            options,
+            highlighted: canHighlight,
+            result,
+            renderRange: undefined,
+          };
+        } catch (error) {
+          // Report after the current render has installed its readable fallback.
+          queueMicrotask(() => this.failHighlight(task, error));
+        }
       }
 
       // If we get in here it means we'll have to kick off an async highlight
       // process which will involve initializing the highlighter with new themes
       // and languages
-      if (!hasThemes || (!forcePlainText && !hasLangs)) {
-        void this.asyncHighlight(file).then(({ result, options }) => {
-          this.applyHighlightResult(file, result, options, !forcePlainText);
-        });
+      if (
+        !forcePlainText &&
+        (!hasThemes || !hasLangs || preserveHydratedContent)
+      ) {
+        this.startHighlight(task, false);
       }
+    }
+
+    // Even a completely cold engine must expose readable, escaped content.
+    // Keep existing hydrated DOM until a corresponding AST becomes available.
+    if (
+      !preserveHydratedContent &&
+      !this.editSessionActive &&
+      (this.renderCache.result == null ||
+        !areFileTargetsEqual(this.renderCache.file, file) ||
+        (!this.renderCache.highlighted &&
+          this.renderCache.renderRange != null &&
+          !areRenderRangesEqual(this.renderCache.renderRange, renderRange)))
+    ) {
+      if (
+        !this.renderCache.highlighted ||
+        !areFileTargetsEqual(this.renderCache.file, file)
+      ) {
+        this.renderCache = {
+          file,
+          options,
+          highlighted: false,
+          result: renderPlainFile(lines, renderRange),
+          renderRange,
+        };
+      }
+    }
+    if (
+      this.renderCache.highlighted &&
+      this.renderCache.result != null &&
+      areFileTargetsEqual(this.renderCache.file, file) &&
+      areFileRenderOptionsEqual(this.renderCache.options, options) &&
+      task.state.status === 'loading'
+    ) {
+      task.state = {
+        fileName: file.name,
+        language: file.lang ?? getFiletypeFromFileName(file.name),
+        status: 'ready',
+      };
+      task.settled = true;
+      if (task.timer != null) clearTimeout(task.timer);
     }
 
     return this.renderCache.result != null
@@ -830,29 +1031,28 @@ export class FileRenderer<LAnnotation = undefined> {
 
   private async asyncHighlight(file: FileContents): Promise<RenderFileResult> {
     const lines = this.getOrCreateLineCache(file);
-    const forcePlainText = isFileMassive(
-      lines.length,
-      this.getTokenizeMaxLength()
-    );
-    this.computedLang = forcePlainText
+    const forcePlainText =
+      isFilePlainText(file) ||
+      file.contents.length === 0 ||
+      isFileMassive(lines.length, this.getTokenizeMaxLength());
+    const options = this.getRenderOptions(file).options;
+    const lang = forcePlainText
       ? 'text'
       : (file.lang ?? getFiletypeFromFileName(file.name));
-    const hasThemes =
-      this.highlighter != null &&
-      hasResolvedThemes(getThemes(this.getLocalHighlightTheme()));
-    const hasLangs =
-      forcePlainText ||
-      (this.highlighter != null && areLanguagesAttached(this.computedLang));
-    // If we don't have the required langs or themes, then we need to
-    // initialize the highlighter to load the appropriate languages and themes
-    if (this.highlighter == null || !hasThemes || !hasLangs) {
-      this.highlighter = await this.initializeHighlighter();
-    }
-    return this.renderFileWithHighlighter(
-      file,
-      this.highlighter,
-      forcePlainText
+    const highlighter = await getSharedHighlighter(
+      getHighlighterOptions(lang, {
+        theme: options.theme,
+        preferredHighlighter:
+          this.workerManager?.getPreferredHighlighter() ??
+          this.options.preferredHighlighter,
+      })
     );
+    return {
+      options,
+      result: renderFileWithHighlighter(file, highlighter, options, {
+        forcePlainText,
+      }),
+    };
   }
 
   private renderFileWithHighlighter(
@@ -1074,7 +1274,7 @@ export class FileRenderer<LAnnotation = undefined> {
       highlighted,
       result,
     };
-    this.onRenderUpdate?.();
+    this.scheduleRenderUpdate();
   }
 
   private getMatchingWorkerResultCache(
@@ -1097,6 +1297,13 @@ export class FileRenderer<LAnnotation = undefined> {
     file: FileContents,
     options: RenderFileOptions
   ): PendingHighlightResult | undefined {
+    const task = this.highlightTask;
+    if (
+      task?.state.status === 'error' &&
+      areFileTargetsEqual(task.file, file) &&
+      areFileRenderOptionsEqual(task.options, options)
+    )
+      return undefined;
     const { pendingHighlightResult } = this;
     if (
       pendingHighlightResult != null &&
@@ -1127,7 +1334,8 @@ export class FileRenderer<LAnnotation = undefined> {
   }
 
   public onHighlightError(error: unknown): void {
-    console.error(error);
+    if (this.highlightTask != null)
+      this.failHighlight(this.highlightTask, error);
   }
 
   private getTokenizeMaxLength(): number {
