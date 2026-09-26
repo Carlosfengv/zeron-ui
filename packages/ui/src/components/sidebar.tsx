@@ -18,7 +18,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Collapsible } from "@base-ui/react/collapsible";
 import { useDirection } from "@base-ui/react/direction-provider";
 import { cn } from "#system/utils";
-import { spring } from "#system/springs";
 import { useSurface, SurfaceProvider } from "#system/surface-context";
 import { resolveSurface, shadowClasses, type ShadowRole } from "#system/surface-classes";
 import { useIcon } from "#system/icon-context";
@@ -28,6 +27,7 @@ import { ScrollArea } from "#components/scroll-area";
 import { MobileDrawer } from "#components/mobile-drawer";
 
 export const SIDEBAR_MOBILE_QUERY = "(max-width: 1279px)";
+export const SIDEBAR_COLLAPSED_WIDTH = "calc(var(--control-height-xl) + var(--spacing) + var(--spacing) + var(--spacing) + var(--spacing))";
 
 export type SidebarState = "expanded" | "collapsed";
 export type SidebarVariant = "sidebar" | "floating";
@@ -260,7 +260,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
       variant = "sidebar",
       collapsible = "offcanvas",
       width = "16rem",
-      collapsedWidth = "3rem",
+      collapsedWidth = SIDEBAR_COLLAPSED_WIDTH,
       mobileWidth = "16rem",
       ariaLabel,
       side = "start",
@@ -287,7 +287,9 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
     const offcanvas = visualState === "collapsed" && collapsible === "offcanvas";
     const physicalLeft = (side === "start") === (dir !== "rtl");
     const offcanvasX = physicalLeft ? "-100%" : "100%";
-    const sidebarTransition = reduceMotion ? { duration: 0 } : spring.moderate;
+    const sidebarTransition = reduceMotion
+      ? { duration: 0 }
+      : { type: "tween" as const, duration: 0.24, ease: [0.65, 0, 0.35, 1] as const };
     const rootStyle = {
       ...style,
       "--sidebar-width": width,
@@ -404,23 +406,29 @@ Sidebar.displayName = "Sidebar";
 export interface SidebarTriggerProps extends Omit<ComponentPropsWithoutRef<typeof Button>, "children"> {
   /** Replaces the default state-aware menu, collapse, or expand icon. */
   icon?: ReactNode;
+  /** Shown in the collapsed rail until hover or keyboard focus reveals the expand icon. */
+  collapsedIcon?: ReactNode;
   label?: string;
 }
 
 const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
-  ({ icon, label = "Toggle sidebar", onClick, ...props }, forwardedRef) => {
+  ({ icon, collapsedIcon, label = "Toggle sidebar", className, onClick, size, ...props }, forwardedRef) => {
     const { breakpointBehavior, isMobile, mobileOpen, state, toggle, setActiveTrigger } = useSidebar();
     const MenuIcon = useIcon("menu");
     const CollapseIcon = useIcon("layout-align-right");
     const ExpandIcon = useIcon("layout-align-left");
     const compactDrawer = breakpointBehavior === "drawer" && isMobile;
+    const collapsed = state === "collapsed" && !compactDrawer;
+    const showCollapsedIcon = collapsed && icon == null && collapsedIcon != null;
+    const resolvedSize = size ?? (collapsed ? "xl" : "lg");
     const Icon = compactDrawer ? MenuIcon : state === "collapsed" ? ExpandIcon : CollapseIcon;
     return (
       <Button
         ref={forwardedRef}
         variant="ghost"
         iconOnly
-        size="lg"
+        size={resolvedSize}
+        className={cn(showCollapsedIcon && "group/sidebar-expand", className)}
         aria-label={label}
         onClick={(event) => {
           onClick?.(event);
@@ -433,7 +441,12 @@ const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
         }}
         {...props}
       >
-        {icon ?? <Icon aria-hidden="true" size={16} strokeWidth={1.5} />}
+        {icon ?? (showCollapsedIcon ? (
+          <span aria-hidden="true" className="relative flex size-8 items-center justify-center">
+            <span className="absolute inset-0 flex items-center justify-center transition-opacity duration-fast group-hover/sidebar-expand:opacity-0 group-focus-visible/sidebar-expand:opacity-0 motion-reduce:transition-none">{collapsedIcon}</span>
+            <ExpandIcon className="absolute opacity-0 transition-opacity duration-fast group-hover/sidebar-expand:opacity-100 group-focus-visible/sidebar-expand:opacity-100 motion-reduce:transition-none" size={20} strokeWidth={1.5} />
+          </span>
+        ) : <Icon aria-hidden="true" size={resolvedSize === "xl" ? 20 : 16} strokeWidth={1.5} />)}
       </Button>
     );
   }
@@ -590,7 +603,7 @@ const SidebarHeader = forwardRef<HTMLDivElement, SidebarHeaderProps>(({ classNam
   <div
     ref={ref}
     data-slot="sidebar-header"
-    className={cn("shrink-0 p-3 group-data-[state=collapsed]/sidebar:p-1.5", className)}
+    className={cn("shrink-0 p-3 group-data-[state=collapsed]/sidebar:p-2", className)}
     {...props}
   />
 ));
@@ -611,7 +624,11 @@ const SidebarContent = forwardRef<HTMLDivElement, SidebarContentProps>(({
   >
     <div
       data-slot="sidebar-content-inner"
-      className={cn("flex min-h-full w-full min-w-0 flex-col gap-4 px-1 py-1.5", contentClassName)}
+      className={cn(
+        "flex min-h-full w-full min-w-0 flex-col gap-4 px-1 py-1.5 transition-[gap] duration-slow ease-[cubic-bezier(0.65,0,0.35,1)] motion-reduce:transition-none",
+        "group-data-[state=collapsed]/sidebar:gap-0 group-data-[collapsible=icon]/sidebar:px-2",
+        contentClassName
+      )}
       {...props}
     >
       {children}
@@ -647,8 +664,19 @@ const SidebarGroup = forwardRef<HTMLElement, SidebarGroupProps>(({
 ));
 SidebarGroup.displayName = "SidebarGroup";
 
-const SidebarGroupLabel = forwardRef<HTMLDivElement, SidebarGroupLabelProps>(({ className, ...props }, ref) => (
-  <div ref={ref} data-slot="sidebar-group-label" className={cn("px-2 pb-1.5 text-label text-fg-muted group-data-[state=collapsed]/sidebar:hidden", className)} {...props} />
+const SidebarGroupLabel = forwardRef<HTMLDivElement, SidebarGroupLabelProps>(({ className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-slot="sidebar-group-label"
+    className={cn(
+      "grid grid-rows-[1fr] overflow-hidden px-2 pb-1.5 text-label text-fg-muted transition-[grid-template-rows,opacity,padding,visibility] duration-slow ease-[cubic-bezier(0.65,0,0.35,1)]",
+      "group-data-[state=collapsed]/sidebar:grid-rows-[0fr] group-data-[state=collapsed]/sidebar:pb-0 group-data-[state=collapsed]/sidebar:opacity-0 group-data-[state=collapsed]/sidebar:invisible motion-reduce:transition-none",
+      className
+    )}
+    {...props}
+  >
+    <span className="min-h-0 overflow-hidden">{children}</span>
+  </div>
 ));
 SidebarGroupLabel.displayName = "SidebarGroupLabel";
 

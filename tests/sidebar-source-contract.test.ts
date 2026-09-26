@@ -7,6 +7,7 @@ const source = (file: string) =>
 
 describe("sidebar implementation contract", () => {
   const sidebar = source("packages/ui/src/components/sidebar.tsx");
+  const navItem = source("packages/ui/src/components/nav-item.tsx");
   const drawer = source("packages/ui/src/components/mobile-drawer.tsx");
   const identityRow = source("packages/ui/src/components/sidebar-identity-row.tsx");
   const accountMenu = source("packages/ui/src/components/sidebar-account-menu.tsx");
@@ -18,6 +19,8 @@ describe("sidebar implementation contract", () => {
   const zaiopsPreview = source("docs/components/shell/site/zaiops-sidebar-preview.tsx");
 
   it("publishes one set of width variables and keeps the compact drawer explicit", () => {
+    expect(sidebar).toContain('export const SIDEBAR_COLLAPSED_WIDTH = "calc(var(--control-height-xl)');
+    expect(sidebar).toContain("collapsedWidth = SIDEBAR_COLLAPSED_WIDTH");
     expect(sidebar).toContain('"--sidebar-width": width');
     expect(sidebar).toContain('"--sidebar-width-collapsed": collapsedWidth');
     expect(sidebar).toContain('"--sidebar-width-mobile": mobileWidth');
@@ -59,32 +62,40 @@ describe("sidebar implementation contract", () => {
     expect(sidebar).toContain("contentClassName?: string;");
     expect(sidebar).toContain('data-slot="sidebar-content-inner"');
     expect(sidebar).toContain('"h-full overflow-x-hidden"');
-    expect(sidebar).toContain('"flex min-h-full w-full min-w-0 flex-col gap-4 px-1 py-1.5"');
+    expect(sidebar).toContain('group-data-[collapsible=icon]/sidebar:px-2');
     expect(sidebar).toContain("{...props}");
   });
 
   it("centers header controls within the icon-collapsed rail", () => {
     expect(sidebar).toContain(
-      '"shrink-0 p-3 group-data-[state=collapsed]/sidebar:p-1.5"'
+      '"shrink-0 p-3 group-data-[state=collapsed]/sidebar:p-2"'
     );
   });
 
-  it("uses the 36px control size for the standard collapse trigger", () => {
+  it("uses a 40px collapsed trigger with a 20px expand icon and optional brand mark", () => {
     expect(sidebar).toContain("icon?: ReactNode;");
-    expect(sidebar).toMatch(
-      /const SidebarTrigger[\s\S]*?iconOnly[\s\S]*?size="lg"/
-    );
-    expect(sidebar).toContain(
-      '{icon ?? <Icon aria-hidden="true" size={16} strokeWidth={1.5} />}'
-    );
-    expect(sidebar.match(/<Icon aria-hidden="true" size=\{16\} strokeWidth=\{1\.5\} \/>/g)).toHaveLength(2);
+    expect(sidebar).toContain("collapsedIcon?: ReactNode;");
+    expect(sidebar).toContain('const resolvedSize = size ?? (collapsed ? "xl" : "lg");');
+    expect(sidebar).toContain('className={cn(showCollapsedIcon && "group/sidebar-expand", className)}');
+    expect(sidebar).toContain("group-hover/sidebar-expand:opacity-0 group-focus-visible/sidebar-expand:opacity-0");
+    expect(sidebar).toContain("group-hover/sidebar-expand:opacity-100 group-focus-visible/sidebar-expand:opacity-100");
+    expect(sidebar).toContain('size={resolvedSize === "xl" ? 20 : 16}');
     expect(sidebarDocs).toContain(
-      '<SidebarTrigger className="shrink-0" label="Toggle preview sidebar" />'
+      '<SidebarTrigger className="shrink-0" collapsedIcon={<SidebarIdentityAvatar'
     );
+  });
+
+  it("gives collapsed navigation full 40px targets, 20px icons, and right-side tooltip support", () => {
+    expect(navItem).toContain("group-data-[collapsible=icon]/sidebar:h-control-xl");
+    expect(navItem).toContain("group-data-[collapsible=icon]/sidebar:min-w-control-xl");
+    expect(navItem).toContain("group-data-[collapsible=icon]/sidebar:py-0");
+    expect(navItem).toContain("group-data-[state=collapsed]/sidebar:[&_svg]:size-5");
+    expect(navItem).toContain("tooltipSide?: TooltipSide;");
+    expect(navItem).toContain('<Tooltip content={tooltip} side={tooltipSide}>');
   });
 
   it("animates desktop collapse and expansion while respecting reduced motion", () => {
-    expect(sidebar).toContain("const sidebarTransition = reduceMotion ? { duration: 0 } : spring.moderate;");
+    expect(sidebar).toContain('type: "tween" as const, duration: 0.24, ease: [0.65, 0, 0.35, 1] as const');
     expect(sidebar).toContain('data-slot="sidebar-gap"');
     expect(sidebar).toContain("animate={{ width: offcanvas ? 0 : panelWidth }}");
     expect(sidebar).toContain("width: panelWidth,");

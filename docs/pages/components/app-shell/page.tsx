@@ -24,7 +24,7 @@ const sidebarWithoutHeaderCode = `<AppShell layout="sidebar">
 
 const props: PropDef[] = [
   { name: "AppShell", type: 'div props & { layout?: "sidebar" | "stacked" }', default: '"sidebar"', description: "Application frame. Use sidebar for a side region and stacked for a header-over-content flow." },
-  { name: "AppShellSidebar", type: 'div props & { side?: "left" | "right"; width?: CSSProperties["width"] }', default: 'side: "left", width: "260px"', description: "Optional persistent navigation column. Its side controls the main column placement." },
+  { name: "AppShellSidebar", type: 'div props & { side?: "left" | "right"; width?: CSSProperties["width"] }', default: 'side: "left"; width: 260px without a Sidebar child', description: "Optional persistent navigation column. When its direct child is a Sidebar, omit width so the main column follows the Sidebar width animation. Set width to keep an explicit track width." },
   { name: "AppShellHeader", type: "header props", description: "Optional sticky header in the main column." },
   { name: "AppShellMain", type: "main props & { landmark?: boolean }", default: "landmark: true", description: "The single primary content landmark. Set landmark to false only inside an embedded preview or nested shell." },
 ];

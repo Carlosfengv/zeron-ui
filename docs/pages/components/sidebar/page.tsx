@@ -24,7 +24,7 @@ const code = `<SidebarProvider defaultOpen breakpointBehavior="collapse">
           <DropdownTrigger render={<SidebarIdentityRow as="button" primary={workspace} />} />
           <DropdownContent>...</DropdownContent>
         </DropdownMenu>
-        <SidebarTrigger />
+        <SidebarTrigger collapsedIcon={<SidebarIdentityAvatar tone="brand">W</SidebarIdentityAvatar>} label="Toggle sidebar" />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup collapsible defaultOpen>
@@ -376,12 +376,19 @@ export function ZaiopsSidebarPreview() {
 const props: PropDef[] = [
   { name: "collapsible", type: '"offcanvas" | "icon" | "none"', default: '"offcanvas"', description: "Desktop collapse behavior." },
   { name: "width", type: "string", default: '"16rem"', description: "Expanded desktop panel width." },
+  { name: "collapsedWidth", type: "string", default: "40px control + 8px on each side", description: "Icon rail width derived from the XL control and spacing tokens; override for a different rail layout." },
   { name: "mobileWidth", type: "string", default: '"16rem"', description: "Drawer panel width on compact viewports." },
   { name: "ariaLabel", type: "string", default: '"Navigation"', description: "Accessible name for the desktop aside and compact drawer." },
   { name: "side", type: '"start" | "end"', default: '"start"', description: "Logical edge used by the panel, rail, border, and drawer motion." },
   { name: "persistenceKey", type: "string", description: "Optional localStorage key for the desktop open state." },
   { name: "breakpointBehavior", type: '"drawer" | "collapse"', default: '"drawer"', description: "Uses either the compact drawer or the same effective collapsed state below 1280px." },
   { name: "setActiveTrigger", type: "(owner: HTMLElement | null) => void", description: "For a controlled or programmatic compact-drawer open, set the final-focus owner immediately before opening. Pass null when there is no valid owner." },
+];
+const triggerProps: PropDef[] = [
+  { name: "collapsedIcon", type: "ReactNode", description: "Optional mark shown in the collapsed rail. Hover or keyboard focus reveals the 20px expand icon." },
+  { name: "icon", type: "ReactNode", description: "Replaces the state-aware icon, including the collapsed mark behavior." },
+  { name: "size", type: "ControlSize", default: '"lg" expanded / "xl" collapsed', description: "Default button size follows the sidebar state; an explicit size overrides it." },
+  { name: "label", type: "string", default: '"Toggle sidebar"', description: "Accessible name for the button." },
 ];
 const groupProps: PropDef[] = [
   { name: "collapsible", type: "boolean", default: "false", description: "Turns SidebarGroupTrigger into an expandable label for the group content." },
@@ -428,36 +435,38 @@ export default function SidebarDoc() {
           <div className="flex h-96 w-full min-w-0 overflow-hidden bg-surface-base group-data-[fullscreen=true]/preview-content:h-full group-data-[fullscreen=true]/preview-content:min-h-0">
             <Sidebar collapsible="icon" className="relative !h-full">
               <SidebarHeader className="flex flex-row items-center gap-1 group-data-[state=collapsed]/sidebar:flex-col">
-                <DropdownMenu>
-                  <DropdownTrigger
-                    render={
-                      <SidebarIdentityRow
-                        as="button"
-                        className="min-w-0 group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:px-0 group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content-row]]:justify-center group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-leading]]:flex-none group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content]]:hidden group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-trailing]]:hidden"
-                        leading={<SidebarIdentityAvatar className="rounded-lg" tone="brand">W</SidebarIdentityAvatar>}
-                        primary={workspace}
-                        trailing={<ChevronDown aria-hidden className="size-4" />}
-                        trailingPlacement="edge"
-                      />
-                    }
-                  />
-                  <DropdownContent
-                    align="start"
-                    checkedIndex={workspaceOptions.indexOf(workspace)}
-                    className="!w-60 !min-w-60 !max-w-60"
-                  >
-                    {workspaceOptions.map((name, index) => (
-                      <MenuItem
-                        checked={name === workspace}
-                        index={index}
-                        key={name}
-                        label={name}
-                        onSelect={() => setWorkspace(name)}
-                      />
-                    ))}
-                  </DropdownContent>
-                </DropdownMenu>
-                <SidebarTrigger className="shrink-0" label="Toggle preview sidebar" />
+                <div className="min-w-0 flex-1 group-data-[state=collapsed]/sidebar:hidden">
+                  <DropdownMenu>
+                    <DropdownTrigger
+                      render={
+                        <SidebarIdentityRow
+                          as="button"
+                          className="min-w-0 group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:px-0 group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content-row]]:justify-center group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-leading]]:flex-none group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-content]]:hidden group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-identity-trailing]]:hidden"
+                          leading={<SidebarIdentityAvatar className="rounded-lg" tone="brand">W</SidebarIdentityAvatar>}
+                          primary={workspace}
+                          trailing={<ChevronDown aria-hidden className="size-4" />}
+                          trailingPlacement="edge"
+                        />
+                      }
+                    />
+                    <DropdownContent
+                      align="start"
+                      checkedIndex={workspaceOptions.indexOf(workspace)}
+                      className="!w-60 !min-w-60 !max-w-60"
+                    >
+                      {workspaceOptions.map((name, index) => (
+                        <MenuItem
+                          checked={name === workspace}
+                          index={index}
+                          key={name}
+                          label={name}
+                          onSelect={() => setWorkspace(name)}
+                        />
+                      ))}
+                    </DropdownContent>
+                  </DropdownMenu>
+                </div>
+                <SidebarTrigger className="shrink-0" collapsedIcon={<SidebarIdentityAvatar className="size-7 rounded-lg" tone="brand">W</SidebarIdentityAvatar>} label="Toggle preview sidebar" />
               </SidebarHeader>
               <SidebarContent>
                 <SidebarGroup collapsible defaultOpen>
@@ -465,13 +474,13 @@ export default function SidebarDoc() {
                   <SidebarGroupContent>
                     <NavMenu activeValue="projects">
                       <NavItem value="projects">
-                        <NavItemTrigger tooltip="Projects">
+                        <NavItemTrigger tooltip="Projects" tooltipSide="right">
                           <NavItemLeading><Project size={16} strokeWidth={1.5} /></NavItemLeading>
                           <NavItemContent><NavItemLabel>Projects</NavItemLabel></NavItemContent>
                         </NavItemTrigger>
                       </NavItem>
                       <NavItem value="team">
-                        <NavItemTrigger tooltip="Team">
+                        <NavItemTrigger tooltip="Team" tooltipSide="right">
                           <NavItemLeading><Team size={16} strokeWidth={1.5} /></NavItemLeading>
                           <NavItemContent><NavItemLabel>Team</NavItemLabel></NavItemContent>
                         </NavItemTrigger>
@@ -484,13 +493,13 @@ export default function SidebarDoc() {
                   <SidebarGroupContent>
                     <NavMenu aria-label="Manage navigation">
                       <NavItem value="activity">
-                        <NavItemTrigger tooltip="Activity">
+                        <NavItemTrigger tooltip="Activity" tooltipSide="right">
                           <NavItemLeading><Activity size={16} strokeWidth={1.5} /></NavItemLeading>
                           <NavItemContent><NavItemLabel>Activity</NavItemLabel></NavItemContent>
                         </NavItemTrigger>
                       </NavItem>
                       <NavItem value="settings">
-                        <NavItemTrigger tooltip="Settings">
+                        <NavItemTrigger tooltip="Settings" tooltipSide="right">
                           <NavItemLeading><Settings size={16} strokeWidth={1.5} /></NavItemLeading>
                           <NavItemContent><NavItemLabel>Settings</NavItemLabel></NavItemContent>
                         </NavItemTrigger>
@@ -515,8 +524,10 @@ export default function SidebarDoc() {
       </ComponentPreview>
     </DocSection>
     <DocSection title="ZAIops recipe"><ComponentPreview fullScreenable padding="none" code={zaiopsCode}><ZaiopsSidebarPreview /></ComponentPreview></DocSection>
+    <DocSection title="Icon rail"><p className="max-w-3xl text-body leading-5 text-fg-muted">The collapsed rail derives its width from a 40px control and the spacing scale. Navigation targets and leading icons grow to 40px and 20px. Pass collapsedIcon to SidebarTrigger to show a brand mark until hover or keyboard focus, and use tooltipSide="right" on NavItemTrigger for rail labels.</p></DocSection>
     <DocSection title="Focus behavior"><p className="max-w-3xl text-body leading-5 text-fg-muted">On compact screens, closing the drawer restores the control that opened it. SidebarTrigger records that owner automatically; controlled or programmatic opens should call setActiveTrigger(owner) immediately before opening, or pass null to avoid restoring a stale trigger.</p></DocSection>
     <DocSection title="API Reference"><PropsTable props={props} /></DocSection>
+    <DocSection title="API Reference — SidebarTrigger"><PropsTable props={triggerProps} /></DocSection>
     <DocSection title="API Reference — SidebarGroup"><PropsTable props={groupProps} /></DocSection>
     <DocSection title="API Reference — SidebarFloatingTrigger"><PropsTable props={floatingTriggerProps} /></DocSection>
   </DocPage>;

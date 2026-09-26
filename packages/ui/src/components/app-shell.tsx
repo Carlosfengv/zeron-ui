@@ -15,7 +15,7 @@ export interface AppShellProps extends ComponentPropsWithoutRef<"div"> {
 export interface AppShellSidebarProps extends ComponentPropsWithoutRef<"div"> {
   /** The sidebar edge in the `sidebar` layout. */
   side?: AppShellSidebarSide;
-  /** The persistent sidebar track width. */
+  /** Explicit track width. Omit it when a direct Sidebar child should drive the track. */
   width?: CSSProperties["width"];
 }
 export type AppShellHeaderProps = ComponentPropsWithoutRef<"header">;
@@ -54,17 +54,20 @@ const AppShell = forwardRef<HTMLDivElement, AppShellProps>(
 AppShell.displayName = "AppShell";
 
 const AppShellSidebar = forwardRef<HTMLDivElement, AppShellSidebarProps>(
-  ({ side = "left", width = "260px", className, style, ...props }, ref) => (
+  ({ side = "left", width, className, style, ...props }, ref) => (
     <div
       ref={ref}
       data-slot="app-shell-sidebar"
       data-side={side}
       className={cn(
-        "col-start-1 row-span-2 min-h-0 w-[var(--app-shell-sidebar-width)] data-[side=right]:col-start-2",
-        "max-xl:w-0 [&:has(>_[data-slot=sidebar][data-collapsible=offcanvas][data-state=collapsed])]:w-0",
+        "col-start-1 row-span-2 min-h-0 data-[side=right]:col-start-2",
+        "w-[var(--app-shell-sidebar-width)]",
+        width === undefined && "[&:has(>_[data-slot=sidebar])]:w-max",
+        "max-xl:w-0",
+        width !== undefined && "[&:has(>_[data-slot=sidebar][data-collapsible=offcanvas][data-state=collapsed])]:w-0",
         className
       )}
-      style={{ "--app-shell-sidebar-width": width, ...style } as CSSProperties}
+      style={{ "--app-shell-sidebar-width": width ?? "260px", ...style } as CSSProperties}
       {...props}
     />
   )

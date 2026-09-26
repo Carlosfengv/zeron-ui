@@ -16,7 +16,7 @@ import { useRender } from "@base-ui/react/use-render";
 import { cn } from "#system/utils";
 import { useIcon } from "#system/icon-context";
 import { Button } from "#components/button";
-import { Tooltip } from "#components/tooltip";
+import { Tooltip, type TooltipSide } from "#components/tooltip";
 import { useNavMenuOptional } from "#components/nav-menu";
 
 export interface NavItemProps extends HTMLAttributes<HTMLElement> {
@@ -67,7 +67,7 @@ const NavItem = forwardRef<HTMLElement, NavItemProps>(
 
     const itemClassName = cn(
       "group/nav-item relative z-content flex min-w-0 items-center",
-      "group-data-[state=collapsed]/sidebar:size-control-lg group-data-[state=collapsed]/sidebar:self-center",
+      "group-data-[collapsible=icon]/sidebar:h-control-xl group-data-[collapsible=icon]/sidebar:w-full group-data-[collapsible=icon]/sidebar:min-w-control-xl group-data-[collapsible=icon]/sidebar:py-0",
       "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50",
       navMenu && "py-0.5",
       !navMenu && [
@@ -115,10 +115,11 @@ NavItem.displayName = "NavItem";
 
 export type NavItemTriggerProps = useRender.ComponentProps<"a"> & {
   tooltip?: ReactNode;
+  tooltipSide?: TooltipSide;
 };
 
 const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
-  ({ className, render, tooltip, onClick, onKeyDown, ...props }, forwardedRef) => {
+  ({ className, render, tooltip, tooltipSide, onClick, onKeyDown, ...props }, forwardedRef) => {
     const { active, disabled, rovingTabIndex } = useNavItem();
     const navMenu = useNavMenuOptional();
     const variant = navMenu?.variant ?? "default";
@@ -152,8 +153,8 @@ const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
             variant === "underline"
               ? "h-control-lg border-b-2 border-transparent data-[active=true]:border-fg-default"
               : "h-control-md",
-            "group-data-[state=collapsed]/sidebar:h-full group-data-[state=collapsed]/sidebar:w-full group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:px-0",
-            "cursor-pointer text-fg-muted transition-[color,border-color] duration-fast",
+            "group-data-[collapsible=icon]/sidebar:h-full group-data-[collapsible=icon]/sidebar:w-full group-data-[collapsible=icon]/sidebar:justify-start group-data-[collapsible=icon]/sidebar:px-2.5 group-data-[state=collapsed]/sidebar:gap-0",
+            "cursor-pointer text-fg-muted transition-[color,border-color,padding,gap] duration-fast group-data-[mobile=false]/sidebar:duration-slow group-data-[mobile=false]/sidebar:ease-[cubic-bezier(0.65,0,0.35,1)]",
             "hover:text-fg-default focus-visible:text-fg-default",
             "data-[active=true]:font-medium",
             variant === "segment"
@@ -169,7 +170,7 @@ const NavItemTrigger = forwardRef<HTMLElement, NavItemTriggerProps>(
       state: { active, disabled, slot: "nav-item-trigger" },
     });
 
-    return tooltip ? <Tooltip content={tooltip}>{trigger}</Tooltip> : trigger;
+    return tooltip ? <Tooltip content={tooltip} side={tooltipSide}>{trigger}</Tooltip> : trigger;
   }
 );
 
@@ -186,7 +187,7 @@ const NavItemLeading = forwardRef<HTMLSpanElement, NavItemLeadingProps>(
         ref={ref}
         data-slot="nav-item-leading"
         className={cn(
-          "flex size-4 shrink-0 items-center justify-center text-fg-default transition-colors duration-fast",
+          "flex size-4 shrink-0 items-center justify-center text-fg-default transition-[width,height,color] duration-fast group-data-[mobile=false]/sidebar:duration-slow group-data-[state=collapsed]/sidebar:size-5 group-data-[state=collapsed]/sidebar:[&_svg]:size-5 [&_svg]:transition-[width,height] [&_svg]:duration-slow",
           navMenu?.variant === "segment" &&
             "group-data-[active=true]/nav-item:text-fg-on-brand",
           className
@@ -207,7 +208,7 @@ const NavItemContent = forwardRef<HTMLSpanElement, NavItemContentProps>(
       ref={ref}
       data-slot="nav-item-content"
       className={cn(
-        "flex min-w-0 flex-1 items-center gap-2 overflow-hidden whitespace-nowrap group-data-[state=collapsed]/sidebar:hidden",
+        "flex min-w-0 flex-1 items-center gap-2 overflow-hidden whitespace-nowrap group-data-[mobile=false]/sidebar:transition-opacity group-data-[mobile=false]/sidebar:duration-slow group-data-[mobile=false]/sidebar:ease-[cubic-bezier(0.65,0,0.35,1)] group-data-[state=collapsed]/sidebar:opacity-0 group-data-[state=collapsed]/sidebar:pointer-events-none motion-reduce:transition-none",
         className
       )}
       {...props}

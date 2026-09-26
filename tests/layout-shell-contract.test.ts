@@ -216,8 +216,8 @@ describe("shell and page-layout composition contract", () => {
     expect(navItem).toContain("group-data-[active=true]/nav-item:font-medium");
   });
 
-  it("keeps collapsed Sidebar navigation items at the 36px control size", () => {
-    expect(navItem).toContain("group-data-[state=collapsed]/sidebar:size-control-lg");
+  it("keeps collapsed Sidebar navigation items at the 40px control size", () => {
+    expect(navItem).toContain("group-data-[collapsible=icon]/sidebar:min-w-control-xl");
     expect(navItem).not.toContain("group-data-[state=collapsed]/sidebar:size-8");
   });
 
