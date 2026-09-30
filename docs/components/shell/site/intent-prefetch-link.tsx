@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useState, type ComponentProps } from "react";
+import { LinkPendingIndicator } from "./link-pending-indicator";
 
-/** Gallery cards should not download every visible detail page on arrival. */
-export function IntentPrefetchLink({ onMouseEnter, onFocus, ...props }: Omit<ComponentProps<typeof Link>, "prefetch">) {
+/** Prefetch only the card the visitor is about to open. */
+export function IntentPrefetchLink({ children, onMouseEnter, onFocus, ...props }: Omit<ComponentProps<typeof Link>, "prefetch">) {
   const [hasIntent, setHasIntent] = useState(false);
 
   return (
@@ -19,6 +20,9 @@ export function IntentPrefetchLink({ onMouseEnter, onFocus, ...props }: Omit<Com
         onFocus?.(event);
         if (!event.defaultPrevented) setHasIntent(true);
       }}
-    />
+    >
+      {children}
+      <LinkPendingIndicator className="absolute right-3 top-3 rounded-full bg-surface-floating p-1.5 shadow-control" />
+    </Link>
   );
 }

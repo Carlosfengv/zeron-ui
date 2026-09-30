@@ -10,3 +10,7 @@ migrated.
 `i18n/content-loaders.generated.ts` is the explicit, statically analyzable
 document-message import map. Update it through the document loader generator
 when entries are added; do not add arbitrary runtime imports.
+
+Component, block, and page detail routes are generated from the document
+manifest and loader maps. Run `pnpm docs:routes:build` after adding a document;
+`pnpm build` checks that all split route files are current.

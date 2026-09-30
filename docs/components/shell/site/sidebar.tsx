@@ -25,6 +25,7 @@ import { artifactCatalog } from "@docs/catalog/artifacts";
 import { SettingsContent } from "@docs/components/shell/site/right-panel";
 import { internalPathname, localizePathname } from "@docs/components/shell/site/locale-path";
 import { SurfaceProvider } from "@zeron/ui/system/surface-context";
+import { LinkPendingIndicator } from "./link-pending-indicator";
 
 interface DocsSidebarProps {
   localePrefix?: string;
@@ -62,6 +63,7 @@ function SiteNavItem({
               />
             )}
           </span>
+          <LinkPendingIndicator className="ml-auto" />
         </NavItemContent>
       </NavItemTrigger>
     </NavItem>

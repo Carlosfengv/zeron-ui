@@ -44,15 +44,16 @@ describe("documentation manifest", () => {
     ).toBe(true);
   });
 
-  it("uses one generic route and a generated page-loader map for every formal detail page", () => {
-    expect(existsSync(join(ROOT, "app/[locale]/docs/components/[slug]/page.tsx"))).toBe(true);
-    expect(existsSync(join(ROOT, "app/[locale]/docs/blocks/[slug]/page.tsx"))).toBe(true);
-    expect(existsSync(join(ROOT, "app/[locale]/docs/pages/[slug]/page.tsx"))).toBe(true);
+  it("gives each component and artifact a split route that defers its document import", () => {
     expect(existsSync(join(ROOT, "app/[locale]/docs/icons/[slug]/page.tsx"))).toBe(true);
     const loaders = readFileSync(join(ROOT, "docs/generated/page-loaders.generated.ts"), "utf8");
     for (const entry of detailDocEntries) {
       expect(loaders).toContain(`\"${pageKeyOf(entry)}\"`);
       expect(existsSync(join(ROOT, "docs/pages", pageKeyOf(entry), "page.tsx")), entry.slug).toBe(true);
+      if (entry.collection === "icons") continue;
+      const route = join(ROOT, "app/[locale]/docs", entry.collection, "(detail)", entry.slug, "page.tsx");
+      expect(existsSync(route), entry.slug).toBe(true);
+      expect(readFileSync(route, "utf8")).toContain(`loadPage: () => import("@docs/pages/${pageKeyOf(entry)}/page")`);
     }
   });
 

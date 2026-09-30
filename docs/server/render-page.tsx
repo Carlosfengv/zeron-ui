@@ -1,10 +1,12 @@
 import "server-only";
 
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { DocPageLoader } from "@docs/generated/page-loader-types";
 import { contentKeyOf, docEntries, getDocEntry, pageKeyOf, pathnameOf, type DocCollection } from "@docs/manifest";
 import { PageMessages } from "@docs/i18n/page-provider";
+import { DocDetailLoading } from "@docs/components/content/DocDetailLoading";
 import { localeAlternates } from "@docs/seo/locale";
 import type { AppLocale } from "@/app/_i18n/routing";
 
@@ -60,6 +62,45 @@ export async function renderDocPage({
   const Page = (await loader()).default;
   return (
     <PageMessages locale={locale} namespace={contentKeyOf(entry)}>
+      <Page />
+    </PageMessages>
+  );
+}
+
+export function renderStaticDocPage({
+  locale,
+  collection,
+  slug,
+  loadPage,
+}: {
+  locale: AppLocale;
+  collection: DocCollection;
+  slug: string;
+  loadPage: DocPageLoader;
+}) {
+  const entry = getDocEntry(collection, slug);
+  if (!entry) notFound();
+
+  return (
+    <Suspense fallback={<DocDetailLoading collection={collection} locale={locale} name={entry.name} />}>
+      <DeferredDocContent loadPage={loadPage} locale={locale} namespace={contentKeyOf(entry)} />
+    </Suspense>
+  );
+}
+
+async function DeferredDocContent({
+  loadPage,
+  locale,
+  namespace,
+}: {
+  loadPage: DocPageLoader;
+  locale: AppLocale;
+  namespace: string;
+}) {
+  const Page = (await loadPage()).default;
+
+  return (
+    <PageMessages locale={locale} namespace={namespace}>
       <Page />
     </PageMessages>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 import type { FileManagerItem } from "@zeron/blocks/file-manager-01";
 
 const fileManagerPreviewItems: FileManagerItem[] = [
@@ -25,9 +25,9 @@ function ResponsivePreview({
   surface?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.32);
+  const [scale, setScale] = useState(1);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     const updateScale = () => setScale(Math.max(0.01, container.clientWidth / canvasWidth));
@@ -39,7 +39,8 @@ function ResponsivePreview({
 
   return (
     <div ref={containerRef} className={`relative aspect-video w-full overflow-hidden ${surface}`}>
-      <div className="origin-top-left" style={{ height: canvasHeight, transform: `scale(${scale})`, width: canvasWidth }}>
+      {/* Zoom lays out text at its displayed size; transform would blur it. */}
+      <div style={{ height: canvasHeight, width: canvasWidth, zoom: scale }}>
         {children}
       </div>
     </div>
@@ -264,6 +265,33 @@ function PreviewPlaceholder() {
   return <div aria-hidden="true" className="aspect-video w-full animate-pulse bg-surface-raised" />;
 }
 
+// Import visible previews in parallel, but mount them one at a time so several
+// complex demos do not occupy the main thread in the same frame.
+const pendingPreviewMounts: Array<() => void> = [];
+let previewMountScheduled = false;
+
+function flushPreviewMount() {
+  pendingPreviewMounts.shift()?.();
+  if (pendingPreviewMounts.length) {
+    window.setTimeout(flushPreviewMount, 80);
+  } else {
+    previewMountScheduled = false;
+  }
+}
+
+function queuePreviewMount(mount: () => void) {
+  pendingPreviewMounts.push(mount);
+  if (!previewMountScheduled) {
+    previewMountScheduled = true;
+    window.setTimeout(flushPreviewMount, 0);
+  }
+
+  return () => {
+    const index = pendingPreviewMounts.indexOf(mount);
+    if (index !== -1) pendingPreviewMounts.splice(index, 1);
+  };
+}
+
 function usePreviewVisibility() {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -295,20 +323,35 @@ function usePreviewVisibility() {
 export function BlockPreview({ name }: { name: string }) {
   const { isVisible, ref } = usePreviewVisibility();
   const [Preview, setPreview] = useState<ComponentType | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const loader = previewLoaders[name];
 
   useEffect(() => {
-    if (!isVisible || !loader || Preview) return;
+    if (!isVisible || !loader || Preview || loadFailed) return;
     let cancelled = false;
-    void loader().then((module) => {
-      // Several cached imports can resolve together. Let React interrupt their
-      // rendering when the visitor clicks a primary navigation link.
-      if (!cancelled) startTransition(() => setPreview(() => module.default));
-    });
+    let cancelMount = () => {};
+    void loader()
+      .then((module) => {
+        if (cancelled) return;
+        cancelMount = queuePreviewMount(() => {
+          // Navigation stays responsive while each live demo becomes available.
+          startTransition(() => setPreview(() => module.default));
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setLoadFailed(true);
+      });
     return () => {
       cancelled = true;
+      cancelMount();
     };
-  }, [Preview, isVisible, loader]);
+  }, [Preview, isVisible, loadFailed, loader]);
 
-  return <div ref={ref} className="w-full">{isVisible && Preview ? <Preview /> : <PreviewPlaceholder />}</div>;
+  return <div ref={ref} className="w-full">
+    {isVisible && Preview ? <Preview /> : loadFailed ? (
+      <div className="flex aspect-video items-center justify-center bg-surface-raised text-label text-fg-muted">
+        {document.documentElement.lang.startsWith("en") ? "Preview unavailable" : "预览暂不可用"}
+      </div>
+    ) : <PreviewPlaceholder />}
+  </div>;
 }

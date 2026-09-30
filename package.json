@@ -8,8 +8,10 @@
     "url": "git+https://github.com/Carlosfengv/zeron-ui.git"
   },
   "scripts": {
-    "dev": "pnpm skills:build && pnpm code-engine:build && next dev --turbopack",
-    "build": "pnpm skills:build && pnpm code-engine:check && next build",
+    "dev": "pnpm skills:build && pnpm code-engine:build && pnpm docs:routes:build && next dev --turbopack",
+    "build": "pnpm skills:build && pnpm code-engine:check && pnpm docs:routes:check && next build",
+    "docs:routes:build": "node scripts/generate-document-routes.mjs",
+    "docs:routes:check": "node scripts/generate-document-routes.mjs --check",
     "covers:generate": "node scripts/generate-component-covers.mjs",
     "start": "next start",
     "lint": "eslint app docs scripts tests packages eslint.config.mjs eslint.design.config.mjs vitest.config.mts next.config.ts postcss.config.mjs --max-warnings=0",

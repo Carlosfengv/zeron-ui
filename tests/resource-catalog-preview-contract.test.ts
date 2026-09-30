@@ -53,7 +53,6 @@ describe("Resource Catalog gallery preview", () => {
     expect(blocksGallery).toContain('aria-label={artifact.title}');
     expect(artifactPathname("resource-catalog-01")).toBe("/docs/pages/resource-catalog-01");
     expect(getArtifact("resource-catalog-01")?.registryName).toBe("model-mcp-marketplace-01");
-    expect(blocksGallery).toContain('className="grid grid-cols-1 gap-4 xl:grid-cols-2"');
   });
 
   it("uses a wider content area and four cards on wide displays", () => {

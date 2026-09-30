@@ -18,6 +18,7 @@ import { componentCardDescription } from "@docs/components/components/component-
 import { componentCoverSrc, type ComponentCoverTheme } from "@docs/lib/component-covers";
 import { useThemeContext } from "@zeron/ui/system/theme-context";
 import { IntentPrefetchLink } from "@docs/components/shell/site/intent-prefetch-link";
+import { LinkPendingIndicator } from "@docs/components/shell/site/link-pending-indicator";
 
 const componentSections = [
   "foundations",
@@ -216,7 +217,10 @@ function ComponentNavigationItem({ active, entry, href }: { active: boolean; ent
     <NavItem active={active} value={entry.slug}>
       <NavItemTrigger render={<Link href={href} />}>
         <NavItemLeading><Icon aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading>
-        <NavItemContent><NavItemLabel>{entry.name}</NavItemLabel></NavItemContent>
+        <NavItemContent>
+          <NavItemLabel>{entry.name}</NavItemLabel>
+          <LinkPendingIndicator className="ml-auto" />
+        </NavItemContent>
       </NavItemTrigger>
     </NavItem>
   );
@@ -365,9 +369,9 @@ export function ComponentsGallery({ localePrefix = "" }: { localePrefix?: string
                     </header>
                     <CardGroup
                       className="gap-4"
-                      columns={4}
+                      columns={3}
                       separated
-                      style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, max(17rem, calc((100% - 3rem) / 4))), 1fr))" }}
+                      style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, max(22rem, calc((100% - 2rem) / 3))), 1fr))" }}
                     >
                       {group.entries.map((entry) => <ComponentCard key={entry.slug} coverTheme={coverTheme} entry={entry} href={`${localePrefix}/docs/components/${entry.slug}`} language={language} />)}
                     </CardGroup>
@@ -443,7 +447,7 @@ function ComponentCard({ coverTheme, entry, href, language }: { coverTheme: Comp
       <Container className="h-full">
         <ContainerBody className="overflow-hidden overscroll-auto bg-transparent p-0">
           <div className="relative aspect-[8/5] min-h-40 overflow-hidden bg-surface-base">
-            <Image alt="" className="object-contain p-2 transition-transform duration-moderate group-hover/card:scale-[1.025]" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 25vw" src={componentCoverSrc(entry.slug, coverTheme)} />
+            <Image alt="" className="object-contain p-2" fill sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw" src={componentCoverSrc(entry.slug, coverTheme)} unoptimized />
           </div>
         </ContainerBody>
         <ContainerFooter className="min-h-20 flex-col items-start gap-1 py-3">

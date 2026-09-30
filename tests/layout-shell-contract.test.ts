@@ -63,10 +63,10 @@ describe("shell and page-layout composition contract", () => {
     expect(card).toContain("renderLink?.({");
   });
 
-  it("caps the component gallery at four responsive columns without narrowing the content area", () => {
+  it("keeps the component covers wide enough to read", () => {
     expect(componentsGallery).toContain('max-w-[1620px]');
-    expect(componentsGallery).toContain('columns={4}');
-    expect(componentsGallery).toContain('calc((100% - 3rem) / 4)');
+    expect(componentsGallery).toContain('columns={3}');
+    expect(componentsGallery).toContain('calc((100% - 2rem) / 3)');
   });
 
   it("keeps painted cards rounded when they are separated from their group", () => {

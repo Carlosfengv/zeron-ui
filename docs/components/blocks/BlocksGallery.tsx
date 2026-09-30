@@ -187,7 +187,7 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
             </div>
 
             {artifacts.length ? (
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 min-[1920px]:grid-cols-2">
               {artifacts.map((artifact) => (
                 <Container key={artifact.slug} className="group relative min-w-0 cursor-pointer overflow-hidden transition-colors duration-fast hover:bg-hover">
                   <IntentPrefetchLink
