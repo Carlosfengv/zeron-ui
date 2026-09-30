@@ -88,7 +88,14 @@
     "copiedToFigma": "Copied — paste in Figma",
     "copyToFigmaFailed": "Couldn’t copy to Figma",
     "retryCopyToFigma": "Try copying to Figma again",
-    "highlighting": "Highlighting…"
+    "highlighting": "Highlighting…",
+    "highlightFailed": "Syntax highlighting unavailable",
+    "highlightRetry": "Retry",
+    "copy": "Copy code",
+    "copied": "Copied",
+    "copyFailed": "Copy failed",
+    "wrap": "Wrap lines",
+    "scroll": "Scroll lines"
   },
   "playground": {
     "variant": "Playground variant",

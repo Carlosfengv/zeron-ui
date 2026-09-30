@@ -27,6 +27,7 @@ const mergeTailwindClasses = extendTailwindMerge({
     theme: {
       text: [
         "label",
+        "code",
         "body",
         "title",
         "heading",

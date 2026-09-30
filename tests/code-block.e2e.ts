@@ -62,8 +62,8 @@ test("renders all interactive examples without hydration errors", async ({ page 
   });
   expect(codeStyle).toEqual({
     bottom: "6px",
-    fontSize: "14px",
-    lineHeight: "20px",
+    fontSize: "13px",
+    lineHeight: "24px",
     top: "6px",
   });
   await expect(
@@ -180,5 +180,24 @@ test("keeps the documentation page within a narrow viewport", async ({ page }, t
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth
   );
   expect(overflow).toBeLessThanOrEqual(1);
+  expect(errors).toEqual([]);
+});
+
+test("switches Python and Node.js with highlighted content", async ({ page }) => {
+  const errors = collectUnexpectedConsoleErrors(page);
+  await page.goto(path);
+  const example = page.getByTestId("code-language-example");
+  const code = example.locator("zeron-code-container");
+  await expect(code).toHaveAttribute("data-highlight-state", "ready");
+  await expect(code).toContainText("def greet(name):");
+  await expect(code.locator("[data-line] span[style]").first()).toBeAttached();
+  await example.getByRole("button", { name: "Node.js", exact: true }).click();
+  await expect(code).toHaveAttribute("data-highlight-state", "ready");
+  await expect(code).toContainText("function greet(name)");
+  await expect(code).toContainText("server.js");
+  await example.getByRole("button", { name: "Python", exact: true }).click();
+  await expect(code).toHaveAttribute("data-highlight-state", "ready");
+  await expect(code).toContainText("def greet(name):");
+  await expect(code.locator("pre")).toHaveAttribute("aria-busy", "false");
   expect(errors).toEqual([]);
 });

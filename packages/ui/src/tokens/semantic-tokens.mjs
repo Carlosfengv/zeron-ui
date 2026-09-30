@@ -229,6 +229,7 @@ export const shadowTokens = [
 
 export const typographyTokens = [
   { name: "label", size: "0.75rem", px: 12, lineHeight: "1rem", linePx: 16, usage: "紧凑控件标签和徽标" },
+  { name: "code", size: "0.8125rem", px: 13, lineHeight: "1.5rem", linePx: 24, usage: "代码块内容" },
   { name: "body", size: "0.875rem", px: 14, lineHeight: "1.25rem", linePx: 20, usage: "默认正文" },
   { name: "title", size: "1.125rem", px: 18, lineHeight: "1.625rem", linePx: 26, usage: "卡片或面板标题" },
   { name: "heading", size: "1.5rem", px: 24, lineHeight: "2rem", linePx: 32, usage: "页面标题" },

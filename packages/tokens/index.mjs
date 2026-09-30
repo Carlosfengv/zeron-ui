@@ -1584,6 +1584,14 @@ const tokenData = {
       "usage": "紧凑控件标签和徽标"
     },
     {
+      "name": "code",
+      "size": "0.8125rem",
+      "px": 13,
+      "lineHeight": "1.5rem",
+      "linePx": 24,
+      "usage": "代码块内容"
+    },
+    {
       "name": "body",
       "size": "0.875rem",
       "px": 14,

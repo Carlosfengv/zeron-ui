@@ -145,10 +145,10 @@ async function codeEngineRegistryItems() {
       description: "Code display, diff, patch, conflict, streaming, Worker, SSR, and editing components.",
       dependencies: ["tw-animate-css"],
       registryDependencies: [
+        "surfaces",
         "button",
         "code-engine",
         "icon-context",
-        "surfaces",
         "tooltip",
         "utils",
       ],

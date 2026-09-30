@@ -116,6 +116,10 @@ function getProps(t: ReturnType<typeof useTranslations>): PropDef[] {
     { name: "appearance", type: '"zeron" | "engine"', default: '"zeron"', description: t("appearanceDescription") },
     { name: "themeMode", type: '"light" | "dark" | "system" | "inherit"', default: '"inherit"', description: t("themeDescription") },
     { name: "toolbar", type: "boolean", default: "true", description: t("toolbarDescription") },
+    { name: "highlightFeedback", type: "boolean", default: "true", description: t("highlightFeedbackDescription") },
+    { name: "highlightTimeoutMs", type: "number", default: "15000", description: t("highlightTimeoutDescription") },
+    { name: "highlightRetryKey", type: "string | number", description: t("highlightRetryDescription") },
+    { name: "onHighlightStateChange", type: "(state: CodeHighlightState) => void", description: t("highlightStateDescription") },
     { name: "messages", type: "Partial<CodeBlockMessages>", description: t("messagesDescription") },
     { name: "edit", type: "boolean", default: "false", description: t("editDescription") },
     { name: "lineAnnotations", type: "LineAnnotation[]", description: t("annotationDescription") },
@@ -126,6 +130,7 @@ function getProps(t: ReturnType<typeof useTranslations>): PropDef[] {
 export default function CodeBlockDoc() {
   const t = useTranslations("codeBlock");
   const [editing, setEditing] = useState(false);
+  const [language, setLanguage] = useState<'python' | 'javascript'>('python');
   const [selectedLines, setSelectedLines] = useState<SelectedLineRange | null>(null);
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
   const highlighterOptions = useMemo(
@@ -138,6 +143,9 @@ export default function CodeBlockDoc() {
     copyFailed: t("copyFailed"),
     wrap: t("wrap"),
     scroll: t("scroll"),
+    highlightLoading: t("highlightLoading"),
+    highlightFailed: t("highlightFailed"),
+    highlightRetry: t("highlightRetry"),
   };
   const conflictMessages = {
     acceptCurrent: t("acceptCurrent"),
@@ -159,7 +167,7 @@ export default function CodeBlockDoc() {
                   messages={messages}
                   lineAnnotations={[{ lineNumber: 3, metadata: t("annotationExample") }]}
                   renderAnnotation={(annotation) => (
-                    <div className="border-l-2 border-accent px-3 py-1 text-xs text-fg-muted">
+                    <div className="border-l-2 border-brand px-3 py-1 text-xs text-fg-muted">
                       {annotation.metadata}
                     </div>
                   )}
@@ -226,6 +234,21 @@ export default function CodeBlockDoc() {
                 edit={editing}
                 editStateKey="docs-code-block"
                 onEditComplete={() => "reject"}
+              />
+            </div>
+          </DocSection>
+          <DocSection title={t("languageSwitch")}>
+            <div className="grid gap-3" data-testid="code-language-example">
+              <div className="flex gap-2">
+                <Button size="sm" variant="secondary" active={language === 'python'} aria-pressed={language === 'python'} onClick={() => setLanguage('python')}>Python</Button>
+                <Button size="sm" variant="secondary" active={language === 'javascript'} aria-pressed={language === 'javascript'} onClick={() => setLanguage('javascript')}>Node.js</Button>
+              </div>
+              <CodeBlock
+                disableWorkerPool
+                messages={messages}
+                file={language === 'python'
+                  ? { name: 'main.py', lang: 'python', contents: 'def greet(name):\n    print(f"Hello, {name}")\n\ngreet("Zeron")' }
+                  : { name: 'server.js', lang: 'javascript', contents: 'function greet(name) {\n  console.log(`Hello, ${name}`);\n}\n\ngreet("Zeron");' }}
               />
             </div>
           </DocSection>

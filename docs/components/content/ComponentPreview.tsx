@@ -27,6 +27,7 @@ import {
 } from "@docs/lib/figma-capture";
 import { PortalContainerProvider } from "@zeron/ui/system/portal-container-context";
 import { cn } from "@zeron/ui/system/utils";
+import type { CodeBlock as CodeBlockType } from "@zeron/ui/code-block";
 
 function FigmaIcon({ className }: { className?: string }) {
   return (
@@ -130,11 +131,9 @@ export function ComponentPreview({
   );
   const isFigmaCopying =
     figmaCopyState === "copying" || figmaCaptureBusy;
-  const [highlighted, setHighlighted] = useState<{
-    code: string;
-    html: string;
-  } | null>(null);
-  const [highlightFailedFor, setHighlightFailedFor] = useState<string | null>(null);
+  const [CodeBlock, setCodeBlock] = useState<typeof CodeBlockType | null>(null);
+  const [codeBlockLoadFailed, setCodeBlockLoadFailed] = useState(false);
+  const [codeBlockRetryKey, setCodeBlockRetryKey] = useState(0);
   const ReplayIcon = useIcon("rotate-ccw");
   const SearchIcon = useIcon("search");
   const previewRef = useRef<HTMLDivElement>(null);
@@ -215,33 +214,28 @@ export function ComponentPreview({
     }
   };
 
-  const html = highlighted?.code === code ? highlighted.html : "";
-
-  // Syntax highlighting is intentionally absent from the initial page load.
-  // Load Shiki only when the Code tab is opened, then reuse the result while
-  // this preview stays mounted. highlight() also maintains a module-level cache
-  // so revisiting a page does not repeat the work.
+  // Keep the code engine out of the initial preview bundle. The module is
+  // fetched only after someone opens the Code tab.
   useEffect(() => {
-    if (tab !== 1 || html) return;
+    if (tab !== 1 || CodeBlock) return;
 
     let cancelled = false;
 
-    import("@docs/lib/highlight")
-      .then(({ highlight }) => highlight(code))
-      .then((result) => {
+    import("@zeron/ui/code-block")
+      .then(({ CodeBlock: LoadedCodeBlock }) => {
         if (!cancelled) {
-          setHighlightFailedFor(null);
-          setHighlighted({ code, html: result });
+          setCodeBlock(() => LoadedCodeBlock);
+          setCodeBlockLoadFailed(false);
         }
       })
       .catch(() => {
-        if (!cancelled) setHighlightFailedFor(code);
+        if (!cancelled) setCodeBlockLoadFailed(true);
       });
 
     return () => {
       cancelled = true;
     };
-  }, [tab, code, html]);
+  }, [tab, CodeBlock, codeBlockRetryKey]);
 
   useEffect(() => {
     if (!fullScreenable) return;
@@ -261,7 +255,7 @@ export function ComponentPreview({
       <div
         ref={setFrameRef}
         className={cn(
-          "relative flex w-full flex-col gap-0 duration-moderate ease-out has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-inset has-[:focus-visible]:ring-fg-default/40",
+          "relative isolate flex w-full flex-col gap-0 duration-moderate ease-out has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-inset has-[:focus-visible]:ring-fg-default/40",
           browserFrame
             ? "overflow-hidden rounded-xl border-hairline border-border bg-surface-floating shadow-control"
             : "rounded-3xl bg-surface-raised p-2",
@@ -459,24 +453,42 @@ export function ComponentPreview({
           >
             {children}
           </div>
-        ) : html ? (
+        ) : CodeBlock ? (
           <div
-            className={`overflow-auto bg-surface-floating text-label [&_pre]:m-0 [&_pre]:p-4 ${fill ? "min-h-0 flex-1 [&_pre]:min-h-full" : minHeightClass.replace("min-h-", "[&_pre]:min-h-")}`}
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-        ) : highlightFailedFor === code ? (
-          <pre
-            className={`m-0 overflow-auto p-4 text-label text-fg-default ${minHeightClass}`}
+            className={cn(
+              "min-w-0 overflow-auto bg-surface-floating text-label",
+              isFullscreen || fill ? "min-h-0 flex-1" : minHeightClass,
+            )}
           >
-            <code>{code.trim()}</code>
-          </pre>
+            <CodeBlock
+              file={{ name: title ?? "example.tsx", lang: "tsx", contents: code.trim() }}
+              className="min-h-full rounded-none border-0"
+              messages={{
+                copy: t("copy"),
+                copied: t("copied"),
+                copyFailed: t("copyFailed"),
+                wrap: t("wrap"),
+                scroll: t("scroll"),
+                highlightLoading: t("highlighting"),
+                highlightFailed: t("highlightFailed"),
+                highlightRetry: t("highlightRetry"),
+              }}
+            />
+          </div>
         ) : (
           <div
-            role="status"
-            aria-live="polite"
-            className={`flex items-center justify-center text-label text-fg-muted ${minHeightClass}`}
+            className={cn("min-w-0 overflow-auto bg-surface-floating", isFullscreen || fill ? "min-h-0 flex-1" : minHeightClass)}
           >
-            {t("highlighting")}
+            <div className="flex items-center gap-2 border-b border-border px-4 py-2 text-label text-fg-muted">
+              <span role="status">{t(codeBlockLoadFailed ? "highlightFailed" : "highlighting")}</span>
+              {codeBlockLoadFailed && (
+                <Button size="sm" variant="ghost" onClick={() => {
+                  setCodeBlockLoadFailed(false);
+                  setCodeBlockRetryKey((current) => current + 1);
+                }}>{t("highlightRetry")}</Button>
+              )}
+            </div>
+            <pre className="m-0 overflow-auto p-4 text-code text-fg-default"><code>{code.trim()}</code></pre>
           </div>
         )}
       </div>

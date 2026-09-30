@@ -95,7 +95,7 @@ export function CodeBlockToolbar({
   return (
     <div
       className={cn(
-        'flex min-h-9 items-center gap-2 border-b border-border bg-surface-subtle px-2',
+        'flex min-h-9 items-center gap-2 border-b border-border bg-surface-floating px-2',
         className
       )}
     >

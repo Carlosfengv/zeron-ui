@@ -32,6 +32,14 @@
     "messagesDescription": "Overrides toolbar, copy-state, and accessible-label text.",
     "editDescription": "Starts an edit session when a CodeEditProvider is present.",
     "annotationDescription": "Typed file or line annotations rendered through slots.",
-    "selectionDescription": "Controlled one-based source-line selection."
+    "selectionDescription": "Controlled one-based source-line selection.",
+    "highlightLoading": "Loading syntax highlighting…",
+    "highlightFailed": "Syntax highlighting unavailable",
+    "highlightRetry": "Retry",
+    "languageSwitch": "Language switching",
+    "highlightFeedbackDescription": "Show loading and retry feedback in the default toolbar.",
+    "highlightTimeoutDescription": "Async highlight deadline in milliseconds; 0 disables the deadline.",
+    "highlightRetryDescription": "Change this value to retry the current failed highlight without remounting.",
+    "highlightStateDescription": "Receive loading, ready, plain, or error after the corresponding content is committed."
   }
 }

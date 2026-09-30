@@ -88,7 +88,14 @@
     "copiedToFigma": "已复制，请在 Figma 中粘贴",
     "copyToFigmaFailed": "无法复制到 Figma",
     "retryCopyToFigma": "重试复制到 Figma",
-    "highlighting": "正在高亮…"
+    "highlighting": "正在高亮…",
+    "highlightFailed": "语法高亮不可用",
+    "highlightRetry": "重试",
+    "copy": "复制代码",
+    "copied": "已复制",
+    "copyFailed": "复制失败",
+    "wrap": "自动换行",
+    "scroll": "横向滚动"
   },
   "playground": {
     "variant": "交互预览",

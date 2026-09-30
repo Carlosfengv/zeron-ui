@@ -32,6 +32,14 @@
     "messagesDescription": "覆盖工具栏、复制状态和无障碍标签文案。",
     "editDescription": "存在 CodeEditProvider 时启动编辑会话。",
     "annotationDescription": "通过插槽渲染的文件或行级类型化注释。",
-    "selectionDescription": "以源码一基行号表示的受控选区。"
+    "selectionDescription": "以源码一基行号表示的受控选区。",
+    "highlightLoading": "正在加载语法高亮…",
+    "highlightFailed": "语法高亮暂不可用",
+    "highlightRetry": "重试",
+    "languageSwitch": "语言切换",
+    "highlightFeedbackDescription": "在默认工具栏中显示加载提示和失败重试。",
+    "highlightTimeoutDescription": "异步高亮超时时间，单位毫秒；0 表示不设置超时。",
+    "highlightRetryDescription": "修改此值可重试当前失败的高亮任务，无需重新挂载。",
+    "highlightStateDescription": "对应内容渲染后报告 loading、ready、plain 或 error 状态。"
   }
 }

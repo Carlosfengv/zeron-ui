@@ -110,6 +110,8 @@
   --font-family-sans: "Inter", system-ui, sans-serif;
   --font-size-label: 0.75rem;
   --line-height-label: 1rem;
+  --font-size-code: 0.8125rem;
+  --line-height-code: 1.5rem;
   --font-size-body: 0.875rem;
   --line-height-body: 1.25rem;
   --font-size-title: 1.125rem;
@@ -262,6 +264,8 @@
   --shadow-overlay: var(--shadow-overlay);
   --text-label: var(--font-size-label);
   --text-label--line-height: var(--line-height-label);
+  --text-code: var(--font-size-code);
+  --text-code--line-height: var(--line-height-code);
   --text-body: var(--font-size-body);
   --text-body--line-height: var(--line-height-body);
   --text-title: var(--font-size-title);
