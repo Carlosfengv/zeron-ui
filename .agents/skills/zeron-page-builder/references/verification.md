@@ -2,6 +2,8 @@
 
 Use this reference before choosing checks and before handing off a Zeron implementation. Match effort to the change and report actual coverage.
 
+Use [Component and style reporting](usage-reporting.md) for the final usage inventory and deviation statistics. Its generated findings complement the four verification dimensions below; they do not replace contract or browser review.
+
 ## Discover available checks
 
 Inspect the target project's package scripts, CLI help, and installed dependencies. Do not assume a future Zeron usage checker or MCP exists.

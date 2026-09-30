@@ -50,3 +50,5 @@ Use scan/check only if the installed CLI exposes them. They are read-only aids, 
 Reconcile plan status, mapping states, scope-wide checks and report conclusions using the [completion reconciliation](references/verification-and-recovery.md#reconcile-completion) procedure. A reviewed subset cannot pass an entire migration's contract or cleanup gate. Remaining generic adapters and capability gaps must appear in plan mappings, not only report prose.
 
 Deliver the [report](assets/report-template.md) with actual counts and one of: **complete and verified**, **migrated with accepted exceptions**, or **partial / awaiting verification**. Keep the result proportional to the task, link evidence and state remaining actions. Do not publish, deploy or claim a universal migration success rate.
+
+Include the paired builder's [component and style handoff](../zeron-page-builder/references/usage-reporting.md): actual component kinds/JSX uses, custom implementations, component/token deviations and unchecked coverage. Bind generated and manual reports as migration evidence; their generation success does not pass migration gates.

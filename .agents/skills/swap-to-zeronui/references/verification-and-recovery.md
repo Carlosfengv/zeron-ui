@@ -12,6 +12,8 @@ Evidence must correspond to the latest scan snapshot and include a readable log,
 
 Report routes reviewed/total, verified mappings/total and critical flows passed/total. List residual, unknown and exception counts. If the denominator is uncertain, explain the missing scope without a completion percentage.
 
+Include [component and style statistics](../../zeron-page-builder/references/usage-reporting.md) in the report. Keep generated inventory/lint facts separate from manual selection, customization and contract judgments. Bind before/after JSON, readable reports and manual explanations in the evidence index when used; preserve the final scan snapshot and existing plan schema.
+
 ## Reconcile completion
 
 Before binding final evidence, compare the report's remaining-work list against plan mappings and the frozen scope:

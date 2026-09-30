@@ -78,6 +78,14 @@ describe("public skill distribution", () => {
     expect(JSON.parse((await execute(process.execPath, args)).stdout).status).toBe("passed");
     await writeFile(path.join(project, "package.json"), "{}");
     await expect(execute(process.execPath, args)).rejects.toMatchObject({ code: 1 });
+    // The installed reporter must degrade honestly in a dependency-free host.
+    const reporter = path.join(destination, "zeron-page-builder/scripts/usage-report.mjs");
+    await execute(process.execPath, [reporter, "--cwd", project, "--file", "package.json", "--output", "output/usage"]);
+    const usage = JSON.parse(await readFile(path.join(project, "output/usage.json"), "utf8"));
+    expect(usage.inventory.status).toBe("unchecked");
+    expect(usage.lint.status).toBe("unchecked");
+    expect(usage.counts.lintCheckedFiles).toBe(0);
+    expect(await readFile(path.join(project, "package.json"), "utf8")).toBe("{}");
   });
 
   it("rebuilds reproducibly without requiring an empty output directory", async () => {

@@ -87,6 +87,8 @@ Read [Verification](references/verification.md) before selecting checks. Discove
 
 Use the [design-lint feedback loop](references/verification.md#design-lint-feedback-loop) when the target project has Zeron design lint. Check the affected files, repair task-introduced violations through public APIs and semantic tokens, then recheck. Keep pre-existing findings separate and retain runtime verification; a clean static check does not establish correct layout or interaction.
 
+For each implementation handoff, follow [Component and style reporting](references/usage-reporting.md): a short statistics paragraph, grouped component list, and significant deviations or unchecked items. Keep complete source/use/rule details in linked JSON. Generate the bundled report when dependencies are available; missing automated checks require a manual inventory and explicit unchecked coverage. Capture a pre-change report when practical before attributing findings to this task.
+
 Review the diff for changes to managed files, duplicated primitives, internal style overrides, and changes outside the requested scope. Run available usage checks and the narrowest meaningful type, build, or interaction checks. When the page can run, exercise the primary flow and relevant states at representative narrow and wide widths.
 
 In the source repository, regenerate Registry artifacts when canonical Registry content changes. In consumer projects, verify installed paths and dependencies rather than relying on the source repository's successful build.

@@ -39,6 +39,10 @@ For affected list/detail headers, record component sources and the owners of pat
 - Critical flows passed / total:
 - Residuals / unknowns / accepted exceptions:
 
+## Component and style statistics
+
+Use the paired [concise handoff](../../zeron-page-builder/assets/usage-report-template.md): one statistics paragraph, a grouped component list, and significant deviations or unchecked items. Explain custom implementation choices only where needed. Link the full JSON and migration mapping evidence instead of repeating source paths, every location and rule coverage here.
+
 ## Independent verification
 
 | Dimension | Actual scope and states | Passed / failed / unchecked | Evidence files | Uncovered states |
