@@ -126,7 +126,7 @@ async function captureCover(page, slug, theme) {
     caret: "hide",
     clip: { x: Math.round(box.x), y: Math.round(box.y), width: 640, height: 400 },
     path: join(outputDirectory, `${slug}-${theme}.jpg`),
-    quality: 88,
+    quality: 94,
     type: "jpeg",
   });
 }
@@ -142,7 +142,7 @@ async function main() {
     });
     try {
       for (const theme of ["light", "dark"]) {
-        const context = await browser.newContext({ colorScheme: theme, viewport: { width: 1280, height: 900 } });
+        const context = await browser.newContext({ colorScheme: theme, deviceScaleFactor: 2, viewport: { width: 1280, height: 900 } });
         await context.addInitScript((requestedTheme) => {
           window.localStorage.setItem("zeron-design.theme", requestedTheme);
         }, theme);
