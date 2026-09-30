@@ -38,7 +38,7 @@ export function ChartContainer({ children, className, config, id, ...props }: Re
   const generatedId = React.useId();
   const chartId = `chart-${id ?? generatedId.replace(/:/g, "")}`;
 
-  return <ChartContext.Provider value={config}><div data-chart={chartId} className={cn("flex min-h-40 w-full justify-center text-label [&_.recharts-cartesian-axis-tick_text]:fill-[var(--fg-subtle)] [&_.recharts-layer]:outline-none [&_.recharts-surface]:outline-none", className)} {...props}><ChartStyle config={config} id={chartId} /><ResponsiveContainer>{children as React.ReactElement}</ResponsiveContainer></div></ChartContext.Provider>;
+  return <ChartContext.Provider value={config}><div data-chart={chartId} className={cn("flex min-h-40 min-w-0 w-full justify-center text-label [&_.recharts-cartesian-axis-tick_text]:fill-[var(--fg-subtle)] [&_.recharts-layer]:outline-none [&_.recharts-surface]:outline-none", className)} {...props}><ChartStyle config={config} id={chartId} /><ResponsiveContainer debounce={240}>{children as React.ReactElement}</ResponsiveContainer></div></ChartContext.Provider>;
 }
 
 export const ChartTooltip = Tooltip;

@@ -168,9 +168,18 @@ export function TimeRangeHistogram({
     };
     updateWidth();
     if (typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver((entries) => updateWidth(entries[0]?.contentRect.width));
+    let resizeTimeout: ReturnType<typeof setTimeout> | undefined;
+    const observer = new ResizeObserver((entries) => {
+      // Use the layout width so zoomed previews keep the same bucket density.
+      const width = entries[0]?.contentRect.width;
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => updateWidth(width), 80);
+    });
     observer.observe(element);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      clearTimeout(resizeTimeout);
+    };
   }, []);
   const targetBucketCount = barSize && targetBarGap !== undefined && chartWidth > 0
     ? Math.max(1, Math.floor(chartWidth / (barSize + targetBarGap)))

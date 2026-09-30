@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   TimeRangeHistogram,
@@ -33,9 +33,32 @@ const series: readonly TimeRangeHistogramSeries[] = [
   { dataKey: "requests", label: "Requests", color: "var(--brand)" },
 ];
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
 describe("TimeRangeHistogram", () => {
+  it("uses the observed layout width for bucket density in a scaled preview", () => {
+    vi.useFakeTimers();
+    render(
+      <TimeRangeHistogram
+        ariaLabel="Request time range"
+        barSize={150}
+        targetBarGap={50}
+        data={data}
+        onValueChange={vi.fn()}
+        series={series}
+        value={{ start: 0, end: 40 }}
+      />,
+    );
+    // The observer reports 400 layout pixels; jsdom's visual bounds remain 0.
+    const slider = screen.getByRole("slider", { name: "Request time range" });
+    expect(slider.getAttribute("aria-valuemax")).toBe("4");
+    act(() => vi.advanceTimersByTime(80));
+    expect(slider.getAttribute("aria-valuemax")).toBe("2");
+  });
+
   it("moves the controlled range by bucket with the keyboard", () => {
     const onValueChange = vi.fn();
     render(

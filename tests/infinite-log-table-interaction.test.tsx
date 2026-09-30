@@ -61,7 +61,24 @@ Object.defineProperty(HTMLElement.prototype, "releasePointerCapture", {
   writable: true,
 });
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
+
+// Give both thumb positions a real layout before their first measurement;
+// otherwise the spring from a zero-width jsdom box can select the wrong thumb.
+function mockSliderLayout() {
+  const originalWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "offsetWidth")!.get!;
+  const originalBounds = HTMLElement.prototype.getBoundingClientRect;
+  vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockImplementation(function () {
+    return this.dataset.slot === "slider-track-control" ? 200 : originalWidth.call(this);
+  });
+  vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function () {
+    if (this.dataset.slot !== "slider-track-control") return originalBounds.call(this);
+    return { bottom: 32, height: 32, left: 0, right: 200, top: 0, width: 200, x: 0, y: 0, toJSON: () => ({}) };
+  });
+}
 
 describe("InfiniteLogTable", () => {
   it("can hide selection while keeping rows keyboard operable", async () => {
@@ -384,6 +401,7 @@ describe("InfiniteLogTable", () => {
   });
 
   it("uses the shared range slider for latency and commits only after dragging", async () => {
+    mockSliderLayout();
     const onStateChange = vi.fn();
     render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} onStateChange={onStateChange} records={createMockLogRecords({ days: 2 })} /></div>);
     await waitFor(() => expect(screen.getByRole("grid", { name: "HTTP request log table" })).toBeTruthy());
@@ -400,18 +418,7 @@ describe("InfiniteLogTable", () => {
     expect(maximum).toBeTruthy();
     expect(within(latencyPanel).queryByRole("button", { name: "Apply" })).toBeNull();
 
-    Object.defineProperty(pointerTrack, "offsetWidth", { configurable: true, value: 200 });
-    vi.spyOn(pointerTrack, "getBoundingClientRect").mockReturnValue({
-      bottom: 32,
-      height: 32,
-      left: 0,
-      right: 200,
-      top: 0,
-      width: 200,
-      x: 0,
-      y: 0,
-      toJSON: () => ({}),
-    });
+    await waitFor(() => expect(pointerTrack.querySelectorAll<HTMLElement>('[data-slot="slider-thumb"]')[1]?.style.transform).toBe("translateX(180px)"));
     const callsBeforeDrag = onStateChange.mock.calls.length;
     fireEvent.pointerDown(pointerTrack, { button: 0, clientX: 10, pointerId: 1 });
     fireEvent.pointerMove(pointerTrack, { clientX: 100, pointerId: 1 });
@@ -427,6 +434,7 @@ describe("InfiniteLogTable", () => {
   });
 
   it("shows flat timing phase range filters and commits only after dragging", async () => {
+    mockSliderLayout();
     const onStateChange = vi.fn();
     render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} onStateChange={onStateChange} records={createMockLogRecords({ days: 2 })} /></div>);
     await waitFor(() => expect(screen.getByRole("grid", { name: "HTTP request log table" })).toBeTruthy());
@@ -447,27 +455,18 @@ describe("InfiniteLogTable", () => {
     expect(screen.getByRole("slider", { name: "Response transfer minimum" })).toBeTruthy();
     expect(within(timingPanel).queryByRole("button")).toBeNull();
 
-    Object.defineProperty(pointerTrack, "offsetWidth", { configurable: true, value: 200 });
-    vi.spyOn(pointerTrack, "getBoundingClientRect").mockReturnValue({
-      bottom: 32,
-      height: 32,
-      left: 0,
-      right: 200,
-      top: 0,
-      width: 200,
-      x: 0,
-      y: 0,
-      toJSON: () => ({}),
-    });
+    await waitFor(() => expect(pointerTrack.querySelectorAll<HTMLElement>('[data-slot="slider-thumb"]')[1]?.style.transform).toBe("translateX(180px)"));
     const callsBeforeDrag = onStateChange.mock.calls.length;
     fireEvent.pointerDown(pointerTrack, { button: 0, clientX: 10, pointerId: 1 });
     fireEvent.pointerMove(pointerTrack, { clientX: 60, pointerId: 1 });
+    const previewMinimum = Number((minimum as HTMLInputElement).value);
+    expect(previewMinimum).toBe(60);
     expect(onStateChange).toHaveBeenCalledTimes(callsBeforeDrag);
-    expect(within(timingField).getByText("60 ms")).toBeTruthy();
+    expect(within(timingField).getByText(`${previewMinimum} ms`)).toBeTruthy();
     fireEvent.pointerUp(pointerTrack, { clientX: 60, pointerId: 1 });
 
     await waitFor(() => expect(onStateChange).toHaveBeenLastCalledWith(expect.objectContaining({
-      filters: expect.objectContaining({ timing: { dns: { min: 60 } } }),
+      filters: expect.objectContaining({ timing: { dns: { min: previewMinimum } } }),
     })));
   });
 
