@@ -35,8 +35,11 @@ describe("sidebar implementation contract", () => {
   it("can derive compact offcanvas navigation from the desktop collapsed state", () => {
     expect(sidebar).toContain('export type SidebarBreakpointBehavior = "drawer" | "collapse";');
     expect(sidebar).toContain('breakpointBehavior = "drawer"');
-    expect(sidebar).toContain('const isBreakpointCollapsed = breakpointBehavior === "collapse" && isMobile;');
-    expect(sidebar).toContain('const open = preferredOpen && !isBreakpointCollapsed;');
+    expect(sidebar).toContain('const compactCollapse = breakpointBehavior === "collapse" && isMobile;');
+    expect(sidebar).toContain('const isBreakpointCollapsed = compactCollapse && !compactOpen;');
+    expect(sidebar).toContain('const open = compactCollapse ? compactOpen : preferredOpen;');
+    expect(sidebar).toContain('if (compactCollapse) {');
+    expect(sidebar).toContain('setCompactOpen(nextOpen);');
     expect(sidebar).toContain('breakpointBehavior === "drawer"');
     expect(sidebar).toContain('? "hidden xl:block"');
     expect(sidebar).toContain(': isMobile');
@@ -159,10 +162,8 @@ describe("sidebar implementation contract", () => {
     expect(sidebarDocs).toContain('description="wei.feng@zstack.io"');
     expect(zaiopsPreview).toContain('alignOffset={20}');
     expect(zaiopsPreview).toContain('className="!w-60 !min-w-60 !max-w-60"');
-    expect(accountMenu).toContain('menuSide = "top"');
-    expect(accountMenu).toContain('side={menuSide}');
-    expect(accountMenu).toContain('menuAlign = "start"');
-    expect(accountMenu).toContain('align={menuAlign}');
+    expect(accountMenu).toContain('side={menuSide ?? (compact ? "right" : "top")}');
+    expect(accountMenu).toContain('align={menuAlign ?? (compact ? "end" : "start")}');
     expect(accountMenu).toContain('!w-[264px] !min-w-[264px] !max-w-[264px]');
     expect(accountMenu).toContain('data-proximity-index={index}');
     expect(accountMenu).toContain('item={item} index={index}');

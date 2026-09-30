@@ -104,7 +104,7 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
       sessionRef,
       handlers,
       registerItem: registerMeasuredItem,
-      remeasure,
+      measureItems,
     } = useProximityHover(containerRef, { axis });
 
     const orderedItems = useMemo(() => itemOrder(items), [items]);
@@ -135,13 +135,13 @@ const NavMenu = forwardRef<HTMLElement, NavMenuProps>(
     }, [orderedItems, registerMeasuredItem]);
 
     useEffect(() => {
-      const container = containerRef.current;
-      if (!container || typeof ResizeObserver === "undefined") return;
-      const observer = new ResizeObserver(() => remeasure());
-      observer.observe(container);
+      if (typeof ResizeObserver === "undefined") return;
+      // Resizing existing items only changes their geometry. Keep the active
+      // indicator visible while its measurements are refreshed.
+      const observer = new ResizeObserver(() => measureItems());
       orderedItems.forEach((item) => observer.observe(item.element));
       return () => observer.disconnect();
-    }, [orderedItems, remeasure]);
+    }, [orderedItems, measureItems]);
 
     useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {

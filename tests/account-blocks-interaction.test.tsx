@@ -13,6 +13,19 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe("account actions", () => {
+  it("keeps the account avatar and actions available in a compact sidebar", async () => {
+    const onSettings = vi.fn();
+    render(<UserAccount compact user={{ name: "Carlos", email: "Admin" }} onOpenSettings={onSettings} />);
+    const trigger = screen.getByRole("button", { name: "Carlos" });
+    expect(trigger.className).toContain("h-control-xl");
+    expect(trigger.querySelector("[data-slot='sidebar-identity-avatar']")).toBeTruthy();
+    fireEvent.click(trigger);
+    expect(await screen.findByRole("menu")).toBeTruthy();
+    expect(screen.getByText("Admin")).toBeTruthy();
+    fireEvent.click(screen.getByRole("menuitem", { name: "个人设置" }));
+    expect(onSettings).toHaveBeenCalledOnce();
+  });
+
   it("keeps static notification and settings items open without selecting an action", () => {
     render(<UserAccount user={{ name: "Carlos" }} extraSections={[{ items: [
       { id: "notifications", label: "通知", closeOnClick: false },

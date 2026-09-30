@@ -57,7 +57,7 @@ export interface SidebarContextValue {
   setMobileOpen: (open: boolean) => void;
   isMobile: boolean;
   breakpointBehavior: SidebarBreakpointBehavior;
-  /** True when the compact breakpoint, rather than the stored user preference, hides the persistent Sidebar. */
+  /** True while the compact breakpoint shows the collapsed persistent Sidebar. */
   isBreakpointCollapsed: boolean;
   triggerRef: React.RefObject<HTMLElement | null>;
   /** Set the element that should regain focus after the next compact-drawer close. */
@@ -108,13 +108,15 @@ const SidebarProvider = ({
 }: SidebarProviderProps) => {
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const [internalMobileOpen, setInternalMobileOpen] = useState(defaultMobileOpen);
+  const [compactOpen, setCompactOpen] = useState(false);
   const triggerRef = useRef<HTMLElement | null>(null);
   const finalFocusPreparedRef = useRef(false);
   const previousMobileOpenRef = useRef(defaultMobileOpen);
   const isMobile = useSidebarMobile();
   const preferredOpen = openProp ?? internalOpen;
-  const isBreakpointCollapsed = breakpointBehavior === "collapse" && isMobile;
-  const open = preferredOpen && !isBreakpointCollapsed;
+  const compactCollapse = breakpointBehavior === "collapse" && isMobile;
+  const isBreakpointCollapsed = compactCollapse && !compactOpen;
+  const open = compactCollapse ? compactOpen : preferredOpen;
   const mobileOpen = mobileOpenProp ?? internalMobileOpen;
   const mobileOpenRef = useRef(mobileOpen);
   const state: SidebarState = open ? "expanded" : "collapsed";
@@ -125,11 +127,18 @@ const SidebarProvider = ({
 
   const setOpen = useCallback(
     (nextOpen: boolean) => {
+      if (compactCollapse) {
+        setCompactOpen(nextOpen);
+        return;
+      }
       if (openProp === undefined) setInternalOpen(nextOpen);
       onOpenChange?.(nextOpen);
     },
-    [onOpenChange, openProp]
+    [compactCollapse, onOpenChange, openProp]
   );
+  useEffect(() => {
+    if (!compactCollapse) setCompactOpen(false);
+  }, [compactCollapse]);
   const setMobileOpen = useCallback(
     (nextOpen: boolean) => {
       if (nextOpen && !mobileOpenRef.current) {

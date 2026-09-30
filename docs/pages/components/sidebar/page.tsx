@@ -381,7 +381,7 @@ const props: PropDef[] = [
   { name: "ariaLabel", type: "string", default: '"Navigation"', description: "Accessible name for the desktop aside and compact drawer." },
   { name: "side", type: '"start" | "end"', default: '"start"', description: "Logical edge used by the panel, rail, border, and drawer motion." },
   { name: "persistenceKey", type: "string", description: "Optional localStorage key for the desktop open state." },
-  { name: "breakpointBehavior", type: '"drawer" | "collapse"', default: '"drawer"', description: "Uses either the compact drawer or the same effective collapsed state below 1280px." },
+  { name: "breakpointBehavior", type: '"drawer" | "collapse"', default: '"drawer"', description: "Uses either the compact drawer or an icon rail below 1280px. The rail can expand temporarily; desktop open state is restored above the breakpoint." },
   { name: "setActiveTrigger", type: "(owner: HTMLElement | null) => void", description: "For a controlled or programmatic compact-drawer open, set the final-focus owner immediately before opening. Pass null when there is no valid owner." },
 ];
 const triggerProps: PropDef[] = [

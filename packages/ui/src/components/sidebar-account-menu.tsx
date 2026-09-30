@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { Menu } from "@base-ui/react/menu";
+import { Button } from "#components/button";
 import {
   DropdownContent,
   DropdownMenu,
@@ -49,6 +50,8 @@ export interface SidebarAccountMenuSection {
 export interface SidebarAccountMenuProps {
   avatar?: ReactNode;
   className?: string;
+  /** Show an avatar-only trigger in a collapsed sidebar. */
+  compact?: boolean;
   description: ReactNode;
   menuAlign?: "start" | "center" | "end";
   menuAlignOffset?: number;
@@ -56,7 +59,7 @@ export interface SidebarAccountMenuProps {
   primary: ReactNode;
   sections: SidebarAccountMenuSection[];
   triggerTrailing?: ReactNode;
-  menuSide?: "top" | "bottom";
+  menuSide?: "top" | "bottom" | "left" | "right";
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -130,14 +133,15 @@ function SidebarAccountSubmenu({
 export function SidebarAccountMenu({
   avatar,
   className,
+  compact = false,
   description,
-  menuAlign = "start",
+  menuAlign,
   menuAlignOffset,
   menuClassName,
   primary,
   sections,
   triggerTrailing,
-  menuSide = "top",
+  menuSide,
   open,
   onOpenChange,
 }: SidebarAccountMenuProps) {
@@ -147,7 +151,12 @@ export function SidebarAccountMenu({
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownTrigger
-        render={
+        render={compact ? (
+          <Button iconOnly size="xl" variant="ghost" className={className}>
+            <span aria-hidden="true">{accountAvatar}</span>
+            <span className="sr-only">{primary}</span>
+          </Button>
+        ) : (
           <SidebarIdentityRow
             as="button"
             primary={primary}
@@ -158,11 +167,11 @@ export function SidebarAccountMenu({
             trailing={triggerTrailing}
             className={cn("px-[calc(var(--spacing)*1.6)]", className)}
           />
-        }
+        )}
       />
       <DropdownContent
-        side={menuSide}
-        align={menuAlign}
+        side={menuSide ?? (compact ? "right" : "top")}
+        align={menuAlign ?? (compact ? "end" : "start")}
         alignOffset={menuAlignOffset}
         className={cn("!w-[264px] !min-w-[264px] !max-w-[264px]", menuClassName)}
       >

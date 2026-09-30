@@ -20,6 +20,7 @@ export interface UserAccountLabels {
 
 export interface UserAccountProps {
   user: { name: string; email?: string; avatar?: ReactNode };
+  compact?: boolean;
   theme?: UserAccountTheme;
   onThemeChange?: (theme: UserAccountTheme) => void | Promise<void>;
   locale?: string;
@@ -47,7 +48,7 @@ const defaultLabels: UserAccountLabels = {
 };
 
 /** Controlled account preferences and application actions; no auth, storage or routing assumptions. */
-export function UserAccount({ user, theme, onThemeChange, locale, localeOptions, onLocaleChange, onOpenSettings, onSignOut, notifications, extraSections = [], pendingAction, error, labels, className, menuSide, open, onOpenChange }: UserAccountProps) {
+export function UserAccount({ user, compact = false, theme, onThemeChange, locale, localeOptions, onLocaleChange, onOpenSettings, onSignOut, notifications, extraSections = [], pendingAction, error, labels, className, menuSide, open, onOpenChange }: UserAccountProps) {
   const copy = { ...defaultLabels, ...labels };
   const [localPending, setLocalPending] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
@@ -93,7 +94,7 @@ export function UserAccount({ user, theme, onThemeChange, locale, localeOptions,
     ...section, items: section.items.map((item) => ({ ...item, disabled: busy || item.disabled })),
   }));
   return <div className="min-w-0" aria-busy={busy}>
-    <SidebarAccountMenu primary={user.name} description={user.email} avatar={user.avatar} sections={visibleSections} className={className} menuSide={menuSide} open={open} onOpenChange={onOpenChange} triggerTrailing={<MoreIcon aria-hidden className="size-4" />} />
+    <SidebarAccountMenu primary={user.name} description={user.email} avatar={user.avatar} sections={visibleSections} className={className} compact={compact} menuSide={menuSide} open={open} onOpenChange={onOpenChange} triggerTrailing={<MoreIcon aria-hidden className="size-4" />} />
     {busy && <p role="status" className="px-2 py-1 text-label text-fg-muted">{copy.working}</p>}
     {(error || localError) && <p role="alert" className="px-2 py-1 text-label text-fg-danger">{error || localError}</p>}
   </div>;
