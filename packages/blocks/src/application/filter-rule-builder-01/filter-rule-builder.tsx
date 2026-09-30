@@ -15,6 +15,7 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
+  CardMedia,
   CardTitle,
 } from "@zeron/ui/card";
 import {
@@ -38,6 +39,7 @@ import {
 import { Field, FieldError, FieldLabel } from "@zeron/ui/field";
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
 import { Input } from "@zeron/ui/input";
+import { Separator } from "@zeron/ui/separator";
 import {
   InputGroup,
   InputGroupAddon,
@@ -189,7 +191,8 @@ function MultiSelectEditor({
   return (
     <Combobox
       disabled={disabled}
-      itemDensity="compact"
+      filter={field.searchable === false ? null : undefined}
+      itemToStringLabel={(item) => optionText(optionByValue.get(item), item)}
       items={items}
       multiple
       onValueChange={(next) => {
@@ -211,6 +214,7 @@ function MultiSelectEditor({
               <ComboboxChipsInput
                 aria-label={labels.searchValues}
                 placeholder={current.length ? "" : labels.selectValue}
+                readOnly={field.searchable === false}
               />
             </>
           )}
@@ -220,7 +224,7 @@ function MultiSelectEditor({
         <ComboboxEmpty>{labels.noValues}</ComboboxEmpty>
         <ComboboxList>
           {(item: string) => (
-            <ComboboxItem key={item} value={item}>
+            <ComboboxItem disabled={optionByValue.get(item)?.disabled} icon={optionByValue.get(item)?.icon} key={item} value={item}>
               {optionLabel(optionByValue.get(item), item)}
             </ComboboxItem>
           )}
@@ -260,7 +264,6 @@ function ValueEditor({
     return (
       <Select
         disabled={disabled}
-        itemDensity="compact"
         onValueChange={(next) => {
           const option = options.find((candidate) => String(candidate.value) === next);
           onChange(option?.value ?? next);
@@ -269,9 +272,9 @@ function ValueEditor({
         value={value === undefined ? "" : String(value)}
       >
         <SelectTrigger placeholder={labels.selectValue} />
-        <SelectContent animated={false}>
+        <SelectContent>
           {options.map((option) => (
-            <SelectItem disabled={option.disabled} key={String(option.value)} textValue={optionText(option, option.value)} value={String(option.value)}>
+            <SelectItem disabled={option.disabled} icon={option.icon} key={String(option.value)} textValue={optionText(option, option.value)} value={String(option.value)}>
               {option.label}
             </SelectItem>
           ))}
@@ -284,13 +287,12 @@ function ValueEditor({
     return (
       <Select
         disabled={disabled}
-        itemDensity="compact"
         onValueChange={(next) => onChange(next === "true")}
         size="md"
         value={value === undefined ? "" : String(value)}
       >
         <SelectTrigger placeholder={labels.selectValue} />
-        <SelectContent animated={false}>
+        <SelectContent>
           <SelectItem value="true">{field.trueLabel ?? labels.trueValue}</SelectItem>
           <SelectItem value="false">{field.falseLabel ?? labels.falseValue}</SelectItem>
         </SelectContent>
@@ -478,12 +480,10 @@ export function FilterRuleBuilder({
   const activePreset = presets.find((preset) => sameFilters(filters, preset.filters));
 
   return (
-    <Container className={cn("w-full max-w-3xl gap-1.5 rounded-2xl p-1.5", className)} {...props}>
-      <ContainerHeader className="px-2.5 py-1.5">
+    <Container className={cn("w-full max-w-3xl", className)} {...props}>
+      <ContainerHeader>
         <div className="flex min-w-0 items-center gap-2">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emphasis text-fg-default" aria-hidden>
-            <ListChecks />
-          </span>
+          <CardMedia icon={ListChecks} />
           <div className="min-w-0">
             <div className="flex min-w-0 flex-wrap items-center gap-1.5">
               <h2 className="text-body font-semibold text-fg-default">{labels.title}</h2>
@@ -499,9 +499,9 @@ export function FilterRuleBuilder({
         ) : null}
       </ContainerHeader>
 
-      <ContainerBody className="rounded-xl p-3" maxHeight={maxBodyHeight}>
+      <ContainerBody maxHeight={maxBodyHeight}>
         {presets.length ? (
-          <section aria-labelledby="filter-rule-presets" className="border-b-hairline border-border-subtle pb-3">
+          <section aria-labelledby="filter-rule-presets">
             <h3 className="mb-1.5 text-label font-medium text-fg-muted" id="filter-rule-presets">{labels.presets}</h3>
             <div className="flex flex-wrap gap-1.5">
               {presets.map((preset) => (
@@ -522,6 +522,7 @@ export function FilterRuleBuilder({
                 </Button>
               ))}
             </div>
+            <Separator />
           </section>
         ) : null}
 
@@ -536,8 +537,8 @@ export function FilterRuleBuilder({
                     <Badge color="gray" size="sm">{labels.conjunction}</Badge>
                   </div>
                 ) : null}
-                <Card className="min-h-0 border-hairline border-border-subtle pb-3">
-                  <CardHeader className="px-3 pt-3">
+                <Card>
+                  <CardHeader>
                     <CardTitle>
                       <span className="flex min-w-0 flex-wrap items-center gap-1.5">
                         <span>{labels.rule(index + 1)} ·</span>
@@ -560,9 +561,11 @@ export function FilterRuleBuilder({
                       </CardAction>
                     ) : null}
                   </CardHeader>
-                  <CardContent className="flex min-w-0 flex-wrap items-center gap-1.5 px-3 pt-1.5">
-                    <span className="text-body text-fg-muted">{resolveOperatorLabel(field, filter.operator)}</span>
-                    <RuleValue field={field} value={filter.value} />
+                  <CardContent>
+                    <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+                      <span className="text-body text-fg-muted">{resolveOperatorLabel(field, filter.operator)}</span>
+                      <RuleValue field={field} value={filter.value} />
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -576,8 +579,8 @@ export function FilterRuleBuilder({
                   <Badge color="gray" size="sm">{labels.conjunction}</Badge>
                 </div>
               ) : null}
-              <Card className="min-h-0 border border-brand pb-3">
-                <CardHeader className="px-3 pt-3">
+              <Card>
+                <CardHeader>
                   <CardTitle>
                     <span className="flex min-w-0 flex-wrap items-center gap-1.5">
                       <span>{labels.rule(filters.length + 1)} · {draftField.label}</span>
@@ -602,112 +605,121 @@ export function FilterRuleBuilder({
                     </Button>
                   </CardAction>
                 </CardHeader>
-                <CardContent className="px-3 pt-2">
-                  <div className="grid min-w-0 grid-cols-1 gap-2 md:grid-cols-3">
-                    <Field className="gap-1">
-                      <FieldLabel className="px-0 text-label">{labels.property}</FieldLabel>
-                      <Select disabled={isDisabled} itemDensity="compact" onValueChange={changeDraftField} size="md" value={draft.field}>
-                        <SelectTrigger placeholder={labels.selectProperty} />
-                        <SelectContent animated={false}>
-                          {fieldGroups.map(([group, groupFields], groupIndex) => (
-                            <SelectGroup key={group}>
-                              {groupIndex > 0 ? <SelectSeparator /> : null}
-                              <SelectLabel>{group}</SelectLabel>
-                              {groupFields.map((field) => (
-                                <SelectItem disabled={field.disabled} icon={field.icon} key={field.id} value={field.id}>
-                                  {field.label}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
-                    <Field className="gap-1">
-                      <FieldLabel className="px-0 text-label">{labels.operator}</FieldLabel>
-                      <Select
-                        disabled={isDisabled}
-                        itemDensity="compact"
-                        onValueChange={(operator) => setDraft({ ...draft, operator })}
-                        size="md"
-                        value={draft.operator}
-                      >
-                        <SelectTrigger placeholder={labels.selectOperator} />
-                        <SelectContent animated={false}>
-                          {(draftField.operators ?? []).map((operator) => (
-                            <SelectItem key={operator.value} value={operator.value}>{operator.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
-                    <Field className="gap-1" invalid={Boolean(draftTouched && draftError)}>
-                      <FieldLabel className="px-0 text-label">{labels.threshold}</FieldLabel>
-                      <ValueEditor
-                        disabled={isDisabled}
-                        field={draftField}
-                        labels={labels}
-                        onChange={(next) => {
-                          setDraft({ ...draft, value: next });
-                          setFeedback(null);
-                        }}
-                        value={draft.value}
-                      />
-                      {draftTouched && draftError ? <FieldError match>{draftError}</FieldError> : null}
-                    </Field>
+                <CardContent>
+                  <div className="@container">
+                    <div className="grid min-w-0 grid-cols-1 gap-3 @2xl:grid-cols-3">
+                      <Field>
+                        <FieldLabel>{labels.property}</FieldLabel>
+                        <Select disabled={isDisabled} onValueChange={changeDraftField} size="md" value={draft.field}>
+                          <SelectTrigger placeholder={labels.selectProperty} />
+                          <SelectContent>
+                            {fieldGroups.map(([group, groupFields], groupIndex) => (
+                              <SelectGroup key={group}>
+                                {groupIndex > 0 ? <SelectSeparator /> : null}
+                                <SelectLabel>{group}</SelectLabel>
+                                {groupFields.map((field) => (
+                                  <SelectItem disabled={field.disabled} icon={field.icon} key={field.id} value={field.id}>
+                                    {field.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </Field>
+                      <Field>
+                        <FieldLabel>{labels.operator}</FieldLabel>
+                        <Select
+                          disabled={isDisabled}
+                          onValueChange={(operator) => setDraft({ ...draft, operator })}
+                          size="md"
+                          value={draft.operator}
+                        >
+                          <SelectTrigger placeholder={labels.selectOperator} />
+                          <SelectContent>
+                            {(draftField.operators ?? []).map((operator) => (
+                              <SelectItem key={operator.value} value={operator.value}>{operator.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </Field>
+                      <Field invalid={Boolean(draftTouched && draftError)}>
+                        <FieldLabel>{labels.threshold}</FieldLabel>
+                        <ValueEditor
+                          disabled={isDisabled}
+                          field={draftField}
+                          labels={labels}
+                          onChange={(next) => {
+                            setDraft({ ...draft, value: next });
+                            setFeedback(null);
+                          }}
+                          value={draft.value}
+                        />
+                        {draftTouched && draftError ? <FieldError match>{draftError}</FieldError> : null}
+                      </Field>
+                    </div>
                   </div>
                 </CardContent>
-                <CardFooter className="justify-end px-3 pt-2">
-                  <Button disabled={isDisabled} onClick={() => { setDraft(null); setDraftTouched(false); }} size="md" type="button" variant="ghost">
-                    {labels.cancelDraft}
-                  </Button>
-                  <Button disabled={isDisabled} leadingIcon={Check} onClick={addDraft} size="md" type="button" variant="secondary">
-                    {labels.addRule}
-                  </Button>
+                <CardFooter>
+                  <div className="flex w-full flex-wrap justify-end gap-2">
+                    <Button disabled={isDisabled} onClick={() => { setDraft(null); setDraftTouched(false); }} size="md" type="button" variant="ghost">
+                      {labels.cancelDraft}
+                    </Button>
+                    <Button disabled={isDisabled} leadingIcon={Check} onClick={addDraft} size="md" type="button" variant="secondary">
+                      {labels.addRule}
+                    </Button>
+                  </div>
                 </CardFooter>
               </Card>
             </div>
           ) : !readOnly && canAddMore ? (
-            <Button
-              className="mt-3 w-full"
-              dashed
-              disabled={isDisabled || fields.length === 0}
-              leadingIcon={Plus}
-              onClick={() => setDraft(newDraft(fields))}
-              size="md"
-              type="button"
-              variant="tertiary"
-            >
-              {labels.addAnotherRule}
-            </Button>
+            <div className="mt-3">
+              <Button
+                className="w-full"
+                dashed
+                disabled={isDisabled || fields.length === 0}
+                leadingIcon={Plus}
+                onClick={() => setDraft(newDraft(fields))}
+                size="md"
+                type="button"
+                variant="tertiary"
+              >
+                {labels.addAnotherRule}
+              </Button>
+            </div>
           ) : null}
 
           {feedback ? (
-            <InlineNotice className="mt-3 flex w-full" role="alert" tone="danger" variant="emphasized">
-              <InlineNoticeContent>{feedback}</InlineNoticeContent>
-            </InlineNotice>
+            <div className="mt-3">
+              <InlineNotice role="alert" tone="danger" variant="emphasized">
+                <InlineNoticeContent>{feedback}</InlineNoticeContent>
+              </InlineNotice>
+            </div>
           ) : null}
         </div>
       </ContainerBody>
 
       {!readOnly ? (
-        <ContainerFooter className="justify-between px-2.5 py-1.5">
-          <Button
-            disabled={isDisabled || filters.length === 0}
-            leadingIcon={Eraser}
-            onClick={() => updateFilters([])}
-            size="md"
-            type="button"
-            variant="ghost"
-          >
-            {labels.clearAll}
-          </Button>
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button disabled={isBusy} onClick={cancelChanges} size="md" type="button" variant="tertiary">
-              {labels.cancel}
+        <ContainerFooter>
+          <div className="flex w-full flex-wrap items-center justify-between gap-2">
+            <Button
+              disabled={isDisabled || filters.length === 0}
+              leadingIcon={Eraser}
+              onClick={() => updateFilters([])}
+              size="md"
+              type="button"
+              variant="ghost"
+            >
+              {labels.clearAll}
             </Button>
-            <Button disabled={disabled} loading={isBusy} onClick={applyFilters} size="md" type="button" variant="primary">
-              {isBusy ? labels.applying : labels.apply}
-            </Button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Button disabled={isBusy} onClick={cancelChanges} size="md" type="button" variant="tertiary">
+                {labels.cancel}
+              </Button>
+              <Button disabled={disabled} loading={isBusy} onClick={applyFilters} size="md" type="button" variant="primary">
+                {isBusy ? labels.applying : labels.apply}
+              </Button>
+            </div>
           </div>
         </ContainerFooter>
       ) : null}

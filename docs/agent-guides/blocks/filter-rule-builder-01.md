@@ -30,4 +30,8 @@ Use this block for a compact filtering task where users need to review existing 
 
 `Container` owns the raised work surface, fixed header and footer, and capped scrolling body. Rule summaries use `Card` and `Badge`. Draft property and operator values use `Select`; multi-value fields use the multiple `Combobox` contract; number units use `InputGroup`. Actions use public `Button` variants and icon slots. Do not restyle control geometry, replace popup positioning, or add a second scroll owner around the body.
 
+Use the components' default surfaces, radii, padding, field labels, option density, and popup animations. `CardMedia` owns the header icon tile and `Separator` owns the presets divider. Keep external layout in business-content wrappers; the draft columns respond to the available container width rather than the viewport width.
+
+Multi-select options use their label or `textValue` for search and preserve their original values when added to a rule. Option icons and disabled states are passed to the Zeron items. Set `searchable={false}` to keep the complete list selectable without text entry. This block edits preloaded `options`; remote option loading is not part of its current editor contract.
+
 The default body height fits a viewport-hosted panel. Override `maxBodyHeight` when the host already provides a smaller bounded region, and verify popup visibility and keyboard reachability at that real height.

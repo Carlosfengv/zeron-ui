@@ -20,6 +20,7 @@ describe("Filter Rule Builder registry item", () => {
       "filter-core",
       "input-group",
       "select",
+      "separator",
     ]));
     expect(targets).toEqual(expect.arrayContaining([
       "components/blocks/filter-rule-builder-01/filter-rule-builder-types.ts",

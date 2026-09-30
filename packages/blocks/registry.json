@@ -547,6 +547,7 @@
         "input",
         "input-group",
         "select",
+        "separator",
         "utils"
       ],
       "files": [

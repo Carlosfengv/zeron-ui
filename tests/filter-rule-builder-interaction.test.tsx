@@ -21,6 +21,99 @@ afterEach(() => {
 });
 
 describe("FilterRuleBuilder", () => {
+  const multiSelectField = {
+    id: "channel",
+    label: "Channel",
+    type: "multiSelect" as const,
+    operators: [{ value: "isAnyOf", label: "is any of" }],
+    options: [
+      { value: "web", label: "Website conversations", textValue: "Browser chat" },
+      { value: "email", label: "Email", disabled: true },
+      { value: "sms", label: "Text messages" },
+    ],
+  };
+
+  it("searches multi-select display text and commits the original option value", async () => {
+    const onValueChange = vi.fn();
+    render(
+      <FilterRuleBuilder
+        defaultDraft={{ field: "channel" }}
+        fields={[multiSelectField]}
+        onValueChange={onValueChange}
+      />
+    );
+
+    const input = screen.getByRole("combobox", { name: "Threshold" });
+    fireEvent.focus(input);
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    fireEvent.change(input, { target: { value: "Browser" } });
+    const option = await screen.findByRole("option", { name: "Website conversations" });
+    expect(screen.queryByRole("option", { name: "Text messages" })).toBeNull();
+    fireEvent.click(option);
+    await screen.findByRole("button", { name: "Remove Browser chat" });
+    if (input.getAttribute("aria-expanded") === "true") {
+      fireEvent.keyDown(input, { key: "Escape" });
+    }
+    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
+    fireEvent.click(screen.getByRole("button", { name: "Add rule" }));
+
+    expect(onValueChange).toHaveBeenLastCalledWith([
+      expect.objectContaining({ field: "channel", value: ["web"] }),
+    ]);
+  });
+
+  it("prevents selection of a disabled multi-select option", async () => {
+    const onValueChange = vi.fn();
+    render(
+      <FilterRuleBuilder
+        defaultDraft={{ field: "channel" }}
+        fields={[multiSelectField]}
+        onValueChange={onValueChange}
+      />
+    );
+
+    const input = screen.getByRole("combobox", { name: "Threshold" });
+    fireEvent.focus(input);
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    const option = await screen.findByRole("option", { name: "Email" });
+    expect(option.getAttribute("aria-disabled")).toBe("true");
+    fireEvent.click(option);
+    if (input.getAttribute("aria-expanded") === "true") {
+      fireEvent.keyDown(input, { key: "Escape" });
+    }
+    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
+    fireEvent.click(screen.getByRole("button", { name: "Add rule" }));
+
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(screen.getByText("Choose or enter a value.")).toBeTruthy();
+  });
+
+  it("keeps non-searchable multi-select options selectable", async () => {
+    const onValueChange = vi.fn();
+    render(
+      <FilterRuleBuilder
+        defaultDraft={{ field: "channel" }}
+        fields={[{ ...multiSelectField, searchable: false }]}
+        onValueChange={onValueChange}
+      />
+    );
+
+    const input = screen.getByRole("combobox", { name: "Threshold" });
+    expect(input).toHaveProperty("readOnly", true);
+    fireEvent.focus(input);
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    fireEvent.click(await screen.findByRole("option", { name: "Text messages" }));
+    if (input.getAttribute("aria-expanded") === "true") {
+      fireEvent.keyDown(input, { key: "Escape" });
+    }
+    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
+    fireEvent.click(screen.getByRole("button", { name: "Add rule" }));
+
+    expect(onValueChange).toHaveBeenLastCalledWith([
+      expect.objectContaining({ field: "channel", value: ["sms"] }),
+    ]);
+  });
+
   it("keeps a draft separate and requires it to be resolved before apply", async () => {
     const onApply = vi.fn();
     const onValueChange = vi.fn();
