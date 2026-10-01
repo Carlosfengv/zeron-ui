@@ -207,7 +207,7 @@ export default function ButtonGroupDoc() {
       </DocSection>
 
       <DocSection title={t("basic")}>
-        <p className="mb-4 max-w-3xl text-body leading-5 text-fg-muted">
+        <p className="mb-4 max-w-3xl text-body text-fg-muted">
           {t("basicDescription")}
         </p>
         <ComponentPreview code={basicCode}>
@@ -226,7 +226,7 @@ export default function ButtonGroupDoc() {
       </DocSection>
 
       <DocSection title={t("splitAction")}>
-        <p className="mb-4 max-w-3xl text-body leading-5 text-fg-muted">
+        <p className="mb-4 max-w-3xl text-body text-fg-muted">
           {t("splitDescription")}
         </p>
         <ComponentPreview code={splitCode}>
@@ -264,7 +264,7 @@ export default function ButtonGroupDoc() {
       </DocSection>
 
       <DocSection title={t("iconActions")}>
-        <p className="mb-4 max-w-3xl text-body leading-5 text-fg-muted">
+        <p className="mb-4 max-w-3xl text-body text-fg-muted">
           {t("iconDescription")}
         </p>
         <ComponentPreview code={iconCode}>
@@ -306,7 +306,7 @@ export default function ButtonGroupDoc() {
       </DocSection>
 
       <DocSection title={t("contextualAddon")}>
-        <p className="mb-4 max-w-3xl text-body leading-5 text-fg-muted">
+        <p className="mb-4 max-w-3xl text-body text-fg-muted">
           {t("addonDescription")}
         </p>
         <ComponentPreview code={addonCode}>
@@ -320,7 +320,7 @@ export default function ButtonGroupDoc() {
       </DocSection>
 
       <DocSection title={t("vertical")}>
-        <p className="mb-4 max-w-3xl text-body leading-5 text-fg-muted">
+        <p className="mb-4 max-w-3xl text-body text-fg-muted">
           {t("verticalDescription")}
         </p>
         <ComponentPreview code={verticalCode}>
@@ -342,7 +342,7 @@ export default function ButtonGroupDoc() {
       </DocSection>
 
       <DocSection title={t("accessibility")}>
-        <div className="flex max-w-3xl flex-col gap-2 text-body leading-5 text-fg-muted">
+        <div className="flex max-w-3xl flex-col gap-2 text-body text-fg-muted">
           <p>{t("accessibilityGroup")}</p>
           <p>{t("accessibilityKeyboard")}</p>
           <p>{t("accessibilitySelection")}</p>

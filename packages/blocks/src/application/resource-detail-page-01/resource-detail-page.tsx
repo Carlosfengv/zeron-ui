@@ -141,7 +141,7 @@ const markdownComponents: Components = {
     </a>
   ),
   pre: ({ children }) => (
-    <pre className="my-3 max-w-full overflow-x-auto whitespace-pre rounded-lg bg-surface-raised px-3 py-2 font-mono text-label leading-5">
+    <pre className="my-3 max-w-full overflow-x-auto whitespace-pre rounded-lg bg-surface-raised px-3 py-2 font-mono text-label">
       {children}
     </pre>
   ),
@@ -330,7 +330,7 @@ function ResourceMetadataPanel({
             ))}
           </SelectContent>
         </Select>
-        <div className="mt-1 rounded-lg bg-surface-raised px-3 py-2 text-label leading-5 text-fg-muted">
+        <div className="mt-1 rounded-lg bg-surface-raised px-3 py-2 text-label text-fg-muted">
           {data.security.description}
         </div>
       </DetailListSection>
@@ -415,7 +415,7 @@ function ProtectionValue({
 
 function MarkdownContent({ markdown }: { markdown: string }) {
   return (
-    <article className="min-w-0 rounded-xl border-hairline border-border bg-surface-floating px-5 py-4 text-body leading-6 text-fg-muted">
+    <article className="min-w-0 rounded-xl border-hairline border-border bg-surface-floating px-5 py-4 text-body text-fg-muted">
       <ReactMarkdown
         components={markdownComponents}
         remarkPlugins={[remarkGfm, remarkBreaks]}

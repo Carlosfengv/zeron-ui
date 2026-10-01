@@ -267,11 +267,11 @@ export function ComponentPreview({
       {/* Tab bar — min-height reserves the playback button's height (h-10 + pt-3)
           so the header doesn't shift when the button mounts/unmounts. A hairline
           along the bottom separates it from the preview/code below. Its own
-          opaque background sits above the inspect overlay (z-40 > z-30) so the
+          opaque background sits above the inspect overlay (z-overlay > z-action) so the
           ruler ticks tuck cleanly under it. */}
       <div
         className={cn(
-          "relative z-40 flex shrink-0 items-center justify-between gap-1",
+          "relative z-overlay flex shrink-0 items-center justify-between gap-1",
           browserFrame
             ? "h-11 border-b border-border-subtle bg-surface-floating px-3 sm:grid sm:grid-cols-[minmax(6rem,1fr)_auto_minmax(6rem,1fr)] sm:px-4"
             : "px-1.5 py-1",

@@ -564,13 +564,13 @@ function turnMetrics(turn: AgentTraceTurn): Pick<AgentTraceRow, "input" | "outpu
 function TurnStatusIcon({ status }: { status: AgentTraceTurn["status"] }) {
   const state = status ?? "running";
   const presentation = {
-    completed: { label: "Completed", icon: "check" as IconName, className: "bg-fg-success" },
-    error: { label: "Error", icon: "x" as IconName, className: "bg-fg-danger" },
-    aborted: { label: "Aborted", icon: "pause" as IconName, className: "bg-fg-warning" },
-    running: { label: "Running", icon: "loader" as IconName, className: "bg-fg-info" },
+    completed: { label: "Completed", icon: "check" as IconName, className: "bg-success-surface text-fg-success" },
+    error: { label: "Error", icon: "x" as IconName, className: "bg-danger-surface text-fg-danger" },
+    aborted: { label: "Aborted", icon: "pause" as IconName, className: "bg-warning-surface text-fg-warning" },
+    running: { label: "Running", icon: "loader" as IconName, className: "bg-info-surface text-fg-info" },
   }[state];
 
-  return <span role="img" aria-label={`Turn status: ${presentation.label}`} title={presentation.label} className={cn("grid size-4 shrink-0 place-items-center rounded-sm text-white", presentation.className)}><TraceIcon name={presentation.icon} size={14} className={state === "running" ? "animate-spin" : undefined} /></span>;
+  return <span role="img" aria-label={`Turn status: ${presentation.label}`} title={presentation.label} className={cn("grid size-4 shrink-0 place-items-center rounded-sm", presentation.className)}><TraceIcon name={presentation.icon} size={14} className={state === "running" ? "animate-spin" : undefined} /></span>;
 }
 
 function primaryEvent(row: AgentTraceRow): JsonRecord | null {
@@ -651,13 +651,13 @@ function ModelLogo({ source, size = 16 }: { source: { provider: string; model?: 
 function RowStatus({ status }: { status: AgentTraceRow["status"] }) {
   const state = status ?? "recorded";
   const presentation = {
-    success: { label: "Success", icon: "check" as IconName, className: "bg-fg-success" },
-    error: { label: "Error", icon: "x" as IconName, className: "bg-fg-danger" },
-    running: { label: "Running", icon: "loader" as IconName, className: "bg-fg-info" },
-    recorded: { label: "Recorded", icon: "dot" as IconName, className: "bg-fg-muted" },
+    success: { label: "Success", icon: "check" as IconName, className: "bg-success-surface text-fg-success" },
+    error: { label: "Error", icon: "x" as IconName, className: "bg-danger-surface text-fg-danger" },
+    running: { label: "Running", icon: "loader" as IconName, className: "bg-info-surface text-fg-info" },
+    recorded: { label: "Recorded", icon: "dot" as IconName, className: "bg-neutral-status-surface text-fg-neutral-status" },
   }[state];
 
-  return <span className="inline-flex items-center gap-1.5"><span role="img" aria-label={`Status: ${presentation.label}`} className={cn("grid size-4 place-items-center rounded-sm text-white", presentation.className)}><TraceIcon name={presentation.icon} size={12} className={state === "running" ? "animate-spin" : undefined} /></span><span>{presentation.label}</span></span>;
+  return <span className="inline-flex items-center gap-1.5"><span role="img" aria-label={`Status: ${presentation.label}`} className={cn("grid size-4 place-items-center rounded-sm", presentation.className)}><TraceIcon name={presentation.icon} size={12} className={state === "running" ? "animate-spin" : undefined} /></span><span>{presentation.label}</span></span>;
 }
 
 function rowUsage(row: AgentTraceRow): { input?: number; cacheRead?: number; cacheWrite?: number; output?: number; reasoning?: number } {
@@ -729,7 +729,7 @@ function inspectorTabs(row: AgentTraceRow): readonly { id: InspectorTab; label: 
 }
 
 function InspectorCode({ children, error = false }: { children: string; error?: boolean }) {
-  return <pre className={cn("overflow-x-auto whitespace-pre-wrap break-words text-sm leading-5 text-fg-muted", error && "text-fg-danger")}>{children}</pre>;
+  return <pre className={cn("overflow-x-auto whitespace-pre-wrap break-words text-body text-fg-muted", error && "text-fg-danger")}>{children}</pre>;
 }
 
 function InspectorSummary({ row, formatTime }: { row: AgentTraceRow; formatTime: (value: number | undefined) => string }) {
@@ -770,16 +770,16 @@ function InspectorPreview({ row }: { row: AgentTraceRow }) {
   const output = row.kind === "assistant" ? assistantOutput(row) : row.kind === "tool" ? rowOutput(row) : rowInput(row);
   const calls = row.kind === "assistant" ? toolCalls(row) : [];
   return <div className="space-y-3">
-    {reasoning && <details className="rounded-lg border border-border-subtle p-2.5 text-sm text-fg-muted"><summary className="cursor-pointer font-normal text-fg-default">Thinking</summary><InspectorCode>{reasoning}</InspectorCode></details>}
+    {reasoning && <details className="rounded-lg border border-border-subtle p-2.5 text-body text-fg-muted"><summary className="cursor-pointer font-normal text-fg-default">Thinking</summary><InspectorCode>{reasoning}</InspectorCode></details>}
     {output && <InspectorCode>{output}</InspectorCode>}
-    {calls.map((call, index) => <section key={`${call.name ?? "tool-call"}:${index}`} className="rounded-lg border border-border-subtle p-2.5"><p className="text-sm font-normal text-fg-default">Tool call · {call.name ?? "Unknown"}</p><InspectorCode>{call.text}</InspectorCode></section>)}
+    {calls.map((call, index) => <section key={`${call.name ?? "tool-call"}:${index}`} className="rounded-lg border border-border-subtle p-2.5"><p className="text-body font-normal text-fg-default">Tool call · {call.name ?? "Unknown"}</p><InspectorCode>{call.text}</InspectorCode></section>)}
   </div>;
 }
 
 function InspectorSchema({ row }: { row: AgentTraceRow }) {
   const data = rowData(row);
   const schema = data?.schema ?? data?.parameters;
-  return schema === undefined ? <p className="text-sm text-fg-muted">Schema unavailable in this JSONL record.</p> : <InspectorCode>{rawJson(schema)}</InspectorCode>;
+  return schema === undefined ? <p className="text-body text-fg-muted">Schema unavailable in this JSONL record.</p> : <InspectorCode>{rawJson(schema)}</InspectorCode>;
 }
 
 /** A high-fidelity, browser-local replica of DSH's Trajectory ledger. */
@@ -928,15 +928,15 @@ export function AgentTrace({
 
       {turns.length === 0 ? <div className="flex min-h-48 flex-1 items-center justify-center text-body text-fg-muted">No renderable message records found in this JSON.</div> : <TraceSplitLayout desktop={desktopLayout}>
         <ScrollArea className="min-h-0 min-w-0 flex-1" viewportClassName="h-full" orientation="both">
-          <Table className="w-full min-w-[720px] table-fixed border-collapse text-sm">
+          <Table className="w-full min-w-[720px] table-fixed border-collapse text-body">
             <colgroup><col className="w-12" /><col className="w-28" /><col /><col className="w-[4.5rem]" /><col className="w-[4.5rem]" /><col className="w-[4.5rem]" /><col className="w-[4.5rem]" /></colgroup>
-            <TableHeader className="sticky top-0 z-20 bg-surface-raised text-fg-subtle"><TableRow className="h-8 border-b border-border"><TableHead className="px-2 text-right text-sm font-normal">#</TableHead><TableHead className="px-2 text-left text-sm font-normal">Event</TableHead><TableHead className="px-2 text-left text-sm font-normal">Content</TableHead><TableHead className="px-2 text-right text-sm font-normal">Input</TableHead><TableHead className="px-2 text-right text-sm font-normal">Output</TableHead><TableHead className="px-2 text-right text-sm font-normal">Think</TableHead><TableHead className="px-2 text-right text-sm font-normal">Time</TableHead></TableRow></TableHeader>
+            <TableHeader className="sticky top-0 z-raised bg-surface-raised text-fg-subtle"><TableRow className="h-8 border-b border-border"><TableHead className="px-2 text-right text-body font-normal">#</TableHead><TableHead className="px-2 text-left text-body font-normal">Event</TableHead><TableHead className="px-2 text-left text-body font-normal">Content</TableHead><TableHead className="px-2 text-right text-body font-normal">Input</TableHead><TableHead className="px-2 text-right text-body font-normal">Output</TableHead><TableHead className="px-2 text-right text-body font-normal">Think</TableHead><TableHead className="px-2 text-right text-body font-normal">Time</TableHead></TableRow></TableHeader>
             <TableBody>{turns.map((turn) => {
               const collapsed = collapsedTurns.has(turn.id);
               const metrics = turnMetrics(turn);
-              return <Fragment key={turn.id}><TableRow className="sticky top-8 z-10 border-y border-border bg-surface-base"><TableCell colSpan={7} className="h-8 px-2"><button type="button" aria-label={`${collapsed ? "展开" : "收起"} ${turn.label}`} onClick={() => setCollapsedTurns((current) => { const next = new Set(current); if (next.has(turn.id)) next.delete(turn.id); else next.add(turn.id); return next; })} className="flex w-full items-center gap-2 text-left outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"><span aria-hidden="true" className="grid size-5 shrink-0 place-items-center text-fg-muted"><HugeiconsIcon icon={ChevronDownIcon} size={18} strokeWidth={1.75} className={cn("transition-transform", collapsed && "-rotate-90")} /></span><TurnStatusIcon status={turn.status} /><span className="font-normal text-fg-default">{turn.label}</span><span className="ml-auto grid w-[18rem] grid-cols-4 text-right font-normal tabular-nums text-fg-subtle"><span title="Input">{compactNumber(metrics.input)}</span><span title="Output">{compactNumber(metrics.output)}</span><span title="Think">{compactNumber(metrics.think)}</span><span title="Time">{formatDuration(metrics.durationMs)}</span></span></button></TableCell></TableRow>
+              return <Fragment key={turn.id}><TableRow className="sticky top-8 z-content border-y border-border bg-surface-base"><TableCell colSpan={7} className="h-8 px-2"><button type="button" aria-label={`${collapsed ? "展开" : "收起"} ${turn.label}`} onClick={() => setCollapsedTurns((current) => { const next = new Set(current); if (next.has(turn.id)) next.delete(turn.id); else next.add(turn.id); return next; })} className="flex w-full items-center gap-2 text-left outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"><span aria-hidden="true" className="grid size-5 shrink-0 place-items-center text-fg-muted"><HugeiconsIcon icon={ChevronDownIcon} size={18} strokeWidth={1.75} className={cn("transition-transform", collapsed && "-rotate-90")} /></span><TurnStatusIcon status={turn.status} /><span className="font-normal text-fg-default">{turn.label}</span><span className="ml-auto grid w-[18rem] grid-cols-4 text-right font-normal tabular-nums text-fg-subtle"><span title="Input">{compactNumber(metrics.input)}</span><span title="Output">{compactNumber(metrics.output)}</span><span title="Think">{compactNumber(metrics.think)}</span><span title="Time">{formatDuration(metrics.durationMs)}</span></span></button></TableCell></TableRow>
                 {!collapsed && turn.groups.map((group) => <Fragment key={`${turn.id}:${group.id}`}>
-                  <TableRow className="border-b border-border-subtle bg-surface-raised/60"><TableCell colSpan={7} className="h-7 px-2 text-xs font-normal text-fg-subtle"><span>{group.label}</span><span className="ml-2">{group.rows.length} record{group.rows.length === 1 ? "" : "s"}</span></TableCell></TableRow>
+                  <TableRow className="border-b border-border-subtle bg-surface-raised/60"><TableCell colSpan={7} className="h-7 px-2 text-label font-normal text-fg-subtle"><span>{group.label}</span><span className="ml-2">{group.rows.length} record{group.rows.length === 1 ? "" : "s"}</span></TableCell></TableRow>
                   {group.rows.filter((row) => !hideCalls || row.kind !== "tool").map((row) => {
                     const style = kindStyle[row.kind];
                     const match = !query || `${row.label} ${row.preview} ${row.result ?? ""} ${row.callId ?? ""}`.toLocaleLowerCase().includes(query);
@@ -953,9 +953,9 @@ export function AgentTrace({
             })}</TableBody>
           </Table>
         </ScrollArea>
-        {selected && <aside className="flex min-h-[18rem] w-full shrink-0 flex-col border-t border-border bg-surface-raised text-sm lg:h-full lg:border-l lg:border-t-0" aria-label="Record inspector">
+        {selected && <aside className="flex min-h-[18rem] w-full shrink-0 flex-col border-t border-border bg-surface-raised text-body lg:h-full lg:border-l lg:border-t-0" aria-label="Record inspector">
           <Tabs value={inspectorTab} onValueChange={(value) => setInspectorTab(value as InspectorTab)} variant="underline" color="neutral" className="flex min-h-0 flex-1 flex-col">
-            <header className="border-b border-border px-3 py-2"><div className="flex items-center justify-between gap-2"><span className="text-sm text-fg-subtle">Record #{selected.seq ?? "—"}</span><Badge size="sm" className="!font-normal" color={selected.status === "error" ? "red" : selected.kind === "tool" ? "amber" : "blue"}>{kindStyle[selected.kind].label}</Badge></div><h3 className="mt-1 text-sm font-normal text-fg-default">{selected.label}</h3></header>
+            <header className="border-b border-border px-3 py-2"><div className="flex items-center justify-between gap-2"><span className="text-body text-fg-subtle">Record #{selected.seq ?? "—"}</span><Badge size="sm" className="!font-normal" color={selected.status === "error" ? "red" : selected.kind === "tool" ? "amber" : "blue"}>{kindStyle[selected.kind].label}</Badge></div><h3 className="mt-1 text-body font-normal text-fg-default">{selected.label}</h3></header>
             <TabsList className="mx-0 px-2" aria-label="Inspector tabs">{inspectorTabs(selected).map((tab) => <TabItem key={tab.id} value={tab.id} label={tab.label} />)}</TabsList>
             <ScrollArea className="min-h-0 flex-1" viewportClassName="h-full" orientation="vertical">
               <TabPanel value="summary" className="p-3"><InspectorSummary formatTime={formatTime} row={selected} /></TabPanel>

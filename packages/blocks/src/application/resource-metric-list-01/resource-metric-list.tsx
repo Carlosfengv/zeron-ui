@@ -177,7 +177,7 @@ export function ResourceMetricList({
           </DetailListLabel>
 
           <DetailListValue className="flex w-[200px] max-w-none shrink-0 items-center justify-end gap-2.5">
-            <span className="min-w-0 flex-1 whitespace-nowrap text-right text-body leading-5 tabular-nums text-fg-muted">
+            <span className="min-w-0 flex-1 whitespace-nowrap text-right text-body tabular-nums text-fg-muted">
               {item.value}
             </span>
             <ResourceStatusBar item={item} />

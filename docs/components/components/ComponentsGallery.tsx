@@ -350,7 +350,7 @@ export function ComponentsGallery({ localePrefix = "" }: { localePrefix?: string
         <PageContent ref={contentRef} className="overflow-y-auto overscroll-contain max-lg:flex-none">
           <PageBody className="h-auto max-w-[1620px] overflow-visible p-4 sm:px-[18px] sm:py-5">
             <header className="border-b border-border pb-5">
-              <h1 ref={galleryTitleRef} id="component-gallery-title" className="scroll-mt-4 text-heading font-semibold leading-tight text-fg-default">{text.galleryTitle}</h1>
+              <h1 ref={galleryTitleRef} id="component-gallery-title" className="scroll-mt-4 text-heading font-semibold text-fg-default">{text.galleryTitle}</h1>
               <p className="mt-2 max-w-3xl text-body text-fg-muted">{text.galleryDescription}</p>
             </header>
 

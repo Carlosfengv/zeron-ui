@@ -241,7 +241,7 @@ const EmptyDescription = forwardRef<
       data-slot="empty-description"
       className={cn(
         "text-pretty text-fg-muted",
-        scope === "inline" ? "text-label leading-5" : "text-body leading-6",
+        scope === "inline" ? "text-label" : "text-body",
         className
       )}
       {...props}
@@ -313,7 +313,7 @@ const EmptyHelp = forwardRef<HTMLDivElement, EmptyHelpProps>(
       ref={ref}
       data-slot="empty-help"
       className={cn(
-        "text-label leading-5 text-fg-muted",
+        "text-label text-fg-muted",
         "[&_a]:font-medium [&_a]:text-fg-default [&_a]:underline [&_a]:decoration-current/30 [&_a]:underline-offset-4",
         className
       )}

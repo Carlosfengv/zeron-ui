@@ -27,7 +27,7 @@ export default function DocsIndex() {
         {firstComponent && <IntroPager nextSlug={firstComponent.slug} nextName={firstComponent.name} />}
       </div>
 
-      <section className="flex flex-col gap-6 text-body text-fg-default/90 leading-relaxed">
+      <section className="flex flex-col gap-6 text-body text-fg-default/90">
         <div className="flex flex-col gap-2">
           <h3
             className="text-title text-fg-default leading-none font-semibold"

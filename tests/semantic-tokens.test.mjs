@@ -49,6 +49,15 @@ const ROOT = new URL("..", import.meta.url).pathname;
 const read = (path) => readFileSync(join(ROOT, path), "utf8");
 const registry = JSON.parse(read("packages/ui/registry.json"));
 
+function sourceFiles(directory) {
+  return readdirSync(join(ROOT, directory), { withFileTypes: true })
+    .flatMap((entry) => {
+      const path = `${directory}/${entry.name}`;
+      if (entry.isDirectory()) return sourceFiles(path);
+      return /\.[jt]sx?$/.test(entry.name) ? [path] : [];
+    });
+}
+
 describe("token contrast helper", () => {
   it("calculates canonical contrast values and composites alpha", () => {
     expect(contrastRatio("#000000", "#FFFFFF")).toBe(21);
@@ -146,7 +155,8 @@ describe("semantic token generation", () => {
     const sharedRules = styles.match(/html, body\s*\{(?<rules>[^}]*)\}/)
       ?.groups?.rules;
 
-    expect(styles).toMatch(/^body\s*\{[^}]*font-size:\s*0\.875rem;/m);
+    expect(styles).toMatch(/^body\s*\{[^}]*font-size:\s*var\(--font-size-body\);/m);
+    expect(styles).toMatch(/^body\s*\{[^}]*line-height:\s*var\(--line-height-body\);/m);
     expect(sharedRules).not.toContain("font-size");
   });
 
@@ -560,13 +570,23 @@ describe("semantic token generation", () => {
 });
 
 describe("component token adoption", () => {
-  const componentSource = ["packages/ui/src/components"]
-    .flatMap((directory) => {
-      return readdirSync(join(ROOT, directory), { withFileTypes: true })
-        .filter((entry) => entry.isFile() && entry.name.endsWith(".tsx"))
-        .map((entry) => read(`${directory}/${entry.name}`));
-    })
+  const componentSource = sourceFiles("packages/ui/src/components")
+    .map(read)
     .join("\n");
+
+  it("uses semantic font-size classes in components, blocks, and pages", () => {
+    const files = [
+      "packages/ui/src/components",
+      "packages/blocks/src",
+      "docs/pages",
+      "docs/components",
+      "app",
+    ].flatMap(sourceFiles);
+
+    for (const path of files) {
+      expect(read(path), path).not.toMatch(/\btext-(?:xs|sm|base|lg|xl|[2-9]xl)\b/);
+    }
+  });
 
   it("does not use arbitrary pixel typography", () => {
     expect(componentSource).not.toMatch(/text-\[\d+px\]/);

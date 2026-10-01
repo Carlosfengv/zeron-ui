@@ -274,7 +274,7 @@ export default function InputGroupDoc() {
       </DocSection>
 
       <DocSection title="Focus behavior">
-        <p className="max-w-3xl text-body leading-5 text-fg-muted">
+        <p className="max-w-3xl text-body text-fg-muted">
           The group ring follows its Input or Textarea only when that editing control matches <code>:focus-visible</code>. Internal buttons keep their own keyboard focus ring and never light the entire group.
         </p>
       </DocSection>

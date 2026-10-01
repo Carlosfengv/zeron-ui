@@ -212,13 +212,13 @@ export default function SkeletonDoc() {
       </DocSection>
 
       <DocSection title={t("accessibility")}>
-        <p className="max-w-3xl text-body leading-6 text-fg-muted">
+        <p className="max-w-3xl text-body text-fg-muted">
           {t("accessibilityBody")}
         </p>
       </DocSection>
 
       <DocSection title={t("usage")}>
-        <p className="max-w-3xl text-body leading-6 text-fg-muted">
+        <p className="max-w-3xl text-body text-fg-muted">
           {t("usageBody")}
         </p>
       </DocSection>

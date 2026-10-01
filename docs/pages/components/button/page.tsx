@@ -102,7 +102,7 @@ function VariantGuide() {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="max-w-3xl text-body leading-5 text-fg-muted">
+      <p className="max-w-3xl text-body text-fg-muted">
         {t("choosingVariantIntro")}
       </p>
       <ScrollArea
@@ -143,7 +143,7 @@ function VariantGuide() {
           </tbody>
         </table>
       </ScrollArea>
-      <p className="max-w-3xl text-body leading-5 text-fg-default">
+      <p className="max-w-3xl text-body text-fg-default">
         {t("highEmphasisRule")}
       </p>
     </div>
@@ -165,10 +165,10 @@ function ButtonGroupGuidance() {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="max-w-3xl text-body leading-5 text-fg-muted">
+      <p className="max-w-3xl text-body text-fg-muted">
         {t("compositionIntro")}
       </p>
-      <ul className="flex max-w-3xl list-disc flex-col gap-1.5 pl-5 text-body leading-5 text-fg-muted marker:text-fg-subtle">
+      <ul className="flex max-w-3xl list-disc flex-col gap-1.5 pl-5 text-body text-fg-muted marker:text-fg-subtle">
         <li>{t("compositionRule1")}</li>
         <li>{t("compositionRule2")}</li>
         <li>{t("compositionRule3")}</li>
@@ -563,7 +563,7 @@ const Loader = useIcon("loader");
       </DocSection>
 
       <DocSection title="Focus behavior">
-        <p className="max-w-3xl text-body leading-5 text-fg-muted">
+        <p className="max-w-3xl text-body text-fg-muted">
           Buttons use <code>:focus-visible</code>: keyboard focus receives a ring, while pointer focus normally does not. Browser and user accessibility preferences that request visible focus are always respected.
         </p>
       </DocSection>

@@ -56,7 +56,7 @@ const InlineNotice = forwardRef<HTMLSpanElement, InlineNoticeProps>(
         data-variant={variant}
         data-tone={tone}
         className={cn(
-          "inline-flex max-w-full items-start gap-1.5 rounded-xl py-1 pr-2 pl-1 align-middle text-body leading-5",
+          "inline-flex max-w-full items-start gap-1.5 rounded-xl py-1 pr-2 pl-1 align-middle text-body",
           isEmphasized && tone
             ? toneClasses[tone]
             : "bg-surface-raised text-fg-default",

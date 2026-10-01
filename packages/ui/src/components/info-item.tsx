@@ -89,7 +89,7 @@ const InfoItemTitle = forwardRef<HTMLDivElement, InfoItemTitleProps>(
       ref={ref}
       data-slot="info-item-title"
       className={cn(
-        "min-w-0 text-body font-medium leading-5 text-fg-default",
+        "min-w-0 text-body font-medium text-fg-default",
         "group-data-[layout=inline]/info-item:shrink-0",
         className
       )}
@@ -108,7 +108,7 @@ const InfoItemDescription = forwardRef<HTMLDivElement, InfoItemDescriptionProps>
       ref={ref}
       data-slot="info-item-description"
       className={cn(
-        "min-w-0 text-label leading-5 text-fg-muted",
+        "min-w-0 text-label text-fg-muted",
         "group-data-[layout=inline]/info-item:flex-1 group-data-[layout=inline]/info-item:truncate",
         className
       )}

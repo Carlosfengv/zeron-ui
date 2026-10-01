@@ -191,7 +191,7 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
               </WorkflowNode>
               </WorkflowConditionBranch>
               {actionGroups.map((group) => <section key={group.phase} className={`${styles.actionGroup} flex w-full flex-col items-center`} aria-label={`处置动作：${group.title}`} data-expanded={group.items.some(({ action }) => expanded.includes(action.id))}>
-                <h2 className={`${styles.phaseHeading} mb-3 w-[336px] max-w-full text-label font-medium leading-5 text-fg-muted`}>处置动作 · {group.title}</h2>
+                <h2 className={`${styles.phaseHeading} mb-3 w-[336px] max-w-full text-label font-medium text-fg-muted`}>处置动作 · {group.title}</h2>
                 {group.items.map(({ action, index }) => <Fragment key={action.id}>
                 <WorkflowNode id={action.id} title={action.type} description={actionDescription(action)} icon={actionIcon(action)} tone="purple" expanded={expanded.includes(action.id)} onToggle={() => toggle(action.id)} issue={issueFor(action.id)} footer={<>执行阶段 <code>{action.phase === "before" ? "before_upstream" : "after_response"}</code></>} tools={<div className={styles.actionTools}>
                   <Button aria-label={`上移动作：${action.type}`} title="上移" iconOnly size="xs" variant="ghost" disabled={index === 0 || actions[index - 1]?.phase !== action.phase} onClick={() => moveAction(action.id,-1)}><WorkflowMoveUpIcon /></Button>

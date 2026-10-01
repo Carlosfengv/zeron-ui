@@ -133,7 +133,7 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("keeps preview/code tabs on the leading edge and inspection actions on the trailing edge", () => {
-    expect(componentPreview).toContain('"relative z-40 flex shrink-0 items-center justify-between gap-1"');
+    expect(componentPreview).toContain('"relative z-overlay flex shrink-0 items-center justify-between gap-1"');
     expect(componentPreview).toContain('className={cn("ml-auto flex shrink-0 items-center gap-1"');
     expect(componentPreview).toContain("{!browserFrame && (");
     expect(componentPreview).toContain("{browserFrame && (");

@@ -302,7 +302,7 @@ function H3({ children }: { children: React.ReactNode }) {
 
 function P({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-body text-fg-muted leading-relaxed">
+    <p className="text-body text-fg-muted">
       {children}
     </p>
   );
@@ -325,7 +325,7 @@ export default function ScrollbarsDoc() {
       }
     >
       <DocSection title={t("problem")}>
-        <div className="flex flex-col gap-3 text-body text-fg-muted leading-relaxed">
+        <div className="flex flex-col gap-3 text-body text-fg-muted">
           <p>
             {t("problemBody")}
           </p>

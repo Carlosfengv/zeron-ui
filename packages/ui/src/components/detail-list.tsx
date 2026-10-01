@@ -50,7 +50,7 @@ const DetailListLabel = forwardRef<HTMLDivElement, DetailListLabelProps>(
       ref={ref}
       data-slot="detail-list-label"
       className={cn(
-        "min-w-0 shrink-0 text-body leading-5 font-medium text-fg-default",
+        "min-w-0 shrink-0 text-body font-medium text-fg-default",
         className
       )}
       {...props}
@@ -68,7 +68,7 @@ const DetailListValue = forwardRef<HTMLDivElement, DetailListValueProps>(
       ref={ref}
       data-slot="detail-list-value"
       className={cn(
-        "ml-auto min-w-0 max-w-[70%] text-right text-body leading-5 text-fg-muted break-words",
+        "ml-auto min-w-0 max-w-[70%] text-right text-body text-fg-muted break-words",
         className
       )}
       {...props}
@@ -102,7 +102,7 @@ const DetailListSectionLabel = forwardRef<HTMLHeadingElement, DetailListSectionL
       ref={ref}
       data-slot="detail-list-section-label"
       className={cn(
-        "py-1.5 text-label leading-5 font-normal text-fg-subtle",
+        "py-1.5 text-label font-normal text-fg-subtle",
         className
       )}
       {...props}

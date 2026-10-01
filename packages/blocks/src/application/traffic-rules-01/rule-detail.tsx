@@ -42,7 +42,7 @@ function WorkflowMinimap({ nodeCount, viewport }: { nodeCount: number; viewport:
 function SectionLink({ icon, label, count, onClick }: { icon: IconName; label: string; count?: number; onClick: () => void }) {
   const Icon = useIcon(icon);
   const Arrow = useIcon("chevron-right");
-  return <button className="flex w-full cursor-pointer items-center gap-2 rounded-lg p-2 text-left text-body text-fg-muted transition-colors duration-150 hover:bg-surface-raised focus-visible:outline focus-visible:outline-1 focus-visible:outline-focus-ring motion-reduce:transition-none [&_svg]:size-4 [&_svg]:shrink-0" type="button" onClick={onClick}><Icon aria-hidden /><span>{label}</span><small className="ml-auto text-label text-fg-subtle">{count === undefined ? "查看" : `${count} 项`}</small><Arrow aria-hidden /></button>;
+  return <button className="flex w-full cursor-pointer items-center gap-2 rounded-lg p-2 text-left text-body text-fg-muted transition-colors duration-moderate hover:bg-surface-raised focus-visible:outline focus-visible:outline-1 focus-visible:outline-focus-ring motion-reduce:transition-none [&_svg]:size-4 [&_svg]:shrink-0" type="button" onClick={onClick}><Icon aria-hidden /><span>{label}</span><small className="ml-auto text-label text-fg-subtle">{count === undefined ? "查看" : `${count} 项`}</small><Arrow aria-hidden /></button>;
 }
 
 function RuleInfo({ rule, detail, onToggle, onLocate }: {
@@ -50,7 +50,7 @@ function RuleInfo({ rule, detail, onToggle, onLocate }: {
 }) {
   return <div className="flex h-full min-h-0 flex-col">
     <header className="flex min-h-12 shrink-0 items-center px-4 py-2"><h2 className="text-body font-semibold">规则信息</h2></header>
-    <div className="min-h-0 overflow-y-auto p-3 pt-0 [&_h3]:mb-3 [&_h3]:text-body [&_h3]:font-medium [&_h3]:leading-5 [&_h3]:text-fg-default [&>section+section]:mt-6 [&>section+section]:border-t [&>section+section]:border-border-subtle [&>section+section]:pt-6">
+    <div className="min-h-0 overflow-y-auto p-3 pt-0 [&_h3]:mb-3 [&_h3]:text-body [&_h3]:font-medium [&_h3]:text-fg-default [&>section+section]:mt-6 [&>section+section]:border-t [&>section+section]:border-border-subtle [&>section+section]:pt-6">
       <section>
         <DetailList className="w-full max-w-none">
           <DetailListItem><DetailListLabel>规则名称</DetailListLabel><DetailListValue>{rule.name || "未命名规则"}</DetailListValue></DetailListItem>
@@ -72,9 +72,9 @@ function RuleInfo({ rule, detail, onToggle, onLocate }: {
       </section>
       <section>
         <h3>{rule.enabled ? "命中后的配置预期" : "启用且命中后的配置预期"}</h3>
-        <p className="whitespace-pre-wrap text-body leading-6 [overflow-wrap:anywhere]">{detail.result}</p>
+        <p className="whitespace-pre-wrap text-body [overflow-wrap:anywhere]">{detail.result}</p>
       </section>
-      {detail.legacy ? <section><h3>历史规则</h3><p className="mt-3 text-label leading-5 text-fg-subtle [overflow-wrap:anywhere]">已保留原始匹配范围和动作。未保存的条件关系、动作参数及异常策略标为“未记录”，编辑并保存后可查看完整流程。</p></section> : null}
+      {detail.legacy ? <section><h3>历史规则</h3><p className="mt-3 text-label text-fg-subtle [overflow-wrap:anywhere]">已保留原始匹配范围和动作。未保存的条件关系、动作参数及异常策略标为“未记录”，编辑并保存后可查看完整流程。</p></section> : null}
     </div>
   </div>;
 }
@@ -186,7 +186,7 @@ export function RuleDetailView({ rule, onBack, onEdit, onHistory, onDelete, onTo
           </div>
         </section>
         <div className="flex min-h-0 shrink-0 p-2 max-[900px]:contents">
-          <div className="h-full w-[360px] shrink-0 overflow-hidden rounded-xl border-hairline border-border bg-surface-floating min-[1600px]:w-[400px] max-[1100px]:w-[320px] max-[900px]:absolute max-[900px]:bottom-2 max-[900px]:right-2 max-[900px]:top-[72px] max-[900px]:z-[4] max-[900px]:h-auto max-[900px]:shadow-floating max-[600px]:inset-x-1 max-[600px]:bottom-1 max-[600px]:top-[116px] max-[600px]:w-auto" ref={panelRef} role={compact && panel === "test" ? "dialog" : "complementary"} aria-modal={compact && panel === "test" ? true : undefined} aria-label={panel === "info" ? "规则信息面板" : "规则试运行面板"}>
+          <div className="h-full w-[360px] shrink-0 overflow-hidden rounded-xl border-hairline border-border bg-surface-floating min-[1600px]:w-[400px] max-[1100px]:w-[320px] max-[900px]:absolute max-[900px]:bottom-2 max-[900px]:right-2 max-[900px]:top-[72px] max-[900px]:z-foreground max-[900px]:h-auto max-[900px]:shadow-floating max-[600px]:inset-x-1 max-[600px]:bottom-1 max-[600px]:top-[116px] max-[600px]:w-auto" ref={panelRef} role={compact && panel === "test" ? "dialog" : "complementary"} aria-modal={compact && panel === "test" ? true : undefined} aria-label={panel === "info" ? "规则信息面板" : "规则试运行面板"}>
             {panel === "info" ? <RuleInfo rule={rule} detail={detail} onToggle={onToggle} onLocate={locate} /> : rule.workflow ? <WorkflowPreview draft={rule.workflow} tab={previewTab} onTabChange={setPreviewTab} onClose={() => setPanel("info")} onFocusNode={locate} /> : null}
           </div>
         </div>

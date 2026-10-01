@@ -420,7 +420,7 @@ function StreamingDescription({ text, active, done }: { text: string; active: bo
   const show = done ? text : displayed;
   if (!show) return null;
   return (
-    <span className="text-label text-fg-muted leading-snug">
+    <span className="text-label text-fg-muted">
       {show}
     </span>
   );

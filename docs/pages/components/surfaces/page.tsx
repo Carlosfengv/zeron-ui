@@ -61,7 +61,7 @@ function SurfaceCard({ role }: { role: SurfaceRole }) {
         <span className="text-body font-semibold">{example.label}</span>
         <code className="text-label text-fg-muted">{role}</code>
       </div>
-      <p className="mt-6 text-label leading-relaxed text-fg-muted">
+      <p className="mt-6 text-label text-fg-muted">
         {example.use}
       </p>
     </article>
@@ -129,7 +129,7 @@ export default function SurfacesDoc() {
       title="Surfaces"
     >
       <DocSection title={t("semanticRoles")}>
-        <p className="max-w-[62ch] text-body leading-relaxed text-fg-muted">
+        <p className="max-w-[62ch] text-body text-fg-muted">
           {t("semanticRolesBody")}
         </p>
         <ComponentPreview code={SURFACE_CODE} padding="responsive">
@@ -138,7 +138,7 @@ export default function SurfacesDoc() {
       </DocSection>
 
       <DocSection title={t("relativeNesting")}>
-        <p className="max-w-[62ch] text-body leading-relaxed text-fg-muted">
+        <p className="max-w-[62ch] text-body text-fg-muted">
           {t("relativeNestingBody")}
         </p>
         <ComponentPreview
@@ -188,7 +188,7 @@ export default function SurfacesDoc() {
       </DocSection>
 
       <DocSection title={t("shadowContract")}>
-        <p className="max-w-[62ch] text-body leading-relaxed text-fg-muted">
+        <p className="max-w-[62ch] text-body text-fg-muted">
           {t("shadowContractBody")}
         </p>
         <div className="grid gap-3 sm:grid-cols-3">
@@ -198,7 +198,7 @@ export default function SurfacesDoc() {
               key={token.name}
             >
               <code className="text-label">--shadow-{token.name}</code>
-              <p className="mt-2 text-label leading-relaxed text-fg-muted">
+              <p className="mt-2 text-label text-fg-muted">
                 {token.usage}
               </p>
             </div>

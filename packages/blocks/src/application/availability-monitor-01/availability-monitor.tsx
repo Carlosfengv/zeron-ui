@@ -430,7 +430,7 @@ export function AvailabilityMonitor({
         timeZone={timeZone}
       />
 
-      <p className="text-body leading-6 text-fg-muted">
+      <p className="text-body text-fg-muted">
         When an error occurs in an upstream provider, we can recover by routing to
         another healthy provider, if your request filters allow it. You can access
         per-provider uptime data programmatically through the{" "}
@@ -470,7 +470,7 @@ export function AvailabilityMonitor({
         <h2 className="text-heading font-semibold text-fg-default" id={titleId}>
           {title}
         </h2>
-        <p className="text-body leading-6 text-fg-muted">
+        <p className="text-body text-fg-muted">
           {description}
         </p>
       </header>

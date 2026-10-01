@@ -232,7 +232,7 @@ function DisplayMenu() {
         Display
       </Button>
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-1.5">
+        <div className="absolute right-0 top-full z-popover mt-1.5">
           <Dropdown checkedIndex={ordering}>
             <DropdownLabel>Ordering</DropdownLabel>
             {orderings.map((o, i) => (

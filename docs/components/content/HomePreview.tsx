@@ -37,7 +37,7 @@ export function HomePreview() {
                 <div className="flex max-w-md flex-col gap-6 py-2">
                   <div className="flex flex-col gap-3">
                     <h2 className="text-heading font-semibold text-fg-default">{t("heading")}</h2>
-                    <p className="text-body leading-relaxed text-fg-muted">{t("description")}</p>
+                    <p className="text-body text-fg-muted">{t("description")}</p>
                   </div>
                   <div className="flex flex-col gap-1">
                     {[
@@ -58,7 +58,7 @@ export function HomePreview() {
                   <div className="flex flex-col gap-2"><label htmlFor={id} className="text-body text-fg-muted">{t("name")}</label><Input id={id} value={name} maxLength={48} required onChange={(event) => { setName(event.target.value); setSaved(false); }} /></div>
                   <div className="flex items-center justify-between gap-3 border-y-hairline border-border-subtle py-4"><Switch label={t("notifications")} checked={notifications} onCheckedChange={(checked) => { setNotifications(checked); setSaved(false); }} /><Badge size="sm" color={notifications ? "green" : "gray"}>{notifications ? t("on") : t("off")}</Badge></div>
                   <div className="flex flex-wrap gap-2"><Button type="submit">{t("save")}</Button><Button type="button" variant="ghost" onClick={() => { setName("Zeron Workspace"); setNotifications(true); setSaved(false); }}>{t("reset")}</Button></div>
-                  <p role="status" aria-live="polite" className="min-h-10 text-label leading-relaxed text-fg-muted">{saved ? t("saved", { name }) : t("local")}</p>
+                  <p role="status" aria-live="polite" className="min-h-10 text-label text-fg-muted">{saved ? t("saved", { name }) : t("local")}</p>
                 </form>
               </PageAside>
             </PageColumns>

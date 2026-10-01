@@ -24,6 +24,6 @@ export function ToolCallCard({ item }: { item: ToolItem }) {
       <span className={cn("min-w-0 truncate text-label", item.status === "running" && "shimmer-text text-fg-default", item.status === "error" && "text-fg-danger", item.status === "success" && "text-fg-muted")}>{state}</span>
       <span className="ml-auto shrink-0 text-label tabular-nums text-fg-subtle">{duration(item.durationMs)}</span>
     </button>
-    {open && <div className="space-y-2 pl-5 pt-2 text-label leading-5"><div><p className="text-fg-subtle">Input</p><pre className="mt-1 max-h-36 overflow-auto whitespace-pre-wrap break-words rounded bg-surface-base p-2 text-fg-muted">{item.argumentsText || "No arguments"}</pre></div>{item.result !== undefined && <div><p className="text-fg-subtle">Output</p><pre className={cn("mt-1 max-h-44 overflow-auto whitespace-pre-wrap break-words rounded bg-surface-base p-2", item.status === "error" ? "text-fg-danger" : "text-fg-default")}>{item.result}</pre></div>}</div>}
+    {open && <div className="space-y-2 pl-5 pt-2 text-label"><div><p className="text-fg-subtle">Input</p><pre className="mt-1 max-h-36 overflow-auto whitespace-pre-wrap break-words rounded bg-surface-base p-2 text-fg-muted">{item.argumentsText || "No arguments"}</pre></div>{item.result !== undefined && <div><p className="text-fg-subtle">Output</p><pre className={cn("mt-1 max-h-44 overflow-auto whitespace-pre-wrap break-words rounded bg-surface-base p-2", item.status === "error" ? "text-fg-danger" : "text-fg-default")}>{item.result}</pre></div>}</div>}
   </section>;
 }

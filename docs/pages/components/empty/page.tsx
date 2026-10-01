@@ -216,7 +216,7 @@ export default function EmptyDoc() {
       </DocSection>
 
       <DocSection title={t("customMedia")}>
-        <p className="max-w-2xl text-body leading-6 text-fg-muted">{t("customMediaBody")}</p>
+        <p className="max-w-2xl text-body text-fg-muted">{t("customMediaBody")}</p>
         <ComponentPreview code={customMediaCode} className="mt-3" minHeightClass="min-h-[20rem]">
           <Empty reason="first-use" scope="section">
             <EmptyMedia variant="custom">
@@ -244,7 +244,7 @@ export default function EmptyDoc() {
       </DocSection>
 
       <DocSection title={t("illustrations")}>
-        <p className="max-w-2xl text-body leading-6 text-fg-muted">{t("illustrationsBody")}</p>
+        <p className="max-w-2xl text-body text-fg-muted">{t("illustrationsBody")}</p>
         <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-border-subtle sm:grid-cols-3">
           {illustrationVariants.map((variant) => (
             <div key={variant} className="flex min-h-44 flex-col items-center justify-center bg-surface-floating p-4">
@@ -264,7 +264,7 @@ export default function EmptyDoc() {
       </DocSection>
 
       <DocSection title={t("usage")}>
-        <div id="usage" className="flex max-w-2xl flex-col gap-3 text-body leading-6 text-fg-muted">
+        <div id="usage" className="flex max-w-2xl flex-col gap-3 text-body text-fg-muted">
           <p>{t("usageBody")}</p>
           <p>{t("loadingBody")}</p>
           <p>{t("actionBody")}</p>
@@ -272,7 +272,7 @@ export default function EmptyDoc() {
       </DocSection>
 
       <DocSection title={t("accessibility")}>
-        <div className="flex max-w-2xl flex-col gap-3 text-body leading-6 text-fg-muted">
+        <div className="flex max-w-2xl flex-col gap-3 text-body text-fg-muted">
           <p>{t("accessibilityBody")}</p>
           <p>{t("announcementBody")}</p>
           <p>{t("mediaAccessibilityBody")}</p>

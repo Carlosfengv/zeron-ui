@@ -167,7 +167,7 @@ export default function CodeBlockDoc() {
                   messages={messages}
                   lineAnnotations={[{ lineNumber: 3, metadata: t("annotationExample") }]}
                   renderAnnotation={(annotation) => (
-                    <div className="border-l-2 border-brand px-3 py-1 text-xs text-fg-muted">
+                    <div className="border-l-2 border-brand px-3 py-1 text-label text-fg-muted">
                       {annotation.metadata}
                     </div>
                   )}
@@ -178,7 +178,7 @@ export default function CodeBlockDoc() {
                     onTokenClick: ({ tokenText }) => setSelectedToken(tokenText),
                   }}
                 />
-                <p className="text-xs text-fg-muted" data-testid="code-interaction-status">
+                <p className="text-label text-fg-muted" data-testid="code-interaction-status">
                   {selectedLines == null
                     ? t("interactionHint")
                     : t("selectedLine", { line: selectedLines.start })}

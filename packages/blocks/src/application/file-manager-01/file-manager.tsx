@@ -1140,7 +1140,7 @@ function IconView<TData>({
                       selected={selected}
                       view="icon"
                     />
-                    <span className={cn("line-clamp-2 max-w-full rounded-sm px-1 text-center text-label leading-4", selected ? "bg-brand font-medium text-fg-on-brand" : "text-fg-default")}>
+                    <span className={cn("line-clamp-2 max-w-full rounded-sm px-1 text-center text-label", selected ? "bg-brand font-medium text-fg-on-brand" : "text-fg-default")}>
                       {displayName(item, showFileExtensions)}
                     </span>
                   </button>
@@ -1217,7 +1217,7 @@ function ListView<TData>({
             key={column.id}
             type="button"
             disabled={column.sortable === false}
-            className={cn("flex h-7 items-center gap-1 text-left font-medium outline-none hover:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring disabled:pointer-events-none", column.className)}
+            className={cn("flex h-control-sm items-center gap-1 text-left font-medium outline-none hover:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring disabled:pointer-events-none", column.className)}
             onClick={() => {
               const sameField = sort.field === column.id;
               onSortChange({ field: column.id, direction: sameField && sort.direction === "asc" ? "desc" : "asc" });
@@ -1284,7 +1284,7 @@ function ListView<TData>({
                   <span className={cn("truncate font-medium", selected ? "text-fg-on-brand" : "text-fg-default")}>{displayName(item, showFileExtensions)}</span>
                 </div>
                 {columns.slice(1).map((column) => (
-                  <span key={column.id} role="gridcell" className={cn("truncate text-sm", selected ? "text-fg-on-brand" : "text-fg-muted", column.className)}>{column.value(item)}</span>
+                  <span key={column.id} role="gridcell" className={cn("truncate text-body", selected ? "text-fg-on-brand" : "text-fg-muted", column.className)}>{column.value(item)}</span>
                 ))}
               </div>
             );
@@ -1358,7 +1358,7 @@ function ColumnView<TData>({
                     role="option"
                     aria-selected={selected}
                     className={cn(
-                      "flex h-8 w-full min-w-0 items-center gap-2 rounded-md px-2 text-left outline-none transition-colors duration-fast hover:bg-hover focus-visible:bg-brand focus-visible:text-fg-on-brand focus-visible:ring-1 focus-visible:ring-focus-ring",
+                      "flex h-control-md w-full min-w-0 items-center gap-2 rounded-md px-2 text-left outline-none transition-colors duration-fast hover:bg-hover focus-visible:bg-brand focus-visible:text-fg-on-brand focus-visible:ring-1 focus-visible:ring-focus-ring",
                       selected && "bg-brand text-fg-on-brand hover:bg-brand"
                     )}
                     onClick={(event) => select(item, event, columnItems)}

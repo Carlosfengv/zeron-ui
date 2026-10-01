@@ -82,7 +82,7 @@ function RuleStatusSwitch({ rule, onAction }: { rule: Rule; onAction: (action: N
 
 function EmptyTableState({ description, onCreate, title }: { description: string; onCreate: () => void; title: string }) {
   const EmptyIcon = useIcon("doc-data-table");
-  return <div className="grid min-h-[280px] place-items-center px-4 py-10"><div className="flex max-w-[480px] flex-col items-center text-center"><span className="grid size-16 place-items-center rounded-2xl bg-surface-raised text-fg-muted"><EmptyIcon aria-hidden className="size-7" /></span><p className="mt-3 text-body font-medium">{title}</p><p className="mt-1 text-label leading-5 text-fg-subtle">{description}</p><Button className="mt-3" onClick={onCreate} size="sm" type="button" variant="primary">{title.includes("限额") ? "新增限额" : "新建规则"}</Button></div></div>;
+  return <div className="grid min-h-[280px] place-items-center px-4 py-10"><div className="flex max-w-[480px] flex-col items-center text-center"><span className="grid size-16 place-items-center rounded-2xl bg-surface-raised text-fg-muted"><EmptyIcon aria-hidden className="size-7" /></span><p className="mt-3 text-body font-medium">{title}</p><p className="mt-1 text-label text-fg-subtle">{description}</p><Button className="mt-3" onClick={onCreate} size="sm" type="button" variant="primary">{title.includes("限额") ? "新增限额" : "新建规则"}</Button></div></div>;
 }
 
 function RuleActions({ rule, onAction, onMove, canMoveUp, canMoveDown }: { rule: Rule; onAction: (action: NonNullable<ConfirmAction>) => void; onMove: (direction: -1 | 1) => void; canMoveUp: boolean; canMoveDown: boolean }) {
@@ -267,7 +267,7 @@ function limitSentence(limit: GlobalLimit, compact = false) {
 }
 
 function LimitSummary({ limit, compact = false }: { limit: GlobalLimit; compact?: boolean }) {
-  return <div className="min-w-0"><p className={cn("mt-1 text-body leading-5", compact ? "max-w-[660px]" : "max-w-none")}>{limitSentence(limit, compact)}</p><div className="mt-2 space-y-0.5 text-label leading-4 text-fg-subtle">{limit.windows.map((windowItem) => <p key={windowItem.id}>基线 {windowItem.unit}: 频次 {windowItem.count} / 突发 {windowItem.burst}</p>)}</div></div>;
+  return <div className="min-w-0"><p className={cn("mt-1 text-body", compact ? "max-w-[660px]" : "max-w-none")}>{limitSentence(limit, compact)}</p><div className="mt-2 space-y-0.5 text-label text-fg-subtle">{limit.windows.map((windowItem) => <p key={windowItem.id}>基线 {windowItem.unit}: 频次 {windowItem.count} / 突发 {windowItem.burst}</p>)}</div></div>;
 }
 
 function LimitStatusSwitch({ limit, onToggle }: { limit: GlobalLimit; onToggle: (limit: GlobalLimit) => void }) {

@@ -143,7 +143,7 @@ export default function StatusOverviewDoc() {
       </DocSection>
 
       <DocSection title={t("dataBoundary")}>
-        <div className="max-w-3xl space-y-2 text-body leading-6 text-fg-muted">
+        <div className="max-w-3xl space-y-2 text-body text-fg-muted">
           <p>{t("dataBoundaryBody")}</p>
           <p>{t("keyboard")}</p>
         </div>

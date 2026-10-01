@@ -363,9 +363,9 @@ export function ZlrProtectionGroupDetail({
               <Tabs className="flex min-h-0 flex-1 flex-col" onValueChange={setTab} value={tab} variant="pill">
                 <div className="shrink-0 border-b border-border-subtle px-3 py-3">
                   <TabsList className="max-w-full gap-1 overflow-x-auto rounded-lg bg-muted p-1">
-                    <TabItem className="h-7 px-2 text-label" label="概览" value="overview">概览</TabItem>
-                    <TabItem className="h-7 px-2 text-label" label="VM 成员" value="members">VM 成员</TabItem>
-                    <TabItem className="h-7 px-2 text-label" label="操作历史" value="history">操作历史</TabItem>
+                    <TabItem className="h-control-sm px-2 text-label" label="概览" value="overview">概览</TabItem>
+                    <TabItem className="h-control-sm px-2 text-label" label="VM 成员" value="members">VM 成员</TabItem>
+                    <TabItem className="h-control-sm px-2 text-label" label="操作历史" value="history">操作历史</TabItem>
                   </TabsList>
                 </div>
                 <div className="min-h-0 flex-1 overflow-auto p-3">

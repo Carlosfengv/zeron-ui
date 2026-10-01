@@ -121,7 +121,7 @@ export function BlockDetailPage({
                   <Badge variant="dot">{readinessLabel}</Badge>
                   <Badge variant="dot">{dataModeLabel}</Badge>
                 </div>
-                <h1 id="artifact-title" className="mt-5 text-heading font-bold leading-tight text-fg-default">{title}</h1>
+                <h1 id="artifact-title" className="mt-5 text-heading font-bold text-fg-default">{title}</h1>
                 <p className="mt-2 max-w-3xl text-body text-fg-muted">{description}</p>
               </div>
 

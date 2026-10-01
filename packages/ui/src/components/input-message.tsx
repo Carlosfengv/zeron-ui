@@ -908,7 +908,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
             aria-label={textareaProps?.["aria-label"] ?? "Message"}
             className={cn(
               "w-full resize-none bg-transparent outline-none",
-              "text-body leading-5 text-fg-default",
+              "text-body text-fg-default",
               layout === "expanded"
                 ? "placeholder:text-fg-subtle/60"
                 : "placeholder:text-fg-muted",

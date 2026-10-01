@@ -240,7 +240,7 @@ export function McpDetail({
               <div aria-hidden className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-floating text-title font-semibold text-fg-default">{service.logo ?? service.name.slice(0, 1).toUpperCase()}</div>
               <div className="min-w-0">
                 <h1 id="mcp-detail-title" className="text-title text-fg-default">{service.name}</h1>
-                <p className="mt-1 text-label leading-5 text-fg-muted">{service.description}</p>
+                <p className="mt-1 text-label text-fg-muted">{service.description}</p>
               </div>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -281,7 +281,7 @@ export function McpDetail({
                   {service.registryStatus && <Badge className="mt-3" size="sm">{service.registryStatus}</Badge>}
                   <p className="mt-3 text-body text-fg-muted">{service.overview.lead}</p>
                   {overviewImage && <Image src={overviewImage.src} alt={overviewImage.alt} width={1280} height={720} className="mt-4 aspect-video w-full rounded-xl border border-border object-cover" />}
-                  <div className="mt-4 space-y-3 text-body leading-7 text-fg-muted">{service.overview.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
+                  <div className="mt-4 space-y-3 text-body text-fg-muted">{service.overview.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
                   <section className="mt-5" aria-labelledby="mcp-setup-title"><h3 id="mcp-setup-title" className="text-title text-fg-default">设置</h3><ol className="mt-3 space-y-3">{service.overview.setupSteps.map((step, index) => <li key={step.title} className="rounded-xl bg-hover p-3"><p className="text-body font-medium text-fg-default">{index + 1}. {step.title}</p><p className="mt-1 text-body text-fg-muted">{step.description}</p></li>)}</ol></section>
                 </TabPanel>
                 <TabPanel value="tools" className="mt-5">

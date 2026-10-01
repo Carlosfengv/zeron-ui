@@ -152,7 +152,7 @@ export function RightPanel({
   const t = useTranslations("settings");
   const className = placement === "content"
     ? "sticky top-4 z-raised col-start-1 row-start-1 hidden w-64 self-start justify-self-end xl:block"
-    : "shrink-0 w-64 sticky top-4 self-start mt-4 mr-2 xl-fade-block max-xl:fixed max-xl:top-0 max-xl:right-0 max-xl:z-40 max-xl:pointer-events-none";
+    : "shrink-0 w-64 sticky top-4 self-start mt-4 mr-2 xl-fade-block max-xl:fixed max-xl:top-0 max-xl:right-0 max-xl:z-overlay max-xl:pointer-events-none";
   return (
     // max-xl:fixed — during the xl-fade-block fade-out the panel keeps
     // display:block for the transition (allow-discrete), which would hold its

@@ -329,7 +329,7 @@ function DropdownPreview() {
 
 function InputCopyPreview() {
   return (
-    <div className="w-full max-w-[420px] relative z-10">
+    <div className="w-full max-w-[420px] relative z-content">
       <InputCopy value="npx zeron-ui add button" />
     </div>
   );
@@ -753,7 +753,7 @@ function ThinkingStepsPreview() {
 
 function TooltipPreview() {
   return (
-    <div className="relative z-10">
+    <div className="relative z-content">
       <Tooltip content={TOOLTIP_COPY.content}>
         <Button variant="secondary" size="sm">{TOOLTIP_COPY.trigger}</Button>
       </Tooltip>

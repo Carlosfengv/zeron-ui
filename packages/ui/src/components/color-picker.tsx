@@ -1459,7 +1459,7 @@ const ColorSwatch = forwardRef<HTMLButtonElement, ColorSwatchProps>(
         type="button"
         aria-label={`Select color ${color}`}
         className={cn(
-          "relative shrink-0 overflow-hidden cursor-pointer outline-none transition-shadow duration-100",
+          "relative shrink-0 overflow-hidden cursor-pointer outline-none transition-shadow duration-fast",
           "rounded-lg",
           className
         )}
@@ -2047,7 +2047,7 @@ const ColorPickerPopover = forwardRef<HTMLDivElement, ColorPickerPopoverProps>(
                 borderBottomLeftRadius: 0,
               }}
               className={cn(
-                "-ml-px flex h-control-md w-control-md items-center justify-center border border-border bg-transparent text-fg-muted transition-colors duration-fast hover:bg-hover hover:text-fg-default focus-visible:z-10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring cursor-pointer",
+                "-ml-px flex h-control-md w-control-md items-center justify-center border border-border bg-transparent text-fg-muted transition-colors duration-fast hover:bg-hover hover:text-fg-default focus-visible:z-raised focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus-ring cursor-pointer",
                 "rounded-lg"
               )}
             >

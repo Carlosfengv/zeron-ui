@@ -20,7 +20,7 @@ const markdownComponents: Components = {
   thead: ({ children }) => <thead className="bg-surface-raised text-fg-default">{children}</thead>,
   th: ({ children }) => <th className="border-b border-border px-3 py-2 font-semibold">{children}</th>,
   td: ({ children }) => <td className="border-b border-border px-3 py-2 last:border-r-0">{children}</td>,
-  pre: ({ children }) => <pre className="my-3 max-w-full overflow-x-auto whitespace-pre rounded-md bg-surface-raised px-3 py-2 font-mono text-label leading-5 [&>code]:bg-transparent [&>code]:p-0">{children}</pre>,
+  pre: ({ children }) => <pre className="my-3 max-w-full overflow-x-auto whitespace-pre rounded-md bg-surface-raised px-3 py-2 font-mono text-label [&>code]:bg-transparent [&>code]:p-0">{children}</pre>,
   code: ({ children, className }) => <code className={`${className ?? ""} rounded bg-surface-raised px-1 py-0.5 font-mono text-fg-default`}>{children}</code>,
 };
 

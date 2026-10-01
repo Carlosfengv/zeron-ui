@@ -35,7 +35,7 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
           </a>
           <div className="flex flex-col items-center gap-5">
             <h1 className={`${styles.heroTitle} whitespace-pre-line font-semibold tracking-tight text-fg-default`}>{t("title")}</h1>
-            <p className="max-w-2xl text-body leading-relaxed text-fg-muted sm:text-title">{t("description")}</p>
+            <p className="max-w-2xl text-body text-fg-muted sm:text-title">{t("description")}</p>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" trailingIcon={ArrowRight}><a href="#install">{t("getStarted")}</a></Button>
@@ -63,7 +63,7 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
               <div className="flex max-w-md flex-col items-start gap-5 py-3 lg:pr-8">
                 <span className="text-label font-medium text-fg-brand">{t("install.eyebrow")}</span>
                 <h2 id="install-title" className={`${styles.sectionTitle} font-semibold tracking-tight text-fg-default`}>{t("install.title")}</h2>
-                <p className="text-body leading-relaxed text-fg-muted">{t("install.description")}</p>
+                <p className="text-body text-fg-muted">{t("install.description")}</p>
                 <div className="flex flex-wrap gap-2">
                   <Button asChild variant="secondary"><Link href={`${prefix}/docs/components`}>{t("install.components")}</Link></Button>
                   <Button asChild variant="ghost" trailingIcon={ArrowRight}><Link href={`${prefix}/docs`}>{t("install.docs")}</Link></Button>
@@ -76,7 +76,7 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
                 <ContainerBody>
                   <ol className="flex min-w-0 flex-col gap-6 p-1 sm:p-2">
                     <li className="flex min-w-0 flex-col gap-3"><h4 className="text-body font-medium text-fg-default">{t("install.initialize")}</h4><p className="text-label text-fg-muted">{t("install.initializeHint")}</p><InstallCommand value={`${cli} init`} /></li>
-                    <li className="flex min-w-0 flex-col gap-3 border-t-hairline border-border-subtle pt-6"><h4 className="text-body font-medium text-fg-default">{t("install.add")}</h4><InstallCommand value={`${cli} add button`} /><p className="text-label leading-relaxed text-fg-muted">{t("install.addHint")}</p></li>
+                    <li className="flex min-w-0 flex-col gap-3 border-t-hairline border-border-subtle pt-6"><h4 className="text-body font-medium text-fg-default">{t("install.add")}</h4><InstallCommand value={`${cli} add button`} /><p className="text-label text-fg-muted">{t("install.addHint")}</p></li>
                   </ol>
                 </ContainerBody>
               </Container>
@@ -88,7 +88,7 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
           <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 pb-10 text-center">
             <span className="text-label font-medium text-fg-brand">{t("skillsSection")}</span>
             <h2 id="capabilities-title" className={`${styles.sectionTitle} font-semibold tracking-tight text-fg-default`}>{t("capabilities.title")}</h2>
-            <p className="text-body leading-relaxed text-fg-muted">{t("capabilities.description")}</p>
+            <p className="text-body text-fg-muted">{t("capabilities.description")}</p>
           </div>
           <Tabs defaultValue="builder" variant="segment" color="default">
             <div className="flex justify-center pb-8"><TabsList aria-label={t("capabilities.eyebrow")}><TabItem value="builder" label="Zeron Page Builder" /><TabItem value="migration" label="Swap to Zeron UI" /></TabsList></div>
@@ -100,7 +100,7 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
                       <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-2"><h3 className="text-heading font-semibold text-fg-default">{skill === "builder" ? "Zeron Page Builder" : "Swap to Zeron UI"}</h3><p className="text-body text-fg-muted">{t(`capabilities.${skill}.description`)}</p></div>
                         <ul className="flex flex-col gap-4">
-                          {(["first", "second", "third"] as const).map((item) => <li className="flex items-start gap-3 text-body leading-relaxed text-fg-muted" key={item}><Check size={18} aria-hidden="true" className="mt-0.5 shrink-0 text-fg-brand" /><span>{t(`capabilities.${skill}.${item}`)}</span></li>)}
+                          {(["first", "second", "third"] as const).map((item) => <li className="flex items-start gap-3 text-body text-fg-muted" key={item}><Check size={18} aria-hidden="true" className="mt-0.5 shrink-0 text-fg-brand" /><span>{t(`capabilities.${skill}.${item}`)}</span></li>)}
                         </ul>
                       </div>
                       <div className="flex min-w-0 flex-col gap-3"><p className="text-label font-medium text-fg-subtle">{t("tryPrompt")}</p><CopyPrompt value={t(`capabilities.${skill}.prompt`)} label={t(`capabilities.${skill}.copy`)} /></div>
@@ -110,7 +110,7 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
               </TabPanel>
             ))}
           </Tabs>
-          <p className="mx-auto max-w-3xl pt-5 text-center text-label leading-relaxed text-fg-subtle">{t("capabilities.boundary")}</p>
+          <p className="mx-auto max-w-3xl pt-5 text-center text-label text-fg-subtle">{t("capabilities.boundary")}</p>
         </section>
 
         <section id="skills" aria-labelledby="skills-title" className="scroll-mt-32 border-t-hairline border-border-subtle py-16 sm:scroll-mt-20 sm:py-24">
@@ -119,8 +119,8 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
               <div className="flex max-w-md flex-col items-start gap-5 py-2 lg:pr-8">
                 <Badge color="blue">Agent Skills</Badge>
                 <h2 id="skills-title" className={`${styles.sectionTitle} font-semibold tracking-tight text-fg-default`}>{skills("title")}</h2>
-                <p className="text-body leading-relaxed text-fg-muted">{skills("description")}</p>
-                <p className="text-label leading-relaxed text-fg-subtle">{skills("hint")}</p>
+                <p className="text-body text-fg-muted">{skills("description")}</p>
+                <p className="text-label text-fg-subtle">{skills("hint")}</p>
               </div>
             </PagePrimary>
             <PageAside>
@@ -128,7 +128,7 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
                 <Button variant="secondary" asChild><a href="/skills/zeron-skills.zip" download>{skills("download")}</a></Button>
                 <Button variant="ghost" asChild><a href="/skills/install.md">{skills("guide")}</a></Button>
               </CopyPrompt>
-              <p className="mt-4 text-label leading-relaxed text-fg-muted">{skills("next")}</p>
+              <p className="mt-4 text-label text-fg-muted">{skills("next")}</p>
             </PageAside>
           </PageColumns>
           <section id="ai-docs" aria-labelledby="ai-docs-title" className="mt-10 scroll-mt-32 border-t-hairline border-border-subtle pt-8 sm:scroll-mt-20">
@@ -136,7 +136,7 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
               <PagePrimary>
                 <div className="flex max-w-md flex-col items-start gap-3 lg:pr-8">
                   <h3 id="ai-docs-title" className="text-heading font-semibold text-fg-default">{t("aiDocs.title")}</h3>
-                  <p className="text-body leading-relaxed text-fg-muted">{t("aiDocs.description")}</p>
+                  <p className="text-body text-fg-muted">{t("aiDocs.description")}</p>
                 </div>
               </PagePrimary>
               <PageAside>

@@ -229,7 +229,7 @@ export default function BadgeDoc() {
 
       <DocSection title={t("accessibility")}>
         <div className="flex flex-col gap-3">
-          <p className="max-w-2xl text-body leading-6 text-fg-muted">
+          <p className="max-w-2xl text-body text-fg-muted">
             {t("accessibilityDescription")}
           </p>
           <ComponentPreview code={announcedStatusCode}>

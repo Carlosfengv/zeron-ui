@@ -43,7 +43,7 @@ export function AgentGuide({ collection, slug, className }: AgentGuideProps) {
         <h2 className="text-title font-semibold leading-none text-fg-default">
           {copy.title}
         </h2>
-        <p className="mt-2 max-w-3xl text-body leading-5 text-fg-muted">
+        <p className="mt-2 max-w-3xl text-body text-fg-muted">
           {copy.description}
         </p>
       </div>

@@ -94,7 +94,7 @@ describe("Resource Catalog gallery preview", () => {
 
   it("uses the subtle foreground token for model and MCP card descriptions", () => {
     expect(resourceCatalog).toContain(
-      'className="mt-1 line-clamp-3 text-label leading-5 text-fg-subtle"'
+      'className="mt-1 line-clamp-3 text-label text-fg-subtle"'
     );
   });
 

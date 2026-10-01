@@ -45,7 +45,7 @@ export function DocDetailLoading({
           <div aria-hidden="true" className="aspect-video w-full animate-pulse rounded-xl bg-surface-floating" />
           <div className="rounded-xl bg-surface-floating px-5 py-6 sm:px-6 lg:px-8 lg:py-8">
             <div className="mx-auto w-full max-w-[960px]">
-              <h1 className="text-heading font-bold leading-tight text-fg-default">{name}</h1>
+              <h1 className="text-heading font-bold text-fg-default">{name}</h1>
               <div aria-hidden="true" className="mt-3 h-4 w-full max-w-2xl animate-pulse rounded bg-surface-raised" />
               <div aria-hidden="true" className="mt-8 h-48 w-full animate-pulse rounded bg-surface-raised" />
             </div>

@@ -228,7 +228,7 @@ export function ZlrNavigation({ onNavigate }: { onNavigate?: (value: string) => 
                     <NavItem key={item.value} value={item.value}>
                       <NavItemTrigger
                         render={<button type="button" />}
-                        className="h-8 rounded-md px-2 text-body"
+                        className="h-control-md rounded-md px-2 text-body"
                         onClick={() => onNavigate?.(item.value)}
                         tooltip={item.label}
                       >
@@ -386,7 +386,7 @@ export function ZlrList({
               <Tabs className="contents" onValueChange={setSite} value={resolvedSiteId} variant="pill">
                 <div className="shrink-0 border-b border-border-subtle px-3 py-3">
                   <TabsList className="max-w-full gap-2 overflow-x-auto rounded-none bg-transparent p-0">
-                    {sites.map((site) => <TabItem className="h-8 rounded-lg px-3 text-body" key={site.id} label={site.label} value={site.id}>{site.label}</TabItem>)}
+                    {sites.map((site) => <TabItem className="h-control-md rounded-lg px-3 text-body" key={site.id} label={site.label} value={site.id}>{site.label}</TabItem>)}
                   </TabsList>
                 </div>
               </Tabs>

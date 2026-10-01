@@ -111,8 +111,8 @@ const columnLabels: Record<ColumnId, keyof InfiniteLogTableLabels | "requestId">
 };
 
 const headerTitleClassName = "text-body font-medium text-fg-default";
-const stickyCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-0 before:bg-hover before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
-const stickyNewLiveCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-0 before:bg-[color-mix(in_oklch,var(--info-surface)_70%,var(--surface-floating))] before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
+const stickyCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-base before:bg-hover before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
+const stickyNewLiveCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-base before:bg-[color-mix(in_oklch,var(--info-surface)_70%,var(--surface-floating))] before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
 const newLiveRowBackgroundClassName = "bg-[color-mix(in_oklch,var(--info-surface)_50%,var(--surface-floating))]";
 const newLiveRowHoverClassName = "hover:bg-[color-mix(in_oklch,var(--info-surface)_70%,var(--surface-floating))]";
 const timelineSeries = [

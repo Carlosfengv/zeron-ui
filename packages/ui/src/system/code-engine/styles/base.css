@@ -898,6 +898,19 @@
     font-size: var(--font-size-code, 0.8125rem);
     line-height: var(--line-height-code, 1.5rem);
 
+    /* Internal controls follow the same paired type scale as the wrappers. */
+    [data-merge-conflict='marker-start']::after,
+    [data-merge-conflict='marker-end']::after,
+    [data-merge-conflict-actions-content] {
+      font-size: var(--font-size-label, 0.75rem);
+      line-height: var(--line-height-label, 1rem);
+    }
+
+    [data-error-wrapper] [data-error-message] {
+      font-size: var(--font-size-title, 1.125rem);
+      line-height: var(--line-height-title, 1.625rem);
+    }
+
     [data-code]::selection,
     [data-code] ::selection {
       background-color: var(--brand, #0060d2);

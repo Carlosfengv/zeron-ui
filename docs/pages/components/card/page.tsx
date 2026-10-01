@@ -136,7 +136,7 @@ import {
         <div className="flex items-center gap-2">
           <CardTitle>GLM-5.2</CardTitle>
         </div>
-        <CardDescription className="line-clamp-3 text-label leading-5">
+        <CardDescription className="line-clamp-3 text-label">
           Long-context reasoning for agentic engineering.
         </CardDescription>
       </CardHeader>
@@ -368,7 +368,7 @@ function ResourceSummaryDemo() {
               <div className="flex min-w-0 items-center gap-2">
                 <CardTitle>GLM-5.2</CardTitle>
               </div>
-              <CardDescription className="line-clamp-3 text-label leading-5">
+              <CardDescription className="line-clamp-3 text-label">
                 GLM-5.2 is built for long-horizon agentic engineering with a 1M-token context window.
               </CardDescription>
             </CardHeader>
@@ -387,7 +387,7 @@ function ResourceSummaryDemo() {
               <div className="flex min-w-0 items-center gap-2">
                 <CardTitle>天眼查 MCP</CardTitle>
               </div>
-              <CardDescription className="line-clamp-3 text-label leading-5">
+              <CardDescription className="line-clamp-3 text-label">
                 为智能体提供企业工商、风险诉讼、知识产权与招投标等数据查询能力。
               </CardDescription>
             </CardHeader>

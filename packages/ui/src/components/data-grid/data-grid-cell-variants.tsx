@@ -1164,7 +1164,7 @@ export function MultiSelectCell<TData>({
             onOpenAutoFocus={onOpenAutoFocus}
           >
             <Command className="**:data-[slot=command-input-wrapper]:h-auto **:data-[slot=command-input-wrapper]:border-none **:data-[slot=command-input-wrapper]:p-0 [&_[data-slot=command-input-wrapper]_svg]:hidden">
-              <div className="flex min-h-9 flex-wrap items-center gap-1 border-b px-3 py-1.5">
+              <div className="flex min-h-control-lg flex-wrap items-center gap-1 border-b px-3 py-1.5">
                 {selectedValues.map((value) => {
                   const option = options.find((opt) => opt.value === value);
                   const label = option?.label ?? value;

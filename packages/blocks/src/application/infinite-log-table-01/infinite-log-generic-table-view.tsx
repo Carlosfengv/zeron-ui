@@ -29,7 +29,7 @@ import type {
 } from "./infinite-log-types";
 
 const LOG_ROW_HEIGHT = 32;
-const stickyCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-0 before:bg-hover before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
+const stickyCellInteractionClassName = "isolate before:pointer-events-none before:absolute before:inset-0 before:z-base before:bg-hover before:opacity-0 before:content-[''] group-hover/log-row:before:opacity-100 group-focus-visible/log-row:before:bg-selection group-focus-visible/log-row:before:opacity-100 [&>*]:relative [&>*]:z-content";
 
 interface ColumnItem extends SortableCollectionItem {
   id: string;

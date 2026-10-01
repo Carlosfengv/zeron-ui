@@ -264,7 +264,7 @@ function ValueDisplay({
     <span
       data-reserve-text={widestValue}
       className={cn(
-        "inline-grid shrink-0 text-body leading-none text-fg-muted transition-[font-weight] duration-100 motion-reduce:transition-none",
+        "inline-grid shrink-0 text-body leading-none text-fg-muted transition-[font-weight] duration-fast motion-reduce:transition-none",
         "tabular-nums",
         "after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:whitespace-nowrap after:font-medium after:content-[attr(data-reserve-text)]",
         isInteracting ? "font-medium" : "font-normal"

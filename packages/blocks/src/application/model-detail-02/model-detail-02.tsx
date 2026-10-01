@@ -292,7 +292,7 @@ function SectionHeader({
     <header>
       <h2 className="text-heading font-semibold text-fg-default">{title}</h2>
       {description ? (
-        <p className="mt-1 max-w-prose text-body leading-6 text-fg-muted">
+        <p className="mt-1 max-w-prose text-body text-fg-muted">
           {description}
         </p>
       ) : null}
@@ -1085,7 +1085,7 @@ export function ModelDetail02({
                     {data.model.slug}
                   </Badge>
                 </div>
-                <p className="mt-3 text-label leading-5 text-fg-muted">{data.model.description}</p>
+                <p className="mt-3 text-label text-fg-muted">{data.model.description}</p>
               </div>
             </div>
             <PageActions className="mt-3">

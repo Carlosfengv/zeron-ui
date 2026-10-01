@@ -186,7 +186,7 @@ const AvatarWithDetails = forwardRef<HTMLDivElement, AvatarWithDetailsProps>(
         <div className="flex min-w-0 items-center gap-1.5">
           <div
             data-slot="avatar-with-details-name"
-            className="min-w-0 truncate text-body font-semibold leading-5 text-fg-default"
+            className="min-w-0 truncate text-body font-semibold text-fg-default"
           >
             {name}
           </div>
@@ -199,7 +199,7 @@ const AvatarWithDetails = forwardRef<HTMLDivElement, AvatarWithDetailsProps>(
         {description != null ? (
           <div
             data-slot="avatar-with-details-description"
-            className="mt-0.5 min-w-0 truncate text-label leading-4 text-fg-muted"
+            className="mt-0.5 min-w-0 truncate text-label text-fg-muted"
           >
             {description}
           </div>

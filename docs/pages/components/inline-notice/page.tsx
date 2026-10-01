@@ -214,7 +214,7 @@ export default function InlineNoticeDoc() {
 
       <DocSection title={t("inlineContext")}>
         <ComponentPreview code={inlineCode}>
-          <p className="max-w-xl text-body leading-7 text-fg-default">
+          <p className="max-w-xl text-body text-fg-default">
             {t("inlineBefore")}{" "}
             <InlineNotice>
               <Badge size="sm" color="violet">{t("inlineBadge")}</Badge>
@@ -226,7 +226,7 @@ export default function InlineNoticeDoc() {
       </DocSection>
 
       <DocSection title={t("usageGuidance")}>
-        <div className="flex max-w-2xl flex-col gap-3 text-body leading-6 text-fg-muted">
+        <div className="flex max-w-2xl flex-col gap-3 text-body text-fg-muted">
           <p>{t("usageBody")}</p>
           <p>{t("emphasizedBody")}</p>
           <p>{t("alertBody")}</p>
@@ -234,7 +234,7 @@ export default function InlineNoticeDoc() {
       </DocSection>
 
       <DocSection title={t("accessibility")}>
-        <div className="flex max-w-2xl flex-col gap-3 text-body leading-6 text-fg-muted">
+        <div className="flex max-w-2xl flex-col gap-3 text-body text-fg-muted">
           <p>{t("accessibilityBody")}</p>
           <p>{t("liveRegionBody")}</p>
         </div>

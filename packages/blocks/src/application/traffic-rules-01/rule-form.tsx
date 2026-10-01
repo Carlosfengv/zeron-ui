@@ -88,10 +88,10 @@ function SectionHeading({
   return (
     <div className="mb-3 flex items-start justify-between gap-4">
       <div>
-        <h3 className="text-body font-semibold leading-5">
+        <h3 className="text-body font-semibold">
           {title} {required ? <span className="text-fg-danger">*</span> : null}
         </h3>
-        <p className="mt-0.5 text-label leading-5 text-fg-subtle">{description}</p>
+        <p className="mt-0.5 text-label text-fg-subtle">{description}</p>
       </div>
       {count !== undefined ? (
         <span className="mt-0.5 shrink-0 rounded-md bg-info-surface px-2 py-1 text-label font-medium text-fg-brand">
@@ -281,7 +281,7 @@ function ConditionGroup({
               {conditions.length}
             </span>
           </span>
-          <span className="block truncate text-label leading-4 text-fg-subtle">{group.description}</span>
+          <span className="block truncate text-label text-fg-subtle">{group.description}</span>
         </span>
         <Chevron className={cn("size-4 text-fg-subtle transition-transform", open && "rotate-180")} />
       </button>
@@ -328,7 +328,7 @@ export function AddConditionPanel({
   return (
     <div className="rounded-xl border border-info-border bg-surface-floating p-3 shadow-floating">
       <div className="flex items-center gap-2">
-        <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-border px-2.5 focus-within:border-focus-ring focus-within:ring-1 focus-within:ring-focus-ring">
+        <label className="flex h-control-lg min-w-0 flex-1 items-center gap-2 rounded-lg border border-border px-2.5 focus-within:border-focus-ring focus-within:ring-1 focus-within:ring-focus-ring">
           <Search className="size-4 shrink-0 text-fg-subtle" />
           <span className="sr-only">搜索条件</span>
           <input
@@ -480,7 +480,7 @@ export function ActionParameters({
   if (action.type === "挂载插件") return <ValueControl ariaLabel="插件绑定 ID" onChange={(primary) => onChange({ ...action, primary })} placeholder="例如 plugin-binding-audit" value={action.primary ?? ""} />;
   if (action.type === "状态码映射") return <div className="grid gap-2 sm:grid-cols-2"><ValueControl ariaLabel="上游状态码" onChange={(primary) => onChange({ ...action, primary })} placeholder="例如 502,503,504" value={action.primary ?? ""} /><ValueControl ariaLabel="返回状态码" onChange={(secondary) => onChange({ ...action, secondary })} placeholder="例如 503" value={action.secondary ?? ""} /></div>;
   if (action.type === "镜像复制") return <div className="grid gap-2 sm:grid-cols-2"><ValueControl ariaLabel="镜像目标端点" onChange={(primary) => onChange({ ...action, primary })} options={[...capabilityIds]} placeholder="请选择能力端点" value={action.primary ?? ""} /><ValueControl ariaLabel="采样比例" onChange={(secondary) => onChange({ ...action, secondary })} placeholder="1–100%" value={action.secondary ?? ""} /></div>;
-  if (action.type === "跳过意图识别") return <p className="text-label leading-5 text-fg-subtle">保存为 intentRecognition = disabled；仅允许路径、模型名和模型服务条件。</p>;
+  if (action.type === "跳过意图识别") return <p className="text-label text-fg-subtle">保存为 intentRecognition = disabled；仅允许路径、模型名和模型服务条件。</p>;
   if (action.type === "失败姿态") return <ValueControl ariaLabel="失败姿态" onChange={(primary) => onChange({ ...action, primary })} options={["deny", "allow"]} placeholder="请选择失败姿态" value={action.primary ?? ""} />;
 
   return (
@@ -557,7 +557,7 @@ function ActionGroup({
       <header className="flex min-h-11 items-center justify-between bg-surface-raised px-4 py-2">
         <div>
           <h4 className="text-label font-semibold">{label}</h4>
-          <p className="text-label leading-4 text-fg-subtle">
+          <p className="text-label text-fg-subtle">
             {label === "转发前执行" ? "在目标模型服务收到请求前" : "在网关收到上游响应后"}
           </p>
         </div>
@@ -598,7 +598,7 @@ function RuleSectionNav({ modal }: { modal?: boolean }) {
       <nav aria-label="规则表单章节" className="sticky top-0 space-y-1 p-4">
         <p className="mb-2 px-2 text-label font-medium text-fg-subtle">规则配置</p>
         {items.map((item, index) => (
-          <a className="flex h-9 items-center gap-2 rounded-lg px-2 text-label text-fg-muted hover:bg-surface-floating hover:text-fg-default" href={item.href} key={item.href}>
+          <a className="flex h-control-lg items-center gap-2 rounded-lg px-2 text-label text-fg-muted hover:bg-surface-floating hover:text-fg-default" href={item.href} key={item.href}>
             <span className={cn("grid size-5 place-items-center rounded-md text-label font-semibold", index === 1 ? "bg-brand text-fg-on-brand" : "bg-surface-floating text-fg-subtle")}>
               {index === 0 ? <Check className="size-3" /> : index + 1}
             </span>
@@ -692,7 +692,7 @@ function RuleFormContent({
             <p className="text-label font-medium">条件关系</p>
             <p className="mt-0.5 text-label text-fg-subtle">请求需要满足这里定义的判断方式</p>
           </div>
-          <p className="text-label leading-5 text-fg-subtle">全部条件均需满足（AND）</p>
+          <p className="text-label text-fg-subtle">全部条件均需满足（AND）</p>
         </div>
         <div className="space-y-3">
           {conditionGroups.map((group) => (
@@ -828,8 +828,8 @@ export function RuleForm({
             </Button>
           ) : null}
           <div className="min-w-0">
-            <h2 className="truncate text-title font-semibold leading-6" id="rule-form-title">{modal ? "新建规则" : `编辑 ${initial?.name}`}</h2>
-            <p className="truncate text-label leading-4 text-fg-subtle">将请求事实组合成一条清晰、可审计的流量规则</p>
+            <h2 className="truncate text-title font-semibold" id="rule-form-title">{modal ? "新建规则" : `编辑 ${initial?.name}`}</h2>
+            <p className="truncate text-label text-fg-subtle">将请求事实组合成一条清晰、可审计的流量规则</p>
           </div>
         </div>
         {!modal ? (

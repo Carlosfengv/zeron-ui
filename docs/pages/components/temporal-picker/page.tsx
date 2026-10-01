@@ -108,7 +108,7 @@ function PickerCase({
     <section className="grid min-w-0 content-start gap-3">
       <div className="space-y-1">
         <h3 className="text-body font-semibold text-fg-default">{label}</h3>
-        <p className="text-label leading-5 text-fg-muted">{description}</p>
+        <p className="text-label text-fg-muted">{description}</p>
       </div>
       <div className="flex min-h-9 items-start">{children}</div>
       <ValuePreview value={value} />
@@ -214,7 +214,7 @@ export default function TemporalPickerDoc() {
       </DocSection>
 
       <DocSection title={t("commitment")}>
-        <div className="max-w-3xl space-y-2 text-body leading-6 text-fg-muted">
+        <div className="max-w-3xl space-y-2 text-body text-fg-muted">
           <p>{t("commitmentBody")}</p>
           <p>{t("timeZoneBody")}</p>
         </div>

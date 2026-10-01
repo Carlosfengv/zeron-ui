@@ -309,7 +309,7 @@ function ModalFrame({
             />
             {/* modal card */}
             <motion.div
-              className="relative z-10 flex w-4/5 flex-col gap-2.5 rounded-xl border border-border bg-surface-raised p-4 shadow-xl"
+              className="relative z-content flex w-4/5 flex-col gap-2.5 rounded-xl border border-border bg-surface-raised p-4 shadow-overlay"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95, transition: exitTransition }}
@@ -403,21 +403,21 @@ export default function MotionDoc() {
       description="Three spring speeds, and exits always move a little faster than entrances. Pick a speed, wire it in — every component follows the same pattern."
     >
       <DocSection title={t("threeSpeeds")}>
-        <p className="text-body leading-relaxed text-fg-muted">
+        <p className="text-body text-fg-muted">
           {t("threeSpeedsBody")}
         </p>
         <SpringTokensDemo />
       </DocSection>
 
       <DocSection title={t("slowInFasterOut")}>
-        <p className="text-body leading-relaxed text-fg-muted">
+        <p className="text-body text-fg-muted">
           {t("slowInFasterOutBody")}
         </p>
         <ModalExitDemo />
       </DocSection>
 
       <DocSection title={t("allTokens")}>
-        <p className="text-body leading-relaxed text-fg-muted">
+        <p className="text-body text-fg-muted">
           {t("allTokensBody")}
         </p>
         <SpringReferenceSection />
@@ -427,7 +427,7 @@ export default function MotionDoc() {
         >
           {t("reducedMotion")}
         </h3>
-        <p className="text-body leading-relaxed text-fg-muted">
+        <p className="text-body text-fg-muted">
           {t("reducedMotionBody")}
         </p>
       </DocSection>

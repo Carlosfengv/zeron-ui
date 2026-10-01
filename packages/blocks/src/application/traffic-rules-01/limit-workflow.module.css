@@ -28,7 +28,7 @@
   color: var(--fg-muted);
   font-size: var(--font-size-label);
   font-weight: 500;
-  line-height: 16px;
+  line-height: var(--line-height-label);
 }
 
 .rowGroup {
@@ -73,7 +73,7 @@
   color: var(--fg-default);
   font-size: var(--font-size-label);
   font-weight: 500;
-  line-height: 18px;
+  line-height: var(--line-height-label);
 }
 
 .summaryValue {
@@ -81,7 +81,7 @@
   flex: 1;
   color: var(--fg-muted);
   font-size: var(--font-size-label);
-  line-height: 18px;
+  line-height: var(--line-height-label);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -96,7 +96,7 @@
   height: 14px;
   flex-shrink: 0;
   color: var(--fg-subtle);
-  transition: transform 180ms ease-out;
+  transition: transform var(--motion-duration-moderate) ease-out;
 }
 
 .summaryChevronOpen {
@@ -125,7 +125,7 @@
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--fg-subtle);
-  font-size: var(--font-size-label);
+  font-size: var(--font-size-label); line-height: var(--line-height-label);
 }
 
 .addButton {
@@ -148,7 +148,7 @@
 .conditionHint {
   color: var(--fg-subtle);
   font-size: var(--font-size-label);
-  line-height: 20px;
+  line-height: var(--line-height-label);
 }
 
 .checkboxRow {
@@ -156,7 +156,7 @@
   align-items: center;
   gap: 8px;
   color: var(--fg-muted);
-  font-size: var(--font-size-label);
+  font-size: var(--font-size-label); line-height: var(--line-height-label);
 }
 
 .temporaryPanel {
@@ -181,7 +181,7 @@
   gap: 8px;
   color: var(--fg-default);
   font-size: var(--font-size-label);
-  line-height: 20px;
+  line-height: var(--line-height-label);
 }
 
 .temporaryRow input,
@@ -237,14 +237,14 @@
   color: var(--fg-default);
   font-size: var(--font-size-label);
   font-weight: 500;
-  line-height: 16px;
+  line-height: var(--line-height-label);
 }
 
 .actionOption small {
   margin-top: 4px;
   color: var(--fg-subtle);
   font-size: var(--font-size-label);
-  line-height: 16px;
+  line-height: var(--line-height-label);
 }
 
 .parameterGrid {
@@ -263,14 +263,14 @@
 .result {
   color: var(--fg-muted);
   font-size: var(--font-size-body);
-  line-height: 22px;
+  line-height: var(--line-height-body);
 }
 
 .help {
   margin-top: 8px;
   color: var(--fg-subtle);
   font-size: var(--font-size-label);
-  line-height: 20px;
+  line-height: var(--line-height-label);
 }
 
 .previewPanel {
@@ -310,7 +310,7 @@
 .testIssue {
   color: var(--fg-subtle);
   font-size: var(--font-size-label);
-  line-height: 20px;
+  line-height: var(--line-height-label);
 }
 
 .testIssue {
@@ -329,7 +329,7 @@
   color: var(--fg-default);
   font-size: var(--font-size-label);
   font-weight: 600;
-  line-height: 18px;
+  line-height: var(--line-height-label);
 }
 
 .testResultCard {
@@ -345,7 +345,7 @@
 .testResultCard p {
   color: var(--fg-muted);
   font-size: var(--font-size-label);
-  line-height: 20px;
+  line-height: var(--line-height-label);
 }
 
 .testEmpty {
@@ -367,14 +367,14 @@
 
 .testEmpty strong {
   color: var(--fg-default);
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-body); line-height: var(--line-height-body);
   font-weight: 500;
 }
 
 .testEmpty p {
   max-width: 248px;
   font-size: var(--font-size-label);
-  line-height: 20px;
+  line-height: var(--line-height-label);
 }
 
 .previewHeader {
@@ -390,7 +390,7 @@
   color: var(--fg-default);
   font-size: var(--font-size-body);
   font-weight: 600;
-  line-height: 20px;
+  line-height: var(--line-height-body);
 }
 
 .previewBody {
@@ -410,7 +410,7 @@
   color: var(--fg-default);
   font-size: var(--font-size-label);
   font-weight: 600;
-  line-height: 18px;
+  line-height: var(--line-height-label);
 }
 
 .sectionTitle {
@@ -441,7 +441,7 @@
   color: var(--fg-warning);
   text-align: left;
   font-size: var(--font-size-label);
-  line-height: 18px;
+  line-height: var(--line-height-label);
 }
 
 .issueList button:hover {
@@ -469,7 +469,7 @@
   background: var(--success-surface);
   color: var(--fg-success);
   font-size: var(--font-size-label);
-  line-height: 18px;
+  line-height: var(--line-height-label);
 }
 
 .previewFacts {
@@ -483,7 +483,7 @@
   padding: 9px 0;
   border-bottom: 1px solid var(--border-subtle);
   font-size: var(--font-size-label);
-  line-height: 18px;
+  line-height: var(--line-height-label);
 }
 
 .previewFacts div:last-child {
@@ -507,7 +507,7 @@
   background: var(--success-surface);
   color: var(--fg-success);
   font-size: var(--font-size-label);
-  line-height: 20px;
+  line-height: var(--line-height-label);
 }
 
 .previewBackdrop {
@@ -518,7 +518,7 @@
   .previewBackdrop {
     position: absolute;
     inset: 0;
-    z-index: 3;
+    z-index: var(--layer-control);
     display: block;
     cursor: default;
     background: var(--scrim);

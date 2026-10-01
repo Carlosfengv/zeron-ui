@@ -87,7 +87,7 @@ export default async function UpdatesPage({ params }: { params: Promise<{ locale
         <PageContent className="overflow-y-auto overscroll-contain">
           <PageBody className="h-auto max-w-[960px] flex-none overflow-visible overscroll-auto px-5 py-10 sm:px-8 sm:py-14">
             <header className="border-b border-border pb-8">
-              <h1 className="text-heading font-semibold leading-tight text-fg-default" id="updates-title">
+              <h1 className="text-heading font-semibold text-fg-default" id="updates-title">
                 {text.title}
               </h1>
               <p className="mt-2 max-w-prose text-body text-fg-muted">{text.description}</p>

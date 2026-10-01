@@ -17,7 +17,7 @@ export function WorkflowNode({ id, title, description, icon, tone = "blue", expa
     <header className={cn("flex items-center gap-1 rounded-t-xl px-3", expanded ? cn("min-h-11 py-1", styles.nodeTint) : "min-h-[72px] py-2")}>
       <button className={cn(styles.nodeTitleButton, "group flex min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-md p-1 text-left outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-focus-ring")} type="button" onClick={onToggle} title={expanded ? "收起节点" : "展开节点"} aria-expanded={expanded} aria-controls={`workflow-${id}`}>
         <span className={cn(styles.nodeIcon, "grid size-9 shrink-0 place-items-center rounded-lg", expanded && "size-6 bg-transparent [&_svg]:size-4")}><Icon aria-hidden className="size-5" /></span>
-        <span className="flex min-w-0 flex-1 flex-col gap-1"><strong className="text-body font-medium leading-5">{title}</strong>{!expanded ? <span className="truncate text-label leading-4 text-fg-subtle">{description}</span> : null}</span>
+        <span className="flex min-w-0 flex-1 flex-col gap-1"><strong className="text-body font-medium">{title}</strong>{!expanded ? <span className="truncate text-label text-fg-subtle">{description}</span> : null}</span>
         <Chevron aria-hidden className={cn("size-4 shrink-0 text-fg-subtle transition-transform", expanded && "rotate-180")} />
       </button>
       {expanded ? tools : null}

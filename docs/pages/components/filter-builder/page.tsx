@@ -130,21 +130,21 @@ export default function FilterBuilderDoc() {
       </DocSection>
 
       <DocSection title={t("controlled")}>
-        <p className="max-w-2xl text-body leading-6 text-fg-muted">{t("controlledBody")}</p>
+        <p className="max-w-2xl text-body text-fg-muted">{t("controlledBody")}</p>
         <ComponentPreview className="mt-3" code={controlledCode}>
           <FilterBuilder defaultFilters={[{ id: "status-filter", field: "status", operator: "is", value: "active" }]} fields={fields} />
         </ComponentPreview>
       </DocSection>
 
       <DocSection title={t("asyncOptions")}>
-        <p className="max-w-2xl text-body leading-6 text-fg-muted">{t("asyncOptionsBody")}</p>
+        <p className="max-w-2xl text-body text-fg-muted">{t("asyncOptionsBody")}</p>
         <ComponentPreview className="mt-3" code={asyncCode}>
           <FilterBuilder fields={fields.filter((field) => field.type === "multiSelect")} />
         </ComponentPreview>
       </DocSection>
 
       <DocSection title={t("serverFiltering")}>
-        <p className="max-w-2xl text-body leading-6 text-fg-muted">{t("serverFilteringBody")}</p>
+        <p className="max-w-2xl text-body text-fg-muted">{t("serverFilteringBody")}</p>
       </DocSection>
 
       <DocSection title={t("apiReference")}>

@@ -176,6 +176,7 @@ function valueWithToken(value: string, token: string | null) {
 
 const typographyTokenByMetrics = new Map<string, string>([
   ["12px / 16px", "--font-size-label · --line-height-label"],
+  ["13px / 24px", "--font-size-code · --line-height-code"],
   ["14px / 20px", "--font-size-body · --line-height-body"],
   ["18px / 26px", "--font-size-title · --line-height-title"],
   ["24px / 32px", "--font-size-heading · --line-height-heading"],
@@ -499,7 +500,7 @@ export function InspectOverlay({
   // never shifts when Inspect toggles. Each ruler occupies the first strip of
   // the content region: the top ruler over [capTop, topStripEnd], the left
   // ruler over [capLeft, leftStripEnd]. The top ruler's ticks still tuck up
-  // under the fixed header (masked by its z-40 background). The strip ends are
+  // under the fixed header (masked by its z-overlay background). The strip ends are
   // where the other ruler's band starts — used to clear the shared corner.
   const capTop = capture?.top ?? 0;
   const capLeft = capture?.left ?? 0;
@@ -534,7 +535,7 @@ export function InspectOverlay({
   return (
     <motion.div
       data-inspect-ui
-      className="absolute inset-0 z-30 pointer-events-none overflow-hidden"
+      className="absolute inset-0 z-action pointer-events-none overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: spring.moderate.exit }}
@@ -598,7 +599,7 @@ export function InspectOverlay({
 
       {/* Top ruler — sits in the gutter just below the header. The ticks run up
           past the top of the gutter (negative y) so they tuck under the opaque
-          header (z-40); the numbers sit below the ticks with ~2px of breathing
+          header (z-overlay); the numbers sit below the ticks with ~2px of breathing
           room above them. overflow:visible lets the ticks bleed under. */}
       <motion.div
         className="absolute inset-0"

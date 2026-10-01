@@ -166,25 +166,25 @@ export default function FilterQueryInputDoc() {
       </DocSection>
 
       <DocSection title={t("suggestionBehavior")}>
-        <p className="max-w-3xl text-body leading-6 text-fg-muted">{t("suggestionBehaviorBody")}</p>
+        <p className="max-w-3xl text-body text-fg-muted">{t("suggestionBehaviorBody")}</p>
       </DocSection>
 
       <DocSection title={t("reuse")}>
-        <div className="max-w-3xl space-y-2 text-body leading-6 text-fg-muted">
+        <div className="max-w-3xl space-y-2 text-body text-fg-muted">
           <p>{t("reuseBody")}</p>
           <p>{t("codecBody")}</p>
         </div>
       </DocSection>
 
       <DocSection title={t("headless")}>
-        <p className="max-w-3xl text-body leading-6 text-fg-muted">{t("headlessBody")}</p>
+        <p className="max-w-3xl text-body text-fg-muted">{t("headlessBody")}</p>
         <ComponentPreview className="mt-3" code={headlessCode} padding="compact">
           <div className="w-full border-s border-brand px-4 py-2 text-body text-fg-muted">{t("headlessPreview")}</div>
         </ComponentPreview>
       </DocSection>
 
       <DocSection title={t("asyncHistory")}>
-        <p className="max-w-3xl text-body leading-6 text-fg-muted">{t("asyncHistoryBody")}</p>
+        <p className="max-w-3xl text-body text-fg-muted">{t("asyncHistoryBody")}</p>
         <ComponentPreview className="mt-3" code={asyncAndHistoryCode} padding="compact">
           <div className="w-full border-s border-brand px-4 py-2 text-body text-fg-muted">{t("asyncHistoryPreview")}</div>
         </ComponentPreview>

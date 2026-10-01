@@ -71,7 +71,7 @@ function Calendar({
       "select-none font-medium",
       captionLayout === "label"
         ? "text-body"
-        : "flex h-8 items-center gap-1 rounded-lg pl-2 pr-1 text-body [&>svg]:size-3.5 [&>svg]:text-fg-muted",
+        : "flex h-control-md items-center gap-1 rounded-lg pl-2 pr-1 text-body [&>svg]:size-3.5 [&>svg]:text-fg-muted",
       defaultClassNames.caption_label,
     ),
     month_grid: cn(
@@ -101,7 +101,7 @@ function Calendar({
       defaultClassNames.day,
     ),
     range_start: cn(
-      "isolate before:absolute before:inset-y-0 before:right-0 before:z-0 before:w-1/2 before:bg-[color-mix(in_oklch,var(--brand)_16%,transparent)] before:content-[''] [&:has(button[data-range-end=true])]:before:hidden",
+      "isolate before:absolute before:inset-y-0 before:right-0 before:z-base before:w-1/2 before:bg-[color-mix(in_oklch,var(--brand)_16%,transparent)] before:content-[''] [&:has(button[data-range-end=true])]:before:hidden",
       defaultClassNames.range_start,
     ),
     range_middle: cn(
@@ -109,7 +109,7 @@ function Calendar({
       defaultClassNames.range_middle,
     ),
     range_end: cn(
-      "isolate after:absolute after:inset-y-0 after:left-0 after:z-0 after:w-1/2 after:bg-[color-mix(in_oklch,var(--brand)_16%,transparent)] after:content-[''] [&:has(button[data-range-start=true])]:after:hidden",
+      "isolate after:absolute after:inset-y-0 after:left-0 after:z-base after:w-1/2 after:bg-[color-mix(in_oklch,var(--brand)_16%,transparent)] after:content-[''] [&:has(button[data-range-start=true])]:after:hidden",
       defaultClassNames.range_end,
     ),
     today: cn(
@@ -222,7 +222,7 @@ function CalendarDayButton({
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       className={cn(
-        "relative z-10 flex aspect-square w-full min-w-(--cell-size) cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-label font-normal leading-none outline-none select-none transition-colors duration-fast hover:bg-hover disabled:pointer-events-none",
+        "relative z-content flex aspect-square w-full min-w-(--cell-size) cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-label font-normal leading-none outline-none select-none transition-colors duration-fast hover:bg-hover disabled:pointer-events-none",
         "focus-visible:ring-1 focus-visible:ring-focus-ring group-data-[focused=true]/day:ring-1 group-data-[focused=true]/day:ring-focus-ring",
         "data-[selected-single=true]:bg-brand data-[selected-single=true]:text-fg-on-brand data-[selected-single=true]:hover:bg-brand-hover",
         "data-[range-start=true]:rounded-lg data-[range-start=true]:bg-brand data-[range-start=true]:text-fg-on-brand data-[range-start=true]:hover:bg-brand-hover",

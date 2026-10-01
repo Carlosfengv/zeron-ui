@@ -86,7 +86,7 @@ function AddBlockMenu() {
         Add block
       </Button>
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1.5">
+        <div className="absolute left-0 top-full z-popover mt-1.5">
           <Dropdown>
             <DropdownLabel>Basic blocks</DropdownLabel>
             {BLOCK_TYPES.map((b, i) => (
@@ -135,7 +135,7 @@ function AIBlock() {
           className={cn("flex gap-2.5 rounded-xl p-3.5", surfaceClasses("raised", "raised"))}
         >
           <Sparkle size={16} className="mt-0.5 shrink-0 text-fg-muted" />
-          <p className="text-body leading-relaxed text-fg-default">{b}</p>
+          <p className="text-body text-fg-default">{b}</p>
         </div>
       ))}
 
@@ -173,7 +173,7 @@ function AIBlock() {
 function DocumentBody() {
   return (
     <div className="flex flex-col gap-5">
-      <p className="text-body leading-relaxed text-fg-muted">
+      <p className="text-body text-fg-muted">
         The single source of truth for what we&rsquo;re building this quarter, why,
         and who owns each bet. Edit freely — every block here is a Fluid
         Functionalism component.
@@ -182,7 +182,7 @@ function DocumentBody() {
       {/* Callout */}
       <div className={cn("flex gap-3 rounded-xl p-4", surfaceClasses("raised", "raised"))}>
         <span className="text-title leading-none">💡</span>
-        <p className="text-body leading-relaxed text-fg-default">
+        <p className="text-body text-fg-default">
           Decisions are final once they land in the Initiatives table. Use
           comments for anything still in debate.
         </p>
@@ -265,7 +265,7 @@ export default function QuillPage() {
         <div className="mx-auto max-w-[760px] px-8 py-12">
           <div className="mb-2 text-heading">🗓️</div>
           <h1
-            className="text-heading leading-tight text-fg-default font-bold"
+            className="text-heading text-fg-default font-bold"
           >
             Q3 Planning
           </h1>

@@ -537,7 +537,7 @@ export function FilterRuleBuilder({
                     <Badge color="gray" size="sm">{labels.conjunction}</Badge>
                   </div>
                 ) : null}
-                <Card>
+                <Card className="border border-border-subtle">
                   <CardHeader>
                     <CardTitle>
                       <span className="flex min-w-0 flex-wrap items-center gap-1.5">
@@ -579,7 +579,7 @@ export function FilterRuleBuilder({
                   <Badge color="gray" size="sm">{labels.conjunction}</Badge>
                 </div>
               ) : null}
-              <Card>
+              <Card className="border border-border-subtle">
                 <CardHeader>
                   <CardTitle>
                     <span className="flex min-w-0 flex-wrap items-center gap-1.5">

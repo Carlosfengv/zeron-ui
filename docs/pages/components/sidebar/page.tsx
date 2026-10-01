@@ -524,8 +524,8 @@ export default function SidebarDoc() {
       </ComponentPreview>
     </DocSection>
     <DocSection title="ZAIops recipe"><ComponentPreview fullScreenable padding="none" code={zaiopsCode}><ZaiopsSidebarPreview /></ComponentPreview></DocSection>
-    <DocSection title="Icon rail"><p className="max-w-3xl text-body leading-5 text-fg-muted">The collapsed rail derives its width from a 40px control and the spacing scale. Navigation targets and leading icons grow to 40px and 20px. Pass collapsedIcon to SidebarTrigger to show a brand mark until hover or keyboard focus, and use tooltipSide="right" on NavItemTrigger for rail labels.</p></DocSection>
-    <DocSection title="Focus behavior"><p className="max-w-3xl text-body leading-5 text-fg-muted">On compact screens, closing the drawer restores the control that opened it. SidebarTrigger records that owner automatically; controlled or programmatic opens should call setActiveTrigger(owner) immediately before opening, or pass null to avoid restoring a stale trigger.</p></DocSection>
+    <DocSection title="Icon rail"><p className="max-w-3xl text-body text-fg-muted">The collapsed rail derives its width from a 40px control and the spacing scale. Navigation targets and leading icons grow to 40px and 20px. Pass collapsedIcon to SidebarTrigger to show a brand mark until hover or keyboard focus, and use tooltipSide="right" on NavItemTrigger for rail labels.</p></DocSection>
+    <DocSection title="Focus behavior"><p className="max-w-3xl text-body text-fg-muted">On compact screens, closing the drawer restores the control that opened it. SidebarTrigger records that owner automatically; controlled or programmatic opens should call setActiveTrigger(owner) immediately before opening, or pass null to avoid restoring a stale trigger.</p></DocSection>
     <DocSection title="API Reference"><PropsTable props={props} /></DocSection>
     <DocSection title="API Reference — SidebarTrigger"><PropsTable props={triggerProps} /></DocSection>
     <DocSection title="API Reference — SidebarGroup"><PropsTable props={groupProps} /></DocSection>

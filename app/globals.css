@@ -364,7 +364,8 @@ html, body {
 /* Keep unstyled document text at 14px without changing the root font size:
    semantic component tokens use rem and must continue to resolve from 16px. */
 body {
-  font-size: 0.875rem;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
 }
 
 h1, h2, h3 {

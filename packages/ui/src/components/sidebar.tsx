@@ -704,7 +704,7 @@ const SidebarGroupTrigger = forwardRef<HTMLButtonElement, SidebarGroupTriggerPro
       type={type}
       data-slot="sidebar-group-trigger"
       className={cn(
-        "group/sidebar-group-trigger mb-1.5 flex h-6 w-full items-center gap-1.5 px-2 text-start text-label text-fg-muted outline-none",
+        "group/sidebar-group-trigger mb-1.5 flex h-control-xs w-full items-center gap-1.5 px-2 text-start text-label text-fg-muted outline-none",
         "transition-colors duration-fast hover:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring",
         "group-data-[state=collapsed]/sidebar:hidden",
         "rounded-lg",

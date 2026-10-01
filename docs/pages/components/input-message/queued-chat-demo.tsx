@@ -514,7 +514,7 @@ export function QueuedChatDemo({
           {stackCount > 0 && (
             <motion.div
               ref={stackRef}
-              className="absolute inset-x-0 z-10"
+              className="absolute inset-x-0 z-content"
               style={{ bottom: inputH + 8 }}
               initial={{ opacity: 0 }}
               animate={{
@@ -783,7 +783,7 @@ export function QueuedChatDemo({
                     <AnimatePresence>
                       {attachOpen && (
                         <motion.div
-                          className="absolute bottom-full mb-2 left-0 z-10"
+                          className="absolute bottom-full mb-2 left-0 z-content"
                           initial={{ opacity: 0, y: 4 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 4, transition: { duration: 0.1 } }}
@@ -833,7 +833,7 @@ export function QueuedChatDemo({
                 <AnimatePresence>
                   {modelOpen && (
                     <motion.div
-                      className="absolute bottom-full mb-2 right-0 z-10"
+                      className="absolute bottom-full mb-2 right-0 z-content"
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 4, transition: { duration: 0.1 } }}

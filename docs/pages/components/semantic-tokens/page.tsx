@@ -188,7 +188,7 @@ function TokenTable({
               ) : (
                 <td className="px-3 py-2.5"><TokenCode>{row.value ?? "—"}</TokenCode></td>
               )}
-              <td className="max-w-[34ch] px-3 py-2.5 text-body leading-relaxed text-fg-muted">
+              <td className="max-w-[34ch] px-3 py-2.5 text-body text-fg-muted">
                 {row.description}
               </td>
             </tr>
@@ -212,7 +212,7 @@ function ChoiceCard({
     <div className="flex min-h-32 flex-col justify-between border border-border bg-surface-raised p-4">
       <div>
         <p className="text-body font-semibold text-fg-default">{title}</p>
-        <p className="mt-1 text-body leading-relaxed text-fg-muted">{body}</p>
+        <p className="mt-1 text-body text-fg-muted">{body}</p>
       </div>
       <TokenCode>{token}</TokenCode>
     </div>
@@ -244,7 +244,7 @@ function RecipeTable({ rows }: { rows: Array<{ scenario: string; tokens: string 
 }
 
 function SectionDescription({ children }: { children: React.ReactNode }) {
-  return <p className="max-w-[72ch] text-body leading-relaxed text-fg-muted">{children}</p>;
+  return <p className="max-w-[72ch] text-body text-fg-muted">{children}</p>;
 }
 
 const fontWeightRows = [
@@ -445,7 +445,7 @@ export default function SemanticTokensPage() {
       <div className="-mt-2 flex flex-col gap-8">
         <section className="border-y border-border py-5">
           <p className="text-label uppercase tracking-widest text-fg-subtle">{t("quickStart")}</p>
-          <p className="mt-2 max-w-[68ch] text-body leading-relaxed text-fg-default">{t("quickStartBody")}</p>
+          <p className="mt-2 max-w-[68ch] text-body text-fg-default">{t("quickStartBody")}</p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             <ChoiceCard title={t("backgroundsChoice")} body={t("backgroundsChoiceBody")} token="surface/*" />
             <ChoiceCard title={t("textChoice")} body={t("textChoiceBody")} token="color/fg/*" />
@@ -497,7 +497,7 @@ export default function SemanticTokensPage() {
 
         <DocSection title={t("foreground")}>
           <SectionDescription>{t("foregroundBody")}</SectionDescription>
-          <div className="border-y border-border px-3 py-3.5 text-body leading-relaxed text-fg-muted">
+          <div className="border-y border-border px-3 py-3.5 text-body text-fg-muted">
             <p className="max-w-[68ch]">{t("onPairBody")}</p>
           </div>
           <TokenTable rows={foregroundRows} includeTheme />
@@ -568,12 +568,12 @@ export default function SemanticTokensPage() {
             </div>
             <div>
               <p className="text-label font-medium text-fg-default">{t("packageCssImport")}</p>
-              <p className="mt-1 text-label leading-relaxed text-fg-muted">{t("packageCssImportBody")}</p>
+              <p className="mt-1 text-label text-fg-muted">{t("packageCssImportBody")}</p>
               <pre className="mt-2 overflow-x-auto rounded-lg bg-surface-raised p-3 text-label text-fg-default"><code>{'@import "@zeron/tokens/styles.css";'}</code></pre>
             </div>
             <div>
               <p className="text-label font-medium text-fg-default">{t("packageJsImport")}</p>
-              <p className="mt-1 text-label leading-relaxed text-fg-muted">{t("packageJsImportBody")}</p>
+              <p className="mt-1 text-label text-fg-muted">{t("packageJsImportBody")}</p>
               <pre className="mt-2 overflow-x-auto rounded-lg bg-surface-raised p-3 text-label text-fg-default"><code>{'import { semanticTokens } from "@zeron/tokens";'}</code></pre>
             </div>
           </div>
@@ -588,7 +588,7 @@ export default function SemanticTokensPage() {
           <div className="border-y border-border px-3 py-3.5">
             <p className="text-body font-medium text-fg-default">{t("naming")}</p>
             <TokenCode>surface/floating</TokenCode>
-            <p className="mt-2 max-w-[62ch] text-body leading-relaxed text-fg-muted">{t("namingBody")}</p>
+            <p className="mt-2 max-w-[62ch] text-body text-fg-muted">{t("namingBody")}</p>
           </div>
         </DocSection>
       </div>

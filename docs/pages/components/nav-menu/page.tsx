@@ -506,7 +506,7 @@ function AgentSessionsDemo() {
                               <Badge
                                 size="sm"
                                 status={session.badgeStatus}
-                                className="h-5 rounded px-1 text-label leading-5 transition-opacity group-hover/nav-item:opacity-0 group-focus-within/nav-item:opacity-0"
+                                className="h-5 rounded px-1 text-label transition-opacity group-hover/nav-item:opacity-0 group-focus-within/nav-item:opacity-0"
                                 style={session.badgeStatus ? undefined : { backgroundColor: "var(--inverse-background)", color: "var(--fg-on-inverse)" }}
                               >
                                 {session.badge}
@@ -623,7 +623,7 @@ export default function NavMenuDoc() {
         </ComponentPreview>
       </DocSection>
       <DocSection title="Agent sessions">
-        <p className="max-w-3xl text-body leading-5 text-fg-muted">
+        <p className="max-w-3xl text-body text-fg-muted">
           Compose a collapsible <code>SidebarGroup</code> for each agent, then render its sessions with <code>NavMenu</code>. The metadata slot shows a status badge before time, while the session menu replaces that metadata only on hover or keyboard focus.
         </p>
         <AgentSessionsDemo />
@@ -640,7 +640,7 @@ export default function NavMenuDoc() {
         </ComponentPreview>
       </DocSection>
       <DocSection title="Focus behavior">
-        <p className="max-w-3xl text-body leading-5 text-fg-muted">
+        <p className="max-w-3xl text-body text-fg-muted">
           The moving row indicator belongs only to a primary navigation trigger that matches <code>:focus-visible</code>. Row actions and nested links keep their own focus treatment so pointer focus never lights the parent row.
         </p>
       </DocSection>

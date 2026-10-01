@@ -259,21 +259,21 @@ export default function SortableCollectionDoc() {
       </DocSection>
 
       <DocSection title={t("checkboxSelection")}>
-        <p className="max-w-2xl text-body leading-6 text-fg-muted">{t("checkboxSelectionBody")}</p>
+        <p className="max-w-2xl text-body text-fg-muted">{t("checkboxSelectionBody")}</p>
         <ComponentPreview className="mt-3" code={checkboxCode} minHeightClass="min-h-[16rem]">
           <CheckboxExample />
         </ComponentPreview>
       </DocSection>
 
       <DocSection title={t("editing")}>
-        <p className="max-w-2xl text-body leading-6 text-fg-muted">{t("editingBody")}</p>
+        <p className="max-w-2xl text-body text-fg-muted">{t("editingBody")}</p>
         <ComponentPreview className="mt-3" code={editingCode} minHeightClass="min-h-[12rem]">
           <EditingExample />
         </ComponentPreview>
       </DocSection>
 
       <DocSection title={t("dragBehavior")}>
-        <div className="max-w-2xl space-y-2 text-body leading-6 text-fg-muted">
+        <div className="max-w-2xl space-y-2 text-body text-fg-muted">
           <p>{t("dragBehaviorBody")}</p>
           <p>{t("keyboardBody")}</p>
         </div>

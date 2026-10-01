@@ -31,7 +31,7 @@ export function ReasoningRow({ text, running }: { text: string; running: boolean
       <span aria-hidden="true" className="size-0.5 rounded-full bg-fg-subtle" />
       <span ref={summaryRef} className="min-w-0 flex-1 truncate text-label text-fg-subtle">{summary}</span>
     </button>
-    {expanded && <p className="whitespace-pre-wrap break-words px-7 pb-2 pt-1 text-sm leading-5 text-fg-muted">{text}</p>}
+    {expanded && <p className="whitespace-pre-wrap break-words px-7 pb-2 pt-1 text-body text-fg-muted">{text}</p>}
     {running && <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 animate-[pulse_2.6s_ease-out_infinite] bg-gradient-to-r from-transparent via-surface-base/60 to-transparent" />}
   </section>;
 }

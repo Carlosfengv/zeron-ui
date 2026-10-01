@@ -141,7 +141,7 @@ export default function TableDoc() {
       </DocSection>
 
       <DocSection title={t("loading")}>
-        <p className="mb-3 max-w-3xl text-body leading-6 text-fg-muted">
+        <p className="mb-3 max-w-3xl text-body text-fg-muted">
           {t("loadingDescription")}
         </p>
         <ComponentPreview code={loadingCode}>

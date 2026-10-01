@@ -425,7 +425,7 @@ export default function AvatarDoc() {
       </DocSection>
 
       <DocSection title={t("accessibility")}>
-        <p className="max-w-3xl text-body leading-6 text-fg-muted">
+        <p className="max-w-3xl text-body text-fg-muted">
           {t("accessibilityBody")}
         </p>
       </DocSection>

@@ -62,6 +62,6 @@ export function TranscriptFlow({ items, replaying, timeZone, locale }: { items: 
         {items.length === 0 && <div className="flex min-h-48 items-center justify-center text-body text-fg-muted">No conversation records found in this JSON.</div>}
       </div>
     </div>
-    {showBackToBottom && <Button type="button" size="sm" variant="secondary" className="absolute bottom-4 right-4 shadow-md" onClick={scrollToBottom}>Back to bottom</Button>}
+    {showBackToBottom && <Button type="button" size="sm" variant="secondary" className="absolute bottom-4 right-4 shadow-floating" onClick={scrollToBottom}>Back to bottom</Button>}
   </div>;
 }

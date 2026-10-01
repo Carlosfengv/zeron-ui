@@ -217,7 +217,7 @@ describe("semantic color consumers", () => {
   });
 
   it("uses paired semantic typography and control-height tokens", () => {
-    const pairedTypeOverride = /\btext-(?:label|body|title|heading)\b[^"`\n]*\bleading-(?:snug|tight|normal|relaxed)\b|\bleading-(?:snug|tight|normal|relaxed)\b[^"`\n]*\btext-(?:label|body|title|heading)\b/;
+    const pairedTypeOverride = /\btext-(?:label|code|body|title|heading)\b[^"`\n]*\bleading-(?:\d+|snug|tight|normal|relaxed|loose)\b|\bleading-(?:\d+|snug|tight|normal|relaxed|loose)\b[^"`\n]*\btext-(?:label|code|body|title|heading)\b/;
 
     for (const path of componentFiles()) {
       expect(read(path), path).not.toMatch(pairedTypeOverride);

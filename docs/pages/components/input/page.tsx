@@ -134,7 +134,7 @@ export default function InputDoc() {
       </DocSection>
 
       <DocSection title="Focus behavior">
-        <p className="max-w-3xl text-body leading-5 text-fg-muted">
+        <p className="max-w-3xl text-body text-fg-muted">
           Text-editing controls may show their focus ring after either pointer or keyboard focus, according to the browser&apos;s <code>:focus-visible</code> behavior.
         </p>
       </DocSection>

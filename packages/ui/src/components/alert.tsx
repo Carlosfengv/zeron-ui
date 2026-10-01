@@ -122,7 +122,7 @@ const AlertTitle = forwardRef<HTMLDivElement, AlertTitleProps>(
         data-slot="alert-title"
         className={cn(
           hasIcon ? "col-start-2" : "col-start-1",
-          "min-w-0 text-body leading-5 font-medium",
+          "min-w-0 text-body font-medium",
           status === "default" && "text-fg-default",
           className
         )}
@@ -147,7 +147,7 @@ const AlertDescription = forwardRef<HTMLDivElement, AlertDescriptionProps>(
         data-slot="alert-description"
         className={cn(
           hasIcon ? "col-start-2" : "col-start-1",
-          "min-w-0 text-label leading-5",
+          "min-w-0 text-label",
           status === "default" && "text-fg-muted",
           className
         )}

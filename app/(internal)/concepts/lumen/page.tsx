@@ -71,7 +71,7 @@ function Cite({ n }: { n: number }) {
 function Answer() {
   return (
     <ChatMessage from="assistant" className="max-w-full">
-      <div className="flex flex-col gap-3 text-body leading-relaxed text-fg-default">
+      <div className="flex flex-col gap-3 text-body text-fg-default">
         <p>
           The Stoics drew a sharp line between what is{" "}
           <span className="font-semibold">
@@ -114,7 +114,7 @@ function SourcesPanel() {
           key={s.n}
           href="#answer"
           className={cn(
-            "flex items-center gap-3 rounded-xl px-3.5 py-3 transition-shadow duration-100 hover:shadow-floating",
+            "flex items-center gap-3 rounded-xl px-3.5 py-3 transition-shadow duration-fast hover:shadow-floating",
             surfaceClasses("raised", "raised")
           )}
         >
@@ -155,7 +155,7 @@ function TurnView({ turn }: { turn: Turn }) {
     <article className="flex flex-col gap-4">
       <h2
         id="answer"
-        className="text-heading leading-tight text-fg-default font-bold"
+        className="text-heading text-fg-default font-bold"
       >
         {turn.question}
       </h2>

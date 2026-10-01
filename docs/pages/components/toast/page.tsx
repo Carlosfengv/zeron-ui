@@ -416,7 +416,7 @@ function PositionDemo() {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="max-w-3xl text-body leading-5 text-fg-muted">
+      <p className="max-w-3xl text-body text-fg-muted">
         {t("positionsIntro")}
       </p>
       <ComponentPreview

@@ -198,7 +198,7 @@ const FileTextIcon = useIcon("square-library");
       <AnimatePresence>
         {attachOpen && (
           <motion.div
-            className="absolute bottom-full mb-2 left-0 z-10"
+            className="absolute bottom-full mb-2 left-0 z-content"
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4, transition: { duration: 0.1 } }}
@@ -245,7 +245,7 @@ const FileTextIcon = useIcon("square-library");
       <AnimatePresence>
         {modelOpen && (
           <motion.div
-            className="absolute bottom-full mb-2 right-0 z-10"
+            className="absolute bottom-full mb-2 right-0 z-content"
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4, transition: { duration: 0.1 } }}
@@ -390,7 +390,7 @@ useEffect(() => () => timers.current.forEach(clearTimeout), []);
       (queue[0]) is next to dispatch. Double-click edits, × removes. */}
   {queue.length > 0 && (
     <div
-      className="absolute inset-x-0 z-10"
+      className="absolute inset-x-0 z-content"
       style={{ bottom: inputHeight + 8, height: hovered ? expandedH : collapsedH }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

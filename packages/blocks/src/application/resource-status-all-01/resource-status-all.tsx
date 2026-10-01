@@ -134,10 +134,10 @@ function ResourceStatusDonut({
         </PieChart>
       </div>
       <div aria-hidden="true" className="absolute flex w-14 flex-col items-center gap-1 text-center">
-        <span className="w-full text-heading font-semibold leading-8 tabular-nums text-fg-default">
+        <span className="w-full text-heading font-semibold tabular-nums text-fg-default">
           {formatValue(total)}
         </span>
-        <span className="w-full text-label leading-4 text-fg-subtle">{totalLabel}</span>
+        <span className="w-full text-label text-fg-subtle">{totalLabel}</span>
       </div>
     </div>
   );
@@ -157,7 +157,7 @@ function ResourceStatusLegend({
           key={`${status.tone}-${status.label}`}
           className="flex min-w-0 items-center justify-between gap-2 px-1.5 py-2"
         >
-          <dt className="flex min-w-0 items-center text-body leading-5 font-medium text-fg-muted">
+          <dt className="flex min-w-0 items-center text-body font-medium text-fg-muted">
             <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center">
               <span
                 className={cn("size-2 rounded-full", statusPresentation[status.tone].dotClassName)}
@@ -165,7 +165,7 @@ function ResourceStatusLegend({
             </span>
             <span className="truncate">{status.label}</span>
           </dt>
-          <dd className="shrink-0 text-body leading-5 tabular-nums text-fg-muted">
+          <dd className="shrink-0 text-body tabular-nums text-fg-muted">
             {formatValue(status.value)}
           </dd>
         </div>
@@ -222,14 +222,14 @@ export function ResourceStatusAll({
         </div>
 
         <section className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-5" aria-label={title}>
-          <p className="text-body leading-5 text-fg-muted">{title}</p>
-          <p className="text-heading leading-9 font-bold tabular-nums text-fg-brand">
+          <p className="text-body text-fg-muted">{title}</p>
+          <p className="text-heading font-bold tabular-nums text-fg-brand">
             {formatValue(total)}
           </p>
           <span aria-hidden="true" className="h-2 shrink-0" />
           <ResourceStatusLegend statuses={normalizedStatuses} formatValue={formatValue} />
           <span aria-hidden="true" className="h-2 shrink-0" />
-          <div className="flex min-w-0 items-center justify-between gap-3 text-body leading-5 text-fg-subtle">
+          <div className="flex min-w-0 items-center justify-between gap-3 text-body text-fg-subtle">
             <span className="min-w-0">{coverageLabel}</span>
             <span className="shrink-0 whitespace-nowrap tabular-nums">
               {formatValue(covered)} / {formatValue(total)} · {formatPercentage(coveragePercentage)}

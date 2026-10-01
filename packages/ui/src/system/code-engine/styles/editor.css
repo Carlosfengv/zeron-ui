@@ -1,3 +1,22 @@
+/* Keep Zeron overrides beside the unlayered editor rules so those rules
+ * cannot override the component's semantic type scale. */
+:host(.zeron-code-block) {
+  [data-input-box] input {
+    font-size: var(--font-size-code, 0.8125rem);
+    line-height: var(--line-height-code, 1.5rem);
+  }
+
+  [data-matches] {
+    font-size: var(--font-size-label, 0.75rem);
+    line-height: var(--line-height-label, 1rem);
+  }
+
+  [data-editor-widget] {
+    font-size: var(--font-size-body, 0.875rem);
+    line-height: var(--line-height-body, 1.25rem);
+  }
+}
+
 ::selection {
   background-color: transparent;
 }
