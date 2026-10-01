@@ -1,0 +1,145 @@
+.workspace {
+  --workflow-header-height: calc(var(--spacing) * 16);
+  height: 100svh;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--fg-default);
+}
+.header { grid-row: 1; align-self: start; background: transparent; pointer-events: none; }
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  min-height: calc(var(--spacing) * 16);
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 3) calc(var(--spacing) * 5);
+}
+.titleGroup, .titleMeta, .topActions, .nodeHeading, .nodeFooter, .canvasControls, .dock, .panelHeader, .runForm, .saveState {
+  display: flex;
+  align-items: center;
+}
+.titleGroup { flex: 1; gap: calc(var(--spacing) * 3); min-width: 0; }
+.titleMeta { gap: calc(var(--spacing) * 3); flex-shrink: 0; max-width: 100%; pointer-events: auto; }
+.titleGroup > nav { min-width: 0; pointer-events: auto; }
+.titleGroup > nav ol { flex-wrap: nowrap; }
+.titleGroup > nav ol > li:last-child { overflow: hidden; }
+.titleGroup > nav ol > li:last-child > span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.topActions { gap: calc(var(--spacing) * 2); flex-shrink: 0; pointer-events: auto; }
+.localLabel { margin-right: calc(var(--spacing) * 2); font-size: var(--font-size-label); color: var(--fg-subtle); }
+.glyph { width: calc(var(--spacing) * 4); height: calc(var(--spacing) * 4); flex-shrink: 0; }
+.logo { width: var(--control-height-xl); height: var(--control-height-xl); display: grid; place-items: center; border-radius: var(--radius-xl); color: var(--fg-on-brand); background: var(--brand); }
+.navFooter { display: flex; flex-direction: column; align-items: center; gap: calc(var(--spacing) * 3); }
+.main { grid-row: 1 / -1; display: flex; flex-direction: column; overflow: hidden; }
+.canvasRow { display: flex; flex: 1; min-height: 0; min-width: 0; position: relative; }
+.canvas { position: relative; flex: 1; min-width: 0; min-height: 0; }
+.flow:global(.react-flow) {
+  /* React Flow's local light/dark class must not override the host scheme,
+     shadows or runtime brand while its theme state catches up. */
+  color-scheme: light dark;
+  --shadow-control: inherit;
+  --shadow-knob: inherit;
+  --shadow-raised: inherit;
+  --shadow-floating-drop: inherit;
+  --shadow-floating: inherit;
+  --shadow-overlay: inherit;
+  --brand: inherit;
+  --brand-hover: inherit;
+  --brand-active: inherit;
+  --fg-brand: inherit;
+  --fg-on-brand: inherit;
+  --primary-action: inherit;
+  --primary-action-hover: inherit;
+  --primary-action-active: inherit;
+  --fg-on-primary-action: inherit;
+  --xy-background-color: var(--surface-base);
+  --xy-background-pattern-dots-color: var(--border);
+  --xy-background-pattern-lines-color: var(--border);
+  --xy-background-pattern-cross-color: var(--border);
+  --xy-edge-stroke: var(--fg-subtle);
+  --xy-edge-stroke-selected: var(--brand);
+  --xy-edge-stroke-width: calc(var(--border-width-hairline) * 2);
+  --xy-connectionline-stroke: var(--brand);
+  --xy-connectionline-stroke-width: calc(var(--border-width-hairline) * 2);
+  --xy-node-color: var(--fg-default);
+  --xy-node-border: var(--border-width-hairline) solid var(--border);
+  --xy-node-border-selected: var(--border-width-hairline) solid var(--brand);
+  --xy-handle-background-color: var(--fg-subtle);
+  --xy-handle-border-color: var(--card-background);
+  --xy-selection-background-color: var(--selection);
+  --xy-selection-border: var(--border-width-hairline) solid var(--brand);
+  --xy-minimap-background-color: var(--surface-raised);
+  --xy-minimap-mask-background-color: var(--scrim);
+  --xy-minimap-mask-stroke-color: var(--brand);
+  --xy-minimap-node-background-color: var(--fg-subtle);
+  --xy-minimap-node-stroke-color: var(--border);
+  --xy-attribution-background-color: var(--surface-base);
+  --xy-resize-background-color: var(--brand);
+}
+/* Explicit host choices override React Flow's independent theme class.
+   With no root choice, light-dark() follows the system preference. Keep these
+   declarations explicit so the CSS compiler also synchronizes color tokens. */
+:global(html.light) .flow:global(.react-flow) { color-scheme: light; }
+:global(html.dark) .flow:global(.react-flow) { color-scheme: dark; }
+.flow :global(.react-flow__attribution) { color: var(--fg-subtle); font-size: var(--font-size-label); bottom: calc(var(--spacing) * 14); }
+.flow :global(.react-flow__pane), .flow :global(.react-flow__node), .flow :global(.react-flow__nodesselection-rect) { cursor: default; }
+.flow[data-pan] :global(.react-flow__pane), .flow[data-pan] :global(.react-flow__node), .flow[data-pan] :global(.react-flow__nodesselection-rect) { cursor: grab; }
+.flow :global(.react-flow__pane.dragging), .flow :global(.react-flow__node.dragging), .flow:has(:global(.react-flow__pane.dragging)) :global(.react-flow__node) { cursor: grabbing; }
+.flow :global(.react-flow__node:focus-visible) { outline: calc(var(--border-width-hairline) * 2) solid var(--focus-ring); outline-offset: calc(var(--spacing)); border-radius: var(--radius-xl); }
+.flow :global(.react-flow__edge.selected .react-flow__edge-path) { stroke: var(--brand); }
+.flow :global(.react-flow__edge-text) { fill: var(--fg-muted); }
+.flow :global(.react-flow__edge-textbg) { fill: var(--surface-floating); }
+.node { position: relative; width: calc(var(--spacing) * 68); border-radius: var(--radius-xl); outline: calc(var(--border-width-hairline) * 2) solid var(--border); transition: outline-color var(--motion-duration-fast); }
+.node[data-selected] { --active: color-mix(in srgb, var(--brand) 12%, transparent); outline-color: var(--brand); }
+.node[data-running] { outline-color: var(--success-border); }
+.nodeHeading { align-items: flex-start; gap: calc(var(--spacing) * 3); }
+.nodeText { display: flex; min-width: 0; flex-direction: column; gap: var(--spacing); overflow-wrap: anywhere; }
+.nodeFooter { justify-content: space-between; width: 100%; gap: calc(var(--spacing) * 2); }
+.branches { display: flex; flex-direction: column; gap: calc(var(--spacing) * 1.5); }
+.branchRow { display: flex; align-items: center; gap: calc(var(--spacing) * 2); min-height: var(--control-height-md); padding: calc(var(--spacing)) calc(var(--spacing) * 2); border: var(--border-width-hairline) solid var(--border); border-radius: var(--radius-lg); background: var(--hover); font-size: var(--font-size-label); color: var(--fg-muted); }
+.branchDot { width: var(--spacing); height: var(--spacing); border-radius: 50%; background: var(--fg-subtle); flex-shrink: 0; }
+.branchLabel { overflow-wrap: anywhere; }
+.node .handle { width: calc(var(--spacing) * 5); height: calc(var(--spacing) * 5); min-width: 0; min-height: 0; border: 0; background: transparent; }
+.node .handle::after { content: ""; position: absolute; inset: calc(var(--spacing) * 1.5); border-radius: 50%; background: var(--fg-subtle); outline: var(--border-width-hairline) solid var(--card-background); }
+.node[data-selected] .handle::after, .node .handle:hover::after { background: var(--brand); }
+.node .handle:global(.react-flow__handle-left) { left: calc(var(--spacing) * -2.5); }
+.node .handle:global(.react-flow__handle-right) { right: calc(var(--spacing) * -2.5); }
+.nodeToolbar { padding: var(--spacing); border-radius: var(--radius-lg); }
+.noPan { touch-action: none; }
+.interactive { display: inline-flex; align-items: center; gap: var(--spacing); }
+.scrollable { overflow: auto; }
+.dock { gap: calc(var(--spacing) * 1.5); padding: calc(var(--spacing) * 1.5); border-radius: var(--radius-xl); margin-bottom: calc(var(--spacing) * 4); }
+.redo { transform: scaleX(-1); }
+.canvasControls { gap: var(--spacing); padding: var(--spacing); border-radius: var(--radius-lg); }
+.zoom { min-width: calc(var(--spacing) * 10); text-align: center; font-size: var(--font-size-label); color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.flow .minimap { margin-bottom: calc(var(--spacing) * 14); border: var(--border-width-hairline) solid var(--border); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-raised); }
+.inspector { width: calc(var(--spacing) * 86); max-width: calc(100% - var(--spacing) * 6); display: flex; flex-direction: column; flex-shrink: 0; margin: calc(var(--spacing) * 3); margin-top: calc(var(--workflow-header-height) + var(--spacing) * 3); z-index: var(--layer-raised); }
+.inspectorForm { min-height: 0; flex: 1; display: flex; flex-direction: column; }
+.bottomPanel { max-height: 40svh; min-height: calc(var(--spacing) * 40); overflow: auto; flex-shrink: 0; border-top: var(--border-width-hairline) solid var(--border); background: var(--surface-floating); }
+.panelHeader { position: sticky; top: 0; justify-content: space-between; padding-inline: calc(var(--spacing) * 5); background: var(--surface-floating); z-index: var(--layer-content); }
+.runPanel { display: flex; gap: calc(var(--spacing) * 8); padding: calc(var(--spacing) * 5); align-items: flex-start; }
+.runForm { flex-shrink: 0; gap: calc(var(--spacing) * 3); align-items: center; }
+.runResult { display: flex; flex-direction: column; gap: calc(var(--spacing) * 3); min-width: 0; }
+.runSteps { display: flex; flex-wrap: wrap; gap: calc(var(--spacing) * 2); font-size: var(--font-size-label); color: var(--fg-muted); }
+.runSteps li { display: flex; align-items: center; gap: calc(var(--spacing) * 2); }
+.codePanel { max-height: 32svh; overflow: auto; padding: calc(var(--spacing) * 3); }
+.saveState { min-width: 0; gap: calc(var(--spacing) * 2); font-size: var(--font-size-label); color: var(--fg-subtle); }
+.saveDot { width: calc(var(--spacing) * 1.5); height: calc(var(--spacing) * 1.5); border-radius: 50%; background: var(--fg-success); flex-shrink: 0; }
+.saveDot[data-error] { background: var(--fg-danger); }
+.nodePicker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: calc(var(--spacing) * 3); margin-top: calc(var(--spacing) * 5); }
+.helpList { display: flex; flex-direction: column; gap: calc(var(--spacing) * 3); margin-top: calc(var(--spacing) * 5); padding-left: calc(var(--spacing) * 4); list-style: disc; font-size: var(--font-size-body); line-height: var(--line-height-body); color: var(--fg-muted); }
+@media (max-width: 1024px) { .localLabel { display: none; } .titleGroup { flex-wrap: wrap; } .runPanel { flex-direction: column; gap: calc(var(--spacing) * 4); } }
+@media (max-width: 768px) {
+  .topbar { gap: calc(var(--spacing) * 2); padding-inline: calc(var(--spacing) * 3); flex-wrap: wrap; }
+  .titleGroup { flex-basis: 100%; width: 100%; }
+  .topActions { margin-left: auto; }
+  .inspector { position: absolute; inset: 0 0 0 auto; width: min(calc(var(--spacing) * 90), calc(100% - var(--spacing) * 6)); }
+  .minimap { display: none; }
+  .dock { margin-bottom: calc(var(--spacing) * 13); }
+  .runForm { flex-wrap: wrap; width: 100%; }
+  .runForm > div { flex: 1; min-width: calc(var(--spacing) * 40); }
+}
+@media (prefers-reduced-motion: reduce) { .node { transition: none; } }
+
+.node .handle:global(.react-flow__handle-top) { top: calc(var(--spacing) * -2.5); }
+.node .handle:global(.react-flow__handle-bottom) { bottom: calc(var(--spacing) * -2.5); }

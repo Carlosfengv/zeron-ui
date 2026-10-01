@@ -9,6 +9,7 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const pagePathname = internalPathname(pathname);
   const isFullscreen =
+    pagePathname === "/workflow" ||
     pagePathname === "/demo" ||
     pagePathname === "/stars" ||
     pagePathname.startsWith("/concepts") ||

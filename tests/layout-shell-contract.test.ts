@@ -20,6 +20,7 @@ describe("shell and page-layout composition contract", () => {
   const localePath = source("docs/components/shell/site/locale-path.ts");
   const docsLayout = source("app/[locale]/docs/layout.tsx");
   const localeLayout = source("app/[locale]/layout.tsx");
+  const internalLayout = source("app/(internal)/layout.tsx");
   const componentsGallery = source("docs/components/components/ComponentsGallery.tsx");
   const card = source("packages/ui/src/components/card.tsx");
   const topNavBlock = source("packages/blocks/src/application/top-nav-app-shell-01/top-nav-app-shell.tsx");
@@ -50,11 +51,14 @@ describe("shell and page-layout composition contract", () => {
   });
 
   it("applies an explicit saved theme before the first stylesheet paint", () => {
-    expect(localeLayout).toContain('const themeBootstrapScript = `(() => {');
-    expect(localeLayout).toContain('window.localStorage.getItem("zeron-design.theme")');
-    expect(localeLayout).toContain('document.documentElement.classList.add(theme)');
+    for (const layout of [localeLayout, internalLayout]) {
+      expect(layout).toContain('import { themeBootstrapScript } from "@/app/theme-bootstrap";');
+      const head = layout.slice(layout.indexOf("<head>"), layout.indexOf("</head>"));
+      expect(head).toContain('<script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />');
+      expect(layout.indexOf("</head>")).toBeLessThan(layout.indexOf("<body>"));
+    }
     expect(localeLayout).toContain('<html lang={locale} suppressHydrationWarning>');
-    expect(localeLayout).toContain('<script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />');
+    expect(internalLayout).toContain('<html lang="zh-CN" suppressHydrationWarning>');
   });
 
   it("makes component gallery cards clickable across their full surface", () => {

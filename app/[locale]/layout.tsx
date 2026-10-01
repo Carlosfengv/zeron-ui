@@ -7,18 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AppProviders } from "@/app/app-providers";
 import { assertLocale } from "@/app/_i18n/locale";
 import { routing } from "@/app/_i18n/routing";
-
-// This runs before the stylesheet paints. Without it, a visitor who selected
-// light mode while their OS is dark receives the OS-dark CSS for one frame
-// before ThemeProvider restores the saved choice during hydration.
-const themeBootstrapScript = `(() => {
-  try {
-    const theme = window.localStorage.getItem("zeron-design.theme");
-    if (theme === "light" || theme === "dark") {
-      document.documentElement.classList.add(theme);
-    }
-  } catch {}
-})();`;
+import { themeBootstrapScript } from "@/app/theme-bootstrap";
 
 type Props = Readonly<{
   children: React.ReactNode;

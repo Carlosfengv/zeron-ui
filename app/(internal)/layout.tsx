@@ -4,6 +4,7 @@ import "../globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AppProviders } from "@/app/app-providers";
+import { themeBootstrapScript } from "@/app/theme-bootstrap";
 import messages from "@docs/content/zh-CN/common.json";
 
 export const metadata: Metadata = {
@@ -40,7 +41,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
+      </head>
       {/* Font smoothing (antialiased/grayscale) is set globally in globals.css */}
       <body>
         <NextIntlClientProvider locale="zh-CN" messages={messages}>
