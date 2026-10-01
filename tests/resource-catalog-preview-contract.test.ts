@@ -46,7 +46,7 @@ describe("Resource Catalog gallery preview", () => {
     expect(blockDetailPage).toContain('npx zeron-ui add ${registryName}');
     expect(resourceCatalogDoc).toContain('registryName="model-mcp-marketplace-01"');
     expect(artifactCatalog).toContain('slug: "resource-catalog-01", registryName: "model-mcp-marketplace-01"');
-    expect(blocksGallery).toContain("artifactCatalog");
+    expect(blocksGallery).toContain("galleryArtifacts");
     expect(blocksGallery).toContain('<BlockPreview name={artifact.slug} />');
     expect(blocksGallery).toContain('className="overflow-hidden overscroll-auto p-1"');
     expect(blocksGallery).toContain('<div className="pointer-events-none">');

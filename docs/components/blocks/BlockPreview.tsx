@@ -48,6 +48,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "workflow": () => import("@/app/(internal)/workflow/_components/workflow-preview").then(({ WorkflowPreview }) => ({
+    default: () => <ResponsivePreview canvasHeight={1060} canvasWidth={1824}><WorkflowPreview /></ResponsivePreview>,
+  })),
   "login-01": () => import("@zeron/blocks/login-01").then(({ Login01 }) => ({
     default: () => <ResponsivePreview canvasHeight={600} canvasWidth={1024}><Login01 className="h-full min-h-0" landmark={false} /></ResponsivePreview>,
   })),

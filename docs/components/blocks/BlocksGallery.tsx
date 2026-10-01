@@ -11,7 +11,8 @@ import { PageBody, PageContent, PageLayout, PageSidebar } from "@zeron/ui/page-l
 import { useIcon, type IconName } from "@zeron/icons/context";
 import { BlockPreview } from "@docs/components/blocks/BlockPreview";
 import { IntentPrefetchLink } from "@docs/components/shell/site/intent-prefetch-link";
-import { artifactCatalog, artifactKinds, artifactProductLabels, artifactProducts, type ArtifactKind, type ArtifactProduct } from "@docs/catalog/artifacts";
+import { artifactKinds, artifactProductLabels, artifactProducts, type ArtifactKind, type ArtifactProduct } from "@docs/catalog/artifacts";
+import { galleryArtifacts } from "@docs/catalog/standalone-pages";
 import { artifactPathname, type ArtifactCollection } from "@docs/catalog/artifact-collections";
 
 const copy = {
@@ -65,7 +66,7 @@ const kindIcons: Record<ArtifactKind | "all", IconName> = {
 };
 
 function initialKind(value: string | null, collection: ArtifactCollection): ArtifactKind | null {
-  return artifactCatalog.some((artifact) => artifact.collection === collection && artifact.kind === value)
+  return galleryArtifacts.some((artifact) => artifact.collection === collection && artifact.kind === value)
     ? value as ArtifactKind : null;
 }
 
@@ -109,7 +110,7 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
   const Search = useIcon("search");
   const language = localePrefix === "/en" ? "en" : "zh";
   const text = { ...copy[language], ...collectionCopy[language][collection] };
-  const collectionArtifacts = useMemo(() => artifactCatalog.filter((artifact) => artifact.collection === collection), [collection]);
+  const collectionArtifacts = useMemo(() => galleryArtifacts.filter((artifact) => artifact.collection === collection), [collection]);
   const availableKinds = useMemo(() => artifactKinds.filter((item) => collectionArtifacts.some((artifact) => artifact.kind === item)), [collectionArtifacts]);
   const normalizedQuery = query.trim().toLowerCase();
   const updateUrl = (nextKind: ArtifactKind | null, nextProduct: ArtifactProduct | null, nextQuery: string) => {
@@ -129,7 +130,7 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
     setQuery(searchParams.get("q") ?? "");
   }, [collection, searchParams]);
   const artifacts = useMemo(() => collectionArtifacts.filter((artifact) => {
-    const searchable = [artifact.title, artifact.description, artifact.kind, artifact.product, artifact.installation.framework, artifact.installation.kind, ...artifact.domains, ...artifact.patterns, ...artifact.searchTerms].join(" ").toLowerCase();
+    const searchable = [artifact.title, artifact.description, artifact.kind, artifact.product, artifact.installation?.framework, artifact.installation?.kind, ...artifact.domains, ...artifact.patterns, ...artifact.searchTerms].join(" ").toLowerCase();
     return (!kind || artifact.kind === kind)
       && (!product || artifact.product === product)
       && (!normalizedQuery || searchable.includes(normalizedQuery));
@@ -193,7 +194,7 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
                   <IntentPrefetchLink
                     aria-label={artifact.title}
                     className="absolute inset-0 z-raised rounded-[inherit] outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
-                    href={`${localePrefix}${artifactPathname(artifact.slug)}`}
+                    href={"href" in artifact ? artifact.href : `${localePrefix}${artifactPathname(artifact.slug)}`}
                   />
                   <ContainerBody
                     aria-hidden="true"
@@ -210,7 +211,7 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
                       <Badge size="sm" variant="dot">{artifactProductLabels[language][artifact.product]}</Badge>
                       <Badge color="blue" size="sm">{kindLabels[language][artifact.kind]}</Badge>
                       <Badge color={artifact.readiness === "demo-only" ? "orange" : "gray"} size="sm">{readinessLabels[language][artifact.readiness]}</Badge>
-                      {artifact.installation.framework === "next" && <Badge color="purple" size="sm">{frameworkLabels[language].next}</Badge>}
+                      {artifact.installation?.framework === "next" && <Badge color="purple" size="sm">{frameworkLabels[language].next}</Badge>}
                     </div>
                   </ContainerFooter>
                 </Container>
