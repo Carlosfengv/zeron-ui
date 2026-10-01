@@ -151,6 +151,9 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "personal-model-usage-01": () => import("@zeron/blocks/personal-model-usage-01").then(({ PersonalModelUsage }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={960}><PersonalModelUsage /></ResponsivePreview>,
   })),
+  "storage-usage-01": () => import("@zeron/blocks/storage-usage-01").then(({ StorageUsage, storageUsageDemoData }) => ({
+    default: () => <ResponsivePreview canvasHeight={360} canvasWidth={1040}><div className="flex min-h-full items-center justify-center bg-surface-base p-8"><StorageUsage data={storageUsageDemoData} /></div></ResponsivePreview>,
+  })),
   "credit-usage-01": () => import("@zeron/blocks/credit-usage-01").then(({ CreditUsage, creditUsageDemoData }) => ({
     default: function CreditUsagePreview() {
       const [cycle, setCycle] = useState<"current" | "previous">("current");

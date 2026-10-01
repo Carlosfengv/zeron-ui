@@ -1,0 +1,5 @@
+.metricTitle {
+  font-size: calc(var(--font-size-label) * 4 / 3);
+  line-height: calc(var(--line-height-label) * 1.25);
+  font-weight: 500;
+}

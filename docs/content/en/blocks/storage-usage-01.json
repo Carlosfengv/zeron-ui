@@ -1,0 +1,12 @@
+{
+  "storageUsageBlock": {
+    "title": "Storage Usage",
+    "description": "A compact storage summary with category segments, remaining capacity, and a wrapping legend.",
+    "composition": "Component mapping and sizing",
+    "compositionBody": "MetricCard owns the split summary header, surface, boundary and availability states. Labels and descriptions use text-label (12px); the title and percentage scale to 4/3 of its font-size variable. The bar is 12px tall, the card padding is 16px, and colors come from the existing Badge categorical palette.",
+    "dataContract": "Data integration",
+    "dataContractBody": "Pass capacity and category items in the same unit. Used capacity, percentage, category widths and remaining capacity are derived from the same normalized values. Demo data keeps 18.8 GB of 20 GB (94%) while correcting the inconsistent category totals in the reference. Customize locale, unit and full-sentence formatters for your product.",
+    "states": "States and responsive behavior",
+    "statesBody": "The legend wraps at narrow widths and long labels remain readable. Loading, unavailable, stale and error states follow MetricCard. Over-capacity usage retains its actual percentage while the bar fills its track; a positive usage with zero capacity shows an unknown percentage. Empty categories show an empty track. The host supplies storage data and any whole-card action."
+  }
+}

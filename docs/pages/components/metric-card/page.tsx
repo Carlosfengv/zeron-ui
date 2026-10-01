@@ -87,6 +87,10 @@ const dashboardCode = `const dashboardCardClass =
 
 const props: PropDef[] = [
   { name: "label", type: "string", description: "The metric being measured." },
+  { name: "layout", type: '"stacked" | "split"', default: '"stacked"', description: "Places the label and description opposite the value and meta in split mode." },
+  { name: "description", type: "ReactNode", description: "Supporting context below the label; hidden when data is unavailable." },
+  { name: "labelClassName", type: "string", description: "Public typography or spacing hook for the label." },
+  { name: "valueClassName", type: "string", description: "Public typography hook for the metric value." },
   { name: "value", type: "ReactNode", description: "The primary metric result, including text, numbers, or inline visual content." },
   { name: "unit", type: "string", description: "A separately formatted unit displayed with the primary value." },
   { name: "meta", type: "string", description: "Optional context such as sample size, token count, or update time." },

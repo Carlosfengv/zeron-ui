@@ -51,12 +51,18 @@ export interface MetricCardProps
   extends Omit<ComponentPropsWithoutRef<"div">, "children" | "content" | "onClick"> {
   /** Describes the measurement, for example "Completion rate". */
   label: string;
+  /** Places the label/description opposite the value/meta in a compact header. */
+  layout?: "stacked" | "split";
+  /** Supporting context below the label. */
+  description?: ReactNode;
   /** Optional content displayed before the label, such as a metric icon. */
   leading?: ReactNode;
   /** Applies project-owned typography or spacing to the public label element. */
   labelClassName?: string;
   /** The primary metric result. Units are rendered separately for consistent formatting. */
   value: ReactNode;
+  /** Applies typography to the public metric value element. */
+  valueClassName?: string;
   unit?: string;
   /** Supporting context such as sample size, token count, or update time. */
   meta?: string;
@@ -311,9 +317,12 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
   (
     {
       label,
+      layout = "stacked",
+      description,
       leading,
       labelClassName,
       value,
+      valueClassName,
       unit,
       meta,
       footer,
@@ -344,6 +353,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
       <div
         ref={ref}
         data-slot="metric-card"
+        data-layout={layout}
         data-state={state}
         data-tone={tone}
         aria-busy={loading || undefined}
@@ -365,37 +375,70 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
         )}
 
         <div className="relative z-content flex min-w-0 flex-col">
-          <div data-slot="metric-card-label-row" className="flex min-w-0 items-center gap-2">
-            {leading ? (
-              <span data-slot="metric-card-leading" className="flex shrink-0 items-center justify-center">
-                {leading}
-              </span>
-            ) : null}
-            <span
-              data-slot="metric-card-label"
-              className={cn("min-w-0 truncate text-body text-fg-muted", labelClassName)}
-            >
-              {label}
-            </span>
-          </div>
-
-          <div data-slot="metric-card-value-row" className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
-            {loading ? (
-              <Skeleton className="mt-0.5 h-6 w-24" />
-            ) : (
-              <span className={cn("min-w-0 truncate text-heading font-semibold tabular-nums", valueClass)}>
-                {unavailable ? "—" : value}
-                {unit && <span className="ml-1 text-body font-medium text-fg-muted">{unit}</span>}
-              </span>
-            )}
-            {meta &&
-              (loading ? (
-                <Skeleton className="h-4 w-16" />
-              ) : (
-                <span data-slot="metric-card-meta" className="ml-auto truncate text-label text-fg-subtle">
-                  {meta}
+          <div className={cn(layout === "split" && "grid grid-cols-2 items-start gap-4")}>
+            <div className="min-w-0">
+              <div data-slot="metric-card-label-row" className="flex min-w-0 items-center gap-2">
+                {leading ? (
+                  <span data-slot="metric-card-leading" className="flex shrink-0 items-center justify-center">
+                    {leading}
+                  </span>
+                ) : null}
+                <span
+                  data-slot="metric-card-label"
+                  className={cn(
+                    layout === "split"
+                      ? "min-w-0 break-words text-body font-medium text-fg-default"
+                      : "min-w-0 truncate text-body text-fg-muted",
+                    labelClassName
+                  )}
+                >
+                  {label}
                 </span>
-              ))}
+              </div>
+
+              {description && !unavailable && (
+                loading ? <Skeleton className="mt-1 h-4 w-28 max-w-full" /> : (
+                  <div data-slot="metric-card-description" className="mt-1 text-label text-fg-muted">
+                    {description}
+                  </div>
+                )
+              )}
+            </div>
+
+            <div
+              data-slot="metric-card-value-row"
+              className={cn(
+                "flex min-w-0",
+                layout === "split"
+                  ? "flex-col items-end gap-1 text-right"
+                  : "flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5"
+              )}
+            >
+              {loading ? (
+                <Skeleton className="mt-0.5 h-6 w-24 max-w-full" />
+              ) : (
+                <span className={cn(
+                  "min-w-0 max-w-full truncate",
+                  layout === "split" ? "text-body font-medium tabular-nums" : "text-heading font-semibold tabular-nums",
+                  valueClass,
+                  valueClassName
+                )}>
+                  {unavailable ? "—" : value}
+                  {unit && <span className="ml-1 text-body font-medium text-fg-muted">{unit}</span>}
+                </span>
+              )}
+              {meta && !(layout === "split" && unavailable) &&
+                (loading ? (
+                  <Skeleton className="h-4 w-16 max-w-full" />
+                ) : (
+                  <span
+                    data-slot="metric-card-meta"
+                    className={cn("ml-auto text-label text-fg-subtle", layout === "split" ? "min-w-0 max-w-full break-words" : "truncate")}
+                  >
+                    {meta}
+                  </span>
+                ))}
+            </div>
           </div>
 
           {statusMessage && !loading && (
@@ -412,7 +455,7 @@ const MetricCard = forwardRef<HTMLDivElement, MetricCardProps>(
           )}
 
           {footer && !loading && !unavailable && (
-            <div data-slot="metric-card-footer" className="mt-1 text-label text-fg-subtle">
+            <div data-slot="metric-card-footer" className={cn(layout === "split" ? "mt-5" : "mt-1", "text-label text-fg-subtle")}>
               {footer}
             </div>
           )}

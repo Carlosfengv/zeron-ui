@@ -30,6 +30,7 @@ import {
   creditUsageDemoData,
   type CreditUsageCycle,
 } from "@zeron/blocks/credit-usage-01";
+import { StorageUsage, storageUsageDemoData } from "@zeron/blocks/storage-usage-01";
 import { PersonalUsage } from "@zeron/blocks/personal-usage-01";
 import { ResourceSettings } from "@zeron/blocks/resource-settings-01";
 import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
@@ -207,6 +208,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <PersonalSettingsDemo />;
     case "personal-model-usage-01":
       return <PersonalModelUsage />;
+    case "storage-usage-01":
+      return <div className={centeredDemoClass}><div className="w-full max-w-4xl"><StorageUsage data={storageUsageDemoData} /></div></div>;
     case "credit-usage-01":
       return <CreditUsageDemo />;
     case "personal-usage-01":

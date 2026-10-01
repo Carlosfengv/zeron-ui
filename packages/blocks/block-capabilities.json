@@ -1,4 +1,5 @@
 {
+  "storage-usage-01": { "framework": "react", "kind": "data-block" },
   "user-account-01": { "framework": "react", "kind": "data-block" },
   "login-01": { "framework": "next", "kind": "template" },
   "signup-01": { "framework": "next", "kind": "template" },

@@ -667,6 +667,37 @@
       ]
     },
     {
+      "name": "storage-usage-01",
+      "type": "registry:block",
+      "title": "Storage Usage",
+      "description": "A compact storage summary with category segments, remaining capacity, and a wrapping legend.",
+      "categories": ["application", "metrics", "storage"],
+      "dependencies": ["tw-animate-css"],
+      "registryDependencies": ["metric-card", "badge", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/storage-usage-01/storage-usage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/storage-usage-01/storage-usage.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/storage-usage-01/storage-usage.module.css",
+          "type": "registry:component",
+          "target": "components/blocks/storage-usage-01/storage-usage.module.css"
+        },
+        {
+          "path": "packages/blocks/src/application/storage-usage-01/storage-usage.module.css.d.ts",
+          "type": "registry:file",
+          "target": "components/blocks/storage-usage-01/storage-usage.module.css.d.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/storage-usage-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/storage-usage-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "resource-metric-list-01",
       "type": "registry:block",
       "title": "Resource Metric List 1",

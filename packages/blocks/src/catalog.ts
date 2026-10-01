@@ -177,6 +177,13 @@ const blockCatalogEntries = [
     dependencies: ["badge", "button", "card", "icon-context", "inline-notice", "switch", "tabs", "@lobehub/icons"],
   },
   {
+    name: "storage-usage-01",
+    title: "Storage Usage",
+    description: "A compact storage summary with category segments, remaining capacity, and a wrapping legend.",
+    categories: ["application", "metrics", "storage"],
+    dependencies: ["metric-card", "badge", "utils"],
+  },
+  {
     name: "personal-usage-01",
     title: "个人使用情况",
     description: "A standalone personal activity dashboard with contextual read-only settings navigation.",

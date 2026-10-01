@@ -18,6 +18,7 @@ export const standaloneBlockSlugs = [
   "model-detail-02",
   "personal-settings-01",
   "personal-model-usage-01",
+  "storage-usage-01",
   "credit-usage-01",
   "personal-usage-01",
   "provider-create-form-01",

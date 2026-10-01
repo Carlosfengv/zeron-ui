@@ -153,6 +153,11 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation" |
     kind: "block", product: "shared", domains: ["settings", "billing", "usage"], patterns: ["metrics", "settings", "segmented progress"], searchTerms: ["credit", "usage", "billing", "quota", "model", "额度", "用量", "计费"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
   },
   {
+    slug: "storage-usage-01", registryName: "storage-usage-01",
+    title: "Storage Usage", description: "A compact storage summary with category segments, remaining capacity, and a wrapping legend.",
+    kind: "block", product: "shared", domains: ["storage", "usage"], patterns: ["metrics", "segmented progress"], searchTerms: ["storage", "usage", "capacity", "quota", "存储", "容量", "用量"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
     slug: "personal-usage-01", registryName: "personal-usage-01",
     title: "Personal Usage", description: "A standalone dashboard for personal activity, calls and token usage.",
     kind: "page", product: "zentrix", domains: ["settings", "usage"], patterns: ["analytics", "sidebar"], searchTerms: ["personal usage", "activity", "token", "调用", "个人使用情况"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"],
