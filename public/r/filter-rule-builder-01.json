@@ -1,6 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "filter-rule-builder-01",
+  "type": "registry:block",
   "title": "Filter Rule Builder",
   "description": "A controlled filter workspace with presets, readable rule summaries, and validated draft editing.",
   "dependencies": [
@@ -60,6 +61,5 @@
     "application",
     "forms",
     "filters"
-  ],
-  "type": "registry:block"
+  ]
 }
