@@ -282,6 +282,17 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
     }
   }
 
+  private requiresLocalHighlighting(): boolean {
+    // Pool-wide options cannot satisfy a surface's token callbacks when the
+    // pool omits token metadata. Keep that surface interactive locally while
+    // the pool continues serving the other files.
+    return (
+      this.editSessionActive ||
+      (this.options.useTokenTransformer === true &&
+        this.workerManager?.getDiffRenderOptions().useTokenTransformer !== true)
+    );
+  }
+
   public setWorkerPool(workerManager: WorkerPoolManager | undefined): void {
     if (this.workerManager === workerManager) return;
     this.workerManager?.cleanUpTasks(this);
@@ -423,7 +434,7 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
     // The pool's diff cache is keyed by cacheKey, so a worker refresh needs
     // one; a keyless diff uses the local highlighter fallback below instead.
     if (
-      !this.editSessionActive &&
+      !this.requiresLocalHighlighting() &&
       workerManager?.isWorkingPool() === true &&
       diff.cacheKey != null
     ) {
@@ -946,7 +957,7 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
       renderRange: undefined,
     };
     if (
-      !this.editSessionActive &&
+      !this.requiresLocalHighlighting() &&
       this.workerManager?.isWorkingPool() === true
     ) {
       if (this.renderCache.result == null && !massiveDiff) {
@@ -989,9 +1000,9 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
     const options: RenderDiffOptions = (() => {
       if (this.workerManager?.isWorkingPool() === true) {
         const poolOptions = this.workerManager.getDiffRenderOptions();
-        // Active edit sessions require `useTokenTransformer: true`
+        // Editing and token callbacks both require token position metadata.
         if (
-          this.editSessionActive &&
+          (this.editSessionActive || this.options.useTokenTransformer === true) &&
           poolOptions.useTokenTransformer !== true
         ) {
           return { ...poolOptions, useTokenTransformer: true };
@@ -1076,7 +1087,7 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
     }
 
     if (
-      !this.editSessionActive &&
+      !this.requiresLocalHighlighting() &&
       this.workerManager?.isWorkingPool() === true
     ) {
       return !renderCache.highlighted;
@@ -1127,7 +1138,7 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
       renderRange
     );
     if (
-      !this.editSessionActive &&
+      !this.requiresLocalHighlighting() &&
       this.workerManager?.isWorkingPool() === true
     ) {
       // Hydration has highlighted DOM but no local AST. Keep that DOM until

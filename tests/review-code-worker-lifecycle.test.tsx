@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { StrictMode, createRef, useEffect } from 'react';
-import { act, cleanup, render, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
 
 import { CodeWorkerProvider } from '../packages/ui/src/components/code-block/worker';
@@ -446,3 +446,42 @@ test('ignores a pending diff refresh from a previous pool', async () => {
     nextManager.terminate();
   }
 });
+
+
+for (const kind of ['file', 'diff', 'code-view'] as const) {
+  test(`${kind} retains token interactions when the pool omits token metadata`, async () => {
+    const pool = createPool();
+    const onTokenClick = vi.fn();
+    const result = render(
+      <CodeWorkerProvider workerFactory={pool.factory} poolSize={1}>
+        <div data-testid="interactive-surface">
+          {kind === 'file' ? (
+            <File file={file} options={{ onTokenClick }} />
+          ) : kind === 'diff' ? (
+            <FileDiff fileDiff={fileDiff} options={{ onTokenClick }} />
+          ) : (
+            <CodeView initialItems={initialItems} options={{ onTokenClick }} />
+          )}
+        </div>
+        <File file={{ ...file, name: 'background.ts' }} />
+      </CodeWorkerProvider>
+    );
+    const findToken = () => {
+      const host = result.getByTestId('interactive-surface')
+        .querySelector('zeron-code-container');
+      return Array.from(host?.shadowRoot?.querySelectorAll('[data-line] span[data-char]') ?? [])
+        .find((element) => element.textContent === 'value');
+    };
+    await waitFor(() => expect(findToken()).toBeDefined());
+    fireEvent.click(findToken()!, { composed: true });
+    expect(onTokenClick.mock.lastCall?.[0]).toMatchObject({ tokenText: 'value' });
+    // Only the metadata-incompatible surface falls back. Other files really
+    // dispatch to the production manager and worker transport.
+    await waitFor(() => expect(pool.renderRequests().some(
+      (request) => request.type === 'file' && request.file.name === 'background.ts'
+    )).toBe(true));
+    expect(pool.renderRequests().every(
+      (request) => request.type === 'file' && request.file.name === 'background.ts'
+    )).toBe(true);
+  });
+}

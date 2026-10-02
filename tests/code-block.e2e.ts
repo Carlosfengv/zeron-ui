@@ -2,6 +2,28 @@ import { expect, test, type Page } from "@playwright/test";
 
 const path = "/zh-CN/docs/components/code-block";
 
+// Match the editor's browser platform detection, including emulated devices.
+async function primaryModifier(page: Page): Promise<"Meta" | "Control"> {
+  return page.evaluate(() =>
+    /macOS|MacIntel|iPhone|iPad|iPod/i.test(navigator.platform) ? "Meta" : "Control"
+  );
+}
+
+async function trackCodeWorkerRequests(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const requests: string[] = [];
+    Object.defineProperty(window, "__codeWorkerRequests", { value: requests });
+    const postMessage = Worker.prototype.postMessage;
+    Worker.prototype.postMessage = function (...args: Parameters<Worker["postMessage"]>) {
+      const [request] = args;
+      if (request?.type === "file" || request?.type === "diff") {
+        requests.push(request.type);
+      }
+      return postMessage.apply(this, args);
+    };
+  });
+}
+
 function collectUnexpectedConsoleErrors(page: Page): string[] {
   const errors: string[] = [];
   page.on("console", (message) => {
@@ -24,6 +46,7 @@ function collectUnexpectedConsoleErrors(page: Page): string[] {
 
 test("renders all interactive examples without hydration errors", async ({ page }) => {
   const errors = collectUnexpectedConsoleErrors(page);
+  await trackCodeWorkerRequests(page);
   await page.goto(path);
 
   await expect(page.getByText("export async function loadStatus()", { exact: false })).toBeVisible();
@@ -86,6 +109,11 @@ test("renders all interactive examples without hydration errors", async ({ page 
   await wrapButton.click();
   await expect(page.getByRole("button", { name: "横向滚动" }).first()).toBeVisible();
 
+  // Creating a pool alone is insufficient: real file and diff render tasks
+  // must reach its workers while token interactions above remain functional.
+  await expect.poll(() => page.evaluate(() =>
+    (window as Window & { __codeWorkerRequests: string[] }).__codeWorkerRequests
+  )).toEqual(expect.arrayContaining(["file", "diff"]));
   expect(errors).toEqual([]);
 });
 
@@ -129,7 +157,7 @@ export function StatusCard({ status }: { status: Status }) {
   await expect(editor).toContainText("d");
   expect(await page.locator("html").getAttribute("class")).toBe(themeBefore);
 
-  await page.keyboard.press(process.platform === "darwin" ? "Meta+z" : "Control+z");
+  await page.keyboard.press(`${await primaryModifier(page)}+z`);
   await page.getByRole("button", { name: "结束编辑" }).click();
   expect(errors).toEqual([]);
 });
@@ -141,7 +169,7 @@ test("supports find/replace and composition input", async ({ page }) => {
 
   const editor = page.getByRole("textbox", { name: "status-card.tsx" });
   await editor.focus();
-  await page.keyboard.press("Meta+Alt+f");
+  await page.keyboard.press(`${await primaryModifier(page)}+Alt+f`);
   await page.getByPlaceholder("Search").fill("Status");
   await page.getByPlaceholder("Replace").fill("Health");
   await page.getByRole("button", { name: "Replace All" }).click();
