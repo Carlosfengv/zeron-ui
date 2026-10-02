@@ -186,6 +186,7 @@ interface ItemData {
 }
 
 interface StepperContextValue {
+  validatedFocusRef: React.RefObject<string | null>;
   rootId: string;
   dir: Direction;
   orientation: Orientation;
@@ -251,7 +252,11 @@ function Stepper(props: StepperProps) {
     value: value ?? defaultValue ?? "",
   }));
 
+  const navigationRef = React.useRef(0);
+  const validatedFocusRef = React.useRef<string | null>(null);
+
   const propsRef = useAsRef({
+    disabled,
     value,
     onValueChange,
     onValueComplete,
@@ -268,6 +273,7 @@ function Stepper(props: StepperProps) {
       },
       getState: () => stateRef.current,
       setState: (key, value) => {
+        if (key === "value") navigationRef.current += 1;
         if (Object.is(stateRef.current[key], value)) return;
 
         if (key === "value" && typeof value === "string") {
@@ -281,17 +287,17 @@ function Stepper(props: StepperProps) {
         store.notify();
       },
       setStateWithValidation: async (value, direction) => {
-        if (!propsRef.current.onValidate) {
+        const request = ++navigationRef.current;
+        const canNavigate = () => !propsRef.current.disabled &&
+          stateRef.current.steps.has(value) && !stateRef.current.steps.get(value)?.disabled;
+        if (!canNavigate()) return false;
+        try {
+          const isValid = propsRef.current.onValidate
+            ? await propsRef.current.onValidate(value, direction)
+            : true;
+          if (!isValid || request !== navigationRef.current || !canNavigate()) return false;
           store.setState("value", value);
           return true;
-        }
-
-        try {
-          const isValid = await propsRef.current.onValidate(value, direction);
-          if (isValid) {
-            store.setState("value", value);
-          }
-          return isValid;
         } catch {
           return false;
         }
@@ -306,6 +312,7 @@ function Stepper(props: StepperProps) {
         store.notify();
       },
       removeStep: (value) => {
+        navigationRef.current += 1;
         const nextSteps = new Map(stateRef.current.steps);
         nextSteps.delete(value);
         stateRef.current.steps = nextSteps;
@@ -315,6 +322,7 @@ function Stepper(props: StepperProps) {
       setStep: (value, completed, disabled) => {
         const step = stateRef.current.steps.get(value);
         if (step) {
+          if (disabled !== step.disabled) navigationRef.current += 1;
           const updatedStep: StepState = { ...step, completed, disabled };
           const nextSteps = new Map(stateRef.current.steps);
           nextSteps.set(value, updatedStep);
@@ -337,10 +345,16 @@ function Stepper(props: StepperProps) {
 
   useIsomorphicLayoutEffect(() => {
     if (value !== undefined && stateRef.current.value !== value) {
+      navigationRef.current += 1;
       stateRef.current.value = value;
       store.notify();
     }
   }, [value, stateRef, store]);
+
+  useIsomorphicLayoutEffect(() => {
+    navigationRef.current += 1;
+    return () => { navigationRef.current += 1; };
+  }, [disabled]);
 
   const contextDir = useDirection();
   const dir = dirProp ?? contextDir;
@@ -350,6 +364,7 @@ function Stepper(props: StepperProps) {
 
   const contextValue = React.useMemo<StepperContextValue>(
     () => ({
+      validatedFocusRef,
       rootId,
       dir,
       orientation,
@@ -653,7 +668,7 @@ function StepperItem(props: StepperItemProps) {
     return () => {
       store.removeStep(itemValue);
     };
-  }, [itemValue, completed, disabled]);
+  }, [itemValue, store]);
 
   useIsomorphicLayoutEffect(() => {
     store.setStep(itemValue, completed, disabled);
@@ -829,9 +844,11 @@ function StepperTrigger(props: ButtonProps) {
       focusContext.onItemFocus(triggerId);
 
       const isKeyboardFocus = !isMouseClickRef.current;
+      const alreadyValidated = context.validatedFocusRef.current === itemValue;
 
       if (
-        !isActive &&
+        !alreadyValidated &&
+        store.getState().value !== itemValue &&
         !isDisabled &&
         activationMode !== "manual" &&
         !context.nonInteractive &&
@@ -853,6 +870,7 @@ function StepperTrigger(props: ButtonProps) {
       isActive,
       isDisabled,
       context.nonInteractive,
+      context.validatedFocusRef,
       store,
       itemValue,
       value,
@@ -912,7 +930,7 @@ function StepperTrigger(props: ButtonProps) {
             : candidateRefs.slice(currentIndex + 1);
         }
 
-        if (store.hasValidation() && candidateRefs.length > 0) {
+        if (activationMode === "automatic" && !context.nonInteractive && store.hasValidation() && candidateRefs.length > 0) {
           const nextRef = candidateRefs[0];
           const nextElement = nextRef?.current;
           const nextItem = items.find(
@@ -939,7 +957,14 @@ function StepperTrigger(props: ButtonProps) {
               store.setState("value", nextItem.value);
             }
 
-            queueMicrotask(() => nextElement?.focus());
+            // Controlled consumers may not have committed their value yet.
+            // Do not validate the same accepted keyboard transition on focus again.
+            context.validatedFocusRef.current = nextItem.value;
+            try {
+              nextElement?.focus();
+            } finally {
+              context.validatedFocusRef.current = null;
+            }
             return;
           }
         }
@@ -951,6 +976,7 @@ function StepperTrigger(props: ButtonProps) {
       focusContext,
       context.nonInteractive,
       context.dir,
+      context.validatedFocusRef,
       activationMode,
       orientation,
       loop,
@@ -1186,6 +1212,7 @@ function StepperContent(props: StepperContentProps) {
 function StepperPrev(props: ButtonProps) {
   const { render, onClick: onClickProp, disabled, ...prevProps } = props;
 
+  const context = useStepperContext(PREV_NAME);
   const store = useStoreContext(PREV_NAME);
   const value = useStore((state) => state.value);
   const steps = useStore((state) => state.steps);
@@ -1196,21 +1223,19 @@ function StepperPrev(props: ButtonProps) {
 
   const stepKeys = Array.from(steps.keys());
   const currentIndex = value ? stepKeys.indexOf(value) : -1;
-  const isDisabled = disabled || currentIndex <= 0;
+  const prevStepValue = stepKeys.slice(0, Math.max(currentIndex, 0)).reverse().find((key) => !steps.get(key)?.disabled);
+  const isDisabled = disabled || context.disabled || !prevStepValue;
 
   const onClick = React.useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       propsRef.current.onClick?.(event);
       if (event.defaultPrevented || isDisabled) return;
 
-      const prevIndex = Math.max(currentIndex - 1, 0);
-      const prevStepValue = stepKeys[prevIndex];
-
       if (prevStepValue) {
         store.setState("value", prevStepValue);
       }
     },
-    [propsRef, isDisabled, currentIndex, stepKeys, store],
+    [propsRef, isDisabled, prevStepValue, store],
   );
 
   return useRender({
@@ -1233,6 +1258,7 @@ function StepperPrev(props: ButtonProps) {
 function StepperNext(props: ButtonProps) {
   const { render, onClick: onClickProp, disabled, ...nextProps } = props;
 
+  const context = useStepperContext(NEXT_NAME);
   const store = useStoreContext(NEXT_NAME);
   const value = useStore((state) => state.value);
   const steps = useStore((state) => state.steps);
@@ -1243,21 +1269,19 @@ function StepperNext(props: ButtonProps) {
 
   const stepKeys = Array.from(steps.keys());
   const currentIndex = value ? stepKeys.indexOf(value) : -1;
-  const isDisabled = disabled || currentIndex >= stepKeys.length - 1;
+  const nextStepValue = stepKeys.slice(currentIndex + 1).find((key) => !steps.get(key)?.disabled);
+  const isDisabled = disabled || context.disabled || !nextStepValue;
 
   const onClick = React.useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       propsRef.current.onClick?.(event);
       if (event.defaultPrevented || isDisabled) return;
 
-      const nextIndex = Math.min(currentIndex + 1, stepKeys.length - 1);
-      const nextStepValue = stepKeys[nextIndex];
-
       if (nextStepValue) {
         await store.setStateWithValidation(nextStepValue, "next");
       }
     },
-    [propsRef, isDisabled, currentIndex, stepKeys, store],
+    [propsRef, isDisabled, nextStepValue, store],
   );
 
   return useRender({

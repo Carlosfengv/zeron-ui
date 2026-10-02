@@ -2,6 +2,7 @@
 
 import {
   useMemo,
+  useRef,
   useState,
   type KeyboardEvent,
   type PointerEvent as ReactPointerEvent,
@@ -118,6 +119,7 @@ function SortableCollection<T extends SortableCollectionItem>({
   const [dropTarget, setDropTarget] = useState<{ id: string; placement: "before" | "after" } | null>(null);
   const [dragPreview, setDragPreview] = useState<DragPreviewState | null>(null);
   const [keyboardDraggedId, setKeyboardDraggedId] = useState<string | null>(null);
+  const keyboardOrderRef = useRef<string[] | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -169,7 +171,7 @@ function SortableCollection<T extends SortableCollectionItem>({
     return { id, placement: clientY < top + height / 2 ? "before" as const : "after" as const };
   };
   const startPointerDrag = (event: ReactPointerEvent<HTMLButtonElement>, item: T) => {
-    if (sortingDisabled || item.draggable === false || event.button !== 0) return;
+    if (keyboardDraggedId || sortingDisabled || item.draggable === false || event.button !== 0) return;
     event.preventDefault();
     const row = event.currentTarget.closest<HTMLElement>("[data-slot='sortable-collection-item']");
     if (!row) return;
@@ -199,6 +201,22 @@ function SortableCollection<T extends SortableCollectionItem>({
     if (target) reorder(draggedId, target.id, target.placement);
     completeDrag();
   };
+  const cancelKeyboardDrag = () => {
+    const originalOrder = keyboardOrderRef.current;
+    keyboardOrderRef.current = null;
+    setKeyboardDraggedId(null);
+    if (originalOrder) {
+      const currentItems = new Map(items.map((item) => [item.id, item]));
+      const restored = originalOrder.flatMap((id) => {
+        const item = currentItems.get(id);
+        currentItems.delete(id);
+        return item ? [item] : [];
+      });
+      restored.push(...currentItems.values());
+      if (restored.some((item, index) => item.id !== items[index]?.id)) commitOrder(restored);
+    }
+    setAnnouncement("Move cancelled.");
+  };
   const handleKeyboardReorder = (event: KeyboardEvent<HTMLButtonElement>, item: T) => {
     if (sortingDisabled || item.draggable === false) return;
     const activeId = keyboardDraggedId ?? item.id;
@@ -206,9 +224,11 @@ function SortableCollection<T extends SortableCollectionItem>({
     if (event.key === " " || event.key === "Enter") {
       event.preventDefault();
       if (keyboardDraggedId === item.id) {
+        keyboardOrderRef.current = null;
         setKeyboardDraggedId(null);
         setAnnouncement(`${announceTitle(item)} placed at position ${index + 1}.`);
       } else {
+        keyboardOrderRef.current = items.map((entry) => entry.id);
         setKeyboardDraggedId(item.id);
         setAnnouncement(`Moving ${announceTitle(item)}. Use up or down arrow keys to reorder.`);
       }
@@ -216,8 +236,8 @@ function SortableCollection<T extends SortableCollectionItem>({
     }
     if (event.key === "Escape" && keyboardDraggedId) {
       event.preventDefault();
-      setKeyboardDraggedId(null);
-      return setAnnouncement("Move cancelled.");
+      cancelKeyboardDrag();
+      return;
     }
     if (!keyboardDraggedId || !["ArrowUp", "ArrowDown"].includes(event.key)) return;
     event.preventDefault();
@@ -237,7 +257,8 @@ function SortableCollection<T extends SortableCollectionItem>({
       <div className="flex min-w-0 flex-col gap-1.5" role="list">
         {items.map((item) => {
           const editing = editingId === item.id;
-          const dragging = draggedId === item.id || keyboardDraggedId === item.id;
+          const pointerDragging = draggedId === item.id;
+          const dragging = pointerDragging || keyboardDraggedId === item.id;
           const originalPositionTarget = dragging && dropTarget?.id === item.id;
           const dropTargetPlacement = dropTarget?.id === item.id && draggedId !== item.id ? dropTarget.placement : null;
           const canDrag = !sortingDisabled && item.draggable !== false;
@@ -254,8 +275,10 @@ function SortableCollection<T extends SortableCollectionItem>({
               className={cn(
                 "grid size-6 shrink-0 place-items-center rounded-md text-fg-subtle outline-none transition-colors duration-fast focus-visible:ring-1 focus-visible:ring-focus-ring",
                 canDrag ? "touch-none cursor-grab hover:bg-hover hover:text-fg-default active:cursor-grabbing" : "cursor-not-allowed opacity-35",
-                dragging && "invisible"
+                pointerDragging && "invisible"
               )}
+              disabled={!canDrag}
+              onBlur={() => { if (keyboardDraggedId === item.id) cancelKeyboardDrag(); }}
               onKeyDown={(event) => handleKeyboardReorder(event, item)}
               onPointerCancel={completeDrag}
               onPointerDown={(event) => startPointerDrag(event, item)}
@@ -298,12 +321,12 @@ function SortableCollection<T extends SortableCollectionItem>({
               )}
               {dragHandlePosition === "start" && dragHandle}
               {renderLeading && (
-                <div className={cn("flex shrink-0 items-center", dragging && "invisible")} data-slot="sortable-collection-leading-actions">
+                <div className={cn("flex shrink-0 items-center", pointerDragging && "invisible")} data-slot="sortable-collection-leading-actions">
                   {renderLeading(item, actionContext)}
                 </div>
               )}
-              {item.leadingIcon && <span className={cn("grid size-4 shrink-0 place-items-center text-fg-muted", dragging && "invisible")} data-slot="sortable-collection-icon">{item.leadingIcon}</span>}
-              <div className={cn("min-w-0 flex-1", dragging && "invisible")} data-slot="sortable-collection-content">
+              {item.leadingIcon && <span className={cn("grid size-4 shrink-0 place-items-center text-fg-muted", pointerDragging && "invisible")} data-slot="sortable-collection-icon">{item.leadingIcon}</span>}
+              <div className={cn("min-w-0 flex-1", pointerDragging && "invisible")} data-slot="sortable-collection-content">
                 <AnimatePresence initial={false} mode="wait">
                   {editing && renderEditingContent ? (
                     <motion.div key="editing" initial={reduceMotion ? false : { opacity: 0, y: -2 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? undefined : { opacity: 0, y: 2 }} transition={{ duration: reduceMotion ? 0 : 0.12 }}>
@@ -322,7 +345,7 @@ function SortableCollection<T extends SortableCollectionItem>({
                 </AnimatePresence>
               </div>
               {(item.meta || (showEditAction && canEdit) || item.removable !== false || renderActions) && (
-                <div className={cn("flex shrink-0 items-center gap-1.5", dragging && "invisible")} data-slot="sortable-collection-actions">
+                <div className={cn("flex shrink-0 items-center gap-1.5", pointerDragging && "invisible")} data-slot="sortable-collection-actions">
                   {item.meta && <div className="hidden items-center gap-1 @sm:flex">{item.meta}</div>}
                   {renderActions?.(item, actionContext)}
                   {showEditAction && canEdit && <Button aria-label={editing ? `Finish editing ${announceTitle(item)}` : `Edit ${announceTitle(item)}`} iconOnly onClick={() => setEditingId((current) => current === item.id ? null : item.id)} size="xs" type="button" variant="ghost"><HugeiconsIcon aria-hidden icon={PencilEdit01Icon} size={16} strokeWidth={1.5} /></Button>}
