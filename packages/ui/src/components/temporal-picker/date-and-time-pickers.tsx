@@ -55,6 +55,7 @@ export function usePickerCore<TValue>(props: CoreProps<TValue>, defaultCommitMod
   });
   const [draft, setDraftState] = React.useState<TValue | undefined>(committedValue);
   const [dirty, setDirty] = React.useState(false);
+  const [resetVersion, setResetVersion] = React.useState(0);
   const commitMode = props.commitMode ?? defaultCommitMode;
   const presetBehavior = commitMode === "complete" ? "commit" : props.presetBehavior ?? "draft";
   const closeOnCommit = props.closeOnCommit ?? props.presentation !== "inline";
@@ -74,22 +75,25 @@ export function usePickerCore<TValue>(props: CoreProps<TValue>, defaultCommitMod
     setOpen(true);
   }, [committedValue, props.disabled, props.readOnly, setOpen]);
   const cancel = React.useCallback(() => {
+    setResetVersion((version) => version + 1);
     setDraftState(committedValue);
     setDirty(false);
     setOpen(false);
   }, [committedValue, setOpen]);
   const updateDraft = React.useCallback((next: TValue | undefined) => {
+    if (props.disabled || props.readOnly) return;
     setDraftState(next);
     setDirty(!temporalValueEquals(next, committedValue));
-  }, [committedValue]);
+  }, [committedValue, props.disabled, props.readOnly]);
   const submit = React.useCallback((next: TValue | undefined, context: TemporalChangeContext) => {
+    if (props.disabled || props.readOnly) return;
     commit(next, context);
     setDraftState(next);
     setDirty(false);
     if (closeOnCommit) setOpen(false);
-  }, [closeOnCommit, commit, setOpen]);
+  }, [closeOnCommit, commit, props.disabled, props.readOnly, setOpen]);
 
-  return { cancel, closeOnCommit, commitMode, committedValue, dirty, draft, isOpen, messages, open, presetBehavior, setOpen, submit, updateDraft };
+  return { cancel, closeOnCommit, commitMode, committedValue, dirty, draft, isOpen, messages, open, presetBehavior, resetVersion, setOpen, submit, updateDraft };
 }
 
 /** Keeps a semantic preset selected across a controlled value echo, but clears it for outside changes. */
@@ -116,11 +120,13 @@ export function PickerHeader({ children }: { children: React.ReactNode }) {
 
 export function PresetList<TValue>({
   activePresetId,
+  disabled,
   onSelect,
   presets,
   title,
 }: {
   activePresetId?: string;
+  disabled?: boolean;
   onSelect: (preset: TemporalPreset<TValue>) => void;
   presets?: readonly TemporalPreset<TValue>[];
   title: string;
@@ -136,7 +142,7 @@ export function PresetList<TValue>({
       className="border-b border-border-subtle p-2"
       data-slot="temporal-preset-list"
       onKeyDown={(event) => {
-        if (event.nativeEvent.isComposing) return;
+        if (disabled || event.nativeEvent.isComposing) return;
         const matched = presets.find((preset) => {
           const shortcut = preset.shortcut;
           return shortcut
@@ -158,6 +164,7 @@ export function PresetList<TValue>({
             active={activePresetId === preset.id}
             aria-keyshortcuts={shortcutLabel(preset)}
             className="justify-start text-left"
+            disabled={disabled}
             key={preset.id}
             onClick={() => onSelect(preset)}
             size="sm"
@@ -212,12 +219,14 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
     : props.placeholder ?? core.messages.selectDate;
   const valid = (value: ISODateString | undefined) => value !== undefined && !dateDisabled(dateToCalendarDate(value), props);
   const select = (value: ISODateString | undefined, context: TemporalChangeContext) => {
+    if (props.disabled || props.readOnly) return;
     if (!valid(value)) return;
     core.updateDraft(value);
     if (context.source !== "preset") clearActivePreset();
     if (core.commitMode === "complete") core.submit(value, context);
   };
   const selectPreset = (preset: TemporalPreset<ISODateString>) => {
+    if (props.disabled || props.readOnly) return;
     const value = preset.resolve({ now: (props.now ?? (() => new Date()))(), locale, timeZone: props.calendarTimeZone ?? "UTC" });
     if (!valid(value)) return;
     setActivePreset(preset.id, value);
@@ -225,12 +234,12 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
     if (core.presetBehavior === "commit") core.submit(value, { source: "preset", presetId: preset.id });
   };
   const panel = (
-    <div className="w-[18rem] max-w-full" data-slot="date-picker-panel">
+    <div key={core.resetVersion} className="w-[18rem] max-w-full" data-slot="date-picker-panel">
       <PickerHeader>{core.messages.selectDate}</PickerHeader>
-      <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
+      <PresetList disabled={props.disabled} activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
       <Calendar
         className="w-full"
-        disabled={(date) => dateDisabled(date, props)}
+        disabled={(date) => Boolean(props.disabled) || dateDisabled(date, props)}
         formatters={pickerCalendarFormatters(locale)}
         labels={pickerCalendarLabels(locale)}
         lang={locale}
@@ -241,6 +250,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
         weekStartsOn={props.firstDayOfWeek}
       />
       <TemporalPickerActions
+        disabled={props.disabled}
         applyDisabled={!valid(core.draft) || temporalValueEquals(core.draft, core.committedValue)}
         clearable={Boolean(core.committedValue || core.draft)}
         messages={core.messages}
@@ -273,6 +283,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
   const [draft, setDraft] = React.useState<DateRangeDraft>(core.committedValue ?? {});
   const { activePresetId, clearActivePreset, selectPreset: setActivePreset } = useActivePreset(core.committedValue);
   const locale = props.locale ?? "en-US";
+  const cancel = () => { setDraft(core.committedValue ?? {}); clearActivePreset(); core.cancel(); };
   React.useEffect(() => { if (!core.isOpen) setDraft(core.committedValue ?? {}); }, [core.committedValue, core.isOpen]);
   const valid = (value: DateRangeDraft): value is DateRangeValue => {
     if (!completeDateRange(value) || compareISODate(value.from, value.to) > 0) return false;
@@ -284,6 +295,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     return true;
   };
   const selectRange = (range: DateRange | undefined, context: TemporalChangeContext) => {
+    if (props.disabled || props.readOnly) return;
     const next: DateRangeDraft = { from: range?.from ? calendarDateToISODate(range.from) : undefined, to: range?.to ? calendarDateToISODate(range.to) : undefined };
     setDraft(next);
     core.updateDraft(valid(next) ? next : undefined);
@@ -291,6 +303,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     if (core.commitMode === "complete" && valid(next)) core.submit(next, context);
   };
   const selectPreset = (preset: TemporalPreset<DateRangeValue>) => {
+    if (props.disabled || props.readOnly) return;
     const next = preset.resolve({ now: (props.now ?? (() => new Date()))(), locale, timeZone: props.calendarTimeZone ?? "UTC" });
     if (!valid(next)) return;
     setActivePreset(preset.id, next);
@@ -303,12 +316,12 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     : props.placeholder ?? core.messages.selectDate;
   const multipleMonths = (props.numberOfMonths ?? 1) > 1;
   const panel = (
-    <div className={multipleMonths ? "w-fit max-w-[92vw]" : "w-[18rem] max-w-full"} data-slot="date-range-picker-panel">
+    <div key={core.resetVersion} className={multipleMonths ? "w-fit max-w-[92vw]" : "w-[18rem] max-w-full"} data-slot="date-range-picker-panel">
       <PickerHeader>{core.messages.selectDate}</PickerHeader>
-      <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
+      <PresetList disabled={props.disabled} activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
       <Calendar
         className={multipleMonths ? "w-fit" : "w-full"}
-        disabled={(date) => dateDisabled(date, props)}
+        disabled={(date) => Boolean(props.disabled) || dateDisabled(date, props)}
         formatters={pickerCalendarFormatters(locale)}
         labels={pickerCalendarLabels(locale)}
         lang={locale}
@@ -320,17 +333,18 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
         weekStartsOn={props.firstDayOfWeek}
       />
       <TemporalPickerActions
+        disabled={props.disabled}
         applyDisabled={!valid(draft) || temporalValueEquals(draft as DateRangeValue | undefined, core.committedValue)}
         clearable={Boolean(core.committedValue || draft.from || draft.to)}
         messages={core.messages}
         onApply={() => valid(draft) && core.submit(draft, { source: "apply", presetId: activePresetId })}
-        onCancel={core.cancel}
+        onCancel={cancel}
         onClear={() => { clearActivePreset(); setDraft({}); core.submit(undefined, { source: "clear" }); }}
         showApply={core.commitMode === "apply"}
       />
     </div>
   );
-  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectDate}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} isOpen={core.isOpen} onRequestClose={core.cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
+  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectDate}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} isOpen={core.isOpen} onRequestClose={cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
 });
 
 function timeValid(value: ISOTimeString | undefined, minValue?: ISOTimeString, maxValue?: ISOTimeString) {
@@ -343,11 +357,13 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(f
   const locale = props.locale ?? "en-US";
   const valid = (value: ISOTimeString | undefined) => timeValid(value, props.minValue, props.maxValue);
   const select = (value: ISOTimeString | undefined, context: TemporalChangeContext) => {
+    if (props.disabled || props.readOnly) return;
     core.updateDraft(value);
     clearActivePreset();
     if (core.commitMode === "complete" && valid(value)) core.submit(value, context);
   };
   const selectPreset = (preset: TemporalPreset<ISOTimeString>) => {
+    if (props.disabled || props.readOnly) return;
     const value = preset.resolve({ now: (props.now ?? (() => new Date()))(), locale });
     if (!valid(value)) return;
     setActivePreset(preset.id, value);
@@ -356,11 +372,11 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(f
   };
   const summary = core.committedValue ? props.formatValue?.(core.committedValue) ?? formatISOTime(core.committedValue, locale, props.hourCycle) : props.placeholder ?? core.messages.selectTime;
   const panel = (
-    <div className="w-[18rem] max-w-full" data-slot="time-picker-panel">
+    <div key={core.resetVersion} className="w-[18rem] max-w-full" data-slot="time-picker-panel">
       <PickerHeader>{core.messages.selectTime}</PickerHeader>
-      <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
-      <TimeField aria-label={core.messages.selectTime} className="w-full [&_[data-slot=time-field-column]]:min-w-0" granularity={props.granularity} hourCycle={props.hourCycle} maxValue={props.maxValue} minValue={props.minValue} minuteStep={props.minuteStep} onValueChange={(value) => select(value, { source: "time-field" })} secondStep={props.secondStep} size={props.size} value={core.draft} />
-      <TemporalPickerActions applyDisabled={!valid(core.draft) || temporalValueEquals(core.draft, core.committedValue)} clearable={Boolean(core.committedValue || core.draft)} messages={core.messages} onApply={() => valid(core.draft) && core.submit(core.draft, { source: "apply", presetId: activePresetId })} onCancel={core.cancel} onClear={() => { clearActivePreset(); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
+      <PresetList disabled={props.disabled} activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
+      <TimeField disabled={props.disabled} aria-label={core.messages.selectTime} className="w-full [&_[data-slot=time-field-column]]:min-w-0" granularity={props.granularity} hourCycle={props.hourCycle} maxValue={props.maxValue} minValue={props.minValue} minuteStep={props.minuteStep} onValueChange={(value) => select(value, { source: "time-field" })} secondStep={props.secondStep} size={props.size} value={core.draft} />
+      <TemporalPickerActions disabled={props.disabled} applyDisabled={!valid(core.draft) || temporalValueEquals(core.draft, core.committedValue)} clearable={Boolean(core.committedValue || core.draft)} messages={core.messages} onApply={() => valid(core.draft) && core.submit(core.draft, { source: "apply", presetId: activePresetId })} onCancel={core.cancel} onClear={() => { clearActivePreset(); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
     </div>
   );
   return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} icon="clock" isOpen={core.isOpen} onRequestClose={core.cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
@@ -374,6 +390,7 @@ export const TimeRangePicker = React.forwardRef<HTMLButtonElement, TimeRangePick
   const [draft, setDraft] = React.useState<TimeRangeDraft>(core.committedValue ?? {});
   const { activePresetId, clearActivePreset, selectPreset: setActivePreset } = useActivePreset(core.committedValue);
   const locale = props.locale ?? "en-US";
+  const cancel = () => { setDraft(core.committedValue ?? {}); clearActivePreset(); core.cancel(); };
   React.useEffect(() => { if (!core.isOpen) setDraft(core.committedValue ?? {}); }, [core.committedValue, core.isOpen]);
   const valid = (value: TimeRangeDraft): value is TimeRangeValue => {
     if (!completeTimeRange(value) || !timeValid(value.from, props.minValue, props.maxValue) || !timeValid(value.to, props.minValue, props.maxValue)) return false;
@@ -381,8 +398,16 @@ export const TimeRangePicker = React.forwardRef<HTMLButtonElement, TimeRangePick
     if (value.overnight) return Boolean(props.allowOvernight) && comparison > 0;
     return comparison <= 0;
   };
-  const update = (next: TimeRangeDraft) => { setDraft(next); core.updateDraft(valid(next) ? next : undefined); clearActivePreset(); };
+  const update = (next: TimeRangeDraft) => {
+    if (props.disabled || props.readOnly) return;
+    setDraft(next);
+    const complete = valid(next);
+    core.updateDraft(complete ? next : undefined);
+    clearActivePreset();
+    if (core.commitMode === "complete" && complete) core.submit(next, { source: "time-field" });
+  };
   const selectPreset = (preset: TemporalPreset<TimeRangeValue>) => {
+    if (props.disabled || props.readOnly) return;
     const next = preset.resolve({ now: (props.now ?? (() => new Date()))(), locale });
     if (!valid(next)) return;
     setActivePreset(preset.id, next); setDraft(next); core.updateDraft(next);
@@ -397,16 +422,16 @@ export const TimeRangePicker = React.forwardRef<HTMLButtonElement, TimeRangePick
     : props.minValue;
   const summary = core.committedValue ? props.formatValue?.(core.committedValue) ?? `${formatISOTime(core.committedValue.from, locale, props.hourCycle)} – ${formatISOTime(core.committedValue.to, locale, props.hourCycle)}${core.committedValue.overnight ? ` (${core.messages.nextDay})` : ""}` : props.placeholder ?? core.messages.selectTime;
   const panel = (
-    <div className="w-[18rem] max-w-full" data-slot="time-range-picker-panel">
+    <div key={core.resetVersion} className="w-[18rem] max-w-full" data-slot="time-range-picker-panel">
       <PickerHeader>{core.messages.selectTime}</PickerHeader>
-      <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
+      <PresetList disabled={props.disabled} activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
       <div className="grid sm:grid-cols-2 sm:divide-x sm:divide-border-subtle">
-        <label className="grid min-w-0 gap-1 text-label text-fg-muted"><span className="bg-surface-base px-2 py-1">{core.messages.start}</span><TimeField aria-label={core.messages.start} className="w-full [&_[data-slot=time-field-column]]:min-w-0" granularity={props.granularity} hourCycle={props.hourCycle} maxValue={startMaxValue} minValue={props.minValue} minuteStep={props.minuteStep} onValueChange={(from) => update({ ...draft, from })} secondStep={props.secondStep} size={props.size} value={draft.from} /></label>
-        <label className="grid min-w-0 gap-1 text-label text-fg-muted"><span className="bg-surface-base px-2 py-1">{core.messages.end}</span><TimeField aria-label={core.messages.end} className="w-full [&_[data-slot=time-field-column]]:min-w-0" granularity={props.granularity} hourCycle={props.hourCycle} maxValue={props.maxValue} minValue={endMinValue} minuteStep={props.minuteStep} onValueChange={(to) => update({ ...draft, to })} secondStep={props.secondStep} size={props.size} value={draft.to} /></label>
+        <label className="grid min-w-0 gap-1 text-label text-fg-muted"><span className="bg-surface-base px-2 py-1">{core.messages.start}</span><TimeField disabled={props.disabled} aria-label={core.messages.start} className="w-full [&_[data-slot=time-field-column]]:min-w-0" granularity={props.granularity} hourCycle={props.hourCycle} maxValue={startMaxValue} minValue={props.minValue} minuteStep={props.minuteStep} onValueChange={(from) => update({ ...draft, from })} secondStep={props.secondStep} size={props.size} value={draft.from} /></label>
+        <label className="grid min-w-0 gap-1 text-label text-fg-muted"><span className="bg-surface-base px-2 py-1">{core.messages.end}</span><TimeField disabled={props.disabled} aria-label={core.messages.end} className="w-full [&_[data-slot=time-field-column]]:min-w-0" granularity={props.granularity} hourCycle={props.hourCycle} maxValue={props.maxValue} minValue={endMinValue} minuteStep={props.minuteStep} onValueChange={(to) => update({ ...draft, to })} secondStep={props.secondStep} size={props.size} value={draft.to} /></label>
       </div>
-      {props.allowOvernight && <label className="flex items-center gap-2 px-3 pb-3 text-label text-fg-muted"><input checked={Boolean(draft.overnight)} onChange={(event) => update({ ...draft, overnight: event.target.checked || undefined })} type="checkbox" /><span>{core.messages.nextDay}</span></label>}
-      <TemporalPickerActions applyDisabled={!valid(draft) || temporalValueEquals(draft as TimeRangeValue | undefined, core.committedValue)} clearable={Boolean(core.committedValue || draft.from || draft.to)} messages={core.messages} onApply={() => valid(draft) && core.submit(draft, { source: "apply", presetId: activePresetId })} onCancel={core.cancel} onClear={() => { clearActivePreset(); setDraft({}); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
+      {props.allowOvernight && <label className="flex items-center gap-2 px-3 pb-3 text-label text-fg-muted"><input disabled={props.disabled} checked={Boolean(draft.overnight)} onChange={(event) => update({ ...draft, overnight: event.target.checked || undefined })} type="checkbox" /><span>{core.messages.nextDay}</span></label>}
+      <TemporalPickerActions disabled={props.disabled} applyDisabled={!valid(draft) || temporalValueEquals(draft as TimeRangeValue | undefined, core.committedValue)} clearable={Boolean(core.committedValue || draft.from || draft.to)} messages={core.messages} onApply={() => valid(draft) && core.submit(draft, { source: "apply", presetId: activePresetId })} onCancel={cancel} onClear={() => { clearActivePreset(); setDraft({}); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
     </div>
   );
-  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} icon="clock" isOpen={core.isOpen} onRequestClose={core.cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
+  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} icon="clock" isOpen={core.isOpen} onRequestClose={cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
 });

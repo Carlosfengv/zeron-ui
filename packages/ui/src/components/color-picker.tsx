@@ -1044,11 +1044,12 @@ const TextColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
     ref
   ) => {
     const [draft, setDraft] = useState(value);
-    const interactingRef = useRef(false);
+    const [interacting, setInteracting] = useState(false);
+    const cancelBlurRef = useRef(false);
 
     useEffect(() => {
-      if (!interactingRef.current) setDraft(value);
-    }, [value]);
+      if (!interacting) setDraft(value);
+    }, [interacting, value]);
 
     const formatNumber = (n: number) =>
       decimals != null ? n.toFixed(decimals) : String(Math.round(n));
@@ -1094,11 +1095,17 @@ const TextColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onFocus={(e) => {
-            interactingRef.current = true;
+            cancelBlurRef.current = false;
+            setInteracting(true);
             e.currentTarget.select();
           }}
           onBlur={() => {
-            interactingRef.current = false;
+            setInteracting(false);
+            if (cancelBlurRef.current) {
+              cancelBlurRef.current = false;
+              setDraft(value);
+              return;
+            }
             if (draft !== value) {
               const numeric = parseFloat(draft.replace("%", ""));
               if (!Number.isNaN(numeric) && (min != null || max != null)) {
@@ -1112,6 +1119,7 @@ const TextColorInput = forwardRef<HTMLInputElement, ColorInputProps>(
             if (e.key === "Enter") {
               (e.currentTarget as HTMLInputElement).blur();
             } else if (e.key === "Escape") {
+              cancelBlurRef.current = true;
               setDraft(value);
               (e.currentTarget as HTMLInputElement).blur();
             } else if (
@@ -1586,7 +1594,9 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
     // Cleared whenever the color changes through a non-OKLCH-internal channel.
     const oklchHueRef = useRef<number | null>(null);
 
-    // External value sync — when controlled value changes from outside, sync HSV
+    // Reconcile every proposed HSV edit with the controlled value. A parent
+    // that declines an edit may keep the same prop, so value-only effects are
+    // insufficient. Accepted echoes retain the precise HSV and sticky hue.
     const lastEmittedRef = useRef<string>("");
     useEffect(() => {
       if (!isControlled) return;
@@ -1597,13 +1607,11 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
       if (!p) return;
       oklchHueRef.current = null;
       const newHsv = rgbToHsv(p.r, p.g, p.b);
-      setHsv((prev) => ({
-        h: newHsv.s === 0 ? prev.h : newHsv.h,
-        s: newHsv.s,
-        v: newHsv.v,
-        a: p.a,
-      }));
-    }, [value, isControlled]);
+      setHsv((prev) => {
+        const next = { h: newHsv.s === 0 ? prev.h : newHsv.h, s: newHsv.s, v: newHsv.v, a: p.a };
+        return prev.h === next.h && prev.s === next.s && prev.v === next.v && prev.a === next.a ? prev : next;
+      });
+    }, [value, isControlled, hsv]);
 
     const parsed = useMemo(
       () => buildParsed(hsv.h, hsv.s, hsv.v, hsv.a),

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import type { FilterClause, FilterField, FilterOption } from "#system/filter-core";
-import { defaultFilterQueryCodec } from "./filter-query-parser";
+import { defaultFilterQueryCodec, quoteFilterQueryValue } from "./filter-query-parser";
 import { mergeFilterQueryClauses } from "./filter-query-reconcile";
 import type {
   FilterQueryCodecContext,
@@ -63,8 +63,7 @@ function optionText(option: FilterOption) {
 }
 
 function quoteOption(value: unknown) {
-  const text = String(value);
-  return /[\s,:]/.test(text) ? `"${text.replace(/[\\"]/g, "\\$&")}"` : text;
+  return quoteFilterQueryValue(String(value));
 }
 
 function unquoteOptionValue(value: string) {

@@ -115,10 +115,11 @@ export const TemporalPickerShell = React.forwardRef<HTMLButtonElement, TemporalP
   );
 
   if (readOnly) return trigger;
+  const content = <fieldset className="m-0 min-w-0 border-0 p-0" disabled={disabled}>{children}</fieldset>;
   if (resolvedPresentation === "inline") {
     return (
       <div className={cn("flex min-w-0 flex-col gap-2", className)} data-slot="temporal-picker-inline">
-        {children}
+        {content}
       </div>
     );
   }
@@ -134,7 +135,7 @@ export const TemporalPickerShell = React.forwardRef<HTMLButtonElement, TemporalP
           side="end"
           triggerRef={internalTriggerRef}
         >
-          <div className="flex min-h-full flex-col" data-slot="temporal-picker-drawer">{children}</div>
+          <div className="flex min-h-full flex-col" data-slot="temporal-picker-drawer">{content}</div>
         </MobileDrawer>
       </>
     );
@@ -143,7 +144,7 @@ export const TemporalPickerShell = React.forwardRef<HTMLButtonElement, TemporalP
     <Popover open={isOpen} onOpenChange={(nextOpen) => nextOpen ? onRequestOpen() : onRequestClose()}>
       <PopoverTrigger render={trigger} />
       <PopoverContent align="start" className="w-fit min-w-0 max-w-[92vw] p-0" sideOffset={6}>
-        <div data-slot="temporal-picker-popover">{children}</div>
+        <div data-slot="temporal-picker-popover">{content}</div>
       </PopoverContent>
     </Popover>
   );
@@ -152,6 +153,7 @@ export const TemporalPickerShell = React.forwardRef<HTMLButtonElement, TemporalP
 interface TemporalPickerActionsProps {
   applyDisabled?: boolean;
   clearable?: boolean;
+  disabled?: boolean;
   messages: { apply: string; cancel: string; clear: string };
   onApply: () => void;
   onCancel: () => void;
@@ -162,6 +164,7 @@ interface TemporalPickerActionsProps {
 export function TemporalPickerActions({
   applyDisabled,
   clearable = true,
+  disabled,
   messages,
   onApply,
   onCancel,
@@ -170,10 +173,10 @@ export function TemporalPickerActions({
 }: TemporalPickerActionsProps) {
   return (
     <div className="flex items-center justify-between gap-2 border-t border-border-subtle px-3 py-2.5" data-slot="temporal-picker-actions">
-      <Button disabled={!clearable} onClick={onClear} size="sm" type="button" variant="ghost">{messages.clear}</Button>
+      <Button disabled={disabled || !clearable} onClick={onClear} size="sm" type="button" variant="ghost">{messages.clear}</Button>
       <div className="flex items-center gap-1.5">
-        <Button onClick={onCancel} size="sm" type="button" variant="ghost">{messages.cancel}</Button>
-        {showApply && <Button disabled={applyDisabled} onClick={onApply} size="sm" type="button" variant="primary">{messages.apply}</Button>}
+        <Button disabled={disabled} onClick={onCancel} size="sm" type="button" variant="ghost">{messages.cancel}</Button>
+        {showApply && <Button disabled={disabled || applyDisabled} onClick={onApply} size="sm" type="button" variant="primary">{messages.apply}</Button>}
       </div>
     </div>
   );

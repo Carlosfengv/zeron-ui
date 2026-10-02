@@ -9,12 +9,10 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Cancel01Icon,
-  DragDropHorizontalIcon,
-  PencilEdit01Icon,
-  Search01Icon,
-} from "@hugeicons/core-free-icons";
+import Cancel01Icon from "@hugeicons/core-free-icons/Cancel01Icon";
+import DragDropHorizontalIcon from "@hugeicons/core-free-icons/DragDropHorizontalIcon";
+import PencilEdit01Icon from "@hugeicons/core-free-icons/PencilEdit01Icon";
+import Search01Icon from "@hugeicons/core-free-icons/Search01Icon";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Button } from "#components/button";
 import { Input } from "#components/input";
@@ -224,7 +222,9 @@ function SortableCollection<T extends SortableCollectionItem>({
     if (!keyboardDraggedId || !["ArrowUp", "ArrowDown"].includes(event.key)) return;
     event.preventDefault();
     const destination = items[index + (event.key === "ArrowUp" ? -1 : 1)];
-    if (destination) reorder(activeId, destination.id);
+    if (destination) {
+      reorder(activeId, destination.id, event.key === "ArrowDown" ? "after" : "before");
+    }
   };
 
   return (

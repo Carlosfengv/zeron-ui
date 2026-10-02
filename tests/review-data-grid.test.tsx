@@ -1,0 +1,220 @@
+// @vitest-environment jsdom
+
+import * as React from "react";
+import type { ColumnDef, OnChangeFn, RowSelectionState, SortingState, TableState } from "@tanstack/react-table";
+import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { useDataGrid } from "../packages/ui/src/hooks/use-data-grid";
+
+beforeAll(() => {
+  window.matchMedia = vi.fn().mockImplementation(() => ({
+    matches: false, addEventListener() {}, removeEventListener() {},
+    addListener() {}, removeListener() {},
+  }));
+  globalThis.ResizeObserver = class {
+    observe() {} unobserve() {} disconnect() {}
+  };
+});
+afterEach(cleanup);
+
+type Item = { name: string };
+const columns: ColumnDef<Item>[] = [{ accessorKey: "name", header: "Name" }];
+const data = [{ name: "hidden A" }, { name: "hidden B" }, { name: "target" }];
+function clipboard(initial = "") {
+  let text = initial;
+  const api = {
+    writeText: vi.fn(async (value: string) => { text = value; }),
+    readText: vi.fn(async () => text),
+  };
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: api });
+  return api;
+}
+
+describe("DataGrid source data integrity", () => {
+  it.each(["column", "global"])("preserves all source rows when editing a %s-filtered row", (filter) => {
+    const onDataChange = vi.fn();
+    const { result } = renderHook(() => useDataGrid({
+      columns, data, onDataChange,
+      initialState: filter === "column"
+        ? { columnFilters: [{ id: "name", value: "target" }] }
+        : { globalFilter: "target" },
+    }));
+    expect(result.current.table.getRowModel().rows.map((row) => row.original.name)).toEqual(["target"]);
+    act(() => result.current.tableMeta.onDataUpdate?.({ rowIndex: 0, columnId: "name", value: "edited" }));
+    const next = onDataChange.mock.calls[0][0] as Item[];
+    expect(next).toEqual([{ name: "hidden A" }, { name: "hidden B" }, { name: "edited" }]);
+    expect(next[0]).toBe(data[0]);
+    expect(next[1]).toBe(data[1]);
+    expect(data[2].name).toBe("target");
+  });
+
+  it("maps sorted edits back to original records and keeps untouched rows", () => {
+    const onDataChange = vi.fn();
+    const sortedData = [{ name: "B" }, { name: "A" }];
+    const { result } = renderHook(() => useDataGrid({ columns, data: sortedData, onDataChange,
+      initialState: { sorting: [{ id: "name", desc: false }] },
+    }));
+    act(() => result.current.tableMeta.onDataUpdate?.({ rowIndex: 0, columnId: "name", value: "edited A" }));
+    expect(onDataChange).toHaveBeenCalledWith([{ name: "B" }, { name: "edited A" }]);
+  });
+
+  it.each(["Delete", "Backspace"])("deletes the selected visible record after sorting with %s", async (key) => {
+    const onRowsDelete = vi.fn();
+    const sortedData = [{ name: "B" }, { name: "A" }];
+    let grid: ReturnType<typeof useDataGrid<Item>>;
+    function Demo() {
+      grid = useDataGrid({ columns, data: sortedData, onRowsDelete,
+        initialState: { sorting: [{ id: "name", desc: false }] },
+      });
+      return <div data-testid="grid" ref={grid.dataGridRef} tabIndex={0} />;
+    }
+    render(<Demo />);
+    await act(async () => grid.table.setRowSelection({ "0": true }));
+    await act(async () => fireEvent.keyDown(screen.getByTestId("grid"), { key, ctrlKey: true }));
+    expect(onRowsDelete).toHaveBeenCalledWith([{ name: "B" }], [1]);
+  });
+
+  it("keeps data when cutting and pasting onto the same cell", async () => {
+    const api = clipboard();
+    const onDataChange = vi.fn();
+    const values = [{ name: "original" }];
+    const { result } = renderHook(() => useDataGrid({ columns, data: values, onDataChange, enablePaste: true }));
+    act(() => result.current.tableMeta.onCellClick?.(0, "name"));
+    await act(async () => { await result.current.tableMeta.onCellsCut?.(); });
+    expect(api.writeText).toHaveBeenCalledWith("original");
+    await act(async () => { await result.current.tableMeta.onCellsPaste?.(); });
+    expect(onDataChange).toHaveBeenLastCalledWith(values);
+  });
+
+  it("moves an overlapping rectangular cut without erasing destination cells", async () => {
+    clipboard();
+    const onDataChange = vi.fn();
+    const values = [{ a: "A", b: "B", c: "C" }];
+    const gridColumns: ColumnDef<(typeof values)[number]>[] = [{ accessorKey: "a" }, { accessorKey: "b" }, { accessorKey: "c" }];
+    const { result } = renderHook(() => useDataGrid({ columns: gridColumns, data: values, onDataChange, enablePaste: true }));
+    act(() => {
+      result.current.tableMeta.onCellClick?.(0, "a");
+      result.current.tableMeta.onCellClick?.(0, "b", { shiftKey: true, preventDefault() {} } as React.MouseEvent);
+    });
+    await act(async () => { await result.current.tableMeta.onCellsCut?.(); });
+    act(() => result.current.tableMeta.onCellClick?.(0, "b"));
+    await act(async () => { await result.current.tableMeta.onCellsPaste?.(); });
+    expect(onDataChange).toHaveBeenLastCalledWith([{ a: "", b: "A", c: "B" }]);
+  });
+
+  it("retains cut values whose paste destination rejects them", async () => {
+    clipboard();
+    const onDataChange = vi.fn();
+    const values = [{ a: "valid", b: "not-a-number", c: "old", d: 4 }];
+    const gridColumns: ColumnDef<(typeof values)[number]>[] = [
+      { accessorKey: "a" }, { accessorKey: "b" }, { accessorKey: "c" },
+      { accessorKey: "d", meta: { cell: { variant: "number" } } },
+    ];
+    const { result } = renderHook(() => useDataGrid({ columns: gridColumns, data: values, onDataChange, enablePaste: true }));
+    act(() => {
+      result.current.tableMeta.onCellClick?.(0, "a");
+      result.current.tableMeta.onCellClick?.(0, "b", { shiftKey: true, preventDefault() {} } as React.MouseEvent);
+    });
+    await act(async () => { await result.current.tableMeta.onCellsCut?.(); });
+    act(() => result.current.tableMeta.onCellClick?.(0, "c"));
+    await act(async () => { await result.current.tableMeta.onCellsPaste?.(); });
+    expect(onDataChange).toHaveBeenLastCalledWith([{ a: "", b: "not-a-number", c: "valid", d: 4 }]);
+  });
+});
+
+describe("DataGrid visual columns", () => {
+  const values = [{ a: "old-a", b: "secret", c: "old-c" }];
+  const gridColumns: ColumnDef<(typeof values)[number]>[] = [{ accessorKey: "a" }, { accessorKey: "b" }, { accessorKey: "c" }];
+  it.each([
+    { state: { columnVisibility: { b: false } }, start: "a", expected: { a: "first", b: "secret", c: "second" } },
+    { state: { columnOrder: ["c", "a", "b"] }, start: "c", expected: { a: "second", b: "secret", c: "first" } },
+    { state: { columnPinning: { left: ["c"] } }, start: "c", expected: { a: "second", b: "secret", c: "first" } },
+  ])("pastes using current visible leaf order: $start", async ({ state, start, expected }) => {
+    clipboard("first\tsecond");
+    const onDataChange = vi.fn();
+    const { result } = renderHook(() => useDataGrid({ columns: gridColumns, data: values, onDataChange, enablePaste: true }));
+    await act(async () => {
+      if (state.columnVisibility) result.current.table.setColumnVisibility(state.columnVisibility);
+      if (state.columnOrder) result.current.table.setColumnOrder(state.columnOrder);
+      if (state.columnPinning) result.current.table.setColumnPinning(state.columnPinning);
+    });
+    act(() => result.current.tableMeta.onCellClick?.(0, start));
+    await act(async () => { await result.current.tableMeta.onCellsPaste?.(); });
+    expect(onDataChange).toHaveBeenLastCalledWith([expected]);
+  });
+
+  it("navigates across visible columns after hiding a middle column", async () => {
+    let grid: ReturnType<typeof useDataGrid<(typeof values)[number]>>;
+    function Demo() {
+      grid = useDataGrid({ columns: gridColumns, data: values });
+      return <div data-testid="grid" ref={grid.dataGridRef} tabIndex={0} />;
+    }
+    render(<Demo />);
+    await act(async () => grid.table.setColumnVisibility({ b: false }));
+    act(() => grid.tableMeta.onCellClick?.(0, "a"));
+    await act(async () => fireEvent.keyDown(screen.getByTestId("grid"), { key: "ArrowRight" }));
+    expect(grid!.tableMeta.focusedCell).toEqual({ rowIndex: 0, columnId: "c" });
+  });
+
+  it("copies range selections in visible order without hidden columns", async () => {
+    const api = clipboard();
+    const { result } = renderHook(() => useDataGrid({ columns: gridColumns, data: values,
+      initialState: { columnVisibility: { b: false }, columnOrder: ["c", "b", "a"] },
+    }));
+    act(() => {
+      result.current.tableMeta.onCellClick?.(0, "a");
+      result.current.tableMeta.onCellClick?.(0, "c", { shiftKey: true, preventDefault() {} } as React.MouseEvent);
+    });
+    await act(async () => { await result.current.tableMeta.onCellsCopy?.(); });
+    expect(api.writeText).toHaveBeenCalledWith("old-c\told-a");
+  });
+});
+
+describe("DataGrid controlled table state", () => {
+  const values = [{ name: "B" }, { name: "A" }];
+  it("honors external state, forwards requests, and accepts later parent updates", async () => {
+    const onRowSelectionChange = vi.fn();
+    const onSortingChange = vi.fn();
+    const onColumnFiltersChange = vi.fn();
+    const initial: Partial<TableState> = {
+      sorting: [{ id: "name", desc: false }], rowSelection: { "1": true },
+      columnFilters: [{ id: "name", value: "A" }],
+    };
+    const { result, rerender } = renderHook(({ state }) => useDataGrid({
+      columns, data: values, state, onRowSelectionChange, onSortingChange, onColumnFiltersChange,
+    }), { initialProps: { state: initial } });
+    expect(result.current.table.getState().sorting).toEqual(initial.sorting);
+    expect(result.current.table.getState().rowSelection).toEqual(initial.rowSelection);
+    expect(result.current.table.getRowModel().rows.map((row) => row.original.name)).toEqual(["A"]);
+    await act(async () => {
+      result.current.table.setRowSelection((old) => ({ ...old, "0": true }));
+      result.current.table.setSorting([{ id: "name", desc: true }]);
+      result.current.table.setColumnFilters([]);
+    });
+    expect(onRowSelectionChange).toHaveBeenCalledWith({ "0": true, "1": true });
+    expect(onSortingChange).toHaveBeenCalledWith([{ id: "name", desc: true }]);
+    expect(onColumnFiltersChange).toHaveBeenCalledWith([]);
+    expect(result.current.table.getState().rowSelection).toEqual({ "1": true });
+    expect(result.current.table.getState().sorting).toEqual(initial.sorting);
+    expect(result.current.table.getState().columnFilters).toEqual(initial.columnFilters);
+    rerender({ state: { rowSelection: { "0": true }, sorting: [{ id: "name", desc: true }], columnFilters: [] } });
+    expect(result.current.table.getState().rowSelection).toEqual({ "0": true });
+    expect(result.current.table.getRowModel().rows.map((row) => row.original.name)).toEqual(["B", "A"]);
+    expect(result.current.tableMeta.selectionState?.selectedCells.has("0:name")).toBe(true);
+  });
+
+  it("keeps uncontrolled state and notifies selection clears", async () => {
+    const onRowSelectionChange = vi.fn<OnChangeFn<RowSelectionState>>();
+    const onSortingChange = vi.fn<OnChangeFn<SortingState>>();
+    const { result } = renderHook(() => useDataGrid({ columns, data: values, onRowSelectionChange, onSortingChange }));
+    await act(async () => {
+      result.current.table.setRowSelection({ "0": true });
+      result.current.table.setSorting([{ id: "name", desc: false }]);
+    });
+    expect(result.current.table.getState().rowSelection).toEqual({ "0": true });
+    expect(result.current.table.getState().sorting).toEqual([{ id: "name", desc: false }]);
+    await act(async () => { result.current.tableMeta.onSelectionClear?.(); });
+    expect(onRowSelectionChange).toHaveBeenLastCalledWith({});
+    expect(result.current.table.getState().rowSelection).toEqual({});
+  });
+});

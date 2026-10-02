@@ -96,8 +96,9 @@ export function FilterBuilder({
   }, [disabled, filters, maxFilters, readOnly, setFilters]);
 
   const updateClause = React.useCallback((id: string, update: Partial<FilterClause>) => {
+    if (isDisabled) return;
     setFilters(filters.map((clause) => clause.id === id ? { ...clause, ...update } : clause));
-  }, [filters, setFilters]);
+  }, [filters, isDisabled, setFilters]);
 
   const updateOperator = React.useCallback((clause: FilterClause, operator: FilterOperator) => {
     updateClause(clause.id, {
@@ -107,8 +108,9 @@ export function FilterBuilder({
   }, [updateClause]);
 
   const removeClause = React.useCallback((id: string) => {
+    if (isDisabled) return;
     setFilters(filters.filter((clause) => clause.id !== id));
-  }, [filters, setFilters]);
+  }, [filters, isDisabled, setFilters]);
 
   const resolvedShowLogic = resolvedSupportedLogic.length > 1 && (showLogic ?? filters.length > 1);
   return (
@@ -144,7 +146,7 @@ export function FilterBuilder({
               className={index > 0 ? "rounded-l-none border-l-0" : undefined}
               disabled={isDisabled}
               key={supported}
-              onClick={() => setLogic(supported)}
+              onClick={() => { if (!isDisabled) setLogic(supported); }}
               size={size}
               variant="tertiary"
             >
@@ -177,8 +179,9 @@ export function FilterBuilder({
       {!readOnly && filters.length > 0 && (
         <Button
           aria-label={messages.clearFilters}
+          disabled={isDisabled}
           leadingIcon={Eraser}
-          onClick={() => setFilters([])}
+          onClick={() => { if (!isDisabled) setFilters([]); }}
           size={size}
           variant="ghost"
         >
