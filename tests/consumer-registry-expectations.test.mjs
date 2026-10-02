@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
-import { consumerRegistryExpectations } from "../scripts/lib/consumer-registry-expectations.mjs";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { consumerRegistryExpectations, snapshotConsumerRegistry } from "../scripts/lib/consumer-registry-expectations.mjs";
 
 const registry = fileURLToPath(new URL("../public/r/", import.meta.url));
 describe("consumer assertions follow the Registry closure", () => {
@@ -20,4 +23,19 @@ describe("consumer assertions follow the Registry closure", () => {
       animation: true, tokens: ["border-width-hairline", "transition-duration-fast"], mergeTokens: true,
     });
   });
+});
+
+
+it("serves and checks immutable postprocessed bytes after a parallel rebuild", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "zeron-registry-snapshot-test-"));
+  try {
+    const processed = JSON.stringify({ name: "data-table", dependencies: ["@tanstack/react-table@^8.21.3"], files: [{ target: "lib/tailwind-merge-tokens.ts" }] });
+    await writeFile(join(directory, "data-table.json"), processed);
+    const snapshot = await snapshotConsumerRegistry(directory);
+    await writeFile(join(directory, "data-table.json"), JSON.stringify({ name: "data-table", dependencies: ["@tanstack/react-table"] }));
+    expect(snapshot.get("data-table.json")).toBe(processed);
+    expect(await consumerRegistryExpectations(snapshot, "data-table")).toEqual({ animation: false, tokens: [], mergeTokens: true });
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });

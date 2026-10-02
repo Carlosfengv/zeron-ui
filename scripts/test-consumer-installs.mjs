@@ -13,13 +13,14 @@ import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { execFile as execFileCallback } from "node:child_process";
 import { promisify } from "node:util";
-import { consumerRegistryExpectations } from "./lib/consumer-registry-expectations.mjs";
+import { consumerRegistryExpectations, snapshotConsumerRegistry } from "./lib/consumer-registry-expectations.mjs";
 
 const execFile = promisify(execFileCallback);
 const ROOT = new URL("..", import.meta.url).pathname;
 const REGISTRY_DIR = join(ROOT, "public/r");
 const all = process.argv.includes("--all");
-const registryItems = JSON.parse(await readFile(join(REGISTRY_DIR, "registry.json"), "utf8")).items;
+const registrySnapshot = await snapshotConsumerRegistry(REGISTRY_DIR);
+const registryItems = JSON.parse(registrySnapshot.get("registry.json")).items;
 const allRegistryItems = registryItems.map((item) => item.name).filter((name) => typeof name === "string");
 const components = process.env.ZERON_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? (all
   ? allRegistryItems
@@ -40,11 +41,11 @@ function registryServer() {
       return;
     }
     try {
-      response.writeHead(200, { "content-type": "application/json" });
       const origin = `http://${request.headers.host}`;
-      const data = (await readFile(join(REGISTRY_DIR, name), "utf8"))
-        .replaceAll("https://zeron-ui.vercel.app/r", origin);
-      response.end(data);
+      const source = registrySnapshot.get(name);
+      if (!source) { response.writeHead(404).end(); return; }
+      const data = source.replaceAll("https://zeron-ui.vercel.app/r", origin);
+      response.writeHead(200, { "content-type": "application/json" }).end(data);
     } catch {
       response.writeHead(404).end();
     }
@@ -191,7 +192,7 @@ async function installWithCli({ consumer, component, manager, tarball }) {
 }
 
 async function assertThemeInstallation({ consumer, cssPath, component }) {
-  const expectations = await consumerRegistryExpectations(REGISTRY_DIR, component);
+  const expectations = await consumerRegistryExpectations(registrySnapshot, component);
   const css = await readFile(join(consumer, cssPath), "utf8");
   const animationImports = css.match(/@import\s+["']tw-animate-css["'];/g) ?? [];
   if (expectations.animation && animationImports.length !== 1) {
