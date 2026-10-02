@@ -264,8 +264,8 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
   useEffect(() => {
     const last = virtualRows.at(-1);
     const recordIndex = last ? recordIndexForVirtualIndex(last.index) : null;
-    if (recordIndex !== null && hasNextPage && !loading && !fetchingMore && recordIndex >= rows.length - 9) onLoadMore();
-  }, [fetchingMore, hasNextPage, loading, onLoadMore, recordIndexForVirtualIndex, rows.length, virtualRows]);
+    if (recordIndex !== null && hasNextPage && !loading && !updating && !fetchingMore && recordIndex >= rows.length - 9) onLoadMore();
+  }, [fetchingMore, hasNextPage, loading, onLoadMore, recordIndexForVirtualIndex, rows.length, updating, virtualRows]);
 
   const copySelected = async () => {
     try {
@@ -388,7 +388,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
             })}
           </div>
         )}
-        <div className="flex min-h-control-lg items-center justify-center gap-2 border-t border-border-subtle p-2">{Boolean(error) && rows.length > 0 && <InlineNotice tone="danger" variant="emphasized"><InlineNoticeContent>Could not load more logs.</InlineNoticeContent></InlineNotice>}{hasNextPage ? <Button disabled={fetchingMore} onClick={onLoadMore} size="sm" type="button" variant="tertiary">{fetchingMore ? "Loading…" : labels.loadMore}</Button> : rows.length > 0 ? <span className="text-label text-fg-subtle">{labels.noMoreRows}</span> : null}</div>
+        <div className="flex min-h-control-lg items-center justify-center gap-2 border-t border-border-subtle p-2">{Boolean(error) && rows.length > 0 && <InlineNotice tone="danger" variant="emphasized"><InlineNoticeContent>Could not load more logs.</InlineNoticeContent></InlineNotice>}{hasNextPage ? <Button disabled={loading || updating || fetchingMore} onClick={onLoadMore} size="sm" type="button" variant="tertiary">{fetchingMore ? "Loading…" : labels.loadMore}</Button> : rows.length > 0 && !updating ? <span className="text-label text-fg-subtle">{labels.noMoreRows}</span> : null}</div>
       </div>
 
       {enableSelection && selectedIds.size > 0 && <div aria-label="Selected log actions" className="absolute bottom-3 left-1/2 z-action flex -translate-x-1/2 items-center gap-2 rounded-xl border border-border bg-surface-overlay px-3 py-2"><span className="text-label text-fg-default">{labels.selectedCount(selectedIds.size)}</span><Button aria-label={copied ? labels.copied : labels.copySelected} iconOnly onClick={() => void copySelected()} size="sm" type="button" variant="ghost"><Copy aria-hidden /></Button><Button onClick={onClearSelection} size="sm" type="button" variant="tertiary">{labels.clear}</Button><Check aria-hidden className="size-3.5 text-fg-success" /></div>}

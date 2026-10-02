@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -415,6 +416,9 @@ export function ProviderCreateForm({
     useState<ProviderConnectionResult | null>(null);
   const [testing, setTesting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const verificationSequence = useRef(0);
+  const activeVerification = useRef<number | undefined>(undefined);
+  const verifiedCredentials = useRef<Pick<ProviderFormValues, "kind" | "apiKey"> | undefined>(undefined);
   const rootRef = useRef<HTMLElement>(null);
   const ErrorIcon = useIcon("circle-x");
   const LinkIcon = useIcon("link");
@@ -436,6 +440,11 @@ export function ProviderCreateForm({
   );
   const SelectedProviderIcon = providerIcons.get(values.kind);
 
+  useEffect(() => () => {
+    verificationSequence.current += 1;
+    activeVerification.current = undefined;
+  }, []);
+
   const clearError = (key: FormErrorKey) => {
     if (!errors[key]) return;
     setErrors((current) => ({ ...current, [key]: undefined }));
@@ -450,6 +459,10 @@ export function ProviderCreateForm({
   };
 
   const resetVerification = (next: Partial<Pick<ProviderFormValues, "kind" | "apiKey">>) => {
+    verificationSequence.current += 1;
+    activeVerification.current = undefined;
+    verifiedCredentials.current = undefined;
+    setTesting(false);
     setValues((current) => ({ ...current, ...next, models: [] }));
     setConnectionResult(null);
     setErrors((current) => ({
@@ -487,7 +500,12 @@ export function ProviderCreateForm({
     if (targetStep === "connection") {
       if (!values.kind) nextErrors.kind = labels.errors.kind;
       if (values.apiKey.trim().length < 8) nextErrors.apiKey = labels.errors.apiKey;
-      if (connectionResult?.status !== "success" || values.models.length === 0) {
+      if (
+        connectionResult?.status !== "success" ||
+        verifiedCredentials.current?.kind !== values.kind ||
+        verifiedCredentials.current?.apiKey !== values.apiKey ||
+        values.models.length === 0
+      ) {
         nextErrors.verification = labels.errors.verification;
       } else if (enabledModels.length === 0) {
         nextErrors.models = labels.errors.models;
@@ -512,6 +530,7 @@ export function ProviderCreateForm({
   };
 
   const handleVerifyAndFetch = async () => {
+    if (activeVerification.current !== undefined) return;
     const credentialErrors: FormErrors = {};
     if (!values.kind) credentialErrors.kind = labels.errors.kind;
     if (values.apiKey.trim().length < 8) credentialErrors.apiKey = labels.errors.apiKey;
@@ -521,6 +540,9 @@ export function ProviderCreateForm({
       return;
     }
 
+    const sequence = ++verificationSequence.current;
+    activeVerification.current = sequence;
+    verifiedCredentials.current = undefined;
     setTesting(true);
     setConnectionResult(null);
     setErrors((current) => ({ ...current, verification: undefined, models: undefined }));
@@ -528,8 +550,10 @@ export function ProviderCreateForm({
       const result = onVerifyAndFetchModels
         ? await onVerifyAndFetchModels(values)
         : await defaultVerifyAndFetchModels(values, labels);
+      if (sequence !== verificationSequence.current) return;
       setConnectionResult(result);
       if (result.status === "success" && result.models?.length) {
+        verifiedCredentials.current = { kind: values.kind, apiKey: values.apiKey };
         setValues((current) => {
           const previous = new Map(current.models.map((model) => [model.id, model.enabled]));
           return {
@@ -544,6 +568,7 @@ export function ProviderCreateForm({
         setValues((current) => ({ ...current, models: [] }));
       }
     } catch {
+      if (sequence !== verificationSequence.current) return;
       setValues((current) => ({ ...current, models: [] }));
       setConnectionResult({
         status: "error",
@@ -551,7 +576,10 @@ export function ProviderCreateForm({
         description: labels.verificationErrorDescription,
       });
     } finally {
-      setTesting(false);
+      if (sequence === verificationSequence.current) {
+        activeVerification.current = undefined;
+        setTesting(false);
+      }
     }
   };
 

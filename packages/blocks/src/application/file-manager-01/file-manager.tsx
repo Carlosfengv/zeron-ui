@@ -536,6 +536,8 @@ export function FileManager<TData>({
   const [expandedIds, setExpandedIds] = React.useState<Set<string>>(() => new Set());
   const [selectionAnchor, setSelectionAnchor] = React.useState<string | null>(null);
   const [pendingIds, setPendingIds] = React.useState<Set<string>>(() => new Set());
+  const pendingActions = React.useRef(new Set<string>());
+  const dialogSequence = React.useRef(0);
   const [dialog, setDialog] = React.useState<"create" | "rename" | "move" | null>(null);
   const [draftName, setDraftName] = React.useState("");
   const [destinationId, setDestinationId] = React.useState<string | null>(null);
@@ -690,31 +692,35 @@ export function FileManager<TData>({
   }, [requestChildren]);
 
   const runAction = React.useCallback(async (key: string, task: () => void | Promise<void>) => {
-    setPendingIds((current) => new Set(current).add(key));
+    // Storage mutations can conflict even when they use different action keys.
+    // Lock synchronously so repeated clicks/Enter cannot race React's next render.
+    if (pendingActions.current.size > 0) return;
+    pendingActions.current.add(key);
+    setPendingIds(new Set([key, ...manager.selectedItems.map((item) => item.id)]));
     try {
       await task();
     } catch (actionError) {
       reportError(actionError, key, manager.currentFolderId, manager.selectedItems);
     } finally {
-      setPendingIds((current) => {
-        const next = new Set(current);
-        next.delete(key);
-        return next;
-      });
+      pendingActions.current.delete(key);
+      setPendingIds(new Set());
     }
   }, [manager.currentFolderId, manager.selectedItems, reportError]);
 
   const openCreate = () => {
+    dialogSequence.current += 1;
     setDraftName("");
     setDialog("create");
   };
   const openRename = () => {
     const item = manager.selectedItems[0];
     if (!item) return;
+    dialogSequence.current += 1;
     setDraftName(item.name);
     setDialog("rename");
   };
   const openMove = () => {
+    dialogSequence.current += 1;
     setDestinationId(manager.currentFolderId);
     setDialog("move");
   };
@@ -754,6 +760,7 @@ export function FileManager<TData>({
           toolbarStart={toolbarStart}
           toolbarEnd={toolbarEnd}
           hasCreate={Boolean(actions?.createFolder)}
+          pending={pendingIds.size > 0}
           onCreate={openCreate}
           onRename={openRename}
           onMove={openMove}
@@ -825,7 +832,13 @@ export function FileManager<TData>({
       </div>
       <FileManagerDialog
         dialog={dialog}
-        onDialogChange={(open) => !open && setDialog(null)}
+        onDialogChange={(open) => {
+          if (!open) {
+            dialogSequence.current += 1;
+            setDialog(null);
+          }
+        }}
+        pending={pendingIds.size > 0}
         labels={labels}
         draftName={draftName}
         onDraftNameChange={setDraftName}
@@ -836,22 +849,30 @@ export function FileManager<TData>({
         currentFolderId={manager.currentFolderId}
         isInvalidDestination={(id) => manager.selectedItems.some((item) => isItemOrDescendant(id, item.id, manager.index))}
         onConfirm={() => {
+          if (pendingActions.current.size > 0) return;
+          const sequence = dialogSequence.current;
+          const closeCompletedDialog = () => {
+            if (sequence === dialogSequence.current) setDialog(null);
+          };
           if (dialog === "create" && actions?.createFolder && draftName.trim()) {
             void runAction("create", async () => {
               await actions.createFolder!({ parentId: manager.currentFolderId, name: draftName.trim() });
-              setDialog(null);
+              closeCompletedDialog();
             });
           }
           if (dialog === "rename" && actions?.rename && manager.selectedItems[0] && draftName.trim()) {
             void runAction(`rename:${manager.selectedItems[0].id}`, async () => {
               await actions.rename!({ item: manager.selectedItems[0], name: draftName.trim() });
-              setDialog(null);
+              closeCompletedDialog();
             });
           }
-          if (dialog === "move" && actions?.move) {
+          if (
+            dialog === "move" && actions?.move && manager.selectedItems.length > 0 &&
+            !manager.selectedItems.some((item) => isItemOrDescendant(destinationId, item.id, manager.index))
+          ) {
             void runAction("move", async () => {
               await actions.move!({ items: manager.selectedItems, destinationId });
-              setDialog(null);
+              closeCompletedDialog();
             });
           }
         }}
@@ -869,6 +890,7 @@ function FileManagerToolbar<TData>({
   toolbarStart,
   toolbarEnd,
   hasCreate,
+  pending,
   onCreate,
   onRename,
   onMove,
@@ -886,6 +908,7 @@ function FileManagerToolbar<TData>({
   toolbarStart?: React.ReactNode;
   toolbarEnd?: React.ReactNode;
   hasCreate: boolean;
+  pending: boolean;
   onCreate: () => void;
   onRename: () => void;
   onMove: () => void;
@@ -965,7 +988,7 @@ function FileManagerToolbar<TData>({
         ) : null}
         {hasSelection ? (
           <>
-            <Button aria-label={labels.download} iconOnly title={labels.download} variant="ghost" onClick={onDownload}>
+            <Button aria-label={labels.download} disabled={pending} iconOnly title={labels.download} variant="ghost" onClick={onDownload}>
               <DownloadIcon size={16} className="rotate-90" />
             </Button>
             <Button aria-label={labels.move} iconOnly title={labels.move} variant="ghost" onClick={onMove}>
@@ -976,7 +999,7 @@ function FileManagerToolbar<TData>({
                 <PencilIcon size={16} />
               </Button>
             ) : null}
-            <Button aria-label={labels.remove} iconOnly title={labels.remove} variant="ghost" className="text-fg-danger hover:text-fg-danger" onClick={onRemove}>
+            <Button aria-label={labels.remove} disabled={pending} iconOnly title={labels.remove} variant="ghost" className="text-fg-danger hover:text-fg-danger" onClick={onRemove}>
               <TrashIcon size={16} />
             </Button>
             {customActions.map((action) => {
@@ -985,7 +1008,7 @@ function FileManagerToolbar<TData>({
                 <Button
                   key={action.id}
                   aria-label={action.label}
-                  disabled={action.disabled}
+                  disabled={pending || action.disabled}
                   iconOnly
                   title={action.label}
                   variant="ghost"
@@ -1445,6 +1468,7 @@ function FileManagerState({ children }: { children: React.ReactNode }) {
 
 function FileManagerDialog<TData>({
   dialog,
+  pending,
   onDialogChange,
   labels,
   draftName,
@@ -1458,6 +1482,7 @@ function FileManagerDialog<TData>({
   onConfirm,
 }: {
   dialog: "create" | "rename" | "move" | null;
+  pending: boolean;
   onDialogChange: (open: boolean) => void;
   labels: FileManagerLabels;
   draftName: string;
@@ -1473,7 +1498,7 @@ function FileManagerDialog<TData>({
   if (!dialog) return null;
   const isMove = dialog === "move";
   const title = isMove ? labels.move : dialog === "rename" ? labels.rename : labels.newFolder;
-  const valid = isMove ? !isInvalidDestination(destinationId) : draftName.trim().length > 0;
+  const valid = isMove ? selection.length > 0 && !isInvalidDestination(destinationId) : draftName.trim().length > 0;
   return (
     <Dialog open onOpenChange={onDialogChange}>
       <DialogContent>
@@ -1500,12 +1525,17 @@ function FileManagerDialog<TData>({
         ) : (
           <label className="grid gap-1.5 text-label text-fg-muted">
             {labels.folderName}
-            <Input autoFocus value={draftName} onChange={(event) => onDraftNameChange(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && valid) onConfirm(); }} />
+            <Input autoFocus value={draftName} onChange={(event) => onDraftNameChange(event.target.value)} onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                if (valid && !pending) onConfirm();
+              }
+            }} />
           </label>
         )}
         <DialogFooter>
           <Button variant="ghost" onClick={() => onDialogChange(false)}>{labels.cancel}</Button>
-          <Button disabled={!valid} onClick={onConfirm}>{isMove ? labels.move : dialog === "rename" ? labels.rename : labels.create}</Button>
+          <Button disabled={!valid || pending} onClick={onConfirm}>{isMove ? labels.move : dialog === "rename" ? labels.rename : labels.create}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -78,6 +78,13 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
   const atTopRef = useRef(atTop);
   const metadataTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const hasLoadedInitialPage = useRef(false);
+  const committedQuery = useRef<{
+    sequence: number;
+    key: string;
+    dataSource: InfiniteLogDataSource<TRecord>;
+    pageSize: number;
+    snapshotRevision: string;
+  } | undefined>(undefined);
 
   const queryKey = useMemo(
     () => JSON.stringify({ filters: state.filters, sort: state.sort }),
@@ -123,6 +130,14 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
     async (phase: "initial" | "refresh") => {
       requestAbort.current?.abort();
       pageAbort.current?.abort();
+      pageAbort.current = undefined;
+      metadataAbort.current?.abort();
+      if (metadataTimer.current !== undefined) globalThis.clearTimeout(metadataTimer.current);
+      metadataTimer.current = undefined;
+      committedQuery.current = undefined;
+      checkpointRef.current = undefined;
+      setNextCursor(undefined);
+      setSnapshotRevision(undefined);
       setFetchingMore(false);
       const abort = new AbortController();
       requestAbort.current = abort;
@@ -149,6 +164,7 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
           { signal: abort.signal },
         );
         if (sequence !== requestSequence.current || abort.signal.aborted) return;
+        committedQuery.current = { sequence, key: queryKey, dataSource, pageSize, snapshotRevision: page.snapshotRevision };
         canonicalIds.current = new Set(page.rows.map((record) => record.id));
         liveOnlyIds.current = new Set();
         checkpointRef.current = page.newerCheckpoint;
@@ -160,17 +176,17 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
         hasLoadedInitialPage.current = true;
         onQueryReset?.();
       } catch (loadError) {
-        if (!isAbortError(loadError) && sequence === requestSequence.current) {
+        if (!isAbortError(loadError) && !abort.signal.aborted && sequence === requestSequence.current) {
           setError({ error: loadError, phase });
         }
       } finally {
-        if (sequence === requestSequence.current) {
+        if (!abort.signal.aborted && sequence === requestSequence.current) {
           setLoading(false);
           setRefreshing(false);
         }
       }
     },
-    [dataSource, onQueryReset, pageSize, resetRows, state.filters, state.sort],
+    [dataSource, onQueryReset, pageSize, queryKey, resetRows, state.filters, state.sort],
   );
 
   useEffect(() => {
@@ -179,8 +195,12 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
   }, [loadInitial, queryKey]);
 
   const loadMore = useCallback(async () => {
-    if (!nextCursor || loading || fetchingMore) return;
-    const sequence = requestSequence.current;
+    const query = committedQuery.current;
+    if (
+      !nextCursor || loading || refreshing || fetchingMore || pageAbort.current ||
+      !query || query.key !== queryKey || query.dataSource !== dataSource || query.pageSize !== pageSize ||
+      query.sequence !== requestSequence.current
+    ) return;
     const abort = new AbortController();
     pageAbort.current = abort;
     setFetchingMore(true);
@@ -191,8 +211,8 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
         { cursor: nextCursor, filters: state.filters, pageSize, sort: state.sort },
         { signal: abort.signal },
       );
-      if (sequence !== requestSequence.current || abort.signal.aborted) return;
-      if (snapshotRevision && page.snapshotRevision !== snapshotRevision) {
+      if (query !== committedQuery.current || abort.signal.aborted) return;
+      if (page.snapshotRevision !== query.snapshotRevision) {
         throw new Error("The log page changed while loading more rows. Refresh and try again.");
       }
       for (const record of page.rows) canonicalIds.current.add(record.id);
@@ -200,13 +220,16 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
       setMetadata((current) => page.metadata ?? current);
       setNextCursor(page.nextCursor);
     } catch (loadError) {
-      if (!isAbortError(loadError) && sequence === requestSequence.current) {
+      if (!isAbortError(loadError) && !abort.signal.aborted && query === committedQuery.current) {
         setError({ error: loadError, phase: "more" });
       }
     } finally {
-      if (sequence === requestSequence.current) setFetchingMore(false);
+      if (pageAbort.current === abort) {
+        pageAbort.current = undefined;
+        setFetchingMore(false);
+      }
     }
-  }, [dataSource, fetchingMore, fields, loading, nextCursor, pageSize, snapshotRevision, state]);
+  }, [dataSource, fetchingMore, fields, loading, nextCursor, pageSize, queryKey, refreshing, state]);
 
   const refresh = useCallback(() => {
     void loadInitial("refresh");
@@ -225,22 +248,27 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
   }, [error?.phase, loadInitial, loadMore]);
 
   const refreshMetadata = useCallback(() => {
-    if (!isInfiniteLogLiveDataSource(dataSource)) return;
-    if (metadataTimer.current) globalThis.clearTimeout(metadataTimer.current);
+    const query = committedQuery.current;
+    if (!query || query.key !== queryKey || query.dataSource !== dataSource || !isInfiniteLogLiveDataSource(dataSource)) return;
+    if (metadataTimer.current !== undefined) globalThis.clearTimeout(metadataTimer.current);
     metadataTimer.current = globalThis.setTimeout(() => {
+      metadataTimer.current = undefined;
+      if (query !== committedQuery.current) return;
       metadataAbort.current?.abort();
       const abort = new AbortController();
       metadataAbort.current = abort;
       void dataSource
         .loadMetadata({ filters: state.filters, sort: state.sort }, { signal: abort.signal })
         .then((nextMetadata) => {
-          if (!abort.signal.aborted) setMetadata(nextMetadata);
+          if (!abort.signal.aborted && query === committedQuery.current) setMetadata(nextMetadata);
         })
         .catch((metadataError) => {
-          if (!isAbortError(metadataError)) setError({ error: metadataError, phase: "live" });
+          if (!isAbortError(metadataError) && !abort.signal.aborted && query === committedQuery.current) {
+            setError({ error: metadataError, phase: "live" });
+          }
         });
     }, 250);
-  }, [dataSource, state.filters, state.sort]);
+  }, [dataSource, queryKey, state.filters, state.sort]);
 
   const mergeLiveRows = useCallback(
     (incoming: readonly TRecord[]) => {
@@ -276,14 +304,20 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
   }, []);
 
   useEffect(() => {
-    if (!liveEligible || !snapshotRevision || !pageVisible || !isInfiniteLogLiveDataSource(dataSource)) {
+    const query = committedQuery.current;
+    if (
+      !query || query.key !== queryKey || query.dataSource !== dataSource ||
+      loading || refreshing || !liveEligible || !snapshotRevision || !pageVisible || !isInfiniteLogLiveDataSource(dataSource)
+    ) {
       return;
     }
+    let active = true;
     const unsubscribe = dataSource.subscribeNewer({
       after: checkpointRef.current,
       filters: state.filters,
       sort: { field: "timestamp", direction: "desc" },
       onBatch: (batch) => {
+        if (!active || query !== committedQuery.current) return;
         checkpointRef.current = batch.checkpoint ?? checkpointRef.current;
         if (batch.metadata) setMetadata(batch.metadata);
         else refreshMetadata();
@@ -295,10 +329,15 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
           setPendingLiveRows((current) => mergeRecords(current, batch.rows, state, fields));
         }
       },
-      onError: (liveError) => setError({ error: liveError, phase: "live" }),
+      onError: (liveError) => {
+        if (active && query === committedQuery.current) setError({ error: liveError, phase: "live" });
+      },
     });
-    return () => unsubscribe();
-  }, [captureLiveBoundary, dataSource, fields, liveEligible, mergeLiveRows, pageVisible, refreshMetadata, snapshotRevision, state]);
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, [captureLiveBoundary, dataSource, fields, liveEligible, loading, mergeLiveRows, pageVisible, queryKey, refreshMetadata, refreshing, snapshotRevision, state]);
 
   const applyPendingLiveRows = useCallback(() => {
     if (pendingLiveRows.length === 0) return 0;
@@ -317,9 +356,10 @@ export function useInfiniteLogController<TRecord extends InfiniteLogBaseRecord>(
 
   useEffect(() => {
     return () => {
+      committedQuery.current = undefined;
       metadataAbort.current?.abort();
       pageAbort.current?.abort();
-      if (metadataTimer.current) globalThis.clearTimeout(metadataTimer.current);
+      if (metadataTimer.current !== undefined) globalThis.clearTimeout(metadataTimer.current);
     };
   }, []);
 

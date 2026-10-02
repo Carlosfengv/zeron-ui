@@ -393,10 +393,10 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
   useEffect(() => {
     const last = virtualRows.at(-1);
     const lastRecordIndex = last ? recordIndexForVirtualIndex(last.index) : null;
-    if (lastRecordIndex !== null && hasNextPage && !loading && !fetchingMore && lastRecordIndex >= rows.length - 9) {
+    if (lastRecordIndex !== null && hasNextPage && !loading && !updating && !fetchingMore && lastRecordIndex >= rows.length - 9) {
       onLoadMore();
     }
-  }, [fetchingMore, hasNextPage, loading, onLoadMore, recordIndexForVirtualIndex, rows.length, virtualRows]);
+  }, [fetchingMore, hasNextPage, loading, onLoadMore, recordIndexForVirtualIndex, rows.length, updating, virtualRows]);
 
   const onScroll = useCallback(() => {
     const viewport = viewportRef.current;
@@ -744,7 +744,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
 
         <div className="flex min-h-control-lg items-center justify-center gap-2 border-t border-border-subtle p-2">
           {Boolean(error) && rows.length > 0 && <InlineNotice tone="danger" variant="emphasized"><InlineNoticeContent>Could not load more logs.</InlineNoticeContent></InlineNotice>}
-          {hasNextPage ? <Button disabled={fetchingMore} onClick={onLoadMore} size="sm" type="button" variant="tertiary">{fetchingMore ? "Loading…" : labels.loadMore}</Button> : rows.length > 0 ? <span className="text-label text-fg-subtle">{labels.noMoreRows}</span> : null}
+          {hasNextPage ? <Button disabled={loading || updating || fetchingMore} onClick={onLoadMore} size="sm" type="button" variant="tertiary">{fetchingMore ? "Loading…" : labels.loadMore}</Button> : rows.length > 0 && !updating ? <span className="text-label text-fg-subtle">{labels.noMoreRows}</span> : null}
         </div>
       </div>
 
