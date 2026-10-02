@@ -58,7 +58,7 @@ test("lists the live catalog shape", async () => {
   assert.match(output.value(), /button — Button/);
 });
 
-test("maps add to the pinned shadcn command", async () => {
+test("maps add to a frozen local snapshot for the pinned shadcn command", async () => {
   const cwd = await projectFixture();
   let invocation;
   const status = await runCli(["add", "button", "--cwd", cwd, "--yes"], {
@@ -70,9 +70,10 @@ test("maps add to the pinned shadcn command", async () => {
   });
 
   assert.equal(status, 0);
+  assert.match(invocation.args[1], /zeron-registry-.*[/\\]0[/\\]button\.json$/);
   assert.deepEqual(invocation.args, [
     "add",
-    "https://zeron-ui.vercel.app/r/button.json",
+    invocation.args[1],
     "--cwd",
     cwd,
     "--yes",
