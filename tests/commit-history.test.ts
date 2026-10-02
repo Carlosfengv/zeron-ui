@@ -1,5 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
+import { tmpdir } from "node:os";
+import { execFileSync } from "node:child_process";
 import { describe, expect, it, vi } from "vitest";
 import {
   parseCommitHistory,
@@ -54,7 +56,7 @@ describe("updates commit history", () => {
   });
 
   it("loads the deployed revision from GitHub", async () => {
-    const fetchMock = vi.fn(async () => new Response(JSON.stringify([
+    const fetchMock = vi.fn<typeof fetch>(async () => new Response(JSON.stringify([
       {
         sha: "abc123456789",
         commit: {
@@ -77,11 +79,22 @@ describe("updates commit history", () => {
     expect(String(fetchMock.mock.calls[0]?.[0])).toContain("per_page=100");
   });
 
-  it("falls back to the current repository history", async () => {
-    const unavailableFetch = vi.fn(async () => new Response(null, { status: 503 }));
-    const commits = await readCommitHistory(process.cwd(), 3, {}, unavailableFetch);
-    expect(commits).toHaveLength(3);
-    expect(commits[0]?.id).toMatch(/^[a-f0-9]{40}$/);
+  it("falls back to repository history independently of checkout depth", async () => {
+    const cwd = fs.mkdtempSync(path.join(tmpdir(), "zeron-commit-history-"));
+    const git = (...args: string[]) => execFileSync("git", args, { cwd, stdio: "ignore" });
+    const unavailableFetch = vi.fn<typeof fetch>(async () => new Response(null, { status: 503 }));
+    try {
+      git("init", "-b", "main");
+      for (const message of ["first", "second", "third"]) {
+        git("-c", "user.name=History Test", "-c", "user.email=history@example.test", "commit", "--allow-empty", "-m", message);
+      }
+      const commits = await readCommitHistory(cwd, 3, {}, unavailableFetch);
+      expect(commits.map(({ message }) => message)).toEqual(["third", "second", "first"]);
+      expect(commits.every(({ id }) => /^[a-f0-9]{40}$/.test(id))).toBe(true);
+      expect(await readCommitHistory(cwd, 5, {}, unavailableFetch)).toHaveLength(3);
+    } finally {
+      fs.rmSync(cwd, { recursive: true, force: true });
+    }
   });
 
   it("keeps the updates content in one centered 960px PageBody", () => {

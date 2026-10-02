@@ -265,6 +265,7 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
   // the pool's global options are not guaranteed to produce it. The pool
   // keeps serving every surface without a session.
   private editSessionActive = false;
+  private highlightGeneration = 0;
 
   constructor(
     public options: DiffHunksRendererOptions = { theme: DEFAULT_THEMES },
@@ -281,6 +282,26 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
     }
   }
 
+  private requiresLocalHighlighting(): boolean {
+    // Pool-wide options cannot satisfy a surface's token callbacks when the
+    // pool omits token metadata. Keep that surface interactive locally while
+    // the pool continues serving the other files.
+    return (
+      this.editSessionActive ||
+      (this.options.useTokenTransformer === true &&
+        this.workerManager?.getDiffRenderOptions().useTokenTransformer !== true)
+    );
+  }
+
+  public setWorkerPool(workerManager: WorkerPoolManager | undefined): void {
+    if (this.workerManager === workerManager) return;
+    this.workerManager?.cleanUpTasks(this);
+    this.highlightGeneration++;
+    this.pendingHighlightResult = undefined;
+    // Preserve the rendered diff, expanded hunks and edit-session skeleton.
+    this.workerManager = workerManager;
+  }
+
   public cleanUp(): void {
     this.recycle();
     this.expandedHunks.clear();
@@ -289,6 +310,7 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
   }
 
   public recycle(): void {
+    this.highlightGeneration++;
     this.highlighter = undefined;
     this.diff = undefined;
     this.clearRenderCache();
@@ -399,7 +421,7 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
    * until the fresh one is promoted, so no interim paint drops highlighting.
    */
   public refreshHighlightedResult(): Promise<void> {
-    const { diff, renderCache, workerManager } = this;
+    const { diff, renderCache, workerManager, highlightGeneration } = this;
     if (
       diff == null ||
       renderCache == null ||
@@ -412,7 +434,7 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
     // The pool's diff cache is keyed by cacheKey, so a worker refresh needs
     // one; a keyless diff uses the local highlighter fallback below instead.
     if (
-      !this.editSessionActive &&
+      !this.requiresLocalHighlighting() &&
       workerManager?.isWorkingPool() === true &&
       diff.cacheKey != null
     ) {
@@ -420,16 +442,29 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
       return workerManager
         .primeDiffHighlightCache(diff)
         .then(() => {
+          if (highlightGeneration !== this.highlightGeneration) return;
           this.applyRefreshedResult(
             diff,
             workerManager.getDiffResultCache(diff)
           );
         })
-        .catch((error: unknown) => this.onHighlightError(error));
+        .catch((error: unknown) => {
+          if (highlightGeneration === this.highlightGeneration) {
+            this.onHighlightError(error);
+          }
+        });
     }
     return this.asyncHighlight(diff)
-      .then((fresh) => this.applyRefreshedResult(diff, fresh))
-      .catch((error: unknown) => this.onHighlightError(error));
+      .then((fresh) => {
+        if (highlightGeneration === this.highlightGeneration) {
+          this.applyRefreshedResult(diff, fresh);
+        }
+      })
+      .catch((error: unknown) => {
+        if (highlightGeneration === this.highlightGeneration) {
+          this.onHighlightError(error);
+        }
+      });
   }
 
   // Holds a freshly highlighted result for the next render transaction, unless
@@ -922,7 +957,7 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
       renderRange: undefined,
     };
     if (
-      !this.editSessionActive &&
+      !this.requiresLocalHighlighting() &&
       this.workerManager?.isWorkingPool() === true
     ) {
       if (this.renderCache.result == null && !massiveDiff) {
@@ -965,9 +1000,9 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
     const options: RenderDiffOptions = (() => {
       if (this.workerManager?.isWorkingPool() === true) {
         const poolOptions = this.workerManager.getDiffRenderOptions();
-        // Active edit sessions require `useTokenTransformer: true`
+        // Editing and token callbacks both require token position metadata.
         if (
-          this.editSessionActive &&
+          (this.editSessionActive || this.options.useTokenTransformer === true) &&
           poolOptions.useTokenTransformer !== true
         ) {
           return { ...poolOptions, useTokenTransformer: true };
@@ -1052,7 +1087,7 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
     }
 
     if (
-      !this.editSessionActive &&
+      !this.requiresLocalHighlighting() &&
       this.workerManager?.isWorkingPool() === true
     ) {
       return !renderCache.highlighted;
@@ -1103,7 +1138,7 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
       renderRange
     );
     if (
-      !this.editSessionActive &&
+      !this.requiresLocalHighlighting() &&
       this.workerManager?.isWorkingPool() === true
     ) {
       // Hydration has highlighted DOM but no local AST. Keep that DOM until
@@ -1195,9 +1230,18 @@ export class DiffHunksRenderer<LAnnotation = undefined> {
       // process which will involve initializing the highlighter with new themes
       // and languages
       if (!hasThemes || (!forcePlainText && !hasLangs)) {
-        void this.asyncHighlight(diff).then(({ result, options }) => {
-          this.applyHighlightResult(diff, result, options, !forcePlainText);
-        });
+        const { highlightGeneration } = this;
+        void this.asyncHighlight(diff).then(
+          ({ result, options }) => {
+            if (highlightGeneration !== this.highlightGeneration) return;
+            this.applyHighlightResult(diff, result, options, !forcePlainText);
+          },
+          (error: unknown) => {
+            if (highlightGeneration === this.highlightGeneration) {
+              this.onHighlightError(error);
+            }
+          }
+        );
       }
     }
     return this.renderCache.result != null

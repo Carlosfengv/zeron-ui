@@ -252,6 +252,7 @@ function Stepper(props: StepperProps) {
   }));
 
   const propsRef = useAsRef({
+    value,
     onValueChange,
     onValueComplete,
     onValueAdd,
@@ -270,8 +271,9 @@ function Stepper(props: StepperProps) {
         if (Object.is(stateRef.current[key], value)) return;
 
         if (key === "value" && typeof value === "string") {
-          stateRef.current.value = value;
           propsRef.current.onValueChange?.(value);
+          if (propsRef.current.value !== undefined) return;
+          stateRef.current.value = value;
         } else {
           stateRef.current[key] = value;
         }
@@ -334,10 +336,11 @@ function Stepper(props: StepperProps) {
   }, [listenersRef, stateRef, propsRef]);
 
   useIsomorphicLayoutEffect(() => {
-    if (value !== undefined) {
-      store.setState("value", value);
+    if (value !== undefined && stateRef.current.value !== value) {
+      stateRef.current.value = value;
+      store.notify();
     }
-  }, [value]);
+  }, [value, stateRef, store]);
 
   const contextDir = useDirection();
   const dir = dirProp ?? contextDir;

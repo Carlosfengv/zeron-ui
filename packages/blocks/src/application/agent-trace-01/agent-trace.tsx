@@ -1,7 +1,8 @@
 "use client";
 
 import { Children, Fragment, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentPropsWithoutRef, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
-import { ArrowDown01Icon as ChevronDownIcon, WebhookIcon } from "@hugeicons/core-free-icons";
+import ChevronDownIcon from "@hugeicons/core-free-icons/ArrowDown01Icon";
+import WebhookIcon from "@hugeicons/core-free-icons/WebhookIcon";
 import { HugeiconsIcon } from "@hugeicons/react";
 import AnthropicMono from "@lobehub/icons/es/Anthropic/components/Mono";
 import DeepSeekColor from "@lobehub/icons/es/DeepSeek/components/Color";

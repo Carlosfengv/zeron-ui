@@ -71,10 +71,10 @@ afterEach(() => {
 function mockSliderLayout() {
   const originalWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "offsetWidth")!.get!;
   const originalBounds = HTMLElement.prototype.getBoundingClientRect;
-  vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockImplementation(function () {
+  vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockImplementation(function (this: HTMLElement) {
     return this.dataset.slot === "slider-track-control" ? 200 : originalWidth.call(this);
   });
-  vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function () {
+  vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
     if (this.dataset.slot !== "slider-track-control") return originalBounds.call(this);
     return { bottom: 32, height: 32, left: 0, right: 200, top: 0, width: 200, x: 0, y: 0, toJSON: () => ({}) };
   });

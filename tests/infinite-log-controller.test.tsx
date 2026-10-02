@@ -106,11 +106,11 @@ describe("useInfiniteLogController", () => {
     const newRecord = { ...createMockLogRecords({ seed: 88, days: 1 })[0]!, id: "new-result" };
     let resolveOld: ((page: Awaited<ReturnType<InfiniteLogDataSource["loadPage"]>>) => void) | undefined;
     const dataSource: InfiniteLogDataSource = {
-      loadPage: vi.fn((request) => {
+      loadPage: vi.fn<InfiniteLogDataSource["loadPage"]>((request) => {
         if (request.filters.query === "new") {
           return Promise.resolve({ rows: [newRecord], snapshotRevision: "new" });
         }
-        return new Promise((resolve) => {
+        return new Promise<Awaited<ReturnType<InfiniteLogDataSource["loadPage"]>>>((resolve) => {
           resolveOld = resolve;
         });
       }),
@@ -134,11 +134,11 @@ describe("useInfiniteLogController", () => {
     const newRecord = { ...createMockLogRecords({ seed: 99, days: 1 })[0]!, id: "new-result" };
     let resolveNew: ((page: Awaited<ReturnType<InfiniteLogDataSource["loadPage"]>>) => void) | undefined;
     const dataSource: InfiniteLogDataSource = {
-      loadPage: vi.fn((request) => {
+      loadPage: vi.fn<InfiniteLogDataSource["loadPage"]>((request) => {
         if (request.filters.query !== "new") {
           return Promise.resolve({ rows: [oldRecord], snapshotRevision: "old" });
         }
-        return new Promise((resolve) => {
+        return new Promise<Awaited<ReturnType<InfiniteLogDataSource["loadPage"]>>>((resolve) => {
           resolveNew = resolve;
         });
       }),
@@ -195,8 +195,8 @@ describe("useInfiniteLogController", () => {
     const [first, second] = createMockLogRecords({ days: 1 }).slice(0, 2);
     let resolveMore: ((page: { rows: typeof first[]; snapshotRevision: string }) => void) | undefined;
     const dataSource: InfiniteLogDataSource = {
-      loadPage: vi.fn((request) => {
-        if (request.cursor) return new Promise((resolve) => { resolveMore = resolve; });
+      loadPage: vi.fn<InfiniteLogDataSource["loadPage"]>((request) => {
+        if (request.cursor) return new Promise<Awaited<ReturnType<InfiniteLogDataSource["loadPage"]>>>((resolve) => { resolveMore = resolve; });
         return Promise.resolve({ rows: [request.filters.query ? second! : first!], snapshotRevision: request.filters.query ? "new" : "old", nextCursor: "next" });
       }),
     };

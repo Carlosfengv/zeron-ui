@@ -148,12 +148,18 @@ export function useUnresolvedFileInstance<LAnnotation>({
       onMergeConflictAction,
       options,
     });
+    // The provider creates its pool after mount and can replace it later.
+    // Rebind in place so an active editor and hydrated content survive.
+    const workerPoolChanged = instance.setWorkerPool(
+      !disableWorkerPool ? poolManager : undefined
+    );
     // setOptions(undefined) is a no-op, so an undefined merge result never
     // requires a forced render — comparing it against the instance's
     // constructor-default options would force a full render on every commit.
     const forceRender =
-      newOptions !== undefined &&
-      !areOptionsEqual(instance.options, newOptions);
+      workerPoolChanged ||
+      (newOptions !== undefined &&
+        !areOptionsEqual(instance.options, newOptions));
     instance.setOptions(newOptions);
     void instance.render({
       fileDiff,

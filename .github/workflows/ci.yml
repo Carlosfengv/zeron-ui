@@ -47,6 +47,9 @@ jobs:
       - name: Typecheck public source packages
         run: pnpm --filter @zeron/ui typecheck && pnpm --filter @zeron/blocks typecheck
 
+      - name: Typecheck the application and tests
+        run: pnpm typecheck
+
       # Rebuild the registry and fail if the committed public/r output has
       # drifted from the sources — public/r is what users install from.
       - name: Registry output is up to date
@@ -83,3 +86,6 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Test production routing and localized pages
+        run: pnpm test:production

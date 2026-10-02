@@ -737,16 +737,28 @@ function DataTableToolbarFilter<TData>({
   }
 
   if (variant === "number") {
+    const filterValue = column.getFilterValue();
+    const usesNumberRange =
+      !column.columnDef.filterFn ||
+      column.columnDef.filterFn === "auto" ||
+      column.columnDef.filterFn === "inNumberRange";
     return (
       <div className="relative shrink-0">
         <Input
           className={cn("w-32", meta?.unit && "pr-10")}
           inputMode="numeric"
-          onChange={(event) => column.setFilterValue(event.target.value)}
+          onChange={(event) => {
+            const value = event.target.value;
+            column.setFilterValue(
+              value === ""
+                ? undefined
+                : usesNumberRange ? [Number(value), Number(value)] : value,
+            );
+          }}
           placeholder={meta?.placeholder ?? meta?.label ?? column.id}
           size="md"
           type="number"
-          value={(column.getFilterValue() as string) ?? ""}
+          value={((Array.isArray(filterValue) ? filterValue[0] : filterValue) as string | number | undefined) ?? ""}
         />
         {meta?.unit && (
           <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-label text-fg-muted">

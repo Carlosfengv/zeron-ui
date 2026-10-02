@@ -83,8 +83,8 @@ function hasUnclosedQuote(value: string) {
   return Boolean(quoteCharacter || escaped);
 }
 
-function quote(value: string) {
-  return /[\s,:]/.test(value) ? `"${value.replace(/[\\"]/g, "\\$&")}"` : value;
+export function quoteFilterQueryValue(value: string) {
+  return !value || /[\s,:\\"']/.test(value) ? `"${value.replace(/[\\"]/g, "\\$&")}"` : value;
 }
 
 function defaultOperator(field: FilterField): FilterOperator {
@@ -260,7 +260,7 @@ function serialize(filters: readonly FilterClause[], context: FilterQueryCodecCo
   for (const clause of filters) {
     const config = byField.get(clause.field);
     const field = fields.get(clause.field);
-    if (!config || !field || field.type === "custom") {
+    if (!config || !field || (field.type === "custom" && !config.serializeValue)) {
       unsupportedClauses.push(clause);
       continue;
     }
@@ -270,19 +270,26 @@ function serialize(filters: readonly FilterClause[], context: FilterQueryCodecCo
       if (clause.operator === "isTrue") rawValue = "true";
       else if (clause.operator === "isFalse") rawValue = "false";
       else if (clause.operator === "isBetween" && Array.isArray(clause.value) && clause.value.length === 2) rawValue = `${clause.value[0]}-${clause.value[1]}`;
-      else if (Array.isArray(clause.value)) rawValue = clause.value.map((value) => quote(String(value))).join(",");
+      else if (Array.isArray(clause.value)) rawValue = clause.value.map((value) => quoteFilterQueryValue(String(value))).join(",");
       else if (clause.value && typeof clause.value === "object") rawValue = `${clause.value.from ?? ""}..${clause.value.to ?? ""}`;
-      else if (clause.value !== undefined) rawValue = quote(String(clause.value));
+      else if (clause.value !== undefined) rawValue = quoteFilterQueryValue(String(clause.value));
     }
     if (rawValue === undefined || !operatorAllowed(field, clause.operator)) {
       unsupportedClauses.push(clause);
       continue;
     }
-    if (context.freeText && context.freeText.fieldId === clause.field && context.freeText.serialize && clause.value !== undefined) {
-      parts.push(context.freeText.serialize(clause.value));
-    } else {
-      parts.push(`${config.key ?? config.fieldId}:${rawValue}`);
+    const part = context.freeText && context.freeText.fieldId === clause.field && context.freeText.serialize && clause.value !== undefined
+      ? context.freeText.serialize(clause.value)
+      : `${config.key ?? config.fieldId}:${rawValue}`;
+    // field:value has no general operator syntax. Only replace a clause when
+    // the configured parser can recover its exact semantics, including custom
+    // operators and metadata supplied by a field-level codec.
+    const roundTrip = parse(part, { ...context, previousFilters: [], createClauseId: () => "" });
+    if (!roundTrip.complete || roundTrip.clauses.length !== 1 || clauseIdentity(roundTrip.clauses[0]) !== clauseIdentity(clause)) {
+      unsupportedClauses.push(clause);
+      continue;
     }
+    parts.push(part);
     representedClauseIds.push(clause.id);
   }
   return { query: parts.join(" "), representedClauseIds, unsupportedClauses };

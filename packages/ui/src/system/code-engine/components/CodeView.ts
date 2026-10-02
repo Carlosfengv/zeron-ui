@@ -1711,6 +1711,22 @@ export class CodeView<LAnnotation = undefined, Caret = undefined> {
     );
   }
 
+  /** Rebind existing items in place so drafts, selection and scroll survive. */
+  public setWorkerPool(workerManager: WorkerPoolManager | undefined): boolean {
+    if (this.workerManager === workerManager) return false;
+    this.clearReadySubscription();
+    this.workerManager?.unsubscribeToThemeChanges(this);
+    this.workerManager = workerManager;
+    if (this.root != null) workerManager?.subscribeToThemeChanges(this);
+    for (const item of this.items) {
+      item.instance.setWorkerPool(workerManager);
+    }
+    this.invalidateElementPool();
+    this.renderOptionsRevision++;
+    if (!this.isContainerManaged) this.render();
+    return true;
+  }
+
   public onThemeChange(): void {
     this.invalidateElementPool();
   }

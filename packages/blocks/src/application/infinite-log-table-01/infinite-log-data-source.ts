@@ -204,12 +204,14 @@ export function createInfiniteLogSnapshotRevision(records: readonly InfiniteLogB
 }
 
 function encodeCursor(payload: CursorPayload) {
-  return btoa(JSON.stringify(payload));
+  const bytes = new TextEncoder().encode(JSON.stringify(payload));
+  return btoa(Array.from(bytes, (byte) => String.fromCharCode(byte)).join(""));
 }
 
 function decodeCursor(cursor: string): CursorPayload {
   try {
-    const payload = JSON.parse(atob(cursor)) as CursorPayload;
+    const bytes = Uint8Array.from(atob(cursor), (character) => character.charCodeAt(0));
+    const payload = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)) as CursorPayload;
     if (payload.version !== 1 || !payload.id || payload.value === undefined) {
       throw new Error("Malformed cursor");
     }

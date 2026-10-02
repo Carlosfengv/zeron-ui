@@ -441,7 +441,9 @@ function CodeViewInner<LAnnotation = undefined, Caret = undefined>(
 
     try {
       cachedDataRef.current.disableFlushSync = true;
-      let shouldRender = false;
+      let shouldRender = instance.setWorkerPool(
+        !disableWorkerPool ? poolManager : undefined
+      );
 
       if (!areOptionsEqual(managedOptions, prevManagedOptions)) {
         cachedDataRef.current.managedOptions = managedOptions;

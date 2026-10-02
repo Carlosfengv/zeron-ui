@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useSyncExternalStore, type ComponentPropsWithoutRef } from "react";
 import Link from "next/link";
-import { AiAudioIcon } from "@hugeicons/core-free-icons";
+import AiAudioIcon from "@hugeicons/core-free-icons/AiAudioIcon";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";

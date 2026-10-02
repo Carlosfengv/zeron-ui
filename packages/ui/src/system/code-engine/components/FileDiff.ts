@@ -1146,6 +1146,19 @@ export class FileDiff<LAnnotation = undefined, Caret = undefined> {
     this.render({ forceRender: true, renderRange: this.renderRange });
   }
 
+  /**
+   * Update the highlighting backend without replacing the file or edit session.
+   * Returns whether the caller needs to render, as it would after setOptions.
+   */
+  public setWorkerPool(workerManager: WorkerPoolManager | undefined): boolean {
+    if (this.workerManager === workerManager) return false;
+    this.workerManager?.unsubscribeToThemeChanges(this);
+    this.hunksRenderer.setWorkerPool(workerManager);
+    this.workerManager = workerManager;
+    if (this.enabled) workerManager?.subscribeToThemeChanges(this);
+    return true;
+  }
+
   public onThemeChange(): void {
     this.hunksRenderer.clearRenderCache();
     this.rerender();

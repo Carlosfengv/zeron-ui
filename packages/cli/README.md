@@ -24,7 +24,22 @@ npx zeron-ui doctor
 rejects `--path` for now; configure the target aliases in `components.json`
 instead. Use `--dry-run` to inspect the planned files first. Next-only Blocks
 are rejected outside a Next.js project, and React 19 is required for published
-Registry items.
+Registry items. The installed Tailwind CSS version must satisfy the item's
+published Tailwind 4 requirement; an unresolved or incompatible version stops
+installation before writes.
+
+The resolved Registry dependency closure is frozen into private, temporary local
+JSON files before invoking the pinned engine. Installation never refetches those
+Registry items. Existing source files are kept when they match the recorded
+post-install hash and the same Registry source/configuration, so repeated and
+incremental installs do not require `--overwrite`. Changed local files or changed
+Registry source still require an explicit overwrite. Older installation records
+without hashes remain conservative and may need a reviewed one-time overwrite.
+
+Targets, CSS/config files, package manifests, lockfiles, and installation records
+are checked against the actual project boundary, including existing symbolic
+links. Links that resolve outside the selected project are rejected. These checks
+run during planning and again before installation and alias post-processing.
 
 After a successful install, `zeron-ui doctor --check` verifies the local
 installation record and reports missing files. Older projects without a record
@@ -47,7 +62,7 @@ shared utilities, CSS, and design tokens.
 --overwrite       Replace existing component files
 --yes             Skip confirmation prompts
 --path <dir>      Temporarily unsupported; configure components.json instead
---dry-run         Inspect resolved Registry items without writing
+--dry-run         Preview add without writing; rejected by init
 --registry <url>  Use another Registry base URL
 ```
 

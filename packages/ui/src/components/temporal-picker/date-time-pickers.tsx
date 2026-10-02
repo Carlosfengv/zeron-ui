@@ -13,6 +13,7 @@ import type {
   ISODateString,
   ISODateTimeString,
   ISOTimeString,
+  TemporalChangeContext,
   TemporalPreset,
   TemporalRangeEndpoint,
 } from "./temporal-types";
@@ -33,7 +34,7 @@ interface DateTimeDraft {
   selectedInstant?: ISODateTimeString;
 }
 
-type DateTimeFieldOptions = Pick<DateTimePickerProps, "granularity" | "hourCycle" | "minuteStep" | "secondStep"> & {
+type DateTimeFieldOptions = Pick<DateTimePickerProps, "disabled" | "granularity" | "hourCycle" | "minuteStep" | "secondStep"> & {
   isTimeUnavailable?: (time: ISOTimeString, context: { date: ISODateString; timeZone: string; endpoint?: TemporalRangeEndpoint }) => boolean;
   maxTime?: ISOTimeString;
   minTime?: ISOTimeString;
@@ -98,6 +99,7 @@ function DateTimeFields({
       <TimeField
         aria-label={label}
         className="w-full [&_[data-slot=time-field-column]]:min-w-0"
+        disabled={props.disabled}
         granularity={props.granularity}
         hourCycle={props.hourCycle}
         invalid={Boolean(unavailable || resolution?.kind === "nonexistent" || resolution?.kind === "ambiguous")}
@@ -114,7 +116,7 @@ function DateTimeFields({
         <div className="grid gap-1 rounded-md bg-emphasis p-1.5" role="group" aria-label={messages.ambiguousTime}>
           <span className="px-1 text-label text-fg-muted">{messages.ambiguousTime}</span>
           {resolution.candidates.map((candidate, index) => (
-            <Button key={candidate.value} onClick={() => onSelectAmbiguous(candidate.value)} size="sm" type="button" variant="tertiary">
+            <Button disabled={props.disabled} key={candidate.value} onClick={() => onSelectAmbiguous(candidate.value)} size="sm" type="button" variant="tertiary">
               {index === 0 ? messages.earlierOccurrence : messages.laterOccurrence} · {formatOffset(candidate.offsetMinutes)}
             </Button>
           ))}
@@ -141,13 +143,25 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
   const disambiguation = props.disambiguation ?? "reject";
   const [draft, setDraft] = React.useState<DateTimeDraft>(() => draftFromInstant(core.committedValue, timeZone));
   const { activePresetId, clearActivePreset, selectPreset: setActivePreset } = useActivePreset(core.committedValue);
+  const cancel = () => { setDraft(draftFromInstant(core.committedValue, timeZone)); clearActivePreset(); core.cancel(); };
   React.useEffect(() => { if (!core.isOpen) setDraft(draftFromInstant(core.committedValue, timeZone)); }, [core.committedValue, core.isOpen, timeZone]);
   const resolution = resolutionForDraft(draft, timeZone, disambiguation);
   const value = resolutionValue(resolution);
-  const draftTimeUnavailable = draft.date && draft.time ? props.isTimeUnavailable?.(draft.time, { date: draft.date, timeZone }) : false;
-  const valid = Boolean(value && (!draft.date || !props.isDateUnavailable?.(draft.date)) && !draftTimeUnavailable && instantValid(value, props));
-  const update = (next: DateTimeDraft) => { setDraft(next); core.updateDraft(resolutionValue(resolutionForDraft(next, timeZone, disambiguation))); clearActivePreset(); };
+  const validDraft = (local: DateTimeDraft, instant: ISODateTimeString | undefined) => {
+    const timeUnavailable = local.date && local.time ? props.isTimeUnavailable?.(local.time, { date: local.date, timeZone }) : false;
+    return Boolean(instant && (!local.date || !props.isDateUnavailable?.(local.date)) && !timeUnavailable && instantValid(instant, props));
+  };
+  const valid = validDraft(draft, value);
+  const update = (next: DateTimeDraft, context: TemporalChangeContext) => {
+    if (props.disabled || props.readOnly) return;
+    const nextValue = resolutionValue(resolutionForDraft(next, timeZone, disambiguation));
+    setDraft(next);
+    core.updateDraft(nextValue);
+    clearActivePreset();
+    if (core.commitMode === "complete" && validDraft(next, nextValue)) core.submit(nextValue, context);
+  };
   const selectPreset = (preset: TemporalPreset<ISODateTimeString>) => {
+    if (props.disabled || props.readOnly) return;
     const nextValue = preset.resolve({ now: (props.now ?? (() => new Date()))(), locale, timeZone });
     if (!instantValid(nextValue, props)) return;
     setActivePreset(preset.id, nextValue);
@@ -157,26 +171,26 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
   };
   const summary = core.committedValue ? props.formatValue?.(core.committedValue, timeZone) ?? formatISODateTime(core.committedValue, locale, timeZone, props.granularity === "second") : props.placeholder ?? core.messages.selectDateTime;
   const panel = (
-    <div className="w-[19rem] max-w-full" data-slot="date-time-picker-panel">
+    <div key={core.resetVersion} className="w-[19rem] max-w-full" data-slot="date-time-picker-panel">
       <PickerHeader>{core.messages.selectDateTime}</PickerHeader>
-      <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
+      <PresetList disabled={props.disabled} activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
       <div className="p-1">
         <Calendar
           className="w-full"
-          disabled={(date) => dateDisabled(date, { isDateUnavailable: props.isDateUnavailable })}
+          disabled={(date) => Boolean(props.disabled) || dateDisabled(date, { isDateUnavailable: props.isDateUnavailable })}
           formatters={pickerCalendarFormatters(locale)}
           labels={pickerCalendarLabels(locale)}
           lang={locale}
           mode="single"
-          onSelect={(date) => update({ ...draft, date: date ? calendarDateToISODate(date) : undefined, selectedInstant: undefined })}
+          onSelect={(date) => update({ ...draft, date: date ? calendarDateToISODate(date) : undefined, selectedInstant: undefined }, { source: "calendar" })}
           selected={draft.date ? dateToCalendarDate(draft.date) : undefined}
         />
       </div>
-      <div className="border-t border-border-subtle"><DateTimeFields draft={draft} messages={core.messages} onChange={update} onSelectAmbiguous={(selectedInstant) => update({ ...draft, selectedInstant })} props={{ granularity: props.granularity, hourCycle: props.hourCycle, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: props.isTimeUnavailable }} resolution={resolution} timeZone={timeZone} /></div>
-      <TemporalPickerActions applyDisabled={!valid || temporalValueEquals(value, core.committedValue)} clearable={Boolean(core.committedValue || draft.date || draft.time)} messages={core.messages} onApply={() => valid && value && core.submit(value, { source: "apply", presetId: activePresetId })} onCancel={core.cancel} onClear={() => { clearActivePreset(); setDraft({}); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
+      <div className="border-t border-border-subtle"><DateTimeFields draft={draft} messages={core.messages} onChange={(next) => update(next, { source: "time-field" })} onSelectAmbiguous={(selectedInstant) => update({ ...draft, selectedInstant }, { source: "time-field" })} props={{ disabled: props.disabled, granularity: props.granularity, hourCycle: props.hourCycle, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: props.isTimeUnavailable }} resolution={resolution} timeZone={timeZone} /></div>
+      <TemporalPickerActions disabled={props.disabled} applyDisabled={!valid || temporalValueEquals(value, core.committedValue)} clearable={Boolean(core.committedValue || draft.date || draft.time)} messages={core.messages} onApply={() => valid && value && core.submit(value, { source: "apply", presetId: activePresetId })} onCancel={cancel} onClear={() => { clearActivePreset(); setDraft({}); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
     </div>
   );
-  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectDateTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} isOpen={core.isOpen} onRequestClose={core.cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
+  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectDateTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} isOpen={core.isOpen} onRequestClose={cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
 });
 
 interface DateTimeRangeDraft { start: DateTimeDraft; end: DateTimeDraft; }
@@ -193,6 +207,7 @@ export const DateTimeRangePicker = React.forwardRef<HTMLButtonElement, DateTimeR
   const [draft, setDraft] = React.useState<DateTimeRangeDraft>(() => rangeDraftFromValue(core.committedValue, timeZone));
   const [activeEndpoint, setActiveEndpoint] = React.useState<TemporalRangeEndpoint>("start");
   const { activePresetId, clearActivePreset, selectPreset: setActivePreset } = useActivePreset(core.committedValue);
+  const cancel = () => { setDraft(rangeDraftFromValue(core.committedValue, timeZone)); setActiveEndpoint("start"); clearActivePreset(); core.cancel(); };
   React.useEffect(() => { if (!core.isOpen) { setDraft(rangeDraftFromValue(core.committedValue, timeZone)); setActiveEndpoint("start"); } }, [core.committedValue, core.isOpen, timeZone]);
   const startResolution = resolutionForDraft(draft.start, timeZone, disambiguation);
   const endResolution = resolutionForDraft(draft.end, timeZone, disambiguation);
@@ -207,22 +222,28 @@ export const DateTimeRangePicker = React.forwardRef<HTMLButtonElement, DateTimeR
       && (!props.maxValue || compareISODateTime(value, props.maxValue) <= 0)
       && !props.isDateTimeUnavailable?.(value, endpoint));
   };
-  const value = startValue && endValue && endpointValid(startValue, "start", draft.start) && endpointValid(endValue, "end", draft.end)
-    && compareISODateTime(startValue, endValue) <= 0
-    && (!props.minDurationMs || Date.parse(endValue) - Date.parse(startValue) >= props.minDurationMs)
-    && (!props.maxDurationMs || Date.parse(endValue) - Date.parse(startValue) <= props.maxDurationMs)
-    ? { from: startValue, to: endValue }
-    : undefined;
-  const updateEndpoint = (endpoint: TemporalRangeEndpoint, next: DateTimeDraft) => {
+  const valueForDraft = (local: DateTimeRangeDraft): DateTimeRangeValue | undefined => {
+    const start = resolutionValue(resolutionForDraft(local.start, timeZone, disambiguation));
+    const end = resolutionValue(resolutionForDraft(local.end, timeZone, disambiguation));
+    return start && end && endpointValid(start, "start", local.start) && endpointValid(end, "end", local.end)
+      && compareISODateTime(start, end) <= 0
+      && (!props.minDurationMs || Date.parse(end) - Date.parse(start) >= props.minDurationMs)
+      && (!props.maxDurationMs || Date.parse(end) - Date.parse(start) <= props.maxDurationMs)
+      ? { from: start, to: end }
+      : undefined;
+  };
+  const value = valueForDraft(draft);
+  const updateEndpoint = (endpoint: TemporalRangeEndpoint, next: DateTimeDraft, context: TemporalChangeContext) => {
+    if (props.disabled || props.readOnly) return;
     const nextDraft = { ...draft, [endpoint]: next };
     setDraft(nextDraft);
-    const nextStart = resolutionValue(resolutionForDraft(nextDraft.start, timeZone, disambiguation));
-    const nextEnd = resolutionValue(resolutionForDraft(nextDraft.end, timeZone, disambiguation));
-    const nextValue = nextStart && nextEnd && endpointValid(nextStart, "start", nextDraft.start) && endpointValid(nextEnd, "end", nextDraft.end) && compareISODateTime(nextStart, nextEnd) <= 0 ? { from: nextStart, to: nextEnd } : undefined;
+    const nextValue = valueForDraft(nextDraft);
     core.updateDraft(nextValue);
     clearActivePreset();
+    if (core.commitMode === "complete" && nextValue) core.submit(nextValue, context);
   };
   const selectPreset = (preset: TemporalPreset<DateTimeRangeValue>) => {
+    if (props.disabled || props.readOnly) return;
     const next = preset.resolve({ now: (props.now ?? (() => new Date()))(), locale, timeZone });
     if (compareISODateTime(next.from, next.to) > 0) return;
     setActivePreset(preset.id, next);
@@ -234,35 +255,35 @@ export const DateTimeRangePicker = React.forwardRef<HTMLButtonElement, DateTimeR
   const endpointsShareDate = Boolean(draft.start.date && draft.start.date === draft.end.date);
   const summary = core.committedValue ? props.formatValue?.(core.committedValue, timeZone) ?? `${formatISODateTime(core.committedValue.from, locale, timeZone, props.granularity === "second")} – ${formatISODateTime(core.committedValue.to, locale, timeZone, props.granularity === "second")}` : props.placeholder ?? core.messages.selectDateTime;
   const panel = (
-    <div className="w-[34rem] max-w-[92vw]" data-slot="date-time-range-picker-panel">
+    <div key={core.resetVersion} className="w-[34rem] max-w-[92vw]" data-slot="date-time-range-picker-panel">
       <PickerHeader>{core.messages.selectDateTime}</PickerHeader>
-      <PresetList activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
+      <PresetList disabled={props.disabled} activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
       <div className="grid divide-y divide-border-subtle md:grid-cols-[minmax(0,1.2fr)_minmax(15rem,1fr)] md:divide-x md:divide-y-0">
         <div className="min-w-0 p-1">
           <Calendar
             className="w-full"
-            disabled={(date) => dateDisabled(date, { isDateUnavailable: (value) => props.isDateUnavailable?.(value, activeEndpoint) ?? false })}
+            disabled={(date) => Boolean(props.disabled) || dateDisabled(date, { isDateUnavailable: (value) => props.isDateUnavailable?.(value, activeEndpoint) ?? false })}
             formatters={pickerCalendarFormatters(locale)}
             labels={pickerCalendarLabels(locale)}
             lang={locale}
             mode="single"
             numberOfMonths={props.numberOfMonths ?? 1}
-            onSelect={(date) => updateEndpoint(activeEndpoint, { ...activeDraft, date: date ? calendarDateToISODate(date) : undefined, selectedInstant: undefined })}
+            onSelect={(date) => updateEndpoint(activeEndpoint, { ...activeDraft, date: date ? calendarDateToISODate(date) : undefined, selectedInstant: undefined }, { source: "calendar" })}
             selected={activeDraft.date ? dateToCalendarDate(activeDraft.date) : undefined}
           />
         </div>
         <div className="grid min-w-0 content-start gap-2">
           <div className="text-left" onFocus={() => setActiveEndpoint("start")} onPointerDown={() => setActiveEndpoint("start")}>
-            <DateTimeFields active={activeEndpoint === "start"} draft={draft.start} endpoint="start" messages={core.messages} onChange={(next) => updateEndpoint("start", next)} onSelectAmbiguous={(selectedInstant) => updateEndpoint("start", { ...draft.start, selectedInstant })} props={{ granularity: props.granularity, hourCycle: props.hourCycle, maxTime: endpointsShareDate ? draft.end.time : undefined, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: (time, context) => props.isTimeUnavailable?.(time, { ...context, endpoint: context.endpoint ?? "start" }) ?? false }} resolution={startResolution} timeZone={timeZone} />
+            <DateTimeFields active={activeEndpoint === "start"} draft={draft.start} endpoint="start" messages={core.messages} onChange={(next) => updateEndpoint("start", next, { source: "time-field" })} onSelectAmbiguous={(selectedInstant) => updateEndpoint("start", { ...draft.start, selectedInstant }, { source: "time-field" })} props={{ disabled: props.disabled, granularity: props.granularity, hourCycle: props.hourCycle, maxTime: endpointsShareDate ? draft.end.time : undefined, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: (time, context) => props.isTimeUnavailable?.(time, { ...context, endpoint: context.endpoint ?? "start" }) ?? false }} resolution={startResolution} timeZone={timeZone} />
           </div>
           <div className="text-left" onFocus={() => setActiveEndpoint("end")} onPointerDown={() => setActiveEndpoint("end")}>
-            <DateTimeFields active={activeEndpoint === "end"} draft={draft.end} endpoint="end" messages={core.messages} onChange={(next) => updateEndpoint("end", next)} onSelectAmbiguous={(selectedInstant) => updateEndpoint("end", { ...draft.end, selectedInstant })} props={{ granularity: props.granularity, hourCycle: props.hourCycle, minTime: endpointsShareDate ? draft.start.time : undefined, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: (time, context) => props.isTimeUnavailable?.(time, { ...context, endpoint: context.endpoint ?? "end" }) ?? false }} resolution={endResolution} timeZone={timeZone} />
+            <DateTimeFields active={activeEndpoint === "end"} draft={draft.end} endpoint="end" messages={core.messages} onChange={(next) => updateEndpoint("end", next, { source: "time-field" })} onSelectAmbiguous={(selectedInstant) => updateEndpoint("end", { ...draft.end, selectedInstant }, { source: "time-field" })} props={{ disabled: props.disabled, granularity: props.granularity, hourCycle: props.hourCycle, minTime: endpointsShareDate ? draft.start.time : undefined, minuteStep: props.minuteStep, secondStep: props.secondStep, isTimeUnavailable: (time, context) => props.isTimeUnavailable?.(time, { ...context, endpoint: context.endpoint ?? "end" }) ?? false }} resolution={endResolution} timeZone={timeZone} />
           </div>
           {startValue && endValue && compareISODateTime(startValue, endValue) > 0 && <p className="text-label text-fg-danger" role="alert">{core.messages.startAfterEnd}</p>}
         </div>
       </div>
-      <TemporalPickerActions applyDisabled={!value || temporalValueEquals(value, core.committedValue)} clearable={Boolean(core.committedValue || draft.start.date || draft.end.date)} messages={core.messages} onApply={() => value && core.submit(value, { source: "apply", presetId: activePresetId })} onCancel={core.cancel} onClear={() => { clearActivePreset(); setDraft({ start: {}, end: {} }); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
+      <TemporalPickerActions disabled={props.disabled} applyDisabled={!value || temporalValueEquals(value, core.committedValue)} clearable={Boolean(core.committedValue || draft.start.date || draft.end.date)} messages={core.messages} onApply={() => value && core.submit(value, { source: "apply", presetId: activePresetId })} onCancel={cancel} onClear={() => { clearActivePreset(); setDraft({ start: {}, end: {} }); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
     </div>
   );
-  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectDateTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} isOpen={core.isOpen} onRequestClose={core.cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
+  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectDateTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} isOpen={core.isOpen} onRequestClose={cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
 });

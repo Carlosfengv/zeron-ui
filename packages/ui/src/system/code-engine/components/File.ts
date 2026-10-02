@@ -454,6 +454,19 @@ export class File<LAnnotation = undefined, Caret = undefined> {
     );
   }
 
+  /**
+   * Update the highlighting backend without replacing the file or edit session.
+   * Returns whether the caller needs to render, as it would after setOptions.
+   */
+  public setWorkerPool(workerManager: WorkerPoolManager | undefined): boolean {
+    if (this.workerManager === workerManager) return false;
+    this.workerManager?.unsubscribeToThemeChanges(this);
+    this.fileRenderer.setWorkerPool(workerManager);
+    this.workerManager = workerManager;
+    if (this.enabled) workerManager?.subscribeToThemeChanges(this);
+    return true;
+  }
+
   public onThemeChange(): void {
     this.fileRenderer.clearRenderCache();
     this.rerender();

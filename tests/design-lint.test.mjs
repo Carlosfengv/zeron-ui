@@ -110,7 +110,7 @@ describe("Zeron design lint", () => {
     `, { unknown: true })).toEqual([]);
   });
 
-  it("accepts only the audited table state marker", async () => {
+  it("accepts only the audited component and Shadow DOM markers", async () => {
     expect(await messages(
       'export const Row = () => <div className="is-active" />;',
       { unknown: true },
@@ -122,7 +122,12 @@ describe("Zeron design lint", () => {
       "packages/ui/src/components/table.tsx",
     );
     expect(found.map(({ ruleId }) => ruleId)).toEqual(["shadcn/no-unknown-classes"]);
-    expect(stateMarkerClasses).toEqual(["is-active"]);
+    expect(await messages(
+      'export const Code = () => <div className="zeron-code-block" />;',
+      { unknown: true },
+      "packages/ui/src/components/code-block/code-block.tsx",
+    )).toEqual([]);
+    expect(stateMarkerClasses).toEqual(["is-active", "zeron-code-block"]);
   });
 
   it("checks dynamic class and style values only when strict is requested", async () => {

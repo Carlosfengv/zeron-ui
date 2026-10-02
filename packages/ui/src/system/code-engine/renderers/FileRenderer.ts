@@ -299,6 +299,27 @@ export class FileRenderer<LAnnotation = undefined> {
     }
   }
 
+  private requiresLocalHighlighting(): boolean {
+    // Pool-wide options cannot satisfy a surface's token callbacks when the
+    // pool omits token metadata. Keep that surface interactive locally while
+    // the pool continues serving the other files.
+    return (
+      this.editSessionActive ||
+      (this.options.useTokenTransformer === true &&
+        this.workerManager?.getFileRenderOptions().useTokenTransformer !== true)
+    );
+  }
+
+  public setWorkerPool(workerManager: WorkerPoolManager | undefined): void {
+    if (this.workerManager === workerManager) return;
+    // Cancel against the old pool before swapping it. Keep the rendered AST
+    // (including hydrated markup and active editor rows) while new work loads.
+    this.clearHighlightTask();
+    this.workerManager?.cleanUpTasks(this);
+    this.pendingHighlightResult = undefined;
+    this.workerManager = workerManager;
+  }
+
   public setOptions(options: FileRendererOptions): void {
     this.options = options;
   }
@@ -504,9 +525,9 @@ export class FileRenderer<LAnnotation = undefined> {
     const options: RenderFileOptions = (() => {
       if (this.workerManager?.isWorkingPool() === true) {
         const poolOptions = this.workerManager.getFileRenderOptions();
-        // Active edit sessions require `useTokenTransformer: true`
+        // Editing and token callbacks both require token position metadata.
         if (
-          this.editSessionActive &&
+          (this.editSessionActive || this.options.useTokenTransformer === true) &&
           poolOptions.useTokenTransformer !== true
         ) {
           return { ...poolOptions, useTokenTransformer: true };
@@ -590,7 +611,7 @@ export class FileRenderer<LAnnotation = undefined> {
     }
 
     if (
-      !this.editSessionActive &&
+      !this.requiresLocalHighlighting() &&
       this.workerManager?.isWorkingPool() === true
     ) {
       return !renderCache.highlighted;
@@ -881,7 +902,7 @@ export class FileRenderer<LAnnotation = undefined> {
       renderRange
     );
     if (
-      !this.editSessionActive &&
+      !this.requiresLocalHighlighting() &&
       this.workerManager?.isWorkingPool() === true
     ) {
       if (

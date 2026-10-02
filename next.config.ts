@@ -16,6 +16,15 @@ const nextConfig: NextConfig = {
   // amount of compilation time for a lower Webpack peak-memory footprint.
   experimental: {
     webpackMemoryOptimizations: true,
+    // Keep compilation isolated even with the scheduler customization below.
+    webpackBuildWorker: true,
+    cpus: 2,
+  },
+  webpack(config) {
+    // The docs include many independently loaded examples and language grammars.
+    // Limit concurrent module work rather than dropping routes or validation.
+    config.parallelism = 16;
+    return config;
   },
   // Keep the long-running dev server isolated from `next build`. Both commands
   // otherwise write to `.next`, and a production build can invalidate the

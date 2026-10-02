@@ -66,6 +66,7 @@ export function ShortTextCell<TData>({
   const [value, setValue] = React.useState(initialValue);
   const cellRef = React.useRef<HTMLDivElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const cancelBlurRef = React.useRef(false);
 
   const prevInitialValueRef = React.useRef(initialValue);
   if (initialValue !== prevInitialValueRef.current) {
@@ -77,6 +78,11 @@ export function ShortTextCell<TData>({
   }
 
   const onBlur = React.useCallback(() => {
+    if (cancelBlurRef.current) {
+      cancelBlurRef.current = false;
+      tableMeta?.onCellEditingStop?.();
+      return;
+    }
     // Read the current value directly from the DOM to avoid stale state
     const currentValue = cellRef.current?.textContent ?? "";
     if (!readOnly && currentValue !== initialValue) {
@@ -99,7 +105,7 @@ export function ShortTextCell<TData>({
         if (event.key === "Enter") {
           event.preventDefault();
           const currentValue = cellRef.current?.textContent ?? "";
-          if (currentValue !== initialValue) {
+          if (!readOnly && currentValue !== initialValue) {
             tableMeta?.onDataUpdate?.({
               rowIndex,
               columnId,
@@ -110,7 +116,7 @@ export function ShortTextCell<TData>({
         } else if (event.key === "Tab") {
           event.preventDefault();
           const currentValue = cellRef.current?.textContent ?? "";
-          if (currentValue !== initialValue) {
+          if (!readOnly && currentValue !== initialValue) {
             tableMeta?.onDataUpdate?.({
               rowIndex,
               columnId,
@@ -123,10 +129,18 @@ export function ShortTextCell<TData>({
         } else if (event.key === "Escape") {
           event.preventDefault();
           setValue(initialValue);
-          cellRef.current?.blur();
+          const element = cellRef.current;
+          if (element) element.textContent = initialValue ?? "";
+          if (element && document.activeElement === element) {
+            cancelBlurRef.current = true;
+            element.blur();
+          } else {
+            tableMeta?.onCellEditingStop?.();
+          }
         }
       } else if (
         isFocused &&
+        !readOnly &&
         event.key.length === 1 &&
         !event.ctrlKey &&
         !event.metaKey
@@ -147,7 +161,7 @@ export function ShortTextCell<TData>({
         });
       }
     },
-    [isEditing, isFocused, initialValue, tableMeta, rowIndex, columnId],
+    [isEditing, isFocused, initialValue, tableMeta, rowIndex, columnId, readOnly],
   );
 
   React.useEffect(() => {
@@ -420,6 +434,7 @@ export function NumberCell<TData>({
   const [value, setValue] = React.useState(String(initialValue ?? ""));
   const inputRef = React.useRef<HTMLInputElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const cancelBlurRef = React.useRef(false);
 
   const cellOpts = cell.column.columnDef.meta?.cell;
   const numberCellOpts = cellOpts?.variant === "number" ? cellOpts : null;
@@ -436,6 +451,11 @@ export function NumberCell<TData>({
   }
 
   const onBlur = React.useCallback(() => {
+    if (cancelBlurRef.current) {
+      cancelBlurRef.current = false;
+      tableMeta?.onCellEditingStop?.();
+      return;
+    }
     const numValue = value === "" ? null : Number(value);
     if (!readOnly && numValue !== initialValue) {
       tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: numValue });
@@ -456,14 +476,14 @@ export function NumberCell<TData>({
         if (event.key === "Enter") {
           event.preventDefault();
           const numValue = value === "" ? null : Number(value);
-          if (numValue !== initialValue) {
+          if (!readOnly && numValue !== initialValue) {
             tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: numValue });
           }
           tableMeta?.onCellEditingStop?.({ moveToNextRow: true });
         } else if (event.key === "Tab") {
           event.preventDefault();
           const numValue = value === "" ? null : Number(value);
-          if (numValue !== initialValue) {
+          if (!readOnly && numValue !== initialValue) {
             tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: numValue });
           }
           tableMeta?.onCellEditingStop?.({
@@ -472,9 +492,16 @@ export function NumberCell<TData>({
         } else if (event.key === "Escape") {
           event.preventDefault();
           setValue(String(initialValue ?? ""));
-          inputRef.current?.blur();
+          const element = inputRef.current;
+          if (element) element.value = String(initialValue ?? "");
+          if (element && document.activeElement === element) {
+            cancelBlurRef.current = true;
+            element.blur();
+          } else {
+            tableMeta?.onCellEditingStop?.();
+          }
         }
-      } else if (isFocused) {
+      } else if (isFocused && !readOnly) {
         // Handle Backspace to start editing with empty value
         if (event.key === "Backspace") {
           setValue("");
@@ -484,7 +511,7 @@ export function NumberCell<TData>({
         }
       }
     },
-    [isEditing, isFocused, initialValue, tableMeta, rowIndex, columnId, value],
+    [isEditing, isFocused, initialValue, tableMeta, rowIndex, columnId, value, readOnly],
   );
 
   React.useEffect(() => {
@@ -549,6 +576,7 @@ export function UrlCell<TData>({
   const [value, setValue] = React.useState(initialValue ?? "");
   const cellRef = React.useRef<HTMLDivElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const cancelBlurRef = React.useRef(false);
 
   const prevInitialValueRef = React.useRef(initialValue);
   if (initialValue !== prevInitialValueRef.current) {
@@ -560,6 +588,11 @@ export function UrlCell<TData>({
   }
 
   const onBlur = React.useCallback(() => {
+    if (cancelBlurRef.current) {
+      cancelBlurRef.current = false;
+      tableMeta?.onCellEditingStop?.();
+      return;
+    }
     const currentValue = cellRef.current?.textContent?.trim() ?? "";
 
     if (!readOnly && currentValue !== initialValue) {
@@ -610,7 +643,14 @@ export function UrlCell<TData>({
         } else if (event.key === "Escape") {
           event.preventDefault();
           setValue(initialValue ?? "");
-          cellRef.current?.blur();
+          const element = cellRef.current;
+          if (element) element.textContent = initialValue ?? "";
+          if (element && document.activeElement === element) {
+            cancelBlurRef.current = true;
+            element.blur();
+          } else {
+            tableMeta?.onCellEditingStop?.();
+          }
         }
       } else if (
         isFocused &&
@@ -1401,6 +1441,14 @@ export function FileCell<TData>({
 
   const cellKey = getCellKey(rowIndex, columnId);
   const prevCellKeyRef = React.useRef(cellKey);
+  const ownedUrlsRef = React.useRef(new Set<string>());
+  const urlOwnerKey = `${cell.row.id}:${columnId}`;
+  const urlOwnerKeyRef = React.useRef(urlOwnerKey);
+  const createLocalUrl = React.useCallback((file: File) => {
+    const url = URL.createObjectURL(file);
+    ownedUrlsRef.current.add(url);
+    return url;
+  }, []);
 
   const labelId = React.useId();
   const descriptionId = React.useId();
@@ -1439,11 +1487,6 @@ export function FileCell<TData>({
   const prevCellValueRef = React.useRef(cellValue);
   if (cellValue !== prevCellValueRef.current) {
     prevCellValueRef.current = cellValue;
-    for (const file of files) {
-      if (file.url) {
-        URL.revokeObjectURL(file.url);
-      }
-    }
     setFiles(cellValue);
     setError(null);
   }
@@ -1572,7 +1615,7 @@ export function FileCell<TData>({
               name: f.name,
               size: f.size,
               type: f.type,
-              url: URL.createObjectURL(f),
+              url: createLocalUrl(f),
             }));
           }
 
@@ -1594,7 +1637,7 @@ export function FileCell<TData>({
             name: f.name,
             size: f.size,
             type: f.type,
-            url: URL.createObjectURL(f),
+            url: createLocalUrl(f),
           }));
           const updatedFiles = [...files, ...newFilesData];
           setFiles(updatedFiles);
@@ -1615,6 +1658,7 @@ export function FileCell<TData>({
       columnId,
       readOnly,
       isPending,
+      createLocalUrl,
     ],
   );
 
@@ -1648,10 +1692,6 @@ export function FileCell<TData>({
           });
           return;
         }
-      }
-
-      if (fileToRemove.url?.startsWith("blob:")) {
-        URL.revokeObjectURL(fileToRemove.url);
       }
 
       const updatedFiles = files.filter((f) => f.id !== fileId);
@@ -1689,11 +1729,6 @@ export function FileCell<TData>({
       }
     }
 
-    for (const file of files) {
-      if (file.url?.startsWith("blob:")) {
-        URL.revokeObjectURL(file.url);
-      }
-    }
     setFiles([]);
     setDeletingFiles(new Set());
     tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: [] });
@@ -1875,14 +1910,23 @@ export function FileCell<TData>({
   );
 
   React.useEffect(() => {
-    return () => {
-      for (const file of files) {
-        if (file.url) {
-          URL.revokeObjectURL(file.url);
-        }
+    if (urlOwnerKeyRef.current !== urlOwnerKey) {
+      // Virtualized cells can be reused for another record. The previous
+      // record still owns its published attachments, so do not revoke them.
+      ownedUrlsRef.current.clear();
+      urlOwnerKeyRef.current = urlOwnerKey;
+    }
+    const retainedUrls = new Set(files.map((file) => file.url));
+    for (const url of ownedUrlsRef.current) {
+      if (!retainedUrls.has(url)) {
+        URL.revokeObjectURL(url);
+        ownedUrlsRef.current.delete(url);
       }
-    };
-  }, [files]);
+    }
+    // Published URLs must outlive this virtualized cell. There is deliberately
+    // no unmount cleanup: the data owner can revoke retained local URLs when
+    // discarding the data, or provide onFilesUpload for durable attachments.
+  }, [files, urlOwnerKey]);
 
   const lineCount = getLineCount(rowHeight);
 

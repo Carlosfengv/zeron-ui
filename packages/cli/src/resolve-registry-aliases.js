@@ -1,6 +1,7 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
+import { assertProjectPath } from "./project-paths.js";
 
 const PLACEHOLDER_ALIASES = new Set(["ui", "lib", "hooks", "components"]);
 
@@ -85,16 +86,14 @@ export function resolveRegistryAliases(source, aliases, filename = "registry-ite
 /** Resolve Registry placeholders after shadcn has written files using the consumer's own aliases. */
 export async function resolveInstalledRegistryAliases(cwd, files) {
   if (!Array.isArray(files)) throw new Error("Registry alias resolution requires an explicit install-plan file list");
+  await assertProjectPath(cwd, path.join(cwd, "components.json"));
   const config = JSON.parse(await readFile(path.join(cwd, "components.json"), "utf8"));
   const aliases = config.aliases ?? {};
   if (!Object.keys(aliases).some((key) => PLACEHOLDER_ALIASES.has(key))) return;
 
   for (const planFile of files) {
     const file = typeof planFile === "string" ? planFile : planFile.targetPath;
-    const relative = path.relative(cwd, file);
-    if (relative.startsWith("..") || path.isAbsolute(relative)) {
-      throw new Error(`Refusing to rewrite an install-plan file outside the project: ${file}`);
-    }
+    await assertProjectPath(cwd, file);
     let input;
     let wasMissing = false;
     try {
@@ -105,10 +104,16 @@ export async function resolveInstalledRegistryAliases(cwd, files) {
       // has already been processed. The install plan is authoritative and
       // contains the exact content that passed conflict checks, so materialize
       // only that missing planned target—never scan or rewrite user files.
+      if (config.tsx === false && /\.tsx?$/.test(planFile.sourcePath ?? "")) throw new Error(`Installer did not produce planned JavaScript file: ${file}`);
       input = planFile.expectedContent;
       wasMissing = true;
     }
     const output = resolveRegistryAliases(input, aliases, file);
-    if (output !== input || wasMissing) await writeFile(file, output);
+    if (output !== input || wasMissing) {
+      await assertProjectPath(cwd, file);
+      await mkdir(path.dirname(file), { recursive: true });
+      await assertProjectPath(cwd, file);
+      await writeFile(file, output);
+    }
   }
 }

@@ -1,4 +1,5 @@
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import {
@@ -9,7 +10,9 @@ import {
 } from "./registry.js";
 import { runShadcn } from "./run-shadcn.js";
 import { resolveInstalledRegistryAliases } from "./resolve-registry-aliases.js";
-import { buildInstallPlan } from "./install-plan.js";
+import { assertProjectPath } from "./project-paths.js";
+import { createInstallSnapshot } from "./install-snapshot.js";
+import { buildInstallPlan, digest, readIfPresent } from "./install-plan.js";
 
 const HELP = `zeron-ui
 
@@ -27,7 +30,7 @@ Options:
   --overwrite       Replace files that already exist
   --yes             Skip confirmation prompts
   --path <dir>      Temporarily unsupported; configure components.json instead
-  --dry-run         Inspect resolved items without writing files
+  --dry-run         Preview add without writing files (not supported by init)
   --registry <url>  Registry base URL. Default: ${DEFAULT_REGISTRY_URL}
   --json            Emit JSON from list
   --plan <file>     Project-relative migration plan for swap check
@@ -102,7 +105,7 @@ function dependencyVersion(dependency) {
 }
 
 function major(version) {
-  const match = version.match(/\d+/);
+  const match = String(version ?? "").match(/\d+/);
   return match ? Number(match[0]) : null;
 }
 
@@ -114,7 +117,7 @@ function projectDependencies(packageJson) {
   };
 }
 
-function assertInstallCompatibility(plan, packageJson) {
+async function assertInstallCompatibility(plan, packageJson, cwd) {
   const dependencies = projectDependencies(packageJson);
   const nextItems = plan.requirements.filter((requirement) => requirement.framework === "next");
   if (nextItems.length && !dependencies.next) {
@@ -124,10 +127,31 @@ function assertInstallCompatibility(plan, packageJson) {
   if (reactRequirements.length && major(dependencies.react) !== 19) {
     throw new Error(`Zeron Registry items require React 19; found ${dependencies.react ?? "no react dependency"}`);
   }
-  for (const requirement of plan.requiredDependencies) {
-    const name = requirement.startsWith("@")
-      ? requirement.slice(0, requirement.indexOf("@", requirement.indexOf("/") + 1))
-      : requirement.split("@")[0];
+  const tailwindRequirements = plan.requirements.filter((requirement) => requirement.tailwind);
+  if (tailwindRequirements.length) {
+    let installed;
+    try {
+      const require = createRequire(path.join(cwd, "package.json"));
+      installed = JSON.parse(await readFile(require.resolve("tailwindcss/package.json"), "utf8")).version;
+    } catch {
+      throw new Error("Cannot resolve the installed Tailwind CSS version; install the project's dependencies before adding Registry items");
+    }
+    for (const requirement of tailwindRequirements) {
+      // Published Zeron metadata uses a stable major caret range. Fail closed
+      // for a custom constraint we cannot prove, rather than guessing from a
+      // manifest range which may disagree with node_modules.
+      const range = /^\^([1-9]\d*)\.(\d+)\.(\d+)$/.exec(requirement.tailwind);
+      const version = /^(\d+)\.(\d+)\.(\d+)(?:\+.*)?$/.exec(installed);
+      if (!range || !version || Number(range[1]) !== Number(version[1])
+        || Number(version[2]) < Number(range[2])
+        || (Number(version[2]) === Number(range[2]) && Number(version[3]) < Number(range[3]))) {
+        throw new Error(`${requirement.name} requires Tailwind CSS ${requirement.tailwind}; resolved ${installed}. No files were written`);
+      }
+    }
+  }
+  for (const requirement of [...plan.requiredDependencies, ...plan.requiredDevDependencies]) {
+    const marker = requirement.startsWith("@") ? requirement.indexOf("@", requirement.indexOf("/") + 1) : requirement.indexOf("@");
+    const name = marker === -1 ? requirement : requirement.slice(0, marker);
     const expectedMajor = major(dependencyVersion(requirement));
     const installedMajor = major(dependencies[name] ?? "");
     if (expectedMajor !== null && installedMajor !== null && expectedMajor !== installedMajor) {
@@ -139,6 +163,7 @@ function assertInstallCompatibility(plan, packageJson) {
 async function writeInstallState(cwd, plan) {
   const stateDir = path.join(cwd, ".zeron");
   const statePath = path.join(stateDir, "install-state.json");
+  await assertProjectPath(cwd, statePath);
   let current = { version: 1, installations: [] };
   try {
     current = JSON.parse(await readFile(statePath, "utf8"));
@@ -151,10 +176,20 @@ async function writeInstallState(cwd, plan) {
     registryBase: plan.registryBase,
     cliVersion: packageVersionValue,
     files: plan.files.map((file) => path.relative(cwd, file.targetPath)),
+    fileHashes: Object.fromEntries(await Promise.all(plan.files.map(async (file) => {
+      await assertProjectPath(cwd, file.targetPath);
+      return [path.relative(cwd, file.targetPath), {
+        sourceHash: file.sourceHash,
+        configHash: file.configHash,
+        installedHash: digest(await readFile(file.targetPath)),
+      }];
+    }))),
     dependencies: plan.requiredDependencies,
+    devDependencies: plan.requiredDevDependencies,
   };
   const installations = (current.installations ?? []).filter((entry) => entry.registryBase !== record.registryBase || entry.items.join(",") !== record.items.join(","));
   await mkdir(stateDir, { recursive: true });
+  await assertProjectPath(cwd, statePath);
   await writeFile(statePath, `${JSON.stringify({ version: 1, installations: [...installations, record] }, null, 2)}\n`);
 }
 
@@ -218,6 +253,7 @@ export async function runCli(
 
   if (command === "init") {
     if (names.length > 0) throw new Error("init does not accept component names");
+    if (values["dry-run"]) throw new Error("init does not support --dry-run; no files were written. Use add --dry-run after initialization to preview an install");
     await assertProject(cwd, { requireConfig: false });
     const initOptions = [];
     if (values.yes) initOptions.push("--yes");
@@ -234,7 +270,6 @@ export async function runCli(
     if (values.path) {
       throw new Error("--path is temporarily unsupported; configure component targets in components.json instead");
     }
-    const urls = names.map((name) => componentUrl(name, baseUrl));
     const plan = await buildInstallPlan({
       cwd,
       names,
@@ -243,7 +278,7 @@ export async function runCli(
       fetchImpl,
     });
     const project = JSON.parse(await readFile(path.join(cwd, "package.json"), "utf8"));
-    assertInstallCompatibility(plan, project);
+    await assertInstallCompatibility(plan, project, cwd);
     if (plan.css?.requestedByTheme && !(await fileExists(plan.css.targetPath))) {
       throw new Error(`Theme installation needs the configured CSS file ${path.relative(cwd, plan.css.targetPath)}; no files were written`);
     }
@@ -252,25 +287,46 @@ export async function runCli(
       stdout.write(`${JSON.stringify({
         requestedItems: plan.requestedItems,
         resolvedItems: plan.resolvedItems,
+        dependencies: plan.requiredDependencies,
+        devDependencies: plan.requiredDevDependencies,
         files: plan.files.map(({ targetPath, existedBefore }) => ({ targetPath, existedBefore })),
         css: plan.css && { targetPath: plan.css.targetPath, exists: await fileExists(plan.css.targetPath), requestedByTheme: plan.css.requestedByTheme },
       }, null, 2)}\n`);
       return 0;
     }
 
-    const status = runShadcnImpl(
-      ["add", ...urls, "--cwd", cwd, ...forwardSharedOptions(values, { includePath: true })],
-      { cwd },
-    );
-    if (status === 0) {
-      await resolveInstalledRegistryAliases(
-        cwd,
-        plan.files
-          .filter((file) => !file.existedBefore || values.overwrite),
+    const snapshot = await createInstallSnapshot(plan, { overwrite: values.overwrite });
+    try {
+      await snapshot.verify();
+      // Recheck immediately before handing control to the installation engine.
+      for (const target of plan.guardedPaths) await assertProjectPath(cwd, target);
+      for (const { targetPath, hash } of [
+        ...plan.inputHashes,
+        ...plan.files.map((file) => ({ targetPath: file.targetPath, hash: file.beforeHash })),
+      ]) {
+        const content = await readIfPresent(targetPath);
+        if ((content === null ? null : digest(content)) !== hash) throw new Error(`Project file changed during preflight: ${path.relative(cwd, targetPath)}; rerun the install`);
+      }
+      const status = await runShadcnImpl(
+        ["add", ...snapshot.paths, "--cwd", cwd, ...forwardSharedOptions(values, { includePath: true })],
+        { cwd },
       );
-      await writeInstallState(cwd, plan);
+      if (status === 0) {
+        for (const target of plan.guardedPaths) await assertProjectPath(cwd, target);
+        if (digest(await readFile(path.join(cwd, "components.json"))) !== plan.configHash) throw new Error("Project configuration changed during installation; installation was not recorded");
+        await resolveInstalledRegistryAliases(
+          cwd,
+          plan.files.filter((file) => !file.existedBefore || values.overwrite),
+        );
+        for (const file of plan.files.filter((file) => file.existedBefore && !values.overwrite)) {
+          if (digest(await readFile(file.targetPath)) !== file.beforeHash) throw new Error(`Preserved file changed during installation: ${path.relative(cwd, file.targetPath)}; installation was not recorded`);
+        }
+        await writeInstallState(cwd, plan);
+      }
+      return status;
+    } finally {
+      await snapshot.cleanup();
     }
-    return status;
   }
 
   if (command === "view") {

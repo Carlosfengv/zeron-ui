@@ -147,6 +147,7 @@ export const TimeField = React.forwardRef<HTMLDivElement, TimeFieldProps>(functi
   ), [max, min, minuteStep, secondStep]);
 
   const change = (part: keyof TimeDraft, nextPart: string) => {
+    if (disabledSelect) return;
     const next = { ...draft, [part]: nextPart } as TimeDraft;
     setDraft(next);
     const nextValue = toValue(next, twelveHour, includeSeconds);

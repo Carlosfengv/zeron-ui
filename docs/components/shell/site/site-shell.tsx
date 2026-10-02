@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, type ReactNode } from "react";
+import { Suspense, useEffect, useRef, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
 import Link, { useLinkStatus } from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -53,18 +53,47 @@ interface LocaleSwitchLinkProps {
   actionLabel: string;
 }
 
+function subscribeToLocationHash(onChange: () => void) {
+  window.addEventListener("hashchange", onChange);
+  window.addEventListener("popstate", onChange);
+  return () => {
+    window.removeEventListener("hashchange", onChange);
+    window.removeEventListener("popstate", onChange);
+  };
+}
+
+function syncLocaleLinkHash(event: MouseEvent<HTMLAnchorElement>) {
+  // History API changes do not emit hashchange. Refresh the native link too so
+  // modifier clicks, middle clicks and the context menu keep the latest hash.
+  event.currentTarget.hash = window.location.hash;
+}
+
 function LocaleSwitchLink({
   alternateLocalePrefix,
   currentPathname,
   label,
   actionLabel,
 }: LocaleSwitchLinkProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  // The server cannot see fragments. An empty server snapshot keeps hydration
+  // stable; the client then updates the link without changing its visible label.
+  const hash = useSyncExternalStore(subscribeToLocationHash, () => window.location.hash, () => "");
   const href = `${localizePathname(currentPathname, alternateLocalePrefix)}${searchParams.size ? `?${searchParams}` : ""}`;
 
   return (
     <Button asChild aria-label={actionLabel} size="sm" variant="ghost">
-      <Link href={href}>{label}</Link>
+      <Link
+        href={`${href}${hash}`}
+        onAuxClick={syncLocaleLinkHash}
+        onClick={syncLocaleLinkHash}
+        onContextMenu={syncLocaleLinkHash}
+        onNavigate={(event) => {
+          if (hash === window.location.hash) return;
+          event.preventDefault();
+          router.push(`${href}${window.location.hash}`);
+        }}
+      >{label}</Link>
     </Button>
   );
 }
