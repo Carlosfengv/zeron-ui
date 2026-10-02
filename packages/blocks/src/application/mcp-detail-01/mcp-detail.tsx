@@ -89,7 +89,12 @@ function AgentButtons({ service, onAgentSelect }: Pick<McpDetailProps, "onAgentS
 }
 
 /** MCP resource details with product-owned connection and tool execution callbacks. */
-export function McpDetail({
+export function McpDetail(props: McpDetailProps) {
+  const service = props.service ?? defaultMcpDetail;
+  return <McpDetailSession key={service.id} {...props} service={service} />;
+}
+
+function McpDetailSession({
   service = defaultMcpDetail,
   defaultSection = "overview",
   defaultConnectionOptions,

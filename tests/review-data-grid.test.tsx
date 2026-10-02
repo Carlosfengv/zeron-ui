@@ -218,3 +218,100 @@ describe("DataGrid controlled table state", () => {
     expect(result.current.table.getState().rowSelection).toEqual({});
   });
 });
+
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((accept) => { resolve = accept; });
+  return { promise, resolve };
+}
+
+describe("DataGrid asynchronous paste identity", () => {
+  it.each(["clipboard", "callback"])("targets original records after sorting during %s wait", async (stage) => {
+    const wait = deferred<string>();
+    const api = clipboard("pasted");
+    if (stage === "clipboard") api.readText.mockImplementation(() => wait.promise);
+    const onDataChange = vi.fn();
+    const values = [{ name: "A" }, { name: "B" }];
+    const { result } = renderHook(() => useDataGrid({
+      columns, data: values, onDataChange, enablePaste: true,
+      onPaste: stage === "callback" ? async () => { await wait.promise; } : undefined,
+    }));
+    act(() => result.current.tableMeta.onCellClick?.(0, "name"));
+    let pending: Promise<void> | undefined;
+    await act(async () => { pending = Promise.resolve(result.current.tableMeta.onCellsPaste?.()); });
+    await act(async () => result.current.table.setSorting([{ id: "name", desc: true }]));
+    await act(async () => { wait.resolve("pasted"); await pending; });
+    expect(onDataChange).toHaveBeenLastCalledWith([{ name: "pasted" }, { name: "B" }]);
+  });
+
+  it("rebases cut sources as well as destinations after a delayed callback", async () => {
+    clipboard();
+    const wait = deferred<void>();
+    const onDataChange = vi.fn();
+    const values = [{ name: "A" }, { name: "B" }, { name: "C" }];
+    const { result } = renderHook(() => useDataGrid({ columns, data: values, onDataChange,
+      enablePaste: true, onPaste: () => wait.promise,
+    }));
+    act(() => result.current.tableMeta.onCellClick?.(0, "name"));
+    await act(async () => { await result.current.tableMeta.onCellsCut?.(); });
+    act(() => result.current.tableMeta.onCellClick?.(1, "name"));
+    let pending: Promise<void> | undefined;
+    await act(async () => { pending = Promise.resolve(result.current.tableMeta.onCellsPaste?.()); });
+    await act(async () => result.current.table.setSorting([{ id: "name", desc: true }]));
+    await act(async () => { wait.resolve(); await pending; });
+    expect(onDataChange).toHaveBeenLastCalledWith([{ name: "" }, { name: "A" }, { name: "C" }]);
+  });
+
+  it.each(["removed", "unmounted", "readonly"])("cancels pending paste when %s", async (reason) => {
+    clipboard("pasted");
+    const wait = deferred<void>();
+    const onDataChange = vi.fn();
+    const values = [{ name: "A" }, { name: "B" }];
+    const { result, rerender, unmount } = renderHook(({ items, readOnly }) => useDataGrid({
+      columns, data: items, readOnly, onDataChange, enablePaste: true, onPaste: () => wait.promise,
+    }), { initialProps: { items: values, readOnly: false } });
+    act(() => result.current.tableMeta.onCellClick?.(0, "name"));
+    let pending: Promise<void> | undefined;
+    await act(async () => { pending = Promise.resolve(result.current.tableMeta.onCellsPaste?.()); });
+    if (reason === "removed") rerender({ items: [values[1]], readOnly: false });
+    if (reason === "readonly") rerender({ items: values, readOnly: true });
+    if (reason === "unmounted") unmount();
+    await act(async () => { wait.resolve(); await pending; });
+    expect(onDataChange).not.toHaveBeenCalled();
+  });
+
+  it("ignores an older paste when a newer paste completes first", async () => {
+    const api = clipboard("old");
+    const wait = deferred<void>();
+    const onPaste = vi.fn().mockImplementationOnce(() => wait.promise).mockResolvedValue(undefined);
+    const onDataChange = vi.fn();
+    const values = [{ name: "A" }];
+    const { result } = renderHook(() => useDataGrid({ columns, data: values, onDataChange, onPaste, enablePaste: true }));
+    act(() => result.current.tableMeta.onCellClick?.(0, "name"));
+    let pending: Promise<void> | undefined;
+    await act(async () => { pending = Promise.resolve(result.current.tableMeta.onCellsPaste?.()); });
+    api.readText.mockResolvedValue("new");
+    await act(async () => { await result.current.tableMeta.onCellsPaste?.(); });
+    await act(async () => { wait.resolve(); await pending; });
+    expect(onDataChange).toHaveBeenCalledTimes(1);
+    expect(onDataChange).toHaveBeenCalledWith([{ name: "new" }]);
+  });
+});
+
+
+it("rebases a pending paste by getRowId across immutable source reordering", async () => {
+  clipboard("pasted");
+  const wait = deferred<void>();
+  const onDataChange = vi.fn();
+  const { result, rerender } = renderHook(({ items }) => useDataGrid({
+    columns: [{ accessorKey: "name" }], data: items, getRowId: (row) => row.id,
+    onDataChange, enablePaste: true, onPaste: () => wait.promise,
+  }), { initialProps: { items: [{ id: "a", name: "A" }, { id: "b", name: "B" }] } });
+  act(() => result.current.tableMeta.onCellClick?.(0, "name"));
+  let pending: Promise<void> | undefined;
+  await act(async () => { pending = Promise.resolve(result.current.tableMeta.onCellsPaste?.()); });
+  rerender({ items: [{ id: "b", name: "B updated" }, { id: "a", name: "A updated" }] });
+  await act(async () => { wait.resolve(); await pending; });
+  expect(onDataChange).toHaveBeenCalledWith([{ id: "b", name: "B updated" }, { id: "a", name: "pasted" }]);
+});

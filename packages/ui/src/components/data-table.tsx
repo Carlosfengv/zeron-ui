@@ -228,6 +228,7 @@ function useDataTable<TData>({
       onSortingChange?.(updater);
     },
     state: {
+      ...controlledState,
       columnFilters: controlledState?.columnFilters ?? columnFilters,
       columnOrder: controlledState?.columnOrder ?? columnOrder,
       columnPinning: controlledState?.columnPinning ?? columnPinning,
