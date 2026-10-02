@@ -14,12 +14,17 @@ async function trackCodeWorkerRequests(page: Page): Promise<void> {
     const requests: string[] = [];
     Object.defineProperty(window, "__codeWorkerRequests", { value: requests });
     const postMessage = Worker.prototype.postMessage;
-    Worker.prototype.postMessage = function (...args: Parameters<Worker["postMessage"]>) {
-      const [request] = args;
-      if (request?.type === "file" || request?.type === "diff") {
+    Worker.prototype.postMessage = function (
+      request: unknown,
+      options?: Transferable[] | StructuredSerializeOptions
+    ) {
+      if (
+        typeof request === "object" && request != null && "type" in request &&
+        (request.type === "file" || request.type === "diff")
+      ) {
         requests.push(request.type);
       }
-      return postMessage.apply(this, args);
+      return Reflect.apply(postMessage, this, [request, options]);
     };
   });
 }
@@ -112,7 +117,7 @@ test("renders all interactive examples without hydration errors", async ({ page 
   // Creating a pool alone is insufficient: real file and diff render tasks
   // must reach its workers while token interactions above remain functional.
   await expect.poll(() => page.evaluate(() =>
-    (window as Window & { __codeWorkerRequests: string[] }).__codeWorkerRequests
+    (window as Window & { __codeWorkerRequests?: string[] }).__codeWorkerRequests
   )).toEqual(expect.arrayContaining(["file", "diff"]));
   expect(errors).toEqual([]);
 });
