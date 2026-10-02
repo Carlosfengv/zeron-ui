@@ -16,7 +16,8 @@ export const borderWidthClasses = borderWidthTokens.flatMap(({ name }) => [
   `border-${name}`,
   ...["x", "y", "s", "e", "t", "r", "b", "l"].map((side) => `border-${side}-${name}`),
 ]);
-export const stateMarkerClasses = ["is-active"];
+// These are selectors consumed by component/Shadow DOM CSS, not Tailwind utilities.
+export const stateMarkerClasses = ["is-active", "zeron-code-block"];
 export const restyleCategories = [
   "layout",
   "spacing",

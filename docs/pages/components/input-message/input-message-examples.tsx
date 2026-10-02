@@ -11,7 +11,7 @@ import {
 } from "@zeron/ui/dropdown";
 import { MenuItem } from "@zeron/ui/menu-item";
 import { useIcon } from "@zeron/icons/context";
-import { ClaudeCode } from "@lobehub/icons";
+import ClaudeCode from "@lobehub/icons/es/ClaudeCode/components/Mono";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
@@ -460,7 +460,7 @@ const disabledCode = `import { InputMessage } from "./components";
 />`;
 
 const agentComposerCode = `import { useState } from "react";
-import { ClaudeCode } from "@lobehub/icons";
+import ClaudeCode from "@lobehub/icons/es/ClaudeCode/components/Mono";
 import {
   Button,
   DropdownContent,

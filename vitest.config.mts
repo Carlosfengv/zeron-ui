@@ -21,5 +21,7 @@ export default defineConfig({
   },
   test: {
     include: ["tests/**/*.test.{js,mjs,ts,tsx}"],
+    // Production suites need a completed Next build; run them explicitly after it.
+    exclude: ["tests/*production*.test.ts"],
   },
 });

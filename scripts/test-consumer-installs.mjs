@@ -64,7 +64,7 @@ async function writeConsumer(directory, packageManager) {
     name: "zeron-consumer-fixture",
     private: true,
     packageManager: packageManager === "pnpm" ? "pnpm@10.12.4" : undefined,
-    dependencies: { next: "15.5.9", react: "19.2.0", "react-dom": "19.2.0" },
+    dependencies: { next: "15.5.24", react: "19.2.0", "react-dom": "19.2.0" },
     devDependencies: { "@tailwindcss/postcss": "4.3.3", typescript: "5.9.3", "@types/node": "20.19.9", "@types/react": "19.2.14", "@types/react-dom": "19.2.3", tailwindcss: "4.3.3" },
   }, null, 2));
   await writeFile(join(directory, "components.json"), JSON.stringify({
@@ -160,7 +160,7 @@ async function installWithCli({ consumer, component, manager, tarball }) {
     await command("npm", ["exec", "--yes", "--package", tarball, "--", "zeron-ui", ...args], { env });
     await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
     if (component === "button") {
-      await command("npm", ["exec", "--yes", "--package", tarball, "--", "zeron-ui", ...args, "--overwrite"], { env });
+      await command("npm", ["exec", "--yes", "--package", tarball, "--", "zeron-ui", ...args], { env });
       await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
     }
     await assertBusinessSourceUntouched(consumer, component);
@@ -175,7 +175,7 @@ async function installWithCli({ consumer, component, manager, tarball }) {
   await command("pnpm", ["exec", "zeron-ui", ...args], { cwd: consumer, env });
   await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
   if (component === "button") {
-    await command("pnpm", ["exec", "zeron-ui", ...args, "--overwrite"], { cwd: consumer, env });
+    await command("pnpm", ["exec", "zeron-ui", ...args], { cwd: consumer, env });
     await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
   }
   await assertBusinessSourceUntouched(consumer, component);

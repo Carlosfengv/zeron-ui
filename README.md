@@ -197,6 +197,22 @@ import { ProIconProvider } from "@/lib/pro-icon-provider";
 - [Base UI](https://base-ui.com) primitives
 - [shadcn/ui](https://ui.shadcn.com) registry protocol
 
+## Validation
+
+Use Node 22 and the pinned pnpm version from `packageManager`. Install with
+`pnpm install --frozen-lockfile`, then run `pnpm test`, `pnpm cli:test`,
+`pnpm typecheck`, `pnpm lint`, and `pnpm lint:design`.
+
+`pnpm test` contains the unit and component suites. Production routing suites
+require a completed build: run `pnpm build && pnpm test:production`. They are
+kept separate so a fresh checkout does not try to start a nonexistent build.
+The existing Playwright commands additionally cover browser navigation, focus,
+and CodeBlock interactions.
+
+After changing Registry sources, regenerate with `pnpm registry:build` and run
+`pnpm registry:check`; commit the resulting `public/r` changes together with
+their source changes. Consumer installation/migration checks remain part of CI.
+
 ## License
 
 [MIT](LICENSE) © Zeron Design

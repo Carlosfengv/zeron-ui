@@ -72,6 +72,7 @@ describe("Tree scenario adapters", () => {
       key: "department:product", type: "department", departmentId: "product", label: "Product",
       children: [{ key: "member:lin", type: "member", memberId: "lin", label: "Lin" }],
     }];
+    // @ts-expect-error Verify the runtime guard for untyped callers supplying an invalid cascade configuration.
     expect(() => render(<MemberTree aria-label="Members" items={mixed} selectableTypes={["department", "member"]} selectionMode="multiple" selectionIndicator="checkbox" checkStrategy="cascade" />))
       .toThrow("cascade selection only supports");
     const duplicate: readonly OrganizationNode[] = [

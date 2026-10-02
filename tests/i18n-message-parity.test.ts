@@ -41,8 +41,7 @@ function placeholders(message: string) {
         names.add(element.value);
       } else if (
         element.type === TYPE.select ||
-        element.type === TYPE.plural ||
-        element.type === TYPE.selectordinal
+        element.type === TYPE.plural
       ) {
         names.add(element.value);
         Object.values(element.options).forEach((option) => visit(option.value));
@@ -56,6 +55,10 @@ function placeholders(message: string) {
 }
 
 describe("i18n message parity", () => {
+  it("includes arguments nested in cardinal and ordinal plural branches", () => {
+    expect(placeholders("{count, plural, one {{name}} other {{count}}} {rank, selectordinal, one {#st} other {{suffix}}}"))
+      .toEqual(["count", "name", "rank", "suffix"]);
+  });
   it("keeps English and Simplified Chinese message files and keys aligned", () => {
     const englishRoot = join(ROOT, "docs/content/en");
     const chineseRoot = join(ROOT, "docs/content/zh-CN");

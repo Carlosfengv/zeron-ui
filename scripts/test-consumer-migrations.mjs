@@ -66,7 +66,7 @@ async function setup(framework) {
   const pkg = {
     name: `swap-${framework}-consumer`, private: true, type: "module",
     scripts: { build: isNext ? "next build" : "vite build", start: isNext ? "next start" : "vite preview" },
-    dependencies: { react: "19.2.0", "react-dom": "19.2.0", ...(isNext ? { next: "15.5.9" } : {}) },
+    dependencies: { react: "19.2.0", "react-dom": "19.2.0", ...(isNext ? { next: "15.5.24" } : {}) },
     devDependencies: { typescript: "5.9.3", "@types/react": "19.2.14", "@types/react-dom": "19.2.3", "@types/node": "20.19.9", tailwindcss: "4.3.3", ...(isNext ? { "@tailwindcss/postcss": "4.3.3" } : { vite: "8.2.1", "@tailwindcss/vite": "4.3.3" }) },
   };
   await write(cwd, "package.json", JSON.stringify(pkg, null, 2));
