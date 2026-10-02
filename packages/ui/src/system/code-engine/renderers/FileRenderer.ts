@@ -299,6 +299,16 @@ export class FileRenderer<LAnnotation = undefined> {
     }
   }
 
+  public setWorkerPool(workerManager: WorkerPoolManager | undefined): void {
+    if (this.workerManager === workerManager) return;
+    // Cancel against the old pool before swapping it. Keep the rendered AST
+    // (including hydrated markup and active editor rows) while new work loads.
+    this.clearHighlightTask();
+    this.workerManager?.cleanUpTasks(this);
+    this.pendingHighlightResult = undefined;
+    this.workerManager = workerManager;
+  }
+
   public setOptions(options: FileRendererOptions): void {
     this.options = options;
   }
