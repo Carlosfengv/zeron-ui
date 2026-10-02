@@ -479,6 +479,8 @@ try {
       await mkdir(consumer, { recursive: true });
       await writeConsumer(consumer, manager);
       await installWithCli({ consumer, component, manager, tarball });
+      console.log(`Consumer passed: ${manager}/${component}`);
+      await rm(consumer, { recursive: true, force: true });
     }
   }
   for (const component of viteComponents) {
@@ -486,6 +488,8 @@ try {
     await mkdir(consumer, { recursive: true });
     await writeViteConsumer(consumer);
     await installViteComponent({ consumer, component, tarball });
+    console.log(`Consumer passed: vite/${component}`);
+    await rm(consumer, { recursive: true, force: true });
   }
   const rejectionConsumer = join(work, "vite-next-rejection");
   await mkdir(rejectionConsumer, { recursive: true });
