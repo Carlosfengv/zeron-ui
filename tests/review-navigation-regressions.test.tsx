@@ -157,3 +157,47 @@ describe("SortableCollection keyboard cancellation", () => {
     expect(screen.getByRole("status").textContent).toBe("b,a,c");
   });
 });
+
+
+describe("SortableCollection externally interrupted moves", () => {
+  function DynamicCollection({ mode }: { mode: "normal" | "removed" | "disabled" }) {
+    const [items, setItems] = React.useState([{ id: "a", title: "A" }, { id: "b", title: "B" }, { id: "c", title: "C" }]);
+    const visibleItems = items.filter((item) => mode !== "removed" || item.id !== "a").map((item) => ({ ...item, draggable: mode !== "disabled" || item.id !== "a" }));
+    return <SortableCollection items={visibleItems} onItemsChange={setItems} showEditAction renderEditingContent={(_item, { close }) => <button onClick={close}>Finish</button>} />;
+  }
+  function startPointerOnB() {
+    const b = screen.getByRole("button", { name: "Reorder B" });
+    const capture = vi.fn();
+    Object.defineProperty(b, "setPointerCapture", { configurable: true, value: capture });
+    // jsdom does not provide PointerEvent. MouseEvent carries the shared input fields.
+    fireEvent(b, new MouseEvent("pointerdown", { bubbles: true, button: 0, clientX: 5, clientY: 5 }));
+    expect(capture).toHaveBeenCalledTimes(1);
+    expect(document.querySelector("[data-slot='sortable-collection-drag-preview']")).not.toBeNull();
+    fireEvent.pointerCancel(b);
+  }
+  it.each(["removed", "disabled"] as const)("releases keyboard drag ownership when the active item becomes %s", (mode) => {
+    const view = render(<DynamicCollection mode="normal" />);
+    const a = screen.getByRole("button", { name: "Reorder A" });
+    act(() => a.focus());
+    fireEvent.keyDown(a, { key: " " });
+    fireEvent.keyDown(a, { key: "ArrowDown" });
+    view.rerender(<DynamicCollection mode={mode} />);
+    expect(document.querySelector("[aria-pressed='true']")).toBeNull();
+    expect(Array.from(document.querySelectorAll("[data-sortable-item-id]")).map((item) => item.getAttribute("data-sortable-item-id"))).toEqual(mode === "removed" ? ["b", "c"] : ["a", "b", "c"]);
+    startPointerOnB();
+    view.rerender(<DynamicCollection mode="normal" />);
+    startPointerOnB();
+  });
+  it("cancels a keyboard drag when editing disables sorting, then permits a new pointer drag", () => {
+    render(<DynamicCollection mode="normal" />);
+    const a = screen.getByRole("button", { name: "Reorder A" });
+    fireEvent.keyDown(a, { key: " " });
+    fireEvent.keyDown(a, { key: "ArrowDown" });
+    // Programmatic click deliberately avoids blur, as can happen in a consumer action.
+    fireEvent.click(screen.getByRole("button", { name: "Edit B" }));
+    expect(document.querySelector("[aria-pressed='true']")).toBeNull();
+    expect(Array.from(document.querySelectorAll("[data-sortable-item-id]")).map((item) => item.getAttribute("data-sortable-item-id"))).toEqual(["a", "b", "c"]);
+    fireEvent.click(screen.getByRole("button", { name: "Finish editing B" }));
+    startPointerOnB();
+  });
+});

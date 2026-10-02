@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -217,6 +218,19 @@ function SortableCollection<T extends SortableCollectionItem>({
     }
     setAnnouncement("Move cancelled.");
   };
+  // A removed or newly disabled handle may never emit blur. End its session
+  // explicitly so an interrupted keyboard move cannot lock pointer sorting.
+  useEffect(() => {
+    if (keyboardDraggedId) {
+      const active = items.find((item) => item.id === keyboardDraggedId);
+      if (!active || active.draggable === false || sortingDisabled) cancelKeyboardDrag();
+    }
+    if (draggedId) {
+      const active = items.find((item) => item.id === draggedId);
+      if (!active || active.draggable === false || sortingDisabled) completeDrag();
+    }
+    if (editingId && !items.some((item) => item.id === editingId)) setEditingId(null);
+  });
   const handleKeyboardReorder = (event: KeyboardEvent<HTMLButtonElement>, item: T) => {
     if (sortingDisabled || item.draggable === false) return;
     const activeId = keyboardDraggedId ?? item.id;
