@@ -124,8 +124,24 @@ async function assertInstallCompatibility(plan, packageJson, cwd) {
     throw new Error(`${nextItems.map((item) => item.name).join(", ")} requires Next.js; this project is not a supported Next consumer`);
   }
   const reactRequirements = plan.requirements.filter((requirement) => requirement.react);
-  if (reactRequirements.length && major(dependencies.react) !== 19) {
-    throw new Error(`Zeron Registry items require React 19; found ${dependencies.react ?? "no react dependency"}`);
+  if (reactRequirements.length) {
+    const require = createRequire(path.join(cwd, "package.json"));
+    const versions = {};
+    for (const name of ["react", "react-dom"]) {
+      try {
+        versions[name] = JSON.parse(await readFile(require.resolve(`${name}/package.json`), "utf8")).version;
+      } catch {
+        throw new Error(`Cannot resolve the installed ${name} version; install the project's dependencies before adding Registry items`);
+      }
+      // Manifest specs may be catalogs, aliases, or ranges that disagree with
+      // node_modules. Validate the actual runtime that will consume the files.
+      if (!/^19\.\d+\.\d+(?:\+.*)?$/.test(versions[name])) {
+        throw new Error(`Zeron Registry items require React 19; resolved ${name} ${versions[name]}. No files were written`);
+      }
+    }
+    if (versions.react !== versions["react-dom"]) {
+      throw new Error(`React and react-dom must have matching installed versions; resolved react ${versions.react} and react-dom ${versions["react-dom"]}. No files were written`);
+    }
   }
   const tailwindRequirements = plan.requirements.filter((requirement) => requirement.tailwind);
   if (tailwindRequirements.length) {

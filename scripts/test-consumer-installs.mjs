@@ -13,6 +13,7 @@ import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { execFile as execFileCallback } from "node:child_process";
 import { promisify } from "node:util";
+import { consumerRegistryExpectations } from "./lib/consumer-registry-expectations.mjs";
 
 const execFile = promisify(execFileCallback);
 const ROOT = new URL("..", import.meta.url).pathname;
@@ -190,19 +191,20 @@ async function installWithCli({ consumer, component, manager, tarball }) {
 }
 
 async function assertThemeInstallation({ consumer, cssPath, component }) {
+  const expectations = await consumerRegistryExpectations(REGISTRY_DIR, component);
   const css = await readFile(join(consumer, cssPath), "utf8");
   const animationImports = css.match(/@import\s+["']tw-animate-css["'];/g) ?? [];
-  if (animationImports.length !== 1) {
+  if (expectations.animation && animationImports.length !== 1) {
     throw new Error(`${component}: expected one tw-animate-css import in ${cssPath}, found ${animationImports.length}`);
   }
-  for (const token of ["--border-width-hairline", "--transition-duration-fast"]) {
+  for (const token of expectations.tokens.map((name) => `--${name}`)) {
     if (!css.includes(token)) throw new Error(`${component}: ${cssPath} is missing ${token}`);
   }
   const manifest = JSON.parse(await readFile(join(consumer, "package.json"), "utf8"));
-  if (!(manifest.dependencies?.["tw-animate-css"] ?? manifest.devDependencies?.["tw-animate-css"])) {
+  if (expectations.animation && !(manifest.dependencies?.["tw-animate-css"] ?? manifest.devDependencies?.["tw-animate-css"])) {
     throw new Error(`${component}: tw-animate-css was not recorded in package.json`);
   }
-  if (!(await exists(join(consumer, "lib", "tailwind-merge-tokens.ts"))) &&
+  if (expectations.mergeTokens && !(await exists(join(consumer, "lib", "tailwind-merge-tokens.ts"))) &&
       !(await exists(join(consumer, "src", "lib", "tailwind-merge-tokens.ts")))) {
     throw new Error(`${component}: generated Tailwind merge token names were not installed`);
   }

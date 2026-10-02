@@ -22,9 +22,10 @@ async function fixture(t, { version = "4.1.18", tsx = true } = {}) {
   const root = await mkdtemp(path.join(tmpdir(), "zeron-install-safety-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const cwd = path.join(root, "consumer");
-  for (const directory of ["app", "node_modules/react", "node_modules/tailwindcss"]) await mkdir(path.join(cwd, directory), { recursive: true });
+  for (const directory of ["app", "node_modules/react", "node_modules/react-dom", "node_modules/tailwindcss"]) await mkdir(path.join(cwd, directory), { recursive: true });
   await writeFile(path.join(cwd, "package.json"), JSON.stringify({ name: "install-safety-fixture", private: true, dependencies: { react: "19.2.0", next: "15.5.9" }, devDependencies: { tailwindcss: "^4.0.0" } }));
   await writeFile(path.join(cwd, "node_modules/react/package.json"), JSON.stringify({ name: "react", version: "19.2.0" }));
+  await writeFile(path.join(cwd, "node_modules/react-dom/package.json"), JSON.stringify({ name: "react-dom", version: "19.2.0" }));
   await writeFile(path.join(cwd, "node_modules/tailwindcss/package.json"), JSON.stringify({ name: "tailwindcss", version }));
   await writeFile(path.join(cwd, "components.json"), JSON.stringify({ style: "new-york", iconLibrary: "none", rsc: true, tsx, aliases, tailwind: { config: "", css: "app/globals.css", baseColor: "", cssVariables: true, prefix: "" } }));
   await writeFile(path.join(cwd, "tsconfig.json"), JSON.stringify({ compilerOptions: { baseUrl: ".", paths: { "@/*": ["./*"] }, jsx: "preserve" } }));
@@ -255,5 +256,38 @@ for (const extra of [{ envVars: { FIXTURE: "value" } }, { files: [{ path: ".env"
   test("rejects payloads with unsupported implicit installer write targets", async (t) => {
     const { cwd } = await fixture(t);
     await assert.rejects(buildInstallPlan({ cwd, names: ["example"], baseUrl: "http://localhost/r", fetchImpl: response({ ...simpleItem(), ...extra }) }), /unsupported environment-file writes|Unsupported Registry target with installer-dependent placement/);
+  });
+}
+
+for (const spec of ["catalog:", "workspace:^", "npm:react@19.2.0", "^18.0.0 || ^19.0.0"]) {
+  test(`React compatibility accepts installed matching React 19 with ${spec}`, async (t) => {
+    const { cwd } = await fixture(t);
+    const manifestPath = path.join(cwd, "package.json");
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+    manifest.dependencies.react = spec;
+    manifest.dependencies["react-dom"] = spec;
+    await writeFile(manifestPath, JSON.stringify(manifest));
+    let invoked = false;
+    await runCli(["add", "example", "--cwd", cwd], {
+      fetchImpl: response({ ...simpleItem(), meta: { zeron: { react: "^19.0.0" } } }),
+      runShadcnImpl: () => { invoked = true; return 0; },
+    });
+    assert.equal(invoked, true);
+  });
+}
+
+for (const [name, version] of [["react", "18.3.1"], ["react-dom", "18.3.1"], ["react-dom", "19.1.0"], ["react", "19.2.0-canary.1"], ["react-dom", null]]) {
+  test(`React compatibility rejects installed ${name} ${version} before mutation`, async (t) => {
+    const { cwd } = await fixture(t);
+    const target = path.join(cwd, "node_modules", name, "package.json");
+    if (version === null) await rm(target);
+    else await writeFile(target, JSON.stringify({ name, version }));
+    const before = await readFile(path.join(cwd, "package.json"), "utf8");
+    await assert.rejects(runCli(["add", "example", "--cwd", cwd], {
+      fetchImpl: response({ ...simpleItem(), meta: { zeron: { react: "^19.0.0" } } }),
+      runShadcnImpl: () => { throw new Error("must not invoke installer"); },
+    }), /require React 19|matching installed versions|Cannot resolve the installed react-dom/);
+    assert.equal(await readFile(path.join(cwd, "package.json"), "utf8"), before);
+    await assert.rejects(access(path.join(cwd, "lib/example.ts")), { code: "ENOENT" });
   });
 }
