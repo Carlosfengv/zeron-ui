@@ -34,7 +34,7 @@ async function stop(server: ChildProcess) {
 
 describe("i18n production smoke", () => {
   it("serves canonical localized documentation from a production build", async () => {
-    const server = spawn("npm", ["run", "start", "--", "-p", String(port)], {
+    const server = spawn("npm", ["run", "start", "--", "-p", String(port), "--hostname", "127.0.0.1"], {
       stdio: "ignore",
       env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
     });

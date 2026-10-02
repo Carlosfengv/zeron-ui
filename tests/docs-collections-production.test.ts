@@ -14,7 +14,7 @@ async function startServer() {
   if (!address || typeof address === "string") throw new Error("No test port assigned");
   const port = address.port;
   await new Promise<void>((resolve, reject) => socket.close((error) => error ? reject(error) : resolve()));
-  const server = spawn(process.execPath, [join(process.cwd(), "node_modules/next/dist/bin/next"), "start", "--port", String(port)], {
+  const server = spawn(process.execPath, [join(process.cwd(), "node_modules/next/dist/bin/next"), "start", "--port", String(port), "--hostname", "127.0.0.1"], {
     stdio: "ignore",
     env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
   });

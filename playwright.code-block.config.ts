@@ -40,7 +40,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm exec next start -p 3335",
+    command: "pnpm exec next start -p 3335 --hostname 127.0.0.1",
     url: "http://127.0.0.1:3335",
     reuseExistingServer: false,
     timeout: 30_000,
