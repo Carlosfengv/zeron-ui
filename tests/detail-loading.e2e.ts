@@ -124,3 +124,19 @@ for (const prefix of ["/en", ""] as const) {
     await expect(page.locator("th").filter({ hasText: prefix ? /^Prop$/ : /^属性$/ }).first()).toBeAttached();
   });
 }
+
+test("all generated sources are served as immutable plain text and unknown hashes are not", async ({ request }) => {
+  const { getPreviewSourceAssetUrls } = await import("../docs/lib/block-preview-sources.generated");
+  const { createHash } = await import("node:crypto");
+  for (const url of getPreviewSourceAssetUrls()) {
+    const response = await request.get(url);
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toContain("text/plain");
+    expect(response.headers()["x-content-type-options"]).toBe("nosniff");
+    expect(response.headers()["cache-control"]).toContain("immutable");
+    expect(`/docs-source/${createHash("sha256").update(await response.body()).digest("hex")}.txt`).toBe(url);
+  }
+  const missing = await request.get(`/docs-source/${"0".repeat(64)}.txt`);
+  expect(missing.status()).toBe(404);
+  expect(missing.headers()["cache-control"] ?? "").not.toContain("immutable");
+});
