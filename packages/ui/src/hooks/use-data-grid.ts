@@ -759,10 +759,15 @@ function useDataGrid<TData>({
     }
   }, []);
 
+  const pasteRevision = React.useRef(0);
+  React.useEffect(() => () => { pasteRevision.current += 1; }, []);
+
   const onCellsPaste = React.useCallback(
     async (expandRows = false) => {
+      const revision = ++pasteRevision.current;
+      const isStale = () => revision !== pasteRevision.current || propsRef.current.readOnly;
       const navigableColumnIds = getNavigableColumnIds();
-      if (propsRef.current.readOnly) return;
+      if (isStale()) return;
 
       const currentState = store.getState();
       if (!currentState.focusedCell) return;
@@ -770,13 +775,61 @@ function useDataGrid<TData>({
       const currentTable = tableRef.current;
       const rows = currentTable?.getRowModel().rows;
       if (!rows) return;
+      // Capture records before the first await. Positional row ids are unsafe
+      // when the consumer replaces or reorders data without a getRowId callback.
+      const hasStableIds = !!currentTable.options.getRowId;
+      const sourceData = [...propsRef.current.data];
+      const sourceCounts = new Map<TData, number>();
+      for (const record of sourceData) {
+        sourceCounts.set(record, (sourceCounts.get(record) ?? 0) + 1);
+      }
+      const rowIdentity = (row: (typeof rows)[number]) =>
+        hasStableIds ? row.id : row.original;
+      const rebase = (updates: CellUpdate[], sourceRows: typeof rows) => {
+        const latestRows = tableRef.current?.getRowModel().rows ?? [];
+        const latestData = propsRef.current.data;
+        // Positional ids identify occurrences, even when multiple rows share
+        // one object. They remain safe across view sorting/filtering while the
+        // source sequence is unchanged (including a new array of the same rows).
+        const sameSourceSequence = sourceData.length === latestData.length &&
+          sourceData.every((record, index) => record === latestData[index]);
+        const rowsById = new Map(latestRows.map((row, index) => [row.id, index]));
+        const latestCounts = new Map<TData, number>();
+        const rowIndices = new Map<TData, number>();
+        if (!hasStableIds && !sameSourceSequence) {
+          for (const record of latestData) {
+            latestCounts.set(record, (latestCounts.get(record) ?? 0) + 1);
+          }
+          latestRows.forEach((row, index) => rowIndices.set(row.original, index));
+        }
+        const rebased: CellUpdate[] = [];
+        for (const update of updates) {
+          const source = sourceRows[update.rowIndex];
+          if (!source) return null;
+          let rowIndex: number | undefined;
+          if (hasStableIds || sameSourceSequence) {
+            rowIndex = rowsById.get(source.id);
+            if (!hasStableIds && latestRows[rowIndex ?? -1]?.original !== source.original) return null;
+          } else {
+            // After a source change, duplicate references cannot tell us which
+            // occurrence moved or disappeared. Cancel rather than edit another
+            // occurrence. Newly added, unique records have no source count yet.
+            if ((sourceCounts.get(source.original) ?? 0) > 1 ||
+              latestCounts.get(source.original) !== 1) return null;
+            rowIndex = rowIndices.get(source.original);
+          }
+          if (rowIndex === undefined) return null;
+          rebased.push({ ...update, rowIndex });
+        }
+        return rebased;
+      };
 
       try {
         let clipboardText = currentState.pasteDialog.clipboardText;
 
         if (!clipboardText) {
           clipboardText = await navigator.clipboard.readText();
-          if (!clipboardText) return;
+          if (isStale() || !clipboardText) return;
         }
 
         const pastedRows = clipboardText
@@ -813,9 +866,11 @@ function useDataGrid<TData>({
 
           if (propsRef.current.onRowsAdd) {
             await propsRef.current.onRowsAdd(rowsNeeded);
+            if (isStale()) return;
           } else if (propsRef.current.onRowAdd) {
             for (let i = 0; i < rowsNeeded; i++) {
               await propsRef.current.onRowAdd();
+              if (isStale()) return;
             }
           }
 
@@ -829,6 +884,7 @@ function useDataGrid<TData>({
             attempts < maxAttempts
           ) {
             await new Promise((resolve) => setTimeout(resolve, 100));
+            if (isStale()) return;
             currentTableRowCount =
               tableRef.current?.getRowModel().rows.length ?? 0;
             attempts++;
@@ -851,7 +907,11 @@ function useDataGrid<TData>({
 
         const updatedTable = tableRef.current;
         const updatedRows = updatedTable?.getRowModel().rows;
-        const currentRowCount = updatedRows?.length ?? 0;
+        const originalRowIds = new Set(rows.map(rowIdentity));
+        const pasteRows = [...rows, ...(updatedRows ?? []).filter(
+          (row) => !originalRowIds.has(rowIdentity(row)),
+        )];
+        const currentRowCount = pasteRows.length;
 
         let cellsSkipped = 0;
 
@@ -1083,8 +1143,11 @@ function useDataGrid<TData>({
         }
 
         if (updates.length > 0) {
+          const callbackUpdates = rebase(updates, pasteRows);
+          if (!callbackUpdates || isStale()) return;
           if (propsRef.current.onPaste) {
-            await propsRef.current.onPaste(updates);
+            await propsRef.current.onPaste(callbackUpdates);
+            if (isStale()) return;
           }
 
           const allUpdates: Array<CellUpdate> = [];
@@ -1108,13 +1171,15 @@ function useDataGrid<TData>({
               allUpdates.push({ rowIndex, columnId, value: emptyValue });
             }
 
-            store.setState("cutCells", new Set());
           }
 
           // Clear only successfully moved sources before writing destinations so
           // in-place and partially overlapping moves cannot erase pasted values.
           allUpdates.push(...updates);
-          onDataUpdate(allUpdates);
+          const rebasedUpdates = rebase(allUpdates, pasteRows);
+          if (!rebasedUpdates || isStale()) return;
+          if (currentState.cutCells.size > 0) store.setState("cutCells", new Set());
+          onDataUpdate(rebasedUpdates);
 
           if (cellsSkipped > 0) {
             toast.success(
@@ -1128,14 +1193,16 @@ function useDataGrid<TData>({
             );
           }
 
-          const endColumnId = navigableColumnIds[endColIndex];
-          if (endColumnId) {
+          const selectionBounds = rebase([
+            { rowIndex: startRowIndex, columnId: currentState.focusedCell.columnId, value: null },
+            { rowIndex: endRowIndex, columnId: navigableColumnIds[endColIndex] ?? "", value: null },
+          ], pasteRows);
+          const start = selectionBounds?.[0];
+          const end = selectionBounds?.[1];
+          if (start && end?.columnId) {
             selectRange(
-              {
-                rowIndex: startRowIndex,
-                columnId: currentState.focusedCell.columnId,
-              },
-              { rowIndex: endRowIndex, columnId: endColumnId },
+              { rowIndex: start.rowIndex, columnId: start.columnId },
+              { rowIndex: end.rowIndex, columnId: end.columnId },
             );
           }
 
@@ -1156,6 +1223,7 @@ function useDataGrid<TData>({
           });
         }
       } catch (error) {
+        if (isStale()) return;
         toast.error(
           error instanceof Error
             ? error.message

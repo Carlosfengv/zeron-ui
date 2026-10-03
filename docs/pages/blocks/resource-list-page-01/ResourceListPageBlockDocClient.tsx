@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { ResourceListPage } from "@zeron/blocks/resource-list-page-01";
 import {
   BlockDetailPage,
@@ -7,7 +8,7 @@ import {
 } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function ResourceListPageBlockDocClient({ code }: { code: string }) {
+export function ResourceListPageBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("resourceListPageBlock");
 
   return (

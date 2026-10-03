@@ -1,8 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { InspectionReportListBlockDocClient } from "./InspectionReportListBlockDocClient";
 
-export default async function InspectionReportListBlockDoc() {
-  const code = await readFile(join(process.cwd(), "packages/blocks/src/application/inspection-report-list-01/inspection-report-list.tsx"), "utf8");
-  return <InspectionReportListBlockDocClient code={code} />;
+export default function InspectionReportListBlockDoc() {
+  return <InspectionReportListBlockDocClient code={getBlockPreviewSource("inspection-report-list-01")} />;
 }

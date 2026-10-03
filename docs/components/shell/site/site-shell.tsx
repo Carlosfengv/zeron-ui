@@ -1,12 +1,12 @@
 "use client";
 
 import { Suspense, useEffect, useRef, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
-import Link, { useLinkStatus } from "next/link";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AppShell, AppShellHeader, AppShellMain, AppShellSidebar } from "@zeron/ui/app-shell";
 import { Button } from "@zeron/ui/button";
-import { NavItem, NavItemContent, NavItemLabel, NavItemTrigger } from "@zeron/ui/nav-item";
+import { NavItem, NavItemTrigger } from "@zeron/ui/nav-item";
 import { NavMenu } from "@zeron/ui/nav-menu";
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@zeron/ui/sidebar";
 import { useIcon } from "@zeron/icons/context";
@@ -17,6 +17,7 @@ import { Tooltip } from "@zeron/ui/tooltip";
 import { rgbToHex, useBrandColor } from "@docs/components/playground/brand-playground";
 import { DeferredDesktopRightPanel } from "@docs/components/shell/site/deferred-desktop-chrome";
 import { DocsSidebar } from "@docs/components/shell/site/sidebar";
+import { PrimaryNavigationLabel } from "@docs/components/shell/site/primary-navigation-label";
 import { RightRailProvider } from "@docs/components/shell/right-rail";
 import { docEntries, type DocCollection } from "@docs/manifest";
 import { internalPathname, localePrefixFromPathname, localizePathname } from "@docs/components/shell/site/locale-path";
@@ -108,17 +109,6 @@ function LocaleSwitchLinkFallback({
     <Button asChild aria-label={actionLabel} size="sm" variant="ghost">
       <Link href={localizePathname(currentPathname, alternateLocalePrefix)}>{label}</Link>
     </Button>
-  );
-}
-
-function PrimaryNavigationLabel({ label, loadingLabel }: { label: string; loadingLabel: string }) {
-  const { pending } = useLinkStatus();
-
-  return (
-    <NavItemContent className={pending ? "opacity-60" : undefined}>
-      <NavItemLabel>{label}</NavItemLabel>
-      <span className="sr-only" role="status">{pending ? loadingLabel : ""}</span>
-    </NavItemContent>
   );
 }
 

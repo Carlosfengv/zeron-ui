@@ -1,10 +1,11 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { StorageUsage, storageUsageDemoData } from "@zeron/blocks/storage-usage-01";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function StorageUsageBlockDocClient({ code }: { code: string }) {
+export function StorageUsageBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("storageUsageBlock");
 
   return (

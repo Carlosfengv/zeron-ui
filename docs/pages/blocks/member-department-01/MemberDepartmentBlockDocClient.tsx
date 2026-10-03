@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import {
   defaultMemberDepartmentMembers,
   MemberDepartment,
@@ -12,7 +13,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-export function MemberDepartmentBlockDocClient({ code }: { code: string }) {
+export function MemberDepartmentBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("memberDepartmentBlock");
   const [members, setMembers] = useState<MemberDepartmentMember[]>(() => [
     ...defaultMemberDepartmentMembers,

@@ -1,12 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { FileManagerBlockDocClient } from "./FileManagerBlockDocClient";
 
-export default async function FileManagerBlockDoc() {
-  const code = await readFile(
-    join(process.cwd(), "packages/blocks/src/application/file-manager-01/file-manager.tsx"),
-    "utf8"
-  );
-
-  return <FileManagerBlockDocClient code={code} />;
+export default function FileManagerBlockDoc() {
+  return <FileManagerBlockDocClient code={getBlockPreviewSource("file-manager-01")} />;
 }

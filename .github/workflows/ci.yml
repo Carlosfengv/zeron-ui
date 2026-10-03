@@ -89,3 +89,14 @@ jobs:
 
       - name: Test production routing and localized pages
         run: pnpm test:production
+
+      - name: Test navigation loading and interruption
+        run: pnpm exec playwright test --config playwright.navigation-loading.config.ts
+
+      - name: Upload navigation failure traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: navigation-loading-evidence
+          path: test-results
+          if-no-files-found: ignore

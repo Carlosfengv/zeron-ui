@@ -1,12 +1,13 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { ZlrWorkspace } from "@zeron/blocks/zlrlist";
 import {
   BlockDetailPage,
   BlockDetailSection,
 } from "@docs/components/blocks/BlockDetailPage";
 
-export function ZlrListBlockDocClient({ code }: { code: string }) {
+export function ZlrListBlockDocClient({ code }: { code: PreviewCode }) {
   return (
     <BlockDetailPage
       code={code}

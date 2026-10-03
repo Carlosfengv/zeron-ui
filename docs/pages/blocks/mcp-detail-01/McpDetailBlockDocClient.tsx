@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { useState } from "react";
 import { McpDetail } from "@zeron/blocks/mcp-detail-01";
 import { InlineNotice } from "@zeron/ui/inline-notice";
@@ -8,7 +9,7 @@ import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useTranslations } from "next-intl";
 import { DetailBlockPreviewShell } from "../_components/DetailBlockPreviewShell";
 
-export function McpDetailBlockDocClient({ code }: { code: string }) {
+export function McpDetailBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("mcpDetailBlock");
   const [notice, setNotice] = useState<string | null>(null);
   const props: PropDef[] = [

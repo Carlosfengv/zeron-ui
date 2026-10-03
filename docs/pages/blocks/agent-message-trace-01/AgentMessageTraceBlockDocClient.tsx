@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import {
   AgentMessageTrace,
   agentMessageTraceDemoData,
@@ -7,7 +8,7 @@ import {
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function AgentMessageTraceBlockDocClient({ code }: { code: string }) {
+export function AgentMessageTraceBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("agentMessageTraceBlock");
 
   return (

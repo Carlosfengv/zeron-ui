@@ -1,6 +1,6 @@
 {
   "name": "zeron-ui",
-  "version": "0.2.0-beta.17",
+  "version": "0.2.0-beta.18",
   "description": "Install Zeron Design components into your project.",
   "type": "module",
   "bin": {
@@ -23,8 +23,10 @@
     "prepublishOnly": "pnpm check && pnpm test"
   },
   "dependencies": {
+    "semver": "7.7.4",
     "shadcn": "3.0.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "yaml": "1.10.3"
   },
   "keywords": [
     "zeron-ui",

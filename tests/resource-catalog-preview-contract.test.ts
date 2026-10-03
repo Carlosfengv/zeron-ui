@@ -17,7 +17,7 @@ const blockCatalog = readFileSync(join(ROOT, "packages/blocks/src/catalog.ts"), 
 const blockRegistry = readFileSync(join(ROOT, "packages/blocks/registry.json"), "utf8");
 const blocksPackage = readFileSync(join(ROOT, "packages/blocks/package.json"), "utf8");
 const blockDetailPage = readFileSync(
-  join(ROOT, "docs/components/blocks/BlockDetailPage.tsx"),
+  join(ROOT, "docs/components/blocks/BlockDetailPageView.tsx"),
   "utf8"
 );
 const blocksGallery = readFileSync(join(ROOT, "docs/components/blocks/BlocksGallery.tsx"), "utf8");

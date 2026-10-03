@@ -1,10 +1,11 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { AgentTrace } from "@zeron/blocks/agent-trace-01";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function AgentTraceBlockDocClient({ code }: { code: string }) {
+export function AgentTraceBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("agentTraceBlock");
 
   return (

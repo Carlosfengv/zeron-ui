@@ -1,10 +1,11 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function ResourceStatusAllBlockDocClient({ code }: { code: string }) {
+export function ResourceStatusAllBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("resourceStatusAllBlock");
 
   return (

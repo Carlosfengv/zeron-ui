@@ -1,10 +1,11 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { PersonalSettingsDemo } from "@docs/components/blocks/AccountBlocksDemo";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function PersonalSettingsBlockDocClient({ code }: { code: string }) {
+export function PersonalSettingsBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("personalSettingsBlock");
   return <BlockDetailPage code={code} description={t("description")} registryName="personal-settings-01" slug="personal-settings-01" title={t("title")} preview={<PersonalSettingsDemo />}>
     <BlockDetailSection title={t("interactionTitle")}><p className="text-body text-fg-muted">{t("interactionBody")}</p></BlockDetailSection>

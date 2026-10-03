@@ -1,15 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { FilterRuleBuilderBlockDocClient } from "./FilterRuleBuilderBlockDocClient";
 
-export default async function FilterRuleBuilderBlockDoc() {
-  const code = await readFile(
-    join(
-      process.cwd(),
-      "packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder.tsx"
-    ),
-    "utf8"
-  );
-
-  return <FilterRuleBuilderBlockDocClient code={code} />;
+export default function FilterRuleBuilderBlockDoc() {
+  return <FilterRuleBuilderBlockDocClient code={getBlockPreviewSource("filter-rule-builder-01")} />;
 }

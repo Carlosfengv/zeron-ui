@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { useState } from "react";
 import {
   FilterRuleBuilder,
@@ -15,7 +16,7 @@ import {
 } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function FilterRuleBuilderBlockDocClient({ code }: { code: string }) {
+export function FilterRuleBuilderBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("filterRuleBuilderBlock");
   const [filters, setFilters] = useState<FilterRuleClause[]>(() =>
     filterRuleBuilderDemoValue.map((filter) => ({ ...filter }))

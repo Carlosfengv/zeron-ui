@@ -1,12 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { AgentTraceBlockDocClient } from "./AgentTraceBlockDocClient";
 
-export default async function AgentTraceBlockDoc() {
-  const code = await readFile(
-    join(process.cwd(), "packages/blocks/src/application/agent-trace-01/agent-trace.tsx"),
-    "utf8"
-  );
-
-  return <AgentTraceBlockDocClient code={code} />;
+export default function AgentTraceBlockDoc() {
+  return <AgentTraceBlockDocClient code={getBlockPreviewSource("agent-trace-01")} />;
 }

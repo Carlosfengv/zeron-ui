@@ -1,9 +1,7 @@
 import "server-only";
 
-import type { ComponentType } from "react";
-
-export type DocPageModule = { default: ComponentType };
-export type DocPageLoader = () => Promise<DocPageModule>;
+import type { DocPageLoader } from "./page-loader-types";
+export type { DocPageModule, DocPageLoader } from "./page-loader-types";
 
 export const pageLoaders: Record<string, DocPageLoader> = {
   "blocks/user-account-01": () => import("@docs/pages/blocks/user-account-01/page"),

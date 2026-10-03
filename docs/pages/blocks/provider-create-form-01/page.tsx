@@ -1,15 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { ProviderCreateFormBlockDocClient } from "./ProviderCreateFormBlockDocClient";
 
-export default async function ProviderCreateFormBlockDoc() {
-  const code = await readFile(
-    join(
-      process.cwd(),
-      "packages/blocks/src/application/provider-create-form-01/provider-create-form.tsx"
-    ),
-    "utf8"
-  );
-
-  return <ProviderCreateFormBlockDocClient code={code} />;
+export default function ProviderCreateFormBlockDoc() {
+  return <ProviderCreateFormBlockDocClient code={getBlockPreviewSource("provider-create-form-01")} />;
 }

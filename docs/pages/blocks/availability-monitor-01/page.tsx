@@ -1,15 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { AvailabilityMonitorBlockDocClient } from "./AvailabilityMonitorBlockDocClient";
 
-export default async function AvailabilityMonitorBlockDoc() {
-  const code = await readFile(
-    join(
-      process.cwd(),
-      "packages/blocks/src/application/availability-monitor-01/availability-monitor.tsx"
-    ),
-    "utf8"
-  );
-
-  return <AvailabilityMonitorBlockDocClient code={code} />;
+export default function AvailabilityMonitorBlockDoc() {
+  return <AvailabilityMonitorBlockDocClient code={getBlockPreviewSource("availability-monitor-01")} />;
 }

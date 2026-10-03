@@ -9,6 +9,7 @@ import {
   normalizeRegistryUrl,
 } from "./registry.js";
 import { runShadcn } from "./run-shadcn.js";
+import { assertReactInstallIntent, assertReactRuntime } from "./react-compatibility.js";
 import { resolveInstalledRegistryAliases } from "./resolve-registry-aliases.js";
 import { assertProjectPath } from "./project-paths.js";
 import { createInstallSnapshot } from "./install-snapshot.js";
@@ -124,8 +125,13 @@ async function assertInstallCompatibility(plan, packageJson, cwd) {
     throw new Error(`${nextItems.map((item) => item.name).join(", ")} requires Next.js; this project is not a supported Next consumer`);
   }
   const reactRequirements = plan.requirements.filter((requirement) => requirement.react);
-  if (reactRequirements.length && major(dependencies.react) !== 19) {
-    throw new Error(`Zeron Registry items require React 19; found ${dependencies.react ?? "no react dependency"}`);
+  if (reactRequirements.length) {
+    try {
+      await assertReactRuntime(cwd);
+      await assertReactInstallIntent(cwd, packageJson, plan);
+    } catch (error) {
+      throw new Error(`${error.message}. No files were written`, { cause: error });
+    }
   }
   const tailwindRequirements = plan.requirements.filter((requirement) => requirement.tailwind);
   if (tailwindRequirements.length) {
@@ -152,6 +158,7 @@ async function assertInstallCompatibility(plan, packageJson, cwd) {
   for (const requirement of [...plan.requiredDependencies, ...plan.requiredDevDependencies]) {
     const marker = requirement.startsWith("@") ? requirement.indexOf("@", requirement.indexOf("/") + 1) : requirement.indexOf("@");
     const name = marker === -1 ? requirement : requirement.slice(0, marker);
+    if (reactRequirements.length && ["react", "react-dom"].includes(name)) continue;
     const expectedMajor = major(dependencyVersion(requirement));
     const installedMajor = major(dependencies[name] ?? "");
     if (expectedMajor !== null && installedMajor !== null && expectedMajor !== installedMajor) {
@@ -296,6 +303,7 @@ export async function runCli(
     }
 
     const snapshot = await createInstallSnapshot(plan, { overwrite: values.overwrite });
+    let installerStarted = false;
     try {
       await snapshot.verify();
       // Recheck immediately before handing control to the installation engine.
@@ -307,11 +315,13 @@ export async function runCli(
         const content = await readIfPresent(targetPath);
         if ((content === null ? null : digest(content)) !== hash) throw new Error(`Project file changed during preflight: ${path.relative(cwd, targetPath)}; rerun the install`);
       }
+      installerStarted = true;
       const status = await runShadcnImpl(
         ["add", ...snapshot.paths, "--cwd", cwd, ...forwardSharedOptions(values, { includePath: true })],
         { cwd },
       );
       if (status === 0) {
+        if (plan.requirements.some((requirement) => requirement.react)) await assertReactRuntime(cwd);
         for (const target of plan.guardedPaths) await assertProjectPath(cwd, target);
         if (digest(await readFile(path.join(cwd, "components.json"))) !== plan.configHash) throw new Error("Project configuration changed during installation; installation was not recorded");
         await resolveInstalledRegistryAliases(
@@ -323,7 +333,13 @@ export async function runCli(
         }
         await writeInstallState(cwd, plan);
       }
+      if (status !== 0) stdout.write("Installation failed; files and dependencies may have changed. Changes were not rolled back and installation was not recorded.\n");
       return status;
+    } catch (error) {
+      if (installerStarted) {
+        throw new Error(`${error.message}. Files and dependencies may have changed; changes were not rolled back and installation was not recorded`, { cause: error });
+      }
+      throw error;
     } finally {
       await snapshot.cleanup();
     }

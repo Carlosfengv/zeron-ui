@@ -1,15 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { RuleFlowEditorBlockDocClient } from "./RuleFlowEditorBlockDocClient";
 
-export default async function RuleFlowEditorBlockDoc() {
-  const code = await readFile(
-    join(
-      process.cwd(),
-      "packages/blocks/src/application/rule-flow-editor-01/rule-flow-editor.tsx",
-    ),
-    "utf8",
-  );
-
-  return <RuleFlowEditorBlockDocClient code={code} />;
+export default function RuleFlowEditorBlockDoc() {
+  return <RuleFlowEditorBlockDocClient code={getBlockPreviewSource("rule-flow-editor-01")} />;
 }

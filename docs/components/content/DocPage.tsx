@@ -14,6 +14,7 @@ const BASE_UI_BACKED_SLUGS = new Set([
 
 interface DocPageProps {
   title: string;
+  installationLabel?: string;
   description: ReactNode;
   slug?: string;
   installSlug?: string;
@@ -24,6 +25,7 @@ interface DocPageProps {
 
 export function DocPage({
   title,
+  installationLabel,
   description,
   slug,
   installSlug,
@@ -62,7 +64,7 @@ export function DocPage({
       {slug && registrySlug && showInstall && (
         <div className="flex flex-col gap-3">
           <h2 className="text-title text-fg-default leading-none font-semibold">
-            {t("installation")}
+            {installationLabel ?? t("installation")}
           </h2>
           <InstallCommand value={`npx zeron-ui add ${registrySlug}`} />
           {BASE_UI_BACKED_SLUGS.has(registrySlug) && (

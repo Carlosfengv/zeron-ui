@@ -5,7 +5,7 @@ import {
   functionalUpdate,
   type PaginationState,
 } from "@tanstack/react-table";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   DataTableFacetedFilter,
@@ -126,5 +126,27 @@ describe("useDataTable controlled state", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Teams" }));
     expect(screen.getByText("99")).toBeTruthy();
+  });
+});
+
+
+describe("all TanStack controlled state slices", () => {
+  it("passes global filtering, expansion, grouping, row pinning and sizing through", () => {
+    const onGlobalFilterChange = vi.fn();
+    const state = {
+      globalFilter: "Alice", expanded: { alice: true }, grouping: ["name"],
+      rowPinning: { top: ["alice"] }, columnSizing: { name: 240 },
+    };
+    const { result, rerender } = renderHook(({ controlled }) => useDataTable({
+      columns, data: [{ name: "Alice" }, { name: "Bob" }],
+      state: controlled, onGlobalFilterChange,
+    }), { initialProps: { controlled: state } });
+    expect(result.current.table.getState()).toMatchObject(state);
+    expect(result.current.table.getRowModel().rows.map((row) => row.original.name)).toEqual(["Alice"]);
+    act(() => result.current.table.setGlobalFilter("Bob"));
+    expect(onGlobalFilterChange).toHaveBeenCalledWith("Bob");
+    expect(result.current.table.getState().globalFilter).toBe("Alice");
+    rerender({ controlled: { ...state, globalFilter: "Bob" } });
+    expect(result.current.table.getRowModel().rows.map((row) => row.original.name)).toEqual(["Bob"]);
   });
 });

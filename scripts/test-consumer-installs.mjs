@@ -13,12 +13,14 @@ import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { execFile as execFileCallback } from "node:child_process";
 import { promisify } from "node:util";
+import { consumerRegistryExpectations, snapshotConsumerRegistry } from "./lib/consumer-registry-expectations.mjs";
 
 const execFile = promisify(execFileCallback);
 const ROOT = new URL("..", import.meta.url).pathname;
 const REGISTRY_DIR = join(ROOT, "public/r");
 const all = process.argv.includes("--all");
-const registryItems = JSON.parse(await readFile(join(REGISTRY_DIR, "registry.json"), "utf8")).items;
+const registrySnapshot = await snapshotConsumerRegistry(REGISTRY_DIR);
+const registryItems = JSON.parse(registrySnapshot.get("registry.json")).items;
 const allRegistryItems = registryItems.map((item) => item.name).filter((name) => typeof name === "string");
 const components = process.env.ZERON_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? (all
   ? allRegistryItems
@@ -39,11 +41,11 @@ function registryServer() {
       return;
     }
     try {
-      response.writeHead(200, { "content-type": "application/json" });
       const origin = `http://${request.headers.host}`;
-      const data = (await readFile(join(REGISTRY_DIR, name), "utf8"))
-        .replaceAll("https://zeron-ui.vercel.app/r", origin);
-      response.end(data);
+      const source = registrySnapshot.get(name);
+      if (!source) { response.writeHead(404).end(); return; }
+      const data = source.replaceAll("https://zeron-ui.vercel.app/r", origin);
+      response.writeHead(200, { "content-type": "application/json" }).end(data);
     } catch {
       response.writeHead(404).end();
     }
@@ -190,19 +192,20 @@ async function installWithCli({ consumer, component, manager, tarball }) {
 }
 
 async function assertThemeInstallation({ consumer, cssPath, component }) {
+  const expectations = await consumerRegistryExpectations(registrySnapshot, component);
   const css = await readFile(join(consumer, cssPath), "utf8");
   const animationImports = css.match(/@import\s+["']tw-animate-css["'];/g) ?? [];
-  if (animationImports.length !== 1) {
+  if (expectations.animation && animationImports.length !== 1) {
     throw new Error(`${component}: expected one tw-animate-css import in ${cssPath}, found ${animationImports.length}`);
   }
-  for (const token of ["--border-width-hairline", "--transition-duration-fast"]) {
+  for (const token of expectations.tokens.map((name) => `--${name}`)) {
     if (!css.includes(token)) throw new Error(`${component}: ${cssPath} is missing ${token}`);
   }
   const manifest = JSON.parse(await readFile(join(consumer, "package.json"), "utf8"));
-  if (!(manifest.dependencies?.["tw-animate-css"] ?? manifest.devDependencies?.["tw-animate-css"])) {
+  if (expectations.animation && !(manifest.dependencies?.["tw-animate-css"] ?? manifest.devDependencies?.["tw-animate-css"])) {
     throw new Error(`${component}: tw-animate-css was not recorded in package.json`);
   }
-  if (!(await exists(join(consumer, "lib", "tailwind-merge-tokens.ts"))) &&
+  if (expectations.mergeTokens && !(await exists(join(consumer, "lib", "tailwind-merge-tokens.ts"))) &&
       !(await exists(join(consumer, "src", "lib", "tailwind-merge-tokens.ts")))) {
     throw new Error(`${component}: generated Tailwind merge token names were not installed`);
   }
@@ -477,6 +480,8 @@ try {
       await mkdir(consumer, { recursive: true });
       await writeConsumer(consumer, manager);
       await installWithCli({ consumer, component, manager, tarball });
+      console.log(`Consumer passed: ${manager}/${component}`);
+      await rm(consumer, { recursive: true, force: true });
     }
   }
   for (const component of viteComponents) {
@@ -484,6 +489,8 @@ try {
     await mkdir(consumer, { recursive: true });
     await writeViteConsumer(consumer);
     await installViteComponent({ consumer, component, tarball });
+    console.log(`Consumer passed: vite/${component}`);
+    await rm(consumer, { recursive: true, force: true });
   }
   const rejectionConsumer = join(work, "vite-next-rejection");
   await mkdir(rejectionConsumer, { recursive: true });

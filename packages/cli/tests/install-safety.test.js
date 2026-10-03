@@ -22,9 +22,10 @@ async function fixture(t, { version = "4.1.18", tsx = true } = {}) {
   const root = await mkdtemp(path.join(tmpdir(), "zeron-install-safety-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const cwd = path.join(root, "consumer");
-  for (const directory of ["app", "node_modules/react", "node_modules/tailwindcss"]) await mkdir(path.join(cwd, directory), { recursive: true });
+  for (const directory of ["app", "node_modules/react", "node_modules/react-dom", "node_modules/tailwindcss"]) await mkdir(path.join(cwd, directory), { recursive: true });
   await writeFile(path.join(cwd, "package.json"), JSON.stringify({ name: "install-safety-fixture", private: true, dependencies: { react: "19.2.0", next: "15.5.9" }, devDependencies: { tailwindcss: "^4.0.0" } }));
   await writeFile(path.join(cwd, "node_modules/react/package.json"), JSON.stringify({ name: "react", version: "19.2.0" }));
+  await writeFile(path.join(cwd, "node_modules/react-dom/package.json"), JSON.stringify({ name: "react-dom", version: "19.2.0" }));
   await writeFile(path.join(cwd, "node_modules/tailwindcss/package.json"), JSON.stringify({ name: "tailwindcss", version }));
   await writeFile(path.join(cwd, "components.json"), JSON.stringify({ style: "new-york", iconLibrary: "none", rsc: true, tsx, aliases, tailwind: { config: "", css: "app/globals.css", baseColor: "", cssVariables: true, prefix: "" } }));
   await writeFile(path.join(cwd, "tsconfig.json"), JSON.stringify({ compilerOptions: { baseUrl: ".", paths: { "@/*": ["./*"] }, jsx: "preserve" } }));
@@ -257,3 +258,191 @@ for (const extra of [{ envVars: { FIXTURE: "value" } }, { files: [{ path: ".env"
     await assert.rejects(buildInstallPlan({ cwd, names: ["example"], baseUrl: "http://localhost/r", fetchImpl: response({ ...simpleItem(), ...extra }) }), /unsupported environment-file writes|Unsupported Registry target with installer-dependent placement/);
   });
 }
+
+for (const spec of ["catalog:", "workspace:^", "npm:react@19.2.0", "^18.0.0 || ^19.0.0"]) {
+  test(`React compatibility accepts installed matching React 19 with ${spec}`, async (t) => {
+    const { cwd } = await fixture(t);
+    const manifestPath = path.join(cwd, "package.json");
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+    manifest.dependencies.react = spec;
+    manifest.dependencies["react-dom"] = spec;
+    await writeFile(manifestPath, JSON.stringify(manifest));
+    let invoked = false;
+    await runCli(["add", "example", "--cwd", cwd], {
+      fetchImpl: response({ ...simpleItem(), meta: { zeron: { react: "^19.0.0" } } }),
+      runShadcnImpl: () => { invoked = true; return 0; },
+    });
+    assert.equal(invoked, true);
+  });
+}
+
+for (const [name, version] of [["react", "18.3.1"], ["react-dom", "18.3.1"], ["react-dom", "19.1.0"], ["react", "19.2.0-canary.1"], ["react-dom", null]]) {
+  test(`React compatibility rejects installed ${name} ${version} before mutation`, async (t) => {
+    const { cwd } = await fixture(t);
+    const target = path.join(cwd, "node_modules", name, "package.json");
+    if (version === null) await rm(target);
+    else await writeFile(target, JSON.stringify({ name, version }));
+    const before = await readFile(path.join(cwd, "package.json"), "utf8");
+    await assert.rejects(runCli(["add", "example", "--cwd", cwd], {
+      fetchImpl: response({ ...simpleItem(), meta: { zeron: { react: "^19.0.0" } } }),
+      runShadcnImpl: () => { throw new Error("must not invoke installer"); },
+    }), /require React 19|matching installed versions|Cannot resolve the installed react-dom/);
+    assert.equal(await readFile(path.join(cwd, "package.json"), "utf8"), before);
+    await assert.rejects(access(path.join(cwd, "lib/example.ts")), { code: "ENOENT" });
+  });
+}
+
+for (const [name, spec] of [["react", "^18.0.0"], ["react-dom", "~18.3.0"], ["react", "npm:react@^18.0.0"], ["react-dom", "workspace:^18.0.0"]]) {
+  test(`rejects incompatible ${name} install intent ${spec} despite installed React 19`, async (t) => {
+    const { cwd } = await fixture(t);
+    const manifest = JSON.parse(await readFile(path.join(cwd, "package.json"), "utf8"));
+    manifest.dependencies[name] = spec;
+    await writeFile(path.join(cwd, "package.json"), JSON.stringify(manifest));
+    await assert.rejects(runCli(["add", "example", "--cwd", cwd], {
+      fetchImpl: response({ ...simpleItem(), meta: { zeron: { react: "^19.0.0" } } }),
+      runShadcnImpl: () => { throw new Error("must not invoke installer"); },
+    }), /require React 19.*declaration.*No files were written/);
+    await assert.rejects(access(path.join(cwd, "lib/example.ts")), { code: "ENOENT" });
+  });
+}
+
+for (const version of ["^18.0.0", "^19.0.0"]) {
+  for (const catalog of ["", "modern"]) {
+    test(`resolves ${catalog || "default"} catalog install intent ${version}`, async (t) => {
+      const { root, cwd } = await fixture(t);
+      await writeFile(path.join(root, "pnpm-workspace.yaml"), catalog
+        ? `catalogs:\n  modern:\n    react: '${version}'\n    react-dom: '${version}'\n`
+        : `catalog:\n  react: '${version}'\n  react-dom: '${version}'\n`);
+      const manifest = JSON.parse(await readFile(path.join(cwd, "package.json"), "utf8"));
+      for (const name of ["react", "react-dom"]) manifest.dependencies[name] = `catalog:${catalog}`;
+      await writeFile(path.join(cwd, "package.json"), JSON.stringify(manifest));
+      let invoked = false;
+      const operation = runCli(["add", "example", "--cwd", cwd], {
+        fetchImpl: response({ ...simpleItem(), meta: { zeron: { react: "^19.0.0" } } }),
+        runShadcnImpl: () => { invoked = true; return 0; },
+      });
+      if (version.startsWith("^18")) await assert.rejects(operation, /declaration catalog:.*incompatible/);
+      else assert.equal(await operation, 0);
+      assert.equal(invoked, version.startsWith("^19"));
+    });
+  }
+}
+
+for (const [name, version] of [["react", "18.3.1"], ["react-dom", "18.3.1"], ["react-dom", "19.1.0"], ["react", "19.2.0-canary.1"], ["react-dom", null]]) {
+  test(`post-install check rejects ${name} ${version} without recording success or implying rollback`, async (t) => {
+    const { cwd } = await fixture(t);
+    const state = '{"version":1,"installations":[]}\n';
+    await mkdir(path.join(cwd, ".zeron"));
+    await writeFile(path.join(cwd, ".zeron/install-state.json"), state);
+    await assert.rejects(runCli(["add", "example", "--cwd", cwd], {
+      fetchImpl: response({ ...simpleItem(), meta: { zeron: { react: "^19.0.0" } } }),
+      runShadcnImpl: async () => {
+        await mkdir(path.join(cwd, "lib"));
+        await writeFile(path.join(cwd, "lib/example.ts"), "// partial installer output\n");
+        const filename = path.join(cwd, "node_modules", name, "package.json");
+        if (version === null) await rm(filename);
+        else await writeFile(filename, JSON.stringify({ name, version }));
+        return 0;
+      },
+    }), (error) => {
+      assert.match(error.message, /require React 19|matching installed versions|Cannot resolve the installed react-dom/);
+      assert.match(error.message, /Files and dependencies may have changed; changes were not rolled back and installation was not recorded/);
+      assert.doesNotMatch(error.message, /No files were written/i);
+      return true;
+    });
+    assert.equal(await readFile(path.join(cwd, ".zeron/install-state.json"), "utf8"), state);
+    assert.equal(await readFile(path.join(cwd, "lib/example.ts"), "utf8"), "// partial installer output\n");
+  });
+}
+
+async function offlineReactFixture(t, version) {
+  const { root, cwd } = await fixture(t);
+  const manifest = { name: "offline-react-consumer", private: true, dependencies: {}, devDependencies: {} };
+  for (const [name, sourceVersion] of [["react", version], ["react-dom", version], ["next", "15.5.9"], ["tailwindcss", "4.1.18"], ["marker", "1.0.0"]]) {
+    const source = path.join(root, `${name}-source`);
+    await mkdir(source);
+    await writeFile(path.join(source, "package.json"), JSON.stringify({ name, version: sourceVersion }));
+    if (name !== "marker") manifest[name === "tailwindcss" ? "devDependencies" : "dependencies"][name] = `file:../${name}-source`;
+  }
+  await writeFile(path.join(cwd, "package.json"), JSON.stringify(manifest));
+  const item = { ...simpleItem(), dependencies: ["marker@file:../marker-source"], meta: { zeron: { react: "^19.0.0" } } };
+  return { root, cwd, item };
+}
+
+for (const mode of ["reject-intent", "successful-install", "changed-during-install"]) {
+  test(`real pinned installer offline React file fixture: ${mode}`, { timeout: 60000 }, async (t) => {
+    const { root, cwd, item } = await offlineReactFixture(t, mode === "reject-intent" ? "18.3.1" : "19.2.0");
+    // Run the real pinned shadcn/npm engine, with no network or lifecycle scripts.
+    // The hook models a local dependency changing after the preflight read.
+    const script = `
+      import { writeFile } from 'node:fs/promises';
+      import { runCli } from ${JSON.stringify(new URL("../src/cli.js", import.meta.url).href)};
+      import { runShadcn } from ${JSON.stringify(new URL("../src/run-shadcn.js", import.meta.url).href)};
+      try {
+        process.exitCode = await runCli(['add', 'example', '--yes', '--cwd', ${JSON.stringify(cwd)}], {
+          fetchImpl: async () => ({ ok: true, json: async () => (${JSON.stringify(item)}) }),
+          runShadcnImpl: async (args, options) => {
+            if (${JSON.stringify(mode)} === 'changed-during-install') {
+              for (const name of ['react', 'react-dom']) await writeFile(${JSON.stringify(root)} + '/' + name + '-source/package.json', JSON.stringify({name, version:'18.3.1'}));
+            }
+            return runShadcn(args, options);
+          }
+        });
+      } catch (error) { console.error(error.message); process.exitCode = 1; }
+    `;
+    const operation = exec(process.execPath, ["--input-type=module", "-e", script], {
+      cwd, timeout: 55000,
+      env: { ...process.env, CI: "true", npm_config_offline: "true", npm_config_ignore_scripts: "true", npm_config_cache: path.join(root, "cache"), XDG_CACHE_HOME: path.join(root, "xdg") },
+    });
+    if (mode === "successful-install") await operation;
+    else await assert.rejects(operation, (error) => {
+      assert.match(error.stderr, /require React 19/);
+      assert.match(error.stderr, mode === "reject-intent" ? /No files were written/ : /changes were not rolled back and installation was not recorded/);
+      return true;
+    });
+    for (const name of ["react", "react-dom"]) {
+      const installed = JSON.parse(await readFile(path.join(cwd, "node_modules", name, "package.json"), "utf8"));
+      assert.equal(installed.version, mode === "changed-during-install" ? "18.3.1" : "19.2.0");
+    }
+    if (mode === "reject-intent") {
+      await assert.rejects(access(path.join(cwd, "lib/example.ts")), { code: "ENOENT" });
+      await assert.rejects(access(path.join(cwd, "node_modules/marker")), { code: "ENOENT" });
+    } else {
+      await access(path.join(cwd, "lib/example.ts"));
+      await access(path.join(cwd, "node_modules/marker/package.json"));
+    }
+    if (mode === "successful-install") {
+      const state = JSON.parse(await readFile(path.join(cwd, ".zeron/install-state.json"), "utf8"));
+      assert.ok(state.installations[0].files.includes("lib/example.ts"));
+    } else await assert.rejects(access(path.join(cwd, ".zeron/install-state.json")), { code: "ENOENT" });
+  });
+}
+
+for (const failure of ["status", "exception"]) {
+  test(`installer ${failure} discloses possible partial changes`, async (t) => {
+    const { cwd } = await fixture(t);
+    let output = "";
+    const operation = runCli(["add", "example", "--cwd", cwd], {
+      fetchImpl: response(simpleItem()),
+      stdout: { write: (value) => { output += value; } },
+      runShadcnImpl: () => {
+        if (failure === "exception") throw new Error("installer interrupted");
+        return 1;
+      },
+    });
+    if (failure === "exception") await assert.rejects(operation, /installer interrupted.*changes were not rolled back and installation was not recorded/);
+    else {
+      assert.equal(await operation, 1);
+      assert.match(output, /files and dependencies may have changed.*Changes were not rolled back and installation was not recorded/);
+    }
+    await assert.rejects(access(path.join(cwd, ".zeron/install-state.json")), { code: "ENOENT" });
+  });
+}
+
+test("Registry dependency install intent cannot downgrade React behind compatible project declarations", async (t) => {
+  const { cwd } = await fixture(t);
+  await assert.rejects(runCli(["add", "example", "--cwd", cwd], {
+    fetchImpl: response({ ...simpleItem(), dependencies: ["react-dom@^18.0.0"], meta: { zeron: { react: "^19.0.0" } } }),
+    runShadcnImpl: () => { throw new Error("must not invoke installer"); },
+  }), /require React 19.*react-dom declaration \^18.0.0.*No files were written/);
+});

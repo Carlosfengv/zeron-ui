@@ -1,8 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { PersonalSettingsBlockDocClient } from "./PersonalSettingsBlockDocClient";
 
-export default async function PersonalSettingsBlockDoc() {
-  const code = await readFile(join(process.cwd(), "packages/blocks/src/application/personal-settings-01/personal-settings.tsx"), "utf8");
-  return <PersonalSettingsBlockDocClient code={code} />;
+export default function PersonalSettingsBlockDoc() {
+  return <PersonalSettingsBlockDocClient code={getBlockPreviewSource("personal-settings-01")} />;
 }

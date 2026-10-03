@@ -86,12 +86,12 @@ export function usePickerCore<TValue>(props: CoreProps<TValue>, defaultCommitMod
     setDirty(!temporalValueEquals(next, committedValue));
   }, [committedValue, props.disabled, props.readOnly]);
   const submit = React.useCallback((next: TValue | undefined, context: TemporalChangeContext) => {
-    if (props.disabled || props.readOnly) return;
+    if (props.disabled || props.readOnly || (next === undefined && props.clearable === false)) return;
     commit(next, context);
     setDraftState(next);
     setDirty(false);
     if (closeOnCommit) setOpen(false);
-  }, [closeOnCommit, commit, props.disabled, props.readOnly, setOpen]);
+  }, [closeOnCommit, commit, props.clearable, props.disabled, props.readOnly, setOpen]);
 
   return { cancel, closeOnCommit, commitMode, committedValue, dirty, draft, isOpen, messages, open, presetBehavior, resetVersion, setOpen, submit, updateDraft };
 }
@@ -252,7 +252,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
       <TemporalPickerActions
         disabled={props.disabled}
         applyDisabled={!valid(core.draft) || temporalValueEquals(core.draft, core.committedValue)}
-        clearable={Boolean(core.committedValue || core.draft)}
+        clearable={props.clearable !== false && Boolean(core.committedValue || core.draft)}
         messages={core.messages}
         onApply={() => valid(core.draft) && core.submit(core.draft, { source: "apply", presetId: activePresetId })}
         onCancel={core.cancel}
@@ -335,7 +335,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       <TemporalPickerActions
         disabled={props.disabled}
         applyDisabled={!valid(draft) || temporalValueEquals(draft as DateRangeValue | undefined, core.committedValue)}
-        clearable={Boolean(core.committedValue || draft.from || draft.to)}
+        clearable={props.clearable !== false && Boolean(core.committedValue || draft.from || draft.to)}
         messages={core.messages}
         onApply={() => valid(draft) && core.submit(draft, { source: "apply", presetId: activePresetId })}
         onCancel={cancel}
@@ -376,7 +376,7 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(f
       <PickerHeader>{core.messages.selectTime}</PickerHeader>
       <PresetList disabled={props.disabled} activePresetId={activePresetId} onSelect={selectPreset} presets={props.presets} title={core.messages.presets} />
       <TimeField disabled={props.disabled} aria-label={core.messages.selectTime} className="w-full [&_[data-slot=time-field-column]]:min-w-0" granularity={props.granularity} hourCycle={props.hourCycle} maxValue={props.maxValue} minValue={props.minValue} minuteStep={props.minuteStep} onValueChange={(value) => select(value, { source: "time-field" })} secondStep={props.secondStep} size={props.size} value={core.draft} />
-      <TemporalPickerActions disabled={props.disabled} applyDisabled={!valid(core.draft) || temporalValueEquals(core.draft, core.committedValue)} clearable={Boolean(core.committedValue || core.draft)} messages={core.messages} onApply={() => valid(core.draft) && core.submit(core.draft, { source: "apply", presetId: activePresetId })} onCancel={core.cancel} onClear={() => { clearActivePreset(); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
+      <TemporalPickerActions disabled={props.disabled} applyDisabled={!valid(core.draft) || temporalValueEquals(core.draft, core.committedValue)} clearable={props.clearable !== false && Boolean(core.committedValue || core.draft)} messages={core.messages} onApply={() => valid(core.draft) && core.submit(core.draft, { source: "apply", presetId: activePresetId })} onCancel={core.cancel} onClear={() => { clearActivePreset(); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
     </div>
   );
   return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} icon="clock" isOpen={core.isOpen} onRequestClose={core.cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
@@ -430,7 +430,7 @@ export const TimeRangePicker = React.forwardRef<HTMLButtonElement, TimeRangePick
         <label className="grid min-w-0 gap-1 text-label text-fg-muted"><span className="bg-surface-base px-2 py-1">{core.messages.end}</span><TimeField disabled={props.disabled} aria-label={core.messages.end} className="w-full [&_[data-slot=time-field-column]]:min-w-0" granularity={props.granularity} hourCycle={props.hourCycle} maxValue={props.maxValue} minValue={endMinValue} minuteStep={props.minuteStep} onValueChange={(to) => update({ ...draft, to })} secondStep={props.secondStep} size={props.size} value={draft.to} /></label>
       </div>
       {props.allowOvernight && <label className="flex items-center gap-2 px-3 pb-3 text-label text-fg-muted"><input disabled={props.disabled} checked={Boolean(draft.overnight)} onChange={(event) => update({ ...draft, overnight: event.target.checked || undefined })} type="checkbox" /><span>{core.messages.nextDay}</span></label>}
-      <TemporalPickerActions disabled={props.disabled} applyDisabled={!valid(draft) || temporalValueEquals(draft as TimeRangeValue | undefined, core.committedValue)} clearable={Boolean(core.committedValue || draft.from || draft.to)} messages={core.messages} onApply={() => valid(draft) && core.submit(draft, { source: "apply", presetId: activePresetId })} onCancel={cancel} onClear={() => { clearActivePreset(); setDraft({}); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
+      <TemporalPickerActions disabled={props.disabled} applyDisabled={!valid(draft) || temporalValueEquals(draft as TimeRangeValue | undefined, core.committedValue)} clearable={props.clearable !== false && Boolean(core.committedValue || draft.from || draft.to)} messages={core.messages} onApply={() => valid(draft) && core.submit(draft, { source: "apply", presetId: activePresetId })} onCancel={cancel} onClear={() => { clearActivePreset(); setDraft({}); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
     </div>
   );
   return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} icon="clock" isOpen={core.isOpen} onRequestClose={cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
