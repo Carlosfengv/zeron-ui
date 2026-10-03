@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync, readdirSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { getPreviewSourceAssetUrls } from "../docs/lib/block-preview-sources.generated";
 
 // Discover the built Recharts chunk rather than pinning a content hash.
 const chartChunks = readdirSync(".next/static/chunks").filter((file) => file.endsWith(".js") && readFileSync(`.next/static/chunks/${file}`, "utf8").includes("recharts-surface"));
@@ -62,7 +64,9 @@ test("DataGrid secondary demo activates on approach and preserves edits on scrol
   await second.scrollIntoViewIfNeeded();
   await expect(second).toHaveAttribute("data-detail-demo", "ready");
   const cell = second.locator('[role="gridcell"]').first();
-  await cell.dblclick();
+  const wrapper = cell.locator('[data-slot="grid-cell-wrapper"]');
+  await wrapper.click();
+  await wrapper.press("F2");
   const editor = cell.locator('[contenteditable="true"]');
   await expect(editor).toBeVisible();
   await editor.fill("Preserved pilot edit");
@@ -126,8 +130,6 @@ for (const prefix of ["/en", ""] as const) {
 }
 
 test("all generated sources are served as immutable plain text and unknown hashes are not", async ({ request }) => {
-  const { getPreviewSourceAssetUrls } = await import("../docs/lib/block-preview-sources.generated");
-  const { createHash } = await import("node:crypto");
   for (const url of getPreviewSourceAssetUrls()) {
     const response = await request.get(url);
     expect(response.status()).toBe(200);
