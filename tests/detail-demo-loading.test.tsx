@@ -67,3 +67,29 @@ it("does not mount a completed import after navigation unmounts its placeholder"
   await act(async () => resolve(Demo));
   expect(screen.queryByRole("button", { name: "Edit 0" })).toBeNull();
 });
+
+it("preserves an explicitly sized host through pending, failure, retry, and ready states", async () => {
+  let resolve!: (component: typeof Demo) => void;
+  const loader = vi.fn<() => Promise<typeof Demo>>()
+    .mockRejectedValueOnce(new Error("offline"))
+    .mockImplementationOnce(() => new Promise((done) => { resolve = done; }));
+  const view = render(<div style={{ height: 1000 }}><DeferredDetailDemo loader={loader} demoProps={{ label: "Edit" }} minHeight={1000} fillHeight /></div>);
+  const wrapper = view.container.querySelector<HTMLElement>("[data-detail-demo]")!;
+  const expectReservedHeight = () => {
+    expect(wrapper.style.height).toBe("100%");
+    expect(wrapper.style.minHeight).toBe("1000px");
+  };
+  expect(wrapper.dataset.detailDemo).toBe("pending");
+  expectReservedHeight();
+  const retry = await screen.findByRole("button", { name: "Retry" });
+  expect(wrapper.dataset.detailDemo).toBe("error");
+  expectReservedHeight();
+  fireEvent.click(retry);
+  expect(wrapper.dataset.detailDemo).toBe("pending");
+  expectReservedHeight();
+  await act(async () => resolve(Demo));
+  expect(await screen.findByRole("button", { name: "Edit 0" })).toBeTruthy();
+  expect(wrapper.dataset.detailDemo).toBe("ready");
+  expectReservedHeight();
+  expect(loader).toHaveBeenCalledTimes(2);
+});

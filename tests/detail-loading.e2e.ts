@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 import { readFileSync, readdirSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { getPreviewSourceAssetUrls } from "../docs/lib/block-preview-sources.generated";
@@ -6,6 +6,71 @@ import { getPreviewSourceAssetUrls } from "../docs/lib/block-preview-sources.gen
 // Discover the built Recharts chunk rather than pinning a content hash.
 const chartChunks = readdirSync(".next/static/chunks").filter((file) => file.endsWith(".js") && readFileSync(`.next/static/chunks/${file}`, "utf8").includes("recharts-surface"));
 const aiPath = "/en/docs/pages/ai-gateway-overview-01";
+
+// A minimum height alone does not establish the containing block required by
+// the gateway's h-full sidebar. Assert geometry, not just rendered navigation.
+async function expectGatewayHeight(demo: Locator) {
+  await expect.poll(() => demo.evaluate((node) => Math.round(node.getBoundingClientRect().height))).toBe(1000);
+  await expect.poll(() => demo.locator(":scope > section").evaluate((node) => Math.round(node.getBoundingClientRect().height))).toBe(1000);
+}
+
+for (const width of [1440, 1280, 1279, 390]) {
+  test(`AI detail bounds and navigation at ${width}px`, async ({ page }, testInfo) => {
+    // The matrix covers each viewport once; loading/recovery tests still run in both projects.
+    test.skip(testInfo.project.name === "chromium-mobile", "Covered by the explicit viewport matrix");
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 960 });
+    await page.goto(aiPath);
+    const demo = page.locator('[data-detail-demo="ready"]');
+    await expect(demo.locator(".recharts-surface").first()).toBeAttached();
+    await expectGatewayHeight(demo);
+    const trigger = demo.getByRole("button", { name: "Open AI gateway navigation", exact: true });
+    if (width >= 1280) {
+      await expect(trigger).toBeHidden();
+      const sidebar = demo.locator('[data-slot="sidebar-panel"]');
+      await expect(sidebar).toBeVisible();
+      const bounds = await sidebar.boundingBox();
+      const root = await demo.boundingBox();
+      expect(bounds!.height).toBeCloseTo(1000, 0);
+      expect(bounds!.width).toBeCloseTo(280, 0);
+      expect(bounds!.y).toBeCloseTo(root!.y, 0);
+      await sidebar.getByRole("link", { name: "Overview", exact: true }).click();
+      await expect(page).toHaveURL(/#overview$/);
+    } else {
+      await expect(trigger).toBeVisible();
+      await expect(demo.locator('[data-slot="sidebar-panel"]')).toHaveCount(0);
+      await trigger.click();
+      const drawer = page.getByRole("dialog", { name: "AI gateway navigation", exact: true });
+      await expect(drawer).toBeVisible();
+      await expect(drawer.getByRole("link", { name: "Settings", exact: true })).toBeInViewport();
+      await drawer.getByRole("link", { name: "Overview", exact: true }).click();
+      await expect(drawer).toBeHidden();
+    }
+    await demo.getByRole("tab", { name: "7d", exact: true }).click();
+    await expect(demo.getByRole("tab", { name: "7d", exact: true })).toHaveAttribute("aria-selected", "true");
+    const content = demo.locator('[data-slot="page-content"]');
+    const scroll = await content.evaluate((node) => {
+      node.scrollTop = node.scrollHeight;
+      return { top: node.scrollTop, height: node.clientHeight, total: node.scrollHeight };
+    });
+    expect(scroll.total).toBeGreaterThan(scroll.height);
+    expect(scroll.top).toBeGreaterThan(0);
+    await expectGatewayHeight(demo);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)).toBe(false);
+  });
+}
+
+test("standalone AI gateway retains viewport-height sidebar", async ({ page }) => {
+  await page.goto("/en/block-demo/ai-gateway-overview-01");
+  await expect(page.locator(".recharts-surface").first()).toBeAttached();
+  await expect(page.locator("[data-detail-demo]")).toHaveCount(0);
+  const layout = page.locator('[data-slot="page-layout"]');
+  await expect.poll(() => layout.evaluate((node) => Math.round(node.getBoundingClientRect().height))).toBe(page.viewportSize()!.height);
+  if (page.viewportSize()!.width >= 1280) {
+    await expect.poll(() => page.locator('[data-slot="sidebar-panel"]').evaluate((node) => Math.round(node.getBoundingClientRect().height))).toBe(page.viewportSize()!.height);
+  } else {
+    await expect(page.getByRole("button", { name: "Open AI gateway navigation", exact: true })).toBeVisible();
+  }
+});
 
 test("AI documentation is available while its chart dependency is held", async ({ page }) => {
   expect(chartChunks.length).toBeGreaterThan(0);
@@ -25,10 +90,12 @@ test("AI documentation is available while its chart dependency is held", async (
     await expect.poll(() => held).toBeGreaterThan(0);
     await expect(page.locator(".recharts-surface")).toHaveCount(0);
     await expect(page.locator('[data-detail-demo="pending"]')).toBeAttached();
+    await expect.poll(() => page.locator("[data-detail-demo]").evaluate((node) => Math.round(node.getBoundingClientRect().height))).toBe(1000);
     await expect(page.getByText("Loading preview…", { exact: true })).toBeInViewport();
     release();
     await expect(page.locator(".recharts-surface").first()).toBeAttached();
     await expect(page.locator('[data-detail-demo="ready"]')).toBeAttached();
+    await expectGatewayHeight(page.locator("[data-detail-demo]"));
   } finally {
     release();
     await page.unrouteAll({ behavior: "wait" });
@@ -44,12 +111,14 @@ test("AI Code loads only on intent and preserves range across tab changes", asyn
   expect(sources).toHaveLength(0);
   await preview.getByRole("tab", { name: "7d", exact: true }).click();
   await expect(preview.getByRole("tab", { name: "7d", exact: true })).toHaveAttribute("aria-selected", "true");
+  await expectGatewayHeight(preview.locator("[data-detail-demo]"));
   await page.getByRole("tab", { name: "Code", exact: true }).click();
   await expect.poll(() => sources.length).toBe(1);
   await expect(preview).toBeHidden();
   await expect(page.getByText('"use client";', { exact: false }).first()).toBeAttached();
   await page.getByRole("tab", { name: "Preview", exact: true }).click();
   await expect(preview.getByRole("tab", { name: "7d", exact: true })).toHaveAttribute("aria-selected", "true");
+  await expectGatewayHeight(preview.locator("[data-detail-demo]"));
   await page.getByRole("tab", { name: "Code", exact: true }).click();
   expect(sources).toHaveLength(1);
 });
@@ -63,6 +132,18 @@ test("DataGrid secondary demo activates on approach and preserves edits on scrol
   // On taller desktops the second example may already be near the viewport.
   await second.scrollIntoViewIfNeeded();
   await expect(second).toHaveAttribute("data-detail-demo", "ready");
+  for (const demo of [first, second]) {
+    expect(await demo.evaluate((node) => (node as HTMLElement).style.height)).toBe("");
+    expect((await demo.boundingBox())!.height).toBeLessThan(1000);
+    const bounds = await demo.evaluate((node) => ({
+      height: node.getBoundingClientRect().height,
+      minimum: parseFloat(getComputedStyle(node).minHeight),
+      bottom: node.getBoundingClientRect().bottom,
+      childBottom: node.firstElementChild!.getBoundingClientRect().bottom,
+    }));
+    expect(bounds.height).toBeGreaterThanOrEqual(bounds.minimum);
+    expect(bounds.bottom + 1).toBeGreaterThanOrEqual(bounds.childBottom);
+  }
   const cell = second.locator('[role="gridcell"]').first();
   const wrapper = cell.locator('[data-slot="grid-cell-wrapper"]');
   await wrapper.click();
@@ -112,11 +193,13 @@ test("failed AI demo import leaves visible recovery without blocking documentati
   await page.goto(aiPath);
   await expect(page.locator("#artifact-title")).toHaveText("AI Gateway Overview 1");
   await expect(page.getByText("Preview unavailable", { exact: true })).toBeVisible();
+  await expect.poll(() => page.locator("[data-detail-demo]").evaluate((node) => Math.round(node.getBoundingClientRect().height))).toBe(1000);
   const retry = page.locator("[data-detail-demo]").getByRole("button", { name: "Retry", exact: true });
   await expect(retry).toBeInViewport();
   fail = false;
   await retry.click();
   await expect(page.locator(".recharts-surface").first()).toBeAttached();
+  await expectGatewayHeight(page.locator("[data-detail-demo]"));
 });
 
 for (const prefix of ["/en", ""] as const) {

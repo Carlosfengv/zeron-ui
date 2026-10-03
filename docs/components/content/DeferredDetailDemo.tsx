@@ -11,11 +11,14 @@ export function DeferredDetailDemo<Props extends object>({
   demoProps,
   minHeight,
   nearViewport = false,
+  fillHeight = false,
 }: {
   loader: () => Promise<ComponentType<Props>>;
   demoProps: Props;
   minHeight: number;
   nearViewport?: boolean;
+  /** Preserve percentage-height children inside an explicitly sized demo host. */
+  fillHeight?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [activated, setActivated] = useState(!nearViewport);
@@ -53,7 +56,7 @@ export function DeferredDetailDemo<Props extends object>({
   }, [activated, attempt, loader]);
 
   return (
-    <div ref={ref} className="w-full min-w-0" style={{ minHeight }} data-detail-demo={Demo ? "ready" : failed ? "error" : "pending"}>
+    <div ref={ref} className="w-full min-w-0" style={{ minHeight, height: fillHeight ? "100%" : undefined }} data-detail-demo={Demo ? "ready" : failed ? "error" : "pending"}>
       {Demo ? <Demo {...demoProps} /> : (
         <div className="flex items-start justify-center gap-3 bg-surface-raised pt-6 text-label text-fg-muted" style={{ minHeight }} aria-busy={activated && !failed}>
           {failed ? <><span>{english ? "Preview unavailable" : "预览暂不可用"}</span><Button variant="secondary" size="sm" onClick={() => setAttempt((value) => value + 1)}>{english ? "Retry" : "重试"}</Button></> : <span>{english ? "Loading preview…" : "正在加载预览…"}</span>}
