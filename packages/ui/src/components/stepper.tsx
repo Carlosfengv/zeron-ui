@@ -253,6 +253,7 @@ function Stepper(props: StepperProps) {
   }));
 
   const navigationRef = React.useRef(0);
+  const pendingNavigationRef = React.useRef<{ source: string; target: string } | null>(null);
   const validatedFocusRef = React.useRef<string | null>(null);
 
   const propsRef = useAsRef({
@@ -291,6 +292,8 @@ function Stepper(props: StepperProps) {
         const canNavigate = () => !propsRef.current.disabled &&
           stateRef.current.steps.has(value) && !stateRef.current.steps.get(value)?.disabled;
         if (!canNavigate()) return false;
+        const pendingNavigation = { source: stateRef.current.value, target: value };
+        pendingNavigationRef.current = pendingNavigation;
         try {
           const isValid = propsRef.current.onValidate
             ? await propsRef.current.onValidate(value, direction)
@@ -300,6 +303,10 @@ function Stepper(props: StepperProps) {
           return true;
         } catch {
           return false;
+        } finally {
+          if (pendingNavigationRef.current === pendingNavigation) {
+            pendingNavigationRef.current = null;
+          }
         }
       },
       hasValidation: () => !!propsRef.current.onValidate,
@@ -312,7 +319,10 @@ function Stepper(props: StepperProps) {
         store.notify();
       },
       removeStep: (value) => {
-        navigationRef.current += 1;
+        const pending = pendingNavigationRef.current;
+        if (pending && (value === pending.source || value === pending.target)) {
+          navigationRef.current += 1;
+        }
         const nextSteps = new Map(stateRef.current.steps);
         nextSteps.delete(value);
         stateRef.current.steps = nextSteps;
@@ -322,7 +332,13 @@ function Stepper(props: StepperProps) {
       setStep: (value, completed, disabled) => {
         const step = stateRef.current.steps.get(value);
         if (step) {
-          if (disabled !== step.disabled) navigationRef.current += 1;
+          // Only changes to the pending transition's endpoints interrupt it.
+          // Keep the revision bump so disable → enable cannot revive a request.
+          const pending = pendingNavigationRef.current;
+          if (disabled !== step.disabled && pending &&
+            (value === pending.source || value === pending.target)) {
+            navigationRef.current += 1;
+          }
           const updatedStep: StepState = { ...step, completed, disabled };
           const nextSteps = new Map(stateRef.current.steps);
           nextSteps.set(value, updatedStep);
