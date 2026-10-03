@@ -238,12 +238,18 @@ importers:
 
   packages/cli:
     dependencies:
+      semver:
+        specifier: 7.7.4
+        version: 7.7.4
       shadcn:
         specifier: 3.0.0
         version: 3.0.0(@types/node@20.19.33)(babel-plugin-macros@3.1.0)(typescript@5.9.3)
       typescript:
         specifier: 5.9.3
         version: 5.9.3
+      yaml:
+        specifier: 1.10.3
+        version: 1.10.3
 
   packages/icons:
     dependencies:

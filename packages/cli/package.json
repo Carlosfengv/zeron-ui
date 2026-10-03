@@ -23,8 +23,10 @@
     "prepublishOnly": "pnpm check && pnpm test"
   },
   "dependencies": {
+    "semver": "7.7.4",
     "shadcn": "3.0.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "yaml": "1.10.3"
   },
   "keywords": [
     "zeron-ui",
