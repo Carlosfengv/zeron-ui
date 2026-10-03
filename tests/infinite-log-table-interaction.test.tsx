@@ -218,7 +218,10 @@ describe("InfiniteLogTable", () => {
 
   it("filters HTTP columns from their header dropdown with multiple checkbox selections", async () => {
     const onStateChange = vi.fn();
-    render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} onStateChange={onStateChange} records={createMockLogRecords({ days: 2 })} /></div>);
+    // Keep dropdown interactions lightweight while retaining every outcome.
+    const mockRecords = createMockLogRecords({ days: 2 });
+    const records = ["success", "warning", "error"].map((outcome) => mockRecords.find((record) => record.outcome === outcome)!);
+    render(<div style={{ height: 640 }}><InfiniteLogTable enableLive={false} onStateChange={onStateChange} records={records} /></div>);
     const grid = await screen.findByRole("grid", { name: "HTTP request log table" });
 
     fireEvent.click(within(grid).getByRole("button", { name: "Filter Outcome" }));
