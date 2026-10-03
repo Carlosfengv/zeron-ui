@@ -140,3 +140,31 @@ test("all generated sources are served as immutable plain text and unknown hashe
   expect(missing.status()).toBe(404);
   expect(missing.headers()["cache-control"] ?? "").not.toContain("immutable");
 });
+
+test("leaving a loading AI demo does not replace newer content when its chunk arrives", async ({ page }) => {
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => { release = resolve; });
+  let held = 0;
+  await page.route("**/*.js", async (route) => {
+    if (chartChunks.some((chunk) => route.request().url().endsWith(`/${chunk}`))) { held++; await gate; }
+    await route.continue().catch(() => {});
+  });
+  try {
+    await page.goto(aiPath);
+    await expect(page.locator("#artifact-title")).toHaveText("AI Gateway Overview 1");
+    await expect.poll(() => held).toBeGreaterThan(0);
+    await page.locator('[data-slot="app-shell-header"] a[href="/en/docs/components"]').last().click();
+    await expect(page).toHaveURL(/\/en\/docs\/components$/);
+    await expect(page.locator("#component-gallery-title")).toBeVisible();
+    release();
+    await page.unrouteAll({ behavior: "wait" });
+    await expect(page.locator("#component-gallery-title")).toBeVisible();
+    await expect(page.locator("#artifact-title")).toHaveCount(0);
+    await page.goBack();
+    await expect(page.locator("#artifact-title")).toHaveText("AI Gateway Overview 1");
+    await expect(page.locator(".recharts-surface").first()).toBeAttached();
+  } finally {
+    release();
+    await page.unrouteAll({ behavior: "wait" });
+  }
+});
