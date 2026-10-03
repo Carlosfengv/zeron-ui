@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { assertLocale } from "@/app/_i18n/locale";
 import type { AppLocale } from "@/app/_i18n/routing";
 import HomeContent from "@docs/pages/home";
+import { HomeReleaseSlot, HomeReleasePlaceholder, type HomeReleasePart } from "@docs/pages/home-release.server";
 import { readNpmRelease } from "@docs/lib/npm-release.server";
 import { localeAlternates } from "@docs/seo/locale";
 
@@ -28,14 +30,24 @@ export default async function HomePage({ params }: Props) {
   const { locale } = await params;
   assertLocale(locale);
   setRequestLocale(locale);
-  const [messages, introduction, release] = await Promise.all([
+  const release = readNpmRelease();
+  const [messages, introduction] = await Promise.all([
     homeMessages(locale),
     locale === "en" ? import("@docs/content/en/components/introduction.json") : import("@docs/content/zh-CN/components/introduction.json"),
-    readNpmRelease(),
   ]);
+  const releaseSlot = (part: HomeReleasePart) => (
+    <Suspense fallback={<HomeReleasePlaceholder part={part} />}>
+      <HomeReleaseSlot release={release} part={part} />
+    </Suspense>
+  );
   return (
     <NextIntlClientProvider locale={locale} messages={{ ...messages, ...introduction.default }}>
-      <HomeContent release={release} />
+      <HomeContent
+        releaseBadge={releaseSlot("badge")}
+        releaseDetails={releaseSlot("details")}
+        initializeCommand={releaseSlot("init")}
+        addCommand={releaseSlot("add button")}
+      />
     </NextIntlClientProvider>
   );
 }

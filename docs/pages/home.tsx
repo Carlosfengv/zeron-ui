@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useIcon } from "@zeron/icons/context";
@@ -8,31 +9,30 @@ import { Button } from "@zeron/ui/button";
 import { Container, ContainerBody, ContainerHeader } from "@zeron/ui/container";
 import { PageLayout, PageColumns, PagePrimary, PageAside } from "@zeron/ui/page-layout";
 import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
-import { InstallCommand } from "@docs/components/content/InstallCommand";
 import { CopyPrompt } from "@docs/components/content/CopyPrompt";
 import { HomePreview } from "@docs/components/content/HomePreview";
-import type { NpmRelease } from "@docs/lib/npm-release.server";
 import styles from "./home.module.css";
 
-export default function HomeContent({ release }: { release: NpmRelease | null }) {
+export type HomeContentProps = {
+  releaseBadge: ReactNode;
+  releaseDetails: ReactNode;
+  initializeCommand: ReactNode;
+  addCommand: ReactNode;
+};
+
+export default function HomeContent({ releaseBadge, releaseDetails, initializeCommand, addCommand }: HomeContentProps) {
   const t = useTranslations("home");
   const skills = useTranslations("introduction.skills");
   const locale = useLocale();
   const prefix = locale === "en" ? "/en" : "";
   const ArrowRight = useIcon("arrow-right");
   const Check = useIcon("check");
-  const cli = `npx zeron-ui@${release?.version ?? "latest"}`;
-  const publishedAt = release?.publishedAt ? new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(release.publishedAt)) : null;
 
   return (
     <PageLayout size="lg" gutter="default">
       <div className="min-w-0 px-3 sm:px-5">
         <header className="mx-auto flex max-w-4xl flex-col items-center gap-7 pb-12 pt-16 text-center sm:pb-16 sm:pt-24">
-          <a href="https://www.npmjs.com/package/zeron-ui" target="_blank" rel="noreferrer" className="flex max-w-full flex-wrap items-center justify-center gap-2 rounded-full border-hairline border-border px-3 py-1.5 text-label text-fg-muted outline-none transition-colors duration-fast hover:bg-hover focus-visible:ring-1 focus-visible:ring-focus-ring">
-            <Badge size="sm" color="blue">{release ? `v${release.version}` : "npm"}</Badge>
-            <span>{release ? release.prerelease ? t("release.prerelease") : t("release.title") : t("release.unavailable")}</span>
-            <ArrowRight size={14} aria-hidden="true" />
-          </a>
+          {releaseBadge}
           <div className="flex flex-col items-center gap-5">
             <h1 className={`${styles.heroTitle} whitespace-pre-line font-semibold tracking-tight text-fg-default`}>{t("title")}</h1>
             <p className="max-w-2xl text-body text-fg-muted sm:text-title">{t("description")}</p>
@@ -46,16 +46,7 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
 
         <HomePreview />
 
-        <section aria-label={t("release.title")} className="flex flex-col gap-3 border-b-hairline border-border-subtle px-2 py-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-label text-fg-muted">
-            <span className="font-medium text-fg-default">zeron-ui <span className="font-normal text-fg-muted">/ npm latest</span></span>
-            {release && <span>{release.version}</span>}
-            {publishedAt && <span>{t("release.published")} <time dateTime={release?.publishedAt ?? undefined}>{publishedAt}</time></span>}
-            {release?.node && <span>Node.js {release.node}</span>}
-          </div>
-          <Button asChild variant="ghost" size="sm" trailingIcon={ArrowRight}><Link href={`${prefix}/updates`}>{t("release.updates")}</Link></Button>
-        </section>
-        <p className="px-2 pt-3 text-label text-fg-subtle">{release ? t("release.source") : t("release.fallback")}</p>
+        {releaseDetails}
 
         <section id="install" aria-labelledby="install-title" className="scroll-mt-32 py-16 sm:scroll-mt-20 sm:py-24">
           <PageColumns asideWidth="34rem">
@@ -75,8 +66,8 @@ export default function HomeContent({ release }: { release: NpmRelease | null })
                 <ContainerHeader><h3 className="py-1 text-body font-medium text-fg-default">{t("install.terminal")}</h3><Badge size="sm" variant="dot">CLI</Badge></ContainerHeader>
                 <ContainerBody>
                   <ol className="flex min-w-0 flex-col gap-6 p-1 sm:p-2">
-                    <li className="flex min-w-0 flex-col gap-3"><h4 className="text-body font-medium text-fg-default">{t("install.initialize")}</h4><p className="text-label text-fg-muted">{t("install.initializeHint")}</p><InstallCommand value={`${cli} init`} /></li>
-                    <li className="flex min-w-0 flex-col gap-3 border-t-hairline border-border-subtle pt-6"><h4 className="text-body font-medium text-fg-default">{t("install.add")}</h4><InstallCommand value={`${cli} add button`} /><p className="text-label text-fg-muted">{t("install.addHint")}</p></li>
+                    <li className="flex min-w-0 flex-col gap-3"><h4 className="text-body font-medium text-fg-default">{t("install.initialize")}</h4><p className="text-label text-fg-muted">{t("install.initializeHint")}</p>{initializeCommand}</li>
+                    <li className="flex min-w-0 flex-col gap-3 border-t-hairline border-border-subtle pt-6"><h4 className="text-body font-medium text-fg-default">{t("install.add")}</h4>{addCommand}<p className="text-label text-fg-muted">{t("install.addHint")}</p></li>
                   </ol>
                 </ContainerBody>
               </Container>

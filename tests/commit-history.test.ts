@@ -98,7 +98,7 @@ describe("updates commit history", () => {
   });
 
   it("keeps the updates content in one centered 960px PageBody", () => {
-    const source = fs.readFileSync(path.join(process.cwd(), "app/[locale]/updates/page.tsx"), "utf8");
+    const source = fs.readFileSync(path.join(process.cwd(), "app/[locale]/updates/updates-shell.tsx"), "utf8");
     expect(source).toContain('<PageLayout className="h-full min-h-0 w-full" gutter="default" size="full">');
     expect(source).toContain('<PageContent className="overflow-y-auto overscroll-contain">');
     expect(source).toContain('<PageBody className="h-auto max-w-[960px] flex-none overflow-visible overscroll-auto');
