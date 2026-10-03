@@ -778,15 +778,46 @@ function useDataGrid<TData>({
       // Capture records before the first await. Positional row ids are unsafe
       // when the consumer replaces or reorders data without a getRowId callback.
       const hasStableIds = !!currentTable.options.getRowId;
+      const sourceData = [...propsRef.current.data];
+      const sourceCounts = new Map<TData, number>();
+      for (const record of sourceData) {
+        sourceCounts.set(record, (sourceCounts.get(record) ?? 0) + 1);
+      }
       const rowIdentity = (row: (typeof rows)[number]) =>
         hasStableIds ? row.id : row.original;
       const rebase = (updates: CellUpdate[], sourceRows: typeof rows) => {
         const latestRows = tableRef.current?.getRowModel().rows ?? [];
-        const rowIndices = new Map(latestRows.map((row, index) => [rowIdentity(row), index]));
+        const latestData = propsRef.current.data;
+        // Positional ids identify occurrences, even when multiple rows share
+        // one object. They remain safe across view sorting/filtering while the
+        // source sequence is unchanged (including a new array of the same rows).
+        const sameSourceSequence = sourceData.length === latestData.length &&
+          sourceData.every((record, index) => record === latestData[index]);
+        const rowsById = new Map(latestRows.map((row, index) => [row.id, index]));
+        const latestCounts = new Map<TData, number>();
+        const rowIndices = new Map<TData, number>();
+        if (!hasStableIds && !sameSourceSequence) {
+          for (const record of latestData) {
+            latestCounts.set(record, (latestCounts.get(record) ?? 0) + 1);
+          }
+          latestRows.forEach((row, index) => rowIndices.set(row.original, index));
+        }
         const rebased: CellUpdate[] = [];
         for (const update of updates) {
           const source = sourceRows[update.rowIndex];
-          const rowIndex = source ? rowIndices.get(rowIdentity(source)) : undefined;
+          if (!source) return null;
+          let rowIndex: number | undefined;
+          if (hasStableIds || sameSourceSequence) {
+            rowIndex = rowsById.get(source.id);
+            if (!hasStableIds && latestRows[rowIndex ?? -1]?.original !== source.original) return null;
+          } else {
+            // After a source change, duplicate references cannot tell us which
+            // occurrence moved or disappeared. Cancel rather than edit another
+            // occurrence. Newly added, unique records have no source count yet.
+            if ((sourceCounts.get(source.original) ?? 0) > 1 ||
+              latestCounts.get(source.original) !== 1) return null;
+            rowIndex = rowIndices.get(source.original);
+          }
           if (rowIndex === undefined) return null;
           rebased.push({ ...update, rowIndex });
         }
