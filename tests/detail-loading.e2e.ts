@@ -150,7 +150,7 @@ test("leaving a loading AI demo does not replace newer content when its chunk ar
     await route.continue().catch(() => {});
   });
   try {
-    await page.goto(aiPath);
+    await page.goto(aiPath, { waitUntil: "domcontentloaded" });
     await expect(page.locator("#artifact-title")).toHaveText("AI Gateway Overview 1");
     await expect.poll(() => held).toBeGreaterThan(0);
     await page.locator('[data-slot="app-shell-header"] a[href="/en/docs/components"]').last().click();
