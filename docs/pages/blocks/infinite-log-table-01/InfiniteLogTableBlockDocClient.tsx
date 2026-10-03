@@ -1,11 +1,12 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { InfiniteLogTable } from "@zeron/blocks/infinite-log-table-01";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { AgentGuide } from "@docs/components/content/AgentGuide";
 import { useTranslations } from "next-intl";
 
-export function InfiniteLogTableBlockDocClient({ code }: { code: string }) {
+export function InfiniteLogTableBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("infiniteLogTableBlock");
   return (
     <BlockDetailPage

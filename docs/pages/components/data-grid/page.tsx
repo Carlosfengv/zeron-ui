@@ -1,6 +1,6 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { createTranslator, type AbstractIntlMessages } from "next-intl";
+import type { AppLocale } from "@/app/_i18n/routing";
+import { loadPageMessages } from "@docs/i18n/content-loaders.generated";
 import { DeferredDataGridDemo } from "@docs/components/shell/site/deferred-data-grid-demo";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
@@ -45,7 +45,7 @@ function ReleaseGrid() {
   return <DataGrid {...grid} table={table} height={360} />;
 }`;
 
-function getGridProps(t: ReturnType<typeof useTranslations>): PropDef[] {
+function getGridProps(t: (key: string) => string): PropDef[] {
   return [
     { name: "table", type: "Table<TData>", description: t("tableDescription") },
     { name: "height", type: "number", default: "600", description: t("heightDescription") },
@@ -54,7 +54,7 @@ function getGridProps(t: ReturnType<typeof useTranslations>): PropDef[] {
   ];
 }
 
-function getHookProps(t: ReturnType<typeof useTranslations>): PropDef[] {
+function getHookProps(t: (key: string) => string): PropDef[] {
   return [
     { name: "data", type: "TData[]", description: t("dataDescription") },
     { name: "columns", type: "ColumnDef<TData>[]", description: t("columnsDescription") },
@@ -67,7 +67,7 @@ function getHookProps(t: ReturnType<typeof useTranslations>): PropDef[] {
   ];
 }
 
-function getCellMetaProps(t: ReturnType<typeof useTranslations>): PropDef[] {
+function getCellMetaProps(t: (key: string) => string): PropDef[] {
   return [
     { name: "variant", type: '"short-text" | "long-text" | "number" | "select" | "multi-select" | "checkbox" | "date" | "url" | "file"', description: t("cellVariantDescription") },
     { name: "options", type: "CellSelectOption[]", description: t("optionsDescription") },
@@ -76,13 +76,18 @@ function getCellMetaProps(t: ReturnType<typeof useTranslations>): PropDef[] {
   ];
 }
 
-export default function DataGridDoc() {
-  const t = useTranslations("dataGrid");
+export default async function DataGridDoc({ locale }: { locale: AppLocale }) {
+  const messages = await loadPageMessages(locale, "components/data-grid");
+  const t = createTranslator({ locale, messages: messages as AbstractIntlMessages, namespace: "dataGrid" });
+  const common = createTranslator({ locale, messages: messages as AbstractIntlMessages, namespace: "common" });
+  const labels = createTranslator({ locale, messages: messages as AbstractIntlMessages, namespace: "propsTable" });
+  const propLabels = { prop: labels("prop"), type: labels("type"), default: labels("default"), description: labels("description") };
   return (
     <DocPage
       title="DataGrid"
+      installationLabel={common("installation")}
       slug="data-grid"
-      description={t("description")}
+      description={messages.docMeta.descriptions["data-grid"] ?? t("description")}
     >
       <DocSection title="Playground">
         <VariantPlayground
@@ -103,7 +108,7 @@ export default function DataGridDoc() {
           minHeightClass="min-h-[420px]"
           padding="responsive"
         >
-          <DeferredDataGridDemo height={360} shortcuts />
+          <DeferredDataGridDemo height={360} shortcuts nearViewport />
         </ComponentPreview>
       </DocSection>
 
@@ -122,15 +127,15 @@ export default function DataGridDoc() {
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-3">
             <h3 className="text-body text-fg-default">DataGrid</h3>
-            <PropsTable props={getGridProps(t)} />
+            <PropsTable labels={propLabels} props={getGridProps(t)} />
           </div>
           <div className="flex flex-col gap-3">
             <h3 className="text-body text-fg-default">useDataGrid</h3>
-            <PropsTable props={getHookProps(t)} />
+            <PropsTable labels={propLabels} props={getHookProps(t)} />
           </div>
           <div className="flex flex-col gap-3">
             <h3 className="text-body text-fg-default">{t("cellMetadata")}</h3>
-            <PropsTable props={getCellMetaProps(t)} />
+            <PropsTable labels={propLabels} props={getCellMetaProps(t)} />
           </div>
         </div>
       </DocSection>

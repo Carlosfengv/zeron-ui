@@ -1,10 +1,11 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function ClusterEnvironmentListBlockDocClient({ code }: { code: string }) {
+export function ClusterEnvironmentListBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("clusterEnvironmentListBlock");
 
   return (

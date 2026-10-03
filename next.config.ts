@@ -3,6 +3,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 import { legacyBlockRedirects, legacyDocRedirects, pathnameOf } from "./docs/manifest";
 import { resolveBuildVersion } from "./docs/components/shell/site/build-version.server";
 
+import { getPreviewSourceAssetUrls } from "./docs/lib/block-preview-sources.generated";
+
 const buildVersion = resolveBuildVersion();
 
 const nextConfig: NextConfig = {
@@ -37,6 +39,16 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   outputFileTracingRoot: process.cwd(),
+  async headers() {
+    return getPreviewSourceAssetUrls().map((source) => ({
+      source,
+      headers: [
+        { key: "Content-Type", value: "text/plain; charset=utf-8" },
+        { key: "X-Content-Type-Options", value: "nosniff" },
+        { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+      ],
+    }));
+  },
   async redirects() {
     return [
       ...[

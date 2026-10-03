@@ -95,7 +95,10 @@
     "copied": "已复制",
     "copyFailed": "复制失败",
     "wrap": "自动换行",
-    "scroll": "横向滚动"
+    "scroll": "横向滚动",
+    "sourceLoading": "正在加载源码…",
+    "sourceFailed": "源码加载失败",
+    "sourceRetry": "重试加载源码"
   },
   "playground": {
     "variant": "交互预览",

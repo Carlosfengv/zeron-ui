@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { Signup01 } from "@zeron/blocks/signup-01";
 import {
   BlockDetailPage,
@@ -7,7 +8,7 @@ import {
 } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function Signup01BlockDocClient({ code }: { code: string }) {
+export function Signup01BlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("signup01Block");
 
   return (

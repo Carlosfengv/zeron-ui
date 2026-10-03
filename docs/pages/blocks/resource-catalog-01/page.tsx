@@ -1,12 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { ResourceCatalogBlockDocClient } from "./ResourceCatalogBlockDocClient";
 
-export default async function ResourceCatalogBlockDoc() {
-  const code = await readFile(
-    join(process.cwd(), "packages/blocks/src/application/resource-catalog-01/resource-catalog.tsx"),
-    "utf8"
-  );
-
-  return <ResourceCatalogBlockDocClient code={code} />;
+export default function ResourceCatalogBlockDoc() {
+  return <ResourceCatalogBlockDocClient code={getBlockPreviewSource("resource-catalog-01")} />;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { ProviderCreateForm } from "@zeron/blocks/provider-create-form-01";
 import {
   BlockDetailPage,
@@ -7,7 +8,7 @@ import {
 } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function ProviderCreateFormBlockDocClient({ code }: { code: string }) {
+export function ProviderCreateFormBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("providerCreateFormBlock");
 
   return (

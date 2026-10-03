@@ -28,6 +28,9 @@ import {
 import { PortalContainerProvider } from "@zeron/ui/system/portal-container-context";
 import { cn } from "@zeron/ui/system/utils";
 import type { CodeBlock as CodeBlockType } from "@zeron/ui/code-block";
+import type { PreviewCode } from "@docs/lib/preview-source";
+import { usePreviewSource } from "@docs/components/content/use-preview-source";
+import { PreviewCodeFallback } from "@docs/components/content/PreviewCodeFallback";
 
 function FigmaIcon({ className }: { className?: string }) {
   return (
@@ -55,7 +58,9 @@ export interface PlaybackButton {
 interface ComponentPreviewProps {
   className?: string;
   title?: string;
-  code: string;
+  code: PreviewCode;
+  /** Keep stateful live demos mounted while reading Code. */
+  preservePreview?: boolean;
   /** Legacy replay callback */
   onReplay?: () => void;
   /** Custom playback button (overrides onReplay) */
@@ -102,6 +107,7 @@ export function ComponentPreview({
   className,
   title,
   code,
+  preservePreview = false,
   onReplay,
   playbackButton,
   padding = "default",
@@ -119,6 +125,15 @@ export function ComponentPreview({
 }: ComponentPreviewProps) {
   const t = useTranslations("preview");
   const [tab, setTab] = useState(0);
+  const [codePointerIntent, setCodePointerIntent] = useState(false);
+  const [codeFocusIntent, setCodeFocusIntent] = useState(false);
+  const source = usePreviewSource(code, tab === 1 || codePointerIntent || codeFocusIntent);
+  const codeIntentProps = {
+    onPointerEnter: () => setCodePointerIntent(true),
+    onPointerLeave: () => setCodePointerIntent(false),
+    onFocus: () => setCodeFocusIntent(true),
+    onBlur: () => setCodeFocusIntent(false),
+  };
   const [inspect, setInspect] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [figmaCopyState, setFigmaCopyState] = useState<
@@ -294,7 +309,7 @@ export function ComponentPreview({
             <Tabs value={String(tab)} onValueChange={(value) => setTab(Number(value))} variant="segment">
               <TabsList activationMode="manual">
                 <TabItem value="0" label={t("preview")} />
-                <TabItem value="1" label={t("code")} />
+                <TabItem value="1" label={t("code")} {...codeIntentProps} />
               </TabsList>
             </Tabs>
           )}
@@ -310,7 +325,7 @@ export function ComponentPreview({
             <Tabs value={String(tab)} onValueChange={(value) => setTab(Number(value))} variant="segment">
               <TabsList activationMode="manual">
                 <TabItem value="0" label={t("preview")} />
-                <TabItem value="1" label={t("code")} />
+                <TabItem value="1" label={t("code")} {...codeIntentProps} />
               </TabsList>
             </Tabs>
           )}
@@ -427,9 +442,11 @@ export function ComponentPreview({
           (isFullscreen || fill) && "flex min-h-0 flex-1 flex-col",
         )}
       >
-        {tab === 0 ? (
+        {(tab === 0 || preservePreview) && (
           <div
             ref={previewRef}
+            hidden={tab !== 0}
+            style={tab !== 0 ? { display: "none" } : undefined}
             data-component-cover-source={coverSource ? "true" : undefined}
             data-slot="component-preview-content"
             data-fullscreen={isFullscreen || undefined}
@@ -453,7 +470,8 @@ export function ComponentPreview({
           >
             {children}
           </div>
-        ) : CodeBlock ? (
+        )}
+        {tab === 1 && (CodeBlock && source.source !== undefined ? (
           <div
             className={cn(
               "min-w-0 overflow-auto bg-surface-floating text-label",
@@ -461,7 +479,7 @@ export function ComponentPreview({
             )}
           >
             <CodeBlock
-              file={{ name: title ?? "example.tsx", lang: "tsx", contents: code.trim() }}
+              file={{ name: title ?? "example.tsx", lang: "tsx", contents: source.source.trim() }}
               className="min-h-full rounded-none border-0"
               messages={{
                 copy: t("copy"),
@@ -479,18 +497,19 @@ export function ComponentPreview({
           <div
             className={cn("min-w-0 overflow-auto bg-surface-floating", isFullscreen || fill ? "min-h-0 flex-1" : minHeightClass)}
           >
-            <div className="flex items-center gap-2 border-b border-border px-4 py-2 text-label text-fg-muted">
-              <span role="status">{t(codeBlockLoadFailed ? "highlightFailed" : "highlighting")}</span>
-              {codeBlockLoadFailed && (
-                <Button size="sm" variant="ghost" onClick={() => {
-                  setCodeBlockLoadFailed(false);
-                  setCodeBlockRetryKey((current) => current + 1);
-                }}>{t("highlightRetry")}</Button>
-              )}
-            </div>
-            <pre className="m-0 overflow-auto p-4 text-code text-fg-default"><code>{code.trim()}</code></pre>
+            <PreviewCodeFallback
+              key={typeof code === "string" ? code : code.url}
+              source={source.source}
+              sourceFailed={source.failed === true}
+              highlightFailed={codeBlockLoadFailed}
+              onSourceRetry={source.retry}
+              onHighlightRetry={() => {
+                setCodeBlockLoadFailed(false);
+                setCodeBlockRetryKey((current) => current + 1);
+              }}
+            />
           </div>
-        )}
+        ))}
       </div>
 
       {/* Inspector — sits over the whole frame so its rulers reach the outer

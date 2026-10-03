@@ -1,15 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { ResourceListTableBlockDocClient } from "./ResourceListTableBlockDocClient";
 
-export default async function ResourceListTableBlockDoc() {
-  const code = await readFile(
-    join(
-      process.cwd(),
-      "packages/blocks/src/application/resource-list-table-01/resource-list-table.tsx"
-    ),
-    "utf8"
-  );
-
-  return <ResourceListTableBlockDocClient code={code} />;
+export default function ResourceListTableBlockDoc() {
+  return <ResourceListTableBlockDocClient code={getBlockPreviewSource("resource-list-table-01")} />;
 }

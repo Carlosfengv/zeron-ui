@@ -1,11 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { ModelDetail02BlockDocClient } from "./ModelDetail02BlockDocClient";
 
-export default async function ModelDetail02BlockDoc() {
-  const code = await readFile(
-    join(process.cwd(), "packages/blocks/src/application/model-detail-02/model-detail-02.tsx"),
-    "utf8",
-  );
-  return <ModelDetail02BlockDocClient code={code} />;
+export default function ModelDetail02BlockDoc() {
+  return <ModelDetail02BlockDocClient code={getBlockPreviewSource("model-detail-02")} />;
 }

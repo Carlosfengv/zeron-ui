@@ -1,10 +1,11 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function ResourceMetricListBlockDocClient({ code }: { code: string }) {
+export function ResourceMetricListBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("resourceMetricListBlock");
 
   return (

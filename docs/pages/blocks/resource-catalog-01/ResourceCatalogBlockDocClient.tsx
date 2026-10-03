@@ -1,12 +1,13 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { useState } from "react";
 import { ResourceCatalog, type ResourceCatalogKind } from "@zeron/blocks/resource-catalog-01";
 import { Button } from "@zeron/ui/button";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function ResourceCatalogBlockDocClient({ code }: { code: string }) {
+export function ResourceCatalogBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("resourceCatalogBlock");
   const [kind, setKind] = useState<ResourceCatalogKind>("model");
 

@@ -1,15 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { MemberDepartmentBlockDocClient } from "./MemberDepartmentBlockDocClient";
 
-export default async function MemberDepartmentBlockDoc() {
-  const code = await readFile(
-    join(
-      process.cwd(),
-      "packages/blocks/src/application/member-department-01/member-department.tsx"
-    ),
-    "utf8"
-  );
-
-  return <MemberDepartmentBlockDocClient code={code} />;
+export default function MemberDepartmentBlockDoc() {
+  return <MemberDepartmentBlockDocClient code={getBlockPreviewSource("member-department-01")} />;
 }

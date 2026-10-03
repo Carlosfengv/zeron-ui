@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { AvailabilityMonitor } from "@zeron/blocks/availability-monitor-01";
 import {
   BlockDetailPage,
@@ -7,7 +8,7 @@ import {
 } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function AvailabilityMonitorBlockDocClient({ code }: { code: string }) {
+export function AvailabilityMonitorBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("availabilityMonitorBlock");
 
   return (

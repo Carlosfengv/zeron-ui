@@ -55,6 +55,13 @@ function placeholders(message: string) {
 }
 
 describe("i18n message parity", () => {
+  it("keeps runtime preview messages aligned with the canonical common catalog", () => {
+    for (const locale of ["en", "zh-CN"]) {
+      const common = JSON.parse(readFileSync(join(ROOT, "docs/content", locale, "common.json"), "utf8"));
+      const runtime = JSON.parse(readFileSync(join(ROOT, "docs/content", locale, "common-slim.json"), "utf8"));
+      expect(runtime.preview, locale).toEqual(common.preview);
+    }
+  });
   it("includes arguments nested in cardinal and ordinal plural branches", () => {
     expect(placeholders("{count, plural, one {{name}} other {{count}}} {rank, selectordinal, one {#st} other {{suffix}}}"))
       .toEqual(["count", "name", "rank", "suffix"]);

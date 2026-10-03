@@ -10,9 +10,10 @@ export interface PropDef {
 
 interface PropsTableProps {
   props: PropDef[];
+  labels?: { prop: string; type: string; default: string; description: string };
 }
 
-export function PropsTable({ props }: PropsTableProps) {
+export function PropsTable({ props, labels }: PropsTableProps) {
   const t = useTranslations("propsTable");
   // Horizontal ScrollArea gives narrow viewports the shape-system scrollbar +
   // a scroll-fade-x edge; min-w keeps columns legible before it scrolls.
@@ -32,24 +33,24 @@ export function PropsTable({ props }: PropsTableProps) {
             <th
               className="px-3 py-2 text-left text-fg-default font-semibold"
             >
-              {t("prop")}
+              {labels?.prop ?? t("prop")}
             </th>
             <th
               className="px-3 py-2 text-left text-fg-default font-semibold"
             >
-              {t("type")}
+              {labels?.type ?? t("type")}
             </th>
             {showDefault && (
               <th
                 className="px-3 py-2 text-left text-fg-default font-semibold"
               >
-                {t("default")}
+                {labels?.default ?? t("default")}
               </th>
             )}
             <th
               className="px-3 py-2 text-left text-fg-default font-semibold"
             >
-              {t("description")}
+              {labels?.description ?? t("description")}
             </th>
           </tr>
         </thead>

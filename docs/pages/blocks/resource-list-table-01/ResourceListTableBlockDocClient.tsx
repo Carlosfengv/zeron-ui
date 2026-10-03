@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import {
   defaultResourceListItems,
   ResourceListTable,
@@ -13,7 +14,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-export function ResourceListTableBlockDocClient({ code }: { code: string }) {
+export function ResourceListTableBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("resourceListTableBlock");
   const [resources, setResources] = useState<ResourceListItem[]>(() => [
     ...defaultResourceListItems,

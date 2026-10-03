@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { useState } from "react";
 import {
   CreditUsage,
@@ -12,7 +13,7 @@ import {
 } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function CreditUsageBlockDocClient({ code }: { code: string }) {
+export function CreditUsageBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("creditUsageBlock");
   const [cycle, setCycle] = useState<CreditUsageCycle>("current");
   const [autoSwitchEnabled, setAutoSwitchEnabled] = useState(true);

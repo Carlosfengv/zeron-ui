@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import {
   RuleFlowEditor,
   defaultRuleFlow,
@@ -12,7 +13,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-export function RuleFlowEditorBlockDocClient({ code }: { code: string }) {
+export function RuleFlowEditorBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("ruleFlowEditorBlock");
   const [flow, setFlow] = useState<RuleFlowValue>(defaultRuleFlow);
 

@@ -213,6 +213,15 @@ After changing Registry sources, regenerate with `pnpm registry:build` and run
 `pnpm registry:check`; commit the resulting `public/r` changes together with
 their source changes. Consumer installation/migration checks remain part of CI.
 
+Block/Page documentation source previews use the explicit allowlist in
+`scripts/preview-source-allowlist.mjs`. After changing those sources, run
+`pnpm docs:sources:build`, verify with `pnpm docs:sources:check`, and commit the generated URL mapping and
+`public/docs-source` assets. `pnpm dev` regenerates them automatically;
+`pnpm build` and the unit tests reject stale output. Source URLs are
+content-hashed, locale-independent text files fetched only on Code-tab intent
+or selection. Keep short component example snippets inline. Never add a
+request-controlled filesystem source endpoint.
+
 ## License
 
 [MIT](LICENSE) © Zeron Design

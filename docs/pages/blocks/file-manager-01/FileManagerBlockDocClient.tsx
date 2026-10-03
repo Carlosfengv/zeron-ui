@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { useState } from "react";
 import {
   FileManager,
@@ -26,7 +27,7 @@ const initialFiles: FileManagerItem[] = [
   { id: "session", kind: "file", name: "Session recording.mp4", parentId: "media", path: "Media/Session recording.mp4", mimeType: "video/mp4", extension: "mp4", size: 38_120_000, modifiedAt: "2026-08-12" },
 ];
 
-export function FileManagerBlockDocClient({ code }: { code: string }) {
+export function FileManagerBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("fileManagerBlock");
   const [items, setItems] = useState<FileManagerItem[]>(initialFiles);
   const [view, setView] = useState<FileManagerView>("icon");

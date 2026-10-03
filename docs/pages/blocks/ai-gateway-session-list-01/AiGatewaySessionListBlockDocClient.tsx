@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { useMemo, useState } from "react";
 import {
   AiGatewaySessionList,
@@ -13,7 +14,7 @@ import {
 } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function AiGatewaySessionListBlockDocClient({ code }: { code: string }) {
+export function AiGatewaySessionListBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("aiGatewaySessionListBlock");
   const [query, setQuery] = useState<AiGatewaySessionListQuery>(() => ({
     ...aiGatewaySessionListDemoQuery,

@@ -1,5 +1,6 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import {
   defaultResourceDetailPageData,
   ResourceDetailPage,
@@ -10,7 +11,7 @@ import {
 } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
-export function ResourceDetailPageBlockDocClient({ code }: { code: string }) {
+export function ResourceDetailPageBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("resourceDetailPageBlock");
 
   return (

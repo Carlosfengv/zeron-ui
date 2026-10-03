@@ -8,8 +8,8 @@
     "url": "git+https://github.com/Carlosfengv/zeron-ui.git"
   },
   "scripts": {
-    "dev": "pnpm skills:build && pnpm code-engine:build && pnpm docs:routes:build && next dev --turbopack",
-    "build": "pnpm skills:build && pnpm code-engine:check && pnpm docs:routes:check && next build",
+    "dev": "pnpm skills:build && pnpm code-engine:build && pnpm docs:routes:build && pnpm docs:sources:build && next dev --turbopack",
+    "build": "pnpm skills:build && pnpm code-engine:check && pnpm docs:routes:check && pnpm docs:sources:check && next build",
     "docs:routes:build": "node scripts/generate-document-routes.mjs",
     "docs:routes:check": "node scripts/generate-document-routes.mjs --check",
     "covers:generate": "node scripts/generate-component-covers.mjs",
@@ -39,7 +39,10 @@
     "code-engine:build": "node scripts/build-code-engine-assets.mjs",
     "code-engine:check": "node scripts/build-code-engine-assets.mjs --check",
     "typecheck": "tsc --noEmit",
-    "test:production": "vitest run --config vitest.production.config.mts"
+    "test:production": "vitest run --config vitest.production.config.mts",
+    "docs:sources:build": "node scripts/generate-preview-sources.mjs",
+    "docs:sources:check": "node scripts/generate-preview-sources.mjs --check",
+    "test:detail:e2e": "pnpm build && playwright test --config playwright.detail-loading.config.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

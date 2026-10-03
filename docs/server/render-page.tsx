@@ -62,7 +62,7 @@ export async function renderDocPage({
   const Page = (await loader()).default;
   return (
     <PageMessages locale={locale} namespace={contentKeyOf(entry)}>
-      <Page />
+      <Page locale={locale} />
     </PageMessages>
   );
 }
@@ -101,7 +101,7 @@ async function DeferredDocContent({
 
   return (
     <PageMessages locale={locale} namespace={namespace}>
-      <Page />
+      <Page locale={locale} />
     </PageMessages>
   );
 }

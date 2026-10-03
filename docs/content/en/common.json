@@ -95,7 +95,10 @@
     "copied": "Copied",
     "copyFailed": "Copy failed",
     "wrap": "Wrap lines",
-    "scroll": "Scroll lines"
+    "scroll": "Scroll lines",
+    "sourceLoading": "Loading source…",
+    "sourceFailed": "Source code unavailable",
+    "sourceRetry": "Retry source"
   },
   "playground": {
     "variant": "Playground variant",

@@ -1,11 +1,12 @@
 "use client";
 
+import type { PreviewCode } from "@docs/lib/preview-source";
 import { ModelDetail02 } from "@zeron/blocks/model-detail-02";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { useTranslations } from "next-intl";
 
-export function ModelDetail02BlockDocClient({ code }: { code: string }) {
+export function ModelDetail02BlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("modelAnalyticsDetailBlock");
   const props: PropDef[] = [
     { name: "data", type: "ModelAnalyticsDetailData", description: "Complete model, provider, pricing, performance, benchmark, app, activity, and FAQ data." },

@@ -1,12 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getBlockPreviewSource } from "@docs/lib/block-preview-sources.generated";
 import { ClusterEnvironmentListBlockDocClient } from "./ClusterEnvironmentListBlockDocClient";
 
-export default async function ClusterEnvironmentListBlockDoc() {
-  const code = await readFile(
-    join(process.cwd(), "packages/blocks/src/application/cluster-environment-list-01/cluster-environment-list.tsx"),
-    "utf8"
-  );
-
-  return <ClusterEnvironmentListBlockDocClient code={code} />;
+export default function ClusterEnvironmentListBlockDoc() {
+  return <ClusterEnvironmentListBlockDocClient code={getBlockPreviewSource("cluster-environment-list-01")} />;
 }
