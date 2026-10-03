@@ -144,6 +144,7 @@ interface StoreState {
 interface Store {
   subscribe: (callback: () => void) => () => void;
   getState: () => StoreState;
+  getNavigationIntent: () => number;
   setState: <K extends keyof StoreState>(key: K, value: StoreState[K]) => void;
   setStateWithValidation: (
     value: string,
@@ -186,6 +187,7 @@ interface ItemData {
 }
 
 interface StepperContextValue {
+  isMountedRef: React.RefObject<boolean>;
   validatedFocusRef: React.RefObject<string | null>;
   rootId: string;
   dir: Direction;
@@ -253,7 +255,10 @@ function Stepper(props: StepperProps) {
   }));
 
   const navigationRef = React.useRef(0);
+  // Deferred initial focus yields to newer navigation, not mount layout effects.
+  const navigationIntentRef = React.useRef(0);
   const pendingNavigationRef = React.useRef<{ source: string; target: string } | null>(null);
+  const isMountedRef = React.useRef(false);
   const validatedFocusRef = React.useRef<string | null>(null);
 
   const propsRef = useAsRef({
@@ -273,8 +278,12 @@ function Stepper(props: StepperProps) {
         return () => listenersRef.current.delete(cb);
       },
       getState: () => stateRef.current,
+      getNavigationIntent: () => navigationIntentRef.current,
       setState: (key, value) => {
-        if (key === "value") navigationRef.current += 1;
+        if (key === "value") {
+          navigationRef.current += 1;
+          navigationIntentRef.current += 1;
+        }
         if (Object.is(stateRef.current[key], value)) return;
 
         if (key === "value" && typeof value === "string") {
@@ -289,6 +298,7 @@ function Stepper(props: StepperProps) {
       },
       setStateWithValidation: async (value, direction) => {
         const request = ++navigationRef.current;
+        navigationIntentRef.current += 1;
         const canNavigate = () => !propsRef.current.disabled &&
           stateRef.current.steps.has(value) && !stateRef.current.steps.get(value)?.disabled;
         if (!canNavigate()) return false;
@@ -368,8 +378,12 @@ function Stepper(props: StepperProps) {
   }, [value, stateRef, store]);
 
   useIsomorphicLayoutEffect(() => {
+    isMountedRef.current = true;
     navigationRef.current += 1;
-    return () => { navigationRef.current += 1; };
+    return () => {
+      isMountedRef.current = false;
+      navigationRef.current += 1;
+    };
   }, [disabled]);
 
   const contextDir = useDirection();
@@ -380,6 +394,7 @@ function Stepper(props: StepperProps) {
 
   const contextValue = React.useMemo<StepperContextValue>(
     () => ({
+      isMountedRef,
       validatedFocusRef,
       rootId,
       dir,
@@ -789,6 +804,13 @@ function StepperTrigger(props: ButtonProps) {
   const composedRef = useComposedRefs(ref, triggerRef);
   const isArrowKeyPressedRef = React.useRef(false);
   const isMouseClickRef = React.useRef(false);
+  const focusRequestRef = React.useRef(0);
+  const focusStateRef = useAsRef({
+    itemValue,
+    isDisabled,
+    activationMode,
+    nonInteractive: context.nonInteractive,
+  });
 
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -853,7 +875,9 @@ function StepperTrigger(props: ButtonProps) {
   );
 
   const onFocus = React.useCallback(
-    async (event: React.FocusEvent<TriggerElement>) => {
+    (event: React.FocusEvent<TriggerElement>) => {
+      const request = ++focusRequestRef.current;
+      const navigationIntent = store.getNavigationIntent();
       propsRef.current.onFocus?.(event);
       if (event.defaultPrevented) return;
 
@@ -870,11 +894,41 @@ function StepperTrigger(props: ButtonProps) {
         !context.nonInteractive &&
         isKeyboardFocus
       ) {
-        const currentStepIndex = Array.from(steps.keys()).indexOf(value || "");
-        const targetStepIndex = Array.from(steps.keys()).indexOf(itemValue);
-        const direction = targetStepIndex > currentStepIndex ? "next" : "prev";
+        const activate = () => {
+          const current = focusStateRef.current;
+          const state = store.getState();
+          if (
+            request !== focusRequestRef.current ||
+            current.itemValue !== itemValue ||
+            current.isDisabled ||
+            current.activationMode === "manual" ||
+            current.nonInteractive ||
+            state.value === itemValue
+          ) return;
 
-        await store.setStateWithValidation(itemValue, direction);
+          const stepValues = Array.from(state.steps.keys());
+          const currentStepIndex = stepValues.indexOf(state.value);
+          const targetStepIndex = stepValues.indexOf(itemValue);
+          const direction = targetStepIndex > currentStepIndex ? "next" : "prev";
+
+          void store.setStateWithValidation(itemValue, direction);
+        };
+
+        if (!context.isMountedRef.current || !store.getState().steps.has(itemValue)) {
+          // Initial focus can precede item registration or root layout effects.
+          // Wait for that commit without replaying focus over a newer navigation.
+          const target = event.currentTarget;
+          queueMicrotask(() => {
+            if (
+              context.isMountedRef.current &&
+              store.getNavigationIntent() === navigationIntent &&
+              triggerRef.current === target &&
+              target.ownerDocument.activeElement === target
+            ) activate();
+          });
+        } else {
+          activate();
+        }
       }
 
       isMouseClickRef.current = false;
@@ -883,15 +937,14 @@ function StepperTrigger(props: ButtonProps) {
       focusContext,
       triggerId,
       activationMode,
-      isActive,
       isDisabled,
       context.nonInteractive,
+      context.isMountedRef,
       context.validatedFocusRef,
       store,
       itemValue,
-      value,
-      steps,
       propsRef,
+      focusStateRef,
     ],
   );
 
