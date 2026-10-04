@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@source not "../node_modules";
+@source not "../.next";
+
+@theme {
+  --color-background: #ffffff;
+  --color-border: #e5e7eb;
+  --color-foreground: #111827;
+  --color-ring: #6088e8;
+}

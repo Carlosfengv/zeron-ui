@@ -52,14 +52,18 @@ If network access is unavailable, use a matching local release or cache when one
 
 ## Install through the supported path
 
-Discover the commands that the installed CLI actually supports. Common current commands are:
+Discover the commands that the installed CLI actually supports. For a public
+installation, obtain the exact verified CLI version and Registry URL using
+[Agent discovery](agent-discovery.md); retain them through the dry run and
+installation. These placeholders describe supported command shapes, not a
+verified release:
 
 ```bash
-npx zeron-ui list
-npx zeron-ui view <item>
-npx zeron-ui add <item> --dry-run
-npx zeron-ui add <item> [more-items]
-npx zeron-ui doctor --check
+npx zeron-ui@<verifiedVersion> list --registry <verifiedReleaseBase>
+npx zeron-ui@<verifiedVersion> view <item> --registry <verifiedReleaseBase>
+npx zeron-ui@<verifiedVersion> add <item> --registry <verifiedReleaseBase> --dry-run
+npx zeron-ui@<verifiedVersion> add <item> [more-items] --registry <verifiedReleaseBase>
+npx zeron-ui@<verifiedVersion> doctor --check
 ```
 
 Do not assume proposed commands such as `inspect`, `contract`, or `check` exist. Inspect CLI help or package scripts first.

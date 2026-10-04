@@ -1,0 +1,19 @@
+{
+  "button": {
+    "keywords": ["操作", "按钮", "提交", "action", "save", "submit"],
+    "useCases": ["触发即时操作；根据任务优先级选择公开 variant。"],
+    "whenNotToUse": ["持久选择使用 Select、Tabs 或 Switch；普通导航使用链接。"],
+    "keyApi": ["variant", "size", "loading", "disabled", "iconOnly", "leadingIcon", "trailingIcon", "asChild"]
+  },
+  "input": { "keywords": ["输入", "文本", "表单", "text", "form"], "useCases": ["单行文本录入，配合 Field 提供标签和校验。"], "whenNotToUse": ["多行内容使用 Textarea；有限选择使用 Select。"] },
+  "select": { "keywords": ["选择", "选项", "下拉选择", "option", "value"], "useCases": ["从有限预加载选项中选择一个值。"], "whenNotToUse": ["远程搜索或创建选项先评估 Combobox；命令使用 Dropdown。"] },
+  "combobox": { "keywords": ["搜索选择", "远程选项", "多选", "searchable", "autocomplete"], "useCases": ["可搜索的单选或多选值录入。"], "whenNotToUse": ["执行操作使用 Dropdown；静态少量选项可用 Select。"] },
+  "data-table": { "keywords": ["资源列表", "表格", "筛选", "分页", "排序", "resource list", "records", "filter", "pagination", "sort"], "useCases": ["记录列表的排序、过滤、分页和选择。"], "whenNotToUse": ["静态表格使用 Table；电子表格式编辑使用 DataGrid。"] },
+  "data-grid": { "keywords": ["电子表格", "单元格编辑", "范围选择", "spreadsheet", "cell", "editable"], "useCases": ["密集可编辑数据和单元格范围选择。"], "whenNotToUse": ["普通管理列表优先 DataTable。"] },
+  "dialog": { "keywords": ["弹窗", "确认", "模态", "确认删除", "confirm", "modal", "destructive"], "useCases": ["需要打断当前任务的短操作或确认。"], "whenNotToUse": ["需要独立链接或复杂长流程时使用页面。"] },
+  "page-layout": { "keywords": ["资源列表", "页面布局", "详情", "设置", "page", "resource list", "settings", "detail"], "useCases": ["在现有应用外壳内组合页面信息、导航与内容。"], "whenNotToUse": ["不要在已拥有完整布局的 Block 外再加一套重复标题和内边距。"] },
+  "resource-detail-layout": { "keywords": ["资源详情", "检查", "detail", "inspection"], "useCases": ["检查一个已识别资源，使用公开区域组合路径、摘要与内容。"], "whenNotToUse": ["浏览多个对象时使用列表结构。"] },
+  "field": { "keywords": ["表单", "校验", "标签", "错误消息", "form", "label", "validation"], "useCases": ["组合标签、说明、控件和错误反馈。"], "whenNotToUse": ["不要重复控件已经拥有的标签和错误区域。"] },
+  "metric-card": { "keywords": ["指标", "趋势", "统计", "kpi", "metric", "trend"], "useCases": ["展示支持用户判断的单项指标及其状态。"], "whenNotToUse": ["普通内容分组使用 Card；不能把演示值当真实业务数据。"] },
+  "tree": { "keywords": ["树", "层级", "目录", "部门", "hierarchy", "folder"], "useCases": ["层级节点的展示、展开和选择。"], "whenNotToUse": ["没有层级的记录列表使用 DataTable。"] }
+}

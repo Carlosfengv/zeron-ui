@@ -1,0 +1,29 @@
+{
+  "archiveDownloadHosts": [
+    "*.actions.githubusercontent.com",
+    "*.blob.core.windows.net",
+    "objects.githubusercontent.com"
+  ],
+  "branch": "main",
+  "jobs": {
+    "consumer": {
+      "archiveCheckStep": "Check consumer archive for public upload",
+      "artifactPrefix": "agent-consumer-evidence",
+      "executeStep": "Verify published consumers",
+      "name": "Published consumers",
+      "uploadStep": "Upload consumer evidence"
+    },
+    "examples": {
+      "archiveCheckStep": "Check example archive for public upload",
+      "artifactPrefix": "agent-example-evidence",
+      "executeStep": "Verify published examples",
+      "name": "Published examples",
+      "uploadStep": "Upload example evidence"
+    }
+  },
+  "provider": "github-actions",
+  "repository": "Carlosfengv/zeron-ui",
+  "schemaVersion": 1,
+  "workflowName": "Agent release validation",
+  "workflowPath": ".github/workflows/agent-release-validation.yml"
+}

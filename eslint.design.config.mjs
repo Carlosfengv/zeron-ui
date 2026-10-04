@@ -17,7 +17,7 @@ export default [
     ignores: ["app/test/**"],
   },
   ...createZeronConfig({
-    files: ["app/**/*.{ts,tsx}", "docs/pages/**/*.{ts,tsx}", "packages/ui/src/**/*.{ts,tsx}", "packages/blocks/src/**/*.{ts,tsx}"],
+    files: ["app/**/*.{ts,tsx}", "docs/pages/**/*.{ts,tsx}", "packages/ui/src/**/*.{ts,tsx}", "packages/blocks/src/**/*.{ts,tsx}", "tests/fixtures/agent-examples/**/*.{ts,tsx}"],
     componentFiles: ["packages/ui/src/**/*.{ts,tsx}"],
     paletteFiles: ["packages/ui/src/components/color-picker.tsx", "packages/ui/src/components/badge-colors.ts"],
     componentImports: ["^@zeron/ui(/|$)", "^@/components/ui(/|$)", "^#components/"],

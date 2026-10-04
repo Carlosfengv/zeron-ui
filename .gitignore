@@ -74,5 +74,9 @@ ZERON_UI_RELEASE_GUIDE.md
 # generated agent skill distribution (rebuilt by dev/build)
 /public/skills/
 
+# Generated agent catalog and local release candidates
+/public/ai/
+/docs/generated/agent-runtime/
+
 # Bingo design data (pages, history, chats and assets)
 /.bingo/design/

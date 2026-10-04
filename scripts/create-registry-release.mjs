@@ -1,76 +1,92 @@
-/** Create an immutable Registry snapshot without leaving mutable output changed. */
-
-import { cp, mkdir, mkdtemp, readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+/** Build an unuploaded Registry candidate without rewriting the legacy endpoint. */
 import { execFileSync } from "node:child_process";
-import { createHash } from "node:crypto";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { composeRegistry } from "../packages/registry/scripts/compose-registry.mjs";
+import { processRegistry } from "../packages/registry/scripts/postbuild.mjs";
+import { checkRegistry } from "../packages/registry/scripts/registry-check.mjs";
+import { artifactFiles, artifactManifestSchema, commitArtifactCandidate, registryReleaseBase } from "./agent-artifacts.mjs";
+import { serialize, sourceProvenance } from "./agent-utils.mjs";
 
-const ROOT = fileURLToPath(new URL("..", import.meta.url));
-const releaseFlag = process.argv.indexOf("--release-id");
-const releaseId = releaseFlag === -1 ? null : process.argv[releaseFlag + 1];
-if (!releaseId || !/^[a-z0-9][a-z0-9._-]*$/.test(releaseId)) {
-  throw new Error("Usage: pnpm registry:release --release-id <lowercase-id>");
-}
+const root = fileURLToPath(new URL("..", import.meta.url));
 
-const outputRoot = join(ROOT, "public/r");
-const releasesRoot = join(outputRoot, "releases");
-const releaseDir = join(releasesRoot, releaseId);
-const releaseBase = `https://zeron-ui.vercel.app/r/releases/${releaseId}`;
-const lockDir = join(outputRoot, ".release-lock");
-
-async function flatArtifacts(directory) {
-  return (await readdir(directory, { withFileTypes: true }))
-    .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
-    .map((entry) => entry.name);
-}
-
-await mkdir(releasesRoot, { recursive: true });
-// Reserve the immutable name before running a build. A duplicate release must
-// never alter mutable artifacts or an existing snapshot.
-await mkdir(releaseDir);
-let locked = false;
-let backup;
-let staging;
-let buildStarted = false;
-let restored = false;
-let published = false;
-let hash;
-try {
-  await mkdir(lockDir);
-  locked = true;
-  backup = await mkdtemp(join(tmpdir(), "zeron-registry-backup-"));
-  const previous = await flatArtifacts(outputRoot);
-  for (const name of previous) await cp(join(outputRoot, name), join(backup, name));
-  staging = await mkdtemp(join(releasesRoot, ".staging-"));
-  try {
-    buildStarted = true;
-    execFileSync("pnpm", ["registry:build"], {
-      cwd: ROOT,
-      stdio: "inherit",
-      env: { ...process.env, ZERON_REGISTRY_BASE_URL: releaseBase },
-    });
-    for (const name of await flatArtifacts(outputRoot)) await cp(join(outputRoot, name), join(staging, name));
-    const registry = await readFile(join(staging, "registry.json"));
-    hash = createHash("sha256").update(registry).digest("hex");
-    await writeFile(join(staging, "release.json"), `${JSON.stringify({ releaseId, registryBase: releaseBase, registrySha256: hash }, null, 2)}\n`);
-  } finally {
-    // Restore exact bytes, including files removed by a failed build. Running
-    // another build here could fail again and strand release-scoped URLs.
-    for (const name of await flatArtifacts(outputRoot)) await rm(join(outputRoot, name));
-    for (const name of previous) await cp(join(backup, name), join(outputRoot, name));
-    restored = true;
+export function validateReleaseDependencies(items, baseUrl) {
+  const names = new Set(items.map((item) => item.name));
+  if (items.some((item) => !/^[a-z0-9][a-z0-9-]*$/.test(item.name)) || names.size !== items.length) {
+    throw new Error("Registry release contains invalid or duplicate names");
   }
-  // The destination is our own empty reservation; no partial release is ever
-  // published, and another invocation cannot claim the same release ID.
-  await rename(staging, releaseDir);
-  published = true;
-} finally {
-  if (!published) await rm(releaseDir, { recursive: true, force: true });
-  if (staging) await rm(staging, { recursive: true, force: true });
-  if (locked) await rm(lockDir, { recursive: true, force: true });
-  if (backup && (!buildStarted || restored)) await rm(backup, { recursive: true, force: true });
-  else if (backup) console.error(`Mutable Registry restoration failed. Original artifacts are preserved at ${backup}`);
+  const urls = new Set([...names].map((name) => `${baseUrl}/${name}.json`));
+  for (const item of items) {
+    for (const dependency of item.registryDependencies ?? []) {
+      // This repository currently has no external Registry dependency. Never
+      // silently fall back to mutable shadcn names or a different release.
+      if (!urls.has(dependency)) throw new Error(`${item.name}: dependency is outside the fixed release closure: ${dependency}`);
+    }
+  }
 }
-console.log(`Created Registry release ${releaseId} (${hash})`);
+
+export async function createRegistryRelease({ releaseId, artifactBaseUrl, requireClean = false,
+  outputBase = path.join(root, "output/agent-releases/registry") }) {
+  const baseUrl = registryReleaseBase(artifactBaseUrl, releaseId);
+  const output = path.resolve(outputBase);
+  const relative = path.relative(root, output);
+  if (!relative.startsWith(`..${path.sep}`) && relative !== ".." && !path.isAbsolute(relative)
+    && relative !== "output" && !relative.startsWith(`output${path.sep}`)) throw new Error("In-repository Registry candidates must use an isolated output/ directory");
+  const before = await sourceProvenance(root);
+  if (requireClean && !before.sourceClean) throw new Error("Formal Registry candidates require a clean committed source checkout");
+  for (const command of ["tokens:check", "code-engine:check"]) {
+    execFileSync("pnpm", [command], { cwd: root, stdio: "inherit" });
+  }
+  await mkdir(output, { recursive: true });
+  const stage = await mkdtemp(path.join(output, ".candidate-"));
+  const artifacts = path.join(stage, "artifacts");
+  const destination = path.join(output, releaseId);
+  try {
+    await mkdir(artifacts);
+    const composed = path.join(stage, "registry.composed.json");
+    const source = await composeRegistry(composed);
+    // Use the workspace's pinned shadcn executable, with isolated input/output.
+    execFileSync("pnpm", ["--filter", "@zeron/registry", "exec", "shadcn", "build", composed, "-o", artifacts, "-c", root], { cwd: root, stdio: "inherit" });
+    const expectedNames = source.items.map((item) => item.name).sort();
+    await processRegistry(artifacts, baseUrl);
+    const catalog = JSON.parse(await readFile(path.join(artifacts, "registry.json"), "utf8"));
+    if (serialize(catalog.items.map((item) => item.name).sort()) !== serialize(expectedNames)) throw new Error("Built Registry index does not match sources");
+    const items = await Promise.all(expectedNames.map(async (name) => {
+      const item = JSON.parse(await readFile(path.join(artifacts, `${name}.json`), "utf8"));
+      if (item.name !== name) throw new Error(`Registry item identity mismatch: ${name}`);
+      return item;
+    }));
+    validateReleaseDependencies(catalog.items, baseUrl);
+    validateReleaseDependencies(items, baseUrl);
+    const errors = checkRegistry(items);
+    if (errors.length) throw new Error(`Registry candidate closure failed:\n${errors.join("\n")}`);
+    const files = await artifactFiles(artifacts, baseUrl);
+    if (serialize(files.map((file) => file.path).sort()) !== serialize(["registry.json", ...expectedNames.map((name) => `${name}.json`)].sort())) {
+      throw new Error("Registry candidate has missing or unexpected distribution files");
+    }
+    if (serialize(before) !== serialize(await sourceProvenance(root))) throw new Error("Source inputs changed while building the Registry candidate; retry from frozen inputs");
+    const manifest = artifactManifestSchema.parse({ schemaVersion: 1, kind: "registry", releaseId, baseUrl, files, provenance: before });
+    await writeFile(path.join(artifacts, "manifest.json"), serialize(manifest));
+    const verified = await commitArtifactCandidate(artifacts, destination, manifest);
+    return { scope: "local-candidate-not-uploaded", directory: destination, ...verified };
+  } finally { await rm(stage, { recursive: true, force: true }); }
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const args = process.argv.slice(2);
+  const options = {};
+  for (let index = 0; index < args.length; index++) {
+    const key = args[index];
+    if (key === "--require-clean" && !options.requireClean) options.requireClean = true;
+    else if ((key === "--release-id" || key === "--artifact-base-url") && args[index + 1] && !args[index + 1].startsWith("--")) {
+      const option = key === "--release-id" ? "releaseId" : "artifactBaseUrl";
+      if (options[option]) throw new Error(`Duplicate option: ${key}`);
+      options[option] = args[++index];
+    } else throw new Error("Usage: registry:release --release-id <id> --artifact-base-url <https-origin> [--require-clean]");
+  }
+  options.artifactBaseUrl ??= process.env.ARTIFACT_BASE_URL;
+  const result = await createRegistryRelease(options);
+  console.log(`Registry candidate ${result.manifest.releaseId}: ${result.manifest.files.length} files; manifest ${result.manifestSha256}`);
+  console.log(`Scope: ${result.scope}; sourceClean: ${result.manifest.provenance.sourceClean}; output: ${result.directory}`);
+}

@@ -1,5 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { withRegistryMetadata } from "./registry-metadata.mjs";
 
 const root = fileURLToPath(new URL("../../..", import.meta.url));
@@ -9,13 +9,20 @@ const sources = [
 ];
 const destination = `${root}/packages/registry/registry.composed.json`;
 
-const catalogs = await Promise.all(sources.map(async (path) => JSON.parse(await readFile(path, "utf8"))));
-const [base] = catalogs;
-const items = catalogs.flatMap((catalog) => (catalog.items ?? []).map(withRegistryMetadata));
-const names = new Set();
-for (const item of items) {
-  if (names.has(item.name)) throw new Error(`Duplicate Registry item: ${item.name}`);
-  names.add(item.name);
+export async function composeRegistry(output = destination) {
+  const catalogs = await Promise.all(sources.map(async (path) => JSON.parse(await readFile(path, "utf8"))));
+  const [base] = catalogs;
+  const items = catalogs.flatMap((catalog) => (catalog.items ?? []).map(withRegistryMetadata));
+  const names = new Set();
+  for (const item of items) {
+    if (names.has(item.name)) throw new Error(`Duplicate Registry item: ${item.name}`);
+    names.add(item.name);
+  }
+  const catalog = { ...base, items };
+  await writeFile(output, `${JSON.stringify(catalog, null, 2)}\n`);
+  return catalog;
 }
 
-await writeFile(destination, `${JSON.stringify({ ...base, items }, null, 2)}\n`);
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await composeRegistry();
+}

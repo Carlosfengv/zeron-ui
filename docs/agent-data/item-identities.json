@@ -1,0 +1,1416 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "block:agent-message-trace-01",
+      "type": "registry",
+      "key": "agent-message-trace-01",
+      "aliases": [
+        "agent-message-trace-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:agent-session-detail-01",
+      "type": "registry",
+      "key": "agent-session-detail-01",
+      "aliases": [
+        "agent-session-detail-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:agent-trace-01",
+      "type": "registry",
+      "key": "agent-trace-01",
+      "aliases": [
+        "agent-trace-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:ai-gateway-overview-01",
+      "type": "registry",
+      "key": "ai-gateway-overview-01",
+      "aliases": [
+        "ai-gateway-overview-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:ai-gateway-session-list-01",
+      "type": "registry",
+      "key": "ai-gateway-session-list-01",
+      "aliases": [
+        "ai-gateway-session-list-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:availability-monitor-01",
+      "type": "registry",
+      "key": "availability-monitor-01",
+      "aliases": [
+        "availability-monitor-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:cluster-environment-detail-01",
+      "type": "registry",
+      "key": "cluster-environment-detail-01",
+      "aliases": [
+        "cluster-environment-detail-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:cluster-environment-list-01",
+      "type": "registry",
+      "key": "cluster-environment-list-01",
+      "aliases": [
+        "cluster-environment-list-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:credit-usage-01",
+      "type": "registry",
+      "key": "credit-usage-01",
+      "aliases": [
+        "credit-usage-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:file-manager-01",
+      "type": "registry",
+      "key": "file-manager-01",
+      "aliases": [
+        "file-manager-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:filter-rule-builder-01",
+      "type": "registry",
+      "key": "filter-rule-builder-01",
+      "aliases": [
+        "filter-rule-builder-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:infinite-log-table-01",
+      "type": "registry",
+      "key": "infinite-log-table-01",
+      "aliases": [
+        "infinite-log-table-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:inspection-report-list-01",
+      "type": "registry",
+      "key": "inspection-report-list-01",
+      "aliases": [
+        "inspection-report-list-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:login-01",
+      "type": "registry",
+      "key": "login-01",
+      "aliases": [
+        "login-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:mcp-detail-01",
+      "type": "registry",
+      "key": "mcp-detail-01",
+      "aliases": [
+        "mcp-detail-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:member-department-01",
+      "type": "registry",
+      "key": "member-department-01",
+      "aliases": [
+        "member-department-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:model-detail-01",
+      "type": "registry",
+      "key": "model-detail-01",
+      "aliases": [
+        "model-detail-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:model-detail-02",
+      "type": "registry",
+      "key": "model-detail-02",
+      "aliases": [
+        "model-detail-02"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:model-mcp-marketplace-01",
+      "type": "registry",
+      "key": "model-mcp-marketplace-01",
+      "aliases": [
+        "model-mcp-marketplace-01",
+        "resource-catalog-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:monitoring-alert-list-01",
+      "type": "registry",
+      "key": "monitoring-alert-list-01",
+      "aliases": [
+        "monitoring-alert-list-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:personal-model-usage-01",
+      "type": "registry",
+      "key": "personal-model-usage-01",
+      "aliases": [
+        "personal-model-usage-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:personal-settings-01",
+      "type": "registry",
+      "key": "personal-settings-01",
+      "aliases": [
+        "personal-settings-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:personal-usage-01",
+      "type": "registry",
+      "key": "personal-usage-01",
+      "aliases": [
+        "personal-usage-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:provider-create-form-01",
+      "type": "registry",
+      "key": "provider-create-form-01",
+      "aliases": [
+        "provider-create-form-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:resource-detail-page-01",
+      "type": "registry",
+      "key": "resource-detail-page-01",
+      "aliases": [
+        "resource-detail-page-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:resource-list-page-01",
+      "type": "registry",
+      "key": "resource-list-page-01",
+      "aliases": [
+        "resource-list-page-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:resource-list-table-01",
+      "type": "registry",
+      "key": "resource-list-table-01",
+      "aliases": [
+        "resource-list-table-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:resource-metric-list-01",
+      "type": "registry",
+      "key": "resource-metric-list-01",
+      "aliases": [
+        "resource-metric-list-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:resource-settings-01",
+      "type": "registry",
+      "key": "resource-settings-01",
+      "aliases": [
+        "resource-settings-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:resource-status-all-01",
+      "type": "registry",
+      "key": "resource-status-all-01",
+      "aliases": [
+        "resource-status-all-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:rule-flow-editor-01",
+      "type": "registry",
+      "key": "rule-flow-editor-01",
+      "aliases": [
+        "rule-flow-editor-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:service-management-01",
+      "type": "registry",
+      "key": "service-management-01",
+      "aliases": [
+        "service-management-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:signup-01",
+      "type": "registry",
+      "key": "signup-01",
+      "aliases": [
+        "signup-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:storage-usage-01",
+      "type": "registry",
+      "key": "storage-usage-01",
+      "aliases": [
+        "storage-usage-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:top-nav-app-shell-01",
+      "type": "registry",
+      "key": "top-nav-app-shell-01",
+      "aliases": [
+        "top-nav-app-shell-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:traffic-rules-01",
+      "type": "registry",
+      "key": "traffic-rules-01",
+      "aliases": [
+        "traffic-rules-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:user-account-01",
+      "type": "registry",
+      "key": "user-account-01",
+      "aliases": [
+        "user-account-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:zaiops-operations-01",
+      "type": "registry",
+      "key": "zaiops-operations-01",
+      "aliases": [
+        "zaiops-operations-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:zlrlist",
+      "type": "registry",
+      "key": "zlrlist",
+      "aliases": [
+        "zlrlist"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:accordion",
+      "type": "registry",
+      "key": "accordion",
+      "aliases": [
+        "accordion"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:alert",
+      "type": "registry",
+      "key": "alert",
+      "aliases": [
+        "alert"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:app-shell",
+      "type": "registry",
+      "key": "app-shell",
+      "aliases": [
+        "app-shell"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:ask-user-questions",
+      "type": "registry",
+      "key": "ask-user-questions",
+      "aliases": [
+        "ask-user-questions"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:auth-layout",
+      "type": "registry",
+      "key": "auth-layout",
+      "aliases": [
+        "auth-layout"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:avatar",
+      "type": "registry",
+      "key": "avatar",
+      "aliases": [
+        "avatar"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:badge",
+      "type": "registry",
+      "key": "badge",
+      "aliases": [
+        "badge"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:badge-overflow",
+      "type": "registry",
+      "key": "badge-overflow",
+      "aliases": [
+        "badge-overflow"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:breadcrumb",
+      "type": "registry",
+      "key": "breadcrumb",
+      "aliases": [
+        "breadcrumb"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:button",
+      "type": "registry",
+      "key": "button",
+      "aliases": [
+        "button"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:button-group",
+      "type": "registry",
+      "key": "button-group",
+      "aliases": [
+        "button-group"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:calendar",
+      "type": "registry",
+      "key": "calendar",
+      "aliases": [
+        "calendar"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:card",
+      "type": "registry",
+      "key": "card",
+      "aliases": [
+        "card"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:chart",
+      "type": "registry",
+      "key": "chart",
+      "aliases": [
+        "chart"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:chat-message",
+      "type": "registry",
+      "key": "chat-message",
+      "aliases": [
+        "chat-message"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:checkbox",
+      "type": "registry",
+      "key": "checkbox",
+      "aliases": [
+        "checkbox"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:checkbox-group",
+      "type": "registry",
+      "key": "checkbox-group",
+      "aliases": [
+        "checkbox-group"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:code-block",
+      "type": "registry",
+      "key": "code-block",
+      "aliases": [
+        "code-block"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:color-picker",
+      "type": "registry",
+      "key": "color-picker",
+      "aliases": [
+        "color-picker"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:combobox",
+      "type": "registry",
+      "key": "combobox",
+      "aliases": [
+        "combobox"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:command",
+      "type": "registry",
+      "key": "command",
+      "aliases": [
+        "command"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:container",
+      "type": "registry",
+      "key": "container",
+      "aliases": [
+        "container"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:data-grid",
+      "type": "registry",
+      "key": "data-grid",
+      "aliases": [
+        "data-grid"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:data-table",
+      "type": "registry",
+      "key": "data-table",
+      "aliases": [
+        "data-table"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:detail-list",
+      "type": "registry",
+      "key": "detail-list",
+      "aliases": [
+        "detail-list"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:dialog",
+      "type": "registry",
+      "key": "dialog",
+      "aliases": [
+        "dialog"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:dropdown",
+      "type": "registry",
+      "key": "dropdown",
+      "aliases": [
+        "dropdown"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:empty",
+      "type": "registry",
+      "key": "empty",
+      "aliases": [
+        "empty"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:field",
+      "type": "registry",
+      "key": "field",
+      "aliases": [
+        "field"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:file-thumbnail",
+      "type": "registry",
+      "key": "file-thumbnail",
+      "aliases": [
+        "file-thumbnail"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:file-tree",
+      "type": "registry",
+      "key": "file-tree",
+      "aliases": [
+        "file-tree"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:filter-builder",
+      "type": "registry",
+      "key": "filter-builder",
+      "aliases": [
+        "filter-builder"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:filter-query-core",
+      "type": "registry",
+      "key": "filter-query-core",
+      "aliases": [
+        "filter-query-core"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:filter-query-input",
+      "type": "registry",
+      "key": "filter-query-input",
+      "aliases": [
+        "filter-query-input"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:info-item",
+      "type": "registry",
+      "key": "info-item",
+      "aliases": [
+        "info-item"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:inline-notice",
+      "type": "registry",
+      "key": "inline-notice",
+      "aliases": [
+        "inline-notice"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:input",
+      "type": "registry",
+      "key": "input",
+      "aliases": [
+        "input"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:input-copy",
+      "type": "registry",
+      "key": "input-copy",
+      "aliases": [
+        "input-copy"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:input-group",
+      "type": "registry",
+      "key": "input-group",
+      "aliases": [
+        "input-group"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:input-message",
+      "type": "registry",
+      "key": "input-message",
+      "aliases": [
+        "input-message"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:kbd",
+      "type": "registry",
+      "key": "kbd",
+      "aliases": [
+        "kbd"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:member-tree",
+      "type": "registry",
+      "key": "member-tree",
+      "aliases": [
+        "member-tree"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:menu-item",
+      "type": "registry",
+      "key": "menu-item",
+      "aliases": [
+        "menu-item"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:metric-card",
+      "type": "registry",
+      "key": "metric-card",
+      "aliases": [
+        "metric-card"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:mobile-drawer",
+      "type": "registry",
+      "key": "mobile-drawer",
+      "aliases": [
+        "mobile-drawer"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:nav-item",
+      "type": "registry",
+      "key": "nav-item",
+      "aliases": [
+        "nav-item"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:nav-menu",
+      "type": "registry",
+      "key": "nav-menu",
+      "aliases": [
+        "nav-menu"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:page-layout",
+      "type": "registry",
+      "key": "page-layout",
+      "aliases": [
+        "page-layout"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:popover",
+      "type": "registry",
+      "key": "popover",
+      "aliases": [
+        "popover"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:radio-group",
+      "type": "registry",
+      "key": "radio-group",
+      "aliases": [
+        "radio-group"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:resizable",
+      "type": "registry",
+      "key": "resizable",
+      "aliases": [
+        "resizable"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:resource-detail-layout",
+      "type": "registry",
+      "key": "resource-detail-layout",
+      "aliases": [
+        "resource-detail-layout"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:resource-workspace-shell-01",
+      "type": "registry",
+      "key": "resource-workspace-shell-01",
+      "aliases": [
+        "resource-workspace-shell-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:scroll-area",
+      "type": "registry",
+      "key": "scroll-area",
+      "aliases": [
+        "scroll-area"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:select",
+      "type": "registry",
+      "key": "select",
+      "aliases": [
+        "select"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:separator",
+      "type": "registry",
+      "key": "separator",
+      "aliases": [
+        "separator"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:sidebar",
+      "type": "registry",
+      "key": "sidebar",
+      "aliases": [
+        "sidebar"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:sidebar-account-menu",
+      "type": "registry",
+      "key": "sidebar-account-menu",
+      "aliases": [
+        "sidebar-account-menu"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:sidebar-identity-row",
+      "type": "registry",
+      "key": "sidebar-identity-row",
+      "aliases": [
+        "sidebar-identity-row"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:skeleton",
+      "type": "registry",
+      "key": "skeleton",
+      "aliases": [
+        "skeleton"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:slider",
+      "type": "registry",
+      "key": "slider",
+      "aliases": [
+        "slider"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:sortable-collection",
+      "type": "registry",
+      "key": "sortable-collection",
+      "aliases": [
+        "sortable-collection"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:status-overview",
+      "type": "registry",
+      "key": "status-overview",
+      "aliases": [
+        "status-overview"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:stepper",
+      "type": "registry",
+      "key": "stepper",
+      "aliases": [
+        "stepper"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:switch",
+      "type": "registry",
+      "key": "switch",
+      "aliases": [
+        "switch"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:table",
+      "type": "registry",
+      "key": "table",
+      "aliases": [
+        "table"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:tabs",
+      "type": "registry",
+      "key": "tabs",
+      "aliases": [
+        "tabs"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:tabs-subtle",
+      "type": "registry",
+      "key": "tabs-subtle",
+      "aliases": [
+        "tabs-subtle"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:temporal-picker",
+      "type": "registry",
+      "key": "temporal-picker",
+      "aliases": [
+        "temporal-picker"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:textarea",
+      "type": "registry",
+      "key": "textarea",
+      "aliases": [
+        "textarea"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:thinking-indicator",
+      "type": "registry",
+      "key": "thinking-indicator",
+      "aliases": [
+        "thinking-indicator"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:thinking-steps",
+      "type": "registry",
+      "key": "thinking-steps",
+      "aliases": [
+        "thinking-steps"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:time-range-histogram",
+      "type": "registry",
+      "key": "time-range-histogram",
+      "aliases": [
+        "time-range-histogram"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:toast",
+      "type": "registry",
+      "key": "toast",
+      "aliases": [
+        "toast"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:tooltip",
+      "type": "registry",
+      "key": "tooltip",
+      "aliases": [
+        "tooltip"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:top-nav",
+      "type": "registry",
+      "key": "top-nav",
+      "aliases": [
+        "top-nav"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:tree",
+      "type": "registry",
+      "key": "tree",
+      "aliases": [
+        "tree"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "page:workflow",
+      "type": "page",
+      "key": "workflow",
+      "aliases": [
+        "workflow"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "reference:catalog",
+      "type": "document",
+      "key": "icons/catalog",
+      "aliases": [
+        "catalog"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "reference:motion",
+      "type": "document",
+      "key": "components/motion",
+      "aliases": [
+        "motion"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "reference:overview",
+      "type": "document",
+      "key": "icons/overview",
+      "aliases": [
+        "overview"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "reference:providers",
+      "type": "document",
+      "key": "icons/providers",
+      "aliases": [
+        "providers"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "reference:scrollbars",
+      "type": "document",
+      "key": "components/scrollbars",
+      "aliases": [
+        "scrollbars"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "reference:semantic-tokens",
+      "type": "document",
+      "key": "components/semantic-tokens",
+      "aliases": [
+        "semantic-tokens"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "reference:usage",
+      "type": "document",
+      "key": "icons/usage",
+      "aliases": [
+        "usage"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:code-engine",
+      "type": "registry",
+      "key": "code-engine",
+      "aliases": [
+        "code-engine"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:compose-refs",
+      "type": "registry",
+      "key": "compose-refs",
+      "aliases": [
+        "compose-refs"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:control-size",
+      "type": "registry",
+      "key": "control-size",
+      "aliases": [
+        "control-size"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:elevated",
+      "type": "registry",
+      "key": "elevated",
+      "aliases": [
+        "elevated"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:filter-core",
+      "type": "registry",
+      "key": "filter-core",
+      "aliases": [
+        "filter-core"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:icon-context",
+      "type": "registry",
+      "key": "icon-context",
+      "aliases": [
+        "icon-context"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:portal-container-context",
+      "type": "registry",
+      "key": "portal-container-context",
+      "aliases": [
+        "portal-container-context"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:pro-icon-provider",
+      "type": "registry",
+      "key": "pro-icon-provider",
+      "aliases": [
+        "pro-icon-provider"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:springs",
+      "type": "registry",
+      "key": "springs",
+      "aliases": [
+        "springs"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:surface-classes",
+      "type": "registry",
+      "key": "surface-classes",
+      "aliases": [
+        "surface-classes"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:surface-context",
+      "type": "registry",
+      "key": "surface-context",
+      "aliases": [
+        "surface-context"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:surfaces",
+      "type": "registry",
+      "key": "surfaces",
+      "aliases": [
+        "surfaces"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:tailwind-merge-tokens",
+      "type": "registry",
+      "key": "tailwind-merge-tokens",
+      "aliases": [
+        "tailwind-merge-tokens"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:use-merge-split",
+      "type": "registry",
+      "key": "use-merge-split",
+      "aliases": [
+        "use-merge-split"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:use-proximity-hover",
+      "type": "registry",
+      "key": "use-proximity-hover",
+      "aliases": [
+        "use-proximity-hover"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:use-touch-primary",
+      "type": "registry",
+      "key": "use-touch-primary",
+      "aliases": [
+        "use-touch-primary"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "support:utils",
+      "type": "registry",
+      "key": "utils",
+      "aliases": [
+        "utils"
+      ],
+      "status": "active",
+      "retirementReason": null
+    }
+  ]
+}

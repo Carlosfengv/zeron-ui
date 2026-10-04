@@ -1,5 +1,14 @@
 ---
+schema_version: 1
 name: filter-rule-builder-01
+kind: block
+status: stable
+locale: en
+summary: Review filter clauses, start from presets, edit drafts, and explicitly apply controlled filters.
+source: packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder.tsx
+related:
+  - filter-builder
+  - button
 type: data-block
 framework: react
 ---

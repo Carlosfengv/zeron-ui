@@ -1,0 +1,1 @@
+export const businessIdentity = <T>(value: T): T => value;

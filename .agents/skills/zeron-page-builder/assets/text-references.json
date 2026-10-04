@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "references": [
+    "swap-to-zeronui/SKILL.md",
+    "swap-to-zeronui/agents/openai.yaml",
+    "swap-to-zeronui/assets/migration-plan.schema.json",
+    "swap-to-zeronui/assets/report-template.md",
+    "swap-to-zeronui/references/inventory-and-mapping.md",
+    "swap-to-zeronui/references/migration-workflow.md",
+    "swap-to-zeronui/references/scope-and-completion.md",
+    "swap-to-zeronui/references/source-profiles/shadcn.md",
+    "swap-to-zeronui/references/verification-and-recovery.md",
+    "swap-to-zeronui/scripts/verify-evidence.mjs",
+    "zeron-page-builder/SKILL.md",
+    "zeron-page-builder/agents/openai.yaml",
+    "zeron-page-builder/assets/text-references.json",
+    "zeron-page-builder/assets/usage-report-template.md",
+    "zeron-page-builder/references/agent-discovery.md",
+    "zeron-page-builder/references/charts.md",
+    "zeron-page-builder/references/composition-contracts.md",
+    "zeron-page-builder/references/control-composition.md",
+    "zeron-page-builder/references/page-header-contracts.md",
+    "zeron-page-builder/references/project-adaptation.md",
+    "zeron-page-builder/references/resource-list-structure.md",
+    "zeron-page-builder/references/selection-guide.md",
+    "zeron-page-builder/references/usage-reporting.md",
+    "zeron-page-builder/references/verification.md",
+    "zeron-page-builder/references/zeron-integration.md",
+    "zeron-page-builder/scripts/usage-report.mjs"
+  ]
+}

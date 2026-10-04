@@ -14,7 +14,7 @@ Read [scope and completion](references/scope-and-completion.md) first. Use the p
 - Inspect project instructions, current edits, actual installed React/Tailwind versions, framework, aliases, theme, providers and existing component sources. Target React 19 and Tailwind 4. Do not install Next-only blocks into Vite; evaluate eligible template porting through the builder's [project adaptation](../zeron-page-builder/references/project-adaptation.md#port-a-template-across-frameworks) procedure.
 - Freeze the target routes/files and the impact on shared consumers. For Vite, explicitly discover the router; entry files alone do not establish route coverage.
 - Record baseline checks and representative screenshots before editing. Preserve pre-existing changes and failures.
-- Pin CLI and Registry sources. A hash of an arbitrary existing component is not an official baseline.
+- Pin catalog, CLI and Registry sources using the builder's [Agent discovery](../zeron-page-builder/references/agent-discovery.md) procedure, with or without MCP. Keep one version through selection and installation. A hash of an arbitrary existing component is not an official baseline.
 - Create `.zeron/migrations/<id>/plan.json` using the [plan schema](assets/migration-plan.schema.json). Read [inventory and mapping](references/inventory-and-mapping.md) for its operational fields and scan/check semantics. Missing evidence remains unchecked.
 
 ## Map and migrate

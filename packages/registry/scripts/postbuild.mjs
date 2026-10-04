@@ -16,13 +16,13 @@ export function localItemNames(catalog) {
   return new Set(Array.isArray(catalog.items) ? catalog.items.map((item) => item.name) : []);
 }
 
-export function depUrl(dep, itemNames) {
-  return itemNames.has(dep) ? `${BASE_URL}/${dep}.json` : dep;
+export function depUrl(dep, itemNames, baseUrl = BASE_URL) {
+  return itemNames.has(dep) ? `${baseUrl}/${dep}.json` : dep;
 }
 
-function rewriteDeps(item, itemNames) {
+function rewriteDeps(item, itemNames, baseUrl) {
   if (Array.isArray(item.registryDependencies)) {
-    item.registryDependencies = item.registryDependencies.map((dep) => depUrl(dep, itemNames));
+    item.registryDependencies = item.registryDependencies.map((dep) => depUrl(dep, itemNames, baseUrl));
   }
 }
 
@@ -76,7 +76,7 @@ async function writeJson(path, data) {
   await writeFile(path, `${JSON.stringify(data, null, 2)}\n`);
 }
 
-export async function processRegistry(registryDir = REGISTRY_DIR) {
+export async function processRegistry(registryDir = REGISTRY_DIR, baseUrl = BASE_URL) {
   const versions = await dependencyVersions();
   const staleFiles = new Set(["font-weight.json", "shape-context.json"]);
   const initialFiles = await readdir(registryDir);
@@ -99,13 +99,13 @@ export async function processRegistry(registryDir = REGISTRY_DIR) {
 
     if (Array.isArray(data.items)) {
       for (const item of data.items) {
-        rewriteDeps(item, itemNames);
+        rewriteDeps(item, itemNames, baseUrl);
         rewriteImports(item);
         addRuntimeDependencies(item);
         pinRuntimeDependencies(item, versions);
       }
     } else {
-      rewriteDeps(data, itemNames);
+      rewriteDeps(data, itemNames, baseUrl);
       rewriteImports(data);
       addRuntimeDependencies(data);
       pinRuntimeDependencies(data, versions);
@@ -122,7 +122,7 @@ export async function processRegistry(registryDir = REGISTRY_DIR) {
   if (surfaces) {
     const theme = structuredClone(surfaces);
     theme.$schema = "https://ui.shadcn.com/schema/registry-item.json";
-    rewriteDeps(theme, itemNames);
+    rewriteDeps(theme, itemNames, baseUrl);
     addRuntimeDependencies(theme);
     pinRuntimeDependencies(theme, versions);
     await writeJson(join(registryDir, "surfaces.json"), theme);

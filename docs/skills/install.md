@@ -7,12 +7,11 @@ React, a package manager, or a clone of the Zeron repository.
 
 ## Download the complete release
 
-- Bundle version (SHA-256): `{{version}}`
+- {{versionLabel}}: `{{version}}`
 - [Pinned manifest]({{manifestPath}})
-- [Latest manifest](/skills/manifest.json) (for checking updates)
+- [Latest manifest]({{latestManifestUrl}}) (for checking updates)
 
-Resolve these root-relative URLs against the origin of this guide. Fetch the
-pinned manifest first, then download its `archive.url` from that same origin.
+{{resourceInstructions}}
 Use a tool that can download raw bytes, not a web-page summary. HTTP errors or
 HTML responses are not archives. The ZIP contains two sibling directories:
 
@@ -87,9 +86,7 @@ existing tools and record static helper checks as unavailable. Do not fabricate 
 passing CLI result or install an unpublished workspace-only lint package.
 
 For updates, fetch the latest manifest and compare its version and file hashes
-with the installed files. Apply the same conflict rules above. If a pinned release
-is no longer available after a site deployment, refetch this guide and restart
-verification from its new pinned manifest; never mix files from two versions.
+with the installed files. Apply the same conflict rules above. {{versionRetentionInstructions}}
 
 If network or file-write access is unavailable, explain that boundary and provide
 the manifest's archive URL for manual download. Do not claim the skills were installed.

@@ -1,38 +1,18 @@
-import { createHash } from "node:crypto";
-import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { zipSync } from "fflate";
-import { bundleMigrationSkills, skillNames } from "./package-migration-skills.mjs";
+import { skillNames } from "./package-migration-skills.mjs";
+import { renderSkillGuide } from "./skill-release.mjs";
+import { sha256 } from "./agent-utils.mjs";
+import { buildSkillArchive } from "./skill-archive.mjs";
+export { buildSkillArchive } from "./skill-archive.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
 // Public assets are generated at build time, so no server function needs to
 // trace the repository or expose arbitrary paths from it.
 export async function buildSkillDistribution(output = path.join(root, "public/skills")) {
-  const temporary = await mkdtemp(path.join(tmpdir(), "zeron-skills-"));
-  try {
-    const bundle = path.join(temporary, "bundle");
-    await bundleMigrationSkills(bundle);
-    const files = [];
-    const archiveFiles = {};
-    async function collect(directory, prefix = "") {
-      for (const entry of (await readdir(directory, { withFileTypes: true })).sort((a, b) => a.name < b.name ? -1 : 1)) {
-        const relative = prefix + entry.name;
-        const absolute = path.join(directory, entry.name);
-        if (entry.isDirectory()) await collect(absolute, `${relative}/`);
-        else {
-          const content = await readFile(absolute);
-          files.push({ path: relative, bytes: content.length, sha256: sha256(content) });
-          // Fixed local date produces stable ZIP bytes across builds/timezones.
-          archiveFiles[relative] = [content, { mtime: new Date(2020, 0, 1) }];
-        }
-      }
-    }
-    await collect(bundle);
-    const archive = zipSync(archiveFiles, { level: 9 });
+    const { archive, files } = await buildSkillArchive();
     const archiveHash = sha256(archive);
     const version = archiveHash;
     const release = `/skills/releases/${version}`;
@@ -51,17 +31,37 @@ export async function buildSkillDistribution(output = path.join(root, "public/sk
     await writeFile(path.join(releaseDirectory, "manifest.json"), manifestText);
     await writeFile(path.join(output, "zeron-skills.zip"), archive);
     await writeFile(path.join(output, "manifest.json"), manifestText);
-    const guide = (await readFile(path.join(root, "docs/skills/install.md"), "utf8"))
-      .replaceAll("{{manifestPath}}", `${release}/manifest.json`)
-      .replaceAll("{{version}}", version);
+    const guide = renderSkillGuide(await readFile(path.join(root, "docs/skills/install.md"), "utf8"), {
+      manifestPath: `${release}/manifest.json`, version,
+    });
     await writeFile(path.join(output, "install.md"), guide);
     return manifest;
-  } finally {
-    await rm(temporary, { recursive: true, force: true });
-  }
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const manifest = await buildSkillDistribution();
-  console.log(`Built Zeron skill distribution: ${manifest.files.length} files, ${manifest.archive.bytes} bytes (${manifest.version.slice(0, 12)})`);
+  const args = process.argv.slice(2);
+  if (!args.length || (args.length === 2 && args[0] === "--mode" && args[1] === "development")) {
+    const manifest = await buildSkillDistribution();
+    console.log(`Built Zeron skill distribution: ${manifest.files.length} files, ${manifest.archive.bytes} bytes (${manifest.version.slice(0, 12)})`);
+  } else {
+    const options = {};
+    let mode;
+    for (let index = 0; index < args.length; index++) {
+      const key = args[index];
+      if (key === "--require-clean" && !options.requireClean) options.requireClean = true;
+      else if (["--mode", "--artifact-base-url", "--site-base-url", "--output"].includes(key) && args[index + 1] && !args[index + 1].startsWith("--")) {
+        const field = { "--mode": "mode", "--artifact-base-url": "artifactBaseUrl", "--site-base-url": "siteBaseUrl", "--output": "outputBase" }[key];
+        if (field === "mode") { if (mode) throw new Error("Duplicate mode"); mode = args[++index]; }
+        else { if (options[field]) throw new Error(`Duplicate option: ${key}`); options[field] = args[++index]; }
+      } else throw new Error("Usage: skills:build --mode release --artifact-base-url <https-origin> --site-base-url <https-origin> [--output <isolated-dir>] [--require-clean]");
+    }
+    if (mode !== "release") throw new Error("Explicit Skill candidate mode must be release");
+    options.artifactBaseUrl ??= process.env.ARTIFACT_BASE_URL;
+    options.siteBaseUrl ??= process.env.SITE_BASE_URL;
+    const { buildSkillRelease } = await import("./create-skill-release.mjs");
+    const result = await buildSkillRelease(options);
+    console.log(`Skill candidate ${result.release.skillVersion}: ${result.release.files.length} source files; artifacts ${result.manifestSha256}`);
+    console.log(`Scope: ${result.scope}; sourceClean: ${result.provenance.sourceClean}; output: ${result.directory}`);
+    console.log(`Source binding: ${result.provenanceFile}`);
+  }
 }

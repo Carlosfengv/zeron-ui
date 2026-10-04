@@ -1,0 +1,17 @@
+# Zeron UI for agents
+
+Read the catalog and exact installed types before choosing a component.
+
+- [AI usage](https://zeron-ui.vercel.app/docs/ai)
+- [Catalog](https://zeron-ui.vercel.app/ai/catalog.json)
+- [Skills installation](https://zeron-ui.vercel.app/skills/install.md)
+
+## Install
+
+Use the verified Zeron CLI. Start with init when components.json is missing; inspect add --dry-run before installing. React 19 and Tailwind 4 are required; Next-only blocks must not be directly installed in Vite. Workspace @zeron/ui imports do not establish consumer import paths.
+
+## Design rules
+
+Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard focus, loading and disabled states. Reuse the host shell, assign one scroll owner per region, and replace demo data with real callbacks. A clean static check is not runtime verification.
+
+For item-level context read the catalog and Markdown links.

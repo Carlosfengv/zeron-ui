@@ -1,0 +1,2670 @@
+# Zeron UI for agents
+
+Read the catalog and exact installed types before choosing a component.
+
+- [AI usage](https://zeron-ui.vercel.app/docs/ai)
+- [Catalog](https://zeron-ui.vercel.app/ai/catalog.json)
+- [Skills installation](https://zeron-ui.vercel.app/skills/install.md)
+
+## Install
+
+Use the verified Zeron CLI. Start with init when components.json is missing; inspect add --dry-run before installing. React 19 and Tailwind 4 are required; Next-only blocks must not be directly installed in Vite. Workspace @zeron/ui imports do not establish consumer import paths.
+
+## Design rules
+
+Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard focus, loading and disabled states. Reuse the host shell, assign one scroll owner per region, and replace demo data with real callbacks. A clean static check is not runtime verification.
+
+## Coverage
+
+This file contains all maintained agent guides, not all component source or complete API declarations. Items without guides have basic metadata in the catalog.
+
+---
+schema_version: 1
+name: agent-message-trace-01
+kind: block
+status: stable
+summary: 显示单条 Agent Message 的调用树、耗时瀑布图和可调整尺寸的 Span 详情。
+package_import: "@zeron/blocks/agent-message-trace-01"
+registry_import: "@/components/blocks/agent-message-trace-01"
+source: packages/blocks/src/application/agent-message-trace-01/agent-message-trace-workspace.tsx
+types: packages/blocks/src/application/agent-message-trace-01/agent-message-trace-types.ts
+registry: packages/blocks/registry.json
+related:
+  - resizable
+  - detail-list
+  - tabs
+  - switch
+---
+
+# Agent Message Trace 01
+
+## Agent intent
+
+使用此 Block 检查一条 Agent Message 内的模型、Agent 与 Tool 调用链。Block 接收扁平 Span 数组，自行构建安全的调用树、虚拟化行、时间轴、选择状态和详情面板。
+
+Block 不负责请求接口，也不要求后端输出展示结构。业务项目应在页面或数据 hook 中将 API、OpenTelemetry 或流式事件映射到 `AgentMessageTraceData`。不要修改 demo data 来模拟已经完成的数据接入。
+
+## Install and import
+
+在使用 Zeron Registry 的项目中安装完整依赖闭包：
+
+```bash
+npx zeron-ui add agent-message-trace-01
+```
+
+Registry 安装后的默认导入路径为：
+
+```tsx
+import {
+  AgentMessageTrace,
+  type AgentMessageTraceData,
+  type AgentMessageTraceMessage,
+  type AgentMessageTraceSpan,
+} from "@/components/blocks/agent-message-trace-01";
+```
+
+`AgentMessageTrace` 是带时间线、Resizable 和详情区的完整 Block。只需要时间线时使用 `AgentMessageTraceTimeline`；详情区单独组合时使用 `AgentMessageTraceInspector`。
+
+## Required data contract
+
+```ts
+interface AgentMessageTraceData {
+  id: string;
+  messageId?: string;
+  startedAt?: string;
+  spans: readonly AgentMessageTraceSpan[];
+}
+
+interface AgentMessageTraceSpan {
+  id: string;
+  parentId: string | null;
+  kind: "chat" | "agent" | "tool";
+  name: string;
+  startOffsetMs: number;
+  durationMs?: number;
+  status: "running" | "success" | "error" | "cancelled";
+}
+```
+
+接入约束：
+
+- `id` 必须在同一条 trace 内稳定且唯一，用于树关系、选择和流式更新。
+- `parentId` 指向同一数组中的父 Span；缺失、循环或自引用会安全降级为根节点。
+- `startOffsetMs` 和 event 的时间均为相对整条 trace 起点的毫秒数，不是 Unix 时间戳。
+- 已完成 Span 传 `durationMs`；运行中 Span 可省略并通过 `nowOffsetMs` 更新当前耗时。
+- `input`、`output`、event payload 和 attributes 接受未知 JSON 值。传入 `AgentMessageTraceMessage` 或其数组时，Pretty 模式会显示角色图标和消息卡片。
+- `spans` 最好在数据没有变化时保持引用稳定，避免重新构建树和虚拟列表。
+
+## API adapter example
+
+适配逻辑属于业务项目。先统一后端状态和类型，再计算相对时间：
+
+```tsx
+import { useMemo } from "react";
+import {
+  AgentMessageTrace,
+  type AgentMessageTraceData,
+  type AgentMessageTraceKind,
+  type AgentMessageTraceStatus,
+} from "@/components/blocks/agent-message-trace-01";
+
+function toKind(value: string): AgentMessageTraceKind {
+  if (value === "llm") return "chat";
+  if (value === "tool") return "tool";
+  return "agent";
+}
+
+function toStatus(value: string): AgentMessageTraceStatus {
+  if (value === "active") return "running";
+  if (value === "failed") return "error";
+  if (value === "cancelled") return "cancelled";
+  return "success";
+}
+
+function TraceView({ response }: { response: ApiTrace }) {
+  const data = useMemo<AgentMessageTraceData>(() => {
+    const traceStartedAt = Date.parse(response.startedAt);
+
+    return {
+      id: response.id,
+      messageId: response.messageId,
+      startedAt: response.startedAt,
+      spans: response.spans.map((span) => {
+        const startedAt = Date.parse(span.startedAt);
+        const endedAt = span.endedAt ? Date.parse(span.endedAt) : undefined;
+
+        return {
+          id: span.spanId,
+          parentId: span.parentSpanId ?? null,
+          kind: toKind(span.type),
+          name: span.name,
+          operation: span.operation,
+          startOffsetMs: Math.max(0, startedAt - traceStartedAt),
+          durationMs: endedAt === undefined ? undefined : Math.max(0, endedAt - startedAt),
+          status: toStatus(span.status),
+          input: span.input,
+          output: span.output,
+          attributes: span.attributes,
+          events: span.events,
+        };
+      }),
+    };
+  }, [response]);
+
+  return <AgentMessageTrace className="h-full" data={data} locale="zh-CN" />;
+}
+```
+
+后端 event 不是相对毫秒结构时，也需要在 adapter 中映射为 `AgentMessageTraceEvent`，不能直接透传绝对时间。
+
+## State ownership
+
+Block 默认内部管理选择、展开节点和类型过滤。需要与 URL、外部详情页或持久化偏好同步时，使用对应的受控属性：
+
+```tsx
+<AgentMessageTrace
+  data={data}
+  selectedSpanId={selectedSpanId}
+  onSelectedSpanIdChange={setSelectedSpanId}
+  expandedSpanIds={expandedSpanIds}
+  onExpandedSpanIdsChange={setExpandedSpanIds}
+  visibleKinds={visibleKinds}
+  onVisibleKindsChange={setVisibleKinds}
+/>
+```
+
+`onSpanSelect` 适合埋点或额外业务动作；选中状态仍由 `selectedSpanId` 契约负责。
+
+## Loading, error, and streaming
+
+- 加载时传 `state="loading"` 和一个空 `spans` 的稳定 data 对象。
+- 请求失败时传 `state="error"`，并通过 `errorMessage` 提供面向用户的信息。
+- 空结果使用 `state="ready"` 和空 `spans`，Block 会显示空状态。
+- 流式更新应按稳定 `id` 合并 Span，避免每个增量生成新 id。
+- 存在运行中 Span 时，宿主按需要更新 `nowOffsetMs`；没有运行中 Span 时不需要定时刷新。
+
+## Layout ownership
+
+Block 填满父级宽高，宿主必须提供有界高度，例如 flex 剩余空间、`h-full` 或明确的 viewport 高度。默认在 900px 以上左右排列，右侧详情初始宽度为 400px；更窄时自动上下排列。
+
+外部布局可通过 `className` 控制 Block 的尺寸，通过 `inspectorDefaultSize`、`inspectorMinSize` 和 `inspectorMaxSize` 调整详情区。不要覆盖内部 Zeron token、Resizable、Tabs、DetailList 或 focus 状态。
+
+## Production boundary
+
+`agentMessageTraceDemoData` 和 `createAgentMessageTraceDemoData` 只用于文档、Story 或测试。生产项目应创建独立 adapter，并将服务端响应转换为公开数据契约。Block 不包含鉴权、请求重试、分页、订阅或脱敏逻辑；这些仍由业务数据层负责。
+
+
+---
+
+---
+schema_version: 1
+name: ai-gateway-overview-01
+kind: block
+status: stable
+summary: 展示 AI 网关的请求、费用、Token、延迟、错误、服务商归因和慢操作。
+registry_import: "@/components/blocks/ai-gateway-overview-01"
+source: packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview.tsx
+types: packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-types.ts
+registry: packages/blocks/registry.json
+related:
+  - chart
+  - metric-card
+  - tabs
+  - sidebar
+  - page-layout
+---
+
+# AI Gateway Overview 01
+
+## Agent intent
+
+使用此 Block 构建完整的 AI 网关业务总览。它负责设计稿中的 Sidebar、PageLayout、指标格式化、响应式图表、加载和失败状态；业务项目负责查询数据、切换时间范围、刷新、重试和导航行为。
+
+默认渲染 `280px` 桌面 Sidebar，并在低于桌面断点时切换为抽屉。若业务应用已经提供同一层级的全局导航，可显式传入 `sidebar={false}`，避免重复外壳。
+
+## Use when
+
+- 需要同时观察请求、费用、Token、延迟和错误率。
+- 需要按 Provider 归因请求和成本。
+- 需要延迟分布、扩展指标、慢操作和高频用户视图。
+- 扩展指标需要同时呈现底部时间轴和按指标单位格式化的数值刻度。
+- 后端能按统一时间窗口返回聚合数据。
+
+## Do not use when
+
+- 只需要单个可用性对比图：使用 `availability-monitor-01`。
+- 需要逐条浏览原始请求日志：使用 `infinite-log-table-01`。
+- 页面只展示单个模型的性能详情：使用模型详情 Block。
+
+## Minimal integration
+
+外部项目通过 Registry 安装。`@zeron/blocks` 是源码仓库内部 workspace 包，不是消费者安装入口。
+
+```bash
+npx zeron-ui add ai-gateway-overview-01 --dry-run
+npx zeron-ui add ai-gateway-overview-01
+```
+
+```tsx
+import { useState } from "react";
+import {
+  AiGatewayOverview,
+  parseAiGatewayOverviewData,
+  type AiGatewayOverviewData,
+  type AiGatewayOverviewRange,
+} from "@/components/blocks/ai-gateway-overview-01";
+
+function GatewayOverviewPage() {
+  const [range, setRange] = useState<AiGatewayOverviewRange>("30d");
+  const query = useGatewayOverviewQuery(range);
+  const data: AiGatewayOverviewData | null = query.data
+    ? parseAiGatewayOverviewData(query.data)
+    : null;
+
+  return (
+    <AiGatewayOverview
+      actions={{
+        onRangeChange: setRange,
+        onRefresh: query.refetch,
+        onRetry: query.refetch,
+        onNavigationSelect: (id, event) => {
+          event.preventDefault();
+          router.push(gatewayRoutes[id]);
+        },
+        onWorkspaceSelect: () => openWorkspaceSwitcher(),
+        onAccountSelect: () => openAccountMenu(),
+        onProviderSelect: (id) => router.push(`/providers/${id}`),
+        onOperationSelect: (id) => router.push(`/operations/${id}`),
+      }}
+      className="h-full"
+      data={data}
+      locale="zh-CN"
+      range={range}
+      status={query.isLoading ? "loading" : query.isFetching ? "refreshing" : query.isError ? "error" : "ready"}
+      timeZone="Asia/Shanghai"
+    />
+  );
+}
+```
+
+## Data contract
+
+### Window
+
+`window` 必须包含 `range`、ISO 8601 的 `from` / `to`、`granularity`、IANA `timeZone`、ISO 4217 `currency` 和 `generatedAt`。
+
+### Units
+
+- 金额使用整数 `costMicros`。不要向 Block 传入已格式化的货币字符串。
+- Token 和请求量使用非负整数。
+- 延迟使用毫秒。
+- `errorRate` 使用 `0..1` 比例，不是百分数。
+- 时间序列的 `timestamp` 使用带时区的 ISO 8601。
+
+### Missing values
+
+`null` 表示该时间点不可用或未计算；`0` 表示有效的零值。不要把两者互换。
+
+接口已经与 Block 契约一致时，用 `parseAiGatewayOverviewData(response)` 在渲染前执行运行时校验。接口字段不一致时，应先在项目侧映射为契约结构，再调用 parser；不要使用 TypeScript 类型断言代替校验。
+
+### Stable IDs
+
+Provider、操作、用户、延迟区间和扩展指标必须提供稳定且唯一的 `id`。Block 用这些 ID 作为渲染键和交互回调参数。
+
+## Query mapping
+
+推荐后端一次返回同一窗口下的完整聚合结果：
+
+```ts
+type GatewayOverviewResponse = AiGatewayOverviewData;
+
+const response = await fetch(
+  `/api/gateway/overview?range=${range}&timeZone=${timeZone}`,
+  { signal },
+);
+```
+
+如果后端拆分多个接口，请在数据适配层等待同一 snapshot revision 的结果后再组装，避免汇总指标与图表时间窗不一致。
+
+## Runtime states
+
+- `loading` + `data={null}`：显示全页骨架。
+- `refreshing` + 旧 `data`：保留图表并将容器标为 busy。
+- `error` + 旧 `data`：保留图表并显示行内错误提示。
+- `error` + `data={null}`：显示整页错误和可选 Retry。
+- `ready` + `data={null}`：显示确认无数据状态。
+
+## Interaction ownership
+
+只有提供对应 callback 时才渲染或启用交互：
+
+- `onNavigationSelect`：Sidebar 选择通知。回调会收到原生 click event；使用客户端路由时调用 `event.preventDefault()`。优先通过 `sidebar.groups[].items[].href` 提供真实页面地址。
+- `onWorkspaceSelect`、`onAccountSelect`：工作区和账号入口。
+- `onRangeChange`：受控 Tabs 时间范围；未提供时 TabItem 保持只读禁用状态。
+- `onRefresh`：刷新按钮。
+- `onRetry`：全页错误重试。
+- `onProviderSelect`、`onOperationSelect`、`onUserSelect`：明细行导航。
+
+不要传入空函数制造看似可点击但无行为的控件。
+
+## Sidebar configuration
+
+通过 `sidebar` 覆盖 workspace、account、activeItem 或完整导航分组。未传入时使用设计稿中的 Overview、Traces、Sessions、Logs、MCP、Setup、API keys 和 Settings 结构。已有产品外壳时使用 `sidebar={false}`，Block 将只渲染右侧 PageLayout。
+
+## Localization
+
+通过 `locale` 和 `timeZone` 控制数字、货币、日期和延迟格式。通过 `labels` 局部覆盖页面与图表文案；业务术语与后端 ID 不要混入标签配置。
+
+
+---
+
+---
+schema_version: 1
+name: ai-gateway-session-list-01
+kind: block
+status: stable
+summary: 在与 AI Gateway Overview 1 一致的工作区侧栏中浏览和筛选 Session，并查看结果、模型、Token、费用、最近活动与创建时间。
+registry_import: "@/components/blocks/ai-gateway-session-list-01"
+source: packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list.tsx
+types: packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list-types.ts
+registry: packages/blocks/registry.json
+related:
+  - data-table
+  - page-layout
+  - checkbox
+---
+
+# AI Gateway Session List 01
+
+## Agent intent
+
+使用此 Block 浏览 AI Gateway Session。它默认包含与 `ai-gateway-overview-01` 共用的响应式 Sidebar，并将 Sessions 设为当前项；页面主体使用 Zeron 组件的原生样式，负责列表筛选、显示格式化、加载/空/错误状态和 DataTable 原生分页。宿主负责数据请求、URL 状态和 Session 详情路由。
+
+## Use when
+
+- 需要按 session id 或 trace name 搜索；
+- 需要按 Agent、User、Model 和错误结果筛选；
+- 需要同时查看模型、turn、Token、费用、最近活动和创建时间；
+- 服务端分页由宿主受控。
+
+## Do not use when
+
+- 需要 AI Gateway 聚合指标和图表：使用 `ai-gateway-overview-01`；
+- 需要查看单个 Session 的完整执行轨迹：使用 `agent-session-detail-01`；
+- 需要浏览任意 schema 的原始日志：使用 `infinite-log-table-01`。
+
+## Minimal integration
+
+```tsx
+import { useState } from "react";
+import {
+  AiGatewaySessionList,
+  aiGatewaySessionListDemoQuery,
+} from "@/components/blocks/ai-gateway-session-list-01";
+
+function SessionsPage() {
+  const [query, setQuery] = useState(aiGatewaySessionListDemoQuery);
+  const sessions = useGatewaySessions(query);
+
+  return (
+    <AiGatewaySessionList
+      actions={{
+        onQueryChange: setQuery,
+        onRetry: sessions.refetch,
+        onSessionOpen: (session) => router.push(`/sessions/${session.id}`),
+      }}
+      data={sessions.data ?? null}
+      query={query}
+      status={sessions.isLoading ? "loading" : sessions.isFetching ? "refreshing" : sessions.isError ? "error" : "ready"}
+    />
+  );
+}
+```
+
+## Data contract
+
+- Token 使用 `inputTokens` 与 `outputTokens` 非负整数；Block 计算显示合计。
+- 费用使用 `costMicros` 整数；货币来自列表响应的 `currency`。
+- `lastActiveAt`、`createdAt` 和 `generatedAt` 使用 ISO 8601 UTC。
+- `generatedAt` 默认作为相对时间基准；宿主只有在需要覆盖快照时间时才传 `now`。
+- Session 第一列分两行：第一行用普通表格文本显示 trace name 或 session ID，不使用 Badge；状态由名称左侧圆点和屏幕阅读器文本表达。第二行仅显示最近活跃时间值，不显示 `Last active:` 前缀；7 天内按分钟、小时或天显示相对时间，严格超过 7 天显示 `YYYY年 M月D日 HH:mm:ss`。
+- 末列使用 `createdAt` 按 `YYYY年 M月D日 HH:mm:ss` 显示具体创建日期时间，例如 `2026年 7月31日 12:21:29`。
+- `agent`、`user`、`model`、`customer` 可为 `null`；`model=null` 显示 `no-model-call`。
+- Model Badge 左侧优先使用 `renderModelLogo(model)`，否则根据 `model.provider` 解析内置品牌 Logo；当前 mock 的 `deepseek-v4-pro` 使用 DeepSeek Logo，其他模型回退为通用模型图标。
+- `total` 是应用当前查询后的总数，不是当前页行数。
+- Facet count 不受当前分页影响。
+- 内置 demo 提供 WorkBuddy、Codex、Claude Code 三个 Agent facet，每类 4 条 Session；产品接入时用真实 Agent 数据替换。
+
+## Query ownership
+
+`query` 是分页和筛选的唯一状态源。搜索或筛选变化会通过 `onQueryChange` 返回并把 `pageIndex` 重置为 `0`；DataTable 原生分页会通过同一回调更新 `pageIndex` 和 `pageSize`，默认提供每页 10/20/30/40/50 条。响应数据不重复携带分页状态。没有 `onQueryChange` 或状态为 `refreshing` 时，筛选与分页统一禁用。不要传入空函数制造无效控件。
+
+## Layout ownership
+
+Block 不创建 `AppShell`，但默认渲染共享 `AiGatewayWorkspaceSidebar`；侧栏结构、宽度、工作区身份和账号区域与 `ai-gateway-overview-01` 保持同源。若宿主已经提供同一套工作区外壳，可传 `sidebar={false}`。`PageBody` 使用与 `resource-list-page-01` 相同的 `max-w-none p-3`，其内部按 `resource-list-table-01` 的 `section > DataTable > toolbar` 层级组织；搜索框、FacetedFilter、表格表面、间距和分页均复用同一组组件约定。分页间距、禁用状态和文案通过 DataTable 公共契约提供，不使用内部 slot 选择器。
+
+## Runtime states
+
+- `loading` + `data=null`：显示七行列对齐骨架；
+- `refreshing` + 旧数据：保留行，并禁用搜索、筛选与分页，避免重复请求；
+- `error` + 旧数据：保留行并显示非阻断错误；
+- `error` + `data=null`：显示阻断错误和可选 Retry；
+- 无数据与筛选无结果使用不同 Empty 文案。
+
+## Adaptation hooks
+
+- `labels` 覆盖筛选、空状态、状态文本、分页和无障碍文案；
+- `dateTimeFormatter` 覆盖绝对时间格式，默认仍为 `YYYY年 M月D日 HH:mm:ss`；
+- `renderModelLogo` 接入产品自己的模型 Logo 目录；
+- Facet 选项的 `count` 是服务端权威数量，不从当前分页行重新计算。
+
+
+---
+
+---
+schema_version: 1
+name: credit-usage-01
+kind: block
+status: stable
+summary: 展示额度周期、模型归因、预计耗尽时间和套餐控制。
+registry_import: "@/components/blocks/credit-usage-01"
+source: packages/blocks/src/application/credit-usage-01/credit-usage.tsx
+types: packages/blocks/src/application/credit-usage-01/credit-usage-types.ts
+registry: packages/blocks/registry.json
+related:
+  - card
+  - tabs
+  - switch
+  - badge
+---
+
+# Credit Usage 01
+
+## Agent intent
+
+在账单、套餐或个人设置界面中使用此 Block，集中展示当前额度消耗、按模型归因、预计耗尽时间、自动降级策略和套餐操作。它是可嵌入的业务卡片，不创建 AppShell、Sidebar 或页面路由。
+
+## Minimal integration
+
+```tsx
+import { useState } from "react";
+import {
+  CreditUsage,
+  creditUsageDemoData,
+  type CreditUsageCycle,
+} from "@/components/blocks/credit-usage-01";
+
+function BillingSummary() {
+  const [cycle, setCycle] = useState<CreditUsageCycle>("current");
+  const [autoSwitchEnabled, setAutoSwitchEnabled] = useState(true);
+
+  return (
+    <CreditUsage
+      actions={{
+        onAutoSwitchChange: setAutoSwitchEnabled,
+        onCycleChange: setCycle,
+        onSetLimit: () => openLimitDialog(),
+        onUpgrade: () => router.push("/billing/upgrade"),
+      }}
+      autoSwitchEnabled={autoSwitchEnabled}
+      cycle={cycle}
+      data={creditUsageDemoData}
+    />
+  );
+}
+```
+
+## Data contract
+
+- `totalCredits` 是套餐周期总额度；Block 会将负数或非有限额度归零，再对模型用量求和。总额度为 0 但存在正用量时按 100% 消耗展示，避免百分比与用量条矛盾。
+- `currentCycle` 必填，`previousCycle` 可选。缺少上一周期时，对应 Tab 会禁用。
+- `projection` 是服务端或领域层给出的预测结果；Block 不自行预测耗尽日期。
+- `autoSwitch` 决定是否显示自动切换区域；目标模型、阈值和说明都由业务数据提供。
+- 模型 `color` 使用 Badge 的语义颜色集合，避免在 Block 内维护第二套颜色常量。
+- 使用 `provider` 选择内置的 OpenAI、Claude 或 Gemini 品牌标识；私有模型通过 `logo` 传入真实的产品 Logo，未提供时使用通用模型图标。
+- 日期作为已格式化文本传入；数字与百分比根据 `locale` 格式化。
+- 使用 `formatters.usageSummary`、`formatters.progressValueText` 和 `formatters.autoSwitchTitle` 覆盖完整句子，避免本地化时受英文词序限制。
+
+## Interaction ownership
+
+- `cycle` 和 `autoSwitchEnabled` 都可受控；省略时分别使用 `defaultCycle` 与 `defaultAutoSwitchEnabled`。
+- 提供 `onSetLimit` 或 `onUpgrade` 时才显示对应按钮。不要传空函数制造无效操作。
+- 用 `operationState.pending` 禁用正在提交的操作，用 `operationState.error` 显示非破坏性错误提示。
+- 宿主负责打开 Dialog、跳转套餐页、请求数据和持久化 Switch 变更。
+
+## Accessibility and layout
+
+用量条暴露 `progressbar` 语义和数值文本；颜色同时由下方模型名称与数值解释，不作为唯一信息来源。Block 以 32px 默认控件高度与 28px 用量条组织密度，最大宽度为 520px；模型列表始终保持单列，在窄屏下会让头部与操作区换行。不要用后代选择器覆盖内部组件状态。
+
+
+---
+
+---
+schema_version: 1
+name: filter-rule-builder-01
+kind: block
+status: stable
+locale: en
+summary: Review filter clauses, start from presets, edit drafts, and explicitly apply controlled filters.
+source: packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder.tsx
+related:
+  - filter-builder
+  - button
+type: data-block
+framework: react
+---
+
+# Filter Rule Builder
+
+Use this block for a compact filtering task where users need to review existing clauses, start from presets, draft one clause at a time, and explicitly apply the result. It is an embedded work surface and does not own an application shell or dialog.
+
+## Data contract
+
+- `fields` uses Zeron filter-core field definitions for text, number, select, multi-select, and boolean values. Supply stable field and option IDs. Add `color` for categorical rule accents and `unit` for number values.
+- `value` and `onValueChange` provide controlled working state. `defaultValue` provides uncontrolled initial state. `onApply` is the persistence boundary and may return a promise; the block supplies its loading state and prevents duplicate submission.
+- `presets` replace the complete working filter set. Preset clause IDs must be stable within the preset.
+- `defaultDraft` opens one initial draft for a guided demo or known entry point. Draft state remains separate from `value` until the user selects Add rule.
+- `onCancel` receives the most recently applied clauses after the block restores them. A successful `onApply` advances that restoration point.
+- `labels` replaces visible copy and accessible action names. Functions receive counts, field labels, and numeric limits so localized messages remain specific.
+- `resultCount` supplies the current matched-record total shown in the header; update it from the host query response when filters change.
+
+## Behavior
+
+- A draft requires a value. Number fields additionally enforce their declared minimum and maximum before insertion.
+- Apply never silently drops a draft. The user must add or cancel it first.
+- Read-only mode preserves presets and summaries while hiding mutation controls and the footer.
+- `maxRules` prevents creating another draft after the limit is reached.
+- Unknown clause field IDs remain in the data contract but do not render a misleading summary. Validate server-provided fields at the application boundary.
+
+## Composition boundaries
+
+`Container` owns the raised work surface, fixed header and footer, and capped scrolling body. Rule summaries use `Card` and `Badge`. Draft property and operator values use `Select`; multi-value fields use the multiple `Combobox` contract; number units use `InputGroup`. Actions use public `Button` variants and icon slots. Do not restyle control geometry, replace popup positioning, or add a second scroll owner around the body.
+
+Use the components' default surfaces, radii, padding, field labels, option density, and popup animations. `CardMedia` owns the header icon tile and `Separator` owns the presets divider. Keep external layout in business-content wrappers; the draft columns respond to the available container width rather than the viewport width.
+
+Multi-select options use their label or `textValue` for search and preserve their original values when added to a rule. Option icons and disabled states are passed to the Zeron items. Set `searchable={false}` to keep the complete list selectable without text entry. This block edits preloaded `options`; remote option loading is not part of its current editor contract.
+
+The default body height fits a viewport-hosted panel. Override `maxBodyHeight` when the host already provides a smaller bounded region, and verify popup visibility and keyboard reachability at that real height.
+
+
+---
+
+---
+schema_version: 1
+name: infinite-log-table-01
+kind: block
+status: stable
+summary: 浏览、筛选和实时追踪大量时间有序的日志或事件记录。
+package_import: "@zeron/blocks/infinite-log-table-01"
+registry_import: "@/components/blocks/infinite-log-table-01"
+source: packages/blocks/src/application/infinite-log-table-01/infinite-log-table.tsx
+types: packages/blocks/src/application/infinite-log-table-01/infinite-log-types.ts
+registry: packages/blocks/registry.json
+related:
+  - data-grid
+  - data-table
+  - filter-query-input
+  - time-range-histogram
+---
+
+# Infinite Log Table 01
+
+## Agent intent
+
+使用此 Block 构建高密度日志、事件或可观测性记录浏览器。它负责虚拟化表格、筛选、排序、seek cursor 分页、详情面板、选择与复制，以及可选的 Live tail。
+
+它不是通用 CRUD 表格。接入前先选择以下数据模式之一：
+
+1. `records`：本地或已完整加载的静态数据。
+2. `dataSource`：远程、分页或实时数据。
+3. 不传两者：只会使用内置 mock 数据，限演示和文档预览，禁止用于生产。
+
+`records` 与 `dataSource` 互斥，同时传入会抛出错误。
+
+## Use when
+
+- 数据以 `timestamp` 为主要时间轴，用户需要浏览大量追加记录。
+- 需要组合文本、字段、时间范围和 facet 筛选。
+- 远程 API 使用稳定快照与 opaque seek cursor 分页。
+- 需要 Live tail，并在用户离开顶部时暂存新记录。
+- 用户需要查看记录详情、复制经过脱敏的数据或执行批量上下文操作。
+
+## Do not use when
+
+- 用户主要进行行内编辑、单元格编辑或业务 CRUD：使用 DataGrid 或 DataTable。
+- 数据量很小且没有分页、筛选或时间浏览需求：使用 Table 或 DataTable。
+- 重点是聚合趋势而不是逐条记录：使用图表、MetricCard 或专用监控 Block。
+- 后端只能提供 offset pagination 且数据持续插入，但无法保证稳定快照：先改造数据契约，避免重复或漏行。
+
+## Required record contract
+
+每条记录至少满足：
+
+```ts
+interface InfiniteLogBaseRecord {
+  id: string;
+  timestamp: string;
+  [field: string]: unknown;
+}
+```
+
+约束：
+
+- `id` 在数据集和 Live 流中必须稳定且唯一，用于去重、选择和详情导航。
+- `timestamp` 必须是可由 `Date.parse` 解析的时间字符串；推荐 ISO 8601，并明确时区。
+- 值可能为敏感信息时，必须配置 `redactRecord`，不要依赖 UI 隐藏。
+- 静态 `records` 可自动推断 fields；生产远程 `dataSource` 应显式提供 `fields`，保证列顺序、类型、筛选和渲染稳定。
+
+## Choose HTTP mode or schema-driven mode
+
+### Built-in HTTP log mode
+
+记录满足 `InfiniteLogRecord` 且未传入显式 `fields` 时，使用内置 request log 体验，包括 outcome、status、method、region、host、pathname、latency 与 timing filters。
+
+### Schema-driven generic mode
+
+以下任一条件会进入 generic mode：
+
+- 显式传入 `fields`。
+- 数据不是内置 HTTP log shape。
+
+每个 field 可控制：
+
+- `id`、`label` 与顺序。
+- `type`: `text | number | boolean | datetime | badge | json`。
+- `filter`: `text | multiSelect | numberRange | none`。
+- `sortable`、`hidden`、`width`、`minWidth`。
+- `accessor`、`renderCell`、`formatValue`、`badgeTone`。
+
+不要依赖远程数据返回的第一行推断生产 schema；字段缺失或类型漂移会造成不稳定的列和筛选体验。
+
+## Static records integration
+
+适合本地样本、测试数据或已经完整加载的小型数据集。Block 在浏览器内完成筛选、排序、facet 和 timeline 计算；`records` 模式不支持 Live。
+
+```tsx
+import { InfiniteLogTable } from "@zeron/blocks/infinite-log-table-01";
+
+const fields = [
+  { id: "timestamp", label: "时间", type: "datetime", sortable: true },
+  { id: "service", label: "服务", type: "text", filter: "multiSelect" },
+  { id: "level", label: "级别", type: "badge", filter: "multiSelect" },
+  { id: "message", label: "消息", type: "text", filter: "text", minWidth: 320 },
+] as const;
+
+<InfiniteLogTable
+  className="h-full"
+  fields={fields}
+  locale="zh-CN"
+  records={records}
+  tableId="service-events"
+  timeZone="Asia/Shanghai"
+/>
+```
+
+## Remote data source contract
+
+`loadPage` 必须遵守以下契约：
+
+- 接收 `filters`、`sort`、`pageSize` 和可选 opaque `cursor`。
+- 响应 `AbortSignal`；取消的请求不得继续提交结果或显示普通错误。
+- 返回 `snapshotRevision`。同一次查询后续页必须保持相同 revision。
+- 返回的 `nextCursor` 必须绑定当前 filters、sort 与 snapshot revision，业务侧不能解析或修改 cursor。
+- 首屏建议返回 `metadata`；后续页可以省略，Block 会保留已有 metadata。
+- dataSource 对象应保持引用稳定，例如在模块级定义或通过 `useMemo` 创建；不要在每次 render 时重新创建。
+
+```tsx
+import { useMemo } from "react";
+import {
+  InfiniteLogTable,
+  type InfiniteLogDataSource,
+  type InfiniteLogPage,
+  type InfiniteLogPageRequest,
+} from "@zeron/blocks/infinite-log-table-01";
+
+function ServiceEventLog() {
+  const dataSource = useMemo<InfiniteLogDataSource<ServiceEvent>>(
+    () => ({
+      async loadPage(request: InfiniteLogPageRequest, { signal }) {
+        const response = await fetch("/api/events/query", {
+          body: JSON.stringify(request),
+          headers: { "content-type": "application/json" },
+          method: "POST",
+          signal,
+        });
+
+        if (!response.ok) throw new Error("日志加载失败");
+        return (await response.json()) as InfiniteLogPage<ServiceEvent>;
+      },
+    }),
+    [],
+  );
+
+  return (
+    <InfiniteLogTable
+      className="h-full"
+      dataSource={dataSource}
+      fields={fields}
+      locale="zh-CN"
+      tableId="service-events"
+      timeZone="Asia/Shanghai"
+    />
+  );
+}
+```
+
+## Live data source contract
+
+Live 只有在 dataSource **同时**提供 `subscribeNewer` 和 `loadMetadata` 时才可用。
+
+Live 激活还要求：
+
+- `enableLive` 为 `true`。
+- 当前没有固定 `timeRange`。
+- 排序是 `timestamp desc`。
+- `state.live` 为 `true`。
+- 使用远程 `dataSource`，而不是 `records`。
+
+选择历史时间范围或改为其他排序时，Block 会暂停 Live。重新开启 Live 会清除固定时间范围，并恢复 `timestamp desc`。
+
+`subscribeNewer` 必须：
+
+- 从 `after` checkpoint 之后订阅。
+- 只推送匹配当前 filters 的新记录。
+- 通过 `onBatch` 返回记录和新的 checkpoint。
+- 返回同步 unsubscribe 函数。
+- 失败时调用 `onError`。
+
+`loadMetadata` 必须返回与当前 filters/sort 一致的总数、filtered count、timeline 与 facets。Live batch 没有附带 metadata 时，Block 会节流调用它刷新聚合信息。
+
+```ts
+const liveDataSource: InfiniteLogDataSource<ServiceEvent> = {
+  async loadPage(request, { signal }) {
+    return queryEvents(request, signal);
+  },
+  async loadMetadata(request, { signal }) {
+    return queryEventMetadata(request, signal);
+  },
+  subscribeNewer({ after, filters, onBatch, onError }) {
+    const stream = subscribeToEvents({ after, filters });
+    stream.on("batch", onBatch);
+    stream.on("error", onError);
+    return () => stream.close();
+  },
+};
+```
+
+## State ownership
+
+Block 默认内部管理 filters、sort 与 live。只有在需要 URL 同步、跨页面保留或外部命令控制时，才使用受控 `state`。
+
+受控模式必须在 `onStateChange` 中提交新状态：
+
+```tsx
+const [state, setState] = useState<InfiniteLogTableState>({
+  filters: {
+    query: "",
+    outcomes: [],
+    statuses: [],
+    methods: [],
+    regions: [],
+    host: "",
+    pathname: "",
+    fields: {},
+  },
+  sort: { field: "timestamp", direction: "desc" },
+  live: true,
+});
+
+<InfiniteLogTable
+  dataSource={dataSource}
+  fields={fields}
+  onStateChange={setState}
+  state={state}
+/>
+```
+
+不要只传 `state` 而忽略 `onStateChange`，否则用户的筛选、排序和 Live 操作无法生效。
+
+`defaultState` 只用于非受控初始值。不要同时把 `defaultState` 当作后续更新通道。
+
+## Metadata and filters
+
+- `metadata.totalCount` 表示完整数据集数量。
+- `metadata.filteredCount` 表示当前 filters 下的数量。
+- `timeline` 应针对当前非时间筛选条件提供时间桶。
+- facet 计数应排除自身 filter、保留其他 filters，使用户能理解继续筛选后的可能结果。
+- schema-driven fields 的 `fieldFacets` 为 multi-select 提供 value counts，为 number range 提供 min/max。
+- 后端必须使用与前端一致的 filter 和 sort 语义，否则分页、计数与界面状态会相互矛盾。
+
+## Privacy and security
+
+默认 `redactRecord` 只会隐藏常见敏感 HTTP headers：Authorization、Proxy-Authorization、Cookie、Set-Cookie 和 X-API-Key。
+
+生产接入必须检查实际 schema，并在需要时提供自定义脱敏：
+
+```tsx
+<InfiniteLogTable
+  dataSource={dataSource}
+  fields={fields}
+  redactRecord={(record) => ({
+    ...record,
+    apiKey: record.apiKey ? "[REDACTED]" : undefined,
+    payload: redactPayload(record.payload),
+  })}
+/>
+```
+
+`redactRecord` 会影响选择操作、详情面板、复制内容和 `onRecordOpen`。不要只在 cell renderer 中遮挡敏感内容，因为原始数据仍可能通过复制或详情暴露。
+
+## Extension slots
+
+- `commandSlot`：替换顶部的默认查询输入，并通过 context 更新 state。
+- `toolbarActions`：添加依赖当前选择、刷新或 loading 状态的操作。
+- `footerSlot`：在结果区域底部添加宿主内容。
+- `emptyState`：根据当前 state 提供业务空状态。
+- `errorState`：显示错误并调用提供的 `retry`。
+- `renderDetail`：定制详情内容；接收到的是已经过 `redactRecord` 的记录。
+- `onRecordOpen`：记录打开时通知宿主；接收到的是已经过 `redactRecord` 的记录。
+
+扩展 slot 应使用 context 提供的命令，不要绕过 Block 直接修改其内部 rows、selection 或 cursor。
+
+## Localization and layout
+
+- 默认 labels 为英文。中文产品应通过 `labels` 覆盖用户可见文案。
+- `locale` 控制数字和日期格式，`timeZone` 控制时间展示与筛选解析；两者应与产品设置一致。
+- 宿主必须提供确定高度，例如 `h-full` 且父级具有可计算高度，否则虚拟化表格无法正确占用空间。
+- 大屏显示固定筛选侧栏和可调整详情面板；小屏使用 drawer。不要在外层固定内部列宽或复制响应式逻辑。
+- `tableId` 在同一页面应唯一，它也用于筛选查询历史的 storage key 和内部 element IDs。
+
+## Safe customization
+
+- 可以替换 fields、labels、empty/error state、toolbar actions 和 detail renderer。
+- 可以调整 pageSize 与 maxLiveRows，但必须根据 API 延迟、row 高度与浏览器内存验证。
+- 不要移除 snapshot revision 校验、AbortSignal、cursor opaque 性质、Live eligibility 或记录去重逻辑。
+- 不要把 mock data source 留在生产路径。
+- 不要引入 Next.js、React Query、nuqs、Zustand、SuperJSON 或 Zod 作为 Block 的必需运行时；Registry 版本保持纯 React、无 Provider 边界。
+
+## Verification checklist
+
+- [ ] 明确选择了 `records` 或 `dataSource`，生产环境没有回退到 mock。
+- [ ] 每条记录具有稳定唯一的 `id` 和可解析的 `timestamp`。
+- [ ] 远程模式显式提供稳定 `fields` 和引用稳定的 dataSource。
+- [ ] cursor 与 snapshot revision 在分页期间保持一致。
+- [ ] 所有请求支持 AbortSignal。
+- [ ] Live dataSource 同时实现 subscribeNewer 与 loadMetadata。
+- [ ] 受控 state 在 onStateChange 中真正提交。
+- [ ] 已根据真实 schema 审核并配置 redactRecord。
+- [ ] locale、timeZone、labels 和 tableId 已按宿主设置。
+- [ ] 宿主为 Block 提供了可计算高度。
+- [ ] loading、empty、error、retry、no-more-results 和 Live unavailable 均已验证。
+
+## API anchors
+
+Agent 优先关注：
+
+- 数据：`records`、`dataSource`、`fields`。
+- 状态：`state`、`defaultState`、`onStateChange`。
+- 规模：`pageSize`、`maxLiveRows`、`enableLive`。
+- 本地化：`locale`、`timeZone`、`labels`、`tableId`。
+- 扩展：`commandSlot`、`toolbarActions`、`footerSlot`、`emptyState`、`errorState`、`renderDetail`、`onRecordOpen`。
+- 安全：`redactRecord`。
+
+完整类型和 data source 联合约束以 `types` 指向的实现为准。
+
+
+---
+
+---
+schema_version: 1
+name: resource-detail-page-01
+kind: block
+status: stable
+summary: 使用共享 Workspace Sidebar、双栏概览和全宽业务 Tabs 的可适配资源详情页。
+package_import: "@zeron/blocks/resource-detail-page-01"
+registry_import: "@/components/blocks/resource-detail-page-01"
+source: packages/blocks/src/application/resource-detail-page-01/resource-detail-page.tsx
+types: packages/blocks/src/application/resource-detail-page-01/resource-detail-page-data.ts
+registry: packages/blocks/registry.json
+related:
+  - resource-detail-layout
+  - resource-workspace-shell-01
+  - detail-list
+  - tabs
+---
+
+# Resource Detail Page 01
+
+## Agent intent
+
+使用此 Block 构建带应用级左侧导航的资源详情页。它负责 Workspace Sidebar、记录导航、详情头、Pill Tabs、概览双栏和独立滚动；业务项目负责 API 查询、路由、权限、保存操作和各业务 Tab 的内容。
+
+默认数据和图标用于 MCP 飞书示例。`data` 是必填属性；文档演示会显式传入 `defaultResourceDetailPageData`。生产接入必须传入项目数据，并通过 props 覆盖业务名称、图标和内容。不要直接修改 Block 内的默认示例数据。
+
+## Install
+
+消费者项目通过 Registry 安装；`@zeron/blocks` 只用于 Zeron 源码仓库内部。
+
+```bash
+npx zeron-ui add resource-detail-page-01 --dry-run
+npx zeron-ui add resource-detail-page-01
+```
+
+安装会递归包含 `resource-workspace-shell-01`、`resource-detail-layout`、Sidebar、Tabs、Select、Dropdown、DetailList 和所需样式依赖。
+
+```tsx
+import {
+  ResourceDetailPage,
+  type ResourceDetailPageChange,
+  type ResourceDetailPageData,
+} from "@/components/blocks/resource-detail-page-01";
+```
+
+## Data adapter
+
+在项目数据层把接口响应映射为稳定的 `ResourceDetailPageData`。不要把接口原始对象直接扩散到 Block，也不要用类型断言掩盖字段缺失。
+
+```tsx
+function toDetailData(response: ResourceResponse): ResourceDetailPageData {
+  return {
+    id: response.id,
+    name: response.displayName,
+    description: response.summary,
+    status: response.published ? "已发布" : "未发布",
+    recordIndex: response.position,
+    recordTotal: response.total,
+    toolCount: response.toolCount,
+    callCount: response.callCount,
+    source: response.source.label,
+    version: response.version,
+    categories: response.categories,
+    categoryOptions: response.availableCategories,
+    published: response.published,
+    authentication: {
+      endpoint: response.endpoint,
+      transport: response.transport,
+      credentialStatus: response.credentialStatus,
+    },
+    security: {
+      level: response.security.level,
+      levelOptions: response.security.availableLevels,
+      description: response.security.description,
+    },
+    protection: response.protection,
+    markdown: response.readmeMarkdown,
+  };
+}
+```
+
+`data.id` 必须是稳定资源 ID。切换资源时传入新的 `data` 对象，Block 会同步发布状态、分类、安全级别和防护设置。
+
+## Mutation adapter
+
+使用 `onResourceChange` 接收统一的判别联合事件，再映射到后端 mutation。原有的 `onPublishedChange`、`onCategoriesChange`、`onSecurityLevelChange` 和 `onProtectionChange` 可用于需要拆分 handler 的项目；不要同时在两组回调中重复提交请求。
+
+```tsx
+async function saveChange(change: ResourceDetailPageChange) {
+  switch (change.type) {
+    case "published":
+      return api.updateResource(id, { published: change.value });
+    case "categories":
+      return api.updateResource(id, { categories: change.value });
+    case "security-level":
+      return api.updateSecurity(id, { level: change.value });
+    case "protection":
+      return api.updateProtection(id, change.value);
+  }
+}
+
+<ResourceDetailPage
+  activeNavigation="mcp-services"
+  data={toDetailData(query.data)}
+  onClose={() => router.push("/resources")}
+  onEdit={() => router.push(`/resources/${id}/edit`)}
+  onNext={() => navigateRecord("next")}
+  onPrevious={() => navigateRecord("previous")}
+  onResourceChange={saveChange}
+  onSectionChange={(section) => router.replace(`#${section}`)}
+  sectionContent={{
+    tools: <ResourceTools resourceId={id} />,
+    scope: <ResourceScope resourceId={id} />,
+    usage: <ResourceUsage resourceId={id} />,
+    audit: <ResourceAudit resourceId={id} />,
+  }}
+  workspaceId={workspaceId}
+  workspaces={workspaces}
+  onWorkspaceChange={setWorkspaceId}
+/>
+```
+
+Block 内部会立即更新交互状态；业务 mutation 失败时应显示错误，并通过缓存回滚或重新获取 `data` 恢复服务端状态。
+
+## Generic resource adaptation
+
+通过 `labels` 覆盖资源类型、按钮、记录单位、Tab 名称和无内容提示。通过 `resourceIcon`、`sourceIcon` 替换示例 SVG。
+
+以下区域可整体替换，传入 `null` 可以移除对应可选区域：
+
+- `detailActions`：详情头操作区。
+- `detailNavigation`：顶部资源路径。
+- `detailStatus`：标题状态。
+- `recordNavigation`：关闭、上一条、下一条和计数区。
+- `overviewAside`：概览左侧属性栏；函数形式会收到当前可编辑状态，以及 `onCategoriesChange`、`onPublishedChange`、`onSecurityLevelChange`、`onProtectionChange` 四个更新入口。
+- `sectionContent`：五个 Tab 的业务内容。
+
+当资源属性模型不是 MCP 的来源、认证、安全和防护结构时，使用 `overviewAside` 组合项目业务内容，不要修改内置 `ResourceMetadataPanel` 或复制 `ResourceDetailLayout`。
+
+## Host shell boundary
+
+此 Block 自带 `ResourceWorkspaceShell`。新建完整资源管理应用时，可与 `resource-list-page-01` 共享 `workspaces`、`navigation`、账户信息和回调。
+
+如果目标项目已经拥有应用级 Sidebar，不要嵌套第二个应用壳层；直接使用 `resource-detail-layout` 组合详情内容，或在项目侧提取无 Sidebar 的业务 composition。
+
+## Loading and errors
+
+加载、请求失败、无权限和资源不存在属于业务查询状态，应在渲染 Block 前由页面路由处理。`data` 未就绪时不要渲染 Block；必填类型会阻止生产页面意外回退到飞书演示数据。
+
+关闭、上一条、下一条和编辑按钮仅在传入对应回调后可用。未接入动作会保留布局但显示为禁用，避免用户触发无反馈操作；也可以通过对应的区域插槽整体替换。
+
+## Verification checklist
+
+- [ ] `--dry-run` 能解析全部 Registry 依赖和 SVG 文件。
+- [ ] API 响应经过显式 adapter 转换为 `ResourceDetailPageData`。
+- [ ] 路由接入关闭、上一条、下一条、Tab 和左侧导航。
+- [ ] mutation 成功后更新查询缓存；失败时可见错误并回滚。
+- [ ] 非 MCP 资源覆盖 labels、icons 和 `overviewAside`。
+- [ ] 基本信息保持左右独立滚动，其他 Tab 占满详情宽度。
+- [ ] 窄屏和 Sidebar 折叠态可恢复，Workspace Avatar 正确显示。
+
+
+---
+
+---
+schema_version: 1
+name: resource-list-page-01
+kind: block
+status: stable
+summary: 使用 Sidebar Basic 标准壳层的 MCP 应用与分类管理页面。
+package_import: "@zeron/blocks/resource-list-page-01"
+registry_import: "@/components/blocks/resource-list-page-01"
+source: packages/blocks/src/application/resource-list-page-01/resource-list-page.tsx
+registry: packages/blocks/registry.json
+related:
+  - page-layout
+  - resource-list-table-01
+  - sidebar
+  - sidebar-account-menu
+---
+
+# Resource List Page 01
+
+## Agent intent
+
+优先使用此 Block 搭建 MCP 管理工作区。它复用 Sidebar Basic 应用壳层，并按 Zentirx MCP 管理设计通过现有 `Tabs` 与 `ResourceListTable` 组合 MCP 列表和分类管理。
+
+## Use when
+
+- 需要从零开始交付完整资源列表页面，而不是向已有页面嵌入一张表格。
+- 页面需要 Sidebar Basic 的图标折叠导航、分组菜单、页头、面包屑和 MCP 管理 Tabs。
+- MCP 与分类数据符合 `ResourceListItem`，搜索、分类/状态筛选和分页由现有 `ResourceListTable` 覆盖。
+
+## Do not use when
+
+- 项目已经有应用级 Sidebar：保留现有宿主，在现有 `PageBody` 中直接使用 `ResourceListTable`，或用 `PageLayout` 与 `DataTable` 重新组合。
+- 只需要嵌入式表格：使用 `resource-list-table-01`。
+- 导航模型、列表交互或响应式结构与此 Block 明显不同：从布局和基础组件重新组合。
+
+## Integration
+
+```tsx
+import { ResourceListPage } from "@zeron/blocks/resource-list-page-01";
+
+<ResourceListPage
+  dataMode="controlled"
+  resources={mcpResources}
+  categoryResources={categories}
+  workspaceId={workspaceId}
+  workspaces={workspaces}
+  onCreate={openCreate}
+  onEdit={openResource}
+  onRefresh={refreshResources}
+  onWorkspaceChange={setWorkspaceId}
+  onNavigationSelect={navigate}
+/>
+```
+
+真实业务接入必须使用 `dataMode="controlled"`，此时缺失数据会显示加载或空状态，不会回退到内置 mock。文档预览和原型才使用默认的 `dataMode="demo"`。MCP 使用稳定的 `categoryId` 关联分类；`category` 仅作为列表中的本地化展示名称，不应承担外键职责。
+
+替换 `navigation`、`workspaces`、`breadcrumb`、`accountName` 和 `accountEmail` 以匹配产品。Workspace 推荐使用 `{ id, name }`，通过 `workspaceId` 和 `onWorkspaceChange` 受控；稳定 ID 也用于在 Workspace 切换时隔离表格的选择状态。字符串 Workspace 与 `workspaceName` 仅用于兼容旧用法。
+
+导航项可提供真实的 `href` 和显式 `group`，不要依赖数组位置表达 Workspace / Manage 分组。账户头像可通过 `accountAvatar` 替换；使用 `onAccountAction` 接入默认账户操作，或通过 `accountSections` 替换完整菜单。`activeNavigation` 应由真实路由状态提供。`activeSection`、`onSectionChange` 可受控同步当前 Tab，`sectionContent` 可替换 MCP 列表或分类管理内容。
+
+Block 默认展示 `defaultMcpResourceListItems` 与 `defaultMcpCategoryItems`，用于本页原型。每条 MCP 的 `categoryId` 关联分类，分类数量与右侧详情在 `categoryDataMode="client"` 下从完整 MCP 数据实时计算；默认 mock 覆盖办公协同、代码开发、创意设计和销售，并使用项目已有的 `@thesvg/icons` 产品标识。
+
+服务端分页时使用 `categoryDataMode="remote"`：分类的 `itemCount` 保留后端权威总数，当前分类详情通过 `categoryApplications[categoryId]` 提供。`onCategoryOpen` 会在初始分类和后续选择变化时触发，可用于请求详情；`categoryDetailsState` 提供分类关联请求的 loading、error 和自定义 empty 状态，`onRetryCategoryApplications` 连接重试。`selectedCategoryId` 可将主从选择设为受控状态，`categoryTableProps` 为分类列表提供独立的服务端查询和分页。
+
+`onRemoveCategoryApplication` 可返回 Promise。操作期间按钮显示 loading 并防止重复提交，失败时保留原数据并展示错误；组件不再伪造成功删除。通过 `canCreateMcp`、`canCreateCategory` 和 `canRemoveCategoryApplication` 接入权限，通过 `labels` 与 `categoryLabels` 接入本地化文案。
+
+后端分页与筛选使用受控查询模式：
+
+```tsx
+<ResourceListPage
+  dataMode="controlled"
+  resources={query.data?.items ?? []}
+  tableProps={{
+    isLoading: query.isLoading,
+    queryState,
+    totalRowCount: query.data?.total ?? 0,
+    onQueryStateChange: setQueryState,
+  }}
+/>
+```
+
+省略 `queryState` 时，表格按完整客户端数据集执行本地搜索、筛选、排序和分页。传入 `queryState` 后，`queryState` 的 `search`、`categoryIds`、`statuses`、`sorting`、`pageIndex` 与 `pageSize` 全部改由业务数据层处理；筛选或排序变化会把 `pageIndex` 重置为 `0`。
+
+Block 保留 Sidebar Basic demo 顶部的 Workspace 切换 dropdown、Workspace / Manage 分组、底部个人账户 dropdown、`collapsible="icon"` 行为与页头面包屑。内容顶部使用 `PageContentHeader > Tabs`；MCP 列表复用 `ResourceListTable surface="plain"`。分类管理沿用 `member-department-01` 部门页的 `PageColumns > PagePrimary + PageAside` 主从布局，左侧分类表提供搜索、添加分类与分页，右侧详情栏提供分类内应用搜索与移除；低于 `xl` 时详情使用 `MobileDrawer side="end"`。
+
+右侧 `PageLayout` 与 `PageBody` 保持全宽，较窄视口仍占满 Sidebar 之外的可用宽度。布局、颜色、间距、圆角和交互状态全部来自现有 Zeron 组件与语义 token，没有引入独立组件或硬编码视觉值。
+
+## Verification checklist
+
+- [ ] 桌面端显示左侧导航，折叠后可恢复。
+- [ ] Sidebar 顶部显示当前 Workspace，dropdown 可切换候选 Workspace。
+- [ ] Sidebar 底部显示个人头像、姓名和邮箱，账户 dropdown 可打开。
+- [ ] 窄屏下 Sidebar 按 Basic demo 的图标折叠模式工作。
+- [ ] 默认显示 MCP 列表，包含名称、分类、状态与可见范围。
+- [ ] MCP 列表与分类管理 Tabs 可切换并保持正确激活状态。
+- [ ] 分类管理显示分类名称与后端权威 MCP 数量。
+- [ ] 服务端模式下分类筛选、排序和分页均通过受控查询状态请求完整数据集。
+- [ ] Workspace 切换后分类选择、详情请求和 mutation 状态不会串到其他 Workspace。
+- [ ] 分类详情覆盖 loading、error、retry、empty 和无权限状态。
+- [ ] 页面只有一个创建入口。
+- [ ] 搜索、筛选、行选择、批量操作、刷新和分页均连接真实行为。
+- [ ] 长表格只在内容区滚动，没有页面级横向溢出。
+
+
+---
+
+---
+schema_version: 1
+name: rule-flow-editor-01
+kind: block
+status: stable
+locale: en
+summary: Compose and edit a controlled graph of trigger, condition, and action nodes.
+source: packages/blocks/src/application/rule-flow-editor-01/rule-flow-editor.tsx
+related:
+  - button
+  - popover
+type: data-block
+framework: react
+---
+
+# Rule Flow Editor
+
+Use this block to define a rule with one traffic trigger, one AND condition group, matched actions, a fixed unmatched exit, and exception-handling policies. It is a controlled business composition, not a general-purpose infinite canvas.
+
+## Data contract
+
+- `defaultRuleFlow` contains no sample business selection. Its trigger, conditions, matched actions, and exception-policy values are empty; the unmatched outcome is explicitly fixed to `{ behavior: "skip-rule" }`.
+- Pass `value` and `onValueChange` when rule edits and card positions must be persisted.
+- Supply `triggers`, `fields`, `operators`, `actions`, and `errorActions` from the product rule schema. Option values are stable business identifiers, not localized labels. Matched-action definitions may declare a `phase` and `select` or `input` fields. Exception definitions use `group`, `resultLabel`, `resultColor`, and the same field schema. All selected field values persist under `RuleFlowAction.config`.
+- Conditions always use `conditionMatch: "all"`. The UI intentionally does not expose an AND/OR switch.
+- Matched outcomes contain ordered actions. They render together in one card and use `SortableCollection`; drag order is persisted directly to `outcomes.matched`. The two fixed execution stages—before forwarding upstream and after receiving a response—sort independently so an action cannot cross an invalid runtime boundary. Exception policies render together in one non-sortable card and persist only configured values to `outcomes.error`. The unmatched outcome cannot contain actions and always ends without executing the rule.
+- Business definition and `layout.nodePositions` are stored separately. Repositioning a card must not alter trigger, condition, or action semantics.
+- The editor fills the width and bounded height of its parent. Give the parent an explicit or flex-owned height; taller or wider content scrolls inside the canvas.
+- Use `readOnly` for inspection surfaces. It preserves the complete rule graph while disabling card repositioning and hiding mutation controls.
+
+## Empty-state behavior
+
+An empty rule renders the primary instructional skeleton first:
+
+1. Choose a traffic trigger.
+2. Add one or more blank AND conditions.
+3. Configure and reorder matched actions inside one card in the left-aligned primary lane.
+4. Show the fixed unmatched endpoint: “结束——不执行本规则.”
+
+Exception handling is optional and hidden by default. The user can reveal it from the condition card; configured policy values always keep it visible directly to the right of the matched-action card with a fixed 24px gap. The unmatched endpoint stays in the far-right lane aligned horizontally with the condition card. One card groups `matched-result` policies above `execution-failure` policies. Its rows follow the condition/action one-line rhythm and are not sortable. In compact layouts the result cards stack as matched actions, exception handling, then unmatched.
+
+Skeleton cards do not add values automatically. A newly added condition starts with empty field, operator, and value selections.
+
+The default matched-action catalog mirrors the model-gateway rule form: reject the call, forward to an upstream, bypass intent recognition, inspect sensitive content, rate limit, rewrite request or response headers, map upstream failures to 502, and copy traffic to another gateway. The block intentionally leaves product-owned dropdown catalogs empty; inject their options through each action field instead of replacing the block controls.
+
+Action parameters follow the same compact horizontal rhythm as condition rows: visible field label, 32px control, consistent gap, and a trailing remove action. Each action stays on one line and its controls share the available row width without changing parameter order.
+
+Matched-action rows keep the canonical `SortableCollectionItem` surface, padding, alignment, drag handle, and state styles. Do not reach into the component with descendant selectors to restyle those item slots.
+
+## Composition boundaries
+
+The canvas and SVG connectors are block-owned visualization code. The primary connector attaches 24px from each card's left edge. The condition and matched-action flow badges use the strong Badge treatment with the active theme brand color and its paired on-brand foreground. Condition, matched-action, exception, and unmatched badges sit flush against their cards with zero gap, a 12px inset from the card's left edge, and square bottom corners; the trigger badge remains detached and keeps its original alignment. Node cards do not render a separate top-right move action: drag the card or its header directly, or focus a draggable card and use the arrow keys. In wide layouts, the unmatched connector is one horizontal line from the condition card's right-side midpoint to the unmatched card's left-side midpoint. The exception branch starts at the horizontal center of the condition card's bottom edge and approaches the exception card near its left edge with 90-degree turns. Cards, badges, buttons, selects, icons, focus treatments, surfaces, and shadows come from Zeron components and semantic tokens. Controls use the standard 32px `md` size. Card borders remain 0.5px and selected cards retain the floating surface fill.
+
+Select popups render through a Portal. Keep `data-flow-control` on popup content so portaled pointer events cannot be captured by card dragging.
+
+This release does not provide OR or nested condition groups, freehand edge creation, per-action error edges, zoom, minimaps, multi-selection, loops, or automatic graph layout. Preserve the `RuleFlowValue` boundary if a future release evaluates a dedicated graph engine.
+
+
+---
+
+---
+schema_version: 1
+name: storage-usage-01
+kind: block
+status: stable
+summary: 以 text-label 为尺寸基准展示存储用量、分类分段和剩余容量。
+registry_import: "@/components/blocks/storage-usage-01"
+source: packages/blocks/src/application/storage-usage-01/storage-usage.tsx
+registry: packages/blocks/registry.json
+related:
+  - metric-card
+  - badge
+---
+
+# Storage Usage 01
+
+Use this embedded block for storage or quota summaries. It does not create a page shell.
+
+```tsx
+import { StorageUsage, storageUsageDemoData } from "@/components/blocks/storage-usage-01";
+
+<StorageUsage data={storageUsageDemoData} />
+```
+
+- `data.capacity` and each item `value` share the chosen `unit` (default GB). Items have stable, unique IDs, labels and a public `BadgeColor`.
+- Used capacity is derived from category values. Negative and nonfinite inputs normalize to zero. Never pass a separate inconsistent total.
+- Empty items show 0% and an empty track. Zero capacity with positive usage shows an unknown percentage. Over-capacity usage keeps its actual percentage; category proportions fit the filled track and remaining capacity is zero.
+- The reference's category labels do not sum to its summary; the demo preserves 94% of 20 GB with consistent, proportional category values. These are example data, not a backend integration.
+- `locale`, `unit`, and full-sentence `formatters` support localization. `state`, `statusMessage`, `onClick`, and `actionLabel` are inherited from MetricCard.
+- The block uses MetricCard's public split layout, description, label/value class names and footer. Colors come from `badgeColors`; do not add raw colors or use descendant selectors to restyle MetricCard.
+- Label text uses `text-label`; titles derive from `--font-size-label` at 4/3 scale. Padding is 16px, the continuous bar is 12px tall, and the legend wraps.
+- Loading and unavailable/error states hide numeric descriptions and the distribution. Stale data remains visible with its supplied status message.
+
+MetricCard's `layout="split"` is optional. Its default `stacked` layout remains unchanged; `description` adds label context, and `valueClassName` is a public typography hook.
+
+
+---
+
+---
+schema_version: 1
+name: user-account-01
+kind: block
+status: stable
+summary: 统一登录用户的受控偏好与账号操作入口。
+package_import: "@zeron/blocks/user-account-01"
+registry_import: "@/components/blocks/user-account-01"
+source: packages/blocks/src/application/user-account-01/user-account.tsx
+registry: packages/blocks/registry.json
+related:
+  - sidebar-account-menu
+  - personal-settings-01
+---
+
+# User Account
+
+Use for a signed-in user's account entrance in a sidebar footer or header (`menuSide="bottom"`). Reuses SidebarAccountMenu and its keyboard-accessible submenus. Supply `user`; do not embed authentication or product routes in this block.
+
+Pair controlled `theme` with `onThemeChange`, and `locale` / `localeOptions` with `onLocaleChange`. Actions with no handler are hidden. Theme values are `system`, `light`, and `dark`. The host owns theme application, persistence, translations and route changes. Preserve search and hash when changing language. Share one preference source with PersonalSettings, supplying its `localeOptions` from the same list.
+
+`onOpenSettings` navigates to the settings page. `onSignOut` must await the real session invalidation and then clear account data / navigate. Rejected promises leave the account visible and show localized failure copy. Pending actions are disabled; share `pendingAction` and `error` across multiple mounted entrances. Do not report success before the host completes the action.
+
+`extraSections` adds typed menu groups; use `labels` for built-in copy. Do not insert arbitrary forms into menu semantics. Use application-owned surfaces for rich content.
+
+`notifications` optionally connects a host-owned notification action. UserAccount does not ship a notification center. Documentation previews use `extraSections` entries without handlers and with `closeOnClick: false` for notifications and personal settings, preserving only hover, focus and active styling.
+
+ZaiopsOperations and ResourceWorkspaceShell accept `account: UserAccountProps`. Existing resource shell `accountSections` / `onAccountAction` remain supported; `account` takes precedence. PersonalSettings retains its `account` ReactNode slot for the same block. Documentation demo sign-out affects only its example session, never a real account.
+
+Validate keyboard navigation, rejected sign-out and retry, shared preferences, menu placement, long identity text, and static demo actions on desktop and mobile. Account covers and detail previews are centered; only the trigger has 1.6 spacing units of horizontal padding.
+
+
+---
+
+---
+schema_version: 1
+name: avatar
+kind: component
+status: stable
+summary: 使用圆形或圆角矩形图片、回退内容、状态标记和用户详情表示人物、智能体或账号。
+package_import: "@zeron/ui/avatar"
+registry_import: "@/components/ui/avatar"
+source: packages/ui/src/components/avatar.tsx
+registry: packages/ui/registry.json
+related:
+  - badge
+  - info-item
+  - sidebar-identity-row
+---
+
+# Avatar
+
+## Agent intent
+
+使用 Avatar 表示人物、智能体、团队或账号身份。始终同时提供 `AvatarImage` 和 `AvatarFallback`，让图片加载失败或尚未完成时仍有可识别内容。
+
+生成或修改界面时，必须遵守以下规则：
+
+- 默认使用 `size="default"`，即 32px。只有高密度界面使用 `sm`，明确需要更高身份强调时才使用 `lg`。
+- 默认使用 `shape="circle"`；产品表面需要较柔和的方形头像、智能体图标或品牌图标时使用 `shape="rounded"`（`rounded-xl`）。
+- `AvatarWithDetails` 使用正常正文与辅助文字密度，不会自动放大内部 Avatar；需要其他头像尺寸时直接设置 Avatar 的 `size`。
+- 图片旁边已经显示同一个姓名时，`AvatarImage` 使用 `alt=""`，避免读屏重复播报；没有相邻姓名时提供可识别人物或账号的 alt。
+- 文本徽章放入 `AvatarWithDetails.badge` 并使用 Badge；`AvatarBadge` 只用于头像右下角的状态点或小图标。
+- 状态不能只靠颜色传达。`AvatarBadge` 必须包含视觉隐藏文案，或在相邻内容中提供同等状态说明。
+- 头像组需要可理解的组名称和溢出计数名称；优先使用 `role="group"` 与 `aria-label`。
+
+## Use when
+
+- 在账号菜单、成员列表、评论、聊天、分配器或协作者区域中显示身份。
+- 图片可能缺失或加载失败，需要姓名首字母或图标作为稳定回退。
+- 需要在头像角落表达在线、忙碌、离开或已验证等简短状态。
+- 需要将少量协作者头像重叠展示，并将其余人数汇总为 `AvatarGroupCount`。
+- 需要标准的“头像 + 姓名 + 描述 + 可选 Badge”身份摘要时使用 `AvatarWithDetails`。
+
+## Do not use when
+
+- 需要完整的列表行、尾部数值或操作区：使用 InfoItem 或业务列表组件组合 Avatar。
+- 需要可点击的账号切换、菜单或导航行为：Avatar 只负责视觉身份，交互语义应由 Button、链接或菜单触发器承担。
+- 需要上传、裁剪或编辑头像：使用文件输入与专用编辑流程，Avatar 只展示结果。
+- 需要表达普通标签或订阅等级但没有用户详情：直接使用 Badge，不要把文本塞进 `AvatarBadge`。
+- 需要展示大量成员或可搜索选择：使用成员列表、Combobox 或 MemberTree，不要无限扩展 AvatarGroup。
+
+## Composition map
+
+| 场景 | 组合 | 规则 |
+| --- | --- | --- |
+| 单个头像 | `Avatar` + `AvatarImage` + `AvatarFallback` | Image 和 Fallback 都保留 |
+| 状态头像 | 单个头像组合 + `AvatarBadge` | Badge 位于 Avatar 内部，并提供状态文本 |
+| 头像组 | `AvatarGroup` + 多个 `Avatar` + 可选 `AvatarGroupCount` | GroupCount 是 AvatarGroup 的直接子项 |
+| 用户详情 | `AvatarWithDetails` + `avatar` / `name` / `description` / `badge` | `avatar` 通常传完整 Avatar，badge 通常传 Badge |
+
+## Size and density
+
+| Avatar size | 尺寸 | 使用场景 |
+| --- | --- | --- |
+| `sm` | 24px | 高密度表格、紧凑工具栏、次要成员标识 |
+| `default` | 32px | 默认账号、列表、评论和详情组合 |
+| `lg` | 40px | 账号菜单头部、成员卡片等明确强调身份的区域 |
+
+不要通过 `className="size-*"` 创建未定义的头像尺寸。尺寸会同时影响回退文字、角标和头像组计数；应使用公开的 `size` API 保持组合一致。
+
+`AvatarWithDetails` 默认搭配 32px Avatar、`text-body` 姓名和 `text-label` 描述。它接受任意 ReactNode 作为 name、description 和 badge，但这些插槽应保持短小；长内容会截断。
+
+## Shape
+
+| Avatar shape | 圆角 | 使用场景 |
+| --- | --- | --- |
+| `circle` | `rounded-full` | 默认人物头像与成员头像 |
+| `rounded` | `rounded-xl` | 智能体、品牌账号或需要圆角矩形轮廓的头像 |
+
+`shape` 会同时作用于 Avatar 根节点、图片、Fallback 和边框，不要分别覆盖子组件圆角。`AvatarBadge` 始终保持圆形状态点。AvatarGroup 中的 Avatar 应使用一致的 `shape`；`AvatarGroupCount` 保持圆形计数标记。
+
+## Image and fallback rules
+
+- `AvatarImage.src` 使用稳定的图片地址，并为非装饰图片提供准确 alt。
+- 回退内容优先使用 1–2 个可识别字符，例如姓名首字母；不要把完整姓名塞入圆形头像。
+- 使用 `delay` 延迟 Fallback，只用于避免快速加载图片时发生闪烁；不要以此替代真实 loading 状态。
+- Image 与 Fallback 由组件内部叠放并处理加载状态；不要覆盖它们的定位或加载/错误可见性样式。
+- 图片附近已有同名文本时使用空 alt：`<AvatarImage alt="" />`。
+- 没有相邻身份文本时使用可识别 alt：`<AvatarImage alt="Chen Ning" />`。
+- 不要仅依赖远程图片；任何图片头像都必须保留 Fallback。
+
+## Status and badge semantics
+
+`AvatarBadge` 是角落状态标记，不是文本 Badge：
+
+```tsx
+<Avatar>
+  <AvatarImage src="/chen.jpg" alt="Chen Ning" />
+  <AvatarFallback>CN</AvatarFallback>
+  <AvatarBadge className="bg-success-border">
+    <span className="sr-only">在线</span>
+  </AvatarBadge>
+</Avatar>
+```
+
+订阅等级、角色或分类标签使用 Badge，并通过 `AvatarWithDetails.badge` 传入：
+
+```tsx
+import { Badge } from "@zeron/ui/badge";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  AvatarWithDetails,
+} from "@zeron/ui/avatar";
+
+<AvatarWithDetails
+  avatar={
+    <Avatar>
+      <AvatarImage src="/alex.jpg" alt="" />
+      <AvatarFallback>AJ</AvatarFallback>
+    </Avatar>
+  }
+  name="Alex Johnson"
+  description="Founder & CEO"
+  badge={<Badge size="sm">Pro</Badge>}
+/>
+```
+
+如果 Badge 表达动态业务状态，按 Badge 的状态语义选择 `status`；不要为了匹配头像颜色而随意使用危险或成功状态。
+
+## Avatar groups
+
+```tsx
+<AvatarGroup role="group" aria-label="项目成员">
+  <Avatar>
+    <AvatarImage src="/chen.jpg" alt="Chen Ning" />
+    <AvatarFallback>CN</AvatarFallback>
+  </Avatar>
+  <Avatar>
+    <AvatarImage src="/alex.jpg" alt="Alex Johnson" />
+    <AvatarFallback>AJ</AvatarFallback>
+  </Avatar>
+  <AvatarGroupCount aria-label="另有 3 位成员">+3</AvatarGroupCount>
+</AvatarGroup>
+```
+
+- Group 中所有 Avatar 使用同一 `size` 和 `shape`。
+- `AvatarGroupCount` 会根据组内 Avatar 的 data-size 调整尺寸；不要手工修改其宽高。
+- 计数只汇总没有显示的成员，且必须有可访问名称。
+- 当成员身份必须逐一查看或操作时，不要使用重叠头像组，改用明确列表。
+
+## Safe customization
+
+- 可以通过 Avatar 的 `size`、`shape`、图片 src/alt、Fallback 内容及组合组件的 `className` 调整公开能力。
+- 可以给 `AvatarWithDetails` 的 name、description 和 badge 传入链接或 Badge，但外层点击行为必须保持明确，避免嵌套互动控件。
+- 可以使用语义背景 token 改变 AvatarBadge 状态颜色；头像圆角使用公开的 `shape` API，不要覆盖裁剪、边框或状态角标定位。
+- 不要复制图片加载、回退延迟、组尺寸同步或文本截断逻辑到业务组件。
+- 不要在页面中重新创建另一套 AvatarWithDetails；业务需要更多尾部操作时组合 InfoItem。
+
+## Verification checklist
+
+- [ ] 每个 Avatar 同时包含 Image 和 Fallback。
+- [ ] Avatar 尺寸来自 `sm`、`default` 或 `lg`，默认场景没有任意尺寸覆盖。
+- [ ] Avatar 形态来自 `circle` 或 `rounded`，同一 AvatarGroup 内保持一致。
+- [ ] 图片 alt 不会与紧邻姓名重复播报。
+- [ ] AvatarBadge 的状态不只靠颜色表达。
+- [ ] 文本标签使用 Badge，而不是 AvatarBadge。
+- [ ] AvatarGroup 中尺寸一致，计数准确且有可访问名称。
+- [ ] AvatarWithDetails 的姓名、描述和 Badge 在窄容器及长文本下不横向溢出。
+- [ ] Avatar 本身未承担按钮或链接交互语义。
+
+## API anchors
+
+Agent 优先关注：
+
+- Avatar：`shape`、`size`、`render` 与底层 Root 属性。
+- AvatarImage：`src`、`alt`、`onLoadingStatusChange`。
+- AvatarFallback：`delay`。
+- AvatarBadge：原生 span 属性和状态可访问文案。
+- AvatarGroup / AvatarGroupCount：原生 div 属性、组名称和计数名称。
+- AvatarWithDetails：`avatar`、`name`、`description`、`badge`、`className`。
+
+完整类型以 `source` 指向的实现为准。
+
+
+---
+
+---
+schema_version: 1
+name: button
+kind: component
+status: stable
+summary: 触发即时操作或推动用户完成当前任务。
+package_import: "@zeron/ui/button"
+registry_import: "@/components/ui/button"
+source: packages/ui/src/components/button.tsx
+registry: packages/ui/registry.json
+related:
+  - button-group
+  - dropdown
+  - field
+---
+
+# Button
+
+## Agent intent
+
+使用 Button 表达用户可以立即触发的操作。先判断操作的语义和优先级，再选择 `variant`；不要因为某种颜色更醒目而选择变体。
+
+生成或修改界面时，必须遵守以下规则：
+
+- 每个任务区域最多只有一个高强调操作。
+- `primary` 与 `neutral` 都是高强调操作，同一区域只能二选一。
+- 非提交按钮位于 `<form>` 内时，显式设置 `type="button"`。
+- 仅图标按钮必须提供可访问名称，例如 `aria-label`。
+- 异步操作进行中使用 `loading`，不要另行叠加自制 spinner。
+
+## Use when
+
+- 提交、保存、创建、确认、继续或删除等即时操作。
+- 打开 Dialog、Popover、Dropdown 等临时界面。
+- 工具栏和上下文区域中的图标操作。
+- 需要把链接渲染成按钮视觉时，可使用 `asChild` 包裹单个链接元素。
+
+## Do not use when
+
+- 用户只是跳转到普通内容页面：优先使用语义正确的链接；只有确实需要按钮视觉时才使用 `asChild`。
+- 用户需要在多个值之间切换：使用 Select、Tabs、Switch 或 RadioGroup。
+- 操作是一组紧密连接的分段动作或 split action：使用 ButtonGroup 组合 Button。
+- 整张卡片或整行都是点击目标：让容器承担交互语义，不要在其上覆盖一个不可见 Button。
+
+## Variant selection
+
+| Variant | 强调层级 | 使用场景 | 不要用于 |
+| --- | --- | --- | --- |
+| `primary` | 高 | 当前任务的主要操作，并且适合体现品牌色，例如创建、继续、发布 | 与另一个 `primary` 或 `neutral` 并列竞争 |
+| `neutral` | 高 | 主要操作需要保持中性，例如保存、确认、登录 | 仅为了“更高级”而替代 `primary`；与 `primary` 并列 |
+| `destructive` | 高风险 | 不可逆或高风险操作，例如删除账户、移除成员 | 普通错误、取消或容易撤销的变更 |
+| `secondary` | 中 | 支持主要任务的选项，例如保存草稿、预览、稍后处理 | 页面唯一或最重要的行动按钮 |
+| `tertiary` | 低 | 低优先级但仍需要清晰边界的独立操作 | 在操作密集的工具栏里大量重复 |
+| `ghost` | 低 | 工具栏、图标和上下文操作，周边结构已经表明其可点击 | 缺少上下文的唯一行动按钮 |
+
+危险操作只有在“处理危险操作”本身就是当前任务时，才让 `destructive` 成为区域中的高强调操作。
+
+## Size and icon rules
+
+- 默认使用 `size="md"`。
+- 同一操作组内保持相同尺寸；与 Input、Select 并排时使用相同 control size。
+- `xs`、`sm` 适合高密度表格和工具栏；`lg`、`xl` 只用于更宽松或更突出的操作区域。
+- 常规按钮通过 `leadingIcon` 或 `trailingIcon` 放置图标，不要手动复制组件内部间距。
+- `iconOnly` 按钮的 child 应是单个图标，并提供 `aria-label`；装饰性图标添加 `aria-hidden`。
+- `dashed` 主要表达尚未添加的项目或未激活的筛选器，通常与有边界的低强调变体搭配。
+- `active` 只表示按钮控制的外部界面仍处于打开或按住状态，例如 Dropdown 正在显示；不要把它当作业务选中状态的通用替代。
+- `tone="warning"` 只为低强调的状态操作增加警告语气，不改变操作层级；通常与 `variant="tertiary"` 一起使用，例如“配置异常”。
+
+## State behavior
+
+- `loading` 会显示内置加载指示器并禁用按钮，同时保留原标签所占宽度。
+- `disabled` 表示当前操作不可用；如果原因不明显，应在附近解释原因。
+- 不要在 `loading` 时再次触发提交，也不要同时渲染另一套加载文案导致按钮宽度跳动。
+- 危险操作不能只依赖红色表达风险，标签必须明确描述结果，例如“删除项目”。
+
+## Composition
+
+标准操作组：一个高强调操作，加若干低强调选项。
+
+```tsx
+import { Button } from "@zeron/ui/button";
+
+<div className="flex items-center gap-2">
+  <Button type="submit">创建项目</Button>
+  <Button type="button" variant="secondary">保存草稿</Button>
+  <Button type="button" variant="ghost">取消</Button>
+</div>
+```
+
+异步与图标操作：
+
+```tsx
+import { Button } from "@zeron/ui/button";
+import { useIcon } from "@zeron/icons/context";
+
+const Refresh = useIcon("rotate-ccw");
+
+<Button
+  aria-label="刷新日志"
+  disabled={!canRefresh}
+  iconOnly
+  loading={isRefreshing}
+  onClick={refresh}
+  type="button"
+  variant="ghost"
+>
+  <Refresh aria-hidden />
+</Button>
+```
+
+## Safe customization
+
+- 可以调整布局级 `className`，例如宽度、对齐或容器内伸缩。
+- 可以替换标签、图标和事件处理器。
+- 不要覆盖语义颜色、focus ring、disabled opacity、loading 结构或按压反馈；这些属于组件契约。
+- 不要在业务代码中重建与现有 variant 相同的颜色组合；需要新语义时先扩展设计系统。
+
+## Verification checklist
+
+- [ ] 一个任务区域不超过一个 `primary`/`neutral`。
+- [ ] variant 与操作意图一致。
+- [ ] form 内的非提交按钮具有 `type="button"`。
+- [ ] icon-only 按钮具有明确的 `aria-label`。
+- [ ] 异步操作使用 `loading` 并阻止重复提交。
+- [ ] 与相邻 controls 的尺寸一致。
+
+## API anchors
+
+Agent 只需优先关注：`variant`、`tone`、`size`、`loading`、`disabled`、`active`、`iconOnly`、`leadingIcon`、`trailingIcon`、`dashed`、`asChild`。完整类型以 `source` 指向的实现为准。
+
+
+---
+
+---
+schema_version: 1
+name: code-block
+kind: component
+status: stable
+summary: 展示代码、差异、Patch、合并冲突、流式输出和可编辑代码。
+package_import: "@zeron/ui/code-block"
+registry_import: "@/components/ui/code-block"
+source: packages/ui/src/components/code-block/index.ts
+registry: packages/ui/registry.json
+related:
+  - button
+  - tabs
+  - tooltip
+---
+
+# CodeBlock
+
+## Agent intent
+
+使用 CodeBlock 组件族展示精确保留原始空白和换行的代码内容。单文件使用 `CodeBlock`，新旧文件对比使用 `CodeDiff`，Git patch 使用 `CodePatch`，冲突文件使用 `CodeConflict`，大量文件使用 `CodeView`。
+
+## Installation and imports
+
+```bash
+npx zeron-ui add code-block
+```
+
+```tsx
+import { CodeBlock, CodeDiff } from "@/components/ui/code-block";
+import { CodeStream } from "@/components/ui/code-block/stream";
+import { CodeEditProvider } from "@/components/ui/code-block/edit";
+import { CodeWorkerProvider } from "@/components/ui/code-block/worker";
+```
+
+服务端预加载从 `@/components/ui/code-block/server` 导入，解析与变更应用从 `@/lib/code-engine/core` 导入。不要从内部目录导入未公开模块。
+
+## Core rules
+
+- `file.contents` 是原始数据，不要 trim、格式化或从渲染后的 DOM 反向读取。
+- `appearance="zeron"` 是默认产品外观；需要仅使用引擎基础样式时可设置 `appearance="engine"`。
+- `toolbar` 默认开启，提供原文复制和 scroll/wrap 切换。通过 `messages` 本地化按钮文本。
+- `selectedLines` 使用从 1 开始的源码行号。受控选区由调用方保存。
+- `CodeDiff` 传 `oldFile` 与 `newFile`，或传已经解析的 `fileDiff`，不要同时混用两组输入。
+- `CodePatch` 接受 patch 字符串；无效 patch 的业务提示应由调用方结合错误边界呈现。
+- 大列表使用 `CodeView` 的稳定 item id/version，不要把全部文件手工映射成独立 CodeBlock。
+
+## Worker, streaming, and SSR
+
+只读 CodeBlock 可以独立运行。多个代码表面需要并发高亮时，在页面局部挂载一个 `CodeWorkerProvider`；不同 Provider 的 Worker 池和配置彼此隔离。
+
+React 严格模式会重挂载 effect，因此 `CodeStream` 应传流工厂：
+
+```tsx
+<CodeStream
+  source={() => new ReadableStream({
+    start(controller) {
+      controller.enqueue("export const ready = true;\n");
+      controller.close();
+    },
+  })}
+  options={{ lang: "typescript" }}
+/>
+```
+
+传入现成 `ReadableStream` 只适合确定不会重挂载的生命周期。切换数据时创建新流，旧流会在清理阶段取消。
+
+服务端页面可先调用 `preloadCode`，再把返回的 `file`、`options` 和 `prerenderedHTML` 传给客户端 CodeBlock。预渲染 HTML 只使用本地渲染器生成的可信结果，不接受任意用户 HTML。
+
+## Editing
+
+编辑区域必须位于 `CodeEditProvider` 下，并显式传 `edit`。`onEditChange` 用于保存草稿，不要把每次输入立即写回 `file` 造成编辑器重置。`onEditComplete` 返回 `"accept"` 或 `"reject"`；未提供完成回调时按拒绝处理。Diff 编辑只作用于新文件一侧。
+
+```tsx
+<CodeEditProvider>
+  <CodeBlock
+    file={file}
+    edit={editing}
+    editStateKey={file.id}
+    onEditChange={(event) => saveDraft(event)}
+    onEditComplete={() => "accept"}
+  />
+</CodeEditProvider>
+```
+
+## Accessibility and safety
+
+- 保留工具栏按钮的可访问名称和焦点样式。
+- 增删状态同时具有行标识和颜色，不要只依赖色块表达变化。
+- 文件名、代码、Patch 和错误文本都按普通文本处理。
+- 在窄屏优先使用 wrap，或保留明确可操作的横向滚动。
+- 编辑时验证输入法组合、撤销重做、查找替换和宿主快捷键不会冲突。
+
+## Verification checklist
+
+- [ ] 原文首尾空白、空文件和末尾换行保持不变。
+- [ ] 明暗主题、语法语言和未知语言降级可读。
+- [ ] copy 成功后才显示成功反馈，失败会触发 `onCopyError`。
+- [ ] Diff/Patch 的增删内容、行号和布局符合输入数据。
+- [ ] Worker 在消费项目中实际创建并返回结果，卸载 Provider 后终止。
+- [ ] Stream 使用可重建的数据源并验证 close/abort。
+- [ ] SSR 首屏已有内容，hydration 没有重复节点或 mismatch。
+- [ ] 编辑 accept/reject、IME、undo/redo 与会话保留经过真实浏览器验证。
+
+完整类型以 `source` 指向的实现为准。
+
+
+---
+
+---
+schema_version: 1
+name: combobox
+kind: component
+status: stable
+locale: zh-CN
+summary: 在可搜索的候选集合中选择一个或多个值，保留稳定身份和受控状态。
+package_import: "@zeron/ui/combobox"
+registry_import: "@/components/ui/combobox"
+source: packages/ui/src/components/combobox.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [select, input, field]
+---
+
+# Combobox
+
+## 使用与选型
+
+适用于候选多、需要输入检索或多选的字段。小型固定枚举优先 Select；自由文本用 Input；页面全文检索不要把结果强行当成表单选项。
+
+## 公共契约
+
+- Root 接收 `items`、`value`、`onValueChange`；设置 `multiple` 时值为数组，单选值可以是 null。不要在一次挂载中改变单选／多选模式。
+- 对象值明确提供 `itemToStringLabel`、`itemToStringValue` 和 `isItemEqualToValue`。标签可以重复，身份不能依赖标签或数组位置。
+- `size` 控制输入尺寸；`itemDensity` 控制候选密度，二者分别设置。输入的 `variant` 为 outline、secondary 或 ghost。
+- `ComboboxInput` 提供 `showClear`、`showTrigger`、`clearAriaLabel` 和 `triggerAriaLabel`；给输入本身提供标签或 `aria-label`。
+- Popup 通过 `ComboboxContent` 组合，定位可用 `side`、`align`、`anchor`、`collisionBoundary`；受限容器通过公开 `container` 配置，不修改 Portal 实现。
+- 多选使用 `ComboboxChips`、`ComboboxChip`、`ComboboxChipsInput`、`useComboboxAnchor`；为移除按钮提供对应项目的可访问名称。
+
+## 对象值接入
+
+示例中的回调与集合由调用者提供；它不加载演示数据，也不实现后端。
+
+```tsx
+"use client";
+import { Combobox, ComboboxInput, ComboboxContent, ComboboxEmpty, ComboboxList, ComboboxItem } from "@zeron/ui/combobox";
+type Owner = { id: string; name: string };
+export function OwnerPicker({ items, value, onChange, disabled = false }: {
+  items: Owner[]; value: Owner | null;
+  onChange: (owner: Owner | null) => void; disabled?: boolean;
+}) {
+  return <Combobox<Owner> items={items} value={value} onValueChange={onChange}
+    disabled={disabled} itemToStringLabel={(item) => item.name}
+    itemToStringValue={(item) => item.id}
+    isItemEqualToValue={(item, selected) => item.id === selected.id}>
+    <ComboboxInput aria-label="负责人" showClear clearAriaLabel="清除负责人" triggerAriaLabel="展开负责人" />
+    <ComboboxContent>
+      <ComboboxEmpty>没有匹配的负责人</ComboboxEmpty>
+      <ComboboxList>{(item: Owner) => <ComboboxItem key={item.id} value={item}>{item.name}</ComboboxItem>}</ComboboxList>
+    </ComboboxContent>
+  </Combobox>;
+}
+```
+
+## 异步与权限
+
+远程候选由业务层读取，取消过期请求或用请求序号拒绝晚到结果。加载中、网络失败和查询成功但为空是不同状态：不要将失败显示成“没有结果”。外部筛选核对 Root 的 `filter/filteredItems` 契约，避免对服务器结果再次过滤。已选对象不能因为下一页候选未包含它而被清除。
+
+不可编辑时禁用控件，并解释原因；后端仍核验权限。清除回调应把 null／空数组交给业务层，不擅自写入默认值。
+
+## 验收
+
+检查同名不同 ID、对象刷新后选中值、多选移除、清除、键盘选择、Escape、加载／错误／空集合和只读权限。在窄屏与嵌入 Dialog 中验证 Popup 定位、滚动及主题。示例由 `agents:guides:examples:check` 做类型检查；业务行为与视觉验收另行执行。消费者导入必须按实际 aliases 改写，仓库导入不证明安装路径。
+
+
+---
+
+---
+schema_version: 1
+name: dialog
+kind: component
+status: stable
+locale: zh-CN
+summary: 让用户在有焦点管理的临时界面中确认操作或编辑内容，异步提交由业务层管理。
+package_import: "@zeron/ui/dialog"
+registry_import: "@/components/ui/dialog"
+source: packages/ui/src/components/dialog.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [button, field, mobile-drawer]
+---
+
+# Dialog
+
+## 使用与选型
+
+用于明确、短暂的确认或编辑任务。复杂详情优先独立路由；移动场景是否改为 MobileDrawer 由任务和现有外壳决定。不要把所有导航与内容都放进层叠 Dialog。
+
+## 公共契约
+
+- Root 提供 `open`、`defaultOpen`、`onOpenChange(open)`、`modal`。Zeron 回调只有布尔值，不能假设获得底层事件详情。
+- Trigger／Close 复用底层 `render` 组合，例如 `render={<Button ... />}`；不能把其他库的 `asChild` 当成这里的契约。
+- Content 的公开尺寸只有 `sm | lg`，默认 sm。Title／Description 保留对话框的可访问命名与说明。
+- `container` 可指定嵌入区域的 Portal 目标；其定位容器和 modal 语义一起设计。普通页面保留默认模式与现有 Portal／主题 Provider。
+- Content 已包含关闭按钮。关闭流程、未保存确认与异步状态由受控 Root 协调，不修改组件内部实现。
+
+## 异步确认
+
+```tsx
+"use client";
+import { useState } from "react";
+import { Button } from "@zeron/ui/button";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@zeron/ui/dialog";
+export function DeleteResourceDialog({ canDelete, onConfirm }: {
+  canDelete: boolean; onConfirm: () => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  async function confirm() {
+    if (!canDelete || pending) return;
+    setPending(true); setError(null);
+    try { await onConfirm(); setOpen(false); }
+    catch { setError("删除失败，请重试。"); }
+    finally { setPending(false); }
+  }
+  return <Dialog open={open} onOpenChange={(next) => { if (!pending) setOpen(next); }}>
+    <DialogTrigger render={<Button type="button" variant="secondary" disabled={!canDelete} />}>删除资源</DialogTrigger>
+    <DialogContent size="sm">
+      <DialogHeader><DialogTitle>删除资源？</DialogTitle><DialogDescription>此操作会永久移除该资源，请确认其影响。</DialogDescription></DialogHeader>
+      {error && <p role="alert">{error}</p>}
+      <DialogFooter>
+        <Button type="button" variant="ghost" disabled={pending} onClick={() => setOpen(false)}>取消</Button>
+        <Button type="button" variant="destructive" loading={pending} disabled={!canDelete} onClick={confirm}>删除资源</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>;
+}
+```
+
+## 业务与验收
+
+回调必须绑定具体资源与真实授权；示例仅定义接入边界。成功后再关闭，失败保留上下文并可重试。编辑任务保存 dirty 草稿，关闭前处理未保存修改；若提交中阻止关闭，应提供明确进行中反馈，并避免无限挂起。
+
+验证打开时焦点、Tab 范围、Escape／关闭策略、关闭后焦点恢复、长文案、窄屏、滚动、Portal 主题及重复提交。示例只由 `agents:guides:examples:check` 做类型检查，未代替这些交互或真实后端验证。不要通过移除 modal、焦点环或动画实现来让局部演示通过。
+
+
+---
+
+---
+schema_version: 1
+name: field
+kind: component
+status: stable
+locale: zh-CN
+summary: 组合表单控件、可访问标签、帮助信息与校验错误，业务层保有值和提交状态。
+package_import: "@zeron/ui/field"
+registry_import: "@/components/ui/field"
+source: packages/ui/src/components/field.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [input, select, combobox, button]
+---
+
+# Field
+
+## 使用与组合
+
+Field 管理一个字段的语义，不是表单状态库或远程提交引擎。使用 `FieldLabel`、实际控件、`FieldDescription` 与 `FieldError`，不要把占位符当成标签。多字段布局用 `FieldGroup`；有共同语义的一组控件用 `Fieldset` 与 `FieldsetLegend`。
+
+## 公共契约
+
+- `Field` 接收底层 Field Root props，包括 `name`、`invalid`、`disabled`。业务字段名保持稳定，不能用翻译后的标签作 key。
+- `FieldLabel`、`FieldDescription`、`FieldError` 保留底层关联和校验行为；不要自行复制错误样式或移除可访问关联。
+- `FieldItem` 为选择／开关类控件提供同行组合；不是另一个独立字段 Root。
+- 控件尺寸属于 Input／Select 等公开 API，Field 不通过任意高度类修改控件。
+- `FieldGroup` 只负责布局；读取、dirty、保存、重试、服务端字段错误属于业务层。
+
+## 受控字段
+
+```tsx
+"use client";
+import { Field, FieldLabel, FieldDescription, FieldError } from "@zeron/ui/field";
+import { Input } from "@zeron/ui/input";
+export function WorkspaceNameField({ value, onChange, error, canEdit }: {
+  value: string; onChange: (value: string) => void;
+  error?: string; canEdit: boolean;
+}) {
+  return <Field name="workspaceName" invalid={Boolean(error)} disabled={!canEdit}>
+    <FieldLabel>工作区名称</FieldLabel>
+    <Input value={value} onChange={(event) => onChange(event.target.value)} disabled={!canEdit} />
+    <FieldDescription>该名称对工作区成员可见。</FieldDescription>
+    {error && <FieldError>{error}</FieldError>}
+  </Field>;
+}
+```
+
+## 数据与状态
+
+初次加载、正在保存和禁止编辑分别记录，不能都叫 disabled。读取刷新时保留用户未保存修改；提交失败保留字段值，将服务端错误映射到真实字段，并提供重试。全局网络错误放在表单级区域，不在每个 Field 内重复。
+
+可见禁用不是权限控制，保存接口仍核验权限。校验成功前不能自动关闭表单；提交按钮使用 Button 的 loading，并在业务回调中避免重复提交。
+
+## 定制与验收
+
+可以调整字段组列数、宽度和布局间距，不覆盖标签关联、错误颜色或 focus ring。检查点击标签聚焦、键盘顺序、长帮助文案、服务端字段错误、清除／修正错误、只读权限和窄屏。示例类型由 `agents:guides:examples:check` 验证；不据此声称真实保存接口已经接通。消费者按实际 aliases 使用已安装源码。
+
+
+---
+
+---
+schema_version: 1
+name: input
+kind: component
+status: stable
+summary: 收集单行文本、数字、日期、文件等原生输入值。
+package_import: "@zeron/ui/input"
+registry_import: "@/components/ui/input"
+source: packages/ui/src/components/input.tsx
+registry: packages/ui/registry.json
+related:
+  - field
+  - input-group
+  - textarea
+  - select
+  - combobox
+---
+
+# Input
+
+## Agent intent
+
+使用 Input 收集单个原生 HTML input 值。它只负责输入控件表面；标签、说明和校验消息应由 Field 组合提供。
+
+生成表单时，必须遵守以下规则：
+
+- 可见标签使用 FieldLabel，不要用 placeholder 代替标签。
+- 校验失败时同时提供错误语义和可见错误消息。
+- 需要前后缀、图标、单位、复制或内嵌操作时，使用 InputGroup，不要把元素绝对定位到 Input 上。
+- 与同一表单中的 Button、Select 使用一致的 control size。
+
+## Use when
+
+- 单行文本、邮箱、密码、数字、URL、搜索词、日期或其他原生 input 类型。
+- 文件选择，可使用 `type="file"` 和 `accept`。
+- 需要标准 focus、disabled、read-only 与 validation 状态的输入控件。
+
+## Do not use when
+
+- 多行内容：使用 Textarea。
+- 从有限选项中选择一个值：使用 Select；选项很多且需要搜索时使用 Combobox。
+- 多选、布尔开关或离散选择：使用 CheckboxGroup、Switch 或 RadioGroup。
+- 输入面包含单位、图标、按钮或 addon：使用 InputGroup。
+- 需要结构化筛选表达式：使用 FilterQueryInput。
+
+## Variant selection
+
+| Variant | 使用场景 | 注意事项 |
+| --- | --- | --- |
+| `outline` | 默认表单、独立输入框、需要清晰边界的页面 | 默认选择 |
+| `secondary` | 输入框位于已有边界的区域中，需要较弱但仍可辨认的填充表面 | 避免在大面积相同填充背景上失去边界 |
+| `ghost` | 高密度工具栏、表格内或已有强容器边界的场景 | 不要用于缺少上下文的独立表单字段 |
+
+## Size rules
+
+- 默认使用 `size="md"`。
+- 支持 `xs`、`sm`、`md`、`lg`、`xl`。
+- `xs`、`sm` 适合高密度工具栏或表格；普通表单使用 `md`。
+- `lg`、`xl` 适合更宽松或触控优先的界面，不要只为了吸引注意而放大。
+- 同一 FieldGroup 内通常保持同一尺寸。
+
+## Validation and state behavior
+
+- `disabled` 表示不可交互且通常不会参与提交；`readOnly` 表示值可查看和选择，但不可修改。不要混用两者。
+- 校验失败时优先组合 `Field invalid`、`Input aria-invalid` 与 `FieldError`。
+- 错误消息应说明如何修复，不要只写“输入错误”。
+- 保留浏览器的输入语义，正确设置 `type`、`name`、`autoComplete`、`required`、`min`、`max`、`inputMode` 等原生属性。
+- 对受控 Input 提供 `value` 与 `onChange`；简单表单可使用 `defaultValue`。不要在受控和非受控模式之间切换。
+
+## Composition
+
+带说明与校验的标准字段：
+
+```tsx
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@zeron/ui/field";
+import { Input } from "@zeron/ui/input";
+
+<Field name="endpoint" invalid={Boolean(error)}>
+  <FieldLabel>API Endpoint</FieldLabel>
+  <Input
+    aria-invalid={Boolean(error)}
+    autoComplete="url"
+    name="endpoint"
+    placeholder="https://api.example.com"
+    type="url"
+  />
+  <FieldDescription>请输入 HTTPS 地址。</FieldDescription>
+  {error ? <FieldError>{error}</FieldError> : null}
+</Field>
+```
+
+文件输入：
+
+```tsx
+import { Field, FieldDescription, FieldLabel } from "@zeron/ui/field";
+import { Input } from "@zeron/ui/input";
+
+<Field name="avatar">
+  <FieldLabel>头像</FieldLabel>
+  <Input accept="image/png,image/jpeg" name="avatar" type="file" />
+  <FieldDescription>PNG 或 JPEG，最大 5 MB。</FieldDescription>
+</Field>
+```
+
+## Content rules
+
+- Label 使用名词或明确的问题，例如“工作区名称”。
+- Placeholder 只提供格式示例或短提示，例如 `you@example.com`，不重复标签。
+- 密码、验证码等敏感字段应设置合适的 `autoComplete`，不要默认关闭自动填充。
+- 数字输入先确认业务是否允许滚轮、负数、小数和本地化格式；复杂数值编辑可能需要专用组件。
+
+## Safe customization
+
+- 可以通过 `className` 调整布局宽度，但不要移除 focus、invalid、disabled 和 placeholder 的语义样式。
+- 不要通过固定高度或自定义 padding 伪造新的 size；使用已有 `size`。
+- 不要在 Input 内手工添加图标或 action；改用 InputGroup。
+
+## Verification checklist
+
+- [ ] 有持久可见的标签。
+- [ ] 使用了正确的原生 `type` 和表单属性。
+- [ ] placeholder 没有替代 label。
+- [ ] invalid 状态有可见、可理解的错误消息。
+- [ ] `disabled` 与 `readOnly` 的语义正确。
+- [ ] 与相邻 Button、Select 的尺寸一致。
+- [ ] 带 addon 或 action 的场景改用 InputGroup。
+
+## API anchors
+
+Agent 只需优先关注：`variant`、`size` 和原生 input props。完整类型以 `source` 指向的实现为准。
+
+
+---
+
+---
+schema_version: 1
+name: metric-card
+kind: component
+status: stable
+locale: zh-CN
+summary: 展示有单位、口径与数据状态的指标，可选明细或基于真实样本的微型图表。
+package_import: "@zeron/ui/metric-card"
+registry_import: "@/components/ui/metric-card"
+source: packages/ui/src/components/metric-card.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [chart, skeleton, status-overview]
+---
+
+# MetricCard
+
+## 选型与数据口径
+
+用于 KPI、统计值和短趋势；大量原始记录用表格，完整分析图用 Chart。先确定指标名称、单位、统计周期、样本范围和更新时刻，不凭视觉样式改变聚合口径。
+
+## 公共契约
+
+- `label` 与 `value` 必需；`unit` 与数值分开，`meta` 说明周期／更新时间，description／footer 提供其他上下文。
+- `layout` 为 stacked／split，`tone` 为 default／positive／warning／critical。上升不一定是好事，依据业务含义选 tone。
+- `state` 为 ready、loading、unavailable、stale、error；使用 `statusMessage` 解释不可用、过期或失败。
+- `content` 为 none、breakdown 或 visualization。breakdown 支持 list／grid 和带标签、值、tone 的项目。
+- visualization 的 chart 为 line／area／bar，data 为数字或 `{ value, label? }`。至少 24 个有限样本，需可访问说明 `accessibleLabel`；`formatValue` 处理检查值的格式。
+- `onClick` 是整卡动作，配 `actionLabel`；`action` 为独立操作区域。整卡可点击时微图表不作为另一组独立交互。不要叠加透明覆盖层或嵌套自制按钮。
+- loading 会关闭整卡动作；其他状态是否允许导航仍由调用者决定，不能假设 error 自动禁用所有业务行为。
+
+## 零值与缺失值
+
+```tsx
+import { MetricCard, type MetricCardState } from "@zeron/ui/metric-card";
+export function RequestMetric({ value, state, updatedAt, canViewDetails, onOpen }: {
+  value: number | null; state: MetricCardState; updatedAt: string;
+  canViewDetails: boolean; onOpen: () => void;
+}) {
+  const valid = value !== null && Number.isFinite(value);
+  const displayState = state === "ready" && !valid ? "unavailable" : state;
+  return <MetricCard label="请求数" value={valid ? value.toLocaleString("zh-CN") : "—"}
+    unit="次" meta={`更新时间：${updatedAt}`} state={displayState}
+    statusMessage={displayState === "error" ? "指标读取失败" : "暂无可用指标"}
+    onClick={canViewDetails && (displayState === "ready" || displayState === "stale") ? onOpen : undefined}
+    actionLabel="查看请求明细" content={{ type: "none" }} />;
+}
+```
+
+## 加载、趋势与权限
+
+0 是有效测量值，null、NaN 和 Infinity 不是；不要用 `value || "—"`。有旧数据但读取失败时明确决定 stale 或 error，不把旧值标为新鲜结果。
+
+样本不足、日期缺失或单位不一致时不给微图表伪造 24 个点。系列采样、排序与缺失处理属于数据适配层；此卡不是时间聚合或自动补点引擎。保留真实 tooltip 标签与值，格式化不能改变底层测量值。
+
+## 验收
+
+检查零值、负值、极大数、loading／error／stale、真实单位、明细权限、键盘整卡操作、微图表方向键与样本不足反馈，并查看窄屏。示例类型由 `agents:guides:examples:check` 验证；不证明指标接口、聚合结果或图表交互已经验收。消费者以已安装源码和实际 aliases 为准。
+
+
+---
+
+---
+schema_version: 1
+name: page-layout
+kind: component
+status: stable
+locale: zh-CN
+summary: 在现有应用外壳内组合页面标题、操作、内容与辅助栏，明确尺寸和滚动归属。
+package_import: "@zeron/ui/page-layout"
+registry_import: "@/components/ui/page-layout"
+source: packages/ui/src/components/page-layout.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [app-shell, resource-detail-layout, button]
+---
+
+# PageLayout
+
+## 布局归属
+
+保留宿主 AppShell、导航与路由。PageLayout 是页面区域，不是替代整个应用的外壳。先确定宿主高度和滚动策略，再选择组合；只导入 PageLayout 不等于采用完整标题与内容结构。
+
+## 公共契约
+
+- `size` 为 sm、md、lg、full；默认 full。`gutter` 为 default 或 none。
+- PageHeader 组合 PageHeaderContent 和 PageActions。标题与描述先放入同一个文本 div，再放入 PageHeaderContent，不能让二者成为 flex 并排兄弟。
+- PageTitle 是 h1，页面保留单一主标题。不传 className 时使用紧凑标题样式；传入 className 会启用 text-heading，不能为一点布局变化无意扩大资源标题。
+- PageContent 是受限内容容器；PageContentHeader 保留操作／子导航；PageBody 默认负责内部纵向滚动。
+- PageSidebar 必须与 PageContent 成为 PageLayout 的直接子项；其 width 控制桌面栏宽，lg 以下堆叠。
+- PageColumns 的直接子项是 PagePrimary、PageAside；`columnsAt` 为 lg／xl，`asideSide` 为 left／right，`asideWidth` 表示桌面辅助栏宽。辅助内容需有可访问名称。
+
+## 有界页面组合
+
+宿主必须提供可用高度；以下示例不创建另一套 AppShell。内容通过 children 接入。
+
+```tsx
+import type { ReactNode } from "react";
+import { Button } from "@zeron/ui/button";
+import { PageLayout, PageHeader, PageHeaderContent, PageTitle, PageDescription, PageActions, PageContent, PageBody } from "@zeron/ui/page-layout";
+export function ResourcePage({ children, canCreate, onCreate }: {
+  children: ReactNode; canCreate: boolean; onCreate: () => void;
+}) {
+  return <PageLayout size="full" gutter="default">
+    <PageHeader>
+      <PageHeaderContent><div className="min-w-0"><PageTitle>资源</PageTitle><PageDescription>管理当前工作区的资源。</PageDescription></div></PageHeaderContent>
+      <PageActions><Button type="button" disabled={!canCreate} onClick={onCreate}>创建资源</Button></PageActions>
+    </PageHeader>
+    <PageContent><PageBody>{children}</PageBody></PageContent>
+  </PageLayout>;
+}
+```
+
+## 滚动与状态
+
+有界应用使用 PageBody 的内部滚动时，不再给同一内容加第二个 overflow-y 容器。文章型页面若采用文档滚动，则明确取消固定高度约束并保留一个文档滚动拥有者，不照搬上面的有界结构。
+
+加载、空、错误、无权限内容放进选定内容区域，标题／筛选上下文按任务保留。动作由真实权限与路由回调管理，布局本身不实现读取、创建或分页。
+
+## 验收
+
+检查一个 h1、标题与描述的组合、长标题、操作折行、窄屏栏堆叠、键盘导航、滚动容器高度及页面返回行为。使用公开布局与语义 tokens，不通过全局 CSS 重建标题栏。示例类型由 `agents:guides:examples:check` 验证；这些布局与行为检查仍需运行页面。消费者以实际安装别名和源码为准。
+
+
+---
+
+---
+schema_version: 1
+name: resource-detail-layout
+kind: component
+status: stable
+locale: zh-CN
+summary: 为资源详情提供稳定的摘要、动作、标签与主辅内容结构，数据和路由由调用者接入。
+package_import: "@zeron/ui/resource-detail-layout"
+registry_import: "@/components/ui/resource-detail-layout"
+source: packages/ui/src/components/resource-detail-layout.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [page-layout, resource-detail-page-01, button, tabs]
+---
+
+# ResourceDetailLayout
+
+## 使用与选型
+
+用于单资源检查、配置或详情页。需要业务参考时进一步读取 resource-detail-page-01；复杂表单不应直接改写此布局源码。沿用现有应用外壳，不在详情内嵌入第二套导航外壳。
+
+## 公共槽位
+
+| 参数 | 归属 |
+| --- | --- |
+| title／description | 资源名称和说明；title 提供单一 h1，不把状态 Badge 放进 title |
+| navigation | 表面上方的页面导航，例如面包屑 |
+| recordNavigation | 关闭详情或切换相邻记录 |
+| leading／status | 资源标志与独立状态 |
+| actions | 页面级资源操作 |
+| tabs | 受控 TabsList 或路由导航；布局不自动管理激活路由 |
+| children | 主内容，读取／保存行为由调用者拥有 |
+| aside／asideLabel | 辅助事实与可访问名称；有 aside 时提供名称 |
+
+`asideSide` 默认 right，`asideWidth` 默认 20rem，`columnsAt` 默认 xl。`scrollMode="body"` 默认共享正文滚动；columns 模式在相应桌面断点让主辅栏分别滚动，堆叠时仍回到共享正文。宿主提供有界高度，不再嵌套同区域的滚动层。
+
+## 业务接入边界
+
+```tsx
+import type { ReactNode } from "react";
+import { Button } from "@zeron/ui/button";
+import { ResourceDetailLayout } from "@zeron/ui/resource-detail-layout";
+export function ResourceDetail({ resource, children, facts, onBack, onEdit, canEdit }: {
+  resource: { id: string; name: string; description: string; status: string };
+  children: ReactNode; facts: ReactNode;
+  onBack: () => void; onEdit: (id: string) => void; canEdit: boolean;
+}) {
+  return <ResourceDetailLayout title={resource.name} description={resource.description}
+    status={<span>{resource.status}</span>}
+    recordNavigation={<Button type="button" variant="ghost" onClick={onBack}>返回列表</Button>}
+    actions={<Button type="button" variant="secondary" disabled={!canEdit} onClick={() => onEdit(resource.id)}>编辑资源</Button>}
+    aside={facts} asideLabel="资源信息" scrollMode="body">
+    {children}
+  </ResourceDetailLayout>;
+}
+```
+
+## 状态与路由
+
+调用者按资源 ID 读取，拒绝晚到的旧资源响应。返回列表时保留查询／分页条件；前后记录切换明确依照当前列表顺序。区分加载、不存在、请求失败、无权读取和可以读取但不能编辑。API 失败保留可重试上下文，后端核验读取与修改权限。
+
+不要给未知资源制造名称或状态。上例要求调用者已经取得有效资源，不能将硬编码对象称为真实接口集成。
+
+## 验收
+
+检查 title 与 status 分离、一个 h1、动作权限、返回条件、长描述、切换资源请求竞争、窄屏主辅栏堆叠和两种滚动模式。示例由 `agents:guides:examples:check` 做类型检查；真实接口、业务状态和视觉验收独立记录。不要复制该组件内部摘要栏到业务代码；消费者按实际 aliases 引用已安装布局。
+
+
+---
+
+---
+schema_version: 1
+name: select
+kind: component
+status: stable
+summary: 从有限且可预先加载的选项中选择一个值。
+package_import: "@zeron/ui/select"
+registry_import: "@/components/ui/select"
+source: packages/ui/src/components/select.tsx
+registry: packages/ui/registry.json
+related:
+  - field
+  - combobox
+  - radio-group
+  - checkbox-group
+---
+
+# Select
+
+## Agent intent
+
+使用 Select 从一组有限、可预先获得的选项中选择一个值。它提供键盘导航、typeahead、碰撞感知定位、表单提交和可控展开状态。
+
+Select 是 compound component。必须保持以下基本结构：
+
+```tsx
+<Select>
+  <SelectTrigger />
+  <SelectContent>
+    <SelectItem value="...">...</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+不要省略 Trigger 或 Content，也不要把 SelectItem 放到 Select 之外。
+
+## Use when
+
+- 用户必须从有限选项中选择一个值。
+- 选项标签较短，数量可以在弹出层中高效浏览。
+- 表单需要原生 `name`、`required` 和提交值。
+- 需要分组、图标、禁用选项或可滚动列表。
+
+## Do not use when
+
+- 选项很多、来自远程搜索或用户需要输入关键词过滤：使用 Combobox。
+- 允许选择多个值：使用多选 Combobox 或 CheckboxGroup。
+- 选项只有 2–5 个且比较成本很重要：优先 RadioGroup，让选项始终可见。
+- 表达即时布尔开关：使用 Switch。
+- 触发的是命令而不是选择持久值：使用 Dropdown。
+
+## Variant and density rules
+
+- `SelectTrigger variant="bordered"` 是默认选择，适合表单和独立控件。
+- `borderless` 只用于已有明确边界的工具栏、表格或容器；不要用于孤立字段。
+- 根组件的 `size` 控制 trigger 高度、padding、文字与图标尺寸。
+- `itemDensity` 独立控制 popup 选项密度：`compact`、`regular`、`comfortable`。
+- 默认使用 `size="md"` 与 `itemDensity="regular"`。
+- 同一表单中的 Select、Input、Button 使用相同 control size；选项密度可根据内容复杂度独立调整。
+
+## Value and option rules
+
+- 每个 SelectItem 的 `value` 必须稳定且唯一；不要使用数组 index 或本地化显示文案作为持久 ID。
+- 简单场景使用 `defaultValue`；当选择会驱动其他界面或需要与 URL/表单状态同步时，使用 `value` 与 `onValueChange`。
+- 受控 `open` 必须同时处理 `onOpenChange`，否则弹出层无法正常响应用户操作。
+- SelectItem 包含图标或富内容时，通过 `label` 指定 trigger 关闭后应显示的内容。
+- 富内容无法直接用于键盘匹配时，通过 `textValue` 提供纯文本 typeahead 值。
+- 不要使用已弃用的 `index`；组件会根据 item 顺序推导索引。
+
+## Grouping and content
+
+- 选项存在清晰类别时使用 SelectGroup 与 SelectLabel。
+- 组之间可使用 SelectSeparator；不要为每两个选项都添加 separator。
+- 选项文案应互斥且使用相同语法结构。
+- 当前选中项由组件提供 checkmark 与背景反馈，不要在 item 内重复添加选中图标。
+- Trigger 中的长值会截断；确保完整值能从上下文、选项列表或辅助说明中理解。
+- `SelectContent` 默认保留快速入场动画；在规则编辑器等高密度、连续编辑界面中，可设置 `animated={false}` 让弹层在挂载首帧直接显示。该选项只跳过入场 tween，不改变 Portal、定位、关闭生命周期或键盘行为。
+
+## Validation and accessibility
+
+- 表单字段需要持久可见的 FieldLabel；placeholder 不能替代 label。
+- 根组件可设置 `name`、`required` 与 `disabled`。
+- 单个不可用选项设置 SelectItem 的 `disabled`，不要从列表中隐藏仍有解释价值的选项。
+- `SelectTrigger error` 提供错误视觉和内联错误文案。正式表单还应确保 label 与错误说明具备可访问关系。
+- 保留组件内建的键盘导航、typeahead、Escape 关闭和 collision handling，不要用自定义点击监听或 animation 重写它们。
+
+## Composition
+
+受控表单选择：
+
+```tsx
+import { useState } from "react";
+import { Field, FieldLabel } from "@zeron/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@zeron/ui/select";
+
+function RoleSelect() {
+  const [role, setRole] = useState("");
+
+  return (
+    <Field name="role">
+      <FieldLabel>角色</FieldLabel>
+      <Select name="role" onValueChange={setRole} required value={role}>
+        <SelectTrigger placeholder="选择角色…" />
+        <SelectContent>
+          <SelectItem value="admin">管理员</SelectItem>
+          <SelectItem value="editor">编辑者</SelectItem>
+          <SelectItem value="viewer">查看者</SelectItem>
+        </SelectContent>
+      </Select>
+    </Field>
+  );
+}
+```
+
+带分组和富标签的选择：
+
+```tsx
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+} from "@zeron/ui/select";
+
+<Select defaultValue="system">
+  <SelectTrigger placeholder="选择主题…" />
+  <SelectContent>
+    <SelectGroup>
+      <SelectLabel>自动</SelectLabel>
+      <SelectItem label="跟随系统" textValue="跟随系统" value="system">
+        跟随系统主题
+      </SelectItem>
+    </SelectGroup>
+    <SelectSeparator />
+    <SelectGroup>
+      <SelectLabel>固定主题</SelectLabel>
+      <SelectItem value="light">浅色</SelectItem>
+      <SelectItem value="dark">深色</SelectItem>
+    </SelectGroup>
+  </SelectContent>
+</Select>
+```
+
+## Safe customization
+
+- 可以调整 Trigger 的布局宽度、Content 的最大宽度及 side/alignment 参数。
+- 可以替换 placeholder、图标、group 和 item 内容。
+- 不要移除 Portal、Positioner、选中反馈、focus ring 或 open/close 生命周期。
+- 不要在业务侧复制 hover/checkmark 动画；它们属于组件行为。
+- 若需要搜索、多选、异步加载或创建新选项，应切换到 Combobox，而不是持续扩展 Select。
+
+## Verification checklist
+
+- [ ] Select 用于单选且选项规模有限。
+- [ ] 所有 value 稳定且唯一。
+- [ ] compound component 层级完整。
+- [ ] 富内容 item 提供了合适的 `label`/`textValue`。
+- [ ] 正式表单具有可见标签和错误说明。
+- [ ] controlled value/open 都有对应 change handler。
+- [ ] Trigger 与相邻 controls 尺寸一致。
+
+## API anchors
+
+Agent 优先关注：
+
+- Select：`value`、`defaultValue`、`onValueChange`、`open`、`onOpenChange`、`disabled`、`name`、`required`、`size`、`itemDensity`。
+- SelectTrigger：`variant`、`icon`、`prefix`、`placeholder`、`error`。
+- SelectItem：`value`、`label`、`textValue`、`icon`、`disabled`。
+- SelectContent：`side`、`align`、`sideOffset`、`alignOffset`、`animated`。
+
+完整类型以 `source` 指向的实现为准。
+
+
+---
+
+---
+schema_version: 1
+name: tree
+kind: component
+status: stable
+summary: 展示或选择具有层级关系的通用节点、部门成员或文件目录。
+package_import: "@zeron/ui/tree"
+registry_import: "@/components/ui/tree"
+source: packages/ui/src/components/tree/index.ts
+registry: packages/ui/registry.json
+related:
+  - member-tree
+  - file-tree
+  - checkbox-group
+  - select
+  - combobox
+  - dropdown
+---
+
+# Tree
+
+## Agent intent
+
+使用 Tree 展示可展开的层级数据，或从层级中选择实体。调用方必须为全部节点提供稳定、非空且全局唯一的 `key`，并为 Tree 提供 `aria-label` 或 `aria-labelledby`。
+
+生成或修改界面时，必须遵守以下规则：
+
+- 展开、焦点和选择是独立状态；方向键移动焦点时不得改变选择。
+- `selectionMode="single"` 至多传入一个 `selectedKeys` 或 `defaultSelectedKeys`；多选必须显式声明 `selectionMode="multiple"`。
+- `selectionIndicator="checkbox"` 只能与多选一起使用；`checkStrategy="cascade"` 也只能与多选复选框一起使用。
+- 外部搜索只传入 `query` 或 `filterNode`，不要为了搜索裁剪 `items`；组件需要完整层级以保留祖先路径和正确计算级联。
+- 行尾互动内容放进 `renderActions`。其中的图标 Button 必须提供 `aria-label`，并使用项目的 Button、Dropdown 等组件。
+
+## Use when
+
+- 展示或选择通用分类、地区、项目、权限、指标、资源等层级节点。
+- 用户需要沿父子关系浏览、展开分支，并通过键盘完成定位或选择。
+- 需要让一个明确的集合节点批量选择符合资格的后代，例如“选择某个分类下的全部指标”。
+- 需要在节点尾部添加数量、状态、More 菜单或打开详情等局部信息与操作。
+
+## Do not use when
+
+- 数据没有层级且选项较少：使用 Select、RadioGroup 或 CheckboxGroup。
+- 需要远程筛选、异步子节点加载、虚拟滚动、拖拽排序或弹出式 TreeSelect：这些能力当前不属于 Tree 的公共契约。
+- 需要多列单元格、列头、行列键盘模型或表格级操作：单独设计 TreeGrid。
+- 整个行点击应跳转到常规页面且不需要层级交互：使用链接或列表，而不是 Tree。
+
+## Variant, density and hierarchy rules
+
+| API | 使用场景 | 规则 |
+| --- | --- | --- |
+| `variant="plain"` | 页面已有明确容器或与内容连续排列 | 默认选择，不改变交互语义 |
+| `variant="bordered"` | Tree 是独立工作区、选择器或需要明确边界的面板 | 不要用额外自定义边框重建组件表面 |
+| `density="compact"` | 高密度资源、指标或文件列表 | 保持文本可读，适合工具区而非触控优先任务 |
+| `density="regular"` | 一般层级浏览 | 默认选择 |
+| `density="comfortable"` | 成员、较长描述或需要更大点击区域的任务 | MemberTree 默认使用此密度 |
+| `showLines` | 深层结构需要辅助阅读 | 连接线表达关系，不能替代正确缩进和可访问层级 |
+| `indent` | 适配受限面板或深层结构 | 使用有限且一致的值，必须是非负有限数 |
+
+节点的 `label` 是可见标签、typeahead 文本和 treeitem 名称。`description` 与 label 同行展示，并作为补充说明；不要把唯一标识、长日志或主要操作塞入 description。
+
+## Selection and entity semantics
+
+- `selectionMode="none"` 用于展示型 Tree：Enter/Space 可切换分支，不传选择相关 props。
+- `selectionMode="single"` 用于选择一个目标，例如一个项目、目录或指标；使用受控 `selectedKeys` 时始终传入至多一个 key。
+- `selectionMode="multiple"` 且 `selectionIndicator="highlight"` 用于彼此独立的多实体选择。
+- `selectionIndicator="checkbox"` 适合用户需要看见选择范围的批量任务。`checkStrategy="independent"` 只切换当前符合资格的节点；`cascade` 切换符合资格的整个后代集合，并在父节点显示 mixed 状态。
+- `selectionScope="leaf"` 禁止直接选择分支；在 checkbox cascade 中，父分支仍可作为其可选叶子集合的开关。
+- `disabled` 节点可被发现但不可展开或选择；有业务原因时提供 `disabledReason`。`readOnly` 保留浏览和展开，但锁定选择改变。
+- 刷新数据后 `selectedKeys` 中无法解析的 key 会保留在回调详情的 `unresolvedKeys`；提交前由业务层决定是否清理或提示用户。
+
+不要把“选择部门实体”与“选择该部门下全部成员”混为同一个配置：前者是 independent 选择 `department`，后者是 member-only checkbox cascade。
+
+## MemberTree and FileTree
+
+| 场景 | 组件与配置 | 返回的 key |
+| --- | --- | --- |
+| 选择一个或多个部门 | `MemberTree selectableTypes={["department"]}` + single 或 independent multiple | 部门节点 key |
+| 按部门批量选择成员 | `MemberTree selectableTypes={["member"]}` + multiple checkbox cascade | 符合资格的成员 key，不含部门 key |
+| 选择文件或目录 | `FileTree selectableTypes={["file"]}` 或 `selectableTypes={["folder"]}` | 文件或目录 key |
+| 批量选择文件 | `FileTree selectableTypes={["file"]}` + multiple checkbox cascade | 符合资格的文件 key，不含文件夹 key |
+| 限制可选文件类型 | `FileTree allowedExtensions={["pdf", "xlsx"]}` | 不允许的文件仍可见，但不可选择 |
+
+MemberTree 会拒绝重复 `memberId` 或 `departmentId`。FileTree 根据 MIME type 和扩展名渲染文件图标。两者都会保留 Tree 的键盘、搜索、展开和无障碍契约。
+
+## Controlled state, search and refresh states
+
+- 简单静态 Tree 使用 `defaultExpandedKeys` 与 `defaultSelectedKeys`；当展开或选择需要和 URL、表单、权限或其他区域同步时，使用 `expandedKeys` / `selectedKeys` 及其回调。
+- `onExpandedChange` 会报告变更的 key、展开结果和 pointer/keyboard 原因；`onSelectionChange` 提供新增、移除、已解析节点和未解析 key。
+- `query` 支持默认的 label / keywords 匹配；需要领域匹配时使用 `filterNode(node, normalizedQuery)`。
+- 查询期间命中节点的祖先会保持可见且展开；不要把这类临时展开状态写回业务的 `expandedKeys`。
+- `loading`、`error` 或 `readOnly` 时不能改变选择。已有数据在 loading/error 下仍可显示；`onRetry` 只用于重新请求整棵树。
+- `messages` 仅用于本地化 Tree 自身状态与辅助文本。业务错误、权限说明和空状态的业务指导应由页面提供。
+
+## Composition
+
+受控的指标叶子单选：
+
+```tsx
+import { useState } from "react";
+import { Tree, type TreeNode } from "@zeron/ui/tree";
+
+function MetricTree({ items }: { items: readonly TreeNode[] }) {
+  const [selectedKeys, setSelectedKeys] = useState<readonly string[]>([]);
+
+  return (
+    <Tree
+      aria-label="选择指标"
+      defaultExpandedKeys={["source:cloud"]}
+      items={items}
+      selectedKeys={selectedKeys}
+      selectionMode="single"
+      selectionScope="leaf"
+      onSelectionChange={setSelectedKeys}
+    />
+  );
+}
+```
+
+带搜索、受控展开和行尾 More 操作：
+
+```tsx
+import { useState } from "react";
+import { Button } from "@zeron/ui/button";
+import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
+import { MenuItem } from "@zeron/ui/menu-item";
+import { Tree, type TreeNode } from "@zeron/ui/tree";
+import { useIcon } from "@zeron/icons/context";
+
+function ProjectTree({ items }: { items: readonly TreeNode[] }) {
+  const More = useIcon("ellipsis");
+  const [query, setQuery] = useState("");
+  const [expandedKeys, setExpandedKeys] = useState<readonly string[]>(["workspace"]);
+
+  return (
+    <>
+      <input aria-label="搜索项目" value={query} onChange={(event) => setQuery(event.target.value)} />
+      <Tree
+        aria-label="项目层级"
+        expandedKeys={expandedKeys}
+        items={items}
+        query={query}
+        showLines
+        variant="bordered"
+        onExpandedChange={setExpandedKeys}
+        onNodeAction={(node) => openProject(node.data)}
+        renderActions={({ node }) => (
+          <DropdownMenu>
+            <DropdownTrigger
+              render={
+                <Button iconOnly size="xs" type="button" variant="ghost" aria-label={`操作：${node.label}`}>
+                  <More aria-hidden />
+                </Button>
+              }
+            />
+            <DropdownContent align="end">
+              <MenuItem index={0} label="重命名" onSelect={() => renameProject(node.data)} />
+              <MenuItem index={1} label="归档" onSelect={() => archiveProject(node.data)} />
+            </DropdownContent>
+          </DropdownMenu>
+        )}
+      />
+    </>
+  );
+}
+```
+
+`renderIcon`、`renderLabel` 和 `renderTrailing` 只放非交互内容。使用 `renderActions` 放按钮、链接与 More 菜单；不要通过点击事件在 `renderTrailing` 内重建行操作隔离逻辑。
+
+## Keyboard and accessibility
+
+- Tree 使用单一 roving Tab 停靠点。方向键在可见节点间移动；左右方向键展开、收起、进入分支或返回父节点；Home/End 跳转到可见首尾节点。
+- 展开箭头使用与 More action 一致的 `Button` 基础组件，但不额外占用 Tab 停靠点；它具有展开/收起的可访问名称。
+- Enter/Space 在选择模式下执行选择，在展示模式下切换分支。Ctrl/⌘+Enter 或双击触发 `onNodeAction`。
+- `renderActions` 中的控件进入正常 Tab 顺序，且不会冒泡为节点选择、展开或双击 action。不要给操作控件添加额外的行级点击处理。
+- 需要自定义状态文本时使用 `messages`；不可用原因使用 `disabledReason`，不要只靠颜色或 opacity 表达。
+
+## Safe customization
+
+- 可以用 `variant`、`density`、`showLines`、`indent` 与 Tree 的 render slots 调整已公开的展示能力。
+- 可以通过节点 `icon` 或 `renderIcon` 使用项目的 IconProvider；不要手工绘制折叠箭头或替换 Tree 的 focus、selection、checkbox 与 spring 行为。
+- `renderTrailing` 适合数量、单位、状态文本或 Badge。`renderActions` 适合 Button、Dropdown 或链接；不要从祖先 CSS 覆盖 Tree 内部 slot 的颜色、间距、disabled opacity 或 focus ring。
+- 不要在业务代码中复制搜索祖先展开、mixed checkbox、焦点恢复或键盘导航。这些属于 Tree 的行为契约。
+
+## Verification checklist
+
+- [ ] 每个节点 key 稳定、非空且全局唯一；Tree 有 `aria-label` 或 `aria-labelledby`。
+- [ ] 选择模式、indicator、check strategy 与 selection scope 的组合有效。
+- [ ] 单选最多有一个受控或默认选中 key。
+- [ ] 搜索只更新 `query`/`filterNode`，没有裁剪完整 `items` 数据。
+- [ ] MemberTree 与 FileTree 的 `selectableTypes` 和 cascade 语义符合返回实体。
+- [ ] icon-only 的展开与行操作 Button 都具有可访问名称。
+- [ ] 行尾互动内容使用 `renderActions`，不会误触发节点选择或 `onNodeAction`。
+- [ ] 已验证键盘展开/收起、焦点恢复、loading/error/readOnly 与长标签。
+
+## API anchors
+
+Agent 优先关注：
+
+- Tree：`items`、`expandedKeys`、`defaultExpandedKeys`、`onExpandedChange`、`selectionMode`、`selectionIndicator`、`checkStrategy`、`selectionScope`、`selectedKeys`、`defaultSelectedKeys`、`onSelectionChange`、`query`、`filterNode`。
+- 展示和状态：`variant`、`density`、`showLines`、`indent`、`disabled`、`readOnly`、`loading`、`error`、`onRetry`、`messages`。
+- 插槽和行为：`renderIcon`、`renderLabel`、`renderTrailing`、`renderActions`、`onNodeAction`。
+- 场景组件：`MemberTree.selectableTypes`，以及 `FileTree.selectableTypes`、`FileTree.allowedExtensions`。
+
+完整类型以 `source` 指向的实现为准。

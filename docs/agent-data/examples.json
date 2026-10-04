@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "hostEntry": "app.tsx",
+  "instructions": "README.md",
+  "examples": [
+    {
+      "exampleId": "resource-detail",
+      "entry": "resource-detail/page.tsx",
+      "adoptedItems": ["component:alert", "component:badge", "component:button", "component:empty", "component:field", "component:input", "component:resource-detail-layout"],
+      "sources": ["resource-detail/page.tsx", "shared/contracts.ts", "shared/notices.tsx", "shared/use-latest-request.ts", "shared/use-single-submit.ts"],
+      "profiles": [{"framework": "next", "packageManager": "npm"}, {"framework": "next", "packageManager": "pnpm"}, {"framework": "vite", "packageManager": "npm"}, {"framework": "vite", "packageManager": "pnpm"}],
+      "notApplicable": {"empty": "A resource detail has one record; absence is the separately tested not-found state."}
+    },
+    {
+      "exampleId": "resource-list",
+      "entry": "resource-list/page.tsx",
+      "adoptedItems": ["component:alert", "component:badge", "component:button", "component:data-table", "component:empty", "component:info-item", "component:input", "component:page-layout", "component:select"],
+      "sources": ["resource-list/page.tsx", "shared/contracts.ts", "shared/notices.tsx", "shared/use-latest-request.ts"],
+      "profiles": [{"framework": "next", "packageManager": "npm"}, {"framework": "next", "packageManager": "pnpm"}, {"framework": "vite", "packageManager": "npm"}, {"framework": "vite", "packageManager": "pnpm"}],
+      "notApplicable": {}
+    },
+    {
+      "exampleId": "settings",
+      "entry": "settings/page.tsx",
+      "adoptedItems": ["component:alert", "component:button", "component:empty", "component:field", "component:input", "component:page-layout"],
+      "sources": ["settings/page.tsx", "shared/contracts.ts", "shared/notices.tsx", "shared/use-latest-request.ts", "shared/use-single-submit.ts"],
+      "profiles": [{"framework": "next", "packageManager": "npm"}, {"framework": "next", "packageManager": "pnpm"}, {"framework": "vite", "packageManager": "npm"}, {"framework": "vite", "packageManager": "pnpm"}],
+      "notApplicable": {"empty": "Settings always returns an object; unavailable and forbidden reads are separately tested."}
+    }
+  ]
+}

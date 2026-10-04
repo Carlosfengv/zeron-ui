@@ -1,5 +1,14 @@
 ---
+schema_version: 1
 name: rule-flow-editor-01
+kind: block
+status: stable
+locale: en
+summary: Compose and edit a controlled graph of trigger, condition, and action nodes.
+source: packages/blocks/src/application/rule-flow-editor-01/rule-flow-editor.tsx
+related:
+  - button
+  - popover
 type: data-block
 framework: react
 ---

@@ -83,4 +83,12 @@ describe("processRegistry pipeline", () => {
     await processRegistry(dir);
     expect(await read("dialog.json")).toEqual(before);
   });
+
+  it("uses an explicit release base independently of the legacy environment default", async () => {
+    await write("dialog.json", { name: "dialog", registryDependencies: ["button", "badge", "utils"] });
+    const base = "https://artifacts.example.invalid/r/releases/candidate-02";
+    await processRegistry(dir, base);
+    expect((await read("dialog.json")).registryDependencies).toEqual([`${base}/button.json`, `${base}/badge.json`, "utils"]);
+    expect(await readFile(join(dir, "releases/candidate-01/registry.json"), "utf8")).toBe('{"snapshot":true}\n');
+  });
 });

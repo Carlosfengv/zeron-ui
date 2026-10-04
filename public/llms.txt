@@ -1,197 +1,168 @@
-# Zeron UI
+# Zeron UI for agents
 
-> Zeron is a React component library and source-code Registry built with TypeScript, Tailwind CSS v4, Base UI primitives, and motion. It provides semantic design tokens, accessible controls, application layouts, and business blocks for light and dark themes.
+Read the catalog and exact installed types before choosing a component.
 
-This index covers the current documentation catalog. Follow the relevant links for usage, examples, and API details. English documentation uses /en/docs; remove /en for Chinese documentation. Verify exact exports, props, callback signatures, and defaults against the installed component source when versions differ.
+- [AI usage](https://zeron-ui.vercel.app/docs/ai)
+- [Catalog](https://zeron-ui.vercel.app/ai/catalog.json)
+- [Skills installation](https://zeron-ui.vercel.app/skills/install.md)
 
-## Start here
+## Install
 
-- [Introduction and installation](https://zeron-ui.vercel.app/en/docs): Set up Zeron, install components, and discover agent skills.
-- [Component catalog](https://zeron-ui.vercel.app/en/docs/components): Foundations, layouts, controls, and component documentation.
-- [Block catalog](https://zeron-ui.vercel.app/en/docs/blocks): Reusable business regions and compositions.
-- [Page catalog](https://zeron-ui.vercel.app/en/docs/pages): Complete page templates and workflows.
-- [Registry index](https://zeron-ui.vercel.app/r/registry.json): Machine-readable installation names, dependencies, and Registry items.
-- [Agent skill installation](https://zeron-ui.vercel.app/skills/install.md): Install the page-building and UI-migration skills with their references.
+Use the verified Zeron CLI. Start with init when components.json is missing; inspect add --dry-run before installing. React 19 and Tailwind 4 are required; Next-only blocks must not be directly installed in Vite. Workspace @zeron/ui imports do not establish consumer import paths.
 
-Use `npx zeron-ui init` when the project has no components.json. Discover installable names with `npx zeron-ui list`, preview changes with `npx zeron-ui add <item> --dry-run`, then install with `npx zeron-ui add <item>`. Let the CLI resolve dependencies and theme integration. Current integration targets React 19, Tailwind CSS v4, and Next.js App Router or Vite React; check each block for additional framework requirements.
+## Design rules
 
-Consumer imports follow the aliases in components.json, commonly `@/components/ui/button`. Workspace examples using `@zeron/ui/...` do not establish consumer import paths or npm package availability. Install `surfaces` through the Registry for the token foundation; do not assume the workspace package `@zeron/tokens` is published.
+Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard focus, loading and disabled states. Reuse the host shell, assign one scroll owner per region, and replace demo data with real callbacks. A clean static check is not runtime verification.
 
-## Design tokens and styling
+## Catalog
 
-Use semantic tokens by purpose. Let the theme supply light/dark values, and use component variants and sizes before overriding styles. These are common CSS variables and Tailwind utilities; the linked foundations document the full token set and usage rules.
+- [Agent Message Trace](https://zeron-ui.vercel.app/ai/items/block%3Aagent-message-trace-01.md): A responsive, resizable agent trace workspace with a virtualized timeline and span inspector. Registry: agent-message-trace-01.
+- [Agent Session Detail](https://zeron-ui.vercel.app/ai/items/block%3Aagent-session-detail-01.md): A session detail workspace with agent navigation, session switching, and an embedded execution trace. Registry: agent-session-detail-01.
+- [Agent Trace](https://zeron-ui.vercel.app/ai/items/block%3Aagent-trace-01.md): A turn-aware agent execution trace with local JSON upload and raw-record inspection. Registry: agent-trace-01.
+- [AI Gateway Overview](https://zeron-ui.vercel.app/ai/items/block%3Aai-gateway-overview-01.md): A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations. Registry: ai-gateway-overview-01.
+- [AI Gateway Session List](https://zeron-ui.vercel.app/ai/items/block%3Aai-gateway-session-list-01.md): A controlled AI gateway session workspace with shared navigation, entity filters, error-only filtering, compact usage values, and responsive pagination. Registry: ai-gateway-session-list-01.
+- [Availability Monitor](https://zeron-ui.vercel.app/ai/items/block%3Aavailability-monitor-01.md): A routing-aware service availability block with summary metrics, a 72-hour status strip, and a 24-hour comparison chart. Registry: availability-monitor-01.
+- [集群环境详情](https://zeron-ui.vercel.app/ai/items/block%3Acluster-environment-detail-01.md): An inspection-report workspace that combines environment context, resource health, and incident follow-up. Registry: cluster-environment-detail-01.
+- [集群环境列表](https://zeron-ui.vercel.app/ai/items/block%3Acluster-environment-list-01.md): A filterable cluster-environment overview with critical, warning, normal, offline, and data-freshness states. Registry: cluster-environment-list-01.
+- [Credit Usage](https://zeron-ui.vercel.app/ai/items/block%3Acredit-usage-01.md): A compact credit-cycle summary with model attribution, depletion guidance, and plan controls. Registry: credit-usage-01.
+- [File Manager](https://zeron-ui.vercel.app/ai/items/block%3Afile-manager-01.md): A token-native file-management workspace with icon, list, and Finder-style column views. Registry: file-manager-01.
+- [Filter Rule Builder](https://zeron-ui.vercel.app/ai/items/block%3Afilter-rule-builder-01.md): A controlled filter workspace with presets, readable rule summaries, and validated draft editing. Registry: filter-rule-builder-01.
+- [Infinite Log Table](https://zeron-ui.vercel.app/ai/items/block%3Ainfinite-log-table-01.md): A schema-driven virtualized log explorer with dynamic fields and filters, cursor pagination, and Live tailing. Registry: infinite-log-table-01.
+- [巡检报告列表](https://zeron-ui.vercel.app/ai/items/block%3Ainspection-report-list-01.md): An operations report workspace with shared navigation, filtering, freshness states, and row actions. Registry: inspection-report-list-01.
+- [Login](https://zeron-ui.vercel.app/ai/items/block%3Alogin-01.md): A card-based authentication flow with credential, Apple, and Google sign-in paths. Registry: login-01.
+- [MCP 详情](https://zeron-ui.vercel.app/ai/items/block%3Amcp-detail-01.md): An MCP resource detail page with safe connection generation and a minimal tool test panel. Registry: mcp-detail-01.
+- [成员与部门](https://zeron-ui.vercel.app/ai/items/block%3Amember-department-01.md): A member directory and expandable department workspace with search, account-status filtering, and responsive organization details. Registry: member-department-01.
+- [模型详情](https://zeron-ui.vercel.app/ai/items/block%3Amodel-detail-01.md): A model detail page with API-key handoff, code samples, benchmark data, and endpoint information. Registry: model-detail-01.
+- [Model Analytics Detail](https://zeron-ui.vercel.app/ai/items/block%3Amodel-detail-02.md): A complete model analytics page with providers, pricing, performance, uptime, benchmarks, apps, activity, and FAQ. Registry: model-detail-02.
+- [模型和 MCP 广场](https://zeron-ui.vercel.app/ai/items/block%3Amodel-mcp-marketplace-01.md): A responsive model and MCP marketplace with search, sorting, page-local filters, and resource cards. Registry: model-mcp-marketplace-01.
+- [监控告警列表](https://zeron-ui.vercel.app/ai/items/block%3Amonitoring-alert-list-01.md): A monitoring alert workspace with shared operations navigation, severity filters, and AI analysis actions. Registry: monitoring-alert-list-01.
+- [个人模型用量](https://zeron-ui.vercel.app/ai/items/block%3Apersonal-model-usage-01.md): A standalone model billing and call-log workspace with consumption trends, routing evidence, and answer traces. Registry: personal-model-usage-01.
+- [个人设置](https://zeron-ui.vercel.app/ai/items/block%3Apersonal-settings-01.md): A personal settings workspace for model services, API keys, credentials, profile details, and usage. Registry: personal-settings-01.
+- [个人使用情况](https://zeron-ui.vercel.app/ai/items/block%3Apersonal-usage-01.md): A standalone dashboard for calls, activity, and token usage. Registry: personal-usage-01.
+- [Provider Create Form 1](https://zeron-ui.vercel.app/ai/items/block%3Aprovider-create-form-01.md): A three-step provider setup workflow with credential verification, model discovery, per-model availability, and final review. Registry: provider-create-form-01.
+- [Resource Detail Page 1](https://zeron-ui.vercel.app/ai/items/block%3Aresource-detail-page-01.md): A full-width generic resource detail page with shared navigation, editable metadata, protection settings, and caller-owned tab content. Registry: resource-detail-page-01.
+- [MCP Resource List Page](https://zeron-ui.vercel.app/ai/items/block%3Aresource-list-page-01.md): A Sidebar workspace for managing MCP applications and categories with design-system-native tabs, filters, and tables. Registry: resource-list-page-01.
+- [Resource List Table 1](https://zeron-ui.vercel.app/ai/items/block%3Aresource-list-table-01.md): A searchable, selectable resource inventory with status filtering and reusable row actions. Registry: resource-list-table-01.
+- [Resource Metric List 1](https://zeron-ui.vercel.app/ai/items/block%3Aresource-metric-list-01.md): A compact resource inventory with status distribution bars for infrastructure health at a glance. Registry: resource-metric-list-01.
+- [模型服务设置](https://zeron-ui.vercel.app/ai/items/block%3Aresource-settings-01.md): A standalone page for reviewing personal model-service access. Registry: resource-settings-01.
+- [Resource Status All 1](https://zeron-ui.vercel.app/ai/items/block%3Aresource-status-all-01.md): A resource-status summary with a circular distribution, detailed counts, and determinate-state coverage. Registry: resource-status-all-01.
+- [Rule Flow Editor](https://zeron-ui.vercel.app/ai/items/block%3Arule-flow-editor-01.md): A controlled visual rule editor with draggable trigger, condition, and action nodes. Registry: rule-flow-editor-01.
+- [服务管理](https://zeron-ui.vercel.app/ai/items/block%3Aservice-management-01.md): A shared service workspace for progress, vendor authorizations, and cluster operation history. Registry: service-management-01.
+- [Signup](https://zeron-ui.vercel.app/ai/items/block%3Asignup-01.md): A surface-neutral account creation flow with email, Apple, and Google signup paths. Registry: signup-01.
+- [Storage Usage](https://zeron-ui.vercel.app/ai/items/block%3Astorage-usage-01.md): A compact storage summary with category segments, remaining capacity, and a wrapping legend. Registry: storage-usage-01.
+- [TopNav App Shell](https://zeron-ui.vercel.app/ai/items/block%3Atop-nav-app-shell-01.md): A stacked application shell with a centered TopNav and focused content area. Registry: top-nav-app-shell-01.
+- [流量规则](https://zeron-ui.vercel.app/ai/items/block%3Atraffic-rules-01.md): A responsive gateway workspace for managing traffic rules, limits, validation, and execution workflows. Registry: traffic-rules-01.
+- [User Account](https://zeron-ui.vercel.app/ai/items/block%3Auser-account-01.md): Controlled appearance, language, settings, notifications and sign-out entry points. Registry: user-account-01.
+- [ZAIops Operations](https://zeron-ui.vercel.app/ai/items/block%3Azaiops-operations-01.md): An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation. Registry: zaiops-operations-01.
+- [ZLR 保护组](https://zeron-ui.vercel.app/ai/items/block%3Azlrlist.md): A ZS Live Recovery protection-group workspace with site switching, search, selection, row actions, and Chinese pagination. Registry: zlrlist.
+- [Accordion (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Aaccordion.md): Collapsible sections with animated expand/collapse and proximity hover in grouped mode. Registry: accordion.
+- [Alert](https://zeron-ui.vercel.app/ai/items/component%3Aalert.md): Composable in-context callout with semantic statuses, optional icon, supporting detail, and action. Registry: alert.
+- [App Shell](https://zeron-ui.vercel.app/ai/items/component%3Aapp-shell.md): Composable application frame for Sidebar, header, and main content. Registry: app-shell.
+- [Ask User Questions](https://zeron-ui.vercel.app/ai/items/component%3Aask-user-questions.md): Stepped question flow with single/multi-select, optional 'other' input, and skip. Registry: ask-user-questions.
+- [Auth Layout](https://zeron-ui.vercel.app/ai/items/component%3Aauth-layout.md): Full-height centered composition for authentication flows, with responsive widths and optional header and footer regions. Registry: auth-layout.
+- [Avatar](https://zeron-ui.vercel.app/ai/items/component%3Aavatar.md): Circle and rounded image or fallback primitives for people, agents, and accounts, with status, group, and compact user-detail composition. Registry: avatar.
+- [Badge](https://zeron-ui.vercel.app/ai/items/component%3Abadge.md): Compact label with categorical colors, custom recipes, semantic statuses, and soft, strong, or dot variants. Registry: badge.
+- [Badge Overflow](https://zeron-ui.vercel.app/ai/items/component%3Abadge-overflow.md): Responsive badge list that collapses hidden items into an overflow count. Registry: badge-overflow.
+- [Breadcrumb](https://zeron-ui.vercel.app/ai/items/component%3Abreadcrumb.md): Composable path navigation with separators, current-page state, and collapsed levels. Registry: breadcrumb.
+- [Button (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Abutton.md): Versatile button with variants, sizes, loading state, and icon support. Registry: button.
+- [Button Group](https://zeron-ui.vercel.app/ai/items/component%3Abutton-group.md): Connected horizontal and vertical action groups with split-button, separator, and contextual-addon composition. Registry: button-group.
+- [Calendar](https://zeron-ui.vercel.app/ai/items/component%3Acalendar.md): Theme-aware calendar primitive with single and range selection support. Registry: calendar.
+- [Card](https://zeron-ui.vercel.app/ai/items/component%3Acard.md): shadcn's compositional card, dressed in Zeron Design — stacked, inline, and grid layouts, borderless dividers, and 2-D proximity hover. Registry: card.
+- [Chart](https://zeron-ui.vercel.app/ai/items/component%3Achart.md): Composable Recharts container, tooltip, and color configuration following the shadcn chart API. Registry: chart.
+- [Chat Message](https://zeron-ui.vercel.app/ai/items/component%3Achat-message.md): Chat transcript bubble with baked-in motion, user/assistant alignment, and file attachments. Registry: chat-message.
+- [Checkbox (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Acheckbox.md): Compact checkbox with checked, mixed, disabled, validation, and form states. Registry: checkbox.
+- [Checkbox Group (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Acheckbox-group.md): Checkbox group with merged backgrounds for contiguous selections. Registry: checkbox-group.
+- [Code Block](https://zeron-ui.vercel.app/ai/items/component%3Acode-block.md): Highlighted code, diffs, patches, conflicts, streaming, SSR, Workers, and editing. Registry: code-block.
+- [Color Picker](https://zeron-ui.vercel.app/ai/items/component%3Acolor-picker.md): Color picker with HEX/RGB/HSL/OKLCH formats, alpha, swatches, and popover trigger. Registry: color-picker.
+- [Combobox](https://zeron-ui.vercel.app/ai/items/component%3Acombobox.md): Filterable single- or multi-select with typed object values, groups, chips, and custom triggers. Registry: combobox.
+- [Command](https://zeron-ui.vercel.app/ai/items/component%3Acommand.md): cmdk-based command primitives with a replaceable input slot for searchable menus and structured query controls. Registry: command.
+- [Container](https://zeron-ui.vercel.app/ai/items/component%3Acontainer.md): Composable raised container with an optional header and footer around a floating content body. Registry: container.
+- [Data Grid](https://zeron-ui.vercel.app/ai/items/component%3Adata-grid.md): Virtualized spreadsheet grid with inline editing, range selection, search, copy and paste, and pinned columns. Registry: data-grid.
+- [Data Table](https://zeron-ui.vercel.app/ai/items/component%3Adata-table.md): TanStack data table with sorting, filters, pagination, selection, visibility, and pinning. Registry: data-table.
+- [Detail List](https://zeron-ui.vercel.app/ai/items/component%3Adetail-list.md): Framed label-value list with grouped sections and separators for compact resource and entity details. Registry: detail-list.
+- [Dialog (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Adialog.md): Modal dialog with smooth enter/exit animations and overlay. Registry: dialog.
+- [Dropdown](https://zeron-ui.vercel.app/ai/items/component%3Adropdown.md): Menu-style dropdown with proximity hover and animated backgrounds. Registry: dropdown.
+- [Empty](https://zeron-ui.vercel.app/ai/items/component%3Aempty.md): Composable empty and first-use states for pages, sections, and inline data surfaces, with custom media and theme-aware illustrations. Registry: empty.
+- [Field](https://zeron-ui.vercel.app/ai/items/component%3Afield.md): Accessible form composition for labels, descriptions, validation messages, groups, and fieldsets. Registry: field.
+- [File Thumbnail](https://zeron-ui.vercel.app/ai/items/component%3Afile-thumbnail.md): Read-only square preview of a File. Images render via object-cover; PDFs render their first page via pdfjs; a spinner shows while either resolves. Adapts its corner radius to the global shape setting. Registry: file-thumbnail.
+- [File Tree](https://zeron-ui.vercel.app/ai/items/component%3Afile-tree.md): File and folder Tree with file-type icons, file-extension restrictions, and file-only cascade selection. Registry: file-tree.
+- [FilterBuilder](https://zeron-ui.vercel.app/ai/items/component%3Afilter-builder.md): Composable typed filters for complex data views, with text, number, option, boolean, date, async, and custom editors. Registry: filter-builder.
+- [Filter Query Core](https://zeron-ui.vercel.app/ai/items/component%3Afilter-query-core.md): Headless parser, serializer, reconciliation logic, and state hook for reusable structured filter text inputs. Registry: filter-query-core.
+- [Filter Query Input](https://zeron-ui.vercel.app/ai/items/component%3Afilter-query-input.md): Structured cmdk query input with configurable fields, aliases, codecs, and portable filter clauses. Registry: filter-query-input.
+- [Info Item](https://zeron-ui.vercel.app/ai/items/component%3Ainfo-item.md): Composable information row with leading media, primary and supporting text, and a flexible trailing value or detail. Registry: info-item.
+- [Inline Notice](https://zeron-ui.vercel.app/ai/items/component%3Ainline-notice.md): Quiet inline emphasis that composes with Badge, with an optional semantic emphasized variant. Registry: inline-notice.
+- [Input](https://zeron-ui.vercel.app/ai/items/component%3Ainput.md): Text input with three variants, five sizes, and accessible validation states. Registry: input.
+- [Input Copy](https://zeron-ui.vercel.app/ai/items/component%3Ainput-copy.md): Read-only input with copy-to-clipboard button and animated feedback. Registry: input-copy.
+- [Input Group](https://zeron-ui.vercel.app/ai/items/component%3Ainput-group.md): Composable input with addons, compact actions, textarea support, and validation. Registry: input-group.
+- [Input Message](https://zeron-ui.vercel.app/ai/items/component%3Ainput-message.md): Chat-style message composer with auto-resizing textarea and configurable action slots. Registry: input-message.
+- [Kbd](https://zeron-ui.vercel.app/ai/items/component%3Akbd.md): Compact keycaps and shortcut groups for keyboard commands and interaction hints. Registry: kbd.
+- [Member Tree](https://zeron-ui.vercel.app/ai/items/component%3Amember-tree.md): Organization-focused Tree with department and member rendering, typed selection, and member-only cascade selection. Registry: member-tree.
+- [MenuItem](https://zeron-ui.vercel.app/ai/items/component%3Amenu-item.md): Accessible menu row primitive with icon, selection, and keyboard-menu integration. Registry: menu-item.
+- [Metric Card](https://zeron-ui.vercel.app/ai/items/component%3Ametric-card.md): Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction. Registry: metric-card.
+- [Mobile Drawer](https://zeron-ui.vercel.app/ai/items/component%3Amobile-drawer.md): Slide-in navigation drawer with scrim, focus trap, and scroll lock. Base UI flavor. Registry: mobile-drawer.
+- [Nav Item](https://zeron-ui.vercel.app/ai/items/component%3Anav-item.md): Composable navigation item that supports router links, labels, badges, actions, and sub-navigation. Registry: nav-item.
+- [Nav Menu](https://zeron-ui.vercel.app/ai/items/component%3Anav-menu.md): Router-agnostic navigation primitives shared by Sidebar and TopNav. Registry: nav-menu.
+- [Page Layout](https://zeron-ui.vercel.app/ai/items/component%3Apage-layout.md): Responsive composition for optional page information, route navigation, content, and asides. Registry: page-layout.
+- [Popover (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Apopover.md): Collision-aware floating content with a liquid anchor-to-panel transition. Registry: popover.
+- [Radio Group (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Aradio-group.md): Composable radio controls with form support and enhanced proximity-hover rows. Registry: radio-group.
+- [Resizable](https://zeron-ui.vercel.app/ai/items/component%3Aresizable.md): Accessible split-pane layouts with pointer and keyboard resizing, semantic constraints, and optional visual grips. Registry: resizable.
+- [Resource Detail Layout](https://zeron-ui.vercel.app/ai/items/component%3Aresource-detail-layout.md): Full-width resource detail preset with record navigation, summary actions, tabs, and a responsive primary-with-aside body. Registry: resource-detail-layout.
+- [Resource Workspace Shell 1](https://zeron-ui.vercel.app/ai/items/component%3Aresource-workspace-shell-01.md): Shared Sidebar Basic workspace shell for resource list and detail pages. Registry: resource-workspace-shell-01.
+- [Scroll Area (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Ascroll-area.md): Scroll container with a restyled overlay scrollbar that stays discoverable on hover and follows the shape system. Falls back to native overflow scrolling on touch-primary devices. Base UI flavor; adapted from Lina (https://lina.sameer.sh). Registry: scroll-area.
+- [Select](https://zeron-ui.vercel.app/ai/items/component%3Aselect.md): Animated select menu with bordered/borderless variants and optional icons. Registry: select.
+- [Separator (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Aseparator.md): Accessible horizontal and vertical rules with a semantic border color and layout-safe gutter. Registry: separator.
+- [Sidebar](https://zeron-ui.vercel.app/ai/items/component%3Asidebar.md): Responsive navigation rail with desktop collapse and a mobile drawer. Registry: sidebar.
+- [Sidebar Account Menu](https://zeron-ui.vercel.app/ai/items/component%3Asidebar-account-menu.md): Account switcher and action menu for the sidebar footer. Registry: sidebar-account-menu.
+- [Sidebar Identity Row](https://zeron-ui.vercel.app/ai/items/component%3Asidebar-identity-row.md): Composable sidebar identity row with avatar, primary and secondary text, and trailing content. Registry: sidebar-identity-row.
+- [Skeleton](https://zeron-ui.vercel.app/ai/items/component%3Askeleton.md): Token-native loading placeholder that composes into avatar, card, text, form, and table layouts. Registry: skeleton.
+- [Slider (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Aslider.md): Range slider with step snapping, range mode, and animated thumb. Registry: slider.
+- [SortableCollection](https://zeron-ui.vercel.app/ai/items/component%3Asortable-collection.md): Controlled reorderable list with optional inline editing, removal, and catalog-based adding. Registry: sortable-collection.
+- [Status Overview](https://zeron-ui.vercel.app/ai/items/component%3Astatus-overview.md): Inspectable timeline and node-status rail with semantic states, a shared tooltip, and keyboard navigation. Registry: status-overview.
+- [Stepper (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Astepper.md): Accessible multi-step navigation with validation, completion states, and keyboard controls. Registry: stepper.
+- [Switch (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Aswitch.md): Toggle switch with animated thumb and label. Registry: switch.
+- [Table](https://zeron-ui.vercel.app/ai/items/component%3Atable.md): Data table with row hover effects and semantic markup. Registry: table.
+- [Tabs (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Atabs.md): Pill, segment, and underline tabs with a sliding active indicator. Registry: tabs.
+- [TabsSubtle (legacy)](https://zeron-ui.vercel.app/ai/items/component%3Atabs-subtle.md): Compatibility adapter for Tabs' segment variant. New integrations should use Tabs with variant="segment". Registry: tabs-subtle.
+- [Temporal Picker](https://zeron-ui.vercel.app/ai/items/component%3Atemporal-picker.md): Date, time, and date-time controls with explicit commitment, relative presets, availability rules, and IANA time-zone handling. Registry: temporal-picker.
+- [Textarea](https://zeron-ui.vercel.app/ai/items/component%3Atextarea.md): Multi-line text input with semantic variants, two content sizes, resizing, and field validation support. Registry: textarea.
+- [Thinking Indicator](https://zeron-ui.vercel.app/ai/items/component%3Athinking-indicator.md): Animated status indicator with morphing SVG and cycling text. Registry: thinking-indicator.
+- [Thinking Steps](https://zeron-ui.vercel.app/ai/items/component%3Athinking-steps.md): Chain-of-thought display with sequential animation and collapsible steps. Registry: thinking-steps.
+- [Time Range Histogram](https://zeron-ui.vercel.app/ai/items/component%3Atime-range-histogram.md): Stacked time-bucket histogram with controlled pointer and keyboard range selection. Registry: time-range-histogram.
+- [Toast](https://zeron-ui.vercel.app/ai/items/component%3Atoast.md): Animated notification stack with statuses, automatic dismissal, actions, and drag gestures. Registry: toast.
+- [Tooltip (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Atooltip.md): Floating tooltip with spring-based animations and configurable placement. Registry: tooltip.
+- [Top Nav](https://zeron-ui.vercel.app/ai/items/component%3Atop-nav.md): Composable top navigation with brand, primary links, and actions. Registry: top-nav.
+- [Tree](https://zeron-ui.vercel.app/ai/items/component%3Atree.md): Accessible hierarchical display and selection for general nodes, members, and files. Registry: tree.
+- [Workflow Editor](https://zeron-ui.vercel.app/ai/items/page%3Aworkflow.md): A standalone automation canvas with editable nodes, branching, local drafts and path simulation. Not installable.
+- [Icon Catalog](https://zeron-ui.vercel.app/ai/items/reference%3Acatalog.md): Searchable names generated from the free icon provider's actual exports. Not installable.
+- [Motion](https://zeron-ui.vercel.app/ai/items/reference%3Amotion.md): Spring tokens, faster exits, and reflow-free weight animation — the motion rules shared by every component. Not installable.
+- [Icons Overview](https://zeron-ui.vercel.app/ai/items/reference%3Aoverview.md): The provider, public API, and style model behind Zeron Design icons. Not installable.
+- [Icon Providers](https://zeron-ui.vercel.app/ai/items/reference%3Aproviders.md): Free and licensed icon styles, plus the boundary for optional Pro packages. Not installable.
+- [Scrollbars](https://zeron-ui.vercel.app/ai/items/reference%3Ascrollbars.md): A scrollbar that stays out of the way but never disappears, over shadcn's scroll-fade baseline — restyled to the shape system, native scroll on touch. Not installable.
+- [Semantic Tokens](https://zeron-ui.vercel.app/ai/items/reference%3Asemantic-tokens.md): The complete runtime contract for color, surface, type, shape, and layering. Not installable.
+- [Icon Usage](https://zeron-ui.vercel.app/ai/items/reference%3Ausage.md): Use named icon slots without coupling application code to a source icon library. Not installable.
 
-- Text and icons: `--fg-default`, `--fg-muted`, `--fg-subtle`; use `text-fg-default`, `text-fg-muted`, and `text-fg-subtle`.
-- Surfaces: `--surface-base`, `--surface-raised`, `--surface-floating`, `--surface-overlay`, `--surface-top`; use the matching `bg-surface-*` utility and follow the relative nesting rules.
-- Actions: `--primary-action`, `--neutral-action`, `--destructive-action`, and `--secondary-action`; pair fills with their documented foregrounds, such as `--fg-on-primary-action`. Prefer Button variants for actions.
-- Boundaries and focus: `--border`, `--border-subtle`, `--input`, and `--focus-ring`; preserve built-in control borders and visible focus. Use `border-hairline` for intentional 0.5px dividers.
-- Feedback: combine status foreground, surface, and border tokens, for example `--fg-danger`, `--danger-surface`, and `--danger-border`. Status must remain understandable without color alone.
-- Interaction: `--hover` and `--active` represent temporary feedback; `--selection` represents persistent selection.
-- Typography and spacing: use `text-label`, `text-body`, `text-title`, and `text-heading`, the existing Tailwind spacing scale, and each component's supported size API.
-- Elevation: use purpose-based `shadow-control`, `shadow-raised`, `shadow-floating`, and `shadow-overlay` with the appropriate surface.
-- Motion: use `duration-fast`, `duration-moderate`, or `duration-slow` with a transition property, and the corresponding `*-exit` tier for shorter exits. Preserve component-owned springs and respect reduced motion.
+## Detailed agent guides
 
-## Foundations
-
-- [Surfaces](https://zeron-ui.vercel.app/en/docs/components/surfaces): Five semantic surfaces with purpose-based shadows for light and dark mode.
-- [Semantic Tokens](https://zeron-ui.vercel.app/en/docs/components/semantic-tokens): The complete runtime contract for color, surface, type, shape, and layering.
-- [Scrollbars](https://zeron-ui.vercel.app/en/docs/components/scrollbars): A scrollbar that stays out of the way but never disappears, over shadcn's scroll-fade baseline — restyled to the shape system, native scroll on touch.
-- [Motion](https://zeron-ui.vercel.app/en/docs/components/motion): Spring tokens, faster exits, and reflow-free weight animation — the motion rules shared by every component.
-
-## Layouts and containers
-
-- [AppShell](https://zeron-ui.vercel.app/en/docs/components/app-shell): Composable application frame for Sidebar, header, and main content.
-- [AuthLayout](https://zeron-ui.vercel.app/en/docs/components/auth-layout): Full-height centered composition for authentication flows, with responsive widths and optional header and footer regions.
-- [PageLayout](https://zeron-ui.vercel.app/en/docs/components/page-layout): Responsive composition for optional page information, route navigation, content, and asides.
-- [Card](https://zeron-ui.vercel.app/en/docs/components/card): shadcn's compositional card, dressed in Zeron Design — stacked, inline, and grid layouts, borderless dividers, and 2-D proximity hover.
-- [Container](https://zeron-ui.vercel.app/en/docs/components/container): Composable raised container with an optional header and footer around a floating content body.
-- [Resizable](https://zeron-ui.vercel.app/en/docs/components/resizable): Accessible split-pane layouts with pointer and keyboard resizing, semantic constraints, and optional visual grips.
-- [Separator](https://zeron-ui.vercel.app/en/docs/components/separator): Accessible horizontal and vertical rules with a semantic border color and layout-safe gutter.
-
-## Navigation
-
-- [Accordion](https://zeron-ui.vercel.app/en/docs/components/accordion): Collapsible sections with animated expand/collapse and proximity hover in grouped mode.
-- [Sidebar](https://zeron-ui.vercel.app/en/docs/components/sidebar): Responsive navigation rail with desktop collapse and a mobile drawer.
-- [TopNav](https://zeron-ui.vercel.app/en/docs/components/top-nav): Composable top navigation with brand, primary links, and actions.
-- [Breadcrumb](https://zeron-ui.vercel.app/en/docs/components/breadcrumb): Composable path navigation with separators, current-page state, and collapsed levels.
-- [NavMenu](https://zeron-ui.vercel.app/en/docs/components/nav-menu): Router-agnostic navigation primitives shared by Sidebar and TopNav.
-- [Stepper](https://zeron-ui.vercel.app/en/docs/components/stepper): Accessible multi-step navigation with validation, completion states, and keyboard controls.
-- [Tabs](https://zeron-ui.vercel.app/en/docs/components/tabs): Pill, segment, and underline tabs with a sliding active indicator.
-
-## Forms and input
-
-- [Checkbox](https://zeron-ui.vercel.app/en/docs/components/checkbox): Compact checkbox with checked, mixed, disabled, validation, and form states.
-- [CheckboxGroup](https://zeron-ui.vercel.app/en/docs/components/checkbox-group): Checkbox group with merged backgrounds for contiguous selections.
-- [ColorPicker](https://zeron-ui.vercel.app/en/docs/components/color-picker): Color picker with HEX/RGB/HSL/OKLCH formats, alpha, swatches, and popover trigger.
-- [Combobox](https://zeron-ui.vercel.app/en/docs/components/combobox): Filterable single- or multi-select with typed object values, groups, chips, and custom triggers.
-- [Field](https://zeron-ui.vercel.app/en/docs/components/field): Accessible form composition for labels, descriptions, validation messages, groups, and fieldsets.
-- [Input](https://zeron-ui.vercel.app/en/docs/components/input): Text input with three variants, five sizes, and accessible validation states.
-- [InputGroup](https://zeron-ui.vercel.app/en/docs/components/input-group): Composable input with addons, compact actions, textarea support, and validation.
-- [RadioGroup](https://zeron-ui.vercel.app/en/docs/components/radio-group): Composable radio controls with form support and enhanced proximity-hover rows.
-- [Select](https://zeron-ui.vercel.app/en/docs/components/select): Animated select menu with bordered/borderless variants and optional icons.
-- [Slider](https://zeron-ui.vercel.app/en/docs/components/slider): Range slider with step snapping, range mode, and animated thumb.
-- [Switch](https://zeron-ui.vercel.app/en/docs/components/switch): Toggle switch with animated thumb and label.
-- [Temporal Picker](https://zeron-ui.vercel.app/en/docs/components/temporal-picker): Date, time, and date-time controls with explicit commitment, relative presets, availability rules, and IANA time-zone handling.
-- [Textarea](https://zeron-ui.vercel.app/en/docs/components/textarea): Multi-line text input with semantic variants, two content sizes, resizing, and field validation support.
-
-## Actions
-
-- [Button](https://zeron-ui.vercel.app/en/docs/components/button): Versatile button with variants, sizes, loading state, and icon support.
-- [ButtonGroup](https://zeron-ui.vercel.app/en/docs/components/button-group): Connected horizontal and vertical action groups with split-button, separator, and contextual-addon composition.
-- [InputCopy](https://zeron-ui.vercel.app/en/docs/components/input-copy): Read-only input with copy-to-clipboard button and animated feedback.
-- [Kbd](https://zeron-ui.vercel.app/en/docs/components/kbd): Compact keycaps and shortcut groups for keyboard commands and interaction hints.
-- [SortableCollection](https://zeron-ui.vercel.app/en/docs/components/sortable-collection): Controlled reorderable list with optional inline editing, removal, and catalog-based adding.
-
-## Data display and filtering
-
-- [Avatar](https://zeron-ui.vercel.app/en/docs/components/avatar): Circle and rounded image or fallback primitives for people, agents, and accounts, with status, group, and compact user-detail composition.
-- [Badge](https://zeron-ui.vercel.app/en/docs/components/badge): Compact label with categorical colors, custom recipes, semantic statuses, and soft, strong, or dot variants.
-- [BadgeOverflow](https://zeron-ui.vercel.app/en/docs/components/badge-overflow): Responsive badge list that collapses hidden items into an overflow count.
-- [DataGrid](https://zeron-ui.vercel.app/en/docs/components/data-grid): Virtualized spreadsheet grid with inline editing, range selection, search, copy and paste, and pinned columns.
-- [CodeBlock](https://zeron-ui.vercel.app/en/docs/components/code-block): Source-owned code display, diff, patch, merge conflict, streaming, Worker, SSR, and editing components.
-- [DataTable](https://zeron-ui.vercel.app/en/docs/components/data-table): TanStack data table with sorting, filters, pagination, selection, visibility, and pinning.
-- [FilterBuilder](https://zeron-ui.vercel.app/en/docs/components/filter-builder): Composable typed filters for complex data views, with text, number, option, boolean, date, async, and custom editors.
-- [FilterQueryInput](https://zeron-ui.vercel.app/en/docs/components/filter-query-input): Structured cmdk query input with configurable fields, aliases, codecs, and portable filter clauses.
-- [DetailList](https://zeron-ui.vercel.app/en/docs/components/detail-list): Framed label-value list with grouped sections and separators for compact resource and entity details.
-- [MetricCard](https://zeron-ui.vercel.app/en/docs/components/metric-card): Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction.
-- [StatusOverview](https://zeron-ui.vercel.app/en/docs/components/status-overview): Inspectable timeline and node-status rail with semantic states, a shared tooltip, and keyboard navigation.
-- [InfoItem](https://zeron-ui.vercel.app/en/docs/components/info-item): Composable information row with leading media, primary and supporting text, and a flexible trailing value or detail.
-- [Table](https://zeron-ui.vercel.app/en/docs/components/table): Data table with row hover effects and semantic markup.
-- [TimeRangeHistogram](https://zeron-ui.vercel.app/en/docs/components/time-range-histogram): Stacked time-bucket histogram with controlled pointer and keyboard range selection.
-- [Tree](https://zeron-ui.vercel.app/en/docs/components/tree): Accessible hierarchical display and selection for general nodes, members, and files.
-
-## Feedback and status
-
-- [Alert](https://zeron-ui.vercel.app/en/docs/components/alert): Composable in-context callout with semantic statuses, optional icon, supporting detail, and action.
-- [InlineNotice](https://zeron-ui.vercel.app/en/docs/components/inline-notice): Quiet inline emphasis that composes with Badge, with an optional semantic emphasized variant.
-- [Empty](https://zeron-ui.vercel.app/en/docs/components/empty): Composable empty and first-use states for pages, sections, and inline data surfaces, with custom media and theme-aware illustrations.
-- [Skeleton](https://zeron-ui.vercel.app/en/docs/components/skeleton): Token-native loading placeholder that composes into avatar, card, text, form, and table layouts.
-- [Toast](https://zeron-ui.vercel.app/en/docs/components/toast): Animated notification stack with statuses, automatic dismissal, actions, and drag gestures.
-
-## Overlays
-
-- [Dialog](https://zeron-ui.vercel.app/en/docs/components/dialog): Modal dialog with smooth enter/exit animations and overlay.
-- [Dropdown](https://zeron-ui.vercel.app/en/docs/components/dropdown): Menu-style dropdown with proximity hover and animated backgrounds.
-- [Popover](https://zeron-ui.vercel.app/en/docs/components/popover): Collision-aware floating content with a liquid anchor-to-panel transition.
-- [Tooltip](https://zeron-ui.vercel.app/en/docs/components/tooltip): Floating tooltip with spring-based animations and configurable placement.
-
-## AI and chat
-
-- [AskUserQuestions](https://zeron-ui.vercel.app/en/docs/components/ask-user-questions): Stepped question flow with single/multi-select, optional 'other' input, and skip.
-- [ChatMessage](https://zeron-ui.vercel.app/en/docs/components/chat-message): Chat transcript bubble with baked-in motion, user/assistant alignment, and file attachments.
-- [InputMessage](https://zeron-ui.vercel.app/en/docs/components/input-message): Chat-style message composer with auto-resizing textarea and configurable action slots.
-- [ThinkingIndicator](https://zeron-ui.vercel.app/en/docs/components/thinking-indicator): Animated status indicator with morphing SVG and cycling text.
-- [ThinkingSteps](https://zeron-ui.vercel.app/en/docs/components/thinking-steps): Chain-of-thought display with sequential animation and collapsible steps.
-
-## Blocks
-
-Check whether an item is a configurable data block or an editable application template. Connect product data and callbacks through its public API; replace demo data and actions when adapting a template.
-
-- [Availability Monitor 1](https://zeron-ui.vercel.app/en/docs/blocks/availability-monitor-01): A routing-aware service availability block with summary metrics, a 72-hour status strip, and a 24-hour comparison chart.
-- [Agent Message Trace 1](https://zeron-ui.vercel.app/en/docs/blocks/agent-message-trace-01): A responsive, resizable agent trace workspace with a virtualized timeline and span inspector.
-- [Rule Flow Editor](https://zeron-ui.vercel.app/en/docs/blocks/rule-flow-editor-01): A controlled visual rule editor with draggable trigger, condition, and action nodes.
-- [用户账号](https://zeron-ui.vercel.app/en/docs/blocks/user-account-01): Controlled appearance, language, settings, notifications and sign-out entry points.
-- [Credit Usage](https://zeron-ui.vercel.app/en/docs/blocks/credit-usage-01): A compact credit-cycle summary with model attribution, depletion guidance, and plan controls.
-- [Resource List Table 1](https://zeron-ui.vercel.app/en/docs/blocks/resource-list-table-01): A searchable, selectable resource inventory with status filtering and reusable row actions.
-- [成员与部门](https://zeron-ui.vercel.app/en/docs/blocks/member-department-01): A member directory and expandable department workspace with search, account-status filtering, and responsive organization details.
-- [File Manager 1](https://zeron-ui.vercel.app/en/docs/blocks/file-manager-01): A token-native file-management workspace with icon, list, and Finder-style column views.
-- [Resource Metric List 1](https://zeron-ui.vercel.app/en/docs/blocks/resource-metric-list-01): A compact resource inventory with status distribution bars for infrastructure health at a glance.
-- [Resource Status All 1](https://zeron-ui.vercel.app/en/docs/blocks/resource-status-all-01): A resource-status summary with a circular distribution, detailed counts, and determinate-state coverage.
-- [TopNav App Shell](https://zeron-ui.vercel.app/en/docs/blocks/top-nav-app-shell-01): A stacked application shell with a centered TopNav and focused content area.
-
-## Pages and workflows
-
-These are complete compositions. Check framework support and whether a page already owns an application shell before embedding it in an existing application.
-
-- [Login](https://zeron-ui.vercel.app/en/docs/pages/login-01): A card-based authentication flow with credential, Apple, and Google sign-in paths.
-- [Signup](https://zeron-ui.vercel.app/en/docs/pages/signup-01): A surface-neutral account creation flow with email, Apple, and Google signup paths.
-- [AI Gateway Overview 1](https://zeron-ui.vercel.app/en/docs/pages/ai-gateway-overview-01): A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations.
-- [Agent Trace 1](https://zeron-ui.vercel.app/en/docs/pages/agent-trace-01): A turn-aware agent execution trace with local JSON upload and raw-record inspection.
-- [AI Gateway Session List 1](https://zeron-ui.vercel.app/en/docs/pages/ai-gateway-session-list-01): A controlled AI gateway session workspace with shared navigation, entity filters, error-only filtering, compact usage values, and responsive pagination.
-- [Agent Session Detail 1](https://zeron-ui.vercel.app/en/docs/pages/agent-session-detail-01): A session detail workspace with agent navigation, session switching, and an embedded execution trace.
-- [Provider Create Form 1](https://zeron-ui.vercel.app/en/docs/pages/provider-create-form-01): A three-step provider setup workflow with credential verification, model discovery, per-model availability, and final review.
-- [Cluster Environment Detail 1](https://zeron-ui.vercel.app/en/docs/pages/cluster-environment-detail-01): An inspection-report workspace that combines environment context, resource health, and incident follow-up.
-- [Cluster Environment List 1](https://zeron-ui.vercel.app/en/docs/pages/cluster-environment-list-01): A filterable cluster-environment overview with critical, warning, normal, offline, and data-freshness states.
-- [Inspection Report List 1](https://zeron-ui.vercel.app/en/docs/pages/inspection-report-list-01): An operations report workspace with shared navigation, filtering, freshness states, and row actions.
-- [Monitoring Alert List 1](https://zeron-ui.vercel.app/en/docs/pages/monitoring-alert-list-01): A monitoring alert workspace with shared operations navigation, severity filters, and AI analysis actions.
-- [Service Management 1](https://zeron-ui.vercel.app/en/docs/pages/service-management-01): A shared service workspace for progress, vendor authorizations, and cluster operation history.
-- [流量规则](https://zeron-ui.vercel.app/en/docs/pages/traffic-rules-01): A responsive gateway workspace for managing traffic rules, limits, validation, and execution workflows.
-- [个人设置](https://zeron-ui.vercel.app/en/docs/pages/personal-settings-01): A personal settings workspace for model services, API keys, credentials, profile details, and usage.
-- [个人模型用量](https://zeron-ui.vercel.app/en/docs/pages/personal-model-usage-01): A standalone model billing and call-log workspace with consumption trends, routing evidence, and answer traces.
-- [个人使用情况](https://zeron-ui.vercel.app/en/docs/pages/personal-usage-01): A standalone dashboard for calls, activity, and token usage.
-- [模型服务设置](https://zeron-ui.vercel.app/en/docs/pages/resource-settings-01): A standalone page for reviewing personal model-service access.
-- [模型和 MCP 广场](https://zeron-ui.vercel.app/en/docs/pages/resource-catalog-01): A responsive model and MCP marketplace with search, sorting, page-local filters, and resource cards. Registry install name: `model-mcp-marketplace-01`.
-- [MCP Detail](https://zeron-ui.vercel.app/en/docs/pages/mcp-detail-01): An MCP resource detail page with safe connection generation and a minimal tool test panel.
-- [Resource Detail Page](https://zeron-ui.vercel.app/en/docs/pages/resource-detail-page-01): A full-width generic resource detail page with shared navigation, editable metadata, protection settings, and caller-owned tab content.
-- [Model Detail](https://zeron-ui.vercel.app/en/docs/pages/model-detail-01): A model detail page with API-key handoff, code samples, benchmark data, and endpoint information.
-- [Model Analytics Detail](https://zeron-ui.vercel.app/en/docs/pages/model-detail-02): A complete model analytics page with providers, pricing, performance, uptime, benchmarks, apps, activity, and FAQ.
-- [MCP Resource List Page](https://zeron-ui.vercel.app/en/docs/pages/resource-list-page-01): A Sidebar workspace for managing MCP applications and categories with design-system-native tabs, filters, and tables.
-- [Infinite Log Table](https://zeron-ui.vercel.app/en/docs/pages/infinite-log-table-01): A schema-driven virtualized log explorer with dynamic fields and filters, cursor pagination, and Live tailing.
-- [ZAIops Operations](https://zeron-ui.vercel.app/en/docs/pages/zaiops-operations-01): An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation.
-- [ZLR Protection Groups](https://zeron-ui.vercel.app/en/docs/pages/zlrlist): A ZS Live Recovery protection-group workspace with site switching, search, selection, row actions, and Chinese pagination.
-
-## Icons
-
-- [Icons Overview](https://zeron-ui.vercel.app/en/docs/icons/overview): The provider, public API, and style model behind Zeron Design icons.
-- [Icon Usage](https://zeron-ui.vercel.app/en/docs/icons/usage): Use named icon slots without coupling application code to a source icon library.
-- [Icon Catalog](https://zeron-ui.vercel.app/en/docs/icons/catalog): Searchable names generated from the free icon provider's actual exports.
-- [Icon Providers](https://zeron-ui.vercel.app/en/docs/icons/providers): Free and licensed icon styles, plus the boundary for optional Pro packages.
-
-## Component selection and API guidance
-
-Choose Table for mostly static tabular content, DataTable for records with sorting/filtering/pagination, and DataGrid for spreadsheet-style editing. Choose Select for a finite set of values and Combobox for searchable selection. Use Dropdown for commands and Dialog for a focused interrupting task.
-
-For a resource list, start with PageLayout and DataTable plus the required toolbar, filters, and pagination. Reuse the host shell and give each region a clear scroll owner. Choose a matching block when its user task, structure, and integration API fit.
-
-Component pages above contain usage and API references where available. Read exact prop types and callback signatures before writing code; do not assume Zeron props match similarly named shadcn or Base UI components. The Markdown guides below add intent, state, composition, and customization rules:
-
-- [Button guide](https://zeron-ui.vercel.app/agent-guides/components/button.md): Variant priority; size, loading, disabled, iconOnly, leadingIcon, trailingIcon, and asChild usage.
-- [Avatar guide](https://zeron-ui.vercel.app/agent-guides/components/avatar.md): Identity images, fallbacks, status, and group composition.
-- [Input guide](https://zeron-ui.vercel.app/agent-guides/components/input.md): Variants, control sizes, validation, and form integration.
-- [Select guide](https://zeron-ui.vercel.app/agent-guides/components/select.md): Value selection, sizes, icons, states, and composition.
-- [Tree guide](https://zeron-ui.vercel.app/agent-guides/components/tree.md): Hierarchy, selection, expansion, and tree interaction contracts.
-- [CodeBlock guide](https://zeron-ui.vercel.app/agent-guides/components/code-block.md): Code data, diff, Worker, streaming, SSR, editing, and accessibility contracts.
-- [Resource List Page guide](https://zeron-ui.vercel.app/agent-guides/blocks/resource-list-page-01.md): Page composition, navigation, filters, and table integration.
-- [Infinite Log Table guide](https://zeron-ui.vercel.app/agent-guides/blocks/infinite-log-table-01.md): Schema-driven columns, filters, cursor pagination, and live data.
-
-Use documented props and slots for customization. Preserve semantic colors, focus, disabled/loading behavior, and surface relationships. If a guide and installed implementation differ, use the installed types and source as the API authority.
+- [agent-message-trace-01](https://zeron-ui.vercel.app/agent-guides/blocks/agent-message-trace-01.md)
+- [ai-gateway-overview-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-overview-01.md)
+- [ai-gateway-session-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-session-list-01.md)
+- [credit-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/credit-usage-01.md)
+- [filter-rule-builder-01](https://zeron-ui.vercel.app/agent-guides/blocks/filter-rule-builder-01.md)
+- [infinite-log-table-01](https://zeron-ui.vercel.app/agent-guides/blocks/infinite-log-table-01.md)
+- [resource-detail-page-01](https://zeron-ui.vercel.app/agent-guides/blocks/resource-detail-page-01.md)
+- [resource-list-page-01](https://zeron-ui.vercel.app/agent-guides/blocks/resource-list-page-01.md)
+- [rule-flow-editor-01](https://zeron-ui.vercel.app/agent-guides/blocks/rule-flow-editor-01.md)
+- [storage-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/storage-usage-01.md)
+- [user-account-01](https://zeron-ui.vercel.app/agent-guides/blocks/user-account-01.md)
+- [avatar](https://zeron-ui.vercel.app/agent-guides/components/avatar.md)
+- [button](https://zeron-ui.vercel.app/agent-guides/components/button.md)
+- [code-block](https://zeron-ui.vercel.app/agent-guides/components/code-block.md)
+- [combobox](https://zeron-ui.vercel.app/agent-guides/components/combobox.md)
+- [dialog](https://zeron-ui.vercel.app/agent-guides/components/dialog.md)
+- [field](https://zeron-ui.vercel.app/agent-guides/components/field.md)
+- [input](https://zeron-ui.vercel.app/agent-guides/components/input.md)
+- [metric-card](https://zeron-ui.vercel.app/agent-guides/components/metric-card.md)
+- [page-layout](https://zeron-ui.vercel.app/agent-guides/components/page-layout.md)
+- [resource-detail-layout](https://zeron-ui.vercel.app/agent-guides/components/resource-detail-layout.md)
+- [select](https://zeron-ui.vercel.app/agent-guides/components/select.md)
+- [tree](https://zeron-ui.vercel.app/agent-guides/components/tree.md)

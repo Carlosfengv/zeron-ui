@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "routes": [
+    {
+      "path": "blocks/agent-message-trace-01.md",
+      "itemId": "block:agent-message-trace-01"
+    },
+    {
+      "path": "blocks/ai-gateway-overview-01.md",
+      "itemId": "block:ai-gateway-overview-01"
+    },
+    {
+      "path": "blocks/ai-gateway-session-list-01.md",
+      "itemId": "block:ai-gateway-session-list-01"
+    },
+    {
+      "path": "blocks/credit-usage-01.md",
+      "itemId": "block:credit-usage-01"
+    },
+    {
+      "path": "blocks/filter-rule-builder-01.md",
+      "itemId": "block:filter-rule-builder-01"
+    },
+    {
+      "path": "blocks/infinite-log-table-01.md",
+      "itemId": "block:infinite-log-table-01"
+    },
+    {
+      "path": "blocks/resource-detail-page-01.md",
+      "itemId": "block:resource-detail-page-01"
+    },
+    {
+      "path": "blocks/resource-list-page-01.md",
+      "itemId": "block:resource-list-page-01"
+    },
+    {
+      "path": "blocks/rule-flow-editor-01.md",
+      "itemId": "block:rule-flow-editor-01"
+    },
+    {
+      "path": "blocks/storage-usage-01.md",
+      "itemId": "block:storage-usage-01"
+    },
+    {
+      "path": "blocks/user-account-01.md",
+      "itemId": "block:user-account-01"
+    },
+    {
+      "path": "components/avatar.md",
+      "itemId": "component:avatar"
+    },
+    {
+      "path": "components/button.md",
+      "itemId": "component:button"
+    },
+    {
+      "path": "components/code-block.md",
+      "itemId": "component:code-block"
+    },
+    {
+      "path": "components/combobox.md",
+      "itemId": "component:combobox"
+    },
+    {
+      "path": "components/dialog.md",
+      "itemId": "component:dialog"
+    },
+    {
+      "path": "components/field.md",
+      "itemId": "component:field"
+    },
+    {
+      "path": "components/input.md",
+      "itemId": "component:input"
+    },
+    {
+      "path": "components/metric-card.md",
+      "itemId": "component:metric-card"
+    },
+    {
+      "path": "components/page-layout.md",
+      "itemId": "component:page-layout"
+    },
+    {
+      "path": "components/resource-detail-layout.md",
+      "itemId": "component:resource-detail-layout"
+    },
+    {
+      "path": "components/select.md",
+      "itemId": "component:select"
+    },
+    {
+      "path": "components/tree.md",
+      "itemId": "component:tree"
+    }
+  ]
+}

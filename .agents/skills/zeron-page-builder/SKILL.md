@@ -20,7 +20,7 @@ Read the target project's instructions and relevant implementation. Identify:
 
 Read [Zeron integration](references/zeron-integration.md) when resolving installation, imports, versions, or consumer compatibility. Preserve the project's package manager and conventions. Do not introduce Zeron into an unrelated design system without the user's direction.
 
-Discover components from the current source catalogs or the consumer's matching Registry release. Use the installed version's public exports and types to verify APIs. Do not infer consumer imports from workspace examples or assume the newest guide describes an older installation.
+For selection or installation, read [Agent discovery](references/agent-discovery.md). Use connected MCP or its static fallback to retain one catalog version through details, pagination and installation. In the source repository, current source catalogs can guide development; in consumers, use the matching Registry release and installed public types. Do not infer consumer imports from workspace examples or assume the newest guide describes an older installation.
 
 When design lint is configured, read its active component contracts and file scope before choosing styling overrides. Use the installed component API to interpret those policies; a linter's suggested prop or token is not proof that it exists or fits the product intent.
 

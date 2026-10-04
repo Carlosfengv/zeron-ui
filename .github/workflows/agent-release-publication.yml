@@ -1,0 +1,183 @@
+name: Agent release publication
+
+on:
+  workflow_dispatch:
+    inputs:
+      consumer_run_id:
+        description: Completed successful validation run for published consumers
+        required: true
+        type: string
+      consumer_run_attempt:
+        description: Exact completed attempt for consumers
+        required: true
+        type: string
+      examples_run_id:
+        description: Completed successful validation run for published examples, using the same source and input
+        required: true
+        type: string
+      examples_run_attempt:
+        description: Exact completed attempt for examples
+        required: true
+        type: string
+      registry_release_id:
+        description: Existing public Registry release from the validated content commit
+        required: true
+        type: string
+      predecessor:
+        description: Latest approved record filename, or explicit none for the first release
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+# Serialize all Catalog publication jobs, including different content commits/releases.
+concurrency:
+  group: agent-release-publication
+  cancel-in-progress: false
+
+env:
+  ARTIFACT_BASE_URL: ${{ vars.ARTIFACT_BASE_URL }}
+  SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
+  PUBLICATION_REGISTRY_RELEASE_ID: ${{ inputs.registry_release_id }}
+  PUBLICATION_PREDECESSOR: ${{ inputs.predecessor }}
+
+jobs:
+  resolve:
+    name: Resolve completed validation and release controls
+    if: github.repository == 'Carlosfengv/zeron-ui' && github.ref == 'refs/heads/main'
+    environment: agent-artifact-publication
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      source-revision: ${{ steps.resolve.outputs.source-revision }}
+      dispatch-artifact-id: ${{ steps.dispatch-artifact.outputs.artifact-id }}
+      dispatch-sha256: ${{ steps.resolve.outputs.dispatch-sha256 }}
+      dispatch-bytes: ${{ steps.resolve.outputs.dispatch-bytes }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10.12.4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Install exact package managers and locked workspace dependencies
+        run: |
+          npm install --global npm@10.9.2
+          pnpm install --frozen-lockfile
+      - name: Resolve completed validation source and compare release controls
+        id: resolve
+        env:
+          AGENT_CI_READ_TOKEN: ${{ secrets.AGENT_CI_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          PUBLICATION_CONSUMER_RUN_ID: ${{ inputs.consumer_run_id }}
+          PUBLICATION_CONSUMER_RUN_ATTEMPT: ${{ inputs.consumer_run_attempt }}
+          PUBLICATION_EXAMPLES_RUN_ID: ${{ inputs.examples_run_id }}
+          PUBLICATION_EXAMPLES_RUN_ATTEMPT: ${{ inputs.examples_run_attempt }}
+        run: node scripts/agent-publication-workflow.mjs resolve --output "$RUNNER_TEMP/agent-publication-dispatch"
+      # This artifact contains a strict small descriptor, never raw CI ZIP/API/logs or tokens.
+      - name: Upload checked publication dispatch
+        id: dispatch-artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agent-publication-dispatch-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.resolve.outputs.dispatch-file }}
+          include-hidden-files: false
+          if-no-files-found: error
+          retention-days: 90
+
+  publish:
+    name: Verify and publish Catalog with durable freeze draft
+    needs: resolve
+    if: github.repository == 'Carlosfengv/zeron-ui' && github.ref == 'refs/heads/main'
+    environment: agent-artifact-publication
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.resolve.outputs.source-revision }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10.12.4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Install exact package managers and locked workspace dependencies
+        run: |
+          npm install --global npm@10.9.2
+          pnpm install --frozen-lockfile
+      - name: Download this publication attempt's checked dispatch by artifact ID
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          artifact-ids: ${{ needs.resolve.outputs.dispatch-artifact-id }}
+          path: ${{ runner.temp }}/agent-publication-dispatch-input
+          merge-multiple: true
+      - name: Verify publication dispatch transport bytes
+        env:
+          DISPATCH_SHA256: ${{ needs.resolve.outputs.dispatch-sha256 }}
+          DISPATCH_BYTES: ${{ needs.resolve.outputs.dispatch-bytes }}
+        run: |
+          node --input-type=module <<'JS'
+          import {readRegularCiInput} from './scripts/check-agent-ci-evidence.mjs';
+          import {sha256} from './scripts/agent-utils.mjs';
+          const bytes=await readRegularCiInput(`${process.env.RUNNER_TEMP}/agent-publication-dispatch-input/publication-dispatch.json`);
+          if(bytes.length!==Number(process.env.DISPATCH_BYTES) || sha256(bytes)!==process.env.DISPATCH_SHA256) throw new Error('PUBLICATION_DISPATCH_TRANSPORT_BYTES');
+          JS
+      - name: Build ignored code engine inputs
+        run: pnpm code-engine:build
+      - name: Prepare exact content source and public installation input
+        run: node scripts/agent-publication-workflow.mjs prepare --dispatch "$RUNNER_TEMP/agent-publication-dispatch-input/publication-dispatch.json" --output "$RUNNER_TEMP/agent-publication-input"
+      - name: Reverify completed CI archives and public evidence
+        env:
+          AGENT_CI_READ_TOKEN: ${{ secrets.AGENT_CI_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: pnpm agents:ci:check --input "$RUNNER_TEMP/agent-publication-input/input/installation-input.json" --locator "$RUNNER_TEMP/agent-publication-input/ci-locator.json" --output "$RUNNER_TEMP/agent-publication-ci"
+      - name: Build Catalog candidate from verified source and reports
+        env:
+          AGENT_CI_READ_TOKEN: ${{ secrets.AGENT_CI_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          PREDECESSOR="$PUBLICATION_PREDECESSOR"
+          if [ "$PREDECESSOR" != none ]; then PREDECESSOR="$GITHUB_WORKSPACE/docs/agent-data/releases/$PREDECESSOR"; fi
+          pnpm agents:catalog:release --input "$RUNNER_TEMP/agent-publication-input/input/installation-input.json" --verification "$RUNNER_TEMP/agent-publication-ci/consumer/verification.json" --examples "$RUNNER_TEMP/agent-publication-ci/examples/examples-verification.json" --ci-evidence "$RUNNER_TEMP/agent-publication-input/ci-locator.json" --predecessor "$PREDECESSOR" --output "$RUNNER_TEMP/agent-publication-candidate"
+      - name: Publish Catalog after fresh source CI and predecessor checks
+        env:
+          AGENT_CI_READ_TOKEN: ${{ secrets.AGENT_CI_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.AGENT_BLOB_TOKEN }}
+        run: pnpm agents:publish --manifest "$RUNNER_TEMP/agent-publication-candidate/payload/manifest.json" --upload --output "$RUNNER_TEMP/agent-publication-result.json"
+      - name: Freeze published stages and retain original CI archives privately
+        env:
+          AGENT_CI_READ_TOKEN: ${{ secrets.AGENT_CI_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          AGENT_CI_ARCHIVE_BLOB_TOKEN: ${{ secrets.AGENT_CI_ARCHIVE_BLOB_TOKEN }}
+        run: |
+          PREDECESSOR="$PUBLICATION_PREDECESSOR"
+          if [ "$PREDECESSOR" != none ]; then PREDECESSOR="$GITHUB_WORKSPACE/docs/agent-data/releases/$PREDECESSOR"; fi
+          pnpm agents:release:freeze --input "$RUNNER_TEMP/agent-publication-input/input/installation-input.json" --verification "$RUNNER_TEMP/agent-publication-ci/consumer/verification.json" --examples "$RUNNER_TEMP/agent-publication-ci/examples/examples-verification.json" --ci-evidence "$RUNNER_TEMP/agent-publication-input/ci-locator.json" --catalog-manifest "$RUNNER_TEMP/agent-publication-candidate/payload/manifest.json" --predecessor "$PREDECESSOR" --output "$RUNNER_TEMP/agent-publication-freeze"
+      - name: Check and copy only the fixed public review files
+        id: public-review
+        env:
+          AGENT_CI_READ_TOKEN: ${{ secrets.AGENT_CI_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.AGENT_BLOB_TOKEN }}
+          AGENT_CI_ARCHIVE_BLOB_TOKEN: ${{ secrets.AGENT_CI_ARCHIVE_BLOB_TOKEN }}
+        run: node scripts/agent-publication-workflow.mjs stage --dispatch "$RUNNER_TEMP/agent-publication-dispatch-input/publication-dispatch.json" --freeze "$RUNNER_TEMP/agent-publication-freeze" --output "$RUNNER_TEMP/agent-publication-public-review"
+      - name: Upload checked freeze draft for review
+        if: success() && steps.public-review.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agent-publication-review-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/agent-publication-public-review
+          include-hidden-files: false
+          if-no-files-found: error
+          retention-days: 90
