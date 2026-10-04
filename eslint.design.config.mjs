@@ -22,6 +22,14 @@ export default [
     paletteFiles: ["packages/ui/src/components/color-picker.tsx", "packages/ui/src/components/badge-colors.ts"],
     componentImports: ["^@zeron/ui(/|$)", "^@/components/ui(/|$)", "^#components/"],
   }),
+  {
+    // This is a Shadow DOM host selector declared by the code engine's
+    // base/editor CSS, rather than a Tailwind utility. Scope the exception to
+    // its adapters; misspelled utilities remain errors everywhere.
+    name: "zeron/code-engine-host-selector",
+    files: ["packages/ui/src/components/code-block/**/*.{ts,tsx}"],
+    rules: { "shadcn/no-unknown-classes": ["error", { allow: ["is-active", "zeron-code-block"] }] },
+  },
   reviewedArbitraryValues(
     ["packages/blocks/src/application/agent-message-trace-01/agent-message-trace.tsx"],
     [
