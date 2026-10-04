@@ -48,9 +48,14 @@ Next.js, and template Blocks remain application skeletons rather than a
 drop-in business backend.
 
 Maintainers create an immutable Registry candidate with
-`pnpm registry:release --release-id <id>`. This preserves `/r/*.json` as the
-legacy endpoint while publishing the candidate under `/r/releases/<id>/` with
-its own dependency URLs and manifest hash.
+`pnpm registry:release --release-id <id> --artifact-base-url <https-origin>`.
+This writes an unuploaded candidate to `output/agent-releases/registry/<id>/`,
+leaving `/r/*.json` unchanged. Its dependency URLs use the supplied origin's
+`/r/releases/<id>/` prefix; its manifest hashes every distribution file.
+Identical retries reuse existing bytes; different content requires a new ID.
+Add `--require-clean` to reject uncommitted sources before creating a formal
+candidate. Run `pnpm registry:release:check` for isolated build and retry checks.
+Candidates are not publicly available until a separate verified upload completes.
 
 ### Use design tokens without installing components
 
@@ -89,11 +94,106 @@ directories. Agents verify archive/file hashes, preserve differing local skills,
 and install skills without modifying the application. Migration is a subsequent
 user request. Other agents must use their own supported skill directory.
 
-`pnpm skills:build` generates the website assets in `public/skills/`. Both `pnpm dev`
-and `pnpm build` run it automatically. Generated downloads are not committed; a
+`pnpm skills:build` generates the website assets in `public/skills/`. `pnpm dev`
+and development-mode `pnpm build` run it automatically. Generated downloads are not committed; a
 website deployment is required before the public URL serves this implementation.
-The manifest version is the archive's SHA-256. A retained guide can refer to an
+The legacy schema 1 manifest version is the archive's SHA-256. A retained guide can refer to an
 older release; if unavailable after deployment, fetch the current guide again.
+
+Create an unuploaded schema 2 Skill candidate with
+`pnpm skills:build --mode release --artifact-base-url <https-origin> --site-base-url <https-origin>`.
+The output is `output/agent-releases/skills/<skillVersion>/` with a ZIP,
+`manifest.json`, a fixed installation guide and all source references.
+`skillVersion` identifies the archive, effective guide template and configured
+origins; `archive.sha256` identifies only the ZIP. `artifacts.json` hashes the
+complete distribution without including itself. Source provenance is recorded
+outside this content-addressed inventory. Add `--require-clean` to reject dirty
+sources, and run `pnpm skills:release:check` for candidate and retry verification.
+The builder prints a `.source.json` record beside the version directory; retain
+it for the publisher's source binding check.
+
+`pnpm agents:publish --manifest <artifact-manifest> --dry-run` validates Registry
+or Skill payloads and lists the objects, hashes, byte sizes and final completion
+marker. It performs no network requests or upload.
+
+`pnpm agents:publish --manifest <artifact-manifest> --upload` publishes Registry
+or Skill resources using the explicitly configured `ARTIFACT_BASE_URL` and a
+publishing identity. Skill uploads also require `--provenance <source-record>`.
+The publisher requires a clean source checkout, rebuilds the candidate's source
+binding, disables overwrite and random suffixes, verifies every public object,
+and writes completion last. Failed gates and interrupted writes produce failed
+reports; retries reuse only identical bytes. Blob credentials belong to the
+publishing job, not the documentation app or MCP runtime. This implementation
+has local fault tests; an actual Blob upload has not yet been verified.
+
+### Build from a frozen Agent release
+
+`pnpm agents:build --mode release --release <record-or-selection>` restores a
+committed record from `docs/agent-data/releases/`. Each record pins public
+resource URLs, byte counts and hashes; it can include two prior records. The
+restorer validates stages, installation summaries, historical Skill bytes,
+catalog identity and identity evolution before replacing generated outputs.
+It stops on incomplete resources or mismatches without using development data.
+
+For a site build, configure `AGENT_CATALOG_MODE=release` and
+`AGENT_RELEASE_RECORD=docs/agent-data/releases/current.json`, then run
+`pnpm build`. Release builds restore inputs and skip legacy Skill generation.
+These interfaces are implemented and tested with temporary fixtures; no actual
+frozen release record is committed yet. Catalog publication, actual npm
+consumer verification, and cloud deployment remain pending. See the
+[AI implementation plan](docs/plans/2026-10-03-agent-access-and-mcp-plan.md)
+for complete scope and evidence boundaries.
+
+For the initial website and readonly MCP deployment, use the default
+`development` catalog mode with `pnpm build`. The same Next.js deployment
+serves the website, generated documentation, Skill downloads and `/api/mcp`.
+This mode does not need Blob credentials or a frozen release record;
+`get_install_command` rejects installation combinations that have not been
+verified. With the repository connected to Vercel and `main` configured as
+the production branch, `vercel.json` enables Git deployments from `main`.
+Verify the deployment reaches `READY` and check the live MCP tools after
+pushing. A local build does not establish that the new code is online.
+
+Before consumer verification, run `pnpm agents:installation:prepare` with
+`--registry-manifest <file> --skill-artifacts <file> --skill-provenance <file>`
+and `--config <file> --output <new-isolated-directory>` from a clean Node 22
+source checkout. The strict configuration contains `schemaVersion: 1`,
+`siteBaseUrl`, `cli` (exact name/version/SRI), four `matrices` and
+`nextOnlyRejectionItem`; see `installationConfigurationSchema` in
+`scripts/prepare-published-installation-input.mjs`.
+The preparer rebuilds source bindings and matches actual public completion
+bytes before writing `installation-input.json`. It pins installation resources
+without depending on a Catalog that does not exist yet. Run
+`pnpm agents:installation:check --input <descriptor> --output <new-isolated-directory>`
+from a clean fixed source checkout with Node 22. The checker reads every public
+Registry/Skill object, verifies closures and archive bytes, rebuilds source
+bindings, and checks the official npm tarball against its pinned SHA-512.
+Output directories must be new; failures retain a safe `failure.json`.
+Successful `input-verification.json` means the inputs are verified. It does not
+claim consumer installation, produce an installation pass record, or enable MCP
+installation commands.
+
+`pnpm test:consumer:published --input <descriptor> --output <new-isolated-directory>`
+runs the four fixed Next/Vite × npm/pnpm templates on Node 22 Linux. It reuses
+the input/source checker, verifies the actual CLI package bytes resolved by
+npm exec or pnpm dlx, then checks dry-run preservation, Vite's Next-only
+rejection, installation, types, framework builds and emitted theme utilities.
+Projects and caches are isolated; each step has a deadline and kills descendants
+on failure. Raw command logs stay under `private-logs/`.
+Default output is `local-verification.json`, which cannot freeze a release.
+Explicit `--publish-evidence` requires the publishing identity, appends cleaned
+content-addressed evidence, anonymously reads it back and only then writes
+the strict `verification.json`. Any failure writes `failure.json` without a
+success report; output directories cannot be reused.
+
+Fault tests and actual template builds/CLI launches have passed locally.
+The exact-version npm metadata and official tarball for `zeron-ui@0.2.0-beta.17`
+have since passed identity and integrity checks, and
+`docs/agent-data/installation-config.json` pins that CLI and the four test
+profiles. Earlier metadata failures remain in the evidence appendix.
+Actual published Registry installation matrices, Blob evidence writes and
+release-mode deployment remain unverified; the prepared configuration does
+not enable MCP installation commands.
 
 For an offline or local transfer, bundle both skills with their references:
 
