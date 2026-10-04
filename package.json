@@ -60,7 +60,9 @@
     "test:examples:published": "node scripts/test-published-examples.mjs",
     "test:mcp": "vitest run --config vitest.config.mts tests/agent-catalog.test.ts tests/mcp-route.test.ts",
     "registry:release:check": "node scripts/check-registry-release-candidate.mjs",
-    "skills:release:check": "node scripts/check-skill-release-candidate.mjs"
+    "skills:release:check": "node scripts/check-skill-release-candidate.mjs",
+    "test:unit": "vitest run --config vitest.config.mts --exclude '**/*production*.test.ts'",
+    "agents:verify:clean": "node scripts/check-agent-clean-checkout.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

@@ -6,6 +6,28 @@ on:
   pull_request:
 
 jobs:
+  agent-clean-checkout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install browser runner
+        run: pnpm install --frozen-lockfile && pnpm exec playwright install --with-deps chromium
+      - name: Verify fresh isolated Agent checkout
+        run: pnpm agents:verify:clean
+      - name: Upload clean checkout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-clean-checkout-evidence
+          path: output/agent-clean
+          if-no-files-found: error
   checks:
     runs-on: ubuntu-latest
     steps:
@@ -26,23 +48,35 @@ jobs:
       - name: Semantic tokens are up to date
         run: pnpm tokens:check
 
-      - name: Lint
-        run: pnpm lint
+      - name: Committed route and guide mappings are up to date
+        run: pnpm docs:routes:check && pnpm agents:guides:check
 
-      - name: Design lint
-        run: pnpm lint:design
+      - name: Build code engine inputs
+        run: pnpm code-engine:build
 
-      - name: Test
-        run: pnpm test
-
-      - name: Test CLI
-        run: pnpm cli:test
+      - name: Typecheck maintained Agent guide examples
+        run: pnpm agents:guides:examples:check
 
       - name: Bundle paired migration skills
         run: pnpm skills:bundle
 
       - name: Build public skill downloads
         run: pnpm skills:build
+
+      - name: Verify isolated Skill release candidate
+        run: pnpm skills:release:check
+
+      - name: Upload Skill candidate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skill-candidate-evidence
+          path: |
+            output/agent-access/skill-candidate.json
+            output/agent-access/skill-candidate-artifacts.json
+            output/agent-access/skill-candidate-manifest.json
+            output/agent-access/skill-publication-plan.json
+          if-no-files-found: ignore
 
       - name: Typecheck public source packages
         run: pnpm --filter @zeron/ui typecheck && pnpm --filter @zeron/blocks typecheck
@@ -67,6 +101,44 @@ jobs:
       - name: Validate Registry closure
         run: pnpm registry:check
 
+      - name: Verify isolated Registry candidate and retry behavior
+        run: pnpm registry:release:check
+
+      - name: Upload Registry candidate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: registry-candidate-evidence
+          path: |
+            output/agent-access/registry-candidate.json
+            output/agent-access/registry-candidate-manifest.json
+            output/agent-access/registry-publication-plan.json
+          if-no-files-found: ignore
+
+      # These directories are ignored and absent in a fresh checkout. Validate
+      # committed generated text first, then materialize runtime JSON before
+      # lint, typechecking, or tests import the MCP route.
+      - name: Agent data and committed context are up to date
+        run: pnpm agents:check
+
+      - name: Build development Agent runtime
+        run: pnpm agents:build --mode development
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Design lint
+        run: pnpm lint:design
+
+      - name: Typecheck application and tests
+        run: pnpm exec tsc --noEmit --incremental false
+
+      - name: Test source modules and MCP protocol
+        run: pnpm test:unit
+
+      - name: Test CLI
+        run: pnpm cli:test
+
       - name: Install representative consumers
         run: pnpm test:consumer:smoke
 
@@ -87,7 +159,7 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Test production routing and localized pages
+      - name: Verify production documentation and MCP HTTP routes
         run: pnpm test:production
 
       - name: Test navigation loading and interruption
