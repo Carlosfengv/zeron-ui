@@ -49,7 +49,7 @@ jobs:
         run: pnpm tokens:check
 
       - name: Committed route and guide mappings are up to date
-        run: pnpm docs:routes:check && pnpm agents:guides:check
+        run: pnpm docs:routes:check && pnpm docs:sources:check && pnpm agents:guides:check
 
       - name: Build code engine inputs
         run: pnpm code-engine:build
@@ -80,9 +80,6 @@ jobs:
 
       - name: Typecheck public source packages
         run: pnpm --filter @zeron/ui typecheck && pnpm --filter @zeron/blocks typecheck
-
-      - name: Typecheck the application and tests
-        run: pnpm typecheck
 
       # Rebuild the registry and fail if the committed public/r output has
       # drifted from the sources — public/r is what users install from.
@@ -131,7 +128,7 @@ jobs:
         run: pnpm lint:design
 
       - name: Typecheck application and tests
-        run: pnpm exec tsc --noEmit --incremental false
+        run: pnpm typecheck
 
       - name: Test source modules and MCP protocol
         run: pnpm test:unit

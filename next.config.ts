@@ -42,13 +42,13 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       ...getPreviewSourceAssetUrls().map((source) => ({
-      source,
-      headers: [
-        { key: "Content-Type", value: "text/plain; charset=utf-8" },
-        { key: "X-Content-Type-Options", value: "nosniff" },
-        { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-      ],
-    })),
+        source,
+        headers: [
+          { key: "Content-Type", value: "text/plain; charset=utf-8" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      })),
       { source: "/ai/catalog.json", headers: [{ key: "Cache-Control", value: "public, max-age=60, stale-while-revalidate=60" }] },
       { source: "/ai/items/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=60, stale-while-revalidate=60" }] },
       { source: "/ai/releases/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },

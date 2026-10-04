@@ -2,7 +2,7 @@
 
 日期：2026-10-04。基线：`c741626ce69436bf07da0d7e63f08a3d02cddd5e`，分支 `main`。
 
-初次 review 发现两项需要提交前处理的问题，以及一处状态说明过期。用户随后授权按发现整改，分页实现、回归测试、main 自动部署配置和文档已调整；本轮验证状态见末尾整改记录。保留原 review 发现及当时的结果，未暂存、commit、push 或部署。
+初次 review 发现两项需要提交前处理的问题，以及一处状态说明过期。用户随后授权整改和推送 main，分页实现、回归测试、main 自动部署配置和文档已调整。下面保留初次 review 与整改时的历史结果；最新提交和远端整合状态见末尾记录。
 
 ## 初次 Review 发现
 
@@ -104,3 +104,22 @@ README 仍称精确版本 npm 元数据目前无法通过 JSON 校验。但本�
 整改验证归档于 `output/agent-access/review-remediation-01/validation-summary.json`、`build-retry-report.json` 和对应日志；原隔离报告为 `output/agent-clean/zeron-agent-clean-zxc9xS/report.json`，输入摘要 `cfb28e493c96fc71f8dce1862ef43b9a115d072b676d5e72a1aa6b4f38b81bbb`。`validated-source-files.json` 绑定查询实现、三份相关测试、Vercel 配置及 README，测试结束后确认当前字节仍与该检出一致。最终状态文档在测试后整理。
 
 三项 review 发现已按建议整改，既有五笔 commit 计划继续适用。本轮没有执行暂存、提交、推送或部署。
+
+## main 推送前远端整合（2026-10-04）
+
+用户随后授权推送 GitHub main。拉取远端时，本地原基线比 `origin/main` 落后 33 个提交，远端头为 `10aa272a349f66474d0f8e6bb1e5a3618f857674`。五笔提交已重放到该远端头上，保留 Next.js `15.5.24` 安全升级、文档源码资源、导航加载优化、组件修复和 CLI 安装安全校验；没有强制覆盖远端。
+
+部分测试类型修复已被远端提交解决，重放时保留远端的更完整回归。因此第一笔提交最终只补充生成输出排除和 code-engine selector 的 lint 配置。另补一笔整合提交，处理远端更新后出现的交叉影响：
+
+- 网站构建保留文档源码资源校验；完整隔离检查加入该校验及远端导航浏览器测试。
+- 生产测试沿用远端独立的 `vitest.production.config.mts`，同时运行 MCP 生产测试。
+- 普通 CI 只执行一次应用类型检查，位于 Agent runtime 生成之后，并保留 `pnpm typecheck` 入口。
+- 远端旧 Registry 发布测试改用当前独立候选目录，继续验证失败清理、冲突内容拒绝、相同字节重试、发布锁及 legacy Registry / composed 输入不变。构建适配器使用明确 fixture；候选脚本、清单字节校验和原子提交实现使用实际代码，测试不上传资源。
+
+第一次整合隔离检查暴露旧发布测试不再适用，修正后第二次检查只剩 CI 入口断言失败；两份失败报告均保留。将隔离检出的 CI 文件同步到最终入口后，重跑完整单元测试，221 个文件、1,959 项全部通过；CLI 测试 110 项通过。
+
+随后组件安装矩阵全部通过：Next.js 中 5 类组件分别使用 npm / pnpm 安装、类型检查和生产构建，Vite 中 4 类组件安装与构建，以及 Next 专属组件拒绝检查。Next.js / Vite 迁移的行为与构建检查也通过。最终 `pnpm build` 成功，3 项生产文档 / 国际化 / MCP 路由测试和桌面 / 移动端共 14 项导航浏览器测试通过。
+
+整合验证报告为 `output/agent-access/github-main-integration-01/report.json`，包含先行隔离检查已通过的 21 个阶段和 CI 入口调整后续跑的 8 个阶段，共覆盖 29 个检查阶段。此结果包含失败后修正与续跑，不是一次未中断的全流程执行。原失败报告为 `output/agent-clean/zeron-agent-clean-5Su5Ld/report.json` 与 `output/agent-clean/zeron-agent-clean-rN8G1G/report.json`；中途为完成 fixture 调整而停止的一次重试另保留中断记录。
+
+最终输入清单与当前代码逐文件比较，仅本文的验证状态说明在测试后更新；机器证据及临时检出均不提交。网站与只读 MCP 的本地交付验证完成，可以推送 main。真实发布资源安装矩阵与正式 release 模式仍是独立的后续验收；Git 推送、Vercel 构建和实际域名验证分别记录，不能互相替代。

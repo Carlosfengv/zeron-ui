@@ -83,6 +83,7 @@ try {
   await run("install", ["install", "--frozen-lockfile"]);
   await run("tokens", ["tokens:check"]);
   await run("routes", ["docs:routes:check"]);
+  await run("preview-sources", ["docs:sources:check"]);
   await run("guides", ["agents:guides:check"]);
   await run("code-engine", ["code-engine:build"]);
   await run("guide-examples", ["agents:guides:examples:check"]);
@@ -112,6 +113,9 @@ try {
   }
   await run("build", ["build"]);
   await run("production", ["test:production"]);
+  if (!args.includes("--core")) {
+    await run("navigation", ["exec", "playwright", "test", "--config", "playwright.navigation-loading.config.ts"]);
+  }
   report.status = "passed";
 } catch (error) {
   report.status = "failed";
