@@ -1,86 +1,28 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-
-// Keep every path literal so Next.js can trace only these files into the
-// serverless function. A path assembled from dynamic route params makes the
-// file tracer conservatively include the entire project directory, including
-// .next/cache, which can make the Vercel function several gigabytes large.
-const guideLoaders: Record<string, () => Promise<string>> = {
-  "blocks/resource-list-page-01.md": () =>
-    readFile(
-      join(
-        process.cwd(),
-        "docs/agent-guides/blocks/resource-list-page-01.md",
-      ),
-      "utf8",
-    ),
-  "blocks/infinite-log-table-01.md": () =>
-    readFile(
-      join(
-        process.cwd(),
-        "docs/agent-guides/blocks/infinite-log-table-01.md",
-      ),
-      "utf8",
-    ),
-  "components/button.md": () =>
-    readFile(
-      join(process.cwd(), "docs/agent-guides/components/button.md"),
-      "utf8",
-    ),
-  "components/avatar.md": () =>
-    readFile(
-      join(process.cwd(), "docs/agent-guides/components/avatar.md"),
-      "utf8",
-    ),
-  "components/input.md": () =>
-    readFile(
-      join(process.cwd(), "docs/agent-guides/components/input.md"),
-      "utf8",
-    ),
-  "components/select.md": () =>
-    readFile(
-      join(process.cwd(), "docs/agent-guides/components/select.md"),
-      "utf8",
-    ),
-  "components/tree.md": () =>
-    readFile(
-      join(process.cwd(), "docs/agent-guides/components/tree.md"),
-      "utf8",
-    ),
-  "components/code-block.md": () =>
-    readFile(
-      join(process.cwd(), "docs/agent-guides/components/code-block.md"),
-      "utf8",
-    ),
-};
+import { agentGuideLoaders } from "@docs/generated/agent-guide-loaders.generated";
+import { snapshots } from "@/lib/agent-catalog/runtime";
+import { guideMarkdownForRuntime } from "@/lib/agent-catalog/guides";
 
 export async function GET(
   _request: Request,
   context: { params: Promise<{ collection: string; slug: string }> },
 ) {
   const { collection, slug } = await context.params;
-  const loadGuide = guideLoaders[`${collection}/${slug}`];
-
-  if (!loadGuide) {
-    return new Response("Agent guide not found.\n", {
-      status: 404,
-      headers: { "content-type": "text/plain; charset=utf-8" },
-    });
+  const key = `${collection}/${slug}`;
+  const current = snapshots.versions.find(version => version.catalog.catalogVersion === snapshots.currentVersion)!;
+  let markdown: string;
+  if (current.catalog.mode === "release" || current.guideRoutes) {
+    const published = guideMarkdownForRuntime(current, collection, slug);
+    if (published === null) return new Response("Agent guide not found.\n", { status: 404 });
+    markdown = published;
+  } else {
+    if (!Object.hasOwn(agentGuideLoaders, key)) return new Response("Agent guide not found.\n", { status: 404 });
+    markdown = await agentGuideLoaders[key]();
   }
-
-  try {
-    const markdown = await loadGuide();
-    return new Response(markdown, {
-      headers: {
-        "cache-control": "public, max-age=300, stale-while-revalidate=86400",
-        "content-disposition": `inline; filename="${slug}"`,
-        "content-type": "text/markdown; charset=utf-8",
-      },
-    });
-  } catch {
-    return new Response("Agent guide not found.\n", {
-      status: 404,
-      headers: { "content-type": "text/plain; charset=utf-8" },
-    });
-  }
+  return new Response(markdown, {
+    headers: {
+      "cache-control": "public, max-age=300, stale-while-revalidate=86400",
+      "content-disposition": `inline; filename="${slug}"`,
+      "content-type": "text/markdown; charset=utf-8",
+    },
+  });
 }

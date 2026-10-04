@@ -1,7 +1,9 @@
 "use client";
 
 import { docOrder } from "@docs/lib/components";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
+import { Button } from "@zeron/ui/button";
 import { InstallCommand } from "@docs/components/content/InstallCommand";
 import { IntroPager } from "@docs/components/navigation/IntroPager";
 import { SkillInstall } from "@docs/components/content/SkillInstall";
@@ -9,6 +11,7 @@ import { SkillInstall } from "@docs/components/content/SkillInstall";
 export default function DocsIndex() {
   const t = useTranslations("introduction");
   const common = useTranslations("common");
+  const locale = useLocale();
   const firstComponent = docOrder[0];
 
   return (
@@ -85,6 +88,7 @@ export default function DocsIndex() {
       </section>
 
       <hr className="border-border-subtle my-8" />
+      <Button asChild variant="secondary"><Link href={locale === "en" ? "/en/docs/ai" : "/docs/ai"}>{locale === "en" ? "AI usage guide" : "AI 使用指南"}</Link></Button>
       <SkillInstall />
 
       <hr className="border-border-subtle my-8" />

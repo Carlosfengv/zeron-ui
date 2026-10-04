@@ -40,6 +40,7 @@ export default function HomeContent({ releaseBadge, releaseDetails, initializeCo
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" trailingIcon={ArrowRight}><a href="#install">{t("getStarted")}</a></Button>
             <Button asChild size="lg" variant="secondary"><a href="#skills">{t("useSkills")}</a></Button>
+            <Button asChild size="lg" variant="ghost"><Link href={`${prefix}/docs/ai`}>{locale === "en" ? "Build with AI" : "通过 AI 接入"}</Link></Button>
           </div>
           <p className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-label text-fg-subtle"><span>React 19</span><span>Tailwind CSS 4</span><span>shadcn Registry</span><span>{t("openSource")}</span></p>
         </header>

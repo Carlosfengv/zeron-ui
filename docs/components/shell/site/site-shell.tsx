@@ -141,6 +141,8 @@ function DocsPrimaryNavigation({
       ? localizePathname("/docs/components", localePrefix)
       : currentPathname === "/updates"
         ? localizePathname("/updates", localePrefix)
+        : currentPathname === "/docs/ai"
+          ? localizePathname("/docs/ai", localePrefix)
         : currentPathname === "/docs"
           ? localizePathname("/docs", localePrefix)
           : null;
@@ -149,6 +151,7 @@ function DocsPrimaryNavigation({
     { href: localizePathname("/docs/components", localePrefix), label: t("componentsEntry") },
     { href: localizePathname("/docs/blocks", localePrefix), label: t("blocks") },
     { href: localizePathname("/docs/pages", localePrefix), label: t("pages") },
+    { href: localizePathname("/docs/ai", localePrefix), label: localePrefix === "/en" ? "AI" : "AI 接入" },
     { href: localizePathname("/updates", localePrefix), label: localePrefix === "/en" ? "Updates" : "更新日志" },
   ];
   const languageActionLabel = isEnglish ? "切换至中文" : "Switch to English";
@@ -181,7 +184,7 @@ function DocsPrimaryNavigation({
         >
           {items.map((item) => (
             <NavItem key={item.href} value={item.href} className="shrink-0">
-              {/* Only the five primary destinations are fully prefetched. */}
+              {/* Only primary destinations are fully prefetched. */}
               <NavItemTrigger render={<Link href={item.href} prefetch />}>
                 <PrimaryNavigationLabel label={item.label} loadingLabel={isEnglish ? "Loading page…" : "正在加载页面…"} />
               </NavItemTrigger>
