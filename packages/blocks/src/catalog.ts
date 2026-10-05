@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "deployment-detail-01", title: "部署详情", description: "网站预览、部署信息、域名、代码来源与阶段检查结果。", categories: ["application", "monitoring"], dependencies: ["avatar", "badge", "button", "card", "dropdown", "empty", "icon-context", "info-item", "inline-notice", "menu-item", "popover", "skeleton", "status-overview", "tooltip", "utils"] },
   { name: "user-account-01", title: "User Account", description: "Controlled account actions and preferences.", categories: ["application", "account"], dependencies: ["sidebar-account-menu", "icon-context"] },
   {
     name: "login-01",

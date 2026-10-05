@@ -73,6 +73,8 @@ interface StatusOverviewBaseProps
   label: ReactNode;
   rangeLabel?: ReactNode;
   summary?: StatusOverviewSummary;
+  /** Optional activity-row controls/results. Replaces the summary column only in activity mode. */
+  trailing?: ReactNode;
   content: StatusOverviewContent;
   emptyContent: ReactNode;
 }
@@ -339,6 +341,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
     label,
     rangeLabel,
     summary,
+    trailing,
     content,
     emptyContent,
     state: stateProp,
@@ -373,14 +376,14 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
         className,
       )}
     >
-      <div className={cn(activity && "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 @sm/status:grid-cols-[6rem_minmax(0,1fr)_3rem]")}>
+      <div className={cn(activity && "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2", activity && (trailing ? "@xl/status:grid-cols-[6rem_minmax(0,1fr)_auto]" : "@sm/status:grid-cols-[6rem_minmax(0,1fr)_3rem]"))}>
       <div data-slot="status-overview-header" className={activity ? "contents" : "flex min-w-0 flex-wrap items-start justify-between gap-x-4 gap-y-2"}>
         <div className={cn("flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5", activity && "col-start-1 row-start-1")}>
           <span data-slot="status-overview-label" className={activity ? "break-words font-mono text-label uppercase text-fg-subtle" : "font-medium text-body text-fg-default"}>{label}</span>
           {rangeLabel && <span data-slot="status-overview-range" className="text-body text-fg-subtle">{rangeLabel}</span>}
         </div>
 
-        {summary && !unavailable && (
+        {summary && !(activity && trailing) && !unavailable && (
           <div data-slot="status-overview-summary" className={cn("flex min-w-0 items-baseline gap-1.5", activity ? "col-start-2 row-start-1 justify-end font-mono text-label @sm/status:col-start-3" : "text-body")}>
             <span className={activity ? "sr-only" : "text-fg-subtle"}>{summary.label}</span>
             {loading ? (
@@ -392,7 +395,12 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
         )}
       </div>
 
-      <div className={cn("min-w-0", activity ? "col-span-2 row-start-2 @sm/status:col-span-1 @sm/status:col-start-2 @sm/status:row-start-1" : "mt-3")}>
+      {activity && trailing && !unavailable && (
+        <div data-slot="status-overview-trailing" className="col-span-2 row-start-3 flex min-w-0 flex-wrap items-center justify-end gap-2 @xl/status:col-span-1 @xl/status:col-start-3 @xl/status:row-start-1">
+          {loading ? <Skeleton className="h-6 w-24 rounded" /> : trailing}
+        </div>
+      )}
+      <div className={cn("min-w-0", activity && "col-span-2 row-start-2", activity && (trailing ? "@xl/status:col-span-1 @xl/status:col-start-2 @xl/status:row-start-1" : "@sm/status:col-span-1 @sm/status:col-start-2 @sm/status:row-start-1"), !activity && "mt-3")}>
         {loading && <Skeleton data-slot="status-overview-skeleton" className={cn("rounded-sm", activity ? "h-6" : "h-control-md")} />}
         {showRail && <StatusSegmentRail ariaLabel={ariaLabel} content={content} variant={variant} />}
         {showData && empty && (
@@ -411,7 +419,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
         )}
       </div>
 
-      {showFooter && <div data-slot="status-overview-footer" className={cn("mt-2 text-label text-fg-subtle", activity && "col-span-2 @sm/status:col-span-3")}>{content.footer}</div>}
+      {showFooter && <div data-slot="status-overview-footer" className={cn("mt-2 text-label text-fg-subtle", activity && "col-span-2", activity && (trailing ? "row-start-4 @xl/status:col-span-3 @xl/status:row-start-2" : "@sm/status:col-span-3"))}>{content.footer}</div>}
       </div>
     </section>
   );

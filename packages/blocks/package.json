@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./deployment-detail-01": "./src/application/deployment-detail-01/index.ts",
     "./project-monitor-01": "./src/application/project-monitor-01/index.ts",
     "./storage-usage-01": "./src/application/storage-usage-01/index.ts",
     "./user-account-01": "./src/application/user-account-01/index.ts",

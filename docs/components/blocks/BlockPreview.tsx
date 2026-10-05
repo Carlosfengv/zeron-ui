@@ -48,6 +48,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "deployment-detail-01": () => import("./DeploymentDetailDemo").then(({ DeploymentDetailDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={930} canvasWidth={900}><DeploymentDetailDemo /></ResponsivePreview>,
+  })),
   "workflow": () => import("@/app/(internal)/workflow/_components/workflow-preview").then(({ WorkflowPreview }) => ({
     default: () => <ResponsivePreview canvasHeight={1060} canvasWidth={1824}><WorkflowPreview /></ResponsivePreview>,
   })),

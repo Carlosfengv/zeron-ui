@@ -74,6 +74,7 @@ const props: PropDef[] = [
   { name: "state", type: '"ready" | "loading" | "stale" | "unavailable" | "error"', default: '"ready"', description: "" },
   { name: "statusMessage", type: "ReactNode", description: "" },
   { name: "variant", type: '"card" | "activity"', default: '"card"', description: "" },
+  { name: "trailing", type: "ReactNode", description: "" },
 ];
 
 export default function StatusOverviewDoc() {

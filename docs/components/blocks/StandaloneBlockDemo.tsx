@@ -2,6 +2,7 @@
 
 import { ModelRouterDemo } from "./ModelRouterDemo";
 import { ProjectMonitorDemo } from "./ProjectMonitorDemo";
+import { DeploymentDetailDemo } from "./DeploymentDetailDemo";
 import { useMemo, useState } from "react";
 import { Login01 } from "@zeron/blocks/login-01";
 import { Signup01 } from "@zeron/blocks/signup-01";
@@ -216,6 +217,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <ModelRouterDemo />;
     case "project-monitor-01":
       return <ProjectMonitorDemo />;
+    case "deployment-detail-01":
+      return <DeploymentDetailDemo />;
     case "credit-usage-01":
       return <CreditUsageDemo />;
     case "personal-usage-01":

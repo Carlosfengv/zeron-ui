@@ -1,0 +1,12 @@
+{
+  "deploymentDetailBlock": {
+    "title": "Deployment Detail",
+    "description": "A deployment snapshot combining website preview, metadata, domains, source and stage results with the Project Monitor and Model Router surfaces.",
+    "composition": "Composition",
+    "compositionBody": "Uses Card, InfoItem, Avatar, Badge, StatusOverview, Button, Popover, Dropdown and Tooltip. A continuous content panel and footer use existing semantic colors, typography, spacing and surfaces, with narrow-container and dark-theme support.",
+    "dataContract": "Data contract",
+    "dataContractBody": "The host supplies deployment status, timestamps, domains, source and stages. Timestamps and durations use milliseconds. Ticks represent actual checks or equal-duration timeline buckets rather than invented progress. Issue counts come from stage issue lists; readiness and check results are independent. The preview uses example data without a live deployment connection.",
+    "behavior": "Interactions and states",
+    "behaviorBody": "Supports sharing, additional domains, copying the commit hash and details for non-build stages. Visit, build logs, run summary and investigate remain visible buttons without click behavior. Host callbacks own external operations; asynchronous actions prevent repeated submissions and report failures. The block supports loading, retry, stale snapshots and missing previews."
+  }
+}

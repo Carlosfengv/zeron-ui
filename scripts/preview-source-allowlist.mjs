@@ -1,5 +1,11 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "deployment-detail-01": [
+    "packages/blocks/src/application/deployment-detail-01/deployment-detail.tsx",
+    "packages/blocks/src/application/deployment-detail-01/deployment-detail-types.ts",
+    "packages/blocks/src/application/deployment-detail-01/deployment-detail-data.ts",
+    "packages/blocks/src/application/deployment-detail-01/deployment-detail-demo-data.ts"
+  ],
   "project-monitor-01": [
     "packages/blocks/src/application/project-monitor-01/project-monitor.tsx",
     "packages/blocks/src/application/project-monitor-01/project-monitor-views.tsx",

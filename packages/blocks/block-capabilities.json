@@ -1,4 +1,5 @@
 {
+  "deployment-detail-01": { "framework": "react", "kind": "data-block" },
   "project-monitor-01": { "framework": "react", "kind": "data-block" },
   "storage-usage-01": { "framework": "react", "kind": "data-block" },
   "user-account-01": { "framework": "react", "kind": "data-block" },

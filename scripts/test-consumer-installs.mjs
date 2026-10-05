@@ -261,6 +261,11 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "deployment-detail-01": [
+      'import { DeploymentDetail, deploymentDetailDemoData } from "@/components/blocks/deployment-detail-01";',
+      'export default function Page() { return <DeploymentDetail data={deploymentDetailDemoData} />; }',
+      '',
+    ].join("\n"),
     "project-monitor-01": [
       'import { ProjectMonitor, projectMonitorDemoData } from "@/components/blocks/project-monitor-01";',
       'export default function Page() { return <ProjectMonitor data={projectMonitorDemoData} />; }',
@@ -424,6 +429,13 @@ async function installViteComponent({ consumer, component, tarball }) {
     await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
   }
   const examples = {
+    "deployment-detail-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { DeploymentDetail, deploymentDetailDemoData } from "@/src/components/blocks/deployment-detail-01";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<DeploymentDetail data={deploymentDetailDemoData} />);',
+      '',
+    ].join("\n"),
     "project-monitor-01": [
       'import { createRoot } from "react-dom/client";',
       'import { ProjectMonitor, projectMonitorDemoData } from "@/src/components/blocks/project-monitor-01";',
