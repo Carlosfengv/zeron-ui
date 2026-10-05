@@ -1,0 +1,12 @@
+{
+  "costEstimateBlock": {
+    "title": "Cost Estimate",
+    "description": "An embedded usage cost estimator with monthly or annual billing, three presets, four usage inputs and example saving. Uses existing Container components and semantic tokens; the host provides the region and rates.",
+    "composition": "Composition",
+    "compositionBody": "Uses Container with separate ContainerBody sections for the summary and usage, plus ContainerHeader and ContainerFooter. The title uses 14px medium text. Slider, Input and Field handle usage; right-aligned pill Tabs with color=default choose billing. Their TabPanels contain the discount and distribution, rendered through Zeron Chart and Recharts.",
+    "calculation": "Calculation",
+    "calculationBody": "Fixed example rates use a 30-day month, 5× compression and three included seats. Integer amounts are rounded per line. Annual usage rates receive 15% off; a separate adjustment raises discounted usage below $49 to the monthly minimum. Distribution percentages exclude the adjustment. Unknown pricing is never zero and rates must match the selected region.",
+    "behavior": "Behavior and integration",
+    "behaviorBody": "Controlled inputs support atomic presets, precise entry, reset, billing changes and a real example JSON download. The header contains only the title and information; region selection, settings and close controls are omitted. The host sets the region. Saving captures the clicked inputs and full pricing fingerprint; editing during saving never marks the new estimate as saved. The demo covers loading, stale, error, missing rates and failed-save retries. It does not connect to a billing service."
+  }
+}

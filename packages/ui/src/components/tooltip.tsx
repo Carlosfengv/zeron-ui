@@ -3,6 +3,7 @@
 import {
   createContext,
   useContext,
+  useId,
   useState,
   type ReactNode,
 } from "react";
@@ -126,6 +127,10 @@ function Tooltip({
   forceOpen,
   onOpenChange: onOpenChangeProp,
 }: TooltipProps) {
+  const generatedId = useId();
+  const childProps = children.props as { id?: string; "aria-describedby"?: string };
+  const triggerId = childProps.id ?? generatedId;
+  const contentId = `${triggerId}-tooltip`;
   const [internalOpen, setInternalOpen] = useState(false);
   const open = forceOpen !== undefined ? forceOpen : internalOpen;
   const portalContainer = useContext(TooltipPortalContainerContext);
@@ -137,6 +142,7 @@ function Tooltip({
   const tooltip = (
     <TooltipPrimitive.Root
       open={open}
+      triggerId={forceOpen !== undefined ? triggerId : undefined}
       onOpenChange={(v) => {
         setInternalOpen(v);
         onOpenChangeProp?.(v);
@@ -144,7 +150,7 @@ function Tooltip({
     >
       {/* An explicit delayDuration overrides the ambient provider's delay;
           left undefined, the trigger inherits it from the provider. */}
-      <TooltipPrimitive.Trigger render={children} delay={delayDuration} />
+      <TooltipPrimitive.Trigger id={triggerId} aria-describedby={[childProps["aria-describedby"], open ? contentId : undefined].filter(Boolean).join(" ") || undefined} render={children} delay={delayDuration} />
       <TooltipPrimitive.Portal
         container={portalContainer ?? fullscreenPortal ?? undefined}
       >
@@ -154,6 +160,8 @@ function Tooltip({
           className="z-popover"
         >
           <TooltipPrimitive.Popup
+            role="tooltip"
+            id={contentId}
             render={(props, state) => {
               const exiting = state.transitionStatus === "ending";
               const {

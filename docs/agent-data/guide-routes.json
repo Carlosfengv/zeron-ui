@@ -14,6 +14,10 @@
       "itemId": "block:ai-gateway-session-list-01"
     },
     {
+      "path": "blocks/cost-estimate-01.md",
+      "itemId": "block:cost-estimate-01"
+    },
+    {
       "path": "blocks/credit-usage-01.md",
       "itemId": "block:credit-usage-01"
     },

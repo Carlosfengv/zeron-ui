@@ -1,5 +1,14 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "cost-estimate-01": [
+    "packages/blocks/src/application/cost-estimate-01/index.ts",
+    "packages/blocks/src/application/cost-estimate-01/cost-estimate.tsx",
+    "packages/blocks/src/application/cost-estimate-01/cost-estimate-types.ts",
+    "packages/blocks/src/application/cost-estimate-01/cost-estimate-data.ts",
+    "packages/blocks/src/application/cost-estimate-01/cost-estimate-summary.tsx",
+    "packages/blocks/src/application/cost-estimate-01/cost-estimate-usage.tsx",
+    "packages/blocks/src/application/cost-estimate-01/cost-estimate-demo-data.ts"
+  ],
   "getting-started-01": [
     "packages/blocks/src/application/getting-started-01/getting-started.tsx",
     "packages/blocks/src/application/getting-started-01/getting-started-types.ts",

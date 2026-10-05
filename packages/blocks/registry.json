@@ -3,6 +3,52 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "cost-estimate-01",
+      "type": "registry:block",
+      "title": "费用估算",
+      "description": "四项用量、预设、月付/年付与最低消费的可控费用估算器。",
+      "categories": ["application", "analytics", "billing"],
+      "dependencies": ["recharts"],
+      "registryDependencies": ["badge", "button", "chart", "container", "empty", "field", "icon-context", "inline-notice", "input", "skeleton", "slider", "tabs", "tooltip", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate-summary.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate-summary.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate-usage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate-usage.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "getting-started-01",
       "type": "registry:block",
       "title": "入门任务清单",
