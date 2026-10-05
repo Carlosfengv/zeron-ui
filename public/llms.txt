@@ -1,3 +1,7 @@
+# Task context
+
+[按任务读取 Zeron 规范](https://zeron-ui.vercel.app/ai/skills/zeron-page-builder/references/task-context.md). New application: choose a standard shell; existing page: preserve the host; small control change: read only relevant contracts.
+
 # Zeron UI for agents
 
 Read the catalog and exact installed types before choosing a component.
@@ -162,6 +166,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [security-overview-01](https://zeron-ui.vercel.app/agent-guides/blocks/security-overview-01.md)
 - [storage-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/storage-usage-01.md)
 - [user-account-01](https://zeron-ui.vercel.app/agent-guides/blocks/user-account-01.md)
+- [app-shell](https://zeron-ui.vercel.app/agent-guides/components/app-shell.md)
 - [avatar](https://zeron-ui.vercel.app/agent-guides/components/avatar.md)
 - [button](https://zeron-ui.vercel.app/agent-guides/components/button.md)
 - [code-block](https://zeron-ui.vercel.app/agent-guides/components/code-block.md)
@@ -170,7 +175,12 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [field](https://zeron-ui.vercel.app/agent-guides/components/field.md)
 - [input](https://zeron-ui.vercel.app/agent-guides/components/input.md)
 - [metric-card](https://zeron-ui.vercel.app/agent-guides/components/metric-card.md)
+- [nav-item](https://zeron-ui.vercel.app/agent-guides/components/nav-item.md)
+- [nav-menu](https://zeron-ui.vercel.app/agent-guides/components/nav-menu.md)
 - [page-layout](https://zeron-ui.vercel.app/agent-guides/components/page-layout.md)
 - [resource-detail-layout](https://zeron-ui.vercel.app/agent-guides/components/resource-detail-layout.md)
 - [select](https://zeron-ui.vercel.app/agent-guides/components/select.md)
+- [sidebar-account-menu](https://zeron-ui.vercel.app/agent-guides/components/sidebar-account-menu.md)
+- [sidebar-identity-row](https://zeron-ui.vercel.app/agent-guides/components/sidebar-identity-row.md)
+- [sidebar](https://zeron-ui.vercel.app/agent-guides/components/sidebar.md)
 - [tree](https://zeron-ui.vercel.app/agent-guides/components/tree.md)

@@ -11,6 +11,8 @@ For an explicit migration of an existing design system, use the paired [Swap to 
 
 ## Ground the work
 
+Start with [Task context](references/task-context.md) to choose the references needed for a new application, an existing page, or a small control change. Read deeper contracts only for the affected regions.
+
 Read the target project's instructions and relevant implementation. Identify:
 
 - whether this is the Zeron source repository or a consumer project;

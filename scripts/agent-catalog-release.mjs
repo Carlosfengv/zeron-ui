@@ -2,6 +2,7 @@ import { artifactFileUrl, artifactOrigin } from "./agent-artifacts.mjs";
 import { serialize, sha256 } from "./agent-utils.mjs";
 import { buildFullContext, assertContextBudget, contextBudgets } from "./agent-context.mjs";
 import { renderDetail } from "./build-agent-catalog.mjs";
+import { hasTaskContext } from "../lib/agent-catalog/task-context.mjs";
 import { loadAgentSchema } from "./load-agent-schema.mjs";
 import { runtimeInstallationSummary, publishedInstallationVerificationSchema } from "./agent-release-record.mjs";
 import { skillReleaseSchema } from "./skill-release.mjs";
@@ -13,7 +14,7 @@ const placeholder = "__ZERON_CATALOG_BASE__";
 const guidePath = id => `guides/${id}.md`;
 
 function contexts(runtime, site) {
-  const intro = `# Zeron UI for agents\n\nRead this fixed catalog and the exact installed public types before choosing components.\n\n- [AI usage](${site}/docs/ai)\n- [Fixed catalog](${placeholder}/catalog.json)\n- [Fixed Skills installation](${new URL(runtime.catalog.catalogUrl).origin}/skills/releases/${runtime.catalog.skillVersion}/install.md)\n\n## Install\n\nUse the exact verified CLI and Registry from get_install_command. Confirm Next or Vite and npm or pnpm, then inspect add --dry-run and local conflicts before installing. React 19 and Tailwind 4 are required. Next-only blocks are not Vite installation candidates.\n\n## Design rules\n\nUse semantic tokens and public variants, sizes and icon slots. Preserve keyboard focus, loading and disabled states, host navigation and scroll ownership. Connect real data and callbacks. A static check does not prove business or visual behavior.\n`;
+  const intro = (hasTaskContext(runtime.skills) ? `# Task context\n\n[按任务读取 Zeron 规范](${placeholder}/skills/zeron-page-builder/references/task-context.md). New application: choose a standard shell; existing page: preserve the host; small control change: read only relevant contracts.\n\n` : "") + `# Zeron UI for agents\n\nRead this fixed catalog and the exact installed public types before choosing components.\n\n- [AI usage](${site}/docs/ai)\n- [Fixed catalog](${placeholder}/catalog.json)\n- [Fixed Skills installation](${new URL(runtime.catalog.catalogUrl).origin}/skills/releases/${runtime.catalog.skillVersion}/install.md)\n\n## Install\n\nUse the exact verified CLI and Registry from get_install_command. Confirm Next or Vite and npm or pnpm, then inspect add --dry-run and local conflicts before installing. React 19 and Tailwind 4 are required. Next-only blocks are not Vite installation candidates.\n\n## Design rules\n\nUse semantic tokens and public variants, sizes and icon slots. Preserve keyboard focus, loading and disabled states, host navigation and scroll ownership. Connect real data and callbacks. A static check does not prove business or visual behavior.\n`;
   const list = runtime.catalog.items.filter(item => item.kind !== "support").map(item =>
     `- [${item.title.en}](${placeholder}/items/${encodeURIComponent(item.id)}.md): ${item.summary.en}${item.installable ? ` Registry: ${item.registryName}.` : " Not installable."}`).join("\n");
   const guides = Object.values(runtime.details).filter(detail => detail.guide !== null).map(detail => ({
@@ -74,8 +75,11 @@ function materialize(runtime, identity, verificationBytes, exampleFiles = new Ma
   if (runtime.guideRoutes) files.set("guide-routes.json", Buffer.from(serialize(runtime.guideRoutes)));
   for (const [id, detail] of Object.entries(runtime.details)) {
     files.set(`items/${id}.json`, Buffer.from(serialize(detail)));
-    files.set(`items/${id}.md`, Buffer.from(renderDetail(detail)));
+    files.set(`items/${id}.md`, Buffer.from(renderDetail(detail, runtime.skills, hasTaskContext(runtime.skills) ? runtime.examples : undefined, runtime.catalog.catalogUrl)));
     if (detail.guide !== null) files.set(guidePath(id), Buffer.from(detail.guide));
+  }
+  if (hasTaskContext(runtime.skills)) for (const [name, references] of Object.entries(runtime.skills)) for (const [relative, text] of Object.entries(references)) {
+    files.set(`skills/${name}/${relative}`, Buffer.from(text));
   }
   const base = runtime.catalog.catalogUrl.slice(0, -"/catalog.json".length);
   for (const [name, template] of Object.entries(identity.contextTemplates)) {

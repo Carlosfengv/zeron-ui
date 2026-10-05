@@ -58,3 +58,9 @@ export function ResourcePage({ children, canCreate, onCreate }: {
 ## 验收
 
 检查一个 h1、标题与描述的组合、长标题、操作折行、窄屏栏堆叠、键盘导航、滚动容器高度及页面返回行为。使用公开布局与语义 tokens，不通过全局 CSS 重建标题栏。示例类型由 `agents:guides:examples:check` 验证；这些布局与行为检查仍需运行页面。消费者以实际安装别名和源码为准。
+
+## 默认样式与订单业务适配
+
+PageContent 默认拥有 floating surface、边框和圆角；不要用 bg-surface-base 或第二层 Card 外框抵消内容与宿主的视觉层次。PageTitle 默认紧凑样式适合资源页面，按任务选择公开参数，不为排列调整重设字体。
+
+将资源列表改为订单列表时，在项目列配置提供订单编号、客户、金额、状态；在数据适配器将搜索/状态/分页映射到接口参数，并供给 loading/error/empty；权限决定可见操作，服务端验证授权。已有 AppShell 和主题保留，PageLayout/PageContent/PageBody 保留布局与滚动职责。业务层允许组合 Input/Select/Button，不自行重造控件状态样式。

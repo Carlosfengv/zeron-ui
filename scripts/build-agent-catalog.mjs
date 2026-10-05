@@ -9,7 +9,8 @@ import { canonical, readOwnedFile, serialize, sha256 } from "./agent-utils.mjs";
 import { generateAgentGuideLoaders } from "./generate-agent-guide-loaders.mjs";
 import { assertContextBudget, buildFullContext, contextBudgets } from "./agent-context.mjs";
 import { readSkillTexts } from "./skill-text-references.mjs";
-import { renderExampleLinks } from "../lib/agent-catalog/example-links.mjs";
+import { renderExampleLinks, renderHostSources } from "../lib/agent-catalog/example-links.mjs";
+import { hasTaskContext, staticTaskContext } from "../lib/agent-catalog/task-context.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const site = "https://zeron-ui.vercel.app";
@@ -51,10 +52,11 @@ async function localizedTitle(doc) {
   const values = Object.values(data).filter((value) => value && typeof value === "object");
   return values.map((value) => value.title ?? value.name).find((value) => typeof value === "string") ?? null;
 }
-export function renderDetail(detail) {
+export function renderDetail(detail, skills = {}, examples = undefined, catalogUrl = null) {
   const { item } = detail;
   const text = `# ${item.title.en}\n\n${item.summary.en}\n\n- ID: ${item.id}\n- Registry: ${item.registryName ?? "not installable"}\n- Framework: ${item.framework ?? "unknown"}\n- Documentation coverage: ${item.coverage}\n- Source exports: ${detail.exports.join(", ") || "Consult linked documentation"}\n- Guide language: ${detail.guideLocale ?? "No detailed guide"}\n\n## Use when\n\n${item.useCases.map((value) => `- ${value}`).join("\n") || "Read the task and installed public types before adopting this item."}\n\n## Do not use when\n\n${item.whenNotToUse.map((value) => `- ${value}`).join("\n") || "Do not assume a similarly named library has the same API."}\n\n## Integration\n\nUse public props and slots. Preserve host navigation and scroll ownership. Connect real data and callbacks; demo content is not an integration. The installed source is the API authority.\n\n${detail.guide ?? "No detailed guide is maintained for this item. Check the installed source and linked documentation."}\n`;
-  return detail.examples ? `${text}\n## Runnable examples\n\n${renderExampleLinks(detail.examples)}` : text;
+  const contextual = text + staticTaskContext(skills) + renderHostSources(examples, catalogUrl);
+  return detail.examples ? `${contextual}\n## Runnable examples\n\n${renderExampleLinks(detail.examples)}` : contextual;
 }
 export async function buildAgentCatalog({ output = root, check = false, publishedInputs = undefined, writeOutputs = true } = {}) {
   const temporary = await mkdtemp(path.join(tmpdir(), "zeron-agent-catalog-"));
@@ -202,11 +204,15 @@ export async function buildAgentCatalog({ output = root, check = false, publishe
       [`ai/releases/${catalogVersion}/guide-routes.json`, serialize(guideRoutes)],
     ]);
     for (const [id, detail] of Object.entries(details)) for (const suffix of ["json", "md"]) {
-      const body = suffix === "json" ? serialize(detail) : renderDetail(detail);
+      const body = suffix === "json" ? serialize(detail) : renderDetail(detail, skills);
       publicFiles.set(`ai/items/${id}.${suffix}`, body);
       publicFiles.set(`ai/releases/${catalogVersion}/items/${id}.${suffix}`, body);
     }
-    const intro = `# Zeron UI for agents\n\nRead the catalog and exact installed types before choosing a component.\n\n- [AI usage](${site}/docs/ai)\n- [Catalog](${site}/ai/catalog.json)\n- [Skills installation](${site}/skills/install.md)\n\n## Install\n\nUse the verified Zeron CLI. Start with init when components.json is missing; inspect add --dry-run before installing. React 19 and Tailwind 4 are required; Next-only blocks must not be directly installed in Vite. Workspace @zeron/ui imports do not establish consumer import paths.\n\n## Design rules\n\nUse semantic tokens and public variants, sizes and icon slots. Preserve keyboard focus, loading and disabled states. Reuse the host shell, assign one scroll owner per region, and replace demo data with real callbacks. A clean static check is not runtime verification.\n`;
+    if (hasTaskContext(skills)) for (const [name, references] of Object.entries(skills)) for (const [relative, text] of Object.entries(references)) {
+      publicFiles.set(`ai/skills/${name}/${relative}`, text);
+      publicFiles.set(`ai/releases/${catalogVersion}/skills/${name}/${relative}`, text);
+    }
+    const intro = (hasTaskContext(skills) ? `# Task context\n\n[按任务读取 Zeron 规范](${site}/ai/skills/zeron-page-builder/references/task-context.md). New application: choose a standard shell; existing page: preserve the host; small control change: read only relevant contracts.\n\n` : "") + `# Zeron UI for agents\n\nRead the catalog and exact installed types before choosing a component.\n\n- [AI usage](${site}/docs/ai)\n- [Catalog](${site}/ai/catalog.json)\n- [Skills installation](${site}/skills/install.md)\n\n## Install\n\nUse the verified Zeron CLI. Start with init when components.json is missing; inspect add --dry-run before installing. React 19 and Tailwind 4 are required; Next-only blocks must not be directly installed in Vite. Workspace @zeron/ui imports do not establish consumer import paths.\n\n## Design rules\n\nUse semantic tokens and public variants, sizes and icon slots. Preserve keyboard focus, loading and disabled states. Reuse the host shell, assign one scroll owner per region, and replace demo data with real callbacks. A clean static check is not runtime verification.\n`;
     const list = items.filter((item) => item.kind !== "support").map((item) => `- [${item.title.en}](${item.markdown}): ${item.summary.en}${item.installable ? ` Registry: ${item.registryName}.` : " Not installable."}`).join("\n");
     const guideIndex = [...guides.values()].map((guide) => `- [${guide.meta.name}](${site}/agent-guides/${guide.key})`).join("\n");
     const texts = {

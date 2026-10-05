@@ -3,6 +3,7 @@ schema_version: 1
 name: button
 kind: component
 status: stable
+typecheck_examples: true
 summary: 触发即时操作或推动用户完成当前任务。
 package_import: "@zeron/ui/button"
 registry_import: "@/components/ui/button"
@@ -15,6 +16,17 @@ related:
 ---
 
 # Button
+
+## 图标和文字的最小契约
+
+普通图文按钮使用 leadingIcon/trailingIcon，传入兼容 IconComponent 的组件类型，不是 `<Icon />` 元素。children 会进入 button-label；图标槽和标签才是内部 flex 的同级节点。图标放进标签可能因 SVG 的 block 显示而上下错行，根元素 gap/inline-flex 无法修复。
+
+```text
+正确：<Button leadingIcon={AddIcon}>创建资源</Button>
+错误：<Button><AddIcon />创建资源</Button>
+```
+
+使用下面完整 Composition 示例；loading 使用组件内置状态。不要覆盖图标尺寸或内部标签 CSS 掩盖误用。业务回调、权限和请求状态在项目代码接入。
 
 ## Agent intent
 
@@ -75,37 +87,17 @@ related:
 
 ## Composition
 
-标准操作组：一个高强调操作，加若干低强调选项。
-
-```tsx
-import { Button } from "@zeron/ui/button";
-
-<div className="flex items-center gap-2">
-  <Button type="submit">创建项目</Button>
-  <Button type="button" variant="secondary">保存草稿</Button>
-  <Button type="button" variant="ghost">取消</Button>
-</div>
-```
-
-异步与图标操作：
-
 ```tsx
 import { Button } from "@zeron/ui/button";
 import { useIcon } from "@zeron/icons/context";
-
-const Refresh = useIcon("rotate-ccw");
-
-<Button
-  aria-label="刷新日志"
-  disabled={!canRefresh}
-  iconOnly
-  loading={isRefreshing}
-  onClick={refresh}
-  type="button"
-  variant="ghost"
->
-  <Refresh aria-hidden />
-</Button>
+export function CreateAction({ pending, onCreate }: { pending: boolean; onCreate: () => void }) {
+  const AddIcon = useIcon("plus");
+  return <Button type="button" leadingIcon={AddIcon} loading={pending} onClick={onCreate}>创建资源</Button>;
+}
+export function RefreshAction({ pending, onRefresh }: { pending: boolean; onRefresh: () => void }) {
+  const Refresh = useIcon("rotate-ccw");
+  return <Button aria-label="刷新日志" type="button" iconOnly loading={pending} variant="ghost" onClick={onRefresh}><Refresh aria-hidden /></Button>;
+}
 ```
 
 ## Safe customization

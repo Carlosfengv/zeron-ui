@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
 import { toolSchemas, type QueryResult, type ResultMeta, type ToolErrorCode, type ToolInputs, type ToolName } from "./contracts";
 import type { AgentRuntime, CatalogItem } from "./schema";
-import { renderExampleLinks } from "./example-links.mjs";
+import { renderExampleLinks, renderHostSources } from "./example-links.mjs";
+import { taskContextHint, hasTaskContext } from "./task-context.mjs";
 
 const normalize = (text: string) => text.normalize("NFKC").trim().toLocaleLowerCase("en-US").replace(/\s+/g, " ");
 const fingerprint = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -207,10 +208,10 @@ export function createCatalogQuery(snapshots: { currentVersion: string; versions
       const item = resolveItem(runtime, input.id);
       const detail = runtime.details[item.id];
       const content: Record<string, Chapter> = {
-        overview: { name: "overview", text: `${item.title.en}\n${item.summary[input.locale] ?? item.summary.en}\nCoverage: ${item.coverage}`, contentLocale: item.summary[input.locale] ? input.locale : "en" },
+        overview: { name: "overview", text: `${item.title.en}\n${item.summary[input.locale] ?? item.summary.en}\nCoverage: ${item.coverage}\n${taskContextHint(runtime.skills, runtime.catalog.catalogVersion, runtime.catalog.catalogUrl)}`, contentLocale: item.summary[input.locale] ? input.locale : "en" },
         usage: { name: "usage", text: [...item.useCases, ...item.whenNotToUse.map((value) => `Avoid: ${value}`), detail.guide ?? "No detailed guide is maintained. Check the installed public types before using this item."].join("\n\n"), contentLocale: detail.guideLocale },
-        api: { name: "api", text: `Public exports: ${detail.exports.join(", ") || "Not recorded"}\n${detail.keyApi.join("\n")}\nThe installed source is authoritative. This is not a complete Props declaration.`, contentLocale: "en" },
-        examples: { name: "examples", text: detail.examples ? renderExampleLinks(detail.examples) : detail.guide ? "Examples, if maintained, are included in the usage guide. No separate runnable example has been verified for this catalog item." : "No maintained example is available for this item.", contentLocale: "en" },
+        api: { name: "api", text: `Public exports: ${detail.exports.join(", ") || "Not recorded"}\n${detail.keyApi.join("\n")}\nThe installed source is authoritative. This is not a complete Props declaration.`, contentLocale: detail.keyApi.some(value => /\p{Script=Han}/u.test(value)) ? "zh-CN" : "en" },
+        examples: { name: "examples", text: (detail.examples ? renderExampleLinks(detail.examples) : detail.guide ? "Examples, if maintained, are included in the usage guide. No separate runnable example has been verified for this catalog item." : "No maintained example is available for this item.") + (hasTaskContext(runtime.skills) ? renderHostSources(runtime.examples, runtime.catalog.catalogUrl) : ""), contentLocale: "en" },
         installation: { name: "installation", text: `Installable: ${item.installable}\nRegistry name: ${item.registryName ?? "none"}\nFramework: ${item.framework ?? "unknown"}\nReact: ${item.react ?? "unknown"}; Tailwind: ${item.tailwind ?? "unknown"}\nUse get_install_command to check the exact published CLI and resource combination.`, contentLocale: "en" },
         sources: { name: "sources", text: [`Documentation: ${item.docs ?? "none"}`, `Markdown: ${item.markdown}`, ...detail.sourceFiles, `Dependencies: ${detail.dependencies.join(", ")}`, `Registry dependencies: ${detail.registryDependencies.join(", ")}`].join("\n"), contentLocale: "en" },
       };

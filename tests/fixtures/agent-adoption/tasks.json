@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "taskVersion": "2026-10-05-v1",
+  "repetitionsPerTaskPerContext": 3,
+  "viewports": [{ "width": 390, "height": 844 }, { "width": 1440, "height": 1000 }],
+  "tasks": [
+    {
+      "id": "new-admin",
+      "prompt": "在给定空 Next 项目中使用 Zeron 制作资源后台。需要管理分组下的资源与设置导航、当前账户操作和资源列表。资源接口已提供，列表显示名称、状态与更新时间，支持搜索、分页和打开详情。账户操作进入设置页面。实现桌面与手机可操作的业务页面，保持 Zeron 的默认规范与样式。交付前完成你认为适用的自查，并说明未检查范围。",
+      "requiredAssertions": ["navigation-changes-content", "account-opens-settings", "list-uses-provided-api", "filter-resets-page", "detail-keeps-list-context", "standard-library-layout-and-feedback", "phone-navigation-reachable", "no-page-overflow", "no-managed-source-edits"]
+    },
+    {
+      "id": "existing-orders",
+      "prompt": "在给定应用的现有导航和主题下新增订单页，使用 Zeron。接口提供订单编号、客户、金额、状态、筛选及分页；操作权限由角色决定。保留当前导航及原页面行为，处理加载、空数据、失败重试和无权限状态。筛选、分页和可用操作必须连接提供的接口。保持现有产品主题，交付前完成适用自查。",
+      "requiredAssertions": ["host-preserved", "old-route-regression", "orders-uses-provided-api", "filter-and-page-server-contract", "permission-controls-actions", "loading-empty-error-retry", "no-managed-source-edits", "no-page-overflow"]
+    },
+    {
+      "id": "detail-action",
+      "prompt": "在给定资源详情页添加带图标和中文文字的异步发布操作，使用 Zeron。调用提供的发布接口，处理提交中、成功、失败重试以及没有操作权限的状态。慢请求期间不允许重复提交，失败后保留当前编辑内容。保留原有详情和返回行为，完成适用自查并交付。",
+      "requiredAssertions": ["action-uses-provided-api", "icon-label-aligned", "loading-size-stable", "duplicate-submit-blocked", "error-keeps-draft-and-retries", "permission-disables-action", "back-keeps-context", "no-managed-source-edits"]
+    },
+    {
+      "id": "responsive-labels",
+      "prompt": "给定使用 Zeron 的资源页面需要增加较长中文操作标签：批量导出当前筛选结果、同步最新资源状态，并支持手机上的筛选、列表和账户导航。保留现有动作接口、权限与桌面业务行为。请完成布局适配，检查窄屏、长文案和键盘使用，保持组件库默认规范与样式。",
+      "requiredAssertions": ["existing-actions-and-permissions-preserved", "long-label-no-clipping", "icon-label-aligned", "action-group-reflows", "phone-navigation-reachable", "keyboard-action-reachable", "table-scroll-owned-locally", "no-page-overflow", "no-managed-source-edits"]
+    }
+  ]
+}

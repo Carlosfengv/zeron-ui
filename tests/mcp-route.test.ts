@@ -14,6 +14,23 @@ async function rpc(method: string, params: Record<string, unknown> = {}, modern 
 }
 
 describe("real stateless MCP HTTP adapter", () => {
+  it("lets a text-only client discover and retrieve exact-version task context without preinstalled Skills", async () => {
+    const found = await rpc("tools/call", { name: "search_components", arguments: { query: "Next 后台侧栏" } });
+    const text = found.envelope.result.content[0].text;
+    const args = JSON.parse(text.match(/get_skill arguments: (.+)/)[1]);
+    expect(args).toEqual({ name: "zeron-page-builder", reference: "references/task-context.md", catalogVersion: found.envelope.result.structuredContent.meta.catalogVersion });
+    const read = await rpc("tools/call", { name: "get_skill", arguments: args });
+    expect(read.envelope.result.isError).toBe(false);
+    expect(read.envelope.result.content[0].text).toContain("已有应用新增页面");
+    const detail = await rpc("tools/call", { name: "get_component", arguments: { id: "sidebar", catalogVersion: args.catalogVersion, sections: ["overview", "usage"] } });
+    expect(detail.envelope.result.structuredContent.data.sections[0].text).toContain(JSON.stringify(args));
+    expect(detail.envelope.result.content[0].text).toContain("NavMenu");
+    const old = structuredClone(snapshots.versions.find(runtime => runtime.catalog.catalogVersion === snapshots.currentVersion)!);
+    delete old.skills["zeron-page-builder"]["references/task-context.md"];
+    const legacy = createAgentMcpHandler({ currentVersion: old.catalog.catalogVersion, versions: [old] }, { allowedOrigins: [] });
+    const oldRead = await rpc("tools/call", { name: "search_components", arguments: { query: "sidebar" } }, false, legacy);
+    expect(oldRead.envelope.result.content[0].text).not.toContain("get_skill arguments:");
+  });
   it("supports legacy initialization and independently discovers five readonly tools", async () => {
     const initialized = await rpc("initialize", { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "tests", version: "1" } });
     expect(initialized.response.status).toBe(200); expect(initialized.envelope.result.protocolVersion).toBe("2025-11-25");

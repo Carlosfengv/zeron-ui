@@ -29,7 +29,11 @@ describe("business example source contract", () => {
   it("reads exact bytes, actual source closures and Registry names without claiming runtime verification", async () => {
     expect(baseline.files).toHaveLength(10);
     expect(baseline.hostSources).toHaveLength(9);
-    expect(baseline.hostAdoptedItems).toHaveLength(11);
+    expect(baseline.hostAdoptedItems).toHaveLength(17);
+    for (const id of ["component:app-shell", "component:sidebar", "component:nav-menu", "component:nav-item", "component:sidebar-account-menu", "component:sidebar-identity-row"]) {
+      expect(baseline.hostAdoptedItems).toContain(id);
+      expect(baseline.declarations.examples.every(example => !example.adoptedItems.includes(id))).toBe(true);
+    }
     expect(baseline.hostRegistryItems.map(item => item.itemId)).toEqual(baseline.hostAdoptedItems);
     expect(baseline.declarations.examples.map(example => example.exampleId)).toEqual(["resource-detail", "resource-list", "settings"]);
     expect(baseline).not.toHaveProperty("passed");

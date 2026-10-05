@@ -56,6 +56,10 @@
       "itemId": "block:user-account-01"
     },
     {
+      "path": "components/app-shell.md",
+      "itemId": "component:app-shell"
+    },
+    {
       "path": "components/avatar.md",
       "itemId": "component:avatar"
     },
@@ -88,6 +92,14 @@
       "itemId": "component:metric-card"
     },
     {
+      "path": "components/nav-item.md",
+      "itemId": "component:nav-item"
+    },
+    {
+      "path": "components/nav-menu.md",
+      "itemId": "component:nav-menu"
+    },
+    {
       "path": "components/page-layout.md",
       "itemId": "component:page-layout"
     },
@@ -98,6 +110,18 @@
     {
       "path": "components/select.md",
       "itemId": "component:select"
+    },
+    {
+      "path": "components/sidebar-account-menu.md",
+      "itemId": "component:sidebar-account-menu"
+    },
+    {
+      "path": "components/sidebar-identity-row.md",
+      "itemId": "component:sidebar-identity-row"
+    },
+    {
+      "path": "components/sidebar.md",
+      "itemId": "component:sidebar"
     },
     {
       "path": "components/tree.md",

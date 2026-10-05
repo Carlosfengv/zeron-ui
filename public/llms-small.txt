@@ -1,3 +1,7 @@
+# Task context
+
+[按任务读取 Zeron 规范](https://zeron-ui.vercel.app/ai/skills/zeron-page-builder/references/task-context.md). New application: choose a standard shell; existing page: preserve the host; small control change: read only relevant contracts.
+
 # Zeron UI for agents
 
 Read the catalog and exact installed types before choosing a component.

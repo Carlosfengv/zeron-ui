@@ -40,7 +40,7 @@ describe("catalog query against the generated full catalog", () => {
   it("meets the bilingual task evaluation threshold without counting negative cases", () => {
     const knownIds = new Set(current.catalog.items.map((item) => item.id));
     for (const task of evaluation) expect(task.expected.every((id) => knownIds.has(id))).toBe(true);
-    expect(evaluation.filter((entry) => entry.locale === "zh-CN")).toHaveLength(15);
+    expect(evaluation.filter((entry) => entry.locale === "zh-CN")).toHaveLength(18);
     expect(evaluation.filter((entry) => entry.locale === "en")).toHaveLength(15);
     const failures = evaluation.filter((entry) => {
       const ids = page(query.call("search_components", { query: entry.query, locale: entry.locale, limit: 3 })).items.map((item) => item.id);

@@ -39,6 +39,22 @@ const copyExamples = () => ({ prepared: structuredClone(fixture.examples.prepare
   verification: structuredClone(fixture.examples.verification), attachments: new Map(fixture.examples.attachments) });
 
 describe("catalog runnable example binding (pure fixtures, not release approval)", () => {
+  it("serves fixed task resources and the full host inventory without upgrading host-only coverage", async () => {
+    const candidate = await releaseFixture({ directory: path.join(directory, "task-context"), label: "b", schemas, objects,
+      includeExamples: true, textSelection: true, extraSkillSources: new Map([
+        ["zeron-page-builder/references/task-context.md", Buffer.from("# Tasks\n\nRead relevant contracts.")],
+        ["zeron-page-builder/scripts/check-rendered-controls.mjs", Buffer.from("export const check = true;\n")],
+      ]) });
+    const base = candidate.catalog.baseUrl;
+    const detail = createCatalogQuery({ currentVersion: candidate.catalog.runtime.catalog.catalogVersion, versions: [candidate.catalog.runtime] }).call("get_component", { id: "sidebar", sections: ["overview", "examples"] });
+    expect(detail.data.item.coverage).not.toBe("example-verified");
+    expect(detail.data.sections[0].text).toContain(`${base}/skills/zeron-page-builder/references/task-context.md`);
+    expect(detail.data.sections[1].text).toContain(`${base}/examples/sources/app.tsx`);
+    expect(detail.data.sections[1].text).toContain(`${base}/examples/source-manifest.json`);
+    expect(candidate.catalog.files.get("items/component:sidebar.md").toString()).toContain(`${base}/examples/sources/app.tsx`);
+    expect(candidate.catalog.files.get("skills/zeron-page-builder/scripts/check-rendered-controls.mjs").toString()).toBe("export const check = true;\n");
+    await verifyCatalogReleaseFiles(candidate.catalog.files, candidate.catalogStage.manifest, { schemas });
+  });
   it("rejects supplied coverage, links and a prebuilt runtime descriptor, with or without a report", async () => {
     for (const change of [runtime => { runtime.catalog.items[0].coverage = "example-verified"; },
       runtime => { runtime.details["component:button"].item.coverage = "example-verified"; },

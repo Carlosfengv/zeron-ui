@@ -2,12 +2,16 @@
 
 Three pages use public Zeron components and an injected `ExampleApi` from `shared/contracts.ts`. The deterministic adapter is an in-memory demonstration service. It records calls and provides controlled delays, failures and permissions; it does not represent a deployed backend.
 
+`app.tsx` is the complete host: AppShell owns the frame, Sidebar owns responsive navigation, NavMenu owns grouped feedback, and SidebarAccountMenu owns account actions. On mobile, choosing a destination closes the drawer. The source manifest separates host adoption from each page's adoption; installing a page alone does not imply that its host components are verified page examples. Reuse existing application navigation when integrating these pages into a host that already has a shell.
+
 Run from the repository with Node 22 and pnpm 10.12.4. Use a fresh output directory on every attempt:
 
 ```sh
 pnpm agents:examples --framework vite --package-manager pnpm --output output/agent-examples/vite-local --serve --port 4187
 pnpm agents:examples --framework next --package-manager pnpm --output output/agent-examples/next-local --serve --port 4188
 ```
+
+For repeatable browser acceptance, replace `--serve` with `--check-browser` and use a new output directory. The runner starts and stops its own production preview, checks all applicable page states and keyboard flows at 390/1440px, then writes `local-browser-verification.json` and `browser/`. `shell-observations.json` records grouped navigation, actual icon/label geometry, collapse/expand, mobile drawer closing and account action separately from page coverage. This local entry does not establish a published release or independent Agent development success. Do not combine `--serve` and `--check-browser`.
 
 The runner bootstraps a fixed consumer template, runs the workspace CLI executable against a loopback Registry, installs components, adapts imports to consumer aliases, checks types and builds production output before serving. `local-verification.json` describes this development combination. It does not prove installation from a published CLI or a public immutable release. The production acceptance runner must bind the same sources to the verified installation input separately.
 

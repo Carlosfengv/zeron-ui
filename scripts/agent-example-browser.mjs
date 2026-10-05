@@ -328,6 +328,50 @@ export async function runExampleBrowserChecks(origin, declarations, output, { ti
         throw error;
       } finally { await context.close(); }
     };
+    const shell = [];
+    for (const width of [390, 1440]) shell.push(await execute("resource-list", `shell-${width}`, async page => {
+      await open(page, origin, "resource-list"); await ready(page, "resource-list");
+      assert.equal(await page.locator('[data-slot="app-shell"]').count(), 1);
+      const trigger = page.locator('[data-slot="app-shell-header"]').getByRole("button", { name: "Toggle sidebar", exact: true });
+      if (width === 390) await trigger.click();
+      const nav = page.getByRole("navigation", { name: "Workspace navigation" });
+      await nav.waitFor();
+      await nav.locator('[data-slot="nav-item-active-indicator"]').waitFor();
+      assert.equal(await nav.locator('[data-slot="nav-item-active-indicator"]').count(), 1);
+      const navigationGeometry = await nav.locator('[data-slot="nav-item-trigger"]').evaluateAll(nodes => nodes.map(node => {
+        const icon = node.querySelector('[data-slot="nav-item-leading"] svg').getBoundingClientRect();
+        const label = node.querySelector('[data-slot="nav-item-label"]').getBoundingClientRect();
+        const row = node.getBoundingClientRect();
+        return { centerDelta: Math.abs(icon.y + icon.height / 2 - label.y - label.height / 2), gap: label.left - icon.right,
+          inside: icon.left >= row.left && label.right <= row.right };
+      }));
+      assert.ok(navigationGeometry.every(row => row.centerDelta <= 2 && row.gap > 0 && row.inside), JSON.stringify(navigationGeometry));
+      const resources = nav.getByRole("button", { name: "Resources", exact: true });
+      await resources.focus(); await page.keyboard.press("ArrowDown");
+      const settings = nav.getByRole("button", { name: "Settings", exact: true });
+      assert.equal(await settings.evaluate(node => node === document.activeElement), true);
+      await page.keyboard.press("Enter");
+      await page.getByLabel("Notification email", { exact: true }).waitFor();
+      if (width === 390) assert.equal(await nav.isVisible(), false);
+      else {
+        await trigger.click();
+        await page.locator('[data-slot="sidebar"][data-state="collapsed"]').waitFor();
+        assert.equal(await page.locator('[data-slot="sidebar-footer"] [data-slot="button-icon"]').count(), 1);
+        await trigger.click();
+        await page.locator('[data-slot="sidebar"][data-state="expanded"]').waitFor();
+      }
+      if (width === 390) await trigger.click();
+      await page.getByRole("button", { name: /Example account/ }).click();
+      await page.getByRole("menuitem", { name: "Account settings", exact: true }).click();
+      await page.getByLabel("Notification email", { exact: true }).waitFor();
+      await page.evaluate(() => document.fonts.ready);
+      const geometry = await page.evaluate(inspectRenderedControls);
+      assert.equal(geometry.checks.some(check => check.status === "failed"), false, JSON.stringify(geometry));
+      const png = await page.screenshot({ type: "png", animations: "disabled" });
+      const filename = `shell-${width}.png`; await writeFile(path.join(output, filename), png, { flag: "wx" });
+      return { width, checks: ["one-shell", "group-active-feedback", "navigation-icon-label-geometry", "keyboard-navigation", "account-action", width === 390 ? "drawer-closes-on-navigation" : "collapse-expand-account-compact"], navigationGeometry, geometry, screenshot: { path: filename, bytes: png.length, sha256: sha256(png) } };
+    }, width));
+    await writeFile(path.join(output, "shell-observations.json"), serialize({ scope: "host-separate-from-page-coverage", shell }), { flag: "wx" });
     for (const declaration of declarations.examples) {
       const id = declaration.exampleId, cases = [];
       for (const caseId of exampleStateCases[id]) {
@@ -341,7 +385,7 @@ export async function runExampleBrowserChecks(origin, declarations, output, { ti
       await writeFile(path.join(output, `${id}.observations.json`), serialize(results.at(-1)), { flag: "wx", mode: 0o600 });
     }
     current = null;
-    const report = { schemaVersion: 1, kind: "agent-example-browser-observations", scope: "actual-browser-and-deterministic-example-api-not-published-installation", results };
+    const report = { schemaVersion: 1, kind: "agent-example-browser-observations", scope: "actual-browser-and-deterministic-example-api-not-published-installation", shell, results };
     await writeFile(path.join(output, "observations.json"), serialize(report), { flag: "wx", mode: 0o600 });
     return report;
   } catch (error) {

@@ -23,6 +23,12 @@ describe("catalog generation from actual maintained inputs", () => {
     for (const [name, relative] of [["zeron-page-builder", "agents/openai.yaml"], ["swap-to-zeronui", "assets/migration-plan.schema.json"], ["swap-to-zeronui", "scripts/verify-evidence.mjs"]]) {
       expect(first.runtime.skills[name][relative]).toBe(await readFile(`.agents/skills/${name}/${relative}`, "utf8"));
     }
+    for (const reference of ["references/task-context.md", "references/consumer-verification.md", "scripts/check-rendered-controls.mjs"]) {
+      const body = await readFile(`.agents/skills/zeron-page-builder/${reference}`, "utf8");
+      expect(first.runtime.skills["zeron-page-builder"][reference]).toBe(body);
+      expect(await readFile(`public/ai/releases/${first.runtime.catalog.catalogVersion}/skills/zeron-page-builder/${reference}`, "utf8")).toBe(body);
+    }
+    expect(await readFile("public/ai/items/component:sidebar.md", "utf8")).toContain("../skills/zeron-page-builder/references/task-context.md");
     expect(await readFile("public/llms.txt", "utf8")).toBe(textBefore);
   }, 20000);
   it("rejects reads escaping the owned source tree, including symlinks", async () => {

@@ -3,6 +3,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { outputSchemas, toolSchemas, type QueryResult, type ToolName } from "../agent-catalog/contracts";
 import { createCatalogQuery } from "../agent-catalog/query";
 import type { AgentRuntime } from "../agent-catalog/schema";
+import { taskContextHint } from "../agent-catalog/task-context.mjs";
 
 const descriptions: Record<ToolName, string> = {
   search_components: "Find Zeron components and blocks by Chinese or English task. Inspect details and local environment before installation. Retain catalogVersion for subsequent calls.",
@@ -12,13 +13,17 @@ const descriptions: Record<ToolName, string> = {
   get_skill: "Read one exact-version Zeron skill or allowlisted reference, optionally by section. Does not install Skills; use the paired ZIP installation guide for complete installation.",
 };
 
-function textSummary(name: ToolName, result: QueryResult, input: unknown) {
+function textSummary(name: ToolName, result: QueryResult, input: unknown, runtime?: AgentRuntime) {
   const lines = [`Catalog: ${result.meta.catalogVersion ?? "unavailable"}; mode: ${result.meta.mode ?? "unavailable"}; locale: ${result.meta.requestedLocale}.`];
   if (result.meta.catalogUrl) lines.push(`Fixed catalog: ${result.meta.catalogUrl}`);
   lines.push(...result.meta.warnings.map((warning) => `Warning: ${warning}`));
   if ("error" in result) return [...lines, `${result.error.code}: ${result.error.message}`, JSON.stringify(result.error.details, null, 2)].join("\n\n");
   const { data } = outputSchemas[name].parse(result);
   if (!data) throw new Error("Missing tool data");
+  if ((name === "search_components" || name === "list_components") && runtime) {
+    const hint = taskContextHint(runtime.skills, runtime.catalog.catalogVersion, runtime.catalog.catalogUrl);
+    if (hint) lines.push(hint);
+  }
   if ("items" in data) {
     lines.push(`${data.items.length} of ${data.total} matching catalog items.`);
     for (const item of data.items) lines.push(`${item.id} — ${item.title}\nFramework: ${item.framework ?? "unknown"}; compatibility: ${item.compatibility}; installable: ${item.installable}; coverage: ${item.coverage}.\nMarkdown: ${item.markdown}`);
@@ -41,9 +46,9 @@ function textSummary(name: ToolName, result: QueryResult, input: unknown) {
   }
   return lines.join("\n\n");
 }
-function toolResult(name: ToolName, result: QueryResult, input: unknown) {
+function toolResult(name: ToolName, result: QueryResult, input: unknown, runtime?: AgentRuntime) {
   return { isError: "error" in result, structuredContent: result,
-    content: [{ type: "text" as const, text: textSummary(name, result, input) }] };
+    content: [{ type: "text" as const, text: textSummary(name, result, input, runtime) }] };
 }
 function response(status: number, message: string, requestId: string) {
   return Response.json({ error: message, requestId }, { status, headers: { "cache-control": "no-store", "x-request-id": requestId } });
@@ -77,11 +82,12 @@ export function createAgentMcpHandler(snapshots: { currentVersion: string; versi
             requestedLocale: input && typeof input === "object" && "locale" in input && input.locale === "en" ? "en" : "zh-CN", warnings: [] },
             error: { code: "INTERNAL_ERROR", message: "The tool could not complete this request.", details: { requestId } } };
         }
-        let output = toolResult(name, result, input);
+        const runtime = snapshots.versions.find(snapshot => snapshot.catalog.catalogVersion === result.meta.catalogVersion);
+        let output = toolResult(name, result, input, runtime);
         let bytes = Buffer.byteLength(JSON.stringify(output), "utf8") + 1024;
         if (bytes > (name === "search_components" || name === "list_components" ? 32768 : 65536)) {
           result = { meta: result.meta, error: { code: "INTERNAL_ERROR", message: "The response exceeds this tool's byte budget. Select fewer items or sections.", details: { requestId: requestContext.getStore()?.requestId } } };
-          output = toolResult(name, result, input);
+          output = toolResult(name, result, input, runtime);
           bytes = Buffer.byteLength(JSON.stringify(output), "utf8") + 1024;
         }
         log({ tool: name, catalogVersion: result.meta.catalogVersion, durationMs: Math.round(performance.now() - started),
@@ -90,7 +96,7 @@ export function createAgentMcpHandler(snapshots: { currentVersion: string; versi
       });
     }
   }, { serverInfo: { name: "zeron-ui", version: "1.0.0" }, maxSubscriptions: 0, verboseLogs: false,
-    instructions: "Search the catalog, preserve catalogVersion, read candidate details, and check the local framework before requesting installation commands. Tools only read public documentation. No server-side project writes or sessions." });
+    instructions: "Search the catalog, preserve catalogVersion, read candidate usage/api/examples and any available task-context reference. For new applications choose a standard shell; preserve the existing shell for page additions. Adapt business data/routes/state through public APIs, retain style ownership, and check rendered controls and actual flows. Check the local framework before requesting installation commands. Tools only read public documentation. No server-side project writes or sessions." });
 
   async function handleRequest(request: Request, requestId: string): Promise<Response> {
     const started = performance.now();

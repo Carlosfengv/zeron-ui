@@ -1,4 +1,7 @@
 {
   "model-mcp-marketplace-01": ["资源市场", "资源广场", "模型市场", "resource marketplace"],
-  "user-account-01": ["用户账户", "账户菜单", "account menu"]
+  "user-account-01": ["用户账户", "账户菜单", "account menu"],
+  "sidebar": ["Next 后台侧栏", "分组导航", "左侧导航"],
+  "app-shell": ["完整后台", "已有宿主", "应用外壳"],
+  "button": ["icon and label", "图文按钮", "按钮图标文字"]
 }

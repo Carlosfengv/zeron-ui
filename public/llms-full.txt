@@ -1,3 +1,7 @@
+# Task context
+
+[按任务读取 Zeron 规范](https://zeron-ui.vercel.app/ai/skills/zeron-page-builder/references/task-context.md). New application: choose a standard shell; existing page: preserve the host; small control change: read only relevant contracts.
+
 # Zeron UI for agents
 
 Read the catalog and exact installed types before choosing a component.
@@ -1527,6 +1531,64 @@ Validate keyboard navigation, rejected sign-out and retry, shared preferences, m
 
 ---
 schema_version: 1
+name: app-shell
+kind: component
+status: stable
+locale: zh-CN
+summary: 应用外壳与页面布局的归属
+package_import: "@zeron/ui/app-shell"
+registry_import: "@/components/ui/app-shell"
+source: packages/ui/src/components/app-shell.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: ["sidebar", "page-layout", "nav-menu"]
+---
+
+# app-shell
+
+## 关键契约
+
+- AppShellSidebar、AppShellHeader、AppShellMain 是 AppShell 的直接 DOM 子级；Fragment 不增加 DOM，真实 div 包装会改变布局。
+- 应用已有外壳时复用它，新增页面只接入内容。不要在同一区域嵌套第二套 AppShell 或 main。
+- 有界工作区显式提供高度，AppShellMain 允许收缩，PageBody 拥有内容纵向滚动；文档滚动页面采用自己的高度策略。
+- Sidebar 可通过直接子级宽度驱动外壳轨道，不同时硬写两套宽度。
+
+## 最小正确组合
+
+工作区 import 展示公开 API；消费者使用实际安装别名。以下例子完整定义业务输入，不代表已经接入后端。
+
+```tsx
+import type { ReactNode } from "react";
+import { AppShell, AppShellSidebar, AppShellHeader, AppShellMain } from "@zeron/ui/app-shell";
+import { SidebarProvider, Sidebar, SidebarContent, SidebarTrigger } from "@zeron/ui/sidebar";
+import { PageLayout, PageHeader, PageHeaderContent, PageTitle, PageContent, PageBody } from "@zeron/ui/page-layout";
+export function Workspace({ navigation, children }: { navigation: ReactNode; children: ReactNode }) {
+  return <SidebarProvider><AppShell className="h-dvh overflow-hidden">
+    <AppShellSidebar><Sidebar className="static h-full"><SidebarContent>{navigation}</SidebarContent></Sidebar></AppShellSidebar>
+    <AppShellHeader><SidebarTrigger /></AppShellHeader>
+    <AppShellMain className="flex min-h-0 flex-col"><PageLayout>
+      <PageHeader><PageHeaderContent><div><PageTitle>资源</PageTitle></div></PageHeaderContent></PageHeader>
+      <PageContent><PageBody>{children}</PageBody></PageContent>
+    </PageLayout></AppShellMain>
+  </AppShell></SidebarProvider>;
+}
+```
+
+## 业务适配与样式边界
+
+菜单名称、稳定值、路由、账户数据和权限条件由项目维护；接口、筛选和请求状态在业务页面或数据适配器接入。公开 props/slots/render 承接这些变化，不修改受管理组件内部实现。
+
+控件 size/variant、内容 surface、focus/disabled/loading 和交互反馈由组件拥有。宽度与业务内容排列可按公开契约调整；不要逐处覆盖颜色、内边距、圆角、阴影或内部 data-slot。品牌、字体与图标通过已支持的主题/provider 入口统一配置。能力不足时先记录实际公开 API 的缺口，再实现最小业务组合。
+
+## 浏览器验收
+
+验证桌面与手机、长中文标签、折叠/展开和键盘路径；导航必须改变正确业务内容，异步/权限状态不能只演示选中样式。确认图标/标签对齐、滚动归属和弹层焦点。页面任务通过同版本 task-context 入口获取必要组合规则，消费者自查见 consumer-verification；未运行状态如实记录。
+
+
+---
+
+---
+schema_version: 1
 name: avatar
 kind: component
 status: stable
@@ -1715,6 +1777,7 @@ schema_version: 1
 name: button
 kind: component
 status: stable
+typecheck_examples: true
 summary: 触发即时操作或推动用户完成当前任务。
 package_import: "@zeron/ui/button"
 registry_import: "@/components/ui/button"
@@ -1727,6 +1790,17 @@ related:
 ---
 
 # Button
+
+## 图标和文字的最小契约
+
+普通图文按钮使用 leadingIcon/trailingIcon，传入兼容 IconComponent 的组件类型，不是 `<Icon />` 元素。children 会进入 button-label；图标槽和标签才是内部 flex 的同级节点。图标放进标签可能因 SVG 的 block 显示而上下错行，根元素 gap/inline-flex 无法修复。
+
+```text
+正确：<Button leadingIcon={AddIcon}>创建资源</Button>
+错误：<Button><AddIcon />创建资源</Button>
+```
+
+使用下面完整 Composition 示例；loading 使用组件内置状态。不要覆盖图标尺寸或内部标签 CSS 掩盖误用。业务回调、权限和请求状态在项目代码接入。
 
 ## Agent intent
 
@@ -1787,37 +1861,17 @@ related:
 
 ## Composition
 
-标准操作组：一个高强调操作，加若干低强调选项。
-
-```tsx
-import { Button } from "@zeron/ui/button";
-
-<div className="flex items-center gap-2">
-  <Button type="submit">创建项目</Button>
-  <Button type="button" variant="secondary">保存草稿</Button>
-  <Button type="button" variant="ghost">取消</Button>
-</div>
-```
-
-异步与图标操作：
-
 ```tsx
 import { Button } from "@zeron/ui/button";
 import { useIcon } from "@zeron/icons/context";
-
-const Refresh = useIcon("rotate-ccw");
-
-<Button
-  aria-label="刷新日志"
-  disabled={!canRefresh}
-  iconOnly
-  loading={isRefreshing}
-  onClick={refresh}
-  type="button"
-  variant="ghost"
->
-  <Refresh aria-hidden />
-</Button>
+export function CreateAction({ pending, onCreate }: { pending: boolean; onCreate: () => void }) {
+  const AddIcon = useIcon("plus");
+  return <Button type="button" leadingIcon={AddIcon} loading={pending} onClick={onCreate}>创建资源</Button>;
+}
+export function RefreshAction({ pending, onRefresh }: { pending: boolean; onRefresh: () => void }) {
+  const Refresh = useIcon("rotate-ccw");
+  return <Button aria-label="刷新日志" type="button" iconOnly loading={pending} variant="ghost" onClick={onRefresh}><Refresh aria-hidden /></Button>;
+}
 ```
 
 ## Safe customization
@@ -2356,6 +2410,110 @@ export function RequestMetric({ value, state, updatedAt, canViewDetails, onOpen 
 
 ---
 schema_version: 1
+name: nav-item
+kind: component
+status: stable
+locale: zh-CN
+summary: 路由链接与本地动作的语义适配
+package_import: "@zeron/ui/nav-item"
+registry_import: "@/components/ui/nav-item"
+source: packages/ui/src/components/nav-item.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: ["nav-menu", "sidebar"]
+---
+
+# nav-item
+
+## 关键契约
+
+- 默认 trigger 是 a：真正页面导航必须提供 href，Next 路由通过 render={<Link href="..." />} 接入。
+- 本地状态切换用 render={<button type="button" />}；不要用无 href 的 a 加外层 onClick 冒充可操作导航。
+- NavItemLeading/Content/Label/Badge 负责内部排列，业务只供给内容、值、权限和路由。
+- active 支持 standalone；NavMenu 下优先由 activeValue 统一选择。standalone 并非错误，但不是标准导航组的相同效果。
+
+## 最小正确组合
+
+工作区 import 展示公开 API；消费者使用实际安装别名。以下例子完整定义业务输入，不代表已经接入后端。
+
+```tsx
+import Link from "next/link";
+import { NavItem, NavItemTrigger, NavItemContent, NavItemLabel } from "@zeron/ui/nav-item";
+export function OrdersLink({ active }: { active: boolean }) {
+  return <NavItem value="orders" active={active}><NavItemTrigger render={<Link href="/orders" />}><NavItemContent><NavItemLabel>订单</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>;
+}
+export function LocalAction({ onSelect }: { onSelect: () => void }) {
+  return <NavItem value="settings"><NavItemTrigger render={<button type="button" />} onClick={onSelect}><NavItemContent><NavItemLabel>设置</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>;
+}
+```
+
+## 业务适配与样式边界
+
+菜单名称、稳定值、路由、账户数据和权限条件由项目维护；接口、筛选和请求状态在业务页面或数据适配器接入。公开 props/slots/render 承接这些变化，不修改受管理组件内部实现。
+
+控件 size/variant、内容 surface、focus/disabled/loading 和交互反馈由组件拥有。宽度与业务内容排列可按公开契约调整；不要逐处覆盖颜色、内边距、圆角、阴影或内部 data-slot。品牌、字体与图标通过已支持的主题/provider 入口统一配置。能力不足时先记录实际公开 API 的缺口，再实现最小业务组合。
+
+## 浏览器验收
+
+验证桌面与手机、长中文标签、折叠/展开和键盘路径；导航必须改变正确业务内容，异步/权限状态不能只演示选中样式。确认图标/标签对齐、滚动归属和弹层焦点。页面任务通过同版本 task-context 入口获取必要组合规则，消费者自查见 consumer-verification；未运行状态如实记录。
+
+
+---
+
+---
+schema_version: 1
+name: nav-menu
+kind: component
+status: stable
+locale: zh-CN
+summary: 导航组的选中状态与键盘模式
+package_import: "@zeron/ui/nav-menu"
+registry_import: "@/components/ui/nav-menu"
+source: packages/ui/src/components/nav-menu.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: ["nav-item", "sidebar"]
+---
+
+# nav-menu
+
+## 关键契约
+
+- NavMenu 包含 NavItem，以 activeValue 表示当前目标；业务回调或路由拥有状态变化。
+- keyboardNavigation="roving" 提供组内方向键移动与单一 Tab 停留点；"tab" 用于逐项 Tab 的导航需求，以安装类型为准。
+- 通过 aria-label 命名每个导航组，使用支持的 orientation/variant，不自己复制选中指示器。
+- NavItem standalone 可以独立工作，但采用不同的悬停/选中反馈。官方分组侧栏优先采用 NavMenu。
+
+## 最小正确组合
+
+工作区 import 展示公开 API；消费者使用实际安装别名。以下例子完整定义业务输入，不代表已经接入后端。
+
+```tsx
+import { NavMenu } from "@zeron/ui/nav-menu";
+import { NavItem, NavItemTrigger, NavItemContent, NavItemLabel } from "@zeron/ui/nav-item";
+export function SectionNavigation({ active, onSelect }: { active: string; onSelect: (value: string) => void }) {
+  return <NavMenu aria-label="工作区导航" activeValue={active} keyboardNavigation="roving">
+    <NavItem value="resources"><NavItemTrigger render={<button type="button" />} onClick={() => onSelect("resources")}><NavItemContent><NavItemLabel>资源</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>
+    <NavItem value="settings"><NavItemTrigger render={<button type="button" />} onClick={() => onSelect("settings")}><NavItemContent><NavItemLabel>设置</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>
+  </NavMenu>;
+}
+```
+
+## 业务适配与样式边界
+
+菜单名称、稳定值、路由、账户数据和权限条件由项目维护；接口、筛选和请求状态在业务页面或数据适配器接入。公开 props/slots/render 承接这些变化，不修改受管理组件内部实现。
+
+控件 size/variant、内容 surface、focus/disabled/loading 和交互反馈由组件拥有。宽度与业务内容排列可按公开契约调整；不要逐处覆盖颜色、内边距、圆角、阴影或内部 data-slot。品牌、字体与图标通过已支持的主题/provider 入口统一配置。能力不足时先记录实际公开 API 的缺口，再实现最小业务组合。
+
+## 浏览器验收
+
+验证桌面与手机、长中文标签、折叠/展开和键盘路径；导航必须改变正确业务内容，异步/权限状态不能只演示选中样式。确认图标/标签对齐、滚动归属和弹层焦点。页面任务通过同版本 task-context 入口获取必要组合规则，消费者自查见 consumer-verification；未运行状态如实记录。
+
+
+---
+
+---
+schema_version: 1
 name: page-layout
 kind: component
 status: stable
@@ -2414,6 +2572,12 @@ export function ResourcePage({ children, canCreate, onCreate }: {
 ## 验收
 
 检查一个 h1、标题与描述的组合、长标题、操作折行、窄屏栏堆叠、键盘导航、滚动容器高度及页面返回行为。使用公开布局与语义 tokens，不通过全局 CSS 重建标题栏。示例类型由 `agents:guides:examples:check` 验证；这些布局与行为检查仍需运行页面。消费者以实际安装别名和源码为准。
+
+## 默认样式与订单业务适配
+
+PageContent 默认拥有 floating surface、边框和圆角；不要用 bg-surface-base 或第二层 Card 外框抵消内容与宿主的视觉层次。PageTitle 默认紧凑样式适合资源页面，按任务选择公开参数，不为排列调整重设字体。
+
+将资源列表改为订单列表时，在项目列配置提供订单编号、客户、金额、状态；在数据适配器将搜索/状态/分页映射到接口参数，并供给 loading/error/empty；权限决定可见操作，服务端验证授权。已有 AppShell 和主题保留，PageLayout/PageContent/PageBody 保留布局与滚动职责。业务层允许组合 Input/Select/Button，不自行重造控件状态样式。
 
 
 ---
@@ -2667,6 +2831,183 @@ Agent 优先关注：
 - SelectContent：`side`、`align`、`sideOffset`、`alignOffset`、`animated`。
 
 完整类型以 `source` 指向的实现为准。
+
+
+---
+
+---
+schema_version: 1
+name: sidebar-account-menu
+kind: component
+status: stable
+locale: zh-CN
+summary: 账户菜单的数据和行为接入
+package_import: "@zeron/ui/sidebar-account-menu"
+registry_import: "@/components/ui/sidebar-account-menu"
+source: packages/ui/src/components/sidebar-account-menu.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: ["sidebar", "sidebar-identity-row"]
+---
+
+# sidebar-account-menu
+
+## 关键契约
+
+- sections/items 的稳定 id、label、disabled、onSelect 由项目供给；权限还需服务端校验。
+- compact 明确控制折叠后的头像菜单触发器；抽屉打开时保留完整身份。
+- open/onOpenChange 可受控；menuSide/menuAlign 等是公开定位参数，不从全局 CSS 重写弹层定位。
+- 账户变更必须更新业务状态和数据服务，不把演示账户名称当作认证结果。
+
+## 最小正确组合
+
+工作区 import 展示公开 API；消费者使用实际安装别名。以下例子完整定义业务输入，不代表已经接入后端。
+
+```tsx
+import { SidebarAccountMenu } from "@zeron/ui/sidebar-account-menu";
+import { useSidebar } from "@zeron/ui/sidebar";
+export function AccountMenu({ onSettings }: { onSettings: () => void }) {
+  const { state, isMobile } = useSidebar();
+  return <SidebarAccountMenu primary="Carlos" description="当前工作区管理员" compact={state === "collapsed" && !isMobile}
+    sections={[{ items: [{ id: "settings", label: "账户设置", onSelect: onSettings }] }]} />;
+}
+```
+
+## 业务适配与样式边界
+
+菜单名称、稳定值、路由、账户数据和权限条件由项目维护；接口、筛选和请求状态在业务页面或数据适配器接入。公开 props/slots/render 承接这些变化，不修改受管理组件内部实现。
+
+控件 size/variant、内容 surface、focus/disabled/loading 和交互反馈由组件拥有。宽度与业务内容排列可按公开契约调整；不要逐处覆盖颜色、内边距、圆角、阴影或内部 data-slot。品牌、字体与图标通过已支持的主题/provider 入口统一配置。能力不足时先记录实际公开 API 的缺口，再实现最小业务组合。
+
+## 浏览器验收
+
+验证桌面与手机、长中文标签、折叠/展开和键盘路径；导航必须改变正确业务内容，异步/权限状态不能只演示选中样式。确认图标/标签对齐、滚动归属和弹层焦点。页面任务通过同版本 task-context 入口获取必要组合规则，消费者自查见 consumer-verification；未运行状态如实记录。
+
+
+---
+
+---
+schema_version: 1
+name: sidebar-identity-row
+kind: component
+status: stable
+locale: zh-CN
+summary: 侧栏身份信息与折叠布局
+package_import: "@zeron/ui/sidebar-identity-row"
+registry_import: "@/components/ui/sidebar-identity-row"
+source: packages/ui/src/components/sidebar-identity-row.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: ["sidebar", "sidebar-account-menu"]
+---
+
+# sidebar-identity-row
+
+## 关键契约
+
+- primary、description、leading、trailing 是公开内容插槽；layout 为 auto/single-line/two-line。
+- 静态身份使用默认 div；确有动作时使用 as="button" 并接入回调或菜单，不添加假操作。
+- 使用 trailingPlacement="edge" 把尾部内容放到行末，保留组件自己的字体、间距与截断。
+- 此行不自动变成折叠头像：调用方根据 useSidebar 的 state/isMobile 选择紧凑头像或完整身份；账户菜单使用自己的 compact 参数。不要猜测每个身份组件都会自动响应 Sidebar 状态。
+
+## 最小正确组合
+
+工作区 import 展示公开 API；消费者使用实际安装别名。以下例子完整定义业务输入，不代表已经接入后端。
+
+```tsx
+import { SidebarIdentityAvatar, SidebarIdentityRow } from "@zeron/ui/sidebar-identity-row";
+export function WorkspaceIdentity({ name }: { name: string }) {
+  return <SidebarIdentityRow primary={name} description="生产工作区" leading={<SidebarIdentityAvatar tone="brand">Z</SidebarIdentityAvatar>} />;
+}
+export function WorkspaceAction({ onOpen }: { onOpen: () => void }) {
+  return <SidebarIdentityRow as="button" type="button" primary="切换工作区" onClick={onOpen} />;
+}
+```
+
+## 业务适配与样式边界
+
+菜单名称、稳定值、路由、账户数据和权限条件由项目维护；接口、筛选和请求状态在业务页面或数据适配器接入。公开 props/slots/render 承接这些变化，不修改受管理组件内部实现。
+
+控件 size/variant、内容 surface、focus/disabled/loading 和交互反馈由组件拥有。宽度与业务内容排列可按公开契约调整；不要逐处覆盖颜色、内边距、圆角、阴影或内部 data-slot。品牌、字体与图标通过已支持的主题/provider 入口统一配置。能力不足时先记录实际公开 API 的缺口，再实现最小业务组合。
+
+## 浏览器验收
+
+验证桌面与手机、长中文标签、折叠/展开和键盘路径；导航必须改变正确业务内容，异步/权限状态不能只演示选中样式。确认图标/标签对齐、滚动归属和弹层焦点。页面任务通过同版本 task-context 入口获取必要组合规则，消费者自查见 consumer-verification；未运行状态如实记录。
+
+
+---
+
+---
+schema_version: 1
+name: sidebar
+kind: component
+status: stable
+locale: zh-CN
+summary: 标准分组侧栏与响应式组合
+package_import: "@zeron/ui/sidebar"
+registry_import: "@/components/ui/sidebar"
+source: packages/ui/src/components/sidebar.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: ["app-shell", "nav-menu", "nav-item", "sidebar-identity-row", "sidebar-account-menu"]
+---
+
+# sidebar
+
+## 关键契约
+
+- SidebarProvider 拥有展开、mobileOpen 和 breakpointBehavior；默认 drawer，支持 collapse。当前断点为 1279px 以下，以安装版本常量为准。
+- Sidebar 的 collapsible 支持 icon/offcanvas/none；width/collapsedWidth/mobileWidth 用公开参数设置。
+- Header/Content/Footer 组合身份、分组导航与账户操作；NavMenu 提供官方导航组反馈，不能用一组独立 NavItem 假定相同效果。
+- SidebarContent 的 className 作用于外层 ScrollArea，contentClassName 作用于内部内容层。内部已有间距，调整其参数时不要再叠加外层 padding 和组 margin。
+- 折叠头像账户菜单应根据 useSidebar 设置 compact，参见 SidebarAccountMenu 指南。
+
+## 最小正确组合
+
+工作区 import 展示公开 API；消费者使用实际安装别名。以下例子完整定义业务输入，不代表已经接入后端。
+
+```tsx
+import { useState } from "react";
+import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarTrigger, useSidebar } from "@zeron/ui/sidebar";
+import { SidebarIdentityRow, SidebarIdentityAvatar } from "@zeron/ui/sidebar-identity-row";
+import { SidebarAccountMenu } from "@zeron/ui/sidebar-account-menu";
+import { NavMenu } from "@zeron/ui/nav-menu";
+import { NavItem, NavItemTrigger, NavItemLeading, NavItemContent, NavItemLabel } from "@zeron/ui/nav-item";
+import { useIcon } from "@zeron/icons/context";
+function NavigationPanel({ active, onNavigate, onAccount }: { active: string; onNavigate: (value: string) => void; onAccount: () => void }) {
+  const { state, isMobile, closeMobile } = useSidebar();
+  const Folder = useIcon("folder"), Settings = useIcon("settings");
+  const compact = state === "collapsed" && !isMobile;
+  const navigate = (value: string) => { onNavigate(value); closeMobile(); };
+  return <Sidebar collapsible="icon" className="static h-full" ariaLabel="应用导航">
+    <SidebarHeader>{compact ? <SidebarIdentityAvatar tone="brand" aria-label="工作区">Z</SidebarIdentityAvatar> : <SidebarIdentityRow primary="工作区" leading={<SidebarIdentityAvatar tone="brand">Z</SidebarIdentityAvatar>} />}</SidebarHeader>
+    <SidebarContent><SidebarGroup><SidebarGroupLabel>管理</SidebarGroupLabel><SidebarGroupContent>
+      <NavMenu aria-label="管理导航" activeValue={active} keyboardNavigation="roving">
+        <NavItem value="resources"><NavItemTrigger render={<button type="button" />} tooltip="资源" onClick={() => navigate("resources")}><NavItemLeading><Folder aria-hidden /></NavItemLeading><NavItemContent><NavItemLabel>资源</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>
+        <NavItem value="settings"><NavItemTrigger render={<button type="button" />} tooltip="设置" onClick={() => navigate("settings")}><NavItemLeading><Settings aria-hidden /></NavItemLeading><NavItemContent><NavItemLabel>设置</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>
+      </NavMenu>
+    </SidebarGroupContent></SidebarGroup></SidebarContent>
+    <SidebarFooter><SidebarAccountMenu primary="Carlos" description="管理员" compact={compact} sections={[{ items: [{ id: "account", label: "账户设置", onSelect: () => { onAccount(); closeMobile(); } }] }]} /></SidebarFooter>
+  </Sidebar>;
+}
+export function NavigationExample({ onAccount }: { onAccount: () => void }) {
+  const [active, setActive] = useState("resources");
+  return <SidebarProvider><div className="flex h-96 min-w-0 overflow-hidden">
+    <NavigationPanel active={active} onNavigate={setActive} onAccount={onAccount} />
+    <section className="min-w-0 flex-1" aria-label="当前内容"><SidebarTrigger /><p>{active === "resources" ? "资源内容" : "设置内容"}</p></section>
+  </div></SidebarProvider>;
+}
+```
+
+## 业务适配与样式边界
+
+菜单名称、稳定值、路由、账户数据和权限条件由项目维护；接口、筛选和请求状态在业务页面或数据适配器接入。公开 props/slots/render 承接这些变化，不修改受管理组件内部实现。
+
+控件 size/variant、内容 surface、focus/disabled/loading 和交互反馈由组件拥有。宽度与业务内容排列可按公开契约调整；不要逐处覆盖颜色、内边距、圆角、阴影或内部 data-slot。品牌、字体与图标通过已支持的主题/provider 入口统一配置。能力不足时先记录实际公开 API 的缺口，再实现最小业务组合。
+
+## 浏览器验收
+
+验证桌面与手机、长中文标签、折叠/展开和键盘路径；导航必须改变正确业务内容，异步/权限状态不能只演示选中样式。确认图标/标签对齐、滚动归属和弹层焦点。页面任务通过同版本 task-context 入口获取必要组合规则，消费者自查见 consumer-verification；未运行状态如实记录。
 
 
 ---

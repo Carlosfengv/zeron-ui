@@ -1,13 +1,20 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ExamplePreview, { ExamplesApp, initialResourceQuery } from "./fixtures/agent-examples/app";
 import { ResourceDetailPage } from "./fixtures/agent-examples/resource-detail/page";
 import { SettingsPage } from "./fixtures/agent-examples/settings/page";
 import { createDeterministicApi } from "./fixtures/agent-examples/shared/deterministic-api";
 import { useSingleSubmit } from "./fixtures/agent-examples/shared/use-single-submit";
 
-afterEach(cleanup);
+// jsdom has no Web Animations API; real geometry and animation run in the browser worker.
+Object.defineProperty(Element.prototype, "getAnimations", { configurable: true, value: () => [] });
+
+beforeEach(() => {
+  vi.stubGlobal("matchMedia", vi.fn(query => ({ matches: false, media: query, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+  vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} });
+});
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 const email = () => screen.getByLabelText("Notification email") as HTMLInputElement;
 describe("agent business example interactions", () => {
   it("exposes observation only when requested by the standalone preview, and cleans it up on unmount", async () => {
