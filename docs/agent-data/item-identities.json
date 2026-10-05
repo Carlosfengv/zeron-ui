@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "component:error-state",
+      "type": "registry",
+      "key": "error-state",
+      "aliases": [
+        "error-state"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:getting-started-01",
       "type": "registry",
       "key": "getting-started-01",

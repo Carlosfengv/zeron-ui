@@ -92,6 +92,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Dialog (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Adialog.md): Modal dialog with smooth enter/exit animations and overlay. Registry: dialog.
 - [Dropdown](https://zeron-ui.vercel.app/ai/items/component%3Adropdown.md): Menu-style dropdown with proximity hover and animated backgrounds. Registry: dropdown.
 - [Empty](https://zeron-ui.vercel.app/ai/items/component%3Aempty.md): Composable empty and first-use states for pages, sections, and inline data surfaces, with custom media and theme-aware illustrations. Registry: empty.
+- [Error State](https://zeron-ui.vercel.app/ai/items/component%3Aerror-state.md): Confirmed request failure with a consumer-owned retry action, composed from Alert. Registry: error-state.
 - [Field](https://zeron-ui.vercel.app/ai/items/component%3Afield.md): Accessible form composition for labels, descriptions, validation messages, groups, and fieldsets. Registry: field.
 - [File Thumbnail](https://zeron-ui.vercel.app/ai/items/component%3Afile-thumbnail.md): Read-only square preview of a File. Images render via object-cover; PDFs render their first page via pdfjs; a spinner shows while either resolves. Adapts its corner radius to the global shape setting. Registry: file-thumbnail.
 - [File Tree](https://zeron-ui.vercel.app/ai/items/component%3Afile-tree.md): File and folder Tree with file-type icons, file-extension restrictions, and file-only cascade selection. Registry: file-tree.
