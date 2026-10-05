@@ -139,8 +139,19 @@ jobs:
       - name: Install representative consumers
         run: pnpm test:consumer:smoke
 
-      - name: Install migration test browser
+      - name: Install consumer test browser
         run: pnpm exec playwright install --with-deps chromium
+
+      - name: Verify initialized consumer styles in browser
+        run: pnpm test:consumer:styles
+
+      - name: Upload consumer style evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: consumer-style-evidence
+          path: output/consumer-styles
+          if-no-files-found: ignore
 
       - name: Migrate representative consumers
         run: pnpm test:consumer:migrations

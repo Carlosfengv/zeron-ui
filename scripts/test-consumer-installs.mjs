@@ -14,19 +14,22 @@ import { basename, join } from "node:path";
 import { execFile as execFileCallback } from "node:child_process";
 import { promisify } from "node:util";
 import { consumerRegistryExpectations, snapshotConsumerRegistry } from "./lib/consumer-registry-expectations.mjs";
+import { consumerStyleExample, verifyConsumerStyles } from "./lib/consumer-style-verification.mjs";
 
 const execFile = promisify(execFileCallback);
 const ROOT = new URL("..", import.meta.url).pathname;
 const REGISTRY_DIR = join(ROOT, "public/r");
 const all = process.argv.includes("--all");
+const styles = process.argv.includes("--styles");
+const keepConsumers = process.env.ZERON_CONSUMER_KEEP === "1";
 const registrySnapshot = await snapshotConsumerRegistry(REGISTRY_DIR);
 const registryItems = JSON.parse(registrySnapshot.get("registry.json")).items;
 const allRegistryItems = registryItems.map((item) => item.name).filter((name) => typeof name === "string");
-const components = process.env.ZERON_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? (all
+const components = styles ? ["button"] : process.env.ZERON_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? (all
   ? allRegistryItems
   : ["button", "card", "ask-user-questions", "code-block", "infinite-log-table-01"]);
 const packageManagers = process.env.ZERON_CONSUMER_PACKAGE_MANAGERS?.split(",").filter(Boolean) ?? ["npm", "pnpm"];
-const viteComponents = process.env.ZERON_VITE_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? ["button", "card", "ask-user-questions", "code-block"];
+const viteComponents = styles ? ["button"] : process.env.ZERON_VITE_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? ["button", "card", "ask-user-questions", "code-block"];
 const BUSINESS_SOURCE = "export const identity = <T>(value: T): T => value;\n";
 
 if (packageManagers.some((manager) => !["npm", "pnpm"].includes(manager))) {
@@ -60,7 +63,7 @@ async function command(file, args, options) {
   return stdout;
 }
 
-async function writeConsumer(directory, packageManager) {
+async function writeConsumer(directory, packageManager, { starter = false } = {}) {
   await mkdir(join(directory, "app"), { recursive: true });
   await writeFile(join(directory, "package.json"), JSON.stringify({
     name: "zeron-consumer-fixture",
@@ -89,14 +92,20 @@ async function writeConsumer(directory, packageManager) {
     '',
   ].join("\n"));
   await writeFile(join(directory, "postcss.config.mjs"), 'export default { plugins: { "@tailwindcss/postcss": {} } };\n');
+  await writeFile(join(directory, "next.config.mjs"), 'export default {};\n');
   // TypeScript's standalone checker does not load Next's generated asset
   // declarations. Keep this consumer fixture able to validate Registry
   // Blocks that import static SVG assets, just as a Next project does.
   await writeFile(join(directory, "assets.d.ts"), 'declare module "*.svg" {\n  const source: string;\n  export default source;\n}\n');
-  // The generated shadcn base layer uses `outline-ring/50`. Define the
-  // minimal Tailwind 4 color tokens up front so a real Next production build
-  // validates the CSS emitted by Registry installation.
-  await writeFile(join(directory, "app", "globals.css"), '@import "tailwindcss";\n\n@theme {\n  --color-background: #ffffff;\n  --color-border: #e5e7eb;\n  --color-foreground: #111827;\n  --color-ring: #6088e8;\n}\n');
+  // Start without compatibility tokens: the Registry must supply its own base-layer contract.
+  await writeFile(join(directory, "app", "globals.css"), starter ? [
+    '@import "tailwindcss";',
+    ':root { --background: #ffffff; --foreground: #171717; }',
+    '@theme inline { --color-background: var(--background); --color-foreground: var(--foreground); }',
+    '@media (prefers-color-scheme: dark) { :root { --background: #0a0a0a; --foreground: #ededed; } }',
+    'body { background: var(--background); color: var(--foreground); font-family: Arial, Helvetica, sans-serif; }',
+    '',
+  ].join("\n") : '@import "tailwindcss";\n');
   await command(packageManager, ["install", "--ignore-scripts"], { cwd: directory });
 }
 
@@ -139,10 +148,7 @@ async function writeViteConsumer(directory) {
     '});',
     '',
   ].join("\n"));
-  // shadcn's generated base layer uses `outline-ring/50`. Define the token in
-  // the consumer fixture so Tailwind 4 validates that generated CSS exactly
-  // as it would in a project that supplies a theme.
-  await writeFile(join(directory, "src", "index.css"), '@import "tailwindcss";\n\n@theme {\n  --color-background: #ffffff;\n  --color-border: #e5e7eb;\n  --color-foreground: #111827;\n  --color-ring: #6088e8;\n}\n');
+  await writeFile(join(directory, "src", "index.css"), '@import "tailwindcss";\n');
   await command("npm", ["install", "--ignore-scripts"], { cwd: directory });
 }
 
@@ -156,9 +162,15 @@ async function exists(path) {
 }
 
 async function installWithCli({ consumer, component, manager, tarball }) {
-  const args = ["add", component, "--yes", "--cwd", consumer, "--registry", baseUrl];
+  const args = ["add", component, ...(styles ? ["input", "card", "dialog"] : []), "--yes", "--cwd", consumer, "--registry", baseUrl];
   const env = { ...process.env, XDG_CACHE_HOME: join(work, "cache") };
   if (manager === "npm") {
+    if (component === "button") {
+      await rm(join(consumer, "components.json"));
+      await command("npm", ["exec", "--yes", "--package", tarball, "--", "zeron-ui", "init", "--yes", "--cwd", consumer, "--registry", baseUrl], { env });
+      await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
+      if (styles) await verifyInitializedConsumer(consumer, "next");
+    }
     await command("npm", ["exec", "--yes", "--package", tarball, "--", "zeron-ui", ...args], { env });
     await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
     if (component === "button") {
@@ -174,6 +186,12 @@ async function installWithCli({ consumer, component, manager, tarball }) {
   // supported version. Install the exact packed CLI into this isolated
   // fixture instead; no workspace package is linked.
   await command("pnpm", ["add", "--save-dev", "--ignore-scripts", tarball], { cwd: consumer, env });
+  if (component === "button") {
+    await rm(join(consumer, "components.json"));
+    await command("pnpm", ["exec", "zeron-ui", "init", "--yes", "--cwd", consumer, "--registry", baseUrl], { cwd: consumer, env });
+    await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
+  }
+  if (styles) await verifyInitializedConsumer(consumer, "next");
   await command("pnpm", ["exec", "zeron-ui", ...args], { cwd: consumer, env });
   await assertThemeInstallation({ consumer, cssPath: "app/globals.css", component });
   if (component === "button") {
@@ -194,6 +212,9 @@ async function installWithCli({ consumer, component, manager, tarball }) {
 async function assertThemeInstallation({ consumer, cssPath, component }) {
   const expectations = await consumerRegistryExpectations(registrySnapshot, component);
   const css = await readFile(join(consumer, cssPath), "utf8");
+  if (component === "button" && cssPath === "app/globals.css" && /body\s*\{[^}]*background:\s*var\(--background\)/.test(css)) {
+    throw new Error("Next starter body colors still override the installed Zeron theme");
+  }
   const animationImports = css.match(/@import\s+["']tw-animate-css["'];/g) ?? [];
   if (expectations.animation && animationImports.length !== 1) {
     throw new Error(`${component}: expected one tw-animate-css import in ${cssPath}, found ${animationImports.length}`);
@@ -224,7 +245,7 @@ async function readCssTree(directory) {
 async function assertCompiledUtilities(directory, component) {
   if (component !== "button") return;
   const css = await readCssTree(directory);
-  for (const className of ["border-hairline", "duration-fast", "animate-in", "fade-in"]) {
+  for (const className of ["rounded-lg", "bg-primary-action", "border-hairline", "duration-fast", "animate-in", "fade-in"]) {
     if (!css.includes(`.${className}`)) {
       throw new Error(`${component}: built CSS is missing .${className}`);
     }
@@ -335,15 +356,25 @@ async function verifyNextBuild({ consumer, component }) {
       '',
     ].join("\n"),
   };
-  const source = examples[component];
+  const source = styles ? consumerStyleExample("next") : examples[component];
   if (!source) return;
   await writeFile(join(consumer, "app", "page.tsx"), source);
   await command("npx", ["next", "build"], { cwd: consumer });
   await assertCompiledUtilities(join(consumer, ".next", "static", "css"), component);
+  if (styles) await verifyConsumerStyles({ consumer, framework: "next", phase: "components" });
+}
+
+async function verifyInitializedConsumer(consumer, framework) {
+  const source = framework === "next"
+    ? 'export default function Page() { return <h1>Initialization verified</h1>; }\n'
+    : 'import { createRoot } from "react-dom/client";\nimport "./index.css";\ncreateRoot(document.getElementById("root")!).render(<h1>Initialization verified</h1>);\n';
+  await writeFile(join(consumer, framework === "next" ? "app/page.tsx" : "src/main.tsx"), source);
+  await command("npx", framework === "next" ? ["next", "build"] : ["vite", "build"], { cwd: consumer });
+  await verifyConsumerStyles({ consumer, framework, phase: "init" });
 }
 
 async function runNpmCli({ consumer, component, tarball, overwrite = false }) {
-  const args = ["add", component, "--yes", "--cwd", consumer, "--registry", baseUrl, ...(overwrite ? ["--overwrite"] : [])];
+  const args = ["add", component, ...(styles ? ["input", "card", "dialog"] : []), "--yes", "--cwd", consumer, "--registry", baseUrl, ...(overwrite ? ["--overwrite"] : [])];
   await command("npm", ["exec", "--yes", "--package", tarball, "--", "zeron-ui", ...args], {
     env: { ...process.env, XDG_CACHE_HOME: join(work, "cache") },
   });
@@ -368,6 +399,14 @@ async function assertViteRejectsNextBlock({ consumer, tarball }) {
 }
 
 async function installViteComponent({ consumer, component, tarball }) {
+  if (component === "button") {
+    await rm(join(consumer, "components.json"));
+    await command("npm", ["exec", "--yes", "--package", tarball, "--", "zeron-ui", "init", "--yes", "--cwd", consumer, "--registry", baseUrl], {
+      env: { ...process.env, XDG_CACHE_HOME: join(work, "cache") },
+    });
+    await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
+    if (styles) await verifyInitializedConsumer(consumer, "vite");
+  }
   await runNpmCli({ consumer, component, tarball });
   await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
   if (component === "button") {
@@ -456,12 +495,13 @@ async function installViteComponent({ consumer, component, tarball }) {
       '',
     ].join("\n"),
   };
-  const source = examples[component];
+  const source = styles ? consumerStyleExample("vite") : examples[component];
   if (!source) throw new Error(`No Vite entry example is defined for ${component}`);
   await writeFile(join(consumer, "src", "main.tsx"), source);
   await command("npx", ["tsc", "--noEmit"], { cwd: consumer });
   await command("npm", ["run", "build"], { cwd: consumer });
   await assertCompiledUtilities(join(consumer, "dist", "assets"), component);
+  if (styles) await verifyConsumerStyles({ consumer, framework: "vite", phase: "components" });
 }
 
 const work = await mkdtemp(join(tmpdir(), "zeron-consumer-"));
@@ -478,10 +518,10 @@ try {
     for (const component of components) {
       const consumer = join(work, `${manager}-${component}`);
       await mkdir(consumer, { recursive: true });
-      await writeConsumer(consumer, manager);
+      await writeConsumer(consumer, manager, { starter: component === "button" });
       await installWithCli({ consumer, component, manager, tarball });
       console.log(`Consumer passed: ${manager}/${component}`);
-      await rm(consumer, { recursive: true, force: true });
+      if (!keepConsumers) await rm(consumer, { recursive: true, force: true });
     }
   }
   for (const component of viteComponents) {
@@ -490,14 +530,17 @@ try {
     await writeViteConsumer(consumer);
     await installViteComponent({ consumer, component, tarball });
     console.log(`Consumer passed: vite/${component}`);
-    await rm(consumer, { recursive: true, force: true });
+    if (!keepConsumers) await rm(consumer, { recursive: true, force: true });
   }
-  const rejectionConsumer = join(work, "vite-next-rejection");
-  await mkdir(rejectionConsumer, { recursive: true });
-  await writeViteConsumer(rejectionConsumer);
-  await assertViteRejectsNextBlock({ consumer: rejectionConsumer, tarball });
-  console.log(`Consumer ${all ? "full" : "smoke"} matrix passed (${components.join(", ")} via ${packageManagers.join(", ")}; Vite: ${viteComponents.join(", ")}; Next-only rejection)`);
+  if (!styles) {
+    const rejectionConsumer = join(work, "vite-next-rejection");
+    await mkdir(rejectionConsumer, { recursive: true });
+    await writeViteConsumer(rejectionConsumer);
+    await assertViteRejectsNextBlock({ consumer: rejectionConsumer, tarball });
+  }
+  console.log(`Consumer ${styles ? "browser styles" : all ? "full" : "smoke"} matrix passed (${components.join(", ")} via ${packageManagers.join(", ")}; Vite: ${viteComponents.join(", ")})`);
 } finally {
   await new Promise((resolveClose) => server.close(resolveClose));
-  await rm(work, { recursive: true, force: true });
+  if (keepConsumers) console.log(`Consumer artifacts retained: ${work}`);
+  else await rm(work, { recursive: true, force: true });
 }

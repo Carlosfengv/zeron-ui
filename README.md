@@ -313,6 +313,13 @@ After changing Registry sources, regenerate with `pnpm registry:build` and run
 `pnpm registry:check`; commit the resulting `public/r` changes together with
 their source changes. Consumer installation/migration checks remain part of CI.
 
+For initialization styles, install Chromium with `pnpm exec playwright install chromium`
+and run `pnpm test:consumer:styles`. This packs the local CLI and installs it into
+independent Next (npm and pnpm) and Vite consumers through an HTTP Registry. It
+checks production pages after `init` and repeated component installation, including
+light/dark colors, control sizes, native radii, and portal styles. Screenshots and
+computed styles are saved in `output/consumer-styles` and uploaded by CI.
+
 Block/Page documentation source previews use the explicit allowlist in
 `scripts/preview-source-allowlist.mjs`. After changing those sources, run
 `pnpm docs:sources:build`, verify with `pnpm docs:sources:check`, and commit the generated URL mapping and
