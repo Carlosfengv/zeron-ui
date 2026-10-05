@@ -3,6 +3,74 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "project-monitor-01",
+      "type": "registry:block",
+      "title": "项目监控",
+      "description": "包含项目概览、资源用量、存储分布与请求报告的中文监控卡片。",
+      "categories": [
+        "application",
+        "analytics"
+      ],
+      "dependencies": [
+        "recharts"
+      ],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "card",
+        "chart",
+        "empty",
+        "icon-context",
+        "info-item",
+        "inline-notice",
+        "metric-card",
+        "select",
+        "skeleton",
+        "status-overview",
+        "storage-usage-01",
+        "tabs",
+        "tooltip",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor-views.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor-views.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor-charts.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor-charts.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "user-account-01",
       "type": "registry:block",
       "title": "User Account",

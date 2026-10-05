@@ -148,6 +148,11 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation" |
     kind: "page", product: "zentrix", domains: ["settings", "billing", "model usage"], patterns: ["analytics", "data table", "sidebar"], searchTerms: ["model usage", "billing", "spend", "token", "模型用量", "消费", "计费"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"], featured: true,
   },
   {
+    slug: "project-monitor-01", registryName: "project-monitor-01",
+    title: "项目监控", description: "项目概览、资源用量、存储分布与请求报告。",
+    kind: "block", product: "shared", domains: ["monitoring", "storage"], patterns: ["metrics", "charts", "tabs"], searchTerms: ["项目监控", "存储", "请求", "project monitor"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
     slug: "model-router-01", registryName: "model-router-01",
     title: "Model Router", description: "Animated gateway traffic, live metrics, draft strategies and fallback controls.",
     kind: "block", product: "shared", domains: ["gateway", "routing", "policy"], patterns: ["metrics", "settings", "flow"], searchTerms: ["model router", "gateway", "fallback", "模型路由", "流量", "回退"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,

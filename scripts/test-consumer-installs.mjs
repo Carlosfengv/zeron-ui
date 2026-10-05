@@ -261,6 +261,11 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "project-monitor-01": [
+      'import { ProjectMonitor, projectMonitorDemoData } from "@/components/blocks/project-monitor-01";',
+      'export default function Page() { return <ProjectMonitor data={projectMonitorDemoData} />; }',
+      '',
+    ].join("\n"),
     "model-router-01": [
       'import { ModelRouter, modelRouterDemoData } from "@/components/blocks/model-router-01";',
       'export default function Page() { return <ModelRouter data={modelRouterDemoData} />; }',
@@ -419,6 +424,13 @@ async function installViteComponent({ consumer, component, tarball }) {
     await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
   }
   const examples = {
+    "project-monitor-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { ProjectMonitor, projectMonitorDemoData } from "@/src/components/blocks/project-monitor-01";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<ProjectMonitor data={projectMonitorDemoData} />);',
+      '',
+    ].join("\n"),
     "model-router-01": [
       'import { createRoot } from "react-dom/client";',
       'import { ModelRouter, modelRouterDemoData } from "@/src/components/blocks/model-router-01";',

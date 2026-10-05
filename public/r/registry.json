@@ -4956,6 +4956,82 @@
       }
     },
     {
+      "name": "project-monitor-01",
+      "type": "registry:block",
+      "title": "项目监控",
+      "description": "包含项目概览、资源用量、存储分布与请求报告的中文监控卡片。",
+      "categories": [
+        "application",
+        "analytics"
+      ],
+      "dependencies": [
+        "recharts@^3.10.1"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/chart.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/info-item.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/metric-card.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/skeleton.json",
+        "https://zeron-ui.vercel.app/r/status-overview.json",
+        "https://zeron-ui.vercel.app/r/storage-usage-01.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor-views.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor-views.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor-charts.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor-charts.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/project-monitor-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/project-monitor-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/project-monitor-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/project-monitor-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "user-account-01",
       "type": "registry:block",
       "title": "User Account",

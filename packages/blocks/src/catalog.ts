@@ -170,6 +170,10 @@ const blockCatalogEntries = [
     dependencies: ["personal-settings-01"],
   },
   {
+    name: "project-monitor-01", title: "项目监控", description: "包含项目概览、资源用量、存储分布与请求报告的中文监控卡片。",
+    categories: ["application", "analytics"], dependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "info-item", "inline-notice", "metric-card", "select", "skeleton", "status-overview", "storage-usage-01", "tabs", "tooltip", "utils", "recharts"],
+  },
+  {
     name: "model-router-01", title: "Model Router", description: "Animated gateway traffic, routing strategies and fallback controls.",
     categories: ["application", "analytics", "settings"], dependencies: ["@lobehub/icons", "badge", "button", "card", "icon-context", "inline-notice", "select", "switch", "table", "tabs", "tooltip", "utils"],
   },

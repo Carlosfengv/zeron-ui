@@ -160,6 +160,9 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "model-router-01": () => import("./ModelRouterDemo").then(({ ModelRouterDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={780} canvasWidth={980}><ModelRouterDemo /></ResponsivePreview>,
   })),
+  "project-monitor-01": () => import("./ProjectMonitorDemo").then(({ ProjectMonitorDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={1040} canvasWidth={980}><ProjectMonitorDemo /></ResponsivePreview>,
+  })),
   "credit-usage-01": () => import("@zeron/blocks/credit-usage-01").then(({ CreditUsage, creditUsageDemoData }) => ({
     default: function CreditUsagePreview() {
       const [cycle, setCycle] = useState<"current" | "previous">("current");

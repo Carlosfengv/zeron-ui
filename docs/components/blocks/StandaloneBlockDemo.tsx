@@ -1,6 +1,7 @@
 "use client";
 
 import { ModelRouterDemo } from "./ModelRouterDemo";
+import { ProjectMonitorDemo } from "./ProjectMonitorDemo";
 import { useMemo, useState } from "react";
 import { Login01 } from "@zeron/blocks/login-01";
 import { Signup01 } from "@zeron/blocks/signup-01";
@@ -213,6 +214,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <div className={centeredDemoClass}><div className="w-full max-w-4xl"><StorageUsage data={storageUsageDemoData} /></div></div>;
     case "model-router-01":
       return <ModelRouterDemo />;
+    case "project-monitor-01":
+      return <ProjectMonitorDemo />;
     case "credit-usage-01":
       return <CreditUsageDemo />;
     case "personal-usage-01":

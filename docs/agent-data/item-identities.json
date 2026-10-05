@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "items": [
+    { "id": "block:project-monitor-01", "type": "registry", "key": "project-monitor-01", "aliases": ["project-monitor-01"], "status": "active", "retirementReason": null },
     {
       "id": "block:agent-message-trace-01",
       "type": "registry",

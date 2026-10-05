@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "project-monitor-01": {
+    "url": "/docs-source/ecd5b3fe4431352f5f2c2d718ebd34c29f42056a876d47c8e0411a8c54849ef3.txt"
+  },
   "agent-message-trace-01": {
     "url": "/docs-source/61a51108c5b81418fd886efa3b7c6813bc5ad04c9fc51a83c7f034e1ae45e14d.txt"
   },

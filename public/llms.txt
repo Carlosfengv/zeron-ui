@@ -40,6 +40,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [个人模型用量](https://zeron-ui.vercel.app/ai/items/block%3Apersonal-model-usage-01.md): A standalone model billing and call-log workspace with consumption trends, routing evidence, and answer traces. Registry: personal-model-usage-01.
 - [个人设置](https://zeron-ui.vercel.app/ai/items/block%3Apersonal-settings-01.md): A personal settings workspace for model services, API keys, credentials, profile details, and usage. Registry: personal-settings-01.
 - [个人使用情况](https://zeron-ui.vercel.app/ai/items/block%3Apersonal-usage-01.md): A standalone dashboard for calls, activity, and token usage. Registry: personal-usage-01.
+- [项目监控](https://zeron-ui.vercel.app/ai/items/block%3Aproject-monitor-01.md): 包含项目概览、存储用量与请求报告的中文监控卡片。 Registry: project-monitor-01.
 - [Provider Create Form 1](https://zeron-ui.vercel.app/ai/items/block%3Aprovider-create-form-01.md): A three-step provider setup workflow with credential verification, model discovery, per-model availability, and final review. Registry: provider-create-form-01.
 - [Resource Detail Page 1](https://zeron-ui.vercel.app/ai/items/block%3Aresource-detail-page-01.md): A full-width generic resource detail page with shared navigation, editable metadata, protection settings, and caller-owned tab content. Registry: resource-detail-page-01.
 - [MCP Resource List Page](https://zeron-ui.vercel.app/ai/items/block%3Aresource-list-page-01.md): A Sidebar workspace for managing MCP applications and categories with design-system-native tabs, filters, and tables. Registry: resource-list-page-01.
@@ -151,6 +152,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [filter-rule-builder-01](https://zeron-ui.vercel.app/agent-guides/blocks/filter-rule-builder-01.md)
 - [infinite-log-table-01](https://zeron-ui.vercel.app/agent-guides/blocks/infinite-log-table-01.md)
 - [model-router-01](https://zeron-ui.vercel.app/agent-guides/blocks/model-router-01.md)
+- [project-monitor-01](https://zeron-ui.vercel.app/agent-guides/blocks/project-monitor-01.md)
 - [resource-detail-page-01](https://zeron-ui.vercel.app/agent-guides/blocks/resource-detail-page-01.md)
 - [resource-list-page-01](https://zeron-ui.vercel.app/agent-guides/blocks/resource-list-page-01.md)
 - [rule-flow-editor-01](https://zeron-ui.vercel.app/agent-guides/blocks/rule-flow-editor-01.md)

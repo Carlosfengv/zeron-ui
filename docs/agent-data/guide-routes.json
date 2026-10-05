@@ -30,6 +30,10 @@
       "itemId": "block:model-router-01"
     },
     {
+      "path": "blocks/project-monitor-01.md",
+      "itemId": "block:project-monitor-01"
+    },
+    {
       "path": "blocks/resource-detail-page-01.md",
       "itemId": "block:resource-detail-page-01"
     },

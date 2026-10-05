@@ -1,5 +1,13 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "project-monitor-01": [
+    "packages/blocks/src/application/project-monitor-01/project-monitor.tsx",
+    "packages/blocks/src/application/project-monitor-01/project-monitor-views.tsx",
+    "packages/blocks/src/application/project-monitor-01/project-monitor-charts.tsx",
+    "packages/blocks/src/application/project-monitor-01/project-monitor-types.ts",
+    "packages/blocks/src/application/project-monitor-01/project-monitor-data.ts",
+    "packages/blocks/src/application/project-monitor-01/project-monitor-demo-data.ts"
+  ],
   "agent-message-trace-01": [
     "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-workspace.tsx"
   ],
