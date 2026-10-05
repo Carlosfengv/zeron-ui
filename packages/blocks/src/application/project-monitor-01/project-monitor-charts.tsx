@@ -17,7 +17,7 @@ export function ResourceMetric({ metric, locale }: { metric: ProjectMonitorMetri
   const text = metric.unit === "%" ? `${value}%` : `${value}/${formatMetric(metric.capacity, locale)}`;
   return <figure className="min-w-0 text-center" aria-label={`${metric.label}：${text}`}>
     <div className="relative mx-auto size-24">
-      <ChartContainer aria-hidden="true" className="h-full min-h-0" config={{ used: { color: "var(--success-border)" } }}>
+      <ChartContainer aria-hidden="true" className="h-full min-h-0" config={{ used: { color: "var(--brand)" } }}>
         <PieChart accessibilityLayer={false}>
           <Pie data={[{ value: percentage ?? 0 }, { value: 1 - (percentage ?? 0) }]} dataKey="value" startAngle={90} endAngle={-270} innerRadius="83%" outerRadius="100%" stroke="none" isAnimationActive={false}>
             <Cell fill="var(--color-used)" /><Cell fill="var(--muted)" />
