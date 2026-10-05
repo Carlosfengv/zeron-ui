@@ -261,6 +261,11 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "model-router-01": [
+      'import { ModelRouter, modelRouterDemoData } from "@/components/blocks/model-router-01";',
+      'export default function Page() { return <ModelRouter data={modelRouterDemoData} />; }',
+      '',
+    ].join("\n"),
     "storage-usage-01": [
       'import { StorageUsage, storageUsageDemoData } from "@/components/blocks/storage-usage-01";',
       'export default function Page() { return <StorageUsage data={storageUsageDemoData} />; }',
@@ -414,6 +419,13 @@ async function installViteComponent({ consumer, component, tarball }) {
     await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
   }
   const examples = {
+    "model-router-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { ModelRouter, modelRouterDemoData } from "@/src/components/blocks/model-router-01";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<ModelRouter data={modelRouterDemoData} />);',
+      '',
+    ].join("\n"),
     "storage-usage-01": [
       'import { createRoot } from "react-dom/client";',
       'import { StorageUsage, storageUsageDemoData } from "@/src/components/blocks/storage-usage-01";',
