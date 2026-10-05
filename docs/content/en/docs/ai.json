@@ -1,12 +1,12 @@
 {
   "title": "Build with Zeron and AI",
   "description": "Find the right components, read their contracts, and let your coding agent integrate them into your project.",
-  "development": "This deployment uses a development catalog. Published installation combinations and client connections are still being verified.",
+  "development": "Component search, documentation and Skills downloads are available. Verified component installation commands are not available on this deployment yet.",
   "release": "This deployment uses a published catalog. Your agent will check the installation combination for your project before returning a command.",
   "connectTitle": "1. Connect MCP",
   "connectBody": "Add a remote MCP server in a coding tool that supports Streamable HTTP. Copy the address below from the deployment you are using. The server reads public Zeron documentation; it does not edit your project or keep a conversation history.",
   "endpointLabel": "MCP server address",
-  "clientStatus": "Protocol checks pass locally. Actual client connections are not yet listed as verified.",
+  "clientStatus": "Check whether this browser can discover all five Zeron tools. This does not verify your coding client or enable component installation.",
   "skillsTitle": "2. Install the Skills",
   "skillsBody": "Zeron Page Builder guides page integration. Swap to Zeron UI manages migration scope, source ownership, and completion evidence. Read the installation guide to install both, verify their hashes, and preserve your local edits.",
   "skillGuide": "Read the Skills installation guide",
@@ -40,5 +40,17 @@
     "language": "Use the root /api/mcp endpoint, without an /en or /zh-cn prefix. Recheck your client's protocol support and deployment access settings.",
     "sourceTitle": "The guide differs from installed code",
     "source": "Check the installed component's source and types, then select its matching Registry and catalog version. The installed public API is authoritative."
-  }
+  },
+  "checkConnection": "Check connection",
+  "checkingConnection": "Checking…",
+  "connectionPassed": "Connected: all five Zeron tools were discovered. Continue with your client setup below.",
+  "connectionFailed": "Connection check failed or timed out. Confirm the address and network access, then try again. You can still use the documentation links below.",
+  "clientSetupTitle": "Configure your coding client",
+  "codexSetup": "Run this command with the Codex CLI, then open a new session and confirm that the Zeron tools are available. If a server named zeron already exists, inspect its configuration before replacing it.",
+  "codexCommand": "Codex connection command",
+  "cursorSetup": "Merge this entry into the mcpServers object in your project’s .cursor/mcp.json, keeping any existing servers. Enable Zeron in Cursor’s MCP settings.",
+  "cursorConfig": "Cursor configuration",
+  "clientDocs": "Official setup guide",
+  "localNotice": "This address points to this machine. Keep the local server running and use a client on this machine. A remote or cloud client needs a deployment it can reach.",
+  "installBoundary": "Skills can be downloaded and installed independently. Component installation commands require a verified published CLI, Registry and target framework combination; a successful connection check does not remove this requirement."
 }

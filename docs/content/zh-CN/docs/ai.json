@@ -1,12 +1,12 @@
 {
   "title": "用 AI 构建 Zeron 页面",
   "description": "让编程助手找到合适的组件，读取使用契约，并接入你现有的项目。",
-  "development": "当前部署使用开发目录，正式安装组合和实际客户端连接仍待验证。",
+  "development": "组件搜索、文档读取和 Skills 下载已开放；当前部署暂不提供经过验证的组件安装命令。",
   "release": "当前部署使用已发布目录。助手会核对你的项目环境与安装组合，再返回安装命令。",
   "connectTitle": "1. 连接 MCP",
   "connectBody": "在支持 Streamable HTTP 的编程工具中添加远程 MCP 服务，复制下方当前部署的地址。服务只读取 Zeron 公开资料，不修改你的项目，也不保存对话历史。",
   "endpointLabel": "MCP 服务地址",
-  "clientStatus": "本地协议检查已通过，实际客户端连接尚未标记为已验证。",
+  "clientStatus": "检查当前浏览器能否发现 Zeron 的全部五个工具。此检查不代表编程客户端已接入，也不会开放组件安装命令。",
   "skillsTitle": "2. 安装 Skills",
   "skillsBody": "Zeron Page Builder 指导页面接入；Swap to Zeron UI 管理迁移范围、文件归属和完成证据。按照安装指南成对安装、核对哈希，并保留已有的本地修改。",
   "skillGuide": "阅读 Skills 安装指南",
@@ -40,5 +40,17 @@
     "language": "使用根路径 /api/mcp，不要添加 /en 或 /zh-cn 前缀。重新核对客户端协议支持和部署访问设置。",
     "sourceTitle": "指南与已安装源码不一致",
     "source": "检查已安装组件的源码和类型，再选择对应 Registry 与目录版本。以已安装的公开 API 为准。"
-  }
+  },
+  "checkConnection": "检查连接",
+  "checkingConnection": "正在检查…",
+  "connectionPassed": "连接成功：已发现全部五个 Zeron 工具。请继续按下方说明配置编程客户端。",
+  "connectionFailed": "连接检查失败或超时。请确认地址和网络访问后重试，也可以使用下方链接直接读取文档。",
+  "clientSetupTitle": "配置编程客户端",
+  "codexSetup": "在已安装 Codex CLI 的终端运行下方命令，然后开启新会话，确认 Zeron 工具可用。如果已有名为 zeron 的服务，请先检查原有配置再替换。",
+  "codexCommand": "Codex 接入命令",
+  "cursorSetup": "将此条目合并到项目 .cursor/mcp.json 的 mcpServers 中，保留已有服务，然后在 Cursor 的 MCP 设置中启用 Zeron。",
+  "cursorConfig": "Cursor 配置",
+  "clientDocs": "官方配置指南",
+  "localNotice": "当前地址指向本机，请保持本地服务运行，并使用同一台机器上的客户端。远程或云端客户端需要可访问的部署地址。",
+  "installBoundary": "Skills 可以独立下载和安装。组件安装命令需要先验证已发布 CLI、Registry 与目标框架的组合；连接检查成功不代表安装验证已完成。"
 }

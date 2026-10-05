@@ -1,15 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@zeron/ui/button";
 import { InputCopy } from "@zeron/ui/input-copy";
 import { PageLayout, PageHeader, PageHeaderContent, PageTitle, PageDescription } from "@zeron/ui/page-layout";
 import { CopyPrompt } from "@docs/components/content/CopyPrompt";
 import type messages from "@docs/content/en/docs/ai.json";
+import { checkMcpConnection } from "@docs/lib/mcp-connection";
 
 export default function AiContent({ text, mode }: { text: typeof messages; mode: "development" | "release" }) {
   const [endpoint, setEndpoint] = useState<string | null>(null);
-  useEffect(() => { setEndpoint(`${window.location.origin}/api/mcp`); }, []);
+  const [connection, setConnection] = useState<"idle" | "checking" | "passed" | "failed">("idle");
+  const request = useRef<AbortController | null>(null);
+  useEffect(() => {
+    setEndpoint(`${window.location.origin}/api/mcp`);
+    return () => {
+      request.current?.abort();
+      request.current = null;
+    };
+  }, []);
+  async function checkConnection() {
+    if (!endpoint || request.current) return;
+    const controller = new AbortController();
+    request.current = controller;
+    setConnection("checking");
+    const timeout = setTimeout(() => controller.abort(), 10_000);
+    try {
+      await checkMcpConnection(endpoint, controller.signal);
+      if (request.current === controller) setConnection(controller.signal.aborted ? "failed" : "passed");
+    } catch {
+      if (request.current === controller) setConnection("failed");
+    } finally {
+      clearTimeout(timeout);
+      request.current = null;
+    }
+  }
+  const isLocal = endpoint && ["localhost", "127.0.0.1", "[::1]"].includes(new URL(endpoint).hostname);
   const prompts = [
     { title: text.prompts.listTitle, value: text.prompts.list },
     { title: text.prompts.detailTitle, value: text.prompts.detail },
@@ -33,12 +59,38 @@ export default function AiContent({ text, mode }: { text: typeof messages; mode:
         </PageHeaderContent>
       </PageHeader>
       <div className="flex min-w-0 flex-col gap-10 px-3">
-        <p className="text-label text-fg-muted">{mode === "development" ? text.development : text.release}</p>
+        <div className="flex flex-col gap-2 border-l-hairline border-border-subtle pl-4">
+          <p className="text-body font-medium text-fg-default">{mode === "development" ? text.development : text.release}</p>
+          {mode === "development" && <p className="text-label text-fg-muted">{text.installBoundary}</p>}
+        </div>
         <section aria-labelledby="ai-connect-title" className="flex min-w-0 flex-col gap-4">
           <h2 id="ai-connect-title" className="text-title font-semibold text-fg-default">{text.connectTitle}</h2>
           <p className="text-body text-fg-muted">{text.connectBody}</p>
           <InputCopy label={text.endpointLabel} value={endpoint ?? "/api/mcp"} disabled={!endpoint} />
+          {isLocal && <p className="text-label text-fg-muted">{text.localNotice}</p>}
+          <div><Button variant="secondary" onClick={checkConnection} disabled={!endpoint || connection === "checking"}>{connection === "checking" ? text.checkingConnection : text.checkConnection}</Button></div>
+          <p role="status" aria-live="polite" className="text-body text-fg-muted">
+            {connection === "passed" ? text.connectionPassed : connection === "failed" ? text.connectionFailed : null}
+          </p>
           <p className="text-label text-fg-subtle">{text.clientStatus}</p>
+          <h3 className="text-body font-medium text-fg-default">{text.clientSetupTitle}</h3>
+          <details className="min-w-0">
+            <summary className="cursor-pointer text-body font-medium text-fg-default">Codex</summary>
+            <div className="flex min-w-0 flex-col gap-3 pt-3">
+              <p className="text-body text-fg-muted">{text.codexSetup}</p>
+              <InputCopy label={text.codexCommand} value={endpoint ? `codex mcp add zeron --url ${endpoint}` : ""} disabled={!endpoint} />
+              <a className="text-body text-brand underline" href="https://developers.openai.com/learn/docs-mcp">{text.clientDocs}</a>
+            </div>
+          </details>
+          <details className="min-w-0">
+            <summary className="cursor-pointer text-body font-medium text-fg-default">Cursor</summary>
+            <div className="flex min-w-0 flex-col gap-3 pt-3">
+              <p className="text-body text-fg-muted">{text.cursorSetup}</p>
+              <pre className="overflow-x-auto rounded-lg bg-surface-raised p-4 text-body text-fg-default"><code>{JSON.stringify({ mcpServers: { zeron: { url: endpoint ?? "/api/mcp" } } }, null, 2)}</code></pre>
+              <InputCopy label={text.cursorConfig} value={endpoint ? JSON.stringify({ mcpServers: { zeron: { url: endpoint } } }, null, 2) : ""} disabled={!endpoint} />
+              <a className="text-body text-brand underline" href="https://cursor.com/docs/mcp">{text.clientDocs}</a>
+            </div>
+          </details>
         </section>
         <section aria-labelledby="ai-skills-title" className="flex flex-col gap-4">
           <h2 id="ai-skills-title" className="text-title font-semibold text-fg-default">{text.skillsTitle}</h2>
