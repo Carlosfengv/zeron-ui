@@ -261,6 +261,11 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "transaction-details-01": [
+      '"use client";',
+      'import { TransactionDetails, transactionDetailsDemoData } from "@/components/blocks/transaction-details-01";',
+      'export default function Page() { return <TransactionDetails transactionId={transactionDetailsDemoData.id} data={transactionDetailsDemoData} />; }',
+    ].join("\n"),
     "getting-started-01": [
       'import { GettingStarted, gettingStartedDemoTasks } from "@/components/blocks/getting-started-01";',
       'export default function Page() { return <GettingStarted tasks={gettingStartedDemoTasks} />; }',
@@ -439,6 +444,12 @@ async function installViteComponent({ consumer, component, tarball }) {
     await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
   }
   const examples = {
+    "transaction-details-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { TransactionDetails, transactionDetailsDemoData } from "@/src/components/blocks/transaction-details-01";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<TransactionDetails transactionId={transactionDetailsDemoData.id} data={transactionDetailsDemoData} />);',
+    ].join("\n"),
     "deployment-detail-01": [
       'import { createRoot } from "react-dom/client";',
       'import { DeploymentDetail, deploymentDetailDemoData } from "@/src/components/blocks/deployment-detail-01";',

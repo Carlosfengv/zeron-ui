@@ -4992,6 +4992,78 @@
       }
     },
     {
+      "name": "transaction-details-01",
+      "type": "registry:block",
+      "title": "交易详情",
+      "description": "突出金额、交易字段、可折叠账单与附件操作的交易详情。",
+      "categories": [
+        "application",
+        "details"
+      ],
+      "dependencies": [
+        "@hugeicons/react@^1.1.6",
+        "@hugeicons/core-free-icons@^4.1.1"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/accordion.json",
+        "https://zeron-ui.vercel.app/r/avatar.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/detail-list.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/error-state.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/info-item.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/menu-item.json",
+        "https://zeron-ui.vercel.app/r/skeleton.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/transaction-details.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/transaction-details.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/transaction-details-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/transaction-details-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/transaction-details-format.ts",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/transaction-details-format.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/transaction-details-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/transaction-details-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/transaction-details-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/transaction-details-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "getting-started-01",
       "type": "registry:block",
       "title": "入门任务清单",

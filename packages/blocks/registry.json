@@ -3,6 +3,70 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "transaction-details-01",
+      "type": "registry:block",
+      "title": "交易详情",
+      "description": "突出金额、交易字段、可折叠账单与附件操作的交易详情。",
+      "categories": [
+        "application",
+        "details"
+      ],
+      "dependencies": [
+        "@hugeicons/react",
+        "@hugeicons/core-free-icons"
+      ],
+      "registryDependencies": [
+        "accordion",
+        "avatar",
+        "badge",
+        "button",
+        "container",
+        "detail-list",
+        "dropdown",
+        "empty",
+        "error-state",
+        "icon-context",
+        "info-item",
+        "inline-notice",
+        "menu-item",
+        "skeleton",
+        "tooltip",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/transaction-details.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/transaction-details.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/transaction-details-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/transaction-details-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/transaction-details-format.ts",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/transaction-details-format.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/transaction-details-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/transaction-details-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/transaction-details-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/transaction-details-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/transaction-details-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/transaction-details-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "getting-started-01",
       "type": "registry:block",
       "title": "入门任务清单",

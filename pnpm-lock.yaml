@@ -207,6 +207,12 @@ importers:
 
   packages/blocks:
     dependencies:
+      '@hugeicons/core-free-icons':
+        specifier: ^4.1.1
+        version: 4.3.5
+      '@hugeicons/react':
+        specifier: ^1.1.6
+        version: 1.1.6(react@19.2.4)
       '@lobehub/icons':
         specifier: ^5.16.0
         version: 5.16.0(@lobehub/ui@5.30.2)(@types/react@19.2.14)(antd@6.6.0(date-fns@4.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)

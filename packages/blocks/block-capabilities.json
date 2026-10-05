@@ -1,4 +1,5 @@
 {
+  "transaction-details-01": { "framework": "react", "kind": "data-block" },
   "getting-started-01": { "framework": "react", "kind": "data-block" },
   "security-overview-01": { "framework": "react", "kind": "data-block" },
   "deployment-detail-01": { "framework": "react", "kind": "data-block" },

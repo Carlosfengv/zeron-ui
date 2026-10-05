@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:transaction-details-01",
+      "type": "registry",
+      "key": "transaction-details-01",
+      "aliases": [
+        "transaction-details-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "component:error-state",
       "type": "registry",
       "key": "error-state",

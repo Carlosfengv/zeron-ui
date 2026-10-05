@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./transaction-details-01": "./src/application/transaction-details-01/index.ts",
     "./getting-started-01": "./src/application/getting-started-01/index.ts",
     "./security-overview-01": "./src/application/security-overview-01/index.ts",
     "./deployment-detail-01": "./src/application/deployment-detail-01/index.ts",
@@ -68,7 +69,9 @@
     "react-markdown": "^10.1.0",
     "recharts": "^3.10.1",
     "remark-breaks": "^4.0.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "@hugeicons/core-free-icons": "^4.1.1",
+    "@hugeicons/react": "^1.1.6"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",
