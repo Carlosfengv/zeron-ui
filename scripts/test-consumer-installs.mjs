@@ -261,6 +261,10 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "getting-started-01": [
+      'import { GettingStarted, gettingStartedDemoTasks } from "@/components/blocks/getting-started-01";',
+      'export default function Page() { return <GettingStarted tasks={gettingStartedDemoTasks} />; }',
+    ].join("\n"),
     "security-overview-01": [
       '"use client";',
       'import { SecurityOverview, securityOverviewDemoData } from "@/components/blocks/security-overview-01";',
@@ -441,6 +445,12 @@ async function installViteComponent({ consumer, component, tarball }) {
       'import "./index.css";',
       'createRoot(document.getElementById("root")!).render(<DeploymentDetail data={deploymentDetailDemoData} />);',
       '',
+    ].join("\n"),
+    "getting-started-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { GettingStarted, gettingStartedDemoTasks } from "@/src/components/blocks/getting-started-01";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<GettingStarted tasks={gettingStartedDemoTasks} />);',
     ].join("\n"),
     "security-overview-01": [
       'import { createRoot } from "react-dom/client";',

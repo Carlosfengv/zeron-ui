@@ -1,0 +1,52 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "getting-started-01",
+  "type": "registry:block",
+  "title": "入门任务清单",
+  "description": "可折叠的入门任务清单，包含完成数量、任务状态与宿主操作入口。",
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/button.json",
+    "https://zeron-ui.vercel.app/r/container.json",
+    "https://zeron-ui.vercel.app/r/stepper.json",
+    "https://zeron-ui.vercel.app/r/icon-context.json",
+    "https://zeron-ui.vercel.app/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "packages/blocks/src/application/getting-started-01/getting-started.tsx",
+      "content": "\"use client\";\nimport { useId, useState } from \"react\";\nimport { Button } from \"@ui/button\";\nimport { Container, ContainerBody, ContainerHeader } from \"@ui/container\";\nimport { Stepper, StepperIndicator, StepperItem } from \"@ui/stepper\";\nimport { useIcon } from \"@lib/icon-context\";\nimport { cn } from \"@lib/utils\";\nimport type { GettingStartedLabels, GettingStartedProps } from \"./getting-started-types\";\nconst defaultLabels: GettingStartedLabels = {\n    completed: \"Completed\",\n    current: \"Current step\",\n    pending: \"Not completed\",\n    empty: \"No setup tasks yet.\",\n    progress: (completed, total) => `${completed} of ${total} tasks completed`,\n};\n/** Embedded setup checklist. Actions never change the caller's completion state. */\nexport function GettingStarted({ title = \"Getting started\", tasks, open, defaultOpen = true, onOpenChange, onTaskAction, labels: suppliedLabels, className }: GettingStartedProps) {\n    const [localOpen, setLocalOpen] = useState(defaultOpen);\n    const panelId = useId();\n    const isOpen = open ?? localOpen;\n    const labels = { ...defaultLabels, ...suppliedLabels };\n    const completed = tasks.filter((task) => task.status === \"completed\").length;\n    const progressLabel = labels.progress(completed, tasks.length);\n    const Check = useIcon(\"check\");\n    const ChevronUp = useIcon(\"chevron-up\");\n    const ChevronDown = useIcon(\"chevron-down\");\n    const ChevronRight = useIcon(\"chevron-right\");\n    function changeOpen() {\n        const nextOpen = !isOpen;\n        if (open === undefined)\n            setLocalOpen(nextOpen);\n        onOpenChange?.(nextOpen);\n    }\n    return (<Container className={cn(\"w-full\", className)} data-block=\"getting-started\">\n      <ContainerHeader>\n        <h2 className=\"min-w-0 flex-1 break-words text-body font-medium text-fg-default\">{title}</h2>\n        <span className=\"shrink-0 text-label font-medium text-fg-muted\" aria-label={progressLabel}>{completed}/{tasks.length}</span>\n        <Button type=\"button\" variant=\"ghost\" iconOnly aria-label={`${title}, ${progressLabel}`} aria-expanded={isOpen} aria-controls={panelId} onClick={changeOpen}>\n          {isOpen ? <ChevronUp aria-hidden=\"true\"/> : <ChevronDown aria-hidden=\"true\"/>}\n        </Button>\n      </ContainerHeader>\n      <ContainerBody id={panelId} hidden={!isOpen}>\n        {tasks.length === 0 ? <p className=\"text-body text-fg-muted\">{labels.empty}</p> : (<ol className=\"flex flex-col gap-3\" aria-label={title}>\n            {tasks.map((task, index) => {\n                const done = task.status === \"completed\";\n                const actionable = !done && Boolean(task.href || onTaskAction);\n                const statusLabel = labels[task.status];\n                return (<li key={task.id} className=\"flex min-w-0 items-center gap-3\" aria-current={task.status === \"current\" ? \"step\" : undefined}>\n                  {/* Isolate indicator state: checklist completion is explicit, not inferred from order. */}\n                  <div className=\"shrink-0\">\n                    <Stepper value={task.status === \"pending\" ? \"\" : task.id} nonInteractive>\n                      <StepperItem value={task.id} completed={done}>\n                        <StepperIndicator role=\"img\" aria-label={statusLabel}>\n                          {done ? <Check className=\"size-4\" aria-hidden=\"true\"/> : index + 1}\n                        </StepperIndicator>\n                      </StepperItem>\n                    </Stepper>\n                  </div>\n                  <p className={cn(\"min-w-0 flex-1 break-words py-1 text-body\", done ? \"text-fg-muted\" : \"text-fg-default\")}>{task.title}</p>\n                  {actionable ? (task.href && !task.disabled ? (<Button asChild variant=\"ghost\" iconOnly aria-label={task.title}>\n                        <a href={task.href}><ChevronRight aria-hidden=\"true\"/></a>\n                      </Button>) : (<Button type=\"button\" variant=\"ghost\" iconOnly aria-label={task.title} disabled={task.disabled} onClick={() => { if (!task.href)\n                        onTaskAction?.(task.id); }}>\n                        <ChevronRight aria-hidden=\"true\"/>\n                      </Button>)) : null}\n                </li>);\n            })}\n          </ol>)}\n      </ContainerBody>\n    </Container>);\n}\n",
+      "type": "registry:component",
+      "target": "components/blocks/getting-started-01/getting-started.tsx"
+    },
+    {
+      "path": "packages/blocks/src/application/getting-started-01/getting-started-types.ts",
+      "content": "/** Tasks have unique ids and at most one current task. Completion is owned by the caller. */\nexport interface GettingStartedTask {\n    id: string;\n    title: string;\n    status: \"completed\" | \"current\" | \"pending\";\n    href?: string;\n    disabled?: boolean;\n}\nexport interface GettingStartedLabels {\n    completed: string;\n    current: string;\n    pending: string;\n    empty: string;\n    progress: (completed: number, total: number) => string;\n}\nexport interface GettingStartedProps {\n    title?: string;\n    tasks: readonly GettingStartedTask[];\n    open?: boolean;\n    defaultOpen?: boolean;\n    onOpenChange?: (open: boolean) => void;\n    /** Called only for tasks without an href; completed tasks remain static. */\n    onTaskAction?: (taskId: string) => void;\n    labels?: Partial<GettingStartedLabels>;\n    /** External layout only. */\n    className?: string;\n}\n",
+      "type": "registry:component",
+      "target": "components/blocks/getting-started-01/getting-started-types.ts"
+    },
+    {
+      "path": "packages/blocks/src/application/getting-started-01/getting-started-demo-data.ts",
+      "content": "import type { GettingStartedTask } from \"./getting-started-types\";\nexport const gettingStartedDemoTasks: readonly GettingStartedTask[] = [\n    { id: \"profile\", title: \"Create your profile\", status: \"completed\" },\n    { id: \"campaign\", title: \"Add your first campaign\", status: \"completed\" },\n    { id: \"budget\", title: \"Set budget & rules\", status: \"current\" },\n    { id: \"creators\", title: \"Invite creators\", status: \"pending\" },\n    { id: \"review\", title: \"Review submissions & approve\", status: \"pending\" },\n];\n",
+      "type": "registry:component",
+      "target": "components/blocks/getting-started-01/getting-started-demo-data.ts"
+    },
+    {
+      "path": "packages/blocks/src/application/getting-started-01/index.ts",
+      "content": "export { GettingStarted } from \"./getting-started\";\nexport { gettingStartedDemoTasks } from \"./getting-started-demo-data\";\nexport type { GettingStartedTask, GettingStartedLabels, GettingStartedProps } from \"./getting-started-types\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/getting-started-01/index.ts"
+    }
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "data-block"
+    }
+  },
+  "categories": [
+    "application",
+    "onboarding"
+  ]
+}

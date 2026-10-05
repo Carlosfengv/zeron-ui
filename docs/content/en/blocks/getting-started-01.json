@@ -1,0 +1,12 @@
+{
+  "gettingStartedBlock": {
+    "title": "Getting Started",
+    "description": "An embedded, collapsible setup checklist with completion counts, task states and host-owned actions.",
+    "composition": "Composition",
+    "compositionBody": "Uses Container as the frame, with ContainerHeader and ContainerBody as direct children, preserving default surfaces, shapes, borders and spacing. A header Button toggles expansion. Task markers use Stepper, StepperItem and StepperIndicator: completed tasks show the shared check through the public content slot, others show their position, and all states retain the default 24px size and semantic colors. Task text wraps beside a named arrow button. Completion is shown as a count.",
+    "dataContract": "Data integration",
+    "dataContractBody": "Supply tasks with unique ids, titles and explicit completed, current or pending states; at most one task is current. Counts are derived from those states. Set href for navigation or onTaskAction for an action. Completed tasks are static and disabled task links become disabled buttons. Task actions never change completion automatically.",
+    "behavior": "Behavior and states",
+    "behaviorBody": "Supports controlled or uncontrolled expansion, independent task completion, disabled actions, an empty list and all tasks completed. The demo opens an example task dialog and lets the host update its status explicitly. It is not connected to a business service. The demo and block support English and Chinese labels."
+  }
+}

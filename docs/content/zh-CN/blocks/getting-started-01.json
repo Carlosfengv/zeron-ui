@@ -1,0 +1,12 @@
+{
+  "gettingStartedBlock": {
+    "title": "入门任务清单",
+    "description": "可嵌入、可折叠的入门任务清单，包含完成数量、任务状态与宿主操作入口。",
+    "composition": "组件组合",
+    "compositionBody": "Container 作为外框，ContainerHeader 与 ContainerBody 为直接子级，保留默认表面、圆角、边框和留白。标题区通过 Button 展开或收起内容。左侧状态使用 Stepper、StepperItem 与 StepperIndicator：完成项通过公开内容插槽显示共享对勾，其余项显示序号，三种状态均保持默认 24px 尺寸与状态配色。任务文字独立换行，右侧图标按钮以任务名作为可访问名称。进度使用完成数量表达。",
+    "dataContract": "数据接入",
+    "dataContractBody": "宿主提供具有唯一 id、标题及 completed/current/pending 状态的任务，最多一个当前任务。完成数量从状态派生。href 用于导航，onTaskAction 用于操作。已完成项静态展示，禁用任务链接显示为禁用按钮。点击任务不会自动修改完成状态。",
+    "behavior": "交互与状态",
+    "behaviorBody": "支持受控或非受控展开、独立完成状态、禁用入口、空清单与全部完成。演示打开示例任务对话框，再由宿主明确更新状态，未接入真实业务服务。演示及组件支持中英文文案。"
+  }
+}

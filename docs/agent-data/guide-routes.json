@@ -23,6 +23,10 @@
       "itemId": "block:filter-rule-builder-01"
     },
     {
+      "path": "blocks/getting-started-01.md",
+      "itemId": "block:getting-started-01"
+    },
+    {
       "path": "blocks/infinite-log-table-01.md",
       "itemId": "block:infinite-log-table-01"
     },

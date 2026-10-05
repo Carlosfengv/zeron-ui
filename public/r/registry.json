@@ -4956,6 +4956,53 @@
       }
     },
     {
+      "name": "getting-started-01",
+      "type": "registry:block",
+      "title": "入门任务清单",
+      "description": "可折叠的入门任务清单，包含完成数量、任务状态与宿主操作入口。",
+      "categories": [
+        "application",
+        "onboarding"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/stepper.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/getting-started-01/getting-started.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/getting-started-01/getting-started.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/getting-started-01/getting-started-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/getting-started-01/getting-started-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/getting-started-01/getting-started-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/getting-started-01/getting-started-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/getting-started-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/getting-started-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "security-overview-01",
       "type": "registry:block",
       "title": "安全概览",

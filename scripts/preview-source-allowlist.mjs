@@ -1,5 +1,11 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "getting-started-01": [
+    "packages/blocks/src/application/getting-started-01/getting-started.tsx",
+    "packages/blocks/src/application/getting-started-01/getting-started-types.ts",
+    "packages/blocks/src/application/getting-started-01/getting-started-demo-data.ts",
+    "packages/blocks/src/application/getting-started-01/index.ts"
+  ],
   "security-overview-01": [
     "packages/blocks/src/application/security-overview-01/security-overview.tsx",
     "packages/blocks/src/application/security-overview-01/security-overview-types.ts",

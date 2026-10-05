@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "getting-started-01", title: "入门任务清单", description: "可折叠的入门任务清单，包含完成数量、任务状态与宿主操作入口。", categories: ["application", "onboarding"], dependencies: ["button", "container", "stepper", "icon-context", "utils"] },
   { name: "security-overview-01", title: "安全概览", description: "安全评分、风险趋势、六维态势与受影响资产的可控扫描概览。", categories: ["application", "security", "analytics"], dependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "inline-notice", "metric-card", "select", "skeleton", "tabs", "tooltip", "utils", "recharts"] },
   { name: "deployment-detail-01", title: "部署详情", description: "网站预览、部署信息、域名、代码来源与阶段检查结果。", categories: ["application", "monitoring"], dependencies: ["avatar", "badge", "button", "card", "dropdown", "empty", "icon-context", "info-item", "inline-notice", "menu-item", "popover", "skeleton", "status-overview", "tooltip", "utils"] },
   { name: "user-account-01", title: "User Account", description: "Controlled account actions and preferences.", categories: ["application", "account"], dependencies: ["sidebar-account-menu", "icon-context"] },

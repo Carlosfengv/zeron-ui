@@ -1,4 +1,5 @@
 "use client";
+import { GettingStartedDemo } from "./GettingStartedDemo";
 
 import { ModelRouterDemo } from "./ModelRouterDemo";
 import { ProjectMonitorDemo } from "./ProjectMonitorDemo";
@@ -174,6 +175,8 @@ function FilterRuleBuilderDemo() {
 
 export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "getting-started-01":
+      return <GettingStartedDemo />;
     case "login-01":
       return <Login01 />;
     case "signup-01":
