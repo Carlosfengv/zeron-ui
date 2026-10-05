@@ -1614,6 +1614,14 @@ const tokenData = {
       "lineHeight": "2rem",
       "linePx": 32,
       "usage": "页面标题"
+    },
+    {
+      "name": "display",
+      "size": "2.5rem",
+      "px": 40,
+      "lineHeight": "3rem",
+      "linePx": 48,
+      "usage": "突出金额与关键数值"
     }
   ],
   "motion": [

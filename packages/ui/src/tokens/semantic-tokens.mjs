@@ -233,6 +233,7 @@ export const typographyTokens = [
   { name: "body", size: "0.875rem", px: 14, lineHeight: "1.25rem", linePx: 20, usage: "默认正文" },
   { name: "title", size: "1.125rem", px: 18, lineHeight: "1.625rem", linePx: 26, usage: "卡片或面板标题" },
   { name: "heading", size: "1.5rem", px: 24, lineHeight: "2rem", linePx: 32, usage: "页面标题" },
+  { name: "display", size: "2.5rem", px: 40, lineHeight: "3rem", linePx: 48, usage: "突出金额与关键数值" },
 ];
 
 /**
