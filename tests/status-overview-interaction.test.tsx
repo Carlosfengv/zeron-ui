@@ -22,9 +22,10 @@ const timelineContent: StatusOverviewContent = {
   ],
 };
 
-function renderOverview(content: StatusOverviewContent = timelineContent) {
+function renderOverview(content: StatusOverviewContent = timelineContent, variant: "card" | "activity" = "card") {
   return render(
     <StatusOverview
+      variant={variant}
       ariaLabel="Service status history"
       content={content}
       emptyContent="No status data"
@@ -47,8 +48,8 @@ describe("StatusOverview", () => {
     expect(grid.getAttribute("aria-activedescendant")).toBe(cells[0]?.id);
   });
 
-  it("moves the active descendant with keyboard commands without moving DOM focus", () => {
-    renderOverview();
+  it.each(["card", "activity"] as const)("moves the active descendant in %s with keyboard commands without moving DOM focus", (variant) => {
+    renderOverview(timelineContent, variant);
     const grid = screen.getByRole("grid", { name: "Service status history" });
 
     grid.focus();
@@ -115,10 +116,11 @@ describe("StatusOverview", () => {
     expect(grid.getAttribute("aria-activedescendant")).toBe(screen.getByRole("gridcell", { name: "01:00 degraded" }).id);
   });
 
-  it("renders loading, empty, stale, unavailable, and error states without stale summary values", () => {
+  it.each(["card", "activity"] as const)("renders %s loading, empty, stale, unavailable, and error states without stale summary values", (variant) => {
     const { rerender } = render(
       <StatusOverview
         ariaLabel="Service status"
+        variant={variant}
         content={timelineContent}
         emptyContent="No status data"
         label="Availability"
@@ -133,6 +135,7 @@ describe("StatusOverview", () => {
     rerender(
       <StatusOverview
         ariaLabel="Service status"
+        variant={variant}
         content={{ type: "nodes", items: [] }}
         emptyContent="No status data"
         label="Availability"
@@ -144,6 +147,7 @@ describe("StatusOverview", () => {
     rerender(
       <StatusOverview
         ariaLabel="Service status"
+        variant={variant}
         content={timelineContent}
         emptyContent="No status data"
         label="Availability"
@@ -158,6 +162,7 @@ describe("StatusOverview", () => {
     rerender(
       <StatusOverview
         ariaLabel="Service status"
+        variant={variant}
         content={timelineContent}
         emptyContent="No status data"
         label="Availability"
@@ -173,6 +178,7 @@ describe("StatusOverview", () => {
     rerender(
       <StatusOverview
         ariaLabel="Service status"
+        variant={variant}
         content={timelineContent}
         emptyContent="No status data"
         label="Availability"
@@ -181,5 +187,21 @@ describe("StatusOverview", () => {
       />,
     );
     expect(screen.getByRole("alert").textContent).toContain("Could not load status");
+  });
+
+  it("activity preserves full hit targets and distinguishes no activity from unknown samples", () => {
+    renderOverview({ type: "nodes", items: [
+      { id: "idle", status: "empty", ariaLabel: "Gateway：0 请求" },
+      { id: "missing", status: "unknown", ariaLabel: "Gateway：未收到数据" },
+    ] }, "activity");
+    const idle = screen.getByRole("gridcell", { name: "Gateway：0 请求" });
+    const unknown = screen.getByRole("gridcell", { name: "Gateway：未收到数据" });
+    expect(idle.querySelector('[data-slot="status-overview-tick"]')?.getAttribute("aria-hidden")).toBe("true");
+    expect(idle.className).not.toContain("bg-");
+    expect(idle.querySelector("span")?.className).toContain("bg-border");
+    expect(unknown.querySelector("span")?.className).toContain("h-3");
+    fireEvent.keyDown(screen.getByRole("grid"), { key: "End" });
+    expect(screen.getByRole("grid").getAttribute("aria-activedescendant")).toBe(unknown.id);
+    expect(document.querySelector('[data-slot="status-overview-summary"] .sr-only')?.textContent).toBe("Availability");
   });
 });

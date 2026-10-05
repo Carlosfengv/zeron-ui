@@ -67,6 +67,8 @@ export type StatusOverviewContent =
 
 interface StatusOverviewBaseProps
   extends Omit<ComponentPropsWithoutRef<"section">, "children" | "content"> {
+  /** Activity is a frameless label / fine-tick rail / value row; card preserves the default surface. */
+  variant?: "card" | "activity";
   ariaLabel: string;
   label: ReactNode;
   rangeLabel?: ReactNode;
@@ -116,7 +118,9 @@ function isFiniteTimelineRange(content: StatusOverviewContent): content is Extra
 function StatusSegmentRail({
   ariaLabel,
   content,
-}: Pick<StatusOverviewProps, "ariaLabel" | "content">) {
+  variant,
+}: Pick<StatusOverviewProps, "ariaLabel" | "content" | "variant">) {
+  const activity = variant === "activity";
   const items = content.items;
   const railId = useId();
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -135,7 +139,7 @@ function StatusSegmentRail({
   const activeItem = items[activeIndex];
   const cellId = (item: StatusOverviewSegment) => `${railId}-segment-${item.id}`;
   const activeCellId = activeItem ? cellId(activeItem) : undefined;
-  const minimumCanvasWidth = Math.max(0, items.length * 4 - 2);
+  const minimumCanvasWidth = Math.max(0, activity ? items.length * 5 - 1 : items.length * 4 - 2);
   const markerRangeValid = isFiniteTimelineRange(content) && items.length > 0;
   const markers = useMemo(() => {
     if (!markerRangeValid || content.type !== "timeline") return [];
@@ -257,13 +261,13 @@ function StatusSegmentRail({
           onPointerMove={handlePointerMove}
           role="grid"
           tabIndex={0}
-          className="relative h-control-md min-w-0 cursor-crosshair outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-focus-ring"
+          className={cn("relative min-w-0 cursor-crosshair outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-focus-ring", activity ? "h-6" : "h-control-md")}
         >
           <div
             data-slot="status-overview-rail-row"
             role="row"
-            className="grid h-full gap-0.5"
-            style={{ gridTemplateColumns: `repeat(${items.length}, minmax(2px, 1fr))` }}
+            className={cn("grid h-full", activity ? "gap-px" : "gap-0.5")}
+            style={{ gridTemplateColumns: `repeat(${items.length}, minmax(${activity ? 4 : 2}px, 1fr))` }}
           >
             {items.map((item, index) => (
               <div
@@ -280,10 +284,16 @@ function StatusSegmentRail({
                 }}
                 role="gridcell"
                 className={cn(
-                  "min-w-0 first:rounded-s-sm last:rounded-e-sm",
-                  statusSegmentClass[item.status],
+                  "min-w-0",
+                  activity ? "flex items-center justify-center" : cn("first:rounded-s-sm last:rounded-e-sm", statusSegmentClass[item.status]),
                 )}
-              />
+              >
+                {activity && <span aria-hidden="true" data-slot="status-overview-tick" className={cn(
+                  "w-1 shrink-0 rounded-full",
+                  item.status === "unknown" ? "h-3" : "h-5",
+                  item.status === "empty" ? "bg-border" : statusSegmentClass[item.status],
+                )} />}
+              </div>
             ))}
           </div>
 
@@ -292,7 +302,7 @@ function StatusSegmentRail({
               <span
                 aria-hidden
                 data-slot="status-overview-active-anchor"
-                className="pointer-events-none absolute top-0 h-control-md w-6 -translate-x-1/2"
+                className="pointer-events-none absolute top-0 h-full w-6 -translate-x-1/2"
                 style={{ left: anchorLeft }}
               />
             </Tooltip>
@@ -334,9 +344,11 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
     state: stateProp,
     statusMessage,
     className,
+    variant = "card",
     ...sectionProps
   } = props;
   const state = stateProp ?? "ready";
+  const activity = variant === "activity";
   const loading = state === "loading";
   const unavailable = state === "unavailable" || state === "error";
   const showData = state === "ready" || state === "stale";
@@ -354,32 +366,35 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
       data-slot="status-overview"
       data-state={state}
       data-view={content.type}
+      data-variant={variant}
       className={cn(
-        "flex min-w-0 flex-col rounded-xl border-hairline border-border bg-surface-floating p-3",
+        "min-w-0",
+        activity ? "@container/status" : "flex flex-col rounded-xl border-hairline border-border bg-surface-floating p-3",
         className,
       )}
     >
-      <div data-slot="status-overview-header" className="flex min-w-0 flex-wrap items-start justify-between gap-x-4 gap-y-2">
-        <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-          <span data-slot="status-overview-label" className="font-medium text-body text-fg-default">{label}</span>
+      <div className={cn(activity && "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 @sm/status:grid-cols-[6rem_minmax(0,1fr)_3rem]")}>
+      <div data-slot="status-overview-header" className={activity ? "contents" : "flex min-w-0 flex-wrap items-start justify-between gap-x-4 gap-y-2"}>
+        <div className={cn("flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5", activity && "col-start-1 row-start-1")}>
+          <span data-slot="status-overview-label" className={activity ? "break-words font-mono text-label uppercase text-fg-subtle" : "font-medium text-body text-fg-default"}>{label}</span>
           {rangeLabel && <span data-slot="status-overview-range" className="text-body text-fg-subtle">{rangeLabel}</span>}
         </div>
 
         {summary && !unavailable && (
-          <div data-slot="status-overview-summary" className="flex min-w-0 items-baseline gap-1.5 text-body">
-            <span className="text-fg-subtle">{summary.label}</span>
+          <div data-slot="status-overview-summary" className={cn("flex min-w-0 items-baseline gap-1.5", activity ? "col-start-2 row-start-1 justify-end font-mono text-label @sm/status:col-start-3" : "text-body")}>
+            <span className={activity ? "sr-only" : "text-fg-subtle"}>{summary.label}</span>
             {loading ? (
               <Skeleton className="h-4 w-16 rounded" />
             ) : (
-              <span className={cn("font-medium tabular-nums", summaryTone)}>{summary.value}</span>
+              <span className={cn("break-words tabular-nums", activity ? "text-fg-muted" : "font-medium", summary?.status || !activity ? summaryTone : undefined)}>{summary.value}</span>
             )}
           </div>
         )}
       </div>
 
-      <div className="mt-3 min-w-0">
-        {loading && <Skeleton data-slot="status-overview-skeleton" className="h-control-md rounded-sm" />}
-        {showRail && <StatusSegmentRail ariaLabel={ariaLabel} content={content} />}
+      <div className={cn("min-w-0", activity ? "col-span-2 row-start-2 @sm/status:col-span-1 @sm/status:col-start-2 @sm/status:row-start-1" : "mt-3")}>
+        {loading && <Skeleton data-slot="status-overview-skeleton" className={cn("rounded-sm", activity ? "h-6" : "h-control-md")} />}
+        {showRail && <StatusSegmentRail ariaLabel={ariaLabel} content={content} variant={variant} />}
         {showData && empty && (
           <div data-slot="status-overview-state-message" role="status" className="grid min-h-control-md place-items-center text-label text-fg-subtle">
             {emptyContent}
@@ -396,7 +411,8 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
         )}
       </div>
 
-      {showFooter && <div data-slot="status-overview-footer" className="mt-2 text-label text-fg-subtle">{content.footer}</div>}
+      {showFooter && <div data-slot="status-overview-footer" className={cn("mt-2 text-label text-fg-subtle", activity && "col-span-2 @sm/status:col-span-3")}>{content.footer}</div>}
+      </div>
     </section>
   );
 });

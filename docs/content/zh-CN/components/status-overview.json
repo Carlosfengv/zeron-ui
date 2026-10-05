@@ -1,5 +1,15 @@
 {
   "statusOverview": {
+    "activity": "服务活动",
+    "activityAria": "Gateway 最近 60 分钟的服务活动",
+    "requests": "请求",
+    "activityItem": "第 {minute} 分钟：{status}",
+    "failed": "错误",
+    "warning": "告警",
+    "unknown": "数据未知",
+    "idle": "无请求",
+    "activityBody": "activity 样式适合嵌入监控面板：名称、等宽细竖条和汇总值同排，窄容器中轨道换行。每根竖条保留完整的命中区域及键盘操作。灰色完整竖条表示空闲或空桶，较短竖条表示状态未知；具体含义通过 ariaLabel / tooltip 提供。默认 card 样式保持不变。",
+    "p8": "card 为默认带表面的状态卡片；activity 为无边框的紧凑服务行和细竖条轨道。",
     "description": "用于等时长可用性历史或当前节点快照的紧凑、可逐项检查的状态轨道。",
     "timeline": "可用性时间线",
     "nodes": "节点快照",

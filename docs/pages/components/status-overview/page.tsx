@@ -73,6 +73,7 @@ const props: PropDef[] = [
   { name: "emptyContent", type: "ReactNode", description: "" },
   { name: "state", type: '"ready" | "loading" | "stale" | "unavailable" | "error"', default: '"ready"', description: "" },
   { name: "statusMessage", type: "ReactNode", description: "" },
+  { name: "variant", type: '"card" | "activity"', default: '"card"', description: "" },
 ];
 
 export default function StatusOverviewDoc() {
@@ -105,6 +106,16 @@ export default function StatusOverviewDoc() {
             summary={{ label: t("availability"), value: "99.91%", status: "operational" }}
           />
         </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("activity")}>
+        <ComponentPreview code={'<StatusOverview variant="activity" label="Gateway" summary={{ label: "请求", value: 148 }} ariaLabel="Gateway 服务活动" emptyContent="暂无数据" content={{ type: "timeline", start, end, items }} />'} minHeightClass="min-h-0">
+          <StatusOverview variant="activity" className="w-full" label="Gateway" ariaLabel={t("activityAria")} emptyContent={t("empty")}
+            summary={{ label: t("requests"), value: "148" }}
+            content={{ type: "timeline", start: timelineStart, end: timelineStart + 60 * 60 * 1000,
+              items: Array.from({ length: 60 }, (_, index) => ({ id: `minute-${index}`, status: index === 23 ? "down" : index === 38 ? "degraded" : index === 51 ? "unknown" : index % 4 === 0 ? "operational" : "empty", ariaLabel: t("activityItem", { minute: index + 1, status: t(index === 23 ? "failed" : index === 38 ? "warning" : index === 51 ? "unknown" : index % 4 === 0 ? "operational" : "idle") }) })) }} />
+        </ComponentPreview>
+        <p className="text-body text-fg-muted">{t("activityBody")}</p>
       </DocSection>
 
       <DocSection title={t("nodes")}>

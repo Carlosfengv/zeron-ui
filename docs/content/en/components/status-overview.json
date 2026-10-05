@@ -1,5 +1,15 @@
 {
   "statusOverview": {
+    "activity": "Service activity",
+    "activityAria": "Gateway service activity over the last 60 minutes",
+    "requests": "Requests",
+    "activityItem": "Minute {minute}: {status}",
+    "failed": "error",
+    "warning": "warning",
+    "unknown": "unknown data",
+    "idle": "no requests",
+    "activityBody": "The activity variant places the label, fixed-width ticks and summary in one row, moving the rail below on narrow containers. Each tick retains its full hit area and keyboard support. Full-height gray ticks indicate idle or empty buckets; shorter ticks indicate unknown status. Supply precise meanings through ariaLabel / tooltip. The default card variant remains unchanged.",
+    "p8": "card is the default framed status card; activity is a frameless compact service row with fine ticks.",
     "description": "A compact, inspectable status rail for equal-duration availability history or current node snapshots.",
     "timeline": "Availability timeline",
     "nodes": "Node snapshot",
