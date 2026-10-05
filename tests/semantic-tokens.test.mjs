@@ -234,7 +234,7 @@ describe("semantic token generation", () => {
     });
   });
 
-  it("does not publish retired compatibility color aliases", () => {
+  it("keeps retired colors out of the semantic API, allowing only the installer's base-layer mappings", () => {
     const retiredNames = [
       "background", "foreground", "card-foreground", "muted-foreground",
       "accent", "accent-hover", "accent-active", "accent-subtlest", "accent-subtle",
@@ -251,8 +251,15 @@ describe("semantic token generation", () => {
     for (const name of retiredNames) {
       expect(colorTokens.map((token) => token.name)).not.toContain(name);
       expect(generated).not.toContain(`--${name}:`);
-      expect(generated).not.toContain(`color-${name}`);
+      if (!["background", "foreground"].includes(name)) {
+        expect(generated).not.toContain(`color-${name}`);
+      }
     }
+    expect(registryCssVars().theme).toMatchObject({
+      "color-background": "var(--surface-base)",
+      "color-foreground": "var(--fg-default)",
+      "color-ring": "var(--focus-ring)",
+    });
   });
 
   it("keeps readable foreground levels accessible on every surface", () => {

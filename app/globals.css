@@ -199,6 +199,9 @@
 
 @theme inline {
   --font-sans: var(--font-family-sans);
+  --color-background: var(--surface-base);
+  --color-foreground: var(--fg-default);
+  --color-ring: var(--focus-ring);
   --color-fg-default: var(--fg-default);
   --color-fg-muted: var(--fg-muted);
   --color-fg-subtle: var(--fg-subtle);

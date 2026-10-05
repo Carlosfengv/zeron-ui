@@ -41,6 +41,11 @@ const cssDeclaration = (name, value) => `--${name}: ${value};`;
 export function registryCssVars() {
   const theme = {
     "font-sans": "var(--font-family-sans)",
+    // The pinned Registry installer adds a shadcn base layer even for custom
+    // themes. Keep its utilities backed by Zeron's light/dark semantic roles.
+    "color-background": "var(--surface-base)",
+    "color-foreground": "var(--fg-default)",
+    "color-ring": "var(--focus-ring)",
   };
   const light = {
     "font-family-sans": fontTokens.family,
@@ -696,6 +701,8 @@ ${table(["CSS 令牌", "CSS 类", "值", "用途"], layerRows)}
 - 每个 \`registry:ui\` 条目都依赖 \`surfaces\`，安装任意组件时都会安装完整的设计令牌。
 - \`packages/ui/registry.json\` 中的 \`cssVars\` 和层级 CSS 类由生成器写入。
 - \`public/r\` 是发布产物，不是设计令牌源。
+- 安装引擎会注入 shadcn 基础样式，因此主题提供 \`color-background\` → \`surface-base\`、\`color-foreground\` → \`fg-default\`、\`color-ring\` → \`focus-ring\` 三个兼容映射。它们不引入独立颜色值；组件继续使用 Zeron 语义角色。\`color-border\` 已由语义边界令牌提供。
+- 圆角由宿主 Tailwind 默认主题或自定义 \`@theme\` 提供；Registry 不覆盖原生 \`--radius-*\`。
 - 如果消费项目已有自己的主题，可在分支版本中移除 UI 条目的 \`surfaces\` 依赖，但必须实现本文档列出的同名 CSS/Tailwind 合约。
 `;
 }
