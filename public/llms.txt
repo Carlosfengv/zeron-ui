@@ -61,7 +61,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Storage Usage](https://zeron-ui.vercel.app/ai/items/block%3Astorage-usage-01.md): A compact storage summary with category segments, remaining capacity, and a wrapping legend. Registry: storage-usage-01.
 - [TopNav App Shell](https://zeron-ui.vercel.app/ai/items/block%3Atop-nav-app-shell-01.md): A stacked application shell with a centered TopNav and focused content area. Registry: top-nav-app-shell-01.
 - [流量规则](https://zeron-ui.vercel.app/ai/items/block%3Atraffic-rules-01.md): A responsive gateway workspace for managing traffic rules, limits, validation, and execution workflows. Registry: traffic-rules-01.
-- [交易详情](https://zeron-ui.vercel.app/ai/items/block%3Atransaction-details-01.md): 突出金额、交易字段、可折叠账单与附件操作的交易详情。 Registry: transaction-details-01.
+- [交易详情](https://zeron-ui.vercel.app/ai/items/block%3Atransaction-details-01.md): 突出金额、交易字段、可折叠账单与附件操作。 Registry: transaction-details-01.
 - [User Account](https://zeron-ui.vercel.app/ai/items/block%3Auser-account-01.md): Controlled appearance, language, settings, notifications and sign-out entry points. Registry: user-account-01.
 - [ZAIops Operations](https://zeron-ui.vercel.app/ai/items/block%3Azaiops-operations-01.md): An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation. Registry: zaiops-operations-01.
 - [ZLR 保护组](https://zeron-ui.vercel.app/ai/items/block%3Azlrlist.md): A ZS Live Recovery protection-group workspace with site switching, search, selection, row actions, and Chinese pagination. Registry: zlrlist.
@@ -169,6 +169,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [rule-flow-editor-01](https://zeron-ui.vercel.app/agent-guides/blocks/rule-flow-editor-01.md)
 - [security-overview-01](https://zeron-ui.vercel.app/agent-guides/blocks/security-overview-01.md)
 - [storage-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/storage-usage-01.md)
+- [transaction-details-01](https://zeron-ui.vercel.app/agent-guides/blocks/transaction-details-01.md)
 - [user-account-01](https://zeron-ui.vercel.app/agent-guides/blocks/user-account-01.md)
 - [app-shell](https://zeron-ui.vercel.app/agent-guides/components/app-shell.md)
 - [avatar](https://zeron-ui.vercel.app/agent-guides/components/avatar.md)

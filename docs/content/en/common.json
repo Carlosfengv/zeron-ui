@@ -118,6 +118,7 @@
     "introductionTitle": "Introduction",
     "introductionDescription": "Why these components feel different.",
     "descriptions": {
+      "transaction-details-01": "An embeddable transaction detail with amount, billing information and attachment actions.",
       "surfaces": "Five semantic surfaces with purpose-based shadows for light and dark mode.",
       "semantic-tokens": "Choose color, surface, type, shape, and layer tokens by the object you are designing.",
       "scrollbars": "A scrollbar that stays out of the way but never disappears, over shadcn's scroll-fade baseline — restyled to the shape system, native scroll on touch.",

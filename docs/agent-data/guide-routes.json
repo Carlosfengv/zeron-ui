@@ -56,6 +56,10 @@
       "itemId": "block:storage-usage-01"
     },
     {
+      "path": "blocks/transaction-details-01.md",
+      "itemId": "block:transaction-details-01"
+    },
+    {
       "path": "blocks/user-account-01.md",
       "itemId": "block:user-account-01"
     },

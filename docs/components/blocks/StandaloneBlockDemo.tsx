@@ -1,4 +1,5 @@
 "use client";
+import { TransactionDetailsDemo } from "./TransactionDetailsDemo";
 import { GettingStartedDemo } from "./GettingStartedDemo";
 
 import { ModelRouterDemo } from "./ModelRouterDemo";
@@ -175,6 +176,8 @@ function FilterRuleBuilderDemo() {
 
 export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "transaction-details-01":
+      return <TransactionDetailsDemo />;
     case "getting-started-01":
       return <GettingStartedDemo />;
     case "login-01":

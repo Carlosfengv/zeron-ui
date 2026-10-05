@@ -1,0 +1,12 @@
+{
+  "transactionDetailsBlock": {
+    "title": "Transaction Details",
+    "description": "An embeddable transaction detail block with a prominent amount, aligned fields, collapsible billing information and attachments.",
+    "composition": "Composition",
+    "compositionBody": "Uses Container and two DetailList compositions for transaction and billing fields. Combines Accordion, Badge, Avatar, Button, Tooltip, Dropdown and InfoItem with semantic colors and the display typography token. Narrow containers stack labels and values.",
+    "dataContract": "Data integration",
+    "dataContractBody": "Supply a matching transaction ID and data snapshot. Amounts use safe integer minor units and a currency code; dates use ISO timestamps and an explicit IANA timezone. Null means unknown. Accounts contain a brand and last four digits. The caller owns requests, downloads, sharing and attachment actions.",
+    "behavior": "Behavior and states",
+    "behaviorBody": "Supports controlled or local billing disclosure, copy feedback, independent async action guards, initial loading and failure, empty results, stale data and refresh failure retaining the previous snapshot. The demo generates a valid example PDF and shows a share summary; it does not connect to payment or sharing services."
+  }
+}

@@ -95,6 +95,7 @@ const iconEntry = (value: Omit<DocEntry, "collection" | "indexable" | "order"> &
 });
 
 export const docEntries = [
+  blockEntry({ slug: "transaction-details-01", section: "application", icon: "doc-card", name: "交易详情", description: "突出金额、交易字段、可折叠账单与附件操作。", registryItem: { name: "transaction-details-01", type: "registry:block" }, isNew: true, order: 36.95 }),
   blockEntry({ slug: "getting-started-01", section: "application", icon: "doc-card", name: "入门任务清单", description: "An embedded, collapsible setup checklist with completion counts, task states and host-owned actions.", registryItem: { name: "getting-started-01", type: "registry:block" }, isNew: true, order: 36.95 }),
   entry({ slug: "surfaces", section: "foundations", icon: "doc-surfaces", name: "Surfaces", description: "Five semantic surfaces with purpose-based shadows for light and dark mode." }),
   entry({ slug: "semantic-tokens", section: "foundations", icon: "doc-semantic-tokens", name: "Semantic Tokens", description: "The complete runtime contract for color, surface, type, shape, and layering.", isNew: true, order: 200 }),

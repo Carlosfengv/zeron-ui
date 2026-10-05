@@ -1,0 +1,12 @@
+{
+  "transactionDetailsBlock": {
+    "title": "交易详情",
+    "description": "可嵌入的交易详情 block，包含突出金额、对齐字段、可折叠账单信息和附件列表。",
+    "composition": "组件组合",
+    "compositionBody": "使用 Container 承担外框和主内容，两组 DetailList 分别呈现交易与账单字段。组合 Accordion、Badge、Avatar、Button、Tooltip、Dropdown 和 InfoItem，沿用语义颜色并增加 display 金额字号。窄容器将标签与值上下排列。",
+    "dataContract": "数据接入",
+    "dataContractBody": "宿主提供匹配的交易编号和数据快照。金额使用安全整数最小货币单位和币种代码，日期使用 ISO 时间戳及明确的 IANA 时区；null 表示未知。账户只包含品牌和后四位。查询、下载、分享与附件操作由宿主提供。",
+    "behavior": "交互与状态",
+    "behaviorBody": "支持受控或本地账单折叠、复制反馈、独立异步操作防重、首次加载/失败、确认无数据、过期数据与刷新失败保留旧快照。当前演示生成有效的示例 PDF，并展示分享摘要，未连接真实付款或交易分享服务。"
+  }
+}
