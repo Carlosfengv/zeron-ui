@@ -85,6 +85,8 @@ Replace demo data and actions with the requested integration. If external servic
 
 Read [Verification](references/verification.md) before selecting checks. Discover which verification commands actually exist; do not assume a proposed CLI checker or MCP is installed.
 
+For rendered control checks in consumer projects, use [Consumer verification](references/consumer-verification.md) and its portable script. Prepare relevant routes and states; report failed and unchecked results separately.
+
 Use the [design-lint feedback loop](references/verification.md#design-lint-feedback-loop) when the target project has Zeron design lint. Check the affected files, repair task-introduced violations through public APIs and semantic tokens, then recheck. Keep pre-existing findings separate and retain runtime verification; a clean static check does not establish correct layout or interaction.
 
 For each implementation handoff, follow [Component and style reporting](references/usage-reporting.md): a short statistics paragraph, grouped component list, and significant deviations or unchecked items. Keep complete source/use/rule details in linked JSON. Generate the bundled report when dependencies are available; missing automated checks require a manual inventory and explicit unchecked coverage. Capture a pre-change report when practical before attributing findings to this task.

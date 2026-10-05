@@ -18,6 +18,7 @@
     "zeron-page-builder/references/agent-discovery.md",
     "zeron-page-builder/references/charts.md",
     "zeron-page-builder/references/composition-contracts.md",
+    "zeron-page-builder/references/consumer-verification.md",
     "zeron-page-builder/references/control-composition.md",
     "zeron-page-builder/references/page-header-contracts.md",
     "zeron-page-builder/references/project-adaptation.md",
@@ -26,6 +27,7 @@
     "zeron-page-builder/references/usage-reporting.md",
     "zeron-page-builder/references/verification.md",
     "zeron-page-builder/references/zeron-integration.md",
+    "zeron-page-builder/scripts/check-rendered-controls.mjs",
     "zeron-page-builder/scripts/usage-report.mjs"
   ]
 }

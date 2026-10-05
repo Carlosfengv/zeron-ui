@@ -6,6 +6,7 @@ import { pathToFileURL } from "node:url";
 import { chromium } from "playwright";
 import { exampleDeclarationsSchema, exampleStateCases } from "./agent-example-sources.mjs";
 import { serialize, sha256 } from "./agent-utils.mjs";
+import { inspectRenderedControls } from "../.agents/skills/zeron-page-builder/scripts/check-rendered-controls.mjs";
 
 const pages = { "resource-list": "list", "resource-detail": "detail", settings: "settings" };
 const operations = { "resource-list": "list", "resource-detail": "detail", settings: "settings" };
@@ -232,7 +233,10 @@ async function keyboardCheck(page, origin, id, browser) {
     await inputEquals(page.getByLabel(labels[id], { exact: true }), "2");
     // Exercise the installed select using its keyboard interface as well as the search input.
     await tabTo(page, page.getByRole("combobox", { name: "Status", exact: true }), steps); await key(page, "Space", steps);
-    await key(page, "ArrowDown", steps); await key(page, "Enter", steps);
+    await page.getByRole("listbox").waitFor();
+    await key(page, "Home", steps); await key(page, "ArrowDown", steps);
+    await waitUntil(() => page.getByRole("option", { name: "Active", exact: true }).evaluate(node => node === document.activeElement || node.hasAttribute("data-highlighted")), value => value, "Keyboard option did not become highlighted");
+    await key(page, "Enter", steps);
     await waitCalls(page, calls => calls.some(call => call.operation === "list" && call.input.search === "2" && call.input.status !== "all" && call.status === "fulfilled"));
     assertions.push({ name: "filter", passed: true });
     const row = page.getByRole("button", { name: /^Resource \d\d$/ }).first();
@@ -273,6 +277,8 @@ async function viewportCheck(page, origin, id, browser, width, output) {
       width: innerWidth, height: innerHeight };
   });
   assert.equal(geometry.width, width); assert.equal(geometry.focused, true); assert.equal(geometry.indicator, true);
+  const controls = await page.evaluate(inspectRenderedControls);
+  assert.equal(controls.checks.some(check => check.status === "failed"), false, JSON.stringify(controls));
   assert.equal(geometry.reachable, true); assert.equal(geometry.horizontalOverflow, false);
   if (id !== "resource-list") {
     await typeFocused(page, draft(id)); await tabTo(page, page.getByRole("button", { name: saveLabel(id), exact: true }), steps);
@@ -282,6 +288,7 @@ async function viewportCheck(page, origin, id, browser, width, output) {
   const png = await page.screenshot({ type: "png", fullPage: false, animations: "disabled" });
   const filename = `${id}-${width}.png`;
   await writeFile(path.join(output, filename), png, { flag: "wx" });
+  await writeFile(path.join(output, `${id}-${width}.controls.json`), serialize({ exampleId: id, width, geometry, controls }), { flag: "wx" });
   return { browser, width, height: geometry.height, horizontalOverflow: false, focusVisible: true,
     screenshot: { path: filename, bytes: png.length, sha256: sha256(png) }, assertions: [{ name: "keyboard-target-reachable-with-visible-focus-and-no-page-overflow", passed: true }] };
 }

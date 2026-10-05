@@ -30,6 +30,7 @@ The repository's [Zeron Page Builder skill](../../.agents/skills/zeron-page-buil
 
 | Check | Default | Zeron adaptation |
 | --- | --- | --- |
+| `zeron/button-icon-slots` | Error at usage sites | Standard labeled Button children cannot contain a known direct icon. Use `leadingIcon`/`trailingIcon` with component types. Resolves aliases and lexical bindings; exempts `iconOnly`, `contentSized`, `asChild`, spreads and uncertain custom compositions. No automatic rewrite. |
 | `shadcn/no-restyle` | Error at usage sites | Button, Input, and InputGroup height comes from `size`; Button padding also comes from its API. SelectTrigger height and padding come from the parent Select unless `contentSized` is used. Public content regions may own presentation. |
 | `shadcn/no-raw-colors` | Error | Exact token-derived exceptions cover Zeron typography, shadows, and border widths that upstream classifies as colors. |
 | `shadcn/no-arbitrary-values` | Error at usage sites | Layout values are allowed. Reviewed block-specific visual recipes use exact file-scoped allowances with named reasons. Component implementations may use internal values. |
@@ -71,3 +72,4 @@ The factory exports its contracts and derived token vocabularies for inspection.
 - `no-restyle` does not prove correct surface nesting, scroll ownership, responsive behavior, accessibility or visual fidelity. Existing browser and contract tests remain necessary.
 - `no-restyle` cannot correlate a class with a component's runtime `variant`, `active`, `asChild`, or nested selector target. Zeron therefore enforces deterministic size ownership and leaves public presentation to semantic-color, focus, token, and runtime checks.
 - The upstream class collector is internal. Future Zeron rules should use supported APIs or a separately tested collector instead of deep-importing private files.
+- The icon-slot rule recognizes direct SVG, supported icon imports and imported `useIcon`; nested rich content, project-local wrappers and uncertain expressions require browser review. A clean lint result does not prove alignment. Consumer projects can use the portable [rendered-control checker](../../.agents/skills/zeron-page-builder/references/consumer-verification.md) without this private package.

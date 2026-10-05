@@ -9,6 +9,8 @@ const directories = [];
 afterEach(async () => { await Promise.all(directories.splice(0).map(directory => rm(directory, { recursive: true, force: true }))); });
 it("rejects ambiguous or invalid consumer options", () => {
   expect(parseExampleArgs(["--output", "/tmp/example", "--framework", "next", "--package-manager", "npm", "--serve", "--port", "4188"])).toMatchObject({ framework: "next", packageManager: "npm", serve: true, port: 4188 });
+  expect(parseExampleArgs(["--output", "/tmp/browser", "--check-browser"])).toMatchObject({ checkBrowser: true });
+  expect(() => parseExampleArgs(["--output", "/tmp/browser", "--check-browser", "--serve"])).toThrow();
   for (const args of [[], ["--output"], ["--output", "/tmp/example", "--framework", "unknown"], ["--output", "/tmp/example", "--port", "80"], ["--output", "/tmp/example", "--serve", "--serve"], ["--output", "/tmp/example", "--package-manager", "yarn"]]) expect(() => parseExampleArgs(args)).toThrow();
 });
 it("materializes public component imports against each consumer's aliases", async () => {

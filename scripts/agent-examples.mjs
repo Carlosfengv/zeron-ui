@@ -8,7 +8,8 @@ import { createInstallationOutput } from "./check-published-installation-input.m
 import { assertConsumerManager, consumerEnvironment, fileInventory, fixtureManagers, materializeConsumer, runConsumerCommand } from "./published-consumer-runtime.mjs";
 import { readOwnedFile, serialize, sha256, sourceProvenance } from "./agent-utils.mjs";
 import { adaptExampleImports, assertExampleSourcesUnchanged, exampleHostEntry, exampleSourceDirectory, exampleSourcesSha256, readExampleSourceManifest } from "./agent-example-sources.mjs";
-import { examplePreviewInvocation } from "./agent-example-preview.mjs";
+import { examplePreviewInvocation, startExamplePreview } from "./agent-example-preview.mjs";
+import { runExampleBrowserChecks } from "./agent-example-browser.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 export function parseExampleArgs(args) {
@@ -19,6 +20,7 @@ export function parseExampleArgs(args) {
     if (seen.has(flag)) throw new Error("Duplicate example option");
     seen.add(flag);
     if (flag === "--serve") options.serve = true;
+    else if (flag === "--check-browser") options.checkBrowser = true;
     else {
       if (!["--framework", "--package-manager", "--output", "--port"].includes(flag) || !args[index + 1] || args[index + 1].startsWith("--")) throw new Error("Invalid example arguments");
       const value = args[++index];
@@ -28,7 +30,7 @@ export function parseExampleArgs(args) {
       if (flag === "--port") options.port = /^\d+$/.test(value) ? Number(value) : NaN;
     }
   }
-  if (!options.output || !["next", "vite"].includes(options.framework) || !Object.hasOwn(fixtureManagers, options.packageManager)
+  if ((options.serve && options.checkBrowser) || !options.output || !["next", "vite"].includes(options.framework) || !Object.hasOwn(fixtureManagers, options.packageManager)
     || !Number.isInteger(options.port) || options.port < 1024 || options.port > 65535) throw new Error("Use --output <new-isolated-dir>, --framework next|vite and --package-manager npm|pnpm");
   return options;
 }
@@ -160,8 +162,19 @@ export async function prepareExamples(options) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const options = parseExampleArgs(process.argv.slice(2));
-  const { consumer, env } = await prepareExamples(options);
+  const { consumer, env, report } = await prepareExamples(options);
   console.log(`Local examples built: ${consumer}`);
+  if (options.checkBrowser) {
+    const preview = await startExamplePreview(consumer, options, env, path.join(options.output, "browser-preview.log.json"));
+    try {
+      const browser = await runExampleBrowserChecks(preview.origin, report.exampleSources.declarations, path.join(options.output, "browser"));
+      preview.assertAlive();
+      await writeFile(path.join(options.output, "local-browser-verification.json"), serialize({ schemaVersion: 1, status: "passed", scope: "local-consumer-not-published-installation-or-independent-agent-evaluation",
+        framework: options.framework, packageManager: options.packageManager, exampleSourcesSha256: report.exampleSourcesSha256,
+        localVerificationSha256: sha256(await readFile(path.join(options.output, "local-verification.json"))), browser }), { flag: "wx" });
+      console.log(`Local browser checks passed: ${options.output}`);
+    } finally { await preview.stop(); }
+  }
   if (options.serve) {
     const invocation = examplePreviewInvocation(options, options.port);
     const child = spawn(invocation.file, invocation.args, { cwd: consumer, env, stdio: "inherit" });

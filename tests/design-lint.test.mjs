@@ -38,6 +38,32 @@ async function messages(code, options, filePath = "app/design-lint-probe.tsx") {
 }
 
 describe("Zeron design lint", () => {
+  it("reports known child icons in labeled Buttons, including aliased imports and useIcon", async () => {
+    for (const icon of [
+      'import { Plus as Glyph } from "lucide-react";',
+      'import * as Icons from "lucide-react";',
+      'import { useIcon as resolveIcon } from "@zeron/icons/context"; const Glyph = resolveIcon("plus");',
+    ]) {
+      const glyph = icon.includes("* as") ? "Icons.Plus" : "Glyph";
+      const found = await messages(`import { Button as Action } from "@zeron/ui/button"; ${icon} export const Page = () => <Action><${glyph} />新增资源</Action>;`);
+      expect(found.map(message => message.ruleId)).toEqual(["zeron/button-icon-slots"]);
+    }
+    expect((await messages('import { Button } from "@/components/ui/button"; export const Page = () => <Button><svg />保存</Button>;')).map(message => message.ruleId)).toEqual(["zeron/button-icon-slots"]);
+  });
+  it("preserves slots, custom content, opt-ins, unknown composition and shadowed bindings", async () => {
+    for (const body of [
+      '<Button leadingIcon={Plus}>保存</Button>',
+      '<Button iconOnly aria-label="新增"><Plus /></Button>',
+      '<Button contentSized><Plus />保存</Button>',
+      '<Button asChild><a href="/new"><Plus />保存</a></Button>',
+      '<Button {...props}><Plus />保存</Button>',
+      '<Button iconOnly={props.iconOnly}><Plus />保存</Button>',
+      '<Button><span><Plus />自定义内容</span></Button>',
+      '<Button><BusinessContent />保存</Button>',
+    ]) expect(await messages(`import { Button } from "@zeron/ui/button"; import { Plus } from "lucide-react"; const props = {}; const BusinessContent = () => null; export const Page = () => ${body};`)).toEqual([]);
+    expect(await messages('import { Button } from "@zeron/ui/button"; import { Plus } from "lucide-react"; export function Local(Button: any) { return <Button><Plus />保存</Button>; }')).toEqual([]);
+    expect(await messages('import { Button } from "other/button"; import { Plus } from "lucide-react"; export const Page = () => <Button><Plus />保存</Button>;')).toEqual([]);
+  });
   it("accepts semantic tokens and public size/variant props", async () => {
     expect(await messages(`
       import { Button } from "@zeron/ui/button";
