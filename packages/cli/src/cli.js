@@ -13,7 +13,8 @@ import { assertReactInstallIntent, assertReactRuntime } from "./react-compatibil
 import { resolveInstalledRegistryAliases } from "./resolve-registry-aliases.js";
 import { assertProjectPath } from "./project-paths.js";
 import { createInstallSnapshot } from "./install-snapshot.js";
-import { buildInstallPlan, digest, readIfPresent } from "./install-plan.js";
+import { alignInitializedAliases, buildInstallPlan, digest, readIfPresent } from "./install-plan.js";
+import { adaptNextStarterStyles } from "./initialize-styles.js";
 
 const HELP = `zeron-ui
 
@@ -263,12 +264,35 @@ export async function runCli(
     if (values["dry-run"]) throw new Error("init does not support --dry-run; no files were written. Use add --dry-run after initialization to preview an install");
     await assertProject(cwd, { requireConfig: false });
     const initOptions = [];
-    if (values.yes) initOptions.push("--yes");
+    if (values.yes) initOptions.push("--yes", "--defaults");
     if (values.overwrite) initOptions.push("--force");
-    return runShadcnImpl(
-      ["init", "--cwd", cwd, ...initOptions],
+    // Bootstrap configuration only: the default shadcn style also installs
+    // its own utils and radius scale, which conflict with Zeron's foundations.
+    const status = await runShadcnImpl(
+      ["init", "--no-base-style", "--cwd", cwd, ...initOptions],
       { cwd },
     );
+    if (status !== 0) return status;
+    let foundationStatus;
+    try {
+      await alignInitializedAliases(cwd);
+      foundationStatus = await runCli(
+        ["add", "surfaces", "utils", "--cwd", cwd, "--registry", baseUrl, ...forwardSharedOptions(values)],
+        { processCwd, env, stdout, fetchImpl, runShadcnImpl },
+      );
+    } catch (error) {
+      throw new Error(`${error.message}. Project configuration was initialized, but Zeron foundations were not completed. Fix the error and run "zeron-ui add surfaces utils" with the same --registry option to retry`, { cause: error });
+    }
+    if (foundationStatus !== 0) {
+      stdout.write('Zeron initialization is incomplete. Fix the installation error and retry "zeron-ui add surfaces utils" with the same --registry option.\n');
+      return foundationStatus;
+    }
+    try {
+      await adaptNextStarterStyles(cwd);
+    } catch (error) {
+      throw new Error(`${error.message}. Zeron foundations were installed, but Next starter style adaptation failed. Check the configured stylesheet and update its default body colors to var(--surface-base) and var(--fg-default)`, { cause: error });
+    }
+    return 0;
   }
 
   if (command === "add") {

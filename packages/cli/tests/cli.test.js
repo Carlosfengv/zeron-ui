@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { isSupportedNodeVersion, runCli } from "../src/cli.js";
@@ -8,7 +8,7 @@ import {
   resolveInstalledRegistryAliases,
   resolveRegistryAliases,
 } from "../src/resolve-registry-aliases.js";
-import { buildInstallPlan } from "../src/install-plan.js";
+import { alignInitializedAliases, buildInstallPlan } from "../src/install-plan.js";
 
 function outputBuffer() {
   let value = "";
@@ -30,6 +30,145 @@ test("prints help", async () => {
   assert.equal(await runCli(["--help"], { stdout: output.stream }), 0);
   assert.match(output.value(), /zeron-ui add/);
 });
+
+test("init bootstraps config without shadcn defaults, then installs Zeron foundations from the selected registry", async () => {
+  const cwd = await projectFixture({ components: false });
+  const calls = [];
+  const fetched = [];
+  const status = await runCli(["init", "--cwd", cwd, "--yes", "--registry", "https://example.com/r"], {
+    fetchImpl: async (url) => {
+      fetched.push(url);
+      return { ok: true, json: async () => ({ name: url.split("/").at(-1).replace(".json", "") }) };
+    },
+    runShadcnImpl: async (args) => {
+      calls.push(args);
+      if (args[0] === "init") await writeFile(path.join(cwd, "components.json"), "{}\n");
+      return 0;
+    },
+  });
+  assert.equal(status, 0);
+  assert.deepEqual(calls[0], ["init", "--no-base-style", "--cwd", cwd, "--yes", "--defaults"]);
+  assert.equal(calls[1][0], "add");
+  assert.deepEqual(fetched, ["https://example.com/r/surfaces.json", "https://example.com/r/utils.json"]);
+  const state = JSON.parse(await readFile(path.join(cwd, ".zeron/install-state.json"), "utf8"));
+  assert.deepEqual(state.installations[0].items, ["surfaces", "utils"]);
+});
+
+test("init stops when configuration initialization fails", async () => {
+  const cwd = await projectFixture({ components: false });
+  assert.equal(await runCli(["init", "--cwd", cwd], {
+    runShadcnImpl: async () => 2,
+    fetchImpl: async () => { throw new Error("must not install foundations"); },
+  }), 2);
+});
+
+for (const [aliasTarget, prefix] of [["./*", "@/src/"], ["./src/*", "@/"]]) {
+  test(`init aligns src targets for ${aliasTarget} without changing TypeScript aliases`, async () => {
+    const cwd = await projectFixture({ components: false });
+    await mkdir(path.join(cwd, "src"));
+    const tsconfig = JSON.stringify({ compilerOptions: { baseUrl: ".", paths: { "@/*": [aliasTarget] } } });
+    await writeFile(path.join(cwd, "tsconfig.json"), tsconfig);
+    const aliases = { components: "components", ui: "components/ui", lib: "lib", hooks: "hooks", utils: "lib/utils" };
+    const status = await runCli(["init", "--cwd", cwd, "--yes"], {
+      fetchImpl: async (url) => ({ ok: true, json: async () => ({ name: url.split("/").at(-1).replace(".json", "") }) }),
+      runShadcnImpl: async (args) => {
+        if (args[0] === "init") {
+          await writeFile(path.join(cwd, "components.json"), JSON.stringify({ aliases: Object.fromEntries(Object.entries(aliases).map(([key, value]) => [key, `@/${value}`])) }));
+        }
+        return 0;
+      },
+    });
+    assert.equal(status, 0);
+    const config = JSON.parse(await readFile(path.join(cwd, "components.json"), "utf8"));
+    assert.deepEqual(config.aliases, Object.fromEntries(Object.entries(aliases).map(([key, value]) => [key, `${prefix}${value}`])));
+    assert.equal(await readFile(path.join(cwd, "tsconfig.json"), "utf8"), tsconfig);
+    const before = await readFile(path.join(cwd, "components.json"), "utf8");
+    await alignInitializedAliases(cwd);
+    assert.equal(await readFile(path.join(cwd, "components.json"), "utf8"), before);
+  });
+}
+
+test("init alias alignment does not rewrite custom directories", async () => {
+  const cwd = await projectFixture();
+  await mkdir(path.join(cwd, "src"));
+  const config = JSON.stringify({ aliases: { ui: "@/custom/components/ui" } });
+  await writeFile(path.join(cwd, "components.json"), config);
+  await writeFile(path.join(cwd, "tsconfig.json"), JSON.stringify({ compilerOptions: { paths: { "@/*": ["./*"] } } }));
+  await alignInitializedAliases(cwd);
+  assert.equal(await readFile(path.join(cwd, "components.json"), "utf8"), config);
+});
+
+test("init alias alignment rejects src symlinks outside the project", async () => {
+  const cwd = await projectFixture();
+  const outside = await mkdtemp(path.join(tmpdir(), "zeron-outside-"));
+  await symlink(outside, path.join(cwd, "src"), "dir");
+  const config = JSON.stringify({ aliases: { ui: "@/components/ui" } });
+  await writeFile(path.join(cwd, "components.json"), config);
+  await assert.rejects(alignInitializedAliases(cwd), /symbolic link/);
+  assert.equal(await readFile(path.join(cwd, "components.json"), "utf8"), config);
+});
+
+test("init reports incomplete foundations with a retry command", async () => {
+  const cwd = await projectFixture({ components: false });
+  await assert.rejects(runCli(["init", "--cwd", cwd], {
+    runShadcnImpl: async () => { await writeFile(path.join(cwd, "components.json"), "{}\n"); return 0; },
+    fetchImpl: async () => { throw new Error("Registry unavailable"); },
+  }), /configuration was initialized.*zeron-ui add surfaces utils/);
+});
+
+test("init propagates a foundation installer failure instead of recording success", async () => {
+  const cwd = await projectFixture({ components: false });
+  const output = outputBuffer();
+  const status = await runCli(["init", "--cwd", cwd], {
+    stdout: output.stream,
+    fetchImpl: async (url) => ({ ok: true, json: async () => ({ name: url.split("/").at(-1).replace(".json", "") }) }),
+    runShadcnImpl: async (args) => {
+      if (args[0] === "init") { await writeFile(path.join(cwd, "components.json"), "{}\n"); return 0; }
+      return 2;
+    },
+  });
+  assert.equal(status, 2);
+  assert.match(output.value(), /initialization is incomplete/);
+  await assert.rejects(readFile(path.join(cwd, ".zeron/install-state.json")), { code: "ENOENT" });
+});
+
+for (const scenario of ["network", "compatibility", "installer", "success", "adaptation"]) {
+  test(`init preserves starter colors until foundations succeed (${scenario})`, async () => {
+    const cwd = await projectFixture({ components: false, packageJson: { dependencies: { next: "15.5.24" } } });
+    const cssPath = path.join(cwd, "globals.css");
+    const source = '@import "tailwindcss";\n:root { --background: #ffffff; --foreground: #171717; }\nbody { background: var(--background); color: var(--foreground); }\n';
+    await writeFile(cssPath, source);
+    let installed = false;
+    const invoke = () => runCli(["init", "--cwd", cwd], {
+      stdout: outputBuffer().stream,
+      fetchImpl: async (url) => {
+        if (scenario === "network") throw new Error("Registry unavailable");
+        return { ok: true, json: async () => ({
+          name: url.split("/").at(-1).replace(".json", ""),
+          ...(scenario === "compatibility" ? { meta: { zeron: { tailwind: "^4.0.0" } } } : {}),
+        }) };
+      },
+      runShadcnImpl: async (args) => {
+        if (args[0] === "init") {
+          await writeFile(path.join(cwd, "components.json"), JSON.stringify({ tailwind: { css: "globals.css" } }));
+          return 0;
+        }
+        assert.equal(await readFile(cssPath, "utf8"), source, "starter colors must survive until installation completes");
+        if (scenario === "installer") return 2;
+        installed = true;
+        if (scenario === "adaptation") await writeFile(cssPath, "body {");
+        return 0;
+      },
+    });
+    if (scenario === "network") await assert.rejects(invoke(), /Registry unavailable/);
+    else if (scenario === "compatibility") await assert.rejects(invoke(), /Cannot resolve the installed Tailwind CSS version/);
+    else if (scenario === "adaptation") await assert.rejects(invoke(), /foundations were installed, but Next starter style adaptation failed/);
+    else assert.equal(await invoke(), scenario === "installer" ? 2 : 0);
+    assert.equal(installed, scenario === "success" || scenario === "adaptation");
+    if (scenario === "success") assert.match(await readFile(cssPath, "utf8"), /background: var\(--surface-base\); color: var\(--fg-default\)/);
+    else if (scenario !== "adaptation") assert.equal(await readFile(cssPath, "utf8"), source);
+  });
+}
 
 test("prints the package version without a command", async () => {
   const output = outputBuffer();

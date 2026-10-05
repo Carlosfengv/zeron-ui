@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
 import { componentUrl, normalizeRegistryUrl, validateComponentName } from "./registry.js";
@@ -86,6 +86,47 @@ function dependencyName(dependency) {
   return dependency.split("@")[0];
 }
 
+function projectCompilerOptions(cwd) {
+  const configPath = ["tsconfig.json", "jsconfig.json"].map((file) => path.join(cwd, file)).find(ts.sys.fileExists);
+  if (!configPath) return undefined;
+  const parsed = ts.getParsedCommandLineOfConfigFile(configPath, {}, { ...ts.sys, onUnRecoverableConfigFileDiagnostic: (d) => { throw new Error(ts.flattenDiagnosticMessageText(d.messageText, " ")); } });
+  const errors = parsed?.errors.filter((d) => d.code !== 18003) ?? [];
+  if (!parsed || errors.length) throw new Error("Cannot resolve installation aliases from project configuration");
+  return parsed.options;
+}
+
+/** Align freshly initialized defaults with the pinned installer's src layout.
+ * Never guess for arbitrary aliases or change a project's TypeScript paths.
+ */
+export async function alignInitializedAliases(cwd) {
+  if (!ts.sys.directoryExists(path.join(cwd, "src"))) return;
+  const configPath = path.join(cwd, "components.json");
+  for (const file of ["components.json", "package.json", "tsconfig.json", "jsconfig.json"]) {
+    await assertProjectPath(cwd, path.join(cwd, file));
+  }
+  const config = JSON.parse(await readFile(configPath, "utf8"));
+  const packageJson = JSON.parse(await readFile(path.join(cwd, "package.json"), "utf8"));
+  const compilerOptions = projectCompilerOptions(cwd);
+  const targets = { components: "components", ui: "components/ui", lib: "lib", hooks: "hooks", utils: "lib/utils" };
+  let changed = false;
+  for (const [name, target] of Object.entries(targets)) {
+    const alias = config.aliases?.[name];
+    if (typeof alias !== "string" || !alias.endsWith(`/${target}`)) continue;
+    const resolve = (value) => path.resolve(cwd, importDirectory(value, packageJson.imports, cwd, compilerOptions));
+    if (resolve(alias) !== path.resolve(cwd, target)) continue;
+    const candidate = `${alias.slice(0, -target.length)}src/${target}`;
+    const expected = path.resolve(cwd, "src", target);
+    if (resolve(candidate) !== expected) continue;
+    await assertProjectPath(cwd, expected);
+    config.aliases[name] = candidate;
+    changed = true;
+  }
+  if (changed) {
+    await assertProjectPath(cwd, configPath);
+    await writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`);
+  }
+}
+
 /**
  * Reads the recursive Registry closure and computes every consumer file before
  * invoking shadcn. This is deliberately a small, explicit plan rather than a
@@ -106,14 +147,7 @@ export async function buildInstallPlan({ cwd, names, baseUrl, overwrite = false,
   for (const record of state.installations ?? []) {
     for (const [target, hashes] of Object.entries(record.fileHashes ?? {})) installedFiles.set(target, hashes);
   }
-  const configPath = ["tsconfig.json", "jsconfig.json"].map((file) => path.join(cwd, file)).find(ts.sys.fileExists);
-  let compilerOptions;
-  if (configPath) {
-    const parsed = ts.getParsedCommandLineOfConfigFile(configPath, {}, { ...ts.sys, onUnRecoverableConfigFileDiagnostic: (d) => { throw new Error(ts.flattenDiagnosticMessageText(d.messageText, " ")); } });
-    const errors = parsed?.errors.filter((d) => d.code !== 18003) ?? [];
-    if (!parsed || errors.length) throw new Error("Cannot resolve installation aliases from project configuration");
-    compilerOptions = parsed.options;
-  }
+  const compilerOptions = projectCompilerOptions(cwd);
   const isSrcDir = ts.sys.directoryExists(path.join(cwd, "src"));
   // The engine can use all aliases to select a workspace, even when no files
   // from that alias occur in this particular item.

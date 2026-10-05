@@ -3,8 +3,32 @@
 Install Zeron Design components into your project.
 
 ```bash
+npx zeron-ui init
 npx zeron-ui add button
 ```
+
+`init` creates the project configuration and installs Zeron's `surfaces` theme
+and shared `utils` through the selected Registry. It skips the default shadcn
+theme and utility file, so adding components afterward uses the same foundations.
+`--yes` selects default configuration without an interactive color prompt.
+The project must already have Tailwind CSS 4 configured and import its global
+stylesheet from the application entry (for example Next's root layout or Vite's
+`main.tsx`). Keep `@import "tailwindcss";` in that stylesheet.
+
+The theme supplies the base-layer background, foreground and ring utilities as
+aliases of Zeron's semantic tokens. No manual compatibility colors are needed.
+Border radii use Tailwind's native theme; host `--radius-*` overrides are preserved.
+When `src` exists but the generated import alias points to the project root,
+`init` aligns its default component aliases with the installer's `src` targets.
+After the foundations install successfully, it adapts recognizable create-next-app
+starter body colors to Zeron's semantic colors, so the starter's unlayered CSS
+does not block dark mode. Custom colors and stylesheets with imports other than
+`tailwindcss` and `tw-animate-css` keep their body colors unchanged.
+Custom colors and unrelated body styles are preserved.
+For an existing installation missing these mappings, use `zeron-ui add surfaces`
+after the corrected Registry is published. If initialization stopped after
+configuration was created, retry `zeron-ui add surfaces utils` with the same
+`--registry` option. Review existing file conflicts before using `--overwrite`.
 
 Install multiple components:
 

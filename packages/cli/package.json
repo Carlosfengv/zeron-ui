@@ -23,6 +23,7 @@
     "prepublishOnly": "pnpm check && pnpm test"
   },
   "dependencies": {
+    "postcss": "8.5.6",
     "semver": "7.7.4",
     "shadcn": "3.0.0",
     "typescript": "5.9.3",
