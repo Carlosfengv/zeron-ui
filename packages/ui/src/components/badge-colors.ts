@@ -1,13 +1,13 @@
 /**
  * Badge-private categorical palette and component-token mapping.
  *
- * Categorical colours describe classification only. They deliberately do not
- * create global CSS variables or semantic status tokens.
+ * Categorical colours describe classification only. The default gray soft fill
+ * reuses the muted background token; chromatic fills stay in this private palette.
  */
 const strongBadgeInk = "#00040D";
 
 const categoricalPalette = {
-  gray: { dot: "#A3A3A3", softLight: "#E5E5E5", softDark: "#3E3E3E", strongLight: "#525252", strongDark: "#A3A3A3", strongInkLight: "#FAFAFA" },
+  gray: { dot: "#A3A3A3", strongLight: "#525252", strongDark: "#A3A3A3", strongInkLight: "#FAFAFA" },
   red: { dot: "#EF4444", softLight: "#F8DFDF", softDark: "#7B1D1D", strongLight: "#DC2626", strongDark: "#F87171", strongInkLight: "#FEF2F2" },
   orange: { dot: "#F97316", softLight: "#FAE6D8", softDark: "#692C17", strongLight: "#EA580C", strongDark: "#FB923C", strongInkLight: "#FFF7ED" },
   amber: { dot: "#F59E0B", softLight: "#F9ECD6", softDark: "#643315", strongLight: "#D97706", strongDark: "#FBBF24", strongInkLight: "#FFFBEB" },
@@ -71,7 +71,7 @@ export function badgeCategoricalTokens(color: BadgeColorInput) {
   return {
     soft: {
       foreground: "var(--fg-default)",
-      background: `light-dark(${palette.softLight}, ${palette.softDark})`,
+      background: color === "gray" ? "var(--muted)" : `light-dark(${categoricalPalette[color].softLight}, ${categoricalPalette[color].softDark})`,
       border: "transparent",
     },
     strong: {

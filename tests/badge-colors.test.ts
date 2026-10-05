@@ -3,10 +3,10 @@ import {
   badgeCategoricalTokens,
   type BadgeColor,
 } from "../packages/ui/src/components/badge-colors";
-import { contrastRatio } from "./helpers/token-contrast.mjs";
+import { colorTokens } from "../packages/ui/src/tokens/semantic-tokens.mjs";
+import { contrastRatio, resolveTokenColor } from "./helpers/token-contrast.mjs";
 
 const softDarkColors = {
-  gray: "#3E3E3E",
   red: "#7B1D1D",
   orange: "#692C17",
   amber: "#643315",
@@ -23,7 +23,7 @@ const softDarkColors = {
   fuchsia: "#6E1D75",
   pink: "#77183F",
   rose: "#791432",
-} satisfies Record<BadgeColor, string>;
+} satisfies Record<Exclude<BadgeColor, "gray">, string>;
 const strongLightColors = {
   gray: ["#525252", "#FAFAFA"],
   red: ["#DC2626", "#FEF2F2"],
@@ -104,6 +104,14 @@ describe("badge categorical colors", () => {
       dot: "#3B82F6",
     });
     expect(badgeCategoricalTokens("gray").dot).toBe("var(--fg-muted)");
+  });
+
+  it.each(["light", "dark"] as const)("uses the muted gray fill with readable text in the %s theme", (mode) => {
+    const soft = badgeCategoricalTokens("gray").soft;
+    expect(soft.background).toBe("var(--muted)");
+    const background = resolveTokenColor(soft.background, { mode, tokens: colorTokens });
+    const foreground = resolveTokenColor(soft.foreground, { mode, tokens: colorTokens });
+    expect(contrastRatio(foreground, background)).toBeGreaterThanOrEqual(4.5);
   });
 
   it("accepts semantic CSS variables for a custom strong recipe", () => {
