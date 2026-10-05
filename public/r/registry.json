@@ -6186,6 +6186,73 @@
       }
     },
     {
+      "name": "model-router-01",
+      "type": "registry:block",
+      "title": "Model Router",
+      "description": "A model routing card with animated gateway traffic, live metrics, draft strategies and fallback controls.",
+      "categories": [
+        "application",
+        "analytics",
+        "settings"
+      ],
+      "dependencies": [
+        "@lobehub/icons@^5.16.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/switch.json",
+        "https://zeron-ui.vercel.app/r/table.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/model-router-01/model-logo.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/model-logo.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/model-router-01/model-router-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/model-router-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/model-router-01/model-router-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/model-router-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/model-router-01/router-flow.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/router-flow.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/model-router-01/model-router.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/model-router.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/model-router-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "credit-usage-01",
       "type": "registry:block",
       "title": "Credit Usage",

@@ -170,6 +170,10 @@ const blockCatalogEntries = [
     dependencies: ["personal-settings-01"],
   },
   {
+    name: "model-router-01", title: "Model Router", description: "Animated gateway traffic, routing strategies and fallback controls.",
+    categories: ["application", "analytics", "settings"], dependencies: ["@lobehub/icons", "badge", "button", "card", "icon-context", "inline-notice", "select", "switch", "table", "tabs", "tooltip", "utils"],
+  },
+  {
     name: "credit-usage-01",
     title: "Credit Usage",
     description: "A compact credit-cycle summary with model attribution, depletion guidance, and plan controls.",

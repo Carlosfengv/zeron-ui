@@ -26,6 +26,9 @@ const blockPreviewSources = {
   "cluster-environment-list-01": {
     "url": "/docs-source/29305e69783fdf24f670e8270749f4b80d795248289c65e46f138d9a18885283.txt"
   },
+  "model-router-01": {
+    "url": "/docs-source/36e6f6c193edc8146cd880be9574e3cc769da24406220696e639d6d62f8851f7.txt"
+  },
   "credit-usage-01": {
     "url": "/docs-source/33cf20822702326d13f00e6660c432ee3cd1a6ae830f8e6155a4f24a07903af3.txt"
   },

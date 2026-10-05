@@ -1411,6 +1411,16 @@
       ],
       "status": "active",
       "retirementReason": null
+    },
+    {
+      "id": "block:model-router-01",
+      "type": "registry",
+      "key": "model-router-01",
+      "aliases": [
+        "model-router-01"
+      ],
+      "status": "active",
+      "retirementReason": null
     }
   ]
 }

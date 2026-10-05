@@ -22,6 +22,7 @@
   "traffic-rules-01": { "framework": "react", "kind": "template" },
   "personal-settings-01": { "framework": "react", "kind": "template" },
   "personal-model-usage-01": { "framework": "react", "kind": "template" },
+  "model-router-01": { "framework": "react", "kind": "data-block" },
   "credit-usage-01": { "framework": "react", "kind": "data-block" },
   "personal-usage-01": { "framework": "react", "kind": "template" },
   "resource-settings-01": { "framework": "react", "kind": "template" },

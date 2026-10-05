@@ -24,6 +24,7 @@ export const blockPageLoaders: Record<string, DocPageLoader> = {
   "blocks/model-detail-02": () => import("@docs/pages/blocks/model-detail-02/page"),
   "blocks/personal-model-usage-01": () => import("@docs/pages/blocks/personal-model-usage-01/page"),
   "blocks/storage-usage-01": () => import("@docs/pages/blocks/storage-usage-01/page"),
+  "blocks/model-router-01": () => import("@docs/pages/blocks/model-router-01/page"),
   "blocks/credit-usage-01": () => import("@docs/pages/blocks/credit-usage-01/page"),
   "blocks/personal-settings-01": () => import("@docs/pages/blocks/personal-settings-01/page"),
   "blocks/personal-usage-01": () => import("@docs/pages/blocks/personal-usage-01/page"),

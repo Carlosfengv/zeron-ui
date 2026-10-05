@@ -24,6 +24,12 @@ export const previewSourceFiles = {
   "cluster-environment-list-01": [
     "packages/blocks/src/application/cluster-environment-list-01/cluster-environment-list.tsx"
   ],
+  "model-router-01": [
+    "packages/blocks/src/application/model-router-01/model-router.tsx",
+    "packages/blocks/src/application/model-router-01/router-flow.tsx",
+    "packages/blocks/src/application/model-router-01/model-logo.tsx",
+    "packages/blocks/src/application/model-router-01/model-router-types.ts"
+  ],
   "credit-usage-01": [
     "packages/blocks/src/application/credit-usage-01/credit-usage.tsx"
   ],

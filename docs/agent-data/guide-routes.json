@@ -26,6 +26,10 @@
       "itemId": "block:infinite-log-table-01"
     },
     {
+      "path": "blocks/model-router-01.md",
+      "itemId": "block:model-router-01"
+    },
+    {
       "path": "blocks/resource-detail-page-01.md",
       "itemId": "block:resource-detail-page-01"
     },

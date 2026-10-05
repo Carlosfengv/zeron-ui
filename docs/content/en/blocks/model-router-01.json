@@ -1,0 +1,12 @@
+{
+  "modelRouterBlock": {
+    "title": "Model Router",
+    "description": "A model routing card with animated gateway traffic, live metrics, draft strategies and fallback controls.",
+    "composition": "Component mapping",
+    "compositionBody": "Composes Card, Tabs, Select, Table, Switch, Button, Tooltip and InlineNotice using shared surfaces, typography and categorical Badge colors. A block-owned SVG topology animates sampled traffic without frame-by-frame React updates.",
+    "dataContract": "Data integration",
+    "dataContractBody": "Supply the environment, confirmed policy, revision, routes and server-aggregated live metrics from one time window. Ratios use 0–1, latency uses seconds, and prices use currency per 1,000 tokens. Null metrics render as unavailable. Hosts own telemetry and deployment; the preview uses illustrative data and local deployment only.",
+    "behavior": "Interaction model",
+    "behaviorBody": "Editing creates a draft without changing live metrics. Deployment is disabled until there is a valid change, locks during submission, and preserves edits on failure. The host confirms success by updating data.policy and revision. Animation respects reduced motion, pauses offscreen and can be paused manually. Fallback requires two different available models."
+  }
+}

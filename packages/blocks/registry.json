@@ -377,6 +377,59 @@
       ]
     },
     {
+      "name": "model-router-01",
+      "type": "registry:block",
+      "title": "Model Router",
+      "description": "A model routing card with animated gateway traffic, live metrics, draft strategies and fallback controls.",
+      "categories": [
+        "application",
+        "analytics",
+        "settings"
+      ],
+      "dependencies": ["@lobehub/icons"],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "card",
+        "icon-context",
+        "inline-notice",
+        "select",
+        "switch",
+        "table",
+        "tabs",
+        "tooltip",
+        "utils"
+      ],
+      "files": [
+        { "path": "packages/blocks/src/application/model-router-01/model-logo.tsx", "type": "registry:component", "target": "components/blocks/model-router-01/model-logo.tsx" },
+        {
+          "path": "packages/blocks/src/application/model-router-01/model-router-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/model-router-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/model-router-01/model-router-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/model-router-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/model-router-01/router-flow.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/router-flow.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/model-router-01/model-router.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/model-router.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/model-router-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "credit-usage-01",
       "type": "registry:block",
       "title": "Credit Usage",

@@ -20,6 +20,7 @@ export const standaloneBlockSlugs = [
   "personal-model-usage-01",
   "storage-usage-01",
   "credit-usage-01",
+  "model-router-01",
   "personal-usage-01",
   "provider-create-form-01",
   "filter-rule-builder-01",

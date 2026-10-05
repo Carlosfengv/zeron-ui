@@ -1,0 +1,12 @@
+{
+  "modelRouterBlock": {
+    "title": "模型路由",
+    "description": "包含 Gateway 管道流动动画、线上指标、策略草稿和故障回退设置的模型路由卡片。",
+    "composition": "组件映射",
+    "compositionBody": "组合 Card、Tabs、Select、Table、Switch、Button、Tooltip 和 InlineNotice，复用统一表面、字体与 Badge 分类配色。Block 内部 SVG 拓扑以抽样粒子表达流量，无需逐帧更新 React。",
+    "dataContract": "数据接入",
+    "dataContractBody": "传入环境、已生效策略、版本、路由及同一时间窗口的服务端聚合指标。比例使用 0–1，延迟使用秒，价格使用每千 Token 金额。null 指标显示为不可用。宿主负责监控数据和部署；预览使用示例数据及本地部署模拟。",
+    "behavior": "交互模型",
+    "behaviorBody": "编辑产生草稿，不改变线上指标。仅有有效变更时才允许部署，提交期间锁定编辑，失败时保留草稿。宿主通过更新 data.policy 和版本确认成功。动画遵循减少动态效果偏好、离屏停止，并支持手动暂停。回退来源和目标必须是两个不同的可用模型。"
+  }
+}

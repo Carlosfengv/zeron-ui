@@ -148,6 +148,11 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation" |
     kind: "page", product: "zentrix", domains: ["settings", "billing", "model usage"], patterns: ["analytics", "data table", "sidebar"], searchTerms: ["model usage", "billing", "spend", "token", "模型用量", "消费", "计费"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive"], featured: true,
   },
   {
+    slug: "model-router-01", registryName: "model-router-01",
+    title: "Model Router", description: "Animated gateway traffic, live metrics, draft strategies and fallback controls.",
+    kind: "block", product: "shared", domains: ["gateway", "routing", "policy"], patterns: ["metrics", "settings", "flow"], searchTerms: ["model router", "gateway", "fallback", "模型路由", "流量", "回退"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
+  },
+  {
     slug: "credit-usage-01", registryName: "credit-usage-01",
     title: "Credit Usage", description: "A compact cycle summary for credit consumption, model attribution, projected depletion and plan controls.",
     kind: "block", product: "shared", domains: ["settings", "billing", "usage"], patterns: ["metrics", "settings", "segmented progress"], searchTerms: ["credit", "usage", "billing", "quota", "model", "额度", "用量", "计费"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
