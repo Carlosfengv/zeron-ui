@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "items": [
+    { "id": "block:security-overview-01", "type": "registry", "key": "security-overview-01", "aliases": ["security-overview-01"], "status": "active", "retirementReason": null },
     { "id": "block:deployment-detail-01", "type": "registry", "key": "deployment-detail-01", "aliases": ["deployment-detail-01"], "status": "active", "retirementReason": null },
     { "id": "block:project-monitor-01", "type": "registry", "key": "project-monitor-01", "aliases": ["project-monitor-01"], "status": "active", "retirementReason": null },
     {

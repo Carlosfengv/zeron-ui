@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "security-overview-01": {
+    "url": "/docs-source/14f2fb72dced0de2b5309b69890c219905d5575dfab7e898335843f933e78e4e.txt"
+  },
   "deployment-detail-01": {
     "url": "/docs-source/26eb77f014d1af9956d1d9e07e42ab54413ba2f9d3583568019a66405c7a1bae.txt"
   },

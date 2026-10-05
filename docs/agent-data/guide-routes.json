@@ -46,6 +46,7 @@
       "path": "blocks/rule-flow-editor-01.md",
       "itemId": "block:rule-flow-editor-01"
     },
+    { "path": "blocks/security-overview-01.md", "itemId": "block:security-overview-01" },
     {
       "path": "blocks/storage-usage-01.md",
       "itemId": "block:storage-usage-01"

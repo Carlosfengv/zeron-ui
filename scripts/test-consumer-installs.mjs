@@ -261,6 +261,12 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "security-overview-01": [
+      '"use client";',
+      'import { SecurityOverview, securityOverviewDemoData } from "@/components/blocks/security-overview-01";',
+      'export default function Page() { return <SecurityOverview scopeId="northwind" data={securityOverviewDemoData} range="30d" onRangeChange={() => {}} />; }',
+      '',
+    ].join("\n"),
     "deployment-detail-01": [
       'import { DeploymentDetail, deploymentDetailDemoData } from "@/components/blocks/deployment-detail-01";',
       'export default function Page() { return <DeploymentDetail data={deploymentDetailDemoData} />; }',
@@ -434,6 +440,13 @@ async function installViteComponent({ consumer, component, tarball }) {
       'import { DeploymentDetail, deploymentDetailDemoData } from "@/src/components/blocks/deployment-detail-01";',
       'import "./index.css";',
       'createRoot(document.getElementById("root")!).render(<DeploymentDetail data={deploymentDetailDemoData} />);',
+      '',
+    ].join("\n"),
+    "security-overview-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { SecurityOverview, securityOverviewDemoData } from "@/src/components/blocks/security-overview-01";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<SecurityOverview scopeId="northwind" data={securityOverviewDemoData} range="30d" onRangeChange={() => {}} />);',
       '',
     ].join("\n"),
     "project-monitor-01": [

@@ -3,6 +3,72 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "security-overview-01",
+      "type": "registry:block",
+      "title": "安全概览",
+      "description": "安全评分、风险趋势、六维态势与受影响资产的可控扫描概览。",
+      "categories": [
+        "application",
+        "security",
+        "analytics"
+      ],
+      "dependencies": [
+        "recharts"
+      ],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "container",
+        "chart",
+        "empty",
+        "icon-context",
+        "inline-notice",
+        "metric-card",
+        "select",
+        "skeleton",
+        "tabs",
+        "tooltip",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/security-overview-01/security-overview.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/security-overview-01/security-overview.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/security-overview-01/security-overview-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/security-overview-01/security-overview-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/security-overview-01/security-overview-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/security-overview-01/security-overview-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/security-overview-01/security-overview-charts.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/security-overview-01/security-overview-charts.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/security-overview-01/security-overview-views.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/security-overview-01/security-overview-views.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/security-overview-01/security-overview-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/security-overview-01/security-overview-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/security-overview-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/security-overview-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "deployment-detail-01", "type": "registry:block", "title": "部署详情",
       "description": "网站预览、部署信息、域名、代码来源与阶段检查结果。",
       "categories": ["application", "monitoring"],

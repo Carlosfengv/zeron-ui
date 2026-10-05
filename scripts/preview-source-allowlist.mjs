@@ -1,5 +1,13 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "security-overview-01": [
+    "packages/blocks/src/application/security-overview-01/security-overview.tsx",
+    "packages/blocks/src/application/security-overview-01/security-overview-types.ts",
+    "packages/blocks/src/application/security-overview-01/security-overview-data.ts",
+    "packages/blocks/src/application/security-overview-01/security-overview-charts.tsx",
+    "packages/blocks/src/application/security-overview-01/security-overview-views.tsx",
+    "packages/blocks/src/application/security-overview-01/security-overview-demo-data.ts"
+  ],
   "deployment-detail-01": [
     "packages/blocks/src/application/deployment-detail-01/deployment-detail.tsx",
     "packages/blocks/src/application/deployment-detail-01/deployment-detail-types.ts",

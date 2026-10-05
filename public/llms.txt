@@ -50,6 +50,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [模型服务设置](https://zeron-ui.vercel.app/ai/items/block%3Aresource-settings-01.md): A standalone page for reviewing personal model-service access. Registry: resource-settings-01.
 - [Resource Status All 1](https://zeron-ui.vercel.app/ai/items/block%3Aresource-status-all-01.md): A resource-status summary with a circular distribution, detailed counts, and determinate-state coverage. Registry: resource-status-all-01.
 - [Rule Flow Editor](https://zeron-ui.vercel.app/ai/items/block%3Arule-flow-editor-01.md): A controlled visual rule editor with draggable trigger, condition, and action nodes. Registry: rule-flow-editor-01.
+- [安全概览](https://zeron-ui.vercel.app/ai/items/block%3Asecurity-overview-01.md): 安全评分、风险趋势、六维态势与受影响资产。 Registry: security-overview-01.
 - [服务管理](https://zeron-ui.vercel.app/ai/items/block%3Aservice-management-01.md): A shared service workspace for progress, vendor authorizations, and cluster operation history. Registry: service-management-01.
 - [Signup](https://zeron-ui.vercel.app/ai/items/block%3Asignup-01.md): A surface-neutral account creation flow with email, Apple, and Google signup paths. Registry: signup-01.
 - [Storage Usage](https://zeron-ui.vercel.app/ai/items/block%3Astorage-usage-01.md): A compact storage summary with category segments, remaining capacity, and a wrapping legend. Registry: storage-usage-01.
@@ -158,6 +159,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [resource-detail-page-01](https://zeron-ui.vercel.app/agent-guides/blocks/resource-detail-page-01.md)
 - [resource-list-page-01](https://zeron-ui.vercel.app/agent-guides/blocks/resource-list-page-01.md)
 - [rule-flow-editor-01](https://zeron-ui.vercel.app/agent-guides/blocks/rule-flow-editor-01.md)
+- [security-overview-01](https://zeron-ui.vercel.app/agent-guides/blocks/security-overview-01.md)
 - [storage-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/storage-usage-01.md)
 - [user-account-01](https://zeron-ui.vercel.app/agent-guides/blocks/user-account-01.md)
 - [avatar](https://zeron-ui.vercel.app/agent-guides/components/avatar.md)

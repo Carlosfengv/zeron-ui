@@ -1,4 +1,5 @@
 export const standaloneBlockSlugs = [
+  "security-overview-01",
   "project-monitor-01",
   "deployment-detail-01",
   "login-01",

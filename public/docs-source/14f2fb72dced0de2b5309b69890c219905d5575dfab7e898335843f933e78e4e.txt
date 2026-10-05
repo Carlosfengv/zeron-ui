@@ -1,0 +1,503 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Badge } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
+import { Empty, EmptyDescription } from "@zeron/ui/empty";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { MetricCard } from "@zeron/ui/metric-card";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
+import { Skeleton } from "@zeron/ui/skeleton";
+import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
+import { Tooltip } from "@zeron/ui/tooltip";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { SecurityScore, SecurityTrend } from "./security-overview-charts";
+import { securityCountTotal, securityFormatCount, securityFormatDate, securityFormatNumber, securityOverviewLabels, securityValidCount, securityValidNumber } from "./security-overview-data";
+import { SecurityAssets, SecurityFindings, SecurityPosture } from "./security-overview-views";
+import type { SecurityOverviewProps, SecurityOverviewView } from "./security-overview-types";
+
+const views: SecurityOverviewView[] = ["trend", "findings", "posture", "assets"];
+const idleScan = { status: "idle" } as const;
+
+/** Scope changes reset only local view and event guards; the caller owns requests and snapshots. */
+export function SecurityOverview(props: SecurityOverviewProps) {
+  return <SecurityOverviewContent key={props.scopeId} {...props} />;
+}
+
+function SecurityOverviewContent({ scopeId, data, state = "ready", statusMessage, range, onRangeChange,
+  view, defaultView = "trend", onViewChange, scan = idleScan, scanDisabledReason, exportState = "idle", exportError,
+  actions, title, description, labels: overrides, locale = "zh-CN", timeZone = "Asia/Shanghai", className, ...props }: SecurityOverviewProps) {
+  const labels = { ...securityOverviewLabels, ...overrides };
+  const [localView, setLocalView] = useState(defaultView);
+  const scanGuard = useRef(false);
+  const exportGuard = useRef(false);
+  const Shield = useIcon("shield");
+  const Close = useIcon("x");
+  const Calendar = useIcon("calendar");
+  const Download = useIcon("arrow-down");
+  const Clock = useIcon("clock");
+  const scoped = data?.scopeId === scopeId ? data : null;
+  const sameRange = scoped?.range === range;
+  const matching = sameRange ? scoped : null;
+  const loading = state === "loading" || (state !== "error" && scoped !== null && !sameRange);
+  const usable = state !== "loading" && state !== "error" ? matching : null;
+  const activeView = views.includes(view ?? localView) ? view ?? localView : "trend";
+  const busy = scan.status === "starting" || scan.status === "running" || scan.status === "refreshing";
+  // A succeeded task is not visually complete until its result belongs to the visible snapshot.
+  const awaitingResult = scan.status === "succeeded" && scan.snapshotId !== scoped?.id;
+  const scanning = busy || awaitingResult;
+  const scoreData = state !== "error" && (state !== "loading" || scanning) ? scoped : null;
+  const total = scoreData ? securityCountTotal(scoreData.openBySeverity) : null;
+  const progress = scan.status === "running" && securityValidCount(scan.completed) && securityValidCount(scan.total) && scan.total > 0 && scan.completed <= scan.total ? `${scan.completed} / ${scan.total}` : null;
+  const currentScore = scoreData && securityValidNumber(scoreData.score, 100) ? scoreData.score : null;
+  const delta = currentScore !== null && usable && securityValidNumber(usable.previousScore, 100) ? currentScore - usable.previousScore : null;
+  const scanText = scan.status === "starting" ? labels.starting : scan.status === "running" ? `${labels.scanning}${progress ? ` · ${progress}` : ""}` : scan.status === "refreshing" || awaitingResult ? labels.refreshing : scan.status === "failed" ? scan.message : scan.status === "succeeded" ? `${labels.scanComplete} · ${securityFormatNumber(scan.newFindingCount, locale)} ${labels.newFindings}` : null;
+
+  useEffect(() => { if (!scanning) scanGuard.current = false; }, [scan.status, scanning]);
+  useEffect(() => { if (exportState !== "pending") exportGuard.current = false; }, [exportState]);
+
+  function runScan() {
+    if (scanGuard.current || scanning || scanDisabledReason || !actions?.onRunScan) return;
+    scanGuard.current = true;
+    try { actions.onRunScan({ scopeId }); } finally { queueMicrotask(() => { scanGuard.current = false; }); }
+  }
+
+  function exportSnapshot() {
+    if (exportGuard.current || exportState === "pending" || !usable || !actions?.onExport) return;
+    exportGuard.current = true;
+    try { actions.onExport({ scopeId, snapshotId: usable.id, range: usable.range }); } finally { queueMicrotask(() => { exportGuard.current = false; }); }
+  }
+
+  const rangeLabels = { "7d": labels.days7, "30d": labels.days30, "90d": labels.days90 };
+  const metricState = loading ? "loading" : state === "error" ? "error" : "ready";
+  const fixHours = usable?.medianFixTimeHours ?? null;
+  const fixDays = securityValidNumber(fixHours) && fixHours >= 24;
+  const viewProps = usable ? { data: usable, labels, locale, timeZone, actions } : null;
+
+  return <Container {...props} data-block="security-overview" data-state={state} aria-busy={loading || undefined} className={cn("@container w-full max-w-xl", className)}>
+    <ContainerHeader className="py-1.5">
+      <div className="flex min-w-0 items-center gap-2"><h2 className="break-words text-body font-medium text-fg-default">{title ?? labels.title}</h2><Tooltip content={description ?? labels.description}><Button iconOnly size="xs" variant="ghost" aria-label={description ?? labels.description}><Shield aria-hidden /></Button></Tooltip></div>
+      <div className="flex max-w-full items-center gap-2"><Select value={range} onValueChange={(value) => { if (value === "7d" || value === "30d" || value === "90d") onRangeChange(value); }} size="sm"><SelectTrigger icon={Calendar} aria-label={labels.range} wrapperClassName="max-w-full" /><SelectContent>{(["7d", "30d", "90d"] as const).map((value) => <SelectItem key={value} value={value} label={rangeLabels[value]}>{rangeLabels[value]}</SelectItem>)}</SelectContent></Select>
+        {actions?.onClose && <Button iconOnly variant="ghost" size="sm" aria-label={labels.close} onClick={actions.onClose}><Close aria-hidden /></Button>}
+      </div>
+    </ContainerHeader>
+    <ContainerBody>
+      <div className="flex flex-wrap items-center gap-4">
+        {scoreData ? <SecurityScore data={scoreData} scan={scan} labels={labels} locale={locale} /> : loading ? <Skeleton className="size-24 rounded-full" /> : <span className="flex size-24 shrink-0 items-center justify-center rounded-full border-hairline border-border text-heading text-fg-subtle">{labels.unknown}</span>}
+        <div className="min-w-0 flex-1 basis-28"><p className="text-label text-fg-subtle">{labels.securityScore}</p><p className="mt-1 flex items-baseline gap-2"><span data-slot="security-score-value" className="text-heading font-semibold tabular-nums text-fg-default">{securityFormatNumber(currentScore, locale, 100)}</span><span className="text-body text-fg-subtle">/ 100</span></p><div className="mt-2 flex flex-wrap items-center gap-2">{delta !== null && <Badge size="sm" status={delta < 0 ? "danger" : delta > 0 ? "success" : "neutral"}>{delta > 0 ? "+" : ""}{securityFormatNumber(Math.abs(delta), locale)}{delta < 0 ? ` ${labels.points} ↓` : ` ${labels.points}`}</Badge>}<span className="text-label text-fg-subtle">{delta === null ? labels.unknown : `${labels.compare} · ${rangeLabels[range]}`}</span></div></div>
+        {actions?.onRunScan && <div className="flex flex-col gap-1"><Button size="sm" leadingIcon={Shield} loading={scanning} disabled={Boolean(scanDisabledReason)} onClick={runScan}>{scanning ? labels.scanning : scan.status === "failed" ? labels.retry : labels.runScan}</Button>{scanDisabledReason && <p className="max-w-40 text-label text-fg-subtle">{scanDisabledReason}</p>}</div>}
+      </div>
+      <div className="mt-5 grid grid-cols-2 gap-2 @lg:grid-cols-4">
+        <MetricCard label={labels.open} value={securityFormatNumber(total, locale)} state={metricState} content={{ type: "none" }} labelClassName="text-label" footer={scoreData?.openBySeverity && securityCountTotal(scoreData.openBySeverity) !== null ? <span className="text-fg-danger">{scoreData.openBySeverity.critical} {labels.critical}</span> : labels.unknown} />
+        <MetricCard label={labels.resolved} value={securityFormatCount(usable?.resolvedInWindow ?? null, locale)} state={metricState} content={{ type: "none" }} labelClassName="text-label" footer={rangeLabels[range]} />
+        <MetricCard label={labels.scannedAssets} value={securityFormatCount(scoreData?.scannedAssetCount ?? null, locale)} state={metricState} content={{ type: "none" }} labelClassName="text-label" footer={usable && securityValidCount(usable.newAssetsInWindow) ? `+${securityFormatCount(usable.newAssetsInWindow, locale)} · ${rangeLabels[range]}` : labels.unknown} />
+        <MetricCard label={labels.fixTime} value={securityFormatNumber(fixDays ? fixHours / 24 : fixHours, locale)} unit={fixDays ? labels.days : labels.hours} state={metricState} content={{ type: "none" }} labelClassName="text-label" footer={labels.median} />
+      </div>
+    </ContainerBody>
+    <Tabs value={activeView} variant="pill" color="default" onValueChange={(next) => { if (!views.includes(next as SecurityOverviewView)) return; if (view === undefined) setLocalView(next as SecurityOverviewView); onViewChange?.(next as SecurityOverviewView); }} className="flex min-w-0 flex-col gap-2">
+      <div className="overflow-x-auto"><TabsList aria-label={labels.navigation} className="w-full min-w-max">{views.map((item) => <TabItem key={item} value={item} label={labels[item]} className="flex-1 justify-center" badge={item === "findings" && total !== null ? total : item === "assets" && scoreData?.affectedAssetCount != null ? securityFormatCount(scoreData.affectedAssetCount, locale) : undefined} />)}</TabsList></div>
+      <TabPanel value={activeView}>
+        <ContainerBody>
+        {(state === "stale" || scanning || scan.status === "failed") && <div className="mb-4"><InlineNotice variant="emphasized" tone={scan.status === "failed" ? "danger" : "warning"}><InlineNoticeContent>{scan.status === "failed" ? scan.message : scanning ? labels.previousSnapshot : statusMessage ?? labels.stale}</InlineNoticeContent></InlineNotice></div>}
+        {loading ? <div role="status" className="space-y-4"><span className="sr-only">{labels.loading}</span><Skeleton className="h-5 w-32" /><Skeleton className="h-48 w-full" /></div> : state === "error" ? <div className="space-y-4"><InlineNotice variant="emphasized" tone="danger" role="alert"><InlineNoticeContent>{statusMessage ?? labels.error}</InlineNoticeContent></InlineNotice>{actions?.onRetry && <Button variant="secondary" onClick={actions.onRetry}>{labels.retry}</Button>}</div> : viewProps ? activeView === "trend" ? <SecurityTrend {...viewProps} /> : activeView === "findings" ? <SecurityFindings {...viewProps} /> : activeView === "posture" ? <SecurityPosture {...viewProps} /> : <SecurityAssets {...viewProps} /> : <Empty reason="no-data" scope="inline"><EmptyDescription>{labels.noData}</EmptyDescription></Empty>}
+        </ContainerBody>
+      </TabPanel>
+    </Tabs>
+    <ContainerFooter className="justify-between gap-3">
+      <div className="min-w-0 space-y-1"><p className="flex items-start gap-2 text-label text-fg-subtle"><Clock size={14} aria-hidden /><span>{scoped?.lastScanAt != null ? `${labels.lastScan} ${securityFormatDate(scoped.lastScanAt, locale, timeZone)}` : labels.neverScanned}</span></p><p role="status" aria-live="polite" className={cn("text-label", scan.status === "failed" ? "text-fg-danger" : "text-fg-muted")}>{scanText}</p>{exportState === "error" && <p role="alert" className="text-label text-fg-danger">{exportError ?? labels.exportError}</p>}</div>
+      {actions?.onExport && <Button variant="secondary" size="sm" leadingIcon={Download} disabled={!usable} loading={exportState === "pending"} onClick={exportSnapshot}>{exportState === "pending" ? labels.exporting : labels.export}</Button>}
+    </ContainerFooter>
+  </Container>;
+}
+
+
+import type { ComponentPropsWithoutRef } from "react";
+
+export type SecurityOverviewRange = "7d" | "30d" | "90d";
+export type SecurityOverviewView = "trend" | "findings" | "posture" | "assets";
+export type SecurityOverviewSeverity = "critical" | "high" | "medium" | "low";
+export type SecurityOverviewCounts = Record<SecurityOverviewSeverity, number>;
+export type SecurityOverviewState = "ready" | "loading" | "stale" | "error";
+
+export interface SecurityOverviewFinding {
+  id: string;
+  title: string;
+  assetId: string;
+  assetName: string;
+  severity: SecurityOverviewSeverity;
+  /** Caller-supplied 0–10 score. Unknown is null. */
+  score: number | null;
+  detectedAt: number;
+}
+
+export interface SecurityOverviewAsset {
+  id: string;
+  name: string;
+  kind: string;
+  lastScannedAt: number | null;
+  findings: SecurityOverviewCounts;
+}
+
+export interface SecurityOverviewPostureArea {
+  id: string;
+  label: string;
+  score: number | null;
+  previousScore: number | null;
+}
+
+export interface SecurityOverviewSnapshot {
+  id: string;
+  scopeId: string;
+  range: SecurityOverviewRange;
+  asOf: number;
+  window: { start: number; end: number; comparisonAt: number };
+  score: number | null;
+  grade: string | null;
+  scoreTone: "success" | "warning" | "danger" | "neutral";
+  previousScore: number | null;
+  openBySeverity: SecurityOverviewCounts | null;
+  resolvedInWindow: number | null;
+  scannedAssetCount: number | null;
+  newAssetsInWindow: number | null;
+  affectedAssetCount: number | null;
+  /** Server-aggregated median, in hours. */
+  medianFixTimeHours: number | null;
+  lastScanAt: number | null;
+  /** Mutually exclusive severity counts at each instant. null is missing, not zero. */
+  trend: readonly { at: number; counts: SecurityOverviewCounts | null }[] | null;
+  posture: readonly SecurityOverviewPostureArea[] | null;
+  /** Sorted preview subset or full collection; lengths are not summary totals. */
+  findings: readonly SecurityOverviewFinding[] | null;
+  assets: readonly SecurityOverviewAsset[] | null;
+}
+
+export type SecurityOverviewScanState =
+  | { status: "idle" }
+  | { status: "starting" }
+  | { status: "running"; jobId: string; completed: number | null; total: number | null }
+  | { status: "refreshing"; jobId: string }
+  | { status: "succeeded"; jobId: string; snapshotId: string; newFindingCount: number }
+  | { status: "failed"; jobId?: string; message: string };
+
+export interface SecurityOverviewLabels {
+  title: string; description: string; range: string; days7: string; days30: string; days90: string;
+  trend: string; findings: string; posture: string; assets: string; navigation: string;
+  securityScore: string; compare: string; points: string; open: string; resolved: string;
+  scannedAssets: string; fixTime: string; median: string; days: string; hours: string;
+  critical: string; high: string; medium: string; low: string; unknown: string;
+  runScan: string; starting: string; scanning: string; refreshing: string; scanComplete: string;
+  newFindings: string; previousSnapshot: string; progress: string; lastScan: string; neverScanned: string;
+  export: string; exporting: string; exportError: string; close: string; retry: string;
+  loading: string; error: string; stale: string; noData: string; noFindings: string; noAssets: string;
+  trendDescription: string; total: string; viewValues: string; sortedByScore: string;
+  viewAllFindings: string; viewAllAssets: string; affectedAssets: string;
+  current: string; previous: string; postureDescription: string; change: string;
+}
+
+export interface SecurityOverviewProps extends Omit<ComponentPropsWithoutRef<"div">, "children" | "title" | "onChange" | "onClick"> {
+  scopeId: string;
+  data: SecurityOverviewSnapshot | null;
+  state?: SecurityOverviewState;
+  statusMessage?: string;
+  range: SecurityOverviewRange;
+  onRangeChange: (range: SecurityOverviewRange) => void;
+  view?: SecurityOverviewView;
+  defaultView?: SecurityOverviewView;
+  onViewChange?: (view: SecurityOverviewView) => void;
+  scan?: SecurityOverviewScanState;
+  scanDisabledReason?: string;
+  exportState?: "idle" | "pending" | "error";
+  exportError?: string;
+  actions?: {
+    onRunScan?: (context: { scopeId: string }) => void;
+    onExport?: (context: { scopeId: string; snapshotId: string; range: SecurityOverviewRange }) => void;
+    onOpenFinding?: (id: string) => void;
+    onOpenAsset?: (id: string) => void;
+    onViewAll?: (kind: "findings" | "assets") => void;
+    onRetry?: () => void;
+    onClose?: () => void;
+  };
+  title?: string;
+  description?: string;
+  labels?: Partial<SecurityOverviewLabels>;
+  locale?: string;
+  timeZone?: string;
+}
+
+
+import type { BadgeColor } from "@zeron/ui/badge";
+import type { SecurityOverviewCounts, SecurityOverviewFinding, SecurityOverviewLabels, SecurityOverviewSnapshot } from "./security-overview-types";
+
+export const securitySeverities = ["critical", "high", "medium", "low"] as const;
+export const securitySeverityColors = { critical: "red", high: "orange", medium: "amber", low: "gray" } as const satisfies Record<typeof securitySeverities[number], BadgeColor>;
+
+export const securityOverviewLabels: SecurityOverviewLabels = {
+  title: "安全概览", description: "评估当前安全状况，跟进风险与资产。", range: "统计时间范围",
+  days7: "近 7 天", days30: "近 30 天", days90: "近 90 天",
+  trend: "趋势", findings: "风险项", posture: "态势", assets: "资产", navigation: "安全概览视图",
+  securityScore: "安全评分", compare: "较前期", points: "分", open: "未解决", resolved: "已解决",
+  scannedAssets: "扫描资产", fixTime: "修复时间", median: "中位数", days: "天", hours: "小时",
+  critical: "严重", high: "高风险", medium: "中风险", low: "低风险", unknown: "—",
+  runScan: "开始扫描", starting: "正在启动", scanning: "扫描中", refreshing: "正在更新结果",
+  scanComplete: "扫描完成", newFindings: "新增风险项", previousSnapshot: "展示上次扫描快照",
+  progress: "已扫描", lastScan: "最近扫描", neverScanned: "暂无扫描记录",
+  export: "导出报告", exporting: "正在导出", exportError: "导出失败，请重试", close: "关闭安全概览", retry: "重试",
+  loading: "正在加载安全概览", error: "安全概览暂不可用", stale: "数据已过期，展示上次快照",
+  noData: "暂无可用数据", noFindings: "当前没有未解决风险", noAssets: "当前没有受影响资产",
+  trendDescription: "按风险级别展示未解决数量，面积为累计数量。", total: "合计", viewValues: "查看趋势数值",
+  sortedByScore: "按评分降序", viewAllFindings: "查看全部风险项", viewAllAssets: "查看全部资产",
+  affectedAssets: "受影响资产", current: "当前", previous: "前期", postureDescription: "各维度评分 · 满分 100", change: "变化",
+};
+
+export function securityValidNumber(value: unknown, max = Infinity): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= max;
+}
+
+export function securityValidCount(value: unknown): value is number {
+  return securityValidNumber(value) && Number.isSafeInteger(value);
+}
+
+export function securityValidTimestamp(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && Math.abs(value) <= 8.64e15;
+}
+
+export function securityCountTotal(counts: SecurityOverviewCounts | null): number | null {
+  if (!counts || securitySeverities.some((severity) => !securityValidCount(counts[severity]))) return null;
+  const total = securitySeverities.reduce((sum, severity) => sum + counts[severity], 0);
+  return Number.isSafeInteger(total) ? total : null;
+}
+
+export function securityFormatNumber(value: number | null, locale: string, max = Infinity): string {
+  return securityValidNumber(value, max) ? new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(value) : "—";
+}
+
+export function securityFormatCount(value: number | null, locale: string): string {
+  return securityValidCount(value) ? new Intl.NumberFormat(locale).format(value) : "—";
+}
+
+export function securityFormatDate(value: number | null, locale: string, timeZone: string): string {
+  return securityValidTimestamp(value) ? new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone }).format(value) : "—";
+}
+
+export function securitySortFindings(findings: readonly SecurityOverviewFinding[]): SecurityOverviewFinding[] {
+  return [...findings].sort((a, b) => {
+    const scoreA = securityValidNumber(a.score, 10) ? a.score : -1;
+    const scoreB = securityValidNumber(b.score, 10) ? b.score : -1;
+    const atA = securityValidTimestamp(a.detectedAt) ? a.detectedAt : -Infinity;
+    const atB = securityValidTimestamp(b.detectedAt) ? b.detectedAt : -Infinity;
+    return scoreB - scoreA || (atA === atB ? 0 : atB - atA) || a.id.localeCompare(b.id);
+  });
+}
+
+export function securityTrendPoints(snapshot: SecurityOverviewSnapshot) {
+  const { window, trend } = snapshot;
+  if (!trend || !securityValidTimestamp(window.start) || !securityValidTimestamp(window.end) || window.end <= window.start) return null;
+  if (trend.some((point, index) => !securityValidTimestamp(point.at) || point.at < window.start || point.at > window.end || (index > 0 && point.at <= trend[index - 1].at))) return null;
+  return trend.map((point) => {
+    const total = securityCountTotal(point.counts);
+    return { at: point.at, total, critical: total === null ? null : point.counts!.critical,
+      high: total === null ? null : point.counts!.high, medium: total === null ? null : point.counts!.medium,
+      low: total === null ? null : point.counts!.low };
+  });
+}
+
+
+"use client";
+
+import { useId } from "react";
+import { Area, AreaChart, CartesianGrid, Cell, Pie, PieChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, XAxis, YAxis } from "recharts";
+import { badgeColors } from "@zeron/ui/badge";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@zeron/ui/chart";
+import { Empty, EmptyDescription } from "@zeron/ui/empty";
+import { securityFormatNumber, securitySeverities, securitySeverityColors, securityTrendPoints, securityValidCount, securityValidNumber } from "./security-overview-data";
+import type { SecurityOverviewLabels, SecurityOverviewScanState, SecurityOverviewSnapshot } from "./security-overview-types";
+
+const scoreColors = { success: "var(--fg-success)", warning: "var(--fg-warning)", danger: "var(--fg-danger)", neutral: "var(--fg-muted)" };
+
+export function SecurityScore({ data, scan, labels, locale }: { data: SecurityOverviewSnapshot; scan: SecurityOverviewScanState; labels: SecurityOverviewLabels; locale: string }) {
+  const score = securityValidNumber(data.score, 100) ? data.score : null;
+  const awaiting = scan.status === "succeeded" && scan.snapshotId !== data.id;
+  const running = scan.status === "starting" || scan.status === "running" || scan.status === "refreshing" || awaiting;
+  const progress = scan.status === "running" && securityValidCount(scan.completed) && securityValidCount(scan.total) && scan.total > 0 && scan.completed <= scan.total ? scan.completed / scan.total : null;
+  const ratio = scan.status === "refreshing" || awaiting ? 1 : running ? (progress ?? 0) : (score === null ? 0 : score / 100);
+  return <figure className="relative size-24 shrink-0" aria-label={`${labels.securityScore} ${securityFormatNumber(score, locale, 100)} / 100${running ? ` · ${labels.previousSnapshot}` : ""}`}>
+    <ChartContainer className="h-full min-h-0" aria-hidden="true" config={{ score: { color: scoreColors[data.scoreTone] } }}>
+      <PieChart accessibilityLayer={false}>
+        <Pie data={[{ value: ratio }, { value: 1 - ratio }]} dataKey="value" startAngle={90} endAngle={-270} innerRadius="88%" outerRadius="100%" stroke="none" isAnimationActive={false}>
+          <Cell fill="var(--color-score)" /><Cell fill="var(--muted)" />
+        </Pie>
+      </PieChart>
+    </ChartContainer>
+    <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-heading font-semibold text-fg-default">{score === null ? labels.unknown : data.grade ?? labels.unknown}</span>
+  </figure>;
+}
+
+export function SecurityTrend({ data, labels, locale, timeZone }: { data: SecurityOverviewSnapshot; labels: SecurityOverviewLabels; locale: string; timeZone: string }) {
+  const gradientId = useId().replace(/:/g, "");
+  const points = securityTrendPoints(data);
+  const date = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", timeZone });
+  const config: ChartConfig = Object.fromEntries(securitySeverities.map((severity) => [severity, { label: labels[severity], color: badgeColors[securitySeverityColors[severity]] }]));
+  if (!points?.length || points.every((point) => point.total === null)) return <Empty reason="no-data" scope="inline"><EmptyDescription>{labels.noData}</EmptyDescription></Empty>;
+  return <div className="space-y-4">
+    <div className="flex flex-wrap items-start justify-between gap-3">
+      <div><h3 className="text-body font-medium text-fg-default">{labels.open}</h3><p className="mt-1 text-label text-fg-subtle">{labels.trendDescription}</p></div>
+      <div className="flex flex-wrap gap-x-3 gap-y-1 text-label text-fg-muted">{securitySeverities.map((severity) => <span key={severity} className="flex items-center gap-1.5"><span aria-hidden className="size-2 shrink-0 rounded-full" style={{ backgroundColor: badgeColors[securitySeverityColors[severity]] }} />{labels[severity]}</span>)}</div>
+    </div>
+    <ChartContainer className="h-48" config={config} aria-label={labels.trendDescription}>
+      <AreaChart data={points} accessibilityLayer margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+        <defs>{securitySeverities.map((severity) => <linearGradient key={severity} id={`${gradientId}-${severity}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={`var(--color-${severity})`} stopOpacity={0.25} /><stop offset="100%" stopColor={`var(--color-${severity})`} stopOpacity={0.04} /></linearGradient>)}</defs>
+        <CartesianGrid vertical={false} stroke="var(--border-subtle)" />
+        <XAxis dataKey="at" type="number" scale="time" domain={[data.window.start, data.window.end]} tickFormatter={(at: number) => date.format(at)} tickLine={false} axisLine={false} minTickGap={32} />
+        <YAxis width={28} allowDecimals={false} tickLine={false} axisLine={false} />
+        <ChartTooltip content={<ChartTooltipContent labelFormatter={(at) => date.format(Number(at))} valueFormatter={(value) => typeof value === "number" ? securityFormatNumber(value, locale) : labels.unknown} />} />
+        {securitySeverities.map((severity, index) => <Area key={severity} dataKey={severity} type="linear" stackId="risks" stroke={`var(--color-${severity})`} strokeWidth={2} strokeDasharray={index === 3 ? "4 3" : undefined} fill={`url(#${gradientId}-${severity})`} connectNulls={false} isAnimationActive={false} />)}
+      </AreaChart>
+    </ChartContainer>
+    <details className="text-label text-fg-muted">
+      <summary className="w-fit cursor-pointer rounded-lg focus-visible:outline focus-visible:outline-1 focus-visible:outline-focus-ring">{labels.viewValues}</summary>
+      <div className="mt-3 max-h-48 overflow-auto rounded-lg border-hairline border-border">
+        <table className="w-full text-left tabular-nums"><caption className="sr-only">{labels.trendDescription}</caption><thead><tr><th className="p-2">{labels.range}</th>{securitySeverities.map((severity) => <th className="p-2" key={severity}>{labels[severity]}</th>)}</tr></thead>
+          <tbody>{points.map((point) => <tr key={point.at} className="border-t-hairline border-border-subtle"><th scope="row" className="p-2 font-normal">{date.format(point.at)}</th>{securitySeverities.map((severity) => <td className="p-2" key={severity}>{securityFormatNumber(point[severity], locale)}</td>)}</tr>)}</tbody>
+        </table>
+      </div>
+    </details>
+  </div>;
+}
+
+export function SecurityPostureRadar({ data, labels }: { data: SecurityOverviewSnapshot; labels: SecurityOverviewLabels }) {
+  const areas = data.posture;
+  const complete = areas && areas.length >= 3 && areas.every((area) => securityValidNumber(area.score, 100));
+  const previousComplete = complete && areas.every((area) => securityValidNumber(area.previousScore, 100));
+  if (!complete) return <Empty reason="no-data" scope="inline"><EmptyDescription>{labels.noData}</EmptyDescription></Empty>;
+  return <ChartContainer className="h-56" aria-hidden="true" config={{ score: { label: labels.current, color: "var(--fg-brand)" }, previousScore: { label: labels.previous, color: "var(--fg-muted)" } }}>
+    <RadarChart data={[...areas]} accessibilityLayer={false} outerRadius="70%">
+      <PolarGrid stroke="var(--border)" />
+      <PolarAngleAxis dataKey="label" tick={{ fill: "var(--fg-muted)", fontSize: "var(--font-size-label)" }} />
+      <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
+      {previousComplete && <Radar dataKey="previousScore" stroke="var(--color-previousScore)" strokeDasharray="4 4" fill="none" isAnimationActive={false} />}
+      <Radar dataKey="score" stroke="var(--color-score)" fill="var(--color-score)" fillOpacity={0.15} isAnimationActive={false} />
+    </RadarChart>
+  </ChartContainer>;
+}
+
+
+"use client";
+
+import { Badge, badgeColors } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { Empty, EmptyDescription } from "@zeron/ui/empty";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { SecurityPostureRadar } from "./security-overview-charts";
+import { securityCountTotal, securityFormatCount, securityFormatDate, securityFormatNumber, securitySeverities, securitySeverityColors, securitySortFindings, securityValidCount, securityValidNumber } from "./security-overview-data";
+import type { SecurityOverviewLabels, SecurityOverviewProps, SecurityOverviewSnapshot } from "./security-overview-types";
+
+interface ViewProps { data: SecurityOverviewSnapshot; labels: SecurityOverviewLabels; locale: string; timeZone: string; actions?: SecurityOverviewProps["actions"] }
+
+function DataEmpty({ text }: { text: string }) {
+  return <Empty reason="no-data" scope="inline"><EmptyDescription>{text}</EmptyDescription></Empty>;
+}
+
+export function SecurityFindings({ data, labels, locale, timeZone, actions }: ViewProps) {
+  const Shield = useIcon("shield");
+  const total = securityCountTotal(data.openBySeverity);
+  const findings = data.findings === null ? null : securitySortFindings(data.findings).slice(0, 3);
+  return <div className="space-y-4">
+    <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="flex items-center gap-2 text-body font-medium text-fg-default">{labels.findings}<Badge size="sm">{securityFormatNumber(total, locale)}</Badge></h3><span className="text-label text-fg-subtle">{labels.sortedByScore}</span></div>
+    {total !== null && total > 0 && <div className="flex h-1.5 gap-1 overflow-hidden rounded-full" aria-hidden>{securitySeverities.map((severity) => <div key={severity} className="min-w-0 rounded-full" style={{ flexGrow: data.openBySeverity![severity], backgroundColor: badgeColors[securitySeverityColors[severity]] }} />)}</div>}
+    {total !== null && <div className="flex flex-wrap gap-2">{securitySeverities.map((severity) => <Badge key={severity} variant="dot" color={securitySeverityColors[severity]} size="sm">{labels[severity]} {securityFormatNumber(data.openBySeverity![severity], locale)}</Badge>)}</div>}
+    {!findings ? <DataEmpty text={labels.noData} /> : findings.length === 0 ? <DataEmpty text={total === 0 ? labels.noFindings : labels.noData} /> : <ul className="divide-y divide-border-subtle">{findings.map((finding) => <li key={finding.id} className="py-3">
+      <div className="flex items-start gap-3"><span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-raised text-fg-muted"><Shield size={16} aria-hidden /></span>
+        <div className="min-w-0 flex-1">{actions?.onOpenFinding ? <button type="button" onClick={() => actions.onOpenFinding!(finding.id)} className="max-w-full rounded-lg text-left text-body font-medium text-fg-default hover:underline focus-visible:outline focus-visible:outline-1 focus-visible:outline-focus-ring">{finding.title}</button> : <p className="break-words text-body font-medium text-fg-default">{finding.title}</p>}
+          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-label"><span className="break-all text-fg-subtle">{finding.assetName}</span><Badge size="sm" color={securitySeverityColors[finding.severity]}>{labels[finding.severity]}</Badge><span className="text-fg-subtle">{securityFormatDate(finding.detectedAt, locale, timeZone)}</span></div>
+        </div><Badge size="sm" color={securitySeverityColors[finding.severity]}>{securityFormatNumber(finding.score, locale, 10)}</Badge>
+      </div>
+    </li>)}</ul>}
+    {actions?.onViewAll && total !== null && total > 0 && <Button size="sm" variant="ghost" onClick={() => actions.onViewAll!("findings")}>{labels.viewAllFindings} · {securityFormatNumber(total, locale)}</Button>}
+  </div>;
+}
+
+export function SecurityPosture({ data, labels, locale }: ViewProps) {
+  const areas = data.posture;
+  return <div className="space-y-3"><div><h3 className="text-body font-medium text-fg-default">{labels.posture}</h3><p className="mt-1 text-label text-fg-subtle">{labels.postureDescription}</p></div>
+    {!areas?.length ? <DataEmpty text={labels.noData} /> : <>
+      <div className="grid min-w-0 items-center gap-4 @lg:grid-cols-2"><SecurityPostureRadar data={data} labels={labels} />
+        <dl className="space-y-3">{areas.map((area) => {
+          const change = securityValidNumber(area.score, 100) && securityValidNumber(area.previousScore, 100) ? area.score - area.previousScore : null;
+          return <div key={area.id} className="flex items-baseline justify-between gap-3 text-body"><dt className="min-w-0 break-words text-fg-muted">{area.label}</dt><dd className="flex shrink-0 gap-3 tabular-nums"><span aria-label={`${labels.change} ${change === null ? labels.unknown : change}`} className={cn("text-label", change === null || change === 0 ? "text-fg-subtle" : change > 0 ? "text-fg-success" : "text-fg-danger")}>{change === null ? labels.unknown : `${change > 0 ? "+" : ""}${change}`}</span><span className="font-medium text-fg-default">{securityFormatNumber(area.score, locale, 100)}</span><span className="sr-only"> / 100 · {labels.previous} {securityFormatNumber(area.previousScore, locale, 100)}</span></dd></div>;
+        })}</dl>
+      </div><p className="text-label text-fg-subtle">{labels.current} · {labels.previous}（{labels.compare}）</p>
+    </>}
+  </div>;
+}
+
+export function SecurityAssets({ data, labels, locale, timeZone, actions }: ViewProps) {
+  const Globe = useIcon("globe");
+  return <div className="space-y-3"><div className="flex flex-wrap items-center justify-between gap-2"><h3 className="flex items-center gap-2 text-body font-medium text-fg-default">{labels.affectedAssets}<Badge size="sm">{securityFormatCount(data.affectedAssetCount, locale)}</Badge></h3><span className="text-label text-fg-subtle">{labels.scannedAssets} {securityFormatCount(data.scannedAssetCount, locale)}</span></div>
+    {!data.assets ? <DataEmpty text={labels.noData} /> : data.assets.length === 0 ? <DataEmpty text={data.affectedAssetCount === 0 ? labels.noAssets : labels.noData} /> : <ul className="divide-y divide-border-subtle">{data.assets.slice(0, 3).map((asset) => <li key={asset.id} className="flex flex-wrap items-center gap-3 py-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-raised text-fg-muted"><Globe size={16} aria-hidden /></span><div className="min-w-0 flex-1 basis-36">
+      {actions?.onOpenAsset ? <button type="button" onClick={() => actions.onOpenAsset!(asset.id)} className="max-w-full break-all rounded-lg text-left text-body font-medium text-fg-default hover:underline focus-visible:outline focus-visible:outline-1 focus-visible:outline-focus-ring">{asset.name}</button> : <p className="break-all text-body font-medium text-fg-default">{asset.name}</p>}
+      <p className="mt-1 text-label text-fg-subtle">{asset.kind} · {securityFormatDate(asset.lastScannedAt, locale, timeZone)}</p></div>
+      <div className="flex flex-wrap gap-1.5">{securityCountTotal(asset.findings) === null ? <span className="text-label text-fg-subtle">{labels.noData}</span> : securitySeverities.filter((severity) => asset.findings[severity] > 0).map((severity) => <Badge key={severity} variant="dot" color={securitySeverityColors[severity]} size="sm">{labels[severity]} {securityFormatNumber(asset.findings[severity], locale)}</Badge>)}</div>
+    </li>)}</ul>}
+    {actions?.onViewAll && securityValidCount(data.affectedAssetCount) && data.affectedAssetCount > 0 && <Button size="sm" variant="ghost" onClick={() => actions.onViewAll!("assets")}>{labels.viewAllAssets} · {securityFormatCount(data.affectedAssetCount, locale)}</Button>}
+  </div>;
+}
+
+
+import type { SecurityOverviewCounts, SecurityOverviewFinding, SecurityOverviewRange, SecurityOverviewSnapshot } from "./security-overview-types";
+
+const asOf = Date.UTC(2026, 9, 5, 4, 0);
+const day = 86_400_000;
+const assetNames = ["api.northwind.example", "auth.northwind.example", "console.northwind.example", "data.northwind.example", "worker.northwind.example", "cdn.northwind.example"];
+const findingSeeds = [
+  ["路径遍历可能读取任意文件", "critical", 9.6, 0],
+  ["会话接口接受未签名令牌", "critical", 9.3, 1],
+  ["搜索页存在反射型脚本注入", "high", 7.2, 2],
+  ["接口速率限制未启用", "high", 7.1, 0],
+  ["密钥轮换策略未配置", "high", 7, 3],
+  ["过期依赖包含已知风险", "high", 6.9, 4],
+  ["管理入口缺少二次验证", "high", 6.8, 1],
+  ["安全响应头不完整", "medium", 5.6, 2],
+  ["存储访问策略过于宽泛", "medium", 5.4, 3],
+  ["跨域访问策略需要收紧", "medium", 5.1, 0],
+  ["缓存策略暴露内部信息", "medium", 4.7, 5],
+  ["服务版本信息可公开读取", "low", 2.2, 0],
+  ["错误页面包含调试标识", "low", 1.8, 2],
+] as const;
+
+/** Fixed demonstration data; no security scanner, random values or external requests. */
+export function createSecurityOverviewDemoData(range: SecurityOverviewRange = "30d", afterScan = false): SecurityOverviewSnapshot {
+  const findings: SecurityOverviewFinding[] = findingSeeds.map(([title, severity, score, asset], index) => ({ id: `finding-${index}`, title, severity, score, assetId: `asset-${asset}`, assetName: assetNames[asset], detectedAt: asOf - (index + 1) * day }));
+  if (afterScan) findings.push({ id: "finding-new", title: "导出接口缺少访问范围校验", severity: "high", score: 7.8, assetId: "asset-0", assetName: assetNames[0], detectedAt: asOf + 300_000 });
+  const count = (items: SecurityOverviewFinding[]): SecurityOverviewCounts => ({ critical: items.filter((item) => item.severity === "critical").length, high: items.filter((item) => item.severity === "high").length, medium: items.filter((item) => item.severity === "medium").length, low: items.filter((item) => item.severity === "low").length });
+  const days = range === "7d" ? 7 : range === "30d" ? 30 : 90;
+  const updatedAt = asOf + (afterScan ? 300_000 : 0);
+  const current = count(findings);
+  return {
+    id: `northwind-scan-${afterScan ? 2 : 1}`, scopeId: "northwind", range, asOf: updatedAt,
+    window: { start: updatedAt - days * day, end: updatedAt, comparisonAt: updatedAt - days * day },
+    score: afterScan ? 75 : 77, grade: "B", scoreTone: "success", previousScore: range === "7d" ? 71 : range === "30d" ? 64 : 58,
+    openBySeverity: current, resolvedInWindow: range === "7d" ? 3 : range === "30d" ? 21 : 58,
+    scannedAssetCount: 26, newAssetsInWindow: range === "7d" ? 0 : range === "30d" ? 2 : 8,
+    affectedAssetCount: 6, medianFixTimeHours: range === "7d" ? 38.4 : range === "30d" ? 57.6 : 72,
+    lastScanAt: afterScan ? updatedAt : asOf - 14 * 60_000,
+    trend: Array.from({ length: days + 1 }, (_, index) => {
+      const remaining = days - index;
+      return { at: updatedAt - remaining * day, counts: { critical: current.critical + Math.floor(remaining / 14), high: current.high + Math.floor(remaining / 9), medium: current.medium + Math.floor(remaining / 7), low: current.low + Math.floor(remaining / 16) } };
+    }),
+    posture: [
+      { id: "auth", label: "身份验证", score: 62, previousScore: 54 },
+      { id: "api", label: "API", score: 70, previousScore: 61 },
+      { id: "web", label: "Web 应用", score: 74, previousScore: 77 },
+      { id: "data", label: "数据与密钥", score: 76, previousScore: 63 },
+      { id: "deps", label: "依赖", score: 88, previousScore: 84 },
+      { id: "infra", label: "基础设施", score: 84, previousScore: 79 },
+    ].map((area) => ({ ...area, previousScore: range === "7d" ? Math.round((area.previousScore + area.score) / 2) : range === "90d" ? area.previousScore - 6 : area.previousScore })),
+    findings,
+    assets: assetNames.map((name, index) => ({ id: `asset-${index}`, name, kind: "主机", lastScannedAt: afterScan ? updatedAt : asOf - 14 * 60_000, findings: count(findings.filter((finding) => finding.assetId === `asset-${index}`)) })),
+  };
+}
+
+export const securityOverviewDemoData = createSecurityOverviewDemoData();

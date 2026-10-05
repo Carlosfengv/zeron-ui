@@ -51,6 +51,7 @@ function installationFor(registryName: string): BlockCapability {
  * discovery, documentation and progressive asset splitting.
  */
 const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation" | "collection">> = [
+  { slug: "security-overview-01", registryName: "security-overview-01", title: "安全概览", description: "安全评分、风险趋势、六维态势与受影响资产的扫描概览。", kind: "block", product: "shared", domains: ["security", "analytics"], patterns: ["metrics", "chart", "tabs", "scan"], searchTerms: ["安全", "风险", "扫描", "资产", "security", "findings", "posture", "scan"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true },
   { slug: "deployment-detail-01", registryName: "deployment-detail-01", title: "部署详情", description: "网站预览、部署信息、域名、代码来源与阶段检查结果。", kind: "block", product: "shared", domains: ["deployment", "monitoring"], patterns: ["detail", "status", "activity"], searchTerms: ["部署", "构建", "域名", "deployment", "build", "checks"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true },
   { slug: "user-account-01", registryName: "user-account-01", title: "User Account", description: "Controlled appearance, language, settings, notifications and sign-out entry points.", kind: "block", product: "shared", domains: ["account"], patterns: ["menu", "dialog"], searchTerms: ["User Account", "用户账号", "账号", "通知"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true },
   {
