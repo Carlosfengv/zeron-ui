@@ -48,6 +48,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "cost-estimate-01": () => import("./CostEstimateDemo").then(({ CostEstimateDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={1120} canvasWidth={800}><CostEstimateDemo /></ResponsivePreview>,
+  })),
   "transaction-details-01": () => import("./TransactionDetailsDemo").then(({ TransactionDetailsDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={960} canvasWidth={760}><TransactionDetailsDemo /></ResponsivePreview>,
   })),

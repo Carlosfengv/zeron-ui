@@ -1,0 +1,12 @@
+{
+  "costEstimateBlock": {
+    "title": "费用估算",
+    "description": "可嵌入的用量费用估算器，支持月付/年付、三组预设、四项用量与示例保存。沿用现有 Container 和语义样式变量，区域与费率由宿主提供。",
+    "composition": "组件组合",
+    "compositionBody": "外层使用 Container，汇总与用量分别使用 ContainerBody；头尾使用 ContainerHeader / ContainerFooter，标题为 14px 中等字重。输入复用 Slider、Input、Field，计费方式使用右对齐的 pill Tabs，颜色为 default；对应 TabPanel 承载优惠与费用构成，图表通过 Zeron Chart 组合 Recharts。",
+    "calculation": "计算口径",
+    "calculationBody": "固定示例单价、30 天基准月、5× 压缩与 3 个免费席位。按整数金额计算并逐项舍入，年付用量单价优惠 15%，折扣后用量费用不足 $49 时单列最低消费补差。费用构成比例不包含补差。金额未知不补零，费率必须与当前区域匹配。",
+    "behavior": "交互与接入",
+    "behaviorBody": "输入受控，预设一次更新四项用量；可精确输入、重置、切换计费周期和保存示例 JSON。顶部仅保留标题与说明，不提供区域选择、设置和关闭入口；区域由宿主设置。保存绑定点击时的输入与完整费率指纹，保存过程中修改输入不会把新估算标为已保存。演示支持加载、过期、错误、无费率和保存失败重试，未连接真实计费服务。"
+  }
+}

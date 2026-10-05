@@ -2492,7 +2492,7 @@
       "name": "slider",
       "type": "registry:ui",
       "title": "Slider (Base UI)",
-      "description": "Animated slider with spring-snapped thumb, step dots, range mode, and click-to-edit value display. Base UI flavor.",
+      "description": "Animated slider with classic and graduated tick tracks, capsule thumbs, portalled value content, range mode, and click-to-edit values. Base UI flavor.",
       "dependencies": [
         "framer-motion@^12.34.0",
         "@base-ui/react@^1.4.1",
@@ -2501,7 +2501,8 @@
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/surfaces.json",
         "https://zeron-ui.vercel.app/r/utils.json",
-        "https://zeron-ui.vercel.app/r/springs.json"
+        "https://zeron-ui.vercel.app/r/springs.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json"
       ],
       "files": [
         {
@@ -4988,6 +4989,81 @@
           "react": "^19.0.0",
           "tailwind": "^4.0.0",
           "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "cost-estimate-01",
+      "type": "registry:block",
+      "title": "费用估算",
+      "description": "四项用量、预设、月付/年付与最低消费的可控费用估算器。",
+      "categories": [
+        "application",
+        "analytics",
+        "billing"
+      ],
+      "dependencies": [
+        "recharts@^3.10.1"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/chart.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/field.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/input.json",
+        "https://zeron-ui.vercel.app/r/skeleton.json",
+        "https://zeron-ui.vercel.app/r/slider.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate-summary.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate-summary.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate-usage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate-usage.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/cost-estimate-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/cost-estimate-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cost-estimate-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
         }
       }
     },

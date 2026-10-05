@@ -79,6 +79,20 @@ const formatCode = `import { Slider } from "./components";
   label="Opacity"
 />`;
 
+const ticksCode = `<Slider
+  variant="ticks"
+  value={value}
+  onChange={setValue}
+  min={0}
+  max={1000}
+  step={0.5}
+  tickCount={41}
+  showValue
+  valuePosition="tooltip"
+  label="Ingest (GB/day)"
+  renderTooltip={(v) => <div>{v} GB/day · {v * 30} GB/month</div>}
+/>`;
+
 
 // ---------------------------------------------------------------------------
 // Code snippets — SliderComfortable
@@ -237,18 +251,18 @@ const sliderProps: PropDef[] = [
     description: "Disables all interaction.",
   },
   {
-    name: "showLabel",
-    type: "boolean",
-    default: "true",
-    description:
-      "In range mode, keeps the label accessible while hiding it inside the control.",
+    name: "variant",
+    type: '"default" | "ticks"',
+    default: '"default"',
+    description: "Classic filled track or graduated ticks with a capsule thumb.",
   },
   {
-    name: "onValueCommit",
-    type: "(value: [number, number]) => void",
-    description:
-      "In range mode, called once when pointer or keyboard interaction commits the value.",
+    name: "tickCount",
+    type: "number",
+    default: "41",
+    description: "Visual tick count, bounded to 2–101. Independent of step and allowed values.",
   },
+  { name: "renderTooltip", type: "(value: number, thumbIndex: number) => ReactNode", description: "Custom current-value content, portalled above the thumb. Enable showValue and valuePosition=tooltip. Works with mouse, touch and keyboard focus." },
 ];
 
 const comfortableProps: PropDef[] = [
@@ -336,6 +350,7 @@ export default function SliderDoc() {
   const [natureColor, setNatureColor] = useState(60);
   const [dangerColor, setDangerColor] = useState(60);
   const [warningColor, setWarningColor] = useState(60);
+  const [graduated, setGraduated] = useState(80);
 
   const [roundness, setRoundness] = useState(2);
   const [volume, setVolume] = useState(50);
@@ -346,7 +361,7 @@ export default function SliderDoc() {
     <DocPage
       title="Slider"
       slug="slider"
-      description="Two variants: compact (spring-snapped thumb with track fill and range mode) and comfortable (pip-based discrete selector for settings panels)."
+      description="Classic filled tracks, graduated tick tracks with portalled value content, and comfortable selectors. Pointer, touch, keyboard and range interactions share the same value contracts."
     >
       <DocSection title="Playground">
         <VariantPlayground
@@ -381,6 +396,11 @@ export default function SliderDoc() {
             <Slider value={basic} onChange={(v) => setBasic(v as number)} />
           </div>
         </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("graduated")}>
+        <ComponentPreview code={ticksCode}><div className="w-72"><Slider variant="ticks" value={graduated} onChange={(v) => setGraduated(v as number)} min={0} max={1000} step={0.5} tickCount={41} valuePosition="tooltip" label={t("ingest")} renderTooltip={(v) => <div className="space-y-1"><p>{v} GB/day</p><p className="font-normal opacity-75">{v * 30} GB/month</p></div>} /></div></ComponentPreview>
+        <p className="text-label text-fg-subtle">{t("tickHelp")}</p>
       </DocSection>
 
       <DocSection title={t("range")}>

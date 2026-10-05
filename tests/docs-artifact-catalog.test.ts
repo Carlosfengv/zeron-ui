@@ -19,7 +19,7 @@ describe("business template catalog", () => {
     const registryNames = new Set(blocksByRegistryName.keys());
     const artifactRegistryNames = artifactCatalog.map(({ registryName }) => registryName);
 
-    expect(artifactCatalog).toHaveLength(45);
+    expect(artifactCatalog).toHaveLength(46);
     expect(new Set(artifactRegistryNames).size).toBe(artifactCatalog.length);
     expect(new Set(artifactRegistryNames)).toEqual(registryNames);
     for (const artifact of artifactCatalog) {
@@ -29,7 +29,14 @@ describe("business template catalog", () => {
 
   it("labels only data-capable Blocks as data blocks", () => {
     expect(blockCatalog.filter((block) => block.installation.kind === "data-block").map((block) => block.name))
-      .toEqual(["transaction-details-01", "getting-started-01", "security-overview-01", "deployment-detail-01", "user-account-01", "ai-gateway-overview-01", "ai-gateway-session-list-01", "file-manager-01", "agent-message-trace-01", "project-monitor-01", "model-router-01", "credit-usage-01", "storage-usage-01", "filter-rule-builder-01", "rule-flow-editor-01", "resource-list-table-01", "member-department-01", "infinite-log-table-01"]);
+      .toEqual(["cost-estimate-01", "transaction-details-01", "getting-started-01", "security-overview-01", "deployment-detail-01", "user-account-01", "ai-gateway-overview-01", "ai-gateway-session-list-01", "file-manager-01", "agent-message-trace-01", "project-monitor-01", "model-router-01", "credit-usage-01", "storage-usage-01", "filter-rule-builder-01", "rule-flow-editor-01", "resource-list-table-01", "member-department-01", "infinite-log-table-01"]);
+  });
+
+  it("keeps cost estimate discovery dependencies aligned with its billing control", () => {
+    const dependencies = blockCatalog.find((block) => block.name === "cost-estimate-01")!.dependencies;
+    expect(dependencies).toContain("tabs");
+    expect(dependencies).not.toContain("radio-group");
+    expect(dependencies).not.toContain("select");
   });
 
   it("keeps every business template reachable through an existing detail page", () => {
@@ -73,7 +80,7 @@ describe("business template catalog", () => {
     const pages = artifactCatalog.filter(({ collection }) => collection === "pages");
     const blocks = artifactCatalog.filter(({ collection }) => collection === "blocks");
     expect(pages).toHaveLength(26);
-    expect(blocks).toHaveLength(19);
+    expect(blocks).toHaveLength(20);
     expect(new Set(pages.map(({ slug }) => slug))).toEqual(new Set(pageArtifactSlugs));
     expect(blocks.some(({ slug }) => pageArtifactSlugs.includes(slug as typeof pageArtifactSlugs[number]))).toBe(false);
     expect(getDocEntry("pages", "resource-list-page-01")).toBeDefined();

@@ -27,8 +27,8 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(114);
-    expect(detailDocEntries).toHaveLength(114);
+    expect(pageDocEntries).toHaveLength(115);
+    expect(detailDocEntries).toHaveLength(115);
     expect(legacyDocRedirects).toHaveLength(66);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });

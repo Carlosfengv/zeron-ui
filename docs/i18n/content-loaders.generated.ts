@@ -12,6 +12,7 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "blocks/cost-estimate-01": () => import("@docs/content/en/blocks/cost-estimate-01.json"),
     "blocks/transaction-details-01": () => import("@docs/content/en/blocks/transaction-details-01.json"),
     "blocks/getting-started-01": () => import("@docs/content/en/blocks/getting-started-01.json"),
     "blocks/security-overview-01": () => import("@docs/content/en/blocks/security-overview-01.json"),
@@ -125,6 +126,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "blocks/cost-estimate-01": () => import("@docs/content/zh-CN/blocks/cost-estimate-01.json"),
     "blocks/transaction-details-01": () => import("@docs/content/zh-CN/blocks/transaction-details-01.json"),
     "blocks/getting-started-01": () => import("@docs/content/zh-CN/blocks/getting-started-01.json"),
     "blocks/security-overview-01": () => import("@docs/content/zh-CN/blocks/security-overview-01.json"),

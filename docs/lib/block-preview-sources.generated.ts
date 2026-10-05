@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "cost-estimate-01": {
+    "url": "/docs-source/28099758c9f88e15cf5bd3b576c0dd3710498405e31d594118d6c164ef391fc7.txt"
+  },
   "transaction-details-01": {
     "url": "/docs-source/a6a5a5b658429ab4ee817c1407584edfb4cc298494a447495f89a46d00c1ef07.txt"
   },

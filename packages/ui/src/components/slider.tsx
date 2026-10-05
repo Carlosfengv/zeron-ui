@@ -8,8 +8,10 @@ import {
   useLayoutEffect,
   useCallback,
   useMemo,
+  useId,
   type CSSProperties,
   type HTMLAttributes,
+  type ReactNode,
 } from "react";
 import {
   motion,
@@ -17,11 +19,13 @@ import {
   useTransform,
   animate,
   AnimatePresence,
+  useReducedMotion,
   type MotionValue,
 } from "framer-motion";
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
+import { Tooltip } from "#components/tooltip";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -35,6 +39,12 @@ interface SliderProps
   extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> {
   value: SliderValue;
   onChange: (value: SliderValue) => void;
+  /** Ticks uses a slim capsule thumb and a graduated track. */
+  variant?: "default" | "ticks";
+  /** Visual graduations only; does not change step or the allowed values. Bounded to 2–101. */
+  tickCount?: number;
+  /** Content at the current thumb, portalled with viewport collision handling. */
+  renderTooltip?: (value: number, thumbIndex: number) => ReactNode;
   min?: number;
   max?: number;
   step?: number;
@@ -330,6 +340,9 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
     {
       value,
       onChange,
+      variant = "default",
+      tickCount = 41,
+      renderTooltip,
       min: minProp = 0,
       max: maxProp = 100,
       step = 1,
@@ -357,6 +370,12 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
     const isRange = Array.isArray(value);
     const values = toPrimitiveValue(value);
     const colorStyle = sliderColors[color];
+    const ticks = variant === "ticks";
+    const reduceMotion = useReducedMotion() ?? false;
+    const positionTransition = useMemo(() => reduceMotion ? { duration: 0 } : spring.moderate, [reduceMotion]);
+    const portalTooltip = ticks || renderTooltip !== undefined;
+    const tooltipId = useId();
+    const graduationCount = Number.isFinite(tickCount) ? Math.max(2, Math.min(101, Math.round(tickCount))) : 41;
 
     // Non-uniform step mode: sorted, deduped list of allowed values. Keyed on
     // the joined string so inline array literals don't recompute every render.
@@ -440,6 +459,9 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
       }
     );
     const stepDotsMask = isRange ? stepDotsMaskRange : stepDotsMaskSingle;
+    const tickFillMaskSingle = useTransform(motionX0, (x) => `linear-gradient(to right, black ${x + THUMB_SIZE / 2}px, transparent ${x + THUMB_SIZE / 2 + 1}px)`);
+    const tickFillMaskRange = useTransform([motionX0, motionX1] as MotionValue<number>[], ([x0, x1]) => `linear-gradient(to right, transparent ${(x0 as number) + THUMB_SIZE / 2 - 1}px, black ${(x0 as number) + THUMB_SIZE / 2}px, black ${(x1 as number) + THUMB_SIZE / 2}px, transparent ${(x1 as number) + THUMB_SIZE / 2 + 1}px)`);
+    const tickFillMask = isRange ? tickFillMaskRange : tickFillMaskSingle;
 
     // --- Hover preview computation ---
     const computeHoverPreview = useCallback(
@@ -507,16 +529,16 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
           const mn = minRef.current;
           const mx = maxRef.current;
           const px0 = valueToPixel(v[0], mn, mx, w);
-          animate(motionX0, px0, spring.moderate);
+          animate(motionX0, px0, positionTransition);
           if (isRange && v[1] !== undefined) {
             const px1 = valueToPixel(v[1], mn, mx, w);
-            animate(motionX1, px1, spring.moderate);
+            animate(motionX1, px1, positionTransition);
           }
         }
       });
       ro.observe(el);
       return () => ro.disconnect();
-    }, [isRange, motionX0, motionX1]);
+    }, [isRange, motionX0, motionX1, positionTransition]);
 
     // --- Sync motion values on value change (keyboard, programmatic) ---
     // Depend on a primitive key rather than the `values` array — its identity
@@ -530,12 +552,12 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
       if (tw <= 0) return;
       const v = valuesRef.current;
       const px0 = valueToPixel(v[0], min, max, tw);
-      animate(motionX0, px0, spring.moderate);
+      animate(motionX0, px0, positionTransition);
       if (isRange && v[1] !== undefined) {
         const px1 = valueToPixel(v[1], min, max, tw);
-        animate(motionX1, px1, spring.moderate);
+        animate(motionX1, px1, positionTransition);
       }
-    }, [valuesKey, min, max, isRange, motionX0, motionX1]);
+    }, [valuesKey, min, max, isRange, motionX0, motionX1, positionTransition]);
 
     // --- Range crossing prevention ---
     const clampForRange = useCallback(
@@ -618,7 +640,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
           activeDragThumb.current
         );
         // Spring-animate thumb to clicked position
-        animate(motionX, finalPx, spring.moderate);
+        animate(motionX, finalPx, positionTransition);
 
         // Update value
         const finalValue = pixelToValue(
@@ -633,7 +655,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
 
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
       },
-      [disabled, isRange, min, max, step, stepValues, motionX0, motionX1, clampForRange, emitChange]
+      [disabled, isRange, min, max, step, stepValues, motionX0, motionX1, clampForRange, emitChange, positionTransition]
     );
 
     const handlePointerMove = useCallback(
@@ -669,6 +691,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
           snappedPx,
           activeDragThumb.current
         );
+        motionX.stop();
         motionX.set(finalPx);
 
         const finalValue = pixelToValue(
@@ -697,8 +720,8 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
       const currentPx = motionX.get();
       const snapped = pixelToValue(currentPx, min, max, step, tw, stepValues);
       const snappedPx = valueToPixel(snapped, min, max, tw);
-      animate(motionX, snappedPx, spring.moderate);
-    }, [min, max, step, stepValues, motionX0, motionX1]);
+      animate(motionX, snappedPx, positionTransition);
+    }, [min, max, step, stepValues, motionX0, motionX1, positionTransition]);
 
     // --- Primitive keyboard handler ---
     // In steps mode the primitive runs on indices (0..len-1, step 1) so arrow
@@ -738,7 +761,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
     // --- Step dots ---
     const stepDots = useMemo(
       () =>
-        showSteps
+        showSteps && !ticks
           ? stepValues
             ? stepValues.map((v) => ({
                 value: v,
@@ -753,11 +776,14 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
                 }
               )
           : [],
-      [showSteps, min, max, step, stepValues]
+      [showSteps, ticks, min, max, step, stepValues]
     );
 
     // --- Interaction state for tooltip ---
-    const isInteracting = isHovered || isPressed;
+    const isInteracting = isHovered || isPressed || focusedThumb !== null;
+    const tooltipThumbIndex = isPressed ? activeDragThumb.current : focusedThumb ?? 0;
+    const tooltipOpen = portalTooltip && showValue && valuePosition === "tooltip" && !disabled && isInteracting;
+    const thumbDescription = (index: number) => [props["aria-describedby"], tooltipOpen && tooltipThumbIndex === index ? `${tooltipId}-${index}-tooltip` : undefined].filter(Boolean).join(" ") || undefined;
 
     // --- Per-thumb accessible names ---
     // aria-label on Root lands on a role-less div and never reaches the
@@ -790,9 +816,12 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
     // --- Render visual thumb (not Primitive — purely visual) ---
     const renderVisualThumb = (index: number) => {
       const motionX = index === 0 ? motionX0 : motionX1;
-      return (
+      const thumb = (
         <motion.span
           data-slot="slider-thumb"
+          id={portalTooltip ? `${tooltipId}-${index}` : undefined}
+          aria-hidden="true"
+          tabIndex={-1}
           key={`visual-thumb-${index}`}
           className="flex items-center justify-center pointer-events-none"
           style={{
@@ -811,14 +840,15 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
             className="block rounded-full"
             initial={false}
             animate={{
-              width: THUMB_SIZE_REST,
-              height: THUMB_SIZE_REST,
+              width: ticks ? 8 : THUMB_SIZE_REST,
+              height: ticks ? 24 : THUMB_SIZE_REST,
+              scale: ticks && isPressed && activeDragThumb.current === index && !reduceMotion ? 1.08 : 1,
             }}
-            transition={spring.fast}
+            transition={reduceMotion ? { duration: 0 } : spring.fast}
             style={{
-              backgroundColor: thumbColor ?? colorStyle.onFill,
+              backgroundColor: thumbColor ?? (ticks ? "var(--surface-floating)" : colorStyle.onFill),
               boxShadow: "var(--shadow-raised)",
-              border: thumbBorderColor ? `1px solid ${thumbBorderColor}` : undefined,
+              border: thumbBorderColor ? `1px solid ${thumbBorderColor}` : ticks ? "1px solid var(--border)" : undefined,
             }}
           />
           {/* Focus ring */}
@@ -827,19 +857,21 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
             initial={false}
             animate={{
               opacity: focusedThumb === index ? 1 : 0,
-              width: THUMB_SIZE + 4,
-              height: THUMB_SIZE + 4,
+              width: ticks ? 14 : THUMB_SIZE + 4,
+              height: ticks ? 30 : THUMB_SIZE + 4,
             }}
             transition={spring.fast}
           />
         </motion.span>
       );
+      return portalTooltip && showValue && valuePosition === "tooltip" ? <Tooltip key={`thumb-tooltip-${index}`} forceOpen={tooltipOpen && tooltipThumbIndex === index} content={renderTooltip ? renderTooltip(values[index], index) : formatValue(values[index])}>{thumb}</Tooltip> : thumb;
     };
 
     return (
       <div
         ref={ref}
         data-slot="slider"
+        data-variant={variant}
         className={cn(
           "flex flex-col gap-0 w-full select-none touch-none overflow-visible",
           valuePosition === "left" || valuePosition === "right"
@@ -861,7 +893,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
             height: (valuePosition === "left" || valuePosition === "right")
               ? THUMB_SIZE + 16
               : THUMB_SIZE + (valuePosition === "tooltip" ? 16 : 0),
-            paddingTop: valuePosition === "tooltip" ? 16 : 0,
+            paddingTop: valuePosition === "tooltip" && !portalTooltip ? 16 : 0,
           }}
           onPointerEnter={() => setIsHovered(true)}
           onPointerLeave={() => {
@@ -885,7 +917,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
           }}
         >
           {/* Tooltip values */}
-          {showValue && valuePosition === "tooltip" && (
+          {showValue && valuePosition === "tooltip" && !portalTooltip && (
             <AnimatePresence>
               {isInteracting && (
                 <TooltipValue
@@ -928,24 +960,26 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
               <SliderPrimitive.Thumb
                 index={0}
                 aria-label={thumbAriaLabel(0)}
+                aria-describedby={thumbDescription(0)}
                 getAriaValueText={
                   stepValues ? () => formatValue(values[0]) : undefined
                 }
                 className="block outline-none"
                 style={{ width: THUMB_SIZE, height: THUMB_SIZE }}
-                onFocus={(e) => { if ((e.currentTarget as HTMLElement).matches(":focus-visible")) setFocusedThumb(0); }}
+                onFocus={() => setFocusedThumb(0)}
                 onBlur={() => setFocusedThumb((prev) => prev === 0 ? null : prev)}
               />
               {isRange && (
                 <SliderPrimitive.Thumb
                   index={1}
                   aria-label={thumbAriaLabel(1)}
+                  aria-describedby={thumbDescription(1)}
                   getAriaValueText={
                     stepValues ? () => formatValue(values[1]) : undefined
                   }
                   className="block outline-none"
                   style={{ width: THUMB_SIZE, height: THUMB_SIZE }}
-                  onFocus={(e) => { if ((e.currentTarget as HTMLElement).matches(":focus-visible")) setFocusedThumb(1); }}
+                  onFocus={() => setFocusedThumb(1)}
                   onBlur={() => setFocusedThumb((prev) => prev === 1 ? null : prev)}
                 />
               )}
@@ -997,6 +1031,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
             </AnimatePresence>
 
             {/* Track background */}
+            {!ticks && <>
             <motion.div
               data-slot="slider-track"
               className={cn("absolute border border-border overflow-hidden rounded-full", trackClassName)}
@@ -1087,6 +1122,11 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(
                 ))}
               </motion.div>
             )}
+            </>}
+
+            {ticks && (hideFill ? [false] : [false, true]).map((filled) => <motion.div key={String(filled)} data-slot={filled ? "slider-ticks-fill" : "slider-ticks"} aria-hidden="true" className="absolute inset-0 pointer-events-none" style={filled ? { maskImage: tickFillMask, WebkitMaskImage: tickFillMask } : undefined} initial={false} animate={{ scaleY: isInteracting && !reduceMotion ? 1.08 : 1 }} transition={reduceMotion ? { duration: 0 } : spring.fast}>
+              {Array.from({ length: graduationCount }, (_, index) => <span key={index} data-slot="slider-tick" data-major={index % 10 === 0 || index === graduationCount - 1 ? "" : undefined} className="absolute rounded-full" style={{ left: `calc(${THUMB_SIZE / 2}px + ${index / (graduationCount - 1)} * (100% - ${THUMB_SIZE}px))`, top: "50%", transform: "translate(-50%, -50%)", width: 2, height: index % 10 === 0 || index === graduationCount - 1 ? 18 : 12, backgroundColor: filled ? fillStyle?.backgroundColor ?? colorStyle.fill : "var(--fg-subtle)", opacity: filled ? 1 : 0.25 }} />)}
+            </motion.div>)}
 
             {/* Visual thumbs */}
             {renderVisualThumb(0)}

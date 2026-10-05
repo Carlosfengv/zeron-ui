@@ -1,5 +1,7 @@
 "use client";
 import { TransactionDetailsDemo } from "./TransactionDetailsDemo";
+
+import { CostEstimateDemo } from "./CostEstimateDemo";
 import { GettingStartedDemo } from "./GettingStartedDemo";
 
 import { ModelRouterDemo } from "./ModelRouterDemo";
@@ -224,6 +226,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <ModelRouterDemo />;
     case "project-monitor-01":
       return <ProjectMonitorDemo />;
+    case "cost-estimate-01":
+      return <CostEstimateDemo />;
     case "security-overview-01":
       return <SecurityOverviewDemo />;
     case "deployment-detail-01":

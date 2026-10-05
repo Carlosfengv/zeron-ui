@@ -2,6 +2,14 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:cost-estimate-01",
+      "type": "registry",
+      "key": "cost-estimate-01",
+      "aliases": ["cost-estimate-01"],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:transaction-details-01",
       "type": "registry",
       "key": "transaction-details-01",

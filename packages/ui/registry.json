@@ -2007,7 +2007,7 @@
       "name": "slider",
       "type": "registry:ui",
       "title": "Slider (Base UI)",
-      "description": "Animated slider with spring-snapped thumb, step dots, range mode, and click-to-edit value display. Base UI flavor.",
+      "description": "Animated slider with classic and graduated tick tracks, capsule thumbs, portalled value content, range mode, and click-to-edit values. Base UI flavor.",
       "dependencies": [
         "framer-motion",
         "@base-ui/react",
@@ -2016,7 +2016,8 @@
       "registryDependencies": [
         "surfaces",
         "utils",
-        "springs"
+        "springs",
+        "tooltip"
       ],
       "files": [
         {

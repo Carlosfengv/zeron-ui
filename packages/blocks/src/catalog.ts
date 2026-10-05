@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "cost-estimate-01", title: "费用估算", description: "四项用量、预设、月付/年付与最低消费的可控费用估算器。", categories: ["application", "analytics", "billing"], dependencies: ["badge", "button", "chart", "container", "empty", "field", "icon-context", "inline-notice", "input", "skeleton", "slider", "tabs", "tooltip", "utils", "recharts"] },
   { name: "transaction-details-01", title: "交易详情", description: "突出金额、交易字段、可折叠账单与附件操作的交易详情。", categories: ["application", "details"], dependencies: ["accordion", "avatar", "badge", "button", "container", "detail-list", "dropdown", "empty", "error-state", "icon-context", "info-item", "inline-notice", "menu-item", "skeleton", "tooltip", "utils", "@hugeicons/react", "@hugeicons/core-free-icons"] },
   { name: "getting-started-01", title: "入门任务清单", description: "可折叠的入门任务清单，包含完成数量、任务状态与宿主操作入口。", categories: ["application", "onboarding"], dependencies: ["button", "container", "stepper", "icon-context", "utils"] },
   { name: "security-overview-01", title: "安全概览", description: "安全评分、风险趋势、六维态势与受影响资产的可控扫描概览。", categories: ["application", "security", "analytics"], dependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "inline-notice", "metric-card", "select", "skeleton", "tabs", "tooltip", "utils", "recharts"] },

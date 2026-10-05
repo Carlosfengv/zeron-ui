@@ -270,6 +270,12 @@ async function verifyNextBuild({ consumer, component }) {
       'import { GettingStarted, gettingStartedDemoTasks } from "@/components/blocks/getting-started-01";',
       'export default function Page() { return <GettingStarted tasks={gettingStartedDemoTasks} />; }',
     ].join("\n"),
+    "cost-estimate-01": [
+      '"use client";',
+      'import { useState } from "react";',
+      'import { CostEstimate, costEstimateDemoInputs, costEstimateDemoRegions, costEstimateDemoRateCards } from "@/components/blocks/cost-estimate-01";',
+      'export default function Page() { const [value, setValue] = useState(costEstimateDemoInputs); return <CostEstimate value={value} onValueChange={setValue} rateCard={costEstimateDemoRateCards[value.regionId]} regions={costEstimateDemoRegions} />; }',
+    ].join("\n"),
     "security-overview-01": [
       '"use client";',
       'import { SecurityOverview, securityOverviewDemoData } from "@/components/blocks/security-overview-01";',
@@ -462,6 +468,14 @@ async function installViteComponent({ consumer, component, tarball }) {
       'import { GettingStarted, gettingStartedDemoTasks } from "@/src/components/blocks/getting-started-01";',
       'import "./index.css";',
       'createRoot(document.getElementById("root")!).render(<GettingStarted tasks={gettingStartedDemoTasks} />);',
+    ].join("\n"),
+    "cost-estimate-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { useState } from "react";',
+      'import { CostEstimate, costEstimateDemoInputs, costEstimateDemoRegions, costEstimateDemoRateCards } from "@/src/components/blocks/cost-estimate-01";',
+      'import "./index.css";',
+      'function Demo() { const [value, setValue] = useState(costEstimateDemoInputs); return <CostEstimate value={value} onValueChange={setValue} rateCard={costEstimateDemoRateCards[value.regionId]} regions={costEstimateDemoRegions} />; }',
+      'createRoot(document.getElementById("root")!).render(<Demo />);',
     ].join("\n"),
     "security-overview-01": [
       'import { createRoot } from "react-dom/client";',
