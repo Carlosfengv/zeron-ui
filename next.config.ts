@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import { legacyBlockRedirects, legacyDocRedirects, pathnameOf } from "./docs/manifest";
 import { resolveBuildVersion } from "./docs/components/shell/site/build-version.server";
+import { readCommitArtifactAdditions } from "./docs/lib/commit-artifact-history.server";
 
 import { getPreviewSourceAssetUrls } from "./docs/lib/block-preview-sources.generated";
 
@@ -9,6 +10,7 @@ const buildVersion = resolveBuildVersion();
 
 const nextConfig: NextConfig = {
   env: {
+    UPDATES_ARTIFACT_ADDITIONS: JSON.stringify(readCommitArtifactAdditions()),
     NEXT_PUBLIC_VERSION_COMMIT_ID: buildVersion.commitId,
     NEXT_PUBLIC_VERSION_COMMIT_MESSAGE: buildVersion.commitMessage,
     NEXT_PUBLIC_VERSION_UPDATED_AT: buildVersion.updatedAt,

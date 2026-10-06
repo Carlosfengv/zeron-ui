@@ -26,6 +26,7 @@ export interface CommitHistoryEntry {
   committedAt: string;
   author: string;
   message: string;
+  artifacts?: Array<{ slug: string; title: string; collection: "blocks" | "pages"; href: string }>;
 }
 
 export function parseCommitHistory(output: string): CommitHistoryEntry[] {

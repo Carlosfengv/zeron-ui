@@ -6,6 +6,9 @@ export const updatesCopy = {
     latest: "Latest",
     loading: "Loading updates…",
     title: "Updates",
+    timeZone: "Time zone: {timeZone}",
+    blocks: "Block",
+    pages: "Page",
   },
   zh: {
     author: "提交者",
@@ -14,5 +17,8 @@ export const updatesCopy = {
     latest: "最新",
     loading: "正在加载更新日志…",
     title: "更新日志",
+    timeZone: "时区：{timeZone}",
+    blocks: "区块",
+    pages: "页面",
   },
 } as const;

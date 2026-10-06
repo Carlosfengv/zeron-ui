@@ -1,46 +1,14 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
-import { Badge } from "@zeron/ui/badge";
+import { UpdatesList } from "./updates-list";
 import { UpdatesHistorySkeleton, UpdatesLayout } from "./updates-shell";
 import { updatesCopy as copy } from "./updates-copy";
 import { assertLocale } from "@/app/_i18n/locale";
 import type { AppLocale } from "@/app/_i18n/routing";
-import { readCommitHistory, type CommitHistoryEntry } from "@docs/lib/commit-history.server";
+import { readCommitHistory } from "@docs/lib/commit-history.server";
+import { withCommitArtifacts } from "@docs/lib/commit-artifacts.server";
 import { localeAlternates } from "@docs/seo/locale";
-
-const repositoryUrl = "https://github.com/Carlosfengv/zeron-ui";
-
-
-function calendarDate(timestamp: string) {
-  return timestamp.slice(0, 10);
-}
-
-function formatDate(timestamp: string, locale: AppLocale) {
-  const [year, month, day] = calendarDate(timestamp).split("-").map(Number);
-  if (!year || !month || !day) return calendarDate(timestamp);
-  return new Intl.DateTimeFormat(locale, {
-    day: "numeric",
-    month: locale === "zh-CN" ? "long" : "short",
-    timeZone: "UTC",
-    year: "numeric",
-  }).format(new Date(Date.UTC(year, month - 1, day)));
-}
-
-function formatTime(timestamp: string) {
-  const match = timestamp.match(/T(\d{2}:\d{2})/);
-  return match?.[1] ?? "";
-}
-
-function groupCommits(commits: CommitHistoryEntry[]) {
-  return commits.reduce<Array<{ date: string; commits: CommitHistoryEntry[] }>>((groups, commit) => {
-    const date = calendarDate(commit.committedAt);
-    const current = groups.at(-1);
-    if (current?.date === date) current.commits.push(commit);
-    else groups.push({ date, commits: [commit] });
-    return groups;
-  }, []);
-}
 
 export async function generateMetadata({
   params,
@@ -74,52 +42,6 @@ export default async function UpdatesPage({ params }: { params: Promise<{ locale
 }
 
 async function UpdatesHistory({ locale }: { locale: AppLocale }) {
-  const text = copy[locale === "en" ? "en" : "zh"];
   const commits = await readCommitHistory();
-  const groups = groupCommits(commits);
-
-  return (
-    <>
-      <p className="mt-5 border-b border-border pb-8 text-label text-fg-subtle">
-        {text.count.replace("{count}", String(commits.length))}
-      </p>
-      <div className="pb-10 pt-4">
-        {groups.map((group) => (
-          <section aria-labelledby={`updates-${group.date}`} className="pt-5" key={group.date}>
-            <h2 className="pb-2 text-title font-semibold text-fg-default" id={`updates-${group.date}`}>
-              {formatDate(group.date, locale)}
-            </h2>
-            <ol className="divide-y divide-border-subtle border-t border-border-subtle">
-              {group.commits.map((commit, index) => (
-                <li className="grid min-w-0 gap-2 py-5 sm:grid-cols-[5rem_minmax(0,1fr)] sm:gap-5" key={commit.id}>
-                  <time className="font-mono text-label tabular-nums text-fg-subtle" dateTime={commit.committedAt}>
-                    {formatTime(commit.committedAt)}
-                  </time>
-                  <article className="min-w-0">
-                    <div className="flex min-w-0 flex-wrap items-center gap-2">
-                      <h3 className="min-w-0 text-body font-medium text-fg-default">{commit.message}</h3>
-                      {group === groups[0] && index === 0 && (
-                        <Badge color="blue" size="sm" variant="dot">{text.latest}</Badge>
-                      )}
-                    </div>
-                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-label text-fg-subtle">
-                      <a
-                        className="rounded-sm font-mono tabular-nums text-fg-muted outline-none hover:text-fg-brand focus-visible:ring-1 focus-visible:ring-focus-ring"
-                        href={`${repositoryUrl}/commit/${commit.id}`}
-                        rel="noreferrer"
-                        target="_blank"
-                      >
-                        {commit.shortId}
-                      </a>
-                      {commit.author && <span>{text.author} {commit.author}</span>}
-                    </div>
-                  </article>
-                </li>
-              ))}
-            </ol>
-          </section>
-        ))}
-      </div>
-    </>
-  );
+  return <UpdatesList commits={withCommitArtifacts(commits)} locale={locale} />;
 }

@@ -60,7 +60,8 @@ describe("Updates streaming", () => {
       expect(html.match(/id="updates-2026-09-11"/g)).toHaveLength(1);
       expect(html.match(/id="updates-2026-09-10"/g)).toHaveLength(1);
       expect(html).toContain('dateTime="2026-09-11T14:46:44+08:00"');
-      expect(html).toContain("14:46");
+      expect(html).toContain("06:46");
+      expect(html).toContain(locale === "en" ? "Time zone: UTC" : "时区：UTC");
       expect(html).toContain("https://github.com/Carlosfengv/zeron-ui/commit/abc123456");
       expect(html.match(new RegExp(`>${latest}<`, "g"))).toHaveLength(1);
     } finally {
