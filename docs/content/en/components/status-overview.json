@@ -40,7 +40,7 @@
     "staleMessage": "Updated 8 minutes ago.",
     "errorMessage": "Could not load current node status.",
     "p0": "Accessible name for the complete status region and its single keyboard rail.",
-    "p1": "Primary label displayed at the upper left.",
+    "p1": "Primary label displayed at the upper left. In activity mode, pass null and omit rangeLabel to let the rail fill the first row, with results below.",
     "p2": "Optional time-range or supporting label beside the primary label.",
     "p3": "Caller-computed summary label, value, and semantic status tone.",
     "p4": "Timeline with a shared epoch range and equal-duration buckets, or an ordered current-node snapshot.",

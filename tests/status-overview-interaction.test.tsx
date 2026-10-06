@@ -36,6 +36,16 @@ function renderOverview(content: StatusOverviewContent = timelineContent, varian
 }
 
 describe("StatusOverview", () => {
+  it("keeps an unlabeled activity rail accessible with results below", () => {
+    render(<StatusOverview ariaLabel="Integration checks" label={null} variant="activity"
+      content={{ type: "nodes", items: timelineContent.items, footer: <span>All checks passed</span> }} emptyContent="No checks" />);
+    expect(screen.getByRole("grid", { name: "Integration checks" })).toBeTruthy();
+    expect(document.querySelector('[data-slot="status-overview-label"]')).toBeNull();
+    expect(screen.getByText("All checks passed")).toBeTruthy();
+    fireEvent.keyDown(screen.getByRole("grid"), { key: "End" });
+    const cells = screen.getAllByRole("gridcell");
+    expect(screen.getByRole("grid").getAttribute("aria-activedescendant")).toBe(cells.at(-1)?.id);
+  });
   it("renders one semantic segment for every input item and exposes a single grid tab stop", () => {
     renderOverview();
 

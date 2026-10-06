@@ -478,6 +478,8 @@ interface TabItemProps
   extends ComponentPropsWithoutRef<typeof TabsPrimitive.Tab> {
   value: string;
   icon?: IconComponent;
+  /** Decorative content before the label, such as a status marker. Takes precedence over icon. */
+  leading?: ReactNode;
   label: string;
   /** A number, text, Badge element, or Badge props shown after the label. */
   badge?: TabBadge;
@@ -486,7 +488,7 @@ interface TabItemProps
 }
 
 const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
-  ({ value, icon: Icon, label, badge, _index = 0, className, onClick, ...props }, ref) => {
+  ({ value, icon: Icon, leading, label, badge, _index = 0, className, onClick, ...props }, ref) => {
     const internalRef = useRef<HTMLButtonElement>(null);
     const {
       registerTab,
@@ -505,7 +507,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
 
     const isSelected = selectedValue === value;
     const isActive = hoveredIndex === _index || isSelected;
-    const collapseLabel = labelVisibility === "active" && !!Icon;
+    const collapseLabel = labelVisibility === "active" && !!Icon && leading == null;
     const showLabel = !collapseLabel || isSelected;
     const badgeContent = badge == null
       ? null
@@ -579,7 +581,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
         )}
         {...props}
       >
-        {Icon && (
+        {leading ?? (Icon && (
           <Icon
             size={16}
             strokeWidth={isActive ? 2 : 1.5}
@@ -592,7 +594,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
                   : "text-fg-muted"
             )}
           />
-        )}
+        ))}
         {collapseLabel ? (
           <AnimatePresence initial={false}>
             {showLabel && (

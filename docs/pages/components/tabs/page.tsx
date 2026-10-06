@@ -138,6 +138,7 @@ const tabItemProps: PropDef[] = [
   { name: "icon", type: "IconComponent", description: "Optional leading icon." },
   { name: "label", type: "string", description: "Text label for the tab." },
   { name: "badge", type: "ReactNode | TabBadgeProps", description: "Optional count, status, Badge element, or Badge props object. Use { children, color, variant } for Badge colors and dot status." },
+  { name: "leading", type: "ReactNode", description: "Decorative content before the label, taking precedence over icon." },
 ];
 
 const tabPanelProps: PropDef[] = [
