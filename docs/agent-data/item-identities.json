@@ -1531,6 +1531,16 @@
       ],
       "status": "active",
       "retirementReason": null
+    },
+    {
+      "id": "block:file-upload-01",
+      "type": "registry",
+      "key": "file-upload-01",
+      "aliases": [
+        "file-upload-01"
+      ],
+      "status": "active",
+      "retirementReason": null
     }
   ]
 }

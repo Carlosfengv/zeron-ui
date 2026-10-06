@@ -48,6 +48,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "file-upload-01": () => import("./FileUploadDemo").then(({ FileUploadDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={680} canvasWidth={960}><FileUploadDemo /></ResponsivePreview>,
+  })),
   "deployment-detail-01": () => import("./DeploymentDetailDemo").then(({ DeploymentDetailDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={930} canvasWidth={900}><DeploymentDetailDemo /></ResponsivePreview>,
   })),

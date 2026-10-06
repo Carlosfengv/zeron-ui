@@ -498,5 +498,26 @@
     "accessibility": [
       "边界按钮禁用与本地化标签"
     ]
+  },
+  "file-upload-01": {
+    "keywords": [
+      "文件上传",
+      "拖拽",
+      "文件队列",
+      "upload",
+      "dropzone",
+      "progress"
+    ],
+    "useCases": [
+      "嵌入式文件上传队列，支持文件选择、拖拽、逐项进度、取消和重试。"
+    ],
+    "whenNotToUse": [
+      "不提供真实传输、持久化或服务端文件校验；宿主需实现上传适配。"
+    ],
+    "keyApi": [
+      "items 受控：稳定 id、name、size、uploadedBytes 和 status。",
+      "onFilesSelected 接收通过单文件大小校验的 File[]，支持 Promise。",
+      "onRemove/onRemoveAll/onRetry/onDone 由宿主执行，labels 支持本地化。"
+    ]
   }
 }

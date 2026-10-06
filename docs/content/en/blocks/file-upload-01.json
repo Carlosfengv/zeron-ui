@@ -1,0 +1,10 @@
+{
+  "fileUploadBlock": {
+    "title": "File upload",
+    "description": "A file-upload queue recreated from the supplied design using current Zeron components and semantic tokens.",
+    "composition": "Composition",
+    "compositionBody": "Container owns the surface, header and footer. File rows use InfoItemGroup and the InfoItem parts with default 14px titles, 12px descriptions, 32px leading regions and 16px icons. Badge classifies file types beside the title; Badge plain owns completion/error styling. Button retains its public size and icon slots. No enlarged glyphs, overlaid badges, monospace font or letter-spacing overrides remain. Progress uses SegmentedBar in capacity mode with its default height and shape; its public color property references the brand token.",
+    "behavior": "Behavior and integration",
+    "behaviorBody": "The host supplies stable item IDs, byte counts and queued/uploading/complete/error states, and connects selection, removal, retry and completion callbacks. Browse and drop share a per-file 20 MB limit by default and report rejected files. Progress is clamped to 0–100%. The options menu runs or pauses a local demo simulation and resets the reference fixture. Files are not sent to a server by the demo."
+  }
+}

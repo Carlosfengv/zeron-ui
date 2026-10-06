@@ -44,5 +44,6 @@
   "top-nav-app-shell-01": {"framework": "react", "kind": "template"},
   "zaiops-operations-01": {"framework": "react", "kind": "template"},
   "zlrlist": {"framework": "next", "kind": "template"},
-  "infinite-log-table-01": {"framework": "react", "kind": "data-block"}
+  "infinite-log-table-01": {"framework": "react", "kind": "data-block"},
+  "file-upload-01": {"framework": "react", "kind": "data-block"}
 }

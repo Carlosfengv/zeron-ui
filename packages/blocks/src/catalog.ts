@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  {"name": "file-upload-01", "title": "文件上传", "description": "支持拖拽、文件选择、逐项进度和取消的上传队列。", "categories": ["application", "files"], "dependencies": ["badge", "button", "chart-primitives", "container", "info-item", "inline-notice", "separator", "badge", "icon-context", "utils"]},
   { name: "transaction-details-01", title: "交易详情", description: "突出金额、交易字段、可折叠账单与附件操作的交易详情。", categories: ["application", "details"], dependencies: ["accordion", "avatar", "badge", "button", "container", "detail-list", "dropdown", "empty", "error-state", "icon-context", "info-item", "inline-notice", "menu-item", "skeleton", "tooltip", "utils", "@hugeicons/react", "@hugeicons/core-free-icons"] },
   { name: "cost-estimate-01", title: "费用估算", description: "四项用量、预设、月付/年付与最低消费的可控费用估算器。", categories: ["application", "analytics", "billing"], dependencies: ["badge", "button", "chart", "container", "empty", "field", "icon-context", "inline-notice", "input", "skeleton", "slider", "tabs", "tooltip", "utils", "recharts"] },
   { name: "getting-started-01", title: "入门任务清单", description: "可折叠的入门任务清单，包含完成数量、任务状态与宿主操作入口。", categories: ["application", "onboarding"], dependencies: ["button", "container", "stepper", "icon-context", "utils"] },

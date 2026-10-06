@@ -1670,6 +1670,31 @@
           "target": "components/blocks/operations-workspace-shell-01/index.ts"
         }
       ]
+    },
+    {
+      "name": "file-upload-01",
+      "type": "registry:block",
+      "title": "文件上传",
+      "description": "支持拖拽、文件选择、逐项进度和取消的上传队列。",
+      "categories": ["application", "files"],
+      "registryDependencies": ["badge", "button", "container", "inline-notice", "separator", "icon-context", "utils", "info-item", "chart-primitives"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/file-upload-01/file-upload.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/file-upload-01/file-upload.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/file-upload-01/file-upload-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/file-upload-01/file-upload-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/file-upload-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/file-upload-01/index.ts"
+        }
+      ]
     }
   ]
 }

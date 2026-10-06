@@ -1,0 +1,10 @@
+{
+  "fileUploadBlock": {
+    "title": "文件上传",
+    "description": "基于参考设计图，使用当前 Zeron 组件与语义样式变量还原的文件上传队列。",
+    "composition": "组件组合",
+    "compositionBody": "Container 承载外框、标题与底部操作区。文件行使用 InfoItemGroup、InfoItem、InfoItemLeading、InfoItemContent、InfoItemTitle、InfoItemDescription 与 InfoItemTrailing，保留默认 14px 文件名、12px 描述、32px 图标区域与 16px 图标。Badge 在文件名旁区分文件类型，Badge plain 展示完成或失败状态。Button 保留公开尺寸和图标插槽。移除手动放大的图标、叠加徽标、等宽字体与字距覆盖。进度直接使用 SegmentedBar capacity 模式，保留默认高度和形状，通过公开 color 属性引用 brand 变量。",
+    "behavior": "交互与数据接入",
+    "behaviorBody": "宿主提供稳定 id、文件大小、已上传字节及 queued/uploading/complete/error 状态，并接入选择、取消或删除、重试与完成回调。选择和拖拽共享默认单文件 20 MB 限制，拒绝的文件显示提示，进度限制在 0–100%。菜单支持运行、暂停本地演示及重置参考数据。演示不会将文件传到服务器。"
+  }
+}

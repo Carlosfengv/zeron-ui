@@ -34,6 +34,10 @@
       "itemId": "block:deployment-detail-01"
     },
     {
+      "path": "blocks/file-upload-01.md",
+      "itemId": "block:file-upload-01"
+    },
+    {
       "path": "blocks/filter-rule-builder-01.md",
       "itemId": "block:filter-rule-builder-01"
     },
