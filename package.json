@@ -16,7 +16,7 @@
     "start": "next start",
     "lint": "eslint app docs lib scripts tests packages eslint.config.mjs eslint.design.config.mjs vitest.config.mts vitest.production.config.mts next.config.ts postcss.config.mjs --max-warnings=0",
     "lint:design": "eslint --config eslint.design.config.mjs app docs/pages packages/ui/src packages/blocks/src tests/fixtures/agent-examples",
-    "test": "vitest run --config vitest.config.mts",
+    "test": "pnpm test:unit && pnpm test:controls:browser",
     "test:i18n:unit": "vitest run --config vitest.config.mts tests/i18n-message-parity.test.ts tests/i18n-document-manifest.test.ts tests/i18n-routing.test.ts",
     "test:i18n:production": "pnpm build && pnpm test:production",
     "test:i18n:e2e": "pnpm build && playwright test --config playwright.config.ts",
@@ -62,8 +62,11 @@
     "test:mcp": "vitest run --config vitest.config.mts tests/agent-catalog.test.ts tests/mcp-route.test.ts",
     "registry:release:check": "node scripts/check-registry-release-candidate.mjs",
     "skills:release:check": "node scripts/check-skill-release-candidate.mjs",
-    "test:unit": "vitest run --config vitest.config.mts --exclude '**/*production*.test.ts'",
-    "agents:verify:clean": "node scripts/check-agent-clean-checkout.mjs"
+    "test:unit": "vitest run --config vitest.config.mts --maxWorkers=2 --exclude '**/*production*.test.ts' --exclude tests/rendered-controls.test.mjs",
+    "agents:verify:clean": "node scripts/check-agent-clean-checkout.mjs",
+    "docs:loaders:build": "node scripts/generate-document-loaders.mjs",
+    "docs:loaders:check": "node scripts/generate-document-loaders.mjs --check",
+    "test:controls:browser": "vitest run --config vitest.config.mts tests/rendered-controls.test.mjs --maxWorkers=1"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

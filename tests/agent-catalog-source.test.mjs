@@ -27,7 +27,9 @@ describe("Catalog source rebuild from actual isolated Registry and Skill bytes",
     const before = await Promise.all(names.map(async name => sha256(await readFile(name))));
     const first = await buildAgentCatalog({ publishedInputs, writeOutputs: false });
     const second = await buildAgentCatalog({ publishedInputs, writeOutputs: false });
-    expect(first.runtime).toEqual(second.runtime); expect(first.runtime.catalog.items).toHaveLength(141);
+    expect(first.runtime).toEqual(second.runtime);
+    const maintained = await buildAgentCatalog({ writeOutputs: false });
+    expect(first.runtime.catalog.items.map(item => item.id).sort()).toEqual(maintained.runtime.catalog.items.map(item => item.id).sort());
     expect(first.runtime.catalog.skillVersion).toBe(publishedInputs.skillRelease.skillVersion);
     expect(first.runtime.details["component:button"].exports).toContain("Button");
     expect(first.runtime.details["component:button"].registryDependencies.every(url => url.startsWith(publishedInputs.registry.manifest.baseUrl))).toBe(true);

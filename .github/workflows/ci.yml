@@ -45,6 +45,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install test browser for unit and consumer checks
+        run: pnpm exec playwright install --with-deps chromium
+
       - name: Semantic tokens are up to date
         run: pnpm tokens:check
 
@@ -133,14 +136,14 @@ jobs:
       - name: Test source modules and MCP protocol
         run: pnpm test:unit
 
+      - name: Test rendered controls in an isolated Chromium process
+        run: pnpm test:controls:browser
+
       - name: Test CLI
         run: pnpm cli:test
 
       - name: Install representative consumers
         run: pnpm test:consumer:smoke
-
-      - name: Install consumer test browser
-        run: pnpm exec playwright install --with-deps chromium
 
       - name: Verify initialized consumer styles in browser
         run: pnpm test:consumer:styles

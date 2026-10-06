@@ -10,8 +10,9 @@ import { promisify } from "node:util";
 import { inspectRenderedControls, parseControlCheckArgs } from "../.agents/skills/zeron-page-builder/scripts/check-rendered-controls.mjs";
 
 let browser;
-beforeAll(async () => { browser = await chromium.launch({ headless: true }); });
-afterAll(async () => { await browser?.close(); });
+// Browser process startup/shutdown needs a separate budget from the UI assertions.
+beforeAll(async () => { browser = await chromium.launch({ headless: true }); }, 30000);
+afterAll(async () => { await browser?.close(); }, 30000);
 const svg = '<svg width="14" height="14" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" /></svg>';
 const css = '<style>button{display:inline-flex;align-items:center;gap:8px;padding:8px;font:14px/20px Arial;white-space:nowrap}svg{display:block;flex-shrink:0}button>span{display:flex;align-items:center;gap:8px}</style>';
 async function measure(html) {
@@ -31,7 +32,7 @@ describe("portable current-state control observations (actual Chromium)", () => 
       const report = JSON.parse(await readFile(output, "utf8"));
       expect(report.checks[0]).toMatchObject({ status: "unchecked", actual: "Page HTTP 404" });
     } finally { await new Promise(resolve => server.close(resolve)); await rm(directory, { recursive: true, force: true }); }
-  });
+  }, 30000); // This integration case starts and closes a separate Chromium CLI process.
   it("detects the original icon-in-label wrong-row composition and offers a public-slot fix", async () => {
     const report = await measure(`<button data-slot="button"><span><span data-slot="button-label">${svg}新增资源</span></span></button>`);
     const check = report.checks.find(check => check.check === "icon-label-row");

@@ -12,6 +12,11 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "components/app-shell": () => import("@docs/content/en/components/app-shell.json"),
+    "components/page-layout": () => import("@docs/content/en/components/page-layout.json"),
+    "components/sidebar": () => import("@docs/content/en/components/sidebar.json"),
+    "components/top-nav": () => import("@docs/content/en/components/top-nav.json"),
+    "components/nav-menu": () => import("@docs/content/en/components/nav-menu.json"),
     "blocks/cost-estimate-01": () => import("@docs/content/en/blocks/cost-estimate-01.json"),
     "blocks/transaction-details-01": () => import("@docs/content/en/blocks/transaction-details-01.json"),
     "blocks/getting-started-01": () => import("@docs/content/en/blocks/getting-started-01.json"),
@@ -37,7 +42,6 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "blocks/model-detail-01": () => import("@docs/content/en/blocks/model-detail-01.json"),
     "blocks/model-detail-02": () => import("@docs/content/en/blocks/model-detail-02.json"),
     "blocks/rule-flow-editor-01": () => import("@docs/content/en/blocks/rule-flow-editor-01.json"),
-    "docs/introduction": () => import("@docs/content/en/components/introduction.json"),
     "components/button": () => import("@docs/content/en/components/button.json"),
     "components/button-group": () => import("@docs/content/en/components/button-group.json"),
     "components/code-block": () => import("@docs/content/en/components/code-block.json"),
@@ -126,6 +130,11 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "components/app-shell": () => import("@docs/content/zh-CN/components/app-shell.json"),
+    "components/page-layout": () => import("@docs/content/zh-CN/components/page-layout.json"),
+    "components/sidebar": () => import("@docs/content/zh-CN/components/sidebar.json"),
+    "components/top-nav": () => import("@docs/content/zh-CN/components/top-nav.json"),
+    "components/nav-menu": () => import("@docs/content/zh-CN/components/nav-menu.json"),
     "blocks/cost-estimate-01": () => import("@docs/content/zh-CN/blocks/cost-estimate-01.json"),
     "blocks/transaction-details-01": () => import("@docs/content/zh-CN/blocks/transaction-details-01.json"),
     "blocks/getting-started-01": () => import("@docs/content/zh-CN/blocks/getting-started-01.json"),
@@ -151,7 +160,6 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "blocks/model-detail-01": () => import("@docs/content/zh-CN/blocks/model-detail-01.json"),
     "blocks/model-detail-02": () => import("@docs/content/zh-CN/blocks/model-detail-02.json"),
     "blocks/rule-flow-editor-01": () => import("@docs/content/zh-CN/blocks/rule-flow-editor-01.json"),
-    "docs/introduction": () => import("@docs/content/zh-CN/components/introduction.json"),
     "components/button": () => import("@docs/content/zh-CN/components/button.json"),
     "components/button-group": () => import("@docs/content/zh-CN/components/button-group.json"),
     "components/code-block": () => import("@docs/content/zh-CN/components/code-block.json"),

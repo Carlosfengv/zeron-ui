@@ -30,6 +30,7 @@ describe("documentation manifest", () => {
     expect(pageDocEntries).toHaveLength(115);
     expect(detailDocEntries).toHaveLength(115);
     expect(legacyDocRedirects).toHaveLength(66);
+    expect(pageDocEntries.some(entry => entry.slug === "error-state" || entry.slug === "status-indicator")).toBe(false);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });
 

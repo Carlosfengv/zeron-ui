@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
   // Keep the long-running dev server isolated from `next build`. Both commands
   // otherwise write to `.next`, and a production build can invalidate the
   // active Turbopack cache and turn every dev request into a 500 response.
-  distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",
+  distDir: process.env.NODE_ENV === "development" ? process.env.NEXT_DEV_DIST_DIR ?? ".next-dev" : ".next",
   // An unrelated lockfile in the parent directory otherwise makes Next scan
   // the whole home workspace during development, which can leave the test
   // server compiling indefinitely.

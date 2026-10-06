@@ -299,11 +299,14 @@ import { ProIconProvider } from "@/lib/pro-icon-provider";
 
 ## Validation
 
-Use Node 22 and the pinned pnpm version from `packageManager`. Install with
-`pnpm install --frozen-lockfile`, then run `pnpm test`, `pnpm cli:test`,
+Use Node 22 (`nvm use`) and the pinned pnpm version from `packageManager`. Install with
+`pnpm install --frozen-lockfile` and `pnpm exec playwright install chromium`, then run `pnpm test`, `pnpm cli:test`,
 `pnpm typecheck`, `pnpm lint`, and `pnpm lint:design`.
 
-`pnpm test` contains the unit and component suites. Production routing suites
+`pnpm test` runs the source/component suites with two workers, followed by the
+actual Chromium control observations in a separate test process. Run those
+steps individually with `pnpm test:unit` and `pnpm test:controls:browser`.
+Production routing suites
 require a completed build: run `pnpm build && pnpm test:production`. They are
 kept separate so a fresh checkout does not try to start a nonexistent build.
 The existing Playwright commands additionally cover browser navigation, focus,
@@ -319,6 +322,15 @@ independent Next (npm and pnpm) and Vite consumers through an HTTP Registry. It
 checks production pages after `init` and repeated component installation, including
 light/dark colors, control sizes, native radii, and portal styles. Screenshots and
 computed styles are saved in `output/consumer-styles` and uploaded by CI.
+
+Next/Vite × npm/pnpm targets, with production builds and rendered examples.
+Logs, screenshots and recursive Registry payload fingerprints are saved in
+`.zeron/reports/stage-six/`. Default runs are fresh. Use `--resume` only within
+a fixed CLI/fixture/checker run; recursive Registry bytes must also match.
+Changing the CLI, examples or verifier requires a fresh run. Local candidate
+artifacts do not imply a public CLI or Registry release.
+
+new candidate so the historical stage-six evidence remains intact.
 
 Block/Page documentation source previews use the explicit allowlist in
 `scripts/preview-source-allowlist.mjs`. After changing those sources, run

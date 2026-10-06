@@ -30,7 +30,9 @@ try {
   const config = ts.readConfigFile(path.join(root, "tsconfig.json"), ts.sys.readFile);
   if (config.error) throw new Error(ts.flattenDiagnosticMessageText(config.error.messageText, "\n"));
   const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, root);
-  const program = ts.createProgram(examples.map((example) => example.file), { ...parsed.options, incremental: false, noEmit: true });
+  // Preserve project ambient declarations (for example SVG imports) when checking isolated snippets.
+  const roots = [...examples.map((example) => example.file), ...parsed.fileNames.filter((file) => file.endsWith(".d.ts"))];
+  const program = ts.createProgram(roots, { ...parsed.options, incremental: false, noEmit: true });
   const diagnostics = [...parsed.errors, ...ts.getPreEmitDiagnostics(program)];
   const report = { schemaVersion: 1, scope: "workspace-types-only", status: diagnostics.length ? "failed" : "passed",
     guides: new Set(examples.map((example) => example.guide)).size,

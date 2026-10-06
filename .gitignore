@@ -6,6 +6,7 @@ __pnp.*
 
 # testing
 /coverage
+/.zeron/reports/
 
 # next.js
 /.next/
