@@ -4,15 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import { TransactionDetails, transactionDetailsDemoData } from "@zeron/blocks/transaction-details-01";
 import { Button } from "@zeron/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
-import { Switch } from "@zeron/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@zeron/ui/dialog";
-import { useDataStateDemo, type DataStateDemoScenario } from "./DataStateDemoControls";
+import { DataStateDemoControls, useDataStateDemo } from "./DataStateDemoControls";
 import { createTransactionDemoPdf } from "./transaction-demo-pdf";
-
-const scenarios = ["ready", "loading", "initial-error", "refreshing", "refresh-error", "stale", "stale-refreshing", "empty"] as const;
-const enScenarios = ["Ready", "Initial loading", "Initial failure", "Refreshing", "Refresh failed", "Stale", "Stale + refreshing", "Empty"];
-const zhScenarios = ["正常", "首次加载", "首次失败", "后台刷新", "刷新失败", "数据过期", "过期并刷新", "确认无数据"];
 
 export function TransactionDetailsDemo() {
   const locale = useLocale();
@@ -45,11 +39,7 @@ export function TransactionDetailsDemo() {
     URL.revokeObjectURL(url);
   }
   return <div className="flex w-full min-w-0 flex-col items-center gap-4 p-4">
-    <div className="flex w-full max-w-md flex-wrap items-center gap-3">
-      <Select size="sm" value={demo.scenario} onValueChange={(value) => demo.changeScenario(value as DataStateDemoScenario)}><SelectTrigger aria-label={zh ? "演示状态" : "Demo state"} /><SelectContent>{scenarios.map((value, index) => <SelectItem key={value} value={value} label={(zh ? zhScenarios : enScenarios)[index]}>{(zh ? zhScenarios : enScenarios)[index]}</SelectItem>)}</SelectContent></Select>
-      <Switch checked={fail} onCheckedChange={setFail} label={zh ? "模拟操作失败" : "Simulate action failure"} />
-      <p className="w-full text-label text-fg-subtle">{zh ? "示例数据 · 下载为有效的示例 PDF，分享仅展示示例摘要" : "Example data · downloads a valid demo PDF; sharing shows an example summary"}</p>
-    </div>
+    <DataStateDemoControls value={demo.scenario} onChange={demo.changeScenario} toggles={[{ id: "action-failure", label: zh ? "模拟操作失败" : "Simulate action failure", checked: fail, onChange: setFail }]} description={zh ? "示例数据 · 下载为有效的示例 PDF，分享仅展示示例摘要" : "Example data · downloads a valid demo PDF; sharing shows an example summary"} />
     {closed ? <Button variant="secondary" onClick={() => setClosed(false)}>{zh ? "重新打开交易详情" : "Reopen transaction details"}</Button> : <TransactionDetails
       transactionId={transactionDetailsDemoData.id} data={demo.empty || (demo.failed && !demo.retainData) ? null : transactionDetailsDemoData}
       state={demo.loading ? "loading" : demo.failed ? "error" : demo.empty ? "empty" : demo.stale ? "stale" : "ready"}

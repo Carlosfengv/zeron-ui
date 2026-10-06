@@ -9,7 +9,7 @@ const blockPreviewSources = {
     "url": "/docs-source/250f44c635ce3b575464f3568ffe450da46e57bb503f3a8d61e745348cd88716.txt"
   },
   "transaction-details-01": {
-    "url": "/docs-source/a6a5a5b658429ab4ee817c1407584edfb4cc298494a447495f89a46d00c1ef07.txt"
+    "url": "/docs-source/e3216c7b2751829596d61e32da13b51123b7aa17887bfbf788b003f36a12f353.txt"
   },
   "cost-estimate-01": {
     "url": "/docs-source/28099758c9f88e15cf5bd3b576c0dd3710498405e31d594118d6c164ef391fc7.txt"

@@ -68,8 +68,8 @@
       "aliases": [
         "error-state"
       ],
-      "status": "active",
-      "retirementReason": null
+      "status": "retired",
+      "retirementReason": "Consolidated into Alert."
     },
     {
       "id": "block:security-overview-01",

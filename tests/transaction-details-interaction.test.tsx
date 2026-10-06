@@ -66,7 +66,7 @@ describe("transaction details", () => {
   });
   it("distinguishes failure, empty, loading and mismatched data, retaining marked stale snapshots", () => {
     const { container, rerender } = render(<TransactionDetails {...base} data={null} state="error" />);
-    expect(container.querySelector("[data-slot=error-state]")).toBeTruthy();
+    expect(container.querySelector("[data-slot=alert]")).toBeTruthy();
     rerender(<TransactionDetails {...base} data={null} state="empty" />); expect(screen.getByText("No transaction found")).toBeTruthy();
     rerender(<TransactionDetails {...base} state="loading" />); expect(screen.getByRole("status").textContent).toContain("Loading transaction");
     rerender(<TransactionDetails {...base} transactionId="new-transaction" />); expect(screen.queryByText("INV-1430")).toBeNull();

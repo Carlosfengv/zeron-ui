@@ -2001,7 +2001,7 @@ transactionId 必须与 data.id 相符；不相符时不显示旧交易。金额
 
 ## 状态与动作
 
-state 支持 ready/loading/empty/error/stale；refreshing 可与 stale 共存。首次失败显示 ErrorState，确认无数据显示 Empty。默认 retainDataOnError=true，存在同一交易数据时失败保留旧快照并明确提示；可设 false 隐藏详情。宿主负责请求、超时和数据更新。
+state 支持 ready/loading/empty/error/stale；refreshing 可与 stale 共存。首次失败显示 Alert，确认无数据显示 Empty。默认 retainDataOnError=true，存在同一交易数据时失败保留旧快照并明确提示；可设 false 隐藏详情。宿主负责请求、超时和数据更新。
 
 actions 提供下载收据、分享、关闭、重试、打开/下载附件；未提供能力的入口隐藏。顶部更多可复制交易编号和发票号。各异步动作等待返回 Promise，同动作防重，不锁定其他操作；失败给出可读反馈。交易切换或卸载后不接收旧动作反馈，关闭不会取消外部服务。
 

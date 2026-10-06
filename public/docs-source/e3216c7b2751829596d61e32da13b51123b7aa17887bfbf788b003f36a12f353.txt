@@ -1,5 +1,7 @@
 "use client";
 
+import { Alert, AlertTitle, AlertDescription, AlertAction } from "@zeron/ui/alert";
+
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Share08Icon from "@hugeicons/core-free-icons/Share08Icon";
@@ -18,7 +20,6 @@ import { InfoItemGroup, InfoItem, InfoItemLeading, InfoItemContent, InfoItemTitl
 import { Tooltip } from "@zeron/ui/tooltip";
 import { Skeleton } from "@zeron/ui/skeleton";
 import { Empty, EmptyHeader, EmptyTitle } from "@zeron/ui/empty";
-import { ErrorState } from "@zeron/ui/error-state";
 import { InlineNotice, InlineNoticeContent, InlineNoticeAction } from "@zeron/ui/inline-notice";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
@@ -107,7 +108,7 @@ function TransactionDetailsContent({ transactionId, data, state = "ready", refre
     </ContainerHeader>
     <ContainerBody>
       {loading ? <div role="status" className="flex flex-col gap-5"><span className="sr-only">{labels.loading}</span><Skeleton className="h-12 w-48 max-w-full" /><Skeleton className="h-56 w-full" /><Skeleton className="h-60 w-full" /><Skeleton className="h-14 w-full" /></div>
-        : state === "error" && !visible ? <ErrorState title={labels.error} description={statusMessage} action={retry} />
+        : state === "error" && !visible ? <div className="flex min-w-0 w-full items-center justify-center min-h-60 px-4 py-8"><Alert status="danger" role="group" className="w-full max-w-xl"><AlertTitle>{labels.error}</AlertTitle><AlertDescription>{statusMessage}</AlertDescription><AlertAction>{retry}</AlertAction></Alert></div>
           : !visible ? <Empty reason="no-data" scope="section"><EmptyHeader><EmptyTitle>{labels.noData}</EmptyTitle></EmptyHeader></Empty>
             : <div className="flex min-w-0 flex-col gap-5">
               {state === "stale" && <InlineNotice variant="emphasized" tone="warning"><InlineNoticeContent>{statusMessage ?? labels.stale}</InlineNoticeContent></InlineNotice>}

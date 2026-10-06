@@ -32,7 +32,6 @@
     "./command": "./src/components/command.tsx",
     "./container": "./src/components/container.tsx",
     "./empty": "./src/components/empty.tsx",
-    "./error-state": "./src/components/error-state.tsx",
     "./field": "./src/components/field.tsx",
     "./filter-builder": "./src/components/filter-builder/index.ts",
     "./filter-query-core": "./src/components/filter-query-core/index.ts",

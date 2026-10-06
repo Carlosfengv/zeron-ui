@@ -114,32 +114,9 @@
       "type": "registry:block",
       "title": "交易详情",
       "description": "突出金额、交易字段、可折叠账单与附件操作的交易详情。",
-      "categories": [
-        "application",
-        "details"
-      ],
-      "dependencies": [
-        "@hugeicons/react",
-        "@hugeicons/core-free-icons"
-      ],
-      "registryDependencies": [
-        "accordion",
-        "avatar",
-        "badge",
-        "button",
-        "container",
-        "detail-list",
-        "dropdown",
-        "empty",
-        "error-state",
-        "icon-context",
-        "info-item",
-        "inline-notice",
-        "menu-item",
-        "skeleton",
-        "tooltip",
-        "utils"
-      ],
+      "categories": ["application", "details"],
+      "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons"],
+      "registryDependencies": ["accordion", "avatar", "badge", "button", "container", "detail-list", "dropdown", "empty", "alert", "icon-context", "info-item", "inline-notice", "menu-item", "skeleton", "tooltip", "utils"],
       "files": [
         {
           "path": "packages/blocks/src/application/transaction-details-01/transaction-details.tsx",
