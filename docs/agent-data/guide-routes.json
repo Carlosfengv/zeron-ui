@@ -14,6 +14,14 @@
       "itemId": "block:ai-gateway-session-list-01"
     },
     {
+      "path": "blocks/cluster-environment-detail-01.md",
+      "itemId": "block:cluster-environment-detail-01"
+    },
+    {
+      "path": "blocks/cluster-environment-list-01.md",
+      "itemId": "block:cluster-environment-list-01"
+    },
+    {
       "path": "blocks/cost-estimate-01.md",
       "itemId": "block:cost-estimate-01"
     },
@@ -38,8 +46,16 @@
       "itemId": "block:infinite-log-table-01"
     },
     {
+      "path": "blocks/inspection-report-list-01.md",
+      "itemId": "block:inspection-report-list-01"
+    },
+    {
       "path": "blocks/model-router-01.md",
       "itemId": "block:model-router-01"
+    },
+    {
+      "path": "blocks/monitoring-alert-list-01.md",
+      "itemId": "block:monitoring-alert-list-01"
     },
     {
       "path": "blocks/project-monitor-01.md",
@@ -62,6 +78,10 @@
       "itemId": "block:security-overview-01"
     },
     {
+      "path": "blocks/service-management-01.md",
+      "itemId": "block:service-management-01"
+    },
+    {
       "path": "blocks/storage-usage-01.md",
       "itemId": "block:storage-usage-01"
     },
@@ -72,6 +92,10 @@
     {
       "path": "blocks/user-account-01.md",
       "itemId": "block:user-account-01"
+    },
+    {
+      "path": "blocks/zaiops-operations-01.md",
+      "itemId": "block:zaiops-operations-01"
     },
     {
       "path": "components/alert.md",
@@ -126,6 +150,10 @@
       "itemId": "component:input"
     },
     {
+      "path": "components/list-pagination.md",
+      "itemId": "component:list-pagination"
+    },
+    {
       "path": "components/metric-card.md",
       "itemId": "component:metric-card"
     },
@@ -136,6 +164,10 @@
     {
       "path": "components/nav-menu.md",
       "itemId": "component:nav-menu"
+    },
+    {
+      "path": "components/operations-workspace-shell-01.md",
+      "itemId": "component:operations-workspace-shell-01"
     },
     {
       "path": "components/page-layout.md",

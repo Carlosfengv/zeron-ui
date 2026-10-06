@@ -2920,6 +2920,29 @@
       ]
     },
     {
+      "name": "list-pagination",
+      "type": "registry:ui",
+      "title": "List Pagination",
+      "description": "Controlled, table-independent pagination for lists, with localized labels and page size controls.",
+      "registryDependencies": [
+        "surfaces",
+        "button",
+        "select",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/list-pagination.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/list-pagination.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "error-state",
       "type": "registry:ui",
       "title": "Error State",

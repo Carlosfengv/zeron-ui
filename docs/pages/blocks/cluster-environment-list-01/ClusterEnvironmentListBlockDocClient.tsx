@@ -1,7 +1,7 @@
 "use client";
 
 import type { PreviewCode } from "@docs/lib/preview-source";
-import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
+import { ClusterEnvironmentListDemo } from "@docs/components/blocks/OperationsListDemos";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 
@@ -14,7 +14,7 @@ export function ClusterEnvironmentListBlockDocClient({ code }: { code: PreviewCo
       description={t("description")}
       slug="cluster-environment-list-01"
       title={t("title")}
-      preview={<ClusterEnvironmentList className="h-full min-h-0" />}
+      preview={<ClusterEnvironmentListDemo />}
     >
       <BlockDetailSection title={t("guidance")}>
         <p className="text-body text-fg-muted">{t("guidanceBody")}</p>

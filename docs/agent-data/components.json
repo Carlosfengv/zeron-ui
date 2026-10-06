@@ -1,4 +1,44 @@
 {
+  "cluster-environment-list-01": {
+    "keywords": [
+      "集群",
+      "环境",
+      "健康",
+      "过期",
+      "cluster"
+    ],
+    "useCases": [
+      "完整环境工作区的健康与新鲜度筛选。"
+    ],
+    "whenNotToUse": [
+      "不自动加载组织数据或执行后端请求。"
+    ],
+    "keyApi": [
+      "environments: 健康与 freshness 独立。",
+      "state/refreshing/retainDataOnError: 统一数据反馈。",
+      "onRefresh/onRetry 支持 Promise；onViewDetails 接收环境对象。"
+    ]
+  },
+  "monitoring-alert-list-01": {
+    "keywords": [
+      "监控",
+      "告警",
+      "处置",
+      "静音",
+      "alert"
+    ],
+    "useCases": [
+      "完整告警工作区的筛选、分页和处置记录。"
+    ],
+    "whenNotToUse": [
+      "不自动执行后端处置或 AI 分析。"
+    ],
+    "keyApi": [
+      "severity 与 resolutionState 独立。",
+      "state/refreshing/retainDataOnError: 统一数据反馈。",
+      "onRefresh/onRetry 支持 Promise；onResolve/onMute/onAnalyze 接收告警对象。"
+    ]
+  },
   "transaction-details-01": {
     "keywords": [
       "交易",
@@ -410,6 +450,53 @@
       "TimeSeriesChart data/series/domain/locale/timeZone；null 保留断点。",
       "DonutSummary segments/total/center；部分覆盖保留中性轨道。",
       "ChartContainer dataTable 为其他专用图提供等价数据入口。"
+    ]
+  },
+  "operations-workspace-shell-01": {
+    "useCases": [
+      "ZAIops 工作区中的组织、导航、搜索与账号入口"
+    ],
+    "whenNotToUse": [
+      "无运维导航需求的通用页面"
+    ],
+    "aliases": [
+      "OperationsWorkspaceShell"
+    ],
+    "anatomy": [
+      "组织身份",
+      "主导航与服务导航",
+      "诊断入口",
+      "账号区",
+      "移动导航"
+    ],
+    "composition": [
+      "PageContent 作为页面内容直接子节点"
+    ],
+    "accessibility": [
+      "独立搜索快捷键与移动导航焦点返回"
+    ]
+  },
+  "list-pagination": {
+    "useCases": [
+      "不使用 TanStack 表格的受控列表分页"
+    ],
+    "whenNotToUse": [
+      "已使用 DataTable 的内置分页"
+    ],
+    "aliases": [
+      "ListPagination"
+    ],
+    "anatomy": [
+      "数量",
+      "每页条数",
+      "当前页",
+      "翻页按钮"
+    ],
+    "composition": [
+      "数据筛选与切片由宿主保持"
+    ],
+    "accessibility": [
+      "边界按钮禁用与本地化标签"
     ]
   }
 }

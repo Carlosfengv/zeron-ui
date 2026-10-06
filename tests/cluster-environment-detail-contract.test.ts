@@ -19,7 +19,8 @@ describe("Cluster Environment Detail 1 block contract", () => {
     expect(source).toContain('from "@zeron/blocks/resource-status-all-01"');
     expect(source).toContain("<ResourceMetricList");
     expect(source).toContain("<ResourceStatusAll");
-    expect(source).toContain("<PageLayout");
+    expect(source).toContain("<OperationsWorkspaceShell");
+    expect(source).toContain("<PageContent");
     expect(source).toContain("<Tabs");
     expect(source).toContain("<MetricCard");
     expect(source).toContain("<DataTable");

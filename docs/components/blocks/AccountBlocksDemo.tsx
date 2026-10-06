@@ -10,12 +10,15 @@ import { Button } from "@zeron/ui/button";
 import { useThemeContext } from "@zeron/ui/system/theme-context";
 import { internalPathname, localizePathname } from "@docs/components/shell/site/locale-path";
 
+import { useOperationsDemoWorkspace } from "./OperationsWorkspaceDemos";
+
 const localeOptions = [{ value: "zh-CN", label: "简体中文" }, { value: "en", label: "English" }];
 const PersonalSettingsAccountDemo = lazy(() => import("./PersonalSettingsAccountDemo"));
 const ZaiopsOperations = lazy(() => import("@zeron/blocks/zaiops-operations-01").then((module) => ({ default: module.ZaiopsOperations })));
 
 function AccountBlocksDemo({ mode, className, centered = true }: { mode: "account" | "operations" | "settings"; className?: string; centered?: boolean }) {
   const { theme, setTheme } = useThemeContext();
+  const workspace = useOperationsDemoWorkspace();
   const locale = useLocale();
   const english = locale === "en";
   const pathname = usePathname();
@@ -44,7 +47,7 @@ function AccountBlocksDemo({ mode, className, centered = true }: { mode: "accoun
   return (
     <Suspense fallback={<p role="status" className="p-4 text-body text-fg-muted">{english ? "Loading preview…" : "正在加载预览…"}</p>}>
       {mode === "operations"
-        ? <ZaiopsOperations account={account} className={className} />
+        ? <ZaiopsOperations workspace={workspace} account={account} className={className} />
         : <PersonalSettingsAccountDemo account={account} />}
     </Suspense>
   );

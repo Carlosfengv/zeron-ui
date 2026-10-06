@@ -99,8 +99,8 @@ describe("catalog query against the generated full catalog", () => {
   it("never recommends known Next-only blocks for an explicit Vite target", () => {
     const data = page(query.call("list_components", { framework: "vite", limit: 20 }));
     expect(data.items.every((item) => item.framework !== "next")).toBe(true);
-    expect(page(query.call("search_components", { query: "cluster-environment-detail-01", framework: "vite" })).items.some((item) => item.id === "block:cluster-environment-detail-01")).toBe(false);
-    expect(error(query.call("get_install_command", { ids: ["cluster-environment-detail-01"], packageManager: "npm", targetFramework: "vite" })).code).toBe("FRAMEWORK_INCOMPATIBLE");
+    expect(page(query.call("search_components", { query: "mcp-detail-01", framework: "vite" })).items.some((item) => item.id === "block:mcp-detail-01")).toBe(false);
+    expect(error(query.call("get_install_command", { ids: ["mcp-detail-01"], packageManager: "npm", targetFramework: "vite" })).code).toBe("FRAMEWORK_INCOMPATIBLE");
   });
   it("fails batch installation atomically and refuses unverified development commands", () => {
     const failed = error(query.call("get_install_command", { ids: ["button", "workflow"], packageManager: "npm", targetFramework: "vite" }));

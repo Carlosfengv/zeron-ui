@@ -48,15 +48,6 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
-  "cost-estimate-01": () => import("./CostEstimateDemo").then(({ CostEstimateDemo }) => ({
-    default: () => <ResponsivePreview canvasHeight={1120} canvasWidth={800}><CostEstimateDemo /></ResponsivePreview>,
-  })),
-  "transaction-details-01": () => import("./TransactionDetailsDemo").then(({ TransactionDetailsDemo }) => ({
-    default: () => <ResponsivePreview canvasHeight={960} canvasWidth={760}><TransactionDetailsDemo /></ResponsivePreview>,
-  })),
-  "getting-started-01": () => import("./GettingStartedDemo").then(({ GettingStartedDemo }) => ({
-    default: () => <ResponsivePreview canvasHeight={600} canvasWidth={760}><GettingStartedDemo /></ResponsivePreview>,
-  })),
   "deployment-detail-01": () => import("./DeploymentDetailDemo").then(({ DeploymentDetailDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={930} canvasWidth={900}><DeploymentDetailDemo /></ResponsivePreview>,
   })),
@@ -142,19 +133,19 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "model-detail-02": () => import("@zeron/blocks/model-detail-02").then(({ ModelDetail02 }) => ({
     default: () => <ResponsivePreview canvasHeight={960} canvasWidth={1440}><ModelDetail02 className="h-full min-h-0" /></ResponsivePreview>,
   })),
-  "cluster-environment-detail-01": () => import("@zeron/blocks/cluster-environment-detail-01").then(({ ClusterEnvironmentDetail }) => ({
+  "cluster-environment-detail-01": () => import("./OperationsWorkspaceDemos").then(({ ClusterEnvironmentDetailDemo: ClusterEnvironmentDetail }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ClusterEnvironmentDetail /></ResponsivePreview>,
   })),
-  "cluster-environment-list-01": () => import("@zeron/blocks/cluster-environment-list-01").then(({ ClusterEnvironmentList }) => ({
-    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ClusterEnvironmentList /></ResponsivePreview>,
+  "cluster-environment-list-01": () => import("./OperationsListDemos").then(({ ClusterEnvironmentListDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ClusterEnvironmentListDemo /></ResponsivePreview>,
   })),
-  "inspection-report-list-01": () => import("@zeron/blocks/inspection-report-list-01").then(({ InspectionReportList }) => ({
+  "inspection-report-list-01": () => import("./OperationsWorkspaceDemos").then(({ InspectionReportListDemo: InspectionReportList }) => ({
     default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><InspectionReportList className="h-full min-h-0" /></ResponsivePreview>,
   })),
-  "monitoring-alert-list-01": () => import("@zeron/blocks/monitoring-alert-list-01").then(({ MonitoringAlertList }) => ({
-    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><MonitoringAlertList className="h-full min-h-0" /></ResponsivePreview>,
+  "monitoring-alert-list-01": () => import("./OperationsListDemos").then(({ MonitoringAlertListDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><MonitoringAlertListDemo /></ResponsivePreview>,
   })),
-  "service-management-01": () => import("@zeron/blocks/service-management-01").then(({ ServiceManagement }) => ({
+  "service-management-01": () => import("./OperationsWorkspaceDemos").then(({ ServiceManagementDemo: ServiceManagement }) => ({
     default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1280}><ServiceManagement className="h-full min-h-0" /></ResponsivePreview>,
   })),
   "traffic-rules-01": () => import("@zeron/blocks/traffic-rules-01").then(({ TrafficRules }) => ({
@@ -177,6 +168,15 @@ const previewLoaders: Record<string, PreviewLoader> = {
   })),
   "security-overview-01": () => import("./SecurityOverviewDemo").then(({ SecurityOverviewDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={920} canvasWidth={800}><SecurityOverviewDemo /></ResponsivePreview>,
+  })),
+  "getting-started-01": () => import("./GettingStartedDemo").then(({ GettingStartedDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={600} canvasWidth={760}><GettingStartedDemo /></ResponsivePreview>,
+  })),
+  "transaction-details-01": () => import("./TransactionDetailsDemo").then(({ TransactionDetailsDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={960} canvasWidth={760}><TransactionDetailsDemo /></ResponsivePreview>,
+  })),
+  "cost-estimate-01": () => import("./CostEstimateDemo").then(({ CostEstimateDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={1120} canvasWidth={800}><CostEstimateDemo /></ResponsivePreview>,
   })),
   "credit-usage-01": () => import("@zeron/blocks/credit-usage-01").then(({ CreditUsage, creditUsageDemoData }) => ({
     default: function CreditUsagePreview() {

@@ -3661,6 +3661,37 @@
       }
     },
     {
+      "name": "list-pagination",
+      "type": "registry:ui",
+      "title": "List Pagination",
+      "description": "Controlled, table-independent pagination for lists, with localized labels and page size controls.",
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/list-pagination.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/list-pagination.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css@^1.4.0"
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
       "name": "error-state",
       "type": "registry:ui",
       "title": "Error State",
@@ -6155,24 +6186,20 @@
         "https://zeron-ui.vercel.app/r/button-group.json",
         "https://zeron-ui.vercel.app/r/card.json",
         "https://zeron-ui.vercel.app/r/data-table.json",
-        "https://zeron-ui.vercel.app/r/dialog.json",
         "https://zeron-ui.vercel.app/r/dropdown.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/inline-notice.json",
-        "https://zeron-ui.vercel.app/r/kbd.json",
         "https://zeron-ui.vercel.app/r/menu-item.json",
         "https://zeron-ui.vercel.app/r/metric-card.json",
-        "https://zeron-ui.vercel.app/r/nav-item.json",
-        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/operations-workspace-shell-01.json",
         "https://zeron-ui.vercel.app/r/page-layout.json",
         "https://zeron-ui.vercel.app/r/popover.json",
         "https://zeron-ui.vercel.app/r/resource-metric-list-01.json",
         "https://zeron-ui.vercel.app/r/resource-status-all-01.json",
         "https://zeron-ui.vercel.app/r/separator.json",
-        "https://zeron-ui.vercel.app/r/sidebar.json",
-        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/empty.json"
       ],
       "files": [
         {
@@ -6188,7 +6215,7 @@
       ],
       "meta": {
         "zeron": {
-          "framework": "next",
+          "framework": "react",
           "react": "^19.0.0",
           "tailwind": "^4.0.0",
           "kind": "template"
@@ -6212,18 +6239,14 @@
         "https://zeron-ui.vercel.app/r/badge.json",
         "https://zeron-ui.vercel.app/r/button.json",
         "https://zeron-ui.vercel.app/r/card.json",
-        "https://zeron-ui.vercel.app/r/dialog.json",
-        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/alert.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/inline-notice.json",
         "https://zeron-ui.vercel.app/r/input.json",
-        "https://zeron-ui.vercel.app/r/kbd.json",
-        "https://zeron-ui.vercel.app/r/menu-item.json",
-        "https://zeron-ui.vercel.app/r/nav-item.json",
-        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/operations-workspace-shell-01.json",
         "https://zeron-ui.vercel.app/r/page-layout.json",
-        "https://zeron-ui.vercel.app/r/sidebar.json",
-        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
+        "https://zeron-ui.vercel.app/r/skeleton.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
         "https://zeron-ui.vercel.app/r/utils.json"
       ],
@@ -6241,7 +6264,7 @@
       ],
       "meta": {
         "zeron": {
-          "framework": "next",
+          "framework": "react",
           "react": "^19.0.0",
           "tailwind": "^4.0.0",
           "kind": "template"
@@ -6264,19 +6287,15 @@
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/badge.json",
         "https://zeron-ui.vercel.app/r/button.json",
-        "https://zeron-ui.vercel.app/r/dialog.json",
         "https://zeron-ui.vercel.app/r/dropdown.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/input.json",
-        "https://zeron-ui.vercel.app/r/kbd.json",
+        "https://zeron-ui.vercel.app/r/list-pagination.json",
         "https://zeron-ui.vercel.app/r/menu-item.json",
-        "https://zeron-ui.vercel.app/r/nav-item.json",
-        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/operations-workspace-shell-01.json",
         "https://zeron-ui.vercel.app/r/page-layout.json",
-        "https://zeron-ui.vercel.app/r/sidebar.json",
-        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
         "https://zeron-ui.vercel.app/r/utils.json",
-        "https://zeron-ui.vercel.app/r/select.json"
+        "https://zeron-ui.vercel.app/r/empty.json"
       ],
       "files": [
         {
@@ -6292,7 +6311,7 @@
       ],
       "meta": {
         "zeron": {
-          "framework": "next",
+          "framework": "react",
           "react": "^19.0.0",
           "tailwind": "^4.0.0",
           "kind": "template"
@@ -6317,20 +6336,19 @@
         "https://zeron-ui.vercel.app/r/badge.json",
         "https://zeron-ui.vercel.app/r/button.json",
         "https://zeron-ui.vercel.app/r/button-group.json",
-        "https://zeron-ui.vercel.app/r/dialog.json",
         "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/alert.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
         "https://zeron-ui.vercel.app/r/input.json",
-        "https://zeron-ui.vercel.app/r/kbd.json",
+        "https://zeron-ui.vercel.app/r/list-pagination.json",
         "https://zeron-ui.vercel.app/r/menu-item.json",
-        "https://zeron-ui.vercel.app/r/nav-item.json",
-        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/operations-workspace-shell-01.json",
         "https://zeron-ui.vercel.app/r/page-layout.json",
         "https://zeron-ui.vercel.app/r/popover.json",
-        "https://zeron-ui.vercel.app/r/sidebar.json",
-        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
-        "https://zeron-ui.vercel.app/r/utils.json",
-        "https://zeron-ui.vercel.app/r/select.json"
+        "https://zeron-ui.vercel.app/r/skeleton.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
       ],
       "files": [
         {
@@ -6346,7 +6364,7 @@
       ],
       "meta": {
         "zeron": {
-          "framework": "next",
+          "framework": "react",
           "react": "^19.0.0",
           "tailwind": "^4.0.0",
           "kind": "template"
@@ -6369,17 +6387,10 @@
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/badge.json",
-        "https://zeron-ui.vercel.app/r/button.json",
         "https://zeron-ui.vercel.app/r/data-table.json",
-        "https://zeron-ui.vercel.app/r/dialog.json",
-        "https://zeron-ui.vercel.app/r/dropdown.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
-        "https://zeron-ui.vercel.app/r/kbd.json",
-        "https://zeron-ui.vercel.app/r/nav-item.json",
-        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/operations-workspace-shell-01.json",
         "https://zeron-ui.vercel.app/r/page-layout.json",
-        "https://zeron-ui.vercel.app/r/sidebar.json",
-        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
         "https://zeron-ui.vercel.app/r/utils.json"
       ],
@@ -6397,7 +6408,7 @@
       ],
       "meta": {
         "zeron": {
-          "framework": "next",
+          "framework": "react",
           "react": "^19.0.0",
           "tailwind": "^4.0.0",
           "kind": "template"
@@ -7688,22 +7699,14 @@
         "tw-animate-css@^1.4.0"
       ],
       "registryDependencies": [
-        "https://zeron-ui.vercel.app/r/user-account-01.json",
-        "https://zeron-ui.vercel.app/r/button.json",
-        "https://zeron-ui.vercel.app/r/dropdown.json",
-        "https://zeron-ui.vercel.app/r/nav-item.json",
-        "https://zeron-ui.vercel.app/r/nav-menu.json",
-        "https://zeron-ui.vercel.app/r/page-layout.json",
-        "https://zeron-ui.vercel.app/r/sidebar.json",
-        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
-        "https://zeron-ui.vercel.app/r/sidebar-account-menu.json",
-        "https://zeron-ui.vercel.app/r/icon-context.json",
-        "https://zeron-ui.vercel.app/r/utils.json",
         "https://zeron-ui.vercel.app/r/badge.json",
-        "https://zeron-ui.vercel.app/r/dialog.json",
-        "https://zeron-ui.vercel.app/r/kbd.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/metric-card.json",
-        "https://zeron-ui.vercel.app/r/table.json"
+        "https://zeron-ui.vercel.app/r/operations-workspace-shell-01.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
+        "https://zeron-ui.vercel.app/r/table.json",
+        "https://zeron-ui.vercel.app/r/user-account-01.json"
       ],
       "files": [
         {
@@ -7719,7 +7722,7 @@
       ],
       "meta": {
         "zeron": {
-          "framework": "next",
+          "framework": "react",
           "react": "^19.0.0",
           "tailwind": "^4.0.0",
           "kind": "template"
@@ -8006,6 +8009,52 @@
           "react": "^19.0.0",
           "tailwind": "^4.0.0",
           "kind": "data-block"
+        }
+      }
+    },
+    {
+      "name": "operations-workspace-shell-01",
+      "type": "registry:component",
+      "title": "Operations Workspace Shell",
+      "description": "Shared ZAIops organization, navigation, search and account shell; application-owned routing and actions.",
+      "categories": [
+        "application",
+        "operations",
+        "navigation"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/dialog.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/kbd.json",
+        "https://zeron-ui.vercel.app/r/menu-item.json",
+        "https://zeron-ui.vercel.app/r/nav-item.json",
+        "https://zeron-ui.vercel.app/r/nav-menu.json",
+        "https://zeron-ui.vercel.app/r/page-layout.json",
+        "https://zeron-ui.vercel.app/r/sidebar.json",
+        "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
+        "https://zeron-ui.vercel.app/r/user-account-01.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/operations-workspace-shell-01/operations-workspace-shell.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/operations-workspace-shell-01/operations-workspace-shell.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/operations-workspace-shell-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/operations-workspace-shell-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
         }
       }
     }

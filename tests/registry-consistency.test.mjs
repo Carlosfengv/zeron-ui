@@ -103,9 +103,7 @@ describe("package Registry sources", () => {
 
   it("derives framework and installability metadata from the Registry source", () => {
     const nextBlocks = new Set([
-      "login-01", "signup-01", "cluster-environment-detail-01", "cluster-environment-list-01",
-      "inspection-report-list-01", "monitoring-alert-list-01", "service-management-01",
-      "mcp-detail-01", "zaiops-operations-01", "zlrlist",
+      "login-01", "signup-01", "mcp-detail-01", "zlrlist",
     ]);
     for (const item of registry.items) {
       const metadata = registryMetadata(item);

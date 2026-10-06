@@ -1511,6 +1511,26 @@
       ],
       "status": "active",
       "retirementReason": null
+    },
+    {
+      "id": "component:operations-workspace-shell-01",
+      "type": "registry",
+      "key": "operations-workspace-shell-01",
+      "aliases": [
+        "operations-workspace-shell-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:list-pagination",
+      "type": "registry",
+      "key": "list-pagination",
+      "aliases": [
+        "list-pagination"
+      ],
+      "status": "active",
+      "retirementReason": null
     }
   ]
 }

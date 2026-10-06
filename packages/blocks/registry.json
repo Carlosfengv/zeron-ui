@@ -484,10 +484,18 @@
       "description": "An inspection-report workspace that combines environment context, resource health, and incident follow-up.",
       "categories": ["application", "operations"],
       "dependencies": ["tw-animate-css", "@lobehub/icons", "@thesvg/icons"],
-      "registryDependencies": ["badge", "breadcrumb", "button", "button-group", "card", "data-table", "dialog", "dropdown", "icon-context", "inline-notice", "kbd", "menu-item", "metric-card", "nav-item", "nav-menu", "page-layout", "popover", "resource-metric-list-01", "resource-status-all-01", "separator", "sidebar", "sidebar-identity-row", "tabs", "utils"],
+      "registryDependencies": ["badge", "breadcrumb", "button", "button-group", "card", "data-table", "dropdown", "icon-context", "inline-notice", "menu-item", "metric-card", "operations-workspace-shell-01", "page-layout", "popover", "resource-metric-list-01", "resource-status-all-01", "separator", "tabs", "utils", "empty"],
       "files": [
-        { "path": "packages/blocks/src/application/cluster-environment-detail-01/cluster-environment-detail.tsx", "type": "registry:component", "target": "components/blocks/cluster-environment-detail-01/cluster-environment-detail.tsx" },
-        { "path": "packages/blocks/src/application/cluster-environment-detail-01/index.ts", "type": "registry:component", "target": "components/blocks/cluster-environment-detail-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/cluster-environment-detail-01/cluster-environment-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/cluster-environment-detail-01/cluster-environment-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/cluster-environment-detail-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cluster-environment-detail-01/index.ts"
+        }
       ]
     },
     {
@@ -497,10 +505,18 @@
       "description": "A filterable cluster-environment overview with health and data-freshness states.",
       "categories": ["application", "operations"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["badge", "button", "card", "dialog", "dropdown", "icon-context", "inline-notice", "input", "kbd", "menu-item", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "tabs", "utils"],
+      "registryDependencies": ["badge", "button", "card", "empty", "alert", "icon-context", "inline-notice", "input", "operations-workspace-shell-01", "page-layout", "skeleton", "tabs", "utils"],
       "files": [
-        { "path": "packages/blocks/src/application/cluster-environment-list-01/cluster-environment-list.tsx", "type": "registry:component", "target": "components/blocks/cluster-environment-list-01/cluster-environment-list.tsx" },
-        { "path": "packages/blocks/src/application/cluster-environment-list-01/index.ts", "type": "registry:component", "target": "components/blocks/cluster-environment-list-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/cluster-environment-list-01/cluster-environment-list.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/cluster-environment-list-01/cluster-environment-list.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/cluster-environment-list-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/cluster-environment-list-01/index.ts"
+        }
       ]
     },
     {
@@ -510,10 +526,18 @@
       "description": "An inspection report workspace with operations navigation, filtering, and report state actions.",
       "categories": ["application", "operations"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["badge", "button", "dialog", "dropdown", "icon-context", "input", "kbd", "menu-item", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "utils", "select"],
+      "registryDependencies": ["badge", "button", "dropdown", "icon-context", "input", "list-pagination", "menu-item", "operations-workspace-shell-01", "page-layout", "utils", "empty"],
       "files": [
-        { "path": "packages/blocks/src/application/inspection-report-list-01/inspection-report-list.tsx", "type": "registry:component", "target": "components/blocks/inspection-report-list-01/inspection-report-list.tsx" },
-        { "path": "packages/blocks/src/application/inspection-report-list-01/index.ts", "type": "registry:component", "target": "components/blocks/inspection-report-list-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/inspection-report-list-01/inspection-report-list.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/inspection-report-list-01/inspection-report-list.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/inspection-report-list-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/inspection-report-list-01/index.ts"
+        }
       ]
     },
     {
@@ -523,10 +547,18 @@
       "description": "A monitoring alert workspace with operations navigation, severity filters, resolution history, and contextual actions.",
       "categories": ["application", "operations", "monitoring"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["badge", "button", "button-group", "dialog", "dropdown", "icon-context", "input", "kbd", "menu-item", "nav-item", "nav-menu", "page-layout", "popover", "sidebar", "sidebar-identity-row", "utils", "select"],
+      "registryDependencies": ["badge", "button", "button-group", "dropdown", "empty", "alert", "icon-context", "inline-notice", "input", "list-pagination", "menu-item", "operations-workspace-shell-01", "page-layout", "popover", "skeleton", "utils"],
       "files": [
-        { "path": "packages/blocks/src/application/monitoring-alert-list-01/monitoring-alert-list.tsx", "type": "registry:component", "target": "components/blocks/monitoring-alert-list-01/monitoring-alert-list.tsx" },
-        { "path": "packages/blocks/src/application/monitoring-alert-list-01/index.ts", "type": "registry:component", "target": "components/blocks/monitoring-alert-list-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/monitoring-alert-list-01/monitoring-alert-list.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/monitoring-alert-list-01/monitoring-alert-list.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/monitoring-alert-list-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/monitoring-alert-list-01/index.ts"
+        }
       ]
     },
     {
@@ -536,10 +568,18 @@
       "description": "A service workspace with operational progress, support authorization, and cluster operation history.",
       "categories": ["application", "operations", "service"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["badge", "button", "data-table", "dialog", "dropdown", "icon-context", "kbd", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "tabs", "utils"],
+      "registryDependencies": ["badge", "data-table", "icon-context", "operations-workspace-shell-01", "page-layout", "tabs", "utils"],
       "files": [
-        { "path": "packages/blocks/src/application/service-management-01/service-management.tsx", "type": "registry:component", "target": "components/blocks/service-management-01/service-management.tsx" },
-        { "path": "packages/blocks/src/application/service-management-01/index.ts", "type": "registry:component", "target": "components/blocks/service-management-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/service-management-01/service-management.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/service-management-01/service-management.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/service-management-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/service-management-01/index.ts"
+        }
       ]
     },
     {
@@ -1116,7 +1156,7 @@
       "description": "An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation.",
       "categories": ["application", "operations"],
       "dependencies": ["tw-animate-css"],
-      "registryDependencies": ["user-account-01", "button", "dropdown", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "sidebar-account-menu", "icon-context", "utils", "badge", "dialog", "kbd", "metric-card", "table"],
+      "registryDependencies": ["badge", "icon-context", "metric-card", "operations-workspace-shell-01", "page-layout", "sidebar-identity-row", "table", "user-account-01"],
       "files": [
         {
           "path": "packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx",
@@ -1211,6 +1251,26 @@
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-table-view.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-table-view.tsx" },
         { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-table.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-table.tsx" },
         { "path": "packages/blocks/src/application/infinite-log-table-01/index.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/index.ts" }
+      ]
+    },
+    {
+      "name": "operations-workspace-shell-01",
+      "type": "registry:component",
+      "title": "Operations Workspace Shell",
+      "description": "Shared ZAIops organization, navigation, search and account shell; application-owned routing and actions.",
+      "categories": ["application", "operations", "navigation"],
+      "registryDependencies": ["button", "dialog", "dropdown", "icon-context", "kbd", "menu-item", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "user-account-01", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/operations-workspace-shell-01/operations-workspace-shell.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/operations-workspace-shell-01/operations-workspace-shell.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/operations-workspace-shell-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/operations-workspace-shell-01/index.ts"
+        }
       ]
     }
   ]

@@ -150,7 +150,8 @@ describe("shell and page-layout composition contract", () => {
     expect(topNavBlock).toContain(
       '"@container h-full w-full min-h-0 min-w-0 flex-1 self-stretch overflow-hidden'
     );
-    expect(zaiopsBlock).toContain(
+    expect(zaiopsBlock).toContain("<OperationsWorkspaceShell");
+    expect(source("packages/blocks/src/application/operations-workspace-shell-01/operations-workspace-shell.tsx")).toContain(
       '"flex h-full min-h-0 w-full min-w-0 flex-1 self-stretch overflow-hidden'
     );
 

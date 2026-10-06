@@ -108,7 +108,8 @@
     "./system/utils": "./src/system/utils.ts",
     "./tokens/*": "./src/tokens/*",
     "./temporal-picker": "./src/components/temporal-picker/index.ts",
-    "./chart-primitives": "./src/components/chart-primitives.tsx"
+    "./chart-primitives": "./src/components/chart-primitives.tsx",
+    "./list-pagination": "./src/components/list-pagination.tsx"
   },
   "imports": {
     "#components/*": "./src/components/*.tsx",

@@ -109,12 +109,14 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Input Group](https://zeron-ui.vercel.app/ai/items/component%3Ainput-group.md): Composable input with addons, compact actions, textarea support, and validation. Registry: input-group.
 - [Input Message](https://zeron-ui.vercel.app/ai/items/component%3Ainput-message.md): Chat-style message composer with auto-resizing textarea and configurable action slots. Registry: input-message.
 - [Kbd](https://zeron-ui.vercel.app/ai/items/component%3Akbd.md): Compact keycaps and shortcut groups for keyboard commands and interaction hints. Registry: kbd.
+- [List Pagination](https://zeron-ui.vercel.app/ai/items/component%3Alist-pagination.md): Controlled, table-independent pagination for lists, with localized labels and page size controls. Registry: list-pagination.
 - [Member Tree](https://zeron-ui.vercel.app/ai/items/component%3Amember-tree.md): Organization-focused Tree with department and member rendering, typed selection, and member-only cascade selection. Registry: member-tree.
 - [MenuItem](https://zeron-ui.vercel.app/ai/items/component%3Amenu-item.md): Accessible menu row primitive with icon, selection, and keyboard-menu integration. Registry: menu-item.
 - [Metric Card](https://zeron-ui.vercel.app/ai/items/component%3Ametric-card.md): Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction. Registry: metric-card.
 - [Mobile Drawer](https://zeron-ui.vercel.app/ai/items/component%3Amobile-drawer.md): Slide-in navigation drawer with scrim, focus trap, and scroll lock. Base UI flavor. Registry: mobile-drawer.
 - [Nav Item](https://zeron-ui.vercel.app/ai/items/component%3Anav-item.md): Composable navigation item that supports router links, labels, badges, actions, and sub-navigation. Registry: nav-item.
 - [Nav Menu](https://zeron-ui.vercel.app/ai/items/component%3Anav-menu.md): Router-agnostic navigation primitives shared by Sidebar and TopNav. Registry: nav-menu.
+- [Operations Workspace Shell](https://zeron-ui.vercel.app/ai/items/component%3Aoperations-workspace-shell-01.md): Shared ZAIops organization, navigation, search and account shell; application-owned routing and actions. Registry: operations-workspace-shell-01.
 - [Page Layout](https://zeron-ui.vercel.app/ai/items/component%3Apage-layout.md): Responsive composition for optional page information, route navigation, content, and asides. Registry: page-layout.
 - [Popover (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Apopover.md): Collision-aware floating content with a liquid anchor-to-panel transition. Registry: popover.
 - [Radio Group (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Aradio-group.md): Composable radio controls with form support and enhanced proximity-hover rows. Registry: radio-group.
@@ -159,21 +161,27 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [agent-message-trace-01](https://zeron-ui.vercel.app/agent-guides/blocks/agent-message-trace-01.md)
 - [ai-gateway-overview-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-overview-01.md)
 - [ai-gateway-session-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-session-list-01.md)
+- [cluster-environment-detail-01](https://zeron-ui.vercel.app/agent-guides/blocks/cluster-environment-detail-01.md)
+- [cluster-environment-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/cluster-environment-list-01.md)
 - [cost-estimate-01](https://zeron-ui.vercel.app/agent-guides/blocks/cost-estimate-01.md)
 - [credit-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/credit-usage-01.md)
 - [deployment-detail-01](https://zeron-ui.vercel.app/agent-guides/blocks/deployment-detail-01.md)
 - [filter-rule-builder-01](https://zeron-ui.vercel.app/agent-guides/blocks/filter-rule-builder-01.md)
 - [getting-started-01](https://zeron-ui.vercel.app/agent-guides/blocks/getting-started-01.md)
 - [infinite-log-table-01](https://zeron-ui.vercel.app/agent-guides/blocks/infinite-log-table-01.md)
+- [inspection-report-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/inspection-report-list-01.md)
 - [model-router-01](https://zeron-ui.vercel.app/agent-guides/blocks/model-router-01.md)
+- [monitoring-alert-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/monitoring-alert-list-01.md)
 - [project-monitor-01](https://zeron-ui.vercel.app/agent-guides/blocks/project-monitor-01.md)
 - [resource-detail-page-01](https://zeron-ui.vercel.app/agent-guides/blocks/resource-detail-page-01.md)
 - [resource-list-page-01](https://zeron-ui.vercel.app/agent-guides/blocks/resource-list-page-01.md)
 - [rule-flow-editor-01](https://zeron-ui.vercel.app/agent-guides/blocks/rule-flow-editor-01.md)
 - [security-overview-01](https://zeron-ui.vercel.app/agent-guides/blocks/security-overview-01.md)
+- [service-management-01](https://zeron-ui.vercel.app/agent-guides/blocks/service-management-01.md)
 - [storage-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/storage-usage-01.md)
 - [transaction-details-01](https://zeron-ui.vercel.app/agent-guides/blocks/transaction-details-01.md)
 - [user-account-01](https://zeron-ui.vercel.app/agent-guides/blocks/user-account-01.md)
+- [zaiops-operations-01](https://zeron-ui.vercel.app/agent-guides/blocks/zaiops-operations-01.md)
 - [alert](https://zeron-ui.vercel.app/agent-guides/components/alert.md)
 - [app-shell](https://zeron-ui.vercel.app/agent-guides/components/app-shell.md)
 - [avatar](https://zeron-ui.vercel.app/agent-guides/components/avatar.md)
@@ -187,9 +195,11 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [field](https://zeron-ui.vercel.app/agent-guides/components/field.md)
 - [inline-notice](https://zeron-ui.vercel.app/agent-guides/components/inline-notice.md)
 - [input](https://zeron-ui.vercel.app/agent-guides/components/input.md)
+- [list-pagination](https://zeron-ui.vercel.app/agent-guides/components/list-pagination.md)
 - [metric-card](https://zeron-ui.vercel.app/agent-guides/components/metric-card.md)
 - [nav-item](https://zeron-ui.vercel.app/agent-guides/components/nav-item.md)
 - [nav-menu](https://zeron-ui.vercel.app/agent-guides/components/nav-menu.md)
+- [operations-workspace-shell-01](https://zeron-ui.vercel.app/agent-guides/components/operations-workspace-shell-01.md)
 - [page-layout](https://zeron-ui.vercel.app/agent-guides/components/page-layout.md)
 - [resource-detail-layout](https://zeron-ui.vercel.app/agent-guides/components/resource-detail-layout.md)
 - [select](https://zeron-ui.vercel.app/agent-guides/components/select.md)

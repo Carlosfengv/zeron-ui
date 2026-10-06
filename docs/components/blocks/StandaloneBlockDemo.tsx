@@ -1,33 +1,29 @@
 "use client";
-import { TransactionDetailsDemo } from "./TransactionDetailsDemo";
 
-import { CostEstimateDemo } from "./CostEstimateDemo";
+
 import { GettingStartedDemo } from "./GettingStartedDemo";
 
 import { ModelRouterDemo } from "./ModelRouterDemo";
 import { ProjectMonitorDemo } from "./ProjectMonitorDemo";
 import { SecurityOverviewDemo } from "./SecurityOverviewDemo";
+import { TransactionDetailsDemo } from "./TransactionDetailsDemo";
+import { CostEstimateDemo } from "./CostEstimateDemo";
 import { DeploymentDetailDemo } from "./DeploymentDetailDemo";
 import { useMemo, useState } from "react";
 import { Login01 } from "@zeron/blocks/login-01";
 import { Signup01 } from "@zeron/blocks/signup-01";
 import { AvailabilityMonitor } from "@zeron/blocks/availability-monitor-01";
-import {
-  AiGatewayOverview,
-  createAiGatewayOverviewDemoData,
-  type AiGatewayOverviewRange,
-} from "@zeron/blocks/ai-gateway-overview-01";
+import { AiGatewayOverviewDemo } from "@docs/pages/blocks/ai-gateway-overview-01/AiGatewayOverviewDemo";
 import {
   AiGatewaySessionList,
   aiGatewaySessionListDemoQuery,
   createAiGatewaySessionListDemoData,
   type AiGatewaySessionListQuery,
 } from "@zeron/blocks/ai-gateway-session-list-01";
-import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
-import { ClusterEnvironmentList } from "@zeron/blocks/cluster-environment-list-01";
-import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";
-import { MonitoringAlertList } from "@zeron/blocks/monitoring-alert-list-01";
-import { ServiceManagement } from "@zeron/blocks/service-management-01";
+import { ClusterEnvironmentDetailDemo as ClusterEnvironmentDetail } from "@docs/components/blocks/OperationsWorkspaceDemos";
+import { ClusterEnvironmentListDemo, MonitoringAlertListDemo } from "./OperationsListDemos";
+import { InspectionReportListDemo as InspectionReportList } from "@docs/components/blocks/OperationsWorkspaceDemos";
+import { ServiceManagementDemo as ServiceManagement } from "@docs/components/blocks/OperationsWorkspaceDemos";
 import { TrafficRules } from "@zeron/blocks/traffic-rules-01";
 import { McpDetail } from "@zeron/blocks/mcp-detail-01";
 import { ModelDetail } from "@zeron/blocks/model-detail-01";
@@ -83,33 +79,6 @@ const fileManagerDemoItems: FileManagerItem[] = [
   { id: "brief", kind: "file", name: "Project brief.pdf", parentId: null, extension: "pdf", size: 2_450_000, modifiedAt: "2026-08-20" },
   { id: "roadmap", kind: "file", name: "Roadmap.xlsx", parentId: null, extension: "xlsx", size: 645_000, modifiedAt: "2026-08-19" },
 ];
-
-function AiGatewayOverviewDemo() {
-  const [range, setRange] = useState<AiGatewayOverviewRange>("30d");
-  const [refreshCount, setRefreshCount] = useState(0);
-  const data = useMemo(() => {
-    const next = createAiGatewayOverviewDemoData(range);
-    return {
-      ...next,
-      window: {
-        ...next.window,
-        generatedAt: new Date(Date.parse(next.window.generatedAt) + refreshCount * 1000).toISOString(),
-      },
-    };
-  }, [range, refreshCount]);
-
-  return (
-    <AiGatewayOverview
-      actions={{
-        onRangeChange: setRange,
-        onRefresh: () => setRefreshCount((value) => value + 1),
-      }}
-      className="h-full min-h-0"
-      data={data}
-      range={range}
-    />
-  );
-}
 
 function AiGatewaySessionListDemo() {
   const [query, setQuery] = useState<AiGatewaySessionListQuery>(() => ({
@@ -177,11 +146,14 @@ function FilterRuleBuilderDemo() {
 }
 
 export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
+  return <>
+    <StandaloneBlockContent key={slug} slug={slug} />
+
+  </>;
+}
+
+function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
-    case "transaction-details-01":
-      return <TransactionDetailsDemo />;
-    case "getting-started-01":
-      return <GettingStartedDemo />;
     case "login-01":
       return <Login01 />;
     case "signup-01":
@@ -201,11 +173,11 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
     case "cluster-environment-detail-01":
       return <ClusterEnvironmentDetail className="h-full" />;
     case "cluster-environment-list-01":
-      return <ClusterEnvironmentList className="h-full min-h-0" />;
+      return <ClusterEnvironmentListDemo />;
     case "inspection-report-list-01":
       return <InspectionReportList className="h-full min-h-0" />;
     case "monitoring-alert-list-01":
-      return <MonitoringAlertList className="h-full min-h-0" />;
+      return <MonitoringAlertListDemo />;
     case "service-management-01":
       return <ServiceManagement className="h-full min-h-0" />;
     case "traffic-rules-01":
@@ -226,10 +198,14 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
       return <ModelRouterDemo />;
     case "project-monitor-01":
       return <ProjectMonitorDemo />;
-    case "cost-estimate-01":
-      return <CostEstimateDemo />;
     case "security-overview-01":
       return <SecurityOverviewDemo />;
+    case "transaction-details-01":
+      return <TransactionDetailsDemo />;
+    case "cost-estimate-01":
+      return <CostEstimateDemo />;
+    case "getting-started-01":
+      return <GettingStartedDemo />;
     case "deployment-detail-01":
       return <DeploymentDetailDemo />;
     case "credit-usage-01":

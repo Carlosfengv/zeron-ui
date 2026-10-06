@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
-import { Switch } from "@zeron/ui/switch";
 
 const scenarios = [
   ["ready", "正常"], ["loading", "首次加载"], ["initial-error", "首次失败"],
@@ -46,18 +44,4 @@ export function useDataStateDemo() {
     empty: scenario === "empty",
   }), [scenario]);
   return { scenario, revision, changeScenario, recover, refresh, failNextRefresh, setFailNextRefresh, ...status };
-}
-
-export function DataStateDemoControls({ value, onChange, failNextRefresh, onFailNextRefreshChange }: {
-  value: DataStateDemoScenario; onChange: (value: DataStateDemoScenario) => void;
-  failNextRefresh?: boolean; onFailNextRefreshChange?: (value: boolean) => void;
-}) {
-  return <div className="flex min-w-0 flex-wrap items-center gap-3 bg-surface-base px-3 py-2">
-    <Select value={value} onValueChange={(next) => onChange(next as DataStateDemoScenario)} size="sm">
-      <SelectTrigger aria-label="演示状态" wrapperClassName="max-w-full" />
-      <SelectContent>{scenarios.map(([id, label]) => <SelectItem key={id} value={id} label={label}>{label}</SelectItem>)}</SelectContent>
-    </Select>
-    {onFailNextRefreshChange && <Switch label="下次刷新失败" checked={failNextRefresh ?? false} onCheckedChange={onFailNextRefreshChange} />}
-    <p className="min-w-0 text-label text-fg-subtle">示例数据 · 重试或刷新后恢复正常</p>
-  </div>;
 }

@@ -477,6 +477,84 @@ Block 不创建 `AppShell`，但默认渲染共享 `AiGatewayWorkspaceSidebar`�
 
 ---
 schema_version: 1
+name: cluster-environment-detail-01
+kind: block
+status: stable
+typecheck_examples: true
+summary: 集群环境详情，采用共同的运维工作区外壳，保留页面自己的数据与操作。
+registry_import: "@/components/blocks/cluster-environment-detail-01"
+source: packages/blocks/src/application/cluster-environment-detail-01/cluster-environment-detail.tsx
+types: packages/blocks/src/application/cluster-environment-detail-01/cluster-environment-detail.tsx
+registry: packages/blocks/registry.json
+related: [operations-workspace-shell-01, list-pagination, page-layout]
+---
+
+# 集群环境详情
+
+```tsx
+import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
+
+export function Preview() {
+  return <ClusterEnvironmentDetail workspace={{ organizations: [{ id: "east", name: "华东团队" }], defaultOrganizationId: "east" }} />;
+}
+```
+
+Registry 安装后使用 registry_import 路径。独立安装会递归安装 operations-workspace-shell-01，不需要先安装另一整页。workspace 遵循公共外壳的组织、导航、搜索、账号与会话配置；共享业务层与 React UI 不导入 Next，框架链接放在应用 renderLink 适配器中。示例搜索与诊断会话占位不代表真实后端能力。
+
+环境、巡检报告选择、受控 activeSection 与操作回调保留。顶栏面包屑使用当前 environment.name。详情中的 DataTable 保留内置分页，资源/网络拓扑与问题处置插槽仍由宿主提供。
+
+## 阶段五统一契约
+
+reports=[] 时保留环境摘要、路径、工作区和原操作回调，以 Empty 表达尚无报告；不再返回空白页。报告选择、总分与 incidentTotal 的原口径保持。优先级 strong Badge 使用 danger/warning，分数强调使用 info。资源摘要图表沿用用户指定的蓝色主题。演示设置可选择“无巡检报告”，示例巡检只恢复示例数据。
+
+
+---
+
+---
+schema_version: 1
+name: cluster-environment-list-01
+kind: block
+status: stable
+typecheck_examples: true
+summary: 集群环境工作区，分别表达资源健康和数据新鲜度，支持筛选及宿主刷新。
+registry_import: "@/components/blocks/cluster-environment-list-01"
+source: packages/blocks/src/application/cluster-environment-list-01/cluster-environment-list.tsx
+types: packages/blocks/src/application/cluster-environment-list-01/cluster-environment-list.tsx
+registry: packages/blocks/registry.json
+related: [badge, alert, sidebar, tabs]
+---
+
+# 集群环境列表
+
+```tsx
+import { ClusterEnvironmentList, defaultClusterEnvironments } from "@zeron/blocks/cluster-environment-list-01";
+
+export function EnvironmentPreview() {
+  return <ClusterEnvironmentList environments={defaultClusterEnvironments} state="stale" onRefresh={async () => {}} onRetry={async () => {}} />;
+}
+```
+
+示例使用工作区公共导出，Registry 安装后改从 `@/components/blocks/cluster-environment-list-01` 导入。
+
+健康由 health 指定，新鲜度由 freshness 指定。正常健康与过期数据可以同时存在；过期筛选不改变健康分类。搜索匹配环境名称及位置，零条数据与筛选无结果使用不同空态，后者可以清空筛选。
+
+state 支持 ready/loading/stale/error；refreshing 独立于 state。首次加载显示 Skeleton，首次失败显示 Alert。已有快照的受控失败需显式 retainDataOnError，展示 InlineNotice 并保留结果。新发生的回调拒绝只宣告一次，不同时重复展示过期错误。statusMessage 覆盖宿主提示。
+
+onRefresh/onRetry 可以返回 Promise，等待完成期间阻止重复数据操作；成功后由宿主更新 environments/state，新数组不会受到旧数组请求失败的覆盖。onViewDetails 接收原始环境对象。组织选择为本地导航演示，不自行加载其他组织的数据；宿主环境、权限和后端集成需要另行提供。
+
+复用 Sidebar、PageLayout、CardGroup、Tabs、Badge plain、InlineNotice、Alert、Skeleton 和 Empty；不新增页面专用状态原语或图表依赖。公共状态名称与其他试点一致，领域健康枚举保留。文档演示支持状态切换、真实异步失败/重试和环境详情弹层，全部使用示例数据。
+
+阶段四：workspace 可配置共同的 OperationsWorkspaceShell，集中组织、导航、搜索、诊断和账号。独立安装递归解析共享外壳，不依赖另一整页；源实现不再导入 Next，应用通过 renderLink 绑定框架路由。
+
+## 阶段五统一契约
+
+critical/warning/offline 的 strong Badge 使用语义 danger/warning/neutral 及专属前景填充配对；normal 保留 success 轻量标签。数据过期始终独立于健康结论。不再通过分类红/琥珀/灰来生成强强调状态。
+
+
+---
+
+---
+schema_version: 1
 name: cost-estimate-01
 kind: block
 status: stable
@@ -1079,6 +1157,41 @@ Agent 优先关注：
 
 ---
 schema_version: 1
+name: inspection-report-list-01
+kind: block
+status: stable
+typecheck_examples: true
+summary: 巡检报告列表，采用共同的运维工作区外壳，保留页面自己的数据与操作。
+registry_import: "@/components/blocks/inspection-report-list-01"
+source: packages/blocks/src/application/inspection-report-list-01/inspection-report-list.tsx
+types: packages/blocks/src/application/inspection-report-list-01/inspection-report-list.tsx
+registry: packages/blocks/registry.json
+related: [operations-workspace-shell-01, list-pagination, page-layout]
+---
+
+# 巡检报告列表
+
+```tsx
+import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";
+
+export function Preview() {
+  return <InspectionReportList workspace={{ organizations: [{ id: "east", name: "华东团队" }], defaultOrganizationId: "east" }} />;
+}
+```
+
+Registry 安装后使用 registry_import 路径。独立安装会递归安装 operations-workspace-shell-01，不需要先安装另一整页。workspace 遵循公共外壳的组织、导航、搜索、账号与会话配置；共享业务层与 React UI 不导入 Next，框架链接放在应用 renderLink 适配器中。示例搜索与诊断会话占位不代表真实后端能力。
+
+搜索、优先级及环境筛选共同作用；筛选和页大小变化归零。数据缩减时显示并保存有效页码，重新增加数据不返回失效末页。采用 ListPagination，不创建表格引擎。onViewReport 收到原报告对象，onRefresh 保持原有接口。
+
+## 阶段五统一契约
+
+默认空数组使用 Empty/no-data，存在搜索、优先级或环境筛选时使用 no-results。ListPagination 的零条和页码夹取契约保持。严重/正常 strong Badge 分别使用 danger/success，不以分类红/绿承担状态。
+
+
+---
+
+---
+schema_version: 1
 name: model-router-01
 kind: block
 status: stable
@@ -1129,6 +1242,49 @@ SVG 粒子表达相对请求密度，不是每个真实请求。零请求线路�
 ## Model identity and linked emphasis
 
 `route.brand` 选择 claude、openai 或 qwen 的 Lobe 图标，独立于托管 provider；私有品牌可传入 `route.logo`。未指定 brand 时支持 Anthropic/OpenAI provider 回退，其他模型使用通用图标。图表标签、管道和表格行通过稳定的 route.id 双向联动：悬停或键盘聚焦时，图表中当前模型保持 100% 不透明度，其他模型为 40%，离开后恢复。图表标签不添加背景；表格各行始终保持完全不透明，仅对应行显示背景高亮。
+
+
+---
+
+---
+schema_version: 1
+name: monitoring-alert-list-01
+kind: block
+status: stable
+typecheck_examples: true
+summary: 告警工作区，分别表达严重程度与处置状态，保留筛选、分页与宿主动作。
+registry_import: "@/components/blocks/monitoring-alert-list-01"
+source: packages/blocks/src/application/monitoring-alert-list-01/monitoring-alert-list.tsx
+types: packages/blocks/src/application/monitoring-alert-list-01/monitoring-alert-list.tsx
+registry: packages/blocks/registry.json
+related: [badge, alert, popover, sidebar]
+---
+
+# 监控告警列表
+
+```tsx
+import { MonitoringAlertList, defaultMonitoringAlertItems } from "@zeron/blocks/monitoring-alert-list-01";
+
+export function AlertsPreview() {
+  return <MonitoringAlertList alerts={defaultMonitoringAlertItems} state="error" retainDataOnError onRefresh={async () => {}} onRetry={async () => {}} />;
+}
+```
+
+示例使用工作区公共导出，Registry 安装后改从 `@/components/blocks/monitoring-alert-list-01` 导入。
+
+severity/level 保留原始严重程度，resolutionState 表达是否已处置，两者互不替代。处置记录支持鼠标及键盘读取；点击已处置按钮不再次调用 onResolve。onResolve/onMute/onAnalyze 收到原始告警，由宿主更新 alerts，组件不自动向后端写入。
+
+搜索、严重程度及环境筛选共同作用，筛选与每页条数变化重置页码。数据数组缩减时显示有效页，不出现有结果却空白的末页。宽表在内容区域内横向滚动，不将整个页面撑宽。分页采用 ListPagination，数据筛选和页码仍由列表管理。
+
+state 支持 ready/loading/stale/error；refreshing 独立表达后台更新。首次加载用 Skeleton，首次失败用 Alert；retainDataOnError 保留受控失败时的列表。刷新回调拒绝时自动保留当前数据并使用局部 InlineNotice，静态错误不自动重复宣告。onRefresh/onRetry 支持 Promise 和重复触发保护，宿主成功后更新数组及状态。
+
+复用 PageLayout、Sidebar、Badge、Badge plain、InlineNotice、Alert、Skeleton、Empty、Popover、Select 和 ButtonGroup，不新建第二套公共状态 API。文档演示的处置更新记录，静音移除指定行，AI 入口显示明确标注的示例说明；没有真实 AI 或后端接入。
+
+阶段四：workspace 可配置共同的 OperationsWorkspaceShell，集中组织、导航、搜索、诊断和账号。独立安装递归解析共享外壳，不依赖另一整页；源实现不再导入 Next，应用通过 renderLink 绑定框架路由。
+
+## 阶段五统一契约
+
+告警严重性视觉映射 danger/warning/info；P0/P1 等领域等级与 resolutionState 保持独立。静音、处置和优先级不是一套状态枚举，不合并数据模型。
 
 
 ---
@@ -1579,6 +1735,41 @@ createSecurityOverviewDemoData 提供固定示例。文档 demo 实际执行模�
 
 ---
 schema_version: 1
+name: service-management-01
+kind: block
+status: stable
+typecheck_examples: true
+summary: 服务管理，采用共同的运维工作区外壳，保留页面自己的数据与操作。
+registry_import: "@/components/blocks/service-management-01"
+source: packages/blocks/src/application/service-management-01/service-management.tsx
+types: packages/blocks/src/application/service-management-01/service-management.tsx
+registry: packages/blocks/registry.json
+related: [operations-workspace-shell-01, list-pagination, page-layout]
+---
+
+# 服务管理
+
+```tsx
+import { ServiceManagement } from "@zeron/blocks/service-management-01";
+
+export function Preview() {
+  return <ServiceManagement workspace={{ organizations: [{ id: "east", name: "华东团队" }], defaultOrganizationId: "east" }} />;
+}
+```
+
+Registry 安装后使用 registry_import 路径。独立安装会递归安装 operations-workspace-shell-01，不需要先安装另一整页。workspace 遵循公共外壳的组织、导航、搜索、账号与会话配置；共享业务层与 React UI 不导入 Next，框架链接放在应用 renderLink 适配器中。示例搜索与诊断会话占位不代表真实后端能力。
+
+defaultView / view / onViewChange 保留受控与非受控行为；三个服务导航 value 分别切换服务进度、服务授权和操作记录。受控视图只发出一次 onViewChange。工单、授权、操作记录表继续使用 DataTable 与其内置分页，不新增第二个分页入口。
+
+## 阶段五统一契约
+
+服务进度中的处置优先级 strong Badge 使用语义 danger/warning。服务进度、服务授权、操作记录的受控 view、列设置和各自业务数据继续独立。
+
+
+---
+
+---
+schema_version: 1
 name: storage-usage-01
 kind: block
 status: stable
@@ -1697,6 +1888,37 @@ Pair controlled `theme` with `onThemeChange`, and `locale` / `localeOptions` wit
 ZaiopsOperations and ResourceWorkspaceShell accept `account: UserAccountProps`. Existing resource shell `accountSections` / `onAccountAction` remain supported; `account` takes precedence. PersonalSettings retains its `account` ReactNode slot for the same block. Documentation demo sign-out affects only its example session, never a real account.
 
 Validate keyboard navigation, rejected sign-out and retry, shared preferences, menu placement, long identity text, and static demo actions on desktop and mobile. Account covers and detail previews are centered; only the trigger has 1.6 spacing units of horizontal padding.
+
+
+---
+
+---
+schema_version: 1
+name: zaiops-operations-01
+kind: block
+status: stable
+typecheck_examples: true
+summary: 运维首页，采用共同的运维工作区外壳，保留页面自己的数据与操作。
+registry_import: "@/components/blocks/zaiops-operations-01"
+source: packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx
+types: packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx
+registry: packages/blocks/registry.json
+related: [operations-workspace-shell-01, list-pagination, page-layout]
+---
+
+# 运维首页
+
+```tsx
+import { ZaiopsOperations } from "@zeron/blocks/zaiops-operations-01";
+
+export function Preview() {
+  return <ZaiopsOperations workspace={{ organizations: [{ id: "east", name: "华东团队" }], defaultOrganizationId: "east" }} />;
+}
+```
+
+Registry 安装后使用 registry_import 路径。独立安装会递归安装 operations-workspace-shell-01，不需要先安装另一整页。workspace 遵循公共外壳的组织、导航、搜索、账号与会话配置；共享业务层与 React UI 不导入 Next，框架链接放在应用 renderLink 适配器中。示例搜索与诊断会话占位不代表真实后端能力。
+
+原 title、description、children 与 account 接口保留；显式 account（包括 null）优先于 workspace.account。
 
 
 ---
@@ -2705,6 +2927,42 @@ Agent 只需优先关注：`variant`、`size` 和原生 input props。完整类�
 
 ---
 schema_version: 1
+name: list-pagination
+kind: component
+status: stable
+typecheck_examples: true
+summary: 不依赖表格引擎的受控列表分页；数据、筛选和请求由宿主管理。
+registry_import: "@/components/ui/list-pagination"
+source: packages/ui/src/components/list-pagination.tsx
+types: packages/ui/src/components/list-pagination.tsx
+registry: packages/ui/registry.json
+related: [button, select, data-table]
+---
+
+# ListPagination
+
+```tsx
+import { useState } from "react";
+import { ListPagination } from "@zeron/ui/list-pagination";
+
+export function PagerPreview() {
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  return <ListPagination total={21} page={page} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={size => { setPage(0); setPageSize(size); }} />;
+}
+```
+
+page 为零基索引。total 是筛选后的数量；组件只展示和回调，不请求数据、不切片、不替宿主更新页码。空结果按第 1 页 / 共 1 页展示，四个导航按钮全部禁用。越界 page 按有效页显示，宿主仍须在筛选、条数变化或数据减少时更新自己的页码，不能只修正分页文案。
+
+pageSizeOptions 默认 5 / 10 / 20 / 50，当前自定义条数也会列入。disabled 同时禁用条数选择和四个导航按钮。labels 支持计数、页摘要和所有可访问名称的本地化。
+
+已使用 DataTable 的页面继续用内置 DataTablePagination，它依赖真实 TanStack Table。不要创建伪造 table 对象或类型断言来使用其分页。ListPagination 用于巡检、告警等保留领域行布局的非表格列表，不引入表格引擎。
+
+
+---
+
+---
+schema_version: 1
 name: metric-card
 kind: component
 status: stable
@@ -2865,6 +3123,44 @@ export function SectionNavigation({ active, onSelect }: { active: string; onSele
 ## 浏览器验收
 
 验证桌面与手机、长中文标签、折叠/展开和键盘路径；导航必须改变正确业务内容，异步/权限状态不能只演示选中样式。确认图标/标签对齐、滚动归属和弹层焦点。页面任务通过同版本 task-context 入口获取必要组合规则，消费者自查见 consumer-verification；未运行状态如实记录。
+
+
+---
+
+---
+schema_version: 1
+name: operations-workspace-shell-01
+kind: component
+status: stable
+typecheck_examples: true
+summary: ZAIops 六页共用的工作区组合，集中组织、主导航、服务导航、诊断入口、账号与搜索快捷键。
+registry_import: "@/components/blocks/operations-workspace-shell-01"
+source: packages/blocks/src/application/operations-workspace-shell-01/operations-workspace-shell.tsx
+types: packages/blocks/src/application/operations-workspace-shell-01/operations-workspace-shell.tsx
+registry: packages/blocks/registry.json
+related: [sidebar, page-layout, user-account-01]
+---
+
+# OperationsWorkspaceShell
+
+```tsx
+import { OperationsWorkspaceShell } from "@zeron/blocks/operations-workspace-shell-01";
+import { PageBody, PageContent } from "@zeron/ui/page-layout";
+
+export function OperationsPreview() {
+  return <OperationsWorkspaceShell title="集群环境" activeNavigation="clusters" workspace={{ organizations: [{ id: "east", name: "华东团队" }], defaultOrganizationId: "east", navigation: [{ value: "clusters", label: "集群环境", iconName: "list", href: "/clusters" }] }}><PageContent><PageBody>应用内容</PageBody></PageContent></OperationsWorkspaceShell>;
+}
+```
+
+Registry 安装后改用 registry_import 指定的路径。children 直接提供 PageContent，不再嵌套另一层 PageLayout 或 SidebarProvider。PageBody 保持内容滚动职责。
+
+workspace 提供 organizations / organizationId / defaultOrganizationId / onOrganizationChange。ID 与名称分开；受控模式仅发出回调，宿主更新后才改变选择。空组织列表显示暂无组织，不伪造选择。activeNavigation 是导航配置中的 value：默认 home、clusters、reports、alerts，服务导航默认 service-progress、service-authorizations、operation-history。
+
+navigation / serviceNavigation 支持 href、onSelect 和 disabled。onNavigationSelect 存在时由宿主负责导航，不同时执行原生链接跳转。renderLink 可接入应用的路由组件；共享实现没有 Next 导入。默认主导航是演示地址，生产应用必须提供实际路径。诊断会话通过 sessions 和 onSessionSelect / onCreateSession / onSessionRename / onSessionDelete 接入；未提供的动作不显示为已实现能力。
+
+searchOpen / onSearchOpenChange 可受控，searchContent 由应用提供。默认搜索内容只是入口占位，未连接检索服务。Meta / Ctrl + K 忽略编辑区、输入法组合和重复键；焦点所在的工作区处理事件，其他工作区不会重复打开。监听随外壳卸载清理。
+
+account 使用现有 UserAccountProps，主题、语言、设置、通知、退出的动作由应用提供；null 隐藏账号。默认静态身份只有展示能力。折叠与移动浮层复用同一导航面板，选中入口时关闭浮层，关闭后按 Sidebar / Dialog 的既有规则返回焦点。
 
 
 ---

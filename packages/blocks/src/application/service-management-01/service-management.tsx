@@ -1,24 +1,15 @@
 "use client";
 
+import { OperationsWorkspaceShell, defaultOperationsServiceNavigation, type OperationsWorkspaceOptions } from "../operations-workspace-shell-01";
+
 import type { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useMemo, useState, useSyncExternalStore, type ComponentPropsWithoutRef } from "react";
-import Link from "next/link";
+import { useMemo, useState, type ComponentPropsWithoutRef } from "react";
 import { Badge } from "@zeron/ui/badge";
-import { Button } from "@zeron/ui/button";
 import { DataTable, useDataTable } from "@zeron/ui/data-table";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
-import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
-import { Kbd, KbdGroup } from "@zeron/ui/kbd";
-import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@zeron/ui/nav-item";
-import { NavMenu } from "@zeron/ui/nav-menu";
-import { PageBody, PageContent, PageHeader, PageHeaderContent, PageLayout } from "@zeron/ui/page-layout";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarFloatingTrigger, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarProvider, SidebarTrigger } from "@zeron/ui/sidebar";
-import { SidebarIdentityAvatar, SidebarIdentityRow } from "@zeron/ui/sidebar-identity-row";
-import { useIcon, type IconComponent } from "@zeron/ui/system/icon-context";
+import { PageBody, PageContent } from "@zeron/ui/page-layout";
+import { useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
 import { TabItem, Tabs, TabsList } from "@zeron/ui/tabs";
-
-type NavigationItem = { value: string; label: string; icon: IconComponent };
 export type ServiceManagementView = "service-progress" | "service-authorizations" | "operation-history";
 
 export interface ServiceTicketItem {
@@ -54,6 +45,7 @@ export interface ClusterOperationItem {
 }
 
 export interface ServiceManagementProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
+  workspace?: OperationsWorkspaceOptions;
   defaultView?: ServiceManagementView;
   view?: ServiceManagementView;
   onViewChange?: (view: ServiceManagementView) => void;
@@ -61,14 +53,6 @@ export interface ServiceManagementProps extends Omit<ComponentPropsWithoutRef<"d
   authorizations?: readonly ServiceAuthorizationItem[];
   operations?: readonly ClusterOperationItem[];
 }
-
-const operationsHomeHref = "/block-demo/zaiops-operations-01";
-const clusterEnvironmentHref = "/block-demo/cluster-environment-list-01";
-const inspectionReportHref = "/block-demo/inspection-report-list-01";
-const monitoringAlertHref = "/block-demo/monitoring-alert-list-01";
-const subscribeToPlatform = () => () => undefined;
-const getServerPlatformShortcut = () => null;
-const getPlatformShortcut = () => /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ K" : "Ctrl K";
 
 export const defaultServiceTickets = [
   { id: "SR-20260819-018", subject: "Ceph 容量扩容与均衡", priority: "P1", stage: "实施中", progress: 60, engineer: "李锐 / 专属运维工程师", updatedAt: "10:18" },
@@ -99,33 +83,6 @@ export const defaultClusterOperations = [
   { id: "operation-12", occurredAt: "2026-08-19 07:12", actor: "王敏", role: "当前用户", action: "关闭已恢复的备份延迟告警", environment: "金融核心环境", result: "已关闭", source: "控制台" },
 ] as const satisfies readonly ClusterOperationItem[];
 
-function ShortcutHint() {
-  const label = useSyncExternalStore(subscribeToPlatform, getPlatformShortcut, getServerPlatformShortcut);
-  if (!label) return <KbdGroup aria-hidden="true" className="invisible ms-auto min-w-13 justify-end"><Kbd>⌘</Kbd><Kbd>K</Kbd></KbdGroup>;
-  return <KbdGroup aria-label={label} className="ms-auto min-w-13 justify-end">{label.split(" ").map((part) => <Kbd key={part}>{part}</Kbd>)}</KbdGroup>;
-}
-
-function OperationsSearchTrigger({ onOpen }: { onOpen: () => void }) {
-  const Search = useIcon("search");
-  return <Button aria-keyshortcuts="Meta+K Control+K" className="w-full justify-start" onClick={onOpen} size="lg" type="button" variant="ghost"><span className="flex w-full min-w-0 items-center gap-1"><Search aria-hidden className="size-4 shrink-0" strokeWidth={1.5} /><span>搜索</span><ShortcutHint /></span></Button>;
-}
-
-function OperationsNavigation({ activeView, onNavigate, onSearchOpen, onViewChange, organization, onOrganizationChange, showSidebarTrigger = false }: { activeView: ServiceManagementView; onNavigate?: () => void; onSearchOpen: () => void; onViewChange: (view: ServiceManagementView) => void; organization: string; onOrganizationChange: (value: string) => void; showSidebarTrigger?: boolean }) {
-  const ChevronDown = useIcon("chevron-down");
-  const Home = useIcon("home");
-  const List = useIcon("list");
-  const Check = useIcon("check-square");
-  const Bell = useIcon("bell");
-  const Clock = useIcon("clock");
-  const User = useIcon("user");
-  const Layers = useIcon("doc-surfaces");
-  const Chat = useIcon("message-circle");
-  const More = useIcon("ellipsis");
-  const primary: NavigationItem[] = [{ value: operationsHomeHref, label: "首页", icon: Home }, { value: clusterEnvironmentHref, label: "集群环境", icon: List }, { value: inspectionReportHref, label: "巡检报告", icon: Check }, { value: monitoringAlertHref, label: "监控告警", icon: Bell }];
-  const services: NavigationItem[] = [{ value: "service-progress", label: "服务进度", icon: Clock }, { value: "service-authorizations", label: "服务授权", icon: User }, { value: "operation-history", label: "操作记录", icon: Layers }];
-  return <><SidebarHeader className="space-y-1 px-2 py-1.5"><div className="flex min-w-0 items-center gap-1"><DropdownMenu><DropdownTrigger render={<SidebarIdentityRow as="button" leading={<SidebarIdentityAvatar className="rounded-lg" tone="brand">C</SidebarIdentityAvatar>} primary={organization} trailing={<ChevronDown className="size-4" />} />} /><DropdownContent align="center" alignOffset={20} className="!w-60">{["华东金融", "华南制造"].map((name) => <button className="flex h-control-lg w-full items-center rounded-lg px-2 text-left text-body hover:bg-hover" key={name} onClick={() => onOrganizationChange(name)} type="button">{name}</button>)}</DropdownContent></DropdownMenu>{showSidebarTrigger && <SidebarTrigger className="shrink-0" label="收起操作导航" size="xs" />}</div><OperationsSearchTrigger onOpen={onSearchOpen} /></SidebarHeader><SidebarContent contentClassName="gap-3 px-2 py-1"><SidebarGroup><SidebarGroupContent><NavMenu activeValue={null} aria-label="主要导航" keyboardNavigation="roving">{primary.map((item) => { const Icon = item.icon; const isHome = item.value === operationsHomeHref; return <NavItem key={item.value} value={item.value}><NavItemTrigger className="px-1.5 text-body" onClick={(event) => { if (isHome) onNavigate?.(); else event.preventDefault(); }} render={<Link href={item.value} />}><NavItemLeading><Icon aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading><NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>; })}</NavMenu></SidebarGroupContent></SidebarGroup><SidebarGroup><SidebarGroupLabel>我的服务</SidebarGroupLabel><SidebarGroupContent><NavMenu activeValue={activeView} aria-label="我的服务" keyboardNavigation="roving">{services.map((item) => { const Icon = item.icon; return <NavItem key={item.value} value={item.value}><NavItemTrigger className="px-1.5 text-body data-[active=true]:text-fg-brand" onClick={(event) => { event.preventDefault(); onViewChange(item.value as ServiceManagementView); onNavigate?.(); }} render={<a href={`#${item.value}`} />}><NavItemLeading className="group-data-[active=true]/nav-item:text-fg-brand"><Icon aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading><NavItemContent><NavItemLabel>{item.label}</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>; })}</NavMenu></SidebarGroupContent></SidebarGroup><SidebarGroup><div className="flex items-center justify-between px-1.5 pb-1"><SidebarGroupLabel className="p-0">诊断会话</SidebarGroupLabel><Button size="xs" type="button" variant="link">新建会话</Button></div><NavMenu activeValue={null} aria-label="诊断会话" keyboardNavigation="roving">{["使用 specialist-network - 新会话", "在使用率最高的那台设备上…"].map((session) => <NavItem key={session} value={session}><NavItemTrigger className="px-1.5" onClick={(event) => event.preventDefault()} render={<a href="#diagnostic-sessions" />}><NavItemLeading><Chat aria-hidden size={16} strokeWidth={1.5} /></NavItemLeading><NavItemContent><NavItemLabel>{session}</NavItemLabel></NavItemContent></NavItemTrigger><span className="me-1 w-8 shrink-0 whitespace-nowrap text-right text-label text-fg-subtle">2分钟</span></NavItem>)}</NavMenu></SidebarGroup></SidebarContent><SidebarFooter className="px-2 py-1.5"><SidebarIdentityRow description="wei.feng@zstack.io" leading={<SidebarIdentityAvatar className="rounded-lg">CF</SidebarIdentityAvatar>} primary="carlos" trailing={<More className="size-4" />} trailingPlacement="edge" /></SidebarFooter></>;
-}
-
 function ServiceProgress({ tickets }: { tickets: readonly ServiceTicketItem[] }) {
   const [ticketView, setTicketView] = useState<"in-progress" | "completed">("in-progress");
   const inProgressTickets = useMemo(() => tickets.filter((ticket) => ticket.stage !== "已关闭"), [tickets]);
@@ -134,7 +91,7 @@ function ServiceProgress({ tickets }: { tickets: readonly ServiceTicketItem[] })
   const columns = useMemo<ColumnDef<ServiceTicketItem, unknown>[]>(() => [
     { accessorKey: "id", cell: ({ row }) => <span className="font-mono text-body text-fg-muted">{row.original.id}</span>, header: "工单号" },
     { accessorKey: "subject", cell: ({ row }) => <span className="text-body font-medium text-fg-default">{row.original.subject}</span>, header: "服务事项" },
-    { accessorKey: "priority", cell: ({ row }) => <Badge color={row.original.priority === "P1" ? "red" : "orange"} size="sm" variant="strong">{row.original.priority}</Badge>, header: "优先级" },
+    { accessorKey: "priority", cell: ({ row }) => <Badge status={row.original.priority === "P1" ? "danger" : "warning"} size="sm" variant="strong">{row.original.priority}</Badge>, header: "优先级" },
     { accessorKey: "stage", cell: ({ row }) => <span className="text-body text-fg-default">{row.original.stage}</span>, header: "当前阶段" },
     { accessorKey: "progress", cell: ({ row }) => <span className="text-label text-fg-muted">{row.original.progress}%</span>, header: "进度" },
     { accessorKey: "engineer", cell: ({ row }) => <span className="text-body text-fg-default">{row.original.engineer}</span>, header: "当前处理人" },
@@ -176,17 +133,13 @@ function OperationHistory({ operations }: { operations: readonly ClusterOperatio
 }
 
 /** A ZAIops service workspace that switches between progress, authorization, and operation-history mock data. */
-export function ServiceManagement({ authorizations = defaultServiceAuthorizations, className, defaultView = "service-progress", onViewChange, operations = defaultClusterOperations, tickets = defaultServiceTickets, view, ...props }: ServiceManagementProps) {
-  const [organization, setOrganization] = useState("华东金融");
+export function ServiceManagement({ workspace, authorizations = defaultServiceAuthorizations, className, defaultView = "service-progress", onViewChange, operations = defaultClusterOperations, tickets = defaultServiceTickets, view, ...props }: ServiceManagementProps) {
   const [internalView, setInternalView] = useState<ServiceManagementView>(defaultView);
-  const [searchOpen, setSearchOpen] = useState(false);
   const activeView = view ?? internalView;
   const Clock = useIcon("clock");
   const User = useIcon("user");
   const Layers = useIcon("doc-surfaces");
   const current = activeView === "service-progress" ? { icon: Clock, title: "服务进度" } : activeView === "service-authorizations" ? { icon: User, title: "服务授权" } : { icon: Layers, title: "操作记录" };
   const setView = (next: ServiceManagementView) => { if (view === undefined) setInternalView(next); onViewChange?.(next); };
-  useEffect(() => { const onKeyDown = (event: KeyboardEvent) => { const target = event.target as HTMLElement | null; if (event.defaultPrevented || event.isComposing || event.repeat || !(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "k" || target?.closest("input, textarea, select, [contenteditable], [role=textbox]")) return; event.preventDefault(); setSearchOpen(true); }; window.addEventListener("keydown", onKeyDown); return () => window.removeEventListener("keydown", onKeyDown); }, []);
-  const navigationProps = { activeView, onSearchOpen: () => setSearchOpen(true), onViewChange: setView, organization, onOrganizationChange: setOrganization };
-  return <SidebarProvider breakpointBehavior="collapse"><div className={cn("flex h-full min-h-[42rem] min-w-0 w-full overflow-hidden bg-surface-base", className)} {...props}><Sidebar ariaLabel="操作导航" className="relative h-full" collapsible="offcanvas" mobileWidth="min(260px, calc(100vw - 24px))" width="260px"><OperationsNavigation {...navigationProps} showSidebarTrigger /></Sidebar><PageLayout className="h-full min-w-0 flex-1"><PageHeader className="h-control-sm py-0 max-sm:flex-row"><div className="flex h-full min-w-0 items-center gap-2"><SidebarFloatingTrigger className="shrink-0" collapsedBehavior="offcanvas" contentClassName="h-[min(36rem,calc(100svh-4rem))] w-[260px] max-w-[calc(100vw-12px)] rounded-xl p-0" label="展开操作导航" menuLabel="打开操作导航菜单" renderContent={({ close }) => <OperationsNavigation {...navigationProps} onNavigate={close} />} size="xs" surfaceClassName="border-hairline border-border-subtle" surfaceShadow="floating-drop" /><PageHeaderContent className="h-full" icon={current.icon}><nav aria-label="当前位置" className="text-body font-medium text-fg-default">{current.title}</nav></PageHeaderContent></div></PageHeader><PageContent><PageBody className="max-w-[101.25rem] p-3">{activeView === "service-progress" ? <ServiceProgress tickets={tickets} /> : activeView === "service-authorizations" ? <ServiceAuthorizations authorizations={authorizations} /> : <OperationHistory operations={operations} />}</PageBody></PageContent></PageLayout></div><Dialog onOpenChange={setSearchOpen} open={searchOpen}><DialogContent size="sm"><DialogHeader><DialogTitle>搜索 ZAIops</DialogTitle><DialogDescription>搜索会话、集群环境、巡检报告和服务记录。</DialogDescription></DialogHeader><div className="rounded-lg border border-border-subtle px-3 py-2 text-body text-fg-subtle">输入关键词开始搜索…</div></DialogContent></Dialog></SidebarProvider>;
+  return <OperationsWorkspaceShell workspace={{ ...workspace, serviceNavigation: (workspace?.serviceNavigation ?? defaultOperationsServiceNavigation).map(item => ({ ...item, onSelect: item.value === "service-progress" || item.value === "service-authorizations" || item.value === "operation-history" ? () => { item.onSelect?.(); setView(item.value as ServiceManagementView); } : item.onSelect })) }} activeNavigation={activeView} title={current.title} icon={current.icon} className={cn("min-h-[42rem]", className)} {...props}><PageContent><PageBody className="max-w-[101.25rem] p-3">{activeView === "service-progress" ? <ServiceProgress tickets={tickets} /> : activeView === "service-authorizations" ? <ServiceAuthorizations authorizations={authorizations} /> : <OperationHistory operations={operations} />}</PageBody></PageContent></OperationsWorkspaceShell>;
 }

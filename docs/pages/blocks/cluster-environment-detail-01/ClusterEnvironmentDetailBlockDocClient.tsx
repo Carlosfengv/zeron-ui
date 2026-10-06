@@ -1,7 +1,7 @@
 "use client";
 
 import type { PreviewCode } from "@docs/lib/preview-source";
-import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
+import { ClusterEnvironmentDetailDemo as ClusterEnvironmentDetail } from "@docs/components/blocks/OperationsWorkspaceDemos";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 

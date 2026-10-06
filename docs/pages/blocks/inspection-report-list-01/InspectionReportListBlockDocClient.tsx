@@ -1,7 +1,7 @@
 "use client";
 
 import type { PreviewCode } from "@docs/lib/preview-source";
-import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";
+import { InspectionReportListDemo as InspectionReportList } from "@docs/components/blocks/OperationsWorkspaceDemos";
 import { BlockDetailPage, BlockDetailSection } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
 

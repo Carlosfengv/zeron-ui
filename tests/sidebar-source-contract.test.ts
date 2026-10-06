@@ -16,6 +16,7 @@ describe("sidebar implementation contract", () => {
   const navMenu = source("packages/ui/src/components/nav-menu.tsx");
   const sidebarDocs = source("docs/pages/components/sidebar/page.tsx");
   const zaiopsBlock = source("packages/blocks/src/application/zaiops-operations-01/zaiops-operations.tsx");
+  const zaiopsShell = source("packages/blocks/src/application/operations-workspace-shell-01/operations-workspace-shell.tsx");
   const zaiopsPreview = source("docs/components/shell/site/zaiops-sidebar-preview.tsx");
 
   it("publishes one set of width variables and keeps the compact drawer explicit", () => {
@@ -206,50 +207,48 @@ describe("sidebar implementation contract", () => {
     expect(sidebar).toContain('const Icon = opensMenuOnClick ? MenuIcon : ExpandIcon;');
     expect(sidebar).toContain('aria-label={opensMenuOnClick ? menuLabel : label}');
     expect(sidebar).toContain('if (!opensMenuOnClick)');
-    expect(zaiopsBlock).toContain('<SidebarProvider breakpointBehavior="collapse">');
-    expect(zaiopsBlock).not.toContain('clickBehavior="menu"');
-    expect(zaiopsBlock).toContain('label="收起操作导航"');
-    expect(zaiopsBlock).toContain('collapsedBehavior="offcanvas"');
-    expect(zaiopsBlock).toContain('label="展开操作导航"');
-    expect(zaiopsBlock).toContain('menuLabel="打开操作导航菜单"');
-    expect(zaiopsBlock).toContain('size="xs"');
+    expect(zaiopsShell).toContain('<SidebarProvider breakpointBehavior="collapse">');
+    expect(zaiopsShell).not.toContain('clickBehavior="menu"');
+    expect(zaiopsShell).toContain('label="收起操作导航"');
+    expect(zaiopsShell).toContain('collapsedBehavior="offcanvas"');
+    expect(zaiopsShell).toContain('label="展开操作导航"');
+    expect(zaiopsShell).toContain('menuLabel="打开操作导航菜单"');
+    expect(zaiopsShell).toContain('size="xs"');
     expect(zaiopsPreview).toContain('size="xs"\n      label={isMobile ? "关闭导航" : "收起侧边栏"}\n      className="shrink-0"');
     expect(zaiopsPreview).toContain('collapsedBehavior="offcanvas"\n                  size="xs"');
     expect(zaiopsPreview).toContain('<SidebarProvider breakpointBehavior="collapse">');
     expect(zaiopsPreview).not.toContain("CompactOpenTrigger");
     expect(zaiopsPreview).not.toContain('className="flex h-full items-center xl:hidden"');
-    expect(zaiopsBlock).not.toContain('<div className="xl:hidden"><SidebarTrigger');
+    expect(zaiopsShell).not.toContain('<div className="xl:hidden"><SidebarTrigger');
   });
 
   it("hydrates the platform shortcut from an invisible size-preserving placeholder", () => {
-    expect(zaiopsBlock).toContain("useSyncExternalStore(");
-    expect(zaiopsBlock).toContain("getServerPlatformShortcut");
-    expect(zaiopsBlock).toContain('className="invisible ms-auto min-w-13 justify-end"');
-    expect(zaiopsBlock).not.toContain('useState("Ctrl/⌘ K")');
-    expect(zaiopsBlock).toContain('aria-keyshortcuts="Meta+K Control+K"');
+    expect(zaiopsShell).toContain("useSyncExternalStore(");
+    expect(zaiopsShell).toContain("const serverShortcut = () => null;");
+    expect(zaiopsShell).toContain('"ms-auto min-w-13 justify-end"');
+    expect(zaiopsShell).toContain('!shortcut && "invisible"');
+    expect(zaiopsShell).not.toContain('useState("Ctrl/⌘ K")');
+    expect(zaiopsShell).toContain('aria-keyshortcuts="Meta+K Control+K"');
   });
 
-  it("uses the App Router paths and one shared navigation panel", () => {
+  it("keeps navigation routes and link rendering in the shared workspace contract", () => {
     for (const href of [
-      "/block-demo/zaiops-operations-01",
-      "/clusters",
-      "/reports",
-      "/service-progress",
-      "/service-authorizations",
-      "/operation-history",
-    ]) {
-      expect(zaiopsBlock).toContain(`"${href}"`);
-    }
-    expect(zaiopsBlock).toContain('render={<Link href={item.value} />}');
-    expect(zaiopsBlock).toContain("function OperationsNavigationPanel(");
-    expect(zaiopsBlock.match(/<OperationsNavigationPanel/g)).toHaveLength(2);
-    expect(zaiopsBlock).not.toContain("event.preventDefault();\n            setActive");
+      "/block-demo/zaiops-operations-01", "/block-demo/cluster-environment-list-01",
+      "/block-demo/inspection-report-list-01", "/block-demo/monitoring-alert-list-01",
+    ]) expect(zaiopsShell).toContain(`"${href}"`);
+    expect(zaiopsShell).toContain("renderLink?:");
+    expect(zaiopsShell).toContain("options.renderLink({ href:");
+    expect(zaiopsShell).toContain("function NavigationPanel(");
+    expect(zaiopsShell.match(/<NavigationPanel/g)).toHaveLength(2);
+    expect(zaiopsShell).not.toContain('from "next/');
+    expect(zaiopsBlock).toContain("<OperationsWorkspaceShell");
+    expect(zaiopsBlock).not.toContain("function NavigationPanel(");
   });
 
   it("keeps ZAIops navigation density independent of the viewport breakpoint", () => {
-    expect(zaiopsBlock).toContain('className="px-1.5 text-body data-[active=true]:text-fg-brand"');
+    expect(zaiopsShell).toContain('className="px-1.5 text-body data-[active=true]:text-fg-brand"');
     expect(zaiopsPreview).toContain('className="gap-1 px-1.5 text-body data-[active=true]:text-fg-brand"');
-    for (const sourceFile of [zaiopsPreview, zaiopsBlock]) {
+    for (const sourceFile of [zaiopsPreview, zaiopsShell]) {
       const navigationTriggerClass = sourceFile.match(
         /<NavItemTrigger[\s\S]*?className="([^"]+)"[\s\S]*?<\/NavItemTrigger>/
       )?.[1];
@@ -259,7 +258,7 @@ describe("sidebar implementation contract", () => {
   });
 
   it("gives the collapsed ZAIops hover navigation a bordered floating surface", () => {
-    for (const sourceFile of [zaiopsPreview, zaiopsBlock]) {
+    for (const sourceFile of [zaiopsPreview, zaiopsShell]) {
       expect(sourceFile).toContain('rounded-xl p-0');
       expect(sourceFile).toContain('surfaceClassName="border-hairline border-border-subtle"');
       expect(sourceFile).toContain('surfaceShadow="floating-drop"');
@@ -267,17 +266,17 @@ describe("sidebar implementation contract", () => {
   });
 
   it("keeps the ZAIops page-header controls and breadcrumb on one 28px row", () => {
-    for (const sourceFile of [zaiopsPreview, zaiopsBlock]) {
+    for (const sourceFile of [zaiopsPreview, zaiopsShell]) {
       expect(sourceFile).toContain('<PageHeader className="h-control-sm py-0 max-sm:flex-row">');
       expect(sourceFile).toContain('<div className="flex h-full min-w-0 items-center gap-2">');
       expect(sourceFile).toMatch(
-        /<PageHeaderContent(?: className="h-full" icon=\{Home\}| icon=\{Home\} className="h-full")>/,
+        /<PageHeaderContent(?: className="h-full" icon=\{(?:Home|icon)\}| icon=\{(?:Home|icon)\} className="h-full")>/,
       );
     }
   });
 
   it("keeps the embedded ZAIops Sidebar as the positioning context for its panel", () => {
-    expect(zaiopsBlock).toContain('className="relative h-full"');
+    expect(zaiopsShell).toContain('className="relative h-full"');
   });
 
   it("keeps vertical menu focus rings inside scrollable navigation bounds", () => {
