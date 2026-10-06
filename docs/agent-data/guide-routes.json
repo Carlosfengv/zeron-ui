@@ -54,6 +54,10 @@
       "itemId": "block:inspection-report-list-01"
     },
     {
+      "path": "blocks/integration-monitors-01.md",
+      "itemId": "block:integration-monitors-01"
+    },
+    {
       "path": "blocks/model-router-01.md",
       "itemId": "block:model-router-01"
     },

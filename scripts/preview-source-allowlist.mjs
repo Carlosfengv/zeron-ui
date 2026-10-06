@@ -27,6 +27,15 @@ export const previewSourceFiles = {
     "packages/blocks/src/application/getting-started-01/getting-started-demo-data.ts",
     "packages/blocks/src/application/getting-started-01/index.ts"
   ],
+  "integration-monitors-01": [
+    "packages/blocks/src/application/integration-monitors-01/integration-monitors-brand-icons.ts",
+    "packages/blocks/src/application/integration-monitors-01/integration-monitors.tsx",
+    "packages/blocks/src/application/integration-monitors-01/integration-monitors-types.ts",
+    "packages/blocks/src/application/integration-monitors-01/integration-monitors-data.ts",
+    "packages/blocks/src/application/integration-monitors-01/integration-monitors-demo-data.ts",
+    "packages/blocks/src/application/integration-monitors-01/integration-monitors-row.tsx",
+    "packages/blocks/src/application/integration-monitors-01/index.ts"
+],
   "security-overview-01": [
     "packages/blocks/src/application/security-overview-01/security-overview.tsx",
     "packages/blocks/src/application/security-overview-01/security-overview-types.ts",

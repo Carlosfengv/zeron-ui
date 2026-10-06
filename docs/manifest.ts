@@ -189,7 +189,7 @@ export const docEntries = [
   blockEntry({ slug: "cost-estimate-01", section: "application", icon: "doc-card", name: "费用估算", description: "四项用量、预设、月付/年付与最低消费估算。", registryItem: { name: "cost-estimate-01", type: "registry:block" }, isNew: true, order: 36.96 }),
 
   blockEntry({ slug: "transaction-details-01", section: "application", icon: "doc-card", name: "交易详情", description: "突出金额、交易字段、可折叠账单与附件操作。", registryItem: { name: "transaction-details-01", type: "registry:block" }, isNew: true, order: 36.95 }),
-
+  blockEntry({ slug: "integration-monitors-01", section: "application", icon: "doc-card", name: "集成监控", description: "集成状态分类、检查条带、筛选、分页与管理操作。", registryItem: { name: "integration-monitors-01", type: "registry:block" }, isNew: true, order: 36.85 }),
   blockEntry({ slug: "security-overview-01", section: "application", icon: "doc-card", name: "安全概览", description: "安全评分、风险趋势、六维态势与受影响资产。", registryItem: { name: "security-overview-01", type: "registry:block" }, isNew: true, order: 36.9 }),
   blockEntry({ slug: "deployment-detail-01", section: "application", icon: "doc-card", name: "部署详情", description: "网站预览、域名、来源与部署阶段检查结果。", registryItem: { name: "deployment-detail-01", type: "registry:block" }, isNew: true, order: 36.8 }),
   blockEntry({ slug: "credit-usage-01", section: "application", icon: "doc-card", name: "Credit Usage", description: "A compact credit-cycle summary with model attribution, depletion guidance, and plan controls.", registryItem: { name: "credit-usage-01", type: "registry:block" }, isNew: true, order: 36.5 }),

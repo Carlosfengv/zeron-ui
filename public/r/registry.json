@@ -5084,6 +5084,85 @@
       }
     },
     {
+      "name": "integration-monitors-01",
+      "type": "registry:block",
+      "title": "集成监控",
+      "description": "集成监控的状态分类、检查条带、筛选、分页与宿主操作。",
+      "categories": [
+        "application",
+        "monitoring"
+      ],
+      "dependencies": [
+        "@thesvg/icons@^3.2.15"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/avatar.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/data-table.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/info-item.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/input-group.json",
+        "https://zeron-ui.vercel.app/r/menu-item.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/skeleton.json",
+        "https://zeron-ui.vercel.app/r/status-overview.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors-brand-icons.ts",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors-brand-icons.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors-row.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors-row.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "transaction-details-01",
       "type": "registry:block",
       "title": "交易详情",

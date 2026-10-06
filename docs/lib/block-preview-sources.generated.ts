@@ -14,6 +14,9 @@ const blockPreviewSources = {
   "getting-started-01": {
     "url": "/docs-source/aaedb2afa3857a884c90d9879ef7c9398544c8b8655fddcc15a792c0fc1b9a58.txt"
   },
+  "integration-monitors-01": {
+    "url": "/docs-source/e935ce781dadea500d68d9e0bac28246ea2961b4a94fe4d8be9dcf0e60840028.txt"
+  },
   "security-overview-01": {
     "url": "/docs-source/4e3bb2f41fb4432d819e89cf31d4ae34bb7062df944157b3198779861486e95a.txt"
   },

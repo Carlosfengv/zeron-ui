@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:integration-monitors-01",
+      "type": "registry",
+      "key": "integration-monitors-01",
+      "aliases": [
+        "integration-monitors-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:transaction-details-01",
       "type": "registry",
       "key": "transaction-details-01",

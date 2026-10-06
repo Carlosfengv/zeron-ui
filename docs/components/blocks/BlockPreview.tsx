@@ -169,6 +169,9 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "project-monitor-01": () => import("./ProjectMonitorDemo").then(({ ProjectMonitorDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={1040} canvasWidth={980}><ProjectMonitorDemo /></ResponsivePreview>,
   })),
+  "integration-monitors-01": () => import("./IntegrationMonitorsDemo").then(({ IntegrationMonitorsDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={950} canvasWidth={900}><IntegrationMonitorsDemo /></ResponsivePreview>,
+  })),
   "security-overview-01": () => import("./SecurityOverviewDemo").then(({ SecurityOverviewDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={920} canvasWidth={800}><SecurityOverviewDemo /></ResponsivePreview>,
   })),

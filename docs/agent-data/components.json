@@ -1,4 +1,23 @@
 {
+  "integration-monitors-01": {
+    "keywords": [
+      "集成监控",
+      "检查",
+      "integration",
+      "compliance"
+    ],
+    "useCases": [
+      "完整集成快照的检查条带、分类、筛选与客户端分页。"
+    ],
+    "whenNotToUse": [
+      "服务端分页集合；检查项条带不表示时间趋势。"
+    ],
+    "keyApi": [
+      "scopeId/data 必须匹配，稳定 id 与 snapshotId。",
+      "query/onQueryChange 支持受控查询；actions 由宿主执行真实操作。",
+      "checks=null 表示未知，[] 表示无检查项；active/paused/needs-setup 与结果分离。"
+    ]
+  },
   "cluster-environment-list-01": {
     "keywords": [
       "集群",

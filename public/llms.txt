@@ -37,6 +37,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [入门任务清单](https://zeron-ui.vercel.app/ai/items/block%3Agetting-started-01.md): An embedded, collapsible setup checklist with completion counts, task states and host-owned actions. Registry: getting-started-01.
 - [Infinite Log Table](https://zeron-ui.vercel.app/ai/items/block%3Ainfinite-log-table-01.md): A schema-driven virtualized log explorer with dynamic fields and filters, cursor pagination, and Live tailing. Registry: infinite-log-table-01.
 - [巡检报告列表](https://zeron-ui.vercel.app/ai/items/block%3Ainspection-report-list-01.md): An operations report workspace with shared navigation, filtering, freshness states, and row actions. Registry: inspection-report-list-01.
+- [集成监控](https://zeron-ui.vercel.app/ai/items/block%3Aintegration-monitors-01.md): 集成状态分类、检查条带、筛选、分页与管理操作。 Registry: integration-monitors-01.
 - [Login](https://zeron-ui.vercel.app/ai/items/block%3Alogin-01.md): A card-based authentication flow with credential, Apple, and Google sign-in paths. Registry: login-01.
 - [MCP 详情](https://zeron-ui.vercel.app/ai/items/block%3Amcp-detail-01.md): An MCP resource detail page with safe connection generation and a minimal tool test panel. Registry: mcp-detail-01.
 - [成员与部门](https://zeron-ui.vercel.app/ai/items/block%3Amember-department-01.md): A member directory and expandable department workspace with search, account-status filtering, and responsive organization details. Registry: member-department-01.
@@ -172,6 +173,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [getting-started-01](https://zeron-ui.vercel.app/agent-guides/blocks/getting-started-01.md)
 - [infinite-log-table-01](https://zeron-ui.vercel.app/agent-guides/blocks/infinite-log-table-01.md)
 - [inspection-report-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/inspection-report-list-01.md)
+- [integration-monitors-01](https://zeron-ui.vercel.app/agent-guides/blocks/integration-monitors-01.md)
 - [model-router-01](https://zeron-ui.vercel.app/agent-guides/blocks/model-router-01.md)
 - [monitoring-alert-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/monitoring-alert-list-01.md)
 - [project-monitor-01](https://zeron-ui.vercel.app/agent-guides/blocks/project-monitor-01.md)

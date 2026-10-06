@@ -1,0 +1,12 @@
+{
+  "integrationMonitorsBlock": {
+    "title": "集成监控",
+    "description": "按视频示例组合的集成监控列表，支持状态分类、检查条带、筛选、搜索、分页和管理操作。全部使用当前 Zeron 组件与语义样式变量。",
+    "composition": "组件组合",
+    "compositionBody": "使用 Container、Tabs、Select、InputGroup、InfoItem、Avatar、Badge、StatusOverview、Dropdown、MenuItem 和 Button。检查条带使用 StatusOverview 的 activity 模式；分页由 useDataTable 管理，页码使用 Button。保持当前组件库的品牌色、尺寸与响应式布局。",
+    "dataContract": "数据接入",
+    "dataContractBody": "宿主提供同一 scopeId 的完整快照，包含稳定的集成和检查项 ID、运行状态、检查结果、资产数、更新时间和可连接集成。顶部计数是集成条数，行内计数是检查项数。null 表示未知，空数组表示确认无检查项；暂停显示历史结果，待配置不生成虚构条带。",
+    "behavior": "交互与状态",
+    "behaviorBody": "分类、集成、运行状态与搜索取交集，筛选变更重置分页，删除后校正页码。查询支持受控接入。异步操作等待 Promise、防重复并显示失败反馈。文档演示支持配置、编辑、暂停、恢复、移除、详情、资产、CSV 下载、查询链接分享、静音和管理集成；使用本地示例数据，未接入真实集成服务。"
+  }
+}

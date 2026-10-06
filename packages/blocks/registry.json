@@ -3,6 +3,52 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "integration-monitors-01",
+      "type": "registry:block",
+      "title": "集成监控",
+      "description": "集成监控的状态分类、检查条带、筛选、分页与宿主操作。",
+      "categories": ["application", "monitoring"],
+      "dependencies": ["@thesvg/icons"],
+      "registryDependencies": ["avatar", "badge", "button", "container", "data-table", "dropdown", "empty", "alert", "icon-context", "info-item", "inline-notice", "input-group", "menu-item", "select", "skeleton", "status-overview", "tabs", "tooltip", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors-brand-icons.ts",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors-brand-icons.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/integration-monitors-row.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/integration-monitors-row.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/integration-monitors-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/integration-monitors-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "transaction-details-01",
       "type": "registry:block",
       "title": "交易详情",

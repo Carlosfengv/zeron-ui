@@ -1,0 +1,12 @@
+{
+  "integrationMonitorsBlock": {
+    "title": "Integration monitors",
+    "description": "An embedded integration monitor list composed from the video reference, with check rails, categories, filters, search, pagination and host actions. Uses current Zeron components and semantic tokens.",
+    "composition": "Composition",
+    "compositionBody": "Composes Container, Tabs, Select, InputGroup, InfoItem, Avatar, Badge, StatusOverview, Dropdown, MenuItem and Button. StatusOverview activity segments represent check items. useDataTable owns pagination; Button renders numbered pages. Uses the library's existing brand color, sizes and responsive contracts.",
+    "dataContract": "Data integration",
+    "dataContractBody": "The host supplies a complete scope-matched snapshot with stable integration and check IDs, lifecycle, results, asset counts, timestamps and available integrations. Category counts measure integrations; row counts measure checks. null means unknown and an empty array means no checks. Paused rows retain historical results; setup rows do not fabricate segments.",
+    "behavior": "Behavior and states",
+    "behaviorBody": "Category, integration, lifecycle and search filters intersect. Filter changes reset pagination and removals clamp the page. Query can be controlled. Promise actions prevent duplicate submissions and surface failures. The local fixture demo includes configure, edit, pause, resume, remove, details, assets, CSV download, query-sharing links, mute and integration management. It is not connected to real integration services. Default labels are Chinese; labels, locale and timeZone are configurable."
+  }
+}
