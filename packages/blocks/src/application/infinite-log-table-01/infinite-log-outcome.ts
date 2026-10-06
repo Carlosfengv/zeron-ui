@@ -1,31 +1,26 @@
-import type { BadgeColorInput } from "@zeron/ui/badge";
+import type { BadgeStatus } from "@zeron/ui/badge";
 import type { HttpLogOutcome } from "./infinite-log-types";
 
 interface InfiniteLogOutcomeVisual {
-  badgeColor: BadgeColorInput;
+  status: BadgeStatus;
   chartColor: string;
   markerClassName: string;
 }
 
 export const infiniteLogOutcomeVisuals = {
   success: {
-    badgeColor: {
-      base: "var(--brand)",
-      onSoft: "var(--fg-brand)",
-      onStrong: "var(--fg-on-brand)",
-      softBackground: "color-mix(in oklab, var(--brand) 14%, transparent)",
-    },
-    chartColor: "var(--brand)",
-    markerClassName: "bg-brand",
+    status: "success",
+    chartColor: "var(--fg-success)",
+    markerClassName: "bg-fg-success",
   },
   warning: {
-    badgeColor: "yellow",
-    chartColor: "var(--warning-border)",
-    markerClassName: "bg-warning-border",
+    status: "warning",
+    chartColor: "var(--fg-warning)",
+    markerClassName: "bg-fg-warning",
   },
   error: {
-    badgeColor: "red",
-    chartColor: "var(--danger-border)",
-    markerClassName: "bg-destructive",
+    status: "danger",
+    chartColor: "var(--fg-danger)",
+    markerClassName: "bg-fg-danger",
   },
 } satisfies Record<HttpLogOutcome, InfiniteLogOutcomeVisual>;

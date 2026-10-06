@@ -1,5 +1,7 @@
 "use client";
 
+import { Alert, AlertTitle, AlertAction } from "@zeron/ui/alert";
+
 /* eslint-disable @next/next/no-img-element -- This React Registry block accepts host images without requiring Next.js. */
 
 import { useRef, useState, type ReactNode } from "react";
@@ -49,8 +51,10 @@ function StageResult({ status, labels }: { status: DeploymentStageStatus; labels
   const Check = useIcon("check");
   const Warning = useIcon("circle-x");
   const Loader = useIcon("loader");
-  const Icon = status === "success" ? Check : status === "error" || status === "warning" ? Warning : Loader;
-  return <Badge status={stageTone[status]}><span className="flex items-center gap-1"><Icon size={16} /><span className="sr-only">{labels[status]}</span></span></Badge>;
+  const Clock = useIcon("clock");
+  const Unknown = useIcon("circle");
+  const Icon = status === "success" ? Check : status === "error" || status === "warning" ? Warning : status === "running" ? Loader : status === "pending" ? Clock : Unknown;
+  return <Badge variant="plain" status={stageTone[status]} role="img" aria-label={labels[status]} leadingIcon={<span className={status === "running" ? "inline-flex animate-spin motion-reduce:animate-none" : "inline-flex"}><Icon size={16} /></span>} />;
 }
 function StageRow({ stage, labels, locale, onOpen, pending, disabled }: { stage: DeploymentStage; labels: DeploymentDetailLabels; locale: string; onOpen?: () => void; pending: boolean; disabled: boolean }) {
   const Play = useIcon("play");
@@ -120,10 +124,10 @@ function DeploymentDetailState({ data, state = "ready", statusMessage, actions, 
     return <Tooltip key={domain.id} content={domain.name}>{href ? <Button asChild size="xs" variant="secondary" leadingIcon={Icon} className="max-w-full"><a href={href} target="_blank" rel="noopener noreferrer"><span className="block max-w-48 truncate @lg:max-w-64">{domain.name}</span></a></Button> : <Badge><span className="block max-w-48 truncate @lg:max-w-64">{domain.name}</span></Badge>}</Tooltip>;
   }
   return <Card {...props} ref={(node) => { alive.current = node !== null; }} data-slot="deployment-detail" data-state={state} aria-busy={state === "loading" || busy || undefined}
-    className={cn("@container w-full max-w-3xl overflow-hidden rounded-2xl border-hairline border-border bg-surface-raised pb-0 shadow-raised", className)}>
+    className={cn("@container w-full max-w-3xl overflow-hidden rounded-2xl bg-surface-raised pb-0", className)}>
     <header className="px-5 py-4"><h2 className="text-body font-medium text-fg-default">{labels.title}</h2></header>
     <section className="mx-1 rounded-xl border-hairline border-border bg-surface-floating p-5">
-      {state === "loading" ? <div role="status" className="space-y-5"><span className="sr-only">{labels.loading}</span><Skeleton className="h-10 w-2/3" /><Skeleton className="h-44 w-full" /><Skeleton className="h-20 w-full" /><Skeleton className="h-36 w-full" /></div> : state === "error" ? <div className="space-y-4"><InlineNotice role="alert" tone="danger" variant="emphasized"><InlineNoticeContent>{statusMessage ?? labels.unavailable}</InlineNoticeContent></InlineNotice>{actions?.onRetry && <Button variant="secondary" loading={pending === "retry"} disabled={busy} onClick={() => void perform("retry", actions.onRetry!)}>{labels.retry}</Button>}</div> : <>
+      {state === "loading" ? <div role="status" className="space-y-5"><span className="sr-only">{labels.loading}</span><Skeleton className="h-10 w-2/3" /><Skeleton className="h-44 w-full" /><Skeleton className="h-20 w-full" /><Skeleton className="h-36 w-full" /></div> : state === "error" ? <div className="flex min-w-0 w-full items-center justify-center min-h-60 px-4 py-8"><Alert status="danger" role="group" className="w-full max-w-xl"><AlertTitle>{statusMessage ?? labels.unavailable}</AlertTitle><AlertAction>{actions?.onRetry && <Button variant="secondary" loading={pending === "retry"} disabled={busy} onClick={() => void perform("retry", actions.onRetry!)}>{labels.retry}</Button>}</AlertAction></Alert></div> : <>
         {state === "stale" && <div className="mb-4"><InlineNotice tone="warning" variant="emphasized"><InlineNoticeContent>{statusMessage ?? labels.stale}</InlineNoticeContent></InlineNotice></div>}
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-4"><h3 className="min-w-0 max-w-full break-all text-heading font-semibold text-fg-default">{data.name}</h3><div className="flex flex-wrap items-center gap-2">
           {(actions?.onShare || shareHref) && <Button variant="secondary" leadingIcon={Share} loading={pending === "share"} disabled={busy} onClick={() => void perform("share", () => actions?.onShare ? actions.onShare(data) : navigator.clipboard.writeText(new URL(shareHref!, window.location.href).href), actions?.onShare ? undefined : labels.copied)}>{labels.share}</Button>}

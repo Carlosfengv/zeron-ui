@@ -39,7 +39,7 @@ export interface PriceProviderRecord {
 
 export interface ChartPoint {
   date: string;
-  [series: string]: string | number;
+  [series: string]: string | number | null | undefined;
 }
 
 export interface PricingData {
@@ -62,6 +62,8 @@ export interface PerformanceChart {
   id: string;
   title: string;
   kind: "line" | "benchmark";
+  /** Display unit; values remain in this unit without implicit conversion. */
+  unit?: string;
   data: readonly ChartPoint[];
   series: readonly PerformanceSeries[];
 }
@@ -185,6 +187,7 @@ function performanceChart(
     id,
     title,
     kind: "line",
+    unit: id === "throughput" ? "tok/s" : id === "latency" || id === "e2e" ? "s" : "%",
     data: points(rows),
     series: performanceSeries
       .filter(({ key }) => averages[key])

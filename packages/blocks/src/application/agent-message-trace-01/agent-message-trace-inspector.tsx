@@ -37,10 +37,10 @@ const kindColors = {
 } as const;
 
 const statusColors = {
-  running: "blue",
-  success: "green",
-  error: "red",
-  cancelled: "amber",
+  running: "info",
+  success: "success",
+  error: "danger",
+  cancelled: "neutral",
 } as const;
 
 export const defaultAgentMessageTraceInspectorLabels: AgentMessageTraceInspectorLabels = {
@@ -329,7 +329,7 @@ function EventsPanel({ labels, locale, span }: { labels: AgentMessageTraceInspec
           <div className="flex items-center justify-between gap-2">
             <span className="min-w-0 truncate text-body font-medium text-fg-default">{event.name}</span>
             <div className="flex shrink-0 items-center gap-2">
-              {event.status && <Badge color={statusColors[event.status]} size="sm">{event.status}</Badge>}
+              {event.status && <Badge status={statusColors[event.status]} size="sm">{event.status}</Badge>}
               <span className="font-mono text-label tabular-nums text-fg-subtle">
                 +{formatAgentMessageTraceDuration(event.startOffsetMs, locale)}
               </span>
@@ -392,7 +392,7 @@ export function AgentMessageTraceInspector({
       <header className="flex shrink-0 items-center gap-2 border-b border-border px-4 py-3">
         <Badge color={kindColors[span.kind]} size="sm" variant="dot">{span.kind}</Badge>
         <h2 className="min-w-0 flex-1 truncate text-body font-semibold" title={span.name}>{span.name}</h2>
-        <Badge color={statusColors[span.status]} size="sm">{span.status}</Badge>
+        <Badge status={statusColors[span.status]} size="sm">{span.status}</Badge>
       </header>
 
       <ScrollArea className="min-h-0 flex-1 [container-type:inline-size]">

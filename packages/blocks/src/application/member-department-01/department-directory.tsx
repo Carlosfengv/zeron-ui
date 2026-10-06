@@ -297,7 +297,7 @@ function DepartmentDirectory({
         accessorKey: "status",
         header: labels.status,
         cell: ({ row }) => (
-          <Badge color={row.original.status === "active" ? "blue" : "gray"} size="sm">
+          <Badge status={row.original.status === "active" ? "info" : "neutral"} size="sm">
             {row.original.status === "active" ? labels.active : labels.suspended}
           </Badge>
         ),

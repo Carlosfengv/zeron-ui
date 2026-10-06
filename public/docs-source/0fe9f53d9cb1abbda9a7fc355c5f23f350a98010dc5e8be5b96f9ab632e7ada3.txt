@@ -1,5 +1,7 @@
 "use client";
 
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+
 import { Children, Fragment, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentPropsWithoutRef, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import ChevronDownIcon from "@hugeicons/core-free-icons/ArrowDown01Icon";
 import WebhookIcon from "@hugeicons/core-free-icons/WebhookIcon";
@@ -565,13 +567,13 @@ function turnMetrics(turn: AgentTraceTurn): Pick<AgentTraceRow, "input" | "outpu
 function TurnStatusIcon({ status }: { status: AgentTraceTurn["status"] }) {
   const state = status ?? "running";
   const presentation = {
-    completed: { label: "Completed", icon: "check" as IconName, className: "bg-success-surface text-fg-success" },
-    error: { label: "Error", icon: "x" as IconName, className: "bg-danger-surface text-fg-danger" },
-    aborted: { label: "Aborted", icon: "pause" as IconName, className: "bg-warning-surface text-fg-warning" },
-    running: { label: "Running", icon: "loader" as IconName, className: "bg-info-surface text-fg-info" },
+    completed: { label: "Completed", icon: "check" as IconName, tone: "success" as const },
+    error: { label: "Error", icon: "x" as IconName, tone: "danger" as const },
+    aborted: { label: "Aborted", icon: "pause" as IconName, tone: "neutral" as const },
+    running: { label: "Running", icon: "loader" as IconName, tone: "info" as const },
   }[state];
 
-  return <span role="img" aria-label={`Turn status: ${presentation.label}`} title={presentation.label} className={cn("grid size-4 shrink-0 place-items-center rounded-sm", presentation.className)}><TraceIcon name={presentation.icon} size={14} className={state === "running" ? "animate-spin" : undefined} /></span>;
+  return <Badge variant="plain" status={presentation.tone} role="img" aria-label={`Turn status: ${presentation.label}`} title={presentation.label} leadingIcon={<span className={state === "running" ? "inline-flex animate-spin motion-reduce:animate-none" : "inline-flex"}><TraceIcon name={presentation.icon} size={14} /></span>} />;
 }
 
 function primaryEvent(row: AgentTraceRow): JsonRecord | null {
@@ -652,13 +654,13 @@ function ModelLogo({ source, size = 16 }: { source: { provider: string; model?: 
 function RowStatus({ status }: { status: AgentTraceRow["status"] }) {
   const state = status ?? "recorded";
   const presentation = {
-    success: { label: "Success", icon: "check" as IconName, className: "bg-success-surface text-fg-success" },
-    error: { label: "Error", icon: "x" as IconName, className: "bg-danger-surface text-fg-danger" },
-    running: { label: "Running", icon: "loader" as IconName, className: "bg-info-surface text-fg-info" },
-    recorded: { label: "Recorded", icon: "dot" as IconName, className: "bg-neutral-status-surface text-fg-neutral-status" },
+    success: { label: "Success", icon: "check" as IconName, tone: "success" as const },
+    error: { label: "Error", icon: "x" as IconName, tone: "danger" as const },
+    running: { label: "Running", icon: "loader" as IconName, tone: "info" as const },
+    recorded: { label: "Recorded", icon: "dot" as IconName, tone: "neutral" as const },
   }[state];
 
-  return <span className="inline-flex items-center gap-1.5"><span role="img" aria-label={`Status: ${presentation.label}`} className={cn("grid size-4 place-items-center rounded-sm", presentation.className)}><TraceIcon name={presentation.icon} size={12} className={state === "running" ? "animate-spin" : undefined} /></span><span>{presentation.label}</span></span>;
+  return <Badge variant="plain" status={presentation.tone} role="img" aria-label={`Status: ${presentation.label}`} leadingIcon={<span className={state === "running" ? "inline-flex animate-spin motion-reduce:animate-none" : "inline-flex"}><TraceIcon name={presentation.icon} size={12} /></span>}>{presentation.label}</Badge>;
 }
 
 function rowUsage(row: AgentTraceRow): { input?: number; cacheRead?: number; cacheWrite?: number; output?: number; reasoning?: number } {
@@ -912,7 +914,7 @@ export function AgentTrace({
                 </Tabs>
                 <label className="relative w-32 sm:w-40"><span className="sr-only">Search trace</span><span aria-hidden="true" className="pointer-events-none absolute left-2 top-1/2 z-content -translate-y-1/2 text-fg-subtle"><TraceIcon name="search" /></span><Input size="md" type="text" role="searchbox" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search trace" aria-label="Search trace" className={cn("pl-7", query && "pr-8")} />{query && <Button type="button" size="xs" variant="ghost" iconOnly aria-label="Clear trace search" onClick={() => setSearch("")} className="absolute right-1 top-1/2 z-content -translate-y-1/2"><TraceIcon name="x" /></Button>}</label>
               </div>
-              {error && <p role="alert" className="border-b border-danger-border bg-danger-surface-subtle px-3 py-2 text-label text-fg-danger">{error}</p>}
+              {error && <InlineNotice role="alert" tone="danger" variant="emphasized" className="mx-3 my-2"><InlineNoticeContent>{error}</InlineNoticeContent></InlineNotice>}
       <section className="grid shrink-0 grid-cols-[48px_minmax(0,1fr)] border-b border-border bg-surface-raised" aria-label="Trajectory overview">
         <div className="relative border-r border-border text-label text-fg-subtle"><span className="absolute right-1 top-1">Input</span><span className="absolute right-1 top-[20px]">Model</span><span className="absolute right-1 top-[35px]">Tools</span></div>
         <div ref={timelineRef} onPointerDown={beginRange} onPointerMove={moveRange} onPointerUp={endRange} onPointerCancel={endRange} onContextMenu={(event) => { event.preventDefault(); setRange(null); }} className="relative h-[50px] cursor-crosshair overflow-hidden touch-none">

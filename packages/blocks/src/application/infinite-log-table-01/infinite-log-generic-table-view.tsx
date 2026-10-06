@@ -1,8 +1,9 @@
 "use client";
 
+import { Alert, AlertTitle, AlertAction } from "@zeron/ui/alert";
+
 import { type ColumnDef, type ColumnSizingState, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Alert, AlertAction, AlertTitle } from "@zeron/ui/alert";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Checkbox } from "@zeron/ui/checkbox";
@@ -74,14 +75,6 @@ interface GenericInfiniteLogTableViewProps<TRecord extends InfiniteLogBaseRecord
   errorContent?: ReactNode;
 }
 
-function badgeColor(tone: ReturnType<NonNullable<InfiniteLogField["badgeTone"]>>) {
-  if (tone === "success") return "green" as const;
-  if (tone === "warning") return "yellow" as const;
-  if (tone === "danger") return "red" as const;
-  if (tone === "info") return "blue" as const;
-  return "gray" as const;
-}
-
 function renderValue<TRecord extends InfiniteLogBaseRecord>(
   field: InfiniteLogField<TRecord>,
   record: TRecord,
@@ -97,7 +90,7 @@ function renderValue<TRecord extends InfiniteLogBaseRecord>(
   }
   if (field.type === "badge") {
     const tone = field.badgeTone?.(value, record) ?? "neutral";
-    return <Badge color={badgeColor(tone)} size="sm">{String(value)}</Badge>;
+    return <Badge status={tone} size="sm">{String(value)}</Badge>;
   }
   if (field.type === "boolean") return <Badge color={value ? "green" : "gray"} size="sm">{String(value)}</Badge>;
   if (field.type === "number") return <span className="font-mono text-label tabular-nums text-fg-default">{new Intl.NumberFormat(locale).format(Number(value))}</span>;
@@ -368,7 +361,7 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
           })}
         </div>
 
-        {loading ? <div className="grid min-h-48 place-items-center text-body text-fg-muted" role="status">Loading logs…</div> : error && rows.length === 0 ? errorContent ?? <div className="grid min-h-48 place-items-center p-3"><Alert className="w-full max-w-md" status="danger"><AlertTitle>Unable to load logs.</AlertTitle><AlertAction><Button onClick={onRetry} size="sm" type="button" variant="secondary">{labels.retry}</Button></AlertAction></Alert></div> : rows.length === 0 ? emptyContent ?? <Empty announce className="min-h-48" density="compact" reason="no-results" scope="inline"><EmptyHeader><EmptyTitle>{labels.noResults}</EmptyTitle></EmptyHeader></Empty> : (
+        {loading ? <div className="grid min-h-48 place-items-center text-body text-fg-muted" role="status">Loading logs…</div> : error && rows.length === 0 ? errorContent ?? <div className="grid min-h-48 place-items-center p-3"><div className="flex min-w-0 w-full items-center justify-center min-h-60 px-4 py-8"><Alert status="danger" role="group" className="w-full max-w-xl"><AlertTitle>{"Unable to load logs."}</AlertTitle><AlertAction><Button onClick={onRetry} size="sm" type="button" variant="secondary">{labels.retry}</Button></AlertAction></Alert></div></div> : rows.length === 0 ? emptyContent ?? <Empty announce className="min-h-48" density="compact" reason="no-results" scope="inline"><EmptyHeader><EmptyTitle>{labels.noResults}</EmptyTitle></EmptyHeader></Empty> : (
           <div className="relative min-w-max" role="rowgroup" style={{ height: `${virtualizer.getTotalSize()}px` }}>
             {renderedRows.map((virtualRow) => {
               if (hasLiveBoundary && virtualRow.index === liveBoundaryRecordIndex) {

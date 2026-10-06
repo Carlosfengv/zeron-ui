@@ -1,5 +1,7 @@
 "use client";
 
+import { Alert, AlertTitle, AlertAction } from "@zeron/ui/alert";
+
 import {
   type ColumnDef,
   type ColumnSizingState,
@@ -11,7 +13,6 @@ import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Checkbox } from "@zeron/ui/checkbox";
 import { DropdownContent, DropdownLabel, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
-import { Alert, AlertAction, AlertTitle } from "@zeron/ui/alert";
 import { Empty, EmptyHeader, EmptyTitle } from "@zeron/ui/empty";
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
 import { SortableCollection, type SortableCollectionItem } from "@zeron/ui/sortable-collection";
@@ -496,7 +497,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
       case "timestamp":
         return <time className="block truncate font-mono text-label tabular-nums text-fg-muted" dateTime={record.timestamp} title={record.timestamp}>{formatInfiniteLogDateTime(record.timestamp, timeZone)}</time>;
       case "outcome":
-        return <Badge color={infiniteLogOutcomeVisuals[record.outcome].badgeColor} data-outcome={record.outcome} size="sm">{record.outcome}</Badge>;
+        return <Badge status={infiniteLogOutcomeVisuals[record.outcome].status} data-outcome={record.outcome} size="sm">{record.outcome}</Badge>;
       case "status":
         return <span className="font-mono text-label tabular-nums text-fg-default">{record.status}</span>;
       case "method":
@@ -655,12 +656,7 @@ export const InfiniteLogTableView = memo(function InfiniteLogTableView({
           <div className="grid min-h-48 place-items-center text-body text-fg-muted" role="status">Loading request logs…</div>
         ) : error && rows.length === 0 ? (
           errorContent ?? (
-            <div className="grid min-h-48 place-items-center p-3">
-              <Alert className="w-full max-w-md" status="danger">
-                <AlertTitle>Unable to load logs.</AlertTitle>
-                <AlertAction><Button onClick={onRetry} size="sm" type="button" variant="secondary">{labels.retry}</Button></AlertAction>
-              </Alert>
-            </div>
+            <div className="flex min-w-0 w-full items-center justify-center min-h-60 px-4 py-8"><Alert status="danger" role="group" className="w-full max-w-xl"><AlertTitle>{"Unable to load logs."}</AlertTitle><AlertAction><Button onClick={onRetry} size="sm" type="button" variant="secondary">{labels.retry}</Button></AlertAction></Alert></div>
           )
         ) : rows.length === 0 ? (
           emptyContent ?? (

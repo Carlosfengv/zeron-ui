@@ -37,6 +37,7 @@ describe("AvailabilityMonitor contract", () => {
         "metric-card",
         "status-overview",
         "utils",
+        "chart-primitives",
       ],
     });
   });
@@ -62,7 +63,8 @@ describe("AvailabilityMonitor contract", () => {
     expect(source).toContain("domain={[75, 100]}");
     expect(source).toContain("ticks={[75, 82, 89, 96, 100]}");
     expect(source).toContain("sm:grid-cols-2");
-    expect(source).toContain("aria-pressed={visible}");
+    expect(source).toContain("pressed: visibleSeries[item.key]");
+    expect(source).toContain("<ChartLegend");
     expect(source).toContain("contained = true");
     expect(source).toContain("{contained ? (");
   });

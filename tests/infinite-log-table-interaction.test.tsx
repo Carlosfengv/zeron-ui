@@ -194,10 +194,10 @@ describe("InfiniteLogTable", () => {
     const successBadge = grid.querySelector<HTMLElement>('[data-outcome="success"]');
     const successFilter = screen.getByRole("checkbox", { name: "success" });
     const successTrendMarker = screen.getByText("Success").querySelector("span");
-    expect(successBadge?.getAttribute("style")).toContain("var(--fg-brand)");
-    expect(successBadge?.getAttribute("style")).toContain("var(--brand)");
-    expect(successFilter.querySelector(".bg-brand")).toBeTruthy();
-    expect(successTrendMarker?.getAttribute("style")).toContain("var(--brand)");
+    expect(successBadge?.getAttribute("style")).toContain("var(--fg-success)");
+    expect(successBadge?.getAttribute("data-status")).toBe("success");
+    expect(successFilter.querySelector(".bg-fg-success")).toBeTruthy();
+    expect(successTrendMarker?.getAttribute("style")).toContain("var(--fg-success)");
     const staticHeader = within(grid).getByRole("columnheader", { name: /Outcome/ }).querySelector("span");
     const sortableHeader = within(grid).getByRole("columnheader", { name: /Status/ }).querySelector("span");
     for (const header of [staticHeader, sortableHeader]) {

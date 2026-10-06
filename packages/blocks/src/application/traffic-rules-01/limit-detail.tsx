@@ -50,7 +50,7 @@ function LimitInfo({ limit, onToggle }: { limit: GlobalLimit; onToggle: () => vo
           <Field label="限额 ID" value={<span className={styles.breakValue}>{limit.code}</span>} />
           <Field label="顺序号" value={limit.order} />
         </ReadonlyRows>
-        <div className={styles.statusRow}><span>当前状态</span><span className={styles.statusControls}><Badge color={limit.enabled ? "green" : "red"} size="sm" variant="dot">{limit.enabled ? "已启用" : "已停用"}</Badge><Switch checked={limit.enabled} label="启用限额" onCheckedChange={onToggle} /></span></div>
+        <div className={styles.statusRow}><span>当前状态</span><span className={styles.statusControls}><Badge status={limit.enabled ? "info" : "neutral"} size="sm" variant="dot">{limit.enabled ? "已启用" : "已停用"}</Badge><Switch checked={limit.enabled} label="启用限额" onCheckedChange={onToggle} /></span></div>
         <p className={styles.stateNote}>{limit.enabled ? "已参与全局请求计数，命中条件后按下方窗口累计用量。" : "当前不参与请求计数，下方展示的是启用后的配置预期。"}</p>
       </section>
       <section className={styles.infoSection}>
@@ -84,7 +84,7 @@ export function LimitDetailView({ limit, onBack, onDelete, onEdit, onHistory, on
     <PortalContainerProvider value={portalContainer}>
       <PageContentHeader>
         <Button aria-label="返回全局限额" iconOnly onClick={onBack} type="button" variant="tertiary"><Close aria-hidden /></Button>
-        <div className={styles.name}><h1 title={limit.name || "未命名限额"}>{limit.name || "未命名限额"}</h1><Badge color={limit.enabled ? "green" : "red"} size="sm" variant="strong">{limit.enabled ? "已启用" : "已停用"}</Badge><span className={styles.readOnly}>只读</span></div>
+        <div className={styles.name}><h1 title={limit.name || "未命名限额"}>{limit.name || "未命名限额"}</h1><Badge status={limit.enabled ? "info" : "neutral"} size="sm" variant="strong">{limit.enabled ? "已启用" : "已停用"}</Badge><span className={styles.readOnly}>只读</span></div>
         <PageActions className={styles.topActions}>
           <Button leadingIcon={Edit} onClick={onEdit} size="md" variant="primary">编辑限额</Button>
           <DropdownMenu><DropdownTrigger render={<Button aria-label="更多限额操作" iconOnly size="md" variant="ghost"><More /></Button>} /><DropdownContent align="end" className="w-40"><MenuItem index={0} label="修改记录" onSelect={onHistory} /><MenuItem className="text-fg-danger" index={1} label="删除限额" onSelect={onDelete} /></DropdownContent></DropdownMenu>

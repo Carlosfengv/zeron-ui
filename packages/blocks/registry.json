@@ -189,16 +189,38 @@
       ]
     },
     {
-      "name": "deployment-detail-01", "type": "registry:block", "title": "部署详情",
+      "name": "deployment-detail-01",
+      "type": "registry:block",
+      "title": "部署详情",
       "description": "网站预览、部署信息、域名、代码来源与阶段检查结果。",
       "categories": ["application", "monitoring"],
-      "registryDependencies": ["avatar", "badge", "button", "card", "dropdown", "empty", "icon-context", "info-item", "inline-notice", "menu-item", "popover", "skeleton", "status-overview", "tooltip", "utils"],
+      "registryDependencies": ["avatar", "badge", "button", "card", "dropdown", "empty", "icon-context", "info-item", "inline-notice", "menu-item", "popover", "skeleton", "status-overview", "tooltip", "utils", "alert"],
       "files": [
-        { "path": "packages/blocks/src/application/deployment-detail-01/deployment-detail.tsx", "type": "registry:component", "target": "components/blocks/deployment-detail-01/deployment-detail.tsx" },
-        { "path": "packages/blocks/src/application/deployment-detail-01/deployment-detail-types.ts", "type": "registry:component", "target": "components/blocks/deployment-detail-01/deployment-detail-types.ts" },
-        { "path": "packages/blocks/src/application/deployment-detail-01/deployment-detail-data.ts", "type": "registry:component", "target": "components/blocks/deployment-detail-01/deployment-detail-data.ts" },
-        { "path": "packages/blocks/src/application/deployment-detail-01/deployment-detail-demo-data.ts", "type": "registry:component", "target": "components/blocks/deployment-detail-01/deployment-detail-demo-data.ts" },
-        { "path": "packages/blocks/src/application/deployment-detail-01/index.ts", "type": "registry:component", "target": "components/blocks/deployment-detail-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/deployment-detail-01/deployment-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/deployment-detail-01/deployment-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/deployment-detail-01/deployment-detail-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/deployment-detail-01/deployment-detail-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/deployment-detail-01/deployment-detail-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/deployment-detail-01/deployment-detail-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/deployment-detail-01/deployment-detail-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/deployment-detail-01/deployment-detail-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/deployment-detail-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/deployment-detail-01/index.ts"
+        }
       ]
     },
     {
@@ -252,15 +274,9 @@
       "type": "registry:block",
       "title": "User Account",
       "description": "Controlled account actions and preferences.",
-      "categories": [
-        "application",
-        "account"
-      ],
+      "categories": ["application", "account"],
       "dependencies": [],
-      "registryDependencies": [
-        "sidebar-account-menu",
-        "icon-context"
-      ],
+      "registryDependencies": ["sidebar-account-menu", "icon-context", "badge", "inline-notice"],
       "files": [
         {
           "path": "packages/blocks/src/application/user-account-01/user-account.tsx",
@@ -281,10 +297,18 @@
       "description": "A card-based authentication block with credential and Apple or Google sign-in paths.",
       "categories": ["application", "authentication", "forms"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["auth-layout", "button", "card", "field", "icon-context", "input", "separator"],
+      "registryDependencies": ["auth-layout", "button", "card", "field", "icon-context", "input", "separator", "inline-notice"],
       "files": [
-        { "path": "packages/blocks/src/application/login-01/login-01.tsx", "type": "registry:component", "target": "components/blocks/login-01/login-01.tsx" },
-        { "path": "packages/blocks/src/application/login-01/index.ts", "type": "registry:component", "target": "components/blocks/login-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/login-01/login-01.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/login-01/login-01.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/login-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/login-01/index.ts"
+        }
       ]
     },
     {
@@ -294,10 +318,18 @@
       "description": "A surface-neutral account creation block with email and Apple or Google signup paths.",
       "categories": ["application", "authentication", "forms"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["auth-layout", "button", "field", "icon-context", "input", "separator"],
+      "registryDependencies": ["auth-layout", "button", "field", "icon-context", "input", "separator", "inline-notice"],
       "files": [
-        { "path": "packages/blocks/src/application/signup-01/signup-01.tsx", "type": "registry:component", "target": "components/blocks/signup-01/signup-01.tsx" },
-        { "path": "packages/blocks/src/application/signup-01/index.ts", "type": "registry:component", "target": "components/blocks/signup-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/signup-01/signup-01.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/signup-01/signup-01.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/signup-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/signup-01/index.ts"
+        }
       ]
     },
     {
@@ -306,11 +338,8 @@
       "title": "Availability Monitor",
       "description": "A routing-aware service availability block with summary metrics, a 72-hour status strip, and a 24-hour comparison chart.",
       "categories": ["application", "monitoring", "observability"],
-      "dependencies": [
-        "recharts",
-        "tw-animate-css"
-      ],
-      "registryDependencies": ["button", "card", "chart", "container", "metric-card", "status-overview", "utils"],
+      "dependencies": ["recharts", "tw-animate-css"],
+      "registryDependencies": ["button", "card", "chart", "container", "metric-card", "status-overview", "utils", "chart-primitives"],
       "files": [
         {
           "path": "packages/blocks/src/application/availability-monitor-01/availability-monitor.tsx",
@@ -382,11 +411,23 @@
       "description": "A token-native, storage-agnostic file-management workspace with icon, list, and Finder-style column views.",
       "categories": ["application", "storage", "files"],
       "dependencies": ["@tanstack/react-virtual", "tw-animate-css"],
-      "registryDependencies": ["button", "dialog", "icon-context", "input", "select", "tabs", "utils"],
+      "registryDependencies": ["button", "dialog", "icon-context", "input", "select", "tabs", "utils", "badge", "skeleton", "empty", "alert", "inline-notice"],
       "files": [
-        { "path": "packages/blocks/src/application/file-manager-01/file-manager.tsx", "type": "registry:component", "target": "components/blocks/file-manager-01/file-manager.tsx" },
-        { "path": "packages/blocks/src/application/file-manager-01/file-manager-types.ts", "type": "registry:component", "target": "components/blocks/file-manager-01/file-manager-types.ts" },
-        { "path": "packages/blocks/src/application/file-manager-01/index.ts", "type": "registry:component", "target": "components/blocks/file-manager-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/file-manager-01/file-manager.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/file-manager-01/file-manager.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/file-manager-01/file-manager-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/file-manager-01/file-manager-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/file-manager-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/file-manager-01/index.ts"
+        }
       ]
     },
     {
@@ -396,14 +437,38 @@
       "description": "A controlled AI gateway session workspace with shared navigation, entity filters, outcome filtering, compact usage formatting, and pagination.",
       "categories": ["application", "tables", "observability"],
       "dependencies": ["@tanstack/react-table", "tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["badge", "button", "checkbox", "data-table", "empty", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "utils"],
+      "registryDependencies": ["badge", "button", "checkbox", "data-table", "empty", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "utils", "alert"],
       "files": [
-        { "path": "packages/blocks/src/application/ai-gateway-workspace-types.ts", "type": "registry:component", "target": "components/blocks/ai-gateway-workspace-types.ts" },
-        { "path": "packages/blocks/src/application/ai-gateway-workspace-sidebar.tsx", "type": "registry:component", "target": "components/blocks/ai-gateway-workspace-sidebar.tsx" },
-        { "path": "packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list-types.ts", "type": "registry:component", "target": "components/blocks/ai-gateway-session-list-01/ai-gateway-session-list-types.ts" },
-        { "path": "packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list-demo-data.ts", "type": "registry:component", "target": "components/blocks/ai-gateway-session-list-01/ai-gateway-session-list-demo-data.ts" },
-        { "path": "packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list.tsx", "type": "registry:component", "target": "components/blocks/ai-gateway-session-list-01/ai-gateway-session-list.tsx" },
-        { "path": "packages/blocks/src/application/ai-gateway-session-list-01/index.ts", "type": "registry:component", "target": "components/blocks/ai-gateway-session-list-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/ai-gateway-workspace-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-workspace-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-workspace-sidebar.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-workspace-sidebar.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-session-list-01/ai-gateway-session-list-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-session-list-01/ai-gateway-session-list-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-session-list-01/ai-gateway-session-list.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-session-list-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-session-list-01/index.ts"
+        }
       ]
     },
     {
@@ -415,13 +480,41 @@
       "dependencies": ["@tanstack/react-virtual", "tw-animate-css"],
       "registryDependencies": ["badge", "button", "detail-list", "empty", "icon-context", "inline-notice", "input-copy", "resizable", "scroll-area", "skeleton", "switch", "tabs", "tooltip", "utils"],
       "files": [
-        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-types.ts", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace-types.ts" },
-        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-model.ts", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace-model.ts" },
-        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-demo-data.ts", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace-demo-data.ts" },
-        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace.tsx", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace.tsx" },
-        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-inspector.tsx", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace-inspector.tsx" },
-        { "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-workspace.tsx", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/agent-message-trace-workspace.tsx" },
-        { "path": "packages/blocks/src/application/agent-message-trace-01/index.ts", "type": "registry:component", "target": "components/blocks/agent-message-trace-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-model.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace-model.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-inspector.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace-inspector.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-workspace.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/agent-message-trace-workspace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-message-trace-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-message-trace-01/index.ts"
+        }
       ]
     },
     {
@@ -431,22 +524,78 @@
       "description": "A turn-aware AI gateway trace workspace with shared navigation that projects agent messages, tool calls, and results from uploaded JSON.",
       "categories": ["application", "agent", "observability"],
       "dependencies": ["tw-animate-css", "react-markdown", "remark-breaks", "remark-gfm", "@lobehub/icons"],
-      "registryDependencies": ["badge", "breadcrumb", "button", "chat-message", "detail-list", "icon-context", "input", "nav-item", "nav-menu", "page-layout", "resizable", "scroll-area", "sidebar", "sidebar-identity-row", "table", "tabs", "thinking-indicator", "tooltip", "utils"],
+      "registryDependencies": ["badge", "breadcrumb", "button", "chat-message", "detail-list", "icon-context", "input", "nav-item", "nav-menu", "page-layout", "resizable", "scroll-area", "sidebar", "sidebar-identity-row", "table", "tabs", "thinking-indicator", "tooltip", "utils", "inline-notice"],
       "files": [
-        { "path": "packages/blocks/src/application/ai-gateway-workspace-types.ts", "type": "registry:component", "target": "components/blocks/ai-gateway-workspace-types.ts" },
-        { "path": "packages/blocks/src/application/ai-gateway-workspace-sidebar.tsx", "type": "registry:component", "target": "components/blocks/ai-gateway-workspace-sidebar.tsx" },
-        { "path": "packages/blocks/src/application/agent-trace-01/agent-trace.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/agent-trace.tsx" },
-        { "path": "packages/blocks/src/application/agent-trace-01/session-default.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/session-default.ts" },
-        { "path": "packages/blocks/src/application/agent-trace-01/markdown-content.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/markdown-content.tsx" },
-        { "path": "packages/blocks/src/application/agent-trace-01/reasoning-row.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/reasoning-row.tsx" },
-        { "path": "packages/blocks/src/application/agent-trace-01/stream-projection.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/stream-projection.ts" },
-        { "path": "packages/blocks/src/application/agent-trace-01/trace-jsonl.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/trace-jsonl.ts" },
-        { "path": "packages/blocks/src/application/agent-trace-01/trace-time.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/trace-time.ts" },
-        { "path": "packages/blocks/src/application/agent-trace-01/tool-call-card.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/tool-call-card.tsx" },
-        { "path": "packages/blocks/src/application/agent-trace-01/transcript-flow.tsx", "type": "registry:component", "target": "components/blocks/agent-trace-01/transcript-flow.tsx" },
-        { "path": "packages/blocks/src/application/agent-trace-01/transcript-grouping.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/transcript-grouping.ts" },
-        { "path": "packages/blocks/src/application/agent-trace-01/use-stream-scroll.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/use-stream-scroll.ts" },
-        { "path": "packages/blocks/src/application/agent-trace-01/index.ts", "type": "registry:component", "target": "components/blocks/agent-trace-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/ai-gateway-workspace-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-workspace-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/ai-gateway-workspace-sidebar.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/ai-gateway-workspace-sidebar.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/agent-trace.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/agent-trace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/session-default.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/session-default.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/markdown-content.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/markdown-content.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/reasoning-row.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/reasoning-row.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/stream-projection.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/stream-projection.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/trace-jsonl.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/trace-jsonl.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/trace-time.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/trace-time.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/tool-call-card.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/tool-call-card.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/transcript-flow.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/transcript-flow.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/transcript-grouping.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/transcript-grouping.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/use-stream-scroll.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/use-stream-scroll.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-trace-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-trace-01/index.ts"
+        }
       ]
     },
     {
@@ -458,9 +607,21 @@
       "dependencies": ["tw-animate-css"],
       "registryDependencies": ["badge", "button", "card", "icon-context", "input", "select", "sortable-collection", "utils"],
       "files": [
-        { "path": "packages/blocks/src/application/rule-flow-editor-01/rule-flow-types.ts", "type": "registry:component", "target": "components/blocks/rule-flow-editor-01/rule-flow-types.ts" },
-        { "path": "packages/blocks/src/application/rule-flow-editor-01/rule-flow-editor.tsx", "type": "registry:component", "target": "components/blocks/rule-flow-editor-01/rule-flow-editor.tsx" },
-        { "path": "packages/blocks/src/application/rule-flow-editor-01/index.ts", "type": "registry:component", "target": "components/blocks/rule-flow-editor-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/rule-flow-editor-01/rule-flow-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/rule-flow-editor-01/rule-flow-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/rule-flow-editor-01/rule-flow-editor.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/rule-flow-editor-01/rule-flow-editor.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/rule-flow-editor-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/rule-flow-editor-01/index.ts"
+        }
       ]
     },
     {
@@ -472,9 +633,21 @@
       "dependencies": ["tw-animate-css"],
       "registryDependencies": ["agent-trace-01", "badge", "breadcrumb", "button", "dropdown", "icon-context", "input-message", "menu-item", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "utils"],
       "files": [
-        { "path": "packages/blocks/src/application/agent-session-detail-01/agent-session-detail.tsx", "type": "registry:component", "target": "components/blocks/agent-session-detail-01/agent-session-detail.tsx" },
-        { "path": "packages/blocks/src/application/agent-session-detail-01/session-mocks.ts", "type": "registry:component", "target": "components/blocks/agent-session-detail-01/session-mocks.ts" },
-        { "path": "packages/blocks/src/application/agent-session-detail-01/index.ts", "type": "registry:component", "target": "components/blocks/agent-session-detail-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/agent-session-detail-01/agent-session-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-session-detail-01/agent-session-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-session-detail-01/session-mocks.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-session-detail-01/session-mocks.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-session-detail-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-session-detail-01/index.ts"
+        }
       ]
     },
     {
@@ -589,32 +762,128 @@
       "description": "A responsive gateway workspace for managing traffic rules, global limits, request validation, and execution workflows.",
       "categories": ["application", "gateway", "tables"],
       "dependencies": ["tw-animate-css", "@hugeicons/core-free-icons", "@tanstack/react-table"],
-      "registryDependencies": ["alert", "badge", "button", "checkbox", "data-table", "detail-list", "dialog", "dropdown", "icon-context", "input", "menu-item", "nav-item", "nav-menu", "page-layout", "portal-container-context", "radio-group", "select", "sidebar", "sidebar-identity-row", "switch", "table", "tabs", "temporal-picker", "textarea", "tooltip", "utils"],
+      "registryDependencies": ["alert", "badge", "button", "checkbox", "data-table", "detail-list", "dialog", "dropdown", "icon-context", "input", "menu-item", "nav-item", "nav-menu", "page-layout", "portal-container-context", "radio-group", "select", "sidebar", "sidebar-identity-row", "switch", "table", "tabs", "temporal-picker", "textarea", "tooltip", "utils", "inline-notice"],
       "files": [
-        { "path": "packages/blocks/src/application/traffic-rules-01/gateway-policy-data.ts", "type": "registry:component", "target": "components/blocks/traffic-rules-01/gateway-policy-data.ts" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/limit-detail.module.css", "type": "registry:component", "target": "components/blocks/traffic-rules-01/limit-detail.module.css" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/limit-detail.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/limit-detail.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/limit-form.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/limit-form.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/limit-workflow.module.css", "type": "registry:component", "target": "components/blocks/traffic-rules-01/limit-workflow.module.css" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/rule-config.ts", "type": "registry:component", "target": "components/blocks/traffic-rules-01/rule-config.ts" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/rule-detail-model.ts", "type": "registry:component", "target": "components/blocks/traffic-rules-01/rule-detail-model.ts" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/rule-detail.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/rule-detail.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/rule-form.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/rule-form.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/rule-workflow-summary.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/rule-workflow-summary.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/rule-workflow.module.css", "type": "registry:component", "target": "components/blocks/traffic-rules-01/rule-workflow.module.css" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/rule-workflow.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/rule-workflow.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/table-footer.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/table-footer.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/traffic-rules-v2.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/traffic-rules-v2.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/traffic-types.ts", "type": "registry:component", "target": "components/blocks/traffic-rules-01/traffic-types.ts" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/use-dialog-focus.ts", "type": "registry:component", "target": "components/blocks/traffic-rules-01/use-dialog-focus.ts" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/workflow-canvas-toolbar.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/workflow-canvas-toolbar.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/workflow-model.ts", "type": "registry:component", "target": "components/blocks/traffic-rules-01/workflow-model.ts" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/workflow-move-icon.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/workflow-move-icon.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/workflow-node.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/workflow-node.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/workflow-preview.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/workflow-preview.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/workflow-styles.d.ts", "type": "registry:component", "target": "components/blocks/traffic-rules-01/workflow-styles.d.ts" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/workflow-zoom-select.tsx", "type": "registry:component", "target": "components/blocks/traffic-rules-01/workflow-zoom-select.tsx" },
-        { "path": "packages/blocks/src/application/traffic-rules-01/index.ts", "type": "registry:component", "target": "components/blocks/traffic-rules-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/gateway-policy-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/gateway-policy-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/limit-detail.module.css",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/limit-detail.module.css"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/limit-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/limit-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/limit-form.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/limit-form.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/limit-workflow.module.css",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/limit-workflow.module.css"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-config.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-config.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-detail-model.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-detail-model.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-form.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-form.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-workflow-summary.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-workflow-summary.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-workflow.module.css",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-workflow.module.css"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/rule-workflow.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/rule-workflow.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/table-footer.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/table-footer.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/traffic-rules-v2.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/traffic-rules-v2.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/traffic-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/traffic-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/use-dialog-focus.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/use-dialog-focus.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-canvas-toolbar.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-canvas-toolbar.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-model.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-model.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-move-icon.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-move-icon.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-node.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-node.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-preview.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-preview.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-styles.d.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-styles.d.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/workflow-zoom-select.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/workflow-zoom-select.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/traffic-rules-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/traffic-rules-01/index.ts"
+        }
       ]
     },
     {
@@ -624,7 +893,7 @@
       "description": "A personal settings workspace for model services, API keys, credentials, profile details, usage, and call logs.",
       "categories": ["application", "settings"],
       "dependencies": ["tw-animate-css", "@lobehub/icons", "recharts", "@tanstack/react-table", "@thesvg/icons"],
-      "registryDependencies": ["user-account-01", "app-shell", "badge", "button", "chart", "container", "detail-list", "field", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "select", "separator", "table", "tabs", "time-range-histogram", "top-nav", "utils", "dialog", "dropdown", "data-table", "info-item", "menu-item", "metric-card", "sidebar-identity-row", "switch"],
+      "registryDependencies": ["user-account-01", "app-shell", "badge", "button", "chart", "container", "detail-list", "field", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "select", "separator", "table", "tabs", "time-range-histogram", "top-nav", "utils", "dialog", "dropdown", "data-table", "info-item", "menu-item", "metric-card", "sidebar-identity-row", "switch", "chart-primitives"],
       "files": [
         {
           "path": "packages/blocks/src/application/personal-settings-01/personal-settings.tsx",
@@ -657,8 +926,16 @@
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
       "registryDependencies": ["personal-settings-01"],
       "files": [
-        { "path": "packages/blocks/src/application/personal-model-usage-01/personal-model-usage.tsx", "type": "registry:component", "target": "components/blocks/personal-model-usage-01/personal-model-usage.tsx" },
-        { "path": "packages/blocks/src/application/personal-model-usage-01/index.ts", "type": "registry:component", "target": "components/blocks/personal-model-usage-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/personal-model-usage-01/personal-model-usage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/personal-model-usage-01/personal-model-usage.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/personal-model-usage-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/personal-model-usage-01/index.ts"
+        }
       ]
     },
     {
@@ -666,27 +943,15 @@
       "type": "registry:block",
       "title": "Model Router",
       "description": "A model routing card with animated gateway traffic, live metrics, draft strategies and fallback controls.",
-      "categories": [
-        "application",
-        "analytics",
-        "settings"
-      ],
+      "categories": ["application", "analytics", "settings"],
       "dependencies": ["@lobehub/icons"],
-      "registryDependencies": [
-        "badge",
-        "button",
-        "card",
-        "icon-context",
-        "inline-notice",
-        "select",
-        "switch",
-        "table",
-        "tabs",
-        "tooltip",
-        "utils"
-      ],
+      "registryDependencies": ["badge", "button", "card", "icon-context", "inline-notice", "select", "switch", "table", "tabs", "tooltip", "utils"],
       "files": [
-        { "path": "packages/blocks/src/application/model-router-01/model-logo.tsx", "type": "registry:component", "target": "components/blocks/model-router-01/model-logo.tsx" },
+        {
+          "path": "packages/blocks/src/application/model-router-01/model-logo.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/model-router-01/model-logo.tsx"
+        },
         {
           "path": "packages/blocks/src/application/model-router-01/model-router-types.ts",
           "type": "registry:component",
@@ -754,8 +1019,16 @@
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
       "registryDependencies": ["personal-settings-01"],
       "files": [
-        { "path": "packages/blocks/src/application/personal-usage-01/personal-usage.tsx", "type": "registry:component", "target": "components/blocks/personal-usage-01/personal-usage.tsx" },
-        { "path": "packages/blocks/src/application/personal-usage-01/index.ts", "type": "registry:component", "target": "components/blocks/personal-usage-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/personal-usage-01/personal-usage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/personal-usage-01/personal-usage.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/personal-usage-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/personal-usage-01/index.ts"
+        }
       ]
     },
     {
@@ -767,8 +1040,16 @@
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
       "registryDependencies": ["personal-settings-01"],
       "files": [
-        { "path": "packages/blocks/src/application/resource-settings-01/resource-settings.tsx", "type": "registry:component", "target": "components/blocks/resource-settings-01/resource-settings.tsx" },
-        { "path": "packages/blocks/src/application/resource-settings-01/index.ts", "type": "registry:component", "target": "components/blocks/resource-settings-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/resource-settings-01/resource-settings.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-settings-01/resource-settings.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-settings-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-settings-01/index.ts"
+        }
       ]
     },
     {
@@ -823,11 +1104,31 @@
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
       "registryDependencies": ["badge", "breadcrumb", "button", "card", "inline-notice", "input-copy", "page-layout", "table", "tabs", "tooltip", "utils"],
       "files": [
-        { "path": "packages/blocks/src/application/model-detail-01/model-detail-data.ts", "type": "registry:component", "target": "components/blocks/model-detail-01/model-detail-data.ts" },
-        { "path": "packages/blocks/src/application/model-detail-01/assets.d.ts", "type": "registry:file", "target": "components/blocks/model-detail-01/assets.d.ts" },
-        { "path": "packages/blocks/src/application/model-detail-01/assets/cline.svg", "type": "registry:file", "target": "components/blocks/model-detail-01/assets/cline.svg" },
-        { "path": "packages/blocks/src/application/model-detail-01/model-detail.tsx", "type": "registry:component", "target": "components/blocks/model-detail-01/model-detail.tsx" },
-        { "path": "packages/blocks/src/application/model-detail-01/index.ts", "type": "registry:component", "target": "components/blocks/model-detail-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/model-detail-01/model-detail-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-detail-01/model-detail-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/model-detail-01/assets.d.ts",
+          "type": "registry:file",
+          "target": "components/blocks/model-detail-01/assets.d.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/model-detail-01/assets/cline.svg",
+          "type": "registry:file",
+          "target": "components/blocks/model-detail-01/assets/cline.svg"
+        },
+        {
+          "path": "packages/blocks/src/application/model-detail-01/model-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/model-detail-01/model-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/model-detail-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-detail-01/index.ts"
+        }
       ]
     },
     {
@@ -837,11 +1138,23 @@
       "description": "A model analytics page with providers, pricing, performance, uptime, benchmarks, apps, activity, and FAQ.",
       "categories": ["application", "details", "analytics"],
       "dependencies": ["recharts", "tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["availability-monitor-01", "accordion", "app-shell", "badge", "breadcrumb", "button", "card", "chart", "checkbox", "container", "data-table", "icon-context", "info-item", "metric-card", "nav-item", "nav-menu", "page-layout", "select", "tabs", "tooltip", "top-nav", "utils"],
+      "registryDependencies": ["availability-monitor-01", "accordion", "app-shell", "badge", "breadcrumb", "button", "card", "chart", "checkbox", "container", "data-table", "icon-context", "info-item", "metric-card", "nav-item", "nav-menu", "page-layout", "select", "tabs", "tooltip", "top-nav", "utils", "chart-primitives"],
       "files": [
-        { "path": "packages/blocks/src/application/model-detail-02/model-detail-02-data.ts", "type": "registry:component", "target": "components/blocks/model-detail-02/model-detail-02-data.ts" },
-        { "path": "packages/blocks/src/application/model-detail-02/model-detail-02.tsx", "type": "registry:component", "target": "components/blocks/model-detail-02/model-detail-02.tsx" },
-        { "path": "packages/blocks/src/application/model-detail-02/index.ts", "type": "registry:component", "target": "components/blocks/model-detail-02/index.ts" }
+        {
+          "path": "packages/blocks/src/application/model-detail-02/model-detail-02-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-detail-02/model-detail-02-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/model-detail-02/model-detail-02.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/model-detail-02/model-detail-02.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/model-detail-02/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/model-detail-02/index.ts"
+        }
       ]
     },
     {
@@ -851,23 +1164,7 @@
       "description": "A three-step workflow for provider details, credential verification, model discovery, and per-model availability.",
       "categories": ["application", "forms"],
       "dependencies": ["tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": [
-        "alert",
-        "badge",
-        "button",
-        "container",
-        "detail-list",
-        "field",
-        "icon-context",
-        "input",
-        "input-group",
-        "select",
-        "stepper",
-        "switch",
-        "textarea",
-        "toast",
-        "utils"
-      ],
+      "registryDependencies": ["alert", "badge", "button", "container", "detail-list", "field", "icon-context", "input", "input-group", "select", "stepper", "switch", "textarea", "toast", "utils"],
       "files": [
         {
           "path": "packages/blocks/src/application/provider-create-form-01/provider-create-form.tsx",
@@ -888,27 +1185,28 @@
       "description": "A controlled filter workspace with presets, readable rule summaries, and validated draft editing.",
       "categories": ["application", "forms", "filters"],
       "dependencies": ["tw-animate-css"],
-      "registryDependencies": [
-        "badge",
-        "button",
-        "card",
-        "combobox",
-        "container",
-        "field",
-        "filter-core",
-        "icon-context",
-        "inline-notice",
-        "input",
-        "input-group",
-        "select",
-        "separator",
-        "utils"
-      ],
+      "registryDependencies": ["badge", "button", "card", "combobox", "container", "field", "filter-core", "icon-context", "inline-notice", "input", "input-group", "select", "separator", "utils"],
       "files": [
-        { "path": "packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder-types.ts", "type": "registry:component", "target": "components/blocks/filter-rule-builder-01/filter-rule-builder-types.ts" },
-        { "path": "packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder-demo-data.ts", "type": "registry:component", "target": "components/blocks/filter-rule-builder-01/filter-rule-builder-demo-data.ts" },
-        { "path": "packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder.tsx", "type": "registry:component", "target": "components/blocks/filter-rule-builder-01/filter-rule-builder.tsx" },
-        { "path": "packages/blocks/src/application/filter-rule-builder-01/index.ts", "type": "registry:component", "target": "components/blocks/filter-rule-builder-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/filter-rule-builder-01/filter-rule-builder-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/filter-rule-builder-01/filter-rule-builder-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/filter-rule-builder-01/filter-rule-builder.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/filter-rule-builder-01/filter-rule-builder.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/filter-rule-builder-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/filter-rule-builder-01/index.ts"
+        }
       ]
     },
     {
@@ -1215,12 +1513,36 @@
       "dependencies": ["tw-animate-css", "@tanstack/react-table"],
       "registryDependencies": ["avatar", "badge", "button", "checkbox", "data-table", "icon-context", "input-group", "member-tree", "mobile-drawer", "page-layout", "tabs", "utils"],
       "files": [
-        { "path": "packages/blocks/src/application/member-department-01/member-department-types.ts", "type": "registry:component", "target": "components/blocks/member-department-01/member-department-types.ts" },
-        { "path": "packages/blocks/src/application/member-department-01/member-department-data.ts", "type": "registry:component", "target": "components/blocks/member-department-01/member-department-data.ts" },
-        { "path": "packages/blocks/src/application/member-department-01/member-department-demo-data.ts", "type": "registry:component", "target": "components/blocks/member-department-01/member-department-demo-data.ts" },
-        { "path": "packages/blocks/src/application/member-department-01/department-directory.tsx", "type": "registry:component", "target": "components/blocks/member-department-01/department-directory.tsx" },
-        { "path": "packages/blocks/src/application/member-department-01/member-department.tsx", "type": "registry:component", "target": "components/blocks/member-department-01/member-department.tsx" },
-        { "path": "packages/blocks/src/application/member-department-01/index.ts", "type": "registry:component", "target": "components/blocks/member-department-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/member-department-01/member-department-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/member-department-01/member-department-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/member-department-01/member-department-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/member-department-01/member-department-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/member-department-01/member-department-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/member-department-01/member-department-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/member-department-01/department-directory.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/member-department-01/department-directory.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/member-department-01/member-department.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/member-department-01/member-department.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/member-department-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/member-department-01/index.ts"
+        }
       ]
     },
     {
@@ -1230,27 +1552,103 @@
       "description": "A schema-driven virtualized log explorer with inferred fields, dynamic filters, cursor pagination, Live tailing, and record detail.",
       "categories": ["application", "tables", "observability"],
       "dependencies": ["tw-animate-css", "@tanstack/react-table", "@tanstack/react-virtual"],
-      "registryDependencies": ["accordion", "alert", "badge", "button", "checkbox", "checkbox-group", "detail-list", "dialog", "dropdown", "empty", "field", "filter-query-input", "icon-context", "inline-notice", "input-group", "mobile-drawer", "resizable", "scroll-area", "select", "sortable-collection", "temporal-picker", "time-range-histogram", "utils", "slider"],
+      "registryDependencies": ["accordion", "alert", "badge", "button", "checkbox", "checkbox-group", "detail-list", "dialog", "dropdown", "empty", "field", "filter-query-input", "icon-context", "inline-notice", "input-group", "mobile-drawer", "resizable", "scroll-area", "select", "sortable-collection", "temporal-picker", "time-range-histogram", "utils", "slider", "popover"],
       "files": [
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-types.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-types.ts" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-data-source.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-data-source.ts" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-mocks.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-mocks.ts" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-controller.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-controller.ts" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-fields.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-fields.ts" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-field-icons.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-field-icons.ts" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-outcome.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-outcome.ts" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-time-range.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-time-range.ts" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-timing.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-timing.tsx" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-filters.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-filters.tsx" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-detail.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-detail.tsx" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-detail.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-generic-detail.tsx" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-filters.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-generic-filters.tsx" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-header-filter.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-header-filter.tsx" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-table-view.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-generic-table-view.tsx" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-query-adapter.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-query-adapter.ts" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-table-view.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-table-view.tsx" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-table.tsx", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/infinite-log-table.tsx" },
-        { "path": "packages/blocks/src/application/infinite-log-table-01/index.ts", "type": "registry:component", "target": "components/blocks/infinite-log-table-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-data-source.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-data-source.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-mocks.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-mocks.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-controller.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-controller.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-fields.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-fields.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-field-icons.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-field-icons.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-outcome.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-outcome.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-time-range.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-time-range.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-timing.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-timing.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-filters.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-filters.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-generic-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-filters.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-generic-filters.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-header-filter.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-header-filter.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-generic-table-view.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-generic-table-view.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-query-adapter.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-query-adapter.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-table-view.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-table-view.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-table.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/infinite-log-table.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/infinite-log-table-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/infinite-log-table-01/index.ts"
+        }
       ]
     },
     {

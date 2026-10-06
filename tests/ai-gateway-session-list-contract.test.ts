@@ -51,22 +51,7 @@ describe("AI Gateway Session List 01 contract", () => {
     expect(item).toMatchObject({
       type: "registry:block",
       dependencies: ["@tanstack/react-table", "tw-animate-css", "@lobehub/icons"],
-      registryDependencies: [
-        "badge",
-        "button",
-        "checkbox",
-        "data-table",
-        "empty",
-        "icon-context",
-        "inline-notice",
-        "input-group",
-        "nav-item",
-        "nav-menu",
-        "page-layout",
-        "sidebar",
-        "sidebar-identity-row",
-        "utils",
-      ],
+      registryDependencies: ["badge", "button", "checkbox", "data-table", "empty", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "utils", "alert", ],
     });
     expect(item.files).toHaveLength(6);
   });

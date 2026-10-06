@@ -91,7 +91,7 @@ export function InfiniteLogDetail({
         {renderDetail ? renderDetail(record) : (
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge color={infiniteLogOutcomeVisuals[record.outcome].badgeColor} data-outcome={record.outcome} size="sm">{record.outcome}</Badge>
+              <Badge status={infiniteLogOutcomeVisuals[record.outcome].status} data-outcome={record.outcome} size="sm">{record.outcome}</Badge>
               <span className="font-mono text-label text-fg-muted">{record.method} {record.status}</span>
               <span className="text-label text-fg-muted">{formatMilliseconds(record.latency)}</span>
               <Button aria-label={copied ? labels.copied : labels.copyJson} iconOnly onClick={() => void copy()} size="sm" type="button" variant="ghost"><Copy aria-hidden /></Button>

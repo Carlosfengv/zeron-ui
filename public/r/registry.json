@@ -5377,7 +5377,8 @@
         "https://zeron-ui.vercel.app/r/skeleton.json",
         "https://zeron-ui.vercel.app/r/status-overview.json",
         "https://zeron-ui.vercel.app/r/tooltip.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/alert.json"
       ],
       "files": [
         {
@@ -5505,7 +5506,9 @@
       "dependencies": [],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/sidebar-account-menu.json",
-        "https://zeron-ui.vercel.app/r/icon-context.json"
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json"
       ],
       "files": [
         {
@@ -5549,7 +5552,8 @@
         "https://zeron-ui.vercel.app/r/field.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/input.json",
-        "https://zeron-ui.vercel.app/r/separator.json"
+        "https://zeron-ui.vercel.app/r/separator.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json"
       ],
       "files": [
         {
@@ -5592,7 +5596,8 @@
         "https://zeron-ui.vercel.app/r/field.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/input.json",
-        "https://zeron-ui.vercel.app/r/separator.json"
+        "https://zeron-ui.vercel.app/r/separator.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json"
       ],
       "files": [
         {
@@ -5636,7 +5641,8 @@
         "https://zeron-ui.vercel.app/r/container.json",
         "https://zeron-ui.vercel.app/r/metric-card.json",
         "https://zeron-ui.vercel.app/r/status-overview.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json"
       ],
       "files": [
         {
@@ -5766,7 +5772,12 @@
         "https://zeron-ui.vercel.app/r/input.json",
         "https://zeron-ui.vercel.app/r/select.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/skeleton.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json"
       ],
       "files": [
         {
@@ -5823,7 +5834,8 @@
         "https://zeron-ui.vercel.app/r/page-layout.json",
         "https://zeron-ui.vercel.app/r/sidebar.json",
         "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/alert.json"
       ],
       "files": [
         {
@@ -5978,7 +5990,8 @@
         "https://zeron-ui.vercel.app/r/tabs.json",
         "https://zeron-ui.vercel.app/r/thinking-indicator.json",
         "https://zeron-ui.vercel.app/r/tooltip.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json"
       ],
       "files": [
         {
@@ -6456,7 +6469,8 @@
         "https://zeron-ui.vercel.app/r/temporal-picker.json",
         "https://zeron-ui.vercel.app/r/textarea.json",
         "https://zeron-ui.vercel.app/r/tooltip.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json"
       ],
       "files": [
         {
@@ -6634,7 +6648,8 @@
         "https://zeron-ui.vercel.app/r/menu-item.json",
         "https://zeron-ui.vercel.app/r/metric-card.json",
         "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
-        "https://zeron-ui.vercel.app/r/switch.json"
+        "https://zeron-ui.vercel.app/r/switch.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json"
       ],
       "files": [
         {
@@ -7126,7 +7141,8 @@
         "https://zeron-ui.vercel.app/r/tabs.json",
         "https://zeron-ui.vercel.app/r/tooltip.json",
         "https://zeron-ui.vercel.app/r/top-nav.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json"
       ],
       "files": [
         {
@@ -7904,7 +7920,8 @@
         "https://zeron-ui.vercel.app/r/temporal-picker.json",
         "https://zeron-ui.vercel.app/r/time-range-histogram.json",
         "https://zeron-ui.vercel.app/r/utils.json",
-        "https://zeron-ui.vercel.app/r/slider.json"
+        "https://zeron-ui.vercel.app/r/slider.json",
+        "https://zeron-ui.vercel.app/r/popover.json"
       ],
       "files": [
         {

@@ -26,20 +26,20 @@ const blockCatalogEntries = [
   { name: "getting-started-01", title: "入门任务清单", description: "可折叠的入门任务清单，包含完成数量、任务状态与宿主操作入口。", categories: ["application", "onboarding"], dependencies: ["button", "container", "stepper", "icon-context", "utils"] },
   { name: "security-overview-01", title: "安全概览", description: "安全评分、风险趋势、六维态势与受影响资产的可控扫描概览。", categories: ["application", "security", "analytics"], dependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "inline-notice", "metric-card", "select", "skeleton", "tabs", "tooltip", "utils", "recharts"] },
   { name: "deployment-detail-01", title: "部署详情", description: "网站预览、部署信息、域名、代码来源与阶段检查结果。", categories: ["application", "monitoring"], dependencies: ["avatar", "badge", "button", "card", "dropdown", "empty", "icon-context", "info-item", "inline-notice", "menu-item", "popover", "skeleton", "status-overview", "tooltip", "utils"] },
-  { name: "user-account-01", title: "User Account", description: "Controlled account actions and preferences.", categories: ["application", "account"], dependencies: ["sidebar-account-menu", "icon-context"] },
+  { name: "user-account-01", title: "User Account", description: "Controlled account actions and preferences.", categories: ["application", "account"], dependencies: ["sidebar-account-menu", "icon-context", "inline-notice"] },
   {
     name: "login-01",
     title: "Login",
     description: "A card-based authentication block with credential and Apple or Google sign-in paths.",
     categories: ["application", "authentication", "forms"],
-    dependencies: ["auth-layout", "button", "card", "field", "icon-context", "input", "separator", "@lobehub/icons"],
+    dependencies: ["auth-layout", "button", "card", "field", "icon-context", "input", "separator", "@lobehub/icons", "inline-notice"],
   },
   {
     name: "signup-01",
     title: "Signup",
     description: "A surface-neutral account creation block with email and Apple or Google signup paths.",
     categories: ["application", "authentication", "forms"],
-    dependencies: ["auth-layout", "button", "field", "icon-context", "input", "separator", "@lobehub/icons"],
+    dependencies: ["auth-layout", "button", "field", "icon-context", "input", "separator", "@lobehub/icons", "inline-notice"],
   },
   {
     name: "availability-monitor-01",
@@ -67,21 +67,21 @@ const blockCatalogEntries = [
     title: "File Manager",
     description: "A token-native, storage-agnostic file-management workspace with icon, list, and Finder-style column views.",
     categories: ["application", "storage", "files"],
-    dependencies: ["button", "dialog", "input", "select", "tabs", "@tanstack/react-virtual"],
+    dependencies: ["button", "dialog", "input", "select", "tabs", "@tanstack/react-virtual", "inline-notice"],
   },
   {
     name: "agent-message-trace-01",
     title: "Agent Message Trace",
     description: "A responsive, resizable agent trace workspace with a virtualized timeline and span inspector.",
     categories: ["application", "agent", "observability"],
-    dependencies: ["badge", "button", "detail-list", "empty", "input-copy", "resizable", "scroll-area", "switch", "tabs", "@tanstack/react-virtual"],
+    dependencies: ["badge", "button", "detail-list", "empty", "input-copy", "resizable", "scroll-area", "switch", "tabs", "@tanstack/react-virtual", "inline-notice"],
   },
   {
     name: "agent-trace-01",
     title: "Agent Trace",
     description: "A turn-aware AI gateway trace workspace with shared navigation that projects agent messages, tool calls, and results from uploaded JSON.",
     categories: ["application", "agent", "observability"],
-    dependencies: ["badge", "breadcrumb", "button", "detail-list", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "@lobehub/icons"],
+    dependencies: ["badge", "breadcrumb", "button", "detail-list", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "@lobehub/icons", "inline-notice"],
   },
   {
     name: "agent-session-detail-01",
@@ -109,7 +109,7 @@ const blockCatalogEntries = [
     title: "模型详情",
     description: "A model detail page with API-key handoff, runnable code samples, benchmarks, and endpoint information.",
     categories: ["application", "details"],
-    dependencies: ["page-layout", "breadcrumb", "tabs", "table", "input-copy", "card", "badge", "button"],
+    dependencies: ["page-layout", "breadcrumb", "tabs", "table", "input-copy", "card", "badge", "button", "inline-notice"],
   },
   {
     name: "model-detail-02",
@@ -158,7 +158,7 @@ const blockCatalogEntries = [
     title: "流量规则",
     description: "A responsive traffic-rule management console with grouped administration navigation, rule search, status, and row actions.",
     categories: ["application", "gateway", "tables"],
-    dependencies: ["badge", "button", "checkbox", "data-table", "dialog", "dropdown", "input", "menu-item", "nav-item", "nav-menu", "page-layout", "portal-container-context", "radio-group", "select", "sidebar", "sidebar-identity-row", "switch", "table", "tabs", "temporal-picker", "textarea", "tooltip", "icon-context", "@hugeicons/core-free-icons", "@tanstack/react-table"],
+    dependencies: ["badge", "button", "checkbox", "data-table", "dialog", "dropdown", "input", "menu-item", "nav-item", "nav-menu", "page-layout", "portal-container-context", "radio-group", "select", "sidebar", "sidebar-identity-row", "switch", "table", "tabs", "temporal-picker", "textarea", "tooltip", "icon-context", "@hugeicons/core-free-icons", "@tanstack/react-table", "inline-notice"],
   },
   {
     name: "personal-settings-01",
@@ -244,7 +244,7 @@ const blockCatalogEntries = [
     title: "MCP Resource List Page",
     description: "A Sidebar workspace for managing MCP applications and categories with design-system-native tabs, filters, and tables.",
     categories: ["application", "resources", "tables", "navigation"],
-    dependencies: ["resource-list-table-01", "resource-workspace-shell-01", "page-layout", "tabs"],
+    dependencies: ["resource-list-table-01", "resource-workspace-shell-01", "page-layout", "tabs", "inline-notice"],
   },
   {
     name: "resource-list-table-01",
@@ -300,7 +300,7 @@ const blockCatalogEntries = [
     title: "Infinite Log Table",
     description: "A schema-driven virtualized log explorer with dynamic fields and filters, cursor pagination, live tailing, and record detail.",
     categories: ["application", "tables", "observability"],
-    dependencies: ["button", "checkbox", "dialog", "input-group", "mobile-drawer", "recharts", "@tanstack/react-table", "@tanstack/react-virtual"],
+    dependencies: ["button", "checkbox", "dialog", "input-group", "mobile-drawer", "recharts", "@tanstack/react-table", "@tanstack/react-virtual", "inline-notice"],
   },
 ] as const;
 

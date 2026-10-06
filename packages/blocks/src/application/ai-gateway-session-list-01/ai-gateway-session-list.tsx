@@ -1,5 +1,7 @@
 "use client";
 
+import { Alert, AlertTitle, AlertAction } from "@zeron/ui/alert";
+
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -611,18 +613,9 @@ export function AiGatewaySessionList({
                 className="gap-2.5"
                 emptyState={
                   hasBlockingError ? (
-                    <div className="p-3">
-                      <InlineNotice tone="danger" variant="emphasized">
-                        <InlineNoticeContent>{error || labels.errorTitle}</InlineNoticeContent>
-                        {actions?.onRetry ? (
-                          <InlineNoticeAction>
-                            <Button onClick={actions.onRetry} size="sm" type="button" variant="secondary">
+                    <div className="flex min-w-0 w-full items-center justify-center min-h-60 px-4 py-8"><Alert status="danger" role="group" className="w-full max-w-xl"><AlertTitle>{error || labels.errorTitle}</AlertTitle><AlertAction>{actions?.onRetry ? (<Button onClick={actions.onRetry} size="sm" type="button" variant="secondary">
                               {labels.retry}
-                            </Button>
-                          </InlineNoticeAction>
-                        ) : null}
-                      </InlineNotice>
-                    </div>
+                            </Button>) : undefined}</AlertAction></Alert></div>
                   ) : (
                     <SessionEmptyState
                       filtered={filtered}

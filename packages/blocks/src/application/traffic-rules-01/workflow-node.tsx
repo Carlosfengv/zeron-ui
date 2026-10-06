@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
 import { Button } from "@zeron/ui/button";
 import { useIcon, type IconName } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
@@ -23,7 +24,7 @@ export function WorkflowNode({ id, title, description, icon, tone = "blue", expa
       {expanded ? tools : null}
     </header>
     {expanded ? <div id={`workflow-${id}`} className="p-4 text-label max-[600px]:p-3">{children}</div> : null}
-    {issue ? <p className="px-4 py-2 text-label text-fg-danger" role="alert">{issue}</p> : null}
+    {issue ? <InlineNotice className="mx-4 my-2" variant="emphasized" tone="warning"><InlineNoticeContent>{issue}</InlineNoticeContent></InlineNotice> : null}
     {expanded && footer ? <footer className="flex flex-wrap items-center gap-2 rounded-b-xl border-t border-border-subtle bg-surface-floating px-4 py-3 text-label text-fg-subtle [&_code]:rounded [&_code]:bg-brand/10 [&_code]:px-2 [&_code]:py-0.5 [&_code]:font-sans [&_code]:text-label [&_code]:text-fg-brand">{footer}</footer> : null}
   </section>;
 }

@@ -71,8 +71,8 @@ describe("Personal model usage call-log contract", () => {
     expect(callLogs).toContain('className="sticky left-0 z-content w-36 min-w-36 max-w-36 bg-surface-floating">开始时间');
     expect(callLogs).toContain('>输入消息</TableHead><TableHead className="w-52 min-w-52 max-w-52">回答结果</TableHead><TableHead className="w-52 min-w-52 max-w-52">调用</TableHead>');
     expect(callLogs).toContain('className="sticky right-0 z-content w-20 min-w-20 max-w-20 border-l border-border bg-surface-floating text-right">费用');
-    expect(callLogs).toContain('<Badge color="red" size="sm" variant="strong">错误');
-    expect(callLogs).toContain('<Badge color="amber" size="sm" variant="strong">降级');
+    expect(callLogs).toContain('<Badge status="danger" size="sm" variant="strong">错误');
+    expect(callLogs).toContain('<Badge status="warning" size="sm" variant="strong">降级');
     expect(callLogs).toContain('<UsageFilter label="计费归属"');
     expect(callLogs).toContain('record.runId === run.id && record.attribution === attribution');
     expect(settings).toContain('return <Badge color="green" size="sm">{presentation.label}</Badge>');

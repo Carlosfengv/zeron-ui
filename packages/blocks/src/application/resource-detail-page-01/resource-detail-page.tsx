@@ -655,7 +655,7 @@ export function ResourceDetailPage({
           scrollMode={section === "overview" ? "columns" : "body"}
           status={
             detailStatus === undefined ? (
-              <Badge color="blue" size="sm" variant="strong">
+              <Badge status={published ? "info" : "neutral"} size="sm" variant="strong">
                 {published ? data.status : resolvedLabels.unpublishedStatus}
               </Badge>
             ) : detailStatus

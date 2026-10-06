@@ -13,14 +13,15 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Button } from "@zeron/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@zeron/ui/card";
 import {
+  chartTrendPreset,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@zeron/ui/chart";
+import { ChartLegend, chartSeriesColor } from "@zeron/ui/chart-primitives";
 import { Container, ContainerBody } from "@zeron/ui/container";
 import { MetricCard } from "@zeron/ui/metric-card";
 import { StatusOverview } from "@zeron/ui/status-overview";
@@ -40,8 +41,8 @@ export interface AvailabilityTimelineMarker {
 
 export interface AvailabilityPoint {
   timestamp: number;
-  routed: number;
-  direct: number;
+  routed: number | null;
+  direct: number | null;
 }
 
 export interface AvailabilityMonitorProps
@@ -66,11 +67,11 @@ export interface AvailabilityMonitorProps
 const chartConfig = {
   routed: {
     label: "OpenRouter Availability",
-    color: "var(--success-border)",
+    color: chartSeriesColor("routed"),
   },
   direct: {
     label: "Without Routing",
-    color: "var(--warning)",
+    color: chartSeriesColor("direct"),
   },
 } satisfies ChartConfig;
 
@@ -149,11 +150,11 @@ const defaultDirectAvailabilityValues = [
 const defaultChartData = defaultRoutedAvailabilityValues.map((routed, index) => ({
   timestamp: Date.UTC(2026, 8, 7, 1, 30) + index * 10 * 60 * 1000,
   routed,
-  direct: defaultDirectAvailabilityValues[index] ?? 0,
+  direct: defaultDirectAvailabilityValues[index] ?? null,
 }));
 
-function formatPercent(value: number) {
-  return `${value.toFixed(2)}%`;
+function formatPercent(value: number | null) {
+  return value !== null && Number.isFinite(value) ? `${value.toFixed(2)}%` : "—";
 }
 
 function TimelineCard({
@@ -247,13 +248,11 @@ function TrendCard({
       key: "routed" as const,
       label: "OpenRouter Availability",
       value: routedAvailability,
-      dotClassName: "bg-success-border",
     },
     {
       key: "direct" as const,
       label: "Without Routing",
       value: directAvailability,
-      dotClassName: "bg-warning",
     },
   ];
 
@@ -269,17 +268,15 @@ function TrendCard({
           <ChartContainer
             className="aspect-auto h-[320px] min-h-0 w-full text-label"
             config={chartConfig}
+            aria-label="Availability over the last 24 hours"
+            dataTable={{ caption: `Availability (%) · ${timeZone}`, columns: ["Time", ...series.map((item) => item.label)], rows: chartData.map((point, index) => ({ id: String(index), label: Number.isFinite(point.timestamp) ? tooltipFormatter.format(point.timestamp) : "—", values: [formatPercent(point.routed), formatPercent(point.direct)] })) }}
           >
             <LineChart
               accessibilityLayer
-              data={chartData}
+              data={chartData.filter((point) => Number.isFinite(point.timestamp)).map((point) => ({ ...point, routed: point.routed !== null && Number.isFinite(point.routed) ? point.routed : null, direct: point.direct !== null && Number.isFinite(point.direct) ? point.direct : null }))}
               margin={{ bottom: 8, left: 0, right: 8, top: 8 }}
             >
-              <CartesianGrid
-                stroke="var(--border-subtle)"
-                strokeDasharray="3 3"
-                vertical={false}
-              />
+              <CartesianGrid {...chartTrendPreset.grid} />
               <XAxis
                 axisLine={false}
                 dataKey="timestamp"
@@ -310,6 +307,7 @@ function TrendCard({
                 cursor={{ stroke: "var(--border)", strokeDasharray: "3 3" }}
               />
               <Line
+                connectNulls={false}
                 activeDot={{ r: 3 }}
                 dataKey="routed"
                 dot={false}
@@ -320,6 +318,7 @@ function TrendCard({
                 type="monotone"
               />
               <Line
+                connectNulls={false}
                 activeDot={{ r: 3 }}
                 dataKey="direct"
                 dot={false}
@@ -332,47 +331,10 @@ function TrendCard({
             </LineChart>
           </ChartContainer>
 
-          <div aria-label="Chart series" className="mt-2 grid gap-1">
-            {series.map((item) => {
-              const visible = visibleSeries[item.key];
-              return (
-                <div
-                  className={cn(
-                    "flex items-center justify-between gap-3",
-                    !visible && "opacity-50"
-                  )}
-                  key={item.key}
-                >
-                  <Button
-                    aria-pressed={visible}
-                    onClick={() =>
-                      setVisibleSeries((current) => ({
-                        ...current,
-                        [item.key]: !current[item.key],
-                      }))
-                    }
-                    size="sm"
-                    type="button"
-                    variant="ghost"
-                  >
-                    <span className="inline-flex items-center gap-1.5">
-                      <span
-                        aria-hidden
-                        className={cn(
-                          "inline-block size-3 shrink-0 rounded-full",
-                          item.dotClassName
-                        )}
-                      />
-                      <span>{item.label}</span>
-                    </span>
-                  </Button>
-                  <span className="shrink-0 tabular-nums text-fg-muted">
-                    {formatPercent(item.value)}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+          <ChartLegend aria-label="Chart series" className="mt-3" items={series.map((item) => ({ id: item.key, label: item.label, color: chartConfig[item.key].color, value: formatPercent(item.value), pressed: visibleSeries[item.key] }))} onSelect={(id) => {
+            if (id !== "routed" && id !== "direct") return;
+            setVisibleSeries((current) => ({ ...current, [id]: !current[id] }));
+          }} />
         </CardContent>
       </Card>
     </section>

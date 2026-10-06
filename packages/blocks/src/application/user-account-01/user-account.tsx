@@ -1,5 +1,7 @@
 "use client";
 
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+
 import { useRef, useState, type ReactNode } from "react";
 import { SidebarAccountMenu, type SidebarAccountMenuProps, type SidebarAccountMenuSection } from "@zeron/ui/sidebar-account-menu";
 import { useIcon } from "@zeron/ui/system/icon-context";
@@ -95,7 +97,7 @@ export function UserAccount({ user, compact = false, theme, onThemeChange, local
   }));
   return <div className="min-w-0" aria-busy={busy}>
     <SidebarAccountMenu primary={user.name} description={user.email} avatar={user.avatar} sections={visibleSections} className={className} compact={compact} menuSide={menuSide} open={open} onOpenChange={onOpenChange} triggerTrailing={<MoreIcon aria-hidden className="size-4" />} />
-    {busy && <p role="status" className="px-2 py-1 text-label text-fg-muted">{copy.working}</p>}
-    {(error || localError) && <p role="alert" className="px-2 py-1 text-label text-fg-danger">{error || localError}</p>}
+    {busy && <div role="status" className="px-2 py-1"><InlineNotice variant="emphasized" tone="info"><InlineNoticeContent>{copy.working}</InlineNoticeContent></InlineNotice></div>}
+    {(error || localError) && <InlineNotice role="alert" tone="danger" variant="emphasized"><InlineNoticeContent>{error || localError}</InlineNoticeContent></InlineNotice>}
   </div>;
 }

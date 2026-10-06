@@ -1,5 +1,13 @@
 "use client";
 
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+
+import { Alert, AlertTitle } from "@zeron/ui/alert";
+
+import { Skeleton } from "@zeron/ui/skeleton";
+
+import { Empty, EmptyDescription } from "@zeron/ui/empty";
+
 import * as React from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Button } from "@zeron/ui/button";
@@ -773,9 +781,9 @@ export function FileManager<TData>({
       ) : null}
       <div className="relative min-h-0 flex-1">
         {error ? (
-          renderErrorState?.(error) ?? <FileManagerState>{error}</FileManagerState>
+          renderErrorState?.(error) ?? <FileManagerState><div className="flex min-w-0 w-full items-center justify-center"><Alert status="danger" role="group" className="w-full max-w-xl"><AlertTitle>{error}</AlertTitle></Alert></div></FileManagerState>
         ) : loading ? (
-          <FileManagerState>{labels.loading}</FileManagerState>
+          <FileManagerState><div role="status"><Skeleton className="mb-3 h-8 w-40" /><InlineNotice variant="emphasized" tone="info"><InlineNoticeContent>{labels.loading}</InlineNoticeContent></InlineNotice></div></FileManagerState>
         ) : manager.view === "icon" ? (
           <IconView
             entries={currentEntries}
@@ -825,7 +833,7 @@ export function FileManager<TData>({
         {!loading && !error && currentEntries.length === 0 ? (
           renderEmptyState?.() ?? (
             <FileManagerState>
-              {manager.query.trim() ? labels.noResults : labels.emptyFolder}
+              <Empty scope="inline" density="compact" reason={manager.query.trim() ? "no-results" : "no-data"}><EmptyDescription>{manager.query.trim() ? labels.noResults : labels.emptyFolder}</EmptyDescription></Empty>
             </FileManagerState>
           )
         ) : null}
@@ -1365,7 +1373,7 @@ function ColumnView<TData>({
           <section key={folderId ?? "root"} aria-label={folder?.name ?? labels.root} className="flex w-60 shrink-0 flex-col border-r border-border last:border-r-0">
             <header className="flex h-8 items-center border-b border-border bg-surface-raised px-2 text-label font-medium text-fg-muted">
               <span className="truncate">{folder?.name ?? labels.root}</span>
-              {folderId && loadingFolders.has(folderId) ? <span className="ml-auto size-3 animate-spin rounded-full border border-border border-t-fg-brand" /> : null}
+              {folderId && loadingFolders.has(folderId) ? <span className="ml-auto size-3 animate-spin motion-reduce:animate-none rounded-full border border-border border-t-fg-brand" /> : null}
             </header>
             <div className="min-h-0 flex-1 overflow-auto p-1" role="listbox">
               {columnItems.map((item) => {

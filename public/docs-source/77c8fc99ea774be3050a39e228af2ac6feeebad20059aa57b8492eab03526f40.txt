@@ -803,7 +803,7 @@ export function ResourceListTable({
           </Badge>
         ) : (
           <Badge
-            color={status === "enabled" ? "blue" : "gray"}
+            status={status === "enabled" ? "info" : "neutral"}
             size="sm"
             variant="strong"
           >

@@ -1,5 +1,7 @@
 "use client";
 
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+
 import Link from "next/link";
 import AppleMono from "@lobehub/icons/es/Apple/components/Mono";
 import GoogleMono from "@lobehub/icons/es/Google/components/Mono";
@@ -192,9 +194,7 @@ export function Signup01({
 
             <div className="grid gap-3">
               {errors?.form && (
-                <p aria-live="polite" className="text-center text-label font-medium text-fg-danger" role="alert">
-                  {errors.form}
-                </p>
+                <InlineNotice role="alert" tone="danger" variant="emphasized"><InlineNoticeContent>{errors.form}</InlineNoticeContent></InlineNotice>
               )}
               <Button
                 className="w-full"

@@ -126,7 +126,7 @@ function ModelRouterState({ data, value, defaultValue, onValueChange, actions, o
   }
 
   return (
-    <Card {...props} aria-busy={pending || undefined} data-slot="model-router" className={cn("@container w-full max-w-3xl overflow-hidden rounded-2xl border-hairline border-border bg-surface-raised pb-0 shadow-raised", className)}>
+    <Card {...props} aria-busy={pending || undefined} data-slot="model-router" className={cn("@container w-full max-w-3xl overflow-hidden rounded-2xl bg-surface-raised pb-0", className)}>
       <header className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
         <div className="flex items-center gap-1">
           <h2 className="text-body font-medium text-fg-default">{labels.title}</h2>
