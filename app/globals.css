@@ -30,6 +30,11 @@
   --surface-floating: light-dark(#FFFFFF, #1F1F1F);
   --surface-overlay: light-dark(#FFFFFF, #292929);
   --surface-top: light-dark(#FFFFFF, #404040);
+  --fg-on-danger-strong: light-dark(#FFFFFF, #00040D);
+  --fg-on-warning-strong: #00040D;
+  --fg-on-success-strong: light-dark(#FFFFFF, #00040D);
+  --fg-on-info-strong: light-dark(#FFFFFF, #00040D);
+  --fg-on-neutral-status-strong: light-dark(#FFFFFF, #00040D);
   --fg-default: light-dark(#00030A, #F9F9F9);
   --fg-muted: light-dark(#00030ABF, #F9F9F9BF);
   --fg-subtle: light-dark(#00030A99, #B6BABC);
@@ -45,6 +50,11 @@
   --fg-on-brand: light-dark(#FFFFFF, #00040D);
   --fg-on-danger: #00040D;
   --fg-on-inverse: light-dark(#FFFFFF, #00040D);
+  --danger-strong: light-dark(#DC2626, #F87171);
+  --warning-strong: light-dark(#FA8801, #FF9314);
+  --success-strong: light-dark(#15803D, #4ADE80);
+  --info-strong: light-dark(#0060D2, #72B9FE);
+  --neutral-status-strong: light-dark(#555B61, #8B9095);
   --brand: light-dark(#0060D2, #1483FD);
   --warning: light-dark(#FA8801, #FF9314);
   --neutral: light-dark(#6B7075, #8B9095);
@@ -204,6 +214,11 @@
   --color-background: var(--surface-base);
   --color-foreground: var(--fg-default);
   --color-ring: var(--focus-ring);
+  --color-fg-on-danger-strong: var(--fg-on-danger-strong);
+  --color-fg-on-warning-strong: var(--fg-on-warning-strong);
+  --color-fg-on-success-strong: var(--fg-on-success-strong);
+  --color-fg-on-info-strong: var(--fg-on-info-strong);
+  --color-fg-on-neutral-status-strong: var(--fg-on-neutral-status-strong);
   --color-fg-default: var(--fg-default);
   --color-fg-muted: var(--fg-muted);
   --color-fg-subtle: var(--fg-subtle);
@@ -219,6 +234,11 @@
   --color-fg-on-brand: var(--fg-on-brand);
   --color-fg-on-danger: var(--fg-on-danger);
   --color-fg-on-inverse: var(--fg-on-inverse);
+  --color-danger-strong: var(--danger-strong);
+  --color-warning-strong: var(--warning-strong);
+  --color-success-strong: var(--success-strong);
+  --color-info-strong: var(--info-strong);
+  --color-neutral-status-strong: var(--neutral-status-strong);
   --color-brand: var(--brand);
   --color-warning: var(--warning);
   --color-neutral: var(--neutral);

@@ -1,6 +1,7 @@
 "use client";
 
-import { Badge, badgeColors, type BadgeColor } from "@zeron/ui/badge";
+import { Badge, badgeColors, type BadgeColor, type BadgeStatus } from "@zeron/ui/badge";
+import { useIcon } from "@zeron/icons/context";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
@@ -61,6 +62,11 @@ const statusCode = `import { Badge } from "./components";
 <Badge status="warning">Attention needed</Badge>
 <Badge status="danger">Sync failed</Badge>`;
 
+const strongStatusCode = statusCode.replaceAll("<Badge status=", '<Badge variant="strong" status=');
+const plainCode = `<Badge variant="plain" status="success">Ready</Badge>
+<Badge variant="plain" status="danger" leadingIcon={<ErrorIcon />}>Failed</Badge>
+<Badge variant="plain" status="info" leadingIcon={<RunningIcon />} role="img" aria-label="Running" />`;
+
 const announcedStatusCode = `<Badge status="warning" role="status">
   Credentials expire in 3 days
 </Badge>`;
@@ -78,8 +84,10 @@ const colorsCode = `import { Badge } from "./components";
 
 export default function BadgeDoc() {
   const t = useTranslations("badge");
+  const Check = useIcon("check");
   const badgeProps: PropDef[] = [
-    { name: "variant", type: '"solid" | "strong" | "dot"', default: '"solid"', description: t("variant") },
+    { name: "variant", type: '"solid" | "strong" | "dot" | "plain"', default: '"solid"', description: t("variant") },
+    { name: "leadingIcon", type: "ReactNode", description: t("leadingIcon") },
     { name: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: t("size") },
     { name: "color", type: "BadgeColorInput", default: '"gray"', description: t("color") },
     { name: "status", type: '"danger" | "warning" | "success" | "info" | "neutral"', description: t("statusDescription") },
@@ -111,6 +119,12 @@ export default function BadgeDoc() {
               label: "Dot",
               code: `<Badge variant="dot" color="violet">Fiction</Badge>`,
               preview: <Badge variant="dot" color="violet">Fiction</Badge>,
+            },
+            {
+              value: "plain",
+              label: "Plain",
+              code: '<Badge variant="plain" status="success">Ready</Badge>',
+              preview: <Badge variant="plain" status="success">Ready</Badge>,
             },
             {
               value: "status",
@@ -223,6 +237,29 @@ export default function BadgeDoc() {
             <Badge status="success">Ready</Badge>
             <Badge status="warning">Attention needed</Badge>
             <Badge status="danger">Sync failed</Badge>
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={`${t("status")} · ${t("strong")}`}>
+        <ComponentPreview code={strongStatusCode}>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="strong" status="neutral">Queued</Badge>
+            <Badge variant="strong" status="info">In review</Badge>
+            <Badge variant="strong" status="success">Ready</Badge>
+            <Badge variant="strong" status="warning">Attention needed</Badge>
+            <Badge variant="strong" status="danger">Sync failed</Badge>
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("plain")}>
+        <p className="mb-3 max-w-2xl text-body text-fg-muted">{t("plainDescription")}</p>
+        <ComponentPreview code={plainCode}>
+          <div className="flex flex-wrap items-center gap-5">
+            {(["neutral", "info", "success", "warning", "danger"] as BadgeStatus[]).map(status => <Badge key={status} variant="plain" status={status}>{status}</Badge>)}
+            <Badge variant="plain" status="success" leadingIcon={<Check />}>Ready</Badge>
+            <Badge variant="plain" status="success" leadingIcon={<Check />} role="img" aria-label="Ready" />
           </div>
         </ComponentPreview>
       </DocSection>

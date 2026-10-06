@@ -74,12 +74,20 @@
       "itemId": "block:user-account-01"
     },
     {
+      "path": "components/alert.md",
+      "itemId": "component:alert"
+    },
+    {
       "path": "components/app-shell.md",
       "itemId": "component:app-shell"
     },
     {
       "path": "components/avatar.md",
       "itemId": "component:avatar"
+    },
+    {
+      "path": "components/badge.md",
+      "itemId": "component:badge"
     },
     {
       "path": "components/button.md",
@@ -100,6 +108,10 @@
     {
       "path": "components/field.md",
       "itemId": "component:field"
+    },
+    {
+      "path": "components/inline-notice.md",
+      "itemId": "component:inline-notice"
     },
     {
       "path": "components/input.md",

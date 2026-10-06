@@ -21,6 +21,14 @@
     "iconPart": "可选的展示性前置图标，会继承状态颜色。",
     "titlePart": "主要提示信息。单独使用时形成紧凑的单行 Alert。",
     "descriptionPart": "可选的辅助说明。添加后形成标准的双行 Alert。",
-    "actionPart": "用于按钮、链接或其他紧凑控件的可选操作区域；窄屏时会移至正文下方。"
+    "actionPart": "用于按钮、链接或其他紧凑控件的可选操作区域；窄屏时会移至正文下方。",
+    "requestFailure": "请求失败与重试",
+    "failureGuidance": "首次失败使用 Alert；重试和等待由宿主负责。刷新失败且已有数据时，保留数据并使用 InlineNotice。静态示例使用 role=\"group\"；新发生且需要立即通知的错误使用 role=\"alert\"。",
+    "failureTitle": "数据加载失败",
+    "failureDescription": "检查连接后重新加载。",
+    "retry": "重新加载",
+    "recovered": "数据已重新加载",
+    "reset": "重置示例",
+    "roleProp": "danger 默认为 alert，其他状态默认为 status。静态内容使用 group；动态通知由宿主明确选择播报方式。"
   }
 }

@@ -3,6 +3,56 @@
 const tokenData = {
   "colors": [
     {
+      "name": "fg-on-danger-strong",
+      "light": "#FFFFFF",
+      "dark": "#00040D",
+      "usage": "高强调危险状态标签的前景；仅与 danger-strong 配对",
+      "classification": {
+        "channel": "foreground",
+        "intent": "danger"
+      }
+    },
+    {
+      "name": "fg-on-warning-strong",
+      "light": "#00040D",
+      "dark": "#00040D",
+      "usage": "高强调警告状态标签的前景；仅与 warning-strong 配对",
+      "classification": {
+        "channel": "foreground",
+        "intent": "warning"
+      }
+    },
+    {
+      "name": "fg-on-success-strong",
+      "light": "#FFFFFF",
+      "dark": "#00040D",
+      "usage": "高强调成功状态标签的前景；仅与 success-strong 配对",
+      "classification": {
+        "channel": "foreground",
+        "intent": "success"
+      }
+    },
+    {
+      "name": "fg-on-info-strong",
+      "light": "#FFFFFF",
+      "dark": "#00040D",
+      "usage": "高强调信息状态标签的前景；仅与 info-strong 配对",
+      "classification": {
+        "channel": "foreground",
+        "intent": "info"
+      }
+    },
+    {
+      "name": "fg-on-neutral-status-strong",
+      "light": "#FFFFFF",
+      "dark": "#00040D",
+      "usage": "高强调中性状态标签的前景；仅与 neutral-status-strong 配对",
+      "classification": {
+        "channel": "foreground",
+        "intent": "neutral-status"
+      }
+    },
+    {
       "name": "fg-default",
       "light": "#00030A",
       "dark": "#F9F9F9",
@@ -150,6 +200,56 @@ const tokenData = {
       "classification": {
         "channel": "foreground",
         "intent": "inverse"
+      }
+    },
+    {
+      "name": "danger-strong",
+      "light": "#DC2626",
+      "dark": "#F87171",
+      "usage": "高强调危险状态标签填充；与 fg-on-danger-strong 配对，区别于操作按钮",
+      "classification": {
+        "channel": "fill",
+        "intent": "danger"
+      }
+    },
+    {
+      "name": "warning-strong",
+      "light": "#FA8801",
+      "dark": "#FF9314",
+      "usage": "高强调警告状态标签填充；与 fg-on-warning-strong 配对",
+      "classification": {
+        "channel": "fill",
+        "intent": "warning"
+      }
+    },
+    {
+      "name": "success-strong",
+      "light": "#15803D",
+      "dark": "#4ADE80",
+      "usage": "高强调成功状态标签填充；与 fg-on-success-strong 配对",
+      "classification": {
+        "channel": "fill",
+        "intent": "success"
+      }
+    },
+    {
+      "name": "info-strong",
+      "light": "#0060D2",
+      "dark": "#72B9FE",
+      "usage": "高强调信息状态标签填充；与 fg-on-info-strong 配对",
+      "classification": {
+        "channel": "fill",
+        "intent": "info"
+      }
+    },
+    {
+      "name": "neutral-status-strong",
+      "light": "#555B61",
+      "dark": "#8B9095",
+      "usage": "高强调中性状态标签填充；与 fg-on-neutral-status-strong 配对",
+      "classification": {
+        "channel": "fill",
+        "intent": "neutral-status"
       }
     },
     {
@@ -706,6 +806,56 @@ const tokenData = {
   ],
   "foregrounds": [
     {
+      "name": "fg-on-danger-strong",
+      "light": "#FFFFFF",
+      "dark": "#00040D",
+      "usage": "高强调危险状态标签的前景；仅与 danger-strong 配对",
+      "classification": {
+        "channel": "foreground",
+        "intent": "danger"
+      }
+    },
+    {
+      "name": "fg-on-warning-strong",
+      "light": "#00040D",
+      "dark": "#00040D",
+      "usage": "高强调警告状态标签的前景；仅与 warning-strong 配对",
+      "classification": {
+        "channel": "foreground",
+        "intent": "warning"
+      }
+    },
+    {
+      "name": "fg-on-success-strong",
+      "light": "#FFFFFF",
+      "dark": "#00040D",
+      "usage": "高强调成功状态标签的前景；仅与 success-strong 配对",
+      "classification": {
+        "channel": "foreground",
+        "intent": "success"
+      }
+    },
+    {
+      "name": "fg-on-info-strong",
+      "light": "#FFFFFF",
+      "dark": "#00040D",
+      "usage": "高强调信息状态标签的前景；仅与 info-strong 配对",
+      "classification": {
+        "channel": "foreground",
+        "intent": "info"
+      }
+    },
+    {
+      "name": "fg-on-neutral-status-strong",
+      "light": "#FFFFFF",
+      "dark": "#00040D",
+      "usage": "高强调中性状态标签的前景；仅与 neutral-status-strong 配对",
+      "classification": {
+        "channel": "foreground",
+        "intent": "neutral-status"
+      }
+    },
+    {
       "name": "fg-default",
       "light": "#00030A",
       "dark": "#F9F9F9",
@@ -857,6 +1007,56 @@ const tokenData = {
     }
   ],
   "fills": [
+    {
+      "name": "danger-strong",
+      "light": "#DC2626",
+      "dark": "#F87171",
+      "usage": "高强调危险状态标签填充；与 fg-on-danger-strong 配对，区别于操作按钮",
+      "classification": {
+        "channel": "fill",
+        "intent": "danger"
+      }
+    },
+    {
+      "name": "warning-strong",
+      "light": "#FA8801",
+      "dark": "#FF9314",
+      "usage": "高强调警告状态标签填充；与 fg-on-warning-strong 配对",
+      "classification": {
+        "channel": "fill",
+        "intent": "warning"
+      }
+    },
+    {
+      "name": "success-strong",
+      "light": "#15803D",
+      "dark": "#4ADE80",
+      "usage": "高强调成功状态标签填充；与 fg-on-success-strong 配对",
+      "classification": {
+        "channel": "fill",
+        "intent": "success"
+      }
+    },
+    {
+      "name": "info-strong",
+      "light": "#0060D2",
+      "dark": "#72B9FE",
+      "usage": "高强调信息状态标签填充；与 fg-on-info-strong 配对",
+      "classification": {
+        "channel": "fill",
+        "intent": "info"
+      }
+    },
+    {
+      "name": "neutral-status-strong",
+      "light": "#555B61",
+      "dark": "#8B9095",
+      "usage": "高强调中性状态标签填充；与 fg-on-neutral-status-strong 配对",
+      "classification": {
+        "channel": "fill",
+        "intent": "neutral-status"
+      }
+    },
     {
       "name": "brand",
       "light": "#0060D2",

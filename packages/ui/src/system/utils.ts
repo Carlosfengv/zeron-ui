@@ -4,6 +4,7 @@ import { extendTailwindMerge } from "tailwind-merge";
 import {
   mergeBorderWidthTokenNames,
   mergeMotionDurationTokenNames,
+  mergeTypographyTokenNames,
 } from "#system/tailwind-merge-tokens";
 
 // Tailwind v4 exposes both semantic font sizes and colors through `text-*`
@@ -25,13 +26,7 @@ const mergeTailwindClasses = extendTailwindMerge({
       duration: [{ duration: mergeMotionDurationTokenNames }],
     },
     theme: {
-      text: [
-        "label",
-        "code",
-        "body",
-        "title",
-        "heading",
-      ],
+      text: [...mergeTypographyTokenNames],
     },
   },
 });

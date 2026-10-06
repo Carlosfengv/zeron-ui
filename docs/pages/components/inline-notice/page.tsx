@@ -12,6 +12,7 @@ import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { useTranslations } from "next-intl";
+import { useIcon } from "@zeron/icons/context";
 
 const basicCode = `import { Badge } from "./components/badge";
 import {
@@ -84,6 +85,7 @@ const emphasizedBadgeColors = {
 } satisfies Record<InlineNoticeTone, BadgeColor>;
 
 export default function InlineNoticeDoc() {
+  const Refresh = useIcon("rotate-ccw");
   const t = useTranslations("inlineNotice");
   const toneExamples: Array<{
     tone: InlineNoticeTone;
@@ -238,6 +240,13 @@ export default function InlineNoticeDoc() {
           <p>{t("accessibilityBody")}</p>
           <p>{t("liveRegionBody")}</p>
         </div>
+      </DocSection>
+
+      <DocSection title={t("activity")}>
+        <ComponentPreview code={'<InlineNotice variant="emphasized" tone="info">\n  <span aria-hidden="true" className="animate-spin motion-reduce:animate-none"><RefreshIcon /></span>\n  <InlineNoticeContent>Refreshing the previous results…</InlineNoticeContent>\n</InlineNotice>'}>
+          <InlineNotice variant="emphasized" tone="info"><span aria-hidden="true" className="inline-flex h-5 shrink-0 items-center [&_svg]:size-4"><Refresh className="animate-spin motion-reduce:animate-none" /></span><InlineNoticeContent>{t("activityMessage")}</InlineNoticeContent></InlineNotice>
+        </ComponentPreview>
+        <p className="mt-3 max-w-2xl text-body text-fg-muted">{t("activityGuidance")}</p>
       </DocSection>
 
       <DocSection title={t("apiReference")}>

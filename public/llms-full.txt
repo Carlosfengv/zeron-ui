@@ -1681,6 +1681,40 @@ Validate keyboard navigation, rejected sign-out and retry, shared preferences, m
 
 ---
 schema_version: 1
+name: alert
+kind: component
+status: stable
+locale: zh-CN
+summary: 可组合的请求失败和区域提示，使用现有标题、描述及宿主操作插槽。
+package_import: "@zeron/ui/alert"
+registry_import: "@/components/ui/alert"
+source: packages/ui/src/components/alert.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [empty, inline-notice, button]
+---
+
+# Alert
+
+首次请求失败或需要独立提示区域时，直接组合 AlertTitle、AlertDescription、AlertIcon 和 AlertAction。成功请求返回空集合使用 Empty；刷新失败且已有快照时保留数据，用 InlineNotice 反馈。
+
+status 支持 default、neutral、info、warning、danger。danger 默认 role="alert"，其他默认 role="status"；静态示例和旧错误使用 role="group"。新错误只选择一个播报 owner。组件不发请求，也不拥有重试状态。
+
+```tsx
+import { Alert, AlertTitle, AlertDescription, AlertAction } from "@zeron/ui/alert";
+import { Button } from "@zeron/ui/button";
+export function RequestFailure({ pending, retry }: { pending: boolean; retry: () => void }) {
+  return <Alert status="danger" role="group"><AlertTitle>数据加载失败</AlertTitle><AlertDescription>检查连接后重新加载。</AlertDescription><AlertAction><Button loading={pending} onClick={retry}>重新加载</Button></AlertAction></Alert>;
+}
+```
+
+安装使用 `npx zeron-ui add alert`。页面、面板的占位高度与外部布局由业务容器拥有，不需要额外的失败状态组件。验收重试等待、防重复请求、失败/空结果区别、窄屏操作换行和播报次数。
+
+
+---
+
+---
+schema_version: 1
 name: app-shell
 kind: component
 status: stable
@@ -1918,6 +1952,50 @@ Agent 优先关注：
 - AvatarWithDetails：`avatar`、`name`、`description`、`badge`、`className`。
 
 完整类型以 `source` 指向的实现为准。
+
+
+---
+
+---
+schema_version: 1
+name: badge
+kind: component
+status: stable
+locale: zh-CN
+summary: 分类与语义状态标签，支持轻量圆点和高强调状态。
+package_import: "@zeron/ui/badge"
+registry_import: "@/components/ui/badge"
+source: packages/ui/src/components/badge.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [alert, inline-notice]
+---
+
+# Badge
+
+`color` 表达模型类型、供应商、分类等身份；`status` 表达 danger、warning、success、info、neutral，优先于分类色。启用通常为 info，停用为 neutral，不能把停用当成失败。业务的 P0/P1、部署就绪和检查结果仍由各业务层映射。
+
+solid、dot、strong、plain 均支持 status。strong 使用专属的语义填充和前景配对，浅色、深色的默认配色对比度均至少 4.5:1。有边框的状态变体默认将对应语义边框颜色以 28% 不透明度与透明色混合。禁止通过 className 覆盖内部状态颜色。分类 strong 与自定义分类色继续兼容；自定义颜色和主题需要宿主验证对比度。
+
+Badge 默认没有实时播报。新发生的操作结果需要通知辅助技术时，选择一个明确的反馈 owner，避免 Badge 和 InlineNotice 同时播报。普通行短状态使用 Badge 的 plain 变体；活动与长文案使用 InlineNotice，强调区域使用 Alert。
+
+```tsx
+import { Badge } from "@zeron/ui/badge";
+export function StateLabels() {
+  return <div><Badge status="neutral">已停用</Badge><Badge status="info">已启用</Badge><Badge variant="strong" status="danger">严重 · P1</Badge><Badge color="violet">模型</Badge></div>;
+}
+```
+
+## 轻量状态
+
+plain 无背景、边框和水平内边距；默认显示圆点，leadingIcon 替换圆点。省略 children 可单独显示标记；装饰标记设置 aria-hidden，需要读取的独立标记设置 role="img" 和 aria-label。图标只表达外观，不自动旋转或播报。
+
+```tsx
+import { Badge } from "@zeron/ui/badge";
+export function HealthMarker() {
+  return <div><Badge variant="plain" status="success">正常</Badge><Badge variant="plain" status="danger" role="img" aria-label="失败" /></div>;
+}
+```
 
 
 ---
@@ -2353,6 +2431,39 @@ export function WorkspaceNameField({ value, onChange, error, canEdit }: {
 ## 定制与验收
 
 可以调整字段组列数、宽度和布局间距，不覆盖标签关联、错误颜色或 focus ring。检查点击标签聚焦、键盘顺序、长帮助文案、服务端字段错误、清除／修正错误、只读权限和窄屏。示例类型由 `agents:guides:examples:check` 验证；不据此声称真实保存接口已经接通。消费者按实际 aliases 使用已安装源码。
+
+
+---
+
+---
+schema_version: 1
+name: inline-notice
+kind: component
+status: stable
+locale: zh-CN
+summary: 活动、长文案和保留旧数据时的局部提示，默认不实时播报。
+package_import: "@zeron/ui/inline-notice"
+registry_import: "@/components/ui/inline-notice"
+source: packages/ui/src/components/inline-notice.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [alert, badge, button]
+---
+
+# InlineNotice
+
+活动、过期、刷新失败与长文案直接使用 InlineNoticeContent。subtle 为默认中性样式；variant="emphasized" 时必须提供 tone：neutral、info、success、warning、danger。正文可换行，包括长标识符。装饰图标使用 aria-hidden，不需要嵌套状态组件。
+
+```tsx
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+export function RefreshNotice() {
+  return <InlineNotice variant="emphasized" tone="info"><span aria-hidden="true" className="inline-flex animate-spin motion-reduce:animate-none"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" /></svg></span><InlineNoticeContent>正在刷新，保留上次获取的结果。</InlineNoticeContent></InlineNotice>;
+}
+```
+
+静态提示默认没有实时播报。非紧急动态更新显式添加 role="status"，紧急错误才使用 role="alert"，避免图标、正文与 Badge 同时播报。短状态和单独标记使用 Badge plain，独立区域及完整重试操作使用 Alert。InlineNoticeAction 支持紧凑链接或文字操作，业务请求由宿主负责。
+
+安装使用 `npx zeron-ui add inline-notice`。验收长文案换行、减少动态效果下停止动画、刷新不丢失旧内容和播报归属。
 
 
 ---

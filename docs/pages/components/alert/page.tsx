@@ -11,6 +11,7 @@ import {
   type AlertStatus,
 } from "@zeron/ui/alert";
 import { Button } from "@zeron/ui/button";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
@@ -230,6 +231,15 @@ function AlertPlayground() {
 
 export default function AlertDoc() {
   const t = useTranslations("alert");
+  const [retrying, setRetrying] = useState(false);
+  const [recovered, setRecovered] = useState(false);
+  async function retry() {
+    if (retrying) return;
+    setRetrying(true);
+    await new Promise(resolve => setTimeout(resolve, 400));
+    setRecovered(true);
+    setRetrying(false);
+  }
   const InformationCircle = useIcon("doc-info-item");
   const Bell = useIcon("bell");
   const Lightbulb = useIcon("lightbulb");
@@ -251,6 +261,7 @@ export default function AlertDoc() {
       description: t("statusProp"),
     },
     { name: "children", type: "ReactNode", description: t("childrenProp") },
+    { name: "role", type: '"alert" | "status" | "group" | ...', description: t("roleProp") },
     { name: "className", type: "string", description: t("classNameProp") },
   ];
 
@@ -320,6 +331,14 @@ export default function AlertDoc() {
               </Button>
             </AlertAction>
           </Alert>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("requestFailure")}>
+        <p className="mb-3 max-w-2xl text-body text-fg-muted">{t("failureGuidance")}</p>
+        <ComponentPreview preservePreview code={'<Alert status="danger" role="group">\n  <AlertTitle>Could not load data</AlertTitle>\n  <AlertDescription>Check your connection and retry.</AlertDescription>\n  <AlertAction><Button loading={pending} onClick={retry}>Retry</Button></AlertAction>\n</Alert>'}>
+          {recovered ? <div className="grid gap-3"><InlineNotice variant="emphasized" tone="success" role="status"><InlineNoticeContent>{t("recovered")}</InlineNoticeContent></InlineNotice><Button variant="secondary" onClick={() => setRecovered(false)}>{t("reset")}</Button></div>
+            : <Alert status="danger" role="group" className="w-full max-w-xl"><AlertIcon><CancelCircle /></AlertIcon><AlertTitle>{t("failureTitle")}</AlertTitle><AlertDescription>{t("failureDescription")}</AlertDescription><AlertAction><Button variant="secondary" loading={retrying} onClick={() => void retry()}>{t("retry")}</Button></AlertAction></Alert>}
         </ComponentPreview>
       </DocSection>
 

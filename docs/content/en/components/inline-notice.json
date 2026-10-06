@@ -46,6 +46,9 @@
     "childrenProp": "A Badge or other phrasing content, plus optional InlineNoticeContent and InlineNoticeAction parts.",
     "classNameProp": "Additional classes applied to the inline notice container.",
     "contentPart": "Flexible message area for text and simple phrasing content such as links or code.",
-    "actionPart": "Optional trailing slot for a compact link or text action."
+    "actionPart": "Optional trailing slot for a compact link or text action.",
+    "activity": "Activity and long messages",
+    "activityMessage": "Refreshing the previous results. The current page will update when the request completes.",
+    "activityGuidance": "Use InlineNoticeContent directly for activity and long messages; text can wrap. Mark decorative icons aria-hidden and stop spin animation for reduced motion. Opt into role=\"status\" on InlineNotice only when dynamic updates should be announced."
   }
 }

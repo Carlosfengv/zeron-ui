@@ -46,6 +46,9 @@
     "childrenProp": "Badge 或其他行内内容，以及可选的 InlineNoticeContent 和 InlineNoticeAction。",
     "classNameProp": "应用到行内提示容器的附加类名。",
     "contentPart": "弹性正文区域，可放置文本、链接或 code 等简单行内内容。",
-    "actionPart": "用于紧凑链接或文字操作的可选尾部区域。"
+    "actionPart": "用于紧凑链接或文字操作的可选尾部区域。",
+    "activity": "活动与长文案",
+    "activityMessage": "正在刷新，保留上次获取的结果。完成后将更新当前页面中的数据。",
+    "activityGuidance": "活动和长文案直接使用 InlineNoticeContent，文字可换行；装饰图标设置 aria-hidden，旋转动画在减少动态效果设置下停止。需要播报动态更新时，仅在 InlineNotice 上添加 role=\"status\"。"
   }
 }

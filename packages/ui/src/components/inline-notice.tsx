@@ -80,7 +80,7 @@ const InlineNoticeContent = forwardRef<
   <span
     ref={ref}
     data-slot="inline-notice-content"
-    className={cn("min-w-0", className)}
+    className={cn("min-w-0 break-words", className)}
     {...props}
   />
 ));

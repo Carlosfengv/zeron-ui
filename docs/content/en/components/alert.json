@@ -21,6 +21,14 @@
     "iconPart": "Optional presentational leading icon. It inherits the status colour.",
     "titlePart": "Primary message. Use it alone for a compact one-line alert.",
     "descriptionPart": "Optional supporting detail. Adding it creates the standard two-line alert.",
-    "actionPart": "Optional action slot for a button, link, or other compact control. It moves below the content on narrow screens."
+    "actionPart": "Optional action slot for a button, link, or other compact control. It moves below the content on narrow screens.",
+    "requestFailure": "Request failure and retry",
+    "failureGuidance": "Use Alert for an initial failure. The host owns retry and pending state. Retain existing data and use InlineNotice for refresh failures. Static examples use role=\"group\"; new urgent failures use role=\"alert\".",
+    "failureTitle": "Could not load data",
+    "failureDescription": "Check your connection and retry.",
+    "retry": "Retry",
+    "recovered": "Data reloaded",
+    "reset": "Reset example",
+    "roleProp": "Defaults to alert for danger and status otherwise. Use group for static content; the host explicitly chooses announcement behavior."
   }
 }

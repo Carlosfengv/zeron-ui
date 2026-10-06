@@ -45,6 +45,11 @@ function classify(tokens, channel) {
 }
 
 export const foregroundColorTokens = classify([
+  { name: "fg-on-danger-strong", light: neutral[0], dark: "#00040D", usage: "高强调危险状态标签的前景；仅与 danger-strong 配对" },
+  { name: "fg-on-warning-strong", light: "#00040D", dark: "#00040D", usage: "高强调警告状态标签的前景；仅与 warning-strong 配对" },
+  { name: "fg-on-success-strong", light: neutral[0], dark: "#00040D", usage: "高强调成功状态标签的前景；仅与 success-strong 配对" },
+  { name: "fg-on-info-strong", light: neutral[0], dark: "#00040D", usage: "高强调信息状态标签的前景；仅与 info-strong 配对" },
+  { name: "fg-on-neutral-status-strong", light: neutral[0], dark: "#00040D", usage: "高强调中性状态标签的前景；仅与 neutral-status-strong 配对" },
   { name: "fg-default", light: "#00030A", dark: "#F9F9F9", usage: "普通承载面上的默认标题、正文、表单值和主要图标" },
   { name: "fg-muted", light: "#00030ABF", dark: "#F9F9F9BF", usage: "普通承载面上的辅助说明、标签、元数据和次要图标" },
   { name: "fg-subtle", light: "#00030A99", dark: "#B6BABC", usage: "普通承载面上的占位文字、时间戳、快捷键提示和低强调图标" },
@@ -63,6 +68,11 @@ export const foregroundColorTokens = classify([
 ], "foreground");
 
 export const fillColorTokens = classify([
+  { name: "danger-strong", light: danger[600], dark: danger[400], usage: "高强调危险状态标签填充；与 fg-on-danger-strong 配对，区别于操作按钮" },
+  { name: "warning-strong", light: "#FA8801", dark: "#FF9314", usage: "高强调警告状态标签填充；与 fg-on-warning-strong 配对" },
+  { name: "success-strong", light: "#15803D", dark: "#4ADE80", usage: "高强调成功状态标签填充；与 fg-on-success-strong 配对" },
+  { name: "info-strong", light: "#0060D2", dark: "#72B9FE", usage: "高强调信息状态标签填充；与 fg-on-info-strong 配对" },
+  { name: "neutral-status-strong", light: "#555B61", dark: "#8B9095", usage: "高强调中性状态标签填充；与 fg-on-neutral-status-strong 配对" },
   { name: "brand", light: "#0060D2", dark: "#1483FD", usage: "品牌表达和明确的选中标记；按钮应使用 primary-action" },
   { name: "warning", light: "#FA8801", dark: "#FF9314", usage: "告警、警告和需突出可视化状态的高强调填充" },
   { name: "neutral", light: "#6B7075", dark: "#8B9095", usage: "未知、一般状态和低强调可视化状态的填充" },

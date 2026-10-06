@@ -446,6 +446,11 @@ describe("semantic token generation", () => {
 
   it("publishes the foreground vocabulary without legacy content-color names", () => {
     expect(foregroundColorTokens.map(({ name }) => name)).toEqual([
+      "fg-on-danger-strong",
+      "fg-on-warning-strong",
+      "fg-on-success-strong",
+      "fg-on-info-strong",
+      "fg-on-neutral-status-strong",
       "fg-default",
       "fg-muted",
       "fg-subtle",
