@@ -94,6 +94,10 @@
       "itemId": "block:storage-usage-01"
     },
     {
+      "path": "blocks/support-analytics-01.md",
+      "itemId": "block:support-analytics-01"
+    },
+    {
       "path": "blocks/transaction-details-01.md",
       "itemId": "block:transaction-details-01"
     },

@@ -45,6 +45,7 @@
   "zaiops-operations-01": {"framework": "react", "kind": "template"},
   "zlrlist": {"framework": "next", "kind": "template"},
   "infinite-log-table-01": {"framework": "react", "kind": "data-block"},
+  "support-analytics-01": {"framework": "react", "kind": "data-block"},
   "integration-monitors-01": {"framework": "react", "kind": "data-block"},
   "file-upload-01": {"framework": "react", "kind": "data-block"}
 }

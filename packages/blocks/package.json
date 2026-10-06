@@ -52,6 +52,7 @@
     "./service-management-01": "./src/application/service-management-01/index.ts",
     "./traffic-rules-01": "./src/application/traffic-rules-01/index.ts",
     "./infinite-log-table-01": "./src/application/infinite-log-table-01/index.ts",
+    "./support-analytics-01": "./src/application/support-analytics-01/index.ts",
     "./integration-monitors-01": "./src/application/integration-monitors-01/index.ts",
     "./operations-workspace-shell-01": "./src/application/operations-workspace-shell-01/index.ts",
     "./file-upload-01": "./src/application/file-upload-01/index.ts"
@@ -75,7 +76,8 @@
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "@hugeicons/core-free-icons": "^4.1.1",
-    "@hugeicons/react": "^1.1.6"
+    "@hugeicons/react": "^1.1.6",
+    "framer-motion": "^12.34.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",

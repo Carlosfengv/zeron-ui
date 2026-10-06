@@ -1,0 +1,641 @@
+export { SupportAnalytics } from "./support-analytics";
+export { createSupportAnalyticsDemoData, createSupportAnalyticsDemoRecords, supportAnalyticsDemoData, supportAnalyticsDemoChannels } from "./support-analytics-demo-data";
+export type { SupportAnalyticsDemoOptions, SupportAnalyticsDemoRecord } from "./support-analytics-demo-data";
+export { supportAnalyticsLabels, supportAnalyticsEnglishLabels } from "./support-analytics-labels";
+export type { SupportAnalyticsProps, SupportAnalyticsSnapshot, SupportAnalyticsActions, SupportAnalyticsActionContext, SupportAnalyticsTicketContext, SupportAnalyticsLabels, SupportAnalyticsRange, SupportAnalyticsChannel, SupportAnalyticsView, SupportAnalyticsState, SupportAnalyticsQuery, SupportAnalyticsMetric, SupportAnalyticsBucket, SupportTicket } from "./support-analytics-types";
+
+
+"use client";
+
+import { useId } from "react";
+import { Bar, BarChart, Line, LineChart, ReferenceLine, XAxis, YAxis, type LabelProps } from "recharts";
+import { Badge } from "@zeron/ui/badge";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@zeron/ui/chart";
+import { Empty, EmptyDescription } from "@zeron/ui/empty";
+import { formatCount, formatDate, metricTrendPoints, trendSummary } from "./support-analytics-data";
+import type { SupportAnalyticsLabels, SupportAnalyticsMetric, SupportAnalyticsSnapshot } from "./support-analytics-types";
+
+const averageColor = { base: "var(--inverse-background)", onStrong: "var(--fg-on-inverse)" };
+
+function AverageMarker({ viewBox, text }: LabelProps & { text: string }) {
+  if (!viewBox || !("x" in viewBox) || !("y" in viewBox) || !("width" in viewBox) || typeof viewBox.x !== "number" || typeof viewBox.y !== "number" || typeof viewBox.width !== "number") return null;
+  return <g aria-hidden="true" pointerEvents="none">
+    <foreignObject x={viewBox.x} y={viewBox.y - 12} width={viewBox.width} height={24} overflow="visible">
+      <div className="flex h-full items-center"><div className="relative inline-flex">
+        <span className="absolute -right-0.5 top-1/2 size-1.5 -translate-y-1/2 rotate-45 bg-inverse-background" />
+        <Badge size="sm" variant="strong" color={averageColor} className="relative">{text}</Badge>
+      </div></div>
+    </foreignObject>
+    <circle cx={viewBox.x + viewBox.width} cy={viewBox.y} r={2} fill="var(--fg-default)" />
+  </g>;
+}
+
+export function TicketTrend({ data, labels, locale, timeZone }: { data: SupportAnalyticsSnapshot; labels: SupportAnalyticsLabels; locale: string; timeZone: string }) {
+  const gradientId = `support-bars-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const { points, average, complete } = trendSummary(data);
+  if (!points.length) return <Empty reason="no-data" scope="inline"><EmptyDescription>{labels.empty}</EmptyDescription></Empty>;
+  const date = (timestamp: number) => data.range === "last-12-weeks" ? `W${Math.floor((timestamp - data.window.start) / data.window.bucketMs) + 1}` : formatDate(timestamp, locale, timeZone, data.range === "this-week").toLocaleUpperCase(locale);
+  const radius = points.length > 12 ? 3 : points.length > 7 ? 6 : 8;
+  return <div className="min-w-0 space-y-2">
+    {!complete && <p className="text-label text-fg-subtle">{labels.average} {labels.unknown} · {labels.incomplete}</p>}
+    <ChartContainer className="h-40" config={{ count: { label: labels[data.channel], color: "var(--brand)" } }} aria-label={`${labels.trend} · ${labels[data.channel]} · ${labels[data.range]}${average === null ? "" : ` · ${labels.average} ${formatCount(Math.round(average), locale)}`}`}
+      dataTable={{ caption: labels.trend, summary: labels.values, columns: [labels.date, labels.count], rows: points.map((point) => ({ id: String(point.start), label: formatDate(point.start, locale, timeZone), values: [formatCount(point.count, locale)] })) }}>
+      <BarChart data={points} accessibilityLayer barCategoryGap={points.length > 12 ? "12%" : "6%"} margin={{ top: 8, right: 3, bottom: 0, left: 0 }}>
+        <defs><linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--color-count)" stopOpacity={0.55} /><stop offset="55%" stopColor="var(--color-count)" stopOpacity={0.2} /><stop offset="100%" stopColor="var(--color-count)" stopOpacity={0} /></linearGradient></defs>
+        <XAxis dataKey="start" tickFormatter={date} axisLine={false} tickLine={false} interval="preserveStartEnd" tickMargin={10} minTickGap={data.range === "last-30-days" ? 24 : 8} height={28} />
+        <YAxis hide domain={[0, "auto"]} />
+        <ChartTooltip cursor={{ fill: "var(--hover)" }} content={<ChartTooltipContent hideIndicator labelFormatter={(value) => formatDate(Number(value), locale, timeZone)} valueFormatter={(value) => formatCount(value, locale)} />} />
+        <Bar dataKey="count" fill={`url(#${gradientId})`} radius={[radius, radius, 0, 0]} isAnimationActive={false} />
+        {average !== null && <ReferenceLine y={average} stroke="var(--fg-default)" strokeDasharray="3 4" label={<AverageMarker text={`${labels.average} ${formatCount(Math.round(average), locale)}`} />} />}
+      </BarChart>
+    </ChartContainer>
+  </div>;
+}
+
+export function MetricTrend({ metric }: { metric: SupportAnalyticsMetric }) {
+  const points = metricTrendPoints(metric);
+  if (!points.some((point) => point.value !== null)) return <span className="text-label text-fg-subtle">—</span>;
+  return <ChartContainer className="h-8 min-h-0 w-20" config={{ value: { color: "var(--fg-muted)" } }} aria-hidden="true">
+    <LineChart data={points} accessibilityLayer={false} margin={{ top: 4, right: 3, bottom: 4, left: 3 }}>
+      <XAxis hide dataKey="timestamp" type="number" domain={["dataMin", "dataMax"]} />
+      <YAxis hide domain={["dataMin", "dataMax"]} />
+      <Line dataKey="value" type="linear" stroke="var(--color-value)" strokeWidth={1.5} dot={false} connectNulls={false} isAnimationActive={false} />
+    </LineChart>
+  </ChartContainer>;
+}
+
+
+import type { SupportAnalyticsBucket, SupportAnalyticsMetric, SupportAnalyticsSnapshot } from "./support-analytics-types";
+
+export function validValue(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+export function validCount(value: unknown): value is number { return validValue(value) && Number.isSafeInteger(value); }
+export function validMetricValue(value: unknown, unit: SupportAnalyticsMetric["unit"]): value is number {
+  return validValue(value) && (unit !== "ratio" || value <= 1);
+}
+export function formatCount(value: unknown, locale: string) {
+  return validCount(value) ? new Intl.NumberFormat(locale).format(value) : "—";
+}
+export function formatMetric(value: unknown, unit: SupportAnalyticsMetric["unit"], locale: string) {
+  if (!validMetricValue(value, unit)) return "—";
+  if (unit === "ratio") return new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1 }).format(value);
+  const minutes = Math.round(value / 60000);
+  const zh = locale.startsWith("zh");
+  if (value < 60000) return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value / 1000)}${zh ? "秒" : "s"}`;
+  if (minutes < 60) return `${minutes}${zh ? "分钟" : "m"}`;
+  return `${Math.floor(minutes / 60)}${zh ? "小时" : "h"}${minutes % 60 ? ` ${minutes % 60}${zh ? "分钟" : "m"}` : ""}`;
+}
+export function metricTrendPoints(metric: SupportAnalyticsMetric) {
+  return metric.trend.filter((point) => Number.isFinite(point.timestamp) && Number.isFinite(new Date(point.timestamp).getTime()))
+    .map((point) => ({ ...point, value: validMetricValue(point.value, metric.unit) ? point.value : null }));
+}
+export function comparison(value: unknown, previous: unknown, method: SupportAnalyticsMetric["comparison"]) {
+  if (!validValue(value) || !validValue(previous)) return null;
+  if (method === "percentage-points") return (value - previous) * 100;
+  if (previous === 0) return value === 0 ? 0 : null;
+  return (value - previous) / previous * 100;
+}
+export function comparisonText(delta: number | null, locale: string, suffix: string) {
+  return delta === null ? "—" : `${delta > 0 ? "+" : ""}${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(delta)}${suffix}`;
+}
+export function trendSummary(data: SupportAnalyticsSnapshot) {
+  const { start, end, observedThrough, bucketMs } = data.window;
+  const windowValid = [start, end, observedThrough].every((value) => Number.isFinite(value) && Number.isFinite(new Date(value).getTime())) && start < end && observedThrough >= start && observedThrough <= end && validValue(bucketMs) && bucketMs > 0;
+  const bucketsValid = windowValid && data.buckets.every((point, index) => Number.isFinite(point.start) && Number.isFinite(point.end) && point.end - point.start === bucketMs && point.start >= start && point.end <= end && (index === 0 || point.start === data.buckets[index - 1].end));
+  const points: SupportAnalyticsBucket[] = bucketsValid ? data.buckets.map((point) => ({ ...point, count: point.start < observedThrough && validCount(point.count) ? point.count : null })) : [];
+  const complete = bucketsValid && observedThrough === end && points.length > 0 && points[0].start === start && points.at(-1)!.end === end && points.every((point) => validCount(point.count));
+  const total = complete ? points.reduce((sum, point) => sum + point.count!, 0) : null;
+  return { points, complete, total, average: total !== null && validCount(total) ? total / points.length : null };
+}
+export function formatDate(timestamp: number, locale: string, timeZone: string, weekday = false) {
+  return Number.isFinite(new Date(timestamp).getTime()) ? new Intl.DateTimeFormat(locale, { timeZone, ...(weekday ? { weekday: "short" } : { month: "short", day: "numeric" }) }).format(timestamp) : "—";
+}
+export function formatUpdated(timestamp: number, locale: string, timeZone: string, now?: number) {
+  if (!Number.isFinite(new Date(timestamp).getTime())) return "—";
+  if (now === undefined || !Number.isFinite(now) || now < timestamp) return new Intl.DateTimeFormat(locale, { timeZone, month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(timestamp);
+  const seconds = Math.floor((timestamp - now) / 1000);
+  const unit = Math.abs(seconds) < 60 ? "second" : Math.abs(seconds) < 3600 ? "minute" : "hour";
+  return new Intl.RelativeTimeFormat(locale, { numeric: "auto" }).format(unit === "second" ? seconds : Math.trunc(seconds / (unit === "minute" ? 60 : 3600)), unit);
+}
+
+
+import type { SupportAnalyticsChannel, SupportAnalyticsMetric, SupportAnalyticsQuery, SupportAnalyticsSnapshot, SupportAnalyticsView, SupportTicket } from "./support-analytics-types";
+
+const day = 86400000;
+const totals = {
+  "this-week": [622, 396, 190, 110],
+  "last-30-days": [2577, 1610, 751, 431],
+  "last-12-weeks": [4251, 3112, 3380, 2768],
+};
+const openCounts = { "this-week": [72, 47, 24, 12], "last-30-days": [291, 191, 87, 49], "last-12-weeks": [580, 420, 451, 371] };
+const channels = ["email", "live-chat", "in-app", "social"] as const;
+const names = ["Greta Hoffmann", "Jonas Weber", "Mateusz Kowalski", "Dev Malhotra", "Lily Hayes", "Kai Chen", "Noah Williams", "Sofia Costa"];
+
+export interface SupportAnalyticsDemoRecord extends SupportTicket {
+  firstReplyMs: number;
+  resolutionMs: number | null;
+  firstContact: boolean;
+  reopened: boolean;
+}
+export interface SupportAnalyticsDemoOptions { resolvedTicketIds?: readonly string[]; revision?: number; empty?: boolean }
+
+/** Fixed, synthetic records. Aggregates are recalculated from the full fixture, never its four-row preview. */
+export function createSupportAnalyticsDemoRecords(query: SupportAnalyticsQuery, options: SupportAnalyticsDemoOptions = {}): SupportAnalyticsDemoRecord[] {
+  if (options.empty) return [];
+  const length = query.range === "this-week" ? 7 : query.range === "last-30-days" ? 30 : 12;
+  const bucketMs = query.range === "last-12-weeks" ? day * 7 : day;
+  // Complete weeks in Asia/Shanghai; the demo clock is fixed at the end of September 13.
+  const end = Date.UTC(2026, 8, 13, 16);
+  const start = end - length * bucketMs;
+  const resolved = new Set(options.resolvedTicketIds);
+  return channels.flatMap((channel, channelIndex) => {
+    if (query.channel !== "all" && channel !== query.channel) return [];
+    const total = totals[query.range][channelIndex];
+    const open = openCounts[query.range][channelIndex];
+    const weights = Array.from({ length }, (_, index) => query.range === "last-12-weeks" ? 0.85 + index * 0.025 : 1.35 - index / length * 0.65);
+    const weightTotal = weights.reduce((sum, value) => sum + value, 0);
+    const bucketCounts = weights.map((weight) => Math.floor(total * weight / weightTotal));
+    const remainder = total - bucketCounts.reduce((sum, count) => sum + count, 0);
+    for (let index = 0; index < remainder; index += 1) bucketCounts[index % length] += 1;
+    const replyFactors = bucketCounts.map((_, index) => 1 + Math.sin(index * 1.8) * 0.16 - index / length * 0.08);
+    const replyMeanFactor = bucketCounts.reduce((sum, count, index) => sum + count * replyFactors[index], 0) / total;
+    let index = 0;
+    return bucketCounts.flatMap((_, reverseIndex) => {
+      const bucketIndex = length - 1 - reverseIndex;
+      return Array.from({ length: bucketCounts[bucketIndex] }, (_, position) => {
+        const i = index++;
+        const id = `${query.range}:${channel}:${i}`;
+        const newlyResolved = resolved.has(id);
+        const status = i < open && !newlyResolved ? "open" : "resolved";
+        const firstReplyMs = (channel === "live-chat" ? 5 : channel === "email" ? 60 : channel === "in-app" ? 35 : 50) * 60000 * replyFactors[bucketIndex] / replyMeanFactor;
+        const resolutionMs = status === "resolved" ? (newlyResolved ? 45 : channel === "live-chat" ? 48 : 413) * 60000 : null;
+        return { id, number: `#HD-${3370 + channelIndex * 20000 + i}`, customer: names[i % names.length], subject: ["Billing question", "Account access", "Workspace settings", "API connection"][i % 4], channel, status, priority: i % 11 === 1 ? "urgent" : i % 5 === 2 ? "low" : "normal",
+          createdAt: start + bucketIndex * bucketMs + (bucketMs * (1 - (position + 1) / (bucketCounts[bucketIndex] + 1))), canResolve: true,
+          firstReplyMs, resolutionMs, firstContact: newlyResolved || ((i - open) * 37) % (total - open) < Math.round((total - open) * 0.728), reopened: i >= open && ((i - open) * 43) % (total - open) < Math.round((total - open) * 0.063),
+        } satisfies SupportAnalyticsDemoRecord;
+      });
+    });
+  }).sort((a, b) => b.createdAt - a.createdAt || a.id.localeCompare(b.id));
+}
+
+export function createSupportAnalyticsDemoData(query: SupportAnalyticsQuery = { range: "this-week", channel: "all" }, options: SupportAnalyticsDemoOptions = {}): SupportAnalyticsSnapshot {
+  const records = createSupportAnalyticsDemoRecords(query, options);
+  const length = query.range === "this-week" ? 7 : query.range === "last-30-days" ? 30 : 12;
+  const bucketMs = query.range === "last-12-weeks" ? day * 7 : day;
+  const end = Date.UTC(2026, 8, 13, 16);
+  const start = end - length * bucketMs;
+  const buckets = Array.from({ length }, (_, index) => ({ start: start + index * bucketMs, end: start + (index + 1) * bucketMs, count: records.filter((record) => record.createdAt >= start + index * bucketMs && record.createdAt < start + (index + 1) * bucketMs).length }));
+  const viewData = (view: SupportAnalyticsView) => {
+    const selected = records.filter((record) => view === "all" || record.status === view);
+    const definitions = (view === "open" ? ["first-reply", "waiting", "sla-breach"] : view === "resolved" ? ["first-reply", "resolution", "reopened"] : ["first-reply", "resolution", "first-contact"]) as SupportAnalyticsMetric["id"][];
+    const metrics = definitions.map((id): SupportAnalyticsMetric => {
+      const ratio = ["sla-breach", "reopened", "first-contact"].includes(id);
+      const samples = selected.filter((record) => !["resolution", "reopened", "first-contact"].includes(id) || record.status === "resolved");
+      const measurement = (record: SupportAnalyticsDemoRecord) => id === "first-reply" ? record.firstReplyMs : id === "waiting" ? end - record.createdAt : id === "resolution" ? record.resolutionMs! : id === "sla-breach" ? Number(end - record.createdAt > 8 * 3600000) : id === "first-contact" ? Number(record.firstContact) : Number(record.reopened);
+      const average = (items: readonly SupportAnalyticsDemoRecord[]) => items.length ? items.reduce((sum, record) => sum + measurement(record), 0) / items.length : null;
+      const value = average(samples);
+      return { id, unit: ratio ? "ratio" : "milliseconds", sampleSize: samples.length, aggregation: ratio ? "ratio" : "mean", value,
+        previousValue: value === null ? null : ratio ? Math.max(0, Math.min(1, value - (id === "first-contact" ? 0.034 : 0.007))) : value / (id === "resolution" ? 1.025 : 0.945),
+        target: id === "first-reply" ? 45 * 60000 : id === "first-contact" ? 0.7 : ratio ? 0.08 : 8 * 3600000,
+        improvementDirection: id === "first-contact" ? "higher" : "lower", comparison: ratio ? "percentage-points" : "relative",
+        trend: buckets.map((bucket) => ({ timestamp: bucket.start, value: average(samples.filter((record) => record.createdAt >= bucket.start && record.createdAt < bucket.end)) })),
+      };
+    });
+    return { metrics, recentTickets: selected.slice(0, 4) };
+  };
+  const views = { all: viewData("all"), open: viewData("open"), resolved: viewData("resolved") };
+  const total = records.length;
+  return { ...query, id: `demo:${query.range}:${query.channel}`, revision: String(options.revision ?? 0), scopeId: "support-demo", window: { start, end, observedThrough: end, bucketMs }, previousWindow: { start: start - length * bucketMs, end: start }, updatedAt: end,
+    total, previousTotal: Math.round(total / (query.channel === "live-chat" ? 1.16 : query.range === "this-week" ? 1.078 : 1.12)),
+    counts: { open: records.filter((record) => record.status === "open").length, resolved: records.filter((record) => record.status === "resolved").length }, buckets, views,
+  };
+}
+
+export const supportAnalyticsDemoData = createSupportAnalyticsDemoData();
+export const supportAnalyticsDemoChannels: readonly SupportAnalyticsChannel[] = ["all", ...channels];
+
+
+import type { SupportAnalyticsLabels } from "./support-analytics-types";
+
+export const supportAnalyticsLabels: SupportAnalyticsLabels = {
+  title: "客服工单分析", description: "分析当前窗口内创建的工单、服务水平和处理状态。", range: "统计范围",
+  "this-week": "本周", "last-30-days": "最近 30 天", "last-12-weeks": "最近 12 周",
+  all: "全部", email: "邮件", "live-chat": "在线聊天", "in-app": "应用内", social: "社交渠道",
+  open: "未解决", resolved: "已解决", channels: "工单渠道", views: "工单状态",
+  total: "工单总量", compare: "与上期比较", average: "平均", trend: "趋势", actual: "实际值", previous: "上期比较",
+  "first-reply": "首次回复时间", resolution: "解决时间", "first-contact": "首次联系解决率",
+  waiting: "当前等待时长", "sla-breach": "SLA 超时比例", reopened: "重开率",
+  target: "目标", met: "达标", missed: "未达标", samples: "样本", recent: "最近工单",
+  low: "低", normal: "普通", urgent: "紧急", more: "更多操作", refresh: "刷新", export: "导出当前快照",
+  queue: "打开工单队列", details: "查看工单", resolve: "标记已解决", resolving: "正在解决",
+  updated: "更新于", loading: "正在加载工单分析", refreshing: "正在刷新数据", stale: "当前数据已过期，显示上次快照。",
+  error: "无法加载工单分析", actionError: "操作失败，请重试。", retry: "重试",
+  empty: "暂无趋势数据", noTickets: "当前筛选下没有工单", unknown: "—", incomplete: "趋势数据不完整，平均值不可用。",
+  values: "查看图表数据", date: "时间", count: "工单数", points: "个百分点",
+};
+
+export const supportAnalyticsEnglishLabels: SupportAnalyticsLabels = {
+  title: "Support analytics", description: "Tickets created in this window, their service levels and current status.", range: "Time range",
+  "this-week": "This week", "last-30-days": "Last 30 days", "last-12-weeks": "Last 12 weeks",
+  all: "All", email: "Email", "live-chat": "Live chat", "in-app": "In-app", social: "Social",
+  open: "Open", resolved: "Resolved", channels: "Ticket channel", views: "Ticket status",
+  total: "Total tickets", compare: "vs previous period", average: "AVG", trend: "Trend", actual: "Actual", previous: "vs prev",
+  "first-reply": "First reply time", resolution: "Time to resolve", "first-contact": "First-contact resolution",
+  waiting: "Current wait time", "sla-breach": "SLA breach rate", reopened: "Reopened",
+  target: "Target", met: "Within", missed: "Missing", samples: "samples", recent: "Recent tickets",
+  low: "Low", normal: "Normal", urgent: "Urgent", more: "More actions", refresh: "Refresh", export: "Export snapshot",
+  queue: "Open ticket queue", details: "View ticket", resolve: "Mark as resolved", resolving: "Resolving",
+  updated: "Updated", loading: "Loading support analytics", refreshing: "Refreshing data", stale: "Showing an out-of-date snapshot.",
+  error: "Unable to load support analytics", actionError: "This action failed. Please try again.", retry: "Retry",
+  empty: "No trend data", noTickets: "No tickets match these filters", unknown: "—", incomplete: "Incomplete trend data; average unavailable.",
+  values: "View chart data", date: "Date", count: "Tickets", points: "pp",
+};
+
+
+"use client";
+
+import { Badge } from "@zeron/ui/badge";
+import { ChartDataTable } from "@zeron/ui/chart-primitives";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@zeron/ui/table";
+import { comparison, comparisonText, formatCount, formatDate, formatMetric, validMetricValue } from "./support-analytics-data";
+import { MetricTrend } from "./support-analytics-charts";
+import type { SupportAnalyticsLabels, SupportAnalyticsMetric } from "./support-analytics-types";
+
+export function SupportMetrics({ metrics, labels, locale, timeZone, rangeLabel }: { metrics: readonly SupportAnalyticsMetric[]; labels: SupportAnalyticsLabels; locale: string; timeZone: string; rangeLabel: string }) {
+  return <div className="min-w-0 space-y-2">
+    <Table>
+      <TableHeader><TableRow><TableHead>{rangeLabel}</TableHead><TableHead>{labels.trend}</TableHead><TableHead className="text-right">{labels.actual}</TableHead><TableHead className="text-right">{labels.previous}</TableHead></TableRow></TableHeader>
+      <TableBody>{metrics.map((metric) => {
+        const available = validMetricValue(metric.value, metric.unit);
+        const target = validMetricValue(metric.target, metric.unit);
+        const met = available && target && (metric.improvementDirection === "higher" ? metric.value! >= metric.target! : metric.value! <= metric.target!);
+        const delta = available && validMetricValue(metric.previousValue, metric.unit) ? comparison(metric.value, metric.previousValue, metric.comparison) : null;
+        const improved = delta !== null && (metric.improvementDirection === "higher" ? delta > 0 : delta < 0);
+        return <TableRow key={metric.id}>
+          <TableCell><p className="min-w-32 text-body text-fg-default">{labels[metric.id]}</p><p className="mt-1 text-label text-fg-subtle">{target && <><span className={met ? "text-fg-success" : available ? "text-fg-danger" : "text-fg-subtle"}>{available ? met ? labels.met : labels.missed : labels.unknown}</span> · {labels.target} {formatMetric(metric.target, metric.unit, locale)}</>}<span className="block">{formatCount(metric.sampleSize, locale)} {labels.samples}</span></p></TableCell>
+          <TableCell><MetricTrend metric={metric} /></TableCell>
+          <TableCell className="whitespace-nowrap text-right font-medium tabular-nums text-fg-default">{formatMetric(metric.value, metric.unit, locale)}</TableCell>
+          <TableCell className="text-right"><Badge size="sm" status={delta === null || delta === 0 ? "neutral" : improved ? "success" : "danger"}>{comparisonText(delta, locale, metric.comparison === "relative" ? "%" : ` ${labels.points}`)}</Badge></TableCell>
+        </TableRow>;
+      })}</TableBody>
+    </Table>
+    <ChartDataTable caption={labels.trend} summary={labels.values} columns={[labels.date, labels.trend, labels.actual]} rows={metrics.flatMap((metric) => metric.trend.map((point, index) => ({ id: `${metric.id}-${index}`, label: formatDate(point.timestamp, locale, timeZone), values: [labels[metric.id], formatMetric(point.value, metric.unit, locale)] })))} />
+  </div>;
+}
+
+
+"use client";
+
+import { useId, useLayoutEffect, useRef, useSyncExternalStore, type FocusEvent } from "react";
+import { animate, motion, MotionConfig } from "framer-motion";
+import { Badge } from "@zeron/ui/badge";
+import { spring } from "@zeron/ui/system/springs";
+import { formatCount, validCount } from "./support-analytics-data";
+import type { SupportAnalyticsChannel, SupportAnalyticsLabels } from "./support-analytics-types";
+
+const channels: SupportAnalyticsChannel[] = ["all", "email", "live-chat", "in-app", "social"];
+const highlight = { base: "var(--brand)", onStrong: "var(--fg-on-brand)" };
+const selectedText = { ...highlight, softBackground: "var(--muted)", onSoft: "var(--fg-on-brand)" };
+const motionQuery = "(prefers-reduced-motion: reduce)";
+function subscribeMotionPreference(onChange: () => void) {
+  const media = window.matchMedia(motionQuery);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
+function getMotionPreference() { return window.matchMedia(motionQuery).matches; }
+function getServerMotionPreference() { return true; }
+function useReducedMotion() {
+  return useSyncExternalStore(subscribeMotionPreference, getMotionPreference, getServerMotionPreference);
+}
+
+export function SupportTotal({ value, locale }: { value: number | null; locale: string }) {
+  const element = useRef<HTMLSpanElement>(null);
+  const displayed = useRef<number | null>(validCount(value) ? value : null);
+  const reducedMotion = useReducedMotion();
+  useLayoutEffect(() => {
+    const target = element.current;
+    if (!target) return;
+    if (!validCount(value) || reducedMotion || displayed.current === null || displayed.current === value) {
+      displayed.current = validCount(value) ? value : null;
+      target.textContent = formatCount(value, locale);
+      return;
+    }
+    // Retarget from the currently displayed value, including an interrupted transition.
+    const formatter = new Intl.NumberFormat(locale);
+    target.textContent = formatter.format(Math.round(displayed.current));
+    const controls = animate(displayed.current, value, {
+      ...spring.slow,
+      duration: spring.slow.duration * 2,
+      bounce: 0,
+      onUpdate: (next) => {
+        displayed.current = next;
+        target.textContent = formatter.format(Math.round(next));
+      },
+      onComplete: () => {
+        displayed.current = value;
+        target.textContent = formatter.format(value);
+      },
+    });
+    return () => controls.stop();
+  }, [value, locale, reducedMotion]);
+  return <span><span ref={element} aria-hidden="true">{formatCount(value, locale)}</span><span className="sr-only">{formatCount(value, locale)}</span></span>;
+}
+
+export function SupportChannelBadges({ channel, labels, onChange, onFocus }: {
+  channel: SupportAnalyticsChannel;
+  labels: SupportAnalyticsLabels;
+  onChange: (channel: SupportAnalyticsChannel) => void;
+  onFocus: (event: FocusEvent<HTMLDivElement>) => void;
+}) {
+  const indicatorId = useId();
+  const reducedMotion = useReducedMotion();
+  // Own the live preference below; the projection engine otherwise freezes its
+  // reduced-motion setting when it first mounts during hydration.
+  return <MotionConfig reducedMotion="never">
+    <motion.div layoutScroll className="overflow-x-auto" onFocus={onFocus}>
+      <div role="group" aria-label={labels.channels} className="relative isolate flex min-w-max items-center gap-2 p-1">
+        {channels.map((item) => {
+          const indicator = <Badge variant="strong" color={highlight} className="h-full w-full"><span className="invisible">{labels[item]}</span></Badge>;
+          return <div key={item} className="relative shrink-0">
+          {channel === item && (reducedMotion
+            ? <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-10">{indicator}</div>
+            : <motion.div layoutId={indicatorId} initial={false} transition={spring.moderate} aria-hidden="true" className="pointer-events-none absolute inset-0 z-10">{indicator}</motion.div>)}
+          <Badge color={channel === item ? selectedText : "gray"} role="button" tabIndex={0} aria-pressed={channel === item}
+            className="cursor-pointer outline-none transition-colors duration-fast ease-out motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            onClick={() => onChange(item)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); if (!event.repeat) onChange(item); } }}>
+            <span className="relative z-20">{labels[item]}</span>
+          </Badge>
+        </div>;
+        })}
+      </div>
+    </motion.div>
+  </MotionConfig>;
+}
+
+
+"use client";
+
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@zeron/ui/accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "@zeron/ui/avatar";
+import { Badge } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
+import { Empty, EmptyDescription } from "@zeron/ui/empty";
+import { InfoItem, InfoItemContent, InfoItemDescription, InfoItemTitle } from "@zeron/ui/info-item";
+import { MenuItem } from "@zeron/ui/menu-item";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { formatCount, formatUpdated } from "./support-analytics-data";
+import type { SupportAnalyticsLabels, SupportTicket } from "./support-analytics-types";
+
+export function RecentTickets({ tickets, expanded, onExpandedChange, labels, locale, timeZone, contextLabel, pending, errors, onOpen, onResolve, now }: {
+  tickets: readonly SupportTicket[]; expanded: boolean; onExpandedChange: (value: boolean) => void;
+  labels: SupportAnalyticsLabels; locale: string; timeZone: string; contextLabel: string;
+  pending: ReadonlySet<string>; errors: Record<string, string>;
+  onOpen?: (ticket: SupportTicket) => void; onResolve?: (ticket: SupportTicket) => void; now?: number;
+}) {
+  const More = useIcon("ellipsis");
+  return <Accordion type="single" collapsible value={expanded ? "recent" : ""} onValueChange={(value: string) => onExpandedChange(value === "recent")} className="w-full">
+    <AccordionItem value="recent">
+      <AccordionTrigger><span className="flex min-w-0 flex-wrap items-center justify-between gap-2"><span className="flex items-center gap-2">{labels.recent}<Badge size="sm">{formatCount(tickets.length, locale)}</Badge></span><span className="text-label font-normal text-fg-subtle">{contextLabel}</span></span></AccordionTrigger>
+      <AccordionContent>
+        {!tickets.length ? <Empty reason="no-data" scope="inline"><EmptyDescription>{labels.noTickets}</EmptyDescription></Empty> : <div className="divide-y divide-border-subtle">{tickets.map((ticket) => <div key={ticket.id}>
+          <InfoItem className="flex-wrap px-0">
+            <Avatar size="sm">{ticket.avatarUrl && <AvatarImage src={ticket.avatarUrl} alt="" />}<AvatarFallback>{ticket.customer.split(/\s+/).map((word) => word[0]).slice(0, 2).join("")}</AvatarFallback></Avatar>
+            <InfoItemContent><InfoItemTitle className="break-words">{ticket.customer}</InfoItemTitle><InfoItemDescription><span className="flex flex-wrap items-center gap-1"><Badge size="sm" status={ticket.status === "resolved" ? "success" : "warning"}>{labels[ticket.status]}</Badge><span>{labels[ticket.priority]} · {labels[ticket.channel]}</span></span></InfoItemDescription></InfoItemContent>
+            <div className="min-w-0 text-right text-label text-fg-subtle"><p>{formatUpdated(ticket.createdAt, locale, timeZone, now)}</p><p>{ticket.number}</p></div>
+            {(onOpen || (onResolve && ticket.status === "open" && ticket.canResolve !== false)) && <DropdownMenu><DropdownTrigger render={<Button iconOnly variant="ghost" size="sm" loading={pending.has(`resolve:${ticket.id}`) || pending.has(`open:${ticket.id}`)} aria-label={`${labels.more} · ${ticket.number}`}><More aria-hidden /></Button>} /><DropdownContent>
+              {onOpen && <MenuItem index={0} label={labels.details} disabled={pending.has(`open:${ticket.id}`)} onClick={() => onOpen(ticket)} />}
+              {onResolve && ticket.status === "open" && ticket.canResolve !== false && <MenuItem index={1} label={labels.resolve} disabled={pending.has(`resolve:${ticket.id}`)} onClick={() => onResolve(ticket)} />}
+            </DropdownContent></DropdownMenu>}
+          </InfoItem>
+          {(errors[`resolve:${ticket.id}`] || errors[`open:${ticket.id}`]) && <p role="alert" className="text-label text-fg-danger">{labels.actionError}{onResolve && errors[`resolve:${ticket.id}`] && <Button variant="link" size="sm" onClick={() => onResolve(ticket)}>{labels.retry}</Button>}</p>}
+        </div>)}</div>}
+      </AccordionContent>
+    </AccordionItem>
+  </Accordion>;
+}
+
+
+import type { ComponentPropsWithoutRef } from "react";
+
+export type SupportAnalyticsRange = "this-week" | "last-30-days" | "last-12-weeks";
+export type SupportAnalyticsChannel = "all" | "email" | "live-chat" | "in-app" | "social";
+export type SupportAnalyticsView = "all" | "open" | "resolved";
+export type SupportAnalyticsState = "ready" | "loading" | "stale" | "error";
+export interface SupportAnalyticsQuery { range: SupportAnalyticsRange; channel: SupportAnalyticsChannel }
+export interface SupportTicket {
+  id: string;
+  number: string;
+  customer: string;
+  subject: string;
+  channel: Exclude<SupportAnalyticsChannel, "all">;
+  status: "open" | "resolved";
+  priority: "low" | "normal" | "urgent";
+  createdAt: number;
+  avatarUrl?: string;
+  canResolve?: boolean;
+}
+export interface SupportAnalyticsBucket { start: number; end: number; count: number | null }
+export interface SupportAnalyticsMetric {
+  id: "first-reply" | "resolution" | "first-contact" | "waiting" | "sla-breach" | "reopened";
+  value: number | null;
+  previousValue: number | null;
+  unit: "milliseconds" | "ratio";
+  sampleSize: number | null;
+  aggregation: "mean" | "ratio";
+  target: number | null;
+  improvementDirection: "higher" | "lower";
+  comparison: "relative" | "percentage-points";
+  trend: readonly { timestamp: number; value: number | null }[];
+}
+export interface SupportAnalyticsSnapshot extends SupportAnalyticsQuery {
+  id: string;
+  revision: string;
+  scopeId: string;
+  window: { start: number; end: number; observedThrough: number; bucketMs: number };
+  previousWindow: { start: number; end: number };
+  updatedAt: number;
+  total: number | null;
+  previousTotal: number | null;
+  counts: { open: number | null; resolved: number | null };
+  buckets: readonly SupportAnalyticsBucket[];
+  views: Partial<Record<SupportAnalyticsView, { metrics: readonly SupportAnalyticsMetric[]; recentTickets: readonly SupportTicket[] }>>;
+}
+export interface SupportAnalyticsActionContext extends SupportAnalyticsQuery {
+  scopeId: string;
+  snapshotId: string;
+  revision: string;
+  view: SupportAnalyticsView;
+}
+export interface SupportAnalyticsTicketContext extends SupportAnalyticsActionContext { ticketId: string }
+export interface SupportAnalyticsActions {
+  onRefresh?: (context: SupportAnalyticsActionContext) => void | Promise<void>;
+  onRetry?: (query: SupportAnalyticsQuery & { scopeId: string }) => void | Promise<void>;
+  onExport?: (context: SupportAnalyticsActionContext) => void | Promise<void>;
+  onOpenQueue?: (context: SupportAnalyticsActionContext) => void | Promise<void>;
+  onOpenTicket?: (context: SupportAnalyticsTicketContext) => void | Promise<void>;
+  onResolveTicket?: (context: SupportAnalyticsTicketContext) => void | Promise<void>;
+}
+export type SupportAnalyticsLabels = Record<
+  "title" | "description" | "range" | "this-week" | "last-30-days" | "last-12-weeks" |
+  "all" | "email" | "live-chat" | "in-app" | "social" | "open" | "resolved" |
+  "channels" | "views" | "total" | "compare" | "average" | "trend" | "actual" | "previous" |
+  "first-reply" | "resolution" | "first-contact" | "waiting" | "sla-breach" | "reopened" |
+  "target" | "met" | "missed" | "samples" | "recent" | "low" | "normal" | "urgent" |
+  "more" | "refresh" | "export" | "queue" | "details" | "resolve" | "resolving" |
+  "updated" | "loading" | "refreshing" | "stale" | "error" | "actionError" | "retry" |
+  "empty" | "noTickets" | "unknown" | "incomplete" | "values" | "date" | "count" | "points",
+  string
+>;
+export interface SupportAnalyticsProps extends Omit<ComponentPropsWithoutRef<"div">, "title">, SupportAnalyticsQuery {
+  scopeId: string;
+  data: SupportAnalyticsSnapshot | null;
+  onRangeChange: (range: SupportAnalyticsRange) => void;
+  onChannelChange: (channel: SupportAnalyticsChannel) => void;
+  view?: SupportAnalyticsView;
+  defaultView?: SupportAnalyticsView;
+  onViewChange?: (view: SupportAnalyticsView) => void;
+  ticketsExpanded?: boolean;
+  defaultTicketsExpanded?: boolean;
+  onTicketsExpandedChange?: (expanded: boolean) => void;
+  state?: SupportAnalyticsState;
+  refreshing?: boolean;
+  retainDataOnError?: boolean;
+  statusMessage?: string;
+  actions?: SupportAnalyticsActions;
+  labels?: Partial<SupportAnalyticsLabels>;
+  locale?: string;
+  timeZone?: string;
+  now?: number;
+}
+
+
+"use client";
+
+import { Alert, AlertTitle, AlertDescription, AlertAction } from "@zeron/ui/alert";
+
+import { useEffect, useLayoutEffect, useRef, useState, type FocusEvent } from "react";
+import { Badge } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
+import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
+import { Empty, EmptyDescription } from "@zeron/ui/empty";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { MenuItem } from "@zeron/ui/menu-item";
+import { MetricCard } from "@zeron/ui/metric-card";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
+import { Skeleton } from "@zeron/ui/skeleton";
+import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
+import { Tooltip } from "@zeron/ui/tooltip";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { TicketTrend } from "./support-analytics-charts";
+import { comparison, comparisonText, formatCount, formatUpdated, trendSummary, validCount } from "./support-analytics-data";
+import { supportAnalyticsLabels } from "./support-analytics-labels";
+import { SupportMetrics } from "./support-analytics-metrics";
+import { SupportChannelBadges, SupportTotal } from "./support-analytics-motion";
+import { RecentTickets } from "./support-analytics-tickets";
+import type { SupportAnalyticsActionContext, SupportAnalyticsProps, SupportAnalyticsRange, SupportAnalyticsView } from "./support-analytics-types";
+
+const ranges: SupportAnalyticsRange[] = ["this-week", "last-30-days", "last-12-weeks"];
+const views: SupportAnalyticsView[] = ["all", "open", "resolved"];
+
+function revealFocusedControl(event: FocusEvent<HTMLDivElement>) {
+  event.target.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+}
+
+export function SupportAnalytics(props: SupportAnalyticsProps) {
+  return <SupportAnalyticsScope key={props.scopeId} {...props} />;
+}
+
+function SupportAnalyticsScope(props: SupportAnalyticsProps) {
+  const [view, setView] = useState(props.defaultView ?? "all");
+  const [expanded, setExpanded] = useState(props.defaultTicketsExpanded ?? false);
+  return <SupportAnalyticsContent {...props} view={props.view ?? view} ticketsExpanded={props.ticketsExpanded ?? expanded}
+    onViewChange={(next) => { if (props.view === undefined) setView(next); props.onViewChange?.(next); }}
+    onTicketsExpandedChange={(next) => { if (props.ticketsExpanded === undefined) setExpanded(next); props.onTicketsExpandedChange?.(next); }} />;
+}
+
+function SupportAnalyticsContent({ scopeId, data, range, channel, onRangeChange, onChannelChange, view = "all", onViewChange, ticketsExpanded = false, onTicketsExpandedChange,
+  state = "ready", refreshing = false, retainDataOnError = false, statusMessage, actions, labels: overrides, locale = "zh-CN", timeZone = "Asia/Shanghai", now, className,
+  defaultView: _defaultView, defaultTicketsExpanded: _defaultTicketsExpanded, ...props }: SupportAnalyticsProps) {
+  const labels = { ...supportAnalyticsLabels, ...overrides };
+  const More = useIcon("ellipsis"); const Info = useIcon("doc-info-item"); const Refresh = useIcon("rotate-ccw");
+  const mounted = useRef(true);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  const guard = useRef(new Set<string>());
+  const [pending, setPending] = useState(new Set<string>());
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const queryIdentity = `${range}:${channel}`;
+  const generation = useRef(0);
+  // Invalidate actions only for committed contexts, including snapshot replacement.
+  useLayoutEffect(() => {
+    generation.current += 1;
+    guard.current.clear();
+    setPending((previous) => previous.size ? new Set() : previous);
+    setErrors((previous) => Object.keys(previous).length ? {} : previous);
+  }, [range, channel, data?.id, data?.revision]);
+  const matched = data?.scopeId === scopeId && data.range === range && data.channel === channel ? data : null;
+  const loading = state === "loading" || (data !== null && !matched && state !== "error");
+  const usable = !loading && (state !== "error" || retainDataOnError) ? matched : null;
+  const activeView = views.includes(view) ? view : "all";
+  const current = usable?.views[activeView];
+  const snapshotTotal = usable ? trendSummary(usable) : null;
+  const total = usable && (!snapshotTotal?.complete || snapshotTotal.total === usable.total) ? usable.total : null;
+  const countsValid = usable && validCount(total) && validCount(usable.counts.open) && validCount(usable.counts.resolved) && usable.counts.open + usable.counts.resolved === total;
+  const delta = usable ? comparison(total, usable.previousTotal, "relative") : null;
+  const context: SupportAnalyticsActionContext | null = usable ? { scopeId, snapshotId: usable.id, revision: usable.revision, range, channel, view: activeView } : null;
+  async function run(key: string, callback: () => void | Promise<void>) {
+    if (guard.current.has(key)) return;
+    const request = generation.current;
+    guard.current.add(key); setPending(new Set(guard.current));
+    setErrors((previous) => { const next = { ...previous }; delete next[key]; return next; });
+    try { await callback(); }
+    catch { if (mounted.current && generation.current === request) setErrors((previous) => ({ ...previous, [key]: labels.actionError })); }
+    finally { if (mounted.current && generation.current === request) { guard.current.delete(key); setPending(new Set(guard.current)); } }
+  }
+  const refreshBusy = refreshing || pending.has("refresh") || pending.has("retry");
+  const showMore = actions?.onRefresh || actions?.onExport;
+  const body = loading ? <div role="status" className="space-y-4"><span className="sr-only">{labels.loading}</span><Skeleton className="h-10 w-32" /><Skeleton className="h-44 w-full" /></div>
+    : state === "error" && !usable ? <div className="flex min-w-0 w-full items-center justify-center"><Alert status="danger" role="alert" className="w-full max-w-xl"><AlertTitle>{labels.error}</AlertTitle><AlertDescription>{statusMessage}</AlertDescription><AlertAction>{actions?.onRetry && <Button variant="secondary" loading={pending.has("retry")} onClick={() => void run("retry", () => actions.onRetry!({ scopeId, range, channel }))}>{labels.retry}</Button>}</AlertAction></Alert></div>
+    : !usable ? <Empty reason="no-data" scope="inline"><EmptyDescription>{labels.noTickets}</EmptyDescription></Empty> : null;
+  return <Container {...props} data-block="support-analytics" data-state={state} aria-busy={loading || refreshBusy || undefined} className={cn("@container w-full max-w-xl", className)}>
+    <ContainerHeader className="py-1.5">
+      <div className="flex min-w-0 items-center gap-2"><h2 className="break-words text-body font-medium text-fg-default">{labels.title}</h2><Tooltip content={labels.description}><Button iconOnly variant="ghost" size="xs" aria-label={labels.description}><Info aria-hidden /></Button></Tooltip></div>
+      <div className="flex max-w-full items-center gap-2"><Select size="sm" value={range} onValueChange={(value) => { if (ranges.includes(value as SupportAnalyticsRange)) onRangeChange(value as SupportAnalyticsRange); }}><SelectTrigger aria-label={labels.range} wrapperClassName="max-w-full" /><SelectContent>{ranges.map((item) => <SelectItem key={item} value={item} label={labels[item]}>{labels[item]}</SelectItem>)}</SelectContent></Select>
+        {showMore && <DropdownMenu><DropdownTrigger render={<Button iconOnly variant="ghost" size="sm" aria-label={labels.more}><More aria-hidden /></Button>} /><DropdownContent>
+          {actions?.onRefresh && <MenuItem index={0} label={labels.refresh} disabled={!context || refreshBusy} onClick={() => { if (context) void run("refresh", () => actions.onRefresh!(context)); }} />}
+          {actions?.onExport && <MenuItem index={1} label={labels.export} disabled={!context || pending.has("export")} onClick={() => { if (context) void run("export", () => actions.onExport!(context)); }} />}
+        </DropdownContent></DropdownMenu>}
+      </div>
+    </ContainerHeader>
+    {(state === "stale" || (state === "error" && usable) || refreshBusy || Object.keys(errors).some((key) => !key.includes(":"))) && <ContainerBody>
+      {(state === "stale" || (state === "error" && usable)) && <InlineNotice variant="emphasized" tone={state === "error" ? "danger" : "warning"}><InlineNoticeContent>{statusMessage ?? (state === "error" ? `${labels.error} · ${labels.stale}` : labels.stale)}</InlineNoticeContent></InlineNotice>}
+      {refreshBusy && <p role="status" className="text-label text-fg-muted">{labels.refreshing}</p>}
+      {Object.entries(errors).filter(([key]) => !key.includes(":")).map(([key, message]) => <p role="alert" key={key} className="text-label text-fg-danger">{message}</p>)}
+    </ContainerBody>}
+    <ContainerBody>
+      {body ?? <><div className="flex flex-wrap items-end gap-x-3 gap-y-1">
+        <MetricCard label={labels.total} value={<SupportTotal value={total} locale={locale} />} valueClassName="text-heading @sm:text-display" content={{ type: "none" }} className="min-w-max flex-1 border-0 bg-transparent p-0" />
+        <div className="flex min-w-0 max-w-full items-center gap-2 text-label text-fg-subtle"><span>{labels[channel]} · {labels.compare}</span><Badge size="sm" status="neutral" className="shrink-0">{comparisonText(delta, locale, "%")}</Badge></div>
+      </div>
+        <div className="mt-4 flex min-w-0 flex-col gap-4">
+          <SupportChannelBadges channel={channel} labels={labels} onChange={onChannelChange} onFocus={revealFocusedControl} />
+          <TicketTrend data={usable!} labels={labels} locale={locale} timeZone={timeZone} />
+        </div></>}
+    </ContainerBody>
+    {usable && <><Tabs value={activeView} variant="pill" color="default" onValueChange={(value) => { if (views.includes(value as SupportAnalyticsView)) onViewChange?.(value as SupportAnalyticsView); }} className="flex min-w-0 flex-col gap-2">
+      <div className="overflow-x-auto" onFocus={revealFocusedControl}><TabsList className="w-full min-w-max" aria-label={labels.views}>{views.map((item) => <TabItem key={item} value={item} label={labels[item]} className="flex-1 justify-center" badge={item === "all" ? undefined : countsValid ? { children: formatCount(usable.counts[item], locale), variant: "strong", color: item === "open" ? "red" : "green" } : labels.unknown} />)}</TabsList></div>
+      <TabPanel value={activeView}><ContainerBody>{current ? <SupportMetrics metrics={current.metrics} labels={labels} locale={locale} timeZone={timeZone} rangeLabel={labels[range]} /> : <div role="status"><span className="sr-only">{labels.loading}</span><Skeleton className="h-44 w-full" /></div>}</ContainerBody></TabPanel>
+    </Tabs>
+      {current && <ContainerBody><RecentTickets key={`${queryIdentity}:${activeView}`} tickets={current.recentTickets.slice(0, 4)} expanded={ticketsExpanded} onExpandedChange={(value) => onTicketsExpandedChange?.(value)} labels={labels} locale={locale} timeZone={timeZone} now={now} contextLabel={`${activeView === "all" ? "" : `${labels[activeView]} · `}${labels[channel]} · ${labels[range]}`} pending={pending} errors={errors}
+        onOpen={actions?.onOpenTicket && context ? (ticket) => void run(`open:${ticket.id}`, () => actions.onOpenTicket!({ ...context, ticketId: ticket.id })) : undefined}
+        onResolve={actions?.onResolveTicket && context ? (ticket) => void run(`resolve:${ticket.id}`, () => actions.onResolveTicket!({ ...context, ticketId: ticket.id })) : undefined} /></ContainerBody>}
+    </>}
+    <ContainerFooter className="justify-between">
+      <p className="min-w-0 text-label text-fg-subtle">{labels.updated} {usable ? formatUpdated(usable.updatedAt, locale, timeZone, now) : labels.unknown}</p>
+      <div className="flex flex-wrap items-center gap-2">{actions?.onRefresh && context && <Tooltip content={labels.refresh}><Button iconOnly size="sm" variant="ghost" loading={refreshBusy} aria-label={labels.refresh} onClick={() => void run("refresh", () => actions.onRefresh!(context))}><Refresh aria-hidden /></Button></Tooltip>}{actions?.onOpenQueue && <Button size="sm" variant="secondary" disabled={!context} loading={pending.has("queue")} onClick={() => { if (context) void run("queue", () => actions.onOpenQueue!(context)); }}>{labels.queue}</Button>}</div>
+    </ContainerFooter>
+  </Container>;
+}

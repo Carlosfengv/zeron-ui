@@ -8,6 +8,7 @@ import { ModelRouterDemo } from "./ModelRouterDemo";
 import { ProjectMonitorDemo } from "./ProjectMonitorDemo";
 import { IntegrationMonitorsDemo } from "./IntegrationMonitorsDemo";
 import { SecurityOverviewDemo } from "./SecurityOverviewDemo";
+import { SupportAnalyticsDemo } from "./SupportAnalyticsDemo";
 import { TransactionDetailsDemo } from "./TransactionDetailsDemo";
 import { CostEstimateDemo } from "./CostEstimateDemo";
 import { DeploymentDetailDemo } from "./DeploymentDetailDemo";
@@ -208,6 +209,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
       return <IntegrationMonitorsDemo />;
     case "security-overview-01":
       return <SecurityOverviewDemo />;
+    case "support-analytics-01":
+      return <SupportAnalyticsDemo />;
     case "transaction-details-01":
       return <TransactionDetailsDemo />;
     case "cost-estimate-01":

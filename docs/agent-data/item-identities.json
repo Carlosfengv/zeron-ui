@@ -12,6 +12,16 @@
       "retirementReason": null
     },
     {
+      "id": "block:support-analytics-01",
+      "type": "registry",
+      "key": "support-analytics-01",
+      "aliases": [
+        "support-analytics-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:transaction-details-01",
       "type": "registry",
       "key": "transaction-details-01",

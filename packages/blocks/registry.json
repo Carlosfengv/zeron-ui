@@ -49,6 +49,67 @@
       ]
     },
     {
+      "name": "support-analytics-01",
+      "type": "registry:block",
+      "title": "客服工单分析",
+      "description": "工单趋势、服务指标、渠道筛选与最近工单处理。",
+      "categories": ["application", "analytics", "support"],
+      "dependencies": ["recharts", "framer-motion"],
+      "registryDependencies": ["accordion", "avatar", "badge", "button", "chart", "chart-primitives", "container", "dropdown", "empty", "alert", "icon-context", "info-item", "inline-notice", "menu-item", "metric-card", "select", "skeleton", "springs", "table", "tabs", "tooltip", "utils"],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/support-analytics-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/support-analytics-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/support-analytics-01/support-analytics-charts.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/support-analytics-01/support-analytics-charts.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/support-analytics-01/support-analytics-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/support-analytics-01/support-analytics-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/support-analytics-01/support-analytics-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/support-analytics-01/support-analytics-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/support-analytics-01/support-analytics-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/support-analytics-01/support-analytics-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/support-analytics-01/support-analytics-metrics.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/support-analytics-01/support-analytics-metrics.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/support-analytics-01/support-analytics-motion.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/support-analytics-01/support-analytics-motion.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/support-analytics-01/support-analytics-tickets.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/support-analytics-01/support-analytics-tickets.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/support-analytics-01/support-analytics-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/support-analytics-01/support-analytics-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/support-analytics-01/support-analytics.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/support-analytics-01/support-analytics.tsx"
+        }
+      ]
+    },
+    {
       "name": "transaction-details-01",
       "type": "registry:block",
       "title": "交易详情",

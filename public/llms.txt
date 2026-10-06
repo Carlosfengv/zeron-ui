@@ -62,6 +62,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [服务管理](https://zeron-ui.vercel.app/ai/items/block%3Aservice-management-01.md): A shared service workspace for progress, vendor authorizations, and cluster operation history. Registry: service-management-01.
 - [Signup](https://zeron-ui.vercel.app/ai/items/block%3Asignup-01.md): A surface-neutral account creation flow with email, Apple, and Google signup paths. Registry: signup-01.
 - [Storage Usage](https://zeron-ui.vercel.app/ai/items/block%3Astorage-usage-01.md): A compact storage summary with category segments, remaining capacity, and a wrapping legend. Registry: storage-usage-01.
+- [客服工单分析](https://zeron-ui.vercel.app/ai/items/block%3Asupport-analytics-01.md): 工单趋势、服务指标、渠道筛选与最近工单处理。 Registry: support-analytics-01.
 - [TopNav App Shell](https://zeron-ui.vercel.app/ai/items/block%3Atop-nav-app-shell-01.md): A stacked application shell with a centered TopNav and focused content area. Registry: top-nav-app-shell-01.
 - [流量规则](https://zeron-ui.vercel.app/ai/items/block%3Atraffic-rules-01.md): A responsive gateway workspace for managing traffic rules, limits, validation, and execution workflows. Registry: traffic-rules-01.
 - [交易详情](https://zeron-ui.vercel.app/ai/items/block%3Atransaction-details-01.md): 突出金额、交易字段、可折叠账单与附件操作。 Registry: transaction-details-01.
@@ -183,6 +184,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [security-overview-01](https://zeron-ui.vercel.app/agent-guides/blocks/security-overview-01.md)
 - [service-management-01](https://zeron-ui.vercel.app/agent-guides/blocks/service-management-01.md)
 - [storage-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/storage-usage-01.md)
+- [support-analytics-01](https://zeron-ui.vercel.app/agent-guides/blocks/support-analytics-01.md)
 - [transaction-details-01](https://zeron-ui.vercel.app/agent-guides/blocks/transaction-details-01.md)
 - [user-account-01](https://zeron-ui.vercel.app/agent-guides/blocks/user-account-01.md)
 - [zaiops-operations-01](https://zeron-ui.vercel.app/agent-guides/blocks/zaiops-operations-01.md)

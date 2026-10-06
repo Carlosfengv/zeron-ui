@@ -1,0 +1,12 @@
+{
+  "supportAnalyticsBlock": {
+    "title": "客服工单分析",
+    "description": "时间与渠道筛选、带平均线的工单趋势、三种状态视图、服务指标与可折叠最近工单。",
+    "composition": "组件组合",
+    "compositionBody": "Container 提供外框与三个浮动内容分区，状态 pill Tabs 直接放在框架上。渠道使用可点击 Badge，选中项实心主题色（当前蓝色），其余默认灰色。组合 Select、Tabs、MetricCard、Chart、Table、Accordion、Avatar、InfoItem、Badge、Dropdown 和 Button，所有样式沿用当前语义 tokens。图表通过 Chart 的公开 Recharts 组合实现，短趋势使用真实分桶，不补造 24 个点。",
+    "dataContract": "数据接入",
+    "dataContractBody": "宿主提供匹配 scopeId、range、channel 的快照。范围与渠道受控，状态视图与最近工单折叠可受控或本地管理。完整数据总量等于未解决与已解决数之和，也等于创建时间分桶之和。时间为 UTC 毫秒，时长为毫秒，比例为 0..1；null 与零区分，服务指标由服务端按真实样本聚合。",
+    "behavior": "交互与状态",
+    "behaviorBody": "支持首次加载/失败、缺数据、过期快照、后台刷新与同查询刷新失败保留。工单操作独立防重复，宿主确认后更新快照；旧查询的操作反馈不会污染新查询。演示详情和队列可打开，解决动作更新完整集合的计数与指标，导出为标记示例的 JSON。演示未连接真实客服系统。"
+  }
+}

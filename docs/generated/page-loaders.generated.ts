@@ -4,6 +4,7 @@ import type { DocPageLoader } from "./page-loader-types";
 export type { DocPageModule, DocPageLoader } from "./page-loader-types";
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "blocks/support-analytics-01": () => import("@docs/pages/blocks/support-analytics-01/page"),
   "blocks/integration-monitors-01": () => import("@docs/pages/blocks/integration-monitors-01/page"),
   "blocks/file-upload-01": () => import("@docs/pages/blocks/file-upload-01/page"),
   "components/chart": () => import("@docs/pages/components/chart/page"),

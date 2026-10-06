@@ -26,6 +26,7 @@ export const agentGuideLoaders: Record<string, () => Promise<string>> = {
   "blocks/security-overview-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/security-overview-01.md"), "utf8"),
   "blocks/service-management-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/service-management-01.md"), "utf8"),
   "blocks/storage-usage-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/storage-usage-01.md"), "utf8"),
+  "blocks/support-analytics-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/support-analytics-01.md"), "utf8"),
   "blocks/transaction-details-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/transaction-details-01.md"), "utf8"),
   "blocks/user-account-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/user-account-01.md"), "utf8"),
   "blocks/zaiops-operations-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/zaiops-operations-01.md"), "utf8"),

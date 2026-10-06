@@ -1,0 +1,12 @@
+{
+  "supportAnalyticsBlock": {
+    "title": "Support Analytics",
+    "description": "Time and channel filters, ticket trends with an average reference, three status views, service metrics and recent tickets.",
+    "composition": "Composition",
+    "compositionBody": "Container owns the frame and three floating regions, with status pill Tabs directly on the frame. Clickable channel Badges use the current solid brand color (blue by default) for the selected item and default gray for the others. Select, Tabs, MetricCard, Chart, Table, Accordion, Avatar, InfoItem, Badge, Dropdown and Button use current semantic tokens. Public Chart/Recharts compositions render the bar chart and short trends without inventing samples.",
+    "dataContract": "Data contract",
+    "dataContractBody": "The host supplies snapshots matching scopeId, range and channel. Range and channel are controlled; status and disclosure can be controlled or local. Complete totals equal open plus resolved counts and creation-time buckets. Timestamps and durations use milliseconds, ratios use 0..1, and null is unknown. Service aggregates use actual server-side samples.",
+    "behavior": "Behavior and states",
+    "behaviorBody": "Supports initial loading/failure, missing data, stale snapshots, refreshing and retained matching snapshots after refresh failures. Actions prevent duplicate submissions; the host confirms updated data. Old-query feedback is isolated. The demo opens details and the queue, updates full-fixture aggregates when resolving tickets and exports labeled example JSON. No production support system is connected."
+  }
+}

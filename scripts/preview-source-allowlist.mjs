@@ -5,6 +5,18 @@ export const previewSourceFiles = {
     "packages/blocks/src/application/file-upload-01/file-upload-types.ts",
     "packages/blocks/src/application/file-upload-01/index.ts"
 ],
+  "support-analytics-01": [
+    "packages/blocks/src/application/support-analytics-01/index.ts",
+    "packages/blocks/src/application/support-analytics-01/support-analytics-charts.tsx",
+    "packages/blocks/src/application/support-analytics-01/support-analytics-data.ts",
+    "packages/blocks/src/application/support-analytics-01/support-analytics-demo-data.ts",
+    "packages/blocks/src/application/support-analytics-01/support-analytics-labels.ts",
+    "packages/blocks/src/application/support-analytics-01/support-analytics-metrics.tsx",
+    "packages/blocks/src/application/support-analytics-01/support-analytics-motion.tsx",
+    "packages/blocks/src/application/support-analytics-01/support-analytics-tickets.tsx",
+    "packages/blocks/src/application/support-analytics-01/support-analytics-types.ts",
+    "packages/blocks/src/application/support-analytics-01/support-analytics.tsx"
+  ],
   "transaction-details-01": [
     "packages/blocks/src/application/transaction-details-01/transaction-details.tsx",
     "packages/blocks/src/application/transaction-details-01/transaction-details-types.ts",

@@ -228,6 +228,9 @@ importers:
       '@zeron/ui':
         specifier: workspace:*
         version: link:../ui
+      framer-motion:
+        specifier: ^12.34.0
+        version: 12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: ^19.0.0
         version: 19.2.4
