@@ -95,7 +95,7 @@ const iconEntry = (value: Omit<DocEntry, "collection" | "indexable" | "order"> &
 });
 
 export const docEntries = [
-  blockEntry({ slug: "transaction-details-01", section: "application", icon: "doc-card", name: "交易详情", description: "突出金额、交易字段、可折叠账单与附件操作。", registryItem: { name: "transaction-details-01", type: "registry:block" }, isNew: true, order: 36.95 }),
+
   blockEntry({ slug: "getting-started-01", section: "application", icon: "doc-card", name: "入门任务清单", description: "An embedded, collapsible setup checklist with completion counts, task states and host-owned actions.", registryItem: { name: "getting-started-01", type: "registry:block" }, isNew: true, order: 36.95 }),
   entry({ slug: "surfaces", section: "foundations", icon: "doc-surfaces", name: "Surfaces", description: "Five semantic surfaces with purpose-based shadows for light and dark mode." }),
   entry({ slug: "semantic-tokens", section: "foundations", icon: "doc-semantic-tokens", name: "Semantic Tokens", description: "The complete runtime contract for color, surface, type, shape, and layering.", isNew: true, order: 200 }),
@@ -118,6 +118,8 @@ export const docEntries = [
   entry({ slug: "button-group", section: "action", icon: "doc-button", name: "ButtonGroup", description: "Connected horizontal and vertical action groups with split-button, separator, and contextual-addon composition.", isNew: true, gridSize: "small", order: 550 }),
   entry({ slug: "card", section: "layout", icon: "doc-card", name: "Card", description: "shadcn's compositional card, dressed in Zeron Design — stacked, inline, and grid layouts, borderless dividers, and 2-D proximity hover.", isNew: true, gridSize: "large", order: 600 }),
   entry({ slug: "container", section: "layout", icon: "doc-card", name: "Container", description: "Composable raised container with an optional header and footer around a floating content body.", isNew: true, gridSize: "medium", order: 650 }),
+
+
   entry({ slug: "checkbox", section: "input", icon: "doc-checkbox", name: "Checkbox", description: "Compact checkbox with checked, mixed, disabled, validation, and form states.", isNew: true, gridSize: "small", order: 700 }),
   entry({ slug: "checkbox-group", section: "input", icon: "doc-checkbox-group", name: "CheckboxGroup", description: "Checkbox group with merged backgrounds for contiguous selections.", gridSize: "small", order: 800 }),
   entry({ slug: "color-picker", section: "input", icon: "doc-color-picker", name: "ColorPicker", description: "Color picker with HEX/RGB/HSL/OKLCH formats, alpha, swatches, and popover trigger.", gridSize: "large", order: 900 }),
@@ -184,8 +186,11 @@ export const docEntries = [
   blockEntry({ slug: "personal-model-usage-01", section: "application", icon: "doc-data-table", name: "个人模型用量", description: "A standalone model billing and call-log workspace with consumption trends, routing evidence, and answer traces.", registryItem: { name: "personal-model-usage-01", type: "registry:block" }, isNew: true, order: 36 }),
   blockEntry({ slug: "model-router-01", section: "application", icon: "doc-card", name: "Model Router", description: "Animated gateway traffic, routing strategies and fallback controls.", registryItem: { name: "model-router-01", type: "registry:block" }, isNew: true, order: 36.6 }),
   blockEntry({ slug: "project-monitor-01", section: "application", icon: "doc-card", name: "项目监控", description: "包含项目概览、存储用量与请求报告的中文监控卡片。", registryItem: { name: "project-monitor-01", type: "registry:block" }, isNew: true, order: 36.7 }),
-  blockEntry({ slug: "security-overview-01", section: "application", icon: "doc-card", name: "安全概览", description: "安全评分、风险趋势、六维态势与受影响资产。", registryItem: { name: "security-overview-01", type: "registry:block" }, isNew: true, order: 36.9 }),
   blockEntry({ slug: "cost-estimate-01", section: "application", icon: "doc-card", name: "费用估算", description: "四项用量、预设、月付/年付与最低消费估算。", registryItem: { name: "cost-estimate-01", type: "registry:block" }, isNew: true, order: 36.96 }),
+
+  blockEntry({ slug: "transaction-details-01", section: "application", icon: "doc-card", name: "交易详情", description: "突出金额、交易字段、可折叠账单与附件操作。", registryItem: { name: "transaction-details-01", type: "registry:block" }, isNew: true, order: 36.95 }),
+
+  blockEntry({ slug: "security-overview-01", section: "application", icon: "doc-card", name: "安全概览", description: "安全评分、风险趋势、六维态势与受影响资产。", registryItem: { name: "security-overview-01", type: "registry:block" }, isNew: true, order: 36.9 }),
   blockEntry({ slug: "deployment-detail-01", section: "application", icon: "doc-card", name: "部署详情", description: "网站预览、域名、来源与部署阶段检查结果。", registryItem: { name: "deployment-detail-01", type: "registry:block" }, isNew: true, order: 36.8 }),
   blockEntry({ slug: "credit-usage-01", section: "application", icon: "doc-card", name: "Credit Usage", description: "A compact credit-cycle summary with model attribution, depletion guidance, and plan controls.", registryItem: { name: "credit-usage-01", type: "registry:block" }, isNew: true, order: 36.5 }),
   blockEntry({ slug: "storage-usage-01", section: "application", icon: "doc-card", name: "Storage Usage", description: "A compact storage summary with category segments, remaining capacity, and a wrapping legend.", registryItem: { name: "storage-usage-01", type: "registry:block" }, isNew: true, order: 36.6 }),

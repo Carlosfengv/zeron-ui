@@ -1,5 +1,12 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "transaction-details-01": [
+    "packages/blocks/src/application/transaction-details-01/transaction-details.tsx",
+    "packages/blocks/src/application/transaction-details-01/transaction-details-types.ts",
+    "packages/blocks/src/application/transaction-details-01/transaction-details-format.ts",
+    "packages/blocks/src/application/transaction-details-01/transaction-details-labels.ts",
+    "packages/blocks/src/application/transaction-details-01/transaction-details-demo-data.ts"
+  ],
   "cost-estimate-01": [
     "packages/blocks/src/application/cost-estimate-01/index.ts",
     "packages/blocks/src/application/cost-estimate-01/cost-estimate.tsx",
@@ -8,13 +15,6 @@ export const previewSourceFiles = {
     "packages/blocks/src/application/cost-estimate-01/cost-estimate-summary.tsx",
     "packages/blocks/src/application/cost-estimate-01/cost-estimate-usage.tsx",
     "packages/blocks/src/application/cost-estimate-01/cost-estimate-demo-data.ts"
-  ],
-  "transaction-details-01": [
-    "packages/blocks/src/application/transaction-details-01/transaction-details.tsx",
-    "packages/blocks/src/application/transaction-details-01/transaction-details-types.ts",
-    "packages/blocks/src/application/transaction-details-01/transaction-details-format.ts",
-    "packages/blocks/src/application/transaction-details-01/transaction-details-labels.ts",
-    "packages/blocks/src/application/transaction-details-01/transaction-details-demo-data.ts"
   ],
   "getting-started-01": [
     "packages/blocks/src/application/getting-started-01/getting-started.tsx",

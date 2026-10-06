@@ -46,7 +46,7 @@ function RadioGroupItem({ className, ...props }: RadioGroupItemProps) {
         <motion.span
           animate={{ opacity: 1, scale: 1 }}
           className="size-2.5 rounded-full bg-brand"
-          initial={reduceMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.3 }}
+          initial={false}
           transition={reduceMotion ? { duration: 0 } : spring.fast}
         />
       </RadioPrimitive.Indicator>

@@ -4,28 +4,6 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
-      "name": "error-state",
-      "type": "registry:ui",
-      "title": "Error State",
-      "description": "Confirmed request failure with a consumer-owned retry action, composed from Alert.",
-      "registryDependencies": [
-        "surfaces",
-        "alert",
-        "icon-context",
-        "utils"
-      ],
-      "files": [
-        {
-          "path": "packages/ui/src/components/error-state.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/error-state.tsx"
-        }
-      ],
-      "dependencies": [
-        "tw-animate-css"
-      ]
-    },
-    {
       "name": "surfaces",
       "type": "registry:theme",
       "title": "Semantic Design Tokens",
@@ -2887,6 +2865,28 @@
           "type": "registry:ui",
           "target": "components/ui/top-nav.tsx"
         }
+      ]
+    },
+    {
+      "name": "error-state",
+      "type": "registry:ui",
+      "title": "Error State",
+      "description": "Confirmed request failure with a consumer-owned retry action, composed from Alert.",
+      "registryDependencies": [
+        "surfaces",
+        "alert",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/error-state.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/error-state.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
       ]
     },
     {

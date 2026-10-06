@@ -2,14 +2,6 @@
   "schemaVersion": 1,
   "items": [
     {
-      "id": "block:cost-estimate-01",
-      "type": "registry",
-      "key": "cost-estimate-01",
-      "aliases": ["cost-estimate-01"],
-      "status": "active",
-      "retirementReason": null
-    },
-    {
       "id": "block:transaction-details-01",
       "type": "registry",
       "key": "transaction-details-01",
@@ -18,6 +10,36 @@
       ],
       "status": "active",
       "retirementReason": null
+    },
+    {
+      "id": "block:cost-estimate-01",
+      "type": "registry",
+      "key": "cost-estimate-01",
+      "aliases": [
+        "cost-estimate-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:getting-started-01",
+      "type": "registry",
+      "key": "getting-started-01",
+      "aliases": [
+        "getting-started-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:status-indicator",
+      "type": "registry",
+      "key": "status-indicator",
+      "aliases": [
+        "status-indicator"
+      ],
+      "status": "retired",
+      "retirementReason": "Consolidated into Badge plain; activity and long messages use InlineNotice."
     },
     {
       "id": "component:error-state",
@@ -30,16 +52,35 @@
       "retirementReason": null
     },
     {
-      "id": "block:getting-started-01",
+      "id": "block:security-overview-01",
       "type": "registry",
-      "key": "getting-started-01",
-      "aliases": ["getting-started-01"],
+      "key": "security-overview-01",
+      "aliases": [
+        "security-overview-01"
+      ],
       "status": "active",
       "retirementReason": null
     },
-    { "id": "block:security-overview-01", "type": "registry", "key": "security-overview-01", "aliases": ["security-overview-01"], "status": "active", "retirementReason": null },
-    { "id": "block:deployment-detail-01", "type": "registry", "key": "deployment-detail-01", "aliases": ["deployment-detail-01"], "status": "active", "retirementReason": null },
-    { "id": "block:project-monitor-01", "type": "registry", "key": "project-monitor-01", "aliases": ["project-monitor-01"], "status": "active", "retirementReason": null },
+    {
+      "id": "block:deployment-detail-01",
+      "type": "registry",
+      "key": "deployment-detail-01",
+      "aliases": [
+        "deployment-detail-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:project-monitor-01",
+      "type": "registry",
+      "key": "project-monitor-01",
+      "aliases": [
+        "project-monitor-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
     {
       "id": "block:agent-message-trace-01",
       "type": "registry",

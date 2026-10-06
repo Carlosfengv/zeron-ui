@@ -1,23 +1,376 @@
 {
-  "transaction-details-01": {"keywords": ["交易", "账单", "发票", "附件", "transaction", "invoice", "billing"], "useCases": ["嵌入式交易详情、账单查看和附件操作。"], "whenNotToUse": ["不执行付款、审批、退款或服务端查询；完整工作区详情使用 ResourceDetailLayout。"], "keyApi": ["transactionId 与 data.id 匹配；金额为安全整数 amountMinor + currency。", "billingOpen/defaultBillingOpen/onBillingOpenChange 控制折叠。", "state + refreshing 表达数据状态；actions 为宿主能力且支持 Promise。"]},
-  "getting-started-01": {"keywords": ["入门", "清单", "onboarding", "checklist", "getting started"], "useCases": ["嵌入式入门任务清单、完成进度和宿主任务入口。"], "whenNotToUse": ["多步表单使用 Stepper；不承载应用外壳或后台任务执行。"], "keyApi": ["tasks: 唯一 id 与明确 completed/current/pending 状态；完成数从任务派生。", "open/defaultOpen/onOpenChange: 可控折叠。", "href 优先于 onTaskAction；已完成项为静态内容。"]},
-  "deployment-detail-01": { "keywords": ["部署详情", "构建日志", "网站预览", "域名", "deployment", "build", "checks"], "useCases": ["检查一个部署的预览、来源、域名与阶段结果。"], "whenNotToUse": ["跨多个项目的资源或请求趋势使用项目监控。"], "keyApi": ["data: 部署生命周期与阶段结果独立；issues 数量从同一列表统计。", "actions: 宿主接入分享、日志、阶段详情、排查与重试。", "state: ready/loading/stale/error", "now/locale/timeZone: 明确日期参考与格式。"] },
-  "button": {"keywords": ["操作", "按钮", "提交", "action", "save", "submit"], "useCases": ["触发即时操作；根据任务优先级选择公开 variant。"], "whenNotToUse": ["持久选择使用 Select、Tabs 或 Switch；普通导航使用链接。"], "keyApi": ["variant: 操作优先级", "size: 组件拥有控件和图标几何", "loading: 内置等待状态并禁用重复触发", "disabled", "iconOnly: 单个图标 child，必须有可访问名称", "leadingIcon/trailingIcon: compatible IconComponent 组件类型，不是 JSX 元素；children 仅作标签", "asChild: 单个链接元素"]},
-  "input": {"keywords": ["输入", "文本", "表单", "text", "form"], "useCases": ["单行文本录入，配合 Field 提供标签和校验。"], "whenNotToUse": ["多行内容使用 Textarea；有限选择使用 Select。"]},
-  "select": {"keywords": ["选择", "选项", "下拉选择", "option", "value"], "useCases": ["从有限预加载选项中选择一个值。"], "whenNotToUse": ["远程搜索或创建选项先评估 Combobox；命令使用 Dropdown。"]},
-  "combobox": {"keywords": ["搜索选择", "远程选项", "多选", "searchable", "autocomplete"], "useCases": ["可搜索的单选或多选值录入。"], "whenNotToUse": ["执行操作使用 Dropdown；静态少量选项可用 Select。"]},
-  "data-table": {"keywords": ["资源列表", "表格", "筛选", "分页", "排序", "resource list", "records", "filter", "pagination", "sort"], "useCases": ["记录列表的排序、过滤、分页和选择。"], "whenNotToUse": ["静态表格使用 Table；电子表格式编辑使用 DataGrid。"]},
-  "data-grid": {"keywords": ["电子表格", "单元格编辑", "范围选择", "spreadsheet", "cell", "editable"], "useCases": ["密集可编辑数据和单元格范围选择。"], "whenNotToUse": ["普通管理列表优先 DataTable。"]},
-  "dialog": {"keywords": ["弹窗", "确认", "模态", "确认删除", "confirm", "modal", "destructive"], "useCases": ["需要打断当前任务的短操作或确认。"], "whenNotToUse": ["需要独立链接或复杂长流程时使用页面。"]},
-  "page-layout": {"keywords": ["资源列表", "页面布局", "详情", "设置", "page", "resource list", "settings", "detail"], "useCases": ["在现有应用外壳内组合页面信息、导航与内容。"], "whenNotToUse": ["不要在已拥有完整布局的 Block 外再加一套重复标题和内边距。"]},
-  "resource-detail-layout": {"keywords": ["资源详情", "检查", "detail", "inspection"], "useCases": ["检查一个已识别资源，使用公开区域组合路径、摘要与内容。"], "whenNotToUse": ["浏览多个对象时使用列表结构。"]},
-  "field": {"keywords": ["表单", "校验", "标签", "错误消息", "form", "label", "validation"], "useCases": ["组合标签、说明、控件和错误反馈。"], "whenNotToUse": ["不要重复控件已经拥有的标签和错误区域。"]},
-  "metric-card": {"keywords": ["指标", "趋势", "统计", "kpi", "metric", "trend"], "useCases": ["展示支持用户判断的单项指标及其状态。"], "whenNotToUse": ["普通内容分组使用 Card；不能把演示值当真实业务数据。"]},
-  "tree": {"keywords": ["树", "层级", "目录", "部门", "hierarchy", "folder"], "useCases": ["层级节点的展示、展开和选择。"], "whenNotToUse": ["没有层级的记录列表使用 DataTable。"]},
-  "app-shell": {"keywords": ["app-shell", "应用外壳与页面布局的归属", "后台"], "useCases": ["应用外壳与页面布局的归属"], "whenNotToUse": ["已有宿主时不再添加第二套应用外壳。"], "keyApi": ["AppShellSidebar、AppShellHeader、AppShellMain 是 AppShell 的直接 DOM 子级；Fragment 不增加 DOM，真实 div 包装会改变布局。", "应用已有外壳时复用它，新增页面只接入内容。不要在同一区域嵌套第二套 AppShell 或 main。", "有界工作区显式提供高度，AppShellMain 允许收缩，PageBody 拥有内容纵向滚动；文档滚动页面采用自己的高度策略。", "Sidebar 可通过直接子级宽度驱动外壳轨道，不同时硬写两套宽度。"]},
-  "nav-menu": {"keywords": ["nav-menu", "导航组的选中状态与键盘模式", "导航"], "useCases": ["导航组的选中状态与键盘模式"], "whenNotToUse": [], "keyApi": ["NavMenu 包含 NavItem，以 activeValue 表示当前目标；业务回调或路由拥有状态变化。", "keyboardNavigation=\"roving\" 提供组内方向键移动与单一 Tab 停留点；\"tab\" 用于逐项 Tab 的导航需求，以安装类型为准。", "通过 aria-label 命名每个导航组，使用支持的 orientation/variant，不自己复制选中指示器。", "NavItem standalone 可以独立工作，但采用不同的悬停/选中反馈。官方分组侧栏优先采用 NavMenu。"]},
-  "nav-item": {"keywords": ["nav-item", "路由链接与本地动作的语义适配", "导航"], "useCases": ["路由链接与本地动作的语义适配"], "whenNotToUse": [], "keyApi": ["默认 trigger 是 a：真正页面导航必须提供 href，Next 路由通过 render={<Link href=\"...\" />} 接入。", "本地状态切换用 render={<button type=\"button\" />}；不要用无 href 的 a 加外层 onClick 冒充可操作导航。", "NavItemLeading/Content/Label/Badge 负责内部排列，业务只供给内容、值、权限和路由。", "active 支持 standalone；NavMenu 下优先由 activeValue 统一选择。standalone 并非错误，但不是标准导航组的相同效果。"]},
-  "sidebar-identity-row": {"keywords": ["sidebar-identity-row", "侧栏身份信息与折叠布局", "导航"], "useCases": ["侧栏身份信息与折叠布局"], "whenNotToUse": [], "keyApi": ["primary、description、leading、trailing 是公开内容插槽；layout 为 auto/single-line/two-line。", "静态身份使用默认 div；确有动作时使用 as=\"button\" 并接入回调或菜单，不添加假操作。", "使用 trailingPlacement=\"edge\" 把尾部内容放到行末，保留组件自己的字体、间距与截断。", "useSidebar 的 state/isMobile 由调用方读取，再选择紧凑头像或完整身份；SidebarIdentityRow 不会自动变成折叠头像。"]},
-  "sidebar-account-menu": {"keywords": ["sidebar-account-menu", "账户菜单的数据和行为接入", "导航"], "useCases": ["账户菜单的数据和行为接入"], "whenNotToUse": [], "keyApi": ["sections/items 的稳定 id、label、disabled、onSelect 由项目供给；权限还需服务端校验。", "compact 明确控制折叠后的头像菜单触发器；抽屉打开时保留完整身份。", "open/onOpenChange 可受控；menuSide/menuAlign 等是公开定位参数，不从全局 CSS 重写弹层定位。", "账户变更必须更新业务状态和数据服务，不把演示账户名称当作认证结果。"]},
-  "sidebar": {"keywords": ["sidebar", "标准分组侧栏与响应式组合", "后台"], "useCases": ["标准分组侧栏与响应式组合"], "whenNotToUse": [], "keyApi": ["SidebarProvider 拥有展开、mobileOpen 和 breakpointBehavior；默认 drawer，支持 collapse。当前断点为 1279px 以下，以安装版本常量为准。", "Sidebar 的 collapsible 支持 icon/offcanvas/none；width/collapsedWidth/mobileWidth 用公开参数设置。", "Header/Content/Footer 组合身份、分组导航与账户操作；NavMenu 提供官方导航组反馈，不能用一组独立 NavItem 假定相同效果。", "SidebarContent 的 className 作用于外层 ScrollArea，contentClassName 作用于内部内容层。内部已有间距，调整其参数时不要再叠加外层 padding 和组 margin。", "折叠头像账户菜单应根据 useSidebar 设置 compact，参见 SidebarAccountMenu 指南。"]}
+  "transaction-details-01": {
+    "keywords": [
+      "交易",
+      "账单",
+      "发票",
+      "附件",
+      "transaction",
+      "invoice",
+      "billing"
+    ],
+    "useCases": [
+      "嵌入式交易详情、账单查看和附件操作。"
+    ],
+    "whenNotToUse": [
+      "不执行付款、审批、退款或服务端查询；完整工作区详情使用 ResourceDetailLayout。"
+    ],
+    "keyApi": [
+      "transactionId 与 data.id 匹配；金额为安全整数 amountMinor + currency。",
+      "billingOpen/defaultBillingOpen/onBillingOpenChange 控制折叠。",
+      "state + refreshing 表达数据状态；actions 为宿主能力且支持 Promise。"
+    ]
+  },
+  "getting-started-01": {
+    "keywords": [
+      "入门",
+      "清单",
+      "onboarding",
+      "checklist",
+      "getting started"
+    ],
+    "useCases": [
+      "嵌入式入门任务清单、完成进度和宿主任务入口。"
+    ],
+    "whenNotToUse": [
+      "多步表单使用 Stepper；不承载应用外壳或后台任务执行。"
+    ],
+    "keyApi": [
+      "tasks: 唯一 id 与明确 completed/current/pending 状态；完成数从任务派生。",
+      "open/defaultOpen/onOpenChange: 可控折叠。",
+      "href 优先于 onTaskAction；已完成项为静态内容。"
+    ]
+  },
+  "deployment-detail-01": {
+    "keywords": [
+      "部署详情",
+      "构建日志",
+      "网站预览",
+      "域名",
+      "deployment",
+      "build",
+      "checks"
+    ],
+    "useCases": [
+      "检查一个部署的预览、来源、域名与阶段结果。"
+    ],
+    "whenNotToUse": [
+      "跨多个项目的资源或请求趋势使用项目监控。"
+    ],
+    "keyApi": [
+      "data: 部署生命周期与阶段结果独立；issues 数量从同一列表统计。",
+      "actions: 宿主接入分享、日志、阶段详情、排查与重试。",
+      "state: ready/loading/stale/error",
+      "now/locale/timeZone: 明确日期参考与格式。"
+    ]
+  },
+  "button": {
+    "keywords": [
+      "操作",
+      "按钮",
+      "提交",
+      "action",
+      "save",
+      "submit"
+    ],
+    "useCases": [
+      "触发即时操作；根据任务优先级选择公开 variant。"
+    ],
+    "whenNotToUse": [
+      "持久选择使用 Select、Tabs 或 Switch；普通导航使用链接。"
+    ],
+    "keyApi": [
+      "variant: 操作优先级",
+      "size: 组件拥有控件和图标几何",
+      "loading: 内置等待状态并禁用重复触发",
+      "disabled",
+      "iconOnly: 单个图标 child，必须有可访问名称",
+      "leadingIcon/trailingIcon: compatible IconComponent 组件类型，不是 JSX 元素；children 仅作标签",
+      "asChild: 单个链接元素"
+    ]
+  },
+  "input": {
+    "keywords": [
+      "输入",
+      "文本",
+      "表单",
+      "text",
+      "form"
+    ],
+    "useCases": [
+      "单行文本录入，配合 Field 提供标签和校验。"
+    ],
+    "whenNotToUse": [
+      "多行内容使用 Textarea；有限选择使用 Select。"
+    ]
+  },
+  "select": {
+    "keywords": [
+      "选择",
+      "选项",
+      "下拉选择",
+      "option",
+      "value"
+    ],
+    "useCases": [
+      "从有限预加载选项中选择一个值。"
+    ],
+    "whenNotToUse": [
+      "远程搜索或创建选项先评估 Combobox；命令使用 Dropdown。"
+    ]
+  },
+  "combobox": {
+    "keywords": [
+      "搜索选择",
+      "远程选项",
+      "多选",
+      "searchable",
+      "autocomplete"
+    ],
+    "useCases": [
+      "可搜索的单选或多选值录入。"
+    ],
+    "whenNotToUse": [
+      "执行操作使用 Dropdown；静态少量选项可用 Select。"
+    ]
+  },
+  "data-table": {
+    "keywords": [
+      "资源列表",
+      "表格",
+      "筛选",
+      "分页",
+      "排序",
+      "resource list",
+      "records",
+      "filter",
+      "pagination",
+      "sort"
+    ],
+    "useCases": [
+      "记录列表的排序、过滤、分页和选择。"
+    ],
+    "whenNotToUse": [
+      "静态表格使用 Table；电子表格式编辑使用 DataGrid。"
+    ]
+  },
+  "data-grid": {
+    "keywords": [
+      "电子表格",
+      "单元格编辑",
+      "范围选择",
+      "spreadsheet",
+      "cell",
+      "editable"
+    ],
+    "useCases": [
+      "密集可编辑数据和单元格范围选择。"
+    ],
+    "whenNotToUse": [
+      "普通管理列表优先 DataTable。"
+    ]
+  },
+  "dialog": {
+    "keywords": [
+      "弹窗",
+      "确认",
+      "模态",
+      "确认删除",
+      "confirm",
+      "modal",
+      "destructive"
+    ],
+    "useCases": [
+      "需要打断当前任务的短操作或确认。"
+    ],
+    "whenNotToUse": [
+      "需要独立链接或复杂长流程时使用页面。"
+    ]
+  },
+  "page-layout": {
+    "keywords": [
+      "资源列表",
+      "页面布局",
+      "详情",
+      "设置",
+      "page",
+      "resource list",
+      "settings",
+      "detail"
+    ],
+    "useCases": [
+      "在现有应用外壳内组合页面信息、导航与内容。"
+    ],
+    "whenNotToUse": [
+      "不要在已拥有完整布局的 Block 外再加一套重复标题和内边距。"
+    ]
+  },
+  "resource-detail-layout": {
+    "keywords": [
+      "资源详情",
+      "检查",
+      "detail",
+      "inspection"
+    ],
+    "useCases": [
+      "检查一个已识别资源，使用公开区域组合路径、摘要与内容。"
+    ],
+    "whenNotToUse": [
+      "浏览多个对象时使用列表结构。"
+    ]
+  },
+  "field": {
+    "keywords": [
+      "表单",
+      "校验",
+      "标签",
+      "错误消息",
+      "form",
+      "label",
+      "validation"
+    ],
+    "useCases": [
+      "组合标签、说明、控件和错误反馈。"
+    ],
+    "whenNotToUse": [
+      "不要重复控件已经拥有的标签和错误区域。"
+    ]
+  },
+  "metric-card": {
+    "keywords": [
+      "指标",
+      "趋势",
+      "统计",
+      "kpi",
+      "metric",
+      "trend"
+    ],
+    "useCases": [
+      "展示支持用户判断的单项指标及其状态。"
+    ],
+    "whenNotToUse": [
+      "普通内容分组使用 Card；不能把演示值当真实业务数据。"
+    ]
+  },
+  "tree": {
+    "keywords": [
+      "树",
+      "层级",
+      "目录",
+      "部门",
+      "hierarchy",
+      "folder"
+    ],
+    "useCases": [
+      "层级节点的展示、展开和选择。"
+    ],
+    "whenNotToUse": [
+      "没有层级的记录列表使用 DataTable。"
+    ]
+  },
+  "app-shell": {
+    "keywords": [
+      "app-shell",
+      "应用外壳与页面布局的归属",
+      "后台"
+    ],
+    "useCases": [
+      "应用外壳与页面布局的归属"
+    ],
+    "whenNotToUse": [
+      "已有宿主时不再添加第二套应用外壳。"
+    ],
+    "keyApi": [
+      "AppShellSidebar、AppShellHeader、AppShellMain 是 AppShell 的直接 DOM 子级；Fragment 不增加 DOM，真实 div 包装会改变布局。",
+      "应用已有外壳时复用它，新增页面只接入内容。不要在同一区域嵌套第二套 AppShell 或 main。",
+      "有界工作区显式提供高度，AppShellMain 允许收缩，PageBody 拥有内容纵向滚动；文档滚动页面采用自己的高度策略。",
+      "Sidebar 可通过直接子级宽度驱动外壳轨道，不同时硬写两套宽度。"
+    ]
+  },
+  "nav-menu": {
+    "keywords": [
+      "nav-menu",
+      "导航组的选中状态与键盘模式",
+      "导航"
+    ],
+    "useCases": [
+      "导航组的选中状态与键盘模式"
+    ],
+    "whenNotToUse": [],
+    "keyApi": [
+      "NavMenu 包含 NavItem，以 activeValue 表示当前目标；业务回调或路由拥有状态变化。",
+      "keyboardNavigation=\"roving\" 提供组内方向键移动与单一 Tab 停留点；\"tab\" 用于逐项 Tab 的导航需求，以安装类型为准。",
+      "通过 aria-label 命名每个导航组，使用支持的 orientation/variant，不自己复制选中指示器。",
+      "NavItem standalone 可以独立工作，但采用不同的悬停/选中反馈。官方分组侧栏优先采用 NavMenu。"
+    ]
+  },
+  "nav-item": {
+    "keywords": [
+      "nav-item",
+      "路由链接与本地动作的语义适配",
+      "导航"
+    ],
+    "useCases": [
+      "路由链接与本地动作的语义适配"
+    ],
+    "whenNotToUse": [],
+    "keyApi": [
+      "默认 trigger 是 a：真正页面导航必须提供 href，Next 路由通过 render={<Link href=\"...\" />} 接入。",
+      "本地状态切换用 render={<button type=\"button\" />}；不要用无 href 的 a 加外层 onClick 冒充可操作导航。",
+      "NavItemLeading/Content/Label/Badge 负责内部排列，业务只供给内容、值、权限和路由。",
+      "active 支持 standalone；NavMenu 下优先由 activeValue 统一选择。standalone 并非错误，但不是标准导航组的相同效果。"
+    ]
+  },
+  "sidebar-identity-row": {
+    "keywords": [
+      "sidebar-identity-row",
+      "侧栏身份信息与折叠布局",
+      "导航"
+    ],
+    "useCases": [
+      "侧栏身份信息与折叠布局"
+    ],
+    "whenNotToUse": [],
+    "keyApi": [
+      "primary、description、leading、trailing 是公开内容插槽；layout 为 auto/single-line/two-line。",
+      "静态身份使用默认 div；确有动作时使用 as=\"button\" 并接入回调或菜单，不添加假操作。",
+      "使用 trailingPlacement=\"edge\" 把尾部内容放到行末，保留组件自己的字体、间距与截断。",
+      "useSidebar 的 state/isMobile 由调用方读取，再选择紧凑头像或完整身份；SidebarIdentityRow 不会自动变成折叠头像。"
+    ]
+  },
+  "sidebar-account-menu": {
+    "keywords": [
+      "sidebar-account-menu",
+      "账户菜单的数据和行为接入",
+      "导航"
+    ],
+    "useCases": [
+      "账户菜单的数据和行为接入"
+    ],
+    "whenNotToUse": [],
+    "keyApi": [
+      "sections/items 的稳定 id、label、disabled、onSelect 由项目供给；权限还需服务端校验。",
+      "compact 明确控制折叠后的头像菜单触发器；抽屉打开时保留完整身份。",
+      "open/onOpenChange 可受控；menuSide/menuAlign 等是公开定位参数，不从全局 CSS 重写弹层定位。",
+      "账户变更必须更新业务状态和数据服务，不把演示账户名称当作认证结果。"
+    ]
+  },
+  "sidebar": {
+    "keywords": [
+      "sidebar",
+      "标准分组侧栏与响应式组合",
+      "后台"
+    ],
+    "useCases": [
+      "标准分组侧栏与响应式组合"
+    ],
+    "whenNotToUse": [],
+    "keyApi": [
+      "SidebarProvider 拥有展开、mobileOpen 和 breakpointBehavior；默认 drawer，支持 collapse。当前断点为 1279px 以下，以安装版本常量为准。",
+      "Sidebar 的 collapsible 支持 icon/offcanvas/none；width/collapsedWidth/mobileWidth 用公开参数设置。",
+      "Header/Content/Footer 组合身份、分组导航与账户操作；NavMenu 提供官方导航组反馈，不能用一组独立 NavItem 假定相同效果。",
+      "SidebarContent 的 className 作用于外层 ScrollArea，contentClassName 作用于内部内容层。内部已有间距，调整其参数时不要再叠加外层 padding 和组 margin。",
+      "折叠头像账户菜单应根据 useSidebar 设置 compact，参见 SidebarAccountMenu 指南。"
+    ]
+  }
 }

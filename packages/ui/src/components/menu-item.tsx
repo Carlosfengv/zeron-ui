@@ -35,6 +35,7 @@ export interface MenuItemRenderOptions {
   disabled?: boolean;
   label: string;
   closeOnClick: boolean;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
   element: ReactElement;
   children: ReactNode;
 }
@@ -222,12 +223,12 @@ const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
         disabled,
         label,
         closeOnClick: closeOnClick ?? true,
+        onClick: handleActivate,
         element: (
           <div
             ref={mergeRef}
             data-proximity-index={index}
             aria-label={label}
-            onClick={handleActivate}
             className={itemClassName}
             {...props}
           />

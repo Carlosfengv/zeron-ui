@@ -417,6 +417,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
         disabled,
         label,
         closeOnClick,
+        onClick,
         element,
         children,
       }: MenuItemRenderOptions) =>
@@ -426,6 +427,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
             disabled={disabled}
             label={label}
             closeOnClick={closeOnClick}
+            onClick={onClick}
             render={element}
           >
             {children}
@@ -435,6 +437,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
             disabled={disabled}
             label={label}
             closeOnClick={closeOnClick}
+            onClick={onClick}
             render={element}
           >
             {children}
