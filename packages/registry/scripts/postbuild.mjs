@@ -7,6 +7,7 @@ import { readdir, readFile, writeFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { transformRegistryImports } from "./transform-imports.mjs";
+import { REGISTRY_BINARY_PREFIX } from "../../cli/src/registry-binary.js";
 
 const REGISTRY_DIR = new URL("../../../public/r", import.meta.url).pathname;
 const ROOT_DIR = new URL("../../..", import.meta.url).pathname;
@@ -30,6 +31,14 @@ function rewriteImports(item) {
   for (const file of item.files ?? []) {
     if (typeof file.content === "string" && /\.(?:[cm]?tsx?|jsx?)$/.test(file.path)) {
       file.content = transformRegistryImports(file.content, file.path);
+    }
+  }
+}
+
+async function encodeBinaryAssets(item) {
+  for (const file of item.files ?? []) {
+    if (file.type === "registry:file" && /\.(?:png|jpe?g|gif|webp|ico|woff2?)$/i.test(file.path)) {
+      file.content = REGISTRY_BINARY_PREFIX + (await readFile(join(ROOT_DIR, file.path))).toString("base64");
     }
   }
 }
@@ -101,12 +110,14 @@ export async function processRegistry(registryDir = REGISTRY_DIR, baseUrl = BASE
       for (const item of data.items) {
         rewriteDeps(item, itemNames, baseUrl);
         rewriteImports(item);
+        await encodeBinaryAssets(item);
         addRuntimeDependencies(item);
         pinRuntimeDependencies(item, versions);
       }
     } else {
       rewriteDeps(data, itemNames, baseUrl);
       rewriteImports(data);
+      await encodeBinaryAssets(data);
       addRuntimeDependencies(data);
       pinRuntimeDependencies(data, versions);
     }

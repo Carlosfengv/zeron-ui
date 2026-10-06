@@ -89,11 +89,24 @@ export async function resolveInstalledRegistryAliases(cwd, files) {
   await assertProjectPath(cwd, path.join(cwd, "components.json"));
   const config = JSON.parse(await readFile(path.join(cwd, "components.json"), "utf8"));
   const aliases = config.aliases ?? {};
-  if (!Object.keys(aliases).some((key) => PLACEHOLDER_ALIASES.has(key))) return;
 
   for (const planFile of files) {
     const file = typeof planFile === "string" ? planFile : planFile.targetPath;
     await assertProjectPath(cwd, file);
+    if (planFile.binary) {
+      // Decode only approved planned targets; retained user files never reach this list.
+      let installed;
+      try { installed = await readFile(file); }
+      catch (error) { if (error?.code !== "ENOENT") throw error; }
+      if (installed?.equals(planFile.expectedBytes)) continue;
+      if (installed && installed.toString("utf8") !== planFile.expectedContent) {
+        throw new Error(`Encoded Registry asset changed during installation: ${file}`);
+      }
+      await mkdir(path.dirname(file), { recursive: true });
+      await assertProjectPath(cwd, file);
+      await writeFile(file, planFile.expectedBytes);
+      continue;
+    }
     let input;
     let wasMissing = false;
     try {

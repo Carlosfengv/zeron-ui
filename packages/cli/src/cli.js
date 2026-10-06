@@ -13,7 +13,7 @@ import { assertReactInstallIntent, assertReactRuntime } from "./react-compatibil
 import { resolveInstalledRegistryAliases } from "./resolve-registry-aliases.js";
 import { assertProjectPath } from "./project-paths.js";
 import { createInstallSnapshot } from "./install-snapshot.js";
-import { alignInitializedAliases, buildInstallPlan, digest, readIfPresent } from "./install-plan.js";
+import { alignInitializedAliases, buildInstallPlan, digest, readBytesIfPresent } from "./install-plan.js";
 import { adaptNextStarterStyles } from "./initialize-styles.js";
 
 const HELP = `zeron-ui
@@ -336,7 +336,7 @@ export async function runCli(
         ...plan.inputHashes,
         ...plan.files.map((file) => ({ targetPath: file.targetPath, hash: file.beforeHash })),
       ]) {
-        const content = await readIfPresent(targetPath);
+        const content = await readBytesIfPresent(targetPath);
         if ((content === null ? null : digest(content)) !== hash) throw new Error(`Project file changed during preflight: ${path.relative(cwd, targetPath)}; rerun the install`);
       }
       installerStarted = true;

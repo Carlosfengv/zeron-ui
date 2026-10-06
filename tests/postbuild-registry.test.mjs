@@ -84,6 +84,17 @@ describe("processRegistry pipeline", () => {
     expect(await read("dialog.json")).toEqual(before);
   });
 
+  it("transports PNG bytes losslessly instead of UTF-8 decoding the image", async () => {
+    const sourcePath = "packages/blocks/src/application/mcp-detail-01/assets/supabase-mcp-cursor.png";
+    await write("image.json", { name: "image", files: [{ path: sourcePath, target: "components/image.png", type: "registry:file", content: "corrupt old UTF-8 image" }] });
+    await processRegistry(dir);
+    const encoded = (await read("image.json")).files[0].content;
+    expect(encoded.startsWith("zeron:base64:")).toBe(true);
+    expect(Buffer.from(encoded.slice("zeron:base64:".length), "base64")).toEqual(await readFile(sourcePath));
+    await processRegistry(dir);
+    expect((await read("image.json")).files[0].content).toBe(encoded);
+  });
+
   it("uses an explicit release base independently of the legacy environment default", async () => {
     await write("dialog.json", { name: "dialog", registryDependencies: ["button", "badge", "utils"] });
     const base = "https://artifacts.example.invalid/r/releases/candidate-02";

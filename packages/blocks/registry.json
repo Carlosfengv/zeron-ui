@@ -1171,12 +1171,36 @@
       "dependencies": ["tw-animate-css", "@lobehub/icons", "@thesvg/icons"],
       "registryDependencies": ["badge", "breadcrumb", "button", "card", "inline-notice", "input-copy", "page-layout", "select", "tabs", "textarea", "tooltip", "utils"],
       "files": [
-        { "path": "packages/blocks/src/application/mcp-detail-01/mcp-detail-data.ts", "type": "registry:component", "target": "components/blocks/mcp-detail-01/mcp-detail-data.ts" },
-        { "path": "packages/blocks/src/application/mcp-detail-01/assets.d.ts", "type": "registry:file", "target": "components/blocks/mcp-detail-01/assets.d.ts" },
-        { "path": "packages/blocks/src/application/mcp-detail-01/assets/cline.svg", "type": "registry:file", "target": "components/blocks/mcp-detail-01/assets/cline.svg" },
-        { "path": "packages/blocks/src/application/mcp-detail-01/assets/supabase-mcp-cursor.png", "type": "registry:file", "target": "components/blocks/mcp-detail-01/assets/supabase-mcp-cursor.png" },
-        { "path": "packages/blocks/src/application/mcp-detail-01/mcp-detail.tsx", "type": "registry:component", "target": "components/blocks/mcp-detail-01/mcp-detail.tsx" },
-        { "path": "packages/blocks/src/application/mcp-detail-01/index.ts", "type": "registry:component", "target": "components/blocks/mcp-detail-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/mcp-detail-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/mcp-detail-01/mcp-detail-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/assets.d.ts",
+          "type": "registry:file",
+          "target": "components/blocks/mcp-detail-01/assets.d.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/assets/cline.svg",
+          "type": "registry:file",
+          "target": "components/blocks/mcp-detail-01/assets/cline.svg"
+        },
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/assets/supabase-mcp-cursor.png",
+          "type": "registry:file",
+          "target": "components/blocks/mcp-detail-01/assets/supabase-mcp-cursor.png"
+        },
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/mcp-detail.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/mcp-detail-01/mcp-detail.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/mcp-detail-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/mcp-detail-01/index.ts"
+        }
       ]
     },
     {

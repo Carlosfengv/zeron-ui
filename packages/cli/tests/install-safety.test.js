@@ -10,6 +10,7 @@ import test from "node:test";
 import { runCli } from "../src/cli.js";
 import { buildInstallPlan } from "../src/install-plan.js";
 import { resolveInstalledRegistryAliases } from "../src/resolve-registry-aliases.js";
+import { REGISTRY_BINARY_PREFIX } from "../src/registry-binary.js";
 
 const exec = promisify(execFile);
 const cli = fileURLToPath(new URL("../src/index.js", import.meta.url));
@@ -17,6 +18,38 @@ const officialToken = JSON.parse(await readFile(new URL("../../../public/r/tailw
 const aliases = { components: "@/components", ui: "@/components/ui", lib: "@/lib", hooks: "@/hooks", utils: "@/lib/utils" };
 const simpleItem = (name = "example") => ({ name, type: "registry:lib", files: [{ path: `${name}.ts`, target: `lib/${name}.ts`, type: "registry:lib", content: `export const ${name} = true;\n` }] });
 const response = (item) => async () => ({ ok: true, json: async () => item });
+
+test("real installer preserves binary asset bytes, repeat receipts and user customization", { timeout: 60000 }, async (t) => {
+  const { cwd } = await fixture(t);
+  const bytes = await readFile(new URL("../../blocks/src/application/mcp-detail-01/assets/supabase-mcp-cursor.png", import.meta.url));
+  const item = { name: "example", type: "registry:block", files: [{ path: "assets/example.png", target: "components/blocks/example/assets/example.png", type: "registry:file", content: REGISTRY_BINARY_PREFIX + bytes.toString("base64") }] };
+  const { baseUrl } = await localRegistry(t, () => item);
+  await invoke(cwd, baseUrl, "example");
+  const target = path.join(cwd, item.files[0].target);
+  assert.deepEqual(await readFile(target), bytes);
+  await invoke(cwd, baseUrl, "example");
+  assert.deepEqual(await readFile(target), bytes);
+  const customized = Buffer.from([0, 255, 128, 10]);
+  await writeFile(target, customized);
+  await assert.rejects(invoke(cwd, baseUrl, "example"), error => /Install conflict/.test(error.stderr));
+  assert.deepEqual(await readFile(target), customized);
+  await invoke(cwd, baseUrl, "example", ["--overwrite"]);
+  assert.deepEqual(await readFile(target), bytes);
+});
+
+test("invalid or source-code binary encodings fail before any installation", async (t) => {
+  const { cwd } = await fixture(t);
+  for (const file of [
+    { path: "assets/example.png", target: "components/example.png", type: "registry:file", content: REGISTRY_BINARY_PREFIX + "not-base64" },
+    { path: "example.ts", target: "lib/example.ts", type: "registry:file", content: REGISTRY_BINARY_PREFIX + "AA==" },
+  ]) {
+    let invoked = false;
+    await assert.rejects(runCli(["add", "example", "--cwd", cwd], {
+      fetchImpl: response({ name: "example", files: [file] }), runShadcnImpl: () => { invoked = true; return 0; },
+    }), /Registry asset/);
+    assert.equal(invoked, false);
+  }
+});
 
 async function fixture(t, { version = "4.1.18", tsx = true } = {}) {
   const root = await mkdtemp(path.join(tmpdir(), "zeron-install-safety-"));

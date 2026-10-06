@@ -98,6 +98,13 @@ it does not silently create a second component tree. When an application has
 `src`, aliases for these Registry items must resolve to the corresponding `src`
 locations. Arbitrary output directories are not supported by this installer.
 
+The local source CLI also restores encoded Registry image/font assets to their
+original bytes after installation. Binary targets participate in the same
+preflight conflict checks and install receipts as source files. A Registry that
+uses the `zeron:base64:` asset transport requires this CLI implementation; the
+underlying shadcn installer alone writes the transport string. Verify the
+published CLI/Registry pair before relying on this local capability publicly.
+
 ## Migration inspection (local development)
 
 The source CLI now includes read-only migration helpers. These commands are not

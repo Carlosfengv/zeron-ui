@@ -5,6 +5,7 @@ import ts from "typescript";
 import { componentUrl, normalizeRegistryUrl, validateComponentName } from "./registry.js";
 import { assertProjectPath } from "./project-paths.js";
 import { resolveRegistryAliases } from "./resolve-registry-aliases.js";
+import { registryBinaryBytes } from "./registry-binary.js";
 
 const TARGET_PREFIXES = [
   ["components/ui/", "ui", ""],
@@ -19,6 +20,15 @@ export const digest = (content) => createHash("sha256").update(content).digest("
 export async function readIfPresent(file) {
   try {
     return await readFile(file, "utf8");
+  } catch (error) {
+    if (error?.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+export async function readBytesIfPresent(file) {
+  try {
+    return await readFile(file);
   } catch (error) {
     if (error?.code === "ENOENT") return null;
     throw error;
@@ -205,12 +215,14 @@ export async function buildInstallPlan({ cwd, names, baseUrl, overwrite = false,
       // shadcn changes the output extension for JavaScript consumers.
       if (config.tsx === false) targetPath = targetPath.replace(/\.tsx?$/, (extension) => extension === ".tsx" ? ".jsx" : ".js");
       await assertProjectPath(cwd, targetPath);
+      const binaryBytes = registryBinaryBytes(file);
       const expectedContent = resolveRegistryAliases(file.content, config.aliases ?? {}, file.path);
+      const expectedBytes = binaryBytes ?? Buffer.from(expectedContent);
       const previous = fileByTarget.get(targetPath);
-      if (previous && previous.expectedContent !== expectedContent) {
+      if (previous && !previous.expectedBytes.equals(expectedBytes)) {
         throw new Error(`Registry target conflict at ${path.relative(cwd, targetPath)} between ${previous.item} and ${item.name}`);
       }
-      const existingContent = await readIfPresent(targetPath);
+      const existingContent = await readBytesIfPresent(targetPath);
       const entry = {
         item: item.name,
         sourcePath: file.path,
@@ -219,13 +231,15 @@ export async function buildInstallPlan({ cwd, names, baseUrl, overwrite = false,
         configHash,
         targetPath,
         expectedContent,
+        expectedBytes,
+        binary: binaryBytes !== null,
         existedBefore: existingContent !== null,
         beforeHash: existingContent === null ? null : digest(existingContent),
       };
       const installed = installedFiles.get(path.relative(cwd, targetPath));
       const unchangedInstall = installed?.sourceHash === entry.sourceHash
         && installed?.configHash === configHash && installed?.installedHash === entry.beforeHash;
-      if (existingContent !== null && existingContent !== expectedContent && !unchangedInstall && !overwrite) {
+      if (existingContent !== null && !existingContent.equals(expectedBytes) && !unchangedInstall && !overwrite) {
         throw new Error(`Install conflict: ${path.relative(cwd, targetPath)} already exists; rerun with --overwrite to replace this planned file`);
       }
       fileByTarget.set(targetPath, entry);
@@ -241,7 +255,7 @@ export async function buildInstallPlan({ cwd, names, baseUrl, overwrite = false,
     configHash,
     guardedPaths: [...new Set([...controlPaths, ...aliasPaths, ...auxiliaryPaths, ...fileByTarget.keys()])],
     inputHashes: await Promise.all(controlPaths.map(async (targetPath) => {
-      const content = await readIfPresent(targetPath);
+      const content = await readBytesIfPresent(targetPath);
       return { targetPath, hash: content === null ? null : digest(content) };
     })),
     requestedItems: names,
