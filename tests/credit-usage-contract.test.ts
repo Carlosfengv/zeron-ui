@@ -63,7 +63,7 @@ describe("Credit Usage 01 contract", () => {
       expect(source).toContain(component);
     }
     expect(source).toContain('<SegmentedBar mode="capacity" total={totalCredits}');
-    expect(source).toContain('className="h-7 rounded-lg"');
+    expect(source).toContain('className="h-3 rounded-none"');
     expect(source).toContain("max-w-[520px]");
     expect(source).not.toContain("sm:grid-cols-2");
     expect(source).not.toContain("splitRows");

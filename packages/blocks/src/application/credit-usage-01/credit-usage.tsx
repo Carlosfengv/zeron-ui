@@ -98,7 +98,7 @@ function CreditBar({
   usedCredits: number;
   valueText: string;
 }) {
-  return <SegmentedBar mode="capacity" total={totalCredits} segments={models.map((model) => ({ id: model.id, label: model.name, value: positiveCredits(model), color: badgeColors[model.color] }))} valueText={valueText} aria-valuenow={usedCredits} className="h-7 rounded-lg" />;
+  return <SegmentedBar mode="capacity" total={totalCredits} segments={models.map((model) => ({ id: model.id, label: model.name, value: positiveCredits(model), color: badgeColors[model.color] }))} valueText={valueText} aria-valuenow={usedCredits} className="h-3 rounded-none" />;
 }
 
 function ModelUsageList({
@@ -190,7 +190,7 @@ function CyclePanel({
           </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6 flex h-5 items-center">
           <CreditBar
             models={data.models}
             totalCredits={totalCredits}

@@ -57,7 +57,7 @@ const blockPreviewSources = {
     "url": "/docs-source/c79b9398ad95a6c88a2f1d0f54bbac9a89e3a91d35ec46d3050c08107a84dbdd.txt"
   },
   "credit-usage-01": {
-    "url": "/docs-source/f5c92e90e461bdf0e977f4449eb2a3b743f8c46f0f16bf2126507f6f329e4de2.txt"
+    "url": "/docs-source/1b6bcb87208162cdcf745c4bbff631c4b50c53ff76bd8e5df5787b9868e0616d.txt"
   },
   "file-manager-01": {
     "url": "/docs-source/f1d4694c301c959fd8cb0e8b3826fc4f062fafd90ce61158362b45ec97fa36a7.txt"
