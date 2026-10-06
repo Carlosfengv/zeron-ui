@@ -226,6 +226,12 @@ related:
 
 默认渲染 `280px` 桌面 Sidebar，并在低于桌面断点时切换为抽屉。若业务应用已经提供同一层级的全局导航，可显式传入 `sidebar={false}`，避免重复外壳。
 
+## 数据反馈契约
+
+首次 loading/refreshing 且 data 为 null 显示骨架；error 且无 data 使用 Alert。确认无数据时才使用 Empty。有 data 时后台刷新保留图表；error 或刷新回调拒绝时保留快照并提示“上次结果”。`stale` 独立于 status，可以与 refreshing 同时传入；`statusMessage` 覆盖旧数据提示。静态反馈默认不增加 live region。
+
+onRefresh/onRetry 支持返回 Promise，等待期间阻止重复触发；成功后的 data/status 更新由宿主负责。onRangeChange 仍为受控回调，不在组件内偷偷修改 range。文档与独立预览提供“演示状态”选择以检查全部状态。
+
 ## Use when
 
 - 需要同时观察请求、费用、Token、延迟和错误率。
@@ -358,6 +364,10 @@ const response = await fetch(
 ## Localization
 
 通过 `locale` 和 `timeZone` 控制数字、货币、日期和延迟格式。通过 `labels` 局部覆盖页面与图表文案；业务术语与后端 ID 不要混入标签配置。
+
+## Shared visualization
+
+请求趋势采用 TimeSeriesChart；费用圆环与图例采用 DonutSummary / ChartLegend。提供商默认色按稳定 ID 分配，重排不会变色，onProviderSelect 保留宿主行为。费用圆环使用 summary.costMicros 作为业务总量，未归属部分保留中性轨道；labels.unassignedCost / inconsistentCost 可选地本地化覆盖说明。其余图保留专用单位与模型，并提供可展开数据表。缺失值不补零，分位数比较与延迟直方图不合并。
 
 
 ---
@@ -586,7 +596,7 @@ function BillingSummary() {
 - `currentCycle` 必填，`previousCycle` 可选。缺少上一周期时，对应 Tab 会禁用。
 - `projection` 是服务端或领域层给出的预测结果；Block 不自行预测耗尽日期。
 - `autoSwitch` 决定是否显示自动切换区域；目标模型、阈值和说明都由业务数据提供。
-- 模型 `color` 使用 Badge 的语义颜色集合，避免在 Block 内维护第二套颜色常量。
+- 模型 `color` 使用 Badge 的分类颜色集合，不表达健康或告警状态。
 - 使用 `provider` 选择内置的 OpenAI、Claude 或 Gemini 品牌标识；私有模型通过 `logo` 传入真实的产品 Logo，未提供时使用通用模型图标。
 - 日期作为已格式化文本传入；数字与百分比根据 `locale` 格式化。
 - 使用 `formatters.usageSummary`、`formatters.progressValueText` 和 `formatters.autoSwitchTitle` 覆盖完整句子，避免本地化时受英文词序限制。
@@ -601,6 +611,8 @@ function BillingSummary() {
 ## Accessibility and layout
 
 用量条暴露 `progressbar` 语义和数值文本；颜色同时由下方模型名称与数值解释，不作为唯一信息来源。Block 以 32px 默认控件高度与 28px 用量条组织密度，最大宽度为 520px；模型列表始终保持单列，在窄屏下会让头部与操作区换行。不要用后代选择器覆盖内部组件状态。
+
+用量条采用 SegmentedBar 的 capacity 模式。模型 ID 与显式分类颜色保持稳定；超额数值保留，绘图按最大值缩放。长模型名称可换行，原有受控值与操作回调保持不变。
 
 
 ---
@@ -1160,7 +1172,9 @@ export function ProjectPreview() {
 
 `tab` / `defaultTab` / `onTabChange` 和 `range` / `defaultRange` / `onRangeChange` 支持受控与非受控模式；视图之间共享窗口选择。窗口变化只选择传入的数据，由宿主加载和更新快照。无效受控窗口不回退到别的窗口，以免展示错误时间范围。切换项目重置非受控选择。
 
-`state` 为 ready、loading、stale、error。过期保留快照并提示，加载显示 Skeleton，失败隐藏指标并可通过 actions.onRetry 重试。宿主提供 statusMessage 可替换默认提示。
+`state` 为 ready、loading、stale、error。过期保留快照并提示，首次加载显示 Skeleton，首次失败使用 Alert 并可通过 actions.onRetry 重试。默认 error 仍隐藏指标以保留旧接口行为；已有快照的刷新失败显式传 `retainDataOnError`，保留图表和指标并显示局部错误。`refreshing` 是独立可选属性，可以与 stale 同时存在。宿主提供 statusMessage 可替换默认提示。
+
+`actions.onRefresh` 可选；onRefresh/onRetry 可以返回 Promise，组件等待完成并阻止同一数据操作的重复触发，拒绝时保留可用快照并提示。组件只触发回调，宿主负责成功后更新 data/state；不会将旧数据偷偷改成新鲜。tabs、复制、自定义等无关操作仍可用。
 
 地址复制通过 Button / Tooltip 组合完成，成功和失败均有中文反馈。actions.onOpenDashboard / onCustomize 只在传入时显示；组件不自行导航或请求网络。演示的“打开独立预览”打开本地完整预览，自定义开关实际控制资源与活动区显隐。所有演示数据明确标注为示例。
 
@@ -1168,7 +1182,7 @@ export function ProjectPreview() {
 
 ## 组件与样式
 
-使用 Card、Tabs、InfoItem、Badge、StatusOverview、StorageUsage、MetricCard、Chart、Select、Button、Tooltip、Skeleton、Empty 和 InlineNotice。服务状态通过 StatusOverview 的 variant="activity" 呈现：名称、细竖条轨道和请求数在宽容器中同排，窄容器中轨道换行。灰色完整竖条表示空闲，较短竖条表示未知；Tooltip 保留准确计数和状态。Chart 使用已有 Recharts 组合环图、面积图和条形图。业务布局使用现有间距、字体、边框、阴影和语义颜色；未新增全局样式或色值。
+使用 Card、Tabs、InfoItem、Badge、StatusOverview、StorageUsage、MetricCard、Chart、Select、Button、Tooltip、Skeleton、Empty、Badge plain、Alert 和 InlineNotice。服务状态通过 StatusOverview 的 variant="activity" 呈现：名称、细竖条轨道和请求数在宽容器中同排，窄容器中轨道换行。灰色完整竖条表示空闲，较短竖条表示未知；Tooltip 保留准确计数和状态。请求趋势采用 TimeSeriesChart，环图采用 DonutSummary，服务图例采用 ChartLegend；缺失分桶保留断点和未知汇总，趋势数据可通过键盘展开。分位数比较保留专用条形图，与直方图共享分位数分类色但不合并模型。业务布局使用现有间距、字体、边框、阴影和语义颜色；未新增全局样式或色值。
 
 CPU 等比例与服务分布通过可读文本提供非图形信息；趋势图支持键盘检查，服务状态条支持方向键和中文提示。布局使用容器断点，在窄卡片中换行。图表不播放装饰性动画。
 
@@ -1554,6 +1568,12 @@ createSecurityOverviewDemoData 提供固定示例。文档 demo 实际执行模�
 
 外层使用 Container，顶部/底部使用 ContainerHeader / ContainerFooter，评分区和各 Tab 内容使用 ContainerBody，保持 raised / floating 表面层级。顶部标题为 text-body / font-medium，与嵌入式面板一致。组合 MetricCard、Tabs、Select、Button、Badge、Chart、Tooltip、Skeleton、Empty、InlineNotice。四级分类映射复用 badgeColors 的 red/orange/amber/gray，操作和评分采用语义颜色；无新增全局 CSS。图表不播放逐点增长动画，趋势提供可展开的数值表，所有图文按钮使用公开图标槽。
 
+评分采用 DonutSummary，始终显示快照评分；正常评分圆环采用主题蓝色 fg-brand，告警、严重和未知保留语义色。扫描进度在独立说明中表达。扫描成功但 snapshotId 尚未匹配时继续提示旧快照。趋势采用公共预设与 ChartLegend，并与风险列表保留相同的严重性分类色。雷达保持专用绘制，采用共享分类色、Tooltip 和可展开的数据表，不新增通用雷达组件。
+
+## 阶段五统一契约
+
+首次失败统一使用默认静态 Alert，并保留 actions.onRetry；操作错误及旧快照提示使用 InlineNotice。严重程度仍保留 critical/high/medium/low 的领域枚举，视觉映射 danger/danger/warning/info。安全评分图继续使用蓝色主题，不把预览条数或扫描中状态当成真实总数。
+
 
 ---
 
@@ -1591,6 +1611,8 @@ import { StorageUsage, storageUsageDemoData } from "@/components/blocks/storage-
 - Loading and unavailable/error states hide numeric descriptions and the distribution. Stale data remains visible with its supplied status message.
 
 MetricCard's `layout="split"` is optional. Its default `stacked` layout remains unchanged; `description` adds label context, and `valueClassName` is a public typography hook.
+
+The category bar uses SegmentedBar in capacity mode; ChartLegend owns its readable category names and values. Both are installed through chart-primitives without Recharts. Stable item IDs and explicit Badge colors preserve identity; business totals and normalization still belong to this block.
 
 
 ---
@@ -2121,6 +2143,80 @@ export function RefreshAction({ pending, onRefresh }: { pending: boolean; onRefr
 ## API anchors
 
 Agent 只需优先关注：`variant`、`tone`、`size`、`loading`、`disabled`、`active`、`iconOnly`、`leadingIcon`、`trailingIcon`、`dashed`、`asChild`。完整类型以 `source` 指向的实现为准。
+
+
+---
+
+---
+schema_version: 1
+name: chart-primitives
+kind: component
+status: stable
+locale: zh-CN
+summary: 无 Recharts 依赖的图例、分段条、数据表与调色格式工具。
+package_import: "@zeron/ui/chart-primitives"
+registry_import: "@/components/ui/chart-primitives"
+source: packages/ui/src/components/chart-primitives.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [chart, badge]
+---
+
+# Chart Primitives
+
+- `chartSeriesColor(id)` 使用稳定 ID 映射分类颜色，不随重排、筛选和刷新变化。有限调色板允许碰撞；需要唯一配色时显式传入已有分类色。`chartStatusColors` 独立提供语义色。
+- `createChartNumberFormatter(locale, options)` 保留未知为 —；percent 的输入为比例 0.15，而非百分数 15。金额的 micros/minor-unit 换算由业务层承担。`createChartTimeFormatter(locale, timeZone, options)` 显式指定时区，非法时间保持未知。
+- `ChartLegend` items 含 id/label/color/value/ratio，可选 pressed 提供真实显隐状态；默认静态，不创建隐式显隐状态。onSelect(id) 只执行宿主明确操作；需要显隐时由宿主维护 pressed 并将其应用到图表，组件不会修改数据。长名称换行，不依赖标题提示。占比不完整时由消费者传入 —。
+- `SegmentedBar` 共用绘制但 mode 明确区分 capacity 和 distribution。capacity 必传 total，valueText 提供容量和实际用量；distribution 可传明确总量保留未覆盖段。数值不因超额被改小；图形按 max(total, assigned) 缩放。只有省略 total 且分类完整时才派生总量；显式 null 或非法总量保持未知，不绘制完整分布。容量或用量不完整时不提供 aria-valuenow，由 valueText 说明未知部分。容量和分类均仅接受非负值，未知用 null。完整业务说明仍由消费者提供。
+- `ChartDataTable` 提供 details/summary/table 的键盘等价入口；原生表格用于展示数据，不负责排序或编辑。
+
+```tsx
+import { ChartLegend, SegmentedBar } from "@zeron/ui/chart-primitives";
+const segments = [{ id: "files", label: "文件", value: 80 }];
+export function StorageBar() {
+  return <div><SegmentedBar mode="capacity" total={100} segments={segments} valueText="已用 80 / 100 GB" /><ChartLegend items={[{ id: "files", label: "文件", value: "80 GB" }]} /></div>;
+}
+```
+
+安装 `npx zeron-ui add chart-primitives` 不引入 Recharts。Badge/Alert 的依赖路径也不包含图表引擎。
+
+
+---
+
+---
+schema_version: 1
+name: chart
+kind: component
+status: stable
+locale: zh-CN
+summary: 基于 Recharts 的容器、趋势与响应式圆环，保留数据语义和可访问数据入口。
+package_import: "@zeron/ui/chart"
+registry_import: "@/components/ui/chart"
+source: packages/ui/src/components/chart.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [chart-primitives, metric-card, time-range-histogram]
+---
+
+# Chart
+
+`ChartContainer/config/ChartTooltip/ChartTooltipContent` 保留原有组合接口。`config` 的 key 使用 CSS 标识符，color/theme 使用可信 CSS 色值。ChartContainer 内只放一个 Recharts 图，不能嵌套 ResponsiveContainer，父容器应 min-w-0 且有可测量高度。`dataTable` 可提供 caption、columns、rows 和 summary，为专用图提供键盘可打开的数据表。
+
+`TimeSeriesChart` 是两个请求趋势消费者验证后的薄组合。data 每项为 `{ timestamp: number, values: Record<string, number | null> }`；series 含稳定 id、label 和可选 color。必填 locale/timeZone/label，domain 可指定真实时间窗口。formatValue 同时用于轴、Tooltip 和数据表。没有汇总、补零、排序、采样或隐式连线；单点保留标记、全零保留真实值、空数组显示无数据。dataSummary 由消费者本地化。绘图关闭非必要动画。
+
+`DonutSummary` 接收 segments（id/label/value/color）、业务 total 和中心 center。total 不传时只有完整非负数列才派生总量；null 表示未知。部分已知总量留中性轨道，超额绘图缩放但不改真实值。调用方提供完整 aria-label，并配 ChartLegend 或可读明细；不依赖鼠标 Tooltip。innerRadius 可按实际用途保留不同环宽。
+
+```tsx
+import { TimeSeriesChart, DonutSummary } from "@zeron/ui/chart";
+export function RequestChart() {
+  return <TimeSeriesChart data={[{ timestamp: 1791158400000, values: { requests: 12 } }]} series={[{ id: "requests", label: "请求" }]} locale="zh-CN" timeZone="Asia/Shanghai" label="请求量" dataSummary="查看数据" />;
+}
+export function UsageDonut() {
+  return <DonutSummary segments={[{ id: "used", label: "已用", value: 80 }]} total={100} center="80 / 100" aria-label="已用 80，总量 100" />;
+}
+```
+
+安装 `npx zeron-ui add chart`。保留 MetricCard 小图及 TimeRangeHistogram 的选择/拖拽契约。分类颜色和状态色不互换；金额、Token、毫秒及比例换算由业务明确输入。
 
 
 ---

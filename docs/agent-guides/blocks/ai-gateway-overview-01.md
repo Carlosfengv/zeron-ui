@@ -24,6 +24,12 @@ related:
 
 默认渲染 `280px` 桌面 Sidebar，并在低于桌面断点时切换为抽屉。若业务应用已经提供同一层级的全局导航，可显式传入 `sidebar={false}`，避免重复外壳。
 
+## 数据反馈契约
+
+首次 loading/refreshing 且 data 为 null 显示骨架；error 且无 data 使用 Alert。确认无数据时才使用 Empty。有 data 时后台刷新保留图表；error 或刷新回调拒绝时保留快照并提示“上次结果”。`stale` 独立于 status，可以与 refreshing 同时传入；`statusMessage` 覆盖旧数据提示。静态反馈默认不增加 live region。
+
+onRefresh/onRetry 支持返回 Promise，等待期间阻止重复触发；成功后的 data/status 更新由宿主负责。onRangeChange 仍为受控回调，不在组件内偷偷修改 range。文档与独立预览提供“演示状态”选择以检查全部状态。
+
 ## Use when
 
 - 需要同时观察请求、费用、Token、延迟和错误率。
@@ -156,3 +162,7 @@ const response = await fetch(
 ## Localization
 
 通过 `locale` 和 `timeZone` 控制数字、货币、日期和延迟格式。通过 `labels` 局部覆盖页面与图表文案；业务术语与后端 ID 不要混入标签配置。
+
+## Shared visualization
+
+请求趋势采用 TimeSeriesChart；费用圆环与图例采用 DonutSummary / ChartLegend。提供商默认色按稳定 ID 分配，重排不会变色，onProviderSelect 保留宿主行为。费用圆环使用 summary.costMicros 作为业务总量，未归属部分保留中性轨道；labels.unassignedCost / inconsistentCost 可选地本地化覆盖说明。其余图保留专用单位与模型，并提供可展开数据表。缺失值不补零，分位数比较与延迟直方图不合并。

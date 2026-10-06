@@ -46,3 +46,9 @@ onExport 触发时宿主立即设置 exportState=pending；回调收到 scopeId/
 createSecurityOverviewDemoData 提供固定示例。文档 demo 实际执行模拟扫描、失败重试、详情 Dialog、完整集合查看、关闭/重新打开和 JSON 下载。定时器在卸载时清理；不连接真实目标。Toast 仅由 demo 宿主拥有，block 自身没有全局 Toaster。
 
 外层使用 Container，顶部/底部使用 ContainerHeader / ContainerFooter，评分区和各 Tab 内容使用 ContainerBody，保持 raised / floating 表面层级。顶部标题为 text-body / font-medium，与嵌入式面板一致。组合 MetricCard、Tabs、Select、Button、Badge、Chart、Tooltip、Skeleton、Empty、InlineNotice。四级分类映射复用 badgeColors 的 red/orange/amber/gray，操作和评分采用语义颜色；无新增全局 CSS。图表不播放逐点增长动画，趋势提供可展开的数值表，所有图文按钮使用公开图标槽。
+
+评分采用 DonutSummary，始终显示快照评分；正常评分圆环采用主题蓝色 fg-brand，告警、严重和未知保留语义色。扫描进度在独立说明中表达。扫描成功但 snapshotId 尚未匹配时继续提示旧快照。趋势采用公共预设与 ChartLegend，并与风险列表保留相同的严重性分类色。雷达保持专用绘制，采用共享分类色、Tooltip 和可展开的数据表，不新增通用雷达组件。
+
+## 阶段五统一契约
+
+首次失败统一使用默认静态 Alert，并保留 actions.onRetry；操作错误及旧快照提示使用 InlineNotice。严重程度仍保留 critical/high/medium/low 的领域枚举，视觉映射 danger/danger/warning/info。安全评分图继续使用蓝色主题，不把预览条数或扫描中状态当成真实总数。

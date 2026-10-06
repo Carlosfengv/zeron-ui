@@ -6,6 +6,7 @@ import GeminiColor from "@lobehub/icons/es/Gemini/components/Color";
 import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono";
 import { Badge, badgeColors } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
+import { SegmentedBar } from "@zeron/ui/chart-primitives";
 import { Card, CardFooter } from "@zeron/ui/card";
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
 import { Switch } from "@zeron/ui/switch";
@@ -97,43 +98,7 @@ function CreditBar({
   usedCredits: number;
   valueText: string;
 }) {
-  const denominator = Math.max(totalCredits, usedCredits, 1);
-  const remaining = Math.max(0, totalCredits - usedCredits);
-
-  return (
-    <div
-      aria-label={valueText}
-      aria-valuemax={denominator}
-      aria-valuemin={0}
-      aria-valuenow={Math.min(denominator, usedCredits)}
-      aria-valuetext={valueText}
-      className="flex h-7 w-full overflow-hidden rounded-lg bg-info-surface"
-      role="progressbar"
-    >
-      {models.map((model, index) => (
-        <span
-          aria-hidden="true"
-          className={cn(
-            "h-full min-w-0 transition-[flex-grow] duration-slow motion-reduce:transition-none",
-            index > 0 && "border-l-3 border-surface-floating",
-          )}
-          key={model.id}
-          style={{
-            backgroundColor: badgeColors[model.color],
-            flexBasis: 0,
-            flexGrow: positiveCredits(model) / denominator,
-          }}
-        />
-      ))}
-      {remaining > 0 && (
-        <span
-          aria-hidden="true"
-          className="h-full min-w-0 border-l-3 border-surface-floating bg-info-surface"
-          style={{ flexBasis: 0, flexGrow: remaining / denominator }}
-        />
-      )}
-    </div>
-  );
+  return <SegmentedBar mode="capacity" total={totalCredits} segments={models.map((model) => ({ id: model.id, label: model.name, value: positiveCredits(model), color: badgeColors[model.color] }))} valueText={valueText} aria-valuenow={usedCredits} className="h-7 rounded-lg" />;
 }
 
 function ModelUsageList({
@@ -152,9 +117,9 @@ function ModelUsageList({
   return (
     <div className="mt-4 space-y-2">
       {models.map((model) => (
-        <div className="flex h-7 min-w-0 items-center gap-2.5" key={model.id}>
+        <div className="flex min-h-7 min-w-0 items-center gap-2.5" key={model.id}>
           <ModelLogo model={model} />
-          <span className="min-w-0 flex-1 truncate text-body text-fg-default">
+          <span className="min-w-0 flex-1 break-words text-body text-fg-default">
             {model.name}
           </span>
           <span className="shrink-0 tabular-nums text-body text-fg-subtle">

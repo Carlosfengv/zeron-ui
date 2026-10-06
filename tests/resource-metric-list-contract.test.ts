@@ -22,9 +22,13 @@ describe("Resource Metric List 1 block contract", () => {
     );
     expect(item).toMatchObject({
       type: "registry:block",
-      registryDependencies: ["detail-list", "utils"],
+      registryDependencies: ["detail-list", "utils", "chart-primitives"],
     });
-    expect(item.files).toHaveLength(8);
+    expect(item.files).toHaveLength(9);
+    expect(item.files).toEqual(expect.arrayContaining([expect.objectContaining({
+      path: "packages/blocks/src/application/resource-metric-list-01/assets.d.ts",
+      target: "components/blocks/resource-metric-list-01/assets.d.ts",
+    })]));
     for (const name of ["platform", "cluster", "host", "vm", "network", "storage"]) {
       expect(
         existsSync(
@@ -47,10 +51,10 @@ describe("Resource Metric List 1 block contract", () => {
     expect(source).toContain("<DetailListLabel");
     expect(source).toContain("<DetailListValue");
     expect(source).toContain('className={cn(\n        "w-full max-w-[700px] gap-0 p-0 py-[3.5px]"');
-    expect(source).toContain('brand: "bg-brand"');
-    expect(source).toContain('warning: "bg-warning"');
-    expect(source).toContain('danger: "bg-destructive"');
-    expect(source).toContain('neutral: "bg-neutral"');
+    expect(source).toContain('brand: "var(--fg-brand)"');
+    expect(source).toContain('warning: chartStatusColors.warning');
+    expect(source).toContain('danger: chartStatusColors.danger');
+    expect(source).toContain('neutral: chartStatusColors.neutral');
   });
 
   it("keeps the six designed resources while allowing inventory data replacement", () => {
@@ -65,7 +69,7 @@ describe("Resource Metric List 1 block contract", () => {
 
   it("exposes list and status distributions to assistive technology", () => {
     expect(source).toContain('aria-label={ariaLabel}');
-    expect(source).toContain('role="img"');
+    expect(source).toContain('<SegmentedBar mode="distribution" total={item.value}');
     expect(source).toContain("statusLabel");
     expect(source).toContain("tabular-nums");
   });

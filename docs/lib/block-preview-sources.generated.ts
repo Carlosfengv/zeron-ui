@@ -12,13 +12,13 @@ const blockPreviewSources = {
     "url": "/docs-source/aaedb2afa3857a884c90d9879ef7c9398544c8b8655fddcc15a792c0fc1b9a58.txt"
   },
   "security-overview-01": {
-    "url": "/docs-source/14f2fb72dced0de2b5309b69890c219905d5575dfab7e898335843f933e78e4e.txt"
+    "url": "/docs-source/4e3bb2f41fb4432d819e89cf31d4ae34bb7062df944157b3198779861486e95a.txt"
   },
   "deployment-detail-01": {
     "url": "/docs-source/26eb77f014d1af9956d1d9e07e42ab54413ba2f9d3583568019a66405c7a1bae.txt"
   },
   "project-monitor-01": {
-    "url": "/docs-source/c4b127a4ef6e92e09ba8a056bb39ddffd4d877b2fc8d95f2c0f9636aa4cea70b.txt"
+    "url": "/docs-source/058c5fdea7607ef2ccd3c0b751cd69ebaf331c18ceabf63236f46ebf09831a2a.txt"
   },
   "agent-message-trace-01": {
     "url": "/docs-source/61a51108c5b81418fd886efa3b7c6813bc5ad04c9fc51a83c7f034e1ae45e14d.txt"
@@ -30,7 +30,7 @@ const blockPreviewSources = {
     "url": "/docs-source/651806a36c908eb7e9cc9e52f48dc28165dec4dcc46ef2866efada74aca3f089.txt"
   },
   "ai-gateway-overview-01": {
-    "url": "/docs-source/fc2fc0ee9ba2cf036fff50971cd7af5c85a77fd7cdf40a94f2412cd8742313f8.txt"
+    "url": "/docs-source/a75dae796901f96e4ff236fa16d62f8a43b3bdf069776ebe037276528c6bb9a4.txt"
   },
   "ai-gateway-session-list-01": {
     "url": "/docs-source/bc4fd8c7093596da2df67e90f17d7f23d9878401fed64816d77786e95acffd0b.txt"
@@ -48,7 +48,7 @@ const blockPreviewSources = {
     "url": "/docs-source/36e6f6c193edc8146cd880be9574e3cc769da24406220696e639d6d62f8851f7.txt"
   },
   "credit-usage-01": {
-    "url": "/docs-source/33cf20822702326d13f00e6660c432ee3cd1a6ae830f8e6155a4f24a07903af3.txt"
+    "url": "/docs-source/f5c92e90e461bdf0e977f4449eb2a3b743f8c46f0f16bf2126507f6f329e4de2.txt"
   },
   "file-manager-01": {
     "url": "/docs-source/651e8c04677c7c74cfb396348128c900cded9e528e35f656928b5fdb3570f69a.txt"
@@ -105,13 +105,13 @@ const blockPreviewSources = {
     "url": "/docs-source/52b653eee4ea92401bf8a60215af5f67517de53b5edbab870ce481cc8eece9f5.txt"
   },
   "resource-metric-list-01": {
-    "url": "/docs-source/fc22b02f676df9a690deeb01d775746da24ff91a67e3a950d891b18b9232af43.txt"
+    "url": "/docs-source/90ec460215f3cc00686a1b4e04264a661244a24de4a26bdbab8553e23d76c449.txt"
   },
   "resource-settings-01": {
     "url": "/docs-source/3c00722e88fbbd1baf500e66d94f087b20dbc7a19e1e5c2577fa4fd31510fdfc.txt"
   },
   "resource-status-all-01": {
-    "url": "/docs-source/6209425f1794a6a8abd5b1d8db1719b50c1f1dd2a756ec4e4345d284a5bb37d6.txt"
+    "url": "/docs-source/ee53e80e08bcf2fd7db78492358b639af8dd207f78c2b0ae2b63f2afda588bf4.txt"
   },
   "rule-flow-editor-01": {
     "url": "/docs-source/bccf1eaadc4af65cbad064d272b6b48f03287e22879112e45af5becb4f4ef548.txt"
@@ -123,7 +123,7 @@ const blockPreviewSources = {
     "url": "/docs-source/d39d22e4acbdaf223fc23b0acc5831eb9bb97bf09073fb150de2629fc11dddef.txt"
   },
   "storage-usage-01": {
-    "url": "/docs-source/fd031714d3036333334a71f50085cbdefef80cd9350c94dcf311c42d55bc2951.txt"
+    "url": "/docs-source/31fa27336b5e9c2918a3763b91bf337c3126bea4032644bf37410a1c5128f562.txt"
   },
   "traffic-rules-01": {
     "url": "/docs-source/b0b52c8cf9dda1b2208eebd3d3357a4a6c088565de13fd1f4246800c83330a20.txt"

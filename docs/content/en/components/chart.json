@@ -1,0 +1,26 @@
+{
+  "chart": {
+    "description": "Shared trends and donuts with stable series colors, explicit time windows and accessible values.",
+    "examples": "Data boundaries",
+    "scenario": "Data scenario",
+    "timeZone": "Display time zone",
+    "ready": "Ready",
+    "empty": "Empty array",
+    "zero": "All zero",
+    "single": "Single point",
+    "gap": "Missing interval",
+    "partial": "Missing source",
+    "reorder": "Reorder categories",
+    "intraday": "Use hourly window",
+    "daily": "Use daily window",
+    "gateway": "Gateway",
+    "longName": "A deliberately long edge function service category name for wrapping and accessible labels",
+    "requests": "Requests",
+    "viewData": "View data",
+    "distribution": "Service distribution",
+    "total": "Total requests",
+    "incomplete": "A source is missing. The neutral track represents unassigned totals; ratios are unavailable.",
+    "contract": "Contract",
+    "guidance": "TimeSeriesChart does not aggregate or replace null with zero. Pass locale/timeZone and the actual window domain. DonutSummary accepts a business total and leaves unassigned totals neutral. The data table is keyboard accessible. Colors stay consistent with the legend."
+  }
+}

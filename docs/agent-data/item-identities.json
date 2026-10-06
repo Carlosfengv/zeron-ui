@@ -1501,6 +1501,16 @@
       ],
       "status": "active",
       "retirementReason": null
+    },
+    {
+      "id": "component:chart-primitives",
+      "type": "registry",
+      "key": "chart-primitives",
+      "aliases": [
+        "chart-primitives"
+      ],
+      "status": "active",
+      "retirementReason": null
     }
   ]
 }

@@ -372,5 +372,44 @@
       "SidebarContent 的 className 作用于外层 ScrollArea，contentClassName 作用于内部内容层。内部已有间距，调整其参数时不要再叠加外层 padding 和组 margin。",
       "折叠头像账户菜单应根据 useSidebar 设置 compact，参见 SidebarAccountMenu 指南。"
     ]
+  },
+  "chart-primitives": {
+    "keywords": [
+      "图例",
+      "分段条",
+      "容量",
+      "legend",
+      "capacity"
+    ],
+    "useCases": [
+      "无需 Recharts 的图例、容量与分类分布。"
+    ],
+    "whenNotToUse": [
+      "趋势与圆环使用 Chart；不负责业务汇总。"
+    ],
+    "keyApi": [
+      "SegmentedBar mode=capacity/distribution，total 明确分母。",
+      "chartSeriesColor(id) 保持颜色稳定；百分比格式接收比例。"
+    ]
+  },
+  "chart": {
+    "keywords": [
+      "趋势",
+      "圆环",
+      "chart",
+      "donut",
+      "time series"
+    ],
+    "useCases": [
+      "ChartContainer + Recharts；共享请求趋势、圆环和数据表。"
+    ],
+    "whenNotToUse": [
+      "MetricCard 的小图保留原有契约；不替换 TimeRangeHistogram 选择引擎。"
+    ],
+    "keyApi": [
+      "TimeSeriesChart data/series/domain/locale/timeZone；null 保留断点。",
+      "DonutSummary segments/total/center；部分覆盖保留中性轨道。",
+      "ChartContainer dataTable 为其他专用图提供等价数据入口。"
+    ]
   }
 }

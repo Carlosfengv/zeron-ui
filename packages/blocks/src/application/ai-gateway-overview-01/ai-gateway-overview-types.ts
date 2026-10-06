@@ -140,6 +140,11 @@ export interface AiGatewayOverviewLabels {
   requestsUnit: string;
   lastWindow: string;
   peakPerDay: string;
+  refreshing?: string;
+  stale?: string;
+  previousData?: string;
+  unassignedCost?: string;
+  inconsistentCost?: string;
 }
 
 export interface AiGatewayOverviewActions extends AiGatewaySidebarActions {
@@ -157,6 +162,9 @@ export interface AiGatewayOverviewProps
   range: AiGatewayOverviewRange;
   status?: AiGatewayOverviewStatus;
   error?: string;
+  /** Data freshness is independent of request progress. */
+  stale?: boolean;
+  statusMessage?: string;
   actions?: AiGatewayOverviewActions;
   availableRanges?: AiGatewayOverviewRange[];
   labels?: Partial<AiGatewayOverviewLabels>;

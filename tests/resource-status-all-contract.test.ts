@@ -23,7 +23,7 @@ describe("Resource Status All 1 block contract", () => {
     expect(item).toMatchObject({
       type: "registry:block",
       dependencies: ["tw-animate-css", "recharts"],
-      registryDependencies: ["card", "utils"],
+      registryDependencies: ["card", "utils", "chart-primitives", "chart"],
     });
     expect(item.files).toHaveLength(2);
   });
@@ -31,17 +31,17 @@ describe("Resource Status All 1 block contract", () => {
   it("uses the designed hierarchy and project semantic tokens", () => {
     expect(source).toContain('<Card');
     expect(source).toContain('<CardContent');
-    expect(source).toContain('import { Cell, Pie, PieChart } from "recharts"');
-    expect(source).toContain('<PieChart');
-    expect(source).toContain('<Pie');
+    expect(source).toContain('import { DonutSummary } from "@zeron/ui/chart"');
+    expect(source).toContain('<DonutSummary');
+    expect(source).toContain('<ChartLegend');
     expect(source).toContain('max-w-[701px]');
-    expect(source).toContain('size-48');
+    expect(source).toContain('max-w-48');
     expect(source).toContain('rounded-xl');
     expect(source).toContain('border-hairline border-border');
-    expect(source).toContain('var(--brand)');
-    expect(source).toContain('var(--warning)');
-    expect(source).toContain('var(--destructive)');
-    expect(source).toContain('var(--neutral)');
+    expect(source).toContain('normal: "var(--fg-brand)"');
+    expect(source).toContain('chartStatusColors.warning');
+    expect(source).toContain('chartStatusColors.danger');
+    expect(source).toContain('chartStatusColors.neutral');
     expect(source).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
   });
 
@@ -52,15 +52,15 @@ describe("Resource Status All 1 block contract", () => {
     expect(source).toContain('label: "未知", value: 28');
     expect(source).toContain('statuses?: readonly ResourceStatusItem[]');
     expect(source).toContain('countsTowardCoverage?: boolean');
-    expect(source).toContain('isAnimationActive={false}');
+    expect(source).toContain('total={total}');
     expect(source).toContain('coveragePercentage');
   });
 
   it("exposes the chart and detailed status values to assistive technology", () => {
-    expect(source).toContain('role="img"');
-    expect(source).toContain('<dl');
-    expect(source).toContain('<dt');
-    expect(source).toContain('<dd');
+    expect(source).toContain('aria-label={`${totalLabel}');
+    expect(source).toContain('<ChartLegend');
+    expect(source).toContain('label: status.label');
+    expect(source).toContain('value: formatValue(status.value)');
     expect(source).toContain('aria-label={ariaLabel}');
     expect(source).toContain('tabular-nums');
   });

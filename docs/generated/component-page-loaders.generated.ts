@@ -3,6 +3,8 @@ import "server-only";
 import type { DocPageLoader } from "./page-loader-types";
 
 export const componentPageLoaders: Record<string, DocPageLoader> = {
+  "components/chart": () => import("@docs/pages/components/chart/page"),
+  "components/chart-primitives": () => import("@docs/pages/components/chart-primitives/page"),
   "components/accordion": () => import("@docs/pages/components/accordion/page"),
   "components/alert": () => import("@docs/pages/components/alert/page"),
   "components/app-shell": () => import("@docs/pages/components/app-shell/page"),

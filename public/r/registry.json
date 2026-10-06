@@ -3350,14 +3350,15 @@
       "name": "chart",
       "type": "registry:ui",
       "title": "Chart",
-      "description": "Composable Recharts container, tooltip, and color configuration following the shadcn chart API.",
+      "description": "Composable charts, shared request trends and responsive donuts with accessible data.",
       "dependencies": [
         "recharts@^3.10.1",
         "tw-animate-css@^1.4.0"
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/surfaces.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json"
       ],
       "files": [
         {
@@ -3620,6 +3621,35 @@
           "type": "registry:ui",
           "target": "components/ui/top-nav.tsx"
         }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "chart-primitives",
+      "type": "registry:ui",
+      "title": "Chart Primitives",
+      "description": "Stable series colors, formatters, legends, accessible data tables and segmented capacity/distribution bars without a chart engine.",
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chart-primitives.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chart-primitives.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css@^1.4.0"
       ],
       "meta": {
         "zeron": {
@@ -5242,7 +5272,9 @@
         "https://zeron-ui.vercel.app/r/skeleton.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
         "https://zeron-ui.vercel.app/r/tooltip.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json",
+        "https://zeron-ui.vercel.app/r/alert.json"
       ],
       "files": [
         {
@@ -5380,7 +5412,9 @@
         "https://zeron-ui.vercel.app/r/storage-usage-01.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
         "https://zeron-ui.vercel.app/r/tooltip.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json"
       ],
       "files": [
         {
@@ -5625,7 +5659,9 @@
         "https://zeron-ui.vercel.app/r/sidebar-identity-row.json",
         "https://zeron-ui.vercel.app/r/skeleton.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json"
       ],
       "files": [
         {
@@ -6747,7 +6783,8 @@
         "https://zeron-ui.vercel.app/r/inline-notice.json",
         "https://zeron-ui.vercel.app/r/switch.json",
         "https://zeron-ui.vercel.app/r/tabs.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json"
       ],
       "files": [
         {
@@ -7450,7 +7487,8 @@
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/metric-card.json",
         "https://zeron-ui.vercel.app/r/badge.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json"
       ],
       "files": [
         {
@@ -7497,7 +7535,8 @@
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/detail-list.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json"
       ],
       "files": [
         {
@@ -7509,6 +7548,11 @@
           "path": "packages/blocks/src/application/resource-metric-list-01/index.ts",
           "type": "registry:component",
           "target": "components/blocks/resource-metric-list-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-metric-list-01/assets.d.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-metric-list-01/assets.d.ts"
         },
         {
           "path": "packages/blocks/src/application/resource-metric-list-01/assets/platform.svg",
@@ -7565,7 +7609,9 @@
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/card.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json",
+        "https://zeron-ui.vercel.app/r/chart.json"
       ],
       "files": [
         {

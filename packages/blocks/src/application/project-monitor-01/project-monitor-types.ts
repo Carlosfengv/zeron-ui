@@ -73,6 +73,7 @@ export interface ProjectMonitorLabels {
   noData: string; storageUsage: string; buckets: string; public: string; private: string;
   files: string; serviceDistribution: string; latency: string; milliseconds: string;
   loading: string; stale: string; error: string; retry: string; incomplete: string;
+  refreshing?: string; refresh?: string; previousData?: string;
 }
 
 export interface ProjectMonitorProps extends Omit<ComponentPropsWithoutRef<"div">, "children" | "defaultValue" | "onChange" | "onClick"> {
@@ -84,8 +85,12 @@ export interface ProjectMonitorProps extends Omit<ComponentPropsWithoutRef<"div"
   defaultRange?: string;
   onRangeChange?: (range: string) => void;
   state?: ProjectMonitorState;
+  /** Background progress can coexist with stale data. */
+  refreshing?: boolean;
+  /** Keep an existing snapshot when a subsequent request fails. Defaults to the existing replacement behavior. */
+  retainDataOnError?: boolean;
   statusMessage?: string;
-  actions?: { onOpenDashboard?: () => void; onCustomize?: () => void; onRetry?: () => void };
+  actions?: { onOpenDashboard?: () => void; onCustomize?: () => void; onRetry?: () => void; onRefresh?: () => void };
   visibleSections?: { resources?: boolean; activity?: boolean };
   advisor?: ReactNode;
   labels?: Partial<ProjectMonitorLabels>;

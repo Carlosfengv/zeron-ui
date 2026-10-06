@@ -118,8 +118,8 @@ export const docEntries = [
   entry({ slug: "button-group", section: "action", icon: "doc-button", name: "ButtonGroup", description: "Connected horizontal and vertical action groups with split-button, separator, and contextual-addon composition.", isNew: true, gridSize: "small", order: 550 }),
   entry({ slug: "card", section: "layout", icon: "doc-card", name: "Card", description: "shadcn's compositional card, dressed in Zeron Design — stacked, inline, and grid layouts, borderless dividers, and 2-D proximity hover.", isNew: true, gridSize: "large", order: 600 }),
   entry({ slug: "container", section: "layout", icon: "doc-card", name: "Container", description: "Composable raised container with an optional header and footer around a floating content body.", isNew: true, gridSize: "medium", order: 650 }),
-
-
+  entry({ slug: "chart", section: "data-display", icon: "doc-data-grid", name: "Chart", description: "Shared request trends and responsive donuts with accessible data.", isNew: true, gridSize: "large", order: 675 }),
+  entry({ slug: "chart-primitives", section: "data-display", icon: "doc-data-grid", name: "Chart Primitives", description: "Legends, stable series colors and segmented bars without a chart engine.", isNew: true, gridSize: "medium", order: 680 }),
   entry({ slug: "checkbox", section: "input", icon: "doc-checkbox", name: "Checkbox", description: "Compact checkbox with checked, mixed, disabled, validation, and form states.", isNew: true, gridSize: "small", order: 700 }),
   entry({ slug: "checkbox-group", section: "input", icon: "doc-checkbox-group", name: "CheckboxGroup", description: "Checkbox group with merged backgrounds for contiguous selections.", gridSize: "small", order: 800 }),
   entry({ slug: "color-picker", section: "input", icon: "doc-color-picker", name: "ColorPicker", description: "Color picker with HEX/RGB/HSL/OKLCH formats, alpha, swatches, and popover trigger.", gridSize: "large", order: 900 }),

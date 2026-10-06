@@ -6,6 +6,7 @@ import {
   type DetailListProps,
   DetailListValue,
 } from "@zeron/ui/detail-list";
+import { SegmentedBar, chartStatusColors } from "@zeron/ui/chart-primitives";
 import { cn } from "@zeron/ui/system/utils";
 
 import clusterIcon from "./assets/cluster.svg";
@@ -103,11 +104,9 @@ const defaultResourceMetrics = [
   },
 ] as const satisfies readonly ResourceMetricItem[];
 
-const segmentToneClasses: Record<ResourceMetricTone, string> = {
-  brand: "bg-brand",
-  warning: "bg-warning",
-  danger: "bg-destructive",
-  neutral: "bg-neutral",
+const segmentColors: Record<ResourceMetricTone, string> = {
+  brand: "var(--fg-brand)", warning: chartStatusColors.warning,
+  danger: chartStatusColors.danger, neutral: chartStatusColors.neutral,
 };
 
 function ResourceIcon({ src }: { src: string }) {
@@ -131,22 +130,9 @@ function ResourceStatusBar({ item }: { item: ResourceMetricItem }) {
     .map((segment) => `${segment.label} ${segment.value}`)
     .join("，");
 
-  return (
-    <div
-      aria-label={`${item.label}共 ${item.value} 个：${statusLabel}`}
-      className="flex h-3 w-40 shrink-0 overflow-hidden rounded-sm bg-muted"
-      role="img"
-    >
-      {item.segments.map((segment, index) => (
-        <span
-          key={`${segment.tone}-${index}`}
-          aria-hidden="true"
-          className={cn("min-w-0", segmentToneClasses[segment.tone])}
-          style={{ flexBasis: 0, flexGrow: Math.max(0, segment.value) }}
-        />
-      ))}
-    </div>
-  );
+  const assigned = item.segments.reduce((sum, segment) => sum + (Number.isFinite(segment.value) ? Math.max(0, segment.value) : 0), 0);
+  const remainder = Math.max(0, item.value - assigned);
+  return <SegmentedBar mode="distribution" total={item.value} segments={item.segments.map((segment, index) => ({ id: `${segment.tone}-${index}`, label: segment.label, value: segment.value, color: segmentColors[segment.tone] }))} valueText={`${item.label}共 ${item.value} 个：${statusLabel}${remainder > 0 ? `，未覆盖 ${remainder}` : ""}${assigned > item.value ? "，分类计数超过总数" : ""}`} className="h-3 w-40 shrink-0 rounded-sm" />;
 }
 
 /** A compact resource inventory with per-status distribution bars. */
@@ -168,9 +154,9 @@ export function ResourceMetricList({
       {items.map((item) => (
         <DetailListItem
           key={`${item.label}-${item.description}`}
-          className="flex min-h-10 min-w-0 items-center justify-between gap-4 px-3 py-2.5"
+          className="flex min-h-10 min-w-0 flex-wrap items-center justify-between gap-4 px-3 py-2.5"
         >
-          <DetailListLabel className="flex min-w-0 items-center gap-1">
+          <DetailListLabel className="flex min-w-0 flex-wrap items-center gap-1">
             <ResourceIcon src={item.iconSrc} />
             <span className="shrink-0 font-medium text-fg-default">{item.label}</span>
             <span className="truncate font-normal text-fg-subtle">{item.description}</span>

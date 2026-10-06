@@ -37,7 +37,9 @@ export function ProjectPreview() {
 
 `tab` / `defaultTab` / `onTabChange` 和 `range` / `defaultRange` / `onRangeChange` 支持受控与非受控模式；视图之间共享窗口选择。窗口变化只选择传入的数据，由宿主加载和更新快照。无效受控窗口不回退到别的窗口，以免展示错误时间范围。切换项目重置非受控选择。
 
-`state` 为 ready、loading、stale、error。过期保留快照并提示，加载显示 Skeleton，失败隐藏指标并可通过 actions.onRetry 重试。宿主提供 statusMessage 可替换默认提示。
+`state` 为 ready、loading、stale、error。过期保留快照并提示，首次加载显示 Skeleton，首次失败使用 Alert 并可通过 actions.onRetry 重试。默认 error 仍隐藏指标以保留旧接口行为；已有快照的刷新失败显式传 `retainDataOnError`，保留图表和指标并显示局部错误。`refreshing` 是独立可选属性，可以与 stale 同时存在。宿主提供 statusMessage 可替换默认提示。
+
+`actions.onRefresh` 可选；onRefresh/onRetry 可以返回 Promise，组件等待完成并阻止同一数据操作的重复触发，拒绝时保留可用快照并提示。组件只触发回调，宿主负责成功后更新 data/state；不会将旧数据偷偷改成新鲜。tabs、复制、自定义等无关操作仍可用。
 
 地址复制通过 Button / Tooltip 组合完成，成功和失败均有中文反馈。actions.onOpenDashboard / onCustomize 只在传入时显示；组件不自行导航或请求网络。演示的“打开独立预览”打开本地完整预览，自定义开关实际控制资源与活动区显隐。所有演示数据明确标注为示例。
 
@@ -45,6 +47,6 @@ export function ProjectPreview() {
 
 ## 组件与样式
 
-使用 Card、Tabs、InfoItem、Badge、StatusOverview、StorageUsage、MetricCard、Chart、Select、Button、Tooltip、Skeleton、Empty 和 InlineNotice。服务状态通过 StatusOverview 的 variant="activity" 呈现：名称、细竖条轨道和请求数在宽容器中同排，窄容器中轨道换行。灰色完整竖条表示空闲，较短竖条表示未知；Tooltip 保留准确计数和状态。Chart 使用已有 Recharts 组合环图、面积图和条形图。业务布局使用现有间距、字体、边框、阴影和语义颜色；未新增全局样式或色值。
+使用 Card、Tabs、InfoItem、Badge、StatusOverview、StorageUsage、MetricCard、Chart、Select、Button、Tooltip、Skeleton、Empty、Badge plain、Alert 和 InlineNotice。服务状态通过 StatusOverview 的 variant="activity" 呈现：名称、细竖条轨道和请求数在宽容器中同排，窄容器中轨道换行。灰色完整竖条表示空闲，较短竖条表示未知；Tooltip 保留准确计数和状态。请求趋势采用 TimeSeriesChart，环图采用 DonutSummary，服务图例采用 ChartLegend；缺失分桶保留断点和未知汇总，趋势数据可通过键盘展开。分位数比较保留专用条形图，与直方图共享分位数分类色但不合并模型。业务布局使用现有间距、字体、边框、阴影和语义颜色；未新增全局样式或色值。
 
 CPU 等比例与服务分布通过可读文本提供非图形信息；趋势图支持键盘检查，服务状态条支持方向键和中文提示。布局使用容器断点，在窄卡片中换行。图表不播放装饰性动画。

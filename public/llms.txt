@@ -79,7 +79,8 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Button Group](https://zeron-ui.vercel.app/ai/items/component%3Abutton-group.md): Connected horizontal and vertical action groups with split-button, separator, and contextual-addon composition. Registry: button-group.
 - [Calendar](https://zeron-ui.vercel.app/ai/items/component%3Acalendar.md): Theme-aware calendar primitive with single and range selection support. Registry: calendar.
 - [Card](https://zeron-ui.vercel.app/ai/items/component%3Acard.md): shadcn's compositional card, dressed in Zeron Design — stacked, inline, and grid layouts, borderless dividers, and 2-D proximity hover. Registry: card.
-- [Chart](https://zeron-ui.vercel.app/ai/items/component%3Achart.md): Composable Recharts container, tooltip, and color configuration following the shadcn chart API. Registry: chart.
+- [Chart](https://zeron-ui.vercel.app/ai/items/component%3Achart.md): Shared request trends and responsive donuts with accessible data. Registry: chart.
+- [Chart Primitives](https://zeron-ui.vercel.app/ai/items/component%3Achart-primitives.md): Legends, stable series colors and segmented bars without a chart engine. Registry: chart-primitives.
 - [Chat Message](https://zeron-ui.vercel.app/ai/items/component%3Achat-message.md): Chat transcript bubble with baked-in motion, user/assistant alignment, and file attachments. Registry: chat-message.
 - [Checkbox (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Acheckbox.md): Compact checkbox with checked, mixed, disabled, validation, and form states. Registry: checkbox.
 - [Checkbox Group (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Acheckbox-group.md): Checkbox group with merged backgrounds for contiguous selections. Registry: checkbox-group.
@@ -178,6 +179,8 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [avatar](https://zeron-ui.vercel.app/agent-guides/components/avatar.md)
 - [badge](https://zeron-ui.vercel.app/agent-guides/components/badge.md)
 - [button](https://zeron-ui.vercel.app/agent-guides/components/button.md)
+- [chart-primitives](https://zeron-ui.vercel.app/agent-guides/components/chart-primitives.md)
+- [chart](https://zeron-ui.vercel.app/agent-guides/components/chart.md)
 - [code-block](https://zeron-ui.vercel.app/agent-guides/components/code-block.md)
 - [combobox](https://zeron-ui.vercel.app/agent-guides/components/combobox.md)
 - [dialog](https://zeron-ui.vercel.app/agent-guides/components/dialog.md)

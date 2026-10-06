@@ -7,12 +7,9 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   LabelList,
   Line,
   LineChart,
-  Pie,
-  PieChart,
   ReferenceLine,
   XAxis,
   YAxis,
@@ -21,9 +18,12 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  DonutSummary,
+  TimeSeriesChart,
+  chartTrendPreset,
   type ChartConfig,
 } from "@zeron/ui/chart";
-import { cn } from "@zeron/ui/system/utils";
+import { chartSeriesColor, chartStatusColors, createChartNumberFormatter, createChartTimeFormatter, type ChartDataTableProps } from "@zeron/ui/chart-primitives";
 import type {
   AiGatewayLatencyBucket,
   AiGatewayMetricSeries,
@@ -33,47 +33,29 @@ import type {
 
 const gridStroke = "var(--border)";
 const primaryColor = "var(--brand)";
-const secondaryColor = "var(--info-border)";
-const dangerColor = "var(--danger-border)";
-
-const providerColors = [
-  "var(--brand)",
-  "var(--info-border)",
-  "var(--success-border)",
-  "var(--warning-border)",
-  "var(--neutral-status-border)",
-] as const;
+const secondaryColor = chartSeriesColor("outputTokens");
+const dangerColor = chartStatusColors.danger;
 
 function numericValue(value: unknown) {
-  return typeof value === "number" ? value : Number(value ?? 0);
+  return typeof value === "number" && Number.isFinite(value) ? value : NaN;
 }
 
-function chartDateFormatter(
-  locale: string,
-  timeZone: string,
-  data?: readonly { timestamp: string }[],
-) {
-  const firstTimestamp = data?.at(0)?.timestamp;
-  const lastTimestamp = data?.at(-1)?.timestamp;
-  const isIntraday =
-    firstTimestamp !== undefined &&
-    lastTimestamp !== undefined &&
-    Date.parse(lastTimestamp) - Date.parse(firstTimestamp) <= 86_400_000;
-  const formatter = new Intl.DateTimeFormat(locale, {
-    ...(isIntraday
-      ? { hour: "numeric", minute: "2-digit" }
-      : { day: "numeric", month: "short" }),
-    timeZone,
-  });
-  return (value: string | number) => formatter.format(new Date(value));
+function chartDateFormatter(locale: string, timeZone: string, data?: readonly { timestamp: string }[]) {
+  const intraday = !!data?.length && Date.parse(data.at(-1)!.timestamp) - Date.parse(data[0].timestamp) <= 86400000;
+  return createChartTimeFormatter(locale, timeZone, intraday ? { hour: "2-digit", minute: "2-digit" } : { day: "numeric", month: "short" });
 }
 
 function compactNumberFormatter(locale: string) {
-  const formatter = new Intl.NumberFormat(locale, {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  });
-  return (value: unknown) => formatter.format(numericValue(value));
+  return createChartNumberFormatter(locale, { notation: "compact", maximumFractionDigits: 1 });
+}
+
+function chartTable(caption: string, rows: readonly { id: string; label: string; values: string[] }[], columns: string[]): ChartDataTableProps {
+  return { caption, summary: "查看数据 / View data", columns, rows };
+}
+
+function timeTable(data: readonly { timestamp: string }[], caption: string, locale: string, timeZone: string, values: (index: number) => string[], columns: string[]) {
+  const time = createChartTimeFormatter(locale, timeZone, { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZoneName: "short" });
+  return chartTable(caption, data.map((point, index) => ({ id: `${point.timestamp}-${index}`, label: time(point.timestamp), values: values(index) })), [timeZone, ...columns]);
 }
 
 function BaseAxis({
@@ -87,9 +69,8 @@ function BaseAxis({
 }) {
   return (
     <XAxis
-      axisLine={false}
+      {...chartTrendPreset.axis}
       dataKey="timestamp"
-      minTickGap={28}
       tickFormatter={chartDateFormatter(locale, timeZone, data)}
       tickLine={false}
     />
@@ -107,42 +88,7 @@ export function RequestsAreaChart({
   locale: string;
   timeZone: string;
 }) {
-  const gradientId = useId().replace(/:/g, "");
-  const config = {
-    requestCount: { label, color: primaryColor },
-  } satisfies ChartConfig;
-
-  return (
-    <ChartContainer className="h-64 min-h-0" config={config}>
-      <AreaChart accessibilityLayer data={data} margin={{ left: 0, right: 8, top: 8 }}>
-        <defs>
-          <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="var(--color-requestCount)" stopOpacity={0.24} />
-            <stop offset="100%" stopColor="var(--color-requestCount)" stopOpacity={0.02} />
-          </linearGradient>
-        </defs>
-        <CartesianGrid stroke={gridStroke} strokeDasharray="3 3" vertical={false} />
-        <BaseAxis data={data} locale={locale} timeZone={timeZone} />
-        <YAxis axisLine={false} tickLine={false} width={40} />
-        <ChartTooltip
-          content={
-            <ChartTooltipContent
-              labelFormatter={chartDateFormatter(locale, timeZone, data)}
-              valueFormatter={compactNumberFormatter(locale)}
-            />
-          }
-          cursor={{ stroke: gridStroke }}
-        />
-        <Area
-          dataKey="requestCount"
-          fill={`url(#${gradientId})`}
-          stroke="var(--color-requestCount)"
-          strokeWidth={2}
-          type="monotone"
-        />
-      </AreaChart>
-    </ChartContainer>
-  );
+  return <TimeSeriesChart className="h-64" data={data.map((point) => ({ timestamp: Date.parse(point.timestamp), values: { requests: point.requestCount } }))} series={[{ id: "requests", label, color: primaryColor }]} label={label} locale={locale} timeZone={timeZone} dataSummary="查看数据 / View data" />;
 }
 
 export function CostBarChart({
@@ -162,9 +108,9 @@ export function CostBarChart({
   const config = { cost: { label, color: primaryColor } } satisfies ChartConfig;
 
   return (
-    <ChartContainer className="h-56 min-h-0" config={config}>
+    <ChartContainer className="h-56 min-h-0" config={config} dataTable={timeTable(data, label, locale, timeZone, (index) => [formatCost(data[index].costMicros)], [label])}>
       <BarChart accessibilityLayer data={chartData} margin={{ left: 0, right: 4, top: 8 }}>
-        <CartesianGrid stroke={gridStroke} strokeDasharray="3 3" vertical={false} />
+        <CartesianGrid {...chartTrendPreset.grid} />
         <BaseAxis data={data} locale={locale} timeZone={timeZone} />
         <YAxis axisLine={false} tickFormatter={(value) => formatCost(Number(value) * 1_000_000)} tickLine={false} width={58} />
         <ChartTooltip
@@ -176,7 +122,7 @@ export function CostBarChart({
           }
           cursor={{ fill: "var(--hover)" }}
         />
-        <Bar dataKey="cost" fill="var(--color-cost)" radius={[4, 4, 0, 0]} />
+        <Bar isAnimationActive={false} dataKey="cost" fill="var(--color-cost)" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ChartContainer>
   );
@@ -199,22 +145,22 @@ export function TokensAreaChart({
   } satisfies ChartConfig;
 
   return (
-    <ChartContainer className="h-56 min-h-0" config={config}>
+    <ChartContainer className="h-56 min-h-0" config={config} dataTable={timeTable(data, `${labels.input} / ${labels.output}`, locale, timeZone, (index) => [createChartNumberFormatter(locale)(data[index].inputTokens), createChartNumberFormatter(locale)(data[index].outputTokens)], [labels.input, labels.output])}>
       <AreaChart accessibilityLayer data={data} margin={{ left: 0, right: 4, top: 8 }}>
-        <CartesianGrid stroke={gridStroke} strokeDasharray="3 3" vertical={false} />
+        <CartesianGrid {...chartTrendPreset.grid} />
         <BaseAxis data={data} locale={locale} timeZone={timeZone} />
         <YAxis axisLine={false} tickFormatter={compactNumberFormatter(locale)} tickLine={false} width={56} />
         <ChartTooltip
           content={
             <ChartTooltipContent
               labelFormatter={chartDateFormatter(locale, timeZone, data)}
-              valueFormatter={compactNumberFormatter(locale)}
+              valueFormatter={createChartNumberFormatter(locale)}
             />
           }
           cursor={{ stroke: gridStroke }}
         />
-        <Area dataKey="inputTokens" fill="var(--color-inputTokens)" fillOpacity={0.12} stackId="tokens" stroke="var(--color-inputTokens)" type="monotone" />
-        <Area dataKey="outputTokens" fill="var(--color-outputTokens)" fillOpacity={0.24} stackId="tokens" stroke="var(--color-outputTokens)" type="monotone" />
+        <Area dataKey="inputTokens" fill="var(--color-inputTokens)" fillOpacity={0.12} stackId="tokens" stroke="var(--color-inputTokens)" type="linear" isAnimationActive={false} />
+        <Area dataKey="outputTokens" fill="var(--color-outputTokens)" fillOpacity={0.24} stackId="tokens" stroke="var(--color-outputTokens)" type="linear" isAnimationActive={false} />
       </AreaChart>
     </ChartContainer>
   );
@@ -232,12 +178,12 @@ export function ProviderRequestsChart({
   const config = { requestCount: { label, color: primaryColor } } satisfies ChartConfig;
 
   return (
-    <ChartContainer className="h-56 min-h-0" config={config}>
+    <ChartContainer className="h-56 min-h-0" config={config} dataTable={chartTable(label, data.map((provider) => ({ id: provider.id, label: provider.name, values: [createChartNumberFormatter(locale)(provider.requestCount)] })), ["Provider", label])}>
       <BarChart accessibilityLayer data={data} layout="vertical" margin={{ left: 4, right: 36 }}>
         <XAxis axisLine={false} hide type="number" />
         <YAxis axisLine={false} dataKey="name" tickLine={false} type="category" width={78} />
-        <ChartTooltip content={<ChartTooltipContent valueFormatter={compactNumberFormatter(locale)} />} cursor={{ fill: "var(--hover)" }} />
-        <Bar dataKey="requestCount" fill="var(--color-requestCount)" radius={[0, 5, 5, 0]}>
+        <ChartTooltip content={<ChartTooltipContent valueFormatter={createChartNumberFormatter(locale)} />} cursor={{ fill: "var(--hover)" }} />
+        <Bar isAnimationActive={false} dataKey="requestCount" fill="var(--color-requestCount)" radius={[0, 5, 5, 0]}>
           <LabelList dataKey="requestCount" fill="var(--fg-subtle)" formatter={compactNumberFormatter(locale)} position="right" />
         </Bar>
       </BarChart>
@@ -261,16 +207,16 @@ export function LatencySparkline({
   const config = { p95LatencyMs: { label, color: primaryColor } } satisfies ChartConfig;
 
   return (
-    <ChartContainer className="h-56 min-h-0" config={config}>
+    <ChartContainer className="h-56 min-h-0" config={config} dataTable={timeTable(data, label, locale, timeZone, (index) => [formatLatency(data[index].p95LatencyMs)], [label])}>
       <LineChart accessibilityLayer data={data} margin={{ left: 0, right: 6, top: 8 }}>
-        <CartesianGrid stroke={gridStroke} strokeDasharray="3 3" vertical={false} />
+        <CartesianGrid {...chartTrendPreset.grid} />
         <BaseAxis data={data} locale={locale} timeZone={timeZone} />
         <YAxis axisLine={false} tickFormatter={(value) => formatLatency(Number(value))} tickLine={false} width={56} />
         <ChartTooltip
           content={<ChartTooltipContent labelFormatter={chartDateFormatter(locale, timeZone, data)} valueFormatter={(value) => formatLatency(numericValue(value))} />}
           cursor={{ stroke: gridStroke }}
         />
-        <Line connectNulls dataKey="p95LatencyMs" dot={false} stroke="var(--color-p95LatencyMs)" strokeWidth={2} type="monotone" />
+        <Line connectNulls={false} dataKey="p95LatencyMs" dot={false} stroke="var(--color-p95LatencyMs)" strokeWidth={2} type="linear" isAnimationActive={false} />
       </LineChart>
     </ChartContainer>
   );
@@ -291,13 +237,13 @@ export function ErrorRateChart({
   const config = { rate: { label, color: dangerColor } } satisfies ChartConfig;
 
   return (
-    <ChartContainer className="h-56 min-h-0" config={config}>
+    <ChartContainer className="h-56 min-h-0" config={config} dataTable={timeTable(data, label, locale, timeZone, (index) => [createChartNumberFormatter(locale, { style: "percent", maximumFractionDigits: 1 })(data[index].errorRate)], [label])}>
       <BarChart accessibilityLayer data={chartData} margin={{ left: 0, right: 6, top: 8 }}>
-        <CartesianGrid stroke={gridStroke} strokeDasharray="3 3" vertical={false} />
+        <CartesianGrid {...chartTrendPreset.grid} />
         <BaseAxis data={data} locale={locale} timeZone={timeZone} />
         <YAxis axisLine={false} tickFormatter={(value) => `${value}%`} tickLine={false} width={48} />
         <ChartTooltip content={<ChartTooltipContent labelFormatter={chartDateFormatter(locale, timeZone, data)} valueFormatter={(value) => `${numericValue(value).toFixed(1)}%`} />} cursor={{ fill: "var(--hover)" }} />
-        <Bar dataKey="rate" fill="var(--color-rate)" radius={[4, 4, 0, 0]} />
+        <Bar isAnimationActive={false} dataKey="rate" fill="var(--color-rate)" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ChartContainer>
   );
@@ -314,11 +260,11 @@ export function MetricSeriesChart({
 }) {
   const gradientId = useId().replace(/:/g, "");
   const config = { value: { label: metric.label, color: primaryColor } } satisfies ChartConfig;
-  const formatValue = (value: unknown) => `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(numericValue(value))}${metric.unit}`;
+  const formatValue = (value: unknown) => typeof value === "number" && Number.isFinite(value) ? `${createChartNumberFormatter(locale, { maximumFractionDigits: 1 })(value)}${metric.unit}` : "—";
   const valueAxisWidth = metric.unit === "ms" ? 64 : metric.unit === "%" ? 50 : 54;
 
   return (
-    <ChartContainer className="h-36 min-h-0" config={config}>
+    <ChartContainer className="h-36 min-h-0" config={config} dataTable={timeTable(metric.points, metric.label, locale, timeZone, (index) => [metric.points[index].value === null ? "—" : formatValue(metric.points[index].value)], [metric.label])}>
       <AreaChart accessibilityLayer data={metric.points} margin={{ bottom: 0, left: 0, right: 6, top: 8 }}>
         <defs>
           <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
@@ -326,7 +272,7 @@ export function MetricSeriesChart({
             <stop offset="100%" stopColor="var(--color-value)" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid stroke={gridStroke} strokeDasharray="3 3" vertical={false} />
+        <CartesianGrid {...chartTrendPreset.grid} />
         <XAxis
           axisLine={false}
           dataKey="timestamp"
@@ -345,7 +291,7 @@ export function MetricSeriesChart({
           width={valueAxisWidth}
         />
         <ChartTooltip content={<ChartTooltipContent labelFormatter={chartDateFormatter(locale, timeZone, metric.points)} valueFormatter={formatValue} />} cursor={{ stroke: gridStroke }} />
-        <Area connectNulls dataKey="value" fill={`url(#${gradientId})`} stroke="var(--color-value)" strokeWidth={2} type="monotone" />
+        <Area connectNulls={false} dataKey="value" fill={`url(#${gradientId})`} stroke="var(--color-value)" strokeWidth={2} type="linear" isAnimationActive={false} />
       </AreaChart>
     </ChartContainer>
   );
@@ -376,22 +322,22 @@ export function LatencyDistributionChart({
   const chartData = buckets.map((bucket) => ({ ...bucket, label: latencyBucketLabel(bucket) }));
   const config = { count: { label: requestLabel, color: primaryColor } } satisfies ChartConfig;
   const markers = [
-    { key: "p50", value: percentileBucket(buckets, percentiles.p50), color: "var(--success-border)" },
-    { key: "p95", value: percentileBucket(buckets, percentiles.p95), color: "var(--warning-border)" },
-    { key: "p99", value: percentileBucket(buckets, percentiles.p99), color: dangerColor },
+    { key: "p50", value: percentileBucket(buckets, percentiles.p50), color: chartSeriesColor("p50") },
+    { key: "p95", value: percentileBucket(buckets, percentiles.p95), color: chartSeriesColor("p95") },
+    { key: "p99", value: percentileBucket(buckets, percentiles.p99), color: chartSeriesColor("p99") },
   ];
 
   return (
-    <ChartContainer className="h-64 min-h-0" config={config}>
+    <ChartContainer className="h-64 min-h-0" config={config} dataTable={chartTable(requestLabel, chartData.map((bucket) => ({ id: bucket.id, label: `${bucket.lowerMs}ms–${bucket.upperMs ?? "∞"}ms`, values: [String(bucket.count)] })), ["Latency", requestLabel])}>
       <BarChart accessibilityLayer data={chartData} margin={{ left: 0, right: 6, top: 24 }}>
-        <CartesianGrid stroke={gridStroke} strokeDasharray="3 3" vertical={false} />
+        <CartesianGrid {...chartTrendPreset.grid} />
         <XAxis axisLine={false} dataKey="id" tickFormatter={(_, index) => chartData[index]?.label ?? ""} tickLine={false} />
         <YAxis axisLine={false} tickLine={false} width={40} />
         <ChartTooltip content={<ChartTooltipContent labelFormatter={(value) => String(value)} />} cursor={{ fill: "var(--hover)" }} />
         {markers.map((marker) => marker.value ? (
           <ReferenceLine key={marker.key} label={{ fill: marker.color, fontSize: 11, position: "insideTopLeft", value: marker.key }} stroke={marker.color} strokeDasharray="4 4" x={marker.value} />
         ) : null)}
-        <Bar dataKey="count" fill="var(--color-count)" radius={[4, 4, 0, 0]} />
+        <Bar isAnimationActive={false} dataKey="count" fill="var(--color-count)" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ChartContainer>
   );
@@ -401,30 +347,17 @@ export function ProviderCostDonut({
   className,
   data,
   formatCost,
+  total: providedTotal,
+  unassignedLabel = "Unassigned",
 }: {
   className?: string;
   data: AiGatewayProviderUsage[];
   formatCost: (micros: number) => string;
+  total?: number;
+  unassignedLabel?: string;
 }) {
-  const chartData = data.map((provider, index) => ({
-    ...provider,
-    color: providerColors[index % providerColors.length],
-    value: provider.costMicros,
-  }));
-  const config = Object.fromEntries(
-    chartData.map((provider) => [provider.id, { label: provider.name, color: provider.color }]),
-  ) satisfies ChartConfig;
-
-  return (
-    <ChartContainer className={cn("h-52 min-h-0", className)} config={config}>
-      <PieChart accessibilityLayer>
-        <ChartTooltip content={<ChartTooltipContent hideIndicator valueFormatter={(value) => formatCost(numericValue(value))} />} />
-        <Pie data={chartData} dataKey="value" innerRadius="52%" nameKey="name" outerRadius="80%" paddingAngle={3} strokeWidth={0}>
-          {chartData.map((entry) => <Cell fill={entry.color} key={entry.id} />)}
-        </Pie>
-      </PieChart>
-    </ChartContainer>
-  );
+  const assigned = data.reduce((sum, provider) => sum + provider.costMicros, 0);
+  const total = providedTotal ?? assigned;
+  const unassigned = Math.max(0, total - assigned);
+  return <div className={className}><DonutSummary className="mx-auto max-w-44" innerRadius="65%" total={total} segments={data.map((provider) => ({ id: provider.id, label: provider.name, value: provider.costMicros }))} aria-label={`${data.map((provider) => `${provider.name}：${formatCost(provider.costMicros)}`).join("，")} · ${unassignedLabel} ${formatCost(unassigned)}`} center={<span className="text-body font-semibold">{formatCost(total)}</span>} /></div>;
 }
-
-export { providerColors };

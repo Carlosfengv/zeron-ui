@@ -12,6 +12,8 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "components/chart": () => import("@docs/content/en/components/chart.json"),
+    "components/chart-primitives": () => import("@docs/content/en/components/chart-primitives.json"),
     "components/app-shell": () => import("@docs/content/en/components/app-shell.json"),
     "components/page-layout": () => import("@docs/content/en/components/page-layout.json"),
     "components/sidebar": () => import("@docs/content/en/components/sidebar.json"),
@@ -130,6 +132,8 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "components/chart": () => import("@docs/content/zh-CN/components/chart.json"),
+    "components/chart-primitives": () => import("@docs/content/zh-CN/components/chart-primitives.json"),
     "components/app-shell": () => import("@docs/content/zh-CN/components/app-shell.json"),
     "components/page-layout": () => import("@docs/content/zh-CN/components/page-layout.json"),
     "components/sidebar": () => import("@docs/content/zh-CN/components/sidebar.json"),

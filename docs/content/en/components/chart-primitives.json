@@ -1,0 +1,15 @@
+{
+  "chartPrimitives": {
+    "description": "Legends, stable colors, formatters, segmented bars and data tables without a chart engine dependency.",
+    "examples": "Capacity and distribution",
+    "files": "Files",
+    "longName": "A long backup category name for checking legend wrapping in narrow containers",
+    "restore": "Restore capacity",
+    "overflow": "Exceed capacity",
+    "reorder": "Reorder categories",
+    "known": "Known",
+    "uncovered": "Known 80 / total 100; 20 uncovered remains neutral.",
+    "contract": "Contract",
+    "guidance": "Capacity retains actual overflow values and scales drawing to fit. Distribution uses an explicit total for unassigned values. ChartLegend is static unless onSelect performs an explicit consumer action. IDs stabilize category colors; statuses have a separate palette. Percent formatting takes 0.15, not 15. Currency conversion stays in the business layer."
+  }
+}

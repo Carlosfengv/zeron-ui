@@ -107,7 +107,8 @@
     "./system/tailwind-merge-tokens": "./src/system/tailwind-merge-tokens.ts",
     "./system/utils": "./src/system/utils.ts",
     "./tokens/*": "./src/tokens/*",
-    "./temporal-picker": "./src/components/temporal-picker/index.ts"
+    "./temporal-picker": "./src/components/temporal-picker/index.ts",
+    "./chart-primitives": "./src/components/chart-primitives.tsx"
   },
   "imports": {
     "#components/*": "./src/components/*.tsx",

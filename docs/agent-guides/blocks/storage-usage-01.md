@@ -32,3 +32,5 @@ import { StorageUsage, storageUsageDemoData } from "@/components/blocks/storage-
 - Loading and unavailable/error states hide numeric descriptions and the distribution. Stale data remains visible with its supplied status message.
 
 MetricCard's `layout="split"` is optional. Its default `stacked` layout remains unchanged; `description` adds label context, and `valueClassName` is a public typography hook.
+
+The category bar uses SegmentedBar in capacity mode; ChartLegend owns its readable category names and values. Both are installed through chart-primitives without Recharts. Stable item IDs and explicit Badge colors preserve identity; business totals and normalization still belong to this block.

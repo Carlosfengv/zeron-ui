@@ -94,6 +94,14 @@
       "itemId": "component:button"
     },
     {
+      "path": "components/chart-primitives.md",
+      "itemId": "component:chart-primitives"
+    },
+    {
+      "path": "components/chart.md",
+      "itemId": "component:chart"
+    },
+    {
       "path": "components/code-block.md",
       "itemId": "component:code-block"
     },

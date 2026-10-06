@@ -1,5 +1,7 @@
 "use client";
 
+import { Alert, AlertTitle, AlertAction } from "@zeron/ui/alert";
+
 import { useEffect, useRef, useState } from "react";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
@@ -101,7 +103,7 @@ function SecurityOverviewContent({ scopeId, data, state = "ready", statusMessage
       <TabPanel value={activeView}>
         <ContainerBody>
         {(state === "stale" || scanning || scan.status === "failed") && <div className="mb-4"><InlineNotice variant="emphasized" tone={scan.status === "failed" ? "danger" : "warning"}><InlineNoticeContent>{scan.status === "failed" ? scan.message : scanning ? labels.previousSnapshot : statusMessage ?? labels.stale}</InlineNoticeContent></InlineNotice></div>}
-        {loading ? <div role="status" className="space-y-4"><span className="sr-only">{labels.loading}</span><Skeleton className="h-5 w-32" /><Skeleton className="h-48 w-full" /></div> : state === "error" ? <div className="space-y-4"><InlineNotice variant="emphasized" tone="danger" role="alert"><InlineNoticeContent>{statusMessage ?? labels.error}</InlineNoticeContent></InlineNotice>{actions?.onRetry && <Button variant="secondary" onClick={actions.onRetry}>{labels.retry}</Button>}</div> : viewProps ? activeView === "trend" ? <SecurityTrend {...viewProps} /> : activeView === "findings" ? <SecurityFindings {...viewProps} /> : activeView === "posture" ? <SecurityPosture {...viewProps} /> : <SecurityAssets {...viewProps} /> : <Empty reason="no-data" scope="inline"><EmptyDescription>{labels.noData}</EmptyDescription></Empty>}
+        {loading ? <div role="status" className="space-y-4"><span className="sr-only">{labels.loading}</span><Skeleton className="h-5 w-32" /><Skeleton className="h-48 w-full" /></div> : state === "error" ? <div className="flex min-w-0 w-full items-center justify-center min-h-60 px-4 py-8"><Alert status="danger" role="group" className="w-full max-w-xl"><AlertTitle>{statusMessage ?? labels.error}</AlertTitle><AlertAction>{actions?.onRetry && <Button variant="secondary" onClick={actions.onRetry}>{labels.retry}</Button>}</AlertAction></Alert></div> : viewProps ? activeView === "trend" ? <SecurityTrend {...viewProps} /> : activeView === "findings" ? <SecurityFindings {...viewProps} /> : activeView === "posture" ? <SecurityPosture {...viewProps} /> : <SecurityAssets {...viewProps} /> : <Empty reason="no-data" scope="inline"><EmptyDescription>{labels.noData}</EmptyDescription></Empty>}
         </ContainerBody>
       </TabPanel>
     </Tabs>

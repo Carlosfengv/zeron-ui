@@ -3,6 +3,7 @@
 import type { ComponentPropsWithoutRef } from "react";
 import { badgeColors, type BadgeColor } from "@zeron/ui/badge";
 import { MetricCard } from "@zeron/ui/metric-card";
+import { ChartLegend, SegmentedBar } from "@zeron/ui/chart-primitives";
 import { cn } from "@zeron/ui/system/utils";
 import styles from "./storage-usage.module.css";
 
@@ -63,7 +64,6 @@ export function StorageUsage({
   const capacity = nonnegative(data.capacity);
   const used = items.reduce((total, item) => total + item.value, 0);
   const remaining = Math.max(0, capacity - used);
-  const denominator = Math.max(capacity, used, 1);
   const percentage = capacity > 0 ? used / capacity : used > 0 ? null : 0;
   const numberFormat = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
   const formatValue = formatters?.value ?? ((value: number) => numberFormat.format(value));
@@ -88,38 +88,18 @@ export function StorageUsage({
       valueClassName={styles.metricTitle}
       footer={
         <div className="grid min-w-0 gap-5" data-slot="storage-usage-content">
-          <div
+          <SegmentedBar
+            mode="capacity"
+            total={capacity}
+            segments={items.map((item) => ({ ...item, color: badgeColors[item.color] }))}
+            valueText={`${summary}. ${remainingText}`}
             aria-label={label}
-            aria-valuemin={0}
-            aria-valuemax={denominator}
-            aria-valuenow={used}
-            aria-valuetext={`${summary}. ${remainingText}`}
-            className="flex h-3 w-full overflow-hidden rounded-full bg-muted"
             data-slot="storage-usage-bar"
-            role="progressbar"
-          >
-            {items.map((item) => (
-              <span
-                aria-hidden="true"
-                className="h-full min-w-0"
-                data-slot="storage-usage-segment"
-                key={item.id}
-                style={{ backgroundColor: badgeColors[item.color], flexBasis: 0, flexGrow: item.value / denominator }}
-              />
-            ))}
-            {remaining > 0 && (
-              <span aria-hidden="true" className="h-full min-w-0 bg-muted" data-slot="storage-usage-remaining" style={{ flexBasis: 0, flexGrow: remaining / denominator }} />
-            )}
-          </div>
+            segmentSlot="storage-usage-segment"
+            remainderSlot="storage-usage-remaining"
+          />
           {items.length > 0 && (
-            <ul className="m-0 flex list-none flex-wrap gap-x-4 gap-y-2 p-0 text-label" data-slot="storage-usage-legend">
-              {items.map((item) => (
-                <li className="flex min-w-0 max-w-full items-start gap-1.5" key={item.id}>
-                  <span aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 rounded-sm" style={{ backgroundColor: badgeColors[item.color] }} />
-                  <span className="min-w-0 break-words text-fg-muted">{item.label}: <span className="tabular-nums text-fg-default">{formatValue(item.value)} {unit}</span></span>
-                </li>
-              ))}
-            </ul>
+            <ChartLegend className="flex flex-wrap gap-x-4 gap-y-2" data-slot="storage-usage-legend" items={items.map((item) => ({ ...item, color: badgeColors[item.color], value: `${formatValue(item.value)} ${unit}` }))} />
           )}
         </div>
       }

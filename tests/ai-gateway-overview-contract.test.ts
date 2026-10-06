@@ -20,7 +20,7 @@ describe("AiGatewayOverview contract", () => {
     expect(capabilities["ai-gateway-overview-01"]).toEqual({ framework: "react", kind: "data-block" });
     expect(item).toMatchObject({
       dependencies: ["recharts", "tw-animate-css"],
-      registryDependencies: ["badge", "button", "card", "chart", "container", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils"],
+      registryDependencies: ["badge", "button", "card", "chart", "container", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils", "alert", "chart-primitives"],
     });
     expect(item.files).toHaveLength(8);
     expect(blockIndex).toContain("AiGatewayOverview");

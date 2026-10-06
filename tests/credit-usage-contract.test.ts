@@ -52,17 +52,18 @@ describe("Credit Usage 01 contract", () => {
         "switch",
         "tabs",
         "utils",
+        "chart-primitives",
       ],
     });
     expect(item.files).toHaveLength(4);
   });
 
-  it("composes existing Zeron components around a small block-owned chart", () => {
+  it("composes existing Zeron components around the shared capacity bar", () => {
     for (const component of ["Badge", "Button", "Card", "InlineNotice", "Switch", "Tabs"]) {
       expect(source).toContain(component);
     }
-    expect(source).toContain('role="progressbar"');
-    expect(source).toContain('className="flex h-7 w-full overflow-hidden');
+    expect(source).toContain('<SegmentedBar mode="capacity" total={totalCredits}');
+    expect(source).toContain('className="h-7 rounded-lg"');
     expect(source).toContain("max-w-[520px]");
     expect(source).not.toContain("sm:grid-cols-2");
     expect(source).not.toContain("splitRows");

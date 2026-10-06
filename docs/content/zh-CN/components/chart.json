@@ -1,0 +1,26 @@
+{
+  "chart": {
+    "description": "共享趋势与圆环：稳定系列颜色、明确时间范围和可访问数据。",
+    "examples": "数据边界演示",
+    "scenario": "数据场景",
+    "timeZone": "显示时区",
+    "ready": "正常数据",
+    "empty": "空数组",
+    "zero": "全零",
+    "single": "单点",
+    "gap": "中间缺失",
+    "partial": "部分来源缺失",
+    "reorder": "重排分类",
+    "intraday": "切换小时窗口",
+    "daily": "切换多日窗口",
+    "gateway": "Gateway",
+    "longName": "名称很长的边缘函数服务分类，用于检查图例换行与完整名称",
+    "requests": "请求量",
+    "viewData": "查看数据",
+    "distribution": "服务分布",
+    "total": "总请求数",
+    "incomplete": "部分来源缺失，灰色轨道表示未分配总量；占比暂不展示。",
+    "contract": "使用规则",
+    "guidance": "TimeSeriesChart 不汇总或补零，null 保留断点。显式传入 locale/timeZone；domain 与实际窗口匹配。DonutSummary 接收业务总量，未分配量使用灰色轨道。数据表可通过键盘打开；颜色与图例保持一致。"
+  }
+}

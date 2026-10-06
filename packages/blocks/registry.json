@@ -147,29 +147,9 @@
       "type": "registry:block",
       "title": "安全概览",
       "description": "安全评分、风险趋势、六维态势与受影响资产的可控扫描概览。",
-      "categories": [
-        "application",
-        "security",
-        "analytics"
-      ],
-      "dependencies": [
-        "recharts"
-      ],
-      "registryDependencies": [
-        "badge",
-        "button",
-        "container",
-        "chart",
-        "empty",
-        "icon-context",
-        "inline-notice",
-        "metric-card",
-        "select",
-        "skeleton",
-        "tabs",
-        "tooltip",
-        "utils"
-      ],
+      "categories": ["application", "security", "analytics"],
+      "dependencies": ["recharts"],
+      "registryDependencies": ["badge", "button", "container", "chart", "empty", "icon-context", "inline-notice", "metric-card", "select", "skeleton", "tabs", "tooltip", "utils", "chart-primitives", "alert"],
       "files": [
         {
           "path": "packages/blocks/src/application/security-overview-01/security-overview.tsx",
@@ -226,31 +206,9 @@
       "type": "registry:block",
       "title": "项目监控",
       "description": "包含项目概览、资源用量、存储分布与请求报告的中文监控卡片。",
-      "categories": [
-        "application",
-        "analytics"
-      ],
-      "dependencies": [
-        "recharts"
-      ],
-      "registryDependencies": [
-        "badge",
-        "button",
-        "card",
-        "chart",
-        "empty",
-        "icon-context",
-        "info-item",
-        "inline-notice",
-        "metric-card",
-        "select",
-        "skeleton",
-        "status-overview",
-        "storage-usage-01",
-        "tabs",
-        "tooltip",
-        "utils"
-      ],
+      "categories": ["application", "analytics"],
+      "dependencies": ["recharts"],
+      "registryDependencies": ["badge", "button", "card", "chart", "empty", "icon-context", "info-item", "inline-notice", "metric-card", "select", "skeleton", "status-overview", "storage-usage-01", "tabs", "tooltip", "utils", "alert", "chart-primitives"],
       "files": [
         {
           "path": "packages/blocks/src/application/project-monitor-01/project-monitor.tsx",
@@ -373,7 +331,7 @@
       "description": "A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations.",
       "categories": ["application", "analytics", "observability"],
       "dependencies": ["recharts", "tw-animate-css"],
-      "registryDependencies": ["badge", "button", "card", "chart", "container", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils"],
+      "registryDependencies": ["badge", "button", "card", "chart", "container", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils", "alert", "chart-primitives"],
       "files": [
         {
           "path": "packages/blocks/src/application/ai-gateway-workspace-types.ts",
@@ -723,12 +681,28 @@
       "description": "A compact credit-cycle summary with model attribution, depletion guidance, and plan controls.",
       "categories": ["application", "settings", "analytics"],
       "dependencies": ["@lobehub/icons", "tw-animate-css"],
-      "registryDependencies": ["badge", "button", "card", "icon-context", "inline-notice", "switch", "tabs", "utils"],
+      "registryDependencies": ["badge", "button", "card", "icon-context", "inline-notice", "switch", "tabs", "utils", "chart-primitives"],
       "files": [
-        { "path": "packages/blocks/src/application/credit-usage-01/credit-usage-types.ts", "type": "registry:component", "target": "components/blocks/credit-usage-01/credit-usage-types.ts" },
-        { "path": "packages/blocks/src/application/credit-usage-01/credit-usage-demo-data.ts", "type": "registry:component", "target": "components/blocks/credit-usage-01/credit-usage-demo-data.ts" },
-        { "path": "packages/blocks/src/application/credit-usage-01/credit-usage.tsx", "type": "registry:component", "target": "components/blocks/credit-usage-01/credit-usage.tsx" },
-        { "path": "packages/blocks/src/application/credit-usage-01/index.ts", "type": "registry:component", "target": "components/blocks/credit-usage-01/index.ts" }
+        {
+          "path": "packages/blocks/src/application/credit-usage-01/credit-usage-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-usage-01/credit-usage-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-usage-01/credit-usage-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-usage-01/credit-usage-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-usage-01/credit-usage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/credit-usage-01/credit-usage.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-usage-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-usage-01/index.ts"
+        }
       ]
     },
     {
@@ -1013,7 +987,7 @@
       "description": "A compact storage summary with category segments, remaining capacity, and a wrapping legend.",
       "categories": ["application", "metrics", "storage"],
       "dependencies": ["tw-animate-css"],
-      "registryDependencies": ["metric-card", "badge", "utils"],
+      "registryDependencies": ["metric-card", "badge", "utils", "chart-primitives"],
       "files": [
         {
           "path": "packages/blocks/src/application/storage-usage-01/storage-usage.tsx",
@@ -1044,7 +1018,7 @@
       "description": "A compact resource inventory with status distribution bars for infrastructure health at a glance.",
       "categories": ["application", "metrics"],
       "dependencies": ["tw-animate-css"],
-      "registryDependencies": ["detail-list", "utils"],
+      "registryDependencies": ["detail-list", "utils", "chart-primitives"],
       "files": [
         {
           "path": "packages/blocks/src/application/resource-metric-list-01/resource-metric-list.tsx",
@@ -1055,6 +1029,11 @@
           "path": "packages/blocks/src/application/resource-metric-list-01/index.ts",
           "type": "registry:component",
           "target": "components/blocks/resource-metric-list-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-metric-list-01/assets.d.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-metric-list-01/assets.d.ts"
         },
         {
           "path": "packages/blocks/src/application/resource-metric-list-01/assets/platform.svg",
@@ -1095,7 +1074,7 @@
       "description": "A resource-status summary with a circular distribution, detailed counts, and determinate-state coverage.",
       "categories": ["application", "metrics"],
       "dependencies": ["tw-animate-css", "recharts"],
-      "registryDependencies": ["card", "utils"],
+      "registryDependencies": ["card", "utils", "chart-primitives", "chart"],
       "files": [
         {
           "path": "packages/blocks/src/application/resource-status-all-01/resource-status-all.tsx",

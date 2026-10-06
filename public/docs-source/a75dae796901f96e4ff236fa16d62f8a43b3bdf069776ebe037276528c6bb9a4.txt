@@ -1,20 +1,22 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { Alert, AlertTitle, AlertDescription, AlertAction } from "@zeron/ui/alert";
+
+import { useRef, useState, type ReactNode } from "react";
+import { ChartLegend } from "@zeron/ui/chart-primitives";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Card, CardContent, CardHeader } from "@zeron/ui/card";
 import { Container, ContainerBody, ContainerHeader } from "@zeron/ui/container";
 import {
   Empty,
-  EmptyActions,
   EmptyDescription,
   EmptyHeader,
   EmptyIllustration,
   EmptyMedia,
   EmptyTitle,
 } from "@zeron/ui/empty";
-import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { InlineNotice, InlineNoticeAction, InlineNoticeContent } from "@zeron/ui/inline-notice";
 import { MetricCard } from "@zeron/ui/metric-card";
 import {
   PageActions,
@@ -45,7 +47,6 @@ import {
   ProviderRequestsChart,
   RequestsAreaChart,
   TokensAreaChart,
-  providerColors,
 } from "./ai-gateway-overview-charts";
 import type {
   AiGatewayMetricSeries,
@@ -91,6 +92,9 @@ const defaultLabels: AiGatewayOverviewLabels = {
   requestsUnit: "requests",
   lastWindow: "Selected window",
   peakPerDay: "Peak per interval",
+  refreshing: "Refreshing metrics. The previous results remain visible.",
+  stale: "Data is out of date. The previous results remain visible.",
+  previousData: "Showing the previous results.",
 };
 
 const rangeLabels: Record<AiGatewayOverviewRange, string> = {
@@ -242,19 +246,7 @@ function ProviderCostList({
   onSelect?: (providerId: string) => void;
   providers: AiGatewayProviderUsage[];
 }) {
-  return (
-    <div className="grid gap-1">
-      {providers.map((provider, index) => (
-        <DataRow key={provider.id} onClick={onSelect ? () => onSelect(provider.id) : undefined}>
-          <span className="flex min-w-0 items-center gap-2 text-body text-fg-muted">
-            <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: providerColors[index % providerColors.length] }} />
-            <span className="truncate">{provider.name}</span>
-          </span>
-          <span className="shrink-0 text-body font-medium tabular-nums text-fg-default">{formatCost(provider.costMicros)}</span>
-        </DataRow>
-      ))}
-    </div>
-  );
+  return <ChartLegend onSelect={onSelect} items={providers.map((provider) => ({ id: provider.id, label: provider.name, value: formatCost(provider.costMicros) }))} />;
 }
 
 function OperationsList({
@@ -325,10 +317,35 @@ export function AiGatewayOverview({
   range,
   sidebar: sidebarProp,
   status = "ready",
+  stale = false,
+  statusMessage,
   timeZone,
   ...props
 }: AiGatewayOverviewProps) {
   const labels = { ...defaultLabels, ...labelsProp };
+  const [pending, setPending] = useState<"refresh" | "retry" | null>(null);
+  const inFlight = useRef(false);
+  const [actionError, setActionError] = useState<{ data: typeof data; range: typeof range; message: string } | null>(null);
+  const requestBusy = status === "loading" || status === "refreshing";
+  const busy = requestBusy || pending !== null;
+  const currentError = actionError?.data === data && actionError.range === range ? actionError.message : undefined;
+  const failed = status === "error" || currentError !== undefined;
+  async function runAction(kind: "refresh" | "retry") {
+    const callback = kind === "refresh" ? actions?.onRefresh : actions?.onRetry;
+    if (!callback || inFlight.current || requestBusy) return;
+    inFlight.current = true;
+    setPending(kind);
+    setActionError(null);
+    try {
+      await callback();
+    } catch (cause) {
+      setActionError({ data, range, message: cause instanceof Error && cause.message ? cause.message : labels.errorTitle });
+    } finally {
+      inFlight.current = false;
+      setPending(null);
+    }
+  }
+  const retryAction = actions?.onRetry ? <Button disabled={busy} loading={pending === "retry"} onClick={() => void runAction("retry")}>{labels.retry}</Button> : undefined;
   const RefreshIcon = useIcon("rotate-ccw");
   const OverviewIcon = useIcon("home");
   const sidebarConfig = resolveAiGatewaySidebarConfig(sidebarProp);
@@ -371,8 +388,9 @@ export function AiGatewayOverview({
           <Button
             aria-label={labels.refresh}
             iconOnly
-            loading={status === "refreshing"}
-            onClick={actions.onRefresh}
+            disabled={busy}
+            loading={status === "refreshing" || pending === "refresh"}
+            onClick={() => void runAction("refresh")}
             size="sm"
             type="button"
             variant="tertiary"
@@ -384,24 +402,20 @@ export function AiGatewayOverview({
     </header>
   );
 
-  const dashboard = status === "loading" && !data ? (
+  const dashboard = requestBusy && !data ? (
     <LoadingDashboard />
-  ) : !data && status === "error" ? (
-    <Empty reason="no-data" scope="page">
-      <EmptyMedia variant="illustration"><EmptyIllustration variant="analytics" /></EmptyMedia>
-      <EmptyHeader>
-        <EmptyTitle>{labels.errorTitle}</EmptyTitle>
-        <EmptyDescription>{error ?? labels.noDataDescription}</EmptyDescription>
-      </EmptyHeader>
-      {actions?.onRetry ? <EmptyActions><Button onClick={actions.onRetry}>{labels.retry}</Button></EmptyActions> : null}
-    </Empty>
+  ) : !data && failed ? (
+    <div className="flex min-w-0 w-full items-center justify-center min-h-[min(60vh,36rem)] px-6 py-12 sm:px-10 sm:py-16"><Alert status="danger" role={Boolean(currentError) ? "alert" : "group"} className="w-full max-w-xl"><AlertTitle>{labels.errorTitle}</AlertTitle><AlertDescription>{currentError ?? error}</AlertDescription><AlertAction>{retryAction}</AlertAction></Alert></div>
   ) : data ? (
     <div className="grid gap-4">
-      {status === "error" ? (
-        <InlineNotice role="alert" tone="danger" variant="emphasized">
-          <InlineNoticeContent>{error ?? labels.errorTitle}</InlineNoticeContent>
+      {failed ? (
+        <InlineNotice tone="danger" variant="emphasized" role={currentError ? "alert" : undefined}>
+          <InlineNoticeContent>{currentError ?? error ?? labels.errorTitle} {labels.previousData ?? defaultLabels.previousData}</InlineNoticeContent>
+          {retryAction && <InlineNoticeAction>{retryAction}</InlineNoticeAction>}
         </InlineNotice>
       ) : null}
+      {stale && !failed ? <InlineNotice tone="warning" variant="emphasized"><InlineNoticeContent>{statusMessage ?? labels.stale ?? defaultLabels.stale}</InlineNoticeContent></InlineNotice> : null}
+      {busy ? <InlineNotice variant="emphasized" tone="info"><span aria-hidden="true" className="inline-flex h-5 shrink-0 items-center [&_svg]:size-4"><span className="inline-flex animate-spin motion-reduce:animate-none"><RefreshIcon /></span></span><InlineNoticeContent>{labels.refreshing ?? defaultLabels.refreshing}</InlineNoticeContent></InlineNotice> : null}
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,11rem),1fr))] gap-3">
         <SummaryTile icon="rocket" label={labels.requests} meta={labels.lastWindow} value={compact.format(data.summary.requests)} />
@@ -461,9 +475,11 @@ export function AiGatewayOverview({
           </ContainerHeader>
           <ContainerBody>
             <div className="grid h-full min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:items-center">
-              <ProviderCostDonut className="h-44" data={data.providers} formatCost={formatCost} />
+              <ProviderCostDonut className="h-44" data={data.providers} total={data.summary.costMicros} unassignedLabel={labels.unassignedCost ?? "Unassigned"} formatCost={formatCost} />
               <ProviderCostList formatCost={formatCost} onSelect={actions?.onProviderSelect} providers={data.providers} />
             </div>
+            {data.summary.costMicros > data.providers.reduce((sum, provider) => sum + provider.costMicros, 0) && <p className="mt-3 text-label text-fg-subtle">{labels.unassignedCost ?? "Unassigned"} · {formatCost(data.summary.costMicros - data.providers.reduce((sum, provider) => sum + provider.costMicros, 0))}</p>}
+            {data.summary.costMicros < data.providers.reduce((sum, provider) => sum + provider.costMicros, 0) && <p className="mt-3 text-label text-fg-warning">{labels.inconsistentCost ?? "Provider costs exceed the total. Check the reporting scope."}</p>}
           </ContainerBody>
         </Container>
       </div>
@@ -507,7 +523,7 @@ export function AiGatewayOverview({
       ) : null}
 
       <PageLayout
-        aria-busy={status === "loading" || status === "refreshing"}
+        aria-busy={busy}
         className="h-full min-w-0 flex-1"
         size="full"
       >

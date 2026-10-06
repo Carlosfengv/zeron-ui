@@ -2673,14 +2673,15 @@
       "name": "chart",
       "type": "registry:ui",
       "title": "Chart",
-      "description": "Composable Recharts container, tooltip, and color configuration following the shadcn chart API.",
+      "description": "Composable charts, shared request trends and responsive donuts with accessible data.",
       "dependencies": [
         "recharts",
         "tw-animate-css"
       ],
       "registryDependencies": [
         "surfaces",
-        "utils"
+        "utils",
+        "chart-primitives"
       ],
       "files": [
         {
@@ -2895,6 +2896,27 @@
           "type": "registry:ui",
           "target": "components/ui/top-nav.tsx"
         }
+      ]
+    },
+    {
+      "name": "chart-primitives",
+      "type": "registry:ui",
+      "title": "Chart Primitives",
+      "description": "Stable series colors, formatters, legends, accessible data tables and segmented capacity/distribution bars without a chart engine.",
+      "registryDependencies": [
+        "surfaces",
+        "badge",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chart-primitives.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chart-primitives.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
       ]
     },
     {
