@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { useState } from "react";
+import { NextIntlClientProvider } from "next-intl";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CostEstimate } from "../packages/blocks/src/application/cost-estimate-01/cost-estimate";
@@ -77,10 +78,16 @@ describe("cost estimate inputs and actions", () => {
     expect((ingest[1] as HTMLInputElement).value).toBe("80");
   });
   it("demo retries failed saving and cleans pending timers on unmount", () => {
-    vi.useFakeTimers(); const { unmount } = render(<CostEstimateDemo />);
-    fireEvent.click(screen.getByRole("switch", { name: "模拟保存失败" })); fireEvent.click(screen.getByRole("button", { name: "保存示例估算" }));
+    vi.useFakeTimers(); const { unmount } = render(<NextIntlClientProvider locale="zh-CN" messages={{}}><CostEstimateDemo /></NextIntlClientProvider>);
+    function toggleFailure() {
+      const settings = screen.getByRole("button", { name: "演示数据设置" });
+      fireEvent.click(settings);
+      fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "模拟保存失败" }));
+      fireEvent.click(settings);
+    }
+    toggleFailure(); fireEvent.click(screen.getByRole("button", { name: "保存示例估算" }));
     act(() => vi.advanceTimersByTime(650)); expect(screen.getAllByRole("alert")[0].textContent).toContain("示例保存失败");
-    fireEvent.click(screen.getByRole("switch", { name: "模拟保存失败" })); fireEvent.click(screen.getByRole("button", { name: "保存示例估算" }));
+    toggleFailure(); fireEvent.click(screen.getByRole("button", { name: "保存示例估算" }));
     expect(screen.getByRole("button", { name: "正在保存" }).hasAttribute("disabled")).toBe(true);
     const download = vi.fn(); Object.defineProperty(URL, "createObjectURL", { configurable: true, value: download });
     unmount(); act(() => vi.advanceTimersByTime(5000)); expect(download).not.toHaveBeenCalled();

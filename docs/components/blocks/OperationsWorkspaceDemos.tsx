@@ -9,6 +9,7 @@ import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-deta
 import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";
 import { ServiceManagement, type ServiceManagementView } from "@zeron/blocks/service-management-01";
 import { useThemeContext } from "@zeron/ui/system/theme-context";
+import { DemoSettingsMenu } from "./DemoSettingsMenu";
 import { internalPathname, localizePathname } from "@docs/components/shell/site/locale-path";
 
 /** All framework-specific links and preferences stay in documentation adapters. */
@@ -32,7 +33,7 @@ export function ClusterEnvironmentDetailDemo({ className = "h-full" }: { classNa
   const workspace = useOperationsDemoWorkspace();
   const zh = useLocale().startsWith("zh");
   const [scenario, setScenario] = useState<"ready" | "empty">("ready");
-  return <><ClusterEnvironmentDetail workspace={workspace} className={className} reports={scenario === "empty" ? [] : undefined} onRunInspection={scenario === "empty" ? () => setScenario("ready") : undefined} /></>;
+  return <><DemoSettingsMenu value={scenario} onChange={setScenario} options={[{ value: "ready", label: zh ? "正常" : "Ready" }, { value: "empty", label: zh ? "无巡检报告" : "No reports" }]} /><ClusterEnvironmentDetail workspace={workspace} className={className} reports={scenario === "empty" ? [] : undefined} onRunInspection={scenario === "empty" ? () => setScenario("ready") : undefined} /></>;
 }
 export function InspectionReportListDemo({ className = "h-full min-h-0" }: { className?: string }) {
   const workspace = useOperationsDemoWorkspace();

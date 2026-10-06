@@ -45,7 +45,7 @@ import {
   filterRuleBuilderDemoPresets,
   filterRuleBuilderDemoValue,
 } from "@zeron/blocks/filter-rule-builder-01";
-import { RuleFlowEditor } from "@zeron/blocks/rule-flow-editor-01";
+import { RuleFlowEditorDemo as RuleFlowEditor } from "./RuleFlowEditorDemo";
 import { ResourceCatalog } from "@zeron/blocks/resource-catalog-01";
 import {
   defaultResourceDetailPageData,
@@ -58,7 +58,8 @@ import {
 } from "@zeron/blocks/resource-list-table-01";
 import { MemberDepartment } from "@zeron/blocks/member-department-01";
 import { InfiniteLogTable } from "@zeron/blocks/infinite-log-table-01";
-import { FileManager, type FileManagerItem } from "@zeron/blocks/file-manager-01";
+import { type FileManagerItem } from "@zeron/blocks/file-manager-01";
+import { FileManagerDemo as FileManager } from "./FileManagerDemo";
 import { ResourceMetricList } from "@zeron/blocks/resource-metric-list-01";
 import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
 import { TopNavAppShell } from "@zeron/blocks/top-nav-app-shell-01";
@@ -70,6 +71,7 @@ import { AgentSessionDetail } from "@zeron/blocks/agent-session-detail-01";
 import { Button } from "@zeron/ui/button";
 import { DetailBlockPreviewShell } from "@docs/pages/blocks/_components/DetailBlockPreviewShell";
 import type { StandaloneBlockSlug } from "./standalone-blocks";
+import { PreviewToolbarProvider, PreviewToolbarSlot } from "@docs/components/content/PreviewToolbar";
 
 const centeredDemoClass = "flex h-full min-h-0 w-full items-center justify-center overflow-auto bg-surface-base p-4 sm:p-8";
 
@@ -146,10 +148,10 @@ function FilterRuleBuilderDemo() {
 }
 
 export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
-  return <>
+  return <PreviewToolbarProvider floating>
     <StandaloneBlockContent key={slug} slug={slug} />
-
-  </>;
+    <PreviewToolbarSlot />
+  </PreviewToolbarProvider>;
 }
 
 function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {

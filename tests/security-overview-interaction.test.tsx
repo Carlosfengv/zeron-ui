@@ -5,6 +5,8 @@ import { SecurityOverview } from "../packages/blocks/src/application/security-ov
 import { createSecurityOverviewDemoData } from "../packages/blocks/src/application/security-overview-01/security-overview-demo-data";
 import { SecurityOverviewDemo } from "../docs/components/blocks/SecurityOverviewDemo";
 
+vi.mock("next-intl", () => ({ useLocale: () => "zh-CN" }));
+
 // Chart geometry is checked in the browser; these tests cover state and actions.
 vi.mock("../packages/blocks/src/application/security-overview-01/security-overview-charts", () => ({
   SecurityScore: () => <div>Score ring</div>,

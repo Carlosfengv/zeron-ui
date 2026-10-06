@@ -118,6 +118,7 @@
     "introductionTitle": "介绍",
     "introductionDescription": "这些组件为何用起来与众不同。",
     "descriptions": {
+      "support-analytics-01": "工单趋势、服务指标、渠道筛选与最近工单处理的可嵌入分析面板。",
       "transaction-details-01": "包含突出金额、交易字段、账单信息与附件操作的可嵌入交易详情。",
       "surfaces": "为浅色和深色模式提供五种具有明确用途和阴影层级的语义表面。",
       "semantic-tokens": "按设计对象选择颜色、表面、排版、形状与层级令牌。",
@@ -199,7 +200,9 @@
       "top-nav-app-shell-01": "带居中 TopNav 与聚焦内容区的堆叠式应用外壳。",
       "user-account-01": "统一登录用户的主题、语言、个人设置、通知和登出入口。",
       "zaiops-operations-01": "带响应式 Sidebar、组织切换和分组导航的运维工作区 recipe。",
-      "zlrlist": "带响应式导航、与 Figma 对齐的保护组列表和详情工作区。"
+      "zlrlist": "带响应式导航、与 Figma 对齐的保护组列表和详情工作区。",
+      "chart": "共享趋势与圆环：稳定系列颜色、明确时间范围和可访问数据。",
+      "chart-primitives": "无图表引擎依赖的图例、稳定调色、格式化、分段条和数据表。"
     }
   }
 }

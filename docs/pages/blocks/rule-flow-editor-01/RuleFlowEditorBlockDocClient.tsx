@@ -1,21 +1,15 @@
 "use client";
 
 import type { PreviewCode } from "@docs/lib/preview-source";
-import {
-  RuleFlowEditor,
-  defaultRuleFlow,
-  type RuleFlowValue,
-} from "@zeron/blocks/rule-flow-editor-01";
+import { RuleFlowEditorDemo as RuleFlowEditor } from "@docs/components/blocks/RuleFlowEditorDemo";
 import {
   BlockDetailPage,
   BlockDetailSection,
 } from "@docs/components/blocks/BlockDetailPage";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 
 export function RuleFlowEditorBlockDocClient({ code }: { code: PreviewCode }) {
   const t = useTranslations("ruleFlowEditorBlock");
-  const [flow, setFlow] = useState<RuleFlowValue>(defaultRuleFlow);
 
   return (
     <BlockDetailPage
@@ -25,10 +19,7 @@ export function RuleFlowEditorBlockDocClient({ code }: { code: PreviewCode }) {
       title={t("title")}
       preview={
         <div className="h-full min-h-0 overflow-hidden bg-surface-raised p-3 sm:p-6">
-          <RuleFlowEditor
-            onValueChange={setFlow}
-            value={flow}
-          />
+          <RuleFlowEditor />
         </div>
       }
     >

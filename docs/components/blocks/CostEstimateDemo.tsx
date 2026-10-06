@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CostEstimate, costEstimateDemoInputs, costEstimateDemoPresets, costEstimateDemoRateCards, costEstimateDemoRegions, type CostEstimateInputs, type CostEstimateResult, type CostEstimateSaveState } from "@zeron/blocks/cost-estimate-01";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
-import { Switch } from "@zeron/ui/switch";
+import { DemoSettingsMenu } from "./DemoSettingsMenu";
 import { ToastStack, type ToastData } from "@zeron/ui/toast";
 
 type DemoState = "ready" | "loading" | "stale" | "error" | "empty";
@@ -51,7 +50,7 @@ export function CostEstimateDemo() {
   const state = dataState === "empty" ? "ready" : dataState;
   return <div className="flex h-full min-h-0 overflow-auto bg-surface-base p-3 sm:p-8"><div className="m-auto w-full max-w-xl space-y-4">
     <CostEstimate value={value} onValueChange={change} rateCard={dataState === "empty" ? null : rateCard} regions={costEstimateDemoRegions} presets={costEstimateDemoPresets} defaultInputs={costEstimateDemoInputs} state={state} saveState={saveState} labels={{ save: "保存示例估算" }} actions={{ onSave: save, onRetry: () => setDataState("ready") }} />
-    <div className="flex flex-wrap items-center justify-center gap-3"><Select size="sm" value={dataState} onValueChange={(next) => setDataState(next as DemoState)}><SelectTrigger aria-label="演示费率状态" /><SelectContent>{[{ value: "ready", label: "正常费率" }, { value: "loading", label: "加载中" }, { value: "stale", label: "过期费率" }, { value: "error", label: "加载失败" }, { value: "empty", label: "无费率" }].map((item) => <SelectItem key={item.value} value={item.value} label={item.label}>{item.label}</SelectItem>)}</SelectContent></Select><Switch label="模拟保存失败" checked={failSave} onCheckedChange={setFailSave} disabled={saveState.status === "pending"} /></div>
+    <DemoSettingsMenu<DemoState> value={dataState} onChange={setDataState} options={[{ value: "ready", label: "正常费率" }, { value: "loading", label: "首次加载" }, { value: "stale", label: "过期费率" }, { value: "error", label: "加载失败" }, { value: "empty", label: "无费率" }]} toggles={[{ id: "save-failure", label: "模拟保存失败", checked: failSave, onChange: setFailSave, disabled: saveState.status === "pending" }]} />
     <p className="text-center text-label text-fg-subtle">交互演示 · 固定示例费率，未连接真实计费服务</p>
     <ToastStack toasts={toasts} placement="static" portal={false} onDismiss={(id) => setToasts((current) => current.filter((item) => item.id !== id))} closeLabel="关闭通知" />
   </div>

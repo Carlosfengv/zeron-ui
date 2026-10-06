@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "next-intl";
+import { DemoSettingsMenu, type DemoSettingToggle } from "./DemoSettingsMenu";
 
 const scenarios = [
   ["ready", "正常"], ["loading", "首次加载"], ["initial-error", "首次失败"],
@@ -8,6 +10,7 @@ const scenarios = [
   ["stale", "数据过期"], ["stale-refreshing", "数据过期并刷新"], ["empty", "确认无数据"],
 ] as const;
 export type DataStateDemoScenario = typeof scenarios[number][0];
+const englishLabels = ["Ready", "Initial loading", "Initial failure", "Refreshing", "Refresh failed · Keep previous data", "Stale data", "Stale data + refreshing", "Confirmed empty"];
 
 /** Documentation-only scenarios; async completion never overwrites a newer selection. */
 export function useDataStateDemo() {
@@ -44,4 +47,16 @@ export function useDataStateDemo() {
     empty: scenario === "empty",
   }), [scenario]);
   return { scenario, revision, changeScenario, recover, refresh, failNextRefresh, setFailNextRefresh, ...status };
+}
+
+export function DataStateDemoControls({ value, onChange, failNextRefresh, onFailNextRefreshChange, toggles = [], description }: {
+  value: DataStateDemoScenario; onChange: (value: DataStateDemoScenario) => void;
+  failNextRefresh?: boolean; onFailNextRefreshChange?: (value: boolean) => void;
+  toggles?: readonly DemoSettingToggle[]; description?: string;
+}) {
+  const zh = useLocale().startsWith("zh");
+  return <DemoSettingsMenu value={value} onChange={onChange}
+    options={scenarios.map(([id, label], index) => ({ value: id, label: zh ? label : englishLabels[index] }))}
+    toggles={[...(onFailNextRefreshChange ? [{ id: "fail-next-refresh", label: zh ? "下次刷新失败" : "Fail next refresh", checked: failNextRefresh ?? false, onChange: onFailNextRefreshChange, control: "switch" as const }] : []), ...toggles]}
+    description={description ?? (zh ? "示例数据 · 重试或刷新后恢复正常" : "Example data · Retry or refresh to recover")} />;
 }

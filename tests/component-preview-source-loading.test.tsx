@@ -2,13 +2,19 @@
 import { useState } from "react";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
-import { afterEach, expect, it, vi } from "vitest";
-import { ComponentPreview } from "../docs/components/content/ComponentPreview";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { PreviewCode, PreviewSourceReference } from "../docs/lib/preview-source";
 import english from "../docs/content/en/common-slim.json";
 import chinese from "../docs/content/zh-CN/common-slim.json";
 
-vi.mock("@zeron/ui/code-block", () => new Promise(() => {}));
+let ComponentPreview: typeof import("../docs/components/content/ComponentPreview").ComponentPreview;
+// Re-register the pending import for each test: an unresolved async mock factory
+// can outlive the suite that requested it when a worker is reused.
+beforeEach(async () => {
+  vi.resetModules();
+  vi.doMock("@zeron/ui/code-block", () => new Promise(() => {}));
+  ({ ComponentPreview } = await import("../docs/components/content/ComponentPreview"));
+});
 let sourceId = 100;
 const reference = (): PreviewSourceReference => ({ url: `/docs-source/${(++sourceId).toString(16).padStart(64, "0")}.txt` });
 const response = (text: string) => new Response(text, { headers: { "content-type": "text/plain" } });

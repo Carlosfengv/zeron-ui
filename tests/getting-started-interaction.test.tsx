@@ -149,9 +149,11 @@ describe("GettingStarted", () => {
     expect(await screen.findByRole("dialog")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Complete example task" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "Getting started, 3 of 5 tasks completed" })).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Empty list" }));
+    fireEvent.click(screen.getByRole("button", { name: "Demo data settings" }));
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Empty list" }));
     expect(screen.getByText("No setup tasks yet.")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Reset demo" }));
+    fireEvent.click(screen.getByRole("button", { name: "Demo data settings" }));
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Reset demo" }));
     expect(screen.getByRole("button", { name: setupName })).toBeTruthy();
   });
 });

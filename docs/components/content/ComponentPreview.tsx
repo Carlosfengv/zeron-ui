@@ -31,6 +31,7 @@ import type { CodeBlock as CodeBlockType } from "@zeron/ui/code-block";
 import type { PreviewCode } from "@docs/lib/preview-source";
 import { usePreviewSource } from "@docs/components/content/use-preview-source";
 import { PreviewCodeFallback } from "@docs/components/content/PreviewCodeFallback";
+import { PreviewToolbarProvider, PreviewToolbarSlot } from "./PreviewToolbar";
 
 function FigmaIcon({ className }: { className?: string }) {
   return (
@@ -253,11 +254,10 @@ export function ComponentPreview({
   }, [tab, CodeBlock, codeBlockRetryKey]);
 
   useEffect(() => {
-    if (!fullScreenable) return;
     const syncFullscreenState = () => setIsFullscreen(document.fullscreenElement === frameRef.current);
     document.addEventListener("fullscreenchange", syncFullscreenState);
     return () => document.removeEventListener("fullscreenchange", syncFullscreenState);
-  }, [fullScreenable]);
+  }, []);
 
   const showButton = !!playbackButton || !!onReplay;
   // Inspect only applies to the live Preview tab. When on, reserve a strip at
@@ -266,6 +266,7 @@ export function ComponentPreview({
   const inspecting = inspectable && inspect && tab === 0;
 
   return (
+    <PreviewToolbarProvider floating={isFullscreen}>
     <PortalContainerProvider value={isFullscreen ? frameElement : null}>
       <div
         ref={setFrameRef}
@@ -275,8 +276,8 @@ export function ComponentPreview({
             ? "overflow-hidden rounded-xl border-hairline border-border bg-surface-floating shadow-control"
             : "rounded-3xl bg-surface-raised p-2",
           fill && "h-full min-h-0",
-          isFullscreen && "h-svh w-screen rounded-none",
           className,
+          isFullscreen && "h-svh w-screen rounded-none p-0",
         )}
       >
       {/* Tab bar — min-height reserves the playback button's height (h-10 + pt-3)
@@ -285,6 +286,7 @@ export function ComponentPreview({
           opaque background sits above the inspect overlay (z-overlay > z-action) so the
           ruler ticks tuck cleanly under it. */}
       <div
+        style={isFullscreen ? { display: "none" } : undefined}
         className={cn(
           "relative z-overlay flex shrink-0 items-center justify-between gap-1",
           browserFrame
@@ -329,6 +331,7 @@ export function ComponentPreview({
               </TabsList>
             </Tabs>
           )}
+          {!isFullscreen && <PreviewToolbarSlot className="flex items-center empty:hidden" />}
           {inspectable && tab === 0 && (
             <Switch
               label={t("inspect")}
@@ -427,6 +430,7 @@ export function ComponentPreview({
           )}
         </div>
       </div>
+      {isFullscreen && <PreviewToolbarSlot />}
 
       {/* Content. Wrapped so its rectangular bottom corners get clipped
           to the outer container's rounded shape (rounded-xl / rounded-3xl
@@ -438,7 +442,7 @@ export function ComponentPreview({
       <div
         className={cn(
           "overflow-hidden",
-          browserFrame ? "rounded-none border-0" : "rounded-2xl border-hairline border-border",
+          browserFrame || isFullscreen ? "rounded-none border-0" : "rounded-2xl border-hairline border-border",
           (isFullscreen || fill) && "flex min-h-0 flex-1 flex-col",
         )}
       >
@@ -459,7 +463,7 @@ export function ComponentPreview({
                 )
                 : minHeightClass,
               align === "bottom" ? "items-end" : align === "top" ? "items-start" : "items-center",
-              padding === "none"
+              isFullscreen || padding === "none"
                 ? "p-0"
                 : padding === "compact"
                   ? "px-3 py-3"
@@ -521,5 +525,6 @@ export function ComponentPreview({
       </AnimatePresence>
       </div>
     </PortalContainerProvider>
+    </PreviewToolbarProvider>
   );
 }

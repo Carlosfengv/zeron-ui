@@ -38,7 +38,7 @@ export function BlockDetailPageView({
   code,
   description,
   preview,
-  preservePreview,
+  preservePreview = true,
   slug,
   registryName = slug,
   title,

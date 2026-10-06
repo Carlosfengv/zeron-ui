@@ -5,7 +5,7 @@ import { useLocale } from "next-intl";
 import { GettingStarted, gettingStartedDemoTasks, type GettingStartedTask } from "@zeron/blocks/getting-started-01";
 import { Button } from "@zeron/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
-import { Switch } from "@zeron/ui/switch";
+import { DemoSettingsMenu } from "./DemoSettingsMenu";
 
 const chineseTitles = ["创建个人资料", "添加首个推广活动", "设置预算与规则", "邀请创作者", "审核并批准投稿"];
 
@@ -44,13 +44,14 @@ export function GettingStartedDemo() {
             completed: "已完成", current: "当前步骤", pending: "待完成", empty: "暂无入门任务。",
             progress: (completed, total) => `已完成 ${completed} 项，共 ${total} 项`,
           } : undefined} />
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <Button variant="secondary" size="sm" onClick={reset}>{chinese ? "重置示例" : "Reset demo"}</Button>
-          <Button variant="ghost" size="sm" onClick={() => { setTasks(gettingStartedDemoTasks.map((task) => ({ ...task, status: "completed" }))); setSelectedId(null); }}>{chinese ? "全部完成" : "Complete all"}</Button>
-          <Button variant="ghost" size="sm" onClick={() => { setTasks([]); setSelectedId(null); }}>{chinese ? "空清单" : "Empty list"}</Button>
-          <Switch checked={open} onCheckedChange={setOpen} label={chinese ? "展开清单" : "Expand checklist"} />
-          <Switch checked={disabled} onCheckedChange={setDisabled} label={chinese ? "禁用任务入口" : "Disable actions"} />
-        </div>
+        <DemoSettingsMenu toggles={[
+          { id: "expand", label: chinese ? "展开清单" : "Expand checklist", checked: open, onChange: setOpen },
+          { id: "disable-actions", label: chinese ? "禁用任务入口" : "Disable actions", checked: disabled, onChange: setDisabled },
+        ]} actions={[
+          { label: chinese ? "重置示例" : "Reset demo", onSelect: reset },
+          { label: chinese ? "全部完成" : "Complete all", onSelect: () => { setTasks(gettingStartedDemoTasks.map((task) => ({ ...task, status: "completed" }))); setSelectedId(null); } },
+          { label: chinese ? "空清单" : "Empty list", onSelect: () => { setTasks([]); setSelectedId(null); } },
+        ]} />
         <p className="text-center text-label text-fg-subtle">{chinese ? "交互演示 · 示例任务，未连接真实业务服务" : "Interactive demo · Example tasks, no service connected"}</p>
       </div>
       <Dialog open={selected !== undefined} onOpenChange={(next) => { if (!next) setSelectedId(null); }}>

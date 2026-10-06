@@ -3,7 +3,6 @@
 import type { PreviewCode } from "@docs/lib/preview-source";
 import { useState } from "react";
 import {
-  FileManager,
   type FileManagerItem,
   type FileManagerView,
 } from "@zeron/blocks/file-manager-01";
@@ -11,6 +10,7 @@ import {
   BlockDetailPage,
   BlockDetailSection,
 } from "@docs/components/blocks/BlockDetailPage";
+import { FileManagerDemo as FileManager } from "@docs/components/blocks/FileManagerDemo";
 import { useTranslations } from "next-intl";
 
 const initialFiles: FileManagerItem[] = [

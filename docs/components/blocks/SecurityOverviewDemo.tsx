@@ -5,8 +5,7 @@ import { createSecurityOverviewDemoData, SecurityOverview, type SecurityOverview
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
-import { Switch } from "@zeron/ui/switch";
+import { DemoSettingsMenu } from "./DemoSettingsMenu";
 import { ToastStack, type ToastData } from "@zeron/ui/toast";
 
 export function SecurityOverviewDemo() {
@@ -81,7 +80,7 @@ export function SecurityOverviewDemo() {
     <div className="m-auto w-full max-w-xl space-y-4">
       {closed ? <div className="flex justify-center py-12"><Button variant="secondary" onClick={() => setClosed(false)}>重新打开安全概览</Button></div> : <SecurityOverview scopeId="northwind" data={data} range={range} onRangeChange={setRange} state={state} scan={scan} exportState={exportState}
         labels={{ export: "导出示例数据" }} actions={{ onRunScan: runScan, onExport: exportReport, onClose: () => setClosed(true), onRetry: () => setState("ready"), onViewAll: (kind) => setDialog({ kind }), onOpenFinding: (id) => setDialog({ kind: "findings", id }), onOpenAsset: (id) => setDialog({ kind: "assets", id }) }} />}
-      <div className="flex flex-wrap items-center justify-center gap-3"><Select size="sm" value={state} onValueChange={(next) => setState(next as SecurityOverviewState)}><SelectTrigger aria-label="演示数据状态" /><SelectContent>{[{ value: "ready", label: "正常数据" }, { value: "loading", label: "加载中" }, { value: "stale", label: "过期快照" }, { value: "error", label: "加载失败" }].map((option) => <SelectItem key={option.value} value={option.value} label={option.label}>{option.label}</SelectItem>)}</SelectContent></Select><Switch label="模拟扫描失败" checked={failScan} onCheckedChange={setFailScan} disabled={running.current} /></div>
+      <DemoSettingsMenu<SecurityOverviewState> value={state} onChange={setState} options={[{ value: "ready", label: "正常数据" }, { value: "loading", label: "首次加载" }, { value: "stale", label: "过期快照" }, { value: "error", label: "加载失败" }]} toggles={[{ id: "scan-failure", label: "模拟扫描失败", checked: failScan, onChange: setFailScan, disabled: running.current }]} />
       <p className="text-center text-label text-fg-subtle">交互演示 · 示例数据，未连接真实安全扫描服务</p>
       <ToastStack toasts={toasts} placement="static" portal={false} onDismiss={(id) => setToasts((current) => current.filter((item) => item.id !== id))} closeLabel="关闭通知" />
     </div>
