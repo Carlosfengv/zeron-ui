@@ -66,7 +66,8 @@
     "agents:verify:clean": "node scripts/check-agent-clean-checkout.mjs",
     "docs:loaders:build": "node scripts/generate-document-loaders.mjs",
     "docs:loaders:check": "node scripts/generate-document-loaders.mjs --check",
-    "test:controls:browser": "vitest run --config vitest.config.mts tests/rendered-controls.test.mjs --maxWorkers=1"
+    "test:controls:browser": "vitest run --config vitest.config.mts tests/rendered-controls.test.mjs --maxWorkers=1",
+    "test:consumer:unification": "node scripts/test-unification-consumers.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

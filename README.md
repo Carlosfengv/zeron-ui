@@ -323,6 +323,8 @@ checks production pages after `init` and repeated component installation, includ
 light/dark colors, control sizes, native radii, and portal styles. Screenshots and
 computed styles are saved in `output/consumer-styles` and uploaded by CI.
 
+For the frozen Block/Page unification scope, run `pnpm test:consumer:unification`.
+It verifies 43 installable entries and 7 shared items in 192 independent
 Next/Vite × npm/pnpm targets, with production builds and rendered examples.
 Logs, screenshots and recursive Registry payload fingerprints are saved in
 `.zeron/reports/stage-six/`. Default runs are fresh. Use `--resume` only within
@@ -330,6 +332,7 @@ a fixed CLI/fixture/checker run; recursive Registry bytes must also match.
 Changing the CLI, examples or verifier requires a fresh run. Local candidate
 artifacts do not imply a public CLI or Registry release.
 
+Set `ZERON_UNIFICATION_EVIDENCE_DIR` to a separate directory when verifying a
 new candidate so the historical stage-six evidence remains intact.
 
 Block/Page documentation source previews use the explicit allowlist in

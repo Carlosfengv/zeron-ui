@@ -3,9 +3,23 @@ import { fileURLToPath } from "node:url";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { consumerRegistryExpectations, snapshotConsumerRegistry } from "../scripts/lib/consumer-registry-expectations.mjs";
+import { consumerRegistryClosureHash, consumerRegistryExpectations, snapshotConsumerRegistry } from "../scripts/lib/consumer-registry-expectations.mjs";
 
 const registry = fileURLToPath(new URL("../public/r/", import.meta.url));
+it("invalidates consumer evidence when its own transitive payload changes", () => {
+  const snapshot = new Map([
+    ["root.json", JSON.stringify({ name: "root", registryDependencies: ["child"] })],
+    ["child.json", JSON.stringify({ name: "child", files: [{ content: "original" }] })],
+    ["unrelated.json", JSON.stringify({ name: "unrelated" })],
+  ]);
+  const hash = consumerRegistryClosureHash(snapshot, "root");
+  snapshot.set("unrelated.json", "changed unrelated payload");
+  expect(consumerRegistryClosureHash(snapshot, "root")).toBe(hash);
+  snapshot.set("child.json", JSON.stringify({ name: "child", files: [{ content: "changed" }] }));
+  expect(consumerRegistryClosureHash(snapshot, "root")).not.toBe(hash);
+  snapshot.delete("child.json");
+  expect(() => consumerRegistryClosureHash(snapshot, "root")).toThrow("missing child");
+});
 describe("consumer assertions follow the Registry closure", () => {
   it.each(["control-size", "springs", "icon-context"])("does not require unrelated theme assets for %s", async (name) => {
     expect(await consumerRegistryExpectations(registry, name)).toEqual({ animation: false, tokens: [], mergeTokens: false });

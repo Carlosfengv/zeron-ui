@@ -15,6 +15,9 @@ import { execFile as execFileCallback } from "node:child_process";
 import { promisify } from "node:util";
 import { consumerRegistryExpectations, snapshotConsumerRegistry } from "./lib/consumer-registry-expectations.mjs";
 import { consumerStyleExample, verifyConsumerStyles } from "./lib/consumer-style-verification.mjs";
+import { verifyFeedbackConsumer } from "./lib/feedback-consumer-verification.mjs";
+import { unificationConsumerExample } from "./lib/unification-consumer-examples.mjs";
+import { verifyUnificationConsumer } from "./lib/unification-consumer-verification.mjs";
 
 const execFile = promisify(execFileCallback);
 const ROOT = new URL("..", import.meta.url).pathname;
@@ -22,6 +25,8 @@ const REGISTRY_DIR = join(ROOT, "public/r");
 const all = process.argv.includes("--all");
 const styles = process.argv.includes("--styles");
 const keepConsumers = process.env.ZERON_CONSUMER_KEEP === "1";
+const verifyFeedback = process.env.ZERON_CONSUMER_FEEDBACK === "1";
+const verifyUnification = process.env.ZERON_CONSUMER_UNIFICATION === "1";
 const registrySnapshot = await snapshotConsumerRegistry(REGISTRY_DIR);
 const registryItems = JSON.parse(registrySnapshot.get("registry.json")).items;
 const allRegistryItems = registryItems.map((item) => item.name).filter((name) => typeof name === "string");
@@ -29,11 +34,12 @@ const components = styles ? ["button"] : process.env.ZERON_CONSUMER_COMPONENTS?.
   ? allRegistryItems
   : ["button", "card", "ask-user-questions", "code-block", "infinite-log-table-01"]);
 const packageManagers = process.env.ZERON_CONSUMER_PACKAGE_MANAGERS?.split(",").filter(Boolean) ?? ["npm", "pnpm"];
+const vitePackageManagers = process.env.ZERON_VITE_CONSUMER_PACKAGE_MANAGERS?.split(",").filter(Boolean) ?? ["npm"];
 const viteComponents = styles ? ["button"] : process.env.ZERON_VITE_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? ["button", "card", "ask-user-questions", "code-block"];
 const BUSINESS_SOURCE = "export const identity = <T>(value: T): T => value;\n";
 
-if (packageManagers.some((manager) => !["npm", "pnpm"].includes(manager))) {
-  throw new Error("ZERON_CONSUMER_PACKAGE_MANAGERS must contain only npm and/or pnpm");
+if ([...packageManagers, ...vitePackageManagers].some((manager) => !["npm", "pnpm"].includes(manager))) {
+  throw new Error("Consumer package managers must contain only npm and/or pnpm");
 }
 
 function registryServer() {
@@ -92,7 +98,7 @@ async function writeConsumer(directory, packageManager, { starter = false } = {}
     '',
   ].join("\n"));
   await writeFile(join(directory, "postcss.config.mjs"), 'export default { plugins: { "@tailwindcss/postcss": {} } };\n');
-  await writeFile(join(directory, "next.config.mjs"), 'export default {};\n');
+  await writeFile(join(directory, "next.config.mjs"), 'export default { experimental: { cpus: 1 } };\n');
   // TypeScript's standalone checker does not load Next's generated asset
   // declarations. Keep this consumer fixture able to validate Registry
   // Blocks that import static SVG assets, just as a Next project does.
@@ -109,11 +115,12 @@ async function writeConsumer(directory, packageManager, { starter = false } = {}
   await command(packageManager, ["install", "--ignore-scripts"], { cwd: directory });
 }
 
-async function writeViteConsumer(directory) {
+async function writeViteConsumer(directory, manager = "npm") {
   await mkdir(join(directory, "src"), { recursive: true });
   await writeFile(join(directory, "package.json"), JSON.stringify({
     name: "zeron-vite-consumer-fixture",
     private: true,
+    packageManager: manager === "pnpm" ? "pnpm@10.12.4" : undefined,
     type: "module",
     scripts: { build: "vite build" },
     dependencies: { react: "19.2.0", "react-dom": "19.2.0" },
@@ -149,7 +156,7 @@ async function writeViteConsumer(directory) {
     '',
   ].join("\n"));
   await writeFile(join(directory, "src", "index.css"), '@import "tailwindcss";\n');
-  await command("npm", ["install", "--ignore-scripts"], { cwd: directory });
+  await command(manager, ["install", "--ignore-scripts"], { cwd: directory });
 }
 
 async function exists(path) {
@@ -261,10 +268,20 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
-    "transaction-details-01": [
+    "integration-monitors-01": [
+      'import { IntegrationMonitors, createIntegrationMonitorsDemoData } from "@/components/blocks/integration-monitors-01";',
+      'const data = createIntegrationMonitorsDemoData();',
+      'export default function Page() { return <IntegrationMonitors scopeId={data.scopeId} data={data} />; }',
+    ].join("\n"),
+    "chart": [
       '"use client";',
-      'import { TransactionDetails, transactionDetailsDemoData } from "@/components/blocks/transaction-details-01";',
-      'export default function Page() { return <TransactionDetails transactionId={transactionDetailsDemoData.id} data={transactionDetailsDemoData} />; }',
+      'import { TimeSeriesChart, DonutSummary } from "@/components/ui/chart";',
+      'export default function Page() { return <div><TimeSeriesChart data={[{ timestamp: 1791158400000, values: { requests: 12 } }]} series={[{ id: "requests", label: "Requests" }]} locale="en" timeZone="UTC" label="Requests" /><DonutSummary segments={[{ id: "used", label: "Used", value: 80 }]} total={100} aria-label="80 of 100" center="80 / 100" /></div>; }',
+    ].join("\n"),
+    "chart-primitives": [
+      'import { ChartLegend, SegmentedBar } from "@/components/ui/chart-primitives";',
+      'const segments = [{ id: "files", label: "Files", value: 80 }];',
+      'export default function Page() { return <div><SegmentedBar mode="capacity" total={100} segments={segments} valueText="80 / 100" /><ChartLegend items={[{ id: "files", label: "Files", value: "80" }]} /></div>; }',
     ].join("\n"),
     "getting-started-01": [
       'import { GettingStarted, gettingStartedDemoTasks } from "@/components/blocks/getting-started-01";',
@@ -276,6 +293,21 @@ async function verifyNextBuild({ consumer, component }) {
       'import { CostEstimate, costEstimateDemoInputs, costEstimateDemoRegions, costEstimateDemoRateCards } from "@/components/blocks/cost-estimate-01";',
       'export default function Page() { const [value, setValue] = useState(costEstimateDemoInputs); return <CostEstimate value={value} onValueChange={setValue} rateCard={costEstimateDemoRateCards[value.regionId]} regions={costEstimateDemoRegions} />; }',
     ].join("\n"),
+    "support-analytics-01": [
+      '"use client";',
+      'import { useState } from "react";',
+
+      'import { SupportAnalytics, createSupportAnalyticsDemoData, type SupportAnalyticsQuery } from "@/components/blocks/support-analytics-01";',
+
+      'function Demo() { const [query, setQuery] = useState<SupportAnalyticsQuery>({ range: "this-week", channel: "all" }); return <SupportAnalytics scopeId="support-demo" data={createSupportAnalyticsDemoData(query)} {...query} onRangeChange={(range) => setQuery({ ...query, range })} onChannelChange={(channel) => setQuery({ ...query, channel })} />; }',
+
+      'export default function Page() { return <Demo />; }',
+    ].join("\n"),
+    "transaction-details-01": [
+      '"use client";',
+      'import { TransactionDetails, transactionDetailsDemoData } from "@/components/blocks/transaction-details-01";',
+      'export default function Page() { return <TransactionDetails transactionId={transactionDetailsDemoData.id} data={transactionDetailsDemoData} />; }',
+    ].join("\n"),
     "security-overview-01": [
       '"use client";',
       'import { SecurityOverview, securityOverviewDemoData } from "@/components/blocks/security-overview-01";',
@@ -285,6 +317,48 @@ async function verifyNextBuild({ consumer, component }) {
     "deployment-detail-01": [
       'import { DeploymentDetail, deploymentDetailDemoData } from "@/components/blocks/deployment-detail-01";',
       'export default function Page() { return <DeploymentDetail data={deploymentDetailDemoData} />; }',
+      '',
+    ].join("\n"),
+    "zaiops-operations-01": [
+      '"use client";',
+      'import { ZaiopsOperations } from "@/components/blocks/zaiops-operations-01";',
+      'export default function Page() { return <ZaiopsOperations />; }',
+    ].join("\n"),
+    "cluster-environment-detail-01": [
+      '"use client";',
+      'import { ClusterEnvironmentDetail } from "@/components/blocks/cluster-environment-detail-01";',
+      'export default function Page() { return <ClusterEnvironmentDetail />; }',
+    ].join("\n"),
+    "inspection-report-list-01": [
+      '"use client";',
+      'import { InspectionReportList } from "@/components/blocks/inspection-report-list-01";',
+      'export default function Page() { return <InspectionReportList />; }',
+    ].join("\n"),
+    "service-management-01": [
+      '"use client";',
+      'import { ServiceManagement } from "@/components/blocks/service-management-01";',
+      'export default function Page() { return <ServiceManagement />; }',
+    ].join("\n"),
+    "operations-workspace-shell-01": [
+      '"use client";',
+      'import { OperationsWorkspaceShell } from "@/components/blocks/operations-workspace-shell-01";',
+      'export default function Page() { return <OperationsWorkspaceShell title="Verify" activeNavigation="home" />; }',
+    ].join("\n"),
+    "list-pagination": [
+      '"use client";',
+      'import { ListPagination } from "@/components/ui/list-pagination";',
+      'export default function Page() { return <ListPagination total={11} page={0} pageSize={5} onPageChange={() => {}} onPageSizeChange={() => {}} />; }',
+    ].join("\n"),
+    "cluster-environment-list-01": [
+      '"use client";',
+      'import { ClusterEnvironmentList } from "@/components/blocks/cluster-environment-list-01";',
+      'export default function Page() { return <ClusterEnvironmentList state="stale" refreshing onRefresh={async () => {}} onRetry={async () => {}} />; }',
+      '',
+    ].join("\n"),
+    "monitoring-alert-list-01": [
+      '"use client";',
+      'import { MonitoringAlertList } from "@/components/blocks/monitoring-alert-list-01";',
+      'export default function Page() { return <MonitoringAlertList state="error" retainDataOnError onRefresh={async () => {}} onRetry={async () => {}} />; }',
       '',
     ].join("\n"),
     "project-monitor-01": [
@@ -392,8 +466,23 @@ async function verifyNextBuild({ consumer, component }) {
       '',
     ].join("\n"),
   };
-  const source = styles ? consumerStyleExample("next") : examples[component];
+  examples["file-upload-01"] = [
+    '"use client";',
+    'import { FileUpload } from "@/components/blocks/file-upload-01";',
+    'export default function Page() { return <FileUpload items={[{ id: "verified", name: "verified.txt", size: 1024, uploadedBytes: 512, status: "uploading" }]} />; }',
+    '',
+  ].join("\n");
+  examples["badge"] = "\"use client\";\nimport { Badge } from \"@/components/ui/badge\";\nexport default function Page() { return <Badge variant=\"strong\" status=\"danger\">Install verified</Badge>; }\n";
+  examples["availability-monitor-01"] = "\"use client\";\nimport { AvailabilityMonitor } from \"@/components/blocks/availability-monitor-01\";\nexport default function Page() { return <AvailabilityMonitor chartData={[{ timestamp: 1788836400000, routed: 0, direct: null }]} />; }\n";
+  examples["model-detail-02"] = "\"use client\";\nimport { ModelDetail02 } from \"@/components/blocks/model-detail-02\";\nexport default function Page() { return <ModelDetail02 />; }\n";
+  examples["file-manager-01"] = "\"use client\";\nimport { FileManager } from \"@/components/blocks/file-manager-01\";\nexport default function Page() { return <FileManager items={[]} error=\"Install verified\" />; }\n";
+  const unifiedSource = unificationConsumerExample(component, "next");
+  let source = styles ? consumerStyleExample("next") : unifiedSource ?? examples[component];
   if (!source) return;
+  if (verifyUnification && !unifiedSource && !styles) {
+    source = source.replace("export default function Page", "function InstalledDemo")
+      + `\nexport default function Page() { return <main data-consumer="${component}"><InstalledDemo /></main>; }\n`;
+  }
   await writeFile(join(consumer, "app", "page.tsx"), source);
   await command("npx", ["next", "build"], { cwd: consumer });
   await assertCompiledUtilities(join(consumer, ".next", "static", "css"), component);
@@ -434,27 +523,69 @@ async function assertViteRejectsNextBlock({ consumer, tarball }) {
   throw new Error("Vite consumer unexpectedly accepted the Next.js-only login-01 Block");
 }
 
-async function installViteComponent({ consumer, component, tarball }) {
+async function installViteComponent({ consumer, component, tarball, manager = "npm" }) {
+  if (manager === "pnpm") await command("pnpm", ["add", "--save-dev", "--ignore-scripts", tarball], { cwd: consumer });
+  const cli = async (args) => command(manager, manager === "npm"
+    ? ["exec", "--yes", "--package", tarball, "--", "zeron-ui", ...args]
+    : ["exec", "zeron-ui", ...args], { cwd: consumer, env: { ...process.env, XDG_CACHE_HOME: join(work, "cache") } });
   if (component === "button") {
     await rm(join(consumer, "components.json"));
-    await command("npm", ["exec", "--yes", "--package", tarball, "--", "zeron-ui", "init", "--yes", "--cwd", consumer, "--registry", baseUrl], {
-      env: { ...process.env, XDG_CACHE_HOME: join(work, "cache") },
-    });
+    await cli(["init", "--yes", "--cwd", consumer, "--registry", baseUrl]);
     await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
     if (styles) await verifyInitializedConsumer(consumer, "vite");
   }
-  await runNpmCli({ consumer, component, tarball });
+  const args = ["add", component, ...(styles ? ["input", "card", "dialog"] : []), "--yes", "--cwd", consumer, "--registry", baseUrl];
+  await cli(args);
   await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
   if (component === "button") {
-    await runNpmCli({ consumer, component, tarball, overwrite: true });
+    await cli([...args, "--overwrite"]);
     await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
   }
   const examples = {
-    "transaction-details-01": [
+    ...Object.fromEntries([
+      ["zaiops-operations-01", "ZaiopsOperations"],
+      ["cluster-environment-list-01", "ClusterEnvironmentList"],
+      ["cluster-environment-detail-01", "ClusterEnvironmentDetail"],
+      ["inspection-report-list-01", "InspectionReportList"],
+      ["monitoring-alert-list-01", "MonitoringAlertList"],
+      ["service-management-01", "ServiceManagement"],
+    ].map(([name, exported]) => [name, [
       'import { createRoot } from "react-dom/client";',
-      'import { TransactionDetails, transactionDetailsDemoData } from "@/src/components/blocks/transaction-details-01";',
+      `import { ${exported} } from "@/src/components/blocks/${name}";`,
       'import "./index.css";',
-      'createRoot(document.getElementById("root")!).render(<TransactionDetails transactionId={transactionDetailsDemoData.id} data={transactionDetailsDemoData} />);',
+      `createRoot(document.getElementById("root")!).render(<${exported} />);`,
+    ].join("\n")])),
+    "integration-monitors-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { IntegrationMonitors, createIntegrationMonitorsDemoData } from "@/src/components/blocks/integration-monitors-01";',
+      'import "./index.css";',
+      'const data = createIntegrationMonitorsDemoData();',
+      'createRoot(document.getElementById("root")!).render(<IntegrationMonitors scopeId={data.scopeId} data={data} />);',
+    ].join("\n"),
+    "chart": [
+      'import { createRoot } from "react-dom/client";',
+      'import { TimeSeriesChart, DonutSummary } from "@/src/components/ui/chart";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<div><TimeSeriesChart data={[{ timestamp: 1791158400000, values: { requests: 12 } }]} series={[{ id: "requests", label: "Requests" }]} locale="en" timeZone="UTC" label="Requests" /><DonutSummary segments={[{ id: "used", label: "Used", value: 80 }]} total={100} aria-label="80 of 100" center="80 / 100" /></div>);',
+    ].join("\n"),
+    "chart-primitives": [
+      'import { createRoot } from "react-dom/client";',
+      'import { ChartLegend, SegmentedBar } from "@/src/components/ui/chart-primitives";',
+      'import "./index.css";',
+      'const segments = [{ id: "files", label: "Files", value: 80 }];',
+      'createRoot(document.getElementById("root")!).render(<div><SegmentedBar mode="capacity" total={100} segments={segments} valueText="80 / 100" /><ChartLegend items={[{ id: "files", label: "Files", value: "80" }]} /></div>);',
+    ].join("\n"),
+    "getting-started-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { GettingStarted, gettingStartedDemoTasks } from "@/src/components/blocks/getting-started-01";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<GettingStarted tasks={gettingStartedDemoTasks} />);',
+    ].join("\n"),
+    "ai-gateway-overview-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { AiGatewayOverview, createAiGatewayOverviewDemoData } from "@/src/components/blocks/ai-gateway-overview-01";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<AiGatewayOverview data={createAiGatewayOverviewDemoData("30d")} range="30d" />);',
     ].join("\n"),
     "deployment-detail-01": [
       'import { createRoot } from "react-dom/client";',
@@ -463,12 +594,6 @@ async function installViteComponent({ consumer, component, tarball }) {
       'createRoot(document.getElementById("root")!).render(<DeploymentDetail data={deploymentDetailDemoData} />);',
       '',
     ].join("\n"),
-    "getting-started-01": [
-      'import { createRoot } from "react-dom/client";',
-      'import { GettingStarted, gettingStartedDemoTasks } from "@/src/components/blocks/getting-started-01";',
-      'import "./index.css";',
-      'createRoot(document.getElementById("root")!).render(<GettingStarted tasks={gettingStartedDemoTasks} />);',
-    ].join("\n"),
     "cost-estimate-01": [
       'import { createRoot } from "react-dom/client";',
       'import { useState } from "react";',
@@ -476,6 +601,24 @@ async function installViteComponent({ consumer, component, tarball }) {
       'import "./index.css";',
       'function Demo() { const [value, setValue] = useState(costEstimateDemoInputs); return <CostEstimate value={value} onValueChange={setValue} rateCard={costEstimateDemoRateCards[value.regionId]} regions={costEstimateDemoRegions} />; }',
       'createRoot(document.getElementById("root")!).render(<Demo />);',
+    ].join("\n"),
+    "support-analytics-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { useState } from "react";',
+
+      'import { SupportAnalytics, createSupportAnalyticsDemoData, type SupportAnalyticsQuery } from "@/src/components/blocks/support-analytics-01";',
+
+      'import "./index.css";',
+
+      'function Demo() { const [query, setQuery] = useState<SupportAnalyticsQuery>({ range: "this-week", channel: "all" }); return <SupportAnalytics scopeId="support-demo" data={createSupportAnalyticsDemoData(query)} {...query} onRangeChange={(range) => setQuery({ ...query, range })} onChannelChange={(channel) => setQuery({ ...query, channel })} />; }',
+
+      'createRoot(document.getElementById("root")!).render(<Demo />);',
+    ].join("\n"),
+    "transaction-details-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { TransactionDetails, transactionDetailsDemoData } from "@/src/components/blocks/transaction-details-01";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<TransactionDetails transactionId={transactionDetailsDemoData.id} data={transactionDetailsDemoData} />);',
     ].join("\n"),
     "security-overview-01": [
       'import { createRoot } from "react-dom/client";',
@@ -578,12 +721,40 @@ async function installViteComponent({ consumer, component, tarball }) {
       'createRoot(document.getElementById("root")!).render(<FileTree aria-label="Install verified" items={[{ key: "file:verified", type: "file", label: "Install verified.txt", extension: "txt" }]} />);',
       '',
     ].join("\n"),
+    "operations-workspace-shell-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { OperationsWorkspaceShell } from "@/src/components/blocks/operations-workspace-shell-01";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<OperationsWorkspaceShell title="Verify" activeNavigation="home" />);',
+    ].join("\n"),
+    "list-pagination": [
+      'import { createRoot } from "react-dom/client";',
+      'import { ListPagination } from "@/src/components/ui/list-pagination";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<ListPagination total={11} page={0} pageSize={5} onPageChange={() => {}} onPageSizeChange={() => {}} />);',
+    ].join("\n"),
   };
-  const source = styles ? consumerStyleExample("vite") : examples[component];
+  examples["file-upload-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { FileUpload } from "@/src/components/blocks/file-upload-01";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<FileUpload items={[{ id: "verified", name: "verified.txt", size: 1024, uploadedBytes: 512, status: "uploading" }]} />);',
+    '',
+  ].join("\n");
+  examples["badge"] = "import { Badge } from \"@/src/components/ui/badge\";\nexport default function App() { return <Badge variant=\"strong\" status=\"danger\">Install verified</Badge>; }\n";
+  examples["availability-monitor-01"] = "import { AvailabilityMonitor } from \"@/src/components/blocks/availability-monitor-01\";\nexport default function App() { return <AvailabilityMonitor chartData={[{ timestamp: 1788836400000, routed: 0, direct: null }]} />; }\n";
+  examples["model-detail-02"] = "import { ModelDetail02 } from \"@/src/components/blocks/model-detail-02\";\nexport default function App() { return <ModelDetail02 />; }\n";
+  examples["file-manager-01"] = "import { FileManager } from \"@/src/components/blocks/file-manager-01\";\nexport default function App() { return <FileManager items={[]} error=\"Install verified\" />; }\n";
+  const unifiedSource = unificationConsumerExample(component, "vite");
+  let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component];
   if (!source) throw new Error(`No Vite entry example is defined for ${component}`);
+  if (verifyUnification && !unifiedSource && !styles) {
+    source = source.replace(/\.render\(([\s\S]+)\);?\s*$/, `.render(<main data-consumer="${component}">$1</main>);\n`);
+  }
   await writeFile(join(consumer, "src", "main.tsx"), source);
   await command("npx", ["tsc", "--noEmit"], { cwd: consumer });
-  await command("npm", ["run", "build"], { cwd: consumer });
+  await command(manager, ["run", "build"], { cwd: consumer });
+  if (manager === "pnpm" && await exists(join(consumer, "package-lock.json"))) throw new Error(`${component}: Vite pnpm consumer created package-lock.json`);
   await assertCompiledUtilities(join(consumer, "dist", "assets"), component);
   if (styles) await verifyConsumerStyles({ consumer, framework: "vite", phase: "components" });
 }
@@ -604,16 +775,24 @@ try {
       await mkdir(consumer, { recursive: true });
       await writeConsumer(consumer, manager, { starter: component === "button" });
       await installWithCli({ consumer, component, manager, tarball });
+      if (verifyFeedback && ["badge", "alert", "inline-notice"].includes(component)) {
+        await verifyFeedbackConsumer({ consumer, framework: "next", component, packageManager: manager, registrySnapshot });
+      }
+      if (verifyUnification) await verifyUnificationConsumer({ consumer, framework: "next", component, packageManager: manager, registrySnapshot });
       console.log(`Consumer passed: ${manager}/${component}`);
       if (!keepConsumers) await rm(consumer, { recursive: true, force: true });
     }
   }
-  for (const component of viteComponents) {
-    const consumer = join(work, `vite-${component}`);
+  for (const manager of vitePackageManagers) for (const component of viteComponents) {
+    const consumer = join(work, `vite-${manager}-${component}`);
     await mkdir(consumer, { recursive: true });
-    await writeViteConsumer(consumer);
-    await installViteComponent({ consumer, component, tarball });
-    console.log(`Consumer passed: vite/${component}`);
+    await writeViteConsumer(consumer, manager);
+    await installViteComponent({ consumer, component, tarball, manager });
+    if (verifyFeedback && ["badge", "alert", "inline-notice"].includes(component)) {
+      await verifyFeedbackConsumer({ consumer, framework: "vite", component, packageManager: manager, registrySnapshot });
+    }
+    if (verifyUnification) await verifyUnificationConsumer({ consumer, framework: "vite", component, packageManager: manager, registrySnapshot });
+    console.log(`Consumer passed: ${manager === "npm" ? "vite" : "vite-pnpm"}/${component}`);
     if (!keepConsumers) await rm(consumer, { recursive: true, force: true });
   }
   if (!styles) {
