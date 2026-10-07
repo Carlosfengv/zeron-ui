@@ -4,7 +4,7 @@ import * as React from "react";
 import type { Cell, TableMeta } from "@tanstack/react-table";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { DateCell, FileCell, NumberCell, ShortTextCell, UrlCell } from "../packages/ui/src/components/data-grid/data-grid-cell-variants";
+import { CheckboxCell, DateCell, FileCell, LongTextCell, MultiSelectCell, NumberCell, SelectCell, ShortTextCell, UrlCell } from "../packages/ui/src/components/data-grid/data-grid-cell-variants";
 import type { DataGridCellProps, FileCellData } from "../packages/ui/src/system/data-grid-types";
 
 beforeAll(() => {
@@ -12,6 +12,7 @@ beforeAll(() => {
     addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {},
   }));
   globalThis.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
+  HTMLElement.prototype.scrollIntoView = vi.fn();
 });
 afterEach(cleanup);
 
@@ -40,6 +41,87 @@ function edit(editor: HTMLElement, value: string) {
 }
 
 describe("DataGrid editor cancellation and read-only state", () => {
+  it("closes the multi-select editor on Escape from its search input", async () => {
+    const onDataUpdate = vi.fn();
+    const onExit = vi.fn();
+    function Demo() {
+      const [editing, setEditing] = React.useState(true);
+      const options = props(["design"], { onDataUpdate, onCellEditingStop: () => { onExit(); setEditing(false); } });
+      options.cell.column.columnDef.meta = { cell: { variant: "multi-select", options: [{ value: "design", label: "Design" }] } };
+      return <MultiSelectCell {...options} isEditing={editing} />;
+    }
+    render(<Demo />);
+    const input = await screen.findByRole("combobox");
+    fireEvent.keyDown(input, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onDataUpdate).not.toHaveBeenCalled();
+  });
+
+  it("does not remove a selected tag on an IME Backspace", async () => {
+    const onDataUpdate = vi.fn();
+    const options = props(["design"], { onDataUpdate });
+    options.cell.column.columnDef.meta = { cell: { variant: "multi-select", options: [{ value: "design", label: "Design" }] } };
+    render(<MultiSelectCell {...options} />);
+    fireEvent.keyDown(await screen.findByRole("combobox"), { key: "Backspace", isComposing: true });
+    expect(onDataUpdate).not.toHaveBeenCalled();
+    expect(screen.getByRole("dialog").textContent).toContain("Design");
+  });
+
+  it("toggles a focused checkbox without entering an unsupported editing state", () => {
+    const onDataUpdate = vi.fn();
+    const onCellEditingStart = vi.fn();
+    const { container } = render(<CheckboxCell {...props(false, { onDataUpdate, onCellEditingStart })} />);
+    fireEvent.click(container.querySelector('[data-slot="grid-cell-wrapper"]')!);
+    expect(onDataUpdate).toHaveBeenCalledExactlyOnceWith({ rowIndex: 0, columnId: "value", value: true });
+    expect(onCellEditingStart).not.toHaveBeenCalled();
+  });
+
+  it("keeps the table cell object out of DOM attributes", () => {
+    const { container } = render(<ShortTextCell {...props("original")} />);
+    expect(container.querySelector('[data-slot="grid-cell-wrapper"]')?.hasAttribute("cell")).toBe(false);
+  });
+
+  it.each([
+    { name: "text", Component: ShortTextCell, key: "Enter", event: { isComposing: true } },
+    { name: "URL", Component: UrlCell, key: "Enter", event: { keyCode: 229 } },
+    { name: "long text", Component: LongTextCell, key: "Escape", event: { isComposing: true } },
+  ])("leaves IME candidate confirmation/cancellation to the $name editor", async ({ Component, key, event }) => {
+    const onDataUpdate = vi.fn();
+    const onCellEditingStop = vi.fn();
+    render(<Component {...props("original", { onDataUpdate, onCellEditingStop })} />);
+    const editor = await screen.findByRole("textbox");
+    fireEvent.keyDown(editor, { key, ...event });
+    expect(onDataUpdate).not.toHaveBeenCalled();
+    expect(onCellEditingStop).not.toHaveBeenCalled();
+    expect(screen.getByRole("textbox")).toBe(editor);
+  });
+
+  it("keeps a select editor open through the rest of its opening gesture", async () => {
+    const onDataUpdate = vi.fn();
+    const onCellEditingStop = vi.fn();
+    const options = props("design", { onDataUpdate, onCellEditingStop });
+    options.cell.column.columnDef.meta = { cell: { variant: "select", options: [
+      { value: "design", label: "Design" }, { value: "hosting", label: "Hosting" },
+    ] } };
+    render(<SelectCell {...options} />);
+    await screen.findByRole("listbox");
+    const trigger = screen.getByRole("combobox");
+    fireEvent.pointerDown(trigger, { button: 0, pointerType: "mouse" });
+    fireEvent.mouseDown(trigger, { button: 0, detail: 2 });
+    fireEvent.click(trigger, { detail: 2 });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(screen.getByRole("listbox")).toBeTruthy();
+    expect(onCellEditingStop).not.toHaveBeenCalled();
+    // The portal is in the React event path, but its option remains interactive.
+    const option = screen.getByRole("option", { name: "Hosting" });
+    act(() => option.focus());
+    fireEvent.keyDown(option, { key: "Enter" });
+    fireEvent.keyUp(option, { key: "Enter" });
+    expect(onDataUpdate).toHaveBeenCalledExactlyOnceWith({ rowIndex: 0, columnId: "value", value: "hosting" });
+    await waitFor(() => expect(onCellEditingStop).toHaveBeenCalledTimes(1));
+  });
+
   it("selects a local calendar date from the Dropdown panel", async () => {
     const onDataUpdate = vi.fn();
     const onCellEditingStop = vi.fn();

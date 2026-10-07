@@ -384,6 +384,12 @@ function useDataGrid<TData>({
       const currentTable = tableRef.current;
       const currentData = propsRef.current.data;
       const rows = currentTable?.getRowModel().rows;
+      const accessorPaths = new Map(
+        (currentTable?.getAllLeafColumns() ?? []).map((column) => {
+          const key = "accessorKey" in column.columnDef ? column.columnDef.accessorKey : undefined;
+          return [column.id, typeof key === "string" ? key.split(".") : [column.id]] as const;
+        }),
+      );
 
       const rowUpdatesMap = new Map<
         number,
@@ -425,7 +431,27 @@ function useDataGrid<TData>({
 
         const updatedRow = { ...existingRow } as Record<string, unknown>;
         for (const { columnId, value } of updates) {
-          updatedRow[columnId] = value;
+          // Resolve IDs to their accessor keys and clone only the nested path
+          // being written. Computed accessors keep the existing ID-based contract.
+          const path = accessorPaths.get(columnId) ?? [columnId];
+          let target = updatedRow;
+          for (const [pathIndex, key] of path.entries()) {
+            const isLeaf = pathIndex === path.length - 1;
+            const previous = target[key];
+            const nextValue = isLeaf ? value : Array.isArray(previous)
+              ? [...previous]
+              : { ...(previous && typeof previous === "object" ? previous : {}) };
+            // Preserve array length descriptors; define own keys so an accessor
+            // named __proto__ behaves as data rather than changing prototypes.
+            Object.defineProperty(target, key, {
+              configurable: true,
+              enumerable: true,
+              writable: true,
+              ...Object.getOwnPropertyDescriptor(target, key),
+              value: nextValue,
+            });
+            if (!isLeaf) target = nextValue as Record<string, unknown>;
+          }
         }
         return updatedRow as TData;
       });
@@ -1607,6 +1633,11 @@ function useDataGrid<TData>({
     (rowIndex: number, columnId: string) => {
       if (propsRef.current.readOnly) return;
 
+      // Checkbox cells commit directly; double-click and F2 must not leave
+      // the grid waiting for an editor that this variant never mounts.
+      const column = tableRef.current?.getAllLeafColumns().find((item) => item.id === columnId);
+      if (column?.columnDef.meta?.cell?.variant === "checkbox") return;
+
       store.batch(() => {
         store.setState("focusedCell", { rowIndex, columnId });
         store.setState("editingCell", { rowIndex, columnId });
@@ -2551,6 +2582,7 @@ function useDataGrid<TData>({
 
   const onDataGridKeyDown = React.useCallback(
     (event: KeyboardEvent) => {
+      if (event.isComposing || event.keyCode === 229) return;
       const navigableColumnIds = getNavigableColumnIds();
       const currentState = store.getState();
       const { key, ctrlKey, metaKey, shiftKey, altKey } = event;
@@ -3170,6 +3202,7 @@ function useDataGrid<TData>({
 
   React.useEffect(() => {
     function onGlobalKeyDown(event: KeyboardEvent) {
+      if (event.isComposing || event.keyCode === 229) return;
       const dataGridElement = dataGridRef.current;
       if (!dataGridElement) return;
 

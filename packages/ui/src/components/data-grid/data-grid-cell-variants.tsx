@@ -965,6 +965,18 @@ export function SelectCell<TData>({
   const selectedOption = options.find((option) => option.value === value);
   const displayLabel = selectedOption?.label ?? value;
 
+  const onEditorPointerEvent = React.useCallback(
+    (event: React.SyntheticEvent<HTMLDivElement>) => {
+      // The cell has already opened the editor. Consume the remainder of the
+      // opening gesture over its trigger, while portalled options still receive
+      // their events and outside presses continue to dismiss normally.
+      if (isEditing && event.currentTarget.contains(event.target as Node)) {
+        event.stopPropagation();
+      }
+    },
+    [isEditing],
+  );
+
   return (
     <DataGridCellWrapper<TData>
       ref={containerRef}
@@ -981,6 +993,9 @@ export function SelectCell<TData>({
       readOnly={readOnly}
       className={cn(!isEditing && "flex items-center")}
       onKeyDown={onWrapperKeyDown}
+      onPointerDownCapture={onEditorPointerEvent}
+      onMouseDownCapture={onEditorPointerEvent}
+      onClickCapture={onEditorPointerEvent}
     >
       {isEditing ? (
         <Select
@@ -1150,11 +1165,8 @@ export function MultiSelectCell<TData>({
           removeValue(lastValue);
         }
       }
-      // Prevent escape from propagating to close the popover immediately
-      // Let the command handle it first
-      if (event.key === "Escape") {
-        event.stopPropagation();
-      }
+      // Escape bubbles to the cell wrapper, which closes the editor. Command
+      // does not own dismissal; swallowing it here leaves the popup stuck open.
     },
     [searchValue, selectedValues, removeValue],
   );
@@ -1406,6 +1418,9 @@ export function DateCell<TData>({
           <PopoverContent
             data-grid-cell-editor=""
             data-slot="dropdown"
+            // Calendar autofocus owns the selected day; avoid a second focus
+            // pass through the popup's month/year controls during mounting.
+            initialFocus={false}
             anchor={containerRef}
             align="start"
             sideOffset={0}

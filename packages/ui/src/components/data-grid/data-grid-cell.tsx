@@ -31,15 +31,9 @@ export const DataGridCell = React.memo(DataGridCellImpl, (prev, next) => {
   if (prev.cell.column.columnDef !== next.cell.column.columnDef) return false;
   if (next.cell.column.columnDef.meta?.leading && prev.cell.row.original !== next.cell.row.original) return false;
 
-  // Check cell value using row.original instead of getValue() for stability
-  // getValue() is unstable and recreates on every render, breaking memoization
-  const prevValue = (prev.cell.row.original as Record<string, unknown>)[
-    prev.columnId
-  ];
-  const nextValue = (next.cell.row.original as Record<string, unknown>)[
-    next.columnId
-  ];
-  if (prevValue !== nextValue) {
+  // IDs can differ from accessor keys, and accessorFn values may depend on
+  // several fields. Compare TanStack's cached accessor results, not raw ID keys.
+  if (!Object.is(prev.cell.getValue(), next.cell.getValue())) {
     return false;
   }
 

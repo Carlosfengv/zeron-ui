@@ -123,6 +123,12 @@ function PopoverContent({
           )}
           data-grid-popover=""
           onKeyDownCapture={(event) => {
+            // Long-text editors are siblings of the cell wrapper in the React
+            // tree, so their portalled input needs the same IME boundary here.
+            if (event.nativeEvent.isComposing || event.keyCode === 229) {
+              event.stopPropagation();
+              return;
+            }
             onKeyDownCapture?.(event);
             if (event.defaultPrevented || event.key !== "Escape" || !onEscapeKeyDown) return;
             const escapeEvent = new Event("escapeKeyDown", { cancelable: true });

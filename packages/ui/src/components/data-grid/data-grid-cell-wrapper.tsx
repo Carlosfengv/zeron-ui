@@ -13,6 +13,7 @@ interface DataGridCellWrapperProps<TData>
     React.ComponentProps<"div"> {}
 
 export function DataGridCellWrapper<TData>({
+  cell: _cell,
   tableMeta,
   rowIndex,
   columnId,
@@ -26,6 +27,7 @@ export function DataGridCellWrapper<TData>({
   className,
   onClick: onClickProp,
   onKeyDown: onKeyDownProp,
+  onKeyDownCapture: onKeyDownCaptureProp,
   ref,
   ...props
 }: DataGridCellWrapperProps<TData>) {
@@ -51,8 +53,9 @@ export function DataGridCellWrapper<TData>({
   const onClick = React.useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       if (!isEditing) {
-        event.preventDefault();
         onClickProp?.(event);
+        if (event.defaultPrevented) return;
+        event.preventDefault();
         if (isFocused && !readOnly) {
           tableMeta?.onCellEditingStart?.(rowIndex, columnId);
         } else {
@@ -143,6 +146,19 @@ export function DataGridCellWrapper<TData>({
     ],
   );
 
+  const onKeyDownCapture = React.useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      // IME owns candidate confirmation/cancellation. Capture also protects
+      // nested editor handlers and the native grid listener.
+      if (event.nativeEvent.isComposing || event.keyCode === 229) {
+        event.stopPropagation();
+        return;
+      }
+      onKeyDownCaptureProp?.(event);
+    },
+    [onKeyDownCaptureProp],
+  );
+
   const onMouseDown = React.useCallback(
     (event: React.MouseEvent) => {
       if (!isEditing) {
@@ -202,6 +218,7 @@ export function DataGridCellWrapper<TData>({
       onMouseEnter={onMouseEnter}
       onMouseUp={onMouseUp}
       onKeyDown={onKeyDown}
+      onKeyDownCapture={onKeyDownCapture}
     />
   );
 }

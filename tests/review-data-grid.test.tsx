@@ -32,6 +32,116 @@ function clipboard(initial = "") {
 }
 
 describe("DataGrid source data integrity", () => {
+  it.each([{ isComposing: true }, { keyCode: 229 }])("does not intercept IME keys in global/native grid handlers: %j", (composition) => {
+    let grid: ReturnType<typeof useDataGrid<Item>>;
+    function Demo() {
+      grid = useDataGrid({ columns, data, enableSearch: true });
+      return <div ref={grid.dataGridRef} data-testid="grid" tabIndex={0}><input aria-label="Editor" /></div>;
+    }
+    render(<Demo />);
+    act(() => grid.tableMeta.onCellClick?.(0, "name"));
+    fireEvent.keyDown(screen.getByTestId("grid"), { key: "a", ctrlKey: true });
+    expect(grid!.tableMeta.selectionState?.selectedCells.size).toBe(3);
+    fireEvent.keyDown(screen.getByRole("textbox"), { key: "Escape", ...composition });
+    expect(grid!.tableMeta.selectionState?.selectedCells.size).toBe(3);
+    fireEvent.keyDown(screen.getByRole("textbox"), { key: "f", ctrlKey: true, ...composition });
+    expect(grid!.tableMeta.searchOpen).toBe(false);
+    fireEvent.keyDown(screen.getByTestId("grid"), { key: "Escape" });
+    expect(grid!.tableMeta.selectionState?.selectedCells.size).toBe(0);
+    fireEvent.keyDown(screen.getByTestId("grid"), { key: "f", ctrlKey: true });
+    expect(grid!.tableMeta.searchOpen).toBe(true);
+  });
+
+  it("writes an aliased column back to its accessor key", () => {
+    const onDataChange = vi.fn();
+    const definitions: ColumnDef<Item>[] = [{ id: "display", accessorKey: "name" }];
+    const { result } = renderHook(() => useDataGrid({ columns: definitions, data: [{ name: "Old" }], onDataChange }));
+    act(() => result.current.tableMeta.onDataUpdate?.({ rowIndex: 0, columnId: "display", value: "New" }));
+    expect(onDataChange).toHaveBeenCalledExactlyOnceWith([{ name: "New" }]);
+  });
+
+  it("preserves the ID-based write contract for computed accessors", () => {
+    const onDataChange = vi.fn();
+    const definitions: ColumnDef<Item>[] = [{ id: "display", accessorFn: (item) => item.name.toUpperCase() }];
+    const { result } = renderHook(() => useDataGrid({ columns: definitions, data: [{ name: "Old" }], onDataChange }));
+    act(() => result.current.tableMeta.onDataUpdate?.({ rowIndex: 0, columnId: "display", value: "New" }));
+    expect(onDataChange).toHaveBeenCalledExactlyOnceWith([{ name: "Old", display: "New" }]);
+  });
+
+  it("preserves arrays and untouched entries when writing a nested accessor", () => {
+    const values = [{ members: [{ name: "Old" }, { name: "Untouched" }] }];
+    const definitions: ColumnDef<(typeof values)[number]>[] = [{ id: "first", accessorKey: "members.0.name" }];
+    const onDataChange = vi.fn();
+    const { result } = renderHook(() => useDataGrid({ columns: definitions, data: values, onDataChange }));
+    act(() => result.current.tableMeta.onDataUpdate?.({ rowIndex: 0, columnId: "first", value: "New" }));
+    const next = onDataChange.mock.calls[0][0] as typeof values;
+    expect(next[0].members).toEqual([{ name: "New" }, { name: "Untouched" }]);
+    expect(next[0].members).not.toBe(values[0].members);
+    expect(next[0].members[1]).toBe(values[0].members[1]);
+    expect(values[0].members[0].name).toBe("Old");
+  });
+
+  it("writes an own __proto__ field without changing the record's prototype", () => {
+    type RecordData = { settings: Record<string, string> };
+    const values: RecordData[] = [{ settings: JSON.parse('{"__proto__":"Old"}') }];
+    const definitions: ColumnDef<RecordData>[] = [{ id: "setting", accessorKey: "settings.__proto__" }];
+    const onDataChange = vi.fn();
+    const { result } = renderHook(() => useDataGrid({ columns: definitions, data: values, onDataChange }));
+    act(() => result.current.tableMeta.onDataUpdate?.({ rowIndex: 0, columnId: "setting", value: "New" }));
+    const next = onDataChange.mock.calls[0][0] as RecordData[];
+    expect(Object.hasOwn(next[0].settings, "__proto__")).toBe(true);
+    expect(next[0].settings["__proto__"]).toBe("New");
+    expect(Object.getPrototypeOf(next[0].settings)).toBe(Object.prototype);
+    expect(values[0].settings["__proto__"]).toBe("Old");
+  });
+
+  it("immutably updates nested accessor paths without losing sibling fields", () => {
+    type Person = { profile: { name: string; role: string }; other: { active: boolean } };
+    const onDataChange = vi.fn();
+    const values = [{ profile: { name: "Old", role: "Designer" }, other: { active: true } }];
+    const definitions: ColumnDef<Person>[] = [
+      { id: "display", accessorKey: "profile.name" }, { id: "role", accessorKey: "profile.role" },
+    ];
+    const { result } = renderHook(() => useDataGrid({ columns: definitions, data: values, onDataChange }));
+    act(() => result.current.tableMeta.onDataUpdate?.([
+      { rowIndex: 0, columnId: "display", value: "New" },
+      { rowIndex: 0, columnId: "role", value: "Engineer" },
+    ]));
+    const next = onDataChange.mock.calls[0][0] as Person[];
+    expect(next).toEqual([{ profile: { name: "New", role: "Engineer" }, other: { active: true } }]);
+    expect(next[0].profile).not.toBe(values[0].profile);
+    expect(next[0].other).toBe(values[0].other);
+    expect(values[0].profile).toEqual({ name: "Old", role: "Designer" });
+  });
+
+  it("keeps checkbox cells out of editing even when activated through grid metadata", () => {
+    const definitions: ColumnDef<{ checked: boolean }>[] = [{
+      accessorKey: "checked", meta: { cell: { variant: "checkbox" } },
+    }];
+    const { result } = renderHook(() => useDataGrid({ columns: definitions, data: [{ checked: false }] }));
+    act(() => result.current.tableMeta.onCellClick?.(0, "checked"));
+    act(() => result.current.tableMeta.onCellEditingStart?.(0, "checked"));
+    expect(result.current.editingCell).toBeNull();
+    act(() => result.current.tableMeta.onCellDoubleClick?.(0, "checked"));
+    expect(result.current.editingCell).toBeNull();
+    expect(result.current.focusedCell).toEqual({ rowIndex: 0, columnId: "checked" });
+  });
+
+  it.each(["alias", "computed"])("refreshes a %s accessor cell when its source fields change", (kind) => {
+    type Person = { first: string; last: string };
+    const definitions: ColumnDef<Person>[] = [kind === "alias"
+      ? { id: "display", accessorKey: "first", header: "Name" }
+      : { id: "display", accessorFn: (person) => `${person.first} ${person.last}`, header: "Name" }];
+    function Demo({ values }: { values: Person[] }) {
+      const grid = useDataGrid({ columns: definitions, data: values });
+      return <DataGrid {...grid} virtualItems={[{ index: 0, key: 0, start: 0, end: 36, size: 36, lane: 0 }]} virtualTotalSize={36} />;
+    }
+    const { rerender } = render(<Demo values={[{ first: "Old", last: "Name" }]} />);
+    expect(screen.getByRole("textbox").textContent).toBe(kind === "alias" ? "Old" : "Old Name");
+    rerender(<Demo values={[{ first: "New", last: "Name" }]} />);
+    expect(screen.getByRole("textbox").textContent).toBe(kind === "alias" ? "New" : "New Name");
+  });
+
   it.each([
     { readOnly: false, addRow: false },
     { readOnly: false, addRow: true },
