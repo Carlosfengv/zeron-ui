@@ -10,21 +10,26 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "#system/utils";
 
 const avatarVariants = cva(
-  "group/avatar relative flex shrink-0 select-none after:pointer-events-none after:absolute after:inset-0 after:border after:border-border",
+  "group/avatar relative flex shrink-0 select-none after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:border after:border-border",
   {
     variants: {
       size: {
         sm: "size-6",
+        md: "size-8",
         default: "size-8",
         lg: "size-10",
       },
       shape: {
-        circle: "rounded-full after:rounded-full",
-        rounded: "rounded-xl after:rounded-xl",
+        circle: "rounded-full",
+        rounded: "rounded-xl",
+        "rounded-md": "rounded-md",
       },
     },
+    compoundVariants: [
+      { size: "sm", shape: "rounded", className: "rounded-md" },
+    ],
     defaultVariants: {
-      size: "default",
+      size: "md",
       shape: "circle",
     },
   }
@@ -36,7 +41,9 @@ type AvatarShape = NonNullable<VariantProps<typeof avatarVariants>["shape"]>;
 interface AvatarProps
   extends Omit<AvatarPrimitive.Root.Props, "className" | "ref"> {
   className?: string;
+  /** sm: 24px, md: 32px, lg: 40px. default is a legacy alias for md. */
   size?: AvatarSize;
+  /** Rounded corners scale with size; rounded-md retains a fixed md radius. */
   shape?: AvatarShape;
 }
 
@@ -67,7 +74,7 @@ interface AvatarWithDetailsProps
 }
 
 const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
-  ({ className, size = "default", shape = "circle", ...props }, ref) => (
+  ({ className, size = "md", shape = "circle", ...props }, ref) => (
     <AvatarPrimitive.Root
       ref={ref}
       data-slot="avatar"
@@ -87,7 +94,7 @@ const AvatarImage = forwardRef<HTMLImageElement, AvatarImageProps>(
       ref={ref}
       data-slot="avatar-image"
       className={cn(
-        "absolute inset-0 aspect-square size-full object-cover group-data-[shape=circle]/avatar:rounded-full group-data-[shape=rounded]/avatar:rounded-xl",
+        "absolute inset-0 aspect-square size-full rounded-[inherit] object-cover",
         "data-[loading]:invisible data-[error]:invisible",
         className
       )}
@@ -104,7 +111,7 @@ const AvatarFallback = forwardRef<HTMLSpanElement, AvatarFallbackProps>(
       ref={ref}
       data-slot="avatar-fallback"
       className={cn(
-        "absolute inset-0 flex size-full items-center justify-center bg-muted text-label text-fg-muted group-data-[shape=circle]/avatar:rounded-full group-data-[shape=rounded]/avatar:rounded-xl group-data-[size=lg]/avatar:text-body",
+        "absolute inset-0 flex size-full items-center justify-center rounded-[inherit] bg-muted text-label text-fg-muted group-data-[size=lg]/avatar:text-body",
         className
       )}
       {...props}
@@ -122,6 +129,7 @@ const AvatarBadge = forwardRef<HTMLSpanElement, AvatarBadgeProps>(
       className={cn(
         "absolute end-0 bottom-0 z-content inline-flex items-center justify-center rounded-full bg-brand text-fg-on-brand ring-2 ring-surface-floating select-none",
         "group-data-[size=sm]/avatar:size-2 group-data-[size=sm]/avatar:[&>svg]:hidden",
+        "group-data-[size=md]/avatar:size-2.5 group-data-[size=md]/avatar:[&>svg]:size-2",
         "group-data-[size=default]/avatar:size-2.5 group-data-[size=default]/avatar:[&>svg]:size-2",
         "group-data-[size=lg]/avatar:size-3 group-data-[size=lg]/avatar:[&>svg]:size-2",
         className

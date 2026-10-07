@@ -51,14 +51,14 @@ describe("Avatar", () => {
 
     expect(circle.getAttribute("data-shape")).toBe("circle");
     expect(circle.classList.contains("rounded-full")).toBe(true);
-    expect(circle.classList.contains("after:rounded-full")).toBe(true);
+    expect(circle.classList.contains("after:rounded-[inherit]")).toBe(true);
     expect(rounded.getAttribute("data-shape")).toBe("rounded");
     expect(rounded.classList.contains("rounded-xl")).toBe(true);
-    expect(rounded.classList.contains("after:rounded-xl")).toBe(true);
+    expect(rounded.classList.contains("after:rounded-[inherit]")).toBe(true);
     expect(
       screen
         .getByText("R")
-        .classList.contains("group-data-[shape=rounded]/avatar:rounded-xl")
+        .classList.contains("rounded-[inherit]")
     ).toBe(true);
   });
 

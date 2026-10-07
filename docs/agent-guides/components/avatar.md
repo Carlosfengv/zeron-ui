@@ -18,12 +18,12 @@ related:
 
 ## Agent intent
 
-使用 Avatar 表示人物、智能体、团队或账号身份。始终同时提供 `AvatarImage` 和 `AvatarFallback`，让图片加载失败或尚未完成时仍有可识别内容。
+使用 Avatar 表示人物、智能体、团队或账号身份。使用图片时同时提供 `AvatarImage` 和 `AvatarFallback`，让图片加载失败或尚未完成时仍有可识别内容。仅显示首字母时可只使用 Fallback；已打包的可信品牌 SVG 可作为装饰内容放入 Avatar，由相邻文字提供名称。
 
 生成或修改界面时，必须遵守以下规则：
 
-- 默认使用 `size="default"`，即 32px。只有高密度界面使用 `sm`，明确需要更高身份强调时才使用 `lg`。
-- 默认使用 `shape="circle"`；产品表面需要较柔和的方形头像、智能体图标或品牌图标时使用 `shape="rounded"`（`rounded-xl`）。
+- 默认使用 `size="md"`，即 32px；`sm`（24px）用于单行文字与紧凑表格，`md` 用于姓名加描述的两行组合，明确需要更高身份强调时才使用 `lg`（40px）。原有 `default` 保留为 `md` 的兼容别名。
+- 默认使用 `shape="circle"`；方形头像、智能体图标或品牌图标使用 `shape="rounded"`，组件按尺寸选择圆角：`sm` 为 `rounded-md`，`md` / `lg` 为 `rounded-xl`。原有 `shape="rounded-md"` 保留为固定 md 圆角的兼容写法。
 - `AvatarWithDetails` 使用正常正文与辅助文字密度，不会自动放大内部 Avatar；需要其他头像尺寸时直接设置 Avatar 的 `size`。
 - 图片旁边已经显示同一个姓名时，`AvatarImage` 使用 `alt=""`，避免读屏重复播报；没有相邻姓名时提供可识别人物或账号的 alt。
 - 文本徽章放入 `AvatarWithDetails.badge` 并使用 Badge；`AvatarBadge` 只用于头像右下角的状态点或小图标。
@@ -59,9 +59,10 @@ related:
 
 | Avatar size | 尺寸 | 使用场景 |
 | --- | --- | --- |
-| `sm` | 24px | 高密度表格、紧凑工具栏、次要成员标识 |
-| `default` | 32px | 默认账号、列表、评论和详情组合 |
+| `sm` | 24px | 单行文字、高密度表格、紧凑工具栏、次要成员标识 |
+| `md`（默认） | 32px | 两行文字、默认账号、列表、评论和详情组合 |
 | `lg` | 40px | 账号菜单头部、成员卡片等明确强调身份的区域 |
+| `default` | 32px | `md` 的兼容别名，新代码优先使用 `md` |
 
 不要通过 `className="size-*"` 创建未定义的头像尺寸。尺寸会同时影响回退文字、角标和头像组计数；应使用公开的 `size` API 保持组合一致。
 
@@ -72,9 +73,22 @@ related:
 | Avatar shape | 圆角 | 使用场景 |
 | --- | --- | --- |
 | `circle` | `rounded-full` | 默认人物头像与成员头像 |
-| `rounded` | `rounded-xl` | 智能体、品牌账号或需要圆角矩形轮廓的头像 |
+| `rounded` | `sm` 为 `rounded-md`；`md` / `lg` 为 `rounded-xl` | 单行工具 Logo、智能体、品牌账号；圆角随尺寸统一调整 |
+| `rounded-md` | 固定 `rounded-md` | 保留的兼容写法，新代码优先使用 `rounded` |
 
-`shape` 会同时作用于 Avatar 根节点、图片、Fallback 和边框，不要分别覆盖子组件圆角。`AvatarBadge` 始终保持圆形状态点。AvatarGroup 中的 Avatar 应使用一致的 `shape`；`AvatarGroupCount` 保持圆形计数标记。
+`size` 与 `shape` 共同决定根节点圆角，图片、Fallback 和边框继承该圆角，不要分别覆盖子组件。`AvatarBadge` 始终保持圆形状态点。AvatarGroup 中的 Avatar 应使用一致的 `shape`；`AvatarGroupCount` 保持圆形计数标记。
+
+```tsx
+// 单行工具名称：24px，自动使用 rounded-md。
+<Avatar size="sm" shape="rounded"><AvatarFallback>FG</AvatarFallback></Avatar>
+
+// 姓名加描述：32px，自动使用 rounded-xl。
+<AvatarWithDetails
+  avatar={<Avatar size="md" shape="rounded"><AvatarFallback>AJ</AvatarFallback></Avatar>}
+  name="Alex Johnson"
+  description="Founder & CEO"
+/>
+```
 
 ## Image and fallback rules
 
@@ -113,7 +127,7 @@ import {
 
 <AvatarWithDetails
   avatar={
-    <Avatar>
+    <Avatar size="md">
       <AvatarImage src="/alex.jpg" alt="" />
       <AvatarFallback>AJ</AvatarFallback>
     </Avatar>
@@ -157,9 +171,9 @@ import {
 
 ## Verification checklist
 
-- [ ] 每个 Avatar 同时包含 Image 和 Fallback。
-- [ ] Avatar 尺寸来自 `sm`、`default` 或 `lg`，默认场景没有任意尺寸覆盖。
-- [ ] Avatar 形态来自 `circle` 或 `rounded`，同一 AvatarGroup 内保持一致。
+- [ ] 图片头像同时包含 Image 和 Fallback；首字母或可信 SVG 的用法保持可识别名称。
+- [ ] Avatar 尺寸来自 `sm`、`md` 或 `lg`，`default` 只作为兼容别名；没有任意尺寸覆盖。
+- [ ] Avatar 形态来自 `circle`、`rounded` 或 `rounded-md`，同一 AvatarGroup 内保持一致。
 - [ ] 图片 alt 不会与紧邻姓名重复播报。
 - [ ] AvatarBadge 的状态不只靠颜色表达。
 - [ ] 文本标签使用 Badge，而不是 AvatarBadge。

@@ -70,7 +70,7 @@ const userDetailsCode = `import {
 
 <AvatarWithDetails
   avatar={
-    <Avatar shape="rounded">
+    <Avatar size="md" shape="rounded">
       <AvatarImage src="/profile.jpg" alt="" />
       <AvatarFallback>AJ</AvatarFallback>
     </Avatar>
@@ -94,9 +94,9 @@ const groupCode = `<AvatarGroup role="group" aria-label="Project members">
 </AvatarGroup>`;
 
 const sizesCode = `<div className="flex items-center gap-3">
-  <Avatar size="sm"><AvatarFallback>CN</AvatarFallback></Avatar>
-  <Avatar><AvatarFallback>CN</AvatarFallback></Avatar>
-  <Avatar size="lg"><AvatarFallback>CN</AvatarFallback></Avatar>
+  <Avatar size="sm" shape="rounded"><AvatarFallback>CN</AvatarFallback></Avatar>
+  <Avatar size="md" shape="rounded"><AvatarFallback>CN</AvatarFallback></Avatar>
+  <Avatar size="lg" shape="rounded"><AvatarFallback>CN</AvatarFallback></Avatar>
 </div>`;
 
 const fallbackCode = `<Avatar>
@@ -168,7 +168,7 @@ function AvatarPlayground() {
   const t = useTranslations("avatar");
   const [content, setContent] = useState<PlaygroundContent>("details");
   const [shape, setShape] = useState<AvatarShape>("rounded");
-  const [size, setSize] = useState<AvatarSize>("default");
+  const [size, setSize] = useState<AvatarSize>("md");
   const [showStatus, setShowStatus] = useState(true);
 
   const randomize = () => {
@@ -176,7 +176,7 @@ function AvatarPlayground() {
       values[Math.floor(Math.random() * values.length)];
     setContent(pick(["details", "image", "fallback", "group"] as const));
     setShape(pick(["rounded", "circle"] as const));
-    setSize(pick(["sm", "default", "lg"] as const));
+    setSize(pick(["sm", "md", "lg"] as const));
     setShowStatus(Math.random() > 0.5);
   };
 
@@ -255,7 +255,7 @@ function AvatarPlayground() {
           onChange={(value) => setSize(value as AvatarSize)}
           options={[
             { value: "sm", label: t("small") },
-            { value: "default", label: t("defaultSize") },
+            { value: "md", label: t("defaultSize") },
             { value: "lg", label: t("large") },
           ]}
         />
@@ -290,8 +290,8 @@ export default function AvatarDoc() {
   const t = useTranslations("avatar");
 
   const avatarProps: PropDef[] = [
-    { name: "shape", type: '"circle" | "rounded"', default: '"circle"', description: t("shapeProp") },
-    { name: "size", type: '"sm" | "default" | "lg"', default: '"default"', description: t("sizeProp") },
+    { name: "shape", type: '"circle" | "rounded" | "rounded-md"', default: '"circle"', description: t("shapeProp") },
+    { name: "size", type: '"sm" | "md" | "lg" | "default"', default: '"md"', description: t("sizeProp") },
     { name: "className", type: "string", description: t("classNameProp") },
     { name: "render", type: "ReactElement | function", description: t("renderProp") },
   ];
@@ -355,7 +355,7 @@ export default function AvatarDoc() {
         <ComponentPreview code={userDetailsCode}>
           <AvatarWithDetails
             avatar={
-              <Avatar shape="rounded">
+              <Avatar size="md" shape="rounded">
                 <AvatarImage src={PROFILE_IMAGE} alt="" />
                 <AvatarFallback>AJ</AvatarFallback>
               </Avatar>
@@ -407,12 +407,22 @@ export default function AvatarDoc() {
 
       <DocSection title={t("sizes")}>
         <ComponentPreview code={sizesCode}>
-          <div className="flex items-center gap-3">
-            <Avatar size="sm"><AvatarFallback>CN</AvatarFallback></Avatar>
-            <Avatar><AvatarFallback>CN</AvatarFallback></Avatar>
-            <Avatar size="lg"><AvatarFallback>CN</AvatarFallback></Avatar>
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-col items-center gap-2">
+              <Avatar size="sm" shape="rounded"><AvatarFallback>CN</AvatarFallback></Avatar>
+              <span className="text-label text-fg-muted">sm · 24px</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar size="md" shape="rounded"><AvatarFallback>CN</AvatarFallback></Avatar>
+              <span className="text-label text-fg-muted">md · 32px</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar size="lg" shape="rounded"><AvatarFallback>CN</AvatarFallback></Avatar>
+              <span className="text-label text-fg-muted">lg · 40px</span>
+            </div>
           </div>
         </ComponentPreview>
+        <p className="text-body text-fg-muted">{t("sizeDensity")}</p>
       </DocSection>
 
       <DocSection title={t("fallback")}>
