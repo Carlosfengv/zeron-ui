@@ -16,7 +16,7 @@ import {
   type ComponentProps,
   type ComponentPropsWithoutRef,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotionConfig } from "framer-motion";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 import type { IconComponent } from "#system/icon-context";
@@ -25,6 +25,7 @@ import { spring, exitFallbackMs } from "#system/springs";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 import { Elevated } from "#system/elevated";
 import { usePortalContainer } from "#system/portal-container-context";
+import { useComposedRefs } from "#system/compose-refs";
 import {
   controlFieldPaddingClasses,
   controlSizeClasses,
@@ -404,9 +405,16 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
     ref
   ) => {
     const portalContainer = usePortalContainer();
-    const { open, value, actionsRef } = useSelectContext();
+    const { open, value, actionsRef, itemIndexByValue } = useSelectContext();
     const containerRef = useRef<HTMLDivElement>(null);
+    const popupRef = useComposedRefs(ref, containerRef);
     const hasOpenedRef = useRef(false);
+    const openRef = useRef(open);
+    openRef.current = open;
+    const reduceMotion = useReducedMotionConfig();
+    const closedTransform = reduceMotion
+      ? "translateY(0px) scaleY(1)"
+      : "translateY(-4px) scaleY(0.96)";
 
     const {
       activeIndex,
@@ -420,14 +428,14 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
     } = useProximityHover(containerRef);
 
     const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
-    const [checkedIndex, setCheckedIndex] = useState<number | undefined>(
-      undefined
-    );
+    // Item discovery already owns the indexes used by proximity registration.
+    // Read selection synchronously instead of querying the DOM two frames later.
+    const checkedIndex = open ? itemIndexByValue.get(value) : undefined;
 
     // Release Base UI's deferred unmount once the exit tween has played.
     // onAnimationComplete on the motion.div is the primary signal; this
     // timeout is a fallback for throttled/background tabs where rAF-driven
-    // animation callbacks can stall. The popup exits with spring.fast, so the
+    // animation callbacks can stall. The popup exits with spring.moderate, so the
     // fallback tracks that tier's exit duration plus a safety buffer.
     useEffect(() => {
       if (open) {
@@ -441,7 +449,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
       const id = setTimeout(() => {
         actionsRef.current?.unmount();
         hasOpenedRef.current = false;
-      }, exitFallbackMs(spring.fast));
+      }, exitFallbackMs(spring.moderate));
       return () => clearTimeout(id);
     }, [open, actionsRef]);
 
@@ -456,44 +464,12 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
       remeasure();
     }, [open, remeasure]);
 
-    // Detect the checked row. Deliberately does NOT remeasure on a value
-    // change while open: the rows haven't moved, so the published rects stay
-    // trustworthy and only checkedIndex switches — which lets the selected
-    // marker spring from the old row to the picked one (the selection
-    // acknowledgment) instead of unmounting and snapping.
-    useEffect(() => {
-      if (!open) return;
-      // Double rAF: first waits for React commit, second for layout
-      let inner: number;
-      const outer = requestAnimationFrame(() => {
-        inner = requestAnimationFrame(() => {
-          const container = containerRef.current;
-          if (container) {
-            const items = Array.from(
-              container.querySelectorAll("[data-proximity-index]")
-            ) as HTMLElement[];
-            const idx = items.findIndex(
-              (el) => el.getAttribute("data-value") === value
-            );
-            setCheckedIndex(idx !== -1 ? idx : undefined);
-          }
-        });
-      });
-      return () => {
-        cancelAnimationFrame(outer);
-        cancelAnimationFrame(inner);
-      };
-    }, [open, value]);
-
-    // Reset every overlay index as the close begins. checkedIndex otherwise
-    // lags one open behind value (picking an item closes the popup before the
-    // effect above re-syncs it), and a leftover activeIndex is worse: Base UI
+    // Reset hover and focus as the close begins. Base UI
     // keeps the popup mounted through the exit tween, so on reopen the hover
     // pill would still be sitting on the previously active row and spring from
     // there to the row that auto-focus lands on.
     useEffect(() => {
       if (open) return;
-      setCheckedIndex(undefined);
       setActiveIndex(null);
       setFocusedIndex(null);
     }, [open, setActiveIndex]);
@@ -513,6 +489,34 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
       [registerItem, activeIndex, checkedIndex]
     );
 
+    const renderPopup = useCallback(
+      (renderProps: React.ComponentPropsWithRef<"div">, state: SelectPrimitive.Popup.State) => (
+        <motion.div
+          initial={animated ? { opacity: 0, transform: closedTransform } : false}
+          animate={
+            state.open && (!animated || state.transitionStatus !== "starting")
+              ? { opacity: 1, transform: "translateY(0px) scaleY(1)" }
+              : { opacity: 0, transform: closedTransform }
+          }
+          transition={
+            state.open && !animated
+              ? { duration: 0 }
+              : state.open ? spring.moderate : spring.moderate.exit
+          }
+          style={{ transformOrigin: "top center" }}
+          onAnimationComplete={() => {
+            if (!openRef.current && hasOpenedRef.current) {
+              actionsRef.current?.unmount();
+              hasOpenedRef.current = false;
+            }
+          }}
+        >
+          <Elevated {...renderProps} surface="floating" shadow="floating" />
+        </motion.div>
+      ),
+      [actionsRef, animated, closedTransform]
+    );
+
     return (
       <SelectPrimitive.Portal container={portalContainer ?? undefined}>
         <SelectPrimitive.Positioner
@@ -524,49 +528,11 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
           anchor={anchor}
           className="z-popover outline-none"
         >
-          <motion.div
-            initial={animated ? { opacity: 0, y: -4, scaleY: 0.96 } : false}
-            animate={
-              open
-                ? { opacity: 1, y: 0, scaleY: 1 }
-                : { opacity: 0, y: -4, scaleY: 0.96 }
-            }
-            transition={
-              open && !animated
-                ? { duration: 0 }
-                : open
-                  ? spring.fast
-                  : spring.fast.exit
-            }
-            style={{ transformOrigin: "top center" }}
-            // Base UI defers unmount while actionsRef is set; release it once
-            // the exit spring has finished so pointer selection can complete.
-            onAnimationComplete={() => {
-              if (!open) {
-                actionsRef.current?.unmount();
-                hasOpenedRef.current = false;
-              }
-            }}
-          >
             <SelectContentContext.Provider value={contentCtx}>
               <SelectPrimitive.Popup
                 {...popupProps}
-                render={
-                  <Elevated
-                    surface="floating"
-                    shadow="floating"
-                    ref={(node: HTMLDivElement | null) => {
-                      (
-                        containerRef as React.MutableRefObject<HTMLDivElement | null>
-                      ).current = node;
-                      if (typeof ref === "function") ref(node);
-                      else if (ref)
-                        (
-                          ref as React.MutableRefObject<HTMLDivElement | null>
-                        ).current = node;
-                    }}
-                  />
-                }
+                ref={popupRef}
+                render={renderPopup}
                 onMouseEnter={(event) => {
                   popupProps.onMouseEnter?.(event);
                   if (event.defaultPrevented) return;
@@ -705,7 +671,6 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                 {children}
               </SelectPrimitive.Popup>
             </SelectContentContext.Provider>
-          </motion.div>
         </SelectPrimitive.Positioner>
       </SelectPrimitive.Portal>
     );

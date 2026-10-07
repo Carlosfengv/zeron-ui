@@ -15,6 +15,28 @@ const ChevronDownIcon = createIconSlot("chevron-down");
 const ChevronLeftIcon = createIconSlot("chevron-left");
 const ChevronRightIcon = createIconSlot("chevron-right");
 
+// Stable component identities keep DayPicker's DOM and focus intact when its
+// parent rerenders (for example, when a cell becomes focused while opening).
+const calendarComponents: NonNullable<React.ComponentProps<typeof DayPicker>["components"]> = {
+  Root: ({ className, rootRef, ...props }) => (
+    <div data-slot="calendar" ref={rootRef} className={cn(className)} {...props} />
+  ),
+  Chevron: ({ className, orientation, ...props }) => {
+    const Icon = orientation === "left"
+      ? ChevronLeftIcon
+      : orientation === "right" ? ChevronRightIcon : ChevronDownIcon;
+    return <Icon className={cn("size-4", className)} {...props} />;
+  },
+  DayButton: CalendarDayButton,
+  WeekNumber: ({ children, ...props }) => (
+    <td {...props}>
+      <div className="flex size-(--cell-size) items-center justify-center text-center">
+        {children}
+      </div>
+    </td>
+  ),
+};
+
 function Calendar({
   className,
   classNames,
@@ -28,6 +50,18 @@ function Calendar({
 }: React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: ButtonProps["variant"];
 }) {
+  const monthFormatter = React.useMemo(
+    () => new Intl.DateTimeFormat(undefined, { month: "short" }),
+    [],
+  );
+  const calendarFormatters = React.useMemo(() => ({
+    formatMonthDropdown: (date: Date) => monthFormatter.format(date),
+    ...formatters,
+  }), [formatters, monthFormatter]);
+  const resolvedComponents = React.useMemo(
+    () => ({ ...calendarComponents, ...components }),
+    [components],
+  );
   const defaultClassNames = getDefaultClassNames();
   const calendarClassNames: Partial<ClassNames> = {
     ...defaultClassNames,
@@ -142,55 +176,9 @@ function Calendar({
         className,
       )}
       captionLayout={captionLayout}
-      formatters={{
-        formatMonthDropdown: (date) =>
-          date.toLocaleString("default", { month: "short" }),
-        ...formatters,
-      }}
+      formatters={calendarFormatters}
       classNames={calendarClassNames}
-      components={{
-        Root: ({ className, rootRef, ...props }) => {
-          return (
-            <div
-              data-slot="calendar"
-              ref={rootRef}
-              className={cn(className)}
-              {...props}
-            />
-          );
-        },
-        Chevron: ({ className, orientation, ...props }) => {
-          if (orientation === "left") {
-            return (
-              <ChevronLeftIcon className={cn("size-4", className)} {...props} />
-            );
-          }
-
-          if (orientation === "right") {
-            return (
-              <ChevronRightIcon
-                className={cn("size-4", className)}
-                {...props}
-              />
-            );
-          }
-
-          return (
-            <ChevronDownIcon className={cn("size-4", className)} {...props} />
-          );
-        },
-        DayButton: CalendarDayButton,
-        WeekNumber: ({ children, ...props }) => {
-          return (
-            <td {...props}>
-              <div className="flex size-(--cell-size) items-center justify-center text-center">
-                {children}
-              </div>
-            </td>
-          );
-        },
-        ...components,
-      }}
+      components={resolvedComponents}
       {...props}
     />
   );

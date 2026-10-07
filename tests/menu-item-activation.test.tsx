@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DropdownMenu, DropdownContent, DropdownTrigger } from "../packages/ui/src/components/dropdown";
 import { MenuItem } from "../packages/ui/src/components/menu-item";
@@ -31,5 +32,42 @@ describe("菜单动作由 primitive 处理鼠标及键盘激活", () => {
     const item = await screen.findByRole("menuitem", { name: "禁用选项" });
     fireEvent.click(item); fireEvent.keyDown(item, { key: "Enter" });
     expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it("退场期间重新打开不会被旧的卸载回调关闭", async () => {
+    function Demo() {
+      const [open, setOpen] = useState(false);
+      return <><button onClick={() => setOpen(true)}>重新打开</button>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
+          <DropdownTrigger render={<Button>菜单</Button>} />
+          <DropdownContent><MenuItem index={0} label="选项" /></DropdownContent>
+        </DropdownMenu></>;
+    }
+    render(<Demo />);
+    fireEvent.click(screen.getByRole("button", { name: "菜单" }));
+    const menu = await screen.findByRole("menu");
+    fireEvent.keyDown(menu, { key: "Escape" });
+    fireEvent.click(screen.getByRole("button", { name: "重新打开" }));
+    await screen.findByRole("menu");
+    // Longer than both the exit and its background-tab fallback.
+    await new Promise((resolve) => setTimeout(resolve, 260));
+    expect(screen.getByRole("menu")).toBeTruthy();
+    fireEvent.keyDown(screen.getByRole("menu"), { key: "Escape" });
+    await waitFor(() => expect(document.querySelector('[role="menu"]')).toBeNull());
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "菜单" }));
+  });
+
+  it("默认打开时 ref 指向语义菜单并在卸载时执行 React 19 清理", async () => {
+    const onCleanup = vi.fn();
+    const menuRef = vi.fn((_node: HTMLDivElement | null) => onCleanup);
+    const { unmount } = render(<DropdownMenu defaultOpen>
+      <DropdownTrigger render={<Button>默认菜单</Button>} />
+      <DropdownContent ref={menuRef}><MenuItem index={0} label="默认选项" /></DropdownContent>
+    </DropdownMenu>);
+    const menu = await screen.findByRole("menu");
+    expect(menuRef.mock.calls.some(([node]) => node === menu)).toBe(true);
+    expect(menu.getAttribute("data-surface")).toBeTruthy();
+    unmount();
+    expect(onCleanup).toHaveBeenCalled();
   });
 });

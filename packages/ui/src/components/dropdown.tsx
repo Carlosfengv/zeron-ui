@@ -13,7 +13,7 @@ import {
   type HTMLAttributes,
   type ComponentProps,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotionConfig } from "framer-motion";
 import { Menu } from "@base-ui/react/menu";
 import type { MenuTriggerProps } from "@base-ui/react/menu";
 import {
@@ -28,6 +28,7 @@ import { spring, exitFallbackMs } from "#system/springs";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 import { Elevated } from "#system/elevated";
 import { usePortalContainer } from "#system/portal-container-context";
+import { useComposedRefs } from "#system/compose-refs";
 
 // ---------------------------------------------------------------------------
 // Panel context — shared by the inline Dropdown and the popup DropdownContent.
@@ -359,6 +360,13 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
     const { open, actionsRef } = useDropdownMenuContext();
     const portalContainer = usePortalContainer();
     const containerRef = useRef<HTMLDivElement>(null);
+    const popupRef = useComposedRefs(ref, containerRef);
+    const reduceMotion = useReducedMotionConfig();
+    const closedTransform = reduceMotion
+      ? "translateY(0px) scaleY(1)"
+      : "translateY(-4px) scaleY(0.96)";
+    const openRef = useRef(open);
+    openRef.current = open;
 
     const {
       activeIndex,
@@ -367,7 +375,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
       sessionRef,
       handlers,
       registerItem,
-      measureItems,
+      remeasure,
     } = useProximityHover(containerRef);
 
     const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
@@ -375,32 +383,47 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
     // Release Base UI's deferred unmount once the exit tween has played.
     // onAnimationComplete on the motion.div is the primary signal; this
     // timeout is a fallback for throttled/background tabs where rAF-driven
-    // animation callbacks can stall. The popup exits with spring.fast, so the
+    // animation callbacks can stall. The popup exits with spring.moderate, so the
     // fallback tracks that tier's exit duration plus a safety buffer.
     useEffect(() => {
       if (open) return;
       const id = setTimeout(
         () => actionsRef.current?.unmount(),
-        exitFallbackMs(spring.fast)
+        exitFallbackMs(spring.moderate)
       );
       return () => clearTimeout(id);
     }, [open, actionsRef]);
 
-    // Measure items once the popup has mounted.
+    // Registration and opening share the hook's coalesced measurement pass.
+    // It retries boxless items, so a second, independent double-rAF pass is
+    // unnecessary and would compete with the first visible animation frames.
     useEffect(() => {
       if (!open) return;
-      // Double rAF: first waits for React commit, second for layout
-      let inner: number;
-      const outer = requestAnimationFrame(() => {
-        inner = requestAnimationFrame(() => {
-          measureItems();
-        });
-      });
-      return () => {
-        cancelAnimationFrame(outer);
-        cancelAnimationFrame(inner);
-      };
-    }, [open, measureItems]);
+      remeasure();
+    }, [open, remeasure]);
+
+    const renderPopup = useCallback(
+      (renderProps: React.ComponentPropsWithRef<"div">, state: Menu.Popup.State) => (
+        <motion.div
+          initial={{ opacity: 0, transform: closedTransform }}
+          // Base UI holds `starting` through the mount/positioning frame. Do
+          // not spend the entry animation while the positioner is still hidden.
+          animate={state.open && state.transitionStatus !== "starting"
+            ? { opacity: 1, transform: "translateY(0px) scaleY(1)" }
+            : { opacity: 0, transform: closedTransform }}
+          // A complete transform can run natively alongside opacity. Separate
+          // y/scaleY values require JS to rebuild the transform every frame.
+          transition={state.open ? spring.moderate : spring.moderate.exit}
+          style={{ transformOrigin: "top center" }}
+          onAnimationComplete={() => {
+            if (!openRef.current) actionsRef.current?.unmount();
+          }}
+        >
+          <Elevated {...renderProps} surface="floating" shadow="floating" />
+        </motion.div>
+      ),
+      [actionsRef, closedTransform]
+    );
 
     const activeRect = activeIndex !== null ? itemRects[activeIndex] : null;
     const checkedRect = checkedIndex != null ? itemRects[checkedIndex] : null;
@@ -466,40 +489,11 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
           alignOffset={alignOffset}
           className="z-popover outline-none"
         >
-          <motion.div
-            initial={{ opacity: 0, y: -4, scaleY: 0.96 }}
-            animate={
-              open
-                ? { opacity: 1, y: 0, scaleY: 1 }
-                : { opacity: 0, y: -4, scaleY: 0.96 }
-            }
-            transition={open ? spring.fast : spring.fast.exit}
-            style={{ transformOrigin: "top center" }}
-            // Base UI defers unmount while actionsRef is set; release it once
-            // the exit spring has finished so the close animation fully plays.
-            onAnimationComplete={() => {
-              if (!open) actionsRef.current?.unmount();
-            }}
-          >
             <DropdownContext.Provider value={contentCtx}>
               <Menu.Popup
                 {...popupProps}
-                render={
-                  <Elevated
-                    surface="floating"
-                    shadow="floating"
-                    ref={(node: HTMLDivElement | null) => {
-                      (
-                        containerRef as React.MutableRefObject<HTMLDivElement | null>
-                      ).current = node;
-                      if (typeof ref === "function") ref(node);
-                      else if (ref)
-                        (
-                          ref as React.MutableRefObject<HTMLDivElement | null>
-                        ).current = node;
-                    }}
-                  />
-                }
+                ref={popupRef}
+                render={renderPopup}
                 onMouseEnter={() => {
                   handlers.onMouseEnter();
                   setFocusedIndex(null);
@@ -628,7 +622,6 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
                 </Menu.RadioGroup>
               </Menu.Popup>
             </DropdownContext.Provider>
-          </motion.div>
         </Menu.Positioner>
       </Menu.Portal>
     );

@@ -1451,7 +1451,8 @@
         "icon-context",
         "use-proximity-hover",
         "elevated",
-        "portal-container-context"
+        "portal-container-context",
+        "compose-refs"
       ],
       "files": [
         {
@@ -2302,6 +2303,7 @@
         "use-proximity-hover",
         "elevated",
         "portal-container-context",
+        "compose-refs",
         "control-size"
       ],
       "files": [
