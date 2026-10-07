@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./design-stack-01": "./src/application/design-stack-01/index.ts",
     "./cost-estimate-01": "./src/application/cost-estimate-01/index.ts",
     "./transaction-details-01": "./src/application/transaction-details-01/index.ts",
     "./getting-started-01": "./src/application/getting-started-01/index.ts",

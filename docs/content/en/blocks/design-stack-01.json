@@ -1,0 +1,10 @@
+{
+  "designStackBlock": {
+    "title": "Design stack",
+    "description": "An editable tool inventory composed from Container and DataGrid, with category badges, websites, renewal dates and undo/redo.",
+    "composition": "Composition",
+    "compositionBody": "Container owns the frame, header and footer. DataGrid directly owns the floating work surface and scrolling, without an extra ContainerBody surface. Its built-in text, select, URL and date editors retain Zeron styles. The public short-text leading slot contains Avatar with bundled brand artwork or a fallback. Checkbox, Badge and Button use their public APIs. Colors, typography, sizes and state feedback come from Zeron semantic tokens.",
+    "behavior": "Behavior and integration",
+    "behaviorBody": "Double-click or press Enter/F2 to edit. Use column menus to sort, pin or hide fields. Select rows to delete or clear selection; Add row creates a stable new ID. The local history hook records edits, additions and deletions, supports Undo/Redo and Ctrl/Cmd+Z, and clears redo after a new edit. Escape cancels text changes. A focused cell shows its spreadsheet coordinate in the footer. Hosts supply controlled items and synchronous changes; omitting onItemsChange makes the grid read-only. The demo uses local browser memory and does not persist or call an external service."
+  }
+}

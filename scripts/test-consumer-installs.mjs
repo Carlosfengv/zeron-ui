@@ -466,6 +466,11 @@ async function verifyNextBuild({ consumer, component }) {
       '',
     ].join("\n"),
   };
+  examples["design-stack-01"] = [
+    '"use client";',
+    'import { DesignStack, designStackDemoItems, useDesignStackHistory } from "@/components/blocks/design-stack-01";',
+    'export default function Page() { const { items, onItemsChange, history } = useDesignStackHistory(designStackDemoItems); return <DesignStack items={items} onItemsChange={onItemsChange} history={history} />; }',
+  ].join("\n");
   examples["file-upload-01"] = [
     '"use client";',
     'import { FileUpload } from "@/components/blocks/file-upload-01";',
@@ -734,6 +739,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
       'createRoot(document.getElementById("root")!).render(<ListPagination total={11} page={0} pageSize={5} onPageChange={() => {}} onPageSizeChange={() => {}} />);',
     ].join("\n"),
   };
+  examples["design-stack-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { DesignStack, designStackDemoItems, useDesignStackHistory } from "@/src/components/blocks/design-stack-01";',
+    'function App() { const { items, onItemsChange, history } = useDesignStackHistory(designStackDemoItems); return <DesignStack items={items} onItemsChange={onItemsChange} history={history} />; }',
+    'createRoot(document.getElementById("root")!).render(<App />);',
+  ].join("\n");
   examples["file-upload-01"] = [
     'import { createRoot } from "react-dom/client";',
     'import { FileUpload } from "@/src/components/blocks/file-upload-01";',

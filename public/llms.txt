@@ -31,6 +31,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [费用估算](https://zeron-ui.vercel.app/ai/items/block%3Acost-estimate-01.md): 四项用量、预设、月付/年付与最低消费估算。 Registry: cost-estimate-01.
 - [Credit Usage](https://zeron-ui.vercel.app/ai/items/block%3Acredit-usage-01.md): A compact credit-cycle summary with model attribution, depletion guidance, and plan controls. Registry: credit-usage-01.
 - [部署详情](https://zeron-ui.vercel.app/ai/items/block%3Adeployment-detail-01.md): 网站预览、域名、来源与部署阶段检查结果。 Registry: deployment-detail-01.
+- [设计工具清单](https://zeron-ui.vercel.app/ai/items/block%3Adesign-stack-01.md): 可编辑单元格、多选、排序与撤销重做。 Registry: design-stack-01.
 - [File Manager](https://zeron-ui.vercel.app/ai/items/block%3Afile-manager-01.md): A token-native file-management workspace with icon, list, and Finder-style column views. Registry: file-manager-01.
 - [文件上传](https://zeron-ui.vercel.app/ai/items/block%3Afile-upload-01.md): 拖拽上传、文件进度与队列管理。 Registry: file-upload-01.
 - [Filter Rule Builder](https://zeron-ui.vercel.app/ai/items/block%3Afilter-rule-builder-01.md): A controlled filter workspace with presets, readable rule summaries, and validated draft editing. Registry: filter-rule-builder-01.
@@ -168,6 +169,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [cost-estimate-01](https://zeron-ui.vercel.app/agent-guides/blocks/cost-estimate-01.md)
 - [credit-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/credit-usage-01.md)
 - [deployment-detail-01](https://zeron-ui.vercel.app/agent-guides/blocks/deployment-detail-01.md)
+- [design-stack-01](https://zeron-ui.vercel.app/agent-guides/blocks/design-stack-01.md)
 - [file-upload-01](https://zeron-ui.vercel.app/agent-guides/blocks/file-upload-01.md)
 - [filter-rule-builder-01](https://zeron-ui.vercel.app/agent-guides/blocks/filter-rule-builder-01.md)
 - [getting-started-01](https://zeron-ui.vercel.app/agent-guides/blocks/getting-started-01.md)

@@ -34,6 +34,10 @@
       "itemId": "block:deployment-detail-01"
     },
     {
+      "path": "blocks/design-stack-01.md",
+      "itemId": "block:design-stack-01"
+    },
+    {
       "path": "blocks/file-upload-01.md",
       "itemId": "block:file-upload-01"
     },

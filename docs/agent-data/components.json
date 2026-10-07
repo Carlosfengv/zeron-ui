@@ -543,5 +543,27 @@
       "onFilesSelected 接收通过单文件大小校验的 File[]，支持 Promise。",
       "onRemove/onRemoveAll/onRetry/onDone 由宿主执行，labels 支持本地化。"
     ]
+  },
+  "design-stack-01": {
+    "keywords": [
+      "设计工具",
+      "清单",
+      "电子表格",
+      "design stack",
+      "spreadsheet",
+      "undo",
+      "redo"
+    ],
+    "useCases": [
+      "嵌入式可编辑工具清单，分类、网站、续费日期与本地历史。"
+    ],
+    "whenNotToUse": [
+      "不提供异步持久化或后端数据加载；宿主拥有同步受控数据。"
+    ],
+    "keyApi": [
+      "items/onItemsChange；缺少修改回调时只读。",
+      "categories/labels 支持业务分类和本地化。",
+      "history 可传入宿主撤销重做；useDesignStackHistory 提供本地实现。"
+    ]
   }
 }

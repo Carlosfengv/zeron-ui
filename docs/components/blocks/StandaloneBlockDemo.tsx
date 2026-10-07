@@ -1,5 +1,7 @@
 "use client";
 
+import { DesignStackDemo } from "./DesignStackDemo";
+
 import { FileUploadDemo } from "./FileUploadDemo";
 
 import { GettingStartedDemo } from "./GettingStartedDemo";
@@ -159,6 +161,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
 
 function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "design-stack-01":
+      return <DesignStackDemo />;
     case "file-upload-01":
       return <FileUploadDemo />;
     case "login-01":

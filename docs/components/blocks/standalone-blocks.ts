@@ -1,4 +1,5 @@
 export const standaloneBlockSlugs = [
+  "design-stack-01",
   "file-upload-01",
   "support-analytics-01",
   "transaction-details-01",

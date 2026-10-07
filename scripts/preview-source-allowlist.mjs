@@ -1,5 +1,13 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "design-stack-01": [
+    "packages/blocks/src/application/design-stack-01/design-stack.tsx",
+    "packages/blocks/src/application/design-stack-01/design-stack-types.ts",
+    "packages/blocks/src/application/design-stack-01/design-stack-history.ts",
+    "packages/blocks/src/application/design-stack-01/design-stack-demo-data.ts",
+    "packages/blocks/src/application/design-stack-01/design-stack-brand-icons.ts",
+    "packages/blocks/src/application/design-stack-01/index.ts"
+  ],
   "file-upload-01": [
     "packages/blocks/src/application/file-upload-01/file-upload.tsx",
     "packages/blocks/src/application/file-upload-01/file-upload-types.ts",

@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:design-stack-01",
+      "type": "registry",
+      "key": "design-stack-01",
+      "aliases": [
+        "design-stack-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:integration-monitors-01",
       "type": "registry",
       "key": "integration-monitors-01",

@@ -1,0 +1,10 @@
+{
+  "designStackBlock": {
+    "title": "设计工具清单",
+    "description": "组合 Container 与 DataGrid，展示分类标签、网站、续费日期及撤销重做的可编辑清单。",
+    "composition": "组件组合",
+    "compositionBody": "Container 负责外框、标题与底部操作。DataGrid 直接负责浮层内容及滚动，不叠加 ContainerBody 表面；内置文本、选择、网址和日期编辑器保留 Zeron 样式。文本单元格的公开 leading 插槽使用 Avatar，展示内置品牌素材或回退内容。Checkbox、Badge 和 Button 均通过公开 API 使用，颜色、字体、尺寸与交互反馈来自 Zeron 语义变量。",
+    "behavior": "交互与接入",
+    "behaviorBody": "双击或按 Enter/F2 编辑，列菜单支持排序、固定和隐藏。选中行后可批量删除或清除选择，添加行生成稳定的新 ID。本地历史 hook 记录编辑、新增和删除，支持撤销重做及 Ctrl/Cmd+Z；撤销后重新编辑会清空重做历史。Escape 取消文本修改，聚焦单元格时底部显示表格坐标。宿主传入受控 items 与同步修改回调；省略 onItemsChange 时只读。演示数据保存在浏览器内存中，不连接外部服务或持久化。"
+  }
+}

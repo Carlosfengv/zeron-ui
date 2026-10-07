@@ -3,6 +3,62 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "design-stack-01",
+      "type": "registry:block",
+      "title": "设计工具清单",
+      "description": "可编辑的工具清单，支持分类、网站、续费日期、多选、排序和撤销重做。",
+      "categories": [
+        "application",
+        "tables"
+      ],
+      "dependencies": [
+        "@thesvg/icons",
+        "@tanstack/react-table"
+      ],
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "button",
+        "checkbox",
+        "container",
+        "data-grid",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/design-stack-01/design-stack.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/design-stack-01/design-stack.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/design-stack-01/design-stack-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/design-stack-01/design-stack-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/design-stack-01/design-stack-history.ts",
+          "type": "registry:component",
+          "target": "components/blocks/design-stack-01/design-stack-history.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/design-stack-01/design-stack-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/design-stack-01/design-stack-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/design-stack-01/design-stack-brand-icons.ts",
+          "type": "registry:component",
+          "target": "components/blocks/design-stack-01/design-stack-brand-icons.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/design-stack-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/design-stack-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "integration-monitors-01",
       "type": "registry:block",
       "title": "集成监控",
