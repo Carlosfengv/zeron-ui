@@ -67,6 +67,7 @@
     "c1": "Preferred side of the trigger.",
     "c2": "Popup alignment relative to the trigger.",
     "c3": "Distance from the trigger along the selected side.",
-    "c4": "Alignment offset along the trigger edge."
+    "c4": "Alignment offset along the trigger edge.",
+    "c5": "Explicit positioning anchor, such as a containing grid cell. Defaults to the trigger."
   }
 }

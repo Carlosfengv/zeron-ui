@@ -381,6 +381,8 @@ interface SelectContentProps
   sideOffset?: number;
   alignOffset?: number;
   alignItemWithTrigger?: boolean;
+  /** Use a containing cell or another element as the popup positioning anchor. */
+  anchor?: SelectPositionerProps["anchor"];
   /** Render the popup at its final visual state without an entry tween. */
   animated?: boolean;
 }
@@ -395,6 +397,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
       sideOffset = 6,
       alignOffset = 0,
       alignItemWithTrigger = false,
+      anchor,
       animated = true,
       ...popupProps
     },
@@ -518,6 +521,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
           sideOffset={sideOffset}
           alignOffset={alignOffset}
           alignItemWithTrigger={alignItemWithTrigger}
+          anchor={anchor}
           className="z-popover outline-none"
         >
           <motion.div

@@ -411,6 +411,11 @@ const contentProps: PropDef[] = [
     default: "0",
     description: "Alignment offset along the trigger edge.",
   },
+  {
+    name: "anchor",
+    type: "Element | RefObject<Element | null> | VirtualElement | function",
+    description: "Explicit positioning anchor, such as a containing grid cell. Defaults to the trigger.",
+  },
 ];
 
 // ---------------------------------------------------------------------------
