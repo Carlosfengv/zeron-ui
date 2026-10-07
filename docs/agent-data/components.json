@@ -227,6 +227,11 @@
     ],
     "whenNotToUse": [
       "普通管理列表优先 DataTable。"
+    ],
+    "keyApi": [
+      "useDataGrid.interactionRef：将外部工具栏纳入焦点和选择边界。",
+      "ColumnMeta.leading：短文本的装饰性前置内容。",
+      "url cell hideProtocol：缩短标签，保留原始网址。"
     ]
   },
   "dialog": {

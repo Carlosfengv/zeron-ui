@@ -62,6 +62,7 @@ function getHookProps(t: (key: string) => string): PropDef[] {
     { name: "onRowAdd", type: "() => CellPosition | void", description: t("rowAddDescription") },
     { name: "enablePaste", type: "boolean", default: "false", description: t("pasteDescription") },
     { name: "readOnly", type: "boolean", default: "false", description: t("readOnlyDescription") },
+    { name: "interactionRef", type: "RefObject<HTMLElement | null>", description: t("interactionRefDescription") },
     { name: "rowHeight", type: '"short" | "medium" | "tall" | "extra-tall"', default: '"short"', description: t("rowHeightDescription") },
     { name: "initialState", type: "InitialTableState", description: t("initialStateDescription") },
   ];
@@ -71,6 +72,8 @@ function getCellMetaProps(t: (key: string) => string): PropDef[] {
   return [
     { name: "variant", type: '"short-text" | "long-text" | "number" | "select" | "multi-select" | "checkbox" | "date" | "url" | "file"', description: t("cellVariantDescription") },
     { name: "options", type: "CellSelectOption[]", description: t("optionsDescription") },
+    { name: "column.meta.leading", type: "(row: TData) => ReactNode", description: t("leadingDescription") },
+    { name: "hideProtocol", type: "boolean (url)", default: "false", description: t("hideProtocolDescription") },
     { name: "min / max", type: "number", description: t("boundsDescription") },
     { name: "readOnly", type: "boolean", default: "false", description: t("columnReadOnlyDescription") },
   ];

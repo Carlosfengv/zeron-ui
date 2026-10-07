@@ -5,6 +5,7 @@ import type { ColumnDef, OnChangeFn, RowSelectionState, SortingState, TableState
 import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { useDataGrid } from "../packages/ui/src/hooks/use-data-grid";
+import { DataGrid } from "../packages/ui/src/components/data-grid/data-grid";
 
 beforeAll(() => {
   window.matchMedia = vi.fn().mockImplementation(() => ({
@@ -31,6 +32,74 @@ function clipboard(initial = "") {
 }
 
 describe("DataGrid source data integrity", () => {
+  it.each([
+    { readOnly: false, addRow: false },
+    { readOnly: false, addRow: true },
+    { readOnly: true, addRow: false },
+    { readOnly: true, addRow: true },
+  ])("reports accessible row counts including only rendered header and footer: $readOnly/$addRow", ({ readOnly, addRow }) => {
+    function Demo() {
+      const grid = useDataGrid({ columns, data: data.slice(0, 1), readOnly });
+      return <DataGrid {...grid} onRowAdd={addRow ? async () => undefined : undefined}
+        virtualItems={[{ index: 0, key: 0, start: 0, end: 36, size: 36, lane: 0 }]} virtualTotalSize={36} />;
+    }
+    render(<Demo />);
+    const rows = screen.getAllByRole("row");
+    expect(Number(screen.getByRole("grid").getAttribute("aria-rowcount"))).toBe(rows.length);
+    expect(Number(rows.at(-1)?.getAttribute("aria-rowindex"))).toBe(rows.length);
+  });
+
+  it("updates cell metadata when the host replaces column definitions", () => {
+    const values = [{ category: "design" }];
+    function Demo({ label }: { label: string }) {
+      const definitions = React.useMemo<ColumnDef<(typeof values)[number]>[]>(() => [{
+        accessorKey: "category", header: "Category",
+        meta: { cell: { variant: "select", options: [{ value: "design", label }] } },
+      }], [label]);
+      const grid = useDataGrid({ columns: definitions, data: values });
+      return <DataGrid {...grid} virtualItems={[{ index: 0, key: 0, start: 0, end: 36, size: 36, lane: 0 }]} virtualTotalSize={36} />;
+    }
+    const { rerender } = render(<Demo label="Design" />);
+    expect(screen.getByText("Design")).toBeTruthy();
+    rerender(<Demo label="Creative tools" />);
+    expect(screen.getByText("Creative tools")).toBeTruthy();
+    expect(screen.queryByText("Design")).toBeNull();
+  });
+
+  it("updates leading content when another field changes while the cell value stays the same", () => {
+    type Tool = { name: string; logo: string };
+    const definitions: ColumnDef<Tool>[] = [{
+      accessorKey: "name", header: "Tool",
+      meta: { cell: { variant: "short-text" }, leading: (row) => <span>{row.logo}</span> },
+    }];
+    function Demo({ values }: { values: Tool[] }) {
+      const grid = useDataGrid({ columns: definitions, data: values });
+      return <DataGrid {...grid} virtualItems={[{ index: 0, key: 0, start: 0, end: 36, size: 36, lane: 0 }]} virtualTotalSize={36} />;
+    }
+    const { rerender } = render(<Demo values={[{ name: "Figma", logo: "Old logo" }]} />);
+    expect(screen.getByText("Old logo")).toBeTruthy();
+    rerender(<Demo values={[{ name: "Figma", logo: "Updated logo" }]} />);
+    expect(screen.getByText("Updated logo")).toBeTruthy();
+    expect(screen.queryByText("Old logo")).toBeNull();
+    expect(screen.getByRole("textbox").textContent).toBe("Figma");
+  });
+
+  it("does not let delayed cell focus blur an editor started by a second click", () => {
+    const callbacks: FrameRequestCallback[] = [];
+    const raf = vi.spyOn(globalThis, "requestAnimationFrame").mockImplementation((callback) => { callbacks.push(callback); return callbacks.length; });
+    const wrapper = document.createElement("div"); wrapper.tabIndex = 0;
+    const editor = document.createElement("input"); wrapper.append(editor); document.body.append(wrapper);
+    try {
+      const { result } = renderHook(() => useDataGrid({ columns, data }));
+      result.current.tableMeta.cellMapRef?.current.set("0:name", wrapper);
+      act(() => result.current.tableMeta.onCellClick?.(0, "name"));
+      act(() => result.current.tableMeta.onCellEditingStart?.(0, "name"));
+      editor.focus();
+      act(() => { for (const callback of callbacks.splice(0)) callback(0); });
+      expect(document.activeElement).toBe(editor);
+      expect(result.current.editingCell).toEqual({ rowIndex: 0, columnId: "name" });
+    } finally { raf.mockRestore(); wrapper.remove(); }
+  });
   it.each(["column", "global"])("preserves all source rows when editing a %s-filtered row", (filter) => {
     const onDataChange = vi.fn();
     const { result } = renderHook(() => useDataGrid({

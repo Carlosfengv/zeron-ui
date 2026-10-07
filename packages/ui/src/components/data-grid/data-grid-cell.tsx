@@ -26,6 +26,11 @@ export const DataGridCell = React.memo(DataGridCellImpl, (prev, next) => {
   if (prev.columnId !== next.columnId) return false;
   if (prev.rowHeight !== next.rowHeight) return false;
 
+  // Column definitions own editor options and decorative content. Leading
+  // content can also depend on fields outside this cell's own value.
+  if (prev.cell.column.columnDef !== next.cell.column.columnDef) return false;
+  if (next.cell.column.columnDef.meta?.leading && prev.cell.row.original !== next.cell.row.original) return false;
+
   // Check cell value using row.original instead of getValue() for stability
   // getValue() is unstable and recreates on every render, breaking memoization
   const prevValue = (prev.cell.row.original as Record<string, unknown>)[

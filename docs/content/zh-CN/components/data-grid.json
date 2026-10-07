@@ -22,6 +22,9 @@
     "cellVariantDescription": "选择列的显示方式和编辑器行为。",
     "optionsDescription": "用于 `select` 和 `multi-select` 单元格的选项。每个选项可通过 `color` 使用 Badge 调色板。",
     "boundsDescription": "数字单元格的可选边界。",
-    "columnReadOnlyDescription": "仅禁用这一列的编辑。"
+    "columnReadOnlyDescription": "仅禁用这一列的编辑。",
+    "interactionRefDescription": "包含网格及外部工具栏的可选边界；操作区域内的控件时保留选择，允许焦点移入工具栏。",
+    "leadingDescription": "短文本单元格的装饰性前置内容，位于可编辑值之外。在 ColumnMeta 上与 cell 并列设置。",
+    "hideProtocolDescription": "网址单元格显示时隐藏 http:// 或 https://，保留完整的存储值和链接目标。"
   }
 }

@@ -52,6 +52,8 @@ export type CellOpts =
     }
   | {
       variant: "url";
+      /** Shorten the visible label while preserving the full stored URL and href. */
+      hideProtocol?: boolean;
     }
   | {
       variant: "file";
@@ -73,6 +75,8 @@ declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
     label?: string;
     cell?: CellOpts;
+    /** Decorative leading content for a short-text cell; the grid owns editing. */
+    leading?: (row: TData) => React.ReactNode;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

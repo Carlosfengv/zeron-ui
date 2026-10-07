@@ -136,6 +136,8 @@ interface UseDataGridProps<TData>
   enableSearch?: boolean;
   enablePaste?: boolean;
   readOnly?: boolean;
+  /** Includes host toolbars in the grid's selection and focus boundary. */
+  interactionRef?: React.RefObject<HTMLElement | null>;
 }
 
 function useDataGrid<TData>({
@@ -1259,6 +1261,13 @@ function useDataGrid<TData>({
       focusGuardRef.current = true;
 
       requestAnimationFrame(() => {
+        const current = store.getState();
+        // A later click or editing start owns focus now; stale navigation must
+        // not blur a newly mounted editor (notably during a double-click).
+        if (current.editingCell || current.focusedCell?.rowIndex !== rowIndex || current.focusedCell?.columnId !== columnId) {
+          releaseFocusGuard();
+          return;
+        }
         const cellKey = getCellKey(rowIndex, columnId);
         const cellWrapperElement = cellMapRef.current.get(cellKey);
 
@@ -1275,7 +1284,7 @@ function useDataGrid<TData>({
         releaseFocusGuard();
       });
     },
-    [releaseFocusGuard],
+    [releaseFocusGuard, store],
   );
 
   const focusCell = React.useCallback(
@@ -3271,8 +3280,10 @@ function useDataGrid<TData>({
         !relatedTarget || !currentContainer.contains(relatedTarget as Node);
 
       const isFocusMovingToPopover = getIsInPopover(relatedTarget);
+      const isFocusMovingToToolbar = relatedTarget instanceof Node &&
+        propsRef.current.interactionRef?.current?.contains(relatedTarget);
 
-      if (isFocusMovingOutsideGrid && !isFocusMovingToPopover) {
+      if (isFocusMovingOutsideGrid && !isFocusMovingToPopover && !isFocusMovingToToolbar) {
         const { rowIndex, columnId } = currentState.focusedCell;
         const cellKey = getCellKey(rowIndex, columnId);
         const cellElement = cellMapRef.current.get(cellKey);
@@ -3304,7 +3315,7 @@ function useDataGrid<TData>({
 
       if (
         dataGridRef.current &&
-        !dataGridRef.current.contains(event.target as Node)
+        !(propsRef.current.interactionRef?.current ?? dataGridRef.current).contains(event.target as Node)
       ) {
         const elements = document.elementsFromPoint(
           event.clientX,

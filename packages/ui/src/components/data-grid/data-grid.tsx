@@ -61,6 +61,7 @@ export function DataGrid<TData>({
 }: DataGridProps<TData>) {
   const rows = table.getRowModel().rows;
   const readOnly = tableMeta?.readOnly ?? false;
+  const showRowAdd = !readOnly && !!onRowAddProp;
   const columnVisibility = table.getState().columnVisibility;
   const columnPinning = table.getState().columnPinning;
 
@@ -109,7 +110,7 @@ export function DataGrid<TData>({
       <div
         role="grid"
         aria-label="Data grid"
-        aria-rowcount={rows.length + (onRowAddProp ? 1 : 0)}
+        aria-rowcount={rows.length + 1 + (showRowAdd ? 1 : 0)}
         aria-colcount={columns.length}
         data-slot="grid"
         tabIndex={0}
@@ -227,7 +228,9 @@ export function DataGrid<TData>({
             return (
               <DataGridRow
                 key={row.id}
+                className={virtualItem.index === rows.length - 1 ? "border-b-0" : undefined}
                 row={row}
+                columns={columns}
                 tableMeta={tableMeta}
                 rowMapRef={rowMapRef}
                 virtualItem={virtualItem}
@@ -244,11 +247,12 @@ export function DataGrid<TData>({
                 adjustLayout={adjustLayout}
                 stretchColumns={stretchColumns}
                 readOnly={readOnly}
+                isRowSelected={row.getIsSelected()}
               />
             );
           })}
         </div>
-        {!readOnly && onRowAdd && (
+        {showRowAdd && (
           <div
             role="rowgroup"
             data-slot="grid-footer"

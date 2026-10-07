@@ -40,6 +40,25 @@ function edit(editor: HTMLElement, value: string) {
 }
 
 describe("DataGrid editor cancellation and read-only state", () => {
+  it("can shorten a URL label without changing its target or editable value", () => {
+    const options = props("https://example.com/path");
+    options.cell.column.columnDef.meta = { cell: { variant: "url", hideProtocol: true } };
+    const { rerender } = render(<UrlCell {...options} isEditing={false} />);
+    expect(screen.getByRole("link", { name: "example.com/path" }).getAttribute("href")).toBe("https://example.com/path");
+    rerender(<UrlCell {...options} isEditing />);
+    expect(screen.getByRole("textbox").textContent).toBe("https://example.com/path");
+  });
+  it("renders decorative leading content outside the editable value", () => {
+    const onDataUpdate = vi.fn();
+    const options = props("Figma", { onDataUpdate });
+    options.cell.column.columnDef.meta = { leading: (row) => <span>{`Logo ${row.value}`}</span> };
+    const { container } = render(<ShortTextCell {...options} />);
+    expect(screen.getByText("Logo Figma").closest('[aria-hidden]')).toBeTruthy();
+    expect(container.querySelectorAll('[contenteditable="true"]')).toHaveLength(1);
+    edit(screen.getByRole("textbox"), "Updated tool");
+    fireEvent.blur(screen.getByRole("textbox"));
+    expect(onDataUpdate).toHaveBeenCalledWith({ rowIndex: 0, columnId: "value", value: "Updated tool" });
+  });
   it.each(editors)("cancels $name changes without a blur commit", ({ Component, initial, draft, role }) => {
     const onDataUpdate = vi.fn();
     const onCellEditingStop = vi.fn();

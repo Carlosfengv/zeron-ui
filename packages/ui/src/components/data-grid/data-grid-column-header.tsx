@@ -151,6 +151,7 @@ export function DataGridColumnHeader<TData, TValue>({
           }
         />
         <DropdownContent
+          data-grid-popover=""
           align="start"
           sideOffset={0}
           checkedIndex={sorted === "asc" ? 0 : sorted === "desc" ? 1 : undefined}

@@ -3,6 +3,7 @@
 "use client";
 
 import type {
+  ColumnDef,
   ColumnPinningState,
   Row,
   TableMeta,
@@ -28,6 +29,7 @@ import { DataGridCell } from "./data-grid-cell";
 
 interface DataGridRowProps<TData> extends React.ComponentProps<"div"> {
   row: Row<TData>;
+  columns: ColumnDef<TData>[];
   tableMeta: TableMeta<TData>;
   virtualItem: VirtualItem;
   measureElement: (node: Element | null) => void;
@@ -44,9 +46,13 @@ interface DataGridRowProps<TData> extends React.ComponentProps<"div"> {
   readOnly: boolean;
   stretchColumns: boolean;
   adjustLayout: boolean;
+  isRowSelected?: boolean;
 }
 
 export const DataGridRow = React.memo(DataGridRowImpl, (prev, next) => {
+  if (prev.columns !== next.columns) return false;
+  if (prev.className !== next.className) return false;
+  if (prev.isRowSelected !== next.isRowSelected) return false;
   const prevRowIndex = prev.virtualItem.index;
   const nextRowIndex = next.virtualItem.index;
 
@@ -151,7 +157,9 @@ export const DataGridRow = React.memo(DataGridRowImpl, (prev, next) => {
 }) as typeof DataGridRowImpl;
 
 function DataGridRowImpl<TData>({
+  isRowSelected: selected,
   row,
+  columns,
   tableMeta,
   virtualItem,
   measureElement,
@@ -191,14 +199,15 @@ function DataGridRowImpl<TData>({
 
   const rowRef = useComposedRefs(ref, onRowChange);
 
-  const isRowSelected = row.getIsSelected();
+  const isRowSelected = selected ?? row.getIsSelected();
 
   // Memoize visible cells to avoid recreating cell array on every render
   // Though TanStack returns new Cell wrappers, memoizing the array helps React's reconciliation
-  // biome-ignore lint/correctness/useExhaustiveDependencies: columnVisibility and columnPinning are used for calculating the visible cells
+  // Column definitions also own cell metadata such as options and leading content.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: columns, columnVisibility and columnPinning determine the visible cells
   const visibleCells = React.useMemo(
     () => row.getVisibleCells(),
-    [row, columnVisibility, columnPinning],
+    [row, columns, columnVisibility, columnPinning],
   );
 
   return (
@@ -286,7 +295,7 @@ function DataGridRowImpl<TData>({
                 rowHeight={rowHeight}
                 isFocused={isCellFocused}
                 isEditing={isCellEditing}
-                isSelected={isCellSelected}
+                isSelected={isCellSelected || isRowSelected}
                 isSearchMatch={isSearchMatch}
                 isActiveSearchMatch={isActiveSearchMatch}
                 readOnly={readOnly}

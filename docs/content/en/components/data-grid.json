@@ -22,6 +22,9 @@
     "cellVariantDescription": "Chooses the display and editor behavior for a column.",
     "optionsDescription": "Options used by select and multi-select cells. Each option accepts the Badge color palette through color.",
     "boundsDescription": "Optional bounds for number cells.",
-    "columnReadOnlyDescription": "Disables editing for this column only."
+    "columnReadOnlyDescription": "Disables editing for this column only.",
+    "interactionRefDescription": "Optional boundary containing the grid and external toolbars; interacting with its controls preserves selection and allows focus to move into them.",
+    "leadingDescription": "Decorative leading content for short-text cells, outside the editable value. Set this on ColumnMeta, alongside cell.",
+    "hideProtocolDescription": "URL cells can hide http:// or https:// in the display label while preserving the stored URL and link target."
   }
 }

@@ -184,6 +184,7 @@ export function ShortTextCell<TData>({
   }, [isEditing, value]);
 
   const displayValue = !isEditing ? (value ?? "") : "";
+  const leading = cell.column.columnDef.meta?.leading?.(cell.row.original);
 
   return (
     <DataGridCellWrapper<TData>
@@ -200,7 +201,9 @@ export function ShortTextCell<TData>({
       isActiveSearchMatch={isActiveSearchMatch}
       readOnly={readOnly}
       onKeyDown={onWrapperKeyDown}
+      className={leading != null ? "flex items-center gap-2" : undefined}
     >
+      {leading != null && <span className="flex shrink-0 items-center" aria-hidden>{leading}</span>}
       <div
         role="textbox"
         data-slot="grid-cell-content"
@@ -210,7 +213,7 @@ export function ShortTextCell<TData>({
         onBlur={onBlur}
         onInput={onInput}
         suppressContentEditableWarning
-        className={cn("size-full overflow-hidden outline-none", {
+        className={cn("size-full overflow-hidden outline-none", leading != null && "min-w-0 flex-1", {
           "whitespace-nowrap **:inline **:whitespace-nowrap [&_br]:hidden":
             isEditing,
         })}
@@ -732,6 +735,9 @@ export function UrlCell<TData>({
   const displayValue = !isEditing ? (value ?? "") : "";
   const urlHref = displayValue ? getUrlHref(displayValue) : "";
   const isDangerousUrl = displayValue && !urlHref;
+  const cellOpts = cell.column.columnDef.meta?.cell;
+  const linkLabel = cellOpts?.variant === "url" && cellOpts.hideProtocol
+    ? displayValue.replace(/^https?:\/\//i, "") : displayValue;
 
   return (
     <DataGridCellWrapper<TData>
@@ -763,7 +769,7 @@ export function UrlCell<TData>({
             className="truncate text-fg-default underline decoration-border underline-offset-2 hover:decoration-fg-default/50 data-invalid:cursor-not-allowed data-invalid:text-fg-danger data-invalid:decoration-danger-border/50"
             onClick={onLinkClick}
           >
-            {displayValue}
+            {linkLabel}
           </a>
         </div>
       ) : (
@@ -990,11 +996,9 @@ export function SelectCell<TData>({
           />
           <SelectContent
             data-grid-cell-editor=""
-            // compensate for the wrapper padding
+            anchor={containerRef}
             align="start"
-            alignOffset={-8}
-            sideOffset={-8}
-            className="min-w-[calc(var(--anchor-width)+16px)]"
+            sideOffset={0}
           >
             {options.map((option) => (
               <SelectItem key={option.value} value={option.value}>
