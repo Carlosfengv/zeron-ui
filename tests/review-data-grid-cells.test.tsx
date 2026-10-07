@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import type { Cell, TableMeta } from "@tanstack/react-table";
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { FileCell, NumberCell, ShortTextCell, UrlCell } from "../packages/ui/src/components/data-grid/data-grid-cell-variants";
+import { DateCell, FileCell, NumberCell, ShortTextCell, UrlCell } from "../packages/ui/src/components/data-grid/data-grid-cell-variants";
 import type { DataGridCellProps, FileCellData } from "../packages/ui/src/system/data-grid-types";
 
 beforeAll(() => {
@@ -40,6 +40,36 @@ function edit(editor: HTMLElement, value: string) {
 }
 
 describe("DataGrid editor cancellation and read-only state", () => {
+  it("selects a local calendar date from the Dropdown panel", async () => {
+    const onDataUpdate = vi.fn();
+    const onCellEditingStop = vi.fn();
+    render(<DateCell {...props("2026-03-12", { onDataUpdate, onCellEditingStop })} />);
+    const panel = await screen.findByRole("dialog");
+    const day = within(panel).getByRole("button", { name: /March 20/ });
+    expect(panel.getAttribute("data-slot")).toBe("dropdown");
+    fireEvent.click(day);
+    expect(onDataUpdate).toHaveBeenCalledExactlyOnceWith({ rowIndex: 0, columnId: "value", value: "2026-03-20" });
+    expect(onCellEditingStop).toHaveBeenCalled();
+  });
+
+  it("closes the date Dropdown on Escape without changing the date", async () => {
+    const onDataUpdate = vi.fn();
+    function Demo() {
+      const [editing, setEditing] = React.useState(true);
+      return <DateCell {...props("2026-03-12", { onDataUpdate,
+        onCellEditingStop: () => setEditing(false) })} isEditing={editing} />;
+    }
+    const { container } = render(<Demo />);
+    const display = container.querySelector('[data-slot="grid-cell-content"]')!;
+    const initialDisplay = display.textContent;
+    const panel = await screen.findByRole("dialog");
+    const day = within(panel).getByRole("button", { name: /March 20/ });
+    fireEvent.keyDown(day, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(onDataUpdate).not.toHaveBeenCalled();
+    expect(display.textContent).toBe(initialDisplay);
+  });
+
   it("can shorten a URL label without changing its target or editable value", () => {
     const options = props("https://example.com/path");
     options.cell.column.columnDef.meta = { cell: { variant: "url", hideProtocol: true } };

@@ -71,13 +71,14 @@ function PopoverAnchor({
 type PopoverContentProps = PopoverPrimitive.Popup.Props &
   Pick<
     PopoverPrimitive.Positioner.Props,
-    "align" | "alignOffset" | "side" | "sideOffset"
+    "anchor" | "align" | "alignOffset" | "side" | "sideOffset"
   > & {
     onEscapeKeyDown?: (event: Event) => void;
     onOpenAutoFocus?: (event: Event) => void;
   };
 
 function PopoverContent({
+  anchor,
   align = "center",
   alignOffset = 0,
   className,
@@ -106,7 +107,7 @@ function PopoverContent({
       <PopoverPrimitive.Positioner
         align={align}
         alignOffset={alignOffset}
-        anchor={context?.anchorRef}
+        anchor={anchor ?? context?.anchorRef}
         className="z-popover outline-none"
         side={side}
         sideOffset={sideOffset}

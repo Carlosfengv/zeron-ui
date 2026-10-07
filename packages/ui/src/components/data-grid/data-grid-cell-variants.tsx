@@ -35,6 +35,7 @@ import {
 } from "../command";
 import { Calendar } from "./data-grid-calendar";
 import { Checkbox } from "../checkbox";
+import { Dropdown } from "../dropdown";
 import { Popover, PopoverAnchor, PopoverContent } from "./data-grid-popover";
 import {
   Select,
@@ -1398,17 +1399,20 @@ export function DateCell<TData>({
       onKeyDown={onWrapperKeyDown}
     >
       <Popover open={isEditing} onOpenChange={onOpenChange}>
-        <PopoverAnchor asChild>
-          <span data-slot="grid-cell-content">
-            {formatDateForDisplay(value)}
-          </span>
-        </PopoverAnchor>
+        <span data-slot="grid-cell-content">
+          {formatDateForDisplay(value)}
+        </span>
         {isEditing && (
           <PopoverContent
             data-grid-cell-editor=""
+            data-slot="dropdown"
+            anchor={containerRef}
             align="start"
-            alignOffset={-8}
-            className="w-auto p-0"
+            sideOffset={0}
+            className="max-h-[var(--available-height)] overflow-y-auto p-1"
+            render={(popupProps) => (
+              <Dropdown {...popupProps}>{popupProps.children}</Dropdown>
+            )}
           >
             <Calendar
               autoFocus
