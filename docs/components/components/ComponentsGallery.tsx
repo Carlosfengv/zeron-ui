@@ -12,7 +12,7 @@ import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger }
 import { NavMenu } from "@zeron/ui/nav-menu";
 import { PageBody, PageContent, PageLayout, PageSidebar } from "@zeron/ui/page-layout";
 import { useIcon, type IconName } from "@zeron/icons/context";
-import { docEntries, type DocEntry } from "@docs/manifest";
+import { navigationDocEntries, type DocEntry } from "@docs/manifest";
 import { RightPanel } from "@docs/components/shell/site/right-panel";
 import { componentCardDescription } from "@docs/components/components/component-card-copy";
 import { componentCoverSrc, type ComponentCoverTheme } from "@docs/lib/component-covers";
@@ -27,6 +27,7 @@ const componentSections = [
   "input",
   "action",
   "data-display",
+  "charts",
   "feedback",
   "overlay",
   "ai-agent",
@@ -62,6 +63,7 @@ const sectionLabels = {
     input: "Input & selection",
     action: "Triggers & execution",
     "data-display": "Data display",
+    charts: "Charts",
     feedback: "Feedback & status",
     overlay: "Overlays & guidance",
     "ai-agent": "AI interaction",
@@ -73,6 +75,7 @@ const sectionLabels = {
     input: "输入与选择",
     action: "触发与执行",
     "data-display": "数据展示",
+    charts: "图表",
     feedback: "反馈与状态",
     overlay: "浮层与辅助",
     "ai-agent": "AI 交互",
@@ -87,6 +90,7 @@ const sectionIcons: Record<ComponentSection | "all", IconName> = {
   input: "doc-input",
   action: "doc-button",
   "data-display": "doc-card",
+  charts: "doc-data-grid",
   feedback: "doc-toast",
   overlay: "doc-popover",
   "ai-agent": "doc-ask-user-questions",
@@ -151,7 +155,7 @@ function ComponentDirectorySidebar({
 }) {
   const SearchIcon = useIcon("search");
   const text = copy[language];
-  const components = useMemo(() => docEntries.filter((entry) => entry.collection === "components"), []);
+  const components = useMemo(() => navigationDocEntries.filter((entry) => entry.collection === "components"), []);
   const normalizedQuery = query.trim().toLowerCase();
   const searchableComponents = useMemo(() => components.filter((entry) => {
     const description = componentCardDescription(entry.slug, language, entry.description);
@@ -240,7 +244,7 @@ export function ComponentsGallery({ localePrefix = "" }: { localePrefix?: string
   const coverTheme = useResolvedTheme();
   const text = copy[language];
   const normalizedQuery = query.trim().toLowerCase();
-  const components = useMemo(() => docEntries.filter((entry) => entry.collection === "components"), []);
+  const components = useMemo(() => navigationDocEntries.filter((entry) => entry.collection === "components"), []);
 
   useEffect(() => {
     setQuery(searchParams.get("q") ?? "");
@@ -399,7 +403,7 @@ export function ComponentsDetailWorkspace({ children }: { children: React.ReactN
   const pathname = usePathname();
   const router = useRouter();
   const language = pathname.startsWith("/en/") ? "en" : "zh";
-  const components = useMemo(() => docEntries.filter((entry) => entry.collection === "components"), []);
+  const components = useMemo(() => navigationDocEntries.filter((entry) => entry.collection === "components"), []);
   const slug = pathname.split("/").at(-1);
   const activeSection = components.find((entry) => entry.slug === slug)?.section as ComponentSection | undefined;
   const collectionPath = `${language === "en" ? "/en" : ""}/docs/components`;

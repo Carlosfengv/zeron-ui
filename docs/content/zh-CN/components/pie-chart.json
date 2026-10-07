@@ -1,0 +1,30 @@
+{
+  "chartType": {
+    "basic": "基础用法",
+    "usage": "使用说明",
+    "composition": "通过 Zeron Chart 组合 Recharts。这些示例共用 chart 安装入口、图表色盘、提示框和可访问数据表。",
+    "viewData": "查看数据",
+    "primary": "请求量",
+    "secondary": "对比系列",
+    "total": "已分配 / 100",
+    "category": "服务",
+    "unassigned": "未分配",
+    "dataKeyProp": "将图形映射到原始数据中的数值字段。",
+    "sourceDescription": "这是基于现有 Pie / PieChart 基元的文档组合示例，DonutSummary 内部也使用这些基元；目前没有对应的独立饼图 Block。",
+    "sourceLink": "共享 Chart 实现",
+    "chartLabel": "服务请求量",
+    "foundationLink": "Chart 基础能力",
+    "tokensLink": "图表色盘",
+    "primitivesLink": "图例与基础工具",
+    "apiReference": "组合 API",
+    "configProp": "将稳定的系列标识映射到标签和共享图表颜色。",
+    "tableProp": "通过支持键盘打开的数据表提供原始数值。",
+    "dataProp": "传入原始数值，不隐式汇总、补零或重新排序。",
+    "valueProp": "指定图表读取的数值字段。",
+    "centerProp": "提供中心摘要及其业务含义。",
+    "title": "饼图",
+    "description": "通过饼图展示一个完整、非负总量的类别构成。",
+    "advanced": "百分比标签",
+    "guidance": "饼图中的类别必须属于同一已知总量，百分比使用所有绘制类别之和作为分母。已知总量但分类不完整时，使用 DonutChart 保留未分配轨道。"
+  }
+}

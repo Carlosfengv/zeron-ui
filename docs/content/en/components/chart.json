@@ -1,6 +1,12 @@
 {
   "chart": {
-    "description": "Shared trends and donuts with stable series colors, explicit time windows and accessible values.",
+    "description": "Shared containers, tooltips, time-series and donut compositions with stable colors and accessible values.",
+    "types": "Browse by chart type",
+    "line": "Line chart",
+    "area": "Area chart",
+    "bar": "Bar chart",
+    "pie": "Pie chart",
+    "donut": "Donut chart",
     "examples": "Data boundaries",
     "scenario": "Data scenario",
     "timeZone": "Display time zone",

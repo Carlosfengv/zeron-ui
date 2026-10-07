@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { docEntries, type DocCollection } from "@docs/manifest";
+import { navigationDocEntries, type DocCollection } from "@docs/manifest";
 import { DocPager } from "@docs/components/navigation/DocPager";
 import { InstallCommand } from "@docs/components/content/InstallCommand";
 
@@ -35,7 +35,7 @@ export function DocPage({
 }: DocPageProps) {
   const t = useTranslations("common");
   const meta = useTranslations("docMeta");
-  const collectionEntries = docEntries.filter((entry) => entry.collection === collection);
+  const collectionEntries = navigationDocEntries.filter((entry) => entry.collection === collection);
   const currentIndex = slug ? collectionEntries.findIndex((component) => component.slug === slug) : -1;
   const prev = currentIndex > 0
     ? collectionEntries[currentIndex - 1]

@@ -20,7 +20,7 @@ import {
 } from "@zeron/ui/sidebar";
 import { cn } from "@zeron/ui/system/utils";
 import { useIcon, type IconName } from "@zeron/icons/context";
-import { docEntries, sectionDefinitions, pathnameOf, type DocCollection } from "@docs/manifest";
+import { navigationDocEntries, sectionDefinitions, pathnameOf, type DocCollection } from "@docs/manifest";
 import { artifactCatalog } from "@docs/catalog/artifacts";
 import { SettingsContent } from "@docs/components/shell/site/right-panel";
 import { internalPathname, localizePathname } from "@docs/components/shell/site/locale-path";
@@ -83,8 +83,8 @@ function DocsSidebarContent({ localePrefix = "" }: Pick<DocsSidebarProps, "local
   const relatedTemplates = currentArtifact
     ? artifactCatalog
       .filter((artifact) => artifact.collection === collection && artifact.kind === currentArtifact.kind && artifact.slug !== currentArtifact.slug)
-      .map((artifact) => docEntries.find((entry) => entry.collection === collection && entry.slug === artifact.slug))
-      .filter((entry): entry is (typeof docEntries)[number] => Boolean(entry))
+      .map((artifact) => navigationDocEntries.find((entry) => entry.collection === collection && entry.slug === artifact.slug))
+      .filter((entry): entry is (typeof navigationDocEntries)[number] => Boolean(entry))
       .slice(0, 5)
     : [];
   const relatedTemplatesLabel = collection === "pages"
@@ -109,7 +109,7 @@ function DocsSidebarContent({ localePrefix = "" }: Pick<DocsSidebarProps, "local
         relatedTemplates.map((item) => <SiteNavItem key={item.slug} href={localizePathname(pathnameOf(item), localePrefix)} label={item.name} icon={item.icon} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />),
       )}
       {!isArtifactCollection && sections.map((definition) => {
-        const entries = docEntries.filter((entry) => entry.collection === collection && entry.section === definition.id);
+        const entries = navigationDocEntries.filter((entry) => entry.collection === collection && entry.section === definition.id);
         const label = t.has(definition.navigationKey) ? t(definition.navigationKey) : definition.id;
         return section(definition.id, label, entries.length, label, entries.map((item) => <SiteNavItem key={item.slug} href={localizePathname(pathnameOf(item), localePrefix)} label={item.name} icon={item.icon} isNew={item.isNew} isUpdated={item.isUpdated} dotColor={item.dotColor} />));
       })}

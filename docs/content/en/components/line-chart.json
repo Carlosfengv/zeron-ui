@@ -1,0 +1,30 @@
+{
+  "chartType": {
+    "basic": "Basic",
+    "usage": "Usage",
+    "composition": "Compose Recharts with Zeron Chart. These examples share the chart installation, palette, tooltip and accessible data table.",
+    "viewData": "View data",
+    "primary": "Requests",
+    "secondary": "Comparison",
+    "total": "Allocated / 100",
+    "category": "Service",
+    "unassigned": "Unassigned",
+    "dataKeyProp": "Map the chart marks to the original numeric data field.",
+    "sourceDescription": "Follows the LineChart composition in support-analytics-01; the data here is a documentation fixture.",
+    "sourceLink": "Support analytics",
+    "chartLabel": "Requests by service",
+    "foundationLink": "Chart foundations",
+    "tokensLink": "Chart colors",
+    "primitivesLink": "Legends and primitives",
+    "apiReference": "Composition API",
+    "configProp": "Map stable series keys to labels and shared chart colors.",
+    "tableProp": "Expose the original values in a keyboard-accessible table.",
+    "dataProp": "Supply original values without aggregation, implicit zeroes or reordering.",
+    "valueProp": "Choose the numeric source field used by the chart.",
+    "centerProp": "Supply the center summary and its business meaning.",
+    "title": "Line chart",
+    "description": "Use lines to show trends and compare series across evenly spaced observations.",
+    "advanced": "Multiple series",
+    "guidance": "Each line has a stable series key and chart color. Keep null gaps disconnected. This demo uses evenly spaced UTC observations; use a numeric time axis for irregular timestamps."
+  }
+}

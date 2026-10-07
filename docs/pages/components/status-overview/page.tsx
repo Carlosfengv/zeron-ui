@@ -10,6 +10,8 @@ import {
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
+import { InstallCommand } from "@docs/components/content/InstallCommand";
+import { StatusBarChartBasicDemo, statusBarChartBasicCode, useStatusBarChartDemoTimeline } from "@docs/components/charts/status-bar-chart-basic-demo";
 
 const HOUR = 60 * 60 * 1000;
 const timelineStart = Date.UTC(2026, 7, 24, 15, 0, 0);
@@ -20,23 +22,28 @@ const timelineItems: readonly StatusTimelineItem[] = Array.from({ length: 72 }, 
   ariaLabel: `Hour ${index + 1}: ${index === 18 || index === 47 ? "degraded" : index === 48 ? "no sample" : "operational"}`,
 }));
 
-const nodeItems: readonly NodeStatusItem[] = [
-  { id: "us-east-1", status: "operational", ariaLabel: "US East, operational, 24 ms", tooltip: "US East · 24 ms" },
-  { id: "us-west-1", status: "operational", ariaLabel: "US West, operational, 31 ms", tooltip: "US West · 31 ms" },
-  { id: "eu-west-1", status: "degraded", ariaLabel: "EU West, degraded, 142 ms", tooltip: "EU West · 142 ms" },
-  { id: "ap-south-1", status: "maintenance", ariaLabel: "AP South, in maintenance", tooltip: "AP South · maintenance" },
-  { id: "sa-east-1", status: "down", ariaLabel: "SA East, unavailable", tooltip: "SA East · unavailable" },
-  { id: "ca-central-1", status: "unknown", ariaLabel: "Canada Central, status unknown", tooltip: "Canada Central · status unknown" },
-];
-
 const denseNodeItems: readonly NodeStatusItem[] = Array.from({ length: 200 }, (_, index) => ({
   id: `node-${index + 1}`,
   status: index % 29 === 0 ? "down" : index % 13 === 0 ? "degraded" : "operational",
   ariaLabel: `Node ${index + 1}: ${index % 29 === 0 ? "down" : index % 13 === 0 ? "degraded" : "operational"}`,
 }));
+const denseOperationalCount = denseNodeItems.filter((item) => item.status === "operational").length;
 
-const basicCode = `import { StatusOverview } from "@zeron/ui/status-overview";
+const basicCode = `"use client";
 
+import { StatusOverview, type StatusTimelineItem } from "@/components/ui/status-overview";
+
+const hour = 60 * 60 * 1000;
+const start = Date.UTC(2026, 7, 24, 15);
+const hourlyItems: StatusTimelineItem[] = Array.from({ length: 72 }, (_, index) => ({
+  id: "hour-" + index,
+  status: index === 18 || index === 47 ? "degraded" : index === 48 ? "empty" : "operational",
+  ariaLabel: "Hour " + (index + 1) + ": " + (index === 18 || index === 47 ? "degraded" : index === 48 ? "no sample" : "operational"),
+}));
+const end = start + hourlyItems.length * hour;
+
+export default function Example() {
+  return (
 <StatusOverview
   ariaLabel="API availability over the last three days"
   label="Availability over the last 3 days"
@@ -51,18 +58,41 @@ const basicCode = `import { StatusOverview } from "@zeron/ui/status-overview";
     markers: [
       { at: start, label: "Mon" },
       { at: start + 24 * hour, label: "Tue" },
+      { at: start + 48 * hour, label: "Wed" },
       { at: end, label: "Now" },
     ],
   }}
-/>`;
+/>
+  );
+}`;
 
-const nodesCode = `<StatusOverview
-  ariaLabel="Current global node status"
-  label="Node status"
-  summary={{ label: "Operational", value: "26 / 28", status: "degraded" }}
-  emptyContent="No nodes"
-  content={{ type: "nodes", items: nodes, footer: "28 nodes" }}
-/>`;
+const activityCode = `"use client";
+
+import { StatusOverview, type StatusTimelineItem } from "@/components/ui/status-overview";
+
+const start = Date.UTC(2026, 7, 24, 15);
+const items: StatusTimelineItem[] = Array.from({ length: 60 }, (_, index) => {
+  const status = index === 23 ? "down" : index === 38 ? "degraded" : index === 51 ? "unknown" : index % 4 === 0 ? "operational" : "empty";
+  return { id: "minute-" + index, status, ariaLabel: "Minute " + (index + 1) + ": " + status };
+});
+
+export default function Example() {
+  return <StatusOverview variant="activity" className="w-full" label="Gateway" summary={{ label: "Requests", value: "148" }} ariaLabel="Gateway service activity" emptyContent="No activity data" content={{ type: "timeline", start, end: start + 60 * 60 * 1000, items }} />;
+}`;
+
+const denseNodesCode = `"use client";
+
+import { StatusOverview, type NodeStatusItem } from "@/components/ui/status-overview";
+
+const items: NodeStatusItem[] = Array.from({ length: 200 }, (_, index) => {
+  const status = index % 29 === 0 ? "down" : index % 13 === 0 ? "degraded" : "operational";
+  return { id: "node-" + (index + 1), status, ariaLabel: "Node " + (index + 1) + ": " + status };
+});
+const operational = items.filter(item => item.status === "operational").length;
+
+export default function Example() {
+  return <StatusOverview className="w-full" label="Node status" ariaLabel="Two hundred current nodes" emptyContent="No status data" summary={{ label: "Operational", value: operational + " / " + items.length, status: "degraded" }} content={{ type: "nodes", items, footer: items.length + " nodes" }} />;
+}`;
 
 const props: PropDef[] = [
   { name: "ariaLabel", type: "string", description: "" },
@@ -73,17 +103,30 @@ const props: PropDef[] = [
   { name: "emptyContent", type: "ReactNode", description: "" },
   { name: "state", type: '"ready" | "loading" | "stale" | "unavailable" | "error"', default: '"ready"', description: "" },
   { name: "statusMessage", type: "ReactNode", description: "" },
-  { name: "variant", type: '"card" | "activity"', default: '"card"', description: "" },
+  { name: "variant", type: '"card" | "activity" | "chart"', default: '"card"', description: "" },
   { name: "trailing", type: "ReactNode", description: "" },
 ];
 
-export default function StatusOverviewDoc() {
+export default function StatusBarChartDoc() {
   const t = useTranslations("statusOverview");
+  const common = useTranslations("common");
+  const stateTimeline = useStatusBarChartDemoTimeline("API");
   const localizedProps = useMemo(() => props.map((prop, index) => ({ ...prop, description: t(`p${index}`) })), [t]);
   const end = timelineStart + timelineItems.length * HOUR;
 
   return (
-    <DocPage title="StatusOverview" slug="status-overview" description={t("description")}>
+    <DocPage title="StatusBarChart" slug="status-overview" description={t("description")} showInstall={false}>
+      <DocSection title={common("installation")}>
+        <InstallCommand value="npx zeron-ui add status-overview button" />
+        <p className="text-label text-fg-muted">{t("actionsInstallation")}</p>
+      </DocSection>
+      <p className="text-label text-fg-muted">{t("implementation")}</p>
+      <DocSection title={t("basic")}>
+        <ComponentPreview coverSource code={statusBarChartBasicCode} minHeightClass="min-h-0">
+          <StatusBarChartBasicDemo />
+        </ComponentPreview>
+        <p className="text-label text-fg-muted">{t("basicBody")}</p>
+      </DocSection>
       <DocSection title={t("timeline")}>
         <ComponentPreview code={basicCode} minHeightClass="min-h-0">
           <StatusOverview
@@ -110,7 +153,7 @@ export default function StatusOverviewDoc() {
       </DocSection>
 
       <DocSection title={t("activity")}>
-        <ComponentPreview code={'<StatusOverview variant="activity" label="Gateway" summary={{ label: "请求", value: 148 }} ariaLabel="Gateway 服务活动" emptyContent="暂无数据" content={{ type: "timeline", start, end, items }} />'} minHeightClass="min-h-0">
+        <ComponentPreview code={activityCode} minHeightClass="min-h-0">
           <StatusOverview variant="activity" className="w-full" label="Gateway" ariaLabel={t("activityAria")} emptyContent={t("empty")}
             summary={{ label: t("requests"), value: "148" }}
             content={{ type: "timeline", start: timelineStart, end: timelineStart + 60 * 60 * 1000,
@@ -119,43 +162,43 @@ export default function StatusOverviewDoc() {
         <p className="text-body text-fg-muted">{t("activityBody")}</p>
       </DocSection>
 
-      <DocSection title={t("nodes")}>
-        <ComponentPreview code={nodesCode} minHeightClass="min-h-0">
-          <StatusOverview
-            ariaLabel={t("nodesAria")}
-            className="w-full"
-            content={{ type: "nodes", items: nodeItems, footer: t("nodeCount", { count: 6 }) }}
-            emptyContent={t("empty")}
-            label={t("nodeStatus")}
-            summary={{ label: t("operational"), value: "4 / 6", status: "degraded" }}
-          />
-        </ComponentPreview>
-      </DocSection>
-
       <DocSection title={t("states")}>
-        <div className="grid gap-3 lg:grid-cols-2">
-          <StatusOverview ariaLabel={t("loadingAria")} className="w-full" content={{ type: "nodes", items: nodeItems }} emptyContent={t("empty")} label={t("nodeStatus")} state="loading" summary={{ label: t("operational"), value: "4 / 6", status: "operational" }} />
-          <StatusOverview ariaLabel={t("staleAria")} className="w-full" content={{ type: "nodes", items: nodeItems }} emptyContent={t("empty")} label={t("nodeStatus")} state="stale" statusMessage={t("staleMessage")} summary={{ label: t("operational"), value: "4 / 6", status: "degraded" }} />
-          <StatusOverview ariaLabel={t("emptyAria")} className="w-full" content={{ type: "nodes", items: [] }} emptyContent={t("empty")} label={t("nodeStatus")} />
-          <StatusOverview ariaLabel={t("errorAria")} className="w-full" content={{ type: "nodes", items: nodeItems }} emptyContent={t("empty")} label={t("nodeStatus")} state="error" statusMessage={t("errorMessage")} />
+        <div className="grid gap-x-6 gap-y-8 lg:grid-cols-2">
+          <div className="space-y-4">
+            <p className="text-label font-medium text-fg-muted">{t("loadingState")}</p>
+            <StatusOverview variant="chart" ariaLabel={t("loadingAria")} className="w-full" content={stateTimeline} emptyContent={t("empty")} label="API" state="loading" summary={{ label: t("currentStatus"), value: t("operational") }} />
+          </div>
+          <div className="space-y-4">
+            <p className="text-label font-medium text-fg-muted">{t("staleState")}</p>
+            <StatusOverview variant="chart" ariaLabel={t("staleAria")} className="w-full" content={stateTimeline} emptyContent={t("empty")} label="API" state="stale" statusMessage={t("staleMessage")} summary={{ label: t("currentStatus"), value: t("operational") }} />
+          </div>
+          <div className="space-y-4">
+            <p className="text-label font-medium text-fg-muted">{t("emptyState")}</p>
+            <StatusOverview variant="chart" ariaLabel={t("emptyAria")} className="w-full" content={{ ...stateTimeline, items: [] }} emptyContent={t("empty")} label="API" />
+          </div>
+          <div className="space-y-4">
+            <p className="text-label font-medium text-fg-muted">{t("errorState")}</p>
+            <StatusOverview variant="chart" ariaLabel={t("errorAria")} className="w-full" content={stateTimeline} emptyContent={t("empty")} label="API" state="error" statusMessage={t("errorMessage")} />
+          </div>
         </div>
       </DocSection>
 
       <DocSection title={t("denseNodes")}>
-        <ComponentPreview code={`<StatusOverview content={{ type: "nodes", items: twoHundredNodes }} ... />`} minHeightClass="min-h-0">
+        <ComponentPreview code={denseNodesCode} minHeightClass="min-h-0">
           <StatusOverview
             ariaLabel={t("denseAria")}
             className="w-full"
             content={{ type: "nodes", items: denseNodeItems, footer: t("nodeCount", { count: 200 }) }}
             emptyContent={t("empty")}
             label={t("nodeStatus")}
-            summary={{ label: t("operational"), value: "179 / 200", status: "degraded" }}
+            summary={{ label: t("operational"), value: `${denseOperationalCount} / ${denseNodeItems.length}`, status: "degraded" }}
           />
         </ComponentPreview>
       </DocSection>
 
       <DocSection title={t("dataBoundary")}>
         <div className="max-w-3xl space-y-2 text-body text-fg-muted">
+          <p>{t("chartMeaning")}</p>
           <p>{t("dataBoundaryBody")}</p>
           <p>{t("keyboard")}</p>
         </div>

@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-07",
+  "status": "reviewed; user authorized both commits and push to GitHub main; execution results are recorded in Git history",
+  "baseCommit": "9042d75489f6d6bb9739ffd220461f0c5e7fad4c",
+  "reviewBranch": "main",
+  "plan": "docs/plans/2026-10-07-chart-docs-status-bar-review-commit-plan.md",
+  "commits": [
+    {
+      "order": 1,
+      "message": "feat(status-overview): add status bar chart presentation",
+      "dependsOn": [],
+      "files": [
+        "packages/ui/src/components/status-overview.tsx",
+        "public/r/status-overview.json",
+        "tests/status-overview-interaction.test.tsx"
+      ]
+    },
+    {
+      "order": 2,
+      "message": "docs(charts): organize chart types and status bar examples",
+      "dependsOn": [
+        1
+      ],
+      "files": [
+        "app/[locale]/docs/components/(detail)/area-chart/page.tsx",
+        "app/[locale]/docs/components/(detail)/bar-chart/page.tsx",
+        "app/[locale]/docs/components/(detail)/donut-chart/page.tsx",
+        "app/[locale]/docs/components/(detail)/line-chart/page.tsx",
+        "app/[locale]/docs/components/(detail)/pie-chart/page.tsx",
+        "docs/agent-data/item-identities.json",
+        "docs/agent-data/search-synonyms.json",
+        "docs/components/charts/bar-chart-gradient-example.tsx",
+        "docs/components/charts/chart-type-doc.tsx",
+        "docs/components/charts/chart-type-example.tsx",
+        "docs/components/charts/status-bar-chart-basic-demo.tsx",
+        "docs/components/components/ComponentsGallery.tsx",
+        "docs/components/components/component-card-copy.ts",
+        "docs/components/content/DocPage.tsx",
+        "docs/components/shell/site/sidebar.tsx",
+        "docs/content/en/common-slim.json",
+        "docs/content/en/common.json",
+        "docs/content/en/components/area-chart.json",
+        "docs/content/en/components/bar-chart.json",
+        "docs/content/en/components/chart.json",
+        "docs/content/en/components/donut-chart.json",
+        "docs/content/en/components/line-chart.json",
+        "docs/content/en/components/pie-chart.json",
+        "docs/content/en/components/status-overview.json",
+        "docs/content/zh-CN/common-slim.json",
+        "docs/content/zh-CN/common.json",
+        "docs/content/zh-CN/components/area-chart.json",
+        "docs/content/zh-CN/components/bar-chart.json",
+        "docs/content/zh-CN/components/chart.json",
+        "docs/content/zh-CN/components/donut-chart.json",
+        "docs/content/zh-CN/components/line-chart.json",
+        "docs/content/zh-CN/components/pie-chart.json",
+        "docs/content/zh-CN/components/status-overview.json",
+        "docs/generated/component-page-loaders.generated.ts",
+        "docs/generated/page-loaders.generated.ts",
+        "docs/i18n/content-loaders.generated.ts",
+        "docs/lib/chart-types.ts",
+        "docs/lib/components.ts",
+        "docs/manifest.ts",
+        "docs/pages/components/area-chart/page.tsx",
+        "docs/pages/components/bar-chart/page.tsx",
+        "docs/pages/components/chart/page.tsx",
+        "docs/pages/components/donut-chart/page.tsx",
+        "docs/pages/components/line-chart/page.tsx",
+        "docs/pages/components/pie-chart/page.tsx",
+        "docs/pages/components/status-overview/page.tsx",
+        "docs/plans/2026-10-07-chart-docs-status-bar-commit-files.json",
+        "docs/plans/2026-10-07-chart-docs-status-bar-review-commit-plan.md",
+        "package.json",
+        "pnpm-lock.yaml",
+        "public/component-covers/area-chart-dark.jpg",
+        "public/component-covers/area-chart-light.jpg",
+        "public/component-covers/bar-chart-dark.jpg",
+        "public/component-covers/bar-chart-light.jpg",
+        "public/component-covers/donut-chart-dark.jpg",
+        "public/component-covers/donut-chart-light.jpg",
+        "public/component-covers/line-chart-dark.jpg",
+        "public/component-covers/line-chart-light.jpg",
+        "public/component-covers/pie-chart-dark.jpg",
+        "public/component-covers/pie-chart-light.jpg",
+        "public/component-covers/status-overview-dark.jpg",
+        "public/component-covers/status-overview-light.jpg",
+        "public/llms.txt",
+        "tests/chart-document-examples.test.ts",
+        "tests/i18n-document-manifest.test.ts",
+        "tests/registry-consistency.test.mjs"
+      ]
+    }
+  ],
+  "files": [
+    "app/[locale]/docs/components/(detail)/area-chart/page.tsx",
+    "app/[locale]/docs/components/(detail)/bar-chart/page.tsx",
+    "app/[locale]/docs/components/(detail)/donut-chart/page.tsx",
+    "app/[locale]/docs/components/(detail)/line-chart/page.tsx",
+    "app/[locale]/docs/components/(detail)/pie-chart/page.tsx",
+    "docs/agent-data/item-identities.json",
+    "docs/agent-data/search-synonyms.json",
+    "docs/components/charts/bar-chart-gradient-example.tsx",
+    "docs/components/charts/chart-type-doc.tsx",
+    "docs/components/charts/chart-type-example.tsx",
+    "docs/components/charts/status-bar-chart-basic-demo.tsx",
+    "docs/components/components/ComponentsGallery.tsx",
+    "docs/components/components/component-card-copy.ts",
+    "docs/components/content/DocPage.tsx",
+    "docs/components/shell/site/sidebar.tsx",
+    "docs/content/en/common-slim.json",
+    "docs/content/en/common.json",
+    "docs/content/en/components/area-chart.json",
+    "docs/content/en/components/bar-chart.json",
+    "docs/content/en/components/chart.json",
+    "docs/content/en/components/donut-chart.json",
+    "docs/content/en/components/line-chart.json",
+    "docs/content/en/components/pie-chart.json",
+    "docs/content/en/components/status-overview.json",
+    "docs/content/zh-CN/common-slim.json",
+    "docs/content/zh-CN/common.json",
+    "docs/content/zh-CN/components/area-chart.json",
+    "docs/content/zh-CN/components/bar-chart.json",
+    "docs/content/zh-CN/components/chart.json",
+    "docs/content/zh-CN/components/donut-chart.json",
+    "docs/content/zh-CN/components/line-chart.json",
+    "docs/content/zh-CN/components/pie-chart.json",
+    "docs/content/zh-CN/components/status-overview.json",
+    "docs/generated/component-page-loaders.generated.ts",
+    "docs/generated/page-loaders.generated.ts",
+    "docs/i18n/content-loaders.generated.ts",
+    "docs/lib/chart-types.ts",
+    "docs/lib/components.ts",
+    "docs/manifest.ts",
+    "docs/pages/components/area-chart/page.tsx",
+    "docs/pages/components/bar-chart/page.tsx",
+    "docs/pages/components/chart/page.tsx",
+    "docs/pages/components/donut-chart/page.tsx",
+    "docs/pages/components/line-chart/page.tsx",
+    "docs/pages/components/pie-chart/page.tsx",
+    "docs/pages/components/status-overview/page.tsx",
+    "docs/plans/2026-10-07-chart-docs-status-bar-commit-files.json",
+    "docs/plans/2026-10-07-chart-docs-status-bar-review-commit-plan.md",
+    "package.json",
+    "packages/ui/src/components/status-overview.tsx",
+    "pnpm-lock.yaml",
+    "public/component-covers/area-chart-dark.jpg",
+    "public/component-covers/area-chart-light.jpg",
+    "public/component-covers/bar-chart-dark.jpg",
+    "public/component-covers/bar-chart-light.jpg",
+    "public/component-covers/donut-chart-dark.jpg",
+    "public/component-covers/donut-chart-light.jpg",
+    "public/component-covers/line-chart-dark.jpg",
+    "public/component-covers/line-chart-light.jpg",
+    "public/component-covers/pie-chart-dark.jpg",
+    "public/component-covers/pie-chart-light.jpg",
+    "public/component-covers/status-overview-dark.jpg",
+    "public/component-covers/status-overview-light.jpg",
+    "public/llms.txt",
+    "public/r/status-overview.json",
+    "tests/chart-document-examples.test.ts",
+    "tests/i18n-document-manifest.test.ts",
+    "tests/registry-consistency.test.mjs",
+    "tests/status-overview-interaction.test.tsx"
+  ],
+  "excludedFiles": [
+    {
+      "path": "docs/components/blocks/BlockPreview.tsx",
+      "reason": "Pre-existing PreviewToolbarProvider change"
+    },
+    {
+      "path": "docs/plans/2026-10-05-block-page-unification-plan.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-05-block-page-unification-stage-one.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-05-block-page-unification-stage-two.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-05-transaction-details-block-plan.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-review-commit-plan.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-five.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-four.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-six.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-three.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-demo-settings-toolbar.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-feedback-component-consolidation.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-integration-monitors-block-implementation.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-integration-monitors-block-plan.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-integration-monitors-review-commit-plan.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-support-analytics-block-plan.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-support-analytics-review-commit-plan.md",
+      "reason": "Unrelated task document"
+    },
+    {
+      "path": "docs/plans/2026-10-06-transaction-details-review-commit-plan.md",
+      "reason": "Unrelated task document"
+    }
+  ],
+  "localEvidence": "output/chart-docs-review/verification.json"
+}

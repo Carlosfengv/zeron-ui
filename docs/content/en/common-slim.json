@@ -3,7 +3,7 @@
   "navigation": {
     "home": "Home",
     "blocks": "Blocks", "pages": "Pages",
-    "main": "Main navigation", "system": "System navigation", "foundations": "Foundations", "layout": "Layout & containers", "navigation": "Navigation", "input": "Input & selection", "action": "Triggers & execution", "dataDisplay": "Data display", "feedback": "Feedback & status", "overlay": "Overlays & guidance", "components": "Component navigation", "aiAgent": "AI interaction",
+    "main": "Main navigation", "system": "System navigation", "foundations": "Foundations", "layout": "Layout & containers", "navigation": "Navigation", "input": "Input & selection", "action": "Triggers & execution", "dataDisplay": "Data display", "charts": "Charts", "feedback": "Feedback & status", "overlay": "Overlays & guidance", "components": "Component navigation", "aiAgent": "AI interaction",
     "showcase": "Showcase", "businessTemplates": "Business templates", "componentsEntry": "Components", "introduction": "Introduction",
     "systemGroup": "System", "layoutGroup": "Layout", "componentsGroup": "Components", "aiAgentGroup": "AI Agent", "open": "Open navigation",
     "application": "Business templates", "overview": "Overview", "usage": "Usage", "catalog": "Catalog", "providers": "Providers"

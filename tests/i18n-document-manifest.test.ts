@@ -6,6 +6,7 @@ import {
   contentKeyOf,
   detailDocEntries,
   legacyDocRedirects,
+  navigationDocEntries,
   pageDocEntries,
   pageKeyOf,
   pathnameOf,
@@ -18,7 +19,7 @@ describe("documentation manifest", () => {
     for (const locale of ["en", "zh-CN"]) {
       const common = JSON.parse(readFileSync(join(ROOT, "docs/content", locale, "common.json"), "utf8"));
       const slim = JSON.parse(readFileSync(join(ROOT, "docs/content", locale, "common-slim.json"), "utf8"));
-      for (const key of ["blocks", "pages"]) {
+      for (const key of ["blocks", "pages", "charts"]) {
         expect(slim.navigation[key]).toBeTruthy();
         expect(slim.navigation[key]).toBe(common.navigation[key]);
       }
@@ -27,11 +28,22 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(122);
-    expect(detailDocEntries).toHaveLength(122);
-    expect(legacyDocRedirects).toHaveLength(69);
+    expect(pageDocEntries).toHaveLength(127);
+    expect(detailDocEntries).toHaveLength(127);
+    expect(legacyDocRedirects).toHaveLength(74);
     expect(pageDocEntries.some(entry => entry.slug === "error-state" || entry.slug === "status-indicator")).toBe(false);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
+  });
+
+  it("groups chart references together and preserves the status component identity", () => {
+    const charts = navigationDocEntries.filter((entry) => entry.collection === "components" && entry.section === "charts");
+    expect(charts.map((entry) => entry.slug)).toEqual([
+      "line-chart", "area-chart", "bar-chart", "pie-chart", "donut-chart", "status-overview",
+      "time-range-histogram", "chart-primitives", "chart-tokens",
+    ]);
+    expect(charts.find((entry) => entry.slug === "status-overview")?.name).toBe("StatusBarChart");
+    expect(charts.slice(0, 5).every((entry) => entry.registryItem === undefined)).toBe(true);
+    expect(pageDocEntries.some((entry) => entry.slug === "status-bar-chart")).toBe(false);
   });
 
   it("provides a compatibility route for the Base UI combobox reference path", () => {

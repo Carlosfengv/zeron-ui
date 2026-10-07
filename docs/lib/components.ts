@@ -1,5 +1,5 @@
 import type { IconName } from "@zeron/icons/context";
-import { docEntries, type DocEntry } from "@docs/manifest";
+import { navigationDocEntries, type DocEntry } from "@docs/manifest";
 
 export interface ComponentEntry {
   slug: string;
@@ -20,6 +20,7 @@ const functionalComponentSections = [
   "input",
   "action",
   "data-display",
+  "charts",
   "feedback",
   "overlay",
 ] as const;
@@ -37,13 +38,13 @@ function toEntry(entry: DocEntry): ComponentEntry {
   };
 }
 
-export const systemList: SystemEntry[] = docEntries.filter((entry) => entry.section === "foundations").map(toEntry);
-export const componentList: ComponentEntry[] = docEntries.filter((entry) => functionalComponentSections.includes(entry.section as (typeof functionalComponentSections)[number])).map(toEntry);
-export const layoutList: LayoutEntry[] = docEntries.filter((entry) => entry.section === "layout").map(toEntry);
-export const aiAgentList: ComponentEntry[] = docEntries.filter((entry) => entry.section === "ai-agent").map(toEntry);
+export const systemList: SystemEntry[] = navigationDocEntries.filter((entry) => entry.section === "foundations").map(toEntry);
+export const componentList: ComponentEntry[] = navigationDocEntries.filter((entry) => functionalComponentSections.includes(entry.section as (typeof functionalComponentSections)[number])).map(toEntry);
+export const layoutList: LayoutEntry[] = navigationDocEntries.filter((entry) => entry.section === "layout").map(toEntry);
+export const aiAgentList: ComponentEntry[] = navigationDocEntries.filter((entry) => entry.section === "ai-agent").map(toEntry);
 export const legacyDocSlugs = ["tabs-subtle"] as const;
 export const allComponentList: ComponentEntry[] = [...componentList, ...aiAgentList];
-export const docOrder = docEntries.map((entry) => ({ slug: entry.slug, name: entry.name }));
+export const docOrder = navigationDocEntries.map((entry) => ({ slug: entry.slug, name: entry.name }));
 
 export function componentPathname(slug: string) {
   return `/docs/components/${slug}`;

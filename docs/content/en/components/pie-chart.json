@@ -1,0 +1,30 @@
+{
+  "chartType": {
+    "basic": "Basic",
+    "usage": "Usage",
+    "composition": "Compose Recharts with Zeron Chart. These examples share the chart installation, palette, tooltip and accessible data table.",
+    "viewData": "View data",
+    "primary": "Requests",
+    "secondary": "Comparison",
+    "total": "Allocated / 100",
+    "category": "Service",
+    "unassigned": "Unassigned",
+    "dataKeyProp": "Map the chart marks to the original numeric data field.",
+    "sourceDescription": "A documentation composition using the existing Pie / PieChart primitives also used inside DonutSummary; it is not extracted from a standalone pie chart Block.",
+    "sourceLink": "Shared Chart implementation",
+    "chartLabel": "Requests by service",
+    "foundationLink": "Chart foundations",
+    "tokensLink": "Chart colors",
+    "primitivesLink": "Legends and primitives",
+    "apiReference": "Composition API",
+    "configProp": "Map stable series keys to labels and shared chart colors.",
+    "tableProp": "Expose the original values in a keyboard-accessible table.",
+    "dataProp": "Supply original values without aggregation, implicit zeroes or reordering.",
+    "valueProp": "Choose the numeric source field used by the chart.",
+    "centerProp": "Supply the center summary and its business meaning.",
+    "title": "Pie chart",
+    "description": "Show the composition of a complete, non-negative total with a pie chart.",
+    "advanced": "Percentage labels",
+    "guidance": "Use a pie only when every category belongs to the same known whole. Percentages use the sum of all plotted categories. For an incomplete distribution with a known total, use DonutChart and preserve the unassigned remainder."
+  }
+}

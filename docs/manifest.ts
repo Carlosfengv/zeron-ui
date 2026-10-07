@@ -5,7 +5,7 @@ export const docCollections = ["components", "blocks", "pages", "icons"] as cons
 export type DocCollection = (typeof docCollections)[number];
 
 export const docSections = [
-  "foundations", "layout", "navigation", "input", "action", "data-display",
+  "foundations", "layout", "navigation", "input", "action", "data-display", "charts",
   "feedback", "overlay", "ai-agent", "application",
   "overview", "usage", "catalog", "providers",
 ] as const;
@@ -38,6 +38,7 @@ export const sectionDefinitions: readonly DocSectionDefinition[] = [
   { id: "input", collection: "components", order: 400, navigationKey: "input" },
   { id: "action", collection: "components", order: 500, navigationKey: "action" },
   { id: "data-display", collection: "components", order: 600, navigationKey: "dataDisplay" },
+  { id: "charts", collection: "components", order: 650, navigationKey: "charts" },
   { id: "feedback", collection: "components", order: 700, navigationKey: "feedback" },
   { id: "overlay", collection: "components", order: 800, navigationKey: "overlay" },
   { id: "ai-agent", collection: "components", order: 900, navigationKey: "aiAgent" },
@@ -59,6 +60,8 @@ export interface DocEntry {
   icon: IconName;
   description?: string;
   indexable: boolean;
+  /** Keep the route available while omitting the page from directories and navigation. */
+  hideFromNavigation?: boolean;
   order: number;
   isNew?: boolean;
   isUpdated?: boolean;
@@ -100,7 +103,6 @@ export const docEntries = [
   blockEntry({ slug: "getting-started-01", section: "application", icon: "doc-card", name: "入门任务清单", description: "An embedded, collapsible setup checklist with completion counts, task states and host-owned actions.", registryItem: { name: "getting-started-01", type: "registry:block" }, isNew: true, order: 36.95 }),
   entry({ slug: "surfaces", section: "foundations", icon: "doc-surfaces", name: "Surfaces", description: "Five semantic surfaces with purpose-based shadows for light and dark mode." }),
   entry({ slug: "semantic-tokens", section: "foundations", icon: "doc-semantic-tokens", name: "Semantic Tokens", description: "The complete runtime contract for color, surface, type, shape, and layering.", isNew: true, order: 200 }),
-  entry({ slug: "chart-tokens", section: "foundations", icon: "doc-data-grid", name: "Chart Tokens", description: "Global chart colors, series variables, and shared styling rules for light and dark mode.", isNew: true, order: 250 }),
   entry({ slug: "scrollbars", section: "foundations", icon: "doc-scrollbars", name: "Scrollbars", description: "A scrollbar that stays out of the way but never disappears, over shadcn's scroll-fade baseline — restyled to the shape system, native scroll on touch.", isNew: true, order: 300 }),
   entry({ slug: "motion", section: "foundations", icon: "doc-motion", name: "Motion", description: "Spring tokens, faster exits, and reflow-free weight animation — the motion rules shared by every component.", order: 400 }),
   entry({ slug: "app-shell", section: "layout", icon: "doc-app-shell", name: "AppShell", description: "Composable application frame for Sidebar, header, and main content." }),
@@ -120,8 +122,16 @@ export const docEntries = [
   entry({ slug: "button-group", section: "action", icon: "doc-button", name: "ButtonGroup", description: "Connected horizontal and vertical action groups with split-button, separator, and contextual-addon composition.", isNew: true, gridSize: "small", order: 550 }),
   entry({ slug: "card", section: "layout", icon: "doc-card", name: "Card", description: "shadcn's compositional card, dressed in Zeron Design — stacked, inline, and grid layouts, borderless dividers, and 2-D proximity hover.", isNew: true, gridSize: "large", order: 600 }),
   entry({ slug: "container", section: "layout", icon: "doc-card", name: "Container", description: "Composable raised container with an optional header and footer around a floating content body.", isNew: true, gridSize: "medium", order: 650 }),
-  entry({ slug: "chart", section: "data-display", icon: "doc-data-grid", name: "Chart", description: "Shared request trends and responsive donuts with accessible data.", isNew: true, gridSize: "large", order: 675 }),
-  entry({ slug: "chart-primitives", section: "data-display", icon: "doc-data-grid", name: "Chart Primitives", description: "Legends, stable series colors and segmented bars without a chart engine.", isNew: true, gridSize: "medium", order: 680 }),
+  entry({ slug: "line-chart", section: "charts", icon: "doc-data-grid", name: "LineChart", description: "Line charts for trends and comparing multiple series.", isNew: true, gridSize: "large", order: 100 }),
+  entry({ slug: "area-chart", section: "charts", icon: "doc-data-grid", name: "AreaChart", description: "Area charts with single-series and stacked comparisons.", isNew: true, gridSize: "large", order: 200 }),
+  entry({ slug: "bar-chart", section: "charts", icon: "doc-data-grid", name: "BarChart", description: "Vertical and horizontal bar charts for category comparisons.", isNew: true, gridSize: "large", order: 300 }),
+  entry({ slug: "pie-chart", section: "charts", icon: "doc-data-grid", name: "PieChart", description: "Pie charts with legends and percentage labels for complete distributions.", isNew: true, gridSize: "medium", order: 400 }),
+  entry({ slug: "donut-chart", section: "charts", icon: "doc-data-grid", name: "DonutChart", description: "Donut charts with center summaries and explicit unassigned totals.", isNew: true, gridSize: "medium", order: 500 }),
+  entry({ slug: "status-overview", section: "charts", icon: "doc-data-grid", name: "StatusBarChart", description: "Status bar charts for equal-duration service history and ordered node snapshots, with shared tooltips and keyboard navigation. Built with StatusOverview.", isNew: true, gridSize: "large", order: 550 }),
+  entry({ slug: "time-range-histogram", section: "charts", icon: "doc-slider", name: "TimeRangeHistogram", description: "Stacked time-bucket histogram with controlled pointer and keyboard range selection.", isNew: true, gridSize: "large", order: 600 }),
+  entry({ slug: "chart", section: "charts", icon: "doc-data-grid", name: "Chart", description: "Shared chart containers, tooltips, request trends and responsive donuts.", hideFromNavigation: true, isNew: true, gridSize: "large", order: 700 }),
+  entry({ slug: "chart-primitives", section: "charts", icon: "doc-data-grid", name: "Chart Primitives", description: "Legends, stable series colors and segmented bars without a chart engine.", isNew: true, gridSize: "medium", order: 800 }),
+  entry({ slug: "chart-tokens", section: "charts", icon: "doc-data-grid", name: "Chart Tokens", description: "Global chart colors, series variables, and shared styling rules for light and dark mode.", isNew: true, order: 900 }),
   entry({ slug: "checkbox", section: "input", icon: "doc-checkbox", name: "Checkbox", description: "Compact checkbox with checked, mixed, disabled, validation, and form states.", isNew: true, gridSize: "small", order: 700 }),
   entry({ slug: "checkbox-group", section: "input", icon: "doc-checkbox-group", name: "CheckboxGroup", description: "Checkbox group with merged backgrounds for contiguous selections.", gridSize: "small", order: 800 }),
   entry({ slug: "color-picker", section: "input", icon: "doc-color-picker", name: "ColorPicker", description: "Color picker with HEX/RGB/HSL/OKLCH formats, alpha, swatches, and popover trigger.", gridSize: "large", order: 900 }),
@@ -133,7 +143,6 @@ export const docEntries = [
   entry({ slug: "filter-query-input", section: "data-display", icon: "doc-input", name: "FilterQueryInput", description: "Structured cmdk query input with configurable fields, aliases, codecs, and portable filter clauses.", isNew: true, gridSize: "large", order: 1130 }),
   entry({ slug: "detail-list", section: "data-display", icon: "doc-info-item", name: "DetailList", description: "Framed label-value list with grouped sections and separators for compact resource and entity details.", isNew: true, gridSize: "medium", order: 1150 }),
   entry({ slug: "metric-card", section: "data-display", icon: "doc-card", name: "MetricCard", description: "Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction.", isNew: true, gridSize: "medium", order: 1175 }),
-  entry({ slug: "status-overview", section: "data-display", icon: "doc-card", name: "StatusOverview", description: "Inspectable timeline and node-status rail with semantic states, a shared tooltip, and keyboard navigation.", isNew: true, gridSize: "large", order: 1180 }),
   entry({ slug: "dialog", section: "overlay", icon: "doc-dialog", name: "Dialog", description: "Modal dialog with smooth enter/exit animations and overlay.", gridSize: "small", order: 1200 }),
   entry({ slug: "dropdown", section: "overlay", icon: "doc-dropdown", name: "Dropdown", description: "Menu-style dropdown with proximity hover and animated backgrounds.", gridSize: "medium", order: 1300 }),
   entry({ slug: "empty", section: "feedback", icon: "doc-info-item", name: "Empty", description: "Composable empty and first-use states for pages, sections, and inline data surfaces, with custom media and theme-aware illustrations.", isNew: true, gridSize: "medium", order: 1325 }),
@@ -154,7 +163,6 @@ export const docEntries = [
   entry({ slug: "stepper", section: "navigation", icon: "doc-stepper", name: "Stepper", description: "Accessible multi-step navigation with validation, completion states, and keyboard controls.", isNew: true, gridSize: "medium", order: 2300 }),
   entry({ slug: "switch", section: "input", icon: "doc-switch", name: "Switch", description: "Toggle switch with animated thumb and label.", gridSize: "small", order: 2400 }),
   entry({ slug: "table", section: "data-display", icon: "doc-table", name: "Table", description: "Data table with row hover effects and semantic markup.", gridSize: "large", order: 2500 }),
-  entry({ slug: "time-range-histogram", section: "data-display", icon: "doc-slider", name: "TimeRangeHistogram", description: "Stacked time-bucket histogram with controlled pointer and keyboard range selection.", isNew: true, gridSize: "large", order: 2550 }),
   entry({ slug: "tree", section: "data-display", icon: "doc-data-grid", name: "Tree", description: "Accessible hierarchical display and selection for general nodes, members, and files.", isNew: true, gridSize: "medium", order: 2560, registryItem: { name: "tree", type: "registry:ui" } }),
   entry({ slug: "temporal-picker", section: "input", icon: "doc-slider", name: "Temporal Picker", description: "Date, time, and date-time controls with explicit commitment, relative presets, availability rules, and IANA time-zone handling.", isNew: true, gridSize: "large", order: 2575 }),
   entry({ slug: "tabs", section: "navigation", icon: "doc-tabs", name: "Tabs", description: "Pill, segment, and underline tabs with a sliding active indicator.", gridSize: "medium", order: 2600 }),
@@ -225,6 +233,8 @@ export const legacyDocRedirects: readonly DocLegacyRedirect[] = [
     .map(({ slug }) => ({ legacySlug: slug, destination: { collection: "components" as const, slug } })),
   { legacySlug: "tabs-subtle", destination: { collection: "components", slug: "tabs" } },
 ];
+
+export const navigationDocEntries = docEntries.filter((entry) => !entry.hideFromNavigation);
 
 export const pageDocEntries = docEntries;
 export const detailDocEntries = docEntries;

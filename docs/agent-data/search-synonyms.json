@@ -3,5 +3,6 @@
   "user-account-01": ["用户账户", "账户菜单", "account menu"],
   "sidebar": ["Next 后台侧栏", "分组导航", "左侧导航"],
   "app-shell": ["完整后台", "已有宿主", "应用外壳"],
-  "button": ["icon and label", "图文按钮", "按钮图标文字"]
+  "button": ["icon and label", "图文按钮", "按钮图标文字"],
+  "status-overview": ["StatusOverview", "StatusBarChart", "status bar chart", "status-bar-chart", "状态条图", "状态历史", "状态轨道"]
 }

@@ -125,11 +125,11 @@ describe("docs pages", () => {
   });
 
   it("does not have orphaned docs pages", async () => {
-    const { aiAgentList, componentList, layoutList, systemList } = await import("../docs/lib/components.ts");
-    const listed = new Set([...componentList, ...aiAgentList, ...layoutList, ...systemList].map((entry) => entry.slug));
+    const { pageDocEntries } = await import("../docs/manifest.ts");
+    const registered = new Set(pageDocEntries.filter((entry) => entry.collection === "components").map((entry) => entry.slug));
     const pages = readdirSync(join(ROOT, "docs/pages/components"), { withFileTypes: true })
       .filter((entry) => entry.isDirectory() && existsSync(join(ROOT, "docs/pages/components", entry.name, "page.tsx")));
-    for (const page of pages) expect(listed.has(page.name), page.name).toBe(true);
+    for (const page of pages) expect(registered.has(page.name), page.name).toBe(true);
   });
 });
 

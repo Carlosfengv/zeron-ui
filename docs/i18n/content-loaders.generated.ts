@@ -12,6 +12,11 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "components/line-chart": () => import("@docs/content/en/components/line-chart.json"),
+    "components/area-chart": () => import("@docs/content/en/components/area-chart.json"),
+    "components/bar-chart": () => import("@docs/content/en/components/bar-chart.json"),
+    "components/pie-chart": () => import("@docs/content/en/components/pie-chart.json"),
+    "components/donut-chart": () => import("@docs/content/en/components/donut-chart.json"),
     "components/chart-tokens": () => import("@docs/content/en/components/chart-tokens.json"),
     "blocks/design-stack-01": () => import("@docs/content/en/blocks/design-stack-01.json"),
     "blocks/support-analytics-01": () => import("@docs/content/en/blocks/support-analytics-01.json"),
@@ -137,6 +142,11 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "components/line-chart": () => import("@docs/content/zh-CN/components/line-chart.json"),
+    "components/area-chart": () => import("@docs/content/zh-CN/components/area-chart.json"),
+    "components/bar-chart": () => import("@docs/content/zh-CN/components/bar-chart.json"),
+    "components/pie-chart": () => import("@docs/content/zh-CN/components/pie-chart.json"),
+    "components/donut-chart": () => import("@docs/content/zh-CN/components/donut-chart.json"),
     "components/chart-tokens": () => import("@docs/content/zh-CN/components/chart-tokens.json"),
     "blocks/design-stack-01": () => import("@docs/content/zh-CN/blocks/design-stack-01.json"),
     "blocks/support-analytics-01": () => import("@docs/content/zh-CN/blocks/support-analytics-01.json"),

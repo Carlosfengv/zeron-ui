@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { DonutSummary, TimeSeriesChart } from "@zeron/ui/chart";
 import { ChartLegend, chartColor, chartSeriesColor, createChartNumberFormatter } from "@zeron/ui/chart-primitives";
 import { Button } from "@zeron/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
+import { chartTypes } from "@docs/lib/chart-types";
 
 export default function ChartDoc() {
+  const locale = useLocale();
   const t = useTranslations("chart");
   const [scenario, setScenario] = useState("ready");
   const [timeZone, setTimeZone] = useState("Asia/Shanghai");
@@ -24,6 +27,11 @@ export default function ChartDoc() {
   const total = scenario === "empty" || scenario === "zero" ? 0 : 100;
   const format = createChartNumberFormatter("zh-CN");
   return <DocPage title="Chart" slug="chart" description={t("description")}>
+    <DocSection title={t("types")}>
+      <nav aria-label={t("types")} className="grid gap-3 text-body sm:grid-cols-2">
+        {chartTypes.map((type) => <Link key={type.kind} className="text-fg-brand underline underline-offset-4" href={`${locale === "en" ? "/en" : ""}/docs/components/${type.slug}`}>{type.name} · {t(type.kind)}</Link>)}
+      </nav>
+    </DocSection>
     <DocSection title={t("examples")}>
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <Select value={scenario} onValueChange={(value) => value && setScenario(value)}><SelectTrigger aria-label={t("scenario")} /><SelectContent>{scenarios.map((value) => <SelectItem key={value} value={value} label={t(value)}>{t(value)}</SelectItem>)}</SelectContent></Select>

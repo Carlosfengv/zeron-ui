@@ -1,0 +1,30 @@
+{
+  "chartType": {
+    "basic": "Basic",
+    "usage": "Usage",
+    "composition": "Compose Recharts with Zeron Chart. These examples share the chart installation, palette, tooltip and accessible data table.",
+    "viewData": "View data",
+    "primary": "Requests",
+    "secondary": "Comparison",
+    "total": "Allocated / 100",
+    "category": "Service",
+    "unassigned": "Unassigned",
+    "dataKeyProp": "Map the chart marks to the original numeric data field.",
+    "sourceDescription": "Follows the AreaChart composition in ai-gateway-overview-01, with the shared Chart preset and documentation data.",
+    "sourceLink": "AI gateway overview",
+    "chartLabel": "Requests by service",
+    "foundationLink": "Chart foundations",
+    "tokensLink": "Chart colors",
+    "primitivesLink": "Legends and primitives",
+    "apiReference": "Composition API",
+    "configProp": "Map stable series keys to labels and shared chart colors.",
+    "tableProp": "Expose the original values in a keyboard-accessible table.",
+    "dataProp": "Supply original values without aggregation, implicit zeroes or reordering.",
+    "valueProp": "Choose the numeric source field used by the chart.",
+    "centerProp": "Supply the center summary and its business meaning.",
+    "title": "Area chart",
+    "description": "Filled areas show volume over time and the contribution of stacked series.",
+    "advanced": "Stacked areas",
+    "guidance": "Stack only additive measures with matching units and aligned observation points. Filled areas share the line color with lower opacity. Do not connect missing samples or silently normalize them to percentages."
+  }
+}
