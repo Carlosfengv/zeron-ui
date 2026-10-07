@@ -15,16 +15,46 @@ const statusSnippets = statusPage.statements.flatMap((statement) => {
       : [],
   );
 });
+const funnelPage = ts.createSourceFile("funnel-chart.tsx", readFileSync(new URL("../docs/pages/components/funnel-chart/page.tsx", import.meta.url), "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+const funnelStrings = new Map<string, string>();
+for (const statement of funnelPage.statements) {
+  if (!ts.isVariableStatement(statement)) continue;
+  for (const declaration of statement.declarationList.declarations) {
+    if (!ts.isIdentifier(declaration.name) || !declaration.initializer) continue;
+    const value = declaration.initializer;
+    if (ts.isNoSubstitutionTemplateLiteral(value)) funnelStrings.set(declaration.name.text, value.text);
+    else if (ts.isTemplateExpression(value)) {
+      const spans = value.templateSpans.map((span) => ts.isIdentifier(span.expression) ? funnelStrings.get(span.expression.text) : undefined);
+      if (spans.every((span) => span !== undefined)) funnelStrings.set(declaration.name.text, value.head.text + value.templateSpans.map((span, index) => spans[index] + span.literal.text).join(""));
+    }
+  }
+}
+const funnelSnippets = ["basicCode", "verticalCode", "straightCode", "fillsCode"].map((name) => ({ name: `funnel-${name}`, code: funnelStrings.get(name)! }));
 const examples = [
   ...chartTypes.flatMap(({ kind }) => [false, true].map((advanced) => ({ name: `${kind}-${advanced ? "advanced" : "basic"}`, code: chartTypeExampleCode(kind, advanced) }))),
   { name: "bar-gradient", code: barChartGradientExampleCode },
   { name: "status-bar-basic", code: statusBarChartBasicCode },
   ...statusSnippets,
+  ...funnelSnippets,
 ];
 
 describe("copyable chart documentation examples", () => {
   it("covers every documented status example", () => {
     expect(statusSnippets.map(({ name }) => name)).toEqual(["basicCode", "activityCode", "denseNodesCode"]);
+  });
+
+  it("covers all four funnel examples", () => {
+    expect(funnelSnippets.every(({ code }) => typeof code === "string")).toBe(true);
+  });
+
+  it("keeps the controlled funnel feedback in copied code without a second live region", () => {
+    const code = funnelStrings.get("basicCode")!;
+    expect(code).toContain("max-w-3xl");
+    expect(code).toContain("highlighted.label");
+    expect(code).toContain("formatValue(highlighted.value)");
+    expect(code).not.toContain('role="status"');
+    const source = readFileSync(new URL("../docs/pages/components/funnel-chart/page.tsx", import.meta.url), "utf8");
+    expect(source).not.toContain('<p role="status"');
   });
 
   it.each(examples)("$name is a complete client module using consumer aliases", ({ name, code }) => {

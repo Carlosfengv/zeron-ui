@@ -12,6 +12,7 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "components/funnel-chart": () => import("@docs/content/en/components/funnel-chart.json"),
     "components/line-chart": () => import("@docs/content/en/components/line-chart.json"),
     "components/area-chart": () => import("@docs/content/en/components/area-chart.json"),
     "components/bar-chart": () => import("@docs/content/en/components/bar-chart.json"),
@@ -142,6 +143,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "components/funnel-chart": () => import("@docs/content/zh-CN/components/funnel-chart.json"),
     "components/line-chart": () => import("@docs/content/zh-CN/components/line-chart.json"),
     "components/area-chart": () => import("@docs/content/zh-CN/components/area-chart.json"),
     "components/bar-chart": () => import("@docs/content/zh-CN/components/bar-chart.json"),

@@ -105,6 +105,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [FilterBuilder](https://zeron-ui.vercel.app/ai/items/component%3Afilter-builder.md): Composable typed filters for complex data views, with text, number, option, boolean, date, async, and custom editors. Registry: filter-builder.
 - [Filter Query Core](https://zeron-ui.vercel.app/ai/items/component%3Afilter-query-core.md): Headless parser, serializer, reconciliation logic, and state hook for reusable structured filter text inputs. Registry: filter-query-core.
 - [Filter Query Input](https://zeron-ui.vercel.app/ai/items/component%3Afilter-query-input.md): Structured cmdk query input with configurable fields, aliases, codecs, and portable filter clauses. Registry: filter-query-input.
+- [FunnelChart](https://zeron-ui.vercel.app/ai/items/component%3Afunnel-chart.md): Layered horizontal and vertical funnels with controlled hover, gradients and keyboard navigation. Registry: funnel-chart.
 - [Info Item](https://zeron-ui.vercel.app/ai/items/component%3Ainfo-item.md): Composable information row with leading media, primary and supporting text, and a flexible trailing value or detail. Registry: info-item.
 - [Inline Notice](https://zeron-ui.vercel.app/ai/items/component%3Ainline-notice.md): Quiet inline emphasis that composes with Badge, with an optional semantic emphasized variant. Registry: inline-notice.
 - [Input](https://zeron-ui.vercel.app/ai/items/component%3Ainput.md): Text input with three variants, five sizes, and accessible validation states. Registry: input.
@@ -206,6 +207,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [combobox](https://zeron-ui.vercel.app/agent-guides/components/combobox.md)
 - [dialog](https://zeron-ui.vercel.app/agent-guides/components/dialog.md)
 - [field](https://zeron-ui.vercel.app/agent-guides/components/field.md)
+- [funnel-chart](https://zeron-ui.vercel.app/agent-guides/components/funnel-chart.md)
 - [inline-notice](https://zeron-ui.vercel.app/agent-guides/components/inline-notice.md)
 - [input](https://zeron-ui.vercel.app/agent-guides/components/input.md)
 - [list-pagination](https://zeron-ui.vercel.app/agent-guides/components/list-pagination.md)

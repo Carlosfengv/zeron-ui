@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "8f8b4d96d51df0fe351b440fabbd395dd62e3669",
+  "branch": "main",
+  "status": "authorized",
+  "commits": [
+    {
+      "message": "feat(funnel-chart): add layered chart and documentation",
+      "files": [
+        "app/[locale]/docs/components/(detail)/funnel-chart/page.tsx",
+        "docs/agent-data/components.json",
+        "docs/agent-data/guide-routes.json",
+        "docs/agent-data/item-identities.json",
+        "docs/agent-data/search-synonyms.json",
+        "docs/agent-guides/components/funnel-chart.md",
+        "docs/content/en/common.json",
+        "docs/content/en/components/funnel-chart.json",
+        "docs/content/zh-CN/common.json",
+        "docs/content/zh-CN/components/funnel-chart.json",
+        "docs/generated/agent-guide-loaders.generated.ts",
+        "docs/generated/component-page-loaders.generated.ts",
+        "docs/generated/page-loaders.generated.ts",
+        "docs/i18n/content-loaders.generated.ts",
+        "docs/manifest.ts",
+        "docs/pages/components/funnel-chart/page.tsx",
+        "docs/plans/2026-10-07-chart-library-integration-plan.md",
+        "docs/plans/2026-10-07-funnel-chart-commit-files.json",
+        "docs/plans/2026-10-07-funnel-chart-implementation.md",
+        "docs/plans/2026-10-07-funnel-chart-review-commit-plan.md",
+        "packages/ui/package.json",
+        "packages/ui/registry.json",
+        "packages/ui/src/components/charts/animation.ts",
+        "packages/ui/src/components/charts/funnel-chart.tsx",
+        "packages/ui/src/components/charts/use-enter-complete.ts",
+        "packages/ui/src/components/charts/use-mount-progress.ts",
+        "packages/ui/src/components/funnel-chart.tsx",
+        "public/component-covers/funnel-chart-dark.jpg",
+        "public/component-covers/funnel-chart-light.jpg",
+        "public/llms-full.txt",
+        "public/llms.txt",
+        "public/r/funnel-chart.json",
+        "public/r/registry.json",
+        "scripts/generate-component-covers.mjs",
+        "scripts/test-consumer-installs.mjs",
+        "tests/chart-document-examples.test.ts",
+        "tests/funnel-chart.test.tsx",
+        "tests/i18n-document-manifest.test.ts"
+      ]
+    }
+  ],
+  "groups": {
+    "component": [
+      "packages/ui/src/components/funnel-chart.tsx",
+      "packages/ui/src/components/charts/funnel-chart.tsx",
+      "packages/ui/src/components/charts/animation.ts",
+      "packages/ui/src/components/charts/use-mount-progress.ts",
+      "packages/ui/src/components/charts/use-enter-complete.ts",
+      "packages/ui/package.json",
+      "packages/ui/registry.json",
+      "public/r/funnel-chart.json",
+      "public/r/registry.json"
+    ],
+    "documentation": [
+      "docs/pages/components/funnel-chart/page.tsx",
+      "app/[locale]/docs/components/(detail)/funnel-chart/page.tsx",
+      "docs/content/en/components/funnel-chart.json",
+      "docs/content/zh-CN/components/funnel-chart.json",
+      "docs/content/en/common.json",
+      "docs/content/zh-CN/common.json",
+      "docs/manifest.ts",
+      "docs/agent-guides/components/funnel-chart.md",
+      "docs/agent-data/components.json",
+      "docs/agent-data/guide-routes.json",
+      "docs/agent-data/item-identities.json",
+      "docs/agent-data/search-synonyms.json",
+      "docs/generated/agent-guide-loaders.generated.ts",
+      "docs/generated/component-page-loaders.generated.ts",
+      "docs/generated/page-loaders.generated.ts",
+      "docs/i18n/content-loaders.generated.ts",
+      "public/llms-full.txt",
+      "public/llms.txt",
+      "public/component-covers/funnel-chart-dark.jpg",
+      "public/component-covers/funnel-chart-light.jpg"
+    ],
+    "verification": [
+      "scripts/generate-component-covers.mjs",
+      "scripts/test-consumer-installs.mjs",
+      "tests/funnel-chart.test.tsx",
+      "tests/chart-document-examples.test.ts",
+      "tests/i18n-document-manifest.test.ts"
+    ],
+    "plans": [
+      "docs/plans/2026-10-07-chart-library-integration-plan.md",
+      "docs/plans/2026-10-07-funnel-chart-implementation.md",
+      "docs/plans/2026-10-07-funnel-chart-review-commit-plan.md",
+      "docs/plans/2026-10-07-funnel-chart-commit-files.json"
+    ]
+  },
+  "excludedFiles": [
+    {
+      "path": "docs/components/blocks/BlockPreview.tsx",
+      "reason": "任务开始前已有的 PreviewToolbarProvider 修改"
+    },
+    {
+      "path": "docs/plans/2026-10-05-block-page-unification-plan.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-05-block-page-unification-stage-one.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-05-block-page-unification-stage-two.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-05-transaction-details-block-plan.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-review-commit-plan.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-five.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-four.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-six.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-three.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-demo-settings-toolbar.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-feedback-component-consolidation.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-integration-monitors-block-implementation.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-integration-monitors-block-plan.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-integration-monitors-review-commit-plan.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-support-analytics-block-plan.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-support-analytics-review-commit-plan.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    },
+    {
+      "path": "docs/plans/2026-10-06-transaction-details-review-commit-plan.md",
+      "reason": "其他任务的历史计划，未纳入 FunnelChart 范围"
+    }
+  ]
+}

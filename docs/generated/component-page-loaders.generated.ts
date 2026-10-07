@@ -3,6 +3,7 @@ import "server-only";
 import type { DocPageLoader } from "./page-loader-types";
 
 export const componentPageLoaders: Record<string, DocPageLoader> = {
+  "components/funnel-chart": () => import("@docs/pages/components/funnel-chart/page"),
   "components/line-chart": () => import("@docs/pages/components/line-chart/page"),
   "components/area-chart": () => import("@docs/pages/components/area-chart/page"),
   "components/bar-chart": () => import("@docs/pages/components/bar-chart/page"),

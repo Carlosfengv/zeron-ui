@@ -33,6 +33,7 @@
     "./container": "./src/components/container.tsx",
     "./empty": "./src/components/empty.tsx",
     "./field": "./src/components/field.tsx",
+    "./funnel-chart": "./src/components/funnel-chart.tsx",
     "./filter-builder": "./src/components/filter-builder/index.ts",
     "./filter-query-core": "./src/components/filter-query-core/index.ts",
     "./filter-query-input": "./src/components/filter-query-input/index.ts",

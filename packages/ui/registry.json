@@ -2916,6 +2916,47 @@
       ]
     },
     {
+      "name": "funnel-chart",
+      "type": "registry:ui",
+      "title": "FunnelChart",
+      "description": "Layered horizontal and vertical funnels with controlled hover, gradients, patterns and keyboard navigation.",
+      "dependencies": [
+        "motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/funnel-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/funnel-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/funnel-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/funnel-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/animation.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/animation.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-mount-progress.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-mount-progress.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-enter-complete.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-enter-complete.ts"
+        }
+      ]
+    },
+    {
       "name": "chart-primitives",
       "type": "registry:ui",
       "title": "Chart Primitives",

@@ -28,9 +28,9 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(127);
-    expect(detailDocEntries).toHaveLength(127);
-    expect(legacyDocRedirects).toHaveLength(74);
+    expect(pageDocEntries).toHaveLength(128);
+    expect(detailDocEntries).toHaveLength(128);
+    expect(legacyDocRedirects).toHaveLength(75);
     expect(pageDocEntries.some(entry => entry.slug === "error-state" || entry.slug === "status-indicator")).toBe(false);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });
@@ -38,7 +38,7 @@ describe("documentation manifest", () => {
   it("groups chart references together and preserves the status component identity", () => {
     const charts = navigationDocEntries.filter((entry) => entry.collection === "components" && entry.section === "charts");
     expect(charts.map((entry) => entry.slug)).toEqual([
-      "line-chart", "area-chart", "bar-chart", "pie-chart", "donut-chart", "status-overview",
+      "line-chart", "area-chart", "bar-chart", "pie-chart", "donut-chart", "funnel-chart", "status-overview",
       "time-range-histogram", "chart-primitives", "chart-tokens",
     ]);
     expect(charts.find((entry) => entry.slug === "status-overview")?.name).toBe("StatusBarChart");

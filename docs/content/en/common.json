@@ -124,6 +124,7 @@
       "bar-chart": "Vertical and horizontal bar charts for category comparisons.",
       "pie-chart": "Pie charts with legends and percentage labels for complete distributions.",
       "donut-chart": "Donut charts with center summaries and explicit unassigned totals.",
+      "funnel-chart": "Layered horizontal and vertical funnels with controlled hover, gradients and keyboard navigation.",
       "support-analytics-01": "An embedded support panel with ticket trends, service metrics, channel filters and ticket actions.",
       "transaction-details-01": "An embeddable transaction detail with amount, billing information and attachment actions.",
       "surfaces": "Five semantic surfaces with purpose-based shadows for light and dark mode.",

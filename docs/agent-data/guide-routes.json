@@ -158,6 +158,10 @@
       "itemId": "component:field"
     },
     {
+      "path": "components/funnel-chart.md",
+      "itemId": "component:funnel-chart"
+    },
+    {
       "path": "components/inline-notice.md",
       "itemId": "component:inline-notice"
     },

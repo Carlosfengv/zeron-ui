@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "items": [
+    { "id": "component:funnel-chart", "type": "registry", "key": "funnel-chart", "aliases": ["funnel-chart"], "status": "active", "retirementReason": null },
     { "id": "reference:line-chart", "type": "document", "key": "components/line-chart", "aliases": ["line-chart"], "status": "active", "retirementReason": null },
     { "id": "reference:area-chart", "type": "document", "key": "components/area-chart", "aliases": ["area-chart"], "status": "active", "retirementReason": null },
     { "id": "reference:bar-chart", "type": "document", "key": "components/bar-chart", "aliases": ["bar-chart"], "status": "active", "retirementReason": null },

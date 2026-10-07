@@ -85,6 +85,16 @@ async function captureCover(page, slug, theme) {
 
   const target = await coverTarget(page, slug);
   await target.scrollIntoViewIfNeeded();
+  if (slug === "funnel-chart") {
+    // Motion's JS entrance is unaffected by the CSS animation reset below.
+    await page.waitForFunction(() => {
+      const segments = [...document.querySelectorAll('[data-slot="funnel-segment"]')];
+      return segments.length > 0 && segments.every((segment) => {
+        const transform = segment.firstElementChild?.style.transform;
+        return !transform || transform === "none";
+      });
+    });
+  }
   await target.evaluate((element) => element.setAttribute("data-component-cover-capture", ""));
   const subject = await coverSubject(target);
   if (subject) await subject.evaluate((element) => element.setAttribute("data-component-cover-subject", ""));

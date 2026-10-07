@@ -1,4 +1,5 @@
 {
+  "funnel-chart": ["FunnelChart", "funnel chart", "漏斗图", "转化漏斗", "阶段占比"],
   "model-mcp-marketplace-01": ["资源市场", "资源广场", "模型市场", "resource marketplace"],
   "user-account-01": ["用户账户", "账户菜单", "account menu"],
   "sidebar": ["Next 后台侧栏", "分组导航", "左侧导航"],

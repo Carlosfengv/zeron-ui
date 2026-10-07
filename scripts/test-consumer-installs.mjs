@@ -268,6 +268,11 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "funnel-chart": [
+      'import { FunnelChart, type FunnelStage } from "@/components/ui/funnel-chart";',
+      'const data: FunnelStage[] = [{ label: "Visits", value: 100 }, { label: "Orders", value: 20 }];',
+      'export default function Page() { return <FunnelChart data={data} grid />; }',
+    ].join("\n"),
     "integration-monitors-01": [
       'import { IntegrationMonitors, createIntegrationMonitorsDemoData } from "@/components/blocks/integration-monitors-01";',
       'const data = createIntegrationMonitorsDemoData();',
@@ -572,6 +577,13 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
       'import { TimeSeriesChart, DonutSummary } from "@/src/components/ui/chart";',
       'import "./index.css";',
       'createRoot(document.getElementById("root")!).render(<div><TimeSeriesChart data={[{ timestamp: 1791158400000, values: { requests: 12 } }]} series={[{ id: "requests", label: "Requests" }]} locale="en" timeZone="UTC" label="Requests" /><DonutSummary segments={[{ id: "used", label: "Used", value: 80 }]} total={100} aria-label="80 of 100" center="80 / 100" /></div>);',
+    ].join("\n"),
+    "funnel-chart": [
+      'import { createRoot } from "react-dom/client";',
+      'import { FunnelChart, type FunnelStage } from "@/src/components/ui/funnel-chart";',
+      'import "./index.css";',
+      'const data: FunnelStage[] = [{ label: "Visits", value: 100 }, { label: "Orders", value: 20 }];',
+      'createRoot(document.getElementById("root")!).render(<FunnelChart data={data} grid />);',
     ].join("\n"),
     "chart-primitives": [
       'import { createRoot } from "react-dom/client";',
