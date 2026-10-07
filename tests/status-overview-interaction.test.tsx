@@ -22,7 +22,7 @@ const timelineContent: StatusOverviewContent = {
   ],
 };
 
-function renderOverview(content: StatusOverviewContent = timelineContent, variant: "card" | "activity" = "card") {
+function renderOverview(content: StatusOverviewContent = timelineContent, variant: "card" | "activity" | "chart" = "card") {
   return render(
     <StatusOverview
       variant={variant}
@@ -58,7 +58,7 @@ describe("StatusOverview", () => {
     expect(grid.getAttribute("aria-activedescendant")).toBe(cells[0]?.id);
   });
 
-  it.each(["card", "activity"] as const)("moves the active descendant in %s with keyboard commands without moving DOM focus", (variant) => {
+  it.each(["card", "activity", "chart"] as const)("moves the active descendant in %s with keyboard commands without moving DOM focus", (variant) => {
     renderOverview(timelineContent, variant);
     const grid = screen.getByRole("grid", { name: "Service status history" });
 
@@ -88,6 +88,38 @@ describe("StatusOverview", () => {
 
     fireEvent.pointerMove(grid, { clientX: 56, pointerType: "mouse" });
     expect(grid.getAttribute("aria-activedescendant")).toBe(cells[2]?.id);
+  });
+
+  it.each([
+    { direction: "ltr", offset: -120, pitch: 6 },
+    { direction: "rtl", offset: 1200, pitch: -6 },
+  ])("locates dense $direction rails with bounded layout reads, including scrolled and out-of-range positions", ({ direction, offset, pitch }) => {
+    renderOverview({ type: "nodes", items: Array.from({ length: 200 }, (_, index) => ({
+      id: `node-${index}`, status: "operational", ariaLabel: `Node ${index}`,
+    })) }, "chart");
+    const grid = screen.getByRole("grid");
+    grid.dir = direction;
+    const cells = screen.getAllByRole("gridcell");
+    let layoutReads = 0;
+    cells.forEach((cell, index) => {
+      Object.defineProperty(cell, "getBoundingClientRect", {
+        configurable: true,
+        value: () => {
+          layoutReads += 1;
+          const left = offset + index * pitch;
+          return { bottom: 32, height: 32, left, right: left + 4, top: 0, width: 4, x: left, y: 0, toJSON: () => ({}) };
+        },
+      });
+    });
+
+    fireEvent.pointerMove(grid, { clientX: offset + 2 + 53.45 * pitch, pointerType: "mouse" });
+    expect(grid.getAttribute("aria-activedescendant")).toBe(cells[53]?.id);
+    expect(layoutReads).toBeLessThan(10);
+
+    fireEvent.pointerMove(grid, { clientX: offset + 2 - pitch, pointerType: "mouse" });
+    expect(grid.getAttribute("aria-activedescendant")).toBe(cells[0]?.id);
+    fireEvent.pointerMove(grid, { clientX: offset + 2 + 200 * pitch, pointerType: "mouse" });
+    expect(grid.getAttribute("aria-activedescendant")).toBe(cells[199]?.id);
   });
 
   it("positions timeline markers in the shared canvas and suppresses invalid ranges", () => {
@@ -126,7 +158,7 @@ describe("StatusOverview", () => {
     expect(grid.getAttribute("aria-activedescendant")).toBe(screen.getByRole("gridcell", { name: "01:00 degraded" }).id);
   });
 
-  it.each(["card", "activity"] as const)("renders %s loading, empty, stale, unavailable, and error states without stale summary values", (variant) => {
+  it.each(["card", "activity", "chart"] as const)("renders %s loading, empty, stale, unavailable, and error states without stale summary values", (variant) => {
     const { rerender } = render(
       <StatusOverview
         ariaLabel="Service status"

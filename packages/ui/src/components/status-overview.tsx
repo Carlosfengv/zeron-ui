@@ -67,8 +67,8 @@ export type StatusOverviewContent =
 
 interface StatusOverviewBaseProps
   extends Omit<ComponentPropsWithoutRef<"section">, "children" | "content"> {
-  /** Activity is a frameless label / fine-tick rail / value row; card preserves the default surface. */
-  variant?: "card" | "activity";
+  /** Card and chart share rounded status bars; chart is frameless and activity is a compact service row. */
+  variant?: "card" | "activity" | "chart";
   ariaLabel: string;
   /** Pass null in activity mode for a full-width rail with results below it. */
   label: ReactNode;
@@ -124,6 +124,7 @@ function StatusSegmentRail({
   variant,
 }: Pick<StatusOverviewProps, "ariaLabel" | "content" | "variant">) {
   const activity = variant === "activity";
+  const chart = variant === "chart";
   const items = content.items;
   const railId = useId();
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -178,19 +179,21 @@ function StatusSegmentRail({
   };
 
   const indexAtPointer = (event: PointerEvent<HTMLDivElement>) => {
-    let nearestIndex = 0;
-    let nearestDistance = Number.POSITIVE_INFINITY;
-    for (const [index, item] of items.entries()) {
-      const cell = cellRefs.current.get(item.id);
-      if (!cell) continue;
-      const bounds = cell.getBoundingClientRect();
-      const distance = Math.abs(event.clientX - (bounds.left + bounds.width / 2));
-      if (distance < nearestDistance) {
-        nearestDistance = distance;
-        nearestIndex = index;
+    const firstItem = items[0];
+    const lastItem = items.at(-1);
+    const first = firstItem && cellRefs.current.get(firstItem.id);
+    const last = lastItem && cellRefs.current.get(lastItem.id);
+    if (first && last) {
+      if (items.length === 1) return 0;
+      const firstBounds = first.getBoundingClientRect();
+      const lastBounds = last.getBoundingClientRect();
+      const firstCenter = firstBounds.left + firstBounds.width / 2;
+      const pitch = (lastBounds.left + lastBounds.width / 2 - firstCenter) / (items.length - 1);
+      // Equal grid columns let two measurements cover gaps, scrolling and RTL.
+      if (Number.isFinite(pitch) && pitch !== 0) {
+        return Math.max(0, Math.min(items.length - 1, Math.round((event.clientX - firstCenter) / pitch)));
       }
     }
-    if (nearestDistance !== Number.POSITIVE_INFINITY) return nearestIndex;
 
     const viewport = viewportRef.current;
     if (!viewport?.clientWidth || items.length === 0) return 0;
@@ -239,7 +242,7 @@ function StatusSegmentRail({
   const anchorLeft = `${((activeIndex + 0.5) / Math.max(items.length, 1)) * 100}%`;
 
   return (
-    <div ref={viewportRef} data-slot="status-overview-rail-scroll" className="overflow-x-auto">
+    <div ref={viewportRef} data-slot="status-overview-rail-scroll" className={cn("overflow-x-auto", !activity && "-mx-1 -my-1 px-1 py-1")}>
       <div
         data-slot="status-overview-rail-canvas"
         data-start={content.type === "timeline" ? content.start : undefined}
@@ -288,8 +291,9 @@ function StatusSegmentRail({
                 role="gridcell"
                 className={cn(
                   "min-w-0",
-                  activity ? "flex items-center justify-center" : cn("first:rounded-s-sm last:rounded-e-sm", statusSegmentClass[item.status]),
+                  activity ? "flex items-center justify-center" : cn("rounded-full transition-colors duration-moderate", statusSegmentClass[item.status], chart && "origin-bottom animate-in fade-in-0 zoom-in-50 ease-out motion-reduce:animate-none", tooltipOpen && item.id === activeId && "outline outline-1 outline-offset-2 outline-fg-muted"),
                 )}
+                style={chart ? { animationDelay: `${Math.min(index * 12, 400)}ms`, animationFillMode: "both" } : undefined}
               >
                 {activity && <span aria-hidden="true" data-slot="status-overview-tick" className={cn(
                   "w-1 shrink-0 rounded-full",
@@ -301,7 +305,7 @@ function StatusSegmentRail({
           </div>
 
           {activeItem && (
-            <Tooltip content={activeItem.tooltip ?? activeItem.ariaLabel} forceOpen={tooltipOpen}>
+            <Tooltip content={activeItem.tooltip ?? activeItem.ariaLabel} forceOpen={tooltipOpen} className={activity ? undefined : "rounded-lg border-hairline border-border bg-surface-floating px-2.5 py-1.5 text-body font-normal text-fg-default shadow-floating"}>
               <span
                 aria-hidden
                 data-slot="status-overview-active-anchor"
@@ -353,6 +357,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
   } = props;
   const state = stateProp ?? "ready";
   const activity = variant === "activity";
+  const chart = variant === "chart";
   const unlabeledActivity = activity && label == null && rangeLabel == null;
   const loading = state === "loading";
   const unavailable = state === "unavailable" || state === "error";
@@ -374,7 +379,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
       data-variant={variant}
       className={cn(
         "min-w-0",
-        activity ? "@container/status" : "flex flex-col rounded-xl border-hairline border-border bg-surface-floating p-3",
+        chart ? "flex flex-col" : activity ? "@container/status" : "flex flex-col rounded-xl border-hairline border-border bg-surface-floating p-3",
         className,
       )}
     >
@@ -387,11 +392,11 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
 
         {summary && !(activity && trailing) && !unavailable && (
           <div data-slot="status-overview-summary" className={cn("flex min-w-0 items-baseline gap-1.5", activity ? "justify-end font-mono text-label" : "text-body", activity && (unlabeledActivity ? "col-start-2 row-start-2" : "col-start-2 row-start-1 @sm/status:col-start-3"))}>
-            <span className={activity ? "sr-only" : "text-fg-subtle"}>{summary.label}</span>
+            <span className={activity || chart ? "sr-only" : "text-fg-subtle"}>{summary.label}</span>
             {loading ? (
               <Skeleton className="h-4 w-16 rounded" />
             ) : (
-              <span className={cn("break-words tabular-nums", activity ? "text-fg-muted" : "font-medium", summary?.status || !activity ? summaryTone : undefined)}>{summary.value}</span>
+              <span className={cn("break-words tabular-nums", activity || chart ? "text-fg-muted" : "font-medium", summary?.status || (!activity && !chart) ? summaryTone : undefined)}>{summary.value}</span>
             )}
           </div>
         )}
@@ -402,7 +407,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
           {loading ? <Skeleton className="h-6 w-24 rounded" /> : trailing}
         </div>
       )}
-      <div className={cn("min-w-0", activity && "col-span-2", activity && (unlabeledActivity ? "row-start-1" : "row-start-2"), activity && !unlabeledActivity && (trailing ? "@xl/status:col-span-1 @xl/status:col-start-2 @xl/status:row-start-1" : "@sm/status:col-span-1 @sm/status:col-start-2 @sm/status:row-start-1"), !activity && "mt-3")}>
+      <div className={cn("min-w-0", activity && "col-span-2", activity && (unlabeledActivity ? "row-start-1" : "row-start-2"), activity && !unlabeledActivity && (trailing ? "@xl/status:col-span-1 @xl/status:col-start-2 @xl/status:row-start-1" : "@sm/status:col-span-1 @sm/status:col-start-2 @sm/status:row-start-1"), chart ? "mt-5" : !activity && "mt-3")}>
         {loading && <Skeleton data-slot="status-overview-skeleton" className={cn("rounded-sm", activity ? "h-6" : "h-control-md")} />}
         {showRail && <StatusSegmentRail ariaLabel={ariaLabel} content={content} variant={variant} />}
         {showData && empty && (
@@ -421,7 +426,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
         )}
       </div>
 
-      {showFooter && <div data-slot="status-overview-footer" className={cn("mt-2 text-label text-fg-subtle", activity && "col-span-2", activity && (unlabeledActivity ? (summary || trailing ? "row-start-3" : "row-start-2") : (trailing ? "row-start-4 @xl/status:col-span-3 @xl/status:row-start-2" : "@sm/status:col-span-3")))}>{content.footer}</div>}
+      {showFooter && <div data-slot="status-overview-footer" className={cn(chart ? "mt-3 text-body text-fg-muted" : "mt-2 text-label text-fg-subtle", activity && "col-span-2", activity && (unlabeledActivity ? (summary || trailing ? "row-start-3" : "row-start-2") : (trailing ? "row-start-4 @xl/status:col-span-3 @xl/status:row-start-2" : "@sm/status:col-span-3")))}>{content.footer}</div>}
       </div>
     </section>
   );
