@@ -77,7 +77,9 @@ describe("reference colors", () => {
     }
   });
 
-  it("does not repeat reference palette hex values in the semantic token source", () => {
+  it("reuses reference colors except for the independent chart palette", () => {
+    // Exact chart values are covered by semantic-tokens.test.mjs; equal initial values stay independent.
+    const nonChartSource = semanticTokenSource.replace(/^\s*\{ name: "chart-[1-5]",[^\n]+\n/gmu, "");
     const referenceHexes = new Set(
       Object.values(referenceColors).flatMap((palette) => [
         ...colorValues(palette),
@@ -86,7 +88,7 @@ describe("reference colors", () => {
     );
 
     for (const hex of referenceHexes) {
-      expect(semanticTokenSource).not.toContain(hex);
+      expect(nonChartSource).not.toContain(hex);
     }
   });
 });

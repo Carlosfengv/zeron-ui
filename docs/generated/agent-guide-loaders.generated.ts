@@ -55,5 +55,6 @@ export const agentGuideLoaders: Record<string, () => Promise<string>> = {
   "components/sidebar-account-menu.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/sidebar-account-menu.md"), "utf8"),
   "components/sidebar-identity-row.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/sidebar-identity-row.md"), "utf8"),
   "components/sidebar.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/sidebar.md"), "utf8"),
+  "components/time-range-histogram.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/time-range-histogram.md"), "utf8"),
   "components/tree.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/tree.md"), "utf8"),
 };

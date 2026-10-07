@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import type { BadgeColor } from "@zeron/ui/badge";
+import type { ChartColorIndex } from "@zeron/ui/chart-primitives";
 
 export type CreditUsageCycle = "current" | "previous";
 export type CreditUsageOperation = "auto-switch" | "set-limit" | "upgrade";
@@ -9,7 +10,9 @@ export interface CreditUsageModel {
   id: string;
   name: string;
   credits: number;
+  /** @deprecated Legacy categorical name; colorIndex takes precedence. */
   color: BadgeColor;
+  colorIndex?: ChartColorIndex;
   /** Uses a built-in model brand mark when a custom logo is not supplied. */
   provider?: CreditUsageModelProvider;
   /** Product-owned logo for private or otherwise unsupported model providers. */

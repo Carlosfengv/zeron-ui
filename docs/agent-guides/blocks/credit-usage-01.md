@@ -57,7 +57,7 @@ function BillingSummary() {
 - `currentCycle` 必填，`previousCycle` 可选。缺少上一周期时，对应 Tab 会禁用。
 - `projection` 是服务端或领域层给出的预测结果；Block 不自行预测耗尽日期。
 - `autoSwitch` 决定是否显示自动切换区域；目标模型、阈值和说明都由业务数据提供。
-- 模型 `color` 使用 Badge 的分类颜色集合，不表达健康或告警状态。
+- 模型可选 `colorIndex` 为 1–5，优先读取全局 Chart 槽位；原必填 `color: BadgeColor` 为兼容字段，适配到槽位，不再读取 Badge HEX。索引和旧色名都非法时按稳定模型 ID 兜底；不表达健康或告警。
 - 使用 `provider` 选择内置的 OpenAI、Claude 或 Gemini 品牌标识；私有模型通过 `logo` 传入真实的产品 Logo，未提供时使用通用模型图标。
 - 日期作为已格式化文本传入；数字与百分比根据 `locale` 格式化。
 - 使用 `formatters.usageSummary`、`formatters.progressValueText` 和 `formatters.autoSwitchTitle` 覆盖完整句子，避免本地化时受英文词序限制。
@@ -73,4 +73,4 @@ function BillingSummary() {
 
 用量条暴露 `progressbar` 语义和数值文本；颜色同时由下方模型名称与数值解释，不作为唯一信息来源。Block 以 32px 默认控件高度组织密度；用量条与 cost-estimate-01 的费用构成条一致，使用 12px 高、平直边缘、无间隙的连续堆叠色条，居中放在 20px 高的区域内。最大宽度为 520px；模型列表始终保持单列，在窄屏下会让头部与操作区换行。不要用后代选择器覆盖内部组件状态。
 
-用量条采用 SegmentedBar 的 capacity 模式。模型 ID 与显式分类颜色保持稳定；超额数值保留，绘图按最大值缩放。长模型名称可换行，原有受控值与操作回调保持不变。
+用量条采用 SegmentedBar 的 capacity 模式。模型 ID 与显式系列槽位保持稳定；超额数值保留，绘图按最大值缩放。长模型名称可换行，原有受控值与操作回调保持不变。

@@ -21,6 +21,6 @@
     "total": "Total requests",
     "incomplete": "A source is missing. The neutral track represents unassigned totals; ratios are unavailable.",
     "contract": "Contract",
-    "guidance": "TimeSeriesChart does not aggregate or replace null with zero. Pass locale/timeZone and the actual window domain. DonutSummary accepts a business total and leaves unassigned totals neutral. The data table is keyboard accessible. Colors stay consistent with the legend."
+    "guidance": "TimeSeriesChart preserves null gaps and requires locale/timeZone and the actual window domain. DonutSummary retains unassigned totals on a neutral track. Data tables are keyboard accessible. Use chartColor(1) for a main series and fixed slots for comparisons; chartSeriesColor(id) provides a stable five-slot fallback. Share the resolved color with legends. Status colors remain independent."
   }
 }

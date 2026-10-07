@@ -6,6 +6,7 @@ import { createServer } from "node:net";
 import { join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { consumerRegistryClosureHash } from "./consumer-registry-expectations.mjs";
+import { verifyChartTokenColors, verifySegmentedBarGeometry } from "./chart-token-verification.mjs";
 
 /** Verify actual copied Registry files, compiled CSS and production-rendered examples. */
 export async function verifyUnificationConsumer({ consumer, framework, component, packageManager, registrySnapshot }) {
@@ -72,7 +73,27 @@ export async function verifyUnificationConsumer({ consumer, framework, component
         assert.ok(animations.every(animation => animation === "none"), "Reduced motion stops activity animation");
         assert.equal(await example.locator('[role="status"], [role="alert"]').count(), 0, "Activity announcements remain opt-in");
       }
+      if (["chart", "chart-primitives", "credit-usage-01", "cost-estimate-01", "model-router-01", "storage-usage-01", "project-monitor-01", "ai-gateway-overview-01", "availability-monitor-01", "model-detail-02", "personal-settings-01", "support-analytics-01", "security-overview-01", "infinite-log-table-01", "resource-status-all-01", "resource-metric-list-01"].includes(component)) {
+        layout.chartTokens = await verifyChartTokenColors(page, {
+          theme, scope: `[data-consumer="${component}"]`,
+          requireMarks: !["model-detail-02", "personal-settings-01", "security-overview-01", "infinite-log-table-01"].includes(component),
+        });
+      }
+      layout.segmentedBars = await verifySegmentedBarGeometry(page, { scope: `[data-consumer="${component}"]`, requireBars: ["chart-primitives", "credit-usage-01", "cost-estimate-01", "storage-usage-01", "resource-metric-list-01"].includes(component) });
       result.views.push({ width, theme, reducedMotion: true, ...layout });
+    }
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    const chartDestinations = component === "personal-settings-01" ? ["使用情况", "模型用量", "调用日志"]
+      : component === "security-overview-01" ? ["态势"] : component === "project-monitor-01" ? ["存储", "报告"] : [];
+    for (const destination of chartDestinations) {
+      await example.getByText(destination, { exact: true }).first().click();
+      for (const width of [390, 1440]) for (const theme of ["light", "dark"]) {
+        await page.setViewportSize({ width, height: 1000 });
+        await page.emulateMedia({ colorScheme: theme });
+        await page.evaluate(dark => document.documentElement.classList.toggle("dark", dark), theme === "dark");
+        await page.waitForTimeout(150);
+        result.views.push({ width, theme, destination, chartTokens: await verifyChartTokenColors(page, { theme, scope: `[data-consumer="${component}"]` }) });
+      }
     }
     await page.setViewportSize({ width: 1440, height: 1000 });
     if (component === "alert") {

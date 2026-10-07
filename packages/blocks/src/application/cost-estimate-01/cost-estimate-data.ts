@@ -1,7 +1,8 @@
+import type { ChartColorIndex } from "@zeron/ui/chart-primitives";
 import type { CostEstimateCategory, CostEstimateInputs, CostEstimateLabels, CostEstimateLimits, CostEstimateRateCard, CostEstimateResult, CostEstimateUsage } from "./cost-estimate-types";
 
 export const costEstimateCategories: CostEstimateCategory[] = ["ingest", "storage", "queries", "seats"];
-export const costEstimateColors = { ingest: "orange", storage: "blue", queries: "teal", seats: "purple" } as const;
+export const costEstimateColorIndices = { ingest: 1, storage: 2, queries: 3, seats: 4 } as const satisfies Record<CostEstimateCategory, ChartColorIndex>;
 export const costEstimateDefaultLimits: CostEstimateLimits = {
   ingestGBPerDay: { min: 0, max: 1000, step: 0.5 }, retentionDays: { min: 1, max: 365, step: 1 },
   scannedTBPerMonth: { min: 0, max: 500, step: 0.5 }, seats: { min: 0, max: 100, step: 1 },

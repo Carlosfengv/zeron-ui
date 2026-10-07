@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useEffect, useId, useMemo, useRef, useState } from "react";
-import { badgeColors } from "@zeron/ui/badge";
+import { chartSeriesColor } from "@zeron/ui/chart-primitives";
 import { cn } from "@zeron/ui/system/utils";
 import { ModelLogo } from "./model-logo";
 import type { ModelRouterRoute } from "./model-router-types";
@@ -55,7 +55,7 @@ export const RouterFlow = memo(function RouterFlow({ routes, animated, gateway, 
             const y = index * 44 + 22;
             const path = `M 8 ${center} H ${width * 0.2} C ${width * 0.34} ${center} ${width * 0.332} ${y} ${width * 0.46} ${y} H ${width - 6}`;
             const pathId = `${id}-route-${index}`;
-            const color = badgeColors[route.color];
+            const color = chartSeriesColor(route.id, route);
             const count = Number.isFinite(route.requestsPerSecond) && route.requestsPerSecond > 0
               ? Math.max(3, Math.round(14 * route.requestsPerSecond / maxRate)) : 0;
             return (

@@ -210,6 +210,10 @@
       "itemId": "component:sidebar"
     },
     {
+      "path": "components/time-range-histogram.md",
+      "itemId": "component:time-range-histogram"
+    },
+    {
       "path": "components/tree.md",
       "itemId": "component:tree"
     }

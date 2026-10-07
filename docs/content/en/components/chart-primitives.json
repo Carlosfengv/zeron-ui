@@ -10,6 +10,6 @@
     "known": "Known",
     "uncovered": "Known 80 / total 100; 20 uncovered remains neutral.",
     "contract": "Contract",
-    "guidance": "Capacity retains actual overflow values and scales drawing to fit. Distribution uses an explicit total for unassigned values. ChartLegend is static unless onSelect performs an explicit consumer action. IDs stabilize category colors; statuses have a separate palette. Percent formatting takes 0.15, not 15. Currency conversion stays in the business layer."
+    "guidance": "Capacity retains overflow values and scales drawing to fit; distribution retains unassigned totals. ChartLegend is static unless onSelect performs a consumer action. chartColor(1–5) reads the global palette: theme blue first, cyan second, followed by amber, green and violet. chartSeriesColor(id) is stable and may collide. Optional colorIndex takes precedence over legacy Badge color names, which are adapted to slots. Status colors remain separate. Percent takes 0.15, not 15; currency conversion belongs to business code."
   }
 }

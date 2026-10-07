@@ -563,12 +563,12 @@ registry_import: "@/components/blocks/cost-estimate-01"
 source: packages/blocks/src/application/cost-estimate-01/cost-estimate.tsx
 types: packages/blocks/src/application/cost-estimate-01/cost-estimate-types.ts
 registry: packages/blocks/registry.json
-related: [container, slider, chart, tabs, credit-usage-01]
+related: [container, slider, chart-primitives, tabs, credit-usage-01]
 ---
 
 # 费用估算
 
-React data-block，不创建应用外壳。外层 Container，汇总与用量两块 ContainerBody，头尾使用 ContainerHeader / ContainerFooter；默认最大宽度 576px，标题 text-body / font-medium。保留组件表面、间距和控件尺寸，分类颜色来自公开 badgeColors。
+React data-block，不创建应用外壳。外层 Container，汇总与用量两块 ContainerBody，头尾使用 ContainerHeader / ContainerFooter；默认最大宽度 576px，标题 text-body / font-medium。保留组件表面、间距和控件尺寸，分类颜色由 ingest / storage / queries / seats → chart-1 / 2 / 3 / 4 固定映射提供；堆叠条、Badge dot、字段圆点和 Slider 填充共用 `chartColor(index)`，独立于品牌和状态色。
 
 四项类别名称按用户要求保留英文 Ingest / Storage / Queries / Seats，在费用构成与用量输入中一致使用；其他默认文案仍为中文，labels 可单独覆盖。
 
@@ -594,7 +594,7 @@ ratesMicros 是非负十进制整数字符串，表示百万分之一主货币�
 
 摄入量 = 日量 × billingDays；稳定存储 = 日量 × retentionDays ÷ compressionRatio；查询独立按 TB/month；收费席位 = max(seats − includedSeats, 0)。年付折扣作用于四项用量费用，不作用于最低消费补差。年额为同月等效金额 × 12，节省以相同输入的月付基线 × 12 对比；不是 365 天精算。
 
-图形和整数百分比表示折扣后用量费用分布，不包含最低消费补差。图形使用实际金额；显示比例最大余数分配，稳定合计 100%；全零显示零用量而不伪造色块。每 GB 综合费率在零摄入时未知。旁置分项金额/比例可读列表固定为 2×2，每项 badge 与价格水平排列，有限宽度内价格与比例可换行，不依赖图表 hover。
+图形和整数百分比表示折扣后用量费用分布，不包含最低消费补差。费用条使用共享 SegmentedBar distribution，不再单独使用 Recharts；每段 rounded-sm、段间 gap-0.5（默认 2px）。图形使用实际金额；显示比例最大余数分配，稳定合计 100%；零值段不占间距，全零显示零用量而不伪造色块。每 GB 综合费率在零摄入时未知。旁置分项金额/比例可读列表固定为 2×2，每项 badge 与价格水平排列，有限宽度内价格与比例可换行，不依赖图表 hover。
 
 ## 输入与保存
 
@@ -674,7 +674,7 @@ function BillingSummary() {
 - `currentCycle` 必填，`previousCycle` 可选。缺少上一周期时，对应 Tab 会禁用。
 - `projection` 是服务端或领域层给出的预测结果；Block 不自行预测耗尽日期。
 - `autoSwitch` 决定是否显示自动切换区域；目标模型、阈值和说明都由业务数据提供。
-- 模型 `color` 使用 Badge 的分类颜色集合，不表达健康或告警状态。
+- 模型可选 `colorIndex` 为 1–5，优先读取全局 Chart 槽位；原必填 `color: BadgeColor` 为兼容字段，适配到槽位，不再读取 Badge HEX。索引和旧色名都非法时按稳定模型 ID 兜底；不表达健康或告警。
 - 使用 `provider` 选择内置的 OpenAI、Claude 或 Gemini 品牌标识；私有模型通过 `logo` 传入真实的产品 Logo，未提供时使用通用模型图标。
 - 日期作为已格式化文本传入；数字与百分比根据 `locale` 格式化。
 - 使用 `formatters.usageSummary`、`formatters.progressValueText` 和 `formatters.autoSwitchTitle` 覆盖完整句子，避免本地化时受英文词序限制。
@@ -690,7 +690,7 @@ function BillingSummary() {
 
 用量条暴露 `progressbar` 语义和数值文本；颜色同时由下方模型名称与数值解释，不作为唯一信息来源。Block 以 32px 默认控件高度组织密度；用量条与 cost-estimate-01 的费用构成条一致，使用 12px 高、平直边缘、无间隙的连续堆叠色条，居中放在 20px 高的区域内。最大宽度为 520px；模型列表始终保持单列，在窄屏下会让头部与操作区换行。不要用后代选择器覆盖内部组件状态。
 
-用量条采用 SegmentedBar 的 capacity 模式。模型 ID 与显式分类颜色保持稳定；超额数值保留，绘图按最大值缩放。长模型名称可换行，原有受控值与操作回调保持不变。
+用量条采用 SegmentedBar 的 capacity 模式。模型 ID 与显式系列槽位保持稳定；超额数值保留，绘图按最大值缩放。长模型名称可换行，原有受控值与操作回调保持不变。
 
 
 ---
@@ -1389,6 +1389,8 @@ SVG 粒子表达相对请求密度，不是每个真实请求。零请求线路�
 
 ## Model identity and linked emphasis
 
+路由可选 `colorIndex` 为 1–5，优先于原必填兼容字段 `color: BadgeColor`。共享取色工具将旧色名适配到全局槽位；SVG 主线、光点、圆点与 share 条共用解析颜色。索引不随排序或策略改变，Logo 和状态色保持独立。
+
 `route.brand` 选择 claude、openai 或 qwen 的 Lobe 图标，独立于托管 provider；私有品牌可传入 `route.logo`。未指定 brand 时支持 Anthropic/OpenAI provider 回退，其他模型使用通用图标。图表标签、管道和表格行通过稳定的 route.id 双向联动：悬停或键盘聚焦时，图表中当前模型保持 100% 不透明度，其他模型为 40%，离开后恢复。图表标签不添加背景；表格各行始终保持完全不透明，仅对应行显示背景高亮。
 
 
@@ -1485,6 +1487,8 @@ export function ProjectPreview() {
 `visibleSections` 控制资源与服务活动区。`advisor` 有内容时才显示“优化建议”标签。`labels` 覆盖公共文案，业务标签通过 data 传入。
 
 ## 组件与样式
+
+服务和存储分类可选 `colorIndex` 为 1–5，优先于原必填兼容字段 `color: BadgeColor`。共享工具将旧色名适配到全局槽位；透传到 StorageUsage 时同时保留索引。固定分位数 P50 / P95 / P99 使用槽位 1 / 2 / 3，图形与图例共用解析颜色，真实健康状态独立取色。
 
 使用 Card、Tabs、InfoItem、Badge、StatusOverview、StorageUsage、MetricCard、Chart、Select、Button、Tooltip、Skeleton、Empty、Badge plain、Alert 和 InlineNotice。服务状态通过 StatusOverview 的 variant="activity" 呈现：名称、细竖条轨道和请求数在宽容器中同排，窄容器中轨道换行。灰色完整竖条表示空闲，较短竖条表示未知；Tooltip 保留准确计数和状态。请求趋势采用 TimeSeriesChart，环图采用 DonutSummary，服务图例采用 ChartLegend；缺失分桶保留断点和未知汇总，趋势数据可通过键盘展开。分位数比较保留专用条形图，与直方图共享分位数分类色但不合并模型。业务布局使用现有间距、字体、边框、阴影和语义颜色；未新增全局样式或色值。
 
@@ -1940,18 +1944,18 @@ import { StorageUsage, storageUsageDemoData } from "@/components/blocks/storage-
 <StorageUsage data={storageUsageDemoData} />
 ```
 
-- `data.capacity` and each item `value` share the chosen `unit` (default GB). Items have stable, unique IDs, labels and a public `BadgeColor`.
+- `data.capacity` and each item `value` share the chosen `unit` (default GB). Items have stable, unique IDs, labels, a legacy required `BadgeColor`, and optional `colorIndex` (1–5).
 - Used capacity is derived from category values. Negative and nonfinite inputs normalize to zero. Never pass a separate inconsistent total.
 - Empty items show 0% and an empty track. Zero capacity with positive usage shows an unknown percentage. Over-capacity usage keeps its actual percentage; category proportions fit the filled track and remaining capacity is zero.
 - The reference's category labels do not sum to its summary; the demo preserves 94% of 20 GB with consistent, proportional category values. These are example data, not a backend integration.
 - `locale`, `unit`, and full-sentence `formatters` support localization. `state`, `statusMessage`, `onClick`, and `actionLabel` are inherited from MetricCard.
-- The block uses MetricCard's public split layout, description, label/value class names and footer. Colors come from `badgeColors`; do not add raw colors or use descendant selectors to restyle MetricCard.
+- The block uses MetricCard's public split layout, description, label/value class names and footer. Colors resolve through global Chart slots: valid colorIndex, then adapted legacy color, then stable ID; do not add raw colors or use descendant selectors to restyle MetricCard.
 - Label text uses `text-label`; titles derive from `--font-size-label` at 4/3 scale. Padding is 16px, the continuous bar is 12px tall, and the legend wraps.
 - Loading and unavailable/error states hide numeric descriptions and the distribution. Stale data remains visible with its supplied status message.
 
 MetricCard's `layout="split"` is optional. Its default `stacked` layout remains unchanged; `description` adds label context, and `valueClassName` is a public typography hook.
 
-The category bar uses SegmentedBar in capacity mode; ChartLegend owns its readable category names and values. Both are installed through chart-primitives without Recharts. Stable item IDs and explicit Badge colors preserve identity; business totals and normalization still belong to this block.
+The category bar uses SegmentedBar in capacity mode; ChartLegend owns its readable category names and values. Both are installed through chart-primitives without Recharts. Stable item IDs and explicit Chart slots preserve identity; the six-category demo retains all categories and repeats a slot with readable labels. Business totals and normalization still belong to this block.
 
 
 ---
@@ -2603,17 +2607,20 @@ related: [chart, badge]
 
 # Chart Primitives
 
-- `chartSeriesColor(id)` 使用稳定 ID 映射分类颜色，不随重排、筛选和刷新变化。有限调色板允许碰撞；需要唯一配色时显式传入已有分类色。`chartStatusColors` 独立提供语义色。
+- `ChartColorIndex` 为 1–5；`chartColor(index)` 返回全局 `var(--chart-N)`，非法运行时索引回到槽位 1。五槽位采用 Panel 体系，当前顺序为主题蓝、青、琥珀、绿、紫，默认系列不含中性色，独立于 Badge 和品牌 Token。旧 gray 分类输入适配到默认槽位 1；中性色只用于结构。主系列显式用槽位 1，多系列固定映射。
+- `chartSeriesColor(id)` 按稳定 ID 取五槽位，不随重排、筛选和刷新变化，但允许碰撞。可选第二参数 `{ colorIndex, color }` 按有效索引 → 旧 Badge 分类色适配 → ID 兜底解析。`chartLegacyColor(color)` 仅供旧分类输入兼容，未知色名返回 undefined；不是危险状态映射。`chartStatusColors` 独立提供语义色。
+- 图形、图例和关联控件共用同一变量引用，亮暗切换和全局覆盖自动生效。超过五项保留完整标签与数值，不能自动删减实体；必要时通过线型区分。
 - `createChartNumberFormatter(locale, options)` 保留未知为 —；percent 的输入为比例 0.15，而非百分数 15。金额的 micros/minor-unit 换算由业务层承担。`createChartTimeFormatter(locale, timeZone, options)` 显式指定时区，非法时间保持未知。
 - `ChartLegend` items 含 id/label/color/value/ratio，可选 pressed 提供真实显隐状态；默认静态，不创建隐式显隐状态。onSelect(id) 只执行宿主明确操作；需要显隐时由宿主维护 pressed 并将其应用到图表，组件不会修改数据。长名称换行，不依赖标题提示。占比不完整时由消费者传入 —。
 - `SegmentedBar` 共用绘制但 mode 明确区分 capacity 和 distribution。capacity 必传 total，valueText 提供容量和实际用量；distribution 可传明确总量保留未覆盖段。数值不因超额被改小；图形按 max(total, assigned) 缩放。只有省略 total 且分类完整时才派生总量；显式 null 或非法总量保持未知，不绘制完整分布。容量或用量不完整时不提供 aria-valuenow，由 valueText 说明未知部分。容量和分类均仅接受非负值，未知用 null。完整业务说明仍由消费者提供。
+- 横向分段条的容器、数据段和剩余轨道均使用 `rounded-sm`，可见段间使用 `gap-0.5`（默认 2px），间隙透出宿主表面。扣除间距后按原始数值比例分配宽度；零值、未知或非法段隐藏且不占间距；全空时保留 muted 轨道。业务消费者不覆盖为 rounded-none / rounded-xs / rounded-full。
 - `ChartDataTable` 提供 details/summary/table 的键盘等价入口；原生表格用于展示数据，不负责排序或编辑。
 
 ```tsx
-import { ChartLegend, SegmentedBar } from "@zeron/ui/chart-primitives";
-const segments = [{ id: "files", label: "文件", value: 80 }];
+import { ChartLegend, SegmentedBar, chartColor } from "@zeron/ui/chart-primitives";
+const segments = [{ id: "files", label: "文件", value: 80, color: chartColor(1) }];
 export function StorageBar() {
-  return <div><SegmentedBar mode="capacity" total={100} segments={segments} valueText="已用 80 / 100 GB" /><ChartLegend items={[{ id: "files", label: "文件", value: "80 GB" }]} /></div>;
+  return <div><SegmentedBar mode="capacity" total={100} segments={segments} valueText="已用 80 / 100 GB" /><ChartLegend items={[{ id: "files", label: "文件", color: segments[0].color, value: "80 GB" }]} /></div>;
 }
 ```
 
@@ -2641,17 +2648,20 @@ related: [chart-primitives, metric-card, time-range-histogram]
 
 `ChartContainer/config/ChartTooltip/ChartTooltipContent` 保留原有组合接口。`config` 的 key 使用 CSS 标识符，color/theme 使用可信 CSS 色值。ChartContainer 内只放一个 Recharts 图，不能嵌套 ResponsiveContainer，父容器应 min-w-0 且有可测量高度。`dataTable` 可提供 caption、columns、rows 和 summary，为专用图提供键盘可打开的数据表。
 
+普通主系列使用 `chartColor(1)`，比较系列显式配置 1–5 槽位；动态系列可用 `chartSeriesColor(id)` 稳定兜底，有限槽位允许碰撞。图形、图例和关联控件共用颜色。`color` 与 `theme` 显式覆盖仍生效；状态色和网格、文字、轨道独立于五色盘。
+
 `TimeSeriesChart` 是两个请求趋势消费者验证后的薄组合。data 每项为 `{ timestamp: number, values: Record<string, number | null> }`；series 含稳定 id、label 和可选 color。必填 locale/timeZone/label，domain 可指定真实时间窗口。formatValue 同时用于轴、Tooltip 和数据表。没有汇总、补零、排序、采样或隐式连线；单点保留标记、全零保留真实值、空数组显示无数据。dataSummary 由消费者本地化。绘图关闭非必要动画。
 
 `DonutSummary` 接收 segments（id/label/value/color）、业务 total 和中心 center。total 不传时只有完整非负数列才派生总量；null 表示未知。部分已知总量留中性轨道，超额绘图缩放但不改真实值。调用方提供完整 aria-label，并配 ChartLegend 或可读明细；不依赖鼠标 Tooltip。innerRadius 可按实际用途保留不同环宽。
 
 ```tsx
 import { TimeSeriesChart, DonutSummary } from "@zeron/ui/chart";
+import { chartColor } from "@zeron/ui/chart-primitives";
 export function RequestChart() {
-  return <TimeSeriesChart data={[{ timestamp: 1791158400000, values: { requests: 12 } }]} series={[{ id: "requests", label: "请求" }]} locale="zh-CN" timeZone="Asia/Shanghai" label="请求量" dataSummary="查看数据" />;
+  return <TimeSeriesChart data={[{ timestamp: 1791158400000, values: { requests: 12 } }]} series={[{ id: "requests", label: "请求", color: chartColor(1) }]} locale="zh-CN" timeZone="Asia/Shanghai" label="请求量" dataSummary="查看数据" />;
 }
 export function UsageDonut() {
-  return <DonutSummary segments={[{ id: "used", label: "已用", value: 80 }]} total={100} center="80 / 100" aria-label="已用 80，总量 100" />;
+  return <DonutSummary segments={[{ id: "used", label: "已用", value: 80, color: chartColor(1) }]} total={100} center="80 / 100" aria-label="已用 80，总量 100" />;
 }
 ```
 
@@ -3879,6 +3889,46 @@ export function NavigationExample({ onAccount }: { onAccount: () => void }) {
 ## 浏览器验收
 
 验证桌面与手机、长中文标签、折叠/展开和键盘路径；导航必须改变正确业务内容，异步/权限状态不能只演示选中样式。确认图标/标签对齐、滚动归属和弹层焦点。页面任务通过同版本 task-context 入口获取必要组合规则，消费者自查见 consumer-verification；未运行状态如实记录。
+
+
+---
+
+---
+schema_version: 1
+name: time-range-histogram
+kind: component
+status: stable
+locale: zh-CN
+summary: 保留时间桶和受控范围的直方图，普通系列使用全局 Chart 槽位，真实结果状态独立取色。
+package_import: "@zeron/ui/time-range-histogram"
+registry_import: "@/components/ui/time-range-histogram"
+source: packages/ui/src/components/time-range-histogram.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [chart, chart-primitives]
+---
+
+# Time Range Histogram
+
+`data` 为有序且不重叠的时间桶，每项包含 start、end、label 和系列计数。`series` 包含 dataKey、label、color 和可选 inactiveColor。`value` 与 `onValueChange` 由宿主控制，选择范围对齐到桶边界；保留真实时间、计数、指针与键盘操作，不通过颜色迁移改变查询或汇总。
+
+普通单系列传 `chartColor(1)`，比较系列固定 1–5 槽位；动态业务 key 可用 `chartSeriesColor(key)` 稳定取色，有限槽位允许碰撞。图形与图例复用同一个 series 配置。真实 success / warning / error 使用领域状态映射或 `chartStatusColors`，不要按数组下标把任意类别解释为状态。
+
+`inactiveColor` 保留中性 surface，选择边界与手柄保留交互色；不将全部元素统一成系列色。`ariaLabel`、`formatRange`、`formatValue` 和边界标签由宿主本地化。父容器可收缩，图表保持可测量宽度。
+
+```tsx
+import { useState } from "react";
+import { TimeRangeHistogram } from "@zeron/ui/time-range-histogram";
+import { chartColor } from "@zeron/ui/chart-primitives";
+const data = [{ start: 0, end: 1000, label: "00:00", requests: 12 }];
+const series = [{ dataKey: "requests", label: "请求", color: chartColor(1) }];
+export function RequestRange() {
+  const [value, setValue] = useState({ start: 0, end: 1000 });
+  return <TimeRangeHistogram ariaLabel="请求时间范围" data={data} series={series} value={value} onValueChange={setValue} />;
+}
+```
+
+安装 `npx zeron-ui add time-range-histogram`，保留 Chart、chart-primitives 与 surfaces 的依赖链。主题切换通过全局变量生效，显式 series.color 覆盖继续接受可信 CSS 色值。
 
 
 ---

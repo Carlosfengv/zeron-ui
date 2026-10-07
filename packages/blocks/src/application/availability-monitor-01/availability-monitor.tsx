@@ -21,7 +21,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@zeron/ui/chart";
-import { ChartLegend, chartSeriesColor } from "@zeron/ui/chart-primitives";
+import { ChartLegend, chartColor } from "@zeron/ui/chart-primitives";
 import { Container, ContainerBody } from "@zeron/ui/container";
 import { MetricCard } from "@zeron/ui/metric-card";
 import { StatusOverview } from "@zeron/ui/status-overview";
@@ -67,11 +67,11 @@ export interface AvailabilityMonitorProps
 const chartConfig = {
   routed: {
     label: "OpenRouter Availability",
-    color: chartSeriesColor("routed"),
+    color: chartColor(1),
   },
   direct: {
     label: "Without Routing",
-    color: chartSeriesColor("direct"),
+    color: chartColor(2),
   },
 } satisfies ChartConfig;
 

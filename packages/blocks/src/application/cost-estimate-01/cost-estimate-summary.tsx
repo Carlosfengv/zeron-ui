@@ -1,10 +1,9 @@
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
-import { Badge, badgeColors } from "@zeron/ui/badge";
-import { ChartContainer, type ChartConfig } from "@zeron/ui/chart";
+import { Badge } from "@zeron/ui/badge";
+import { chartColor, SegmentedBar } from "@zeron/ui/chart-primitives";
 import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
-import { costEstimateCategories, costEstimateColors, costEstimateMoney } from "./cost-estimate-data";
+import { costEstimateCategories, costEstimateColorIndices, costEstimateMoney } from "./cost-estimate-data";
 import type { CostEstimateLabels, CostEstimateRateCard, CostEstimateResult } from "./cost-estimate-types";
 
 export function CostEstimateSummary({ result, rateCard, labels, locale, onBillingChange }: {
@@ -13,7 +12,7 @@ export function CostEstimateSummary({ result, rateCard, labels, locale, onBillin
 }) {
   const money = (minor: number) => costEstimateMoney(minor, result, locale);
   const annual = result.inputs.billing === "annual";
-  const config: ChartConfig = Object.fromEntries(costEstimateCategories.map((key) => [key, { label: labels[key], color: badgeColors[costEstimateColors[key]] }]));
+  const segments = costEstimateCategories.map((key) => ({ id: key, label: labels[key], value: result.amountsMinor[key], color: chartColor(costEstimateColorIndices[key]) }));
   return <Tabs value={result.inputs.billing} variant="pill" color="default" onValueChange={(value) => { if (value === "monthly" || value === "annual") onBillingChange(value); }} className="space-y-4">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="min-w-0"><p className="text-label text-fg-subtle">{labels.estimated}</p>
@@ -33,14 +32,9 @@ export function CostEstimateSummary({ result, rateCard, labels, locale, onBillin
     </div>
     <div className="space-y-3">
       <h3 className="text-body font-medium text-fg-default">{labels.breakdown}</h3>
-      {result.usageSubtotalMinor > 0 ? <ChartContainer className="h-5 min-h-0" config={config} aria-hidden="true">
-        <BarChart layout="vertical" data={[{ category: "usage", ...result.amountsMinor }]} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} barSize={12} accessibilityLayer={false}>
-          <XAxis type="number" hide domain={[0, result.usageSubtotalMinor]} /><YAxis type="category" dataKey="category" hide />
-          {costEstimateCategories.map((key) => <Bar key={key} dataKey={key} stackId="cost" fill={`var(--color-${key})`} isAnimationActive={false} />)}
-        </BarChart>
-      </ChartContainer> : <p className="text-label text-fg-muted">{labels.zeroUsage}</p>}
+      {result.usageSubtotalMinor > 0 ? <div className="flex h-5 items-center"><SegmentedBar mode="distribution" total={result.usageSubtotalMinor} segments={segments} valueText={`${labels.breakdown}: ${costEstimateCategories.map((key) => `${labels[key]} ${money(result.amountsMinor[key])} (${result.percentages[key]}%)`).join("; ")}`} /></div> : <p className="text-label text-fg-muted">{labels.zeroUsage}</p>}
       <dl className="grid grid-cols-2 gap-3">{costEstimateCategories.map((key) => <div className="flex min-w-0 items-center justify-between gap-0.5 @lg:gap-2" key={key}>
-        <dt className="shrink-0"><Badge variant="dot" color={costEstimateColors[key]} size="sm">{labels[key]}</Badge></dt>
+        <dt className="shrink-0"><Badge variant="dot" color={{ base: chartColor(costEstimateColorIndices[key]), onStrong: "var(--fg-default)" }} size="sm">{labels[key]}</Badge></dt>
         <dd className="flex min-w-0 flex-wrap items-baseline justify-end gap-x-1.5 gap-y-0.5 text-right text-label tabular-nums @lg:text-body"><span className="break-all font-medium text-fg-default">{money(result.amountsMinor[key])}</span><span className="text-label text-fg-subtle">{result.percentages[key]}%</span></dd>
       </div>)}</dl>
     </div>

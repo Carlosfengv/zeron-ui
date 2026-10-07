@@ -3,7 +3,7 @@
 import { useId } from "react";
 import { Area, AreaChart, CartesianGrid, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, DonutSummary, chartTrendPreset, type ChartConfig } from "@zeron/ui/chart";
-import { ChartLegend, chartSeriesColor, chartStatusColors } from "@zeron/ui/chart-primitives";
+import { ChartLegend, chartColor, chartStatusColors } from "@zeron/ui/chart-primitives";
 import { badgeColors } from "@zeron/ui/badge";
 import { Empty, EmptyDescription } from "@zeron/ui/empty";
 import { securityFormatNumber, securitySeverities, securitySeverityColors, securityTrendPoints, securityValidNumber } from "./security-overview-data";
@@ -57,7 +57,7 @@ export function SecurityPostureRadar({ data, labels }: { data: SecurityOverviewS
   const complete = areas && areas.length >= 3 && areas.every((area) => securityValidNumber(area.score, 100));
   const previousComplete = complete && areas.every((area) => securityValidNumber(area.previousScore, 100));
   if (!complete) return <Empty reason="no-data" scope="inline"><EmptyDescription>{labels.noData}</EmptyDescription></Empty>;
-  return <ChartContainer className="h-56" aria-label={labels.postureDescription} config={{ score: { label: labels.current, color: chartSeriesColor("score") }, previousScore: { label: labels.previous, color: chartSeriesColor("previousScore") } }} dataTable={{ caption: labels.postureDescription, summary: labels.viewValues, columns: [labels.posture, labels.current, labels.previous], rows: areas.map((area) => ({ id: area.id, label: area.label, values: [String(area.score), securityValidNumber(area.previousScore, 100) ? String(area.previousScore) : labels.unknown] })) }}>
+  return <ChartContainer className="h-56" aria-label={labels.postureDescription} config={{ score: { label: labels.current, color: chartColor(1) }, previousScore: { label: labels.previous, color: chartColor(2) } }} dataTable={{ caption: labels.postureDescription, summary: labels.viewValues, columns: [labels.posture, labels.current, labels.previous], rows: areas.map((area) => ({ id: area.id, label: area.label, values: [String(area.score), securityValidNumber(area.previousScore, 100) ? String(area.previousScore) : labels.unknown] })) }}>
     <RadarChart data={[...areas]} accessibilityLayer={false} outerRadius="70%">
       <PolarGrid stroke="var(--border)" />
       <PolarAngleAxis dataKey="label" tick={{ fill: "var(--fg-muted)", fontSize: "var(--font-size-label)" }} />

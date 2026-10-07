@@ -1682,6 +1682,56 @@ const tokenData = {
         "channel": "component",
         "intent": "neutral"
       }
+    },
+    {
+      "name": "chart-1",
+      "light": "#0060D2",
+      "dark": "#1483FD",
+      "usage": "普通图表系列槽位 1；默认主系列采用主题蓝，独立于品牌和状态 Token",
+      "classification": {
+        "channel": "component",
+        "intent": "neutral"
+      }
+    },
+    {
+      "name": "chart-2",
+      "light": "#06B6D4",
+      "dark": "#22D3EE",
+      "usage": "普通图表系列槽位 2；不表达状态",
+      "classification": {
+        "channel": "component",
+        "intent": "neutral"
+      }
+    },
+    {
+      "name": "chart-3",
+      "light": "#F59E0B",
+      "dark": "#FBBF24",
+      "usage": "普通图表系列槽位 3；不表达状态",
+      "classification": {
+        "channel": "component",
+        "intent": "neutral"
+      }
+    },
+    {
+      "name": "chart-4",
+      "light": "#10B981",
+      "dark": "#34D399",
+      "usage": "普通图表系列槽位 4；不表达状态",
+      "classification": {
+        "channel": "component",
+        "intent": "neutral"
+      }
+    },
+    {
+      "name": "chart-5",
+      "light": "#8B5CF6",
+      "dark": "#A78BFA",
+      "usage": "普通图表系列槽位 5；不表达状态",
+      "classification": {
+        "channel": "component",
+        "intent": "neutral"
+      }
     }
   ],
   "surfaces": [

@@ -2,6 +2,7 @@ export const componentCardDescriptions = {
   zh: {
     surfaces: "为浅色和深色模式提供五个语义表面，并按用途定义阴影层级。",
     "semantic-tokens": "颜色、表面、排版、形状与层级的完整运行时语义契约。",
+    "chart-tokens": "图表全局色盘、系列变量与亮暗模式下的共享样式规则。",
     scrollbars: "始终可用又不过度干扰的滚动条；基于 shadcn 的滚动淡出方案重构，适配形状系统，并在触屏保留原生滚动。",
     motion: "供所有组件共享的弹簧令牌、更快退场与无重排字重动画规则。",
     "app-shell": "可组合的应用框架，用于容纳 Sidebar、Header 和主内容。",

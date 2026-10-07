@@ -82,6 +82,20 @@ describe("token contrast helper", () => {
 });
 
 describe("semantic token generation", () => {
+  it("publishes a blue-first five-series palette independently from brand and status tokens", () => {
+    const pairs = [["#0060D2", "#1483FD"], ["#06B6D4", "#22D3EE"], ["#F59E0B", "#FBBF24"], ["#10B981", "#34D399"], ["#8B5CF6", "#A78BFA"]];
+    const { theme, light, dark } = registryCssVars();
+    expect(componentColorTokens.filter(({ name }) => name.startsWith("chart-"))).toHaveLength(5);
+    for (const [index, [lightValue, darkValue]] of pairs.entries()) {
+      const name = `chart-${index + 1}`;
+      expect(tokenByName(componentColorTokens, name)).toMatchObject({ light: lightValue, dark: darkValue });
+      expect(theme[`color-${name}`]).toBe(`var(--${name})`);
+      expect(light[name]).toBe(lightValue);
+      expect(dark[name]).toBe(darkValue);
+      expect(renderTokenPackageCss()).toContain(`--${name}: light-dark(${lightValue}, ${darkValue});`);
+      expect(JSON.parse(renderTokenPackageModule().match(/const tokenData = ([\s\S]*?);\n/)[1]).componentColors).toContainEqual(expect.objectContaining({ name, light: lightValue, dark: darkValue }));
+    }
+  });
   it("generates CSS durations and Framer Motion tiers from one motion source", () => {
     expect(read("packages/ui/src/system/springs.ts")).toBe(renderSpringsModule());
     expect(motionTokens).toEqual([

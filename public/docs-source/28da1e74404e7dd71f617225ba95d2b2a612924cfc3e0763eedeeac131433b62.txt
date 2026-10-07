@@ -1,9 +1,9 @@
 "use client";
 
 import type { ComponentPropsWithoutRef } from "react";
-import { badgeColors, type BadgeColor } from "@zeron/ui/badge";
+import type { BadgeColor } from "@zeron/ui/badge";
 import { MetricCard } from "@zeron/ui/metric-card";
-import { ChartLegend, SegmentedBar } from "@zeron/ui/chart-primitives";
+import { ChartLegend, SegmentedBar, chartSeriesColor, type ChartColorIndex } from "@zeron/ui/chart-primitives";
 import { cn } from "@zeron/ui/system/utils";
 import styles from "./storage-usage.module.css";
 
@@ -12,7 +12,9 @@ export interface StorageUsageItem {
   label: string;
   /** Use the same unit as capacity. */
   value: number;
+  /** @deprecated Legacy categorical name; colorIndex takes precedence. */
   color: BadgeColor;
+  colorIndex?: ChartColorIndex;
 }
 
 export interface StorageUsageData {
@@ -37,12 +39,12 @@ export interface StorageUsageProps
 export const storageUsageDemoData: StorageUsageData = {
   capacity: 20,
   items: [
-    { id: "contacts", label: "Contacts", value: 5.27, color: "indigo" },
-    { id: "tasks", label: "Tasks", value: 4.16, color: "cyan" },
-    { id: "deals", label: "Deals", value: 3.33, color: "green" },
-    { id: "emails", label: "Emails", value: 2.63, color: "yellow" },
-    { id: "companies", label: "Companies", value: 2.27, color: "red" },
-    { id: "other", label: "Other", value: 1.14, color: "gray" },
+    { id: "contacts", label: "Contacts", value: 5.27, color: "indigo", colorIndex: 1 },
+    { id: "tasks", label: "Tasks", value: 4.16, color: "cyan", colorIndex: 2 },
+    { id: "deals", label: "Deals", value: 3.33, color: "green", colorIndex: 3 },
+    { id: "emails", label: "Emails", value: 2.63, color: "yellow", colorIndex: 4 },
+    { id: "companies", label: "Companies", value: 2.27, color: "red", colorIndex: 5 },
+    { id: "other", label: "Other", value: 1.14, color: "gray", colorIndex: 1 },
   ],
 };
 
@@ -60,7 +62,7 @@ export function StorageUsage({
   className,
   ...props
 }: StorageUsageProps) {
-  const items = data.items.map((item) => ({ ...item, value: nonnegative(item.value) }));
+  const items = data.items.map((item) => ({ ...item, value: nonnegative(item.value), seriesColor: chartSeriesColor(item.id, item) }));
   const capacity = nonnegative(data.capacity);
   const used = items.reduce((total, item) => total + item.value, 0);
   const remaining = Math.max(0, capacity - used);
@@ -91,7 +93,7 @@ export function StorageUsage({
           <SegmentedBar
             mode="capacity"
             total={capacity}
-            segments={items.map((item) => ({ ...item, color: badgeColors[item.color] }))}
+            segments={items.map((item) => ({ ...item, color: item.seriesColor }))}
             valueText={`${summary}. ${remainingText}`}
             aria-label={label}
             data-slot="storage-usage-bar"
@@ -99,7 +101,7 @@ export function StorageUsage({
             remainderSlot="storage-usage-remaining"
           />
           {items.length > 0 && (
-            <ChartLegend className="flex flex-wrap gap-x-4 gap-y-2" data-slot="storage-usage-legend" items={items.map((item) => ({ ...item, color: badgeColors[item.color], value: `${formatValue(item.value)} ${unit}` }))} />
+            <ChartLegend className="flex flex-wrap gap-x-4 gap-y-2" data-slot="storage-usage-legend" items={items.map((item) => ({ ...item, color: item.seriesColor, value: `${formatValue(item.value)} ${unit}` }))} />
           )}
         </div>
       }

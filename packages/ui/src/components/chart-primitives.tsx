@@ -1,14 +1,40 @@
 "use client";
 
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
-import { badgeColors } from "#components/badge";
+import type { BadgeColor } from "#components/badge";
 import { cn } from "#system/utils";
 
 /** Categories never imply health. Stable IDs, rather than list positions, select a color. */
-export const chartCategoricalColors = [badgeColors.indigo, badgeColors.cyan, badgeColors.violet, badgeColors.orange, badgeColors.teal, badgeColors.pink, badgeColors.blue, badgeColors.amber] as const;
+export type ChartColorIndex = 1 | 2 | 3 | 4 | 5;
+export const chartCategoricalColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"] as const;
 export const chartStatusColors = { success: "var(--fg-success)", warning: "var(--fg-warning)", danger: "var(--fg-danger)", info: "var(--fg-info)", neutral: "var(--fg-neutral-status)" } as const;
 
-export function chartSeriesColor(id: string) {
+function isChartColorIndex(index: unknown): index is ChartColorIndex {
+  return typeof index === "number" && Number.isInteger(index) && index >= 1 && index <= 5;
+}
+
+export function chartColor(index: ChartColorIndex) {
+  return isChartColorIndex(index) ? chartCategoricalColors[index - 1] : chartCategoricalColors[0];
+}
+
+const legacyChartIndices = {
+  gray: 1, blue: 1, cyan: 2,
+  lime: 4, green: 4, emerald: 4, teal: 4,
+  red: 3, orange: 3, amber: 3, yellow: 3, rose: 3,
+  indigo: 5, violet: 5, purple: 5, fuchsia: 5, pink: 5,
+} as const satisfies Record<BadgeColor, ChartColorIndex>;
+
+/** @deprecated Compatibility for old categorical inputs. Prefer an explicit chart slot. */
+export function chartLegacyColor(color: BadgeColor) {
+  return typeof color === "string" && Object.hasOwn(legacyChartIndices, color)
+    ? chartColor(legacyChartIndices[color]) : undefined;
+}
+
+/** Optional legacy fields keep existing business inputs compatible; identity alone remains stable. */
+export function chartSeriesColor(id: string, options?: { colorIndex?: ChartColorIndex; color?: BadgeColor }) {
+  if (isChartColorIndex(options?.colorIndex)) return chartColor(options.colorIndex);
+  const legacy = options?.color === undefined ? undefined : chartLegacyColor(options.color);
+  if (legacy !== undefined) return legacy;
   let hash = 2166136261;
   for (const character of id) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
   return chartCategoricalColors[(hash >>> 0) % chartCategoricalColors.length];
@@ -71,9 +97,13 @@ type SegmentedBarProps = Omit<ComponentPropsWithoutRef<"div">, "children"> & {
 /** Capacity and distribution share drawing; each retains its denominator and accessible semantics. */
 export function SegmentedBar({ segments, mode, total, valueText, className, segmentSlot, remainderSlot, ...props }: SegmentedBarProps) {
   const layout = visualizationLayout(segments, total);
-  return <div role={mode === "capacity" ? "progressbar" : "img"} aria-label={valueText} {...(mode === "capacity" ? { "aria-valuemin": 0, "aria-valuemax": Math.max(layout.denominator, 1), "aria-valuenow": layout.complete ? layout.assigned : undefined, "aria-valuetext": valueText } : {})} className={cn("flex h-3 min-w-0 w-full overflow-hidden rounded-full bg-muted", className)} data-slot="segmented-bar" data-complete={layout.complete} data-overflow={layout.overflow} {...props}>
-    {segments.map((segment) => <span key={segment.id} aria-hidden="true" className="h-full min-w-0" data-slot={segmentSlot ?? "segmented-bar-segment"} data-series={segment.id} style={{ backgroundColor: segment.color ?? chartSeriesColor(segment.id), flexBasis: 0, flexGrow: layout.denominator > 0 && segment.value !== null && Number.isFinite(segment.value) ? Math.max(0, segment.value) / layout.denominator : 0 }} />)}
-    {layout.remainder > 0 && <span aria-hidden="true" className="h-full min-w-0 bg-muted" data-slot={remainderSlot ?? "segmented-bar-remainder"} style={{ flexBasis: 0, flexGrow: layout.remainder / layout.denominator }} />}
+  return <div role={mode === "capacity" ? "progressbar" : "img"} aria-label={valueText} {...(mode === "capacity" ? { "aria-valuemin": 0, "aria-valuemax": Math.max(layout.denominator, 1), "aria-valuenow": layout.complete ? layout.assigned : undefined, "aria-valuetext": valueText } : {})} className={cn("flex h-3 min-w-0 w-full gap-0.5 overflow-hidden rounded-sm", layout.denominator > 0 ? "bg-transparent" : "bg-muted", className)} data-slot="segmented-bar" data-complete={layout.complete} data-overflow={layout.overflow} {...props}>
+    {segments.map((segment) => {
+      const weight = layout.denominator > 0 && segment.value !== null && Number.isFinite(segment.value)
+        ? Math.max(0, segment.value) / layout.denominator : 0;
+      return <span key={segment.id} aria-hidden="true" hidden={weight <= 0} className="h-full min-w-0 rounded-sm" data-slot={segmentSlot ?? "segmented-bar-segment"} data-series={segment.id} style={{ backgroundColor: segment.color ?? chartSeriesColor(segment.id), flexBasis: 0, flexGrow: weight }} />;
+    })}
+    {layout.remainder > 0 && <span aria-hidden="true" className="h-full min-w-0 rounded-sm bg-muted" data-slot={remainderSlot ?? "segmented-bar-remainder"} style={{ flexBasis: 0, flexGrow: layout.remainder / layout.denominator }} />}
   </div>;
 }
 

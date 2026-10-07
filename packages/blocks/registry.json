@@ -212,8 +212,8 @@
       "title": "费用估算",
       "description": "四项用量、预设、月付/年付与最低消费的可控费用估算器。",
       "categories": ["application", "analytics", "billing"],
-      "dependencies": ["recharts"],
-      "registryDependencies": ["badge", "button", "chart", "container", "empty", "field", "icon-context", "inline-notice", "input", "skeleton", "slider", "tabs", "tooltip", "utils"],
+      "dependencies": [],
+      "registryDependencies": ["badge", "button", "container", "empty", "field", "icon-context", "inline-notice", "input", "skeleton", "slider", "tabs", "tooltip", "utils", "chart-primitives"],
       "files": [
         {
           "path": "packages/blocks/src/application/cost-estimate-01/cost-estimate.tsx",
@@ -1085,7 +1085,7 @@
       "description": "A model routing card with animated gateway traffic, live metrics, draft strategies and fallback controls.",
       "categories": ["application", "analytics", "settings"],
       "dependencies": ["@lobehub/icons"],
-      "registryDependencies": ["badge", "button", "card", "icon-context", "inline-notice", "select", "switch", "table", "tabs", "tooltip", "utils"],
+      "registryDependencies": ["badge", "button", "card", "icon-context", "inline-notice", "select", "switch", "table", "tabs", "tooltip", "utils", "chart-primitives"],
       "files": [
         {
           "path": "packages/blocks/src/application/model-router-01/model-logo.tsx",
@@ -1716,7 +1716,7 @@
       "description": "A schema-driven virtualized log explorer with inferred fields, dynamic filters, cursor pagination, Live tailing, and record detail.",
       "categories": ["application", "tables", "observability"],
       "dependencies": ["tw-animate-css", "@tanstack/react-table", "@tanstack/react-virtual"],
-      "registryDependencies": ["accordion", "alert", "badge", "button", "checkbox", "checkbox-group", "detail-list", "dialog", "dropdown", "empty", "field", "filter-query-input", "icon-context", "inline-notice", "input-group", "mobile-drawer", "resizable", "scroll-area", "select", "sortable-collection", "temporal-picker", "time-range-histogram", "utils", "slider", "popover"],
+      "registryDependencies": ["accordion", "alert", "badge", "button", "checkbox", "checkbox-group", "detail-list", "dialog", "dropdown", "empty", "field", "filter-query-input", "icon-context", "inline-notice", "input-group", "mobile-drawer", "resizable", "scroll-area", "select", "sortable-collection", "temporal-picker", "time-range-histogram", "utils", "slider", "popover", "chart-primitives"],
       "files": [
         {
           "path": "packages/blocks/src/application/infinite-log-table-01/infinite-log-types.ts",

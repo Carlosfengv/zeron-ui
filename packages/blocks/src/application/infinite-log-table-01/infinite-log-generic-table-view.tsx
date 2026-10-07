@@ -6,6 +6,7 @@ import { type ColumnDef, type ColumnSizingState, getCoreRowModel, useReactTable 
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
+import { chartSeriesColor } from "@zeron/ui/chart-primitives";
 import { Checkbox } from "@zeron/ui/checkbox";
 import { DropdownContent, DropdownLabel, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
 import { Empty, EmptyHeader, EmptyTitle } from "@zeron/ui/empty";
@@ -203,10 +204,10 @@ export const GenericInfiniteLogTableView = memo(function GenericInfiniteLogTable
     const keys = [...new Set(buckets.flatMap((bucket) => Object.keys(bucket.counts)))];
     return keys.length > 0 ? keys : buckets.length > 0 ? ["records"] : [];
   }, [metadata?.timeline?.buckets]);
-  const series = useMemo<readonly TimeRangeHistogramSeries[]>(() => seriesKeys.map((key, index) => ({
+  const series = useMemo<readonly TimeRangeHistogramSeries[]>(() => seriesKeys.map((key) => ({
     dataKey: key,
     label: key === "records" ? "Records" : key,
-    color: ["var(--brand)", "var(--warning-border)", "var(--danger-border)", "var(--info-border)"][index % 4]!,
+    color: chartSeriesColor(key),
     inactiveColor: "var(--surface-raised)",
   })), [seriesKeys]);
   const timelineData = useMemo(() => (metadata?.timeline?.buckets ?? []).flatMap((bucket) => {

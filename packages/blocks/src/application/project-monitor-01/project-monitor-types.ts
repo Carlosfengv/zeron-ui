@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import type { BadgeColor } from "@zeron/ui/badge";
+import type { ChartColorIndex } from "@zeron/ui/chart-primitives";
 import type { IconName } from "@zeron/ui/system/icon-context";
 
 export type ProjectMonitorTab = "overview" | "storage" | "reports" | "advisor";
@@ -26,7 +27,9 @@ export interface ProjectMonitorBucket {
 export interface ProjectMonitorService {
   id: string;
   name: string;
+  /** @deprecated Legacy categorical name; colorIndex takes precedence. */
   color: BadgeColor;
+  colorIndex?: ChartColorIndex;
   /** 每一项对应时间窗口内连续、等长的一个时间桶。null 表示未收到数据。 */
   buckets: readonly ({ success: number; warning: number; errors: number } | null)[];
 }
@@ -56,7 +59,7 @@ export interface ProjectMonitorData {
   storage: {
     /** 存储值统一使用字节。 */
     capacityBytes: number | null;
-    categories: readonly { id: string; label: string; bytes: number | null; color: BadgeColor }[];
+    categories: readonly { id: string; label: string; bytes: number | null; color: BadgeColor; colorIndex?: ChartColorIndex }[];
     buckets: readonly ProjectMonitorBucket[];
   };
   windows: readonly ProjectMonitorWindow[];

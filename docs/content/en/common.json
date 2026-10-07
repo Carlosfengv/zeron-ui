@@ -122,6 +122,7 @@
       "transaction-details-01": "An embeddable transaction detail with amount, billing information and attachment actions.",
       "surfaces": "Five semantic surfaces with purpose-based shadows for light and dark mode.",
       "semantic-tokens": "Choose color, surface, type, shape, and layer tokens by the object you are designing.",
+      "chart-tokens": "Global chart colors, series variables, and shared styling rules for light and dark mode.",
       "scrollbars": "A scrollbar that stays out of the way but never disappears, over shadcn's scroll-fade baseline — restyled to the shape system, native scroll on touch.",
       "motion": "Spring tokens, faster exits, and reflow-free weight animation — the motion rules shared by every component.",
       "app-shell": "Composable application frame for Sidebar, header, and main content.",

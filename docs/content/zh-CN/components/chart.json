@@ -21,6 +21,6 @@
     "total": "总请求数",
     "incomplete": "部分来源缺失，灰色轨道表示未分配总量；占比暂不展示。",
     "contract": "使用规则",
-    "guidance": "TimeSeriesChart 不汇总或补零，null 保留断点。显式传入 locale/timeZone；domain 与实际窗口匹配。DonutSummary 接收业务总量，未分配量使用灰色轨道。数据表可通过键盘打开；颜色与图例保持一致。"
+    "guidance": "TimeSeriesChart 保留 null 断点，显式传入 locale/timeZone 与实际窗口 domain。DonutSummary 将未分配总量留在中性轨道；数据表支持键盘。主系列用 chartColor(1)，比较系列固定槽位；chartSeriesColor(id) 提供稳定的五槽位兜底。图形与图例共用解析颜色，状态色独立。"
   }
 }

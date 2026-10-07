@@ -23,7 +23,7 @@ import {
   chartTrendPreset,
   type ChartConfig,
 } from "@zeron/ui/chart";
-import { chartSeriesColor, chartStatusColors, createChartNumberFormatter, createChartTimeFormatter, type ChartDataTableProps } from "@zeron/ui/chart-primitives";
+import { chartColor, chartStatusColors, createChartNumberFormatter, createChartTimeFormatter, type ChartDataTableProps } from "@zeron/ui/chart-primitives";
 import type {
   AiGatewayLatencyBucket,
   AiGatewayMetricSeries,
@@ -32,8 +32,8 @@ import type {
 } from "./ai-gateway-overview-types";
 
 const gridStroke = "var(--border)";
-const primaryColor = "var(--brand)";
-const secondaryColor = chartSeriesColor("outputTokens");
+const primaryColor = chartColor(1);
+const secondaryColor = chartColor(2);
 const dangerColor = chartStatusColors.danger;
 
 function numericValue(value: unknown) {
@@ -322,9 +322,9 @@ export function LatencyDistributionChart({
   const chartData = buckets.map((bucket) => ({ ...bucket, label: latencyBucketLabel(bucket) }));
   const config = { count: { label: requestLabel, color: primaryColor } } satisfies ChartConfig;
   const markers = [
-    { key: "p50", value: percentileBucket(buckets, percentiles.p50), color: chartSeriesColor("p50") },
-    { key: "p95", value: percentileBucket(buckets, percentiles.p95), color: chartSeriesColor("p95") },
-    { key: "p99", value: percentileBucket(buckets, percentiles.p99), color: chartSeriesColor("p99") },
+    { key: "p50", value: percentileBucket(buckets, percentiles.p50), color: chartColor(1) },
+    { key: "p95", value: percentileBucket(buckets, percentiles.p95), color: chartColor(2) },
+    { key: "p99", value: percentileBucket(buckets, percentiles.p99), color: chartColor(3) },
   ];
 
   return (

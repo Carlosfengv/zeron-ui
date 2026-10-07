@@ -1,5 +1,7 @@
 {
   "semanticTokens": {
+    "chartColors": "Chart series",
+    "chartColorsBody": "Five global series slots adapt the Panel light and dark palette: theme blue first, cyan second, then amber, green and violet. Neutral colors are reserved for structure. Reference chart-1 through chart-5 independently from brand, status, axes, and tracks. Fills and strokes share a slot; opacity controls emphasis.",
     "designToken": "Design token",
     "light": "Light",
     "dark": "Dark",

@@ -41,7 +41,7 @@ describe("Resource Metric List 1 block contract", () => {
     }
   });
 
-  it("matches the Figma dimensions, hierarchy, and semantic colors", () => {
+  it("matches the Figma dimensions and hierarchy with shared chart tokens", () => {
     expect(source).toContain("max-w-[700px]");
     expect(source).toContain("min-h-10");
     expect(source).toContain("w-40");
@@ -51,10 +51,7 @@ describe("Resource Metric List 1 block contract", () => {
     expect(source).toContain("<DetailListLabel");
     expect(source).toContain("<DetailListValue");
     expect(source).toContain('className={cn(\n        "w-full max-w-[700px] gap-0 p-0 py-[3.5px]"');
-    expect(source).toContain('brand: "var(--fg-brand)"');
-    expect(source).toContain('warning: chartStatusColors.warning');
-    expect(source).toContain('danger: chartStatusColors.danger');
-    expect(source).toContain('neutral: chartStatusColors.neutral');
+    expect(source).toContain('SegmentedBar, chartColor');
   });
 
   it("keeps the six designed resources while allowing inventory data replacement", () => {

@@ -152,6 +152,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Tree](https://zeron-ui.vercel.app/ai/items/component%3Atree.md): Accessible hierarchical display and selection for general nodes, members, and files. Registry: tree.
 - [Workflow Editor](https://zeron-ui.vercel.app/ai/items/page%3Aworkflow.md): A standalone automation canvas with editable nodes, branching, local drafts and path simulation. Not installable.
 - [Icon Catalog](https://zeron-ui.vercel.app/ai/items/reference%3Acatalog.md): Searchable names generated from the free icon provider's actual exports. Not installable.
+- [Chart Tokens](https://zeron-ui.vercel.app/ai/items/reference%3Achart-tokens.md): Global chart colors, series variables, and shared styling rules for light and dark mode. Not installable.
 - [Motion](https://zeron-ui.vercel.app/ai/items/reference%3Amotion.md): Spring tokens, faster exits, and reflow-free weight animation — the motion rules shared by every component. Not installable.
 - [Icons Overview](https://zeron-ui.vercel.app/ai/items/reference%3Aoverview.md): The provider, public API, and style model behind Zeron Design icons. Not installable.
 - [Icon Providers](https://zeron-ui.vercel.app/ai/items/reference%3Aproviders.md): Free and licensed icon styles, plus the boundary for optional Pro packages. Not installable.
@@ -213,4 +214,5 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [sidebar-account-menu](https://zeron-ui.vercel.app/agent-guides/components/sidebar-account-menu.md)
 - [sidebar-identity-row](https://zeron-ui.vercel.app/agent-guides/components/sidebar-identity-row.md)
 - [sidebar](https://zeron-ui.vercel.app/agent-guides/components/sidebar.md)
+- [time-range-histogram](https://zeron-ui.vercel.app/agent-guides/components/time-range-histogram.md)
 - [tree](https://zeron-ui.vercel.app/agent-guides/components/tree.md)

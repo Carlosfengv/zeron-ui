@@ -1283,6 +1283,16 @@
       "retirementReason": null
     },
     {
+      "id": "reference:chart-tokens",
+      "type": "document",
+      "key": "components/chart-tokens",
+      "aliases": [
+        "chart-tokens"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "reference:catalog",
       "type": "document",
       "key": "icons/catalog",

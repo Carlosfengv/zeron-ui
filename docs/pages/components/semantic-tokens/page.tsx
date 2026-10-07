@@ -6,6 +6,7 @@ import {
   boundaryColorTokens,
   overlayColorTokens,
   supportColorTokens,
+  componentColorTokens,
   surfaceTokens,
   shadowTokens,
   typographyTokens,
@@ -343,6 +344,7 @@ export default function SemanticTokensPage() {
   const foregroundRows = colorRows(foregroundColorTokens);
   const boundaryRows = colorRows(boundaryColorTokens);
   const supportRows = colorRows(supportColorTokens);
+  const chartRows = colorRows(componentColorTokens.filter((token: ColorToken) => token.name.startsWith("chart-")));
   const actionFillRows = tokenRows(fillColorTokens, [
     "primary-action", "primary-action-hover", "primary-action-active",
     "neutral-action", "neutral-action-hover", "neutral-action-active",
@@ -523,6 +525,11 @@ export default function SemanticTokensPage() {
         <DocSection title={t("feedback")}>
           <SectionDescription>{t("feedbackBody")}</SectionDescription>
           <TokenTable rows={feedbackRows} includeTheme />
+        </DocSection>
+
+        <DocSection title={t("chartColors")}>
+          <SectionDescription>{t("chartColorsBody")}</SectionDescription>
+          <TokenTable rows={chartRows} includeTheme />
         </DocSection>
 
         <DocSection title={t("elevation")}>

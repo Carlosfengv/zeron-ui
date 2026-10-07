@@ -220,7 +220,7 @@ export function StorageView({ data, labels, locale, timeZone }: ViewProps) {
   const date = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone });
   return <div className="space-y-1">
     {available ? <StorageUsage className="rounded-xl border-hairline border-border bg-surface-floating p-5" label={labels.storageUsage} unit="GB" locale={locale}
-      data={{ capacity: storage.capacityBytes! / 1e9, items: storage.categories.map((category) => ({ id: category.id, label: category.label, value: category.bytes! / 1e9, color: category.color })) }}
+      data={{ capacity: storage.capacityBytes! / 1e9, items: storage.categories.map((category) => ({ id: category.id, label: category.label, value: category.bytes! / 1e9, color: category.color, colorIndex: category.colorIndex })) }}
       formatters={{ usageSummary: (used, capacity, unit) => `已用 ${used} ${unit} / 共 ${capacity} ${unit}`, remaining: (remaining, unit) => `剩余 ${remaining} ${unit}` }} />
       : <MonitorPanel label={labels.storageUsage}><NoMonitorData>{labels.noData}</NoMonitorData></MonitorPanel>}
     <InfoItemGroup aria-label={labels.buckets} className="border-hairline border-border p-2">
@@ -250,9 +250,8 @@ export function ReportsView({ window, labels, locale, timeZone, rangeControl }: 
 "use client";
 
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
-import { badgeColors } from "@zeron/ui/badge";
 import { ChartContainer, DonutSummary, TimeSeriesChart } from "@zeron/ui/chart";
-import { ChartLegend, chartSeriesColor, createChartNumberFormatter } from "@zeron/ui/chart-primitives";
+import { ChartLegend, chartColor, chartSeriesColor, createChartNumberFormatter } from "@zeron/ui/chart-primitives";
 import { MetricCard } from "@zeron/ui/metric-card";
 import { formatMetric, summarizeWindow, validNumber } from "./project-monitor-data";
 import type { ProjectMonitorLabels, ProjectMonitorMetric, ProjectMonitorWindow } from "./project-monitor-types";
@@ -265,19 +264,19 @@ export function ResourceMetric({ metric, locale }: { metric: ProjectMonitorMetri
   if (!hasCapacity) return <MetricCard label={metric.label} value={value} unit={metric.unit} state={available ? "ready" : "unavailable"} statusMessage={available ? undefined : "暂无可用数据"} className="h-full justify-center border-0 bg-transparent p-0 text-center" />;
   const text = metric.unit === "%" ? `${value}%` : `${value}/${formatMetric(metric.capacity, locale)}`;
   return <figure className="min-w-0 text-center" aria-label={`${metric.label}：${text}`}>
-    <DonutSummary className="mx-auto w-24" segments={[{ id: "used", label: metric.label, value: percentage, color: "var(--brand)" }]} total={1} innerRadius="83%" aria-label={`${metric.label}：${text}`} center={<span className="text-body font-semibold">{text}</span>} />
+    <DonutSummary className="mx-auto w-24" segments={[{ id: "used", label: metric.label, value: percentage, color: chartColor(1) }]} total={1} innerRadius="83%" aria-label={`${metric.label}：${text}`} center={<span className="text-body font-semibold">{text}</span>} />
     <figcaption className="mt-3 text-label text-fg-subtle">{metric.label}</figcaption>
   </figure>;
 }
 
 export function RequestTrend({ window, labels, locale, timeZone }: { window: ProjectMonitorWindow; labels: ProjectMonitorLabels; locale: string; timeZone: string }) {
   const { points } = summarizeWindow(window);
-  return <TimeSeriesChart data={points.map((point) => ({ timestamp: point.timestamp, values: { requests: point.requests } }))} series={[{ id: "requests", label: labels.requests, color: "var(--brand)" }]} domain={[window.start, window.end]} locale={locale} timeZone={timeZone} label={`${window.label} · ${labels.requests}，缺失时段保留断点`} dataSummary="查看数据" />;
+  return <TimeSeriesChart data={points.map((point) => ({ timestamp: point.timestamp, values: { requests: point.requests } }))} series={[{ id: "requests", label: labels.requests, color: chartColor(1) }]} domain={[window.start, window.end]} locale={locale} timeZone={timeZone} label={`${window.label} · ${labels.requests}，缺失时段保留断点`} dataSummary="查看数据" />;
 }
 
 export function ServiceDistribution({ window, labels, locale }: { window: ProjectMonitorWindow; labels: ProjectMonitorLabels; locale: string }) {
   const { services, total, complete } = summarizeWindow(window);
-  const segments = services.map((service) => ({ id: service.id, label: service.name, value: service.total, color: badgeColors[service.color] }));
+  const segments = services.map((service) => ({ id: service.id, label: service.name, value: service.total, color: chartSeriesColor(service.id, service) }));
   const formatPercent = createChartNumberFormatter(locale, { style: "percent", maximumFractionDigits: 1 });
   return <div className="min-w-0">
     <h3 className="mb-5 text-label font-medium text-fg-subtle">{labels.serviceDistribution}</h3>
@@ -290,7 +289,7 @@ export function ServiceDistribution({ window, labels, locale }: { window: Projec
 }
 
 export function LatencyChart({ window, labels, locale }: { window: ProjectMonitorWindow; labels: ProjectMonitorLabels; locale: string }) {
-  const entries = [{ key: "p50", label: "P50", color: chartSeriesColor("p50") }, { key: "p95", label: "P95", color: chartSeriesColor("p95") }, { key: "p99", label: "P99", color: chartSeriesColor("p99") }] as const;
+  const entries = [{ key: "p50", label: "P50", color: chartColor(1) }, { key: "p95", label: "P95", color: chartColor(2) }, { key: "p99", label: "P99", color: chartColor(3) }] as const;
   // 超过约定标尺仍显示真实值，所有分位数始终共用一个标尺。
   const maximum = Math.max(validNumber(window.latencyScaleMs) ? window.latencyScaleMs : 0, ...entries.map(({ key }) => validNumber(window.latency[key]) ? window.latency[key]! : 0), 1);
   return <div className="min-w-0">
@@ -312,6 +311,7 @@ export function LatencyChart({ window, labels, locale }: { window: ProjectMonito
 
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import type { BadgeColor } from "@zeron/ui/badge";
+import type { ChartColorIndex } from "@zeron/ui/chart-primitives";
 import type { IconName } from "@zeron/ui/system/icon-context";
 
 export type ProjectMonitorTab = "overview" | "storage" | "reports" | "advisor";
@@ -338,7 +338,9 @@ export interface ProjectMonitorBucket {
 export interface ProjectMonitorService {
   id: string;
   name: string;
+  /** @deprecated Legacy categorical name; colorIndex takes precedence. */
   color: BadgeColor;
+  colorIndex?: ChartColorIndex;
   /** 每一项对应时间窗口内连续、等长的一个时间桶。null 表示未收到数据。 */
   buckets: readonly ({ success: number; warning: number; errors: number } | null)[];
 }
@@ -368,7 +370,7 @@ export interface ProjectMonitorData {
   storage: {
     /** 存储值统一使用字节。 */
     capacityBytes: number | null;
-    categories: readonly { id: string; label: string; bytes: number | null; color: BadgeColor }[];
+    categories: readonly { id: string; label: string; bytes: number | null; color: BadgeColor; colorIndex?: ChartColorIndex }[];
     buckets: readonly ProjectMonitorBucket[];
   };
   windows: readonly ProjectMonitorWindow[];
@@ -496,10 +498,10 @@ export const projectMonitorDemoData: ProjectMonitorData = {
   storage: {
     capacityBytes: 8e9,
     categories: [
-      { id: "images", label: "图片", bytes: 1.12e9, color: "orange" },
-      { id: "documents", label: "文档", bytes: .64e9, color: "blue" },
-      { id: "backups", label: "备份", bytes: .41e9, color: "green" },
-      { id: "other", label: "其他", bytes: .24e9, color: "gray" },
+      { id: "images", label: "图片", bytes: 1.12e9, color: "orange", colorIndex: 1 },
+      { id: "documents", label: "文档", bytes: .64e9, color: "blue", colorIndex: 2 },
+      { id: "backups", label: "备份", bytes: .41e9, color: "green", colorIndex: 3 },
+      { id: "other", label: "其他", bytes: .24e9, color: "gray", colorIndex: 4 },
     ],
     buckets: [
       { id: "avatars", name: "avatars", access: "public", files: 1284, bytes: 412e6, updatedAt: Date.UTC(2026, 9, 5, 3, 10) },
@@ -512,10 +514,10 @@ export const projectMonitorDemoData: ProjectMonitorData = {
     id: `${minutes}m`, label: minutes === 60 ? "最近 60 分钟" : minutes === 360 ? "最近 6 小时" : "最近 24 小时",
     start: Date.UTC(2026, 9, 5, 3, 12) - minutes * 60000, end: Date.UTC(2026, 9, 5, 3, 12),
     services: ([
-      { id: "gateway", name: "Gateway", color: "blue" },
-      { id: "auth", name: "Auth", color: "orange" },
-      { id: "functions", name: "Function", color: "green" },
-      { id: "storage", name: "Storage", color: "purple" },
+      { id: "gateway", name: "Gateway", color: "blue", colorIndex: 1 },
+      { id: "auth", name: "Auth", color: "orange", colorIndex: 2 },
+      { id: "functions", name: "Function", color: "green", colorIndex: 3 },
+      { id: "storage", name: "Storage", color: "purple", colorIndex: 4 },
     ] as const).map((service, serviceIndex) => ({ ...service,
       buckets: Array.from({ length: 60 }, (_, index) => ({
         success: (index * 7 + serviceIndex * 3) % (serviceIndex + 4) === 0 ? 0 : Math.max(0, Math.round((2 + Math.sin(index * .7 + serviceIndex) * 2) * (4 - serviceIndex) * (rangeIndex + 1))),

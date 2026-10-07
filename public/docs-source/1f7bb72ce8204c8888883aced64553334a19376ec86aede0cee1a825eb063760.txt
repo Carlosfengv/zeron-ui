@@ -6,7 +6,7 @@ import {
   type DetailListProps,
   DetailListValue,
 } from "@zeron/ui/detail-list";
-import { SegmentedBar, chartStatusColors } from "@zeron/ui/chart-primitives";
+import { SegmentedBar, chartColor } from "@zeron/ui/chart-primitives";
 import { cn } from "@zeron/ui/system/utils";
 
 import clusterIcon from "./assets/cluster.svg";
@@ -105,8 +105,10 @@ const defaultResourceMetrics = [
 ] as const satisfies readonly ResourceMetricItem[];
 
 const segmentColors: Record<ResourceMetricTone, string> = {
-  brand: "var(--fg-brand)", warning: chartStatusColors.warning,
-  danger: chartStatusColors.danger, neutral: chartStatusColors.neutral,
+  brand: chartColor(1),
+  warning: chartColor(3),
+  danger: chartColor(5),
+  neutral: chartColor(2),
 };
 
 function ResourceIcon({ src }: { src: string }) {
@@ -132,7 +134,7 @@ function ResourceStatusBar({ item }: { item: ResourceMetricItem }) {
 
   const assigned = item.segments.reduce((sum, segment) => sum + (Number.isFinite(segment.value) ? Math.max(0, segment.value) : 0), 0);
   const remainder = Math.max(0, item.value - assigned);
-  return <SegmentedBar mode="distribution" total={item.value} segments={item.segments.map((segment, index) => ({ id: `${segment.tone}-${index}`, label: segment.label, value: segment.value, color: segmentColors[segment.tone] }))} valueText={`${item.label}共 ${item.value} 个：${statusLabel}${remainder > 0 ? `，未覆盖 ${remainder}` : ""}${assigned > item.value ? "，分类计数超过总数" : ""}`} className="h-3 w-40 shrink-0 rounded-sm" />;
+  return <SegmentedBar mode="distribution" total={item.value} segments={item.segments.map((segment, index) => ({ id: `${segment.tone}-${index}`, label: segment.label, value: segment.value, color: segmentColors[segment.tone] }))} valueText={`${item.label}共 ${item.value} 个：${statusLabel}${remainder > 0 ? `，未覆盖 ${remainder}` : ""}${assigned > item.value ? "，分类计数超过总数" : ""}`} className="h-3 w-40 shrink-0" />;
 }
 
 /** A compact resource inventory with per-status distribution bars. */

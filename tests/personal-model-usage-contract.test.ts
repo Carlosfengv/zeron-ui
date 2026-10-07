@@ -59,8 +59,8 @@ describe("Personal model usage call-log contract", () => {
     expect(timeRangeHistogram).toContain('origin.startIndex + index - dragStartIndex.current');
     expect(callLogs).toContain("拖动选区可整体移动");
     expect(callLogs).toContain("setRange(matchingRange ?? \"custom\")");
-    expect(settings).toContain('{ dataKey: "model", label: "模型", color: "light-dark(var(--brand-active), var(--brand))"');
-    expect(settings).toContain('{ dataKey: "mcp", label: "MCP", color: "light-dark(var(--brand), var(--brand-active))"');
+    expect(settings).toContain('{ dataKey: "model", label: "模型", color: chartColor(1)');
+    expect(settings).toContain('{ dataKey: "mcp", label: "MCP", color: chartColor(2)');
     expect(settings).toContain("const CALL_LOG_TIMELINE_BUCKETS = 60");
     expect(settings).toContain("month: { end: latestTimestamp, label: \"最近 30 天\", start: latestTimestamp - 30 * DAY_IN_MS }");
     expect(callLogs).toContain('className="sticky left-0 z-content w-36 min-w-36 max-w-36 bg-surface-floating">时间');

@@ -92,6 +92,11 @@
   --scrollbar-thumb-hover: light-dark(rgb(0 0 0 / 0.12), rgb(255 255 255 / 0.12));
   --scrollbar-thumb-active: light-dark(rgb(0 0 0 / 0.16), rgb(255 255 255 / 0.16));
   --card-background: light-dark(#FFFFFF, #292929);
+  --chart-1: light-dark(#0060D2, #1483FD);
+  --chart-2: light-dark(#06B6D4, #22D3EE);
+  --chart-3: light-dark(#F59E0B, #FBBF24);
+  --chart-4: light-dark(#10B981, #34D399);
+  --chart-5: light-dark(#8B5CF6, #A78BFA);
   --shadow-color: rgb(0 0 0 / 0.06);
   --dm-hi-base: rgba(255,255,255,0.01);
   --dm-hi-mid: rgba(255,255,255,0.02);
@@ -276,6 +281,11 @@
   --color-scrollbar-thumb-hover: var(--scrollbar-thumb-hover);
   --color-scrollbar-thumb-active: var(--scrollbar-thumb-active);
   --color-card: var(--card-background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
   --color-surface-base: var(--surface-base);
   --color-surface-raised: var(--surface-raised);
   --color-surface-floating: var(--surface-floating);

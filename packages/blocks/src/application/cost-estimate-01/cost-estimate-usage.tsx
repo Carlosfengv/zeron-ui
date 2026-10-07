@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { badgeColors } from "@zeron/ui/badge";
+import { chartColor } from "@zeron/ui/chart-primitives";
 import { Field, FieldDescription, FieldLabel } from "@zeron/ui/field";
 import { Input } from "@zeron/ui/input";
 import { Slider } from "@zeron/ui/slider";
-import { costEstimateColors, costEstimateMoney } from "./cost-estimate-data";
+import { costEstimateColorIndices, costEstimateMoney } from "./cost-estimate-data";
 import type { CostEstimateCategory, CostEstimateField, CostEstimateLabels, CostEstimateLimits, CostEstimateRateCard, CostEstimateResult, CostEstimateUsage } from "./cost-estimate-types";
 
 const fields: { field: CostEstimateField; category: CostEstimateCategory; unit: "ingestUnit" | "retentionUnit" | "queriesUnit" | "seatsUnit" }[] = [
@@ -37,11 +37,11 @@ function UsageField({ field, category, unit, value, limit, labels, amount, detai
   }
   return <Field className="space-y-1">
     <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 @lg:flex-nowrap">
-      <div className="min-w-0 flex-1 @lg:w-28 @lg:flex-none"><FieldLabel className="px-0"><span className="flex items-center gap-2"><span aria-hidden className="size-2 shrink-0 rounded-full" style={{ backgroundColor: badgeColors[costEstimateColors[category]] }} />{labels[category]}<span className="sr-only"> ({unit})</span></span></FieldLabel>
+      <div className="min-w-0 flex-1 @lg:w-28 @lg:flex-none"><FieldLabel className="px-0"><span className="flex items-center gap-2"><span aria-hidden className="size-2 shrink-0 rounded-full" style={{ backgroundColor: chartColor(costEstimateColorIndices[category]) }} />{labels[category]}<span className="sr-only"> ({unit})</span></span></FieldLabel>
       <div className="flex min-w-0 items-center gap-1"><Input size="xs" variant="ghost" inputMode="decimal" aria-invalid={error || undefined} aria-describedby={error ? `${id}-error` : `${id}-detail`} disabled={disabled} value={draft} onFocus={() => { cancelBlur.current = false; }}
         onChange={(event) => { setDraft(event.target.value); onInvalid(field, true); }} onBlur={commit} onKeyDown={(event) => { if (event.key === "Enter") commit(); if (event.key === "Escape") { cancelBlur.current = true; setDraft(String(value)); setError(false); onInvalid(field, false); event.currentTarget.blur(); } }} /><span className="shrink-0 text-label text-fg-subtle">{unit}</span></div>
       </div>
-      <div className="order-3 w-full min-w-0 @lg:order-none @lg:w-auto @lg:flex-1"><Slider variant="ticks" tickCount={41} label={`${labels[category]} (${unit})`} value={value} min={limit.min} max={limit.max} step={limit.step} showSteps={false} showValue valuePosition="tooltip" showHoverPreview={false} fillStyle={{ backgroundColor: badgeColors[costEstimateColors[category]] }} renderTooltip={(next) => <div className="max-w-64 space-y-1"><p>{next} {unit}</p><p className="font-normal opacity-75">{tooltipDetail(next)}</p></div>} disabled={disabled} onChange={(next) => { if (typeof next === "number") { setDraft(String(next)); setError(false); onInvalid(field, false); onChange(field, next); } }} aria-describedby={`${id}-detail`} /></div>
+      <div className="order-3 w-full min-w-0 @lg:order-none @lg:w-auto @lg:flex-1"><Slider variant="ticks" tickCount={41} label={`${labels[category]} (${unit})`} value={value} min={limit.min} max={limit.max} step={limit.step} showSteps={false} showValue valuePosition="tooltip" showHoverPreview={false} fillStyle={{ backgroundColor: chartColor(costEstimateColorIndices[category]) }} renderTooltip={(next) => <div className="max-w-64 space-y-1"><p>{next} {unit}</p><p className="font-normal opacity-75">{tooltipDetail(next)}</p></div>} disabled={disabled} onChange={(next) => { if (typeof next === "number") { setDraft(String(next)); setError(false); onInvalid(field, false); onChange(field, next); } }} aria-describedby={`${id}-detail`} /></div>
       <div className="min-w-0 space-y-1 text-right @lg:w-28"><p className="break-all text-body font-medium tabular-nums text-fg-default">{amount}</p><p className="text-label tabular-nums text-fg-subtle">{unitPrice}</p></div>
     </div>
     <FieldDescription id={`${id}-detail`} className="px-0 @lg:sr-only">{detail}</FieldDescription>

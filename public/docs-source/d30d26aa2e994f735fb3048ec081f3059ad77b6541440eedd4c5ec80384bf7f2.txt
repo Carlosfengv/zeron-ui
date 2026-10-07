@@ -131,10 +131,11 @@ export interface CostEstimateProps extends Omit<ComponentPropsWithoutRef<"div">,
 }
 
 
+import type { ChartColorIndex } from "@zeron/ui/chart-primitives";
 import type { CostEstimateCategory, CostEstimateInputs, CostEstimateLabels, CostEstimateLimits, CostEstimateRateCard, CostEstimateResult, CostEstimateUsage } from "./cost-estimate-types";
 
 export const costEstimateCategories: CostEstimateCategory[] = ["ingest", "storage", "queries", "seats"];
-export const costEstimateColors = { ingest: "orange", storage: "blue", queries: "teal", seats: "purple" } as const;
+export const costEstimateColorIndices = { ingest: 1, storage: 2, queries: 3, seats: 4 } as const satisfies Record<CostEstimateCategory, ChartColorIndex>;
 export const costEstimateDefaultLimits: CostEstimateLimits = {
   ingestGBPerDay: { min: 0, max: 1000, step: 0.5 }, retentionDays: { min: 1, max: 365, step: 1 },
   scannedTBPerMonth: { min: 0, max: 500, step: 0.5 }, seats: { min: 0, max: 100, step: 1 },
@@ -236,11 +237,10 @@ export function costEstimateMoney(amountMinor: number, result: Pick<CostEstimate
 
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
-import { Badge, badgeColors } from "@zeron/ui/badge";
-import { ChartContainer, type ChartConfig } from "@zeron/ui/chart";
+import { Badge } from "@zeron/ui/badge";
+import { chartColor, SegmentedBar } from "@zeron/ui/chart-primitives";
 import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
-import { costEstimateCategories, costEstimateColors, costEstimateMoney } from "./cost-estimate-data";
+import { costEstimateCategories, costEstimateColorIndices, costEstimateMoney } from "./cost-estimate-data";
 import type { CostEstimateLabels, CostEstimateRateCard, CostEstimateResult } from "./cost-estimate-types";
 
 export function CostEstimateSummary({ result, rateCard, labels, locale, onBillingChange }: {
@@ -249,7 +249,7 @@ export function CostEstimateSummary({ result, rateCard, labels, locale, onBillin
 }) {
   const money = (minor: number) => costEstimateMoney(minor, result, locale);
   const annual = result.inputs.billing === "annual";
-  const config: ChartConfig = Object.fromEntries(costEstimateCategories.map((key) => [key, { label: labels[key], color: badgeColors[costEstimateColors[key]] }]));
+  const segments = costEstimateCategories.map((key) => ({ id: key, label: labels[key], value: result.amountsMinor[key], color: chartColor(costEstimateColorIndices[key]) }));
   return <Tabs value={result.inputs.billing} variant="pill" color="default" onValueChange={(value) => { if (value === "monthly" || value === "annual") onBillingChange(value); }} className="space-y-4">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="min-w-0"><p className="text-label text-fg-subtle">{labels.estimated}</p>
@@ -269,14 +269,9 @@ export function CostEstimateSummary({ result, rateCard, labels, locale, onBillin
     </div>
     <div className="space-y-3">
       <h3 className="text-body font-medium text-fg-default">{labels.breakdown}</h3>
-      {result.usageSubtotalMinor > 0 ? <ChartContainer className="h-5 min-h-0" config={config} aria-hidden="true">
-        <BarChart layout="vertical" data={[{ category: "usage", ...result.amountsMinor }]} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} barSize={12} accessibilityLayer={false}>
-          <XAxis type="number" hide domain={[0, result.usageSubtotalMinor]} /><YAxis type="category" dataKey="category" hide />
-          {costEstimateCategories.map((key) => <Bar key={key} dataKey={key} stackId="cost" fill={`var(--color-${key})`} isAnimationActive={false} />)}
-        </BarChart>
-      </ChartContainer> : <p className="text-label text-fg-muted">{labels.zeroUsage}</p>}
+      {result.usageSubtotalMinor > 0 ? <div className="flex h-5 items-center"><SegmentedBar mode="distribution" total={result.usageSubtotalMinor} segments={segments} valueText={`${labels.breakdown}: ${costEstimateCategories.map((key) => `${labels[key]} ${money(result.amountsMinor[key])} (${result.percentages[key]}%)`).join("; ")}`} /></div> : <p className="text-label text-fg-muted">{labels.zeroUsage}</p>}
       <dl className="grid grid-cols-2 gap-3">{costEstimateCategories.map((key) => <div className="flex min-w-0 items-center justify-between gap-0.5 @lg:gap-2" key={key}>
-        <dt className="shrink-0"><Badge variant="dot" color={costEstimateColors[key]} size="sm">{labels[key]}</Badge></dt>
+        <dt className="shrink-0"><Badge variant="dot" color={{ base: chartColor(costEstimateColorIndices[key]), onStrong: "var(--fg-default)" }} size="sm">{labels[key]}</Badge></dt>
         <dd className="flex min-w-0 flex-wrap items-baseline justify-end gap-x-1.5 gap-y-0.5 text-right text-label tabular-nums @lg:text-body"><span className="break-all font-medium text-fg-default">{money(result.amountsMinor[key])}</span><span className="text-label text-fg-subtle">{result.percentages[key]}%</span></dd>
       </div>)}</dl>
     </div>
@@ -289,11 +284,11 @@ export function CostEstimateSummary({ result, rateCard, labels, locale, onBillin
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { badgeColors } from "@zeron/ui/badge";
+import { chartColor } from "@zeron/ui/chart-primitives";
 import { Field, FieldDescription, FieldLabel } from "@zeron/ui/field";
 import { Input } from "@zeron/ui/input";
 import { Slider } from "@zeron/ui/slider";
-import { costEstimateColors, costEstimateMoney } from "./cost-estimate-data";
+import { costEstimateColorIndices, costEstimateMoney } from "./cost-estimate-data";
 import type { CostEstimateCategory, CostEstimateField, CostEstimateLabels, CostEstimateLimits, CostEstimateRateCard, CostEstimateResult, CostEstimateUsage } from "./cost-estimate-types";
 
 const fields: { field: CostEstimateField; category: CostEstimateCategory; unit: "ingestUnit" | "retentionUnit" | "queriesUnit" | "seatsUnit" }[] = [
@@ -325,11 +320,11 @@ function UsageField({ field, category, unit, value, limit, labels, amount, detai
   }
   return <Field className="space-y-1">
     <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 @lg:flex-nowrap">
-      <div className="min-w-0 flex-1 @lg:w-28 @lg:flex-none"><FieldLabel className="px-0"><span className="flex items-center gap-2"><span aria-hidden className="size-2 shrink-0 rounded-full" style={{ backgroundColor: badgeColors[costEstimateColors[category]] }} />{labels[category]}<span className="sr-only"> ({unit})</span></span></FieldLabel>
+      <div className="min-w-0 flex-1 @lg:w-28 @lg:flex-none"><FieldLabel className="px-0"><span className="flex items-center gap-2"><span aria-hidden className="size-2 shrink-0 rounded-full" style={{ backgroundColor: chartColor(costEstimateColorIndices[category]) }} />{labels[category]}<span className="sr-only"> ({unit})</span></span></FieldLabel>
       <div className="flex min-w-0 items-center gap-1"><Input size="xs" variant="ghost" inputMode="decimal" aria-invalid={error || undefined} aria-describedby={error ? `${id}-error` : `${id}-detail`} disabled={disabled} value={draft} onFocus={() => { cancelBlur.current = false; }}
         onChange={(event) => { setDraft(event.target.value); onInvalid(field, true); }} onBlur={commit} onKeyDown={(event) => { if (event.key === "Enter") commit(); if (event.key === "Escape") { cancelBlur.current = true; setDraft(String(value)); setError(false); onInvalid(field, false); event.currentTarget.blur(); } }} /><span className="shrink-0 text-label text-fg-subtle">{unit}</span></div>
       </div>
-      <div className="order-3 w-full min-w-0 @lg:order-none @lg:w-auto @lg:flex-1"><Slider variant="ticks" tickCount={41} label={`${labels[category]} (${unit})`} value={value} min={limit.min} max={limit.max} step={limit.step} showSteps={false} showValue valuePosition="tooltip" showHoverPreview={false} fillStyle={{ backgroundColor: badgeColors[costEstimateColors[category]] }} renderTooltip={(next) => <div className="max-w-64 space-y-1"><p>{next} {unit}</p><p className="font-normal opacity-75">{tooltipDetail(next)}</p></div>} disabled={disabled} onChange={(next) => { if (typeof next === "number") { setDraft(String(next)); setError(false); onInvalid(field, false); onChange(field, next); } }} aria-describedby={`${id}-detail`} /></div>
+      <div className="order-3 w-full min-w-0 @lg:order-none @lg:w-auto @lg:flex-1"><Slider variant="ticks" tickCount={41} label={`${labels[category]} (${unit})`} value={value} min={limit.min} max={limit.max} step={limit.step} showSteps={false} showValue valuePosition="tooltip" showHoverPreview={false} fillStyle={{ backgroundColor: chartColor(costEstimateColorIndices[category]) }} renderTooltip={(next) => <div className="max-w-64 space-y-1"><p>{next} {unit}</p><p className="font-normal opacity-75">{tooltipDetail(next)}</p></div>} disabled={disabled} onChange={(next) => { if (typeof next === "number") { setDraft(String(next)); setError(false); onInvalid(field, false); onChange(field, next); } }} aria-describedby={`${id}-detail`} /></div>
       <div className="min-w-0 space-y-1 text-right @lg:w-28"><p className="break-all text-body font-medium tabular-nums text-fg-default">{amount}</p><p className="text-label tabular-nums text-fg-subtle">{unitPrice}</p></div>
     </div>
     <FieldDescription id={`${id}-detail`} className="px-0 @lg:sr-only">{detail}</FieldDescription>

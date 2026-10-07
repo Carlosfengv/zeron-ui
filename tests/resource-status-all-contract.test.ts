@@ -28,7 +28,7 @@ describe("Resource Status All 1 block contract", () => {
     expect(item.files).toHaveLength(2);
   });
 
-  it("uses the designed hierarchy and project semantic tokens", () => {
+  it("uses the designed hierarchy and shared chart tokens", () => {
     expect(source).toContain('<Card');
     expect(source).toContain('<CardContent');
     expect(source).toContain('import { DonutSummary } from "@zeron/ui/chart"');
@@ -38,10 +38,7 @@ describe("Resource Status All 1 block contract", () => {
     expect(source).toContain('max-w-48');
     expect(source).toContain('rounded-xl');
     expect(source).toContain('border-hairline border-border');
-    expect(source).toContain('normal: "var(--fg-brand)"');
-    expect(source).toContain('chartStatusColors.warning');
-    expect(source).toContain('chartStatusColors.danger');
-    expect(source).toContain('chartStatusColors.neutral');
+    expect(source).toContain('ChartLegend, chartColor');
     expect(source).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
   });
 

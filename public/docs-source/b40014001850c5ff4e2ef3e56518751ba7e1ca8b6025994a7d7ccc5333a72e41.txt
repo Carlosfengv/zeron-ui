@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { badgeColors } from "@zeron/ui/badge";
+import { chartSeriesColor } from "@zeron/ui/chart-primitives";
 import { Button } from "@zeron/ui/button";
 import { Card, CardFooter } from "@zeron/ui/card";
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
@@ -43,7 +43,7 @@ function equalPolicy(a: ModelRouterPolicy, b: ModelRouterPolicy) {
 }
 
 function RouteDot({ route }: { route?: ModelRouterRoute }) {
-  return <span aria-hidden="true" className="inline-block size-2 shrink-0 rounded-full bg-fg-subtle" style={route ? { backgroundColor: badgeColors[route.color] } : undefined} />;
+  return <span aria-hidden="true" className="inline-block size-2 shrink-0 rounded-full bg-fg-subtle" style={route ? { backgroundColor: chartSeriesColor(route.id, route) } : undefined} />;
 }
 
 function ModelSelect({ routes, value, excluded, disabled, label, onChange }: {
@@ -180,7 +180,7 @@ function ModelRouterState({ data, value, defaultValue, onValueChange, actions, o
                 className={cn("focus-visible:outline-2 focus-visible:outline-focus-ring", activeRouteId === route.id && "bg-hover")}>
                 <TableCell className="py-4"><div className="flex items-center gap-2.5"><RouteDot route={route} /><ModelLogo route={route} /><span className="whitespace-nowrap text-body text-fg-default">{route.name}</span><span className="whitespace-nowrap font-mono text-label uppercase text-fg-subtle">{route.provider}</span><span className="sr-only">{metric(route.requestsPerSecond, number)} {labels.requestsUnit}</span></div></TableCell>
                 <TableCell><div className="flex items-center justify-end gap-3">
-                  <span aria-hidden="true" className="h-1 w-10 overflow-hidden rounded-full bg-surface-raised"><span className="block h-full rounded-full" style={{ backgroundColor: badgeColors[route.color], width: `${isValidMetric(route.share, true) ? route.share * 100 : 0}%` }} /></span>
+                  <span aria-hidden="true" className="h-1 w-10 overflow-hidden rounded-full bg-surface-raised"><span className="block h-full rounded-full" style={{ backgroundColor: chartSeriesColor(route.id, route), width: `${isValidMetric(route.share, true) ? route.share * 100 : 0}%` }} /></span>
                   <span className="tabular-nums text-fg-default">{metric(route.share, percent, true)}</span>
                 </div></TableCell>
                 <TableCell className="whitespace-nowrap text-right tabular-nums">{metric(route.p50Seconds, decimal)} / {metric(route.p95Seconds, decimal)}</TableCell>
@@ -218,7 +218,7 @@ function ModelRouterState({ data, value, defaultValue, onValueChange, actions, o
 "use client";
 
 import { memo, useEffect, useId, useMemo, useRef, useState } from "react";
-import { badgeColors } from "@zeron/ui/badge";
+import { chartSeriesColor } from "@zeron/ui/chart-primitives";
 import { cn } from "@zeron/ui/system/utils";
 import { ModelLogo } from "./model-logo";
 import type { ModelRouterRoute } from "./model-router-types";
@@ -272,7 +272,7 @@ export const RouterFlow = memo(function RouterFlow({ routes, animated, gateway, 
             const y = index * 44 + 22;
             const path = `M 8 ${center} H ${width * 0.2} C ${width * 0.34} ${center} ${width * 0.332} ${y} ${width * 0.46} ${y} H ${width - 6}`;
             const pathId = `${id}-route-${index}`;
-            const color = badgeColors[route.color];
+            const color = chartSeriesColor(route.id, route);
             const count = Number.isFinite(route.requestsPerSecond) && route.requestsPerSecond > 0
               ? Math.max(3, Math.round(14 * route.requestsPerSecond / maxRate)) : 0;
             return (
@@ -345,6 +345,7 @@ export function ModelLogo({ route }: { route?: ModelRouterRoute }) {
 
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import type { BadgeColor } from "@zeron/ui/badge";
+import type { ChartColorIndex } from "@zeron/ui/chart-primitives";
 
 export type ModelRouterStrategy = "cost" | "balanced" | "quality";
 
@@ -360,7 +361,9 @@ export interface ModelRouterRoute {
   /** Model family, independent of hosting provider (for example self-hosted Qwen). */
   brand?: "claude" | "openai" | "qwen";
   logo?: ReactNode;
+  /** @deprecated Legacy categorical name; colorIndex takes precedence. */
   color: BadgeColor;
+  colorIndex?: ChartColorIndex;
   requestsPerSecond: number;
   /** All ratios are in the range 0..1. Null metrics are unavailable, not zero. */
   share: number | null;

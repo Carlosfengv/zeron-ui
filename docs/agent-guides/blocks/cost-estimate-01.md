@@ -8,12 +8,12 @@ registry_import: "@/components/blocks/cost-estimate-01"
 source: packages/blocks/src/application/cost-estimate-01/cost-estimate.tsx
 types: packages/blocks/src/application/cost-estimate-01/cost-estimate-types.ts
 registry: packages/blocks/registry.json
-related: [container, slider, chart, tabs, credit-usage-01]
+related: [container, slider, chart-primitives, tabs, credit-usage-01]
 ---
 
 # 费用估算
 
-React data-block，不创建应用外壳。外层 Container，汇总与用量两块 ContainerBody，头尾使用 ContainerHeader / ContainerFooter；默认最大宽度 576px，标题 text-body / font-medium。保留组件表面、间距和控件尺寸，分类颜色来自公开 badgeColors。
+React data-block，不创建应用外壳。外层 Container，汇总与用量两块 ContainerBody，头尾使用 ContainerHeader / ContainerFooter；默认最大宽度 576px，标题 text-body / font-medium。保留组件表面、间距和控件尺寸，分类颜色由 ingest / storage / queries / seats → chart-1 / 2 / 3 / 4 固定映射提供；堆叠条、Badge dot、字段圆点和 Slider 填充共用 `chartColor(index)`，独立于品牌和状态色。
 
 四项类别名称按用户要求保留英文 Ingest / Storage / Queries / Seats，在费用构成与用量输入中一致使用；其他默认文案仍为中文，labels 可单独覆盖。
 
@@ -39,7 +39,7 @@ ratesMicros 是非负十进制整数字符串，表示百万分之一主货币�
 
 摄入量 = 日量 × billingDays；稳定存储 = 日量 × retentionDays ÷ compressionRatio；查询独立按 TB/month；收费席位 = max(seats − includedSeats, 0)。年付折扣作用于四项用量费用，不作用于最低消费补差。年额为同月等效金额 × 12，节省以相同输入的月付基线 × 12 对比；不是 365 天精算。
 
-图形和整数百分比表示折扣后用量费用分布，不包含最低消费补差。图形使用实际金额；显示比例最大余数分配，稳定合计 100%；全零显示零用量而不伪造色块。每 GB 综合费率在零摄入时未知。旁置分项金额/比例可读列表固定为 2×2，每项 badge 与价格水平排列，有限宽度内价格与比例可换行，不依赖图表 hover。
+图形和整数百分比表示折扣后用量费用分布，不包含最低消费补差。费用条使用共享 SegmentedBar distribution，不再单独使用 Recharts；每段 rounded-sm、段间 gap-0.5（默认 2px）。图形使用实际金额；显示比例最大余数分配，稳定合计 100%；零值段不占间距，全零显示零用量而不伪造色块。每 GB 综合费率在零摄入时未知。旁置分项金额/比例可读列表固定为 2×2，每项 badge 与价格水平排列，有限宽度内价格与比例可换行，不依赖图表 hover。
 
 ## 输入与保存
 

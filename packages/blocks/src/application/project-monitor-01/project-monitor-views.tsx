@@ -95,7 +95,7 @@ export function StorageView({ data, labels, locale, timeZone }: ViewProps) {
   const date = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone });
   return <div className="space-y-1">
     {available ? <StorageUsage className="rounded-xl border-hairline border-border bg-surface-floating p-5" label={labels.storageUsage} unit="GB" locale={locale}
-      data={{ capacity: storage.capacityBytes! / 1e9, items: storage.categories.map((category) => ({ id: category.id, label: category.label, value: category.bytes! / 1e9, color: category.color })) }}
+      data={{ capacity: storage.capacityBytes! / 1e9, items: storage.categories.map((category) => ({ id: category.id, label: category.label, value: category.bytes! / 1e9, color: category.color, colorIndex: category.colorIndex })) }}
       formatters={{ usageSummary: (used, capacity, unit) => `已用 ${used} ${unit} / 共 ${capacity} ${unit}`, remaining: (remaining, unit) => `剩余 ${remaining} ${unit}` }} />
       : <MonitorPanel label={labels.storageUsage}><NoMonitorData>{labels.noData}</NoMonitorData></MonitorPanel>}
     <InfoItemGroup aria-label={labels.buckets} className="border-hairline border-border p-2">

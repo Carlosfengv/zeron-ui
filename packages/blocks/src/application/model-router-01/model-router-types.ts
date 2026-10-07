@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import type { BadgeColor } from "@zeron/ui/badge";
+import type { ChartColorIndex } from "@zeron/ui/chart-primitives";
 
 export type ModelRouterStrategy = "cost" | "balanced" | "quality";
 
@@ -15,7 +16,9 @@ export interface ModelRouterRoute {
   /** Model family, independent of hosting provider (for example self-hosted Qwen). */
   brand?: "claude" | "openai" | "qwen";
   logo?: ReactNode;
+  /** @deprecated Legacy categorical name; colorIndex takes precedence. */
   color: BadgeColor;
+  colorIndex?: ChartColorIndex;
   requestsPerSecond: number;
   /** All ratios are in the range 0..1. Null metrics are unavailable, not zero. */
   share: number | null;

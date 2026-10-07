@@ -3,6 +3,7 @@
 import { useId } from "react";
 import { Bar, BarChart, Line, LineChart, ReferenceLine, XAxis, YAxis, type LabelProps } from "recharts";
 import { Badge } from "@zeron/ui/badge";
+import { chartColor } from "@zeron/ui/chart-primitives";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@zeron/ui/chart";
 import { Empty, EmptyDescription } from "@zeron/ui/empty";
 import { formatCount, formatDate, metricTrendPoints, trendSummary } from "./support-analytics-data";
@@ -31,7 +32,7 @@ export function TicketTrend({ data, labels, locale, timeZone }: { data: SupportA
   const radius = points.length > 12 ? 3 : points.length > 7 ? 6 : 8;
   return <div className="min-w-0 space-y-2">
     {!complete && <p className="text-label text-fg-subtle">{labels.average} {labels.unknown} · {labels.incomplete}</p>}
-    <ChartContainer className="h-40" config={{ count: { label: labels[data.channel], color: "var(--brand)" } }} aria-label={`${labels.trend} · ${labels[data.channel]} · ${labels[data.range]}${average === null ? "" : ` · ${labels.average} ${formatCount(Math.round(average), locale)}`}`}
+    <ChartContainer className="h-40" config={{ count: { label: labels[data.channel], color: chartColor(1) } }} aria-label={`${labels.trend} · ${labels[data.channel]} · ${labels[data.range]}${average === null ? "" : ` · ${labels.average} ${formatCount(Math.round(average), locale)}`}`}
       dataTable={{ caption: labels.trend, summary: labels.values, columns: [labels.date, labels.count], rows: points.map((point) => ({ id: String(point.start), label: formatDate(point.start, locale, timeZone), values: [formatCount(point.count, locale)] })) }}>
       <BarChart data={points} accessibilityLayer barCategoryGap={points.length > 12 ? "12%" : "6%"} margin={{ top: 8, right: 3, bottom: 0, left: 0 }}>
         <defs><linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--color-count)" stopOpacity={0.55} /><stop offset="55%" stopColor="var(--color-count)" stopOpacity={0.2} /><stop offset="100%" stopColor="var(--color-count)" stopOpacity={0} /></linearGradient></defs>
@@ -48,7 +49,7 @@ export function TicketTrend({ data, labels, locale, timeZone }: { data: SupportA
 export function MetricTrend({ metric }: { metric: SupportAnalyticsMetric }) {
   const points = metricTrendPoints(metric);
   if (!points.some((point) => point.value !== null)) return <span className="text-label text-fg-subtle">—</span>;
-  return <ChartContainer className="h-8 min-h-0 w-20" config={{ value: { color: "var(--fg-muted)" } }} aria-hidden="true">
+  return <ChartContainer className="h-8 min-h-0 w-20" config={{ value: { color: chartColor(1) } }} aria-hidden="true">
     <LineChart data={points} accessibilityLayer={false} margin={{ top: 4, right: 3, bottom: 4, left: 3 }}>
       <XAxis hide dataKey="timestamp" type="number" domain={["dataMin", "dataMax"]} />
       <YAxis hide domain={["dataMin", "dataMax"]} />

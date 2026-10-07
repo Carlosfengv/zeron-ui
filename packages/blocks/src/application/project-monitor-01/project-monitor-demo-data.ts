@@ -22,10 +22,10 @@ export const projectMonitorDemoData: ProjectMonitorData = {
   storage: {
     capacityBytes: 8e9,
     categories: [
-      { id: "images", label: "图片", bytes: 1.12e9, color: "orange" },
-      { id: "documents", label: "文档", bytes: .64e9, color: "blue" },
-      { id: "backups", label: "备份", bytes: .41e9, color: "green" },
-      { id: "other", label: "其他", bytes: .24e9, color: "gray" },
+      { id: "images", label: "图片", bytes: 1.12e9, color: "orange", colorIndex: 1 },
+      { id: "documents", label: "文档", bytes: .64e9, color: "blue", colorIndex: 2 },
+      { id: "backups", label: "备份", bytes: .41e9, color: "green", colorIndex: 3 },
+      { id: "other", label: "其他", bytes: .24e9, color: "gray", colorIndex: 4 },
     ],
     buckets: [
       { id: "avatars", name: "avatars", access: "public", files: 1284, bytes: 412e6, updatedAt: Date.UTC(2026, 9, 5, 3, 10) },
@@ -38,10 +38,10 @@ export const projectMonitorDemoData: ProjectMonitorData = {
     id: `${minutes}m`, label: minutes === 60 ? "最近 60 分钟" : minutes === 360 ? "最近 6 小时" : "最近 24 小时",
     start: Date.UTC(2026, 9, 5, 3, 12) - minutes * 60000, end: Date.UTC(2026, 9, 5, 3, 12),
     services: ([
-      { id: "gateway", name: "Gateway", color: "blue" },
-      { id: "auth", name: "Auth", color: "orange" },
-      { id: "functions", name: "Function", color: "green" },
-      { id: "storage", name: "Storage", color: "purple" },
+      { id: "gateway", name: "Gateway", color: "blue", colorIndex: 1 },
+      { id: "auth", name: "Auth", color: "orange", colorIndex: 2 },
+      { id: "functions", name: "Function", color: "green", colorIndex: 3 },
+      { id: "storage", name: "Storage", color: "purple", colorIndex: 4 },
     ] as const).map((service, serviceIndex) => ({ ...service,
       buckets: Array.from({ length: 60 }, (_, index) => ({
         success: (index * 7 + serviceIndex * 3) % (serviceIndex + 4) === 0 ? 0 : Math.max(0, Math.round((2 + Math.sin(index * .7 + serviceIndex) * 2) * (4 - serviceIndex) * (rangeIndex + 1))),

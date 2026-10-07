@@ -17,17 +17,20 @@ related: [chart-primitives, metric-card, time-range-histogram]
 
 `ChartContainer/config/ChartTooltip/ChartTooltipContent` 保留原有组合接口。`config` 的 key 使用 CSS 标识符，color/theme 使用可信 CSS 色值。ChartContainer 内只放一个 Recharts 图，不能嵌套 ResponsiveContainer，父容器应 min-w-0 且有可测量高度。`dataTable` 可提供 caption、columns、rows 和 summary，为专用图提供键盘可打开的数据表。
 
+普通主系列使用 `chartColor(1)`，比较系列显式配置 1–5 槽位；动态系列可用 `chartSeriesColor(id)` 稳定兜底，有限槽位允许碰撞。图形、图例和关联控件共用颜色。`color` 与 `theme` 显式覆盖仍生效；状态色和网格、文字、轨道独立于五色盘。
+
 `TimeSeriesChart` 是两个请求趋势消费者验证后的薄组合。data 每项为 `{ timestamp: number, values: Record<string, number | null> }`；series 含稳定 id、label 和可选 color。必填 locale/timeZone/label，domain 可指定真实时间窗口。formatValue 同时用于轴、Tooltip 和数据表。没有汇总、补零、排序、采样或隐式连线；单点保留标记、全零保留真实值、空数组显示无数据。dataSummary 由消费者本地化。绘图关闭非必要动画。
 
 `DonutSummary` 接收 segments（id/label/value/color）、业务 total 和中心 center。total 不传时只有完整非负数列才派生总量；null 表示未知。部分已知总量留中性轨道，超额绘图缩放但不改真实值。调用方提供完整 aria-label，并配 ChartLegend 或可读明细；不依赖鼠标 Tooltip。innerRadius 可按实际用途保留不同环宽。
 
 ```tsx
 import { TimeSeriesChart, DonutSummary } from "@zeron/ui/chart";
+import { chartColor } from "@zeron/ui/chart-primitives";
 export function RequestChart() {
-  return <TimeSeriesChart data={[{ timestamp: 1791158400000, values: { requests: 12 } }]} series={[{ id: "requests", label: "请求" }]} locale="zh-CN" timeZone="Asia/Shanghai" label="请求量" dataSummary="查看数据" />;
+  return <TimeSeriesChart data={[{ timestamp: 1791158400000, values: { requests: 12 } }]} series={[{ id: "requests", label: "请求", color: chartColor(1) }]} locale="zh-CN" timeZone="Asia/Shanghai" label="请求量" dataSummary="查看数据" />;
 }
 export function UsageDonut() {
-  return <DonutSummary segments={[{ id: "used", label: "已用", value: 80 }]} total={100} center="80 / 100" aria-label="已用 80，总量 100" />;
+  return <DonutSummary segments={[{ id: "used", label: "已用", value: 80, color: chartColor(1) }]} total={100} center="80 / 100" aria-label="已用 80，总量 100" />;
 }
 ```
 

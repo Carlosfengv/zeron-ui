@@ -2,7 +2,7 @@
 
 import type { ComponentPropsWithoutRef } from "react";
 import { DonutSummary } from "@zeron/ui/chart";
-import { ChartLegend, chartStatusColors } from "@zeron/ui/chart-primitives";
+import { ChartLegend, chartColor } from "@zeron/ui/chart-primitives";
 import { Card, CardContent } from "@zeron/ui/card";
 import { cn } from "@zeron/ui/system/utils";
 
@@ -33,10 +33,10 @@ export interface ResourceStatusAllProps
 }
 
 const statusPresentation: Record<ResourceStatusTone, string> = {
-  normal: "var(--fg-brand)",
-  warning: chartStatusColors.warning,
-  critical: chartStatusColors.danger,
-  unknown: chartStatusColors.neutral,
+  normal: chartColor(1),
+  warning: chartColor(3),
+  critical: chartColor(5),
+  unknown: chartColor(2),
 };
 
 export const defaultResourceStatuses = [

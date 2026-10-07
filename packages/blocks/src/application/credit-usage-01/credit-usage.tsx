@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import ClaudeColor from "@lobehub/icons/es/Claude/components/Color";
 import GeminiColor from "@lobehub/icons/es/Gemini/components/Color";
 import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono";
-import { Badge, badgeColors } from "@zeron/ui/badge";
+import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
-import { SegmentedBar } from "@zeron/ui/chart-primitives";
+import { SegmentedBar, chartSeriesColor } from "@zeron/ui/chart-primitives";
 import { Card, CardFooter } from "@zeron/ui/card";
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
 import { Switch } from "@zeron/ui/switch";
@@ -98,7 +98,7 @@ function CreditBar({
   usedCredits: number;
   valueText: string;
 }) {
-  return <SegmentedBar mode="capacity" total={totalCredits} segments={models.map((model) => ({ id: model.id, label: model.name, value: positiveCredits(model), color: badgeColors[model.color] }))} valueText={valueText} aria-valuenow={usedCredits} className="h-3 rounded-none" />;
+  return <SegmentedBar mode="capacity" total={totalCredits} segments={models.map((model) => ({ id: model.id, label: model.name, value: positiveCredits(model), color: chartSeriesColor(model.id, model) }))} valueText={valueText} aria-valuenow={usedCredits} />;
 }
 
 function ModelUsageList({

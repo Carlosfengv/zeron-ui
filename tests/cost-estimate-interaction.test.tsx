@@ -10,7 +10,6 @@ import type { CostEstimateProps } from "../packages/blocks/src/application/cost-
 import { CostEstimateDemo } from "../docs/components/blocks/CostEstimateDemo";
 
 // Browser verification owns chart/slider geometry; state tests retain the real inputs and tabs.
-vi.mock("@zeron/ui/chart", () => ({ ChartContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div> }));
 vi.mock("@zeron/ui/slider", () => ({ Slider: ({ value, label, onChange }: { value: number; label: string; onChange: (v: number) => void }) => <input type="range" aria-label={label} value={value} onChange={(e) => onChange(Number(e.target.value))} /> }));
 afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); });
 const base = { value: costEstimateDemoInputs, rateCard: costEstimateDemoRateCards["us-east"], regions: costEstimateDemoRegions, presets: costEstimateDemoPresets, defaultInputs: costEstimateDemoInputs, onValueChange: () => {} };

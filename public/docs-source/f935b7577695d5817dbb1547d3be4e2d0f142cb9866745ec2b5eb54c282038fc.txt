@@ -57,7 +57,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@zeron/ui/chart";
-import { ChartLegend, chartSeriesColor, createChartNumberFormatter } from "@zeron/ui/chart-primitives";
+import { ChartLegend, chartColor, chartSeriesColor, createChartNumberFormatter, type ChartColorIndex } from "@zeron/ui/chart-primitives";
 import { Container, ContainerBody, ContainerHeader } from "@zeron/ui/container";
 import { DataTable, useDataTable } from "@zeron/ui/data-table";
 import {
@@ -115,6 +115,14 @@ import {
   type PriceProviderRecord,
   type ProviderRecord,
 } from "./model-detail-02-data";
+
+// Known providers retain distinct slots across pricing and performance views.
+const providerColorIndices: Partial<Record<string, ChartColorIndex>> = {
+  openai: 5, "openai-flex": 3, "openai-fast": 1, azure: 2, "azure-us": 4,
+};
+function providerSeriesColor(id: string) {
+  return chartSeriesColor(id, { colorIndex: providerColorIndices[id] });
+}
 
 function ModalityIcon({
   icon: Icon,
@@ -180,15 +188,15 @@ type PricingMetric = "input" | "output";
 type PricingRange = "3d" | "1w" | "1m" | "3m" | "1y" | "all";
 
 const activityChartConfig = {
-  prompt: { label: "Prompt", color: chartSeriesColor("prompt") },
-  completion: { label: "Completion", color: chartSeriesColor("completion") },
-  reasoning: { label: "Reasoning", color: chartSeriesColor("reasoning") },
+  prompt: { label: "Prompt", color: chartColor(1) },
+  completion: { label: "Completion", color: chartColor(2) },
+  reasoning: { label: "Reasoning", color: chartColor(3) },
 } satisfies ChartConfig;
 
 const appChartConfig = {
-  hermes: { label: "Hermes Agent", color: chartSeriesColor("hermes") },
-  codex: { label: "Codex", color: chartSeriesColor("codex") },
-  other: { label: "Other apps", color: chartSeriesColor("other") },
+  hermes: { label: "Hermes Agent", color: chartColor(1) },
+  codex: { label: "Codex", color: chartColor(2) },
+  other: { label: "Other apps", color: chartColor(3) },
 } satisfies ChartConfig;
 
 export interface ModelDetail02Props
@@ -533,7 +541,7 @@ function PricingSection({ data }: { data: ModelAnalyticsDetailData }) {
     () => Object.fromEntries(data.pricing.providers.map((provider) => [provider.id, true])),
   );
   const chartData = trimRange(pricingSeries(data, source, metric), range);
-  const providerChartConfig: ChartConfig = Object.fromEntries(data.pricing.providers.map((provider) => [provider.id, { label: provider.name, color: chartSeriesColor(provider.id) }]));
+  const providerChartConfig: ChartConfig = Object.fromEntries(data.pricing.providers.map((provider) => [provider.id, { label: provider.name, color: providerSeriesColor(provider.id) }]));
 
   return (
     <section className="scroll-mt-4 space-y-4" data-model-section id="pricing">
@@ -605,7 +613,7 @@ function PricingSection({ data }: { data: ModelAnalyticsDetailData }) {
                     hide={visibleProviders[provider.id] === false}
                     isAnimationActive={false}
                     key={provider.id}
-                    stroke={chartSeriesColor(provider.id)}
+                    stroke={providerSeriesColor(provider.id)}
                     strokeWidth={2}
                     type="monotone"
                   />
@@ -616,7 +624,7 @@ function PricingSection({ data }: { data: ModelAnalyticsDetailData }) {
             <EmptyState>No pricing history is available.</EmptyState>
           )}
 
-          <ChartLegend aria-label="Price series" className="mt-3 sm:grid-cols-2" items={data.pricing.providers.map((provider) => ({ id: provider.id, label: provider.name, color: chartSeriesColor(provider.id), pressed: visibleProviders[provider.id] !== false }))} onSelect={(id) => setVisibleProviders((current) => ({ ...current, [id]: current[id] === false }))} />
+          <ChartLegend aria-label="Price series" className="mt-3 sm:grid-cols-2" items={data.pricing.providers.map((provider) => ({ id: provider.id, label: provider.name, color: providerSeriesColor(provider.id), pressed: visibleProviders[provider.id] !== false }))} onSelect={(id) => setVisibleProviders((current) => ({ ...current, [id]: current[id] === false }))} />
           </CardContent>
         </Card>
       </CardGroup>
@@ -700,7 +708,7 @@ function PerformanceCardView({
   period: string;
 }) {
   const chartData = period === "3d" ? chart.data.slice(-3) : chart.data;
-  const providerChartConfig: ChartConfig = Object.fromEntries(chart.series.map((series) => [series.key, { label: series.label, color: chartSeriesColor(series.key) }]));
+  const providerChartConfig: ChartConfig = Object.fromEntries(chart.series.map((series) => [series.key, { label: series.label, color: providerSeriesColor(series.key) }]));
   const performanceValue = createChartNumberFormatter("en-US", { maximumFractionDigits: 4 });
   const unit = chart.unit ?? "";
   return (
@@ -741,7 +749,7 @@ function PerformanceCardView({
                     dot={false}
                     isAnimationActive={false}
                     key={series.key}
-                    stroke={chartSeriesColor(series.key)}
+                    stroke={providerSeriesColor(series.key)}
                     strokeWidth={2}
                     type="monotone"
                   />
@@ -751,7 +759,7 @@ function PerformanceCardView({
           ) : (
             <EmptyState>No performance history is available.</EmptyState>
           )}
-        {chart.kind !== "benchmark" && <ChartLegend className="mt-3" items={chart.series.map((series) => ({ id: series.key, label: series.label, value: series.average, color: chartSeriesColor(series.key) }))} />}
+        {chart.kind !== "benchmark" && <ChartLegend className="mt-3" items={chart.series.map((series) => ({ id: series.key, label: series.label, value: series.average, color: providerSeriesColor(series.key) }))} />}
         </CardContent>
       </Card>
     </CardGroup>
