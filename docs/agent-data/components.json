@@ -1,13 +1,14 @@
 {
   "funnel-chart": {
-    "keywords": ["漏斗图", "转化漏斗", "FunnelChart", "funnel", "conversion"],
+    "keywords": ["漏斗图", "转化漏斗", "FunnelChart", "funnel", "conversion", "stacked", "series", "团队"],
     "useCases": ["按业务阶段顺序展示数值及相对首阶段的占比，支持横向与纵向布局。"],
     "whenNotToUse": ["相邻阶段转化率、带时间轴的趋势图或需要自动聚合、排序的数据。"],
     "keyApi": [
       "data: FunnelStage[]，首值须大于零，百分比相对首值计算。",
       "hoveredIndex/onHoverChange 支持受控悬停与键盘高亮。",
       "orientation/edges/layers/gap 保留参考几何；labelLayout 控制 spread/grouped。",
-      "stage.gradient/renderPattern 使用实例唯一 SVG 定义；默认颜色为 var(--chart-1)。"
+      "stage.gradient/renderPattern 使用实例唯一 SVG 定义；默认颜色为 var(--chart-1)。",
+      "series/values 开启真实团队堆叠；团队值求和与阶段总量匹配，末段收尖。"
     ]
   },
   "integration-monitors-01": {

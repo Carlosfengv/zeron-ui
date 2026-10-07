@@ -113,6 +113,7 @@ const props: Omit<PropDef, "description">[] = [
   { name: "labelAlign", type: '"center" | "start" | "end"', default: '"center"' },
   { name: "grid", type: "boolean | { bands?, bandColor?, lines?, lineColor?, lineOpacity?, lineWidth? }", default: "false" },
   { name: "className / style", type: "string / CSSProperties" },
+  { name: "series", type: "FunnelSeries[]" },
 ];
 
 export default function FunnelChartDoc() {
@@ -171,7 +172,7 @@ export default function FunnelChartDoc() {
       </DocSection>
 
       <DocSection title={t("behavior")}>
-        <div className="space-y-2 text-body text-fg-muted"><p>{t("percentageBehavior")}</p><p>{t("keyboardBehavior")}</p><p>{t("dataBehavior")}</p><p>{t("motionBehavior")}</p><p>{t("stageBehavior")}</p></div>
+        <div className="space-y-2 text-body text-fg-muted"><p>{t("percentageBehavior")}</p><p>{t("keyboardBehavior")}</p><p>{t("dataBehavior")}</p><p>{t("motionBehavior")}</p><p>{t("stageBehavior")}</p><p>{t("stackedBehavior")}</p></div>
       </DocSection>
       <DocSection title={t("api")}><PropsTable props={props.map((prop, index) => ({ ...prop, description: t(`p${index}`) }))} /></DocSection>
     </DocPage>

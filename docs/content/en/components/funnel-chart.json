@@ -10,11 +10,12 @@
     "layouts": "Orientation, edges and labels", "fills": "Gradients and patterns",
     "vertical": "Vertical funnel with grouped labels", "straight": "Straight edges with grid",
     "behavior": "Behavior", "api": "API reference",
-    "percentageBehavior": "Percentages divide each stage by the first stage. They do not represent conversion from the preceding stage. The final segment retains its final stage width.",
+    "percentageBehavior": "Percentages divide each stage by the first stage. They do not represent conversion from the preceding stage. In the default layered mode, the final segment retains its final stage width.",
     "keyboardBehavior": "Tab focuses the chart. Left / Right moves through horizontal stages; Up / Down moves through vertical stages. Home / End reaches either boundary; Escape or blur clears the highlight. Keyboard focus preserves highlighting; leaving a stage after a mouse click still clears hover. One focus stop serves the entire chart.",
     "dataBehavior": "An empty array renders nothing. A zero or negative first value, negative stage values or non-finite numbers suppress SVG and percentages while preserving accessible raw values. The host supplies any visible empty or error message. Invalid data or an out-of-range index clears internal highlighting; controlled state remains with the host. Zero-sized containers redraw when measurable again. Parent scaling does not change the chart's layout pixels.",
     "motionBehavior": "Entrance uses a 1.1-second tween and a 0.12-second stagger by default. Use a React key to replay after changing the transition. Reduced motion skips entrance and hover scaling. Long labels truncate with full text available through titles and the accessible list.",
     "stageBehavior": "FunnelStage contains label, value, optional displayValue, color and gradient. Gradient stops contain offset (0–1 number or percentage string) and color. A pattern overrides the innermost gradient. Explicit colors remain supported; defaults follow the active Zeron theme.",
+    "stackedBehavior": "Supply series with unique key, label and color fields, plus stage.values with absolute nonnegative counts for every key. Values must sum to the stage total. Series stack along the bottom horizontally or the right edge vertically, with a tapered final segment. Heights follow data proportions. This mode uses series colors instead of decorative layers, stage fills or patterns. Accessible lists include team values.",
     "p0": "Ordered stages; the first value must be positive and all values must be finite and nonnegative.",
     "p1": "Flow direction; default aspect ratios are 2.2 / 1 horizontally and 1 / 1.8 vertically.",
     "p2": "Fallback series color, overridden by the stage color or first gradient stop.",
@@ -33,6 +34,7 @@
     "p15": "Grouped label direction; defaults to vertical for horizontal funnels and horizontal for vertical funnels.",
     "p16": "Grouped label placement: top / center / bottom for horizontal funnels, left / center / right for vertical funnels. Ignored in spread mode.",
     "p17": "Optional alternating bands and separators. Object defaults: bands / lines true, muted / border colors, lineOpacity / lineWidth 1.",
-    "p18": "Root layout overrides; style can override the default aspect ratio."
+    "p18": "Root layout overrides; style can override the default aspect ratio.",
+    "p19": "Optional data stacks. Each series has key, label and color; every stage supplies values for all keys, summing to value. Missing, negative, non-finite or inconsistent data suppresses drawing."
   }
 }

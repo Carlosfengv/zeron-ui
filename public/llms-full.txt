@@ -3031,6 +3031,25 @@ layers 归一化为 1–64 的整数，非有限值回退 3；gap 非负并在�
 
 需要可见原始数据表时额外安装 chart-primitives 并组合 ChartDataTable，传入宿主本地化的列名、caption 和数字格式。不要将可视化计算结果写回原始数据。
 
+传入可选 `series: FunnelSeries[]` 开启数据堆叠模式。每项包含唯一非空 key、label、color，阶段通过 `values: Record<string, number>` 提供各 key 的绝对数值。数值必须非负且有限，求和须与 stage.value 一致（相对误差容限 1e-9）；缺失、不一致或重复 key 不绘图。团队按数组顺序堆叠，横向底部对齐，纵向右侧对齐。曲线先保持一段平台再平滑过渡到下一阶段，末段收尖至零仅作为结束造型；不增加零值数据阶段。堆叠模式使用 series.color，忽略装饰性 layers、stage.color、gradient 和 renderPattern，保留 gap、edges、标签、grid、动画、悬停、键盘和格式化接口。每个边界仍使用首阶段 value 作为分母；超出首阶段的数值保留原有 overflow-visible 语义。隐藏有序列表额外包含团队数值。
+
+```tsx
+import { FunnelChart, type FunnelSeries, type FunnelStage } from "@zeron/ui/funnel-chart";
+
+const teams: FunnelSeries[] = [
+  { key: "a", label: "团队 A", color: "var(--chart-1)" },
+  { key: "b", label: "团队 B", color: "var(--chart-2)" },
+];
+const stages: FunnelStage[] = [
+  { label: "线索", value: 100, values: { a: 60, b: 40 } },
+  { label: "成交", value: 50, values: { a: 30, b: 20 } },
+];
+
+export function TeamFunnel() {
+  return <FunnelChart data={stages} series={teams} />;
+}
+```
+
 
 ---
 

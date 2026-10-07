@@ -17,10 +17,20 @@ export interface FunnelStage {
   displayValue?: string;
   color?: string;
   gradient?: FunnelGradientStop[];
+  /** Absolute series values, required for each key when series is supplied. */
+  values?: Record<string, number>;
+}
+
+export interface FunnelSeries {
+  key: string;
+  label: string;
+  color: string;
 }
 
 export interface FunnelChartProps {
   data: FunnelStage[];
+  /** Opt into baseline-aligned, data-driven stacks instead of decorative layers. */
+  series?: FunnelSeries[];
   orientation?: "horizontal" | "vertical";
   color?: string;
   layers?: number;
@@ -74,6 +84,15 @@ function segmentPath(start: number, end: number, width: number, height: number, 
   return `M ${midpoint - a} 0 C ${midpoint - a} ${control}, ${midpoint - b} ${height - control}, ${midpoint - b} ${height} L ${midpoint + b} ${height} C ${midpoint + b} ${height - control}, ${midpoint + a} ${control}, ${midpoint + a} 0 Z`;
 }
 
+function stackedSegmentPath(lowerStart: number, upperStart: number, lowerEnd: number, upperEnd: number, width: number, height: number, horizontal: boolean, straight: boolean) {
+  const main = horizontal ? width : height;
+  const cross = horizontal ? height : width;
+  const point = (along: number, ratio: number) => horizontal ? `${along} ${cross * (1 - ratio)}` : `${cross * (1 - ratio)} ${along}`;
+  if (straight) return `M ${point(0, upperStart)} L ${point(main, upperEnd)} L ${point(main, lowerEnd)} L ${point(0, lowerStart)} Z`;
+  const plateau = main * 0.42;
+  return `M ${point(0, upperStart)} L ${point(plateau, upperStart)} C ${point(main * 0.56, upperStart)}, ${point(main * 0.86, upperEnd)}, ${point(main, upperEnd)} L ${point(main, lowerEnd)} C ${point(main * 0.86, lowerEnd)}, ${point(main * 0.56, lowerStart)}, ${point(plateau, lowerStart)} L ${point(0, lowerStart)} Z`;
+}
+
 interface SegmentProps {
   id: string;
   index: number;
@@ -92,27 +111,44 @@ interface SegmentProps {
   renderPattern?: FunnelChartProps["renderPattern"];
   straight: boolean;
   gradient?: FunnelGradientStop[];
+  stack?: { series: FunnelSeries[]; start: number[]; end: number[] };
 }
 
-function FunnelSegment({ id, index, start, end, width, height, horizontal, color, layers, hovered, dimmed, staggerDelay, enterTransition, reducedMotion, renderPattern, straight, gradient }: SegmentProps) {
+function FunnelSegment({ id, index, start, end, width, height, horizontal, color, layers, hovered, dimmed, staggerDelay, enterTransition, reducedMotion, renderPattern, straight, gradient, stack }: SegmentProps) {
   const patternId = `${id}-pattern-${index}`;
   const gradientId = `${id}-gradient-${index}`;
+  const clipId = `${id}-stack-clip-${index}`;
   const progress = useMountProgress(enterTransition, index * staggerDelay, index, reducedMotion);
   const complete = useEnterComplete(progress);
   const hasGradient = Boolean(gradient?.length);
+  const cornerRadius = Math.min(width, height) * 0.04;
+  const crossSize = horizontal ? height : width;
+  // Keep the rounded leading edge without clipping a following stage above 100%.
+  const clipCrossSize = crossSize * (stack ? Math.max(1, stack.start.at(-1) ?? 0, stack.end.at(-1) ?? 0) : 1);
   const svg = (
     <svg aria-hidden="true" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none" viewBox={`0 0 ${width} ${height}`}>
       <defs>
-        {hasGradient && (
+        {stack && index === 0 && <clipPath id={clipId}><rect
+          x={horizontal ? 0 : crossSize - clipCrossSize} y={horizontal ? crossSize - clipCrossSize : 0}
+          width={horizontal ? width + cornerRadius : clipCrossSize} height={horizontal ? clipCrossSize : height + cornerRadius}
+          rx={cornerRadius}
+        /></clipPath>}
+        {!stack && hasGradient && (
           <linearGradient id={gradientId} x1="0" y1="0" x2={horizontal ? "1" : "0"} y2={horizontal ? "0" : "1"}>
             {gradient?.map((stop, stopIndex) => (
               <stop key={stopIndex} offset={typeof stop.offset === "number" ? `${stop.offset * 100}%` : stop.offset} stopColor={stop.color} />
             ))}
           </linearGradient>
         )}
-        {renderPattern?.(patternId, color)}
+        {!stack && renderPattern?.(patternId, color)}
       </defs>
-      {Array.from({ length: layers }, (_, ring) => {
+      {stack ? <g clipPath={index === 0 ? `url(#${clipId})` : undefined}>
+        {stack.series.map((series, seriesIndex) => <path
+          key={series.key} data-slot="funnel-series" data-series={series.key}
+          d={stackedSegmentPath(stack.start[seriesIndex], stack.start[seriesIndex + 1], stack.end[seriesIndex], stack.end[seriesIndex + 1], width, height, horizontal, straight)}
+          fill={series.color}
+        />)}
+      </g> : Array.from({ length: layers }, (_, ring) => {
         const scale = 1 - (ring / layers) * 0.35;
         const opacity = 0.18 + (ring / (layers - 1 || 1)) * 0.65;
         const inner = ring === layers - 1;
@@ -142,7 +178,7 @@ function FunnelSegment({ id, index, start, end, width, height, horizontal, color
     >
       <motion.div
         className="absolute inset-0 overflow-visible"
-        style={{ scaleX: complete ? 1 : progress, scaleY: complete ? 1 : progress, transformOrigin: horizontal ? "left center" : "center top" }}
+        style={{ scaleX: complete ? 1 : progress, scaleY: complete ? 1 : progress, transformOrigin: stack ? (horizontal ? "left bottom" : "right top") : (horizontal ? "left center" : "center top") }}
       >
         {svg}
       </motion.div>
@@ -193,7 +229,7 @@ function SegmentLabel({ stage, percentage, displayValue, horizontal, showValues,
 }
 
 export function FunnelChart({
-  data, orientation = "horizontal", color = "var(--chart-1)", layers = 3, className, style,
+  data, series, orientation = "horizontal", color = "var(--chart-1)", layers = 3, className, style,
   showPercentage = true, showValues = true, showLabels = true, hoveredIndex, onHoverChange,
   formatPercentage = percentFmt, formatValue = intFmt, staggerDelay = 0.12, enterTransition,
   gap = 4, renderPattern, edges = "curved", labelLayout = "spread", labelOrientation,
@@ -210,7 +246,18 @@ export function FunnelChart({
   const horizontal = orientation === "horizontal";
   const first = data[0]?.value ?? 0;
   const ratios = data.map((stage) => stage.value / first);
-  const valid = first > 0 && data.every((stage, index) => Number.isFinite(stage.value) && stage.value >= 0 && Number.isFinite(ratios[index] * 100) && Number.isFinite(ratios[index] * Math.max(size.width, size.height)));
+  const stacked = series !== undefined;
+  const validSeries = !stacked || (series.length > 0 && new Set(series.map((entry) => entry.key)).size === series.length && series.every((entry) => entry.key.length > 0) && data.every((stage) => {
+    const values = series.map((entry) => stage.values?.[entry.key]);
+    const sum = values.reduce<number>((total, value) => total + (value ?? NaN), 0);
+    return values.every((value) => typeof value === "number" && Number.isFinite(value) && value >= 0) && Number.isFinite(sum) && Math.abs(sum - stage.value) <= Math.max(sum, stage.value) * 1e-9;
+  }));
+  const valid = validSeries && first > 0 && data.every((stage, index) => Number.isFinite(stage.value) && stage.value >= 0 && Number.isFinite(ratios[index] * 100) && Number.isFinite(ratios[index] * Math.max(size.width, size.height)));
+  const stacks = valid && series ? data.map((stage) => {
+    const boundaries = [0];
+    for (const entry of series) boundaries.push(boundaries[boundaries.length - 1] + stage.values![entry.key] / first);
+    return boundaries;
+  }) : [];
   const requestedHover = hoveredIndex === undefined ? internalHover : hoveredIndex;
   const hover = valid && requestedHover !== null && Number.isInteger(requestedHover) && requestedHover >= 0 && requestedHover < data.length ? requestedHover : null;
   const setHover = (next: number | null) => {
@@ -273,12 +320,13 @@ export function FunnelChart({
     keyboardFocus.current = true;
     pointerFocus.current = false;
     setHover(next);
+    if (next !== null) rootRef.current?.querySelectorAll<HTMLElement>('[data-slot="funnel-stage"]')[next]?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
   };
 
   return (
     <div
       ref={rootRef} role="group" aria-label={data.map((stage) => stage.label).join(" → ")}
-      data-slot="funnel-chart" data-state={valid ? "ready" : "invalid"} data-orientation={orientation}
+      data-slot="funnel-chart" data-state={valid ? "ready" : "invalid"} data-orientation={orientation} data-mode={stacked ? "stacked" : "layered"}
       data-hovered-index={hover ?? undefined} tabIndex={valid ? 0 : undefined}
       className={cn("relative isolate w-full select-none overflow-visible outline-none focus-visible:ring-1 focus-visible:ring-focus-ring", className)}
       style={{ aspectRatio: horizontal ? "2.2 / 1" : "1 / 1.8", ...style }}
@@ -293,7 +341,7 @@ export function FunnelChart({
       }}
     >
       <ol className="sr-only">
-        {data.map((stage, index) => <li key={index}>{stage.label}: {displays[index]}{valid ? ` (${percentages[index]})` : ""}</li>)}
+        {data.map((stage, index) => <li key={index}>{stage.label}: {displays[index]}{valid ? ` (${percentages[index]})` : ""}{series && <ul>{series.map((entry, seriesIndex) => <li key={`${entry.key}-${seriesIndex}`}>{entry.label}: {stage.values?.[entry.key] === undefined ? "—" : formatValue(stage.values[entry.key])}</li>)}</ul>}</li>)}
       </ol>
       <span className="sr-only" role="status" aria-live="polite" aria-atomic="true">{hover !== null ? `${data[hover].label}: ${displays[hover]} (${percentages[hover]})` : ""}</span>
       {drawable && <>
@@ -310,6 +358,7 @@ export function FunnelChart({
               layers={layerCount} hovered={hover === index} dimmed={hover !== null && hover !== index}
               staggerDelay={delay} enterTransition={enterTransition} reducedMotion={reducedMotion}
               renderPattern={renderPattern} straight={edges === "straight"} gradient={stage.gradient}
+              stack={series && valid ? { series, start: stacks[index], end: stacks[index + 1] ?? series.map(() => 0).concat(0) } : undefined}
             />
           ))}
         </div>
