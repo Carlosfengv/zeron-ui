@@ -126,6 +126,7 @@
       "donut-chart": "Donut charts with center summaries and explicit unassigned totals.",
       "funnel-chart": "Layered horizontal and vertical funnels with controlled hover, gradients and keyboard navigation.",
       "support-analytics-01": "An embedded support panel with ticket trends, service metrics, channel filters and ticket actions.",
+      "sales-conversion-funnel-01": "Sales conversion metrics, stage counts and stacked team contributions.",
       "transaction-details-01": "An embeddable transaction detail with amount, billing information and attachment actions.",
       "surfaces": "Five semantic surfaces with purpose-based shadows for light and dark mode.",
       "semantic-tokens": "Choose color, surface, type, shape, and layer tokens by the object you are designing.",

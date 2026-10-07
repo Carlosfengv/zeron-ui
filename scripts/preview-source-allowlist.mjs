@@ -1,5 +1,10 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "sales-conversion-funnel-01": [
+    "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel.tsx",
+    "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel-demo-data.ts",
+    "packages/blocks/src/application/sales-conversion-funnel-01/index.ts"
+  ],
   "design-stack-01": [
     "packages/blocks/src/application/design-stack-01/design-stack.tsx",
     "packages/blocks/src/application/design-stack-01/design-stack-types.ts",

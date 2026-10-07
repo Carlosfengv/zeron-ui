@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "sales-conversion-funnel-01", title: "销售转化漏斗", description: "成交总数、转化率、阶段数量与团队堆叠面积。", categories: ["application", "analytics", "sales"], dependencies: ["container", "funnel-chart", "icon-context", "utils"] },
   { name: "design-stack-01", title: "设计工具清单", description: "可编辑的工具清单，支持分类、网站、续费日期、多选、排序和撤销重做。", categories: ["application", "tables"], dependencies: ["avatar", "badge", "button", "checkbox", "container", "data-grid", "icon-context", "utils", "@thesvg/icons", "@tanstack/react-table"] },
   {"name": "file-upload-01", "title": "文件上传", "description": "支持拖拽、文件选择、逐项进度和取消的上传队列。", "categories": ["application", "files"], "dependencies": ["badge", "button", "chart-primitives", "container", "info-item", "inline-notice", "separator", "badge", "icon-context", "utils"]},
   { name: "integration-monitors-01", title: "集成监控", description: "集成监控的状态分类、检查条带、筛选、分页与宿主操作。", categories: ["application", "monitoring"], dependencies: ["avatar", "badge", "button", "container", "data-table", "dropdown", "empty", "alert", "icon-context", "info-item", "inline-notice", "input-group", "menu-item", "select", "skeleton", "status-overview", "tabs", "tooltip", "utils", "@thesvg/icons"] },

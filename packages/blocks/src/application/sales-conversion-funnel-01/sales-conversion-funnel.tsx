@@ -1,0 +1,92 @@
+"use client";
+
+import { useId, type ReactNode } from "react";
+import { Container, ContainerBody, ContainerHeader } from "@zeron/ui/container";
+import { FunnelChart, type FunnelSeries } from "@zeron/ui/funnel-chart";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+
+export interface SalesFunnelStage {
+  id: string;
+  label: string;
+  /** Absolute counts for every team key; zero is valid, missing is unknown. */
+  values: Record<string, number>;
+}
+
+export interface SalesConversionFunnelLabels {
+  deals: string;
+  conversionRate: string;
+  teams: string;
+  empty: string;
+  invalid: string;
+}
+
+export interface SalesConversionFunnelProps {
+  stages: readonly SalesFunnelStage[];
+  teams: readonly FunnelSeries[];
+  title?: string;
+  labels?: Partial<SalesConversionFunnelLabels>;
+  locale?: string;
+  /** Host-owned menu or other header actions. */
+  actions?: ReactNode;
+  className?: string;
+}
+
+const defaultLabels: SalesConversionFunnelLabels = {
+  deals: "Deals", conversionRate: "Conversion rate", teams: "Teams",
+  empty: "No leads yet", invalid: "Funnel data is incomplete or invalid",
+};
+
+export function SalesConversionFunnel({ stages, teams, title = "Sales Conversion Funnel", labels: labelOverrides, locale = "en-US", actions, className }: SalesConversionFunnelProps) {
+  const titleId = useId();
+  const labels = { ...defaultLabels, ...labelOverrides };
+  const ArrowRight = useIcon("arrow-right");
+  const formatValue = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format;
+  const percentageFormatter = new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }).format;
+  const formatPercentage = (value: number) => percentageFormatter(value / 100);
+  const data = stages.map((stage) => ({ ...stage, value: teams.reduce((sum, team) => sum + (stage.values?.[team.key] ?? NaN), 0) }));
+  const first = data[0]?.value;
+  const last = data.at(-1)?.value;
+  const valid = teams.length > 0 && new Set(teams.map((team) => team.key)).size === teams.length && teams.every((team) => team.key.length > 0)
+    && new Set(stages.map((stage) => stage.id)).size === stages.length && stages.every((stage) => stage.id.length > 0)
+    && data.every((stage) => Number.isFinite(stage.value) && teams.every((team) => Number.isFinite(stage.values?.[team.key]) && stage.values[team.key] >= 0))
+    && (first === undefined || first > 0 || data.every((stage) => stage.value === 0))
+    && (first === undefined || first === 0 || data.every((stage) => Number.isFinite(stage.value / first * 100)));
+  const drawable = valid && first !== undefined && first > 0;
+  const deals = valid && last !== undefined ? formatValue(last) : "—";
+  const rate = drawable && last !== undefined ? formatPercentage(last / first * 100) : "—";
+
+  return <Container className={cn("w-full", className)} data-slot="sales-conversion-funnel" role="region" aria-labelledby={titleId}>
+    <ContainerHeader className="py-1.5">
+      <h2 id={titleId} className="min-w-0 max-w-full flex-auto break-words text-body font-medium text-fg-default">{title}</h2>
+      {actions && <div className="ml-auto flex max-w-full shrink-0 flex-wrap items-center justify-end gap-1">{actions}</div>}
+    </ContainerHeader>
+    <ContainerBody className="p-0">
+      <dl className="flex flex-wrap items-baseline gap-x-8 gap-y-3 p-6">
+        <div className="flex min-w-0 max-w-full flex-wrap items-baseline gap-2"><dt className="order-2 text-body text-fg-muted">{labels.deals}</dt><dd className="min-w-0 break-all text-4xl font-medium tabular-nums text-fg-default">{deals}</dd></div>
+        <div className="flex min-w-0 max-w-full flex-wrap items-baseline gap-2"><dt className="order-2 text-body text-fg-muted">{labels.conversionRate}</dt><dd className="min-w-0 break-all text-4xl font-medium tabular-nums text-fg-default">{rate}</dd></div>
+      </dl>
+      <div className="border-t-hairline border-border p-6">
+        {drawable ? <div className="overflow-x-auto pb-1">
+          <div style={{ minWidth: `${Math.max(36, stages.length * 9)}rem` }}>
+            <ol aria-hidden="true" className="mb-6 grid gap-2" style={{ gridTemplateColumns: `repeat(${stages.length}, minmax(0, 1fr))` }}>
+              {data.map((stage) => {
+                const valueLabel = `${formatValue(stage.value)} (${formatPercentage(stage.value / first * 100)})`;
+                return <li key={stage.id} className="flex min-w-0 items-center justify-between gap-2">
+                  <div className="min-w-0"><p className="truncate text-body text-fg-muted" title={stage.label}>{stage.label}</p><p className="truncate text-body font-medium tabular-nums text-fg-default" title={valueLabel}>{valueLabel}</p></div>
+                  <ArrowRight className="size-4 shrink-0 text-fg-muted" />
+                </li>;
+              })}
+            </ol>
+            <FunnelChart data={data} series={[...teams]} gap={8} showLabels={false} showValues={false} showPercentage={false} formatValue={formatValue} formatPercentage={formatPercentage} style={{ aspectRatio: "3.5 / 1" }} />
+          </div>
+        </div> : <p role="status" className="flex min-h-48 items-center justify-center text-body text-fg-muted">{valid || stages.length === 0 ? labels.empty : labels.invalid}</p>}
+      </div>
+      {teams.length > 0 && <div className="border-t-hairline border-border px-6 py-5">
+        <ul aria-label={labels.teams} className="flex flex-wrap gap-x-6 gap-y-3">
+          {teams.map((team, index) => <li key={`${team.key}-${index}`} className="flex min-w-0 items-center gap-2 text-body text-fg-default"><span aria-hidden="true" className="size-3 shrink-0 rounded-sm" style={{ backgroundColor: team.color }} /><span className="break-words">{team.label}</span></li>)}
+        </ul>
+      </div>}
+    </ContainerBody>
+  </Container>;
+}

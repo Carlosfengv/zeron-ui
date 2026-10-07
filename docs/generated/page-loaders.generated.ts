@@ -4,6 +4,7 @@ import type { DocPageLoader } from "./page-loader-types";
 export type { DocPageModule, DocPageLoader } from "./page-loader-types";
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "blocks/sales-conversion-funnel-01": () => import("@docs/pages/blocks/sales-conversion-funnel-01/page"),
   "components/funnel-chart": () => import("@docs/pages/components/funnel-chart/page"),
   "components/line-chart": () => import("@docs/pages/components/line-chart/page"),
   "components/area-chart": () => import("@docs/pages/components/area-chart/page"),

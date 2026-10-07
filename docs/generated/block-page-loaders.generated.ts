@@ -3,6 +3,7 @@ import "server-only";
 import type { DocPageLoader } from "./page-loader-types";
 
 export const blockPageLoaders: Record<string, DocPageLoader> = {
+  "blocks/sales-conversion-funnel-01": () => import("@docs/pages/blocks/sales-conversion-funnel-01/page"),
   "blocks/design-stack-01": () => import("@docs/pages/blocks/design-stack-01/page"),
   "blocks/support-analytics-01": () => import("@docs/pages/blocks/support-analytics-01/page"),
   "blocks/integration-monitors-01": () => import("@docs/pages/blocks/integration-monitors-01/page"),

@@ -1,4 +1,14 @@
 {
+  "sales-conversion-funnel-01": {
+    "keywords": ["销售", "转化", "漏斗", "团队", "sales", "conversion", "funnel", "stacked"],
+    "useCases": ["嵌入式销售转化漏斗、阶段总量和团队贡献分析。"],
+    "whenNotToUse": ["时序趋势使用 AreaChart；不承载 CRM 查询或销售记录编辑。"],
+    "keyApi": [
+      "stages: 唯一 id、label、values；teams: 唯一 key、label、color。",
+      "成交总数为末阶段团队之和，比例以首阶段为分母，缺失值不补零。",
+      "title/labels/locale/actions/className 适配宿主；FunnelChart series 模式负责真实数据堆叠。"
+    ]
+  },
   "funnel-chart": {
     "keywords": ["漏斗图", "转化漏斗", "FunnelChart", "funnel", "conversion", "stacked", "series", "团队"],
     "useCases": ["按业务阶段顺序展示数值及相对首阶段的占比，支持横向与纵向布局。"],

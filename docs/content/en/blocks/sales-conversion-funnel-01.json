@@ -1,0 +1,12 @@
+{
+  "salesConversionFunnelBlock": {
+    "title": "Sales Conversion Funnel",
+    "description": "A sales funnel container with deal totals, conversion rate, stage counts and stacked team contributions.",
+    "composition": "Composition",
+    "compositionBody": "Uses Container, ContainerHeader and ContainerBody. The header holds the funnel title and the more button on the right; the body contains deal totals, conversion rate, stage labels, chart and team legend. The existing FunnelChart renders baseline-aligned team stacks with curved transitions, stage gaps and a tapered final segment. Dividers and typography use existing theme variables. Team colors use the active brand color and two tints mixed with the body background; the legend uses the same colors. The host supplies header actions.",
+    "dataContract": "Data integration",
+    "dataContractBody": "Provide ordered stages with unique ids and absolute nonnegative values for every unique team key. Totals are derived from team counts. Deals use the final stage total; conversion and stage percentages use the first stage as denominator. Unknown or invalid values are not replaced with zero. Chart heights follow actual totals rather than the evenly stepped heights of the visual reference. The demo's team splits are illustrative.",
+    "behavior": "Behavior and states",
+    "behaviorBody": "Retains FunnelChart hover, arrow-key, Home, End and Escape navigation, reduced-motion support and a screen-reader list containing totals and team values. Empty and all-zero funnels show an empty state; invalid data shows a data notice. On narrow containers only the chart region scrolls horizontally. Supports localized labels and number formatting. The demo menu downloads the example snapshot as JSON."
+  }
+}

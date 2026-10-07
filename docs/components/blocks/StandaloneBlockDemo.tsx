@@ -1,5 +1,7 @@
 "use client";
 
+import { SalesConversionFunnelDemo } from "./SalesConversionFunnelDemo";
+
 import { DesignStackDemo } from "./DesignStackDemo";
 
 import { FileUploadDemo } from "./FileUploadDemo";
@@ -215,6 +217,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
       return <SecurityOverviewDemo />;
     case "support-analytics-01":
       return <SupportAnalyticsDemo />;
+    case "sales-conversion-funnel-01":
+      return <SalesConversionFunnelDemo />;
     case "transaction-details-01":
       return <TransactionDetailsDemo />;
     case "cost-estimate-01":

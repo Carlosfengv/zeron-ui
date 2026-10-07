@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-08",
+  "baseCommit": "9c68a6dc176e7b678db5f3da69314213db2a3a64",
+  "scope": "FunnelChart data stacks and sales-conversion-funnel-01, including Container, brand colors, discovery and documentation",
+  "commits": [
+    {
+      "title": "feat(ui): support data-driven funnel stacks",
+      "fullDiffFiles": [
+        "packages/ui/src/components/charts/funnel-chart.tsx",
+        "packages/ui/src/components/funnel-chart.tsx",
+        "tests/funnel-chart-stacked.test.tsx",
+        "docs/pages/components/funnel-chart/page.tsx",
+        "docs/content/en/components/funnel-chart.json",
+        "docs/content/zh-CN/components/funnel-chart.json"
+      ],
+      "sharedChanges": [
+        {
+          "file": "docs/agent-guides/components/funnel-chart.md",
+          "include": "Data stacks paragraph and TeamFunnel example",
+          "exclude": "chart-motion extraction description unless that extraction is already in the target baseline"
+        },
+        {
+          "file": "docs/agent-data/components.json",
+          "include": "funnel-chart stacked/series/team keywords and series/values keyApi only"
+        }
+      ],
+      "generated": [
+        "public/r/funnel-chart.json",
+        "public/r/registry.json if changed",
+        "public/llms.txt",
+        "public/llms-full.txt",
+        "agent catalog artifacts generated for the target checkout"
+      ]
+    },
+    {
+      "title": "feat(blocks): add sales conversion funnel block",
+      "requires": [
+        "Commit 1"
+      ],
+      "fullDiffFiles": [
+        "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel.tsx",
+        "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel-demo-data.ts",
+        "packages/blocks/src/application/sales-conversion-funnel-01/index.ts",
+        "tests/sales-conversion-funnel.test.tsx",
+        "docs/components/blocks/SalesConversionFunnelDemo.tsx",
+        "docs/pages/blocks/sales-conversion-funnel-01/page.tsx",
+        "docs/pages/blocks/sales-conversion-funnel-01/SalesConversionFunnelBlockDocClient.tsx",
+        "app/[locale]/docs/blocks/(detail)/sales-conversion-funnel-01/page.tsx",
+        "docs/content/en/blocks/sales-conversion-funnel-01.json",
+        "docs/content/zh-CN/blocks/sales-conversion-funnel-01.json",
+        "docs/agent-guides/blocks/sales-conversion-funnel-01.md",
+        "docs/plans/2026-10-08-sales-conversion-funnel-review-commit-plan.md",
+        "docs/plans/2026-10-08-sales-conversion-funnel-task-files.json"
+      ],
+      "sharedChanges": [
+        {
+          "file": "packages/blocks/package.json",
+          "include": "sales-conversion-funnel-01 export"
+        },
+        {
+          "file": "packages/blocks/registry.json",
+          "include": "sales-conversion-funnel-01 item using container dependency"
+        },
+        {
+          "file": "packages/blocks/block-capabilities.json",
+          "include": "sales-conversion-funnel-01 capability"
+        },
+        {
+          "file": "packages/blocks/src/catalog.ts",
+          "include": "sales-conversion-funnel-01 entry"
+        },
+        {
+          "file": "docs/catalog/artifacts.ts",
+          "include": "sales-conversion-funnel-01 gallery entry"
+        },
+        {
+          "file": "docs/manifest.ts",
+          "include": "sales-conversion-funnel-01 blockEntry only",
+          "exclude": "AreaChart registry entry"
+        },
+        {
+          "file": "docs/content/en/common.json",
+          "include": "sales-conversion-funnel-01 description",
+          "exclude": "area-chart description"
+        },
+        {
+          "file": "docs/content/zh-CN/common.json",
+          "include": "sales-conversion-funnel-01 description",
+          "exclude": "area-chart description"
+        },
+        {
+          "file": "docs/components/blocks/BlockPreview.tsx",
+          "include": "sales-conversion-funnel-01 loader and 1280x720 canvas",
+          "exclude": "PreviewToolbarProvider import/wrapper"
+        },
+        {
+          "file": "docs/components/blocks/StandaloneBlockDemo.tsx",
+          "include": "SalesConversionFunnelDemo import/case"
+        },
+        {
+          "file": "docs/components/blocks/standalone-blocks.ts",
+          "include": "sales-conversion-funnel-01 slug"
+        },
+        {
+          "file": "docs/agent-data/components.json",
+          "include": "sales-conversion-funnel-01 object"
+        },
+        {
+          "file": "docs/agent-data/guide-routes.json",
+          "include": "sales-conversion-funnel-01 guide route"
+        },
+        {
+          "file": "docs/agent-data/item-identities.json",
+          "include": "block:sales-conversion-funnel-01 identity",
+          "exclude": "other identities and unrelated formatting"
+        },
+        {
+          "file": "scripts/preview-source-allowlist.mjs",
+          "include": "sales-conversion-funnel-01 source list"
+        },
+        {
+          "file": "scripts/test-consumer-installs.mjs",
+          "include": "sales-conversion-funnel-01 Next and Vite examples"
+        },
+        {
+          "file": "tests/docs-artifact-catalog.test.ts",
+          "include": "sales-conversion-funnel-01 data-block expectation and resulting counts"
+        },
+        {
+          "file": "tests/i18n-document-manifest.test.ts",
+          "include": "129 document counts and sales-conversion-funnel-01 assertion",
+          "exclude": "AreaChart registry assertions"
+        }
+      ],
+      "generated": [
+        "docs/generated/agent-guide-loaders.generated.ts",
+        "docs/generated/block-page-loaders.generated.ts",
+        "docs/generated/page-loaders.generated.ts",
+        "docs/i18n/content-loaders.generated.ts",
+        "docs/lib/block-preview-sources.generated.ts",
+        "public/docs-source/<current generated sales funnel hash>.txt",
+        "public/r/sales-conversion-funnel-01.json",
+        "public/r/registry.json",
+        "public/llms.txt",
+        "public/llms-full.txt",
+        "agent catalog artifacts generated for the target checkout"
+      ]
+    }
+  ],
+  "generationStrategy": "Apply only scoped source changes to an isolated checkout of the target baseline and regenerate. Preserve the HEAD embedded animation closure unless the chart-motion extraction has already landed; never stage aggregate outputs from the mixed working tree wholesale.",
+  "excluded": [
+    "packages/ui/registry.json chart-motion/core/brush extraction",
+    "packages/ui/package.json AreaChart exports/dependencies",
+    "packages/ui/src/components/charts/animation.ts shared timing additions",
+    "pnpm-lock.yaml",
+    "tests/funnel-chart.test.tsx chart-motion Registry extraction expectations",
+    "tests/chart-document-examples.test.ts AreaChart examples",
+    "AreaChart/core/brush/motion implementation, guides and cover assets",
+    "Other session plans",
+    "output/**",
+    ".playwright-cli/**",
+    ".next*/**"
+  ],
+  "isolatedCommitVerification": "passed on 2026-10-08 for both scoped source states; whole-site production build and browser block flow passed for Commit 2",
+  "supportingManifestFile": "docs/plans/2026-10-08-sales-conversion-funnel-task-files.json",
+  "planningSnapshot": {
+    "staged": false
+  },
+  "executionValidation": {
+    "date": "2026-10-08",
+    "firstCommit": "ae51fd2609ae924ef209a7285eedaee2a9bc4361",
+    "firstCommitTests": {
+      "files": 6,
+      "passed": 100
+    },
+    "secondCommitTests": {
+      "files": 13,
+      "passed": 143
+    },
+    "registryItemCounts": [
+      148,
+      149
+    ],
+    "consumers": "Next/pnpm and Vite/pnpm installation, typecheck and production build passed for both states",
+    "wholeSiteProductionBuild": "passed for Commit 2",
+    "browser": "production gallery, detail, export and mobile keyboard flow passed",
+    "localEnvironmentFindings": "Vercel analytics/speed-insights script endpoints return 404 under local next start",
+    "fullRepositoryTests": "not executed"
+  }
+}

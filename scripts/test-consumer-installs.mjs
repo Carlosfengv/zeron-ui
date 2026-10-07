@@ -482,6 +482,11 @@ async function verifyNextBuild({ consumer, component }) {
     'export default function Page() { return <FileUpload items={[{ id: "verified", name: "verified.txt", size: 1024, uploadedBytes: 512, status: "uploading" }]} />; }',
     '',
   ].join("\n");
+  examples["sales-conversion-funnel-01"] = [
+    'import { SalesConversionFunnel, salesFunnelDemoStages, salesFunnelDemoTeams } from "@/components/blocks/sales-conversion-funnel-01";',
+    'export default function Page() { return <SalesConversionFunnel stages={salesFunnelDemoStages} teams={salesFunnelDemoTeams} />; }',
+    '',
+  ].join("\n");
   examples["badge"] = "\"use client\";\nimport { Badge } from \"@/components/ui/badge\";\nexport default function Page() { return <Badge variant=\"strong\" status=\"danger\">Install verified</Badge>; }\n";
   examples["availability-monitor-01"] = "\"use client\";\nimport { AvailabilityMonitor } from \"@/components/blocks/availability-monitor-01\";\nexport default function Page() { return <AvailabilityMonitor chartData={[{ timestamp: 1788836400000, routed: 0, direct: null }]} />; }\n";
   examples["model-detail-02"] = "\"use client\";\nimport { ModelDetail02 } from \"@/components/blocks/model-detail-02\";\nexport default function Page() { return <ModelDetail02 />; }\n";
@@ -762,6 +767,13 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { FileUpload } from "@/src/components/blocks/file-upload-01";',
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<FileUpload items={[{ id: "verified", name: "verified.txt", size: 1024, uploadedBytes: 512, status: "uploading" }]} />);',
+    '',
+  ].join("\n");
+  examples["sales-conversion-funnel-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { SalesConversionFunnel, salesFunnelDemoStages, salesFunnelDemoTeams } from "@/src/components/blocks/sales-conversion-funnel-01";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<SalesConversionFunnel stages={salesFunnelDemoStages} teams={salesFunnelDemoTeams} />);',
     '',
   ].join("\n");
   examples["badge"] = "import { Badge } from \"@/src/components/ui/badge\";\nexport default function App() { return <Badge variant=\"strong\" status=\"danger\">Install verified</Badge>; }\n";

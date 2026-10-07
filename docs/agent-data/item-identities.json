@@ -1,6 +1,16 @@
 {
   "schemaVersion": 1,
   "items": [
+    {
+      "id": "block:sales-conversion-funnel-01",
+      "type": "registry",
+      "key": "sales-conversion-funnel-01",
+      "aliases": [
+        "sales-conversion-funnel-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
     { "id": "component:funnel-chart", "type": "registry", "key": "funnel-chart", "aliases": ["funnel-chart"], "status": "active", "retirementReason": null },
     { "id": "reference:line-chart", "type": "document", "key": "components/line-chart", "aliases": ["line-chart"], "status": "active", "retirementReason": null },
     { "id": "reference:area-chart", "type": "document", "key": "components/area-chart", "aliases": ["area-chart"], "status": "active", "retirementReason": null },

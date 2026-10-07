@@ -86,6 +86,10 @@
       "itemId": "block:rule-flow-editor-01"
     },
     {
+      "path": "blocks/sales-conversion-funnel-01.md",
+      "itemId": "block:sales-conversion-funnel-01"
+    },
+    {
       "path": "blocks/security-overview-01.md",
       "itemId": "block:security-overview-01"
     },

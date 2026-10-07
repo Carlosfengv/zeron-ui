@@ -1,0 +1,47 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "sales-conversion-funnel-01",
+  "type": "registry:block",
+  "title": "销售转化漏斗",
+  "description": "成交总数、转化率、阶段数量与团队堆叠面积。",
+  "dependencies": [],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/container.json",
+    "https://zeron-ui.vercel.app/r/funnel-chart.json",
+    "https://zeron-ui.vercel.app/r/icon-context.json",
+    "https://zeron-ui.vercel.app/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel.tsx",
+      "content": "\"use client\";\nimport { useId, type ReactNode } from \"react\";\nimport { Container, ContainerBody, ContainerHeader } from \"@ui/container\";\nimport { FunnelChart, type FunnelSeries } from \"@ui/funnel-chart\";\nimport { useIcon } from \"@lib/icon-context\";\nimport { cn } from \"@lib/utils\";\nexport interface SalesFunnelStage {\n    id: string;\n    label: string;\n    /** Absolute counts for every team key; zero is valid, missing is unknown. */\n    values: Record<string, number>;\n}\nexport interface SalesConversionFunnelLabels {\n    deals: string;\n    conversionRate: string;\n    teams: string;\n    empty: string;\n    invalid: string;\n}\nexport interface SalesConversionFunnelProps {\n    stages: readonly SalesFunnelStage[];\n    teams: readonly FunnelSeries[];\n    title?: string;\n    labels?: Partial<SalesConversionFunnelLabels>;\n    locale?: string;\n    /** Host-owned menu or other header actions. */\n    actions?: ReactNode;\n    className?: string;\n}\nconst defaultLabels: SalesConversionFunnelLabels = {\n    deals: \"Deals\", conversionRate: \"Conversion rate\", teams: \"Teams\",\n    empty: \"No leads yet\", invalid: \"Funnel data is incomplete or invalid\",\n};\nexport function SalesConversionFunnel({ stages, teams, title = \"Sales Conversion Funnel\", labels: labelOverrides, locale = \"en-US\", actions, className }: SalesConversionFunnelProps) {\n    const titleId = useId();\n    const labels = { ...defaultLabels, ...labelOverrides };\n    const ArrowRight = useIcon(\"arrow-right\");\n    const formatValue = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format;\n    const percentageFormatter = new Intl.NumberFormat(locale, { style: \"percent\", maximumFractionDigits: 0 }).format;\n    const formatPercentage = (value: number) => percentageFormatter(value / 100);\n    const data = stages.map((stage) => ({ ...stage, value: teams.reduce((sum, team) => sum + (stage.values?.[team.key] ?? NaN), 0) }));\n    const first = data[0]?.value;\n    const last = data.at(-1)?.value;\n    const valid = teams.length > 0 && new Set(teams.map((team) => team.key)).size === teams.length && teams.every((team) => team.key.length > 0)\n        && new Set(stages.map((stage) => stage.id)).size === stages.length && stages.every((stage) => stage.id.length > 0)\n        && data.every((stage) => Number.isFinite(stage.value) && teams.every((team) => Number.isFinite(stage.values?.[team.key]) && stage.values[team.key] >= 0))\n        && (first === undefined || first > 0 || data.every((stage) => stage.value === 0))\n        && (first === undefined || first === 0 || data.every((stage) => Number.isFinite(stage.value / first * 100)));\n    const drawable = valid && first !== undefined && first > 0;\n    const deals = valid && last !== undefined ? formatValue(last) : \"—\";\n    const rate = drawable && last !== undefined ? formatPercentage(last / first * 100) : \"—\";\n    return <Container className={cn(\"w-full\", className)} data-slot=\"sales-conversion-funnel\" role=\"region\" aria-labelledby={titleId}>\n    <ContainerHeader className=\"py-1.5\">\n      <h2 id={titleId} className=\"min-w-0 max-w-full flex-auto break-words text-body font-medium text-fg-default\">{title}</h2>\n      {actions && <div className=\"ml-auto flex max-w-full shrink-0 flex-wrap items-center justify-end gap-1\">{actions}</div>}\n    </ContainerHeader>\n    <ContainerBody className=\"p-0\">\n      <dl className=\"flex flex-wrap items-baseline gap-x-8 gap-y-3 p-6\">\n        <div className=\"flex min-w-0 max-w-full flex-wrap items-baseline gap-2\"><dt className=\"order-2 text-body text-fg-muted\">{labels.deals}</dt><dd className=\"min-w-0 break-all text-4xl font-medium tabular-nums text-fg-default\">{deals}</dd></div>\n        <div className=\"flex min-w-0 max-w-full flex-wrap items-baseline gap-2\"><dt className=\"order-2 text-body text-fg-muted\">{labels.conversionRate}</dt><dd className=\"min-w-0 break-all text-4xl font-medium tabular-nums text-fg-default\">{rate}</dd></div>\n      </dl>\n      <div className=\"border-t-hairline border-border p-6\">\n        {drawable ? <div className=\"overflow-x-auto pb-1\">\n          <div style={{ minWidth: `${Math.max(36, stages.length * 9)}rem` }}>\n            <ol aria-hidden=\"true\" className=\"mb-6 grid gap-2\" style={{ gridTemplateColumns: `repeat(${stages.length}, minmax(0, 1fr))` }}>\n              {data.map((stage) => {\n                const valueLabel = `${formatValue(stage.value)} (${formatPercentage(stage.value / first * 100)})`;\n                return <li key={stage.id} className=\"flex min-w-0 items-center justify-between gap-2\">\n                  <div className=\"min-w-0\"><p className=\"truncate text-body text-fg-muted\" title={stage.label}>{stage.label}</p><p className=\"truncate text-body font-medium tabular-nums text-fg-default\" title={valueLabel}>{valueLabel}</p></div>\n                  <ArrowRight className=\"size-4 shrink-0 text-fg-muted\"/>\n                </li>;\n            })}\n            </ol>\n            <FunnelChart data={data} series={[...teams]} gap={8} showLabels={false} showValues={false} showPercentage={false} formatValue={formatValue} formatPercentage={formatPercentage} style={{ aspectRatio: \"3.5 / 1\" }}/>\n          </div>\n        </div> : <p role=\"status\" className=\"flex min-h-48 items-center justify-center text-body text-fg-muted\">{valid || stages.length === 0 ? labels.empty : labels.invalid}</p>}\n      </div>\n      {teams.length > 0 && <div className=\"border-t-hairline border-border px-6 py-5\">\n        <ul aria-label={labels.teams} className=\"flex flex-wrap gap-x-6 gap-y-3\">\n          {teams.map((team, index) => <li key={`${team.key}-${index}`} className=\"flex min-w-0 items-center gap-2 text-body text-fg-default\"><span aria-hidden=\"true\" className=\"size-3 shrink-0 rounded-sm\" style={{ backgroundColor: team.color }}/><span className=\"break-words\">{team.label}</span></li>)}\n        </ul>\n      </div>}\n    </ContainerBody>\n  </Container>;\n}\n",
+      "type": "registry:component",
+      "target": "components/blocks/sales-conversion-funnel-01/sales-conversion-funnel.tsx"
+    },
+    {
+      "path": "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel-demo-data.ts",
+      "content": "import type { FunnelSeries } from \"@ui/funnel-chart\";\nimport type { SalesFunnelStage } from \"./sales-conversion-funnel\";\n// Brand colors follow the active theme, with distinct tints for each team.\nexport const salesFunnelDemoTeams: FunnelSeries[] = [\n    { key: \"team-1\", label: \"Team 1\", color: \"var(--brand)\" },\n    { key: \"team-2\", label: \"Team 2\", color: \"color-mix(in oklch, var(--brand) 65%, var(--surface-floating))\" },\n    { key: \"team-3\", label: \"Team 3\", color: \"color-mix(in oklch, var(--brand) 35%, var(--surface-floating))\" },\n];\nexport const salesFunnelDemoStages: SalesFunnelStage[] = [\n    { id: \"leads\", label: \"Leads\", values: { \"team-1\": 500, \"team-2\": 500, \"team-3\": 500 } },\n    { id: \"contact\", label: \"Contact\", values: { \"team-1\": 300, \"team-2\": 250, \"team-3\": 250 } },\n    { id: \"quotes\", label: \"Quotes\", values: { \"team-1\": 80, \"team-2\": 60, \"team-3\": 60 } },\n    { id: \"deals\", label: \"Deals\", values: { \"team-1\": 50, \"team-2\": 50, \"team-3\": 50 } },\n];\n",
+      "type": "registry:component",
+      "target": "components/blocks/sales-conversion-funnel-01/sales-conversion-funnel-demo-data.ts"
+    },
+    {
+      "path": "packages/blocks/src/application/sales-conversion-funnel-01/index.ts",
+      "content": "export { SalesConversionFunnel } from \"./sales-conversion-funnel\";\nexport type { SalesConversionFunnelProps, SalesConversionFunnelLabels, SalesFunnelStage } from \"./sales-conversion-funnel\";\nexport { salesFunnelDemoStages, salesFunnelDemoTeams } from \"./sales-conversion-funnel-demo-data\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/sales-conversion-funnel-01/index.ts"
+    }
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "data-block"
+    }
+  },
+  "categories": [
+    "application",
+    "analytics",
+    "sales"
+  ]
+}

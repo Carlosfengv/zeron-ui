@@ -5120,6 +5120,49 @@
       }
     },
     {
+      "name": "sales-conversion-funnel-01",
+      "type": "registry:block",
+      "title": "销售转化漏斗",
+      "description": "成交总数、转化率、阶段数量与团队堆叠面积。",
+      "categories": [
+        "application",
+        "analytics",
+        "sales"
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/funnel-chart.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/sales-conversion-funnel-01/sales-conversion-funnel.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/sales-conversion-funnel-01/sales-conversion-funnel-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/sales-conversion-funnel-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/sales-conversion-funnel-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "design-stack-01",
       "type": "registry:block",
       "title": "设计工具清单",

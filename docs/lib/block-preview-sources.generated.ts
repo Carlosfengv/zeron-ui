@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "sales-conversion-funnel-01": {
+    "url": "/docs-source/c666d7261983f944aadad55503ef26fa8f43b6bc8f15328bbd5969542be09d79.txt"
+  },
   "design-stack-01": {
     "url": "/docs-source/4dd4976b8142e62722c36340b70c957aeb05c963063df86a15d89106dbf91f90.txt"
   },
