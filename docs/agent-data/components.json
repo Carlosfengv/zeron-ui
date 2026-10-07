@@ -587,5 +587,81 @@
       "categories/labels 支持业务分类和本地化。",
       "history 可传入宿主撤销重做；useDesignStackHistory 提供本地实现。"
     ]
+  },
+  "area-chart": {
+    "keywords": [
+      "面积图",
+      "AreaChart",
+      "area",
+      "gradient",
+      "time series"
+    ],
+    "useCases": [
+      "日期序列的渐变面积、重叠比较、标记与选区联动。"
+    ],
+    "whenNotToUse": [
+      "需要 stackId 堆叠、自动聚合或 Recharts 原生 props。"
+    ],
+    "keyApi": [
+      "AreaChart(data) 组合 Area(dataKey)、Grid、轴和 ChartTooltip。",
+      "缺失/非有限值保留断点；不同 Y 轴用 yAxisId。",
+      "status/revealSignature 驱动加载与重播；主系列默认 chart-1。"
+    ]
+  },
+  "chart-core": {
+    "keywords": [
+      "坐标轴",
+      "提示框",
+      "图例",
+      "ChartTooltip",
+      "XAxis",
+      "YAxis"
+    ],
+    "useCases": [
+      "AreaChart 的共享轴、Tooltip、图例、SVG 图案和参考区域。"
+    ],
+    "whenNotToUse": [
+      "独立使用轴和 Tooltip；Recharts Chart API。"
+    ],
+    "keyApi": [
+      "Grid/XAxis/YAxis/ChartTooltip 必须放在 AreaChart 内。",
+      "ChartLegend/Legend 独立组合；与 chart-primitives 同名图例契约不同。"
+    ]
+  },
+  "chart-brush": {
+    "keywords": [
+      "选区",
+      "时间范围",
+      "ChartBrush",
+      "brush",
+      "zoom"
+    ],
+    "useCases": [
+      "面积图的受控或非受控时间窗拖动、键盘调整及小图联动。"
+    ],
+    "whenNotToUse": [
+      "分类筛选或自动修改业务数据。"
+    ],
+    "keyApi": [
+      "selection.start/end 为 Date；null 清除，undefined 为非受控。",
+      "onSelectionChange 在预览与提交调用，外部 prop 更新同步原生 Visx 手柄。",
+      "ChartBrushLayout 提供 xDomain/xDomainSlotCount/brushSelection。"
+    ]
+  },
+  "chart-motion": {
+    "keywords": [
+      "图表动画",
+      "motion",
+      "reveal"
+    ],
+    "useCases": [
+      "AreaChart 和 FunnelChart 的共享动画基础依赖。"
+    ],
+    "whenNotToUse": [
+      "业务页面直接调用内部 hook。"
+    ],
+    "keyApi": [
+      "Registry 自动安装；无需手动复制共享文件。"
+    ]
   }
 }

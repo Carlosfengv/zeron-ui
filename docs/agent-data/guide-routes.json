@@ -126,6 +126,10 @@
       "itemId": "component:app-shell"
     },
     {
+      "path": "components/area-chart.md",
+      "itemId": "component:area-chart"
+    },
+    {
       "path": "components/avatar.md",
       "itemId": "component:avatar"
     },
@@ -136,6 +140,18 @@
     {
       "path": "components/button.md",
       "itemId": "component:button"
+    },
+    {
+      "path": "components/chart-brush.md",
+      "itemId": "component:chart-brush"
+    },
+    {
+      "path": "components/chart-core.md",
+      "itemId": "component:chart-core"
+    },
+    {
+      "path": "components/chart-motion.md",
+      "itemId": "component:chart-motion"
     },
     {
       "path": "components/chart-primitives.md",

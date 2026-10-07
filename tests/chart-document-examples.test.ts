@@ -30,15 +30,21 @@ for (const statement of funnelPage.statements) {
   }
 }
 const funnelSnippets = ["basicCode", "verticalCode", "straightCode", "fillsCode"].map((name) => ({ name: `funnel-${name}`, code: funnelStrings.get(name)! }));
+const areaPage = ts.createSourceFile("area-chart.tsx", readFileSync(new URL("../docs/pages/components/area-chart/page.tsx", import.meta.url), "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+const areaSnippets = areaPage.statements.flatMap(statement => ts.isVariableStatement(statement) ? statement.declarationList.declarations.flatMap(declaration =>
+  ts.isIdentifier(declaration.name) && ["basicCode", "comparisonCode", "stylingCode", "loadingCode", "brushCode"].includes(declaration.name.text) && declaration.initializer && ts.isNoSubstitutionTemplateLiteral(declaration.initializer)
+    ? [{ name: `area-${declaration.name.text}`, code: declaration.initializer.text }] : []) : []);
 const examples = [
-  ...chartTypes.flatMap(({ kind }) => [false, true].map((advanced) => ({ name: `${kind}-${advanced ? "advanced" : "basic"}`, code: chartTypeExampleCode(kind, advanced) }))),
+  ...chartTypes.filter(({ kind }) => kind !== "area").flatMap(({ kind }) => [false, true].map((advanced) => ({ name: `${kind}-${advanced ? "advanced" : "basic"}`, code: chartTypeExampleCode(kind, advanced) }))),
   { name: "bar-gradient", code: barChartGradientExampleCode },
   { name: "status-bar-basic", code: statusBarChartBasicCode },
   ...statusSnippets,
   ...funnelSnippets,
+  ...areaSnippets,
 ];
 
 describe("copyable chart documentation examples", () => {
+  it("covers all five new area examples", () => { expect(areaSnippets).toHaveLength(5); });
   it("covers every documented status example", () => {
     expect(statusSnippets.map(({ name }) => name)).toEqual(["basicCode", "activityCode", "denseNodesCode"]);
   });

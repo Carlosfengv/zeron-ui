@@ -2,7 +2,7 @@
 
 日期：2026-10-07
 
-状态：FunnelChart 已实现并验证，其余六类待实施。本文保留整理前的基线分析与整体方案；本次进度见 [FunnelChart 实施记录](./2026-10-07-funnel-chart-implementation.md)。
+状态：FunnelChart、AreaChart 已实施；其余五类待实施。本文保留整理前的基线分析与整体方案；进度见 [FunnelChart 实施记录](./2026-10-07-funnel-chart-implementation.md)与 [AreaChart 实施记录](./2026-10-07-area-chart-implementation.md)。
 
 ZeronUI 基线：`8f8b4d96d51df0fe351b440fabbd395dd62e3669`。
 

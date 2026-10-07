@@ -1,0 +1,48 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "chart-motion",
+  "type": "registry:ui",
+  "title": "Chart Motion",
+  "description": "Shared entrance timing for standalone charts.",
+  "dependencies": [
+    "motion@^12.42.2",
+    "tw-animate-css@^1.4.0"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/surfaces.json"
+  ],
+  "files": [
+    {
+      "path": "packages/ui/src/components/chart-motion.tsx",
+      "content": "export { DEFAULT_CHART_ENTER_TRANSITION, DEFAULT_ANIMATION_DURATION_MS, DEFAULT_ANIMATION_EASING, clipRevealTransition, } from \"./charts/animation\";\n",
+      "type": "registry:ui",
+      "target": "components/ui/chart-motion.tsx"
+    },
+    {
+      "path": "packages/ui/src/components/charts/animation.ts",
+      "content": "import type { Transition } from \"motion/react\";\nexport const DEFAULT_ANIMATION_EASING = \"cubic-bezier(0.85, 0, 0.15, 1)\";\nexport const DEFAULT_ANIMATION_DURATION_MS = 1100;\nexport const DEFAULT_CHART_ENTER_TRANSITION: Transition = {\n    type: \"tween\",\n    duration: 1.1,\n    ease: [0.85, 0, 0.15, 1],\n};\n/** SVG width reveals require a tween even when series enter uses a spring. */\nexport function clipRevealTransition(enterTransition?: Transition): Transition {\n    if (enterTransition?.type === \"tween\") {\n        return { ...enterTransition, ease: enterTransition.ease ?? DEFAULT_CHART_ENTER_TRANSITION.ease };\n    }\n    return {\n        type: \"tween\",\n        duration: typeof enterTransition?.duration === \"number\" ? enterTransition.duration : DEFAULT_ANIMATION_DURATION_MS / 1000,\n        ease: DEFAULT_CHART_ENTER_TRANSITION.ease,\n    };\n}\n",
+      "type": "registry:ui",
+      "target": "components/ui/charts/animation.ts"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-mount-progress.ts",
+      "content": "\"use client\";\nimport { animate, useMotionValue, type Transition } from \"motion/react\";\nimport { useEffect, useRef } from \"react\";\nimport { DEFAULT_CHART_ENTER_TRANSITION } from \"./animation\";\nexport function useMountProgress(enterTransition: Transition | undefined, delaySeconds: number, replayKey: number | string, reducedMotion: boolean) {\n    const progress = useMotionValue(reducedMotion ? 1 : 0);\n    const transitionRef = useRef(enterTransition);\n    transitionRef.current = enterTransition;\n    useEffect(() => {\n        if (reducedMotion) {\n            progress.set(1);\n            return;\n        }\n        progress.set(0);\n        const controls = animate(progress, 1, {\n            ...(transitionRef.current ?? DEFAULT_CHART_ENTER_TRANSITION),\n            delay: delaySeconds,\n        });\n        return () => controls.stop();\n    }, [delaySeconds, replayKey, progress, reducedMotion]);\n    return progress;\n}\n",
+      "type": "registry:ui",
+      "target": "components/ui/charts/use-mount-progress.ts"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-enter-complete.ts",
+      "content": "\"use client\";\nimport type { MotionValue } from \"motion/react\";\nimport { useEffect, useState } from \"react\";\nexport function useEnterComplete(progress: MotionValue<number>): boolean {\n    const [complete, setComplete] = useState(() => progress.get() >= 1);\n    useEffect(() => {\n        setComplete(progress.get() >= 1);\n        // Observe resets as well as completion when a segment's index changes.\n        return progress.on(\"change\", (value) => {\n            if (value <= 0)\n                setComplete(false);\n            else if (value >= 1)\n                setComplete(true);\n        });\n    }, [progress]);\n    return complete;\n}\n",
+      "type": "registry:ui",
+      "target": "components/ui/charts/use-enter-complete.ts"
+    }
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui"
+    }
+  }
+}

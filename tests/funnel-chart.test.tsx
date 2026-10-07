@@ -354,9 +354,9 @@ describe("FunnelChart interaction and resilience", () => {
     const registry = JSON.parse(readFileSync("packages/ui/registry.json", "utf8"));
     const item = registry.items.find((entry: { name: string }) => entry.name === "funnel-chart");
     expect(item.dependencies).toEqual(["motion", "tw-animate-css"]);
-    expect(item.registryDependencies).toEqual(["surfaces", "utils"]);
+    expect([...item.registryDependencies].sort()).toEqual(["chart-motion", "surfaces", "utils"]);
     expect(item.files.map((file: { target: string }) => file.target)).toEqual([
-      "components/ui/funnel-chart.tsx", "components/ui/charts/funnel-chart.tsx", "components/ui/charts/animation.ts", "components/ui/charts/use-mount-progress.ts", "components/ui/charts/use-enter-complete.ts",
+      "components/ui/funnel-chart.tsx", "components/ui/charts/funnel-chart.tsx",
     ]);
   });
 });

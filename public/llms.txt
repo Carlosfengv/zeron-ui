@@ -74,6 +74,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Accordion (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Aaccordion.md): Collapsible sections with animated expand/collapse and proximity hover in grouped mode. Registry: accordion.
 - [Alert](https://zeron-ui.vercel.app/ai/items/component%3Aalert.md): Composable in-context callout with semantic statuses, optional icon, supporting detail, and action. Registry: alert.
 - [App Shell](https://zeron-ui.vercel.app/ai/items/component%3Aapp-shell.md): Composable application frame for Sidebar, header, and main content. Registry: app-shell.
+- [AreaChart](https://zeron-ui.vercel.app/ai/items/component%3Aarea-chart.md): Reference area charts with overlapping series, gradients and brush selection. Registry: area-chart.
 - [Ask User Questions](https://zeron-ui.vercel.app/ai/items/component%3Aask-user-questions.md): Stepped question flow with single/multi-select, optional 'other' input, and skip. Registry: ask-user-questions.
 - [Auth Layout](https://zeron-ui.vercel.app/ai/items/component%3Aauth-layout.md): Full-height centered composition for authentication flows, with responsive widths and optional header and footer regions. Registry: auth-layout.
 - [Avatar](https://zeron-ui.vercel.app/ai/items/component%3Aavatar.md): Circle and rounded image or fallback primitives for people, agents, and accounts, with status, group, and compact user-detail composition. Registry: avatar.
@@ -85,6 +86,9 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Calendar](https://zeron-ui.vercel.app/ai/items/component%3Acalendar.md): Theme-aware calendar primitive with single and range selection support. Registry: calendar.
 - [Card](https://zeron-ui.vercel.app/ai/items/component%3Acard.md): shadcn's compositional card, dressed in Zeron Design — stacked, inline, and grid layouts, borderless dividers, and 2-D proximity hover. Registry: card.
 - [Chart](https://zeron-ui.vercel.app/ai/items/component%3Achart.md): Shared chart containers, tooltips, request trends and responsive donuts. Registry: chart.
+- [Chart Brush](https://zeron-ui.vercel.app/ai/items/component%3Achart-brush.md): Controlled time-range selection with synchronized handles and overlays. Registry: chart-brush.
+- [Chart Core](https://zeron-ui.vercel.app/ai/items/component%3Achart-core.md): Time-series shell, axes, tooltip, legends and SVG patterns. Registry: chart-core.
+- [Chart Motion](https://zeron-ui.vercel.app/ai/items/component%3Achart-motion.md): Shared entrance timing for standalone charts. Registry: chart-motion.
 - [Chart Primitives](https://zeron-ui.vercel.app/ai/items/component%3Achart-primitives.md): Legends, stable series colors and segmented bars without a chart engine. Registry: chart-primitives.
 - [Chat Message](https://zeron-ui.vercel.app/ai/items/component%3Achat-message.md): Chat transcript bubble with baked-in motion, user/assistant alignment, and file attachments. Registry: chat-message.
 - [Checkbox (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Acheckbox.md): Compact checkbox with checked, mixed, disabled, validation, and form states. Registry: checkbox.
@@ -153,7 +157,6 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Top Nav](https://zeron-ui.vercel.app/ai/items/component%3Atop-nav.md): Composable top navigation with brand, primary links, and actions. Registry: top-nav.
 - [Tree](https://zeron-ui.vercel.app/ai/items/component%3Atree.md): Accessible hierarchical display and selection for general nodes, members, and files. Registry: tree.
 - [Workflow Editor](https://zeron-ui.vercel.app/ai/items/page%3Aworkflow.md): A standalone automation canvas with editable nodes, branching, local drafts and path simulation. Not installable.
-- [AreaChart](https://zeron-ui.vercel.app/ai/items/reference%3Aarea-chart.md): Area charts with single-series and stacked comparisons. Not installable.
 - [BarChart](https://zeron-ui.vercel.app/ai/items/reference%3Abar-chart.md): Vertical and horizontal bar charts for category comparisons. Not installable.
 - [Icon Catalog](https://zeron-ui.vercel.app/ai/items/reference%3Acatalog.md): Searchable names generated from the free icon provider's actual exports. Not installable.
 - [Chart Tokens](https://zeron-ui.vercel.app/ai/items/reference%3Achart-tokens.md): Global chart colors, series variables, and shared styling rules for light and dark mode. Not installable.
@@ -200,9 +203,13 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [zaiops-operations-01](https://zeron-ui.vercel.app/agent-guides/blocks/zaiops-operations-01.md)
 - [alert](https://zeron-ui.vercel.app/agent-guides/components/alert.md)
 - [app-shell](https://zeron-ui.vercel.app/agent-guides/components/app-shell.md)
+- [area-chart](https://zeron-ui.vercel.app/agent-guides/components/area-chart.md)
 - [avatar](https://zeron-ui.vercel.app/agent-guides/components/avatar.md)
 - [badge](https://zeron-ui.vercel.app/agent-guides/components/badge.md)
 - [button](https://zeron-ui.vercel.app/agent-guides/components/button.md)
+- [chart-brush](https://zeron-ui.vercel.app/agent-guides/components/chart-brush.md)
+- [chart-core](https://zeron-ui.vercel.app/agent-guides/components/chart-core.md)
+- [chart-motion](https://zeron-ui.vercel.app/agent-guides/components/chart-motion.md)
 - [chart-primitives](https://zeron-ui.vercel.app/agent-guides/components/chart-primitives.md)
 - [chart](https://zeron-ui.vercel.app/agent-guides/components/chart.md)
 - [code-block](https://zeron-ui.vercel.app/agent-guides/components/code-block.md)

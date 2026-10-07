@@ -15,7 +15,7 @@ related: [chart-primitives, surfaces]
 
 # FunnelChart
 
-安装 `npx zeron-ui add funnel-chart`。此组件只依赖 Motion、surfaces 和 utils；不安装 Recharts、Visx 或其他 chart。工作区从 `@zeron/ui/funnel-chart` 导入，Registry 消费项目从 `@/components/ui/funnel-chart` 导入。
+安装 `npx zeron-ui add funnel-chart`。此组件通过 chart-motion 共享动画，只依赖 Motion、surfaces 和 utils；不安装 Recharts、Visx 或其他 chart。工作区从 `@zeron/ui/funnel-chart` 导入，Registry 消费项目从 `@/components/ui/funnel-chart` 导入。
 
 `data: FunnelStage[]` 按业务阶段顺序传入 label、value，可带 displayValue、color、gradient。百分比为当前 value / 首项 value × 100，首项必须大于 0，其余必须是非负有限数。不排序、不删掉零值、不计算相邻阶段转化率。空数组不渲染；非法数据只保留屏幕阅读器可访问的原始值，不生成路径或虚构百分比。业务空态和数据错误提示由宿主提供。
 

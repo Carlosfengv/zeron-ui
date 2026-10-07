@@ -109,7 +109,11 @@
     "./tokens/*": "./src/tokens/*",
     "./temporal-picker": "./src/components/temporal-picker/index.ts",
     "./chart-primitives": "./src/components/chart-primitives.tsx",
-    "./list-pagination": "./src/components/list-pagination.tsx"
+    "./list-pagination": "./src/components/list-pagination.tsx",
+    "./area-chart": "./src/components/area-chart.tsx",
+    "./chart-core": "./src/components/chart-core.tsx",
+    "./chart-brush": "./src/components/chart-brush.tsx",
+    "./chart-motion": "./src/components/chart-motion.tsx"
   },
   "imports": {
     "#components/*": "./src/components/*.tsx",
@@ -159,9 +163,18 @@
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.9",
     "@types/hast": "3.0.5",
+    "@visx/brush": "4.0.0",
+    "@visx/curve": "4.0.0",
+    "@visx/event": "4.0.0",
+    "@visx/grid": "4.0.0",
+    "@visx/pattern": "4.0.0",
+    "@visx/responsive": "4.0.0",
+    "@visx/scale": "4.0.0",
+    "@visx/shape": "4.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "d3-array": "3.2.4",
     "date-fns": "^4.4.0",
     "dialkit": "^1.1.0",
     "diff": "9.0.0",
@@ -178,6 +191,8 @@
     "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
+    "@types/d3-array": "3.2.2",
+    "@types/d3-shape": "3.1.8",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "typescript": "^5.9.3"

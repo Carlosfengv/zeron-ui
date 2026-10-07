@@ -13,7 +13,7 @@
     },
     { "id": "component:funnel-chart", "type": "registry", "key": "funnel-chart", "aliases": ["funnel-chart"], "status": "active", "retirementReason": null },
     { "id": "reference:line-chart", "type": "document", "key": "components/line-chart", "aliases": ["line-chart"], "status": "active", "retirementReason": null },
-    { "id": "reference:area-chart", "type": "document", "key": "components/area-chart", "aliases": ["area-chart"], "status": "active", "retirementReason": null },
+    { "id": "component:area-chart", "type": "registry", "key": "area-chart", "aliases": ["area-chart"], "status": "active", "retirementReason": null },
     { "id": "reference:bar-chart", "type": "document", "key": "components/bar-chart", "aliases": ["bar-chart"], "status": "active", "retirementReason": null },
     { "id": "reference:pie-chart", "type": "document", "key": "components/pie-chart", "aliases": ["pie-chart"], "status": "active", "retirementReason": null },
     { "id": "reference:donut-chart", "type": "document", "key": "components/donut-chart", "aliases": ["donut-chart"], "status": "active", "retirementReason": null },
@@ -1594,6 +1594,36 @@
       "key": "file-upload-01",
       "aliases": [
         "file-upload-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:chart-motion",
+      "type": "registry",
+      "key": "chart-motion",
+      "aliases": [
+        "chart-motion"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:chart-core",
+      "type": "registry",
+      "key": "chart-core",
+      "aliases": [
+        "chart-core"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:chart-brush",
+      "type": "registry",
+      "key": "chart-brush",
+      "aliases": [
+        "chart-brush"
       ],
       "status": "active",
       "retirementReason": null

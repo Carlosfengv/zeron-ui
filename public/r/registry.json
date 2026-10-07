@@ -3659,6 +3659,7 @@
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart-motion.json",
         "https://zeron-ui.vercel.app/r/utils.json"
       ],
       "files": [
@@ -3671,21 +3672,6 @@
           "path": "packages/ui/src/components/charts/funnel-chart.tsx",
           "type": "registry:ui",
           "target": "components/ui/charts/funnel-chart.tsx"
-        },
-        {
-          "path": "packages/ui/src/components/charts/animation.ts",
-          "type": "registry:ui",
-          "target": "components/ui/charts/animation.ts"
-        },
-        {
-          "path": "packages/ui/src/components/charts/use-mount-progress.ts",
-          "type": "registry:ui",
-          "target": "components/ui/charts/use-mount-progress.ts"
-        },
-        {
-          "path": "packages/ui/src/components/charts/use-enter-complete.ts",
-          "type": "registry:ui",
-          "target": "components/ui/charts/use-enter-complete.ts"
         }
       ],
       "meta": {
@@ -3747,6 +3733,537 @@
       ],
       "dependencies": [
         "tw-animate-css@^1.4.0"
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "chart-motion",
+      "type": "registry:ui",
+      "title": "Chart Motion",
+      "description": "Shared entrance timing for standalone charts.",
+      "dependencies": [
+        "motion@^12.42.2",
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chart-motion.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chart-motion.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/animation.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/animation.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-mount-progress.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-mount-progress.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-enter-complete.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-enter-complete.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "chart-core",
+      "type": "registry:ui",
+      "title": "Chart Core",
+      "description": "Time-series shell, axes, tooltip, legends and SVG patterns.",
+      "dependencies": [
+        "@base-ui/react@^1.4.1",
+        "@visx/scale@4.0.0",
+        "@visx/event@4.0.0",
+        "@visx/grid@4.0.0",
+        "@visx/pattern@4.0.0",
+        "@visx/shape@4.0.0",
+        "@visx/curve@4.0.0",
+        "d3-array@3.2.4",
+        "@types/d3-array",
+        "@types/d3-shape",
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart-motion.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chart-core.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chart-core.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-child-passthrough.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-child-passthrough.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-config-context.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-config-context.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-context.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-context.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-data.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-data.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-defs.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-defs.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-formatters.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-formatters.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-legend-hover.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-legend-hover.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-legend.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-legend.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-loading-label.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-loading-label.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-phase.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-phase.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-reveal-clip.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-reveal-clip.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/dash-tail-stroke.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/dash-tail-stroke.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/decimate-time-series.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/decimate-time-series.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/fade-edges.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/fade-edges.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/filter-data-by-x-domain.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/filter-data-by-x-domain.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/generate-chart-skeleton-data.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/generate-chart-skeleton-data.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/grid.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/grid.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/highlight-segment-bounds.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/highlight-segment-bounds.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/highlight-segment.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/highlight-segment.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/indicator-fade.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/indicator-fade.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/legend/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/legend/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/legend/legend-context.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/legend/legend-context.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/legend/legend-item.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/legend/legend-item.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/legend/legend-label.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/legend/legend-label.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/legend/legend-marker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/legend/legend-marker.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/legend/legend-progress.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/legend/legend-progress.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/legend/legend-value.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/legend/legend-value.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/legend/legend.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/legend/legend.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/line-loading-pulse.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/line-loading-pulse.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/line-loading-timing.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/line-loading-timing.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/loading-sweep.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/loading-sweep.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/path-stroke-utils.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/path-stroke-utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/pattern-preset.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/pattern-preset.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/projection-config.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/projection-config.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/projection-utils.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/projection-utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/reference-area-config.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/reference-area-config.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/reference-area-geometry.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/reference-area-geometry.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/reference-area-registration-context.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/reference-area-registration-context.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/reference-area.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/reference-area.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/series-bar-layout.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/series-bar-layout.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/series-dash-tail-overlay.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/series-dash-tail-overlay.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/series-highlight-layer.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/series-highlight-layer.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/series-hover-dim.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/series-hover-dim.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/series-markers.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/series-markers.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/series-point-marker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/series-point-marker.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/shimmering-text.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/shimmering-text.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/static-chart-preview-context.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/static-chart-preview-context.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/time-series-chart-shell.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/time-series-chart-shell.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/tooltip/chart-tooltip.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/tooltip/chart-tooltip.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/tooltip/date-ticker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/tooltip/date-ticker.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/tooltip/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/tooltip/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/tooltip/tooltip-box.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/tooltip/tooltip-box.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/tooltip/tooltip-content.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/tooltip/tooltip-content.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/tooltip/tooltip-dot.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/tooltip/tooltip-dot.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/tooltip/tooltip-indicator.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/tooltip/tooltip-indicator.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-animated-y-domains.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-animated-y-domains.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-chart-interaction.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-chart-interaction.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-chart-phase-orchestrator.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-chart-phase-orchestrator.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-grid-shimmer.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-grid-shimmer.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-highlight-segment.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-highlight-segment.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-scheduled-tooltip.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-scheduled-tooltip.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/visx-pattern.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/visx-pattern.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/x-axis.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/x-axis.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/y-axis-scales.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/y-axis-scales.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/y-axis-ticks.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/y-axis-ticks.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/y-axis.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/y-axis.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/y-domain-utils.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/y-domain-utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/legend/legend-layout.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/legend/legend-layout.tsx"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "area-chart",
+      "type": "registry:ui",
+      "title": "AreaChart",
+      "description": "Reference area geometry, gradients, markers and loading phases.",
+      "dependencies": [
+        "@visx/responsive@4.0.0",
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/area-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/area-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/area-chart-loading.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/area-chart-loading.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/area-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/area-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/area-gradient-defs.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/area-gradient-defs.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/area.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/area.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/pattern-area.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/pattern-area.tsx"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "chart-brush",
+      "type": "registry:ui",
+      "title": "Chart Brush",
+      "description": "Controlled time-range selection with synchronized handles and overlays.",
+      "dependencies": [
+        "@visx/brush@4.0.0",
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chart-brush.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chart-brush.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-brush-handle.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-brush-handle.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-brush-layout.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-brush-layout.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-brush-selection-overlay.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-brush-selection-overlay.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-brush-track-overlay.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-brush-track-overlay.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-brush.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-brush.tsx"
+        }
       ],
       "meta": {
         "zeron": {

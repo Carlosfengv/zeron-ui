@@ -43,7 +43,8 @@ describe("documentation manifest", () => {
       "time-range-histogram", "chart-primitives", "chart-tokens",
     ]);
     expect(charts.find((entry) => entry.slug === "status-overview")?.name).toBe("StatusBarChart");
-    expect(charts.slice(0, 5).every((entry) => entry.registryItem === undefined)).toBe(true);
+    expect(charts.find((entry) => entry.slug === "area-chart")?.registryItem?.name).toBe("area-chart");
+    expect(charts.slice(0, 5).filter((entry) => entry.slug !== "area-chart").every((entry) => entry.registryItem === undefined)).toBe(true);
     expect(pageDocEntries.some((entry) => entry.slug === "status-bar-chart")).toBe(false);
   });
 

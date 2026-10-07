@@ -120,7 +120,7 @@
     "introductionDescription": "Why these components feel different.",
     "descriptions": {
       "line-chart": "Line charts for trends and comparing multiple series.",
-      "area-chart": "Area charts with single-series and stacked comparisons.",
+      "area-chart": "Reference area geometry with overlapping series, gradients and time-range selection.",
       "bar-chart": "Vertical and horizontal bar charts for category comparisons.",
       "pie-chart": "Pie charts with legends and percentage labels for complete distributions.",
       "donut-chart": "Donut charts with center summaries and explicit unassigned totals.",

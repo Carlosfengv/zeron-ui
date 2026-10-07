@@ -85,6 +85,15 @@ async function captureCover(page, slug, theme) {
 
   const target = await coverTarget(page, slug);
   await target.scrollIntoViewIfNeeded();
+  if (slug === "area-chart") {
+    await page.waitForFunction(() => {
+      const chart = document.querySelector('[data-slot="area-chart"]');
+      const clip = chart?.querySelector('clipPath[id^="chart-area-grow-clip"] rect');
+      const svg = chart?.querySelector("svg");
+      return chart?.getAttribute("data-phase") === "ready" && Boolean(chart.querySelector("svg path")) &&
+        (!clip || Number(clip.getAttribute("width")) >= Number(svg?.getAttribute("width")) - 80);
+    });
+  }
   if (slug === "funnel-chart") {
     // Motion's JS entrance is unaffected by the CSS animation reset below.
     await page.waitForFunction(() => {

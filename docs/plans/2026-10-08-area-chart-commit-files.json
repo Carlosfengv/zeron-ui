@@ -1,0 +1,976 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-08",
+  "scope": "AreaChart runtime, brush, configurable legends, installation closure, docs and regression review",
+  "reviewStartBaseCommit": "9c68a6dc176e7b678db5f3da69314213db2a3a64",
+  "plannedBaseCommit": "65fc0baeaa7dc2f5acf387a95d77400482c89d95",
+  "branch": "main",
+  "commit": {
+    "count": 1,
+    "title": "feat(area-chart): add reference chart with brush and configurable legends",
+    "execution": "Candidate verified for the user-authorized commit and push to GitHub main; final revision is recorded in Git history"
+  },
+  "counts": {
+    "registryOwnedSourceFiles": 85,
+    "changedWholeFileCandidates": 107,
+    "sharedSourceSelections": 9,
+    "generatedResourceCandidates": 9,
+    "totalCandidatePaths": 125
+  },
+  "wholeFiles": [
+    {
+      "path": "packages/ui/src/components/chart-motion.tsx",
+      "sha256": "9650cbb46f71cae4b89931bd549a1b4c9e388b35d3a11ee39619e212a51d529b"
+    },
+    {
+      "path": "packages/ui/src/components/charts/animation.ts",
+      "sha256": "c030153a3e45a284d3461fe82207f9ce3a1f679d979d9150cce09a60645700a4"
+    },
+    {
+      "path": "packages/ui/src/components/chart-core.tsx",
+      "sha256": "9b95c681738435474d0ec14fb567d56ee63d0fe3eff9bc2ca5b7110613e8c541"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-child-passthrough.ts",
+      "sha256": "7ed588788dd6b8d009928b0f6f2af64838ba9291f4690f2801d77586b7269790"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-config-context.tsx",
+      "sha256": "65c9fae029556283adf951203679147f9708187df6ec62cbe961b4e250c0b210"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-context.tsx",
+      "sha256": "ca5bed16329e94429617fe955787b41f3406e0c24d2d2374229dc9c4b9dd4718"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-data.ts",
+      "sha256": "45464496d0ea6dcd4ca742ac19f70856edc3d9cedb521c1ea1c7e020d8666a8c"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-defs.ts",
+      "sha256": "3450fd3a5b52169b6cbfb10ea87dc4ef8feafeefc5ace88ef45366051926d5d0"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-formatters.ts",
+      "sha256": "5044fb8e7e6cfaba51d4d3a1d961ecb53e95d3fdd733cb4b1666cb285bd96821"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-legend-hover.tsx",
+      "sha256": "fb31f3648fed0aba2d92792ee943a6317b5051532d5738855bae24a496403882"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-legend.tsx",
+      "sha256": "c867773a2544924508407834a97785b7c9cd45400cf9c755b8867c1c0f5a2f2d"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-loading-label.tsx",
+      "sha256": "2f198616d981ab4261c258a08696909dbb17ba8c0a3313918a6a309b6080f07b"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-phase.ts",
+      "sha256": "1dd53632aa57857f0302c2f8376b1882da324451040f47b35fad50167a2f15a4"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-reveal-clip.tsx",
+      "sha256": "e63aa2b186ba797f1737f0a88d717bd0f07da10b2476598b7522924cac9f9d01"
+    },
+    {
+      "path": "packages/ui/src/components/charts/dash-tail-stroke.tsx",
+      "sha256": "42e25bc552b9eab95f6960ae75a633c6c5dd515d38654ce954f2fcb1df6cee89"
+    },
+    {
+      "path": "packages/ui/src/components/charts/decimate-time-series.ts",
+      "sha256": "cf60a42bdd5fd90db20a36a69fc6258afd877faafad85dc431c4c7ac4c8952e6"
+    },
+    {
+      "path": "packages/ui/src/components/charts/fade-edges.ts",
+      "sha256": "74eebe91d37b5b5d4b4227c590edcf2cf8de7c68dc359827910e0bc0f25bb120"
+    },
+    {
+      "path": "packages/ui/src/components/charts/filter-data-by-x-domain.ts",
+      "sha256": "cd4262b0f5bb84c54d49efa4565ec6f3a64870b7d7c1349dfe685ec6e198fdf4"
+    },
+    {
+      "path": "packages/ui/src/components/charts/generate-chart-skeleton-data.ts",
+      "sha256": "7673a08792a7623133660473663da5e94bf519ddc54689bb024b7a2b78f58393"
+    },
+    {
+      "path": "packages/ui/src/components/charts/grid.tsx",
+      "sha256": "84646936c9c971acbd87b3122161e7e3ee56241962793bed93a233e9b34fe156"
+    },
+    {
+      "path": "packages/ui/src/components/charts/highlight-segment-bounds.ts",
+      "sha256": "b5a304c3b9907823f7c0762443304dc6fc16c5ec76c9c927742f7250465e97b3"
+    },
+    {
+      "path": "packages/ui/src/components/charts/highlight-segment.tsx",
+      "sha256": "112a80a08a9d35b1babe66be7b03dfe0be8638cc2860982d6c7c049839769872"
+    },
+    {
+      "path": "packages/ui/src/components/charts/indicator-fade.ts",
+      "sha256": "e2d87a04e32b40e9452155d1ea841038f3d3bc3c55e4ec7bc26df18f9a28adf8"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/index.ts",
+      "sha256": "b83d8b2d923086359eba6d137b27394d0d08a590dd970c15d329e3fd5411a053"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-context.tsx",
+      "sha256": "ccfe30e4bed8c0abe0b6f10b9965a0a785877dda3ab49ffdc70411fb6bb26aed"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-item.tsx",
+      "sha256": "59338c32359de8f405a514193a743d566fef13af5e0e9dec42b6466e7ac7fd65"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-label.tsx",
+      "sha256": "7b25e278f8eaf3295d14d71561e35e3311f19d92dad60c7ac6b23352594f7a5e"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-marker.tsx",
+      "sha256": "b176f0c34a0f0e6d86c70f02ffdfc0a38e2f5848a41417b9a32cb580929cb8e7"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-progress.tsx",
+      "sha256": "b9ca77bc6e996d72e932170cb5cc06f8b96aca2c144b82d62f92d14e3d58cdfd"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-value.tsx",
+      "sha256": "c289bbafaf523375104a93f3b59d63f8ff0f42e50b3476c388d69443e396f9e4"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend.tsx",
+      "sha256": "794f51d88ca1b02c78d5b3f433fe2d849a5e1cea19ba8ab64f863f38646b0015"
+    },
+    {
+      "path": "packages/ui/src/components/charts/line-loading-pulse.tsx",
+      "sha256": "b4d52dc9d55052885ed531170633a188ace35877929c1e299671e7a4fce82d35"
+    },
+    {
+      "path": "packages/ui/src/components/charts/line-loading-timing.ts",
+      "sha256": "e2328b4a9502014022dd671c6086ede1b6bd4ce8da02f04a8d251634bee0e4f4"
+    },
+    {
+      "path": "packages/ui/src/components/charts/loading-sweep.tsx",
+      "sha256": "b13b512c3a5f065c943a373cdbf11666a831a67cb00a8a8adf4762f477d38aba"
+    },
+    {
+      "path": "packages/ui/src/components/charts/path-stroke-utils.ts",
+      "sha256": "32dac3ab8593c03fa60bbc192b82d1640fbf27a01a517ae0a40e57b06ceb22e9"
+    },
+    {
+      "path": "packages/ui/src/components/charts/pattern-preset.tsx",
+      "sha256": "946ba9c7146297d5c918442d57c2a7c08fef63ad6f3d2e5177ca50d2c0e823a6"
+    },
+    {
+      "path": "packages/ui/src/components/charts/projection-config.ts",
+      "sha256": "fb7e04bbaac83119bcbe5fcfea4c2c713d80ec3cf65dc8a427d506edeca4bf59"
+    },
+    {
+      "path": "packages/ui/src/components/charts/projection-utils.ts",
+      "sha256": "a7d6c269220dcce466e2eaf620081d488fbef1a372ed3d9cff4fd76298232e0f"
+    },
+    {
+      "path": "packages/ui/src/components/charts/reference-area-config.ts",
+      "sha256": "6d5a08ea977f9181f78ebf7e32d5d1dd4f70fb4c645fa11006b9f62b45f223e5"
+    },
+    {
+      "path": "packages/ui/src/components/charts/reference-area-geometry.ts",
+      "sha256": "846c484c1a94faf0f0090783f408d586ba02e6c28dbe597c25241fad6fa9cda9"
+    },
+    {
+      "path": "packages/ui/src/components/charts/reference-area-registration-context.tsx",
+      "sha256": "1bdf081f8d454f6e9b678d4b470aabbade8fb7b47d9bcf8a44e05887e11aa347"
+    },
+    {
+      "path": "packages/ui/src/components/charts/reference-area.tsx",
+      "sha256": "5ef92e4c157cc45c1c4e8a4571bbb02f0230a4cf0b7e92a15a561dd1f20ed1b5"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-bar-layout.ts",
+      "sha256": "3e834065bf086275b263b2f5a0737a544dc4dfbfc7aa533191fcd0365feefb2c"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-dash-tail-overlay.tsx",
+      "sha256": "62425aae177b81d3ee730d3d379ed2e43e6ec998bd2d17851f01de265b434582"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-highlight-layer.tsx",
+      "sha256": "c9d5d19fe7fb3e1cf6dd3d054ef89538920b523f4899ea78a37f63b976fa00ac"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-hover-dim.tsx",
+      "sha256": "3eb2c82aa794c2b263bef2dba8bfe81ef9fb63b78891225d3cf951b0c89483ba"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-markers.tsx",
+      "sha256": "194e91ab8dc442a4aa2b898025d12b51066234b11ccc5496fa71f984edcb4519"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-point-marker.tsx",
+      "sha256": "9775cb40e04639fafa29c675619e6ebbaf20984d353cf41fdc5d10fe1034ea04"
+    },
+    {
+      "path": "packages/ui/src/components/charts/shimmering-text.tsx",
+      "sha256": "58c847371b6bf9fdb4c01963b7449a464e3f451310556206930918d850d7de4b"
+    },
+    {
+      "path": "packages/ui/src/components/charts/static-chart-preview-context.tsx",
+      "sha256": "231d750e55824c86c3f79fd18870bb43633cf47fae4c33f8c218fea7eab8f551"
+    },
+    {
+      "path": "packages/ui/src/components/charts/time-series-chart-shell.tsx",
+      "sha256": "fd74de000847067e0a6dbfe7421329ec6dd995af254d87de8e2f7778098698ea"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/chart-tooltip.tsx",
+      "sha256": "bc2d96a8b4961169ce5916493fb7a85c3e56da3f8517101fcdaa0a659e75e0e6"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/date-ticker.tsx",
+      "sha256": "5492836ba7f40b500a8c6c80e41b12de1f8972d225c7511642fefd947972a67c"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/index.ts",
+      "sha256": "53b24a2f5cb83018efaf5320040a448a468a3962b000a25e5bf1e6b04b3e23df"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/tooltip-box.tsx",
+      "sha256": "c92d232032310876d81313813e6c663744e97f0963362bfb07cf89ea9a1c04bf"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/tooltip-content.tsx",
+      "sha256": "a83fd081437027797b1eefccf749b2d81e9ab69e5554027bddff098d5cc0368c"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/tooltip-dot.tsx",
+      "sha256": "00d4dcadb37a1eaf005707e770b6ab0a0cfa410c7c327e86c8c35bde7043208e"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/tooltip-indicator.tsx",
+      "sha256": "6cb388941274d7a32d9d8f502915160a23bcaf56ad649d0207204ff7cac384be"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-animated-y-domains.ts",
+      "sha256": "dbdcecf29f1297af607296f2fa15cdfe2062da43b766818390b120cfbcd536cb"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-chart-interaction.ts",
+      "sha256": "e5d73750f9b3645683c84a1e6c9eb328b595d5af30046cae7ed16d95f542aa6d"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-chart-phase-orchestrator.ts",
+      "sha256": "c3a3675f7cee3d3be7fb04748e3f80bf6900ff1c3e81b15c9fbe746835a02431"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-grid-shimmer.ts",
+      "sha256": "cc3f402c8b6215fcaa7707a3181085b9e77e936a610575b08a0df4bea35141fb"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-highlight-segment.ts",
+      "sha256": "942b5517a63b8077f0af2852fb045e5f6bda28784962058ef060d79ec445865d"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-scheduled-tooltip.ts",
+      "sha256": "197430cabf1f017a47f6f2262341b8355d55436876e19affcc8b46f2f35752d3"
+    },
+    {
+      "path": "packages/ui/src/components/charts/visx-pattern.tsx",
+      "sha256": "987831a15796d47edc1e0a7783f239a78914f3e2e038ed082d66e8fcad12e016"
+    },
+    {
+      "path": "packages/ui/src/components/charts/x-axis.tsx",
+      "sha256": "e53719a79e2527d84d648c17b94ffb4e4804552491c96e9e23545317055ec21f"
+    },
+    {
+      "path": "packages/ui/src/components/charts/y-axis-scales.ts",
+      "sha256": "4bd7bfee4e0ef50e185ed96ed910af6236793663b5947f14778513b6e70a8fe1"
+    },
+    {
+      "path": "packages/ui/src/components/charts/y-axis-ticks.ts",
+      "sha256": "2b8b5eae899adca35419007248a863566626919e651d611ee431b9f68cc1ed62"
+    },
+    {
+      "path": "packages/ui/src/components/charts/y-axis.tsx",
+      "sha256": "d93a2c028bb2c2fd0e58d708444749e7a37d92c1e894d2ca364749d7bdb5e368"
+    },
+    {
+      "path": "packages/ui/src/components/charts/y-domain-utils.ts",
+      "sha256": "d3f67c8760a7ada2b6bdc05fe470900a49ab86ee70a13ec6686f2c64a64eeebb"
+    },
+    {
+      "path": "packages/ui/src/components/area-chart.tsx",
+      "sha256": "048c865410871d1fbfaa042cf3b701b055bd74c4109cb56a3c5f69313299ac48"
+    },
+    {
+      "path": "packages/ui/src/components/charts/area-chart-loading.tsx",
+      "sha256": "f154817c82016d7bd6fd1a2b4c972909ece87deb00251ad729a22d101e4bde16"
+    },
+    {
+      "path": "packages/ui/src/components/charts/area-chart.tsx",
+      "sha256": "09d5e4541abfd191f1d72336588b0b585579d37901f4adb3dadf6ca46b2dcc81"
+    },
+    {
+      "path": "packages/ui/src/components/charts/area-gradient-defs.tsx",
+      "sha256": "4dd07b0a7fa5822f20a5287722c075aff0b9aa39411ad048f7a03b7dec4c7c42"
+    },
+    {
+      "path": "packages/ui/src/components/charts/area.tsx",
+      "sha256": "97e719ec2d5e984aabb224c81f579a05d3de91244ff0a230b42c61a8101a4168"
+    },
+    {
+      "path": "packages/ui/src/components/charts/pattern-area.tsx",
+      "sha256": "740467be0544bf0fe494aa55a262ba1db6113f21ab9392bb8081ab807418ae22"
+    },
+    {
+      "path": "packages/ui/src/components/chart-brush.tsx",
+      "sha256": "84d334b135704832a543f1cb659d2df14163a74d14276699a4a81153f604b76e"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-brush-handle.tsx",
+      "sha256": "0820b5ed19993e5f3630f901ccad771feccc74993b3f70630316db8c693b4487"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-brush-layout.tsx",
+      "sha256": "94b499115400e54f963320277b37a92a14d4684a6dbb0e8670835993e2f75829"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-brush-selection-overlay.tsx",
+      "sha256": "b87ae69c441e13ebacf913a0ed62952acebd95c1729cad657da05ab67298fa28"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-brush-track-overlay.tsx",
+      "sha256": "4849d14c1601f5c802fa1b283984add7b9193b20649552d88481d9e85f1b83cf"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-brush.tsx",
+      "sha256": "91e58a65c2c2d3822967cd24d0371baeffb3f8d4d14cff2eb6dd7485bea4f7f2"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-layout.tsx",
+      "sha256": "49bda57c7344bfc85c537a8ff24a4bd2045ebc787977bedd816684c2387a2a48"
+    },
+    {
+      "path": "packages/ui/package.json",
+      "sha256": "3003ea10fb09471a666e7a60bb5abcf86c792a5bcadf67686bdb2be01a88213f"
+    },
+    {
+      "path": "packages/ui/registry.json",
+      "sha256": "7fe6019c9a6e72438ff42e6f8de116c913fb82f06ea8c35c5ca836f8c8b8c2c0"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "df0859574b239d9faca0448c2fd8d2fe04d02be661470328a812c7811043423e"
+    },
+    {
+      "path": "tests/area-chart.test.tsx",
+      "sha256": "537859d74a2240dcfa00f90235e42f4b3206aed792133e3698888d02d7d94393"
+    },
+    {
+      "path": "tests/chart-document-examples.test.ts",
+      "sha256": "ac5e622caeb2c9525880efe092e55408d09363f84773d839ad2026e9d99a1625"
+    },
+    {
+      "path": "tests/funnel-chart.test.tsx",
+      "sha256": "f6934157dd04ba3431301698198b919807a2a233dff982e2b80063cb1c69a771"
+    },
+    {
+      "path": "scripts/generate-component-covers.mjs",
+      "sha256": "34d2f9c54acb98e9a65c89d8db619509b4782f3dbb8d25829763d04058028bb8"
+    },
+    {
+      "path": "docs/content/en/components/area-chart.json",
+      "sha256": "519f7d2915af8065cc468254edee5508867f69e2198f475d2662b6bd2b2d9461"
+    },
+    {
+      "path": "docs/content/zh-CN/components/area-chart.json",
+      "sha256": "0fe91f0255ac4786bc2a75278b626375579127c40d82055ad39363c164c2c3df"
+    },
+    {
+      "path": "public/component-covers/area-chart-light.jpg",
+      "sha256": "def0e8d9072e6ffc48ab39576c8c7b2be8a20072db51ba0eb278744be733b1bf"
+    },
+    {
+      "path": "public/component-covers/area-chart-dark.jpg",
+      "sha256": "d5584d78530779e8b021fab179fa2b9332028fd8c2d9bca134cf5154788566f4"
+    },
+    {
+      "path": "docs/agent-guides/components/area-chart.md",
+      "sha256": "dc55852d718af0d5c64357bfbfcd391a69a267e58b7bb7e503e8644c7fa102e3"
+    },
+    {
+      "path": "docs/agent-guides/components/chart-core.md",
+      "sha256": "4b598c7af71a133cd42c6b6ea28009f8354efc1e89b68a3a24ac037808c193d0"
+    },
+    {
+      "path": "docs/agent-guides/components/chart-brush.md",
+      "sha256": "2a21fd95a227b1360b0ae400f14eb56ba5bafb89e2115f5e4702ee845b218517"
+    },
+    {
+      "path": "docs/agent-guides/components/chart-motion.md",
+      "sha256": "f7402a61a9c678553029a4fca91d6858d5cb0e50426163f2fbb4639e338ba60a"
+    },
+    {
+      "path": "docs/plans/2026-10-07-chart-library-integration-plan.md",
+      "sha256": "c5d88b95a4206746f098958d6aa6ca2df3556ff9c8a3e8e21512397abb961195"
+    },
+    {
+      "path": "docs/plans/2026-10-07-area-chart-implementation.md",
+      "sha256": "9a3052f5039a47453ac09d756cf9f78f698d4ee3e1202caba5ff1259482aca79"
+    },
+    {
+      "path": "docs/plans/2026-10-07-area-chart-reference-manifest.json",
+      "sha256": "d85024569357d0989ee5521b16f51df94d0bc0d128ef5c42e799f30626487652"
+    },
+    {
+      "path": "docs/plans/2026-10-07-area-chart-task-files.json",
+      "sha256": "dba007fcdb7661b6168b4077f8c30426da0840d7cbbd37676e53109438574bbf"
+    },
+    {
+      "path": "tests/chart-legend-layout.test.tsx",
+      "sha256": "f039194cc5b957e33329c4738ec422d077eedecccb1293514ddf163946574129"
+    },
+    {
+      "path": "tests/chart-y-domain-lifecycle.test.tsx",
+      "sha256": "842b40d393bff49db5c047159fede59f6aab466a884d36f17fea6f595566fdd9"
+    },
+    {
+      "path": "docs/plans/2026-10-08-area-chart-review-commit-plan.md",
+      "sha256": "aed2dfca94882b820d5bd9edd8db345236a669f65bf87d29fbf710a1c358b30c"
+    },
+    {
+      "path": "docs/plans/2026-10-08-area-chart-commit-files.json",
+      "sha256": null,
+      "hashNote": "Self-describing plan file; excluded from recursive hash"
+    },
+    {
+      "path": "docs/pages/components/area-chart/page.tsx",
+      "sha256": "e6b82d51616cf4a07530318e45bfc95ccc07f0c87ca4bc05b25eb6a2a741d4a2"
+    }
+  ],
+  "sharedSourceSelections": [
+    {
+      "path": "docs/manifest.ts",
+      "selection": "AreaChart registryItem and description only",
+      "reviewedWorkingTreeSha256": "3e0a4f97343e1fa50303fed5458b1760ffd42ab2a9a1eb2ed1d3f8e40ccf7e73",
+      "staging": "Project only these semantic changes onto the execution baseline; do not blindly stage the entire file"
+    },
+    {
+      "path": "docs/content/en/common.json",
+      "selection": "AreaChart description only",
+      "reviewedWorkingTreeSha256": "f0536bccfb095a4651d282e6471f4c5eb79c6330c407d4fd1e8762e467fc9232",
+      "staging": "Project only these semantic changes onto the execution baseline; do not blindly stage the entire file"
+    },
+    {
+      "path": "docs/content/zh-CN/common.json",
+      "selection": "AreaChart description only",
+      "reviewedWorkingTreeSha256": "26f2ed75f6ece195d808764581d1ecb0140916a459dc3a8b68295d2106f27743",
+      "staging": "Project only these semantic changes onto the execution baseline; do not blindly stage the entire file"
+    },
+    {
+      "path": "docs/agent-data/components.json",
+      "selection": "Area/core/brush/motion entries only",
+      "reviewedWorkingTreeSha256": "8ce8f20a4f40724455108ed1b521ecf33c1b853fbb1e3ccc56a2445da9df2a34",
+      "staging": "Project only these semantic changes onto the execution baseline; do not blindly stage the entire file"
+    },
+    {
+      "path": "docs/agent-data/guide-routes.json",
+      "selection": "Area/core/brush/motion routes only",
+      "reviewedWorkingTreeSha256": "308440d53c8d2e3358a05050d3f7c1846e2502624ad5111e9cafa64ac69687cb",
+      "staging": "Project only these semantic changes onto the execution baseline; do not blindly stage the entire file"
+    },
+    {
+      "path": "docs/agent-data/item-identities.json",
+      "selection": "Area replacement and core/brush/motion identities only",
+      "reviewedWorkingTreeSha256": "8ce53deedbcdc26c9c473bb33abc0593e168d926dff182a39e0b300e3a8e6974",
+      "staging": "Project only these semantic changes onto the execution baseline; do not blindly stage the entire file"
+    },
+    {
+      "path": "docs/agent-guides/components/funnel-chart.md",
+      "selection": "shared motion dependency only",
+      "reviewedWorkingTreeSha256": "c383c0c42e0479332e4b666f0518180b36c37deb6206d67868df9086735807a8",
+      "staging": "Project only these semantic changes onto the execution baseline; do not blindly stage the entire file"
+    },
+    {
+      "path": "scripts/test-consumer-installs.mjs",
+      "selection": "Next and Vite Area examples only; Sales examples belong to concurrent work",
+      "reviewedWorkingTreeSha256": "035d9528a8cfcf1c5f2100784839a28b44007ccc87b6be5d097cfffb12f1ecf5",
+      "staging": "Project only these semantic changes onto the execution baseline; do not blindly stage the entire file"
+    },
+    {
+      "path": "tests/i18n-document-manifest.test.ts",
+      "selection": "Area registry assertions only; total 129 and Sales entry belong to concurrent work",
+      "reviewedWorkingTreeSha256": "a8cae02d0c380fb21b20af7bd8f2c52eb2493647fca59a282918361e2ec54936",
+      "staging": "Project only these semantic changes onto the execution baseline; do not blindly stage the entire file"
+    }
+  ],
+  "generatedResources": [
+    {
+      "path": "public/r/area-chart.json",
+      "action": "Regenerate from the isolated Area candidate tree; do not copy mixed working-tree artifacts"
+    },
+    {
+      "path": "public/r/chart-core.json",
+      "action": "Regenerate from the isolated Area candidate tree; do not copy mixed working-tree artifacts"
+    },
+    {
+      "path": "public/r/chart-brush.json",
+      "action": "Regenerate from the isolated Area candidate tree; do not copy mixed working-tree artifacts"
+    },
+    {
+      "path": "public/r/chart-motion.json",
+      "action": "Regenerate from the isolated Area candidate tree; do not copy mixed working-tree artifacts"
+    },
+    {
+      "path": "public/r/funnel-chart.json",
+      "action": "Regenerate from the isolated Area candidate tree; do not copy mixed working-tree artifacts",
+      "preserve": "Existing baseline FunnelSeries implementation; move shared animation file ownership to chart-motion only"
+    },
+    {
+      "path": "public/r/registry.json",
+      "action": "Regenerate from the isolated Area candidate tree; do not copy mixed working-tree artifacts"
+    },
+    {
+      "path": "public/llms.txt",
+      "action": "Regenerate from the isolated Area candidate tree; do not copy mixed working-tree artifacts"
+    },
+    {
+      "path": "public/llms-full.txt",
+      "action": "Regenerate from the isolated Area candidate tree; do not copy mixed working-tree artifacts"
+    },
+    {
+      "path": "docs/generated/agent-guide-loaders.generated.ts",
+      "action": "Regenerate from the isolated Area candidate tree; do not copy mixed working-tree artifacts"
+    }
+  ],
+  "unchangedSourceFiles": [
+    "packages/ui/src/components/charts/use-mount-progress.ts",
+    "packages/ui/src/components/charts/use-enter-complete.ts"
+  ],
+  "sourceFileSnapshots": [
+    {
+      "path": "packages/ui/src/components/chart-motion.tsx",
+      "sha256": "9650cbb46f71cae4b89931bd549a1b4c9e388b35d3a11ee39619e212a51d529b"
+    },
+    {
+      "path": "packages/ui/src/components/charts/animation.ts",
+      "sha256": "c030153a3e45a284d3461fe82207f9ce3a1f679d979d9150cce09a60645700a4"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-mount-progress.ts",
+      "sha256": "99ed8485c9ca2f1a93ea8996d5b74235c81972df7ac5851eded53d89207c213f"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-enter-complete.ts",
+      "sha256": "c1c20d2a36435512a4112288b69220de9a6ad217454744ec6980e7b18c68c788"
+    },
+    {
+      "path": "packages/ui/src/components/chart-core.tsx",
+      "sha256": "9b95c681738435474d0ec14fb567d56ee63d0fe3eff9bc2ca5b7110613e8c541"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-child-passthrough.ts",
+      "sha256": "7ed588788dd6b8d009928b0f6f2af64838ba9291f4690f2801d77586b7269790"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-config-context.tsx",
+      "sha256": "65c9fae029556283adf951203679147f9708187df6ec62cbe961b4e250c0b210"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-context.tsx",
+      "sha256": "ca5bed16329e94429617fe955787b41f3406e0c24d2d2374229dc9c4b9dd4718"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-data.ts",
+      "sha256": "45464496d0ea6dcd4ca742ac19f70856edc3d9cedb521c1ea1c7e020d8666a8c"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-defs.ts",
+      "sha256": "3450fd3a5b52169b6cbfb10ea87dc4ef8feafeefc5ace88ef45366051926d5d0"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-formatters.ts",
+      "sha256": "5044fb8e7e6cfaba51d4d3a1d961ecb53e95d3fdd733cb4b1666cb285bd96821"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-legend-hover.tsx",
+      "sha256": "fb31f3648fed0aba2d92792ee943a6317b5051532d5738855bae24a496403882"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-legend.tsx",
+      "sha256": "c867773a2544924508407834a97785b7c9cd45400cf9c755b8867c1c0f5a2f2d"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-loading-label.tsx",
+      "sha256": "2f198616d981ab4261c258a08696909dbb17ba8c0a3313918a6a309b6080f07b"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-phase.ts",
+      "sha256": "1dd53632aa57857f0302c2f8376b1882da324451040f47b35fad50167a2f15a4"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-reveal-clip.tsx",
+      "sha256": "e63aa2b186ba797f1737f0a88d717bd0f07da10b2476598b7522924cac9f9d01"
+    },
+    {
+      "path": "packages/ui/src/components/charts/dash-tail-stroke.tsx",
+      "sha256": "42e25bc552b9eab95f6960ae75a633c6c5dd515d38654ce954f2fcb1df6cee89"
+    },
+    {
+      "path": "packages/ui/src/components/charts/decimate-time-series.ts",
+      "sha256": "cf60a42bdd5fd90db20a36a69fc6258afd877faafad85dc431c4c7ac4c8952e6"
+    },
+    {
+      "path": "packages/ui/src/components/charts/fade-edges.ts",
+      "sha256": "74eebe91d37b5b5d4b4227c590edcf2cf8de7c68dc359827910e0bc0f25bb120"
+    },
+    {
+      "path": "packages/ui/src/components/charts/filter-data-by-x-domain.ts",
+      "sha256": "cd4262b0f5bb84c54d49efa4565ec6f3a64870b7d7c1349dfe685ec6e198fdf4"
+    },
+    {
+      "path": "packages/ui/src/components/charts/generate-chart-skeleton-data.ts",
+      "sha256": "7673a08792a7623133660473663da5e94bf519ddc54689bb024b7a2b78f58393"
+    },
+    {
+      "path": "packages/ui/src/components/charts/grid.tsx",
+      "sha256": "84646936c9c971acbd87b3122161e7e3ee56241962793bed93a233e9b34fe156"
+    },
+    {
+      "path": "packages/ui/src/components/charts/highlight-segment-bounds.ts",
+      "sha256": "b5a304c3b9907823f7c0762443304dc6fc16c5ec76c9c927742f7250465e97b3"
+    },
+    {
+      "path": "packages/ui/src/components/charts/highlight-segment.tsx",
+      "sha256": "112a80a08a9d35b1babe66be7b03dfe0be8638cc2860982d6c7c049839769872"
+    },
+    {
+      "path": "packages/ui/src/components/charts/indicator-fade.ts",
+      "sha256": "e2d87a04e32b40e9452155d1ea841038f3d3bc3c55e4ec7bc26df18f9a28adf8"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/index.ts",
+      "sha256": "b83d8b2d923086359eba6d137b27394d0d08a590dd970c15d329e3fd5411a053"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-context.tsx",
+      "sha256": "ccfe30e4bed8c0abe0b6f10b9965a0a785877dda3ab49ffdc70411fb6bb26aed"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-item.tsx",
+      "sha256": "59338c32359de8f405a514193a743d566fef13af5e0e9dec42b6466e7ac7fd65"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-label.tsx",
+      "sha256": "7b25e278f8eaf3295d14d71561e35e3311f19d92dad60c7ac6b23352594f7a5e"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-marker.tsx",
+      "sha256": "b176f0c34a0f0e6d86c70f02ffdfc0a38e2f5848a41417b9a32cb580929cb8e7"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-progress.tsx",
+      "sha256": "b9ca77bc6e996d72e932170cb5cc06f8b96aca2c144b82d62f92d14e3d58cdfd"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-value.tsx",
+      "sha256": "c289bbafaf523375104a93f3b59d63f8ff0f42e50b3476c388d69443e396f9e4"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend.tsx",
+      "sha256": "794f51d88ca1b02c78d5b3f433fe2d849a5e1cea19ba8ab64f863f38646b0015"
+    },
+    {
+      "path": "packages/ui/src/components/charts/line-loading-pulse.tsx",
+      "sha256": "b4d52dc9d55052885ed531170633a188ace35877929c1e299671e7a4fce82d35"
+    },
+    {
+      "path": "packages/ui/src/components/charts/line-loading-timing.ts",
+      "sha256": "e2328b4a9502014022dd671c6086ede1b6bd4ce8da02f04a8d251634bee0e4f4"
+    },
+    {
+      "path": "packages/ui/src/components/charts/loading-sweep.tsx",
+      "sha256": "b13b512c3a5f065c943a373cdbf11666a831a67cb00a8a8adf4762f477d38aba"
+    },
+    {
+      "path": "packages/ui/src/components/charts/path-stroke-utils.ts",
+      "sha256": "32dac3ab8593c03fa60bbc192b82d1640fbf27a01a517ae0a40e57b06ceb22e9"
+    },
+    {
+      "path": "packages/ui/src/components/charts/pattern-preset.tsx",
+      "sha256": "946ba9c7146297d5c918442d57c2a7c08fef63ad6f3d2e5177ca50d2c0e823a6"
+    },
+    {
+      "path": "packages/ui/src/components/charts/projection-config.ts",
+      "sha256": "fb7e04bbaac83119bcbe5fcfea4c2c713d80ec3cf65dc8a427d506edeca4bf59"
+    },
+    {
+      "path": "packages/ui/src/components/charts/projection-utils.ts",
+      "sha256": "a7d6c269220dcce466e2eaf620081d488fbef1a372ed3d9cff4fd76298232e0f"
+    },
+    {
+      "path": "packages/ui/src/components/charts/reference-area-config.ts",
+      "sha256": "6d5a08ea977f9181f78ebf7e32d5d1dd4f70fb4c645fa11006b9f62b45f223e5"
+    },
+    {
+      "path": "packages/ui/src/components/charts/reference-area-geometry.ts",
+      "sha256": "846c484c1a94faf0f0090783f408d586ba02e6c28dbe597c25241fad6fa9cda9"
+    },
+    {
+      "path": "packages/ui/src/components/charts/reference-area-registration-context.tsx",
+      "sha256": "1bdf081f8d454f6e9b678d4b470aabbade8fb7b47d9bcf8a44e05887e11aa347"
+    },
+    {
+      "path": "packages/ui/src/components/charts/reference-area.tsx",
+      "sha256": "5ef92e4c157cc45c1c4e8a4571bbb02f0230a4cf0b7e92a15a561dd1f20ed1b5"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-bar-layout.ts",
+      "sha256": "3e834065bf086275b263b2f5a0737a544dc4dfbfc7aa533191fcd0365feefb2c"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-dash-tail-overlay.tsx",
+      "sha256": "62425aae177b81d3ee730d3d379ed2e43e6ec998bd2d17851f01de265b434582"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-highlight-layer.tsx",
+      "sha256": "c9d5d19fe7fb3e1cf6dd3d054ef89538920b523f4899ea78a37f63b976fa00ac"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-hover-dim.tsx",
+      "sha256": "3eb2c82aa794c2b263bef2dba8bfe81ef9fb63b78891225d3cf951b0c89483ba"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-markers.tsx",
+      "sha256": "194e91ab8dc442a4aa2b898025d12b51066234b11ccc5496fa71f984edcb4519"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-point-marker.tsx",
+      "sha256": "9775cb40e04639fafa29c675619e6ebbaf20984d353cf41fdc5d10fe1034ea04"
+    },
+    {
+      "path": "packages/ui/src/components/charts/shimmering-text.tsx",
+      "sha256": "58c847371b6bf9fdb4c01963b7449a464e3f451310556206930918d850d7de4b"
+    },
+    {
+      "path": "packages/ui/src/components/charts/static-chart-preview-context.tsx",
+      "sha256": "231d750e55824c86c3f79fd18870bb43633cf47fae4c33f8c218fea7eab8f551"
+    },
+    {
+      "path": "packages/ui/src/components/charts/time-series-chart-shell.tsx",
+      "sha256": "fd74de000847067e0a6dbfe7421329ec6dd995af254d87de8e2f7778098698ea"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/chart-tooltip.tsx",
+      "sha256": "bc2d96a8b4961169ce5916493fb7a85c3e56da3f8517101fcdaa0a659e75e0e6"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/date-ticker.tsx",
+      "sha256": "5492836ba7f40b500a8c6c80e41b12de1f8972d225c7511642fefd947972a67c"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/index.ts",
+      "sha256": "53b24a2f5cb83018efaf5320040a448a468a3962b000a25e5bf1e6b04b3e23df"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/tooltip-box.tsx",
+      "sha256": "c92d232032310876d81313813e6c663744e97f0963362bfb07cf89ea9a1c04bf"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/tooltip-content.tsx",
+      "sha256": "a83fd081437027797b1eefccf749b2d81e9ab69e5554027bddff098d5cc0368c"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/tooltip-dot.tsx",
+      "sha256": "00d4dcadb37a1eaf005707e770b6ab0a0cfa410c7c327e86c8c35bde7043208e"
+    },
+    {
+      "path": "packages/ui/src/components/charts/tooltip/tooltip-indicator.tsx",
+      "sha256": "6cb388941274d7a32d9d8f502915160a23bcaf56ad649d0207204ff7cac384be"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-animated-y-domains.ts",
+      "sha256": "dbdcecf29f1297af607296f2fa15cdfe2062da43b766818390b120cfbcd536cb"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-chart-interaction.ts",
+      "sha256": "e5d73750f9b3645683c84a1e6c9eb328b595d5af30046cae7ed16d95f542aa6d"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-chart-phase-orchestrator.ts",
+      "sha256": "c3a3675f7cee3d3be7fb04748e3f80bf6900ff1c3e81b15c9fbe746835a02431"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-grid-shimmer.ts",
+      "sha256": "cc3f402c8b6215fcaa7707a3181085b9e77e936a610575b08a0df4bea35141fb"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-highlight-segment.ts",
+      "sha256": "942b5517a63b8077f0af2852fb045e5f6bda28784962058ef060d79ec445865d"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-scheduled-tooltip.ts",
+      "sha256": "197430cabf1f017a47f6f2262341b8355d55436876e19affcc8b46f2f35752d3"
+    },
+    {
+      "path": "packages/ui/src/components/charts/visx-pattern.tsx",
+      "sha256": "987831a15796d47edc1e0a7783f239a78914f3e2e038ed082d66e8fcad12e016"
+    },
+    {
+      "path": "packages/ui/src/components/charts/x-axis.tsx",
+      "sha256": "e53719a79e2527d84d648c17b94ffb4e4804552491c96e9e23545317055ec21f"
+    },
+    {
+      "path": "packages/ui/src/components/charts/y-axis-scales.ts",
+      "sha256": "4bd7bfee4e0ef50e185ed96ed910af6236793663b5947f14778513b6e70a8fe1"
+    },
+    {
+      "path": "packages/ui/src/components/charts/y-axis-ticks.ts",
+      "sha256": "2b8b5eae899adca35419007248a863566626919e651d611ee431b9f68cc1ed62"
+    },
+    {
+      "path": "packages/ui/src/components/charts/y-axis.tsx",
+      "sha256": "d93a2c028bb2c2fd0e58d708444749e7a37d92c1e894d2ca364749d7bdb5e368"
+    },
+    {
+      "path": "packages/ui/src/components/charts/y-domain-utils.ts",
+      "sha256": "d3f67c8760a7ada2b6bdc05fe470900a49ab86ee70a13ec6686f2c64a64eeebb"
+    },
+    {
+      "path": "packages/ui/src/components/area-chart.tsx",
+      "sha256": "048c865410871d1fbfaa042cf3b701b055bd74c4109cb56a3c5f69313299ac48"
+    },
+    {
+      "path": "packages/ui/src/components/charts/area-chart-loading.tsx",
+      "sha256": "f154817c82016d7bd6fd1a2b4c972909ece87deb00251ad729a22d101e4bde16"
+    },
+    {
+      "path": "packages/ui/src/components/charts/area-chart.tsx",
+      "sha256": "09d5e4541abfd191f1d72336588b0b585579d37901f4adb3dadf6ca46b2dcc81"
+    },
+    {
+      "path": "packages/ui/src/components/charts/area-gradient-defs.tsx",
+      "sha256": "4dd07b0a7fa5822f20a5287722c075aff0b9aa39411ad048f7a03b7dec4c7c42"
+    },
+    {
+      "path": "packages/ui/src/components/charts/area.tsx",
+      "sha256": "97e719ec2d5e984aabb224c81f579a05d3de91244ff0a230b42c61a8101a4168"
+    },
+    {
+      "path": "packages/ui/src/components/charts/pattern-area.tsx",
+      "sha256": "740467be0544bf0fe494aa55a262ba1db6113f21ab9392bb8081ab807418ae22"
+    },
+    {
+      "path": "packages/ui/src/components/chart-brush.tsx",
+      "sha256": "84d334b135704832a543f1cb659d2df14163a74d14276699a4a81153f604b76e"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-brush-handle.tsx",
+      "sha256": "0820b5ed19993e5f3630f901ccad771feccc74993b3f70630316db8c693b4487"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-brush-layout.tsx",
+      "sha256": "94b499115400e54f963320277b37a92a14d4684a6dbb0e8670835993e2f75829"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-brush-selection-overlay.tsx",
+      "sha256": "b87ae69c441e13ebacf913a0ed62952acebd95c1729cad657da05ab67298fa28"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-brush-track-overlay.tsx",
+      "sha256": "4849d14c1601f5c802fa1b283984add7b9193b20649552d88481d9e85f1b83cf"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-brush.tsx",
+      "sha256": "91e58a65c2c2d3822967cd24d0371baeffb3f8d4d14cff2eb6dd7485bea4f7f2"
+    },
+    {
+      "path": "packages/ui/src/components/charts/legend/legend-layout.tsx",
+      "sha256": "49bda57c7344bfc85c537a8ff24a4bd2045ebc787977bedd816684c2387a2a48"
+    }
+  ],
+  "excluded": [
+    "SalesConversionFunnel / FunnelSeries changes and records already committed by another task",
+    "Pre-existing BlockPreview PreviewToolbarProvider changes",
+    "Older block unification / implementation plans",
+    "output/**",
+    ".zeron/**",
+    ".playwright-cli/**",
+    "Temporary consumer projects and build caches"
+  ],
+  "stagingProcedure": [
+    "Read HEAD/origin/main/index again; preserve other task staging",
+    "Rebase candidate scope on the confirmed execution baseline if HEAD changed",
+    "Check source hashes and review changed bytes before applying full files",
+    "Project only Area semantic selections in shared sources",
+    "Regenerate registry, agent guides and catalog in the isolated candidate",
+    "Run scoped tests, types, lint, registry and consumer verification; retain full-suite failure facts",
+    "Review the complete staged candidate before any future commit"
+  ],
+  "checks": {
+    "relatedTests": {
+      "files": 6,
+      "passed": 95
+    },
+    "fullUnit": {
+      "passedFiles": 267,
+      "failedFiles": 1,
+      "passedTests": 2442,
+      "failedTests": 1,
+      "failure": "tests/semantic-tokens.test.mjs:613: SalesConversionFunnel text-4xl"
+    },
+    "types": "UI package and workspace passed",
+    "lint": "Ordinary and design passed",
+    "registry": {
+      "items": 153,
+      "status": "passed"
+    },
+    "agents": {
+      "items": 166,
+      "guides": 60,
+      "status": "passed"
+    },
+    "consumers": "Next and Vite actual CLI installs, production builds and browser checks passed",
+    "installedParity": {
+      "sourceFiles": 85,
+      "copies": 170,
+      "allMatch": true,
+      "normalization": "TypeScript formatting, comments, verified lib aliases only"
+    },
+    "siteProductionBuild": "not run by this review",
+    "isolatedAreaCommitCandidate": "not prepared or verified by this review"
+  },
+  "evidence": {
+    "implementation": "docs/plans/2026-10-07-area-chart-implementation.md",
+    "reviewPlan": "docs/plans/2026-10-08-area-chart-review-commit-plan.md",
+    "usageReport": ".zeron/reports/area-chart-review/after.json",
+    "manualReview": ".zeron/reports/area-chart-review/manual-review.json",
+    "localLogsPrefix": "output/playwright/area-chart-review-",
+    "localEvidenceCommitted": false
+  },
+  "authorizedCommitExecution": {
+    "date": "2026-10-08",
+    "userRequest": "提交到github main",
+    "baseCommit": "65fc0baeaa7dc2f5acf387a95d77400482c89d95",
+    "targetBranch": "main",
+    "commitCount": 1,
+    "candidateFiles": 125,
+    "relatedTests": 95,
+    "fullUnit": {
+      "passed": 2442,
+      "failed": 1,
+      "remainingFailure": "SalesConversionFunnel semantic text size"
+    },
+    "types": "UI/workspace passed",
+    "lint": "ordinary/design passed",
+    "registry": "153 items passed",
+    "agents": "166 items / 60 guides passed",
+    "guideExamples": "31 guides / 33 TSX examples passed",
+    "consumerMatrix": "Area/Funnel, Next/Vite, npm: four fresh installs, types and production builds passed",
+    "siteBuild": "passed",
+    "productionBrowser": "seven chart previews, wide inline legend, narrow disclosure, focus, keyboard, loading, brush gray/border/restore, dark mobile passed",
+    "localEnvironment": "Vercel analytics and speed-insights scripts return 404 on local Next host",
+    "evidence": "output/zeron/area-chart-commit/",
+    "unrelatedChangesIncluded": false
+  }
+}
