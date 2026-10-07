@@ -274,7 +274,9 @@ function useDataGrid<TData>({
 
   const focusedCell = useStore(store, (state) => state.focusedCell);
   const editingCell = useStore(store, (state) => state.editingCell);
-  const selectionState = useStore(store, (state) => state.selectionState);
+  // Drag bookkeeping has no visual output. Subscribe only to the selected
+  // cells; range/isSelecting remain available through the live meta getter.
+  const selectedCells = useStore(store, (state) => state.selectionState.selectedCells);
   const searchQuery = useStore(store, (state) => state.searchQuery);
   const searchMatches = useStore(store, (state) => state.searchMatches);
   const matchIndex = useStore(store, (state) => state.matchIndex);
@@ -295,8 +297,6 @@ function useDataGrid<TData>({
   // Memoize per-row selection sets to prevent unnecessary row re-renders
   // Each row gets a stable Set reference that only changes when its cells' selection changes
   const cellSelectionMap = React.useMemo(() => {
-    const selectedCells = selectionState.selectedCells;
-
     if (selectedCells.size === 0) {
       prevCellSelectionMapRef.current.clear();
       return null;
@@ -329,7 +329,7 @@ function useDataGrid<TData>({
 
     prevCellSelectionMapRef.current = stableMap;
     return stableMap;
-  }, [selectionState.selectedCells, prevCellSelectionMapRef]);
+  }, [selectedCells, prevCellSelectionMapRef]);
 
   const visualRowIndexCacheRef = React.useRef<{
     rows: Row<TData>[] | null;
@@ -472,13 +472,16 @@ function useDataGrid<TData>({
   );
 
   const onSelectionClear = React.useCallback(() => {
+    const { selectionState, rowSelection } = store.getState();
     store.batch(() => {
-      store.setState("selectionState", {
-        selectedCells: new Set(),
-        selectionRange: null,
-        isSelecting: false,
-      });
-      store.setState("rowSelection", {});
+      if (selectionState.selectedCells.size || selectionState.selectionRange || selectionState.isSelecting) {
+        store.setState("selectionState", {
+          selectedCells: selectionState.selectedCells.size ? new Set() : selectionState.selectedCells,
+          selectionRange: null,
+          isSelecting: false,
+        });
+      }
+      if (Object.keys(rowSelection).length) store.setState("rowSelection", {});
     });
   }, [store]);
 
@@ -1987,18 +1990,21 @@ function useDataGrid<TData>({
 
       if (!event.ctrlKey && !event.metaKey && !event.shiftKey) {
         const cellKey = getCellKey(rowIndex, columnId);
+        const selectedCells = store.getState().selectionState.selectedCells;
         store.batch(() => {
           store.setState("selectionState", {
             selectedCells: propsRef.current.enableSingleCellSelection
               ? new Set([cellKey])
-              : new Set(),
+              : selectedCells.size ? new Set() : selectedCells,
             selectionRange: {
               start: { rowIndex, columnId },
               end: { rowIndex, columnId },
             },
             isSelecting: true,
           });
-          store.setState("rowSelection", {});
+          if (Object.keys(store.getState().rowSelection).length) {
+            store.setState("rowSelection", {});
+          }
         });
       }
     },
@@ -2030,6 +2036,7 @@ function useDataGrid<TData>({
 
   const onCellMouseUp = React.useCallback(() => {
     const currentState = store.getState();
+    if (!currentState.selectionState.isSelecting) return;
     store.setState("selectionState", {
       ...currentState.selectionState,
       isSelecting: false,

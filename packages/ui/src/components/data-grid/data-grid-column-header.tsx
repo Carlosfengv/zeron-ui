@@ -35,32 +35,75 @@ interface DataGridColumnHeaderProps<TData, TValue>
   table: Table<TData>;
 }
 
-export function DataGridColumnHeader<TData, TValue>({
+// TanStack mutates the table instance in place. Snapshot the state used by the
+// header before memoizing its menu, so cell navigation skips this subtree while
+// sorting, pinning, sizing and host option changes still update it.
+export function DataGridColumnHeader<TData, TValue>(props: DataGridColumnHeaderProps<TData, TValue>) {
+  const { header, table } = props;
+  const column = header.column;
+  const defaults = table._getDefaultColumnDef();
+  return <MemoizedColumnHeader
+    {...props}
+    label={column.columnDef.meta?.label || (typeof column.columnDef.header === "string" ? column.columnDef.header : column.id)}
+    variant={column.columnDef.meta?.cell?.variant}
+    sorted={column.getIsSorted()}
+    pinnedPosition={column.getIsPinned()}
+    canSort={column.getCanSort()}
+    canPin={column.getCanPin()}
+    canHide={column.getCanHide()}
+    canResize={column.getCanResize()}
+    isAnyColumnResizing={!!table.getState().columnSizingInfo.isResizingColumn}
+    isResizing={column.getIsResizing()}
+    size={column.getSize()}
+    minSize={defaults.minSize}
+    maxSize={defaults.maxSize}
+  />;
+}
+
+interface ColumnHeaderSnapshotProps<TData, TValue> extends DataGridColumnHeaderProps<TData, TValue> {
+  label: string;
+  variant: Parameters<typeof getColumnVariant>[0];
+  sorted: false | SortDirection;
+  pinnedPosition: false | "left" | "right";
+  canSort: boolean;
+  canPin: boolean;
+  canHide: boolean;
+  canResize: boolean;
+  isAnyColumnResizing: boolean;
+  isResizing: boolean;
+  size: number;
+  minSize?: number;
+  maxSize?: number;
+}
+
+const MemoizedColumnHeader = React.memo(ColumnHeaderImpl) as typeof ColumnHeaderImpl;
+
+function ColumnHeaderImpl<TData, TValue>({
   header,
   table,
+  label,
+  variant,
+  sorted,
+  pinnedPosition,
+  canSort,
+  canPin,
+  canHide,
+  canResize,
+  isAnyColumnResizing,
+  isResizing,
+  size,
+  minSize,
+  maxSize,
   className,
   onPointerDown,
   ...props
-}: DataGridColumnHeaderProps<TData, TValue>) {
+}: ColumnHeaderSnapshotProps<TData, TValue>) {
   const column = header.column;
-  const label = column.columnDef.meta?.label
-    ? column.columnDef.meta.label
-    : typeof column.columnDef.header === "string"
-      ? column.columnDef.header
-      : column.id;
-
-  const isAnyColumnResizing =
-    table.getState().columnSizingInfo.isResizingColumn;
-
-  const cellVariant = column.columnDef.meta?.cell;
-  const columnVariant = getColumnVariant(cellVariant?.variant);
-
-  const pinnedPosition = column.getIsPinned();
+  const columnVariant = getColumnVariant(variant);
   const isPinnedLeft = pinnedPosition === "left";
   const isPinnedRight = pinnedPosition === "right";
-  const sorted = column.getIsSorted();
-  const pinStartIndex = column.getCanSort() ? (sorted ? 3 : 2) : 0;
-  const hideIndex = pinStartIndex + (column.getCanPin() ? 2 : 0);
+  const pinStartIndex = canSort ? (sorted ? 3 : 2) : 0;
+  const hideIndex = pinStartIndex + (canPin ? 2 : 0);
 
   const onSortingChange = React.useCallback(
     (direction: SortDirection) => {
@@ -157,7 +200,7 @@ export function DataGridColumnHeader<TData, TValue>({
           checkedIndex={sorted === "asc" ? 0 : sorted === "desc" ? 1 : undefined}
           className="w-60"
         >
-          {column.getCanSort() && (
+          {canSort && (
             <>
               <MenuItem
                 checked={sorted === "asc"}
@@ -183,9 +226,9 @@ export function DataGridColumnHeader<TData, TValue>({
               )}
             </>
           )}
-          {column.getCanPin() && (
+          {canPin && (
             <>
-              {column.getCanSort() && <DropdownSeparator />}
+              {canSort && <DropdownSeparator />}
 
               {isPinnedLeft ? (
                 <MenuItem
@@ -219,7 +262,7 @@ export function DataGridColumnHeader<TData, TValue>({
               )}
             </>
           )}
-          {column.getCanHide() && (
+          {canHide && (
             <>
               <DropdownSeparator />
               <MenuItem
@@ -232,44 +275,32 @@ export function DataGridColumnHeader<TData, TValue>({
           )}
         </DropdownContent>
       </DropdownMenu>
-      {header.column.getCanResize() && (
-        <DataGridColumnResizer header={header} table={table} label={label} />
+      {canResize && (
+        <DataGridColumnResizer header={header} label={label} size={size} isResizing={isResizing} minSize={minSize} maxSize={maxSize} />
       )}
     </>
   );
 }
 
-const DataGridColumnResizer = React.memo(
-  DataGridColumnResizerImpl,
-  (prev, next) => {
-    const prevColumn = prev.header.column;
-    const nextColumn = next.header.column;
+const DataGridColumnResizer = React.memo(DataGridColumnResizerImpl) as typeof DataGridColumnResizerImpl;
 
-    if (
-      prevColumn.getIsResizing() !== nextColumn.getIsResizing() ||
-      prevColumn.getSize() !== nextColumn.getSize()
-    ) {
-      return false;
-    }
-
-    if (prev.label !== next.label) return false;
-
-    return true;
-  },
-) as typeof DataGridColumnResizerImpl;
-
-interface DataGridColumnResizerProps<TData, TValue>
-  extends DataGridColumnHeaderProps<TData, TValue> {
+interface DataGridColumnResizerProps<TData, TValue> {
+  header: Header<TData, TValue>;
   label: string;
+  size: number;
+  isResizing: boolean;
+  minSize?: number;
+  maxSize?: number;
 }
 
 function DataGridColumnResizerImpl<TData, TValue>({
   header,
-  table,
   label,
+  size,
+  isResizing,
+  minSize,
+  maxSize,
 }: DataGridColumnResizerProps<TData, TValue>) {
-  const defaultColumnDef = table._getDefaultColumnDef();
-
   const onDoubleClick = React.useCallback(() => {
     header.column.resetSize();
   }, [header.column]);
@@ -279,13 +310,13 @@ function DataGridColumnResizerImpl<TData, TValue>({
       role="separator"
       aria-orientation="vertical"
       aria-label={`Resize ${label} column`}
-      aria-valuenow={header.column.getSize()}
-      aria-valuemin={defaultColumnDef.minSize}
-      aria-valuemax={defaultColumnDef.maxSize}
+      aria-valuenow={size}
+      aria-valuemin={minSize}
+      aria-valuemax={maxSize}
       tabIndex={0}
       className={cn(
         "absolute -end-px top-0 z-raised h-full w-0.5 cursor-ew-resize touch-none select-none bg-border transition-opacity after:absolute after:inset-y-0 after:start-1/2 after:h-full after:w-[18px] after:-translate-x-1/2 after:content-[''] hover:bg-inverse-background focus:bg-inverse-background focus:outline-none",
-        header.column.getIsResizing()
+        isResizing
           ? "bg-inverse-background"
           : "opacity-0 hover:opacity-100",
       )}

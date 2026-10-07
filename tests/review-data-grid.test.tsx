@@ -2,9 +2,11 @@
 
 import * as React from "react";
 import type { ColumnDef, OnChangeFn, RowSelectionState, SortingState, TableState } from "@tanstack/react-table";
-import { act, cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { useDataGrid } from "../packages/ui/src/hooks/use-data-grid";
+import { DataGridColumnHeader } from "../packages/ui/src/components/data-grid/data-grid-column-header";
+import * as gridSystem from "../packages/ui/src/system/data-grid";
 import { DataGrid } from "../packages/ui/src/components/data-grid/data-grid";
 
 beforeAll(() => {
@@ -493,4 +495,70 @@ it("rebases a pending paste by getRowId across immutable source reordering", asy
   rerender({ items: [{ id: "b", name: "B updated" }, { id: "a", name: "A updated" }] });
   await act(async () => { wait.resolve(); await pending; });
   expect(onDataChange).toHaveBeenCalledWith([{ id: "b", name: "B updated" }, { id: "a", name: "pasted" }]);
+});
+
+
+describe("DataGrid interaction rendering", () => {
+  it("keeps drag bookkeeping live without rerendering unchanged cell selection", () => {
+    let renders = 0;
+    const onRowSelectionChange = vi.fn();
+    const { result } = renderHook(() => {
+      renders++;
+      return useDataGrid({ columns, data, onRowSelectionChange });
+    });
+    const initialRenders = renders;
+    act(() => result.current.tableMeta.onCellMouseDown?.(0, "name", {
+      button: 0, preventDefault() {},
+    } as React.MouseEvent));
+    expect(result.current.tableMeta.selectionState?.isSelecting).toBe(true);
+    expect(renders).toBe(initialRenders);
+    expect(onRowSelectionChange).not.toHaveBeenCalled();
+    act(() => result.current.tableMeta.onCellMouseEnter?.(1, "name"));
+    expect(result.current.cellSelectionMap?.get(0)?.has("0:name")).toBe(true);
+    expect(result.current.cellSelectionMap?.get(1)?.has("1:name")).toBe(true);
+    const afterDrag = renders;
+    act(() => result.current.tableMeta.onCellMouseUp?.());
+    expect(result.current.tableMeta.selectionState?.isSelecting).toBe(false);
+    expect(renders).toBe(afterDrag);
+    act(() => result.current.tableMeta.onSelectionClear?.());
+    expect(result.current.cellSelectionMap).toBeNull();
+    const afterClear = renders;
+    act(() => result.current.tableMeta.onSelectionClear?.());
+    expect(renders).toBe(afterClear);
+  });
+
+  it("skips header menu work during cell focus but refreshes sorting, pinning, sizing and host options", async () => {
+    const variant = vi.spyOn(gridSystem, "getColumnVariant");
+    let grid: ReturnType<typeof useDataGrid<Item>>;
+    function Demo({ label = "Name", canSort = true }: { label?: string; canSort?: boolean }) {
+      const definitions = React.useMemo<ColumnDef<Item>[]>(() => [{ accessorKey: "name", header: label, enableSorting: canSort }], [label, canSort]);
+      grid = useDataGrid({ columns: definitions, data });
+      return <DataGridColumnHeader header={grid.table.getFlatHeaders()[0]!} table={grid.table} />;
+    }
+    try {
+      const { rerender } = render(<Demo />);
+      const before = variant.mock.calls.length;
+      act(() => grid.tableMeta.onCellClick?.(0, "name"));
+      act(() => grid.tableMeta.onCellClick?.(1, "name"));
+      expect(variant.mock.calls.length).toBe(before);
+      act(() => grid.table.setSorting([{ id: "name", desc: true }]));
+      act(() => grid.table.setColumnPinning({ left: ["name"], right: [] }));
+      fireEvent.click(screen.getByRole("button", { name: "Name" }));
+      expect((await screen.findByRole("menuitemradio", { name: "Sort desc" })).getAttribute("aria-checked")).toBe("true");
+      expect(screen.getByRole("menuitem", { name: "Remove sort" })).toBeTruthy();
+      expect(screen.getByRole("menuitem", { name: "Unpin from left" })).toBeTruthy();
+      act(() => grid.table.setColumnSizing({ name: 240 }));
+      expect(screen.getByRole("separator", { name: "Resize Name column" }).getAttribute("aria-valuenow")).toBe("240");
+      act(() => grid.table.setColumnSizingInfo((state) => ({ ...state, isResizingColumn: "name" })));
+      expect(screen.getByRole("separator", { name: "Resize Name column" }).className).toContain("bg-inverse-background");
+      expect(screen.getByRole("button", { name: "Name" }).className).toContain("pointer-events-none");
+      act(() => grid.table.setColumnSizingInfo((state) => ({ ...state, isResizingColumn: false })));
+      fireEvent.keyDown(screen.getByRole("menu"), { key: "Escape" });
+      await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+      rerender(<Demo label="Updated name" canSort={false} />);
+      fireEvent.click(screen.getByRole("button", { name: "Updated name" }));
+      await screen.findByRole("menu");
+      expect(screen.queryByRole("menuitemradio", { name: "Sort desc" })).toBeNull();
+    } finally { variant.mockRestore(); }
+  });
 });
