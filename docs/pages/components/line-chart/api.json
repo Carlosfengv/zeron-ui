@@ -1,0 +1,344 @@
+[
+  {
+    "name": "LineChart.data",
+    "type": "Record<string, unknown>[]",
+    "default": "required",
+    "description": "Data array - each item should have a date field and numeric values"
+  },
+  {
+    "name": "LineChart.xDataKey",
+    "type": "string",
+    "default": "\"date\"",
+    "description": "Key in data for the x-axis (date). Default: \"date\""
+  },
+  {
+    "name": "LineChart.margin",
+    "type": "Partial<Margin>",
+    "default": "—",
+    "description": "Chart margins"
+  },
+  {
+    "name": "LineChart.animationDuration",
+    "type": "number",
+    "default": "1100",
+    "description": "Animation duration in milliseconds. Default: 1100"
+  },
+  {
+    "name": "LineChart.animationEasing",
+    "type": "string",
+    "default": "cubic-bezier(0.85, 0, 0.15, 1)",
+    "description": "CSS easing for clip-reveal. Default: cubic-bezier(0.85, 0, 0.15, 1)"
+  },
+  {
+    "name": "LineChart.enterTransition",
+    "type": "Transition",
+    "default": "—",
+    "description": "Motion enter transition (spring or cubic-bezier tween)."
+  },
+  {
+    "name": "LineChart.revealSignature",
+    "type": "string",
+    "default": "—",
+    "description": "Signature of motion URL state — triggers reveal replay when it changes."
+  },
+  {
+    "name": "LineChart.aspectRatio",
+    "type": "string",
+    "default": "\"2 / 1\"",
+    "description": "Aspect ratio as \"width / height\". Default: \"2 / 1\""
+  },
+  {
+    "name": "LineChart.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name for the container"
+  },
+  {
+    "name": "LineChart.status",
+    "type": "ChartStatus",
+    "default": "`\"ready\"`",
+    "description": "Loading vs ready — drives chart phase and loading chrome. Default: `\"ready\"`."
+  },
+  {
+    "name": "LineChart.loadingLabel",
+    "type": "string",
+    "default": "—",
+    "description": "Centered shimmer label while loading."
+  },
+  {
+    "name": "LineChart.yDomainTweenDuration",
+    "type": "number",
+    "default": "500",
+    "description": "Animate y-domain over this duration (ms) on status transitions. Default: 500."
+  },
+  {
+    "name": "LineChart.yDomainTween",
+    "type": "boolean",
+    "default": "true",
+    "description": "Animate y-domain when status or target domain changes. Default: true"
+  },
+  {
+    "name": "LineChart.xDomain",
+    "type": "[Date, Date]",
+    "default": "—",
+    "description": "Visible x-domain for brush zoom."
+  },
+  {
+    "name": "LineChart.xDomainSlotCount",
+    "type": "number",
+    "default": "—",
+    "description": "Full dataset length for x-scale padding when `xDomain` is set."
+  },
+  {
+    "name": "LineChart.tweenYDomainOnXDomainChange",
+    "type": "boolean",
+    "default": "false",
+    "description": "Tween y-domain when brush changes the visible x-range. Default: false"
+  },
+  {
+    "name": "LineChart.style",
+    "type": "CSSProperties",
+    "default": "—",
+    "description": "Inline container styles (e.g. fixed height for brush strip)."
+  },
+  {
+    "name": "LineChart.onPhaseChange",
+    "type": "(phase: ChartPhase) => void",
+    "default": "—",
+    "description": "Fires when the internal chart phase changes (e.g. OG capture readiness)."
+  },
+  {
+    "name": "LineChart.children",
+    "type": "ReactNode",
+    "default": "required",
+    "description": "Child components (Line, Grid, ChartTooltip, etc.)"
+  },
+  {
+    "name": "Line.dataKey",
+    "type": "string",
+    "default": "required",
+    "description": "Key in data to use for y values"
+  },
+  {
+    "name": "Line.yAxisId",
+    "type": "string | number",
+    "default": "`\"left\"`",
+    "description": "Y-scale group id (Recharts `yAxisId`). Default: `\"left\"`."
+  },
+  {
+    "name": "Line.stroke",
+    "type": "string",
+    "default": "var(--chart-1)",
+    "description": "Stroke color. Default: var(--chart-1)"
+  },
+  {
+    "name": "Line.strokeWidth",
+    "type": "number",
+    "default": "2.5",
+    "description": "Stroke width. Default: 2.5"
+  },
+  {
+    "name": "Line.curve",
+    "type": "CurveFactory",
+    "default": "curveNatural",
+    "description": "Curve function. Default: curveNatural"
+  },
+  {
+    "name": "Line.animate",
+    "type": "boolean",
+    "default": "true",
+    "description": "Whether to animate the line. Default: true"
+  },
+  {
+    "name": "Line.fadeEdges",
+    "type": "FadeEdges",
+    "default": "true",
+    "description": "Fade the line stroke toward transparent at the chart edges.\n- `true` fades both edges, `false` disables the fade entirely.\n- `\"left\"` / `\"right\"` fades only that side.\nDefault: true"
+  },
+  {
+    "name": "Line.showHighlight",
+    "type": "boolean",
+    "default": "true",
+    "description": "Whether to show highlight segment on hover. Default: true"
+  },
+  {
+    "name": "Line.showMarkers",
+    "type": "boolean",
+    "default": "false",
+    "description": "Render scatter-style circle markers at each data point. Default: false"
+  },
+  {
+    "name": "Line.markers",
+    "type": "SeriesPointMarkerStyle",
+    "default": "—",
+    "description": "Marker styling (same options as Scatter)."
+  },
+  {
+    "name": "Line.dashFromIndex",
+    "type": "number",
+    "default": "—",
+    "description": "Data index from which the line stroke becomes dashed (inclusive).\nUseful for projecting incomplete periods, e.g. dashed from yesterday through today."
+  },
+  {
+    "name": "Line.dashArray",
+    "type": "string",
+    "default": "\"6,4\"",
+    "description": "Dash pattern for the tail segment when `dashFromIndex` is set. Default: \"6,4\""
+  },
+  {
+    "name": "Line.loading",
+    "type": "boolean",
+    "default": "follows chart loading phase",
+    "description": "Show the loading pulse overlay. Default: follows chart loading phase.\nSet `false` to disable even during loading."
+  },
+  {
+    "name": "Line.loadingStroke",
+    "type": "string",
+    "default": "var(--fg-default)",
+    "description": "Stroke color for the loading pulse overlay. Default: var(--fg-default)"
+  },
+  {
+    "name": "Line.loadingStrokeOpacity",
+    "type": "number",
+    "default": "0.5",
+    "description": "Loading pulse stroke opacity. Default: 0.5"
+  },
+  {
+    "name": "Line.loadingPulseMode",
+    "type": "LineLoadingPulseMode",
+    "default": "—",
+    "description": "Override pulse animation mode (loop / exit / enter)."
+  },
+  {
+    "name": "Line.onLoadingPulseCycleComplete",
+    "type": "() => void",
+    "default": "—",
+    "description": "Called when a loop-mode pulse cycle completes."
+  },
+  {
+    "name": "Line.loadingStyle",
+    "type": "LoadingStyle",
+    "default": "`\"pulse\"`",
+    "description": "Loading animation while the chart is in loading status: the default\ntraveling `\"pulse\"`, or a diagonal `\"sweep\"` shimmer across the skeleton\nline. Default: `\"pulse\"`."
+  },
+  {
+    "name": "LineChartLoading.margin",
+    "type": "Partial<Margin>",
+    "default": "—",
+    "description": "Chart margins"
+  },
+  {
+    "name": "LineChartLoading.stroke",
+    "type": "string",
+    "default": "DEFAULT_LOADING_STROKE",
+    "description": "Stroke color for the animated loading segment."
+  },
+  {
+    "name": "LineChartLoading.strokeOpacity",
+    "type": "number",
+    "default": "0.5",
+    "description": "Stroke opacity for the animated loading segment. Default: 0.5"
+  },
+  {
+    "name": "LineChartLoading.gridStroke",
+    "type": "string",
+    "default": "DEFAULT_LOADING_GRID_STROKE",
+    "description": "Grid line stroke (color and opacity via color-mix or oklch alpha)."
+  },
+  {
+    "name": "LineChartLoading.gridShimmerStroke",
+    "type": "string",
+    "default": "DEFAULT_LOADING_GRID_SHIMMER_STROKE",
+    "description": "Shimmer band stroke (color and opacity via color-mix or oklch alpha)."
+  },
+  {
+    "name": "LineChartLoading.gridShimmer",
+    "type": "boolean",
+    "default": "true",
+    "description": "Animate a shimmer band across grid lines. Default: true"
+  },
+  {
+    "name": "LineChartLoading.gridShimmerLength",
+    "type": "number",
+    "default": "140",
+    "description": "Shimmer band width in pixels. Default: 140"
+  },
+  {
+    "name": "LineChartLoading.gridShimmerSpeed",
+    "type": "number",
+    "default": "1",
+    "description": "Shimmer speed multiplier (higher = faster). Default: 1"
+  },
+  {
+    "name": "LineChartLoading.gridShimmerSync",
+    "type": "boolean",
+    "default": "false",
+    "description": "Match shimmer loop to the loading line pulse (cycle + inter-loop pause)."
+  },
+  {
+    "name": "LineChartLoading.loadingStyle",
+    "type": "LoadingStyle",
+    "default": "`\"pulse\"`",
+    "description": "Loading animation: `\"pulse\"` (default traveling pulse) or `\"sweep\"` (a\ndiagonal shimmer across the skeleton line). Default: `\"pulse\"`."
+  },
+  {
+    "name": "LineChartLoading.label",
+    "type": "string",
+    "default": "\"Loading\"",
+    "description": "Centered shimmer label text. Default: \"Loading\""
+  },
+  {
+    "name": "LineChartLoading.aspectRatio",
+    "type": "string",
+    "default": "\"2 / 1\"",
+    "description": "Aspect ratio as \"width / height\". Default: \"2 / 1\""
+  },
+  {
+    "name": "LineChartLoading.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name for the container"
+  },
+  {
+    "name": "LineSeriesTerminalMarker.dataKey",
+    "type": "string",
+    "default": "required",
+    "description": "Required composition API."
+  },
+  {
+    "name": "LineSeriesTerminalMarker.yAxisId",
+    "type": "string | number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "LineSeriesTerminalMarker.fill",
+    "type": "string",
+    "default": "\"transparent\"",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "LineSeriesTerminalMarker.stroke",
+    "type": "string",
+    "default": "\"var(--chart-1)\"",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "LineSeriesTerminalMarker.radius",
+    "type": "number",
+    "default": "5",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "LineSeriesTerminalMarker.ringGap",
+    "type": "number",
+    "default": "0",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "LineSeriesTerminalMarker.strokeWidth",
+    "type": "number",
+    "default": "1.5",
+    "description": "Optional composition API."
+  }
+]

@@ -36,6 +36,32 @@ function renderOverview(content: StatusOverviewContent = timelineContent, varian
 }
 
 describe("StatusOverview", () => {
+  it("uses chart tokens for known statuses while preserving unknown and empty data distinctions", () => {
+    renderOverview({ type: "nodes", items: (["operational", "degraded", "down", "maintenance", "unknown", "empty"] as const).map(status => ({ id: status, status, ariaLabel: status })) }, "chart");
+    const cells = screen.getAllByRole("gridcell");
+    expect(cells.map(cell => cell.style.backgroundColor)).toEqual([
+      "var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--neutral-status-border)", "",
+    ]);
+    expect(cells.at(-1)?.className).toContain("repeating-linear-gradient");
+    expect(screen.getByText("99.9%").className).toContain("text-fg-success");
+  });
+
+  it.each(["chart", "card", "activity"] as const)("applies partial chart color overrides without changing %s semantics", (variant) => {
+    render(<StatusOverview variant={variant} chartColors={{ operational: "var(--chart-5)" }} ariaLabel="Custom status palette" label="Availability" emptyContent="No status data" content={timelineContent} summary={{ label: "Availability", value: "99.9%", status: "operational" }} />);
+    const operational = screen.getByRole("gridcell", { name: "00:00 operational" });
+    const degraded = screen.getByRole("gridcell", { name: "01:00 degraded" });
+    if (variant === "chart") {
+      expect(operational.style.backgroundColor).toBe("var(--chart-5)");
+      expect(degraded.style.backgroundColor).toBe("var(--chart-2)");
+    } else {
+      expect(operational.style.backgroundColor).toBe("");
+      expect((variant === "activity" ? operational.querySelector("span") : operational)?.className).toContain("bg-success-border");
+      expect((variant === "activity" ? degraded.querySelector("span") : degraded)?.className).toContain("bg-warning-border");
+    }
+    expect(screen.getByText("99.9%").className).toContain("text-fg-success");
+    expect(screen.getByRole("region", { name: "Custom status palette" }).hasAttribute("chartColors")).toBe(false);
+  });
+
   it("keeps an unlabeled activity rail accessible with results below", () => {
     render(<StatusOverview ariaLabel="Integration checks" label={null} variant="activity"
       content={{ type: "nodes", items: timelineContent.items, footer: <span>All checks passed</span> }} emptyContent="No checks" />);

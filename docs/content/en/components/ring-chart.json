@@ -1,0 +1,25 @@
+{
+  "ringchart": {
+    "description": "Display independent progress as concentric rings.",
+    "basic": "Rings and side legend",
+    "caps": "Half rings and flat caps",
+    "geometry": "Dynamic geometry and progress",
+    "behavior": "Behavior",
+    "api": "API reference",
+    "contract": "Each ring uses its own value/maxValue and keeps input order from inside to outside. Invalid values and non-positive maxima are omitted. Values exceeding a target render a full ring while summaries retain the actual value. Defaults: 12px width, 6px gap and 60px base inner radius, scaled down to fit. Angles use radians. animationDuration defaults to 1100ms; enterTransition takes precedence. geometryScrubbing skips path animation while preserving each Ring’s color, caps and hover behavior.",
+    "keyboard": "Tab enters once; arrows, Home and End inspect rings, Escape or blur clears the highlight. Reduced motion skips decorative animation. RingCenter custom rendering runs for both total and hovered values; the default data object contains aggregate value and maximum.",
+    "compatibility": "Use Ring and RingCenter inside RingChart. Shared legends come from chart-core. RingChart shows independent progress; use PieChart with innerRadius for parts of one total.",
+    "labels": {
+      "requests": "Requests",
+      "storage": "Storage",
+      "compute": "Compute",
+      "total": "Total",
+      "update": "Update progress",
+      "data": "Independent progress",
+      "viewData": "View source data",
+      "item": "Item",
+      "value": "Value",
+      "maximum": "Maximum"
+    }
+  }
+}

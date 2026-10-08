@@ -165,6 +165,9 @@ importers:
       '@vercel/blob':
         specifier: 2.8.0
         version: 2.8.0
+      '@visx/curve':
+        specifier: 4.0.0
+        version: 4.0.0
       autoprefixer:
         specifier: 10.4.22
         version: 10.4.22(postcss@8.5.6)
@@ -334,6 +337,9 @@ importers:
       '@hugeicons/react':
         specifier: ^1.1.6
         version: 1.1.6(react@19.2.4)
+      '@number-flow/react':
+        specifier: 0.5.10
+        version: 0.5.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@shikijs/themes':
         specifier: 4.4.3
         version: 4.4.3
@@ -358,7 +364,16 @@ importers:
       '@visx/event':
         specifier: 4.0.0
         version: 4.0.0(@types/react@19.2.14)(react@19.2.4)
+      '@visx/gradient':
+        specifier: 4.0.0
+        version: 4.0.0(@types/react@19.2.14)(react@19.2.4)
       '@visx/grid':
+        specifier: 4.0.0
+        version: 4.0.0(@types/react@19.2.14)(react@19.2.4)
+      '@visx/group':
+        specifier: 4.0.0
+        version: 4.0.0(@types/react@19.2.14)(react@19.2.4)
+      '@visx/heatmap':
         specifier: 4.0.0
         version: 4.0.0(@types/react@19.2.14)(react@19.2.4)
       '@visx/pattern':
@@ -385,6 +400,9 @@ importers:
       d3-array:
         specifier: 3.2.4
         version: 3.2.4
+      d3-shape:
+        specifier: 3.2.0
+        version: 3.2.0
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
@@ -1569,6 +1587,12 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@number-flow/react@0.5.10':
+    resolution: {integrity: sha512-a8Wh5eNITn7Km4xbddAH7QH8eNmnduR6k34ER1hkHSGO4H2yU1DDnuAWLQM99vciGInFODemSc0tdxrXkJEpbA==}
+    peerDependencies:
+      react: ^18 || ^19
+      react-dom: ^18 || ^19
 
   '@open-draft/deferred-promise@2.2.0':
     resolution: {integrity: sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA==}
@@ -3172,6 +3196,15 @@ packages:
       '@types/react':
         optional: true
 
+  '@visx/gradient@4.0.0':
+    resolution: {integrity: sha512-AycKA/9Hhx9BXOdWACqYKGU+Dkq/gWzgaDAK/MkVDjXME+3Sl8oE6mn/ZO54gi6wg9qNHhWLnp8XKPJSp4/pzA==}
+    peerDependencies:
+      '@types/react': ^18.0.0 || ^19.0.0
+      react: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
   '@visx/grid@4.0.0':
     resolution: {integrity: sha512-BUnznqYo8jyn3zXRWZiF0zwg1VQl6w5kYqZ+XMY+cPXtAHZZbwGXBChMpPefH5Lj1+P1b4Pf3QihKG8zjL9PCw==}
     peerDependencies:
@@ -3183,6 +3216,15 @@ packages:
 
   '@visx/group@4.0.0':
     resolution: {integrity: sha512-HGAq8BCqn5x0t94CJOLJeKtWss9LFpF3HY69HbuO1PlR+B9c4aVT9xbjfudmU8wGQZLT6JNt+PJvxbO2aJ+1aA==}
+    peerDependencies:
+      '@types/react': ^18.0.0 || ^19.0.0
+      react: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
+  '@visx/heatmap@4.0.0':
+    resolution: {integrity: sha512-+78FPvR3kGWRGwlA3j8kLARRdwTGWViIOMe8OC6layuAGWIa8Cgi1DXXc4054xoUwMkVC0bqcHdsbldIGKhz4w==}
     peerDependencies:
       '@types/react': ^18.0.0 || ^19.0.0
       react: ^18.0.0 || ^19.0.0
@@ -4140,6 +4182,9 @@ packages:
     peerDependenciesMeta:
       jiti:
         optional: true
+
+  esm-env@1.2.2:
+    resolution: {integrity: sha512-Epxrv+Nr/CaL4ZcFGPJIYLWFom+YeV1DqMLHJoEd9SYRxNbaFruBwfEX/kkHUJf55j2+TUbmDcmuilbP1TmXHA==}
 
   espree@10.4.0:
     resolution: {integrity: sha512-j6PAQ2uUr79PZhBjP5C5fhl8e39FmRnOjsD5lGnWrFU8i2G776tBK7+nP8KuQUTTyAZUwfQqXAgrVH5MbH9CYQ==}
@@ -5611,6 +5656,9 @@ packages:
   npm-run-path@6.0.0:
     resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
     engines: {node: '>=18'}
+
+  number-flow@0.5.8:
+    resolution: {integrity: sha512-FPr1DumWyGi5Nucoug14bC6xEz70A1TnhgSHhKyfqjgji2SOTz+iLJxKtv37N5JyJbteGYCm6NQ9p1O4KZ7iiA==}
 
   numeral@2.0.6:
     resolution: {integrity: sha512-qaKRmtYPZ5qdw4jWJD6bxEf1FJEqllJrwxCLIm0sQU/A7v2/czigzOb+C2uSiFsa9lBUzeH7M1oK+Q+OLxL3kA==}
@@ -8306,6 +8354,13 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
+  '@number-flow/react@0.5.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      esm-env: 1.2.2
+      number-flow: 0.5.8
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
   '@open-draft/deferred-promise@2.2.0': {}
 
   '@open-draft/logger@0.3.0':
@@ -9728,6 +9783,12 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
+  '@visx/gradient@4.0.0(@types/react@19.2.14)(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+    optionalDependencies:
+      '@types/react': 19.2.14
+
   '@visx/grid@4.0.0(@types/react@19.2.14)(react@19.2.4)':
     dependencies:
       '@visx/curve': 4.0.0
@@ -9742,6 +9803,14 @@ snapshots:
 
   '@visx/group@4.0.0(@types/react@19.2.14)(react@19.2.4)':
     dependencies:
+      classnames: 2.5.1
+      react: 19.2.4
+    optionalDependencies:
+      '@types/react': 19.2.14
+
+  '@visx/heatmap@4.0.0(@types/react@19.2.14)(react@19.2.4)':
+    dependencies:
+      '@visx/group': 4.0.0(@types/react@19.2.14)(react@19.2.4)
       classnames: 2.5.1
       react: 19.2.4
     optionalDependencies:
@@ -10922,6 +10991,8 @@ snapshots:
       jiti: 2.6.1
     transitivePeerDependencies:
       - supports-color
+
+  esm-env@1.2.2: {}
 
   espree@10.4.0:
     dependencies:
@@ -12714,6 +12785,10 @@ snapshots:
     dependencies:
       path-key: 4.0.0
       unicorn-magic: 0.3.0
+
+  number-flow@0.5.8:
+    dependencies:
+      esm-env: 1.2.2
 
   numeral@2.0.6: {}
 

@@ -58,6 +58,11 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      ...["", "/en", "/zh-cn"].map((prefix) => ({
+        source: `${prefix}/docs/components/donut-chart`,
+        destination: `${prefix === "/en" ? prefix : ""}/docs/components/pie-chart`,
+        permanent: true,
+      })),
       ...[
         { source: "/docs/blocks", destination: "/docs/pages" },
         { source: "/en/docs/blocks", destination: "/en/docs/pages" },

@@ -3775,6 +3775,11 @@
           "path": "packages/ui/src/components/charts/use-enter-complete.ts",
           "type": "registry:ui",
           "target": "components/ui/charts/use-enter-complete.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-chart-reduced-motion.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-chart-reduced-motion.ts"
         }
       ],
       "meta": {
@@ -3802,7 +3807,10 @@
         "d3-array@3.2.4",
         "@types/d3-array",
         "@types/d3-shape",
-        "tw-animate-css@^1.4.0"
+        "tw-animate-css@^1.4.0",
+        "@visx/group@4.0.0",
+        "@visx/gradient@4.0.0",
+        "@number-flow/react@0.5.10"
       ],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/surfaces.json",
@@ -4154,6 +4162,56 @@
           "path": "packages/ui/src/components/charts/legend/legend-layout.tsx",
           "type": "registry:ui",
           "target": "components/ui/charts/legend/legend-layout.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/background.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/background.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/markers/chart-markers.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/markers/chart-markers.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/markers/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/markers/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/markers/marker-group.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/markers/marker-group.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/motion-utils.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/motion-utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-keyboard.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-keyboard.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-source-data.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-source-data.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-center-typography.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-center-typography.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-stat-flow.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-stat-flow.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/area-stack.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/area-stack.ts"
         }
       ],
       "meta": {
@@ -4263,6 +4321,495 @@
           "path": "packages/ui/src/components/charts/chart-brush.tsx",
           "type": "registry:ui",
           "target": "components/ui/charts/chart-brush.tsx"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "line-chart",
+      "type": "registry:ui",
+      "title": "LineChart",
+      "description": "Dates use milliseconds or parseable strings; plotting is chronological and raw rows remain unchanged. Missing and non-finite values remain gaps. Defaults: 40px margin, 2 / 1 aspect ratio, 1100ms entrance, curveNatural, 2.5px stroke, edge fading on. Loading/reveal and 500ms Y-domain tween reuse AreaChart. Brush uses Date start/end, neutral inactive ranges and a full track border.",
+      "dependencies": [
+        "@visx/responsive@4.0.0",
+        "tw-animate-css@^1.4.0",
+        "d3-shape@3.2.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/line-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/line-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/line-chart-loading.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/line-chart-loading.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/line-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/line-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/line-series-terminal-marker.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/line-series-terminal-marker.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/line.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/line.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/series-path-utils.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/series-path-utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/use-animated-series-path.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/use-animated-series-path.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "bar-chart",
+      "type": "registry:ui",
+      "title": "BarChart",
+      "description": "Values must be finite and non-negative; invalid values stay in source data but do not create bars or affect domains. barGap is a band ratio (0.2); barWidth, groupGap and stackGap use pixels. Default margin is 40px, entrance 1100ms, round caps and grow animation. Depth helpers never register extra series.",
+      "dependencies": [
+        "@visx/responsive@4.0.0",
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/bar-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/bar-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/bar-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/bar-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/bar-depth-geometry.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/bar-depth-geometry.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/bar-depth.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/bar-depth.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/bar-squares-layout.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/bar-squares-layout.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/bar-squares.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/bar-squares.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/bar-x-axis.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/bar-x-axis.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/bar-y-axis.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/bar-y-axis.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/bar.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/bar.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/bar-chart-loading.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/bar-chart-loading.tsx"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "pie-chart",
+      "type": "registry:ui",
+      "title": "PieChart",
+      "description": "Radii and hoverOffset use pixels; angles use radians. Input order is preserved; finite non-negative values determine the total. Invalid slices retain their index without visible geometry. Default hover is translate by 10px, innerRadius=0, padAngle=0 and cornerRadius=0. Geometry scrubbing skips Motion path morphing. Explicitly assign colors when items can reorder. DonutSummary retains its separate total/unassigned semantics.",
+      "dependencies": [
+        "@visx/responsive@4.0.0",
+        "tw-animate-css@^1.4.0",
+        "d3-shape@3.2.0",
+        "@number-flow/react@0.5.10"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/pie-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/pie-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/pie-center-shell.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/pie-center-shell.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/pie-center.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/pie-center.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/pie-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/pie-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/pie-context.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/pie-context.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/pie-slice.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/pie-slice.tsx"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "heatmap-chart",
+      "type": "registry:ui",
+      "title": "HeatmapChart",
+      "description": "Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation. weekStartDay rotates display rows without changing date identity. Default fluid layout, 2px gaps, 2px corners and 1600ms entrance. Thresholds remain <=0, 1, 2, 3, >=4; shades derive from chart-1 and muted. Pass the same levelStyles to cells/chart and external legend. Every instance owns its texture IDs.",
+      "dependencies": [
+        "@visx/responsive@4.0.0",
+        "tw-animate-css@^1.4.0",
+        "@visx/heatmap@4.0.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/heatmap-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/heatmap-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/chart-scale.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-scale.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/generate-heatmap-skeleton-data.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/generate-heatmap-skeleton-data.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-animation.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-animation.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-cells.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-cells.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-chart-loading.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-chart-loading.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-colors.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-colors.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-context.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-context.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-legend-gradient.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-legend-gradient.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-legend-swatch.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-legend-swatch.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-legend.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-legend.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-pattern-defs.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-pattern-defs.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-resolve-separator.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-resolve-separator.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-separator.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-separator.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-tooltip.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-tooltip.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-utils.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-x-axis.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-x-axis.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-y-axis.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-y-axis.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/index.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/index.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/use-delayed-tooltip-data.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/use-delayed-tooltip-data.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "live-line-chart",
+      "type": "registry:ui",
+      "title": "LiveLineChart",
+      "description": "Point time is Unix seconds. Latest value is a separate required prop. Defaults: 30-second window, 5 ticks, leading offset 0, lerpSpeed 0.08 and height 300px. paused freezes scrolling while latest-value interpolation and Y-range changes continue. Invalid window/ticks/speed revert to defaults. The demo source updates every second, supports stopping and cleans up on unmount; the component does not open a WebSocket.",
+      "dependencies": [
+        "@visx/responsive@4.0.0",
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/live-line-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/live-line-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/live-line-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/live-line-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/live-line.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/live-line.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/live-x-axis.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/live-x-axis.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/live-y-axis.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/live-y-axis.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/live-line-state.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/live-line-state.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "radar-chart",
+      "type": "registry:ui",
+      "title": "RadarChart",
+      "description": "Multi-metric radar comparison with normalized 0–100 geometry, controlled hover and configurable grid/axis/labels.",
+      "dependencies": [
+        "@visx/responsive@4.0.0",
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/radar-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/radar-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/radar-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/radar-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/radar-context.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/radar-context.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/radar-grid.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/radar-grid.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/radar-axis.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/radar-axis.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/radar-labels.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/radar-labels.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/radar-area.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/radar-area.tsx"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "ring-chart",
+      "type": "registry:ui",
+      "title": "RingChart",
+      "description": "Concentric independent progress rings with rounded or flat caps, controlled hover, HTML center and live geometry updates.",
+      "dependencies": [
+        "@visx/responsive@4.0.0",
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json",
+        "https://zeron-ui.vercel.app/r/surface-context.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/ring-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/ring-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/ring-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/ring-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/ring-context.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/ring-context.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/ring.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/ring.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/ring-center.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/ring-center.tsx"
         }
       ],
       "meta": {

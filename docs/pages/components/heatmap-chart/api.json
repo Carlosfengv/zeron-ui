@@ -1,0 +1,530 @@
+[
+  {
+    "name": "HeatmapChart.data",
+    "type": "HeatmapColumn[]",
+    "default": "required",
+    "description": "Column data — one entry per week (or category) with row bins inside."
+  },
+  {
+    "name": "HeatmapChart.onCellSelect",
+    "type": "(bin: HeatmapBin) => void",
+    "default": "—",
+    "description": "Select a dated bin by click/tap or Enter/Space after keyboard inspection."
+  },
+  {
+    "name": "HeatmapChart.xDomain",
+    "type": "[Date, Date]",
+    "default": "—",
+    "description": "Visible time range — filters week columns that overlap the domain."
+  },
+  {
+    "name": "HeatmapChart.sizingColumnCount",
+    "type": "number",
+    "default": "—",
+    "description": "Week columns used for cell sizing when `xDomain` is set. Keeps bin height\nstable while scrubbing (filtered columns can vary by ±1 at boundaries)."
+  },
+  {
+    "name": "HeatmapChart.layout",
+    "type": "HeatmapLayout",
+    "default": "\"fluid\"",
+    "description": "`fluid` — width drives square cells; chart height hugs the grid (GitHub-style).\n`fill` — expands cells to fill the parent."
+  },
+  {
+    "name": "HeatmapChart.margin",
+    "type": "Partial<Margin>",
+    "default": "—",
+    "description": "Chart margins"
+  },
+  {
+    "name": "HeatmapChart.binSize",
+    "type": "number",
+    "default": "0",
+    "description": "Fixed cell size in pixels. When 0, cells are square and sized to fit the plot. Default: 0"
+  },
+  {
+    "name": "HeatmapChart.gap",
+    "type": "number",
+    "default": "2",
+    "description": "Gap between cells in pixels. Default: 2"
+  },
+  {
+    "name": "HeatmapChart.colorScale",
+    "type": "(count: number | null | undefined) => string",
+    "default": "—",
+    "description": "Override the default color scale."
+  },
+  {
+    "name": "HeatmapChart.levelColors",
+    "type": "HeatmapLevelColors",
+    "default": "—",
+    "description": "Per-level colors for the Less → More scale (5 entries)."
+  },
+  {
+    "name": "HeatmapChart.levelStyles",
+    "type": "HeatmapLevelStyles",
+    "default": "—",
+    "description": "Per-level fill styles (color and optional pattern). Takes precedence over `levelColors`."
+  },
+  {
+    "name": "HeatmapChart.aspectRatio",
+    "type": "string",
+    "default": "—",
+    "description": "Optional outer aspect ratio (e.g. \"2 / 1\"). Omit to fill the parent."
+  },
+  {
+    "name": "HeatmapChart.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name for the container"
+  },
+  {
+    "name": "HeatmapChart.status",
+    "type": "ChartStatus",
+    "default": "`\"ready\"`",
+    "description": "Fetch / display status. Default: `\"ready\"`."
+  },
+  {
+    "name": "HeatmapChart.loadingLabel",
+    "type": "string",
+    "default": "—",
+    "description": "Centered label while loading."
+  },
+  {
+    "name": "HeatmapChart.animationDuration",
+    "type": "number",
+    "default": "1600",
+    "description": "Enter animation duration in milliseconds. Default: 1600"
+  },
+  {
+    "name": "HeatmapChart.enterTransition",
+    "type": "Transition",
+    "default": "HEATMAP_DEFAULT_ENTER_TRANSITION",
+    "description": "Motion enter transition (spring or cubic-bezier tween)."
+  },
+  {
+    "name": "HeatmapChart.revealSignature",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Signature of motion URL state — triggers enter replay when it changes."
+  },
+  {
+    "name": "HeatmapChart.enterStaggerScale",
+    "type": "number",
+    "default": "1",
+    "description": "Scales wave stagger delays (1 = default)."
+  },
+  {
+    "name": "HeatmapChart.animate",
+    "type": "boolean",
+    "default": "true",
+    "description": "Play enter fade-in / loading shimmer animations. Default: true"
+  },
+  {
+    "name": "HeatmapChart.loadingOpacity",
+    "type": "number",
+    "default": "0.5",
+    "description": "Chart opacity while loading. Default: 0.5"
+  },
+  {
+    "name": "HeatmapChart.showLoadingCells",
+    "type": "boolean",
+    "default": "true",
+    "description": "Show loading cell shimmer while loading. Default: true"
+  },
+  {
+    "name": "HeatmapChart.loadingCellMaxOpacity",
+    "type": "number",
+    "default": "0.5",
+    "description": "Max opacity loading cells animate toward (0–1). Default: 0.5"
+  },
+  {
+    "name": "HeatmapChart.loadingCellRandomness",
+    "type": "number",
+    "default": "0.65",
+    "description": "Share of cells that participate in loading shimmer (0–1). Default: 0.65"
+  },
+  {
+    "name": "HeatmapChart.columnSeparators",
+    "type": "HeatmapSeparatorParsedConfig",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapChart.weekStartDay",
+    "type": "HeatmapWeekStartDay",
+    "default": "0",
+    "description": "First row of the grid — `0` = Sunday (GitHub default), `1` = Monday, etc.\nRotates column bins for display without reshaping source data."
+  },
+  {
+    "name": "HeatmapChart.children",
+    "type": "ReactNode",
+    "default": "required",
+    "description": "Child components (HeatmapCells, HeatmapXAxis, HeatmapYAxis)"
+  },
+  {
+    "name": "HeatmapCells.cornerRadius",
+    "type": "number",
+    "default": "2",
+    "description": "Corner radius for each cell. Default: 2"
+  },
+  {
+    "name": "HeatmapCells.colorScale",
+    "type": "(count: number | null | undefined) => string",
+    "default": "—",
+    "description": "Override the default GitHub-style green color scale."
+  },
+  {
+    "name": "HeatmapCells.inactiveOpacity",
+    "type": "number",
+    "default": "0.3",
+    "description": "Opacity for inactive cells while hovering. Default: 0.3"
+  },
+  {
+    "name": "HeatmapCells.inactiveScale",
+    "type": "number",
+    "default": "1",
+    "description": "Scale for inactive cells while hovering. Default: 1"
+  },
+  {
+    "name": "HeatmapCells.activeScale",
+    "type": "number",
+    "default": "1",
+    "description": "Scale for the highlighted cell while hovering. Default: 1"
+  },
+  {
+    "name": "HeatmapCells.rowOpacity",
+    "type": "number | readonly number[]",
+    "default": "1",
+    "description": "Per-row opacity multiplier (display row index). Default: 1"
+  },
+  {
+    "name": "HeatmapCells.interactive",
+    "type": "boolean",
+    "default": "true",
+    "description": "Pointer hover + dimming. Default: true"
+  },
+  {
+    "name": "HeatmapCells.hideGhostCells",
+    "type": "boolean",
+    "default": "true",
+    "description": "Hide out-of-range bins (GitHub-style ghost cells). Default: true"
+  },
+  {
+    "name": "HeatmapLegend.lessLabel",
+    "type": "string",
+    "default": "\"Less\"",
+    "description": "Side label before the swatches. Default: \"Less\""
+  },
+  {
+    "name": "HeatmapLegend.moreLabel",
+    "type": "string",
+    "default": "\"More\"",
+    "description": "Side label after the swatches. Default: \"More\""
+  },
+  {
+    "name": "HeatmapLegend.cellSize",
+    "type": "number",
+    "default": "11",
+    "description": "Swatch size in pixels. Default: 11"
+  },
+  {
+    "name": "HeatmapLegend.gap",
+    "type": "number",
+    "default": "2",
+    "description": "Gap between swatches. Default: 2"
+  },
+  {
+    "name": "HeatmapLegend.cornerRadius",
+    "type": "number",
+    "default": "2",
+    "description": "Corner radius for swatches. Default: 2"
+  },
+  {
+    "name": "HeatmapLegend.align",
+    "type": "\"start\" | \"center\" | \"end\"",
+    "default": "\"end\"",
+    "description": "Horizontal alignment within the legend cell. Default: \"end\""
+  },
+  {
+    "name": "HeatmapLegend.variant",
+    "type": "HeatmapLegendVariant",
+    "default": "`\"swatches\"`",
+    "description": "Legend layout — discrete swatches or a continuous gradient bar. Default: `\"swatches\"`"
+  },
+  {
+    "name": "HeatmapLegend.gradientSpan",
+    "type": "number",
+    "default": "5",
+    "description": "Gradient bar width in swatch units when `variant=\"gradient\"`. Default: 5"
+  },
+  {
+    "name": "HeatmapLegend.fontSize",
+    "type": "number",
+    "default": "—",
+    "description": "Font size in pixels for side labels."
+  },
+  {
+    "name": "HeatmapLegend.labelClassName",
+    "type": "string",
+    "default": "—",
+    "description": "Additional class name for less/more labels."
+  },
+  {
+    "name": "HeatmapLegend.levelStyles",
+    "type": "HeatmapLevelStyles",
+    "default": "—",
+    "description": "Shared level styles for cells and legend swatches."
+  },
+  {
+    "name": "HeatmapLegend.colorScale",
+    "type": "(count: number | null | undefined) => string",
+    "default": "—",
+    "description": "Override the default color scale (used when `levelStyles` is omitted)."
+  },
+  {
+    "name": "HeatmapLegend.inactiveOpacity",
+    "type": "number",
+    "default": "0.3",
+    "description": "Opacity for inactive swatches while interacting. Default: 0.3"
+  },
+  {
+    "name": "HeatmapLegend.inactiveScale",
+    "type": "number",
+    "default": "1",
+    "description": "Scale for inactive swatches while interacting. Default: 1"
+  },
+  {
+    "name": "HeatmapLegend.activeScale",
+    "type": "number",
+    "default": "1",
+    "description": "Scale for the highlighted swatch while interacting. Default: 1"
+  },
+  {
+    "name": "HeatmapLegend.interactive",
+    "type": "boolean",
+    "default": "true when inside HeatmapInteractionProvider",
+    "description": "Sync dimming with chart hover. Default: true when inside HeatmapInteractionProvider"
+  },
+  {
+    "name": "HeatmapLegend.className",
+    "type": "string",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapTooltip.formatLabel",
+    "type": "(count: number, date: Date) => string",
+    "default": "`N contribution(s)`",
+    "description": "Custom contribution line (bottom section). Default: `N contribution(s)`."
+  },
+  {
+    "name": "HeatmapTooltip.className",
+    "type": "string",
+    "default": "—",
+    "description": "Custom class name"
+  },
+  {
+    "name": "HeatmapTooltip.panelStyle",
+    "type": "React.CSSProperties",
+    "default": "—",
+    "description": "Inline styles for the tooltip panel (background, blur, etc.)."
+  },
+  {
+    "name": "HeatmapTooltip.backgroundColor",
+    "type": "string",
+    "default": "`var(--surface-floating)`",
+    "description": "Tooltip panel background color (CSS variable or color value).\nDefault: `var(--surface-floating)`."
+  },
+  {
+    "name": "HeatmapTooltip.showDelay",
+    "type": "number",
+    "default": "—",
+    "description": "Delay before showing the tooltip on first hover (ms).\nMoving between cells updates immediately once visible."
+  },
+  {
+    "name": "HeatmapTooltip.hideDelay",
+    "type": "number",
+    "default": "—",
+    "description": "Grace period before hiding when the pointer leaves a cell (ms).\nHelps avoid flicker when moving quickly between adjacent cells."
+  },
+  {
+    "name": "HeatmapTooltip.instant",
+    "type": "boolean",
+    "default": "—",
+    "description": "When true, the tooltip appears and disappears instantly with no motion."
+  },
+  {
+    "name": "HeatmapSeparator.every",
+    "type": "number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapSeparator.groupBy",
+    "type": "\"every\" | \"quarter\"",
+    "default": "`\"every\"`",
+    "description": "Group columns by fixed interval (`every`) or calendar quarter (`quarter`).\nDefault: `\"every\"`."
+  },
+  {
+    "name": "HeatmapSeparator.className",
+    "type": "string",
+    "default": "—",
+    "description": "Additional class name for each separator group."
+  },
+  {
+    "name": "HeatmapSeparator.spacing",
+    "type": "number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapSeparator.paddingX",
+    "type": "number",
+    "default": "0",
+    "description": "Half-width of the line band in pixels (line is centered). Default: 0"
+  },
+  {
+    "name": "HeatmapSeparator.paddingY",
+    "type": "number",
+    "default": "0",
+    "description": "Inset from the bottom of the plot in pixels. Default: 0"
+  },
+  {
+    "name": "HeatmapSeparator.startOffset",
+    "type": "number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapSeparator.labelOffset",
+    "type": "number",
+    "default": "0",
+    "description": "Distance below the separator line top to place quarter labels.\n`0` aligns labels with the line top. Default: 0."
+  },
+  {
+    "name": "HeatmapSeparator.showLabels",
+    "type": "boolean",
+    "default": "false",
+    "description": "Draw Q1–Q4 labels at the start of each quarter group. Default: false"
+  },
+  {
+    "name": "HeatmapSeparator.labelFormat",
+    "type": "(quarter: number, startDate: Date) => string",
+    "default": "`Q{n}`",
+    "description": "Format quarter group labels. Default: `Q{n}`"
+  },
+  {
+    "name": "HeatmapSeparator.labelClassName",
+    "type": "string",
+    "default": "—",
+    "description": "Additional class name for quarter labels"
+  },
+  {
+    "name": "HeatmapSeparator.strokeStyle",
+    "type": "HeatmapSeparatorStrokeStyle",
+    "default": "`\"solid\"`",
+    "description": "Solid or dashed separator line. Default: `\"solid\"`"
+  },
+  {
+    "name": "HeatmapSeparator.strokeDasharray",
+    "type": "string",
+    "default": "`\"4,4\"`",
+    "description": "Dash pattern when `strokeStyle=\"dashed\"`. Default: `\"4,4\"`"
+  },
+  {
+    "name": "HeatmapSeparator.stroke",
+    "type": "string",
+    "default": "`var(--border)`",
+    "description": "Line stroke color when `gradient` is omitted. Default: `var(--border)`"
+  },
+  {
+    "name": "HeatmapSeparator.gradient",
+    "type": "HeatmapSeparatorGradient",
+    "default": "—",
+    "description": "Vertical stroke gradient aligned to each line's span.\nUse matching `from`/`via`/`to` colors with fading opacities to soften the\ntop and bottom (e.g. `{ fromOpacity: 0, viaOpacity: 1, toOpacity: 0 }`)."
+  },
+  {
+    "name": "HeatmapSeparator.strokeWidth",
+    "type": "number",
+    "default": "1",
+    "description": "Line stroke width in pixels. Default: 1"
+  },
+  {
+    "name": "HeatmapSeparator.strokeOpacity",
+    "type": "number",
+    "default": "1",
+    "description": "Multiplier applied to solid strokes or gradient stop opacities. Default: 1"
+  },
+  {
+    "name": "HeatmapChartLoading.data",
+    "type": "HeatmapColumn[]",
+    "default": "required",
+    "description": "Target column data used to size the skeleton grid."
+  },
+  {
+    "name": "HeatmapChartLoading.xDomain",
+    "type": "[Date, Date]",
+    "default": "—",
+    "description": "Visible time range — filters week columns that overlap the domain."
+  },
+  {
+    "name": "HeatmapChartLoading.margin",
+    "type": "Partial<Margin>",
+    "default": "—",
+    "description": "Chart margins"
+  },
+  {
+    "name": "HeatmapChartLoading.gap",
+    "type": "number",
+    "default": "2",
+    "description": "Gap between cells in pixels. Default: 2"
+  },
+  {
+    "name": "HeatmapChartLoading.cornerRadius",
+    "type": "number",
+    "default": "2",
+    "description": "Corner radius for each cell. Default: 2"
+  },
+  {
+    "name": "HeatmapChartLoading.label",
+    "type": "string",
+    "default": "\"Loading\"",
+    "description": "Centered shimmer label text. Default: \"Loading\""
+  },
+  {
+    "name": "HeatmapChartLoading.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name for the container"
+  },
+  {
+    "name": "HeatmapXAxis.className",
+    "type": "string",
+    "default": "—",
+    "description": "Additional class name for labels"
+  },
+  {
+    "name": "HeatmapYAxis.className",
+    "type": "string",
+    "default": "—",
+    "description": "Additional class name for labels"
+  },
+  {
+    "name": "HeatmapYAxis.tickFilter",
+    "type": "HeatmapYAxisTickFilter",
+    "default": "`\"odd\"` (Mon / Wed / Fri)",
+    "description": "Which row ticks to display. Default: `\"odd\"` (Mon / Wed / Fri)."
+  },
+  {
+    "name": "HeatmapYAxis.labelFormat",
+    "type": "HeatmapYAxisLabelFormat",
+    "default": "`\"full\"`",
+    "description": "Label format — `\"initial\"` shows the first letter only (Mon → M). Default: `\"full\"`."
+  },
+  {
+    "name": "HeatmapYAxis.rowOpacity",
+    "type": "number | readonly number[]",
+    "default": "—",
+    "description": "Optional composition API."
+  }
+]

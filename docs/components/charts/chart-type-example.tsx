@@ -4,7 +4,7 @@ import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line, LineChart,
   Pie, PieChart, XAxis, YAxis,
 } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, DonutSummary, chartTrendPreset } from "@zeron/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, chartTrendPreset } from "@zeron/ui/chart";
 import { ChartDataTable, ChartLegend, chartColor, createChartNumberFormatter } from "@zeron/ui/chart-primitives";
 import type { ChartType } from "@docs/lib/chart-types";
 
@@ -41,12 +41,12 @@ interface ChartTypeExampleProps {
   unassignedLabel: string;
 }
 
-export function ChartTypeExample({ kind, advanced = false, locale, label, viewData, primaryLabel, secondaryLabel, totalLabel, categoryLabel, unassignedLabel }: ChartTypeExampleProps) {
+export function ChartTypeExample({ kind, advanced = false, locale, label, viewData, primaryLabel, secondaryLabel, categoryLabel, unassignedLabel }: ChartTypeExampleProps) {
   const format = createChartNumberFormatter(locale, { maximumFractionDigits: 0 });
   const formatPercent = createChartNumberFormatter(locale, { style: "percent", maximumFractionDigits: 0 });
 
-  if (kind === "pie" || kind === "donut") {
-    const segments = kind === "donut" && advanced ? distributionData.slice(0, 3) : distributionData;
+  if (kind === "pie") {
+    const segments = distributionData;
     const assigned = segments.reduce((sum, segment) => sum + segment.value, 0);
     const table = {
       caption: label,
@@ -60,15 +60,6 @@ export function ChartTypeExample({ kind, advanced = false, locale, label, viewDa
     return (
       <div className="grid w-full min-w-0 gap-4">
         <div className="flex min-w-0 flex-col items-center gap-6 sm:flex-row">
-          {kind === "donut" ? (
-            <DonutSummary
-              aria-label={`${label}: ${assigned} / 100`}
-              center={<><strong className="text-heading">{format(assigned)}</strong><span className="text-label text-fg-subtle">{totalLabel}</span></>}
-              className="shrink-0"
-              segments={segments}
-              total={100}
-            />
-          ) : (
             <ChartContainer aria-label={label} className="h-64 w-full min-w-0 sm:flex-1" config={{}}>
               <PieChart accessibilityLayer>
                 <ChartTooltip content={<ChartTooltipContent hideIndicator valueFormatter={(value) => format(value)} />} />
@@ -87,7 +78,6 @@ export function ChartTypeExample({ kind, advanced = false, locale, label, viewDa
                 </Pie>
               </PieChart>
             </ChartContainer>
-          )}
           <ChartLegend
             className="w-full min-w-0 sm:flex-1"
             items={segments.map((segment) => ({ ...segment, value: format(segment.value), ratio: formatPercent(segment.value / 100) }))}
@@ -137,12 +127,12 @@ export function ChartTypeExample({ kind, advanced = false, locale, label, viewDa
 
 /** Displayed examples use the installed consumer aliases and the same data as the previews. */
 export function chartTypeExampleCode(kind: ChartType, advanced = false) {
-  if (kind === "donut" || kind === "pie") {
-    const donut = kind === "donut";
-    const segments = donut && advanced ? distributionData.slice(0, 3) : distributionData;
+  if (kind === "pie") {
+    const segments = distributionData;
     return `"use client";
 
-${donut ? 'import { DonutSummary } from "@/components/ui/chart";' : 'import { Cell, Pie, PieChart } from "recharts";\nimport { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";'}
+import { Cell, Pie, PieChart } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { ChartDataTable, ChartLegend, chartColor, createChartNumberFormatter } from "@/components/ui/chart-primitives";
 
 const segments = ${JSON.stringify(segments.map(({ id, label, value }) => ({ id, label, value })), null, 2)}.map((segment, index) => ({ ...segment, color: chartColor(index + 1 as 1 | 2 | 3 | 4) }));
@@ -153,14 +143,14 @@ const formatPercent = createChartNumberFormatter("en", { style: "percent", maxim
 export default function Example() {
   return <div className="grid w-full min-w-0 gap-4">
     <div className="flex min-w-0 flex-col items-center gap-6 sm:flex-row">
-${donut ? `      <DonutSummary className="shrink-0" segments={segments} total={100} aria-label={"Service distribution: " + assigned + " / 100"} center={<><strong className="text-heading">{format(assigned)}</strong><span className="text-label text-fg-subtle">Allocated / 100</span></>} />` : `      <ChartContainer config={{}} className="h-64 w-full min-w-0 sm:flex-1" aria-label="Service distribution">
+      <ChartContainer config={{}} className="h-64 w-full min-w-0 sm:flex-1" aria-label="Service distribution">
         <PieChart accessibilityLayer>
           <ChartTooltip content={<ChartTooltipContent hideIndicator valueFormatter={format} />} />
           <Pie data={segments} dataKey="value" nameKey="label" outerRadius="${advanced ? "65%" : "85%"}"${advanced ? ' label={({ percent }) => formatPercent(percent)} labelLine={{ stroke: "var(--border)" }}' : ""} stroke="var(--surface-base)" fill="var(--fg-muted)" isAnimationActive={false}>
             {segments.map(segment => <Cell key={segment.id} fill={segment.color} />)}
           </Pie>
         </PieChart>
-      </ChartContainer>`}
+      </ChartContainer>
       <ChartLegend className="w-full min-w-0 sm:flex-1" items={segments.map(segment => ({ ...segment, value: format(segment.value), ratio: formatPercent(segment.value / 100) }))} />
     </div>
     <ChartDataTable caption="Service distribution" summary="View data" columns={["Service", "Requests"]} rows={[

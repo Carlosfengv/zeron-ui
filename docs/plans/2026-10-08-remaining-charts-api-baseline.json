@@ -1,0 +1,1856 @@
+{
+  "source": "/Users/carlos/Downloads/charts",
+  "contracts": [
+    {
+      "file": "background.tsx",
+      "name": "BackgroundProps",
+      "fields": [
+        {
+          "name": "pattern",
+          "optional": true,
+          "type": "BackgroundPatternPreset"
+        },
+        {
+          "name": "color",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "showFill",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "opacity",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "fadeHorizontal",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "fadeVertical",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "fadeHorizontalLength",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "fadeVerticalLength",
+          "optional": true,
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "file": "bar-chart.tsx",
+      "name": "BarChartProps",
+      "fields": [
+        {
+          "name": "data",
+          "optional": false,
+          "type": "Record<string, unknown>[]"
+        },
+        {
+          "name": "xDataKey",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "margin",
+          "optional": true,
+          "type": "Partial<Margin>"
+        },
+        {
+          "name": "animationDuration",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "animationEasing",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "enterTransition",
+          "optional": true,
+          "type": "Transition"
+        },
+        {
+          "name": "revealSignature",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "aspectRatio",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "barGap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "barWidth",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "orientation",
+          "optional": true,
+          "type": "BarOrientation"
+        },
+        {
+          "name": "stacked",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "stackGap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "squareSnap",
+          "optional": true,
+          "type": "{ squareGap: number; groupGap?: number; fit?: boolean }"
+        },
+        {
+          "name": "children",
+          "optional": true,
+          "type": "ReactNode"
+        },
+        {
+          "name": "onPhaseChange",
+          "optional": true,
+          "type": "(phase: ChartPhase) => void"
+        },
+        {
+          "name": "status",
+          "optional": true,
+          "type": "ChartStatus"
+        }
+      ]
+    },
+    {
+      "file": "bar-depth.tsx",
+      "name": "BarDepthProviderProps",
+      "fields": [
+        {
+          "name": "children",
+          "optional": false,
+          "type": "ReactNode"
+        }
+      ]
+    },
+    {
+      "file": "bar-depth.tsx",
+      "name": "BarDepthBackProps",
+      "fields": [
+        {
+          "name": "dataKey",
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "color",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "colorAccessor",
+          "optional": true,
+          "type": "ColorAccessor"
+        }
+      ]
+    },
+    {
+      "file": "bar-depth.tsx",
+      "name": "BarDepthFrontProps",
+      "fields": [
+        {
+          "name": "dataKey",
+          "optional": false,
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "file": "bar-depth.tsx",
+      "name": "BarPulseProps",
+      "fields": [
+        {
+          "name": "dataKey",
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "activeIndex",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "pulsePaused",
+          "optional": true,
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "file": "bar-squares.tsx",
+      "name": "BarSquaresProps",
+      "fields": [
+        {
+          "name": "dataKey",
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "yAxisId",
+          "optional": true,
+          "type": "string | number"
+        },
+        {
+          "name": "fill",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "stroke",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "squareGap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "squareRadius",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "squareFit",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "useGradient",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "gradientStops",
+          "optional": true,
+          "type": "GradientStop[]"
+        },
+        {
+          "name": "patternPreset",
+          "optional": true,
+          "type": "PatternPresetId"
+        },
+        {
+          "name": "animate",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "fadedOpacity",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "staggerDelay",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "groupGap",
+          "optional": true,
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "file": "bar-squares.tsx",
+      "name": "BarColumnTrackProps",
+      "fields": [
+        {
+          "name": "fill",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "opacity",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "squareGap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "squareRadius",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "groupGap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "squareFit",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "staggerDelay",
+          "optional": true,
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "file": "bar-x-axis.tsx",
+      "name": "BarXAxisProps",
+      "fields": [
+        {
+          "name": "tickerHalfWidth",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "showAllLabels",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "maxLabels",
+          "optional": true,
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "file": "bar-y-axis.tsx",
+      "name": "BarYAxisProps",
+      "fields": [
+        {
+          "name": "showAllLabels",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "maxLabels",
+          "optional": true,
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "file": "bar.tsx",
+      "name": "BarProps",
+      "fields": [
+        {
+          "name": "dataKey",
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "yAxisId",
+          "optional": true,
+          "type": "string | number"
+        },
+        {
+          "name": "fill",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "stroke",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "lineCap",
+          "optional": true,
+          "type": "BarLineCap"
+        },
+        {
+          "name": "animate",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "animationType",
+          "optional": true,
+          "type": "BarAnimationType"
+        },
+        {
+          "name": "fadedOpacity",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "staggerDelay",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "stackGap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "groupGap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "perspective",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "minBarHeight",
+          "optional": true,
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "file": "chart-stat-flow.tsx",
+      "name": "ChartStatFlowProps",
+      "fields": [
+        {
+          "name": "value",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "label",
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "formatOptions",
+          "optional": true,
+          "type": "ChartStatFlowFormat"
+        },
+        {
+          "name": "prefix",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "suffix",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "valueClassName",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "labelClassName",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "icon",
+          "optional": true,
+          "type": "ReactNode"
+        }
+      ]
+    },
+    {
+      "file": "heatmap/heatmap-cells.tsx",
+      "name": "HeatmapCellsProps",
+      "fields": [
+        {
+          "name": "cornerRadius",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "colorScale",
+          "optional": true,
+          "type": "(count: number | null | undefined) => string"
+        },
+        {
+          "name": "inactiveOpacity",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "inactiveScale",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "activeScale",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "rowOpacity",
+          "optional": true,
+          "type": "number | readonly number[]"
+        },
+        {
+          "name": "interactive",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "hideGhostCells",
+          "optional": true,
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "file": "heatmap/heatmap-chart-loading.tsx",
+      "name": "HeatmapChartLoadingProps",
+      "fields": [
+        {
+          "name": "data",
+          "optional": false,
+          "type": "HeatmapColumn[]"
+        },
+        {
+          "name": "xDomain",
+          "optional": true,
+          "type": "[Date, Date]"
+        },
+        {
+          "name": "margin",
+          "optional": true,
+          "type": "Partial<Margin>"
+        },
+        {
+          "name": "gap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "cornerRadius",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "label",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "file": "heatmap/heatmap-chart.tsx",
+      "name": "HeatmapChartProps",
+      "fields": [
+        {
+          "name": "data",
+          "optional": false,
+          "type": "HeatmapColumn[]"
+        },
+        {
+          "name": "xDomain",
+          "optional": true,
+          "type": "[Date, Date]"
+        },
+        {
+          "name": "sizingColumnCount",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "layout",
+          "optional": true,
+          "type": "HeatmapLayout"
+        },
+        {
+          "name": "margin",
+          "optional": true,
+          "type": "Partial<Margin>"
+        },
+        {
+          "name": "binSize",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "gap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "colorScale",
+          "optional": true,
+          "type": "(count: number | null | undefined) => string"
+        },
+        {
+          "name": "levelColors",
+          "optional": true,
+          "type": "HeatmapLevelColors"
+        },
+        {
+          "name": "levelStyles",
+          "optional": true,
+          "type": "HeatmapLevelStyles"
+        },
+        {
+          "name": "aspectRatio",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "optional": true,
+          "type": "ChartStatus"
+        },
+        {
+          "name": "loadingLabel",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "animationDuration",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "enterTransition",
+          "optional": true,
+          "type": "Transition"
+        },
+        {
+          "name": "revealSignature",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "enterStaggerScale",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "animate",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "loadingOpacity",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "showLoadingCells",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "loadingCellMaxOpacity",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "loadingCellRandomness",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "columnSeparators",
+          "optional": true,
+          "type": "HeatmapSeparatorParsedConfig"
+        },
+        {
+          "name": "weekStartDay",
+          "optional": true,
+          "type": "HeatmapWeekStartDay"
+        },
+        {
+          "name": "children",
+          "optional": false,
+          "type": "ReactNode"
+        }
+      ]
+    },
+    {
+      "file": "heatmap/heatmap-legend-gradient.tsx",
+      "name": "HeatmapLegendGradientProps",
+      "fields": [
+        {
+          "name": "levels",
+          "optional": false,
+          "type": "readonly number[]"
+        },
+        {
+          "name": "levelStyles",
+          "optional": false,
+          "type": "HeatmapLevelStyles"
+        },
+        {
+          "name": "cellSize",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "gap",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "cornerRadius",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "gradientSpan",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "highlightedLevel",
+          "optional": false,
+          "type": "number | null"
+        },
+        {
+          "name": "isDimming",
+          "optional": false,
+          "type": "boolean"
+        },
+        {
+          "name": "inactiveOpacity",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "inactiveScale",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "activeScale",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "isInteractive",
+          "optional": false,
+          "type": "boolean"
+        },
+        {
+          "name": "onEnter",
+          "optional": false,
+          "type": "(level: number) => void"
+        },
+        {
+          "name": "onLeave",
+          "optional": false,
+          "type": "() => void"
+        }
+      ]
+    },
+    {
+      "file": "heatmap/heatmap-legend.tsx",
+      "name": "HeatmapLegendProps",
+      "fields": [
+        {
+          "name": "lessLabel",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "moreLabel",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "cellSize",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "gap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "cornerRadius",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "align",
+          "optional": true,
+          "type": "\"start\" | \"center\" | \"end\""
+        },
+        {
+          "name": "variant",
+          "optional": true,
+          "type": "HeatmapLegendVariant"
+        },
+        {
+          "name": "gradientSpan",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "fontSize",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "labelClassName",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "levelStyles",
+          "optional": true,
+          "type": "HeatmapLevelStyles"
+        },
+        {
+          "name": "colorScale",
+          "optional": true,
+          "type": "(count: number | null | undefined) => string"
+        },
+        {
+          "name": "inactiveOpacity",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "inactiveScale",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "activeScale",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "interactive",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "file": "heatmap/heatmap-separator.tsx",
+      "name": "HeatmapSeparatorProps",
+      "fields": [
+        {
+          "name": "every",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "groupBy",
+          "optional": true,
+          "type": "\"every\" | \"quarter\""
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "spacing",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "paddingX",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "paddingY",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "startOffset",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "labelOffset",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "showLabels",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "labelFormat",
+          "optional": true,
+          "type": "(quarter: number, startDate: Date) => string"
+        },
+        {
+          "name": "labelClassName",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "strokeStyle",
+          "optional": true,
+          "type": "HeatmapSeparatorStrokeStyle"
+        },
+        {
+          "name": "strokeDasharray",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "stroke",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "gradient",
+          "optional": true,
+          "type": "HeatmapSeparatorGradient"
+        },
+        {
+          "name": "strokeWidth",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "strokeOpacity",
+          "optional": true,
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "file": "heatmap/heatmap-tooltip.tsx",
+      "name": "HeatmapTooltipProps",
+      "fields": [
+        {
+          "name": "formatLabel",
+          "optional": true,
+          "type": "(count: number, date: Date) => string"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "panelStyle",
+          "optional": true,
+          "type": "React.CSSProperties"
+        },
+        {
+          "name": "backgroundColor",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "showDelay",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "hideDelay",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "instant",
+          "optional": true,
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "file": "heatmap/heatmap-x-axis.tsx",
+      "name": "HeatmapXAxisProps",
+      "fields": [
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "file": "heatmap/heatmap-y-axis.tsx",
+      "name": "HeatmapYAxisProps",
+      "fields": [
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "tickFilter",
+          "optional": true,
+          "type": "HeatmapYAxisTickFilter"
+        },
+        {
+          "name": "labelFormat",
+          "optional": true,
+          "type": "HeatmapYAxisLabelFormat"
+        },
+        {
+          "name": "rowOpacity",
+          "optional": true,
+          "type": "number | readonly number[]"
+        }
+      ]
+    },
+    {
+      "file": "line-chart-loading.tsx",
+      "name": "LineChartLoadingProps",
+      "fields": [
+        {
+          "name": "margin",
+          "optional": true,
+          "type": "Partial<Margin>"
+        },
+        {
+          "name": "stroke",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "strokeOpacity",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "gridStroke",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "gridShimmerStroke",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "gridShimmer",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "gridShimmerLength",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "gridShimmerSpeed",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "gridShimmerSync",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "loadingStyle",
+          "optional": true,
+          "type": "LoadingStyle"
+        },
+        {
+          "name": "label",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "aspectRatio",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "file": "line-chart.tsx",
+      "name": "LineChartProps",
+      "fields": [
+        {
+          "name": "data",
+          "optional": false,
+          "type": "Record<string, unknown>[]"
+        },
+        {
+          "name": "xDataKey",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "margin",
+          "optional": true,
+          "type": "Partial<Margin>"
+        },
+        {
+          "name": "animationDuration",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "animationEasing",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "enterTransition",
+          "optional": true,
+          "type": "Transition"
+        },
+        {
+          "name": "revealSignature",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "aspectRatio",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "optional": true,
+          "type": "ChartStatus"
+        },
+        {
+          "name": "loadingLabel",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "yDomainTweenDuration",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "yDomainTween",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "xDomain",
+          "optional": true,
+          "type": "[Date, Date]"
+        },
+        {
+          "name": "xDomainSlotCount",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "tweenYDomainOnXDomainChange",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "style",
+          "optional": true,
+          "type": "CSSProperties"
+        },
+        {
+          "name": "onPhaseChange",
+          "optional": true,
+          "type": "(phase: ChartPhase) => void"
+        },
+        {
+          "name": "children",
+          "optional": false,
+          "type": "ReactNode"
+        }
+      ]
+    },
+    {
+      "file": "line-series-terminal-marker.tsx",
+      "name": "LineSeriesTerminalMarkerProps",
+      "fields": [
+        {
+          "name": "dataKey",
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "yAxisId",
+          "optional": true,
+          "type": "string | number"
+        },
+        {
+          "name": "fill",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "stroke",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "radius",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "ringGap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "strokeWidth",
+          "optional": true,
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "file": "line.tsx",
+      "name": "LineProps",
+      "fields": [
+        {
+          "name": "dataKey",
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "yAxisId",
+          "optional": true,
+          "type": "string | number"
+        },
+        {
+          "name": "stroke",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "strokeWidth",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "curve",
+          "optional": true,
+          "type": "CurveFactory"
+        },
+        {
+          "name": "animate",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "fadeEdges",
+          "optional": true,
+          "type": "FadeEdges"
+        },
+        {
+          "name": "showHighlight",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "showMarkers",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "markers",
+          "optional": true,
+          "type": "SeriesPointMarkerStyle"
+        },
+        {
+          "name": "dashFromIndex",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "dashArray",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "loading",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "loadingStroke",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "loadingStrokeOpacity",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "loadingPulseMode",
+          "optional": true,
+          "type": "LineLoadingPulseMode"
+        },
+        {
+          "name": "onLoadingPulseCycleComplete",
+          "optional": true,
+          "type": "() => void"
+        },
+        {
+          "name": "loadingStyle",
+          "optional": true,
+          "type": "LoadingStyle"
+        }
+      ]
+    },
+    {
+      "file": "live-line-chart.tsx",
+      "name": "LiveLineChartProps",
+      "fields": [
+        {
+          "name": "data",
+          "optional": false,
+          "type": "LiveLinePoint[]"
+        },
+        {
+          "name": "value",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "dataKey",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "window",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "numXTicks",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "nowOffsetUnits",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "exaggerate",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "lerpSpeed",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "margin",
+          "optional": true,
+          "type": "Partial<Margin>"
+        },
+        {
+          "name": "paused",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "children",
+          "optional": false,
+          "type": "ReactNode"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "style",
+          "optional": true,
+          "type": "React.CSSProperties"
+        }
+      ]
+    },
+    {
+      "file": "live-line.tsx",
+      "name": "LiveLineProps",
+      "fields": [
+        {
+          "name": "dataKey",
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "stroke",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "strokeWidth",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "curve",
+          "optional": true,
+          "type": "CurveFactory"
+        },
+        {
+          "name": "fill",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "pulse",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "dotSize",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "badge",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "formatValue",
+          "optional": true,
+          "type": "(v: number) => string"
+        },
+        {
+          "name": "momentumColors",
+          "optional": true,
+          "type": "MomentumColors"
+        }
+      ]
+    },
+    {
+      "file": "live-x-axis.tsx",
+      "name": "LiveXAxisProps",
+      "fields": [
+        {
+          "name": "numTicks",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "formatTime",
+          "optional": true,
+          "type": "(t: number) => string"
+        }
+      ]
+    },
+    {
+      "file": "live-y-axis.tsx",
+      "name": "LiveYAxisProps",
+      "fields": [
+        {
+          "name": "minGap",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "position",
+          "optional": true,
+          "type": "\"left\" | \"right\""
+        },
+        {
+          "name": "formatValue",
+          "optional": true,
+          "type": "(v: number) => string"
+        },
+        {
+          "name": "allowDecimals",
+          "optional": true,
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "file": "markers/chart-markers.tsx",
+      "name": "ChartMarkersProps",
+      "fields": [
+        {
+          "name": "items",
+          "optional": false,
+          "type": "ChartMarker[]"
+        },
+        {
+          "name": "size",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "showLines",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "animate",
+          "optional": true,
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "file": "markers/chart-markers.tsx",
+      "name": "MarkerTooltipContentProps",
+      "fields": [
+        {
+          "name": "markers",
+          "optional": false,
+          "type": "ChartMarker[]"
+        }
+      ]
+    },
+    {
+      "file": "markers/marker-group.tsx",
+      "name": "MarkerGroupProps",
+      "fields": [
+        {
+          "name": "x",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "y",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "markers",
+          "optional": false,
+          "type": "ChartMarker[]"
+        },
+        {
+          "name": "isActive",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "size",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "onHover",
+          "optional": true,
+          "type": "(markers: ChartMarker[] | null) => void"
+        },
+        {
+          "name": "containerRef",
+          "optional": true,
+          "type": "React.RefObject<HTMLDivElement | null>"
+        },
+        {
+          "name": "marginLeft",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "marginTop",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "animationDelay",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "animate",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "lineHeight",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "showLine",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "forceOpen",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "iconFill",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "borderColor",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "borderWidth",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "maxFanned",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "isMuted",
+          "optional": true,
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "file": "pie-center-shell.tsx",
+      "name": "PieCenterShellProps",
+      "type": "Omit<PieCenterProps, \"children\"> & { /** Value shown with NumberFlow (same role as pie total when not hovering) */ centerValue: number; /** Square reference size for pie context (matches `PieChart` `size`) */ contextSize: number; /** Inner radius in px — must be > 0 so `PieCenter` renders */ innerRadiusPx: number; /** * When true (default), the first paint uses `0` then updates to `centerValue` * on the next frame so NumberFlow can run an entrance transition. Subsequent * `centerValue` updates animate as usual. */ animateEntrance?: boolean; }"
+    },
+    {
+      "file": "pie-center.tsx",
+      "name": "PieCenterProps",
+      "fields": [
+        {
+          "name": "defaultLabel",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "formatOptions",
+          "optional": true,
+          "type": "ChartStatFlowFormat"
+        },
+        {
+          "name": "children",
+          "optional": true,
+          "type": "(props: { value: number; label: string; isHovered: boolean; data: { label: string; value: number; color?: string; fill?: string }; }) => ReactNode"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "valueClassName",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "labelClassName",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "prefix",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "suffix",
+          "optional": true,
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "file": "pie-chart.tsx",
+      "name": "PieChartProps",
+      "fields": [
+        {
+          "name": "data",
+          "optional": false,
+          "type": "PieData[]"
+        },
+        {
+          "name": "size",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "innerRadius",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "padAngle",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "cornerRadius",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "startAngle",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "endAngle",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "hoveredIndex",
+          "optional": true,
+          "type": "number | null"
+        },
+        {
+          "name": "onHoverChange",
+          "optional": true,
+          "type": "(index: number | null) => void"
+        },
+        {
+          "name": "hoverOffset",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "children",
+          "optional": false,
+          "type": "ReactNode"
+        },
+        {
+          "name": "enterTransition",
+          "optional": true,
+          "type": "Transition"
+        },
+        {
+          "name": "enterStaggerScale",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "geometryScrubbing",
+          "optional": true,
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "file": "pie-slice.tsx",
+      "name": "PieSliceProps",
+      "fields": [
+        {
+          "name": "index",
+          "optional": false,
+          "type": "number"
+        },
+        {
+          "name": "color",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "fill",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "animate",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "showGlow",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "hoverEffect",
+          "optional": true,
+          "type": "PieSliceHoverEffect"
+        },
+        {
+          "name": "hoverOffset",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "file": "bar-chart-loading.tsx",
+      "name": "BarChartLoadingProps",
+      "fields": [
+        {
+          "name": "margin",
+          "optional": true,
+          "type": "Partial<Margin>"
+        },
+        {
+          "name": "aspectRatio",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "className",
+          "optional": true,
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

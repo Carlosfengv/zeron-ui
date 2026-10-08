@@ -7,6 +7,7 @@ import type { LineConfig, Margin, TooltipData } from "./chart-context";
 import { useScheduledTooltip } from "./use-scheduled-tooltip";
 import { normalizeYAxisId } from "./y-axis-scales";
 import { isFiniteValue } from "./chart-data";
+import { seriesYValue } from "./area-stack";
 
 type ScaleTime = ReturnType<typeof scaleTime<number>>;
 type ScaleLinear = ReturnType<typeof scaleLinear<number>>;
@@ -100,7 +101,7 @@ export function useChartInteraction({
 
       const yPositions: Record<string, number> = {};
       for (const line of lines) {
-        const value = d[line.dataKey];
+        const value = seriesYValue(d, line, lines);
         if (isFiniteValue(value)) {
           const axisScale = yScales[normalizeYAxisId(line.yAxisId)] ?? yScale;
           yPositions[line.dataKey] = axisScale(value) ?? 0;

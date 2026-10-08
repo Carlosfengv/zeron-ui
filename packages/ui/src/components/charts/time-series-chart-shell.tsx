@@ -73,16 +73,27 @@ import {
 import { computeYDomainsByAxis } from "./y-domain-utils";
 import { chartChildren, chartDate, isFiniteValue, timeSeriesData } from "./chart-data";
 import { normalizeYAxisId } from "./y-axis-scales";
+import { areaStackRange, seriesYValue } from "./area-stack";
 
 function collectNumericExtents(
   data: Record<string, unknown>[],
-  dataKeys: string[]
+  dataKeys: string[],
+  lines: LineConfig[]
 ) {
   let minValue = Number.POSITIVE_INFINITY;
   let maxValue = Number.NEGATIVE_INFINITY;
 
   for (const d of data) {
     for (const key of dataKeys) {
+      const series = lines.find(line => line.dataKey === key);
+      if (series?.stackId !== undefined) {
+        const range = areaStackRange(d, series, lines);
+        if (range) {
+          minValue = Math.min(minValue, ...range);
+          maxValue = Math.max(maxValue, ...range);
+        }
+        continue;
+      }
       const value = d[key];
       if (isFiniteValue(value)) {
         if (value < minValue) {
@@ -105,13 +116,14 @@ function collectNumericExtents(
 function resolveTimeSeriesYDomain(
   data: Record<string, unknown>[],
   dataKeys: string[],
-  yScaleDomainMax: number | undefined
+  yScaleDomainMax: number | undefined,
+  lines: LineConfig[]
 ): [number, number] {
   if (isFiniteValue(yScaleDomainMax) && yScaleDomainMax > 0) {
     return [0, yScaleDomainMax * 1.1];
   }
 
-  const { minValue, maxValue } = collectNumericExtents(data, dataKeys);
+  const { minValue, maxValue } = collectNumericExtents(data, dataKeys, lines);
 
   if (minValue >= 0) {
     const top = maxValue <= 0 ? 100 : maxValue * 1.1;
@@ -238,7 +250,7 @@ const TimeSeriesChartCore = memo(function TimeSeriesChartCore({
         usesDefaultOnly && yScaleDomainMax != null
           ? yScaleDomainMax
           : undefined;
-      return resolveTimeSeriesYDomain(sourceData, dataKeys, domainMax);
+      return resolveTimeSeriesYDomain(sourceData, dataKeys, domainMax, lines);
     },
     [lines, yScaleDomainMax]
   );
@@ -415,9 +427,21 @@ const TimeSeriesChartCore = memo(function TimeSeriesChartCore({
     scaleLinear({ range: [innerHeight, 0], domain: [0, 100], nice: true })
   );
 
+  const formatDate = useMemo(() => {
+    for (const child of chartChildren(children)) {
+      if (!isValidElement(child)) continue;
+      const axis = resolveChartChildElement(child);
+      const type = axis.type as { displayName?: string; name?: string };
+      if ((type.displayName || type.name) === "XAxis") {
+        return (axis.props as { formatDate?: (date: Date) => string }).formatDate;
+      }
+    }
+    return undefined;
+  }, [children]);
+
   const dateLabels = useMemo(
-    () => visiblePlotData.map((d) => shortDateFmt.format(xAccessor(d))),
-    [visiblePlotData, xAccessor]
+    () => visiblePlotData.map((d) => formatDate ? formatDate(xAccessor(d)) : shortDateFmt.format(xAccessor(d))),
+    [visiblePlotData, xAccessor, formatDate]
   );
 
   const canInteract = isLoaded && isChartInteractionPhase(chartPhase);
@@ -668,7 +692,7 @@ const TimeSeriesChartCore = memo(function TimeSeriesChartCore({
     interactionHandlers.onMouseLeave?.();
     const yPositions: Record<string, number> = {};
     for (const line of lines) {
-      const value = point[line.dataKey];
+      const value = seriesYValue(point, line, lines);
       if (isFiniteValue(value)) yPositions[line.dataKey] = (yScales[normalizeYAxisId(line.yAxisId)] ?? yScale)(value) ?? 0;
     }
     setTooltipData({ point, index, x: xScale(xAccessor(point)) ?? 0, yPositions });

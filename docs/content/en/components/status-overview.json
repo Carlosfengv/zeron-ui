@@ -28,7 +28,7 @@
     "p8": "card is the default framed status card and chart is frameless. Both use evenly distributed rounded bars, 2 px gaps, an active outline and a surface tooltip. activity is a compact service row. Chart entry animations respect reduced motion.",
     "p9": "Optional activity-row controls or results replacing the summary column. Inline in wide containers and stacked in narrow ones. Ignored in card and chart modes.",
     "title": "Status bar chart",
-    "description": "Equal-width status bars for service history or current node snapshots, with semantic status colors, shared tooltips and keyboard inspection.",
+    "description": "Equal-width status bars for service history or current node snapshots, with Chart color tokens, shared tooltips and keyboard inspection.",
     "implementation": "Install status-overview and import StatusOverview to use StatusBarChart. These examples use the existing component that also powers status rails in current Blocks and Pages.",
     "chartMeaning": "Each bar represents an equal-duration period or one node. Color indicates status; height does not encode request counts or other numeric values. Use the timeline for history and the node snapshot to compare current states.",
     "timeline": "Availability timeline",
@@ -67,6 +67,7 @@
     "p4": "Timeline with a shared epoch range and equal-duration buckets, or an ordered current-node snapshot.",
     "p5": "Localized content rendered whenever the active data mode has no items.",
     "p6": "Controls data availability and loading presentation.",
-    "p7": "Required localized explanation for stale, unavailable, and error states."
+    "p7": "Required localized explanation for stale, unavailable, and error states.",
+    "p10": "Per-status color overrides in chart mode. Defaults: operational var(--chart-1), degraded var(--chart-2), down var(--chart-3), maintenance var(--chart-4), and neutral unknown. Supports partial overrides, such as setting operational to var(--chart-5). Empty buckets retain their neutral texture; card/activity retain semantic status colors."
   }
 }

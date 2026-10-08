@@ -1,0 +1,206 @@
+[
+  {
+    "name": "RadarChart.data",
+    "type": "RadarData[]",
+    "default": "required",
+    "description": "Data array - each item represents a data series (polygon)"
+  },
+  {
+    "name": "RadarChart.metrics",
+    "type": "RadarMetric[]",
+    "default": "required",
+    "description": "Metrics to display on the radar"
+  },
+  {
+    "name": "RadarChart.size",
+    "type": "number",
+    "default": "—",
+    "description": "Chart size in pixels. If not provided, uses parent container size"
+  },
+  {
+    "name": "RadarChart.levels",
+    "type": "number",
+    "default": "5",
+    "description": "Number of concentric grid circles. Default: 5"
+  },
+  {
+    "name": "RadarChart.margin",
+    "type": "number",
+    "default": "60",
+    "description": "Margin around the chart. Default: 60"
+  },
+  {
+    "name": "RadarChart.animate",
+    "type": "boolean",
+    "default": "true",
+    "description": "Enable animations. Default: true"
+  },
+  {
+    "name": "RadarChart.enterDurationMs",
+    "type": "number",
+    "default": "1100",
+    "description": "Enter animation budget in ms. Default: 1100"
+  },
+  {
+    "name": "RadarChart.staggerScale",
+    "type": "number",
+    "default": "1",
+    "description": "Scales stagger timing (1 = default)."
+  },
+  {
+    "name": "RadarChart.enterTransition",
+    "type": "Transition",
+    "default": "—",
+    "description": "Motion enter transition (spring or cubic-bezier tween)."
+  },
+  {
+    "name": "RadarChart.motionReplayKey",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Changes when motion settings change — replays enter animations."
+  },
+  {
+    "name": "RadarChart.hoveredIndex",
+    "type": "number | null",
+    "default": "—",
+    "description": "Controlled hover state - index of hovered area"
+  },
+  {
+    "name": "RadarChart.onHoverChange",
+    "type": "(index: number | null) => void",
+    "default": "—",
+    "description": "Callback when hover state changes"
+  },
+  {
+    "name": "RadarChart.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name for the container"
+  },
+  {
+    "name": "RadarChart.children",
+    "type": "ReactNode",
+    "default": "required",
+    "description": "Child components (RadarGrid, RadarAxis, RadarLabels, RadarArea)"
+  },
+  {
+    "name": "RadarGrid.showLabels",
+    "type": "boolean",
+    "default": "true",
+    "description": "Show level value labels. Default: true"
+  },
+  {
+    "name": "RadarGrid.stroke",
+    "type": "string",
+    "default": "var(--border)",
+    "description": "Grid line stroke color. Default: var(--border)"
+  },
+  {
+    "name": "RadarGrid.strokeOpacity",
+    "type": "number",
+    "default": "0.6",
+    "description": "Grid line stroke opacity. Default: 0.6"
+  },
+  {
+    "name": "RadarGrid.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name"
+  },
+  {
+    "name": "RadarAxis.stroke",
+    "type": "string",
+    "default": "var(--border)",
+    "description": "Axis line stroke color. Default: var(--border)"
+  },
+  {
+    "name": "RadarAxis.strokeOpacity",
+    "type": "number",
+    "default": "0.6",
+    "description": "Axis line stroke opacity. Default: 0.6"
+  },
+  {
+    "name": "RadarAxis.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name"
+  },
+  {
+    "name": "RadarLabels.offset",
+    "type": "number",
+    "default": "24",
+    "description": "Distance from the chart edge. Default: 24"
+  },
+  {
+    "name": "RadarLabels.fontSize",
+    "type": "number",
+    "default": "11",
+    "description": "Font size for labels. Default: 11"
+  },
+  {
+    "name": "RadarLabels.interactive",
+    "type": "boolean",
+    "default": "false",
+    "description": "Enable interactive hover on labels. Default: false"
+  },
+  {
+    "name": "RadarLabels.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name"
+  },
+  {
+    "name": "RadarArea.index",
+    "type": "number",
+    "default": "required",
+    "description": "Index of this area in the data array"
+  },
+  {
+    "name": "RadarArea.color",
+    "type": "string",
+    "default": "—",
+    "description": "Optional color override"
+  },
+  {
+    "name": "RadarArea.fillOpacity",
+    "type": "number",
+    "default": "0.15",
+    "description": "Fill opacity when idle. Default: 0.15"
+  },
+  {
+    "name": "RadarArea.strokeDasharray",
+    "type": "string",
+    "default": "—",
+    "description": "SVG outline dash pattern, e.g. \"4 4\" for a previous period."
+  },
+  {
+    "name": "RadarArea.onPointHover",
+    "type": "(metricKey: string | null, event: PointerEvent<SVGCircleElement>) => void",
+    "default": "—",
+    "description": "Observe metric-point hover to compose a tooltip through TooltipBox."
+  },
+  {
+    "name": "RadarArea.showPoints",
+    "type": "boolean",
+    "default": "true",
+    "description": "Show data point circles. Default: true"
+  },
+  {
+    "name": "RadarArea.showStroke",
+    "type": "boolean",
+    "default": "true",
+    "description": "Show stroke outline on the polygon. Default: true"
+  },
+  {
+    "name": "RadarArea.showGlow",
+    "type": "boolean",
+    "default": "true",
+    "description": "Show glow effect on hover. Default: true"
+  },
+  {
+    "name": "RadarArea.className",
+    "type": "string",
+    "default": "—",
+    "description": "Additional class name"
+  }
+]

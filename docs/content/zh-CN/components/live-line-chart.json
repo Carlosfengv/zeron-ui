@@ -1,0 +1,15 @@
+{
+  "livelinechart": {
+    "description": "数据 time 是 Unix 秒，最新 value 为独立必填属性。",
+    "basic": "实时数据、暂停与停止",
+    "window": "60 秒窗口与前导留白",
+    "style": "动量配色、脉冲与徽标",
+    "dataCaption": "原始观测数据",
+    "viewData": "查看原始数据",
+    "behavior": "行为说明",
+    "api": "API 参考",
+    "contract": "数据 time 是 Unix 秒，最新 value 为独立必填属性。默认窗口 30 秒、5 个刻度、前导 0、lerpSpeed 0.08、高度 300px。paused 冻结滚动，最新值插值和 Y 域仍继续更新。非法窗口／刻度／速度回到默认值。示例每秒更新，支持停止并在卸载清理；组件不创建 WebSocket。",
+    "keyboard": "Tab 进入一个键盘查看入口；方向键、Home、End 查看数据，Escape 或失焦清除提示。减少动态效果关闭装饰循环。ChartLegend 的 layout／overflow 是 API 配置，inline／collapse 同行显示并折叠溢出。",
+    "compatibility": "共享 Tooltip／Legend 从 chart-core 导入。原 chart／Recharts 与 chart-primitives 保持独立契约和兼容入口。"
+  }
+}

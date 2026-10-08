@@ -2281,11 +2281,13 @@ registry_import: "@/components/ui/area-chart"
 
 默认 margin 四边 40px、aspectRatio="2 / 1"、animationDuration=1100ms、ease cubic-bezier(0.85, 0, 0.15, 1)、Y 域过渡 500ms、status="ready"。style 可覆盖尺寸；revealSignature 变化重播。onPhaseChange 提供 loading/exiting/gridTweenReady/revealing/ready/exitingReady/gridTweenLoading/revealingLoading 阶段。减少动态效果跳过入场与加载循环，状态仍完成。
 
-Area 默认 curveMonotoneX、strokeWidth=2、fillOpacity=.4、gradientToOpacity=0、gradientSpan=1、showLine/showHighlight=true、showMarkers=false、fadeEdges=false。主系列默认 chart-1，多系列须显式传固定 chart-N；颜色与图例共用。不同量纲用 yAxisId 并配置左右 YAxis。无 stackId，系列重叠，不实现 Recharts 的堆叠；原 Chart/Recharts 入口保留。
+Area 默认 curveMonotoneX、strokeWidth=2、fillOpacity=.4、gradientToOpacity=0、gradientSpan=1、showLine/showHighlight=true、showMarkers=false、fadeEdges=false。主系列默认 chart-1，多系列须显式传固定 chart-N；颜色与图例共用。不同量纲用 yAxisId 并配置左右 YAxis。系列默认重叠，传 Area.stackId 开启分组堆叠；原 Chart/Recharts 入口保留。
 
 日期有效的行按时间排序成绘图视图，不修改业务数组；缺失/NaN/Infinity 为断点，采样保留断点及相邻行，Tooltip 显示 —，标记只绘制有限点。无效日期仅从绘图排除，隐藏原始数据仍保留输入。空或过小容器不生成 SVG；宿主提供可见空态和错误文案。
 
 采样覆盖第一个内部时间分桶并保留首尾观测；原始隐藏数据按 data 缓存，尺寸和阶段变化不会重复格式化所有行。加载或空数据打断拖动时清理交互状态，恢复后正常悬停。Y 域动画的参数或目标变更会接续当前值，关闭动画或启用减少动态效果时立即收敛；减少动态效果同时关闭轴标签位置过渡、标记入场和高亮移动。虚线尾段在高度、时间域、值域和曲线变化后与面积几何同步，仅虚线 / 加载需要时测量路径长度。
+
+Area 的 stackId 将同一 Y 轴、同一分组中的系列按子组件顺序堆叠，省略则保持默认重叠绘制。正负值分别累加，组内缺失或非有限数保留整组断点；原始数据与 Tooltip 数值不做累加，坐标域、标记和 Tooltip 圆点使用累计几何。stackId 仅用于 Area，不用于 PatternArea。
 
 Area 的 dashFromIndex/dashArray 控制尾段，markers 提供半径/描边/环样式；fadeEdges 可为 true、false、left、right。PatternArea 只绘制填充，配合 Area(fillOpacity=0) 绘制线；PatternLines 等 defs 的 id 必须实例唯一，例如 useId。AreaChartLoading 是独立加载骨架，支持 pulse/sweep 与自定义 label。
 
@@ -2549,6 +2551,82 @@ export function HealthMarker() {
 
 ---
 schema_version: 1
+name: bar-chart
+kind: component
+status: stable
+locale: zh-CN
+summary: 数值必须有限且非负；非法值保留在原始数据，不生成柱形或污染数值域。
+source: packages/ui/src/components/bar-chart.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [bar-chart, chart-core, area-chart, chart-brush, chart-primitives, empty]
+package_import: "@zeron/ui/bar-chart"
+registry_import: "@/components/ui/bar-chart"
+---
+
+# bar-chart
+
+安装 `npx zeron-ui add bar-chart chart-primitives button`。React 19、Tailwind 4，保留参考 API 与几何，颜色使用 Zeron Token。
+
+数值必须有限且非负；非法值保留在原始数据，不生成柱形或污染数值域。barGap 是 band 比例（0.2），barWidth、groupGap、stackGap 使用像素。默认四边 40px、入场 1100ms、圆头、grow 动画。纵深辅助层不重复注册系列。
+
+图表只有一个键盘入口，方向键／Home／End 查看，Escape 清除。原始数据表负责可访问的数值说明。图例 layout／overflow 由调用 API 控制，不添加布局选择控件。共享 Tooltip 从 chart-core 导入，避免和旧 Recharts 契约混用。
+
+受控时间范围示例额外安装 `area-chart chart-brush empty`。BarChart 使用分类轴，没有 `xDomain` API；不可将 ChartBrush 直接放入 BarChart 来选择真实日期。宿主持有 `ChartBrushSelection | null`，通过真实时间戳按 start/end 包含边界过滤主图 data，再按同一时区格式化分类标签。下方 AreaChart 保留完整数据，组合 `ChartBrush selection={selection} onSelectionChange={setSelection}`。清除时恢复全部原始数据，未命中观察值时展示 Empty，不补零；原始数据表同步当前范围。示例使用 UTC 日期，导航条 80px、上下 margin=8、blurPx=0，轨道边框与选区外中性色沿用组件默认行为。
+
+```tsx
+"use client";
+import { useId, useState } from "react";
+import { BarChart, Bar, BarSquares, BarColumnTrack, BarDepthProvider, BarDepthBack, BarDepthFront, BarPulse, BarXAxis, BarYAxis } from "@zeron/ui/bar-chart";
+import { Grid, YAxis, ChartTooltip, ChartLegend, LinearGradient, PatternLines } from "@zeron/ui/chart-core";
+import { Button } from "@zeron/ui/button";
+const data = [
+  {
+    "name": "Mon",
+    "requests": 120,
+    "comparison": 80
+  },
+  {
+    "name": "Tue",
+    "requests": 210,
+    "comparison": 140
+  },
+  {
+    "name": "Wed",
+    "requests": 170,
+    "comparison": 110
+  },
+  {
+    "name": "Thu",
+    "requests": 320,
+    "comparison": 220
+  },
+  {
+    "name": "Fri",
+    "requests": 280,
+    "comparison": 200
+  },
+  {
+    "name": "Sat",
+    "requests": 390,
+    "comparison": 270
+  },
+  {
+    "name": "Sun",
+    "requests": 340,
+    "comparison": 240
+  }
+];
+
+function BasicDemo() { return <BarChart data={data}><Grid horizontal /><Bar dataKey="requests" /><BarXAxis /><YAxis /><ChartTooltip /></BarChart>; }
+export function Example() { return <BasicDemo />; }
+```
+
+
+---
+
+---
+schema_version: 1
 name: button
 kind: component
 status: stable
@@ -2724,14 +2802,14 @@ summary: 参考时间序列图的共享坐标轴、Tooltip、图例、图案和�
 source: packages/ui/src/components/chart-core.tsx
 registry: packages/ui/registry.json
 typecheck_examples: false
-related: [area-chart, chart-core, chart-brush, funnel-chart]
+related: [line-chart, area-chart, bar-chart, live-line-chart, pie-chart, radar-chart, ring-chart, chart-core, chart-brush]
 package_import: "@zeron/ui/chart-core"
 registry_import: "@/components/ui/chart-core"
 ---
 
 # chart-core
 
-由 area-chart 自动安装。工作区使用 @zeron/ui/chart-core，消费项目使用 @/components/ui/chart-core。轴与 Tooltip 必须在 AreaChart 内；不要把它们放进 Recharts ChartContainer。
+由 line-chart、area-chart、bar-chart、live-line-chart、pie-chart、radar-chart、ring-chart 等自动安装。工作区使用 @zeron/ui/chart-core，消费项目使用 @/components/ui/chart-core。XAxis／YAxis 组合 LineChart 或 AreaChart；Bar 与 Live 使用各自轴。ChartTooltip 必须在相应图表上下文内；不要放进 Recharts ChartContainer，也不要直接放进 RadarChart 或 RingChart。通用 SVG 渐变、Background 与 ChartMarkers 也从此入口导出。Pie 与 Ring 的中心数字和排版文件由 chart-core 统一分发，公开组件仍通过各自入口导入。
 
 XAxis 默认 5 个刻度，tickMode=data，日期标签和悬停观测对齐；domain 模式为时间域等距刻度。YAxis 默认 left、5 刻度，formatLargeNumbers=true，可传 formatValue 和 yAxisId/orientation。Grid 保留 horizontal/vertical、条带、线宽、颜色和加载 shimmer 配置。
 
@@ -2742,6 +2820,8 @@ ChartLegend 和复合 Legend/LegendItem/LegendLabel/LegendMarker/LegendProgress/
 ChartLegend 与复合 Legend 均支持 layout="stack"（默认，每行一个标注与数值）或 "inline"（完整项目同行）；overflow="wrap"（默认，自动换行）或 "collapse"（按宽度收起超出部分，展开后显示全部）。maxVisibleItems 可限制折叠时的最大项目数，renderOverflowLabel(hiddenCount, expanded) 可定制/本地化更多和收起文案。折叠项保留原始内容和 hover 下标，并移出无障碍树与键盘停靠；容器、内容与字体变化后重新计算可见项。已有逐行调用无须改动。
 
 布局由宿主 API 配置，示例不提供用户布局选择按钮。折叠隐藏当前焦点项时转交“更多”；容器变宽使披露按钮消失时，焦点保留在图例容器，该容器不增加正常 Tab 停靠点。
+
+XAxis.formatDate(date) 可按宿主 locale / timeZone 格式化标签，并同步默认日期提示和键盘读屏日期；未传时使用共享短日期格式。业务需要定制 Tooltip 标题时，可组合 ChartTooltip.content / TooltipContent，并关闭默认 showDatePill。
 
 默认标注与数值支持长文本换行，复合 Legend 的完整标注 / 数值项目限制在容器宽度内；自定义 renderItem / className 覆盖时由宿主保留这一边界。
 
@@ -3239,6 +3319,51 @@ export function TeamFunnel() {
 
 ---
 schema_version: 1
+name: heatmap-chart
+kind: component
+status: stable
+locale: zh-CN
+summary: 输入是包含日期格的周列，不是数字矩阵，也不会自动聚合。
+source: packages/ui/src/components/heatmap-chart.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [heatmap-chart, chart-core, area-chart]
+package_import: "@zeron/ui/heatmap-chart"
+registry_import: "@/components/ui/heatmap-chart"
+---
+
+# heatmap-chart
+
+安装 `npx zeron-ui add heatmap-chart chart-primitives button`。React 19、Tailwind 4，保留参考 API 与几何，颜色使用 Zeron Token。
+
+输入是包含日期格的周列，不是数字矩阵，也不会自动聚合。weekStartDay 只旋转显示行，不改变日期身份。默认 fluid 布局、间隙 2px、圆角 2px、入场 1600ms。阈值保持 <=0、1、2、3、>=4，颜色由 chart-1 与 muted 派生。图表与外部图例传入同一 levelStyles，各实例纹理 ID 隔离。
+
+图表只有一个键盘入口，方向键／Home／End 查看，Escape 清除。原始数据表负责可访问的数值说明。图例 layout／overflow 由调用 API 控制，不添加布局选择控件。共享 Tooltip 从 chart-core 导入，避免和旧 Recharts 契约混用。
+
+提供 `onCellSelect={(bin) => ...}` 时，点击／轻触或键盘查看后的 Enter／空格选择原始日期格，回调包含 `date`、`count`、`bin`。`HeatmapCells interactive={false}`、加载或尚未 ready 时不触发。更新日志 `/updates` 是实际应用：全年 Git commit 日历，按访问者时区聚合并筛选当天全部日志；未来日期留空，不完整历史不能画成零活跃度。
+
+```tsx
+"use client";
+import { useState } from "react";
+import { HeatmapChart, HeatmapCells, HeatmapXAxis, HeatmapYAxis, HeatmapTooltip, HeatmapLegend, HeatmapSeparator, HeatmapInteractionProvider, HeatmapInteractionBoundary, getHeatmapWeekStartSunday, type HeatmapColumn, type HeatmapLevelStyles, HEATMAP_DEFAULT_LEVEL_COLORS } from "@zeron/ui/heatmap-chart";
+import { Button } from "@zeron/ui/button";
+const rangeStart = new Date(2026, 0, 1);
+const rangeEnd = new Date(2026, 11, 31);
+const weekStart = getHeatmapWeekStartSunday(rangeStart);
+const data: HeatmapColumn[] = Array.from({ length: 53 }, (_, column) => ({ bin: column, bins: Array.from({ length: 7 }, (_, row) => {
+  const date = new Date(weekStart); date.setDate(date.getDate() + column * 7 + row);
+  return { bin: row, date, count: (column * 3 + row * 7) % 9 };
+}) }));
+
+function BasicDemo() { return <HeatmapInteractionProvider><HeatmapInteractionBoundary><HeatmapChart data={data} xDomain={[rangeStart,rangeEnd]}><HeatmapCells /><HeatmapXAxis /><HeatmapYAxis /><HeatmapTooltip /></HeatmapChart><HeatmapLegend /></HeatmapInteractionBoundary></HeatmapInteractionProvider>; }
+export function Example() { return <BasicDemo />; }
+```
+
+
+---
+
+---
+schema_version: 1
 name: inline-notice
 kind: component
 status: stable
@@ -3411,6 +3536,88 @@ Agent 只需优先关注：`variant`、`size` 和原生 input props。完整类�
 
 ---
 schema_version: 1
+name: line-chart
+kind: component
+status: stable
+locale: zh-CN
+summary: 日期可用 Date、可解析字符串或毫秒时间戳；绘图视图按时间排序且保留原始数据。
+source: packages/ui/src/components/line-chart.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [line-chart, chart-core, area-chart]
+package_import: "@zeron/ui/line-chart"
+registry_import: "@/components/ui/line-chart"
+---
+
+# line-chart
+
+安装 `npx zeron-ui add line-chart chart-primitives button chart-brush`。React 19、Tailwind 4，保留参考 API 与几何，颜色使用 Zeron Token。
+
+日期可用 Date、可解析字符串或毫秒时间戳；绘图视图按时间排序且保留原始数据。缺失与非有限数值保持断点。默认四边 40px、比例 2 / 1、入场 1100ms、curveNatural、线宽 2.5px、边缘淡出开启。加载与 500ms Y 域过渡复用 AreaChart。Brush 用 Date 起止、范围外中性色和完整边框。
+
+图表只有一个键盘入口，方向键／Home／End 查看，Escape 清除。原始数据表负责可访问的数值说明。图例 layout／overflow 由调用 API 控制，不添加布局选择控件。共享 Tooltip 从 chart-core 导入，避免和旧 Recharts 契约混用。
+
+```tsx
+"use client";
+import { useId, useState } from "react";
+import { LineChart, Line } from "@zeron/ui/line-chart";
+import { Grid, XAxis, YAxis, ChartTooltip, ChartLegend } from "@zeron/ui/chart-core";
+import { ChartBrush, type ChartBrushSelection } from "@zeron/ui/chart-brush";
+import { Button } from "@zeron/ui/button";
+const data = [
+  {
+    "date": "2026-10-01",
+    "requests": 120,
+    "comparison": 80,
+    "latency": 28
+  },
+  {
+    "date": "2026-10-02",
+    "requests": 210,
+    "comparison": 140,
+    "latency": 34
+  },
+  {
+    "date": "2026-10-03",
+    "requests": 170,
+    "comparison": 110,
+    "latency": 31
+  },
+  {
+    "date": "2026-10-04",
+    "requests": 320,
+    "comparison": 220,
+    "latency": 42
+  },
+  {
+    "date": "2026-10-05",
+    "requests": 280,
+    "comparison": 200,
+    "latency": 37
+  },
+  {
+    "date": "2026-10-06",
+    "requests": 390,
+    "comparison": 270,
+    "latency": 48
+  },
+  {
+    "date": "2026-10-07",
+    "requests": 340,
+    "comparison": 240,
+    "latency": 44
+  }
+];
+
+function BasicDemo() { return <LineChart data={data}><Grid horizontal /><Line dataKey="requests" /><XAxis /><YAxis /><ChartTooltip /></LineChart>; }
+export function Example() { return <BasicDemo />; }
+```
+
+
+---
+
+---
+schema_version: 1
 name: list-pagination
 kind: component
 status: stable
@@ -3441,6 +3648,57 @@ page 为零基索引。total 是筛选后的数量；组件只展示和回调，
 pageSizeOptions 默认 5 / 10 / 20 / 50，当前自定义条数也会列入。disabled 同时禁用条数选择和四个导航按钮。labels 支持计数、页摘要和所有可访问名称的本地化。
 
 已使用 DataTable 的页面继续用内置 DataTablePagination，它依赖真实 TanStack Table。不要创建伪造 table 对象或类型断言来使用其分页。ListPagination 用于巡检、告警等保留领域行布局的非表格列表，不引入表格引擎。
+
+
+---
+
+---
+schema_version: 1
+name: live-line-chart
+kind: component
+status: stable
+locale: zh-CN
+summary: 数据 time 是 Unix 秒，最新 value 为独立必填属性。
+source: packages/ui/src/components/live-line-chart.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [live-line-chart, chart-core, area-chart]
+package_import: "@zeron/ui/live-line-chart"
+registry_import: "@/components/ui/live-line-chart"
+---
+
+# live-line-chart
+
+安装 `npx zeron-ui add live-line-chart chart-primitives button`。React 19、Tailwind 4，保留参考 API 与几何，颜色使用 Zeron Token。
+
+数据 time 是 Unix 秒，最新 value 为独立必填属性。默认窗口 30 秒、5 个刻度、前导 0、lerpSpeed 0.08、高度 300px。paused 冻结滚动，最新值插值和 Y 域仍继续更新。非法窗口／刻度／速度回到默认值。示例每秒更新，支持停止并在卸载清理；组件不创建 WebSocket。
+
+图表只有一个键盘入口，方向键／Home／End 查看，Escape 清除。原始数据表负责可访问的数值说明。图例 layout／overflow 由调用 API 控制，不添加布局选择控件。共享 Tooltip 从 chart-core 导入，避免和旧 Recharts 契约混用。
+
+```tsx
+"use client";
+import { useEffect, useState } from "react";
+import { LiveLineChart, LiveLine, LiveXAxis, LiveYAxis, type LiveLinePoint } from "@zeron/ui/live-line-chart";
+import { Grid, ChartTooltip } from "@zeron/ui/chart-core";
+import { Button } from "@zeron/ui/button";
+import { ChartDataTable } from "@zeron/ui/chart-primitives";
+
+function StreamDemo({windowSecs=30,leading=0,minimal=false}:{windowSecs?:number;leading?:number;minimal?:boolean}) {
+  const [data, setData] = useState<LiveLinePoint[]>([]);
+  const [value, setValue] = useState(42);
+  const [paused, setPaused] = useState(false);
+  const [running, setRunning] = useState(true);
+  useEffect(() => {
+    if (!running) return;
+    let step = 0;
+    const update = () => { const time = Date.now() / 1000; const next = 42 + Math.sin(step++ / 4) * 9; setValue(next); setData(previous => [...previous.filter(point => point.time >= time - 120),{time,value:next}]); };
+    update(); const timer = window.setInterval(update, 1000); return () => window.clearInterval(timer);
+  }, [running]);
+  return <div className="w-full"><div className="flex flex-wrap gap-2"><Button size="sm" variant="secondary" onClick={() => setPaused(v => !v)}>{paused ? "Resume scrolling" : "Pause scrolling"}</Button><Button size="sm" variant="secondary" onClick={() => setRunning(v => !v)}>{running ? "Stop source" : "Start source"}</Button></div><LiveLineChart data={data} value={value} window={windowSecs} nowOffsetUnits={leading} paused={paused} exaggerate={minimal}><Grid horizontal /><LiveLine dataKey="value" pulse={!minimal} badge={!minimal} fill={!minimal} momentumColors={minimal ? {up:"var(--chart-1)",down:"var(--chart-3)",flat:"var(--chart-2)"} : undefined} /><LiveXAxis /><LiveYAxis /><ChartTooltip showDatePill={false} /></LiveLineChart><ChartDataTable caption="Live samples (Unix seconds)" columns={["Time (s)","Value"]} rows={data.map(point => ({id:String(point.time),label:String(point.time),values:[point.value.toFixed(2)]}))} /></div>;
+}
+function BasicDemo() { return <StreamDemo />; }
+export function Example() { return <BasicDemo />; }
+```
 
 
 ---
@@ -3721,6 +3979,142 @@ PageContent 默认拥有 floating surface、边框和圆角；不要用 bg-surfa
 
 ---
 schema_version: 1
+name: pie-chart
+kind: component
+status: stable
+locale: zh-CN
+summary: 饼图与圆环图共用 PieChart，通过 innerRadius 设置圆环，支持中心摘要和左右图例布局。
+source: packages/ui/src/components/pie-chart.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [pie-chart, chart-core, area-chart]
+package_import: "@zeron/ui/pie-chart"
+registry_import: "@/components/ui/pie-chart"
+---
+
+# pie-chart
+
+安装 `npx zeron-ui add pie-chart chart-primitives button`。React 19、Tailwind 4，保留参考 API 与几何，颜色使用 Zeron Token。
+
+innerRadius 为 0 时绘制饼图，大于 0 时绘制圆环图。半径与 hoverOffset 使用像素，角度使用弧度。保持输入顺序，有限非负数值决定总量；非法扇区保留索引但不绘制。业务总量大于已分配值时，由调用方显式追加中性颜色的未分配扇区，保持正确的占比分母；未知总量不得补零。默认平移 10px，innerRadius、padAngle、cornerRadius 均为 0。geometryScrubbing 跳过 Motion 路径变形。动态重排须显式指定颜色。PieCenter 的自定义渲染在默认和悬停状态均生效。
+
+DonutChart 文档和示例已合并至此，原链接跳转到 PieChart。共享 Tooltip／Legend 从 chart-core 导入。现有业务 Block 使用的 DonutSummary，以及原 chart／Recharts、chart-primitives 兼容入口继续保留。
+
+图表只有一个键盘入口，方向键／Home／End 查看，Escape 清除。原始数据表负责可访问的数值说明。图例 layout／overflow 由调用 API 控制，不添加布局选择控件。共享 Tooltip 从 chart-core 导入，避免和旧 Recharts 契约混用。
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { PieChart, PieSlice } from "@zeron/ui/pie-chart";
+import { ChartLegend } from "@zeron/ui/chart-core";
+
+const data = [
+  {
+    "label": "Direct",
+    "value": 340,
+    "color": "var(--chart-1)"
+  },
+  {
+    "label": "Search",
+    "value": 240,
+    "color": "var(--chart-2)"
+  },
+  {
+    "label": "Referral",
+    "value": 180,
+    "color": "var(--chart-3)"
+  },
+  {
+    "label": "Social",
+    "value": 130,
+    "color": "var(--chart-4)"
+  },
+  {
+    "label": "Email",
+    "value": 110,
+    "color": "var(--chart-5)"
+  }
+];
+
+function BasicDemo() { const [hovered, setHovered] = useState<number | null>(null); return <div className="mx-auto w-full max-w-sm"><div className="flex justify-center"><PieChart size={180} data={data} hoveredIndex={hovered} onHoverChange={setHovered}>{data.map((item,index) => <PieSlice key={item.label} index={index} />)}</PieChart></div><ChartLegend layout="inline" overflow="collapse" items={data.map(item => ({label:item.label,value:item.value,color:item.color}))} hoveredIndex={hovered} onHover={setHovered} /></div>; }
+
+export function Example() { return <BasicDemo />; }
+```
+
+
+---
+
+---
+schema_version: 1
+name: radar-chart
+kind: component
+status: stable
+locale: zh-CN
+summary: 按 0–100 指标绘制多系列雷达图，支持受控悬停、网格、轴线与标签。
+source: packages/ui/src/components/radar-chart.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [radar-chart, chart-core, area-chart]
+package_import: "@zeron/ui/radar-chart"
+registry_import: "@/components/ui/radar-chart"
+---
+
+# radar-chart
+
+安装 `npx zeron-ui add radar-chart chart-primitives button`。React 19、Tailwind 4。保留参考实现的几何与 API，颜色使用 Zeron Chart Token。
+
+至少三个指标，每个值按 0–100 归一化。缺失或非有限数按 0 绘制，越界数裁剪到 0–100，原始数据保留。默认五层网格、60px 边距和 1100ms 入场。RadarGrid／Axis／Labels 及 Area 分别控制装饰、点和高亮。
+
+图表只有一个键盘入口，方向键／Home／End 查看，Escape 或失焦清除；降低动态效果设置会跳过入场和高亮动画。提供原始数据表，不依赖颜色区分信息。ChartLegend 的 layout／overflow 由 API 控制。共享依赖由 chart-core／chart-motion 拥有，不重复安装文件。
+
+RadarArea.fillOpacity 默认为 0.15，设为 0 保持无填充对比线，悬停也不填充；strokeDasharray 定制前期虚线。onPointHover(metricKey, event) 在指标点进入、移动或离开时回调，离开传 null；可用共享 TooltipBox / TooltipContent 组合业务提示，数值继续读取原始记录。
+
+```tsx
+"use client";
+
+import { useMemo, useState } from "react";
+import { RadarChart, RadarGrid, RadarAxis, RadarLabels, RadarArea, type RadarData, type RadarMetric } from "@zeron/ui/radar-chart";
+import { ChartLegend } from "@zeron/ui/chart-core";
+import { ChartDataTable } from "@zeron/ui/chart-primitives";
+import { Button } from "@zeron/ui/button";
+
+const defaultLabels = { speed: "Speed", reliability: "Reliability", capacity: "Capacity", efficiency: "Efficiency", coverage: "Coverage", current: "Current", previous: "Previous", update: "Update metrics", data: "Metric observations", viewData: "View source data", series: "Series" };
+
+function RadarDemo({ mode = "basic", labels = defaultLabels }: { mode?: "basic" | "comparison" | "style"; labels?: typeof defaultLabels }) {
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [updated, setUpdated] = useState(false);
+  const metrics = useMemo<RadarMetric[]>(() => ["speed", "reliability", "capacity", "efficiency", "coverage"].map(key => ({ key, label: labels[key as keyof Pick<typeof defaultLabels, "speed" | "reliability" | "capacity" | "efficiency" | "coverage">] })), [labels]);
+  const data = useMemo<RadarData[]>(() => [
+    { label: labels.current, color: "var(--chart-1)", values: { speed: updated ? 90 : 78, reliability: 92, capacity: updated ? 88 : 64, efficiency: 82, coverage: 72 } },
+    ...(mode === "basic" ? [] : [{ label: labels.previous, color: "var(--chart-2)", values: { speed: 68, reliability: 76, capacity: 84, efficiency: 62, coverage: 86 } }]),
+  ], [labels, mode, updated]);
+  const columns = [labels.series, ...metrics.map(metric => metric.label)];
+  return <div className="mx-auto grid w-full min-w-0 max-w-2xl gap-4">
+    {mode === "style" && <Button className="justify-self-start" size="sm" variant="secondary" onClick={() => setUpdated(value => !value)}>{labels.update}</Button>}
+    <div className="flex min-w-0 flex-col items-center gap-6 sm:flex-row">
+      <div className="w-full min-w-0 max-w-sm sm:flex-1">
+        <RadarChart data={data} metrics={metrics} levels={mode === "style" ? 3 : 5} hoveredIndex={hovered} onHoverChange={setHovered}>
+          <RadarGrid showLabels={mode !== "style"} />
+          <RadarAxis />
+          {data.map((item, index) => <RadarArea key={item.label} index={index} showPoints={mode !== "style"} showGlow={mode !== "style"} />)}
+          <RadarLabels />
+        </RadarChart>
+      </div>
+      <ChartLegend className="w-full min-w-0 sm:max-w-40 sm:flex-1" layout="stack" overflow="wrap" showValue={false} items={data.map(item => ({ label: item.label, color: item.color || "var(--chart-1)", value: 0 }))} hoveredIndex={hovered} onHover={setHovered} />
+    </div>
+    <ChartDataTable caption={labels.data} summary={labels.viewData} columns={columns} rows={data.map(item => ({ id: item.label, label: item.label, values: metrics.map(metric => item.values[metric.key]) }))} />
+  </div>;
+}
+
+export function Example() { return <RadarDemo mode="basic" />; }
+```
+
+
+---
+
+---
+schema_version: 1
 name: resource-detail-layout
 kind: component
 status: stable
@@ -3785,6 +4179,72 @@ export function ResourceDetail({ resource, children, facts, onBack, onEdit, canE
 ## 验收
 
 检查 title 与 status 分离、一个 h1、动作权限、返回条件、长描述、切换资源请求竞争、窄屏主辅栏堆叠和两种滚动模式。示例由 `agents:guides:examples:check` 做类型检查；真实接口、业务状态和视觉验收独立记录。不要复制该组件内部摘要栏到业务代码；消费者按实际 aliases 引用已安装布局。
+
+
+---
+
+---
+schema_version: 1
+name: ring-chart
+kind: component
+status: stable
+locale: zh-CN
+summary: 同心圆环展示多项独立进度，支持圆角／平直端点、中心内容与联动图例。
+source: packages/ui/src/components/ring-chart.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [ring-chart, chart-core, pie-chart]
+package_import: "@zeron/ui/ring-chart"
+registry_import: "@/components/ui/ring-chart"
+---
+
+# ring-chart
+
+安装 `npx zeron-ui add ring-chart chart-primitives button`。React 19、Tailwind 4。保留参考实现的几何与 API，颜色使用 Zeron Chart Token。
+
+每项以 value/maxValue 计算独立进度，按输入顺序从内到外。非法值或非正 maxValue 不绘制；超目标值绘制满环，中心和数据表保留实际数值。默认 strokeWidth=12px、ringGap=6px、baseInnerRadius=60px，按容器等比缩小，角度使用弧度。animationDuration 默认 1100ms，自定义 enterTransition 优先。geometryScrubbing 使用静态路径，同时保留 Ring 的颜色、端点和交互。RingCenter 在默认及悬停状态都调用自定义 children；默认 data 是合计值和合计目标。
+
+图表只有一个键盘入口，方向键／Home／End 查看，Escape 或失焦清除；降低动态效果设置会跳过入场和高亮动画。提供原始数据表，不依赖颜色区分信息。ChartLegend 的 layout／overflow 由 API 控制。共享依赖由 chart-core／chart-motion 拥有，不重复安装文件。
+
+```tsx
+"use client";
+
+import { useMemo, useState } from "react";
+import { RingChart, Ring, RingCenter, type RingData } from "@zeron/ui/ring-chart";
+import { ChartLegend } from "@zeron/ui/chart-core";
+import { ChartDataTable } from "@zeron/ui/chart-primitives";
+import { Button } from "@zeron/ui/button";
+
+const defaultLabels = { requests: "Requests", storage: "Storage", compute: "Compute", total: "Total", update: "Update progress", data: "Independent progress", viewData: "View source data", item: "Item", value: "Value", maximum: "Maximum" };
+
+function RingDemo({ mode = "basic", labels = defaultLabels, locale = "en" }: { mode?: "basic" | "caps" | "geometry"; labels?: typeof defaultLabels; locale?: string }) {
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [updated, setUpdated] = useState(false);
+  const data = useMemo<RingData[]>(() => [
+    { label: labels.requests, value: updated ? 92 : 72, maxValue: 100, color: "var(--chart-1)" },
+    { label: labels.storage, value: updated ? 35 : 48, maxValue: 80, color: "var(--chart-2)" },
+    { label: labels.compute, value: updated ? 54 : 36, maxValue: 60, color: "var(--chart-3)" },
+  ], [labels, updated]);
+  const format = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 });
+  return <div className="mx-auto grid w-full min-w-0 max-w-2xl gap-4">
+    {mode === "geometry" && <Button className="justify-self-start" size="sm" variant="secondary" onClick={() => setUpdated(value => !value)}>{labels.update}</Button>}
+    <div className="flex min-w-0 flex-col items-center gap-6 sm:flex-row">
+      <div className="shrink-0">
+        <RingChart data={data} size={180} hoveredIndex={hovered} onHoverChange={setHovered} strokeWidth={mode === "geometry" && updated ? 16 : 12} ringGap={6} startAngle={-Math.PI / 2} endAngle={mode === "caps" || (mode === "geometry" && updated) ? Math.PI / 2 : 3 * Math.PI / 2} geometryScrubbing={mode === "geometry"}>
+          {data.map((item, index) => <Ring key={item.label} index={index} lineCap={mode === "caps" ? "butt" : "round"} />)}
+          <RingCenter defaultLabel={labels.total}>
+            {({ value, label }) => <div className="flex min-w-0 flex-col items-center gap-1 text-center"><strong className="text-heading tabular-nums">{format.format(value)}</strong><span className="max-w-full truncate text-label text-fg-muted">{label}</span></div>}
+          </RingCenter>
+        </RingChart>
+      </div>
+      <ChartLegend className="w-full min-w-0 sm:flex-1" layout="stack" overflow="wrap" items={data.map(item => ({ label: item.label, color: item.color || "var(--chart-1)", value: item.value, maxValue: item.maxValue }))} formatValue={value => format.format(value)} hoveredIndex={hovered} onHover={setHovered} />
+    </div>
+    <ChartDataTable caption={labels.data} summary={labels.viewData} columns={[labels.item, labels.value, labels.maximum]} rows={data.map(item => ({ id: item.label, label: item.label, values: [item.value, item.maxValue] }))} />
+  </div>;
+}
+
+export function Example() { return <RingDemo mode="basic" />; }
+```
 
 
 ---

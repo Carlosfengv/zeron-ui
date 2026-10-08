@@ -30,6 +30,8 @@ export interface StatusOverviewSummary {
   status?: Exclude<StatusOverviewStatus, "empty">;
 }
 
+export type StatusOverviewChartColors = Partial<Record<Exclude<StatusOverviewStatus, "empty">, string>>;
+
 export interface StatusOverviewSegment {
   /** Unique and stable within one rail. Used to retain the active segment across updates. */
   id: string;
@@ -69,6 +71,8 @@ interface StatusOverviewBaseProps
   extends Omit<ComponentPropsWithoutRef<"section">, "children" | "content"> {
   /** Card and chart share rounded status bars; chart is frameless and activity is a compact service row. */
   variant?: "card" | "activity" | "chart";
+  /** Per-status colors for chart mode. Defaults to chart-1 through chart-4 and a neutral unknown state. */
+  chartColors?: StatusOverviewChartColors;
   ariaLabel: string;
   /** Pass null in activity mode for a full-width rail with results below it. */
   label: ReactNode;
@@ -106,6 +110,14 @@ const statusSegmentClass: Record<StatusOverviewStatus, string> = {
   empty: "bg-surface-raised [background-image:repeating-linear-gradient(135deg,var(--neutral-status-border)_0_1px,transparent_1px_3px)]",
 };
 
+const defaultChartColors: Record<Exclude<StatusOverviewStatus, "empty">, string> = {
+  operational: "var(--chart-1)",
+  degraded: "var(--chart-2)",
+  down: "var(--chart-3)",
+  maintenance: "var(--chart-4)",
+  unknown: "var(--neutral-status-border)",
+};
+
 const summaryClass: Record<Exclude<StatusOverviewStatus, "empty">, string> = {
   operational: "text-fg-success",
   degraded: "text-fg-warning",
@@ -122,7 +134,8 @@ function StatusSegmentRail({
   ariaLabel,
   content,
   variant,
-}: Pick<StatusOverviewProps, "ariaLabel" | "content" | "variant">) {
+  chartColors,
+}: Pick<StatusOverviewProps, "ariaLabel" | "content" | "variant" | "chartColors">) {
   const activity = variant === "activity";
   const chart = variant === "chart";
   const items = content.items;
@@ -291,9 +304,13 @@ function StatusSegmentRail({
                 role="gridcell"
                 className={cn(
                   "min-w-0",
-                  activity ? "flex items-center justify-center" : cn("rounded-full transition-colors duration-moderate", statusSegmentClass[item.status], chart && "origin-bottom animate-in fade-in-0 zoom-in-50 ease-out motion-reduce:animate-none", tooltipOpen && item.id === activeId && "outline outline-1 outline-offset-2 outline-fg-muted"),
+                  activity ? "flex items-center justify-center" : cn("rounded-full transition-colors duration-moderate", (!chart || item.status === "empty") && statusSegmentClass[item.status], chart && "origin-bottom animate-in fade-in-0 zoom-in-50 ease-out motion-reduce:animate-none", tooltipOpen && item.id === activeId && "outline outline-1 outline-offset-2 outline-fg-muted"),
                 )}
-                style={chart ? { animationDelay: `${Math.min(index * 12, 400)}ms`, animationFillMode: "both" } : undefined}
+                style={chart ? {
+                  backgroundColor: item.status === "empty" ? undefined : chartColors?.[item.status] ?? defaultChartColors[item.status],
+                  animationDelay: `${Math.min(index * 12, 400)}ms`,
+                  animationFillMode: "both",
+                } : undefined}
               >
                 {activity && <span aria-hidden="true" data-slot="status-overview-tick" className={cn(
                   "w-1 shrink-0 rounded-full",
@@ -353,6 +370,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
     statusMessage,
     className,
     variant = "card",
+    chartColors,
     ...sectionProps
   } = props;
   const state = stateProp ?? "ready";
@@ -409,7 +427,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
       )}
       <div className={cn("min-w-0", activity && "col-span-2", activity && (unlabeledActivity ? "row-start-1" : "row-start-2"), activity && !unlabeledActivity && (trailing ? "@xl/status:col-span-1 @xl/status:col-start-2 @xl/status:row-start-1" : "@sm/status:col-span-1 @sm/status:col-start-2 @sm/status:row-start-1"), chart ? "mt-5" : !activity && "mt-3")}>
         {loading && <Skeleton data-slot="status-overview-skeleton" className={cn("rounded-sm", activity ? "h-6" : "h-control-md")} />}
-        {showRail && <StatusSegmentRail ariaLabel={ariaLabel} content={content} variant={variant} />}
+        {showRail && <StatusSegmentRail ariaLabel={ariaLabel} content={content} variant={variant} chartColors={chartColors} />}
         {showData && empty && (
           <div data-slot="status-overview-state-message" role="status" className="grid min-h-control-md place-items-center text-label text-fg-subtle">
             {emptyContent}

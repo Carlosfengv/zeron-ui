@@ -1,4 +1,4 @@
-import { Children, Fragment, isValidElement, type ReactNode } from "react";
+import { Children, Fragment, cloneElement, isValidElement, type ReactNode } from "react";
 
 export function isFiniteValue(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
@@ -22,9 +22,16 @@ export function timeSeriesData(data: Record<string, unknown>[], key: string) {
 }
 
 export function chartChildren(children: ReactNode): ReactNode[] {
-  return Children.toArray(children).flatMap(child =>
-    isValidElement<{ children?: ReactNode }>(child) && child.type === Fragment
-      ? chartChildren(child.props.children) : [child]);
+  function flatten(nodes: ReactNode, parentKey: string): ReactNode[] {
+    return Children.toArray(nodes).flatMap(child => {
+      if (!isValidElement<{ children?: ReactNode }>(child)) return [child];
+      const key = `${parentKey}${child.key}`;
+      return child.type === Fragment
+        ? flatten(child.props.children, `${key}:`)
+        : [cloneElement(child, { key })];
+    });
+  }
+  return flatten(children, "");
 }
 
 export function tooltipPosition(x: number, y: number, width: number, height: number, containerWidth: number, containerHeight: number, offset: number) {

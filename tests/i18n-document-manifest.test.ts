@@ -28,10 +28,10 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(129);
-    expect(detailDocEntries).toHaveLength(129);
+    expect(pageDocEntries).toHaveLength(132);
+    expect(detailDocEntries).toHaveLength(132);
     expect(pageDocEntries.find((entry) => entry.slug === "sales-conversion-funnel-01")?.collection).toBe("blocks");
-    expect(legacyDocRedirects).toHaveLength(75);
+    expect(legacyDocRedirects).toHaveLength(79);
     expect(pageDocEntries.some(entry => entry.slug === "error-state" || entry.slug === "status-indicator")).toBe(false);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });
@@ -39,12 +39,14 @@ describe("documentation manifest", () => {
   it("groups chart references together and preserves the status component identity", () => {
     const charts = navigationDocEntries.filter((entry) => entry.collection === "components" && entry.section === "charts");
     expect(charts.map((entry) => entry.slug)).toEqual([
-      "line-chart", "area-chart", "bar-chart", "pie-chart", "donut-chart", "funnel-chart", "status-overview",
+      "line-chart", "area-chart", "bar-chart", "pie-chart", "heatmap-chart", "live-line-chart", "radar-chart", "ring-chart", "funnel-chart", "status-overview",
       "time-range-histogram", "chart-primitives", "chart-tokens",
     ]);
     expect(charts.find((entry) => entry.slug === "status-overview")?.name).toBe("StatusBarChart");
     expect(charts.find((entry) => entry.slug === "area-chart")?.registryItem?.name).toBe("area-chart");
-    expect(charts.slice(0, 5).filter((entry) => entry.slug !== "area-chart").every((entry) => entry.registryItem === undefined)).toBe(true);
+    expect(["line-chart", "area-chart", "bar-chart", "pie-chart", "heatmap-chart", "live-line-chart", "radar-chart", "ring-chart", "funnel-chart"].every(slug => charts.find(entry => entry.slug === slug)?.registryItem?.name === slug)).toBe(true);
+    expect(pageDocEntries.some(entry => entry.slug === "donut-chart")).toBe(false);
+    expect(legacyDocRedirects.find(entry => entry.legacySlug === "donut-chart")?.destination).toEqual({ collection: "components", slug: "pie-chart" });
     expect(pageDocEntries.some((entry) => entry.slug === "status-bar-chart")).toBe(false);
   });
 

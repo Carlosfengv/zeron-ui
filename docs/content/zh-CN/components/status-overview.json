@@ -28,7 +28,7 @@
     "p8": "card 为默认带表面的状态卡片，chart 为无边框图表；两者均使用随容器宽度均匀分布的圆角竖条、2px 间距、选中外圈与卡片提示框。activity 为紧凑服务行；chart 入场动画遵循减少动态效果偏好。",
     "p9": "activity 的可选尾部操作或结果区域，替代汇总列；宽容器同排，窄容器换行。card 和 chart 模式忽略此插槽。",
     "title": "状态条图",
-    "description": "通过等宽状态条展示服务状态历史或当前节点快照，支持语义状态色、共享提示框和键盘检查。",
+    "description": "通过等宽状态条展示服务状态历史或当前节点快照，图表使用 Chart 颜色变量，支持共享提示框和键盘检查。",
     "implementation": "StatusBarChart 的安装入口为 status-overview，导出组件为 StatusOverview。以下示例使用这一现有组件，也适用于当前 Block 和 Page 的状态轨道。",
     "chartMeaning": "每根状态条表示一个等时长时间段或一个节点，颜色表示状态；条高不表示请求量或其他数值。时间线用于查看历史变化，节点快照用于比较当前状态。",
     "timeline": "可用性时间线",
@@ -67,6 +67,7 @@
     "p4": "带统一 epoch 范围和等时长桶的 Timeline，或有序的当前节点快照。",
     "p5": "当前数据模式没有 item 时显示的已本地化内容。",
     "p6": "控制数据可用性和加载状态的呈现。",
-    "p7": "stale、unavailable 和 error 状态必填的已本地化说明。"
+    "p7": "stale、unavailable 和 error 状态必填的已本地化说明。",
+    "p10": "chart 模式的状态颜色覆盖：默认正常为 var(--chart-1)、降级为 var(--chart-2)、中断为 var(--chart-3)、维护为 var(--chart-4)，未知为中性色。支持部分覆盖，例如将 operational 设置为 var(--chart-5)；空桶保留中性纹理，card／activity 保留语义状态色。"
   }
 }

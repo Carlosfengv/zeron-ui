@@ -1,13 +1,14 @@
 "use client";
 
 import { curveMonotoneX } from "@visx/curve";
-import { AreaClosed, LinePath } from "@visx/shape";
+import { Area as AreaShape, AreaClosed, LinePath } from "@visx/shape";
 
 import type { CurveFactory } from "d3-shape";
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import { isFiniteValue } from "./chart-data";
+import { areaStackRange } from "./area-stack";
 import { AreaGradientDefs } from "./area-gradient-defs";
 import { chartCssVars, useChartStable, useYScale } from "./chart-context";
 import type { ChartPhase, LoadingStyle } from "./chart-phase";
@@ -32,6 +33,8 @@ import type { SeriesPointMarkerStyle } from "./series-point-marker";
 export interface AreaProps {
   /** Key in data to use for y values */
   dataKey: string;
+  /** Stack areas in child order within the same group and Y axis. Missing values leave a gap. */
+  stackId?: string | number;
   /** Y-scale group id (Recharts `yAxisId`). Default: `"left"`. */
   yAxisId?: string | number;
   /** Fill color for the area gradient start. Default: var(--chart-1) */
@@ -140,6 +143,7 @@ function useAreaLoadingPulseState(
 
 export function Area({
   dataKey,
+  stackId,
   yAxisId,
   fill = chartCssVars.linePrimary,
   fillOpacity = 0.4,
@@ -230,12 +234,18 @@ export function Area({
   const resolvedStroke =
     stroke || (isPatternFill ? chartCssVars.linePrimary : fill);
 
+  const rangeFor = useCallback((d: Record<string, unknown>) => {
+    const series = lines[seriesIndex];
+    return series && stackId !== undefined ? areaStackRange(d, series, lines) :
+      isFiniteValue(d[dataKey]) ? [0, d[dataKey]] as [number, number] : null;
+  }, [dataKey, lines, seriesIndex, stackId]);
+  const isDefined = useCallback((d: Record<string, unknown>) => rangeFor(d) !== null, [rangeFor]);
   const getY = useCallback(
     (d: Record<string, unknown>) => {
-      const value = d[dataKey];
-      return isFiniteValue(value) ? (yScale(value) ?? 0) : 0;
+      const range = rangeFor(d);
+      return range ? (yScale(range[1]) ?? 0) : 0;
     },
-    [dataKey, yScale]
+    [rangeFor, yScale]
   );
 
   // The stroke gradient is only emitted when at least one edge fades, so fall
@@ -258,10 +268,19 @@ export function Area({
   const seriesLayers = (
     <>
       {showSeriesContent && showAreaFill ? (
+        stackId !== undefined ? <AreaShape
+          curve={curve}
+          data={renderData}
+          defined={isDefined}
+          fill={areaFill}
+          x={(d) => xScale(xAccessor(d)) ?? 0}
+          y0={(d) => yScale(rangeFor(d)?.[0] ?? 0) ?? 0}
+          y1={getY}
+        /> :
         <AreaClosed
           curve={curve}
           data={renderData}
-          defined={(d) => isFiniteValue(d[dataKey])}
+          defined={isDefined}
           fill={areaFill}
           x={(d) => xScale(xAccessor(d)) ?? 0}
           y={getY}
@@ -274,7 +293,7 @@ export function Area({
           <LinePath
             curve={curve}
             data={renderData}
-            defined={(d) => isFiniteValue(d[dataKey])}
+            defined={isDefined}
             innerRef={pathRef}
             stroke={visibleStroke}
             strokeLinecap="round"

@@ -1,0 +1,26 @@
+{
+  "radarchart": {
+    "description": "Compare normalized metrics across one or more series.",
+    "basic": "Metric overview",
+    "comparison": "Multiple series and linked legend",
+    "style": "Grid, points and metric updates",
+    "behavior": "Behavior",
+    "api": "API reference",
+    "contract": "Provide at least three metrics with values normalized to 0–100. Missing and non-finite values plot at zero; out-of-range values clamp to the chart bounds while source data is preserved. Defaults: 5 grid levels, 60px margin and 1100ms entrance. Each area controls its points, outline and hover glow.",
+    "keyboard": "Tab enters the chart once. Arrow keys, Home and End inspect series; Escape or blur clears the highlight. Reduced motion skips decorative animation. Legend layout and overflow are controlled by API.",
+    "compatibility": "Use RadarGrid, RadarAxis, RadarLabels and RadarArea inside RadarChart. Import shared legends from chart-core. The original observations remain available in the data table.",
+    "labels": {
+      "speed": "Speed",
+      "reliability": "Reliability",
+      "capacity": "Capacity",
+      "efficiency": "Efficiency",
+      "coverage": "Coverage",
+      "current": "Current",
+      "previous": "Previous",
+      "update": "Update metrics",
+      "data": "Metric observations",
+      "viewData": "View source data",
+      "series": "Series"
+    }
+  }
+}

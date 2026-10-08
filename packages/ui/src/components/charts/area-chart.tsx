@@ -104,6 +104,7 @@ function extractAreaConfigs(children: ReactNode): LineConfig[] {
         stroke: props.stroke || props.fill || "var(--chart-1)",
         strokeWidth: props.strokeWidth || 2,
         yAxisId: props.yAxisId,
+        stackId: props.stackId,
       });
     }
   });

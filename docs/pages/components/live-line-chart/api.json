@@ -1,0 +1,176 @@
+[
+  {
+    "name": "LiveLineChart.data",
+    "type": "LiveLinePoint[]",
+    "default": "required",
+    "description": "Streaming data — array of { time: unixSeconds, value }"
+  },
+  {
+    "name": "LiveLineChart.value",
+    "type": "number",
+    "default": "required",
+    "description": "Latest value (smoothly interpolated to)"
+  },
+  {
+    "name": "LiveLineChart.dataKey",
+    "type": "string",
+    "default": "\"value\"",
+    "description": "Key used for the value field in context data. Default: \"value\""
+  },
+  {
+    "name": "LiveLineChart.window",
+    "type": "number",
+    "default": "30",
+    "description": "Visible time window in seconds. Default: 30"
+  },
+  {
+    "name": "LiveLineChart.numXTicks",
+    "type": "number",
+    "default": "5",
+    "description": "Number of X-axis ticks (used to compute leading offset). Default: 5"
+  },
+  {
+    "name": "LiveLineChart.nowOffsetUnits",
+    "type": "number",
+    "default": "0",
+    "description": "Leading offset in X-tick units (0 = now at right edge). Default: 0"
+  },
+  {
+    "name": "LiveLineChart.exaggerate",
+    "type": "boolean",
+    "default": "false",
+    "description": "Tight Y-axis. Default: false"
+  },
+  {
+    "name": "LiveLineChart.lerpSpeed",
+    "type": "number",
+    "default": "0.08",
+    "description": "Interpolation speed (0–1). Default: 0.08"
+  },
+  {
+    "name": "LiveLineChart.margin",
+    "type": "Partial<Margin>",
+    "default": "—",
+    "description": "Chart margins"
+  },
+  {
+    "name": "LiveLineChart.paused",
+    "type": "boolean",
+    "default": "false",
+    "description": "Freeze chart scrolling. Default: false"
+  },
+  {
+    "name": "LiveLineChart.children",
+    "type": "ReactNode",
+    "default": "required",
+    "description": "Child components (LiveLine, Grid, ChartTooltip, LiveXAxis, LiveYAxis, etc.)"
+  },
+  {
+    "name": "LiveLineChart.className",
+    "type": "string",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "LiveLineChart.style",
+    "type": "React.CSSProperties",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "LiveLine.dataKey",
+    "type": "string",
+    "default": "required",
+    "description": "Key in data to use for y values"
+  },
+  {
+    "name": "LiveLine.stroke",
+    "type": "string",
+    "default": "var(--chart-1)",
+    "description": "Stroke color. Default: var(--chart-1)"
+  },
+  {
+    "name": "LiveLine.strokeWidth",
+    "type": "number",
+    "default": "2",
+    "description": "Stroke width. Default: 2"
+  },
+  {
+    "name": "LiveLine.curve",
+    "type": "CurveFactory",
+    "default": "curveMonotoneX",
+    "description": "Curve function. Default: curveMonotoneX"
+  },
+  {
+    "name": "LiveLine.fill",
+    "type": "boolean",
+    "default": "true",
+    "description": "Show gradient fill under the curve. Default: true"
+  },
+  {
+    "name": "LiveLine.pulse",
+    "type": "boolean",
+    "default": "true",
+    "description": "Show pulsing live dot at the right edge. Default: true"
+  },
+  {
+    "name": "LiveLine.dotSize",
+    "type": "number",
+    "default": "4",
+    "description": "Radius of the live dot. Default: 4"
+  },
+  {
+    "name": "LiveLine.badge",
+    "type": "boolean",
+    "default": "true",
+    "description": "Show value badge pill at the live tip. Default: true"
+  },
+  {
+    "name": "LiveLine.formatValue",
+    "type": "(v: number) => string",
+    "default": "(v: number) => v.toFixed(2)",
+    "description": "Value label formatter for the badge"
+  },
+  {
+    "name": "LiveLine.momentumColors",
+    "type": "MomentumColors",
+    "default": "—",
+    "description": "When set, the line/fill color changes based on momentum direction.\nOverrides `stroke` for the line and fill (dot always uses momentum colors)."
+  },
+  {
+    "name": "LiveXAxis.numTicks",
+    "type": "number",
+    "default": "5",
+    "description": "Number of time labels. Default: 5"
+  },
+  {
+    "name": "LiveXAxis.formatTime",
+    "type": "(t: number) => string",
+    "default": "HH:MM:SS",
+    "description": "Time formatter. Default: HH:MM:SS"
+  },
+  {
+    "name": "LiveYAxis.minGap",
+    "type": "number",
+    "default": "36",
+    "description": "Minimum pixel gap between labels. Default: 36"
+  },
+  {
+    "name": "LiveYAxis.position",
+    "type": "\"left\" | \"right\"",
+    "default": "\"left\"",
+    "description": "Position. Default: \"left\""
+  },
+  {
+    "name": "LiveYAxis.formatValue",
+    "type": "(v: number) => string",
+    "default": "—",
+    "description": "Value formatter"
+  },
+  {
+    "name": "LiveYAxis.allowDecimals",
+    "type": "boolean",
+    "default": "true",
+    "description": "Allow decimal tick values. Default: true"
+  }
+]

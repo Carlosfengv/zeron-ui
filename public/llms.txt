@@ -80,6 +80,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Avatar](https://zeron-ui.vercel.app/ai/items/component%3Aavatar.md): Circle and rounded image or fallback primitives for people, agents, and accounts, with status, group, and compact user-detail composition. Registry: avatar.
 - [Badge](https://zeron-ui.vercel.app/ai/items/component%3Abadge.md): Compact label with categorical colors, custom recipes, semantic statuses, and soft, strong, or dot variants. Registry: badge.
 - [Badge Overflow](https://zeron-ui.vercel.app/ai/items/component%3Abadge-overflow.md): Responsive badge list that collapses hidden items into an overflow count. Registry: badge-overflow.
+- [BarChart](https://zeron-ui.vercel.app/ai/items/component%3Abar-chart.md): Vertical and horizontal bar charts for category comparisons. Registry: bar-chart.
 - [Breadcrumb](https://zeron-ui.vercel.app/ai/items/component%3Abreadcrumb.md): Composable path navigation with separators, current-page state, and collapsed levels. Registry: breadcrumb.
 - [Button (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Abutton.md): Versatile button with variants, sizes, loading state, and icon support. Registry: button.
 - [Button Group](https://zeron-ui.vercel.app/ai/items/component%3Abutton-group.md): Connected horizontal and vertical action groups with split-button, separator, and contextual-addon composition. Registry: button-group.
@@ -111,6 +112,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Filter Query Core](https://zeron-ui.vercel.app/ai/items/component%3Afilter-query-core.md): Headless parser, serializer, reconciliation logic, and state hook for reusable structured filter text inputs. Registry: filter-query-core.
 - [Filter Query Input](https://zeron-ui.vercel.app/ai/items/component%3Afilter-query-input.md): Structured cmdk query input with configurable fields, aliases, codecs, and portable filter clauses. Registry: filter-query-input.
 - [FunnelChart](https://zeron-ui.vercel.app/ai/items/component%3Afunnel-chart.md): Layered horizontal and vertical funnels with controlled hover, gradients and keyboard navigation. Registry: funnel-chart.
+- [HeatmapChart](https://zeron-ui.vercel.app/ai/items/component%3Aheatmap-chart.md): Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation. Registry: heatmap-chart.
 - [Info Item](https://zeron-ui.vercel.app/ai/items/component%3Ainfo-item.md): Composable information row with leading media, primary and supporting text, and a flexible trailing value or detail. Registry: info-item.
 - [Inline Notice](https://zeron-ui.vercel.app/ai/items/component%3Ainline-notice.md): Quiet inline emphasis that composes with Badge, with an optional semantic emphasized variant. Registry: inline-notice.
 - [Input](https://zeron-ui.vercel.app/ai/items/component%3Ainput.md): Text input with three variants, five sizes, and accessible validation states. Registry: input.
@@ -118,7 +120,9 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Input Group](https://zeron-ui.vercel.app/ai/items/component%3Ainput-group.md): Composable input with addons, compact actions, textarea support, and validation. Registry: input-group.
 - [Input Message](https://zeron-ui.vercel.app/ai/items/component%3Ainput-message.md): Chat-style message composer with auto-resizing textarea and configurable action slots. Registry: input-message.
 - [Kbd](https://zeron-ui.vercel.app/ai/items/component%3Akbd.md): Compact keycaps and shortcut groups for keyboard commands and interaction hints. Registry: kbd.
+- [LineChart](https://zeron-ui.vercel.app/ai/items/component%3Aline-chart.md): Line charts for trends and comparing multiple series. Registry: line-chart.
 - [List Pagination](https://zeron-ui.vercel.app/ai/items/component%3Alist-pagination.md): Controlled, table-independent pagination for lists, with localized labels and page size controls. Registry: list-pagination.
+- [LiveLineChart](https://zeron-ui.vercel.app/ai/items/component%3Alive-line-chart.md): Point time is Unix seconds. Registry: live-line-chart.
 - [Member Tree](https://zeron-ui.vercel.app/ai/items/component%3Amember-tree.md): Organization-focused Tree with department and member rendering, typed selection, and member-only cascade selection. Registry: member-tree.
 - [MenuItem](https://zeron-ui.vercel.app/ai/items/component%3Amenu-item.md): Accessible menu row primitive with icon, selection, and keyboard-menu integration. Registry: menu-item.
 - [Metric Card](https://zeron-ui.vercel.app/ai/items/component%3Ametric-card.md): Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction. Registry: metric-card.
@@ -127,11 +131,14 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Nav Menu](https://zeron-ui.vercel.app/ai/items/component%3Anav-menu.md): Router-agnostic navigation primitives shared by Sidebar and TopNav. Registry: nav-menu.
 - [Operations Workspace Shell](https://zeron-ui.vercel.app/ai/items/component%3Aoperations-workspace-shell-01.md): Shared ZAIops organization, navigation, search and account shell; application-owned routing and actions. Registry: operations-workspace-shell-01.
 - [Page Layout](https://zeron-ui.vercel.app/ai/items/component%3Apage-layout.md): Responsive composition for optional page information, route navigation, content, and asides. Registry: page-layout.
+- [PieChart](https://zeron-ui.vercel.app/ai/items/component%3Apie-chart.md): Pie and donut charts with center summaries, legends and explicit unassigned totals. Registry: pie-chart.
 - [Popover (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Apopover.md): Collision-aware floating content with a liquid anchor-to-panel transition. Registry: popover.
+- [RadarChart](https://zeron-ui.vercel.app/ai/items/component%3Aradar-chart.md): Compare multiple series across normalized metrics with configurable grid, axes and labels. Registry: radar-chart.
 - [Radio Group (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Aradio-group.md): Composable radio controls with form support and enhanced proximity-hover rows. Registry: radio-group.
 - [Resizable](https://zeron-ui.vercel.app/ai/items/component%3Aresizable.md): Accessible split-pane layouts with pointer and keyboard resizing, semantic constraints, and optional visual grips. Registry: resizable.
 - [Resource Detail Layout](https://zeron-ui.vercel.app/ai/items/component%3Aresource-detail-layout.md): Full-width resource detail preset with record navigation, summary actions, tabs, and a responsive primary-with-aside body. Registry: resource-detail-layout.
 - [Resource Workspace Shell 1](https://zeron-ui.vercel.app/ai/items/component%3Aresource-workspace-shell-01.md): Shared Sidebar Basic workspace shell for resource list and detail pages. Registry: resource-workspace-shell-01.
+- [RingChart](https://zeron-ui.vercel.app/ai/items/component%3Aring-chart.md): Independent concentric progress rings with center summaries and linked legends. Registry: ring-chart.
 - [Scroll Area (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Ascroll-area.md): Scroll container with a restyled overlay scrollbar that stays discoverable on hover and follows the shape system. Falls back to native overflow scrolling on touch-primary devices. Base UI flavor; adapted from Lina (https://lina.sameer.sh). Registry: scroll-area.
 - [Select](https://zeron-ui.vercel.app/ai/items/component%3Aselect.md): Animated select menu with bordered/borderless variants and optional icons. Registry: select.
 - [Separator (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Aseparator.md): Accessible horizontal and vertical rules with a semantic border color and layout-safe gutter. Registry: separator.
@@ -157,14 +164,10 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Top Nav](https://zeron-ui.vercel.app/ai/items/component%3Atop-nav.md): Composable top navigation with brand, primary links, and actions. Registry: top-nav.
 - [Tree](https://zeron-ui.vercel.app/ai/items/component%3Atree.md): Accessible hierarchical display and selection for general nodes, members, and files. Registry: tree.
 - [Workflow Editor](https://zeron-ui.vercel.app/ai/items/page%3Aworkflow.md): A standalone automation canvas with editable nodes, branching, local drafts and path simulation. Not installable.
-- [BarChart](https://zeron-ui.vercel.app/ai/items/reference%3Abar-chart.md): Vertical and horizontal bar charts for category comparisons. Not installable.
 - [Icon Catalog](https://zeron-ui.vercel.app/ai/items/reference%3Acatalog.md): Searchable names generated from the free icon provider's actual exports. Not installable.
 - [Chart Tokens](https://zeron-ui.vercel.app/ai/items/reference%3Achart-tokens.md): Global chart colors, series variables, and shared styling rules for light and dark mode. Not installable.
-- [DonutChart](https://zeron-ui.vercel.app/ai/items/reference%3Adonut-chart.md): Donut charts with center summaries and explicit unassigned totals. Not installable.
-- [LineChart](https://zeron-ui.vercel.app/ai/items/reference%3Aline-chart.md): Line charts for trends and comparing multiple series. Not installable.
 - [Motion](https://zeron-ui.vercel.app/ai/items/reference%3Amotion.md): Spring tokens, faster exits, and reflow-free weight animation — the motion rules shared by every component. Not installable.
 - [Icons Overview](https://zeron-ui.vercel.app/ai/items/reference%3Aoverview.md): The provider, public API, and style model behind Zeron Design icons. Not installable.
-- [PieChart](https://zeron-ui.vercel.app/ai/items/reference%3Apie-chart.md): Pie charts with legends and percentage labels for complete distributions. Not installable.
 - [Icon Providers](https://zeron-ui.vercel.app/ai/items/reference%3Aproviders.md): Free and licensed icon styles, plus the boundary for optional Pro packages. Not installable.
 - [Scrollbars](https://zeron-ui.vercel.app/ai/items/reference%3Ascrollbars.md): A scrollbar that stays out of the way but never disappears, over shadcn's scroll-fade baseline — restyled to the shape system, native scroll on touch. Not installable.
 - [Semantic Tokens](https://zeron-ui.vercel.app/ai/items/reference%3Asemantic-tokens.md): The complete runtime contract for color, surface, type, shape, and layering. Not installable.
@@ -206,6 +209,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [area-chart](https://zeron-ui.vercel.app/agent-guides/components/area-chart.md)
 - [avatar](https://zeron-ui.vercel.app/agent-guides/components/avatar.md)
 - [badge](https://zeron-ui.vercel.app/agent-guides/components/badge.md)
+- [bar-chart](https://zeron-ui.vercel.app/agent-guides/components/bar-chart.md)
 - [button](https://zeron-ui.vercel.app/agent-guides/components/button.md)
 - [chart-brush](https://zeron-ui.vercel.app/agent-guides/components/chart-brush.md)
 - [chart-core](https://zeron-ui.vercel.app/agent-guides/components/chart-core.md)
@@ -217,15 +221,21 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [dialog](https://zeron-ui.vercel.app/agent-guides/components/dialog.md)
 - [field](https://zeron-ui.vercel.app/agent-guides/components/field.md)
 - [funnel-chart](https://zeron-ui.vercel.app/agent-guides/components/funnel-chart.md)
+- [heatmap-chart](https://zeron-ui.vercel.app/agent-guides/components/heatmap-chart.md)
 - [inline-notice](https://zeron-ui.vercel.app/agent-guides/components/inline-notice.md)
 - [input](https://zeron-ui.vercel.app/agent-guides/components/input.md)
+- [line-chart](https://zeron-ui.vercel.app/agent-guides/components/line-chart.md)
 - [list-pagination](https://zeron-ui.vercel.app/agent-guides/components/list-pagination.md)
+- [live-line-chart](https://zeron-ui.vercel.app/agent-guides/components/live-line-chart.md)
 - [metric-card](https://zeron-ui.vercel.app/agent-guides/components/metric-card.md)
 - [nav-item](https://zeron-ui.vercel.app/agent-guides/components/nav-item.md)
 - [nav-menu](https://zeron-ui.vercel.app/agent-guides/components/nav-menu.md)
 - [operations-workspace-shell-01](https://zeron-ui.vercel.app/agent-guides/components/operations-workspace-shell-01.md)
 - [page-layout](https://zeron-ui.vercel.app/agent-guides/components/page-layout.md)
+- [pie-chart](https://zeron-ui.vercel.app/agent-guides/components/pie-chart.md)
+- [radar-chart](https://zeron-ui.vercel.app/agent-guides/components/radar-chart.md)
 - [resource-detail-layout](https://zeron-ui.vercel.app/agent-guides/components/resource-detail-layout.md)
+- [ring-chart](https://zeron-ui.vercel.app/agent-guides/components/ring-chart.md)
 - [select](https://zeron-ui.vercel.app/agent-guides/components/select.md)
 - [sidebar-account-menu](https://zeron-ui.vercel.app/agent-guides/components/sidebar-account-menu.md)
 - [sidebar-identity-row](https://zeron-ui.vercel.app/agent-guides/components/sidebar-identity-row.md)

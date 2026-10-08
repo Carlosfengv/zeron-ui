@@ -105,6 +105,7 @@ const props: PropDef[] = [
   { name: "statusMessage", type: "ReactNode", description: "" },
   { name: "variant", type: '"card" | "activity" | "chart"', default: '"card"', description: "" },
   { name: "trailing", type: "ReactNode", description: "" },
+  { name: "chartColors", type: "StatusOverviewChartColors", description: "" },
 ];
 
 export default function StatusBarChartDoc() {

@@ -3,12 +3,15 @@ import "server-only";
 import type { DocPageLoader } from "./page-loader-types";
 
 export const componentPageLoaders: Record<string, DocPageLoader> = {
+  "components/heatmap-chart": () => import("@docs/pages/components/heatmap-chart/page"),
+  "components/live-line-chart": () => import("@docs/pages/components/live-line-chart/page"),
+  "components/radar-chart": () => import("@docs/pages/components/radar-chart/page"),
+  "components/ring-chart": () => import("@docs/pages/components/ring-chart/page"),
   "components/funnel-chart": () => import("@docs/pages/components/funnel-chart/page"),
   "components/line-chart": () => import("@docs/pages/components/line-chart/page"),
   "components/area-chart": () => import("@docs/pages/components/area-chart/page"),
   "components/bar-chart": () => import("@docs/pages/components/bar-chart/page"),
   "components/pie-chart": () => import("@docs/pages/components/pie-chart/page"),
-  "components/donut-chart": () => import("@docs/pages/components/donut-chart/page"),
   "components/chart-tokens": () => import("@docs/pages/components/chart-tokens/page"),
   "components/chart": () => import("@docs/pages/components/chart/page"),
   "components/chart-primitives": () => import("@docs/pages/components/chart-primitives/page"),

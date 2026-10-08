@@ -1,0 +1,170 @@
+[
+  {
+    "name": "RingChart.data",
+    "type": "RingData[]",
+    "default": "required",
+    "description": "Data array - each item represents a ring"
+  },
+  {
+    "name": "RingChart.size",
+    "type": "number",
+    "default": "—",
+    "description": "Chart size in pixels. If not provided, uses parent container size"
+  },
+  {
+    "name": "RingChart.strokeWidth",
+    "type": "number",
+    "default": "12",
+    "description": "Stroke width of each ring. Default: 12"
+  },
+  {
+    "name": "RingChart.ringGap",
+    "type": "number",
+    "default": "6",
+    "description": "Gap between rings. Default: 6"
+  },
+  {
+    "name": "RingChart.baseInnerRadius",
+    "type": "number",
+    "default": "60",
+    "description": "Inner radius of the innermost ring. Default: 60"
+  },
+  {
+    "name": "RingChart.animationDuration",
+    "type": "number",
+    "default": "1100",
+    "description": "Animation duration in milliseconds. Default: 1100"
+  },
+  {
+    "name": "RingChart.className",
+    "type": "string",
+    "default": "—",
+    "description": "Additional class name for the container"
+  },
+  {
+    "name": "RingChart.hoveredIndex",
+    "type": "number | null",
+    "default": "—",
+    "description": "Controlled hover state - index of hovered ring"
+  },
+  {
+    "name": "RingChart.onHoverChange",
+    "type": "(index: number | null) => void",
+    "default": "—",
+    "description": "Callback when hover state changes"
+  },
+  {
+    "name": "RingChart.startAngle",
+    "type": "number",
+    "default": "-PI/2",
+    "description": "Start angle in radians. Default: -PI/2"
+  },
+  {
+    "name": "RingChart.endAngle",
+    "type": "number",
+    "default": "3*PI/2 (full circle)",
+    "description": "End angle in radians. Default: 3*PI/2 (full circle)"
+  },
+  {
+    "name": "RingChart.enterTransition",
+    "type": "Transition",
+    "default": "—",
+    "description": "Motion transition for ring enter animation; overrides animationDuration"
+  },
+  {
+    "name": "RingChart.enterStaggerScale",
+    "type": "number",
+    "default": "—",
+    "description": "Scales ring stagger delays (1 = default)."
+  },
+  {
+    "name": "RingChart.geometryScrubbing",
+    "type": "boolean",
+    "default": "false",
+    "description": "High-frequency geometry updates use plain SVG paths. Default: false"
+  },
+  {
+    "name": "RingChart.children",
+    "type": "ReactNode",
+    "default": "required",
+    "description": "Child components (Ring, RingCenter, etc.)"
+  },
+  {
+    "name": "Ring.index",
+    "type": "number",
+    "default": "required",
+    "description": "Index of this ring in the input array"
+  },
+  {
+    "name": "Ring.color",
+    "type": "string",
+    "default": "—",
+    "description": "Overrides this ring's chart token color"
+  },
+  {
+    "name": "Ring.animate",
+    "type": "boolean",
+    "default": "true",
+    "description": "Enable entrance animation. Default: true"
+  },
+  {
+    "name": "Ring.showGlow",
+    "type": "boolean",
+    "default": "true",
+    "description": "Show hover glow. Default: true"
+  },
+  {
+    "name": "Ring.lineCap",
+    "type": "RingLineCap",
+    "default": "\"round\"",
+    "description": "End cap style. Default: \"round\""
+  },
+  {
+    "name": "RingCenter.defaultLabel",
+    "type": "string",
+    "default": "\"Total\" when not hovering",
+    "description": "Label shown below the value. Default: \"Total\" when not hovering"
+  },
+  {
+    "name": "RingCenter.formatOptions",
+    "type": "ChartStatFlowFormat",
+    "default": "standard notation",
+    "description": "Format options for NumberFlow. Default: standard notation"
+  },
+  {
+    "name": "RingCenter.children",
+    "type": "(props: { value: number; label: string; isHovered: boolean; data: { label: string; value: number; maxValue: number; color?: string }; }) => ReactNode",
+    "default": "—",
+    "description": "Custom render function for complete control over center content"
+  },
+  {
+    "name": "RingCenter.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name for the container"
+  },
+  {
+    "name": "RingCenter.valueClassName",
+    "type": "string",
+    "default": "chartCenterValueClassName",
+    "description": "Class name for the value text. Scales with center size via container queries."
+  },
+  {
+    "name": "RingCenter.labelClassName",
+    "type": "string",
+    "default": "chartCenterLabelClassName",
+    "description": "Class name for the label text. Scales with center size via container queries."
+  },
+  {
+    "name": "RingCenter.prefix",
+    "type": "string",
+    "default": "—",
+    "description": "Prefix to show before the number (e.g., \"$\")"
+  },
+  {
+    "name": "RingCenter.suffix",
+    "type": "string",
+    "default": "—",
+    "description": "Suffix to show after the number (e.g., \"%\")"
+  }
+]

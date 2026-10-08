@@ -1,0 +1,610 @@
+{
+  "source": "/Users/carlos/Downloads/charts",
+  "sources": [
+    {
+      "file": "radar-chart.tsx",
+      "sha256": "1ed80f9ff8a8b8f98867683a5ab49810efa671ee32f753f4695eb161e4fe2f66",
+      "interfaces": {
+        "RadarChartProps": [
+          {
+            "name": "data",
+            "type": "RadarData[]",
+            "optional": false
+          },
+          {
+            "name": "metrics",
+            "type": "RadarMetric[]",
+            "optional": false
+          },
+          {
+            "name": "size",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "levels",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "margin",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "animate",
+            "type": "boolean",
+            "optional": true
+          },
+          {
+            "name": "enterDurationMs",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "staggerScale",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "enterTransition",
+            "type": "Transition",
+            "optional": true
+          },
+          {
+            "name": "motionReplayKey",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "hoveredIndex",
+            "type": "number | null",
+            "optional": true
+          },
+          {
+            "name": "onHoverChange",
+            "type": "(index: number | null) => void",
+            "optional": true
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "children",
+            "type": "ReactNode",
+            "optional": false
+          }
+        ]
+      }
+    },
+    {
+      "file": "radar-context.tsx",
+      "sha256": "bca47f7ad7a7cd2ee00bb9c6905d584054e2144998e1442d4918cb5869adab5e",
+      "interfaces": {
+        "RadarMetric": [
+          {
+            "name": "key",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "optional": false
+          }
+        ],
+        "RadarData": [
+          {
+            "name": "label",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "color",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "values",
+            "type": "Record<string, number>",
+            "optional": false
+          }
+        ],
+        "RadarHoverContextValue": [
+          {
+            "name": "hoveredIndex",
+            "type": "number | null",
+            "optional": false
+          },
+          {
+            "name": "setHoveredIndex",
+            "type": "(index: number | null) => void",
+            "optional": false
+          }
+        ],
+        "RadarStableContextValue": [
+          {
+            "name": "data",
+            "type": "RadarData[]",
+            "optional": false
+          },
+          {
+            "name": "metrics",
+            "type": "RadarMetric[]",
+            "optional": false
+          },
+          {
+            "name": "size",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "radius",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "levels",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "animate",
+            "type": "boolean",
+            "optional": false
+          },
+          {
+            "name": "enterDurationMs",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "staggerScale",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "enterTransition",
+            "type": "Transition",
+            "optional": true
+          },
+          {
+            "name": "motionReplayKey",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "getColor",
+            "type": "(index: number) => string",
+            "optional": false
+          },
+          {
+            "name": "getAngle",
+            "type": "(metricIndex: number) => number",
+            "optional": false
+          },
+          {
+            "name": "getPointPosition",
+            "type": "( metricIndex: number, value: number ) => { x: number; y: number }",
+            "optional": false
+          },
+          {
+            "name": "yScale",
+            "type": "(value: number) => number",
+            "optional": false
+          }
+        ]
+      }
+    },
+    {
+      "file": "radar-grid.tsx",
+      "sha256": "154a070e850841d0a0529bb70899309459d7f5a10eca38672871c8005436b93c",
+      "interfaces": {
+        "RadarGridProps": [
+          {
+            "name": "showLabels",
+            "type": "boolean",
+            "optional": true
+          },
+          {
+            "name": "stroke",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "strokeOpacity",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      }
+    },
+    {
+      "file": "radar-axis.tsx",
+      "sha256": "5faa614970890294c417f4b372235362ef1ed222cb9d10c95695dd100c43ef88",
+      "interfaces": {
+        "RadarAxisProps": [
+          {
+            "name": "stroke",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "strokeOpacity",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      }
+    },
+    {
+      "file": "radar-labels.tsx",
+      "sha256": "7b175a31f07a26b6aa86f502107a668152e66ec783efe39d4c118c015998fa24",
+      "interfaces": {
+        "RadarLabelsProps": [
+          {
+            "name": "offset",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "fontSize",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "interactive",
+            "type": "boolean",
+            "optional": true
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      }
+    },
+    {
+      "file": "radar-area.tsx",
+      "sha256": "019e33cddc4dfd9352ca7a89e8dc3735039b76d885f50d1fb9d51628547fe7b1",
+      "interfaces": {
+        "RadarAreaProps": [
+          {
+            "name": "index",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "color",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "showPoints",
+            "type": "boolean",
+            "optional": true
+          },
+          {
+            "name": "showStroke",
+            "type": "boolean",
+            "optional": true
+          },
+          {
+            "name": "showGlow",
+            "type": "boolean",
+            "optional": true
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      }
+    },
+    {
+      "file": "ring-chart.tsx",
+      "sha256": "8184c4893ff6dc8b8dbc19d52c62c4cc5f745fd60ef1a3de06bbd139d5361636",
+      "interfaces": {
+        "RingChartProps": [
+          {
+            "name": "data",
+            "type": "RingData[]",
+            "optional": false
+          },
+          {
+            "name": "size",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "strokeWidth",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "ringGap",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "baseInnerRadius",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "animationDuration",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "hoveredIndex",
+            "type": "number | null",
+            "optional": true
+          },
+          {
+            "name": "onHoverChange",
+            "type": "(index: number | null) => void",
+            "optional": true
+          },
+          {
+            "name": "startAngle",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "endAngle",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "enterTransition",
+            "type": "Transition",
+            "optional": true
+          },
+          {
+            "name": "enterStaggerScale",
+            "type": "number",
+            "optional": true
+          },
+          {
+            "name": "geometryScrubbing",
+            "type": "boolean",
+            "optional": true
+          },
+          {
+            "name": "children",
+            "type": "ReactNode",
+            "optional": false
+          }
+        ]
+      }
+    },
+    {
+      "file": "ring-context.tsx",
+      "sha256": "181d147574420adbc2b51fd7f9670022e6b3dcfdc6f1f215ae82f9ffb96c7dac",
+      "interfaces": {
+        "RingData": [
+          {
+            "name": "label",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "maxValue",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "color",
+            "type": "string",
+            "optional": true
+          }
+        ],
+        "RingHoverContextValue": [
+          {
+            "name": "hoveredIndex",
+            "type": "number | null",
+            "optional": false
+          },
+          {
+            "name": "setHoveredIndex",
+            "type": "(index: number | null) => void",
+            "optional": false
+          }
+        ],
+        "RingStableContextValue": [
+          {
+            "name": "data",
+            "type": "RingData[]",
+            "optional": false
+          },
+          {
+            "name": "size",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "center",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "strokeWidth",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "ringGap",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "baseInnerRadius",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "animationKey",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "isLoaded",
+            "type": "boolean",
+            "optional": false
+          },
+          {
+            "name": "enterTransition",
+            "type": "Transition",
+            "optional": true
+          },
+          {
+            "name": "enterStaggerScale",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "containerRef",
+            "type": "RefObject<HTMLDivElement | null>",
+            "optional": false
+          },
+          {
+            "name": "totalValue",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "getColor",
+            "type": "(index: number) => string",
+            "optional": false
+          },
+          {
+            "name": "getRingRadii",
+            "type": "(index: number) => { innerRadius: number; outerRadius: number }",
+            "optional": false
+          },
+          {
+            "name": "startAngle",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "endAngle",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "geometryScrubbing",
+            "type": "boolean",
+            "optional": false
+          }
+        ]
+      }
+    },
+    {
+      "file": "ring.tsx",
+      "sha256": "7071b8ef326c8c3ab39324de11c13a2880db37f40e801d04e201061deea00eaf",
+      "interfaces": {
+        "RingProps": [
+          {
+            "name": "index",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "color",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "animate",
+            "type": "boolean",
+            "optional": true
+          },
+          {
+            "name": "showGlow",
+            "type": "boolean",
+            "optional": true
+          },
+          {
+            "name": "lineCap",
+            "type": "RingLineCap",
+            "optional": true
+          }
+        ]
+      }
+    },
+    {
+      "file": "ring-center.tsx",
+      "sha256": "93a9fe44d912041a77676d7e42a864d961485ea1a936fd9a245ff222ad2e16e2",
+      "interfaces": {
+        "RingCenterProps": [
+          {
+            "name": "defaultLabel",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "formatOptions",
+            "type": "ChartStatFlowFormat",
+            "optional": true
+          },
+          {
+            "name": "children",
+            "type": "(props: { value: number; label: string; isHovered: boolean; data: { label: string; value: number; maxValue: number; color?: string }; }) => ReactNode",
+            "optional": true
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "valueClassName",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "labelClassName",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "prefix",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "suffix",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      }
+    }
+  ]
+}

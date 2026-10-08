@@ -119,11 +119,10 @@
     "introductionTitle": "介绍",
     "introductionDescription": "这些组件为何用起来与众不同。",
     "descriptions": {
-      "line-chart": "用折线展示变化趋势，并比较多个数据系列。",
+      "line-chart": "日期可用 Date、可解析字符串或毫秒时间戳；绘图视图按时间排序且保留原始数据。",
       "area-chart": "保留参考面积几何，支持重叠系列、渐变与时间选区。",
-      "bar-chart": "用柱状图和横向条形图比较不同类别的数值。",
-      "pie-chart": "用饼图、图例和百分比标签展示完整总量的构成。",
-      "donut-chart": "用环形图展示总量构成，支持中心摘要和未分配部分。",
+      "bar-chart": "数值必须有限且非负；非法值保留在原始数据，不生成柱形或污染数值域。",
+      "pie-chart": "饼图与圆环图共用 PieChart，通过 innerRadius 设置圆环，支持中心摘要和左右图例布局。",
       "funnel-chart": "横向和纵向分层漏斗图，支持受控悬停、渐变和键盘高亮。",
       "support-analytics-01": "工单趋势、服务指标、渠道筛选与最近工单处理的可嵌入分析面板。",
       "sales-conversion-funnel-01": "成交总数、转化率、阶段数量与团队堆叠面积的销售漏斗容器。",
@@ -211,7 +210,11 @@
       "zaiops-operations-01": "带响应式 Sidebar、组织切换和分组导航的运维工作区 recipe。",
       "zlrlist": "带响应式导航、与 Figma 对齐的保护组列表和详情工作区。",
       "chart": "共享趋势与圆环：稳定系列颜色、明确时间范围和可访问数据。",
-      "chart-primitives": "无图表引擎依赖的图例、稳定调色、格式化、分段条和数据表。"
+      "chart-primitives": "无图表引擎依赖的图例、稳定调色、格式化、分段条和数据表。",
+      "heatmap-chart": "输入是包含日期格的周列，不是数字矩阵，也不会自动聚合。",
+      "live-line-chart": "数据 time 是 Unix 秒，最新 value 为独立必填属性。",
+      "radar-chart": "将归一化指标绘制为雷达图，比较一个或多个系列。",
+      "ring-chart": "通过同心圆环展示多项独立进度。"
     }
   }
 }

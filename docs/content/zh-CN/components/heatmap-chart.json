@@ -1,0 +1,21 @@
+{
+  "heatmapchart": {
+    "description": "输入是包含日期格的周列，不是数字矩阵，也不会自动聚合。",
+    "basic": "全年日历与等级图例",
+    "quarters": "周一起始与季度间隔",
+    "sizing": "填充布局与固定尺寸",
+    "patterns": "共享等级纹理",
+    "range": "受控日历范围",
+    "loading": "加载格与重播",
+    "dataCaption": "原始观测数据",
+    "viewData": "查看原始数据",
+    "behavior": "行为说明",
+    "api": "API 参考",
+    "application": "应用实例：更新活跃度",
+    "applicationDescription": "更新日志使用全年日历，按天统计真实 Git 提交。日期格与日志使用访问者的同一时区，选择日期展示当天全部提交。未来日期留空；历史数据不完整时显示暂不可用，不将缺失数据计为零。",
+    "applicationLink": "查看更新活跃度",
+    "contract": "输入是包含日期格的周列，不是数字矩阵，也不会自动聚合。weekStartDay 只旋转显示行，不改变日期身份。默认 fluid 布局、间隙 2px、圆角 2px、入场 1600ms。阈值保持 <=0、1、2、3、>=4，颜色由 chart-1 与 muted 派生。图表与外部图例传入同一 levelStyles，各实例纹理 ID 隔离。",
+    "keyboard": "Tab 进入一个键盘查看入口；方向键、Home、End 查看数据，Escape 或失焦清除提示。提供 onCellSelect 时，点击、轻触或 Enter／空格选择当前日期格。减少动态效果关闭装饰循环。ChartLegend 的 layout／overflow 是 API 配置，inline／collapse 同行显示并折叠溢出。",
+    "compatibility": "共享 Tooltip／Legend 从 chart-core 导入。原 chart／Recharts 与 chart-primitives 保持独立契约和兼容入口。"
+  }
+}

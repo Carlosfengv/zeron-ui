@@ -48,12 +48,7 @@ export function ChartTypeDoc({ kind }: { kind: ChartType }) {
         </div>
       </DocSection>
       <DocSection title={t("apiReference")}>
-        <PropsTable props={kind === "donut" ? [
-          { name: "DonutSummary.segments", type: "VisualizationSegment[]", description: t("dataProp") },
-          { name: "DonutSummary.total", type: "number | null", description: t("valueProp") },
-          { name: "DonutSummary.center", type: "ReactNode", description: t("centerProp") },
-          { name: "ChartDataTable.rows", type: "ChartDataTableProps['rows']", description: t("tableProp") },
-        ] : [
+        <PropsTable props={[
           { name: "ChartContainer.config", type: "ChartConfig", description: t("configProp") },
           { name: kind === "pie" ? "ChartDataTable.rows" : "ChartContainer.dataTable", type: kind === "pie" ? "ChartDataTableProps['rows']" : "ChartDataTableProps", description: t("tableProp") },
           { name: `${kind === "pie" ? "Pie" : definition.name}.data`, type: "array", description: t("dataProp") },

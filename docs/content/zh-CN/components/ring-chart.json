@@ -1,0 +1,25 @@
+{
+  "ringchart": {
+    "description": "通过同心圆环展示多项独立进度。",
+    "basic": "圆环与左右图例",
+    "caps": "半环与平直端点",
+    "geometry": "动态几何与进度",
+    "behavior": "行为说明",
+    "api": "API 参考",
+    "contract": "每个圆环使用自身的 value/maxValue，按输入顺序由内到外绘制。非法数值或非正目标值不绘制。超过目标时绘制满环，摘要保留实际数值。默认宽度 12px、间距 6px、内圈半径 60px，空间不足时等比缩小，角度使用弧度。animationDuration 默认为 1100ms，自定义 enterTransition 优先。geometryScrubbing 跳过路径动画，保留各 Ring 的颜色、端点和悬停行为。",
+    "keyboard": "Tab 进入一次，方向键、Home 和 End 浏览圆环，Escape 或失焦清除高亮。降低动态效果设置会跳过装饰动画。RingCenter 自定义渲染在合计及悬停状态均生效，默认 data 对象包含合计值和合计目标。",
+    "compatibility": "在 RingChart 内组合 Ring 与 RingCenter，共享图例从 chart-core 导入。RingChart 展示多项独立进度；同一个总量的份额使用设置 innerRadius 的 PieChart。",
+    "labels": {
+      "requests": "请求量",
+      "storage": "存储",
+      "compute": "计算",
+      "total": "合计",
+      "update": "更新进度",
+      "data": "独立进度",
+      "viewData": "查看原始数据",
+      "item": "项目",
+      "value": "数值",
+      "maximum": "目标值"
+    }
+  }
+}

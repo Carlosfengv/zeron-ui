@@ -9,7 +9,7 @@ const DAY = 24 * 60 * 60 * 1000;
 const START = Date.UTC(2026, 7, 21);
 const DAYS = 48;
 const services = ["API", "Website"] as const;
-const legendClasses = { operational: "bg-success-border", degraded: "bg-warning-border", outage: "bg-danger-border" } as const;
+const legendClasses = { operational: "bg-chart-1", degraded: "bg-chart-2", outage: "bg-chart-3" } as const;
 
 export function useStatusBarChartDemoTimeline(service: typeof services[number], incident = false) {
   const locale = useLocale();
@@ -74,9 +74,9 @@ const start = Date.UTC(2026, 7, 21);
 const days = 48;
 const date = new Intl.DateTimeFormat("en", { month: "short", day: "numeric", timeZone: "UTC" });
 const legend = [
-  { label: "Operational", color: "bg-success-border" },
-  { label: "Degraded", color: "bg-warning-border" },
-  { label: "Outage", color: "bg-danger-border" },
+  { label: "Operational", color: "bg-chart-1" },
+  { label: "Degraded", color: "bg-chart-2" },
+  { label: "Outage", color: "bg-chart-3" },
 ];
 
 export default function Example() {
@@ -97,7 +97,7 @@ export default function Example() {
         const period = date.format(start + index * day);
         const label = status === "down" ? "Outage" : status === "degraded" ? "Degraded" : "Operational";
         const details = simulated ? "Simulated incident on " + period + "." : status === "degraded" ? "Elevated response times for 12 minutes." : "All checks passed.";
-        const color = status === "down" ? "bg-danger-border" : status === "degraded" ? "bg-warning-border" : "bg-success-border";
+        const color = status === "down" ? "bg-chart-3" : status === "degraded" ? "bg-chart-2" : "bg-chart-1";
         return { id: service + "-" + index, status, ariaLabel: service + " · " + period + " · " + label + " · " + details, tooltip: <div className="space-y-1"><p className="text-fg-muted">{period}</p><p className="flex items-center gap-2"><span aria-hidden className={"h-1.5 w-1.5 rounded-full " + color} />{label}</p><p className="text-fg-muted">{details}</p></div> };
       });
       return <div key={service} className={serviceIndex ? "border-t-hairline border-border-subtle pt-6" : undefined}>

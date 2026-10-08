@@ -1,0 +1,428 @@
+[
+  {
+    "name": "BarChart.data",
+    "type": "Record<string, unknown>[]",
+    "default": "required",
+    "description": "Data array - each item should have an x-axis key and numeric values"
+  },
+  {
+    "name": "BarChart.xDataKey",
+    "type": "string",
+    "default": "\"name\"",
+    "description": "Key in data for the categorical axis. Default: \"name\""
+  },
+  {
+    "name": "BarChart.margin",
+    "type": "Partial<Margin>",
+    "default": "—",
+    "description": "Chart margins"
+  },
+  {
+    "name": "BarChart.animationDuration",
+    "type": "number",
+    "default": "1100",
+    "description": "Animation duration in milliseconds. Default: 1100"
+  },
+  {
+    "name": "BarChart.animationEasing",
+    "type": "string",
+    "default": "DEFAULT_ANIMATION_EASING",
+    "description": "CSS easing for bar grow transitions."
+  },
+  {
+    "name": "BarChart.enterTransition",
+    "type": "Transition",
+    "default": "—",
+    "description": "Motion enter transition (spring or cubic-bezier tween)."
+  },
+  {
+    "name": "BarChart.revealSignature",
+    "type": "string",
+    "default": "—",
+    "description": "Signature of motion URL state — triggers enter replay when it changes."
+  },
+  {
+    "name": "BarChart.aspectRatio",
+    "type": "string",
+    "default": "\"2 / 1\"",
+    "description": "Aspect ratio as \"width / height\". Default: \"2 / 1\""
+  },
+  {
+    "name": "BarChart.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name for the container"
+  },
+  {
+    "name": "BarChart.barGap",
+    "type": "number",
+    "default": "0.2",
+    "description": "Gap between bar groups as a fraction of band width (0-1). Default: 0.2"
+  },
+  {
+    "name": "BarChart.barWidth",
+    "type": "number",
+    "default": "—",
+    "description": "Fixed bar width in pixels. If not set, bars auto-size to fill the band."
+  },
+  {
+    "name": "BarChart.orientation",
+    "type": "BarOrientation",
+    "default": "\"vertical\"",
+    "description": "Bar chart orientation. Default: \"vertical\""
+  },
+  {
+    "name": "BarChart.stacked",
+    "type": "boolean",
+    "default": "false",
+    "description": "Whether to stack bars instead of grouping them. Default: false"
+  },
+  {
+    "name": "BarChart.stackGap",
+    "type": "number",
+    "default": "0",
+    "description": "Gap between stacked bar segments in pixels. Default: 0"
+  },
+  {
+    "name": "BarChart.squareSnap",
+    "type": "{ squareGap: number; groupGap?: number; fit?: boolean }",
+    "default": "—",
+    "description": "When set, tooltip Y positions snap to the top square center (shape variant)."
+  },
+  {
+    "name": "BarChart.children",
+    "type": "ReactNode",
+    "default": "—",
+    "description": "Child components (Bar, Grid, ChartTooltip, etc.). Optional — omit for a\npure `status=\"loading\"` skeleton."
+  },
+  {
+    "name": "BarChart.onPhaseChange",
+    "type": "(phase: ChartPhase) => void",
+    "default": "—",
+    "description": "Reports reveal lifecycle for OG screenshots and loading orchestration."
+  },
+  {
+    "name": "BarChart.status",
+    "type": "ChartStatus",
+    "default": "`\"ready\"`",
+    "description": "Fetch / display status. When `\"loading\"`, a shimmer skeleton replaces the\nbars (no chart data required). Default: `\"ready\"`."
+  },
+  {
+    "name": "Bar.dataKey",
+    "type": "string",
+    "default": "required",
+    "description": "Key in data to use for y values"
+  },
+  {
+    "name": "Bar.yAxisId",
+    "type": "string | number",
+    "default": "`\"left\"`",
+    "description": "Y-scale group id for vertical bars (Recharts `yAxisId`). Default: `\"left\"`."
+  },
+  {
+    "name": "Bar.fill",
+    "type": "string",
+    "default": "var(--chart-1)",
+    "description": "Fill color for the bar. Can be a color, gradient url, or pattern url. Default: var(--chart-1)"
+  },
+  {
+    "name": "Bar.stroke",
+    "type": "string",
+    "default": "uses fill value",
+    "description": "Color for tooltip dot. Use when fill is a gradient/pattern. Default: uses fill value"
+  },
+  {
+    "name": "Bar.lineCap",
+    "type": "BarLineCap",
+    "default": "\"round\"",
+    "description": "Line cap style for bar ends: \"round\", \"butt\", or a number for custom radius. Default: \"round\""
+  },
+  {
+    "name": "Bar.animate",
+    "type": "boolean",
+    "default": "true",
+    "description": "Whether to animate the bars. Default: true"
+  },
+  {
+    "name": "Bar.animationType",
+    "type": "BarAnimationType",
+    "default": "\"grow\"",
+    "description": "Animation type: \"grow\" (height) or \"fade\" (opacity + blur). Default: \"grow\""
+  },
+  {
+    "name": "Bar.fadedOpacity",
+    "type": "number",
+    "default": "0.3",
+    "description": "Opacity when not hovered (when another bar is hovered). Default: 0.3"
+  },
+  {
+    "name": "Bar.staggerDelay",
+    "type": "number",
+    "default": "—",
+    "description": "Stagger delay between bars in seconds. Auto-calculated if not provided."
+  },
+  {
+    "name": "Bar.stackGap",
+    "type": "number",
+    "default": "0",
+    "description": "Gap between stacked bars in pixels. Default: 0"
+  },
+  {
+    "name": "Bar.groupGap",
+    "type": "number",
+    "default": "4",
+    "description": "Gap between grouped bars in pixels. Default: 4"
+  },
+  {
+    "name": "Bar.perspective",
+    "type": "boolean",
+    "default": "false",
+    "description": "Shrink each positive bar's top by its perspective rise so the front face\nlines up with `<BarDepthBack>`'s lid (instead of the lid sitting above the\nfront face). Pass `true` whenever the chart also renders the bar-depth 3D\nsurfaces. Default: false"
+  },
+  {
+    "name": "Bar.minBarHeight",
+    "type": "number",
+    "default": "0",
+    "description": "Minimum rendered bar height in px (non-stacked, vertical). Floors short or\nzero-value bars so they stay visible. Pair with the same value on\n`<BarDepthProvider minBarHeight>` when using the 3D surfaces. Default: 0"
+  },
+  {
+    "name": "BarSquares.dataKey",
+    "type": "string",
+    "default": "required",
+    "description": "Required composition API."
+  },
+  {
+    "name": "BarSquares.yAxisId",
+    "type": "string | number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarSquares.fill",
+    "type": "string",
+    "default": "var(--chart-1)",
+    "description": "Fill color, gradient url, or pattern url. Default: var(--chart-1)"
+  },
+  {
+    "name": "BarSquares.stroke",
+    "type": "string",
+    "default": "—",
+    "description": "Tooltip dot / ring stroke color when fill is gradient/pattern"
+  },
+  {
+    "name": "BarSquares.squareGap",
+    "type": "number",
+    "default": "3",
+    "description": "Gap between stacked squares in pixels. Default: 3"
+  },
+  {
+    "name": "BarSquares.squareRadius",
+    "type": "number",
+    "default": "0.25",
+    "description": "Corner radius as a fraction of square size (0 = flat, 0.5 = circle). Default: 0.25"
+  },
+  {
+    "name": "BarSquares.squareFit",
+    "type": "boolean",
+    "default": "—",
+    "description": "Redistribute gap so columns fit bar height exactly"
+  },
+  {
+    "name": "BarSquares.useGradient",
+    "type": "boolean",
+    "default": "—",
+    "description": "Apply bar-spanning gradient from gradientStops"
+  },
+  {
+    "name": "BarSquares.gradientStops",
+    "type": "GradientStop[]",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarSquares.patternPreset",
+    "type": "PatternPresetId",
+    "default": "—",
+    "description": "Pattern preset when fill is a pattern (for gradient tinting)"
+  },
+  {
+    "name": "BarSquares.animate",
+    "type": "boolean",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarSquares.fadedOpacity",
+    "type": "number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarSquares.staggerDelay",
+    "type": "number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarSquares.groupGap",
+    "type": "number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarColumnTrack.fill",
+    "type": "string",
+    "default": "var(--border)",
+    "description": "Fill color or pattern url. Default: var(--border)"
+  },
+  {
+    "name": "BarColumnTrack.opacity",
+    "type": "number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarColumnTrack.squareGap",
+    "type": "number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarColumnTrack.squareRadius",
+    "type": "number",
+    "default": "0.25",
+    "description": "Corner radius fraction (matches squares). Default: 0.25"
+  },
+  {
+    "name": "BarColumnTrack.groupGap",
+    "type": "number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarColumnTrack.squareFit",
+    "type": "boolean",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarColumnTrack.staggerDelay",
+    "type": "number",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarDepthProvider.children",
+    "type": "ReactNode",
+    "default": "required",
+    "description": "Required composition API."
+  },
+  {
+    "name": "BarDepthProvider.segmentsAccessor",
+    "type": "( datum: Record<string, unknown> ) => BarDepthSegment[] | null | undefined",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "BarDepthProvider.groundShadow",
+    "type": "number",
+    "default": "—",
+    "description": "Opacity (0–1) of the baseline contact shadow. 0 removes it."
+  },
+  {
+    "name": "BarDepthProvider.minBarHeight",
+    "type": "number",
+    "default": "—",
+    "description": "Minimum bar height in px — floors short/zero bars so they stay visible.\nMatch the value passed to `<Bar minBarHeight>`."
+  },
+  {
+    "name": "BarDepthBack.dataKey",
+    "type": "string",
+    "default": "required",
+    "description": "Key in data for the bar value. Match the sibling `<Bar dataKey>`."
+  },
+  {
+    "name": "BarDepthBack.color",
+    "type": "string",
+    "default": "var(--chart-1)",
+    "description": "Solid color for the side + top faces. Default: var(--chart-1)."
+  },
+  {
+    "name": "BarDepthBack.colorAccessor",
+    "type": "ColorAccessor",
+    "default": "—",
+    "description": "Per-bar color override; takes precedence over `color` when provided."
+  },
+  {
+    "name": "BarDepthFront.dataKey",
+    "type": "string",
+    "default": "required",
+    "description": "Key in data for the bar value. Match the sibling `<Bar dataKey>`."
+  },
+  {
+    "name": "BarPulse.dataKey",
+    "type": "string",
+    "default": "required",
+    "description": "Key in data for the bar value. Match the sibling `<Bar dataKey>`."
+  },
+  {
+    "name": "BarPulse.activeIndex",
+    "type": "number",
+    "default": "—",
+    "description": "Index (in the data array) of the bar to pulse."
+  },
+  {
+    "name": "BarPulse.pulsePaused",
+    "type": "boolean",
+    "default": "—",
+    "description": "Suppress the sweep while keeping the bar's 3D + glass treatment."
+  },
+  {
+    "name": "BarChartLoading.margin",
+    "type": "Partial<Margin>",
+    "default": "—",
+    "description": "Chart margins."
+  },
+  {
+    "name": "BarChartLoading.aspectRatio",
+    "type": "string",
+    "default": "\"2 / 1\"",
+    "description": "Aspect ratio as \"width / height\". Default: \"2 / 1\""
+  },
+  {
+    "name": "BarChartLoading.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name for the container."
+  },
+  {
+    "name": "BarXAxis.tickerHalfWidth",
+    "type": "number",
+    "default": "50",
+    "description": "Width of the date ticker box for fade calculation. Default: 50"
+  },
+  {
+    "name": "BarXAxis.showAllLabels",
+    "type": "boolean",
+    "default": "false",
+    "description": "Whether to show all labels or skip some for dense data. Default: false"
+  },
+  {
+    "name": "BarXAxis.maxLabels",
+    "type": "number",
+    "default": "12",
+    "description": "Maximum number of labels to show. Default: 12"
+  },
+  {
+    "name": "BarYAxis.showAllLabels",
+    "type": "boolean",
+    "default": "true",
+    "description": "Whether to show all labels or skip some for dense data. Default: true"
+  },
+  {
+    "name": "BarYAxis.maxLabels",
+    "type": "number",
+    "default": "20",
+    "description": "Maximum number of labels to show. Default: 20"
+  }
+]

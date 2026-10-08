@@ -1,0 +1,26 @@
+{
+  "radarchart": {
+    "description": "将归一化指标绘制为雷达图，比较一个或多个系列。",
+    "basic": "指标概览",
+    "comparison": "多系列与联动图例",
+    "style": "网格、数据点与指标更新",
+    "behavior": "行为说明",
+    "api": "API 参考",
+    "contract": "至少提供三个指标，数值按 0–100 归一化。缺失与非有限数按 0 绘制，越界数裁剪到图表边界，原始数据保留。默认五层网格、60px 边距和 1100ms 入场动画。每个区域可以独立控制数据点、轮廓线与悬停发光。",
+    "keyboard": "Tab 进入图表一次，方向键、Home 和 End 浏览系列，Escape 或失焦清除高亮。降低动态效果设置会跳过装饰动画。图例布局及溢出方式由 API 控制。",
+    "compatibility": "在 RadarChart 内组合 RadarGrid、RadarAxis、RadarLabels 与 RadarArea；共享图例从 chart-core 导入。数据表保留原始观测值。",
+    "labels": {
+      "speed": "速度",
+      "reliability": "可靠性",
+      "capacity": "容量",
+      "efficiency": "效率",
+      "coverage": "覆盖率",
+      "current": "当前",
+      "previous": "此前",
+      "update": "更新指标",
+      "data": "指标观测值",
+      "viewData": "查看原始数据",
+      "series": "系列"
+    }
+  }
+}

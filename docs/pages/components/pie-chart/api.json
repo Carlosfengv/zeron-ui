@@ -1,0 +1,302 @@
+[
+  {
+    "name": "PieChart.data",
+    "type": "PieData[]",
+    "default": "required",
+    "description": "Data array - each item represents a slice"
+  },
+  {
+    "name": "PieChart.size",
+    "type": "number",
+    "default": "—",
+    "description": "Chart size in pixels. If not provided, uses parent container size"
+  },
+  {
+    "name": "PieChart.innerRadius",
+    "type": "number",
+    "default": "0 (solid pie)",
+    "description": "Inner radius for donut charts. Default: 0 (solid pie)"
+  },
+  {
+    "name": "PieChart.padAngle",
+    "type": "number",
+    "default": "0",
+    "description": "Padding angle between slices in radians. Default: 0"
+  },
+  {
+    "name": "PieChart.cornerRadius",
+    "type": "number",
+    "default": "0",
+    "description": "Corner radius for rounded slice edges. Default: 0"
+  },
+  {
+    "name": "PieChart.startAngle",
+    "type": "number",
+    "default": "-PI/2 (top)",
+    "description": "Start angle in radians. Default: -PI/2 (top)"
+  },
+  {
+    "name": "PieChart.endAngle",
+    "type": "number",
+    "default": "3*PI/2 (full circle from top)",
+    "description": "End angle in radians. Default: 3*PI/2 (full circle from top)"
+  },
+  {
+    "name": "PieChart.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name for the container"
+  },
+  {
+    "name": "PieChart.hoveredIndex",
+    "type": "number | null",
+    "default": "—",
+    "description": "Controlled hover state - index of hovered slice"
+  },
+  {
+    "name": "PieChart.onHoverChange",
+    "type": "(index: number | null) => void",
+    "default": "—",
+    "description": "Callback when hover state changes"
+  },
+  {
+    "name": "PieChart.hoverOffset",
+    "type": "number",
+    "default": "10",
+    "description": "Hover offset in pixels for slice hover effects.\nThis also determines the padding around the chart to prevent clipping.\nDefault: 10"
+  },
+  {
+    "name": "PieChart.children",
+    "type": "ReactNode",
+    "default": "required",
+    "description": "Child components (PieSlice, PieCenter, patterns, gradients, etc.)"
+  },
+  {
+    "name": "PieChart.enterTransition",
+    "type": "Transition",
+    "default": "—",
+    "description": "Framer Motion transition for slice enter animation"
+  },
+  {
+    "name": "PieChart.enterStaggerScale",
+    "type": "number",
+    "default": "1",
+    "description": "Scales slice stagger delays (1 = default)."
+  },
+  {
+    "name": "PieChart.geometryScrubbing",
+    "type": "boolean",
+    "default": "false",
+    "description": "High-frequency geometry updates (e.g. studio NumberField scrub).\nUses plain SVG paths instead of Motion `d` / spring hover morphing."
+  },
+  {
+    "name": "PieSlice.index",
+    "type": "number",
+    "default": "required",
+    "description": "Index of the slice in the data array"
+  },
+  {
+    "name": "PieSlice.color",
+    "type": "string",
+    "default": "—",
+    "description": "Optional color override - falls back to data color or palette"
+  },
+  {
+    "name": "PieSlice.fill",
+    "type": "string",
+    "default": "—",
+    "description": "Optional fill override for patterns/gradients (e.g., \"url(#patternId)\")"
+  },
+  {
+    "name": "PieSlice.animate",
+    "type": "boolean",
+    "default": "true",
+    "description": "Animate the slice on mount. Default: true"
+  },
+  {
+    "name": "PieSlice.showGlow",
+    "type": "boolean",
+    "default": "true",
+    "description": "Show glow effect on hover. Default: true"
+  },
+  {
+    "name": "PieSlice.hoverEffect",
+    "type": "PieSliceHoverEffect",
+    "default": "\"translate\"",
+    "description": "Hover effect type. Default: \"translate\"\n- \"translate\": Slice moves outward along its radial axis\n- \"grow\": Slice extends its outer radius (gets longer)\n- \"none\": No hover animation"
+  },
+  {
+    "name": "PieSlice.hoverOffset",
+    "type": "number",
+    "default": "—",
+    "description": "Distance in pixels for hover effect (translate distance or grow amount). Defaults to PieChart's hoverOffset"
+  },
+  {
+    "name": "PieSlice.className",
+    "type": "string",
+    "default": "—",
+    "description": "Additional CSS class"
+  },
+  {
+    "name": "PieCenter.defaultLabel",
+    "type": "string",
+    "default": "\"Total\" when not hovering",
+    "description": "Label shown below the value. Default: \"Total\" when not hovering"
+  },
+  {
+    "name": "PieCenter.formatOptions",
+    "type": "ChartStatFlowFormat",
+    "default": "standard notation",
+    "description": "Format options for NumberFlow. Default: standard notation"
+  },
+  {
+    "name": "PieCenter.children",
+    "type": "(props: { value: number; label: string; isHovered: boolean; data: { label: string; value: number; color?: string; fill?: string }; }) => ReactNode",
+    "default": "—",
+    "description": "Custom renderer for idle and hover states. Idle data contains the total and defaultLabel."
+  },
+  {
+    "name": "PieCenter.className",
+    "type": "string",
+    "default": "\"\"",
+    "description": "Additional class name for the container"
+  },
+  {
+    "name": "PieCenter.valueClassName",
+    "type": "string",
+    "default": "chartCenterValueClassName",
+    "description": "Class name for the value text. Scales with center size via container queries."
+  },
+  {
+    "name": "PieCenter.labelClassName",
+    "type": "string",
+    "default": "chartCenterLabelClassName",
+    "description": "Class name for the label text. Scales with center size via container queries."
+  },
+  {
+    "name": "PieCenter.prefix",
+    "type": "string",
+    "default": "—",
+    "description": "Prefix to show before the number (e.g., \"$\")"
+  },
+  {
+    "name": "PieCenter.suffix",
+    "type": "string",
+    "default": "—",
+    "description": "Suffix to show after the number (e.g., \"%\")"
+  },
+  {
+    "name": "PieCenterShell.defaultLabel",
+    "type": "string",
+    "default": "\"Total\" when not hovering",
+    "description": "Label shown below the value. Default: \"Total\" when not hovering"
+  },
+  {
+    "name": "PieCenterShell.formatOptions",
+    "type": "ChartStatFlowFormat",
+    "default": "standard notation",
+    "description": "Format options for NumberFlow. Default: standard notation"
+  },
+  {
+    "name": "PieCenterShell.className",
+    "type": "string",
+    "default": "—",
+    "description": "Additional class name for the container"
+  },
+  {
+    "name": "PieCenterShell.valueClassName",
+    "type": "string",
+    "default": "—",
+    "description": "Class name for the value text. Scales with center size via container queries."
+  },
+  {
+    "name": "PieCenterShell.labelClassName",
+    "type": "string",
+    "default": "—",
+    "description": "Class name for the label text. Scales with center size via container queries."
+  },
+  {
+    "name": "PieCenterShell.prefix",
+    "type": "string",
+    "default": "—",
+    "description": "Prefix to show before the number (e.g., \"$\")"
+  },
+  {
+    "name": "PieCenterShell.suffix",
+    "type": "string",
+    "default": "—",
+    "description": "Suffix to show after the number (e.g., \"%\")"
+  },
+  {
+    "name": "PieCenterShell.centerValue",
+    "type": "number",
+    "default": "required",
+    "description": "Value shown with NumberFlow (same role as pie total when not hovering)"
+  },
+  {
+    "name": "PieCenterShell.contextSize",
+    "type": "number",
+    "default": "required",
+    "description": "Square reference size for pie context (matches `PieChart` `size`)"
+  },
+  {
+    "name": "PieCenterShell.innerRadiusPx",
+    "type": "number",
+    "default": "required",
+    "description": "Inner radius in px — must be > 0 so `PieCenter` renders"
+  },
+  {
+    "name": "PieCenterShell.animateEntrance",
+    "type": "boolean",
+    "default": "true",
+    "description": "When true (default), the first paint uses `0` then updates to `centerValue`\non the next frame so NumberFlow can run an entrance transition. Subsequent\n`centerValue` updates animate as usual."
+  },
+  {
+    "name": "ChartStatFlow.value",
+    "type": "number",
+    "default": "required",
+    "description": "Required composition API."
+  },
+  {
+    "name": "ChartStatFlow.label",
+    "type": "string",
+    "default": "required",
+    "description": "Required composition API."
+  },
+  {
+    "name": "ChartStatFlow.formatOptions",
+    "type": "ChartStatFlowFormat",
+    "default": "defaultChartStatFlowFormat",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "ChartStatFlow.prefix",
+    "type": "string",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "ChartStatFlow.suffix",
+    "type": "string",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "ChartStatFlow.valueClassName",
+    "type": "string",
+    "default": "\"text-heading font-bold\"",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "ChartStatFlow.labelClassName",
+    "type": "string",
+    "default": "\"text-label\"",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "ChartStatFlow.icon",
+    "type": "ReactNode",
+    "default": "—",
+    "description": "Optional composition API."
+  }
+]

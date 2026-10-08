@@ -472,9 +472,9 @@ const props = [
     "default": "—"
   },
   {
-    "name": "Area.dataKey / yAxisId",
-    "type": "string / string | number",
-    "default": "left"
+    "name": "Area.dataKey / yAxisId / stackId",
+    "type": "string / string | number / string | number",
+    "default": "left / undefined"
   },
   {
     "name": "fill / stroke / strokeWidth",

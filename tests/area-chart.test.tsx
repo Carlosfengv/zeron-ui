@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useState } from "react";
 import { readFileSync } from "node:fs";
 import { AreaChart, Area, PatternArea } from "@zeron/ui/area-chart";
-import { ChartTooltip, useChartStable, PatternLines, XAxis, YAxis } from "@zeron/ui/chart-core";
+import { ChartTooltip, useChartStable, useChartHover, PatternLines, XAxis, YAxis } from "@zeron/ui/chart-core";
 import { ChartBrush, type ChartBrushSelection } from "@zeron/ui/chart-brush";
 import { chartDate, timeSeriesData, tooltipPosition } from "../packages/ui/src/components/charts/chart-data";
 import { decimateTimeSeries } from "../packages/ui/src/components/charts/decimate-time-series";
@@ -48,7 +48,41 @@ function DomainProbe() {
   return <text data-testid="domain">{yScale.domain().join(",")}</text>;
 }
 
+function StackProbe() {
+  const { yScale, lines } = useChartStable();
+  const { tooltipData } = useChartHover();
+  return <text data-testid="stack-probe">{JSON.stringify({ domain: yScale.domain(), group: lines[1]?.stackId, y: tooltipData?.yPositions.b, expectedY: yScale(7), point: tooltipData?.point })}</text>;
+}
+
 describe("area chart observations and geometry", () => {
+  it("uses stacked totals for scales and keyboard dots while keeping raw tooltip values", async () => {
+    const rows = [{ date: "2026-10-01", a: 2, b: 5 }, { date: "2026-10-02", a: 3, b: 4 }];
+    const view = await render(<AreaChart data={rows} animationDuration={0} yDomainTween={false}><Area dataKey="a" stackId="total" /><Area dataKey="b" stackId="total" showMarkers /><ChartTooltip /><StackProbe /></AreaChart>);
+    const group = view.container.querySelector('[tabindex="0"]')!;
+    fireEvent.focus(group);
+    const result = JSON.parse(view.getByTestId("stack-probe").textContent!);
+    expect(result.group).toBe("total");
+    expect(result.domain[1]).toBeGreaterThanOrEqual(7);
+    expect(result.y).toBeCloseTo(result.expectedY);
+    expect(result.point).toEqual(rows[0]);
+    expect(view.getByText("5")).toBeTruthy();
+    const paths = [...view.container.querySelectorAll("path")].map(path => path.getAttribute("d") ?? "");
+    expect(paths.join(" ")).not.toMatch(/NaN|Infinity/);
+  });
+
+  it("preserves stacked gap boundaries and host time-zone labels", async () => {
+    const rows = [{ date: "2026-10-01T23:30:00Z", a: 2, b: 5 }, { date: "2026-10-02T23:30:00Z", a: null, b: 4 }, { date: "2026-10-03T23:30:00Z", a: 3, b: 6 }];
+    const format = new Intl.DateTimeFormat("en", { month: "short", day: "numeric", timeZone: "Asia/Shanghai" });
+    const view = await render(<AreaChart data={rows} animationDuration={0}><Area dataKey="a" stackId="total" /><Area dataKey="b" stackId="total" /><><XAxis formatDate={date => format.format(date)} /></></AreaChart>);
+    expect(view.getByText("Oct 2")).toBeTruthy();
+    expect(view.getByText("Oct 4")).toBeTruthy();
+    expect([...view.container.querySelectorAll("path")].some(path => (path.getAttribute("d")?.match(/M/g) ?? []).length === 2)).toBe(true);
+    const chart = view.getByRole("group");
+    fireEvent.focus(chart);
+    expect(view.getByRole("status").textContent).toBe("Oct 2: a: 2, b: 5");
+    fireEvent.keyDown(chart, { key: "End" });
+    expect(view.getByRole("status").textContent).toBe("Oct 4: a: 3, b: 6");
+  });
   it("orders a plotting view, excludes invalid dates and leaves original rows unchanged", async () => {
     const rows = [data[2], { date: null, value: 3 }, data[0], { date: "bad", value: 4 }];
     expect(timeSeriesData(rows, "date")).toEqual([data[0], data[2]]);

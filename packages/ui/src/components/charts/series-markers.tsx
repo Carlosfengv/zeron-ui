@@ -3,6 +3,7 @@
 import { type ReactNode, useCallback, useMemo } from "react";
 import { clipRevealTransition } from "./animation";
 import { isFiniteValue } from "./chart-data";
+import { seriesYValue } from "./area-stack";
 import {
   defaultScatterColors,
   useChartHover,
@@ -106,10 +107,10 @@ export function SeriesMarkers({
 
   const getY = useCallback(
     (d: Record<string, unknown>) => {
-      const value = d[dataKey];
+      const value = seriesConfig ? seriesYValue(d, seriesConfig, lines) : d[dataKey];
       return isFiniteValue(value) ? (yScale(value) ?? 0) : null;
     },
-    [dataKey, yScale]
+    [dataKey, seriesConfig, lines, yScale]
   );
 
   const points = useMemo<PointAt[]>(

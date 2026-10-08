@@ -138,6 +138,10 @@
       "itemId": "component:badge"
     },
     {
+      "path": "components/bar-chart.md",
+      "itemId": "component:bar-chart"
+    },
+    {
       "path": "components/button.md",
       "itemId": "component:button"
     },
@@ -182,6 +186,10 @@
       "itemId": "component:funnel-chart"
     },
     {
+      "path": "components/heatmap-chart.md",
+      "itemId": "component:heatmap-chart"
+    },
+    {
       "path": "components/inline-notice.md",
       "itemId": "component:inline-notice"
     },
@@ -190,8 +198,16 @@
       "itemId": "component:input"
     },
     {
+      "path": "components/line-chart.md",
+      "itemId": "component:line-chart"
+    },
+    {
       "path": "components/list-pagination.md",
       "itemId": "component:list-pagination"
+    },
+    {
+      "path": "components/live-line-chart.md",
+      "itemId": "component:live-line-chart"
     },
     {
       "path": "components/metric-card.md",
@@ -214,8 +230,20 @@
       "itemId": "component:page-layout"
     },
     {
+      "path": "components/pie-chart.md",
+      "itemId": "component:pie-chart"
+    },
+    {
+      "path": "components/radar-chart.md",
+      "itemId": "component:radar-chart"
+    },
+    {
       "path": "components/resource-detail-layout.md",
       "itemId": "component:resource-detail-layout"
+    },
+    {
+      "path": "components/ring-chart.md",
+      "itemId": "component:ring-chart"
     },
     {
       "path": "components/select.md",

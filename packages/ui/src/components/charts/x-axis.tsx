@@ -12,6 +12,8 @@ import { LINE_LOADING_PULSE_EASE } from "./line-loading-timing";
 const X_AXIS_POSITION_TWEEN_MS = DEFAULT_Y_DOMAIN_TWEEN_MS;
 
 export interface XAxisProps {
+  /** Format dates with the caller's locale/time zone. Default: shared short date formatter. */
+  formatDate?: (date: Date) => string;
   /** Number of ticks to show (including first and last). Default: 5. */
   numTicks?: number;
   /** Width of the date ticker box for fade calculation. Default: 50 */
@@ -579,10 +581,13 @@ const XAxisInner = memo(function XAxisInner({
   numTicks = 5,
   tickerHalfWidth = 50,
   tickMode = "data",
+  formatDate,
   container,
 }: XAxisProps & { container: HTMLDivElement }) {
-  const { xScale, margin, tooltipData, data, xAccessor, dateLabels, xDomain } =
+  const { xScale, margin, tooltipData, data, xAccessor, dateLabels: sharedDateLabels, xDomain } =
     useChart();
+  const dateLabels = useMemo(() => formatDate ? data.map(point => formatDate(xAccessor(point))) : sharedDateLabels,
+    [data, formatDate, sharedDateLabels, xAccessor]);
 
   const labelsToShow = useMemo(() => {
     const projectionExtendsScale =
@@ -655,7 +660,7 @@ const XAxisInner = memo(function XAxisInner({
           hoveredLabel={hoveredLabel}
           isHovering={isHovering}
           key={`${item.date.getTime()}-${item.x}`}
-          label={item.label}
+          label={formatDate ? formatDate(item.date) : item.label}
           tickerHalfWidth={tickerHalfWidth}
           x={item.x}
         />

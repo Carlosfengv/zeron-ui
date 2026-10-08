@@ -1,0 +1,21 @@
+{
+  "heatmapchart": {
+    "description": "Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation",
+    "basic": "Year calendar and level legend",
+    "quarters": "Monday start and quarter separators",
+    "sizing": "Fill layout and fixed cells",
+    "patterns": "Shared level patterns",
+    "range": "Controlled calendar range",
+    "loading": "Loading cells and replay",
+    "dataCaption": "Original observations",
+    "viewData": "View source data",
+    "behavior": "Behavior",
+    "api": "API reference",
+    "application": "Application: update activity",
+    "applicationDescription": "The Updates page uses a full-year calendar of real daily Git commits. Calendar cells and the commit list share the visitor's time zone; selecting a day shows all its commits. Future dates stay blank. Incomplete history is shown as unavailable, rather than zero activity.",
+    "applicationLink": "View update activity",
+    "contract": "Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation. weekStartDay rotates display rows without changing date identity. Default fluid layout, 2px gaps, 2px corners and 1600ms entrance. Thresholds remain <=0, 1, 2, 3, >=4; shades derive from chart-1 and muted. Pass the same levelStyles to cells/chart and external legend. Every instance owns its texture IDs.",
+    "keyboard": "Tab enters once; arrows, Home and End inspect data, Escape or blur clears the tooltip. When onCellSelect is supplied, click/tap or Enter/Space selects the inspected bin. Reduced motion disables decorative loops. ChartLegend layout/overflow are API options; inline/collapse fits multiple entries and folds overflow.",
+    "compatibility": "Import shared tooltip and legend from chart-core. Existing chart/Recharts and chart-primitives APIs remain available with their own contracts."
+  }
+}

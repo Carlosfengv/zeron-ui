@@ -67,7 +67,9 @@
     "docs:loaders:build": "node scripts/generate-document-loaders.mjs",
     "docs:loaders:check": "node scripts/generate-document-loaders.mjs --check",
     "test:controls:browser": "vitest run --config vitest.config.mts tests/rendered-controls.test.mjs --maxWorkers=1",
-    "test:consumer:unification": "node scripts/test-unification-consumers.mjs"
+    "test:consumer:unification": "node scripts/test-unification-consumers.mjs",
+    "docs:charts-api:build": "node scripts/generate-reference-chart-api.mjs",
+    "docs:charts-api:check": "node scripts/generate-reference-chart-api.mjs --check"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -136,7 +138,8 @@
     "typescript": "^5.9.3",
     "vitest": "^4.1.10",
     "playwright": "1.55.1",
-    "@vercel/blob": "2.8.0"
+    "@vercel/blob": "2.8.0",
+    "@visx/curve": "4.0.0"
   },
   "pnpm": {
     "overrides": {

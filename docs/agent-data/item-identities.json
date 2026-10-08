@@ -11,12 +11,36 @@
       "status": "active",
       "retirementReason": null
     },
-    { "id": "component:funnel-chart", "type": "registry", "key": "funnel-chart", "aliases": ["funnel-chart"], "status": "active", "retirementReason": null },
-    { "id": "reference:line-chart", "type": "document", "key": "components/line-chart", "aliases": ["line-chart"], "status": "active", "retirementReason": null },
-    { "id": "component:area-chart", "type": "registry", "key": "area-chart", "aliases": ["area-chart"], "status": "active", "retirementReason": null },
-    { "id": "reference:bar-chart", "type": "document", "key": "components/bar-chart", "aliases": ["bar-chart"], "status": "active", "retirementReason": null },
-    { "id": "reference:pie-chart", "type": "document", "key": "components/pie-chart", "aliases": ["pie-chart"], "status": "active", "retirementReason": null },
-    { "id": "reference:donut-chart", "type": "document", "key": "components/donut-chart", "aliases": ["donut-chart"], "status": "active", "retirementReason": null },
+    {
+      "id": "component:funnel-chart",
+      "type": "registry",
+      "key": "funnel-chart",
+      "aliases": [
+        "funnel-chart"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:area-chart",
+      "type": "registry",
+      "key": "area-chart",
+      "aliases": [
+        "area-chart"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "reference:donut-chart",
+      "type": "document",
+      "key": "components/donut-chart",
+      "aliases": [
+        "donut-chart"
+      ],
+      "status": "retired",
+      "retirementReason": "Merged into pie-chart; legacy documentation URLs redirect to the PieChart donut examples."
+    },
     {
       "id": "block:design-stack-01",
       "type": "registry",
@@ -1625,6 +1649,73 @@
       "aliases": [
         "chart-brush"
       ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:line-chart",
+      "type": "registry",
+      "key": "line-chart",
+      "aliases": [
+        "line-chart"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:bar-chart",
+      "type": "registry",
+      "key": "bar-chart",
+      "aliases": [
+        "bar-chart"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:pie-chart",
+      "type": "registry",
+      "key": "pie-chart",
+      "aliases": [
+        "pie-chart",
+        "donut-chart"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:heatmap-chart",
+      "type": "registry",
+      "key": "heatmap-chart",
+      "aliases": [
+        "heatmap-chart"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:live-line-chart",
+      "type": "registry",
+      "key": "live-line-chart",
+      "aliases": [
+        "live-line-chart"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:radar-chart",
+      "type": "registry",
+      "key": "radar-chart",
+      "aliases": ["radar-chart"],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:ring-chart",
+      "type": "registry",
+      "key": "ring-chart",
+      "aliases": ["ring-chart"],
       "status": "active",
       "retirementReason": null
     }

@@ -84,6 +84,8 @@ export interface LineConfig {
   dataKey: string;
   stroke: string;
   strokeWidth: number;
+  /** Area stack group. Groups are independent on each Y axis. */
+  stackId?: string | number;
   /** Scale group id (Recharts `yAxisId`). Default: `"left"`. */
   yAxisId?: string | number;
 }

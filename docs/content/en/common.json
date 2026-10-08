@@ -119,11 +119,10 @@
     "introductionTitle": "Introduction",
     "introductionDescription": "Why these components feel different.",
     "descriptions": {
-      "line-chart": "Line charts for trends and comparing multiple series.",
+      "line-chart": "Dates use milliseconds or parseable strings; plotting is chronological and raw rows remain unchanged.",
       "area-chart": "Reference area geometry with overlapping series, gradients and time-range selection.",
-      "bar-chart": "Vertical and horizontal bar charts for category comparisons.",
-      "pie-chart": "Pie charts with legends and percentage labels for complete distributions.",
-      "donut-chart": "Donut charts with center summaries and explicit unassigned totals.",
+      "bar-chart": "Values must be finite and non-negative; invalid values stay in source data but do not create bars or affect domains.",
+      "pie-chart": "Pie and donut charts share PieChart. Set innerRadius for a donut with center summaries and side-by-side legends.",
       "funnel-chart": "Layered horizontal and vertical funnels with controlled hover, gradients and keyboard navigation.",
       "support-analytics-01": "An embedded support panel with ticket trends, service metrics, channel filters and ticket actions.",
       "sales-conversion-funnel-01": "Sales conversion metrics, stage counts and stacked team contributions.",
@@ -211,7 +210,11 @@
       "zaiops-operations-01": "An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation.",
       "zlrlist": "A ZS Live Recovery protection-group workspace with responsive navigation, Figma-aligned list and detail views.",
       "chart": "Shared trends and donuts with stable series colors, explicit time windows and accessible values.",
-      "chart-primitives": "Legends, stable colors, formatters, segmented bars and data tables without a chart engine dependency."
+      "chart-primitives": "Legends, stable colors, formatters, segmented bars and data tables without a chart engine dependency.",
+      "heatmap-chart": "Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation.",
+      "live-line-chart": "Point time is Unix seconds.",
+      "radar-chart": "Compare normalized metrics across one or more series.",
+      "ring-chart": "Display independent progress as concentric rings."
     }
   }
 }

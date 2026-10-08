@@ -35,6 +35,12 @@
       "content": "\"use client\";\nimport type { MotionValue } from \"motion/react\";\nimport { useEffect, useState } from \"react\";\nexport function useEnterComplete(progress: MotionValue<number>): boolean {\n    const [complete, setComplete] = useState(() => progress.get() >= 1);\n    useEffect(() => {\n        setComplete(progress.get() >= 1);\n        // Observe resets as well as completion when a segment's index changes.\n        return progress.on(\"change\", (value) => {\n            if (value <= 0)\n                setComplete(false);\n            else if (value >= 1)\n                setComplete(true);\n        });\n    }, [progress]);\n    return complete;\n}\n",
       "type": "registry:ui",
       "target": "components/ui/charts/use-enter-complete.ts"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-chart-reduced-motion.ts",
+      "content": "\"use client\";\nimport { useSyncExternalStore } from \"react\";\nconst query = \"(prefers-reduced-motion: reduce)\";\nfunction subscribe(callback: () => void) {\n    const media = window.matchMedia(query);\n    media.addEventListener(\"change\", callback);\n    return () => media.removeEventListener(\"change\", callback);\n}\nfunction getSnapshot() { return window.matchMedia(query).matches; }\nfunction getServerSnapshot() { return false; }\n/** Hydrate the same entrance markup as SSR, then apply the visitor preference. */\nexport function useChartReducedMotion() {\n    return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);\n}\n",
+      "type": "registry:ui",
+      "target": "components/ui/charts/use-chart-reduced-motion.ts"
     }
   ],
   "meta": {

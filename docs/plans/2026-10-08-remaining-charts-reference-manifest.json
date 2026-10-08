@@ -1,0 +1,525 @@
+{
+  "baseCommit": "fadf9639a5eacc91b886b77cdad990cbe2f9f450",
+  "roots": [
+    "line-chart.tsx",
+    "line-chart-loading.tsx",
+    "bar-chart.tsx",
+    "bar.tsx",
+    "bar-x-axis.tsx",
+    "bar-y-axis.tsx",
+    "bar-squares.tsx",
+    "bar-depth.tsx",
+    "live-line-chart.tsx",
+    "live-line.tsx",
+    "live-x-axis.tsx",
+    "live-y-axis.tsx",
+    "pie-chart.tsx",
+    "pie-slice.tsx",
+    "pie-center.tsx",
+    "pie-center-shell.tsx",
+    "heatmap/index.ts",
+    "background.tsx",
+    "line-series-terminal-marker.tsx",
+    "markers/index.ts",
+    "bar-chart-loading.tsx"
+  ],
+  "source": "/Users/carlos/Downloads/charts",
+  "files": [
+    {
+      "path": "animation.ts",
+      "sha256": "bd91d889c06e719f74069ee7141cf69a51e4f238e6b37f762399d239f1ea4521",
+      "existing": true
+    },
+    {
+      "path": "background.tsx",
+      "sha256": "de5422be53c88fadb5ef63b9bc4ecffbf2f1a3b28a3fd64f1fe0894384d2815b",
+      "existing": false
+    },
+    {
+      "path": "bar-chart-loading.tsx",
+      "sha256": "865783afebeb72fb930b9635144818b550af95fa6080470325b6b2dc66f299d8",
+      "existing": false
+    },
+    {
+      "path": "bar-chart.tsx",
+      "sha256": "252a46d22fcff1c1396f164abe6264b434f9392baa4294fdb4c2fb2b2af7d37f",
+      "existing": false
+    },
+    {
+      "path": "bar-depth-geometry.ts",
+      "sha256": "dce3598a113b676eec41da3addec2ff29137b452b9705b3abc7b5fef8b5cf66f",
+      "existing": false
+    },
+    {
+      "path": "bar-depth.tsx",
+      "sha256": "66462800679a9c6b3b53c25f25f697e1046ba4b118e07f5af2c16aba50ccb406",
+      "existing": false
+    },
+    {
+      "path": "bar-squares-layout.ts",
+      "sha256": "eaea7f00696b5d1c600e00b4e47f7a7d4082315e1da8bce15485627282fc5274",
+      "existing": false
+    },
+    {
+      "path": "bar-squares.tsx",
+      "sha256": "91d7940f5ee6a2278157aa8a9d2b305a393cb68398b4ba0226557642d61ff539",
+      "existing": false
+    },
+    {
+      "path": "bar-x-axis.tsx",
+      "sha256": "bfcec1d7ac3aac85b300e6dcf6980feb8dd08db14e8e738f29bd67db70e75663",
+      "existing": false
+    },
+    {
+      "path": "bar-y-axis.tsx",
+      "sha256": "7737bc7da56b3cfd6372010e61ea1877ba21d24d04a63bc99241d2a66662be45",
+      "existing": false
+    },
+    {
+      "path": "bar.tsx",
+      "sha256": "07f28d1e4efb081e7ae3c776d2a717ed04ab4041e44ba6449fc235acb69310d2",
+      "existing": false
+    },
+    {
+      "path": "chart-center-typography.ts",
+      "sha256": "5b76892ad167d83f58817f0d4af2d52283623a2501e810d2fc126872d2843dac",
+      "existing": false
+    },
+    {
+      "path": "chart-child-passthrough.ts",
+      "sha256": "7ed588788dd6b8d009928b0f6f2af64838ba9291f4690f2801d77586b7269790",
+      "existing": true
+    },
+    {
+      "path": "chart-config-context.tsx",
+      "sha256": "65c9fae029556283adf951203679147f9708187df6ec62cbe961b4e250c0b210",
+      "existing": true
+    },
+    {
+      "path": "chart-context.tsx",
+      "sha256": "890e9f473dd105ed3bea286b6a668eadd8540641972acb902885e3f973264f65",
+      "existing": true
+    },
+    {
+      "path": "chart-defs.ts",
+      "sha256": "3450fd3a5b52169b6cbfb10ea87dc4ef8feafeefc5ace88ef45366051926d5d0",
+      "existing": true
+    },
+    {
+      "path": "chart-formatters.ts",
+      "sha256": "5044fb8e7e6cfaba51d4d3a1d961ecb53e95d3fdd733cb4b1666cb285bd96821",
+      "existing": true
+    },
+    {
+      "path": "chart-legend-hover.tsx",
+      "sha256": "fb31f3648fed0aba2d92792ee943a6317b5051532d5738855bae24a496403882",
+      "existing": true
+    },
+    {
+      "path": "chart-loading-label.tsx",
+      "sha256": "06f6b5dc09269f07b65afbd6a70559fa1d53c40e6c4ae0548a92d0664732a06e",
+      "existing": true
+    },
+    {
+      "path": "chart-phase.ts",
+      "sha256": "1dd53632aa57857f0302c2f8376b1882da324451040f47b35fad50167a2f15a4",
+      "existing": true
+    },
+    {
+      "path": "chart-reveal-clip.tsx",
+      "sha256": "e63aa2b186ba797f1737f0a88d717bd0f07da10b2476598b7522924cac9f9d01",
+      "existing": true
+    },
+    {
+      "path": "chart-scale.ts",
+      "sha256": "50cf8193194aa05948a074030a7830a95f25af89c529e9c26fecbc08de3b133a",
+      "existing": false
+    },
+    {
+      "path": "chart-stat-flow.tsx",
+      "sha256": "687499a57c5e0493e710396badfe106f939a308dcda73e75966ea49b24819139",
+      "existing": false
+    },
+    {
+      "path": "dash-tail-stroke.tsx",
+      "sha256": "42e25bc552b9eab95f6960ae75a633c6c5dd515d38654ce954f2fcb1df6cee89",
+      "existing": true
+    },
+    {
+      "path": "decimate-time-series.ts",
+      "sha256": "5b9cb92a94b34f4de5de550c87404833f0a215aceb1f28213cad0bdfb57ba47c",
+      "existing": true
+    },
+    {
+      "path": "fade-edges.ts",
+      "sha256": "74eebe91d37b5b5d4b4227c590edcf2cf8de7c68dc359827910e0bc0f25bb120",
+      "existing": true
+    },
+    {
+      "path": "filter-data-by-x-domain.ts",
+      "sha256": "cd4262b0f5bb84c54d49efa4565ec6f3a64870b7d7c1349dfe685ec6e198fdf4",
+      "existing": true
+    },
+    {
+      "path": "generate-chart-skeleton-data.ts",
+      "sha256": "7673a08792a7623133660473663da5e94bf519ddc54689bb024b7a2b78f58393",
+      "existing": true
+    },
+    {
+      "path": "grid.tsx",
+      "sha256": "f2ad9cd94ba3b2df6cd4b15d6a7ea7bff4b2e577a5a18e820e3eb1684956717c",
+      "existing": true
+    },
+    {
+      "path": "heatmap/generate-heatmap-skeleton-data.ts",
+      "sha256": "6ee598efab0ed6102d7d555930238bc31e2a04902a821f9c73b27f776e023c5a",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-animation.ts",
+      "sha256": "635152672f88e9329fc61c8311fb09034d8c64514560c75a8bfa44fa48e8a2d2",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-cells.tsx",
+      "sha256": "c1e29f557390300a8bcfd7b0ad8b5460eeac4f8869e4e6562b3c589990d4adb8",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-chart-loading.tsx",
+      "sha256": "28e43ffed3fff820844c9ff51f237501da2909307afeb80945285cb55a17bc46",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-chart.tsx",
+      "sha256": "3b04d1c84eb36c55920d1224a8e93557c2af9157fca65b72c90944e0da6e9d5f",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-colors.ts",
+      "sha256": "78c794e40ef40aba49e63ab6b1130ea946e1153526770bc8b94ba4e92651664a",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-context.tsx",
+      "sha256": "ef636bb494ff95e429d2d0f857096eba9dc72d544e047df199c23cf53e250235",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-legend-gradient.tsx",
+      "sha256": "8b79c616360c3abbc7f44eef33a917aee37f9fd1e8ca692079a68cf400f11daf",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-legend-swatch.tsx",
+      "sha256": "6d2ed887829365202ed3b4dfbc7c239603afe854f46a73f554bc2e267834f149",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-legend.tsx",
+      "sha256": "6e2718b8e978734d91d3ff5eda10e17a3b6230a1dfd4b5d2e57acc791166d326",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-pattern-defs.tsx",
+      "sha256": "d0f1e3e28bcd6475a74ccb34508219351ad36a504408ca86bdca45be2d7df1d5",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-resolve-separator.ts",
+      "sha256": "568a445ee445f7f8a8207aaaa2eafcf8cfc3f27a7430ab5be8137bd2afb2c7a0",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-separator.tsx",
+      "sha256": "6b852251e631cac90ce81ad48ab8e34d7c83fc3287c036e30969fb411cf0e34e",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-tooltip.tsx",
+      "sha256": "92f949744db8fa0c9c6dafe9cd88f58849c534d181308589dcfa5ad5d8b99f4a",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-utils.ts",
+      "sha256": "fda74631f2bce13c569d88ed23fba27d360f26619e8a7e9892703454ca8d0ac5",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-x-axis.tsx",
+      "sha256": "63a0666d70f7321f7b24dbc34ed0fd527651d8779b97842feb8076431b3ff0d7",
+      "existing": false
+    },
+    {
+      "path": "heatmap/heatmap-y-axis.tsx",
+      "sha256": "a673745ba7dd63a1e26bf635491351be9386334fb1a455b29c0829a0ab0a5389",
+      "existing": false
+    },
+    {
+      "path": "heatmap/index.ts",
+      "sha256": "28275b522302247982869d1f629889149c7f8db4d04e20763b3f77e880fda02d",
+      "existing": false
+    },
+    {
+      "path": "heatmap/use-delayed-tooltip-data.ts",
+      "sha256": "d078e68f74802f16193f9527584dab4bf37ecd9b7fa9c8d910d2a77d5f680611",
+      "existing": false
+    },
+    {
+      "path": "highlight-segment-bounds.ts",
+      "sha256": "b5a304c3b9907823f7c0762443304dc6fc16c5ec76c9c927742f7250465e97b3",
+      "existing": true
+    },
+    {
+      "path": "highlight-segment.tsx",
+      "sha256": "112a80a08a9d35b1babe66be7b03dfe0be8638cc2860982d6c7c049839769872",
+      "existing": true
+    },
+    {
+      "path": "line-chart-loading.tsx",
+      "sha256": "0d2803b3b0e71e92afb3119aa0cbce19c08a932b948c9e4d0ba959e62dc138f1",
+      "existing": false
+    },
+    {
+      "path": "line-chart.tsx",
+      "sha256": "0b4ff9fde6e5f38bd58ef11b54b8764342156092d1bba07bdd73525e49fd2b8c",
+      "existing": false
+    },
+    {
+      "path": "line-loading-pulse.tsx",
+      "sha256": "04ed94b7d657b8293ab8d56ce241b4cb73894d61fa5e9ca907d4a5fa80bedc4e",
+      "existing": true
+    },
+    {
+      "path": "line-loading-timing.ts",
+      "sha256": "e2328b4a9502014022dd671c6086ede1b6bd4ce8da02f04a8d251634bee0e4f4",
+      "existing": true
+    },
+    {
+      "path": "line-series-terminal-marker.tsx",
+      "sha256": "02e65354d92f02c52a67aa59220fb768070811bd900c2d424b3362f888b10d4c",
+      "existing": false
+    },
+    {
+      "path": "line.tsx",
+      "sha256": "66e15ba8e2fb406e2cfa66d6a26dde78084d2948fe96bed7c6dae7cd9cbd481e",
+      "existing": false
+    },
+    {
+      "path": "live-line-chart.tsx",
+      "sha256": "431f5fe91c8f3a23508ac308a70c271368d4365b166527c006b2daf391acf278",
+      "existing": false
+    },
+    {
+      "path": "live-line.tsx",
+      "sha256": "4a7c7a7dd1b392315c37412640e9e88551983ea86c30c103b59ac09a1c379ed9",
+      "existing": false
+    },
+    {
+      "path": "live-x-axis.tsx",
+      "sha256": "6e9ccebd1f5324e71826a704b9d81e1b9959df76238217dea2648975fcc59796",
+      "existing": false
+    },
+    {
+      "path": "live-y-axis.tsx",
+      "sha256": "dd9e2584a2ea8671c33c1637bc3e5d8cce7ce685874070151d464491c3a5d740",
+      "existing": false
+    },
+    {
+      "path": "loading-sweep.tsx",
+      "sha256": "9e42ef6a860c770cd5bdef3cfee65843ad713155e27c3158f71c194fa1195b01",
+      "existing": true
+    },
+    {
+      "path": "markers/chart-markers.tsx",
+      "sha256": "5066472fa60515a02b9e267c365ec31c030c6a446cf7564b4dd23d9e6c06fadb",
+      "existing": false
+    },
+    {
+      "path": "markers/index.ts",
+      "sha256": "45871037042c19e7aedb674c5cd8fd5e41b4775a085c751cdd64b7f5ea1ee774",
+      "existing": false
+    },
+    {
+      "path": "markers/marker-group.tsx",
+      "sha256": "5acb6bfe2583d53f220c13010e379f3d2cc089acff1aea258a5dfeb47dd1ed2e",
+      "existing": false
+    },
+    {
+      "path": "motion-utils.ts",
+      "sha256": "42bee04facfc758f9a4b89607040a9e8bb40a5cfafe4bb4e363f1fcd1cb1f858",
+      "existing": false
+    },
+    {
+      "path": "path-stroke-utils.ts",
+      "sha256": "1c3cbb715eb143995dfec320a53524a60ef790db0fdafca1ebf3502fde223dc4",
+      "existing": true
+    },
+    {
+      "path": "pattern-preset.tsx",
+      "sha256": "b877d4479a805dd72d7daee5be4cc6b82243b9f4026f84e0085d0639dcb6e2d0",
+      "existing": true
+    },
+    {
+      "path": "pie-center-shell.tsx",
+      "sha256": "eecb866ba893aa6a3bba838c80b96a5799344e6bb8a2f40297b01059a8447f14",
+      "existing": false
+    },
+    {
+      "path": "pie-center.tsx",
+      "sha256": "ece9a83b9faaf34a45313fb9535482328f30b9b7521373f4b2140915709b7e4e",
+      "existing": false
+    },
+    {
+      "path": "pie-chart.tsx",
+      "sha256": "d6e0516e1854379fe66489d0e1e9551d583302b8d6e0303560e11eaa8ab9f883",
+      "existing": false
+    },
+    {
+      "path": "pie-context.tsx",
+      "sha256": "c3ebffd2c228c5e3973e824c3442b368ada81396bad45d393fb7d1c2b8495df5",
+      "existing": false
+    },
+    {
+      "path": "pie-slice.tsx",
+      "sha256": "2034d79ebd5701093ca9135ac306a7cdeb26439d0e150e208e92db59ecfb8120",
+      "existing": false
+    },
+    {
+      "path": "projection-config.ts",
+      "sha256": "fb7e04bbaac83119bcbe5fcfea4c2c713d80ec3cf65dc8a427d506edeca4bf59",
+      "existing": true
+    },
+    {
+      "path": "projection-utils.ts",
+      "sha256": "a7d6c269220dcce466e2eaf620081d488fbef1a372ed3d9cff4fd76298232e0f",
+      "existing": true
+    },
+    {
+      "path": "reference-area-config.ts",
+      "sha256": "6d5a08ea977f9181f78ebf7e32d5d1dd4f70fb4c645fa11006b9f62b45f223e5",
+      "existing": true
+    },
+    {
+      "path": "reference-area-registration-context.tsx",
+      "sha256": "1bdf081f8d454f6e9b678d4b470aabbade8fb7b47d9bcf8a44e05887e11aa347",
+      "existing": true
+    },
+    {
+      "path": "series-bar-layout.ts",
+      "sha256": "3e834065bf086275b263b2f5a0737a544dc4dfbfc7aa533191fcd0365feefb2c",
+      "existing": true
+    },
+    {
+      "path": "series-dash-tail-overlay.tsx",
+      "sha256": "62425aae177b81d3ee730d3d379ed2e43e6ec998bd2d17851f01de265b434582",
+      "existing": true
+    },
+    {
+      "path": "series-highlight-layer.tsx",
+      "sha256": "c9d5d19fe7fb3e1cf6dd3d054ef89538920b523f4899ea78a37f63b976fa00ac",
+      "existing": true
+    },
+    {
+      "path": "series-hover-dim.tsx",
+      "sha256": "3eb2c82aa794c2b263bef2dba8bfe81ef9fb63b78891225d3cf951b0c89483ba",
+      "existing": true
+    },
+    {
+      "path": "series-markers.tsx",
+      "sha256": "c8c37a80c3760bbac0c0872830ca77fb51b49daaa644409e2f0855581b816dc6",
+      "existing": true
+    },
+    {
+      "path": "series-path-utils.ts",
+      "sha256": "cdc21b513a9789f33fa85335a791b49e389a6866b8397abe9eaaff59ef385fe4",
+      "existing": false
+    },
+    {
+      "path": "series-point-marker.tsx",
+      "sha256": "9775cb40e04639fafa29c675619e6ebbaf20984d353cf41fdc5d10fe1034ea04",
+      "existing": true
+    },
+    {
+      "path": "static-chart-preview-context.tsx",
+      "sha256": "231d750e55824c86c3f79fd18870bb43633cf47fae4c33f8c218fea7eab8f551",
+      "existing": true
+    },
+    {
+      "path": "time-series-chart-shell.tsx",
+      "sha256": "fef7e34f1194b1ab01383ac3c086d1b41122a065d60534be5443b84c6050cea2",
+      "existing": true
+    },
+    {
+      "path": "tooltip/tooltip-box.tsx",
+      "sha256": "7f486a34b6b8e6098a01806a6260784c760f5539ee95c716444b48b4cba63646",
+      "existing": true
+    },
+    {
+      "path": "use-animated-series-path.ts",
+      "sha256": "54bad56d9d3cdc02ca0433719059b1b1e595fc8169a16530798c320a76b8f0a6",
+      "existing": false
+    },
+    {
+      "path": "use-animated-y-domains.ts",
+      "sha256": "f928c539e664b3688aa232904f35f51f0f3d34e51c938c47403cc08fa84404e0",
+      "existing": true
+    },
+    {
+      "path": "use-chart-interaction.ts",
+      "sha256": "e84a3a4fd66b150e89b05e919189e5fcad0d63ca8b804120bf574a7491a0283e",
+      "existing": true
+    },
+    {
+      "path": "use-chart-phase-orchestrator.ts",
+      "sha256": "e50da33ef9f6183fc63b074b718f92f3b0da4a72bf4bae142d9e38e58c81cc73",
+      "existing": true
+    },
+    {
+      "path": "use-enter-complete.ts",
+      "sha256": "267e864d7568b51a7df97bed28d34060918b38bacb1c7c6fb5488f33bbf786dd",
+      "existing": true
+    },
+    {
+      "path": "use-grid-shimmer.ts",
+      "sha256": "cc3f402c8b6215fcaa7707a3181085b9e77e936a610575b08a0df4bea35141fb",
+      "existing": true
+    },
+    {
+      "path": "use-highlight-segment.ts",
+      "sha256": "f34fd027d2197976aa9ebab9b80727c2cd11e48242289901834d69a26ca01cb3",
+      "existing": true
+    },
+    {
+      "path": "use-mount-progress.ts",
+      "sha256": "744cacfe71fba55e287bae655c7f51a2e8384268d0887ad81ed95967dd70fd94",
+      "existing": true
+    },
+    {
+      "path": "use-scheduled-tooltip.ts",
+      "sha256": "197430cabf1f017a47f6f2262341b8355d55436876e19affcc8b46f2f35752d3",
+      "existing": true
+    },
+    {
+      "path": "visx-pattern.tsx",
+      "sha256": "987831a15796d47edc1e0a7783f239a78914f3e2e038ed082d66e8fcad12e016",
+      "existing": true
+    },
+    {
+      "path": "y-axis-scales.ts",
+      "sha256": "4bd7bfee4e0ef50e185ed96ed910af6236793663b5947f14778513b6e70a8fe1",
+      "existing": true
+    },
+    {
+      "path": "y-domain-utils.ts",
+      "sha256": "d3f67c8760a7ada2b6bdc05fe470900a49ab86ee70a13ec6686f2c64a64eeebb",
+      "existing": true
+    }
+  ],
+  "missing": [
+    [
+      "chart-loading-label.tsx",
+      "../components/shimmering-text"
+    ]
+  ]
+}

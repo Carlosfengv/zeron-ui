@@ -1,0 +1,15 @@
+{
+  "livelinechart": {
+    "description": "Point time is Unix seconds",
+    "basic": "Live stream with pause and stop",
+    "window": "60-second window and leading offset",
+    "style": "Momentum, pulse and badge options",
+    "dataCaption": "Original observations",
+    "viewData": "View source data",
+    "behavior": "Behavior",
+    "api": "API reference",
+    "contract": "Point time is Unix seconds. Latest value is a separate required prop. Defaults: 30-second window, 5 ticks, leading offset 0, lerpSpeed 0.08 and height 300px. paused freezes scrolling while latest-value interpolation and Y-range changes continue. Invalid window/ticks/speed revert to defaults. The demo source updates every second, supports stopping and cleans up on unmount; the component does not open a WebSocket.",
+    "keyboard": "Tab enters once; arrows, Home and End inspect data, Escape or blur clears the tooltip. Reduced motion disables decorative loops. ChartLegend layout/overflow are API options; inline/collapse fits multiple entries and folds overflow.",
+    "compatibility": "Import shared tooltip and legend from chart-core. Existing chart/Recharts and chart-primitives APIs remain available with their own contracts."
+  }
+}

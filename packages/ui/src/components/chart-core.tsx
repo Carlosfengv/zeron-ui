@@ -12,3 +12,6 @@ export { PatternLines, PatternCircles, PatternWaves, PatternHexagons } from "./c
 export { chartCssVars, useChart, useChartStable, useChartHover, type LineConfig, type Margin } from "./charts/chart-context";
 export type { ChartPhase, ChartStatus, LoadingStyle } from "./charts/chart-phase";
 export { renderPatternPreset, PATTERN_PRESET_IDS, type PatternPresetId, type PatternPresetOptions } from "./charts/pattern-preset";
+export { Background, type BackgroundProps } from "./charts/background";
+export { LinearGradient, RadialGradient } from "@visx/gradient";
+export * from "./charts/markers";
