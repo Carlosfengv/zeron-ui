@@ -12,6 +12,7 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "blocks/website-analytics-01": () => import("@docs/content/en/blocks/website-analytics-01.json"),
     "components/heatmap-chart": () => import("@docs/content/en/components/heatmap-chart.json"),
     "components/live-line-chart": () => import("@docs/content/en/components/live-line-chart.json"),
     "components/radar-chart": () => import("@docs/content/en/components/radar-chart.json"),
@@ -147,6 +148,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "blocks/website-analytics-01": () => import("@docs/content/zh-CN/blocks/website-analytics-01.json"),
     "components/heatmap-chart": () => import("@docs/content/zh-CN/components/heatmap-chart.json"),
     "components/live-line-chart": () => import("@docs/content/zh-CN/components/live-line-chart.json"),
     "components/radar-chart": () => import("@docs/content/zh-CN/components/radar-chart.json"),

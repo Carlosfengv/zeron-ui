@@ -1,5 +1,12 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "website-analytics-01": [
+    "packages/blocks/src/application/website-analytics-01/website-analytics.tsx",
+    "packages/blocks/src/application/website-analytics-01/website-analytics-types.ts",
+    "packages/blocks/src/application/website-analytics-01/website-analytics-labels.ts",
+    "packages/blocks/src/application/website-analytics-01/website-analytics-demo-data.ts",
+    "packages/blocks/src/application/website-analytics-01/index.ts"
+  ],
   "sales-conversion-funnel-01": [
     "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel.tsx",
     "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel-demo-data.ts",

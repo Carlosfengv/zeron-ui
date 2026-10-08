@@ -1,4 +1,5 @@
 "use client";
+import { WebsiteAnalyticsDemo } from "./WebsiteAnalyticsDemo";
 
 import { SalesConversionFunnelDemo } from "./SalesConversionFunnelDemo";
 
@@ -219,6 +220,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
       return <SupportAnalyticsDemo />;
     case "sales-conversion-funnel-01":
       return <SalesConversionFunnelDemo />;
+    case "website-analytics-01":
+      return <WebsiteAnalyticsDemo />;
     case "transaction-details-01":
       return <TransactionDetailsDemo />;
     case "cost-estimate-01":

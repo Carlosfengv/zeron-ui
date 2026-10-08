@@ -114,6 +114,10 @@
       "itemId": "block:user-account-01"
     },
     {
+      "path": "blocks/website-analytics-01.md",
+      "itemId": "block:website-analytics-01"
+    },
+    {
       "path": "blocks/zaiops-operations-01.md",
       "itemId": "block:zaiops-operations-01"
     },

@@ -1,0 +1,12 @@
+{
+  "websiteAnalyticsBlock": {
+    "title": "Website Analytics",
+    "description": "Website metrics, period controls, trend comparison, top pages and traffic sources in one analytics surface.",
+    "composition": "Composition",
+    "compositionBody": "Uses Container, MetricCard, Tabs, Checkbox, AreaChart, BarChart, ChartLegend and ChartDataTable. Four summaries control one trend chart; two rankings compose the existing horizontal bar chart with domain labels. Ranking labels sit inside the chart, using fg-on-inverse over each bar and regular text colors beyond short bars. The main trend and rankings use the default chart-1 token; the comparison uses chart-2, with matching legend and tooltip colors. Surfaces, typography, chart and status colors, spacing and dividers use existing design variables. No new primitives or theme variables are introduced.",
+    "dataContract": "Data integration",
+    "dataContractBody": "The host supplies range, site and a matching data snapshot, and queries through onRangeChange. Count changes are relative ratios; conversion and bounce rates are ratios from 0 to 1, with absolute ratio differences for their changes. Trend points contain offset-aware dates, four raw metrics and host-aligned previous-period buckets. Pages and sources have stable unique ids, labels and nonnegative visitor counts. Missing values remain unknown. A mismatched range shows loading rather than displaying stale results under a new period.",
+    "behavior": "Behavior and states",
+    "behaviorBody": "Supports 7D, 30D and 90D ranges, metric selection, comparison, keyboard and pointer chart inspection, and an expandable raw-data table. The host owns export; the button is omitted without a callback. Metric and comparison state may be local or controlled. Includes loading, empty, error and retry states, localized numbers and dates, light and dark themes, and reduced motion. Narrow screens use two metric columns and stacked rankings. The preview uses fixed example data and exports the current JSON snapshot without connecting to an analytics service."
+  }
+}

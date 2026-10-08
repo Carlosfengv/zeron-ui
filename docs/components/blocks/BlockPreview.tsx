@@ -187,6 +187,9 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "sales-conversion-funnel-01": () => import("./SalesConversionFunnelDemo").then(({ SalesConversionFunnelDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={720} canvasWidth={1280}><SalesConversionFunnelDemo /></ResponsivePreview>,
   })),
+  "website-analytics-01": () => import("./WebsiteAnalyticsDemo").then(({ WebsiteAnalyticsDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1280}><WebsiteAnalyticsDemo /></ResponsivePreview>,
+  })),
   "transaction-details-01": () => import("./TransactionDetailsDemo").then(({ TransactionDetailsDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={960} canvasWidth={760}><TransactionDetailsDemo /></ResponsivePreview>,
   })),

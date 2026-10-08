@@ -204,6 +204,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [support-analytics-01](https://zeron-ui.vercel.app/agent-guides/blocks/support-analytics-01.md)
 - [transaction-details-01](https://zeron-ui.vercel.app/agent-guides/blocks/transaction-details-01.md)
 - [user-account-01](https://zeron-ui.vercel.app/agent-guides/blocks/user-account-01.md)
+- [website-analytics-01](https://zeron-ui.vercel.app/agent-guides/blocks/website-analytics-01.md)
 - [zaiops-operations-01](https://zeron-ui.vercel.app/agent-guides/blocks/zaiops-operations-01.md)
 - [alert](https://zeron-ui.vercel.app/agent-guides/components/alert.md)
 - [app-shell](https://zeron-ui.vercel.app/agent-guides/components/app-shell.md)
