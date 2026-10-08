@@ -216,7 +216,8 @@ const BarInner = memo(function BarInner({
   const calculatedStaggerDelay =
     staggerDelay ?? (data.length > 1 ? staggerSpread / 1000 / data.length : 0);
   const uniqueId = useId();
-  animate = animate && !useReducedMotion();
+  const reducedMotion = useReducedMotion();
+  animate = animate && !reducedMotion;
 
   const isHorizontal = orientation === "horizontal";
 

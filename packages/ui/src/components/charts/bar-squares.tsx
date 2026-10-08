@@ -306,7 +306,8 @@ const BarSquaresInner = memo(function BarSquaresInner({
 
   const { hoveredIndex: legendHoveredIndex } = useChartLegendHover();
   const uniqueId = useId();
-  animate = animate && !useReducedMotion();
+  const reducedMotion = useReducedMotion();
+  animate = animate && !reducedMotion;
 
   const isHorizontal = orientation === "horizontal";
   const isUnsupported = isHorizontal || stacked;
