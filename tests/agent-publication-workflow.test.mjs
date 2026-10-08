@@ -256,11 +256,13 @@ describe("closed publication workflow runtime and YAML", () => {
       expect(() => publicationRequestedRuns({ ...requestedEnv, PUBLICATION_CONSUMER_RUN_ID: value })).toThrow("PUBLICATION_INTEGER_INPUT");
     }
   });
-  it("actually refuses the uncontrolled runtime/source before network and leaves only safe failure", async () => {
+  it("actually refuses uncontrolled runtime/source/workflow context before network and leaves only safe failure", async () => {
     const fetcher = vi.spyOn(globalThis, "fetch").mockImplementation(async () => { throw new Error("must never reach HTTP"); });
     vi.stubEnv("GITHUB_ACTIONS", "false"); const output = path.join(parent, "closed-refusal");
     try {
-      await expect(runPublicationWorkflow(["resolve", "--output", output])).rejects.toHaveProperty("code", process.platform === "linux" ? "DIRTY_SOURCE" : "PUBLICATION_RUNTIME");
+      const allowedRefusals = process.platform === "linux" && Number(process.versions.node.split(".")[0]) === 22
+        ? ["DIRTY_SOURCE", "PUBLICATION_WORKFLOW_CONTEXT"] : ["PUBLICATION_RUNTIME"];
+      await expect(runPublicationWorkflow(["resolve", "--output", output])).rejects.toHaveProperty("code", expect.toBeOneOf(allowedRefusals));
       expect(fetcher).not.toHaveBeenCalled(); expect(await readdir(output)).toEqual(["failure.json"]);
       const failure = JSON.parse(await readFile(path.join(output, "failure.json"))); expect(failure.status).toBe("failed");
       expect(serialize(failure)).not.toMatch(/https:|TOKEN|secret|passed/);
@@ -272,7 +274,7 @@ describe("closed publication workflow runtime and YAML", () => {
     try { execFileSync(process.execPath, ["scripts/agent-publication-workflow.mjs", "resolve", "--output", output],
       { encoding: "utf8", timeout: 15000, stdio: "pipe", env: { ...process.env, GITHUB_ACTIONS: "false" } }); }
     catch (error) { result = error; }
-    expect(result.status).toBe(1); expect(result.signal).toBeNull(); expect(result.stderr).toMatch(/PUBLICATION_RUNTIME|DIRTY_SOURCE/);
+    expect(result.status).toBe(1); expect(result.signal).toBeNull(); expect(result.stderr).toMatch(/PUBLICATION_RUNTIME|DIRTY_SOURCE|PUBLICATION_WORKFLOW_CONTEXT/);
     expect(await readdir(output)).toEqual(["failure.json"]);
   });
   it("pins exact control jobs, source checkouts, transport and independent step order", async () => {

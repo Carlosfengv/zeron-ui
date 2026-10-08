@@ -6,8 +6,9 @@ const items = ["ui", "blocks"].flatMap(name => JSON.parse(readFileSync(`packages
 
 describe("installed examples for the frozen unification scope", () => {
   it("renders every installable entry and shared foundation through public consumer imports", () => {
-    expect(unificationConsumerItems).toHaveLength(50);
-    expect(new Set(unificationConsumerItems).size).toBe(50);
+    expect(unificationConsumerItems).toHaveLength(49);
+    expect(new Set(unificationConsumerItems).size).toBe(49);
+    expect(unificationConsumerItems).not.toContain("availability-monitor-01");
     expect(unificationConsumerExample("model-mcp-marketplace-01", "next")).toContain('from "@/components/blocks/resource-catalog-01"');
     expect(unificationConsumerExample("model-mcp-marketplace-01", "vite")).toContain('from "@/src/components/blocks/resource-catalog-01"');
     expect(unificationConsumerExample("resource-detail-page-01", "next")).toContain('data={defaultResourceDetailPageData}');
