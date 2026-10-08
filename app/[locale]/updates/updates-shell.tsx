@@ -34,6 +34,7 @@ export function UpdatesHistorySkeleton({ label }: { label?: string }) {
   return (
     <div aria-busy="true" role={label ? "status" : undefined}>
       {label && <span className="sr-only">{label}</span>}
+      <div aria-hidden="true" className="mt-6"><Skeleton className="h-56 w-full rounded-3xl" /></div>
       <div className="mt-5 border-b border-border pb-8"><Skeleton className="h-4 w-32" /></div>
       <div aria-hidden="true" className="pb-10 pt-9">
         <Skeleton className="mb-2 h-6 w-40" />

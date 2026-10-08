@@ -1,13 +1,17 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
+import { Button } from "@zeron/ui/button";
 import { Badge } from "@zeron/ui/badge";
 import { Container, ContainerBody, ContainerFooter } from "@zeron/ui/container";
 import { BlockPreview } from "@docs/components/blocks/BlockPreview";
 import { IntentPrefetchLink } from "@docs/components/shell/site/intent-prefetch-link";
 import type { AppLocale } from "@/app/_i18n/routing";
 import type { CommitHistoryEntry } from "@docs/lib/commit-history.server";
+import type { CommitActivityHistory } from "@docs/lib/commit-activity.server";
+import { buildCommitActivity, formatActivityDate } from "@docs/lib/commit-activity";
 import { updatesCopy as copy } from "./updates-copy";
+import { UpdatesActivity } from "./updates-activity";
 
 const repositoryUrl = "https://github.com/Carlosfengv/zeron-ui";
 const subscribe = () => () => {};
@@ -35,21 +39,34 @@ function groupCommits(commits: CommitHistoryEntry[], locale: AppLocale, timeZone
   return Array.from(groups.values());
 }
 
-export function UpdatesList({ commits, locale }: { commits: CommitHistoryEntry[]; locale: AppLocale }) {
+export function UpdatesList({ commits, locale, activityHistory }: { commits: CommitHistoryEntry[]; locale: AppLocale; activityHistory?: Pick<CommitActivityHistory, "asOf" | "complete"> }) {
   const timeZone = useSyncExternalStore(subscribe, browserTimeZone, serverTimeZone);
   const text = copy[locale === "en" ? "en" : "zh"];
-  const groups = groupCommits(commits, locale, timeZone);
+  const [selection, setSelection] = useState<{ date: string; timeZone: string } | null>(null);
+  const [visibleCount, setVisibleCount] = useState(100);
+  const activity = useMemo(() => activityHistory ? buildCommitActivity(commits, activityHistory.asOf, timeZone) : null, [commits, activityHistory, timeZone]);
+  const selectedDate = activityHistory?.complete && activity && selection?.timeZone === timeZone && selection.date >= activity.start && selection.date <= activity.through ? selection.date : null;
+  const recentCommits = activityHistory?.complete && activity ? [...activity.groups.values()].flat() : commits;
+  const filteredCommits = selectedDate && activity ? activity.groups.get(selectedDate) ?? [] : recentCommits;
+  const visibleCommits = activityHistory && !selectedDate ? filteredCommits.slice(0, visibleCount) : filteredCommits;
+  const groups = groupCommits(visibleCommits, locale, timeZone);
   const time = new Intl.DateTimeFormat(locale, {
     timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23",
   });
 
   return (
     <>
+      {activity && activityHistory && <UpdatesActivity activity={activity} complete={activityHistory.complete} locale={locale} onSelectDate={date => setSelection({ date, timeZone })} selectedDate={selectedDate} />}
       <p className="mt-5 border-b border-border pb-8 text-label text-fg-subtle">
-        {text.count.replace("{count}", String(commits.length))}
+        {text.count.replace("{count}", String(recentCommits.length))}
         <span className="ml-3">{text.timeZone.replace("{timeZone}", timeZone)}</span>
       </p>
+      {selectedDate && <div className="flex flex-wrap items-center justify-between gap-3 pt-5">
+        <p aria-live="polite" className="text-body font-medium text-fg-default">{text.selectedDay.replace("{date}", formatActivityDate(selectedDate, locale)).replace("{count}", String(filteredCommits.length))}</p>
+        <Button onClick={() => setSelection(null)} size="sm" variant="secondary">{text.clearDay}</Button>
+      </div>}
       <div className="pb-10 pt-4">
+        {!visibleCommits.length && activityHistory && <p aria-live="polite" className="py-5 text-body text-fg-muted">{selectedDate ? text.dayEmpty : text.activityEmpty}</p>}
         {groups.map((group) => (
           <section aria-labelledby={`updates-${group.date}`} className="pt-5" key={group.date}>
             <h2 className="pb-2 text-title font-semibold text-fg-default" id={`updates-${group.date}`}>
@@ -105,6 +122,10 @@ export function UpdatesList({ commits, locale }: { commits: CommitHistoryEntry[]
             </ol>
           </section>
         ))}
+        {activityHistory && !selectedDate && visibleCount < filteredCommits.length && <div className="flex flex-wrap items-center gap-3 pt-5">
+          <Button onClick={() => setVisibleCount(count => count + 100)} size="sm" variant="secondary">{text.showMore}</Button>
+          <p className="text-label text-fg-subtle">{text.shown.replace("{shown}", String(visibleCommits.length)).replace("{count}", String(filteredCommits.length))}</p>
+        </div>}
       </div>
     </>
   );
