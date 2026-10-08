@@ -1,0 +1,2772 @@
+{
+  "formatVersion": 1,
+  "baseCommit": "fadf9639a5eacc91b886b77cdad990cbe2f9f450",
+  "branch": "main",
+  "operation": "Reviewed scope snapshot with authorized four-commit main execution; source changes and generation clarifications are recorded.",
+  "counts": {
+    "initialSessionFiles": 238,
+    "finalFiles": 246,
+    "maintainedFiles": 203,
+    "generatedFiles": 43,
+    "preservedFiles": 18
+  },
+  "commits": [
+    {
+      "id": 1,
+      "message": "feat(charts): complete native charts and consolidate pie demos",
+      "dependsOn": [],
+      "maintainedFiles": [
+        "app/[locale]/docs/components/(detail)/donut-chart/page.tsx",
+        "app/[locale]/docs/components/(detail)/heatmap-chart/page.tsx",
+        "app/[locale]/docs/components/(detail)/live-line-chart/page.tsx",
+        "app/[locale]/docs/components/(detail)/radar-chart/page.tsx",
+        "app/[locale]/docs/components/(detail)/ring-chart/page.tsx",
+        "docs/agent-data/components.json",
+        "docs/agent-data/guide-routes.json",
+        "docs/agent-data/item-identities.json",
+        "docs/agent-guides/components/area-chart.md",
+        "docs/agent-guides/components/bar-chart.md",
+        "docs/agent-guides/components/chart-core.md",
+        "docs/agent-guides/components/heatmap-chart.md",
+        "docs/agent-guides/components/line-chart.md",
+        "docs/agent-guides/components/live-line-chart.md",
+        "docs/agent-guides/components/pie-chart.md",
+        "docs/agent-guides/components/radar-chart.md",
+        "docs/agent-guides/components/ring-chart.md",
+        "docs/components/charts/chart-type-doc.tsx",
+        "docs/components/charts/chart-type-example.tsx",
+        "docs/components/charts/status-bar-chart-basic-demo.tsx",
+        "docs/content/en/common.json",
+        "docs/content/en/components/area-chart.json",
+        "docs/content/en/components/bar-chart.json",
+        "docs/content/en/components/donut-chart.json",
+        "docs/content/en/components/heatmap-chart.json",
+        "docs/content/en/components/line-chart.json",
+        "docs/content/en/components/live-line-chart.json",
+        "docs/content/en/components/pie-chart.json",
+        "docs/content/en/components/radar-chart.json",
+        "docs/content/en/components/ring-chart.json",
+        "docs/content/en/components/status-overview.json",
+        "docs/content/zh-CN/common.json",
+        "docs/content/zh-CN/components/area-chart.json",
+        "docs/content/zh-CN/components/bar-chart.json",
+        "docs/content/zh-CN/components/donut-chart.json",
+        "docs/content/zh-CN/components/heatmap-chart.json",
+        "docs/content/zh-CN/components/line-chart.json",
+        "docs/content/zh-CN/components/live-line-chart.json",
+        "docs/content/zh-CN/components/pie-chart.json",
+        "docs/content/zh-CN/components/radar-chart.json",
+        "docs/content/zh-CN/components/ring-chart.json",
+        "docs/content/zh-CN/components/status-overview.json",
+        "docs/lib/chart-types.ts",
+        "docs/manifest.ts",
+        "docs/pages/components/area-chart/page.tsx",
+        "docs/pages/components/bar-chart/api.json",
+        "docs/pages/components/bar-chart/page.tsx",
+        "docs/pages/components/donut-chart/page.tsx",
+        "docs/pages/components/heatmap-chart/api.json",
+        "docs/pages/components/heatmap-chart/page.tsx",
+        "docs/pages/components/line-chart/api.json",
+        "docs/pages/components/line-chart/page.tsx",
+        "docs/pages/components/live-line-chart/api.json",
+        "docs/pages/components/live-line-chart/page.tsx",
+        "docs/pages/components/pie-chart/api.json",
+        "docs/pages/components/pie-chart/page.tsx",
+        "docs/pages/components/radar-chart/api.json",
+        "docs/pages/components/radar-chart/page.tsx",
+        "docs/pages/components/ring-chart/api.json",
+        "docs/pages/components/ring-chart/page.tsx",
+        "docs/pages/components/status-overview/page.tsx",
+        "docs/plans/2026-10-08-radar-ring-reference-baseline.json",
+        "docs/plans/2026-10-08-remaining-charts-api-baseline.json",
+        "docs/plans/2026-10-08-remaining-charts-reference-manifest.json",
+        "next.config.ts",
+        "package.json",
+        "packages/ui/package.json",
+        "packages/ui/registry.json",
+        "packages/ui/src/components/bar-chart.tsx",
+        "packages/ui/src/components/chart-core.tsx",
+        "packages/ui/src/components/charts/area-chart.tsx",
+        "packages/ui/src/components/charts/area-stack.ts",
+        "packages/ui/src/components/charts/area.tsx",
+        "packages/ui/src/components/charts/background.tsx",
+        "packages/ui/src/components/charts/bar-chart-loading.tsx",
+        "packages/ui/src/components/charts/bar-chart.tsx",
+        "packages/ui/src/components/charts/bar-depth-geometry.ts",
+        "packages/ui/src/components/charts/bar-depth.tsx",
+        "packages/ui/src/components/charts/bar-squares-layout.ts",
+        "packages/ui/src/components/charts/bar-squares.tsx",
+        "packages/ui/src/components/charts/bar-x-axis.tsx",
+        "packages/ui/src/components/charts/bar-y-axis.tsx",
+        "packages/ui/src/components/charts/bar.tsx",
+        "packages/ui/src/components/charts/chart-center-typography.ts",
+        "packages/ui/src/components/charts/chart-context.tsx",
+        "packages/ui/src/components/charts/chart-data.ts",
+        "packages/ui/src/components/charts/chart-keyboard.ts",
+        "packages/ui/src/components/charts/chart-scale.ts",
+        "packages/ui/src/components/charts/chart-source-data.tsx",
+        "packages/ui/src/components/charts/chart-stat-flow.tsx",
+        "packages/ui/src/components/charts/heatmap/generate-heatmap-skeleton-data.ts",
+        "packages/ui/src/components/charts/heatmap/heatmap-animation.ts",
+        "packages/ui/src/components/charts/heatmap/heatmap-cells.tsx",
+        "packages/ui/src/components/charts/heatmap/heatmap-chart-loading.tsx",
+        "packages/ui/src/components/charts/heatmap/heatmap-chart.tsx",
+        "packages/ui/src/components/charts/heatmap/heatmap-colors.ts",
+        "packages/ui/src/components/charts/heatmap/heatmap-context.tsx",
+        "packages/ui/src/components/charts/heatmap/heatmap-legend-gradient.tsx",
+        "packages/ui/src/components/charts/heatmap/heatmap-legend-swatch.tsx",
+        "packages/ui/src/components/charts/heatmap/heatmap-legend.tsx",
+        "packages/ui/src/components/charts/heatmap/heatmap-pattern-defs.tsx",
+        "packages/ui/src/components/charts/heatmap/heatmap-resolve-separator.ts",
+        "packages/ui/src/components/charts/heatmap/heatmap-separator.tsx",
+        "packages/ui/src/components/charts/heatmap/heatmap-tooltip.tsx",
+        "packages/ui/src/components/charts/heatmap/heatmap-utils.ts",
+        "packages/ui/src/components/charts/heatmap/heatmap-x-axis.tsx",
+        "packages/ui/src/components/charts/heatmap/heatmap-y-axis.tsx",
+        "packages/ui/src/components/charts/heatmap/index.ts",
+        "packages/ui/src/components/charts/heatmap/use-delayed-tooltip-data.ts",
+        "packages/ui/src/components/charts/line-chart-loading.tsx",
+        "packages/ui/src/components/charts/line-chart.tsx",
+        "packages/ui/src/components/charts/line-series-terminal-marker.tsx",
+        "packages/ui/src/components/charts/line.tsx",
+        "packages/ui/src/components/charts/live-line-chart.tsx",
+        "packages/ui/src/components/charts/live-line-state.ts",
+        "packages/ui/src/components/charts/live-line.tsx",
+        "packages/ui/src/components/charts/live-x-axis.tsx",
+        "packages/ui/src/components/charts/live-y-axis.tsx",
+        "packages/ui/src/components/charts/markers/chart-markers.tsx",
+        "packages/ui/src/components/charts/markers/index.ts",
+        "packages/ui/src/components/charts/markers/marker-group.tsx",
+        "packages/ui/src/components/charts/motion-utils.ts",
+        "packages/ui/src/components/charts/pie-center-shell.tsx",
+        "packages/ui/src/components/charts/pie-center.tsx",
+        "packages/ui/src/components/charts/pie-chart.tsx",
+        "packages/ui/src/components/charts/pie-context.tsx",
+        "packages/ui/src/components/charts/pie-slice.tsx",
+        "packages/ui/src/components/charts/radar-area.tsx",
+        "packages/ui/src/components/charts/radar-axis.tsx",
+        "packages/ui/src/components/charts/radar-chart.tsx",
+        "packages/ui/src/components/charts/radar-context.tsx",
+        "packages/ui/src/components/charts/radar-grid.tsx",
+        "packages/ui/src/components/charts/radar-labels.tsx",
+        "packages/ui/src/components/charts/ring-center.tsx",
+        "packages/ui/src/components/charts/ring-chart.tsx",
+        "packages/ui/src/components/charts/ring-context.tsx",
+        "packages/ui/src/components/charts/ring.tsx",
+        "packages/ui/src/components/charts/series-markers.tsx",
+        "packages/ui/src/components/charts/series-path-utils.ts",
+        "packages/ui/src/components/charts/time-series-chart-shell.tsx",
+        "packages/ui/src/components/charts/use-animated-series-path.ts",
+        "packages/ui/src/components/charts/use-chart-interaction.ts",
+        "packages/ui/src/components/charts/use-chart-reduced-motion.ts",
+        "packages/ui/src/components/charts/x-axis.tsx",
+        "packages/ui/src/components/heatmap-chart.tsx",
+        "packages/ui/src/components/line-chart.tsx",
+        "packages/ui/src/components/live-line-chart.tsx",
+        "packages/ui/src/components/pie-chart.tsx",
+        "packages/ui/src/components/radar-chart.tsx",
+        "packages/ui/src/components/ring-chart.tsx",
+        "packages/ui/src/components/status-overview.tsx",
+        "pnpm-lock.yaml",
+        "scripts/generate-component-covers.mjs",
+        "scripts/generate-reference-chart-api.mjs",
+        "scripts/test-consumer-installs.mjs",
+        "tests/area-chart.test.tsx",
+        "tests/area-stack.test.ts",
+        "tests/chart-live-state.test.ts",
+        "tests/i18n-document-manifest.test.ts",
+        "tests/radar-ring-contract.test.ts",
+        "tests/radar-ring.test.tsx",
+        "tests/reference-bar-depth-geometry.test.ts",
+        "tests/reference-heatmap-animation.test.ts",
+        "tests/reference-heatmap-ghost.test.ts",
+        "tests/reference-heatmap-inactive.test.ts",
+        "tests/reference-heatmap-quarter-separator.test.ts",
+        "tests/reference-heatmap-separator.test.ts",
+        "tests/reference-heatmap-tooltip-format.test.ts",
+        "tests/reference-heatmap-week-range.test.ts",
+        "tests/reference-heatmap-week-start.test.ts",
+        "tests/reference-series-path-utils.test.ts",
+        "tests/remaining-charts-contract.test.ts",
+        "tests/remaining-charts.test.tsx",
+        "tests/status-overview-interaction.test.tsx"
+      ],
+      "generatedFiles": [
+        "docs/generated/agent-guide-loaders.generated.ts",
+        "docs/generated/component-page-loaders.generated.ts",
+        "docs/generated/page-loaders.generated.ts",
+        "docs/i18n/content-loaders.generated.ts",
+        "public/component-covers/bar-chart-dark.jpg",
+        "public/component-covers/bar-chart-light.jpg",
+        "public/component-covers/donut-chart-dark.jpg",
+        "public/component-covers/donut-chart-light.jpg",
+        "public/component-covers/heatmap-chart-dark.jpg",
+        "public/component-covers/heatmap-chart-light.jpg",
+        "public/component-covers/line-chart-dark.jpg",
+        "public/component-covers/line-chart-light.jpg",
+        "public/component-covers/live-line-chart-dark.jpg",
+        "public/component-covers/live-line-chart-light.jpg",
+        "public/component-covers/pie-chart-dark.jpg",
+        "public/component-covers/pie-chart-light.jpg",
+        "public/component-covers/radar-chart-dark.jpg",
+        "public/component-covers/radar-chart-light.jpg",
+        "public/component-covers/ring-chart-dark.jpg",
+        "public/component-covers/ring-chart-light.jpg",
+        "public/component-covers/status-overview-dark.jpg",
+        "public/component-covers/status-overview-light.jpg",
+        "public/llms-full.txt",
+        "public/llms.txt",
+        "public/r/area-chart.json",
+        "public/r/bar-chart.json",
+        "public/r/chart-core.json",
+        "public/r/chart-motion.json",
+        "public/r/heatmap-chart.json",
+        "public/r/line-chart.json",
+        "public/r/live-line-chart.json",
+        "public/r/pie-chart.json",
+        "public/r/radar-chart.json",
+        "public/r/registry.json",
+        "public/r/ring-chart.json",
+        "public/r/status-overview.json"
+      ],
+      "sharedFiles": [
+        "pnpm-lock.yaml",
+        "public/r/registry.json",
+        "public/llms.txt",
+        "public/llms-full.txt"
+      ],
+      "createdCommit": "90dec2259c6b9000b1c78dd02ef219ce5ec95ee6"
+    },
+    {
+      "id": 2,
+      "message": "feat(updates): add annual commit activity calendar",
+      "dependsOn": [
+        1
+      ],
+      "maintainedFiles": [
+        "app/[locale]/updates/page.tsx",
+        "app/[locale]/updates/updates-activity.tsx",
+        "app/[locale]/updates/updates-copy.ts",
+        "app/[locale]/updates/updates-list.tsx",
+        "app/[locale]/updates/updates-shell.tsx",
+        "docs/lib/commit-activity.server.ts",
+        "docs/lib/commit-activity.ts",
+        "tests/commit-activity.test.ts",
+        "tests/updates-activity.test.tsx",
+        "tests/updates-streaming.test.tsx"
+      ],
+      "generatedFiles": [],
+      "sharedFiles": [],
+      "createdCommit": "5992069a3d4f9d2fb277b3d30033c6f784989ab6"
+    },
+    {
+      "id": 3,
+      "message": "refactor(blocks): adopt native security charts and semantic typography",
+      "dependsOn": [
+        1
+      ],
+      "maintainedFiles": [
+        "docs/agent-guides/blocks/security-overview-01.md",
+        "docs/content/en/blocks/security-overview-01.json",
+        "docs/content/zh-CN/blocks/security-overview-01.json",
+        "packages/blocks/package.json",
+        "packages/blocks/registry.json",
+        "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel.tsx",
+        "packages/blocks/src/application/security-overview-01/security-overview-charts.tsx",
+        "packages/blocks/src/application/security-overview-01/security-overview-data.ts",
+        "packages/blocks/src/application/security-overview-01/security-overview-views.tsx",
+        "packages/blocks/src/catalog.ts",
+        "tests/chart-unification.test.tsx",
+        "tests/security-overview-charts.test.tsx"
+      ],
+      "generatedFiles": [
+        "docs/lib/block-preview-sources.generated.ts",
+        "public/docs-source/125e7314d3a8047e6f83c43f7810ef333b5e06a4e8a99de3a341bce357604e9e.txt",
+        "public/docs-source/30823fbbf08e635f17494f81cdd6ff5853a6b2128f109e8694dd7368482ffb3b.txt",
+        "public/docs-source/527587be16d1fe2ec7183e100ee6bec071de8edfab6c18103c4dceea89ddbae5.txt",
+        "public/docs-source/c666d7261983f944aadad55503ef26fa8f43b6bc8f15328bbd5969542be09d79.txt",
+        "public/r/sales-conversion-funnel-01.json",
+        "public/r/security-overview-01.json"
+      ],
+      "sharedFiles": [
+        "pnpm-lock.yaml",
+        "public/r/registry.json",
+        "public/llms.txt",
+        "public/llms-full.txt"
+      ],
+      "createdCommit": "328721a90561c2e7b1e3f111ea65e217411f4845"
+    },
+    {
+      "id": 4,
+      "message": "docs(charts): record implementation review and commit scope",
+      "dependsOn": [
+        1,
+        2,
+        3
+      ],
+      "maintainedFiles": [
+        "docs/plans/2026-10-07-chart-library-integration-plan.md",
+        "docs/plans/2026-10-08-charts-session-review-commit-plan.md",
+        "docs/plans/2026-10-08-charts-session-review-task-files.json",
+        "docs/plans/2026-10-08-radar-ring-implementation.md",
+        "docs/plans/2026-10-08-remaining-charts-implementation.md",
+        "docs/plans/2026-10-08-remaining-charts-task-files.json",
+        "docs/plans/2026-10-08-security-overview-chart-migration.md"
+      ],
+      "generatedFiles": [],
+      "sharedFiles": []
+    }
+  ],
+  "sharedFiles": [
+    {
+      "path": "pnpm-lock.yaml",
+      "commits": [
+        1,
+        3
+      ],
+      "handling": "Regenerate each importer from the matching package manifests; Blocks importer belongs to Commit 3."
+    },
+    {
+      "path": "public/r/registry.json",
+      "commits": [
+        1,
+        3
+      ],
+      "handling": "Regenerate from each isolated commit's source state; never copy the final mixed snapshot into Commit 1."
+    },
+    {
+      "path": "public/llms.txt",
+      "commits": [
+        1,
+        3
+      ],
+      "handling": "Regenerate from each isolated commit's source state; never copy the final mixed snapshot into Commit 1."
+    },
+    {
+      "path": "public/llms-full.txt",
+      "commits": [
+        1,
+        3
+      ],
+      "handling": "Regenerate from each isolated commit's source state; never copy the final mixed snapshot into Commit 1."
+    }
+  ],
+  "files": [
+    {
+      "path": "app/[locale]/docs/components/(detail)/donut-chart/page.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "7e344225e5543975c99c91ac52449b41372a9e5cc52a798a9e0d8bc544c4c405"
+    },
+    {
+      "path": "app/[locale]/docs/components/(detail)/heatmap-chart/page.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "6a7f47d46899af349354cc1efd4bf7fa4d420c2b0d897ff4b056abbb7873d299"
+    },
+    {
+      "path": "app/[locale]/docs/components/(detail)/live-line-chart/page.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "fd6388af5c13d095a3b573a264e06673f58f5f5e3971741d854c3faa29284f4b"
+    },
+    {
+      "path": "app/[locale]/docs/components/(detail)/radar-chart/page.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "96577439c5a85a43fd5e67421b3cd6e53a2ef261f4b5052365a370c5d2dc86bc"
+    },
+    {
+      "path": "app/[locale]/docs/components/(detail)/ring-chart/page.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "ac79be029353c43a1ffa2be3bb2778153c9ffa4b0de955a052f2d49b543c6d46"
+    },
+    {
+      "path": "app/[locale]/updates/page.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 2,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "730c16979f6308f5f597d2aef47d4f1ae21f5e72bdec17e44f57c82aae70774c"
+    },
+    {
+      "path": "app/[locale]/updates/updates-activity.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 2,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "31858325ab4f7e8f68d985edf332cb900ae31feb4d2858135b053b2e760a071d"
+    },
+    {
+      "path": "app/[locale]/updates/updates-copy.ts",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 2,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "42182c0da65410391f51b84b8861526ad985144d56cbadd45e9aac780292f1a2"
+    },
+    {
+      "path": "app/[locale]/updates/updates-list.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 2,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "75e1b538ad3b2c4c1a50a3cd536f3a5fb913d8dfc674541d1154f475bd4669db"
+    },
+    {
+      "path": "app/[locale]/updates/updates-shell.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 2,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "0c74a7bb2aa5054e856f021c640f691894a34cbad443d5bcb04d3a61fd7643f9"
+    },
+    {
+      "path": "docs/agent-data/components.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "14ca45d04c74a5edf22d06799f43534d49cf1d2c50d03ebb613f263cc0694708"
+    },
+    {
+      "path": "docs/agent-data/guide-routes.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "213b3d1300480c109643de810b06ac318972c52e3529cc3f54b43c9569518dbe"
+    },
+    {
+      "path": "docs/agent-data/item-identities.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "b301c8c630f30043b7e465f4e2115751eb6fba0a8884265737111d01a7908e6a"
+    },
+    {
+      "path": "docs/agent-guides/blocks/security-overview-01.md",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "13b4e986afb8d3deb1d5d4fd5d8e46abffdbb40f46b02abebaf288a8ed3b7bb6"
+    },
+    {
+      "path": "docs/agent-guides/components/area-chart.md",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "97f8ed7d5d929a6e6aa8287ca05c320bcae1529db0168cb171c58b2405f1a2db"
+    },
+    {
+      "path": "docs/agent-guides/components/bar-chart.md",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "b200e9c6df88f8cb3334adddf83309bb25b8669ca61c23916be2b9e9aaaecdc2"
+    },
+    {
+      "path": "docs/agent-guides/components/chart-core.md",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "496fac0b743a100958ac84582bc7ebc481af1005f784a7d982997a2e0ca3260d"
+    },
+    {
+      "path": "docs/agent-guides/components/heatmap-chart.md",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "4c72ed6db0118a9859d94379d2cf42899e074fd31e1f3b27c44fb130062665e7"
+    },
+    {
+      "path": "docs/agent-guides/components/line-chart.md",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "190915737c25765e7f83ef6c201ee87bf2705fc6a46a851fe7738dda564e081d"
+    },
+    {
+      "path": "docs/agent-guides/components/live-line-chart.md",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "fc59906700ccd39270f0ce45cadcad434792740e581296cd9f3c4a53c716175c"
+    },
+    {
+      "path": "docs/agent-guides/components/pie-chart.md",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "93159bfb8ad9e6259a92cd86b437976da222b0d51658ed59c49559c304b148d5"
+    },
+    {
+      "path": "docs/agent-guides/components/radar-chart.md",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "ebff3ee775e604b5fb3dc67c49e0e3dbf78e4d874c823f81731d3778ce487be6"
+    },
+    {
+      "path": "docs/agent-guides/components/ring-chart.md",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "040a9d8f5f02da583c965f5ef831f4d3782f2e6be205bf86d24bf8ef2587155c"
+    },
+    {
+      "path": "docs/components/charts/chart-type-doc.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "c725e7e02dcf7ed7e2b6ba4352efc66b5d8850aba969e13241c452e810b0e4e1"
+    },
+    {
+      "path": "docs/components/charts/chart-type-example.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "ddd2533063e4c389ba63dcc35ec1e093ca5569e5eb44cab0a3b0bd7bb1da7f1b"
+    },
+    {
+      "path": "docs/components/charts/status-bar-chart-basic-demo.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "def42836699587af982b8ed8c366ba4594c572cd3463463ed1dd30f0aa56d572"
+    },
+    {
+      "path": "docs/content/en/blocks/security-overview-01.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "8c9cd0b374a8fd7e8949c54522a6cdba8361b65068360b37316d58252a4f398c"
+    },
+    {
+      "path": "docs/content/en/common.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "13bfefe87f498c8966df08645760ad6976672d4fb935b078824612815357e120"
+    },
+    {
+      "path": "docs/content/en/components/area-chart.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "bc986806f59e1bf9478e5ff5fb7d35df6ddc6c021882610c65085dbc01bb45e9"
+    },
+    {
+      "path": "docs/content/en/components/bar-chart.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "dbb345ce691274e5b0ca9968d774ab27188fb6e154756508a8c5e8921879a7ab"
+    },
+    {
+      "path": "docs/content/en/components/donut-chart.json",
+      "status": " D",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": null
+    },
+    {
+      "path": "docs/content/en/components/heatmap-chart.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "628844a33e5313752c319b1612e1db1ff2ac96972f582dd29d2da88f76ceb399"
+    },
+    {
+      "path": "docs/content/en/components/line-chart.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "e2a93b6561e42e449230e401cdfdc40743ef4c847acac8642b1ea01c322cf8ea"
+    },
+    {
+      "path": "docs/content/en/components/live-line-chart.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "391268583340b222d510b4cd9b68467e98fec67e87ad05748ebfa558d97baf09"
+    },
+    {
+      "path": "docs/content/en/components/pie-chart.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "f53b092cd3b9f2d1a060abc206ef8285dbdee022b653ec4348b8b49c3ca77938"
+    },
+    {
+      "path": "docs/content/en/components/radar-chart.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "3741d38c5887f2c038575a910de6e17408c3938d577ceeac48f03f02b0051e71"
+    },
+    {
+      "path": "docs/content/en/components/ring-chart.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "f8a9eef732c9d2d62224eb7330b3414a95d1a15c6636d8a03e36e50ac0712fa3"
+    },
+    {
+      "path": "docs/content/en/components/status-overview.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "7eebd4b6181abb8e0b9f6bb5585e98edbc5c38d6df1c1fe594cc6c88c6d98775"
+    },
+    {
+      "path": "docs/content/zh-CN/blocks/security-overview-01.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "b86cc1e7e7a076f8a36d615da066ece1b2136c98b651b3273e3ad488609bdeb7"
+    },
+    {
+      "path": "docs/content/zh-CN/common.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "524962e2dcd83d9f1a8cc6cd13840fbbb81fce97517cfe6d2211044fd4d4d5c5"
+    },
+    {
+      "path": "docs/content/zh-CN/components/area-chart.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "c760a04d45f8653103e9038a2c61951d326a803465ed102ec3733988e36be9c2"
+    },
+    {
+      "path": "docs/content/zh-CN/components/bar-chart.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "ee998b398b4503f8d6cf950ab19a3d6aec0de15038746e093adbcdd71de87596"
+    },
+    {
+      "path": "docs/content/zh-CN/components/donut-chart.json",
+      "status": " D",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": null
+    },
+    {
+      "path": "docs/content/zh-CN/components/heatmap-chart.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "92399228782a222d084d2185688e86ffaa7a4eafc38106d485ea2123667952c8"
+    },
+    {
+      "path": "docs/content/zh-CN/components/line-chart.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "119e9d0957b8653091c02d5dbee557dcb8e9e21140b6d112f00d4d7e839e8bd1"
+    },
+    {
+      "path": "docs/content/zh-CN/components/live-line-chart.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "aa4113058a81eda49df83cdc67b034e6e068c8040295407a12f1ee9a50dfdcc2"
+    },
+    {
+      "path": "docs/content/zh-CN/components/pie-chart.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "86e7abd35c5d161ac0828581af9923b78263337b8ea2ebd4f4c71cf3cdfc6fd7"
+    },
+    {
+      "path": "docs/content/zh-CN/components/radar-chart.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "b0677cba0f90a62c9c1a4bc9e48a40690a3cb16b0ccd8c35594af1be926b8949"
+    },
+    {
+      "path": "docs/content/zh-CN/components/ring-chart.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "0ebedc692a8a7f8f06b3ef95279ab4f83dfd995f9cb0063a5cb4936622bcbd3f"
+    },
+    {
+      "path": "docs/content/zh-CN/components/status-overview.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "6aadea50ef0025608994481f83037290048f5bf5e7f3c8095d2f374288b6b3ca"
+    },
+    {
+      "path": "docs/generated/agent-guide-loaders.generated.ts",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "491d412ec928c4a2d75e135d8d3a2e8cd9cb6a0f2ec865e55a35b66ff36c3fd1"
+    },
+    {
+      "path": "docs/generated/component-page-loaders.generated.ts",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "a2b05e863c84b0f57b921a6bb75e5142e0212032ff30b34ddd4cc0c91ee700ff"
+    },
+    {
+      "path": "docs/generated/page-loaders.generated.ts",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "37593e1cc4472084eded51fc7103d74bfd323789f427ab7d445a8625176b7220"
+    },
+    {
+      "path": "docs/i18n/content-loaders.generated.ts",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "6075faddf444d4090c32e6ee544106ce368d842032e3132f0e88846b07a00153"
+    },
+    {
+      "path": "docs/lib/block-preview-sources.generated.ts",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 3,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "0ba21c6274d4ee65cba3b73e92b918dde91e2d8d4d3febc2d2fa737c7d415bb4"
+    },
+    {
+      "path": "docs/lib/chart-types.ts",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "3d24d2ee8bed94f2a6831abfef2348226ef8fe5e25505760b536fdba86970570"
+    },
+    {
+      "path": "docs/lib/commit-activity.server.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 2,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "c9eba59e7d537cbb32089601c562bca12b52658811f2622a74910d3cd78d3a3a"
+    },
+    {
+      "path": "docs/lib/commit-activity.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 2,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "1debf50b92a91e3b7d21004d8819e5039311995a3593d4bdb7a384960cb0a1a1"
+    },
+    {
+      "path": "docs/manifest.ts",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "84bdb8b9ba0693001b0811efe0b57b53a44cef346dfd199725f5c90f6db1f942"
+    },
+    {
+      "path": "docs/pages/components/area-chart/page.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "f5aa40e69b40c6c560fc8c8860ecea179ee9e669a8c0c18e2efaec37e622bd4f"
+    },
+    {
+      "path": "docs/pages/components/bar-chart/api.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "8a1280ada4006cd2011e431d271c12465dba1ed6e1682a7448d0fee789c81bd3"
+    },
+    {
+      "path": "docs/pages/components/bar-chart/page.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "c6b93d1352e88454fe809b87af5d8e262a88745a82ed534c08023d55e8722691"
+    },
+    {
+      "path": "docs/pages/components/donut-chart/page.tsx",
+      "status": " D",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": null
+    },
+    {
+      "path": "docs/pages/components/heatmap-chart/api.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "7b27f198803727db9e774a93566897ed3a4ff21420a2e981995cc40e53468b82"
+    },
+    {
+      "path": "docs/pages/components/heatmap-chart/page.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "e45f08aa488a4ab782bc17feb30e824ca93e6a540d375570e74e667647e9969a"
+    },
+    {
+      "path": "docs/pages/components/line-chart/api.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "1d9f49cb2d31dee7cca237fdd85a40e303bec1b3591793d91064b38a66c13044"
+    },
+    {
+      "path": "docs/pages/components/line-chart/page.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "71c5ae93c9d2d06d5e2df0509ed30393d15c5f53e1fa697d2a44f5e75eceff3b"
+    },
+    {
+      "path": "docs/pages/components/live-line-chart/api.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "eda53fd98ef224aba41b0ed4dbc0b2f5531359676ddd5a0daf0b739e55cee399"
+    },
+    {
+      "path": "docs/pages/components/live-line-chart/page.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "633cfcfb1e3057d044463faa627cc0335eb34fed7b8c2aa2780d07346016f9d1"
+    },
+    {
+      "path": "docs/pages/components/pie-chart/api.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "86d20fd9ddc5389841a4bb5add596e99c79ddbef8a153e71d6435e483d8d71bd"
+    },
+    {
+      "path": "docs/pages/components/pie-chart/page.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "edf260840303fac69c133e5f451819026d38497756ac88af7db9dc1fe3b05c26"
+    },
+    {
+      "path": "docs/pages/components/radar-chart/api.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "9bc4c73e727dbc795b20269a92d13dcb5b4c592cce7ca2d153024f5c7a5fee7a"
+    },
+    {
+      "path": "docs/pages/components/radar-chart/page.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "d5206062ed1547600bef58afb734c13fde70cfaeb2ae3272ea2b76afb382cf62"
+    },
+    {
+      "path": "docs/pages/components/ring-chart/api.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "cbf6c66b8301e2fd62b4e10199460c8b1b938d4d2dd6b6cc747700e7e8a9b06d"
+    },
+    {
+      "path": "docs/pages/components/ring-chart/page.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "b17af3dcd3f7552c9fdfcd450678ff4cfb97d853a923d49019a1617c58ee4e35"
+    },
+    {
+      "path": "docs/pages/components/status-overview/page.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "5f9cc2e7717418c1493b8034ce0c524c89854efa9108d3b643701bb656904dfd"
+    },
+    {
+      "path": "docs/plans/2026-10-07-chart-library-integration-plan.md",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 4,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "23c049d347d1da42fbab2e063cec4acded3e77cec735ea1bee14691322d002fd"
+    },
+    {
+      "path": "docs/plans/2026-10-08-charts-session-review-commit-plan.md",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 4,
+      "stageMode": "whole-file",
+      "initialSessionFile": false,
+      "sha256": "192bea40cf7224cf2ba60012abe349af25ec601d2234a8ea13d6426ccaeb3a60"
+    },
+    {
+      "path": "docs/plans/2026-10-08-charts-session-review-task-files.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 4,
+      "stageMode": "whole-file",
+      "initialSessionFile": false
+    },
+    {
+      "path": "docs/plans/2026-10-08-radar-ring-implementation.md",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 4,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "db0713400ceacb1df3d6c654c77396574e9bfcae0c6ad2a179cb04363b14a6c9"
+    },
+    {
+      "path": "docs/plans/2026-10-08-radar-ring-reference-baseline.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "4f5dbc43e1a912d02449368ce5b05b6306507a73b7a71d510eaf43e57f5c5012"
+    },
+    {
+      "path": "docs/plans/2026-10-08-remaining-charts-api-baseline.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "2351ddfa66195254761637daa607ebb5234a43dd513569acdfe86bcd4c46cb06"
+    },
+    {
+      "path": "docs/plans/2026-10-08-remaining-charts-implementation.md",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 4,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "16ab036c3cd6152d106fc5aff37f56f7e1c0d4b1cd68a8ef28c11f29ce3e5deb"
+    },
+    {
+      "path": "docs/plans/2026-10-08-remaining-charts-reference-manifest.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "e1bf9fd5be75f07d6834c0b11691e88216fcbcc7949cf214ebd72f1d8c0a29f2"
+    },
+    {
+      "path": "docs/plans/2026-10-08-remaining-charts-task-files.json",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 4,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "871c9f7d81b1eb818687b53b9ea710175be60f5a7d2137f9a9203352bbba355e"
+    },
+    {
+      "path": "docs/plans/2026-10-08-security-overview-chart-migration.md",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 4,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "6a9bef972787bd04e15cdf301c17b469f6648ab85b574d82804fc15fc8662e43"
+    },
+    {
+      "path": "next.config.ts",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "da9acdcb5f1d48607917188c18791a5932b94719fb1b1526a28ac24cf69a8974"
+    },
+    {
+      "path": "package.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "7881f61932bee8a9bbe82a9ca32f21bf24203944a8cad3f7029f1faed51906c6"
+    },
+    {
+      "path": "packages/blocks/package.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "acba00c4fb6cdb4073c87e88110cd08b12eca9c9557b2300c1dc0da7d5c3911c"
+    },
+    {
+      "path": "packages/blocks/registry.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "a89eaed598c9162533a5549ee949173980fd084797fc2126003b9e2c612b0407"
+    },
+    {
+      "path": "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": false,
+      "sha256": "2e1cc67a51a133c894a11916548cd6fff715b423b3afa71a7bf21289d1d5aeba"
+    },
+    {
+      "path": "packages/blocks/src/application/security-overview-01/security-overview-charts.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "c16a54b2fb791a537879eea531cffd074fd05b10e0ff5166df5e1515b0626bbb"
+    },
+    {
+      "path": "packages/blocks/src/application/security-overview-01/security-overview-data.ts",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "b06311c2c9ac1155f07f06a5a8706c0a77bdb13cb1b8c62d14249954ae55ac34"
+    },
+    {
+      "path": "packages/blocks/src/application/security-overview-01/security-overview-views.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "43598fd56c5d543b3c96f29394434d890e67d9f42816c1398131c46b3482a25e"
+    },
+    {
+      "path": "packages/blocks/src/catalog.ts",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "8c2c6a97c182bf72a1ba13eb8dda939555eb98df53755d3c6e92a1c64a81ab3a"
+    },
+    {
+      "path": "packages/ui/package.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "9cd528c72c82c28c247eb330a22a7e13b8abf29d9e8ed7dca29745559b40ad2e"
+    },
+    {
+      "path": "packages/ui/registry.json",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "e91dd4863d260515ccdcdf3572f45299e70c6a79e9ac11d09943f6dc13d60f34"
+    },
+    {
+      "path": "packages/ui/src/components/bar-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "296b1ff92da2aef07f7967e4eebaeeebbb309623c3b5116d6aa99484199b881c"
+    },
+    {
+      "path": "packages/ui/src/components/chart-core.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "c01ff4787a25d4e99c3d9d5955f896794b5fe18269f1727aba7d6e615a91db2d"
+    },
+    {
+      "path": "packages/ui/src/components/charts/area-chart.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "a9189533eb01faf1f9cec3520044b8756e9df8b6f72e7b1f1e3b6921ed01212d"
+    },
+    {
+      "path": "packages/ui/src/components/charts/area-stack.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "6e0120231d5b89ff787308be8cd62232990f8397d6bfb7cde2d1dfd61853af73"
+    },
+    {
+      "path": "packages/ui/src/components/charts/area.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "6c506a5d6f0919f6056a3e4d4def6360d628d35ba958c5da508dac68e8dafc37"
+    },
+    {
+      "path": "packages/ui/src/components/charts/background.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "d360c08688c48ec450410f5f73fb39961de4ce6a7dba91cab75abf059da58759"
+    },
+    {
+      "path": "packages/ui/src/components/charts/bar-chart-loading.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "865783afebeb72fb930b9635144818b550af95fa6080470325b6b2dc66f299d8"
+    },
+    {
+      "path": "packages/ui/src/components/charts/bar-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "db75bd717b1ddfb0f70d75bdc40a5f8c34ae324ffcaebbc2a2dcf2e8968bd275"
+    },
+    {
+      "path": "packages/ui/src/components/charts/bar-depth-geometry.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "dce3598a113b676eec41da3addec2ff29137b452b9705b3abc7b5fef8b5cf66f"
+    },
+    {
+      "path": "packages/ui/src/components/charts/bar-depth.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "7203af32c214ed603cee798436b38fe2ff8b641c9c45e8565e75eb0300c3c36c"
+    },
+    {
+      "path": "packages/ui/src/components/charts/bar-squares-layout.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "eaea7f00696b5d1c600e00b4e47f7a7d4082315e1da8bce15485627282fc5274"
+    },
+    {
+      "path": "packages/ui/src/components/charts/bar-squares.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "69cad6321545d39f8c3c272f35bff7320cc4a1c4709747839952106fb9b54a0e"
+    },
+    {
+      "path": "packages/ui/src/components/charts/bar-x-axis.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "e9c397fda31180c74bce165f2c14ebafbdb94dae1cb4d9b82f0189e32d67e110"
+    },
+    {
+      "path": "packages/ui/src/components/charts/bar-y-axis.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "e86b0bbe2a1442dfc0cc0c278698a59b70d603bbdace4ef8f814dd1b288637b9"
+    },
+    {
+      "path": "packages/ui/src/components/charts/bar.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "324b97fb944757f51d80757426b411ea928197d636d02d639448b7b4048259cc"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-center-typography.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "41241ee595771289e45b67c904b73c6dc260c635396391eb025f9fcfba76bbb0"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-context.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "b3f81cf098726f9f35d6cfb85532421879bb22771833443eea2b8396dd3a96cc"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-data.ts",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": false,
+      "sha256": "256a70622c3472f3e0657f06c71b36e26eaae9560da57bf85a7ecb261cf4fd2e"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-keyboard.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "d2c68c733203eafc177220cef2d018c8829c92c07779da5606cb5878c5d318dd"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-scale.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "cc054d5378f6f1ee465f6dccee2033b5fbdc18beeb321d3314e600edfd922ccf"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-source-data.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "384c757c8dd78598b566c769f43523b20bb56b6f6ddea069266a100c1d820f56"
+    },
+    {
+      "path": "packages/ui/src/components/charts/chart-stat-flow.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "a96b2d7ca09d40ba925875a9150ca1176e07ee1e781dc51703ed67bd406d5d37"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/generate-heatmap-skeleton-data.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "6ee598efab0ed6102d7d555930238bc31e2a04902a821f9c73b27f776e023c5a"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-animation.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "635152672f88e9329fc61c8311fb09034d8c64514560c75a8bfa44fa48e8a2d2"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-cells.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "d70026a049a27e691a6e6d1f932a4295cb7a7c0a20798cf5803edbd8d3134949"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-chart-loading.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "28e43ffed3fff820844c9ff51f237501da2909307afeb80945285cb55a17bc46"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "011f567b09b0e62f0d6569dc8ba13ca32e0ec76918136a00a92ddaa918644637"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-colors.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "8c45defaa2085a1e304195cf215529be9afb1a0f3439cbdfd4fc9576ff56953f"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-context.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "38999962ec7c996c72e99201b8b9c3e17c7857dab7443569a7f620903ea8e240"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-legend-gradient.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "8b79c616360c3abbc7f44eef33a917aee37f9fd1e8ca692079a68cf400f11daf"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-legend-swatch.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "9e9fd2ce785d84120d6520fd23f48a0cfa3a33409f870b4e3818b6ad7ac1ac94"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-legend.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "fa538451dbeb1182e6b31667a43ecf7639a39f394101a279bd720e9eb7623818"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-pattern-defs.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "2c91b407d34cda56f9482f6d399aad1951f4488c3953bdd14589324b84fa2029"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-resolve-separator.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "568a445ee445f7f8a8207aaaa2eafcf8cfc3f27a7430ab5be8137bd2afb2c7a0"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-separator.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "97b64e229eea6fef27629182f0b3c40973baa51364c6c091372cbad9c90a03c9"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-tooltip.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "85f9209bc0f4d6419bf1cc08264813d601ba3043ee9d573e5a2a82a63bcb0996"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-utils.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "1edba677cd79170b39f086e3d85861d5177fe48e21dcd8b8079f93dcbcf7d94b"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-x-axis.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "1906418fd035a0c09eb22bb4b057b5306680293b8b646a270a56a2a4705c7c92"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/heatmap-y-axis.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "113c4ec242643f2f42f37d04164348ce8707ef14bb5b8665cabfb92a2790add4"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/index.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "28275b522302247982869d1f629889149c7f8db4d04e20763b3f77e880fda02d"
+    },
+    {
+      "path": "packages/ui/src/components/charts/heatmap/use-delayed-tooltip-data.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "d078e68f74802f16193f9527584dab4bf37ecd9b7fa9c8d910d2a77d5f680611"
+    },
+    {
+      "path": "packages/ui/src/components/charts/line-chart-loading.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "a727b8e08a855fc02df1011c43e81a688382e69542f37187717099792a3f76c9"
+    },
+    {
+      "path": "packages/ui/src/components/charts/line-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "64e83530f242cccc1f82e0cb9afa0288db4e983d1690a53b2d1e64c9d071c4cb"
+    },
+    {
+      "path": "packages/ui/src/components/charts/line-series-terminal-marker.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "02e65354d92f02c52a67aa59220fb768070811bd900c2d424b3362f888b10d4c"
+    },
+    {
+      "path": "packages/ui/src/components/charts/line.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "30b48172e425c898a79a8bb346b7e2ad8590481a76b69856852042debb253077"
+    },
+    {
+      "path": "packages/ui/src/components/charts/live-line-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "ac2df32daf620badf978e653784354abf5959f2c5d4c4b7c3409f215f421fcae"
+    },
+    {
+      "path": "packages/ui/src/components/charts/live-line-state.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "64c8494ad5f3f19338bcdf38cceaaa35b3fc03ca9068208fb2685e179c7542ac"
+    },
+    {
+      "path": "packages/ui/src/components/charts/live-line.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "74cb080a3d48f294ee1fd8fb3a5ce479347ff018ccc30cdec180f4c76c1c14b9"
+    },
+    {
+      "path": "packages/ui/src/components/charts/live-x-axis.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "7aa00cbb6ceb545acb7dfb4ce8475d357256f753117e4450e5791e29f25fda4d"
+    },
+    {
+      "path": "packages/ui/src/components/charts/live-y-axis.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "b0f8f24d0f5966124347f6bc93c8de7746463c603e466e8bda3f103bead21f48"
+    },
+    {
+      "path": "packages/ui/src/components/charts/markers/chart-markers.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "c5e946e05ccccbc18b6b6659ba588942ff646acf4b866c1bc79d00d0e9c6dbc7"
+    },
+    {
+      "path": "packages/ui/src/components/charts/markers/index.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "45871037042c19e7aedb674c5cd8fd5e41b4775a085c751cdd64b7f5ea1ee774"
+    },
+    {
+      "path": "packages/ui/src/components/charts/markers/marker-group.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "797442dab92bb3032e2d57574aa5c78deb2f574afcd5dcfef218510118405984"
+    },
+    {
+      "path": "packages/ui/src/components/charts/motion-utils.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "e9f8c813f930bfd6912b8991158b3fd22ac154d789d4725ff048a41ea149f55e"
+    },
+    {
+      "path": "packages/ui/src/components/charts/pie-center-shell.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "eecb866ba893aa6a3bba838c80b96a5799344e6bb8a2f40297b01059a8447f14"
+    },
+    {
+      "path": "packages/ui/src/components/charts/pie-center.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "8cddf85d3f23fa6af903fbc26780d15d9a7386b138c724ce84cca72e11ea5b56"
+    },
+    {
+      "path": "packages/ui/src/components/charts/pie-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "fbcc3c7d6471cff0a03704c38de29a77172fe3d85c65857f33e2ef45efdd762b"
+    },
+    {
+      "path": "packages/ui/src/components/charts/pie-context.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "a177d1508b19f4fb634d65abc23d05dd67a15271bb3c5950da3492e911f34b75"
+    },
+    {
+      "path": "packages/ui/src/components/charts/pie-slice.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "3f77a4e395657f2c04f593852601859f9c64bb3030d8ae1b6a18cc7da2e04857"
+    },
+    {
+      "path": "packages/ui/src/components/charts/radar-area.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "f2c282b6f77b605859ec60f11853d823c3a9311a8b6344372bb39f144734223b"
+    },
+    {
+      "path": "packages/ui/src/components/charts/radar-axis.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "14ca08165a09df1028f0e71f234b1dd7db5605756333e791b8574cef32f5e5c4"
+    },
+    {
+      "path": "packages/ui/src/components/charts/radar-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "b003f71360c7a31257606b3d36b90e8fc15d99813b19af0918f04ee5726a4159"
+    },
+    {
+      "path": "packages/ui/src/components/charts/radar-context.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "2aae2c0d5be86a711961b645481610379dd4ee70b00136ec8475c0b27eaebb34"
+    },
+    {
+      "path": "packages/ui/src/components/charts/radar-grid.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "d08dffc0585a5aa2da5d70d8ab0804bbd6c3e71c828a0e962966a1e720339a31"
+    },
+    {
+      "path": "packages/ui/src/components/charts/radar-labels.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "4cae4bf62436bf3fa9ebbb7a459c3ce481b35e13b2eee5254e950dea99a91b48"
+    },
+    {
+      "path": "packages/ui/src/components/charts/ring-center.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "83687e610c5e4741e9fd708e46f725178a905e7a6fff8e7b8f1d73dcb35efe75"
+    },
+    {
+      "path": "packages/ui/src/components/charts/ring-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "85550f264f9554eb3ed3b4608dda7d3da6f335ce3d5488318ef12c036252b5e1"
+    },
+    {
+      "path": "packages/ui/src/components/charts/ring-context.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "bafb4bab2f413ffc114f8b51ec7bd5449e99a11a76fa47aa28ab8ea036960dc8"
+    },
+    {
+      "path": "packages/ui/src/components/charts/ring.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "64dc6d297fbc07e69261a53e3f8510447cb51439fd4706940882f6b1eea9e023"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-markers.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "f254019b7c5f1cde396b5273ee84e6083065ca3a7e89eef60cf4c87626c0f7a2"
+    },
+    {
+      "path": "packages/ui/src/components/charts/series-path-utils.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "2abe79dc9d0c078af07bc29e329c4e087a06fd06a83b0794c9939376137e2c5d"
+    },
+    {
+      "path": "packages/ui/src/components/charts/time-series-chart-shell.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "cde56090a9da7c0acbbdcc6e10e3987787b5ae2d5d4bb0685651e33f119400df"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-animated-series-path.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "4326a81031cdfe6da9cebd684694cc72a00ec68c67be15649857b9a5d7f25b80"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-chart-interaction.ts",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "7e9fe8af04507249a20cbe2f2b2b66458b16291bee8494d4a6260307bba3f340"
+    },
+    {
+      "path": "packages/ui/src/components/charts/use-chart-reduced-motion.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "f37cc9aac988b20cfcaf0427966030adeec217e3be8212a5ee6aa2ed544f0b54"
+    },
+    {
+      "path": "packages/ui/src/components/charts/x-axis.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "6645e7b79c2048c204fc6362f884eda14bff83f1c73422196262ba73e364888f"
+    },
+    {
+      "path": "packages/ui/src/components/heatmap-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "d9eea5f440b180429d024675ad6e83188c4abe97ca88e5ca6fc5289d78617258"
+    },
+    {
+      "path": "packages/ui/src/components/line-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "8e5b8138381653b419604b270470de7a0ddd084bd15022291e895b07929b88f6"
+    },
+    {
+      "path": "packages/ui/src/components/live-line-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "c26e20b6bd66a14b5bf4bb7817519f6425fa7a4d5d96a1501ab0ce431ba7f288"
+    },
+    {
+      "path": "packages/ui/src/components/pie-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "1b34ec0fbfe7baefba47aad98b55fe3dc6c125799ebc64ea3f46c878b5087e87"
+    },
+    {
+      "path": "packages/ui/src/components/radar-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "12c1192be82feb24f48374a2796af69364445f760630be89d7fae05775fd0365"
+    },
+    {
+      "path": "packages/ui/src/components/ring-chart.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "82c98a969329a6cf2010701d2dc64dee08c35653c3236524740cc485ac4a049a"
+    },
+    {
+      "path": "packages/ui/src/components/status-overview.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "d926a869cc0db266257672bbb91234600fa2b2d85564a103579a3cb4598b553d"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "split-or-regenerate-per-commit",
+      "initialSessionFile": true,
+      "sha256": "3a736ece3cba117a159dc53903f9342fd87b1ffb887509f1a692d0db705e0b1a"
+    },
+    {
+      "path": "public/component-covers/bar-chart-dark.jpg",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "8a412c36a8b52f95707eeb422a55001839f86400708d85dbaff2e989c6d9bd51"
+    },
+    {
+      "path": "public/component-covers/bar-chart-light.jpg",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "9118697c4b997cd5795d299e630ae8822bb0479fc7ccedf44fbb12349015526a"
+    },
+    {
+      "path": "public/component-covers/donut-chart-dark.jpg",
+      "status": " D",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": null
+    },
+    {
+      "path": "public/component-covers/donut-chart-light.jpg",
+      "status": " D",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": null
+    },
+    {
+      "path": "public/component-covers/heatmap-chart-dark.jpg",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "96d92347551d30c207dab2bb7ac8cecf3451c944d5c4e961ca9625bf30e8a259"
+    },
+    {
+      "path": "public/component-covers/heatmap-chart-light.jpg",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "bc8015cb2a800dd6f53f0ae0876eb15c2db4078c325b867b5b0938e033d98f69"
+    },
+    {
+      "path": "public/component-covers/line-chart-dark.jpg",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "3b9a5e06b27bbdb10da855e9b4938943bb5f95dfd6eee3048b53e9ecf1bd45ff"
+    },
+    {
+      "path": "public/component-covers/line-chart-light.jpg",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "57759645978b030f2ccb6f0b102d33f8927aaed511fbd6341a02887b446e695f"
+    },
+    {
+      "path": "public/component-covers/live-line-chart-dark.jpg",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "bd079995113989aa41818280ee43f9d95fcf1d1a8b4fc70c60589ef00b05addf"
+    },
+    {
+      "path": "public/component-covers/live-line-chart-light.jpg",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "52a69c499cffdfd53479a43346cb8abd6e6f3312e6a2ee7f0fb524f27cb4bba6"
+    },
+    {
+      "path": "public/component-covers/pie-chart-dark.jpg",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "ea1a8247f1a3ff896a908954e7fc895c298256ced7917b917b5cb71b529b00b7"
+    },
+    {
+      "path": "public/component-covers/pie-chart-light.jpg",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "6f242bb3d1f451899c4ae5a0c2e776558f1904104629263e558f68a8ec2d83f8"
+    },
+    {
+      "path": "public/component-covers/radar-chart-dark.jpg",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "92cb3ecf7880850fc41b3a81a2017c2a389d2879d9055d3828377bbcfc188046"
+    },
+    {
+      "path": "public/component-covers/radar-chart-light.jpg",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "f0cfd0ad1c3f0a824d89435fe6e684cb54828b4dae1a1538b42fcfffae1ef295"
+    },
+    {
+      "path": "public/component-covers/ring-chart-dark.jpg",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "4b03441f4fd2b2d636107db066daf5bfc2bed26baf3877271a34582a63b4e463"
+    },
+    {
+      "path": "public/component-covers/ring-chart-light.jpg",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "847328f91f424b20adc02b3785d9d5d9bcebd7fefa982330f03d391e769804c4"
+    },
+    {
+      "path": "public/component-covers/status-overview-dark.jpg",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "b43f0dc7ac064f805ac09865e74132cc45dc93dc2c03bd3bd9784b2ce680bdda"
+    },
+    {
+      "path": "public/component-covers/status-overview-light.jpg",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "05eb8bc58e743cfa5c263e9929f32717a31c1800351e5ac53beade5217fc3c4b"
+    },
+    {
+      "path": "public/docs-source/125e7314d3a8047e6f83c43f7810ef333b5e06a4e8a99de3a341bce357604e9e.txt",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 3,
+      "stageMode": "regenerate",
+      "initialSessionFile": false,
+      "sha256": "125e7314d3a8047e6f83c43f7810ef333b5e06a4e8a99de3a341bce357604e9e"
+    },
+    {
+      "path": "public/docs-source/30823fbbf08e635f17494f81cdd6ff5853a6b2128f109e8694dd7368482ffb3b.txt",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 3,
+      "stageMode": "regenerate",
+      "initialSessionFile": false,
+      "sha256": "30823fbbf08e635f17494f81cdd6ff5853a6b2128f109e8694dd7368482ffb3b"
+    },
+    {
+      "path": "public/docs-source/527587be16d1fe2ec7183e100ee6bec071de8edfab6c18103c4dceea89ddbae5.txt",
+      "status": " D",
+      "kind": "generated",
+      "primaryCommit": 3,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": null
+    },
+    {
+      "path": "public/docs-source/c666d7261983f944aadad55503ef26fa8f43b6bc8f15328bbd5969542be09d79.txt",
+      "status": " D",
+      "kind": "generated",
+      "primaryCommit": 3,
+      "stageMode": "regenerate",
+      "initialSessionFile": false,
+      "sha256": null
+    },
+    {
+      "path": "public/llms-full.txt",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "split-or-regenerate-per-commit",
+      "initialSessionFile": true,
+      "sha256": "0c8d007958df5ad5da19c03a048ccffc4a62a490b52060324aa393c00ed69658"
+    },
+    {
+      "path": "public/llms.txt",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "split-or-regenerate-per-commit",
+      "initialSessionFile": true,
+      "sha256": "96f50c908dd0b199dff329735243185594c2a6c7129b6d24ca85ce2b1c7cdf4d"
+    },
+    {
+      "path": "public/r/area-chart.json",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "3627a7ff3f36ba12c226c0ba103da247acfd0910293dfeca0077d178d1e3aa8b"
+    },
+    {
+      "path": "public/r/bar-chart.json",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "91fe5815401a22080d4575d1eda60f4f1ebfe5a1a51d7e7bea0c73162a596ea9"
+    },
+    {
+      "path": "public/r/chart-core.json",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "c7486a02a43e6fe82f527922775325069b8d35c51d88d05829242e1c5c48f103"
+    },
+    {
+      "path": "public/r/chart-motion.json",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "e27168deb73ed2f1dc52e2182d13866de82ee25217a46bf81ed2859ed3fb3f1e"
+    },
+    {
+      "path": "public/r/heatmap-chart.json",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "a1f9947f2b306ff139c15de837a387cde682c0fc3eda9eca6eaf9e7610512f9f"
+    },
+    {
+      "path": "public/r/line-chart.json",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "ba1f9e83d1c45910d1befb68ac8964eb6385b137dd8114fa0075be5421b4c4aa"
+    },
+    {
+      "path": "public/r/live-line-chart.json",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "e78029d896ff78aefa5fa99f6e4da43978cc818e13cfce96f206e7281d7f2877"
+    },
+    {
+      "path": "public/r/pie-chart.json",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "d89818fd23b6d70ed3d42a2b208cd896500197d88ae86264f74539e54d029753"
+    },
+    {
+      "path": "public/r/radar-chart.json",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "4b7f160c53b7c7f3ce08e75681d1b6e14114f262f8b1c1bb03f8be897e5b13b2"
+    },
+    {
+      "path": "public/r/registry.json",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "split-or-regenerate-per-commit",
+      "initialSessionFile": true,
+      "sha256": "269a75acc52f38e5b929f38ea24ca5d55e42d7102f0cbf23471b82ece90dc7f1"
+    },
+    {
+      "path": "public/r/ring-chart.json",
+      "status": "??",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "dc8cd756fc9ecc6128a34702684745a8a373a1fb195e3feae43f504dc8d2fee4"
+    },
+    {
+      "path": "public/r/sales-conversion-funnel-01.json",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 3,
+      "stageMode": "regenerate",
+      "initialSessionFile": false,
+      "sha256": "838e68f6c7c4a45d347e8f6783ecbd8832cf4f779755ecb31d9eec545aae9a1d"
+    },
+    {
+      "path": "public/r/security-overview-01.json",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 3,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "ab57cdaf42295525babe5202ed45d7399344184a009ce6399dd8753b19866998"
+    },
+    {
+      "path": "public/r/status-overview.json",
+      "status": " M",
+      "kind": "generated",
+      "primaryCommit": 1,
+      "stageMode": "regenerate",
+      "initialSessionFile": true,
+      "sha256": "d9e77e537d4edfbdd1cfb2fdb3dcd20702350bd6a87b9ea7a7ec55362b04e0b1"
+    },
+    {
+      "path": "scripts/generate-component-covers.mjs",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "29745bbef8ad452b22691295c88c64afca5c4726d54aa12252104642aceaf159"
+    },
+    {
+      "path": "scripts/generate-reference-chart-api.mjs",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "a467e8bca277567fc632a4b6289d8626cfb6a2abdf3d284d28503937be620e8c"
+    },
+    {
+      "path": "scripts/test-consumer-installs.mjs",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "b1c16ea2d5e9369d51536fa97900423cd7896b2aee77779d4e852068691ae9f4"
+    },
+    {
+      "path": "tests/area-chart.test.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "ab9e3cad0e86a509aa4efa99639b5a44f61d29e66293d77d756e3b317dc72230"
+    },
+    {
+      "path": "tests/area-stack.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "cdd1c9ce4d0ac30dcccb59e327ea623d9745c942c748ef3c32cfd662e1bb987b"
+    },
+    {
+      "path": "tests/chart-live-state.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "c34f1b07cc57540ecd5617cecd48bbf40e066736b0a5d0d2d08aa107293aac1d"
+    },
+    {
+      "path": "tests/chart-unification.test.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": false,
+      "sha256": "ccf0b023e1881d539667a8a9883489f9b7cf0272d06f968cd2fe003d73b776df"
+    },
+    {
+      "path": "tests/commit-activity.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 2,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "bd61c009d82ee8d91e2198bd224db92f905e39684449d6860cd527c2f61cbb9a"
+    },
+    {
+      "path": "tests/i18n-document-manifest.test.ts",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "08428601217f3455752c22ea8023f075e366f84132e00fd7a4842bd27c324070"
+    },
+    {
+      "path": "tests/radar-ring-contract.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "1d020d61548a37d8c576b12cd97bb2acd431d78c9ec2c416160f22e940721240"
+    },
+    {
+      "path": "tests/radar-ring.test.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "2fa8df23d53a9fabfc55e4e72771e95ecfa0369dc05ed4475009078db229cebe"
+    },
+    {
+      "path": "tests/reference-bar-depth-geometry.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "9c1961184812ebb8e441d056bfa26d45ad6309841a8bf2cbce2c0fd8f1d3d7a3"
+    },
+    {
+      "path": "tests/reference-heatmap-animation.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "de22aa6e9bb4e43477fd06f62311f1998936deb0b32b547960d671a590ba7545"
+    },
+    {
+      "path": "tests/reference-heatmap-ghost.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "dd5b3e6fdf3ce25a7117108a111a41d22525a372dc4e3a7760516a1b6716b7c9"
+    },
+    {
+      "path": "tests/reference-heatmap-inactive.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "6ca1b88f2c96d56193159722d4a4cdbee0323a6f88d2eb70aae1abf3a1052e35"
+    },
+    {
+      "path": "tests/reference-heatmap-quarter-separator.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "9b7e4e8fe2e6ff4f35878e9e56614e593850b965abe222af9570205d0475441c"
+    },
+    {
+      "path": "tests/reference-heatmap-separator.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "6f9fb32b41d4438e210036daf6c822ddfb119db436cf262c54207895b7551335"
+    },
+    {
+      "path": "tests/reference-heatmap-tooltip-format.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "490364200cdf49acf3f210e0b17c12b12bf9b6654f17e41a9f0b0649177c976e"
+    },
+    {
+      "path": "tests/reference-heatmap-week-range.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "9a29391733bf9b0155c70b31b2910ff25237fb1c8eb8448c132171217ad2dd2a"
+    },
+    {
+      "path": "tests/reference-heatmap-week-start.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "78f3abd3c8c50db810d63689f9be203e783c1afd2420bbf317656c583ebc9352"
+    },
+    {
+      "path": "tests/reference-series-path-utils.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "761180213249a42670fca2fa0d93d6d1f0a06db4ee42853db54e21b3afa4d756"
+    },
+    {
+      "path": "tests/remaining-charts-contract.test.ts",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "884e43041e2952482eac66afdd1dbce69fcde173898402e8343b62b771fd87ce"
+    },
+    {
+      "path": "tests/remaining-charts.test.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "6e18eb1c293619ea727f74c74e5214e49bb6080f487aef13d21e61a264b19f85"
+    },
+    {
+      "path": "tests/security-overview-charts.test.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 3,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "0c680017e0b687bcf42dcda5e1b735bfc2e468890954cafc0bc3f893d0cb7c2b"
+    },
+    {
+      "path": "tests/status-overview-interaction.test.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 1,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "d51a84a8dd6a46c56961e24987134f940ff183768c385aa8bcf532840dcdd7f3"
+    },
+    {
+      "path": "tests/updates-activity.test.tsx",
+      "status": "??",
+      "kind": "maintained",
+      "primaryCommit": 2,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "2dbc1e40df7bddca836d381bd4e332ca330b6f563302078d51ccb7def6cf1acc"
+    },
+    {
+      "path": "tests/updates-streaming.test.tsx",
+      "status": " M",
+      "kind": "maintained",
+      "primaryCommit": 2,
+      "stageMode": "whole-file",
+      "initialSessionFile": true,
+      "sha256": "72e81ee321eb3b1afb872afbeabd9c7ab289c4567ef8f3ed350835820aad4ee8"
+    }
+  ],
+  "removedFiles": [
+    "docs/content/en/components/donut-chart.json",
+    "docs/content/zh-CN/components/donut-chart.json",
+    "docs/pages/components/donut-chart/page.tsx",
+    "public/component-covers/donut-chart-dark.jpg",
+    "public/component-covers/donut-chart-light.jpg",
+    "public/docs-source/527587be16d1fe2ec7183e100ee6bec071de8edfab6c18103c4dceea89ddbae5.txt",
+    "public/docs-source/c666d7261983f944aadad55503ef26fa8f43b6bc8f15328bbd5969542be09d79.txt"
+  ],
+  "reviewAddedFiles": [
+    "docs/plans/2026-10-08-charts-session-review-commit-plan.md",
+    "docs/plans/2026-10-08-charts-session-review-task-files.json",
+    "packages/blocks/src/application/sales-conversion-funnel-01/sales-conversion-funnel.tsx",
+    "packages/ui/src/components/charts/chart-data.ts",
+    "public/docs-source/125e7314d3a8047e6f83c43f7810ef333b5e06a4e8a99de3a341bce357604e9e.txt",
+    "public/docs-source/30823fbbf08e635f17494f81cdd6ff5853a6b2128f109e8694dd7368482ffb3b.txt",
+    "public/docs-source/c666d7261983f944aadad55503ef26fa8f43b6bc8f15328bbd5969542be09d79.txt",
+    "public/r/sales-conversion-funnel-01.json",
+    "tests/chart-unification.test.tsx"
+  ],
+  "supersededInitialUntrackedFiles": [
+    {
+      "path": "public/docs-source/050a82a4bd04be1ece556fa332d1004700e9f5ac127e83ee7805af10aa1ed98d.txt",
+      "reason": "Content-hashed generated source replaced by regeneration"
+    }
+  ],
+  "preservedFiles": [
+    {
+      "path": "docs/components/blocks/BlockPreview.tsx",
+      "status": " M",
+      "scope": "preserved",
+      "sha256": "ca8ed712cdf83952bf512cf6dbc36b87c150951aee6b227b8077c4396a8ae3d7",
+      "currentSha256": "ca8ed712cdf83952bf512cf6dbc36b87c150951aee6b227b8077c4396a8ae3d7",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-05-block-page-unification-plan.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "520e9abed8941c77dbe9e7192222bf2bc06a235c497ad3a580fc1939362602b0",
+      "currentSha256": "520e9abed8941c77dbe9e7192222bf2bc06a235c497ad3a580fc1939362602b0",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-05-block-page-unification-stage-one.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "f586fa03dc779ead96c19a800561d31b393cecd59ab3f125c5d4f0115881cd4a",
+      "currentSha256": "f586fa03dc779ead96c19a800561d31b393cecd59ab3f125c5d4f0115881cd4a",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-05-block-page-unification-stage-two.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "283379378f387d9f303b1a0df7b19c5d7b809460ab2945ee612656f6651509c0",
+      "currentSha256": "283379378f387d9f303b1a0df7b19c5d7b809460ab2945ee612656f6651509c0",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-05-transaction-details-block-plan.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "99ff4eb059cb7f392afbeaf7c195e3338fd538ebbb3bae584bc91eadf4d95717",
+      "currentSha256": "99ff4eb059cb7f392afbeaf7c195e3338fd538ebbb3bae584bc91eadf4d95717",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-review-commit-plan.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "2b0e9a38ef737b71940853f98b035cffc9a0413af9b5358cf1141479463569e5",
+      "currentSha256": "2b0e9a38ef737b71940853f98b035cffc9a0413af9b5358cf1141479463569e5",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-five.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "c659359d70e3dd196063e464c1fa282968606524613a42221a9016efb48d1461",
+      "currentSha256": "c659359d70e3dd196063e464c1fa282968606524613a42221a9016efb48d1461",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-four.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "96afede1d97b55ba5758bc90aafda755f40cc1dc3a4a2a976a87c859cff487e8",
+      "currentSha256": "96afede1d97b55ba5758bc90aafda755f40cc1dc3a4a2a976a87c859cff487e8",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-six.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "6110677f7464e5c0becce6e6c2aed81524baea2512361751832b5823a0047280",
+      "currentSha256": "6110677f7464e5c0becce6e6c2aed81524baea2512361751832b5823a0047280",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-block-page-unification-stage-three.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "f13ba4182c45ad9b2dd87b1824e4f841e4b13acca917d33d048eb02c557f42fd",
+      "currentSha256": "f13ba4182c45ad9b2dd87b1824e4f841e4b13acca917d33d048eb02c557f42fd",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-demo-settings-toolbar.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "a5bacdc617ffb93719a695ae835b7169f66aceeaa94814326af351ad46a1ba1b",
+      "currentSha256": "a5bacdc617ffb93719a695ae835b7169f66aceeaa94814326af351ad46a1ba1b",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-feedback-component-consolidation.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "6d3ae3e7f6ca9ff210b3150f7308bf0b58b9fbd2421163c2f3d6e1fe481cf515",
+      "currentSha256": "6d3ae3e7f6ca9ff210b3150f7308bf0b58b9fbd2421163c2f3d6e1fe481cf515",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-integration-monitors-block-implementation.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "abf789b660ee04533877516c782d016cebcb066e9d5d8a6076092a6c4fb33fd6",
+      "currentSha256": "abf789b660ee04533877516c782d016cebcb066e9d5d8a6076092a6c4fb33fd6",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-integration-monitors-block-plan.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "f2ff3b2474dea6c4b2cf0271d3ec6b757181a9f74281d771e234ab81b997afbf",
+      "currentSha256": "f2ff3b2474dea6c4b2cf0271d3ec6b757181a9f74281d771e234ab81b997afbf",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-integration-monitors-review-commit-plan.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "b7e0789c1f1e25aa05d1e7fbfd6b915d34dd8b14cf38823af2fa8a21c9d6938f",
+      "currentSha256": "b7e0789c1f1e25aa05d1e7fbfd6b915d34dd8b14cf38823af2fa8a21c9d6938f",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-support-analytics-block-plan.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "46bea7c729d33c08ba44a20b9dadf896ac8aaabea361109c3f44c22dfd5e1a59",
+      "currentSha256": "46bea7c729d33c08ba44a20b9dadf896ac8aaabea361109c3f44c22dfd5e1a59",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-support-analytics-review-commit-plan.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "bed7ca7bf40d46385319a1685999ac1fc5257e6196fd376f5d57fd0734fdc6c1",
+      "currentSha256": "bed7ca7bf40d46385319a1685999ac1fc5257e6196fd376f5d57fd0734fdc6c1",
+      "unchanged": true
+    },
+    {
+      "path": "docs/plans/2026-10-06-transaction-details-review-commit-plan.md",
+      "status": "??",
+      "scope": "preserved",
+      "sha256": "cc28a3eca62b10d180becc9ebf7a3563935941ebcdec8d7a0ddbff5546d0b40b",
+      "currentSha256": "cc28a3eca62b10d180becc9ebf7a3563935941ebcdec8d7a0ddbff5546d0b40b",
+      "unchanged": true
+    }
+  ],
+  "localEvidence": [
+    "output/playwright/session-review/",
+    ".zeron/reports/session-chart-review/"
+  ],
+  "executionClarifications": {
+    "consumerFixtures": "The actual diff adds only the seven chart fixtures; the existing security fixture is reused without source changes.",
+    "generationOrder": "Generate skills distribution before Agent catalog, and document loaders before routes when starting from a clean base.",
+    "loaderOrdering": "Clean-base regeneration adds all four new documents together. Three generated loader maps differ from the review snapshot only by the order of those four entries; the committed order is synced locally.",
+    "stagedWhitespace": "Removed one extra final blank line in live-line-state.ts after the staged diff check included new files."
+  },
+  "statusMeaning": "File status records the precommit review snapshot; SHA-256 reflects the final payload prepared for Commit 4.",
+  "execution": {
+    "date": "2026-10-08",
+    "target": "origin/main",
+    "branch": "codex/charts-session-commits",
+    "runtimeCommits": [
+      "90dec2259c6b9000b1c78dd02ef219ce5ec95ee6",
+      "5992069a3d4f9d2fb277b3d30033c6f784989ab6",
+      "328721a90561c2e7b1e3f111ea65e217411f4845"
+    ],
+    "finalUnit": {
+      "files": 287,
+      "tests": 2649,
+      "passed": true
+    },
+    "typecheck": "passed for Commits 1–3",
+    "lint": "passed",
+    "designLint": "passed",
+    "productionBuild": "passed",
+    "fourthCommit": "Saves this review snapshot and execution record; its own SHA is recorded in Git history and the local execution receipt."
+  }
+}

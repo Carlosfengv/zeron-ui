@@ -2,7 +2,7 @@
 
 日期：2026-10-07
 
-状态：FunnelChart、AreaChart 已实施；其余五类待实施。本文保留整理前的基线分析与整体方案；进度见 [FunnelChart 实施记录](./2026-10-07-funnel-chart-implementation.md)与 [AreaChart 实施记录](./2026-10-07-area-chart-implementation.md)。
+状态：七类 Chart 均已实施。本文保留整理前的基线分析与整体方案；进度见 [FunnelChart 实施记录](./2026-10-07-funnel-chart-implementation.md)、[AreaChart 实施记录](./2026-10-07-area-chart-implementation.md)与[剩余五类实施记录](./2026-10-08-remaining-charts-implementation.md)。原主题 CSS 和缺失 ShimmeringText 的精确复原边界，以及现有 SalesConversionFunnel 规范测试失败，见对应实施记录。
 
 ZeronUI 基线：`8f8b4d96d51df0fe351b440fabbd395dd62e3669`。
 
@@ -316,7 +316,7 @@ packages/ui/src/components/
 | Funnel 直接用首项 value 作除数；gap 可能大于容器可用尺寸 | 首项非正／非有限时不构造比例 path；保留原始值供外层说明；约束可绘几何为非负，普通有效输入仍用第一阶段分母 | 零值、NaN、Infinity、负值及极窄容器不产生非法 SVG 或虚假百分比 |
 | Line／Area 的路径工具对非数字 value 返回像素 y=0，可能把缺失点画到顶部 | 路径分段并保留缺口；动画 path、抽稀和 markers 同步处理，不把 null 当数值零或跨缺口插值；不对有效值改变曲线默认值 | 缺失前后两段不连接，实际零值正常绘制，Tooltip 不捏造数值 |
 | 多处 domain／坐标计算只判断 typeof number | 绘制和 domain 使用有限数值；异常值保留在外层原始数据说明中 | NaN／Infinity 不污染坐标轴、路径或 Tooltip |
-| nearest-point 的 bisector 假设时间已排序；Live `numXTicks=1` 会出现除零 | 文档要求时间升序，不自动重排输入；保护无效时间、零跨度及非法 window／ticks／lerp，非法选项回到声明默认值 | 有序／重复时间、单点、空点、非法参数不崩溃；保持原索引含义 |
+| nearest-point 的 bisector 假设时间已排序；Live `numXTicks=1` 会出现除零 | 保留原始数组及顺序，派生时间视图过滤无效时间并按时间排序；保护零跨度及非法 window／ticks／lerp，非法选项回到声明默认值 | 有序／重复时间、单点、空点、非法参数不崩溃；保持原索引含义 |
 | 参考大量 SVG aria-hidden，交互主要依赖 pointer／mouse；减少动态效果覆盖不一致 | 保留数据表；为可交互根区域补一个键盘入口和焦点标记，方向键／Home／End 查看数据、Escape 清除提示，Brush 把手补键盘操作；减少动态效果时直接落到稳定图形并完成 phase 回调 | 无千级 tab stops；键盘操作不触发文档翻页；减少动态效果下不锁死 loading/reveal |
 | Line loading pulse 在回调中创建 timeout；Live、Tooltip、尺寸观察有持续任务 | 审计并清理 timeout／rAF／observer；StrictMode 重挂载时不重复循环；持续 hover 只更新必要上下文 | 卸载后无回调、观察器或动画遗留；暂停滚动的既有语义保持 |
 | Tooltip 仅按理想 panel 宽度翻转，长文本与窄容器仍有越界风险 | 保留默认 140px 最小宽度及跟随效果；窄容器按实际可用宽度约束，内容更新重新测量，保留长标签／数值换行 | 390px 页面与较窄嵌套卡片内无横向溢出或误读 |
@@ -381,7 +381,7 @@ Bar 的参考 max/domain 主要围绕非负分类数值构建。本轮文档声�
 
 每页展示完整数据表、Props 单位和颜色覆盖方式。基础图及进阶图的预览、代码和 API 表使用同一实现来源；保留旧 Recharts 用法的明确兼容说明。
 
-`donut-chart` 继续解释现有 `DonutSummary` 的 total／剩余轨道，不将它悄悄换成按 slice sum 归一化的 PieChart；可附链接说明新 PieChart 的圆环组合。StatusBarChart、TimeRangeHistogram、ChartPrimitives 与 ChartTokens 维持原入口与领域契约。
+2026-10-08 按用户后续要求，将 `donut-chart` 的文档和两组示例合并到 `pie-chart`，原路径永久跳转。示例使用 PieChart 的 `innerRadius`，图表与图例左右排列；总量 100／已分配 92 显式追加中性剩余扇区 8，避免按 92 重新归一化。现有业务 Block 使用的 DonutSummary 保留兼容契约。StatusBarChart、TimeRangeHistogram、ChartPrimitives 与 ChartTokens 维持原入口与领域契约。
 
 需要修改的文档源：
 
@@ -460,15 +460,17 @@ pnpm agents:check
 
 ### 10.4 最终完成清单
 
-- [ ] 七类都有实际包导出、独立安装入口、完整 Props 类型和可运行示例。
-- [ ] 参考的默认非颜色样式、交互与已列入范围的变体完整迁移。
-- [ ] 所有默认颜色解析到当前 Zeron Token；Heatmap 等级与分类色盘区分。
-- [ ] 同名 Tooltip／Legend 与原 Recharts API 的导入边界清楚，旧调用兼容。
-- [ ] 缺件、ID 冲突、受控 selection、异常几何和持续任务清理已解决。
-- [ ] 数据表、键盘查看、减少动态效果、窄屏与长文本可用。
-- [ ] 七类中英文文档、API 表、安装命令、预览、复制代码、指南和封面一致。
-- [ ] 本地与干净消费者测试通过，证据对应最终文件及 Registry 哈希。
-- [ ] 实施记录列出正常参考行为、必要修复、颜色映射及缺失 shimmer／原主题的复原边界；不将历史 review 结果记为本轮通过。
+- [x] 七类都有实际包导出、独立安装入口、完整 Props 类型和可运行示例。
+- [x] 参考的默认非颜色样式、交互与已列入范围的变体完整迁移。
+- [x] 所有默认颜色解析到当前 Zeron Token；Heatmap 等级与分类色盘区分。
+- [x] 同名 Tooltip／Legend 与原 Recharts API 的导入边界清楚，旧调用兼容。
+- [x] 缺件、ID 冲突、受控 selection、异常几何和持续任务清理已解决。
+- [x] 数据表、键盘查看、减少动态效果、窄屏与长文本可用。
+- [x] 七类中英文文档、API 表、安装命令、预览、复制代码、指南和封面一致。
+- [x] 本轮相关本地测试与干净消费者安装／构建通过，证据对应最终文件及 Registry 哈希；全量测试仍有 1 项既有 SalesConversionFunnel 字号规范失败，未扩大本轮范围修改。
+- [x] 实施记录列出正常参考行为、必要修复、颜色映射及缺失 shimmer／原主题的复原边界；不将历史 review 结果记为本轮通过。
+
+上述完成项针对所给源码和本轮验证范围；未获得的原主题 CSS 与 ShimmeringText 细节仍为未校准，不表示全场景逐像素或完整动画轨迹已验证。
 
 ## 11. 参考根文件指纹
 
