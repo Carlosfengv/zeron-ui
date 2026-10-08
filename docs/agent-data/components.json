@@ -1,4 +1,15 @@
 {
+  "website-analytics-01": {
+    "keywords": ["网站", "分析", "流量", "访客", "来源", "website", "analytics", "traffic", "visitors"],
+    "useCases": ["嵌入式网站分析面板：指标、时序对比和页面来源排行。"],
+    "whenNotToUse": ["不承载真实埋点、分析查询或站点导航外壳。"],
+    "keyApi": [
+      "site/range/data；data.range 必须匹配查询范围；onRangeChange 由宿主查询。",
+      "metric/compare 可本地或受控；onExport 接收当前范围、指标和对比状态。",
+      "计数变化为相对比例，率值为 0–1 比例，率变化为绝对比例差；未知值不补零。",
+      "Container/MetricCard/Tabs/Checkbox/AreaChart/BarChart 及原始数据表完全复用现有组件。"
+    ]
+  },
   "sales-conversion-funnel-01": {
     "keywords": [
       "销售",

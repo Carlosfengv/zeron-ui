@@ -3,6 +3,22 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "website-analytics-01",
+      "type": "registry:block",
+      "title": "网站分析",
+      "description": "访客、注册、转化率、跳出率、趋势对比与页面来源排行。",
+      "categories": ["application", "analytics", "website"],
+      "dependencies": [],
+      "registryDependencies": ["area-chart", "bar-chart", "button", "chart-core", "chart-primitives", "checkbox", "container", "inline-notice", "metric-card", "tabs", "icon-context", "utils"],
+      "files": [
+        {"path": "packages/blocks/src/application/website-analytics-01/website-analytics.tsx", "type": "registry:component", "target": "components/blocks/website-analytics-01/website-analytics.tsx"},
+        {"path": "packages/blocks/src/application/website-analytics-01/website-analytics-types.ts", "type": "registry:component", "target": "components/blocks/website-analytics-01/website-analytics-types.ts"},
+        {"path": "packages/blocks/src/application/website-analytics-01/website-analytics-labels.ts", "type": "registry:component", "target": "components/blocks/website-analytics-01/website-analytics-labels.ts"},
+        {"path": "packages/blocks/src/application/website-analytics-01/website-analytics-demo-data.ts", "type": "registry:component", "target": "components/blocks/website-analytics-01/website-analytics-demo-data.ts"},
+        {"path": "packages/blocks/src/application/website-analytics-01/index.ts", "type": "registry:component", "target": "components/blocks/website-analytics-01/index.ts"}
+      ]
+    },
+    {
       "name": "sales-conversion-funnel-01",
       "type": "registry:block",
       "title": "销售转化漏斗",

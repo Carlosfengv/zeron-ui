@@ -495,6 +495,13 @@ async function verifyNextBuild({ consumer, component }) {
     'export default function Page() { return <SalesConversionFunnel stages={salesFunnelDemoStages} teams={salesFunnelDemoTeams} />; }',
     '',
   ].join("\n");
+  examples["website-analytics-01"] = [
+    '"use client";',
+    'import { useState } from "react";',
+    'import { WebsiteAnalytics, createWebsiteAnalyticsDemoData, type WebsiteAnalyticsRange } from "@/components/blocks/website-analytics-01";',
+    'export default function Page() { const [range, setRange] = useState<WebsiteAnalyticsRange>("30d"); return <WebsiteAnalytics site="example.com" range={range} onRangeChange={setRange} data={createWebsiteAnalyticsDemoData(range)} />; }',
+    '',
+  ].join("\n");
   examples["badge"] = "\"use client\";\nimport { Badge } from \"@/components/ui/badge\";\nexport default function Page() { return <Badge variant=\"strong\" status=\"danger\">Install verified</Badge>; }\n";
   examples["availability-monitor-01"] = "\"use client\";\nimport { AvailabilityMonitor } from \"@/components/blocks/availability-monitor-01\";\nexport default function Page() { return <AvailabilityMonitor chartData={[{ timestamp: 1788836400000, routed: 0, direct: null }]} />; }\n";
   examples["model-detail-02"] = "\"use client\";\nimport { ModelDetail02 } from \"@/components/blocks/model-detail-02\";\nexport default function Page() { return <ModelDetail02 />; }\n";
@@ -790,6 +797,15 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { SalesConversionFunnel, salesFunnelDemoStages, salesFunnelDemoTeams } from "@/src/components/blocks/sales-conversion-funnel-01";',
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<SalesConversionFunnel stages={salesFunnelDemoStages} teams={salesFunnelDemoTeams} />);',
+    '',
+  ].join("\n");
+  examples["website-analytics-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { useState } from "react";',
+    'import { WebsiteAnalytics, createWebsiteAnalyticsDemoData, type WebsiteAnalyticsRange } from "@/src/components/blocks/website-analytics-01";',
+    'import "./index.css";',
+    'function Example() { const [range, setRange] = useState<WebsiteAnalyticsRange>("30d"); return <WebsiteAnalytics site="example.com" range={range} onRangeChange={setRange} data={createWebsiteAnalyticsDemoData(range)} />; }',
+    'createRoot(document.getElementById("root")!).render(<Example />);',
     '',
   ].join("\n");
   examples["badge"] = "import { Badge } from \"@/src/components/ui/badge\";\nexport default function App() { return <Badge variant=\"strong\" status=\"danger\">Install verified</Badge>; }\n";

@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "website-analytics-01", title: "网站分析", description: "访客、注册、转化率、跳出率、趋势对比与页面来源排行。", categories: ["application", "analytics", "website"], dependencies: ["area-chart", "bar-chart", "button", "chart-core", "chart-primitives", "checkbox", "container", "inline-notice", "metric-card", "tabs", "icon-context", "utils"] },
   { name: "sales-conversion-funnel-01", title: "销售转化漏斗", description: "成交总数、转化率、阶段数量与团队堆叠面积。", categories: ["application", "analytics", "sales"], dependencies: ["container", "funnel-chart", "icon-context", "utils"] },
   { name: "design-stack-01", title: "设计工具清单", description: "可编辑的工具清单，支持分类、网站、续费日期、多选、排序和撤销重做。", categories: ["application", "tables"], dependencies: ["avatar", "badge", "button", "checkbox", "container", "data-grid", "icon-context", "utils", "@thesvg/icons", "@tanstack/react-table"] },
   {"name": "file-upload-01", "title": "文件上传", "description": "支持拖拽、文件选择、逐项进度和取消的上传队列。", "categories": ["application", "files"], "dependencies": ["badge", "button", "chart-primitives", "container", "info-item", "inline-notice", "separator", "badge", "icon-context", "utils"]},

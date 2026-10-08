@@ -6184,6 +6184,67 @@
       }
     },
     {
+      "name": "website-analytics-01",
+      "type": "registry:block",
+      "title": "网站分析",
+      "description": "访客、注册、转化率、跳出率、趋势对比与页面来源排行。",
+      "categories": [
+        "application",
+        "analytics",
+        "website"
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/area-chart.json",
+        "https://zeron-ui.vercel.app/r/bar-chart.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json",
+        "https://zeron-ui.vercel.app/r/checkbox.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/metric-card.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/website-analytics-01/website-analytics.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/website-analytics-01/website-analytics.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/website-analytics-01/website-analytics-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/website-analytics-01/website-analytics-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/website-analytics-01/website-analytics-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/website-analytics-01/website-analytics-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/website-analytics-01/website-analytics-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/website-analytics-01/website-analytics-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/website-analytics-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/website-analytics-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "sales-conversion-funnel-01",
       "type": "registry:block",
       "title": "销售转化漏斗",

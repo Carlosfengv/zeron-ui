@@ -2,6 +2,14 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:website-analytics-01",
+      "type": "registry",
+      "key": "website-analytics-01",
+      "aliases": ["website-analytics-01"],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:sales-conversion-funnel-01",
       "type": "registry",
       "key": "sales-conversion-funnel-01",

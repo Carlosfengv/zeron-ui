@@ -69,6 +69,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [流量规则](https://zeron-ui.vercel.app/ai/items/block%3Atraffic-rules-01.md): A responsive gateway workspace for managing traffic rules, limits, validation, and execution workflows. Registry: traffic-rules-01.
 - [交易详情](https://zeron-ui.vercel.app/ai/items/block%3Atransaction-details-01.md): 突出金额、交易字段、可折叠账单与附件操作。 Registry: transaction-details-01.
 - [User Account](https://zeron-ui.vercel.app/ai/items/block%3Auser-account-01.md): Controlled appearance, language, settings, notifications and sign-out entry points. Registry: user-account-01.
+- [网站分析](https://zeron-ui.vercel.app/ai/items/block%3Awebsite-analytics-01.md): 访客、注册、转化率、跳出率、趋势对比与页面来源排行。 Registry: website-analytics-01.
 - [ZAIops Operations](https://zeron-ui.vercel.app/ai/items/block%3Azaiops-operations-01.md): An operations workspace recipe with a responsive Sidebar, organization switcher, and grouped navigation. Registry: zaiops-operations-01.
 - [ZLR 保护组](https://zeron-ui.vercel.app/ai/items/block%3Azlrlist.md): A ZS Live Recovery protection-group workspace with site switching, search, selection, row actions, and Chinese pagination. Registry: zlrlist.
 - [Accordion (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Aaccordion.md): Collapsible sections with animated expand/collapse and proximity hover in grouped mode. Registry: accordion.
