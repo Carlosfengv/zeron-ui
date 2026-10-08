@@ -73,7 +73,7 @@ export async function verifyUnificationConsumer({ consumer, framework, component
         assert.ok(animations.every(animation => animation === "none"), "Reduced motion stops activity animation");
         assert.equal(await example.locator('[role="status"], [role="alert"]').count(), 0, "Activity announcements remain opt-in");
       }
-      if (["chart", "chart-primitives", "credit-usage-01", "cost-estimate-01", "model-router-01", "storage-usage-01", "project-monitor-01", "ai-gateway-overview-01", "availability-monitor-01", "model-detail-02", "personal-settings-01", "support-analytics-01", "security-overview-01", "infinite-log-table-01", "resource-status-all-01", "resource-metric-list-01"].includes(component)) {
+      if (["chart", "chart-primitives", "credit-usage-01", "cost-estimate-01", "model-router-01", "storage-usage-01", "project-monitor-01", "ai-gateway-overview-01", "model-detail-02", "personal-settings-01", "support-analytics-01", "security-overview-01", "infinite-log-table-01", "resource-status-all-01", "resource-metric-list-01"].includes(component)) {
         layout.chartTokens = await verifyChartTokenColors(page, {
           theme, scope: `[data-consumer="${component}"]`,
           requireMarks: !["model-detail-02", "personal-settings-01", "security-overview-01", "infinite-log-table-01"].includes(component),
@@ -118,14 +118,15 @@ export async function verifyUnificationConsumer({ consumer, framework, component
       await example.getByRole("button", { name: "下一页", exact: true }).click();
       await example.getByText("第 2 页，共 3 页", { exact: true }).waitFor();
       result.checks.push("Controlled page callback updates rendered summary");
-    } else if (component === "availability-monitor-01") {
-      const toggle = example.getByRole("button", { name: /Without Routing/ });
+    } else if (component === "model-detail-02") {
+      await example.getByRole("link", { name: "Uptime", exact: true }).filter({ visible: true }).click();
+      const toggle = example.locator("#uptime").getByRole("button", { name: /Without Routing/ });
       assert.equal(await toggle.getAttribute("aria-pressed"), "true");
       await toggle.click(); assert.equal(await toggle.getAttribute("aria-pressed"), "false");
       result.checks.push("Installed availability legend toggles");
     }
-    if (["chart", "availability-monitor-01", "personal-model-usage-01"].includes(component)) {
-      const details = example.locator('details').first();
+    if (["chart", "model-detail-02", "personal-model-usage-01"].includes(component)) {
+      const details = (component === "model-detail-02" ? example.locator("#uptime") : example).locator('details').first();
       assert.ok(await details.count(), "Accessible data alternative exists");
       await details.locator('summary').focus(); await page.keyboard.press('Enter');
       assert.equal(await details.getAttribute('open'), "");

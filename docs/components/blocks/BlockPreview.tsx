@@ -2,6 +2,7 @@
 
 import { startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 import type { FileManagerItem } from "@zeron/blocks/file-manager-01";
+import { PreviewToolbarProvider } from "@docs/components/content/PreviewToolbar";
 
 const fileManagerPreviewItems: FileManagerItem[] = [
   { id: "design", kind: "folder", name: "Design", parentId: null, modifiedAt: "2026-08-18" },
@@ -65,9 +66,6 @@ const previewLoaders: Record<string, PreviewLoader> = {
   })),
   "signup-01": () => import("@zeron/blocks/signup-01").then(({ Signup01 }) => ({
     default: () => <ResponsivePreview canvasHeight={600} canvasWidth={1024}><Signup01 className="h-full min-h-0" landmark={false} /></ResponsivePreview>,
-  })),
-  "availability-monitor-01": () => import("@zeron/blocks/availability-monitor-01").then(({ AvailabilityMonitor }) => ({
-    default: () => <ResponsivePreview canvasHeight={760} canvasWidth={1046}><div className="min-h-full bg-surface-base p-8"><AvailabilityMonitor /></div></ResponsivePreview>,
   })),
   "ai-gateway-overview-01": () => import("@zeron/blocks/ai-gateway-overview-01").then(({ AiGatewayOverview, createAiGatewayOverviewDemoData }) => ({
     default: function AiGatewayOverviewPreview() {
@@ -393,7 +391,8 @@ export function BlockPreview({ name }: { name: string }) {
   }, [Preview, isVisible, loadFailed, loader]);
 
   return <div ref={ref} className="w-full">
-    {isVisible && Preview ? <Preview /> : loadFailed ? (
+    {/* Covers omit the toolbar slot so demo settings never appear in thumbnails. */}
+    {isVisible && Preview ? <PreviewToolbarProvider><Preview /></PreviewToolbarProvider> : loadFailed ? (
       <div className="flex aspect-video items-center justify-center bg-surface-raised text-label text-fg-muted">
         {document.documentElement.lang.startsWith("en") ? "Preview unavailable" : "预览暂不可用"}
       </div>

@@ -18,7 +18,6 @@ export const blockPageLoaders: Record<string, DocPageLoader> = {
   "blocks/user-account-01": () => import("@docs/pages/blocks/user-account-01/page"),
   "blocks/login-01": () => import("@docs/pages/blocks/login-01/page"),
   "blocks/signup-01": () => import("@docs/pages/blocks/signup-01/page"),
-  "blocks/availability-monitor-01": () => import("@docs/pages/blocks/availability-monitor-01/page"),
   "blocks/ai-gateway-overview-01": () => import("@docs/pages/blocks/ai-gateway-overview-01/page"),
   "blocks/ai-gateway-session-list-01": () => import("@docs/pages/blocks/ai-gateway-session-list-01/page"),
   "blocks/agent-message-trace-01": () => import("@docs/pages/blocks/agent-message-trace-01/page"),

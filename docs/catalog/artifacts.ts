@@ -74,11 +74,6 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation" |
     kind: "flow", product: "shared", domains: ["authentication", "account"], patterns: ["signup", "form", "oauth"], searchTerms: ["signup", "register", "create account", "注册", "认证"], readiness: "adapter-required", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,
   },
   {
-    slug: "availability-monitor-01", registryName: "availability-monitor-01",
-    title: "Availability Monitor", description: "A routing-aware service availability summary with a 72-hour status strip and 24-hour comparison chart.",
-    kind: "block", product: "shared", domains: ["monitoring", "availability", "observability"], patterns: ["metrics", "status timeline", "line chart"], searchTerms: ["availability", "uptime", "routing", "monitoring", "可用性", "正常运行时间", "监控"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
-  },
-  {
     slug: "ai-gateway-overview-01", registryName: "ai-gateway-overview-01",
     title: "AI Gateway Overview", description: "A complete AI gateway workspace with responsive navigation and analytics for traffic, spend, tokens, latency, reliability and provider usage.",
     kind: "page", product: "zenfuse", domains: ["ai gateway", "analytics", "observability"], patterns: ["sidebar", "dashboard", "metrics", "charts", "histogram"], searchTerms: ["gateway", "sidebar", "navigation", "requests", "cost", "tokens", "latency", "provider", "AI 网关", "侧边栏", "费用", "延迟"], readiness: "copy-ready", dataMode: "api-ready", devices: ["desktop", "responsive", "mobile"], featured: true,

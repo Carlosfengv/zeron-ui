@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Badge, type BadgeStatus } from "@zeron/ui/badge";
 import { ChartLegend, chartSeriesColor } from "@zeron/ui/chart-primitives";
 import { foregroundColorTokens, fillColorTokens } from "../packages/ui/src/tokens/semantic-tokens.mjs";
-import { AvailabilityMonitor } from "@zeron/blocks/availability-monitor-01";
+import { AvailabilityMonitor } from "../packages/blocks/src/application/model-detail-02/model-availability";
 import { FileManager } from "@zeron/blocks/file-manager-01";
 import { ClusterEnvironmentDetail } from "@zeron/blocks/cluster-environment-detail-01";
 import { InspectionReportList } from "@zeron/blocks/inspection-report-list-01";

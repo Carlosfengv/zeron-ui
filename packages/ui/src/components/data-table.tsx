@@ -558,16 +558,30 @@ function DataTable<TData>({
   );
 }
 
+export type DataTableControlLabels = {
+    ascending?: string;
+    descending?: string;
+    resetSorting?: string;
+    hideColumn?: string;
+    customizeColumns?: string;
+    dragToReorder?: string;
+    reorderAndToggle?: string;
+    reorderColumn?: (title: string) => string;
+    showColumn?: (title: string) => string;
+};
+
 export type DataTableColumnHeaderProps<TData, TValue> =
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
     column: Column<TData, TValue>;
     label: string;
+    labels?: DataTableControlLabels;
   };
 
 function DataTableColumnHeader<TData, TValue>({
   className,
   column,
   label,
+  labels,
   ...props
 }: DataTableColumnHeaderProps<TData, TValue>) {
   const [open, setOpen] = React.useState(false);
@@ -619,21 +633,21 @@ function DataTableColumnHeader<TData, TValue>({
               checked={sorted === "asc"}
               icon={ChevronUp}
               index={0}
-              label="Ascending"
+              label={labels?.ascending ?? "Ascending"}
               onSelect={() => column.toggleSorting(false)}
             />
             <MenuItem
               checked={sorted === "desc"}
               icon={ChevronDown}
               index={1}
-              label="Descending"
+              label={labels?.descending ?? "Descending"}
               onSelect={() => column.toggleSorting(true)}
             />
             {sorted && (
               <MenuItem
                 icon={X}
                 index={2}
-                label="Reset sorting"
+                label={labels?.resetSorting ?? "Reset sorting"}
                 onSelect={() => column.clearSorting()}
               />
             )}
@@ -644,7 +658,7 @@ function DataTableColumnHeader<TData, TValue>({
           <MenuItem
             icon={EyeOff}
             index={3}
-            label="Hide column"
+            label={labels?.hideColumn ?? "Hide column"}
             onSelect={() => column.toggleVisibility(false)}
           />
         )}
@@ -1049,11 +1063,13 @@ function DataTablePagination<TData>({
 export type DataTableViewOptionsProps<TData> = {
   className?: string;
   table: TanstackTable<TData>;
+  labels?: DataTableControlLabels;
 };
 
 function DataTableViewOptions<TData>({
   className,
   table,
+  labels,
 }: DataTableViewOptionsProps<TData>) {
   const [open, setOpen] = React.useState(false);
   const Settings = useIcon("settings");
@@ -1096,7 +1112,7 @@ function DataTableViewOptions<TData>({
         render={
           <Button
             active={open}
-            aria-label="Customize columns"
+            aria-label={labels?.customizeColumns ?? "Customize columns"}
             className={cn("shrink-0", className)}
             iconOnly
             size="md"
@@ -1108,21 +1124,22 @@ function DataTableViewOptions<TData>({
       />
       <PopoverContent align="end" className="w-64 p-1.5" sideOffset={4}>
         <div className="px-1 pb-1.5 pt-0.5 text-label text-fg-muted">
-          Drag to reorder columns
+          {labels?.dragToReorder ?? "Drag to reorder columns"}
         </div>
         <SortableCollection
-          aria-label="Reorder and toggle columns"
+          aria-label={labels?.reorderAndToggle ?? "Reorder and toggle columns"}
           className="border-0 bg-transparent p-0 [&_[data-slot=sortable-collection-item]]:px-1 [&_[data-slot=sortable-collection-item]]:py-1"
           dragHandlePosition="end"
           items={columnItems}
           onItemsChange={reorderColumns}
+          reorderLabel={labels?.reorderColumn}
           renderLeading={(item) => {
             const column = table.getColumn(item.id);
             if (!column) return null;
 
             return (
               <Checkbox
-                aria-label={`Show ${String(item.title)} column`}
+                aria-label={labels?.showColumn?.(String(item.title)) ?? `Show ${String(item.title)} column`}
                 checked={column.getIsVisible()}
                 onCheckedChange={(checked) =>
                   column.toggleVisibility(checked === true)

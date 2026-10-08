@@ -121,7 +121,6 @@ describe("ModelDetail02 contract", () => {
     expect(item).toMatchObject({
       dependencies: ["recharts", "tw-animate-css", "@lobehub/icons"],
       registryDependencies: expect.arrayContaining([
-        "availability-monitor-01",
         "accordion",
         "app-shell",
         "breadcrumb",
@@ -133,11 +132,13 @@ describe("ModelDetail02 contract", () => {
         "nav-menu",
         "page-layout",
         "select",
+        "status-overview",
         "tabs",
         "tooltip",
         "top-nav",
       ]),
     });
+    expect(item.registryDependencies).not.toContain("availability-monitor-01");
   });
 
   it("uses the OpenAI model mark and keeps identity badges below the title", () => {

@@ -17,6 +17,8 @@ related: [chart, chart-primitives]
 
 `data` 为有序且不重叠的时间桶，每项包含 start、end、label 和系列计数。`series` 包含 dataKey、label、color 和可选 inactiveColor。`value` 与 `onValueChange` 由宿主控制，选择范围对齐到桶边界；保留真实时间、计数、指针与键盘操作，不通过颜色迁移改变查询或汇总。
 
+方向键移动整个选区；Shift 加方向键调整选区结束边界。PageUp／PageDown 按五个桶移动，Home／End 移到边界；与 Shift 组合时同样只调整结束边界，使全范围选区也能用键盘缩小。
+
 普通单系列传 `chartColor(1)`，比较系列固定 1–5 槽位；动态业务 key 可用 `chartSeriesColor(key)` 稳定取色，有限槽位允许碰撞。图形与图例复用同一个 series 配置。真实 success / warning / error 使用领域状态映射或 `chartStatusColors`，不要按数组下标把任意类别解释为状态。
 
 `inactiveColor` 保留中性 surface，选择边界与手柄保留交互色；不将全部元素统一成系列色。`ariaLabel`、`formatRange`、`formatValue` 和边界标签由宿主本地化。父容器可收缩，图表保持可测量宽度。

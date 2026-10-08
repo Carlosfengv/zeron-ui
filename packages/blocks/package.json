@@ -18,7 +18,6 @@
     "./catalog": "./src/catalog.ts",
     "./login-01": "./src/application/login-01/index.ts",
     "./signup-01": "./src/application/signup-01/index.ts",
-    "./availability-monitor-01": "./src/application/availability-monitor-01/index.ts",
     "./ai-gateway-overview-01": "./src/application/ai-gateway-overview-01/index.ts",
     "./ai-gateway-session-list-01": "./src/application/ai-gateway-session-list-01/index.ts",
     "./file-manager-01": "./src/application/file-manager-01/index.ts",

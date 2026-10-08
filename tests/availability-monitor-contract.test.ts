@@ -6,30 +6,26 @@ const ROOT = new URL("..", import.meta.url).pathname;
 const source = readFileSync(
   join(
     ROOT,
-    "packages/blocks/src/application/availability-monitor-01/availability-monitor.tsx",
+    "packages/blocks/src/application/model-detail-02/model-availability.tsx",
   ),
-  "utf8",
-);
-const blockIndex = readFileSync(
-  join(ROOT, "packages/blocks/src/application/availability-monitor-01/index.ts"),
   "utf8",
 );
 const registry = JSON.parse(
   readFileSync(join(ROOT, "packages/blocks/registry.json"), "utf8"),
 );
 
-describe("AvailabilityMonitor contract", () => {
-  it("is exported and declares its complete install contract", () => {
-    expect(blockIndex).toContain("AvailabilityMonitor");
-    expect(blockIndex).toContain("AvailabilityTimelineMarker");
-
-    const item = registry.items.find(
+describe("Model detail availability contract", () => {
+  it("ships with the model page without a standalone block dependency", () => {
+    expect(registry.items.some(
       (entry: { name: string }) => entry.name === "availability-monitor-01",
+    )).toBe(false);
+    const item = registry.items.find(
+      (entry: { name: string }) => entry.name === "model-detail-02",
     );
 
     expect(item).toMatchObject({
-      dependencies: ["recharts", "tw-animate-css"],
-      registryDependencies: [
+      dependencies: expect.arrayContaining(["recharts", "tw-animate-css"]),
+      registryDependencies: expect.arrayContaining([
         "button",
         "card",
         "chart",
@@ -38,8 +34,15 @@ describe("AvailabilityMonitor contract", () => {
         "status-overview",
         "utils",
         "chart-primitives",
-      ],
+      ]),
+      files: expect.arrayContaining([
+        expect.objectContaining({
+          path: "packages/blocks/src/application/model-detail-02/model-availability.tsx",
+          target: "components/blocks/model-detail-02/model-availability.tsx",
+        }),
+      ]),
     });
+    expect(item.registryDependencies).not.toContain("availability-monitor-01");
   });
 
   it("keeps the OpenRouter reference copy, values, and documentation destinations", () => {

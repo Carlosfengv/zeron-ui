@@ -40,7 +40,7 @@ onRefresh/onRetry 支持返回 Promise，等待期间阻止重复触发；成功
 
 ## Do not use when
 
-- 只需要单个可用性对比图：使用 `availability-monitor-01`。
+- 只需要单个可用性对比图：使用 `chart`、`chart-primitives` 与 `status-overview` 组合。
 - 需要逐条浏览原始请求日志：使用 `infinite-log-table-01`。
 - 页面只展示单个模型的性能详情：使用模型详情 Block。
 

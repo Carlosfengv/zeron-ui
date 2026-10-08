@@ -48,13 +48,6 @@ const blockCatalogEntries = [
     dependencies: ["auth-layout", "button", "field", "icon-context", "input", "separator", "@lobehub/icons", "inline-notice"],
   },
   {
-    name: "availability-monitor-01",
-    title: "Availability Monitor",
-    description: "A routing-aware service availability block with summary metrics, a 72-hour status strip, and a 24-hour comparison chart.",
-    categories: ["application", "monitoring", "observability"],
-    dependencies: ["button", "chart", "container", "icon-context", "status-overview", "tooltip", "recharts"],
-  },
-  {
     name: "ai-gateway-overview-01",
     title: "AI Gateway Overview",
     description: "A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations.",
@@ -122,7 +115,7 @@ const blockCatalogEntries = [
     title: "Model Analytics Detail",
     description: "A complete model analytics page with providers, pricing, performance, uptime, benchmarks, apps, activity, and FAQ.",
     categories: ["application", "details", "analytics"],
-    dependencies: ["availability-monitor-01", "accordion", "badge", "breadcrumb", "button", "card", "chart", "checkbox", "data-table", "icon-context", "info-item", "metric-card", "page-layout", "select", "tabs", "tooltip", "recharts"],
+    dependencies: ["accordion", "badge", "breadcrumb", "button", "card", "chart", "chart-primitives", "checkbox", "container", "data-table", "icon-context", "info-item", "metric-card", "page-layout", "select", "status-overview", "tabs", "tooltip", "utils", "recharts"],
   },
   {
     name: "cluster-environment-detail-01",

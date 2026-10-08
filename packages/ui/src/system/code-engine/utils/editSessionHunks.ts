@@ -736,7 +736,7 @@ function buildRegionHunks(diff: FileDiffMetadata, plans: RegionPlan[]): Hunk[] {
 }
 
 function createRegionHunk(
-  diff: FileDiffMetadata,
+  _diff: FileDiffMetadata,
   bounds: RegionBounds,
   hunkContent: Array<ContextContent | ChangeContent>
 ): Hunk {

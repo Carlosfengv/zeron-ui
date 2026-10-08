@@ -503,7 +503,6 @@ async function verifyNextBuild({ consumer, component }) {
     '',
   ].join("\n");
   examples["badge"] = "\"use client\";\nimport { Badge } from \"@/components/ui/badge\";\nexport default function Page() { return <Badge variant=\"strong\" status=\"danger\">Install verified</Badge>; }\n";
-  examples["availability-monitor-01"] = "\"use client\";\nimport { AvailabilityMonitor } from \"@/components/blocks/availability-monitor-01\";\nexport default function Page() { return <AvailabilityMonitor chartData={[{ timestamp: 1788836400000, routed: 0, direct: null }]} />; }\n";
   examples["model-detail-02"] = "\"use client\";\nimport { ModelDetail02 } from \"@/components/blocks/model-detail-02\";\nexport default function Page() { return <ModelDetail02 />; }\n";
   examples["file-manager-01"] = "\"use client\";\nimport { FileManager } from \"@/components/blocks/file-manager-01\";\nexport default function Page() { return <FileManager items={[]} error=\"Install verified\" />; }\n";
   const unifiedSource = unificationConsumerExample(component, "next");
@@ -809,7 +808,6 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     '',
   ].join("\n");
   examples["badge"] = "import { Badge } from \"@/src/components/ui/badge\";\nexport default function App() { return <Badge variant=\"strong\" status=\"danger\">Install verified</Badge>; }\n";
-  examples["availability-monitor-01"] = "import { AvailabilityMonitor } from \"@/src/components/blocks/availability-monitor-01\";\nexport default function App() { return <AvailabilityMonitor chartData={[{ timestamp: 1788836400000, routed: 0, direct: null }]} />; }\n";
   examples["model-detail-02"] = "import { ModelDetail02 } from \"@/src/components/blocks/model-detail-02\";\nexport default function App() { return <ModelDetail02 />; }\n";
   examples["file-manager-01"] = "import { FileManager } from \"@/src/components/blocks/file-manager-01\";\nexport default function App() { return <FileManager items={[]} error=\"Install verified\" />; }\n";
   const unifiedSource = unificationConsumerExample(component, "vite");

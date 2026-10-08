@@ -13,7 +13,6 @@ export const standaloneBlockSlugs = [
   "deployment-detail-01",
   "login-01",
   "signup-01",
-  "availability-monitor-01",
   "ai-gateway-overview-01",
   "ai-gateway-session-list-01",
   "agent-message-trace-01",

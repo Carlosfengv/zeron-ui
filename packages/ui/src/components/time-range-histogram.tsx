@@ -279,6 +279,26 @@ export function TimeRangeHistogram({
   };
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (disabled) return;
+    if (event.shiftKey) {
+      let endIndex = selection.endIndex;
+      if (event.key === "ArrowLeft")
+        endIndex = Math.max(selection.startIndex, endIndex - 1);
+      else if (event.key === "ArrowRight")
+        endIndex = Math.min(chartData.length - 1, endIndex + 1);
+      else if (event.key === "PageUp")
+        endIndex = Math.max(selection.startIndex, endIndex - 5);
+      else if (event.key === "PageDown")
+        endIndex = Math.min(chartData.length - 1, endIndex + 5);
+      else if (event.key === "Home")
+        endIndex = selection.startIndex;
+      else if (event.key === "End")
+        endIndex = chartData.length - 1;
+      else
+        return;
+      event.preventDefault();
+      onValueChange(rangeForSelection(chartData, { startIndex: selection.startIndex, endIndex }));
+      return;
+    }
     const selectionWidth = selection.endIndex - selection.startIndex;
     const maximumStart = chartData.length - selectionWidth - 1;
     let startIndex = selection.startIndex;

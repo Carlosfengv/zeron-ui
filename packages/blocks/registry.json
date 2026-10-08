@@ -503,27 +503,6 @@
       ]
     },
     {
-      "name": "availability-monitor-01",
-      "type": "registry:block",
-      "title": "Availability Monitor",
-      "description": "A routing-aware service availability block with summary metrics, a 72-hour status strip, and a 24-hour comparison chart.",
-      "categories": ["application", "monitoring", "observability"],
-      "dependencies": ["recharts", "tw-animate-css"],
-      "registryDependencies": ["button", "card", "chart", "container", "metric-card", "status-overview", "utils", "chart-primitives"],
-      "files": [
-        {
-          "path": "packages/blocks/src/application/availability-monitor-01/availability-monitor.tsx",
-          "type": "registry:component",
-          "target": "components/blocks/availability-monitor-01/availability-monitor.tsx"
-        },
-        {
-          "path": "packages/blocks/src/application/availability-monitor-01/index.ts",
-          "type": "registry:component",
-          "target": "components/blocks/availability-monitor-01/index.ts"
-        }
-      ]
-    },
-    {
       "name": "ai-gateway-overview-01",
       "type": "registry:block",
       "title": "AI Gateway Overview",
@@ -1332,8 +1311,13 @@
       "description": "A model analytics page with providers, pricing, performance, uptime, benchmarks, apps, activity, and FAQ.",
       "categories": ["application", "details", "analytics"],
       "dependencies": ["recharts", "tw-animate-css", "@lobehub/icons"],
-      "registryDependencies": ["availability-monitor-01", "accordion", "app-shell", "badge", "breadcrumb", "button", "card", "chart", "checkbox", "container", "data-table", "icon-context", "info-item", "metric-card", "nav-item", "nav-menu", "page-layout", "select", "tabs", "tooltip", "top-nav", "utils", "chart-primitives"],
+      "registryDependencies": ["accordion", "app-shell", "badge", "breadcrumb", "button", "card", "chart", "checkbox", "container", "data-table", "icon-context", "info-item", "metric-card", "nav-item", "nav-menu", "page-layout", "select", "status-overview", "tabs", "tooltip", "top-nav", "utils", "chart-primitives"],
       "files": [
+        {
+          "path": "packages/blocks/src/application/model-detail-02/model-availability.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/model-detail-02/model-availability.tsx"
+        },
         {
           "path": "packages/blocks/src/application/model-detail-02/model-detail-02-data.ts",
           "type": "registry:component",

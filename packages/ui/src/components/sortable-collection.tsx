@@ -71,6 +71,8 @@ export interface SortableCollectionProps<T extends SortableCollectionItem>
   renderEditingContent?: (item: T, context: SortableCollectionEditContext) => ReactNode;
   /** Places the reorder affordance before or after the item content. */
   dragHandlePosition?: "start" | "end";
+  /** Localizes the accessible name of each reorder handle. */
+  reorderLabel?: (title: string) => string;
   /** Renders a control before the item label, such as a visibility checkbox. */
   renderLeading?: (item: T, context: SortableCollectionActionContext) => ReactNode;
   /** Replaces the default title and description presentation with product content. */
@@ -107,6 +109,7 @@ function SortableCollection<T extends SortableCollectionItem>({
   onRemove,
   renderEditingContent,
   dragHandlePosition = "start",
+  reorderLabel,
   renderLeading,
   renderContent,
   showEditAction = false,
@@ -284,7 +287,7 @@ function SortableCollection<T extends SortableCollectionItem>({
           } satisfies SortableCollectionActionContext;
           const dragHandle = (
             <button
-              aria-label={`Reorder ${announceTitle(item)}`}
+              aria-label={reorderLabel?.(announceTitle(item)) ?? `Reorder ${announceTitle(item)}`}
               aria-pressed={keyboardDraggedId === item.id || undefined}
               className={cn(
                 "grid size-6 shrink-0 place-items-center rounded-md text-fg-subtle outline-none transition-colors duration-fast focus-visible:ring-1 focus-visible:ring-focus-ring",

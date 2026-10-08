@@ -1,4 +1,4 @@
-/** Local installation/runtime matrix for the original 44-entry migration. */
+/** Local installation/runtime matrix for active migration entries. */
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";

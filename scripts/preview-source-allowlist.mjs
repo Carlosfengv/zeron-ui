@@ -105,9 +105,6 @@ export const previewSourceFiles = {
   "ai-gateway-session-list-01": [
     "packages/blocks/src/application/ai-gateway-session-list-01/ai-gateway-session-list.tsx"
   ],
-  "availability-monitor-01": [
-    "packages/blocks/src/application/availability-monitor-01/availability-monitor.tsx"
-  ],
   "cluster-environment-detail-01": [
     "packages/blocks/src/application/cluster-environment-detail-01/cluster-environment-detail.tsx"
   ],
@@ -148,7 +145,8 @@ export const previewSourceFiles = {
     "packages/blocks/src/application/model-detail-01/model-detail.tsx"
   ],
   "model-detail-02": [
-    "packages/blocks/src/application/model-detail-02/model-detail-02.tsx"
+    "packages/blocks/src/application/model-detail-02/model-detail-02.tsx",
+    "packages/blocks/src/application/model-detail-02/model-availability.tsx"
   ],
   "monitoring-alert-list-01": [
     "packages/blocks/src/application/monitoring-alert-list-01/monitoring-alert-list.tsx"

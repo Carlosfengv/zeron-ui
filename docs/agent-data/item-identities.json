@@ -216,8 +216,8 @@
       "aliases": [
         "availability-monitor-01"
       ],
-      "status": "active",
-      "retirementReason": null
+      "status": "retired",
+      "retirementReason": "Standalone block removed; availability content is now internal to model-detail-02."
     },
     {
       "id": "block:cluster-environment-detail-01",

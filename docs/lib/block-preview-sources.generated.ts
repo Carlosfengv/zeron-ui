@@ -53,9 +53,6 @@ const blockPreviewSources = {
   "ai-gateway-session-list-01": {
     "url": "/docs-source/e0489477ddb061c2fa66fbfc15f5a41310403a1766fb1fd9e5e69cab97b45aac.txt"
   },
-  "availability-monitor-01": {
-    "url": "/docs-source/21fe4fa6d94a35d0085955e394723e94111bb6db2f6bef7da9d76aba3c444a60.txt"
-  },
   "cluster-environment-detail-01": {
     "url": "/docs-source/16ff6ab83985547c95fc1ece28243431061b43c6331b076501e88aeb020f3ed1.txt"
   },
@@ -93,7 +90,7 @@ const blockPreviewSources = {
     "url": "/docs-source/5d71ed4fdbf6bbc67732350640a2839cd6622918a9387e60772b80bd10e4ad13.txt"
   },
   "model-detail-02": {
-    "url": "/docs-source/f935b7577695d5817dbb1547d3be4e2d0f142cb9866745ec2b5eb54c282038fc.txt"
+    "url": "/docs-source/63d8559ced99fde9cec0c77ef21ca8e8e7aa72bb00de62423f98e4439b991415.txt"
   },
   "monitoring-alert-list-01": {
     "url": "/docs-source/a61e0289405db1bda1e4582b7e62533e9c50f7195d6282582bf620707a3e7267.txt"

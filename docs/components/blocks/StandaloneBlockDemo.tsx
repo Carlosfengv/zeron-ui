@@ -20,7 +20,6 @@ import { DeploymentDetailDemo } from "./DeploymentDetailDemo";
 import { useMemo, useState } from "react";
 import { Login01 } from "@zeron/blocks/login-01";
 import { Signup01 } from "@zeron/blocks/signup-01";
-import { AvailabilityMonitor } from "@zeron/blocks/availability-monitor-01";
 import { AiGatewayOverviewDemo } from "@docs/pages/blocks/ai-gateway-overview-01/AiGatewayOverviewDemo";
 import {
   AiGatewaySessionList,
@@ -172,8 +171,6 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
       return <Login01 />;
     case "signup-01":
       return <Signup01 />;
-    case "availability-monitor-01":
-      return <div className="h-full overflow-auto bg-surface-base p-4 sm:p-8"><AvailabilityMonitor className="mx-auto" /></div>;
     case "ai-gateway-overview-01":
       return <AiGatewayOverviewDemo />;
     case "ai-gateway-session-list-01":

@@ -106,7 +106,7 @@ import {
 import { Tooltip, TooltipProvider } from "@zeron/ui/tooltip";
 import { useIcon, type IconComponent } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
-import { AvailabilityMonitor } from "../availability-monitor-01";
+import { AvailabilityMonitor } from "./model-availability";
 import {
   defaultModelAnalyticsDetail,
   type ChartPoint,

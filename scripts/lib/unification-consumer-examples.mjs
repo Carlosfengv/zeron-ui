@@ -1,6 +1,5 @@
-/** Public imports and real rendered examples for the frozen 44-entry migration. */
+/** Public imports and real rendered examples for active migration entries. */
 const examples = {
-  "availability-monitor-01": ["AvailabilityMonitor", "<AvailabilityMonitor chartData={[{ timestamp: 1791158400000, routed: 99, direct: 0 }, { timestamp: 1791162000000, routed: null, direct: 95 }]} />"],
   "ai-gateway-overview-01": ["AiGatewayOverview, createAiGatewayOverviewDemoData", '<AiGatewayOverview data={createAiGatewayOverviewDemoData("30d")} range="30d" sidebar={false} />'],
   "project-monitor-01": ["ProjectMonitor, projectMonitorDemoData", "<ProjectMonitor data={projectMonitorDemoData} />"],
   "security-overview-01": ["SecurityOverview, securityOverviewDemoData", '<SecurityOverview scopeId="northwind" data={securityOverviewDemoData} range="30d" onRangeChange={() => {}} />'],

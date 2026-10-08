@@ -11,7 +11,7 @@ const directory = process.env.ZERON_CHART_EVIDENCE_DIR
   : new URL("../output/playwright/chart-tokens/", import.meta.url);
 const pilots = ["credit-usage-01", "cost-estimate-01", "model-router-01"];
 const resources = ["resource-status-all-01", "resource-metric-list-01"];
-const blocks = process.env.ZERON_CHART_BLOCKS?.split(",").filter(Boolean) ?? [...pilots, "storage-usage-01", "project-monitor-01", "ai-gateway-overview-01", "availability-monitor-01", "model-detail-02", "personal-settings-01", "support-analytics-01", "security-overview-01", ...resources];
+const blocks = process.env.ZERON_CHART_BLOCKS?.split(",").filter(Boolean) ?? [...pilots, "storage-usage-01", "project-monitor-01", "ai-gateway-overview-01", "model-detail-02", "personal-settings-01", "support-analytics-01", "security-overview-01", ...resources];
 const baseline = await readFile(new URL("before.json", directory), "utf8").then(JSON.parse).catch(() => []);
 const report = { origin, views: [], baselines: [], interactions: [], errors: [], status: "failed" };
 await mkdir(directory, { recursive: true });
