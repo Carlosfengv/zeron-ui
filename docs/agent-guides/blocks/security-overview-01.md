@@ -8,7 +8,7 @@ registry_import: "@/components/blocks/security-overview-01"
 source: packages/blocks/src/application/security-overview-01/security-overview.tsx
 types: packages/blocks/src/application/security-overview-01/security-overview-types.ts
 registry: packages/blocks/registry.json
-related: [project-monitor-01, metric-card, chart, tabs, badge]
+related: [project-monitor-01, metric-card, area-chart, radar-chart, ring-chart, chart-core, tabs, badge]
 ---
 
 # 安全概览
@@ -37,7 +37,7 @@ data.scopeId 必须匹配 scopeId，data.range 必须匹配 range。旧范围窗
 
 range/onRangeChange 为受控查询；view/defaultView/onViewChange 支持受控或非受控视图。scope 切换重置本地视图。state 为 ready/loading/stale/error；stale 保留快照，error 隐藏指标并可通过 actions.onRetry 重试。
 
-scan 由宿主控制：idle → starting → running → refreshing → succeeded，失败为 failed。onRunScan 触发时宿主立即设置 starting，再处理异步任务；jobId 归属 scope，进度未知时不伪造百分比。扫描期间保留旧评分，环形图显示扫描进度，文本说明旧快照。完成 snapshotId 未对应 data.id 时仍等待结果。任务/范围切换后由宿主刷新当前窗口，防止过期任务写入其他 scope。
+scan 由宿主控制：idle → starting → running → refreshing → succeeded，失败为 failed。onRunScan 触发时宿主立即设置 starting，再处理异步任务；jobId 归属 scope，进度未知时不伪造百分比。扫描期间环形图始终保留旧快照评分；扫描进度在独立文本中表达。完成 snapshotId 未对应 data.id 时仍等待结果。任务/范围切换后由宿主刷新当前窗口，防止过期任务写入其他 scope。
 
 onExport 触发时宿主立即设置 exportState=pending；回调收到 scopeId/snapshotId/range，绑定点击时的快照。失败用 exportState=error/exportError，允许重试。没有有效当前范围快照时禁用导出；有旧快照的扫描过程中可导出该快照。没有回调的扫描/关闭/导出/查看全部入口隐藏，详情行只在提供回调时可点击。关闭只通知宿主，不自动取消服务器任务。
 
@@ -45,10 +45,12 @@ onExport 触发时宿主立即设置 exportState=pending；回调收到 scopeId/
 
 createSecurityOverviewDemoData 提供固定示例。文档 demo 实际执行模拟扫描、失败重试、详情 Dialog、完整集合查看、关闭/重新打开和 JSON 下载。定时器在卸载时清理；不连接真实目标。Toast 仅由 demo 宿主拥有，block 自身没有全局 Toaster。
 
-外层使用 Container，顶部/底部使用 ContainerHeader / ContainerFooter，评分区和各 Tab 内容使用 ContainerBody，保持 raised / floating 表面层级。顶部标题为 text-body / font-medium，与嵌入式面板一致。组合 MetricCard、Tabs、Select、Button、Badge、Chart、Tooltip、Skeleton、Empty、InlineNotice。四级分类映射复用 badgeColors 的 red/orange/amber/gray，操作和评分采用语义颜色；无新增全局 CSS。图表不播放逐点增长动画，趋势提供可展开的数值表，所有图文按钮使用公开图标槽。
+外层使用 Container，顶部/底部使用 ContainerHeader / ContainerFooter，评分区和各 Tab 内容使用 ContainerBody，保持 raised / floating 表面层级。顶部标题为 text-body / font-medium，与嵌入式面板一致。组合 MetricCard、Tabs、Select、Button、Badge、AreaChart、RadarChart、RingChart、Tooltip、Skeleton、Empty、InlineNotice。四级分类映射复用 badgeColors 的 red/orange/amber/gray，操作和评分采用语义颜色；无新增全局 CSS。图表不播放逐点增长动画，趋势提供可展开的数值表，所有图文按钮使用公开图标槽。
 
-评分采用 DonutSummary，始终显示快照评分；正常评分圆环采用主题蓝色 fg-brand，告警、严重和未知保留语义色。扫描进度在独立说明中表达。扫描成功但 snapshotId 尚未匹配时继续提示旧快照。趋势采用公共预设与 ChartLegend，并与风险列表保留相同的严重性分类色。雷达保持专用绘制，采用共享分类色、Tooltip 和可展开的数据表，不新增通用雷达组件。
+评分采用 RingChart / Ring / RingCenter，value 为有效快照评分、maxValue 固定 100，中心保持宿主等级。未知评分使用中性占位，不作为零分传给图表。正常评分读取 chart-1，告警和严重保留语义色；扫描进度独立表达。
+
+趋势采用 AreaChart / Area(stackId="risks")，保留线性堆叠、原始单级 Tooltip、时间窗口、locale / timeZone 和缺失断点。XAxis.formatDate 格式化宿主时区日期。态势采用 RadarChart 组合，固定 0–100，缺失当前维度不补零；前期完整才绘制虚线无填充多边形。RadarArea.onPointHover 配合共享 TooltipBox / TooltipContent 显示维度的当前与前期值。图表与可展开数据表包在同一列，右列为指标列表，窄容器上下排列。分布条复用 SegmentedBar(mode="distribution")，所有数据表和静态图例复用 chart-primitives；本 block 不再依赖 Recharts。
 
 ## 阶段五统一契约
 
-首次失败统一使用默认静态 Alert，并保留 actions.onRetry；操作错误及旧快照提示使用 InlineNotice。严重程度仍保留 critical/high/medium/low 的领域枚举，视觉映射 danger/danger/warning/info。安全评分图继续使用蓝色主题，不把预览条数或扫描中状态当成真实总数。
+首次失败统一使用默认静态 Alert，并保留 actions.onRetry；操作错误及旧快照提示使用 InlineNotice。严重程度仍保留 critical/high/medium/low 的领域枚举，视觉映射 danger/danger/warning/info。安全评分正常色跟随 chart-1，不把预览条数或扫描中状态当成真实总数。

@@ -68,6 +68,7 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
+    "@visx/curve": "4.0.0",
     "@lobehub/icons": "^5.16.0",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.9",

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ChartLegend, SegmentedBar, chartCategoricalColors, chartColor, chartLegacyColor, chartSeriesColor, chartStatusColors, createChartNumberFormatter, createChartTimeFormatter, visualizationLayout, type ChartColorIndex } from "@zeron/ui/chart-primitives";
 import type { BadgeColor } from "@zeron/ui/badge";
 import { CreditUsage, creditUsageDemoData } from "@zeron/blocks/credit-usage-01";
@@ -21,7 +21,10 @@ import { securityOverviewLabels } from "../packages/blocks/src/application/secur
 import { securityOverviewDemoData } from "../packages/blocks/src/application/security-overview-01/security-overview-demo-data";
 import { readFileSync } from "node:fs";
 
-afterEach(cleanup);
+beforeEach(() => {
+  vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true, addEventListener() {}, removeEventListener() {} })));
+});
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 // This suite checks data and token references; browser verification owns typography.
 vi.mock("../packages/blocks/src/application/storage-usage-01/storage-usage.module.css", () => ({
@@ -273,12 +276,12 @@ describe("真实消费者的数据边界", () => {
   it("评分和扫描进度分开，扫描完成等待快照时仍标记旧快照", () => {
     const data = securityOverviewDemoData;
     const { container, rerender } = render(<SecurityScore data={data} scan={{ status: "running", jobId: "job", completed: 1, total: 100 }} labels={securityOverviewLabels} locale="zh-CN" />);
-    const label = screen.getByRole("img").getAttribute("aria-label");
+    const label = screen.getByRole("group", { name: new RegExp(securityOverviewLabels.previousSnapshot) }).getAttribute("aria-label");
     expect(label).toContain(securityOverviewLabels.previousSnapshot);
     expect(label).toContain(String(data.score));
     rerender(<SecurityScore data={data} scan={{ status: "succeeded", jobId: "job", snapshotId: "new", newFindingCount: 0 }} labels={securityOverviewLabels} locale="zh-CN" />);
-    expect(screen.getByRole("img").getAttribute("aria-label")).toContain(securityOverviewLabels.previousSnapshot);
-    expect(container.querySelector('[data-slot="donut-summary"]')).toBeTruthy();
+    expect(screen.getByRole("group", { name: new RegExp(securityOverviewLabels.previousSnapshot) }).getAttribute("aria-label")).toContain(securityOverviewLabels.previousSnapshot);
+    expect(container.querySelector('[data-slot="ring-chart"]')).toBeTruthy();
   });
 
   it("公共依赖按需，状态和分段条不会拉入图表引擎", () => {

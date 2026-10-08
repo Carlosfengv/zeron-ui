@@ -3,7 +3,7 @@ import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
   "sales-conversion-funnel-01": {
-    "url": "/docs-source/c666d7261983f944aadad55503ef26fa8f43b6bc8f15328bbd5969542be09d79.txt"
+    "url": "/docs-source/125e7314d3a8047e6f83c43f7810ef333b5e06a4e8a99de3a341bce357604e9e.txt"
   },
   "design-stack-01": {
     "url": "/docs-source/4dd4976b8142e62722c36340b70c957aeb05c963063df86a15d89106dbf91f90.txt"
@@ -27,7 +27,7 @@ const blockPreviewSources = {
     "url": "/docs-source/e935ce781dadea500d68d9e0bac28246ea2961b4a94fe4d8be9dcf0e60840028.txt"
   },
   "security-overview-01": {
-    "url": "/docs-source/527587be16d1fe2ec7183e100ee6bec071de8edfab6c18103c4dceea89ddbae5.txt"
+    "url": "/docs-source/30823fbbf08e635f17494f81cdd6ff5853a6b2128f109e8694dd7368482ffb3b.txt"
   },
   "deployment-detail-01": {
     "url": "/docs-source/8bea852e7f437aca1091bb56048873814f6f2434bebb29617c8797da6c93f8fd.txt"

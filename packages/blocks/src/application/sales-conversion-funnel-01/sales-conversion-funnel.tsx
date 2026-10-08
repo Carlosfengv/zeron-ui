@@ -63,8 +63,8 @@ export function SalesConversionFunnel({ stages, teams, title = "Sales Conversion
     </ContainerHeader>
     <ContainerBody className="p-0">
       <dl className="flex flex-wrap items-baseline gap-x-8 gap-y-3 p-6">
-        <div className="flex min-w-0 max-w-full flex-wrap items-baseline gap-2"><dt className="order-2 text-body text-fg-muted">{labels.deals}</dt><dd className="min-w-0 break-all text-4xl font-medium tabular-nums text-fg-default">{deals}</dd></div>
-        <div className="flex min-w-0 max-w-full flex-wrap items-baseline gap-2"><dt className="order-2 text-body text-fg-muted">{labels.conversionRate}</dt><dd className="min-w-0 break-all text-4xl font-medium tabular-nums text-fg-default">{rate}</dd></div>
+        <div className="flex min-w-0 max-w-full flex-wrap items-baseline gap-2"><dt className="order-2 text-body text-fg-muted">{labels.deals}</dt><dd className="min-w-0 break-all text-display font-medium tabular-nums text-fg-default">{deals}</dd></div>
+        <div className="flex min-w-0 max-w-full flex-wrap items-baseline gap-2"><dt className="order-2 text-body text-fg-muted">{labels.conversionRate}</dt><dd className="min-w-0 break-all text-display font-medium tabular-nums text-fg-default">{rate}</dd></div>
       </dl>
       <div className="border-t-hairline border-border p-6">
         {drawable ? <div className="overflow-x-auto pb-1">

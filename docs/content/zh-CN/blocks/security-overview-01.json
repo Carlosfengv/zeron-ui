@@ -3,7 +3,7 @@
     "title": "安全概览",
     "description": "紧凑的安全扫描概览，包含评分、风险趋势、六维安全态势和受影响资产。沿用当前组件库和语义样式变量，支持浅色、深色与窄容器。",
     "composition": "组件组合",
-    "compositionBody": "外层使用 Container，顶部和底部使用 ContainerHeader / ContainerFooter，评分区与各视图内容使用 ContainerBody。组合 MetricCard、Tabs、Select、Button、Badge、Chart、Tooltip、Skeleton、Empty 和 InlineNotice。评分环、堆叠面积图与雷达图通过 Zeron Chart 组合 Recharts；不引入新的全局样式或调色板。",
+    "compositionBody": "外层使用 Container，顶部和底部使用 ContainerHeader / ContainerFooter，评分区与各视图内容使用 ContainerBody。评分采用 RingChart，风险趋势采用 AreaChart 堆叠四级风险，态势采用 RadarChart 对比当前与前期。共用 Chart Tooltip、图例与数据表，风险分布复用 SegmentedBar；颜色读取 Chart Token 与严重性语义变量。",
     "dataContract": "数据接入",
     "dataContractBody": "宿主提供同一版本的评分、风险计数、窗口统计、趋势、态势和资产快照。未解决总数从四级风险求和；列表可为预览子集，不能拿数组长度替代总数。未知使用 null，时间使用 UTC 毫秒，修复中位数使用小时。评分和等级由宿主提供。",
     "behavior": "交互与状态",

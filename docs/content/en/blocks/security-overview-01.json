@@ -3,7 +3,7 @@
     "title": "Security Overview",
     "description": "A compact security scan overview with a score, finding trends, six-area posture and affected assets. Uses existing components and semantic tokens in light, dark and narrow containers.",
     "composition": "Composition",
-    "compositionBody": "Uses Container with ContainerHeader and ContainerFooter, and ContainerBody for the score section and each view. Composes MetricCard, Tabs, Select, Button, Badge, Chart, Tooltip, Skeleton, Empty and InlineNotice. The score ring, stacked area chart and radar use Recharts through Zeron Chart without adding global styles or a new palette.",
+    "compositionBody": "Uses Container with ContainerHeader and ContainerFooter, and ContainerBody for the score section and each view. RingChart presents the score, AreaChart stacks four severity counts, and RadarChart compares current and previous posture. Reuses Chart tooltips, legends and data tables, plus SegmentedBar for the severity distribution. Colors follow Chart Tokens and severity semantics.",
     "dataContract": "Data integration",
     "dataContractBody": "The caller supplies a versioned snapshot with scores, severity counts, window statistics, trends, posture and assets. Open totals are summed from mutually exclusive severity counts; preview lengths never replace collection totals. Unknown values use null, timestamps use UTC milliseconds and median fix time uses hours. Scores and grades come from the caller.",
     "behavior": "Behavior and states",

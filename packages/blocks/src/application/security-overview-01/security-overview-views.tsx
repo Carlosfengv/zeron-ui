@@ -3,6 +3,7 @@
 import { Badge, badgeColors } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Empty, EmptyDescription } from "@zeron/ui/empty";
+import { ChartLegend, SegmentedBar, chartColor } from "@zeron/ui/chart-primitives";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
 import { SecurityPostureRadar } from "./security-overview-charts";
@@ -21,7 +22,7 @@ export function SecurityFindings({ data, labels, locale, timeZone, actions }: Vi
   const findings = data.findings === null ? null : securitySortFindings(data.findings).slice(0, 3);
   return <div className="space-y-4">
     <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="flex items-center gap-2 text-body font-medium text-fg-default">{labels.findings}<Badge size="sm">{securityFormatNumber(total, locale)}</Badge></h3><span className="text-label text-fg-subtle">{labels.sortedByScore}</span></div>
-    {total !== null && total > 0 && <div className="flex h-1.5 gap-1 overflow-hidden rounded-full" aria-hidden>{securitySeverities.map((severity) => <div key={severity} className="min-w-0 rounded-full" style={{ flexGrow: data.openBySeverity![severity], backgroundColor: badgeColors[securitySeverityColors[severity]] }} />)}</div>}
+    {total !== null && total > 0 && <SegmentedBar mode="distribution" total={total} className="h-1.5" valueText={`${labels.open} ${securityFormatNumber(total, locale)}`} segments={securitySeverities.map(severity => ({ id: severity, label: labels[severity], value: data.openBySeverity![severity], color: badgeColors[securitySeverityColors[severity]] }))} />}
     {total !== null && <div className="flex flex-wrap gap-2">{securitySeverities.map((severity) => <Badge key={severity} variant="dot" status={severity === "critical" || severity === "high" ? "danger" : severity === "medium" ? "warning" : "info"} size="sm">{labels[severity]} {securityFormatNumber(data.openBySeverity![severity], locale)}</Badge>)}</div>}
     {!findings ? <DataEmpty text={labels.noData} /> : findings.length === 0 ? <DataEmpty text={total === 0 ? labels.noFindings : labels.noData} /> : <ul className="divide-y divide-border-subtle">{findings.map((finding) => <li key={finding.id} className="py-3">
       <div className="flex items-start gap-3"><span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-raised text-fg-muted"><Shield size={16} aria-hidden /></span>
@@ -43,7 +44,7 @@ export function SecurityPosture({ data, labels, locale }: ViewProps) {
           const change = securityValidNumber(area.score, 100) && securityValidNumber(area.previousScore, 100) ? area.score - area.previousScore : null;
           return <div key={area.id} className="flex items-baseline justify-between gap-3 text-body"><dt className="min-w-0 break-words text-fg-muted">{area.label}</dt><dd className="flex shrink-0 gap-3 tabular-nums"><span aria-label={`${labels.change} ${change === null ? labels.unknown : change}`} className={cn("text-label", change === null || change === 0 ? "text-fg-subtle" : change > 0 ? "text-fg-success" : "text-fg-danger")}>{change === null ? labels.unknown : `${change > 0 ? "+" : ""}${change}`}</span><span className="font-medium text-fg-default">{securityFormatNumber(area.score, locale, 100)}</span><span className="sr-only"> / 100 · {labels.previous} {securityFormatNumber(area.previousScore, locale, 100)}</span></dd></div>;
         })}</dl>
-      </div><p className="text-label text-fg-subtle">{labels.current} · {labels.previous}（{labels.compare}）</p>
+      </div><ChartLegend className="flex flex-wrap gap-x-4 gap-y-2" items={[{ id: "current", label: labels.current, color: chartColor(1) }, ...(areas.every(area => securityValidNumber(area.previousScore, 100)) ? [{ id: "previous", label: `${labels.previous}（${labels.compare}）`, color: chartColor(2) }] : [])]} />
     </>}
   </div>;
 }

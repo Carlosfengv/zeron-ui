@@ -17,7 +17,7 @@ export const securityOverviewLabels: SecurityOverviewLabels = {
   export: "导出报告", exporting: "正在导出", exportError: "导出失败，请重试", close: "关闭安全概览", retry: "重试",
   loading: "正在加载安全概览", error: "安全概览暂不可用", stale: "数据已过期，展示上次快照",
   noData: "暂无可用数据", noFindings: "当前没有未解决风险", noAssets: "当前没有受影响资产",
-  trendDescription: "按风险级别展示未解决数量，面积为累计数量。", total: "合计", viewValues: "查看趋势数值",
+  trendDescription: "按风险级别展示未解决数量，面积为累计数量。", total: "合计", viewValues: "查看数值",
   sortedByScore: "按评分降序", viewAllFindings: "查看全部风险项", viewAllAssets: "查看全部资产",
   affectedAssets: "受影响资产", current: "当前", previous: "前期", postureDescription: "各维度评分 · 满分 100", change: "变化",
 };

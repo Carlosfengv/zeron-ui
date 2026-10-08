@@ -231,6 +231,9 @@ importers:
       '@thesvg/icons':
         specifier: ^3.2.15
         version: 3.3.1
+      '@visx/curve':
+        specifier: 4.0.0
+        version: 4.0.0
       '@zeron/ui':
         specifier: workspace:*
         version: link:../ui

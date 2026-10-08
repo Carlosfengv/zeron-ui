@@ -302,8 +302,8 @@
       "title": "安全概览",
       "description": "安全评分、风险趋势、六维态势与受影响资产的可控扫描概览。",
       "categories": ["application", "security", "analytics"],
-      "dependencies": ["recharts"],
-      "registryDependencies": ["badge", "button", "container", "chart", "empty", "icon-context", "inline-notice", "metric-card", "select", "skeleton", "tabs", "tooltip", "utils", "chart-primitives", "alert"],
+      "dependencies": ["@visx/curve@4.0.0"],
+      "registryDependencies": ["badge", "button", "container", "area-chart", "radar-chart", "ring-chart", "chart-core", "empty", "icon-context", "inline-notice", "metric-card", "select", "skeleton", "tabs", "tooltip", "utils", "chart-primitives", "alert"],
       "files": [
         {
           "path": "packages/blocks/src/application/security-overview-01/security-overview.tsx",
