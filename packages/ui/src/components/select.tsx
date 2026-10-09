@@ -56,7 +56,7 @@ interface SelectContextValue {
   size: ControlSize;
   itemDensity: SelectItemDensity;
   itemIndexByValue: ReadonlyMap<string, number>;
-  actionsRef: React.RefObject<{ unmount: () => void } | null>;
+  actionsRef: React.RefObject<SelectPrimitive.Root.Actions | null>;
 }
 
 const SelectContext = createContext<SelectContextValue | null>(null);
@@ -148,7 +148,7 @@ function Select({
   const [internalValue, setInternalValue] = useState(defaultValue ?? "");
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const open = openProp !== undefined ? openProp : internalOpen;
-  const actionsRef = useRef<{ unmount: () => void } | null>(null);
+  const actionsRef = useRef<SelectPrimitive.Root.Actions | null>(null);
   const currentValue = value !== undefined ? value : internalValue;
 
   const items = useMemo(() => collectSelectItems(children), [children]);
