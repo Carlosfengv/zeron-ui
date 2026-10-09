@@ -24,6 +24,13 @@ import { readFileSync } from "node:fs";
 beforeEach(() => {
   vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true, addEventListener() {}, removeEventListener() {} })));
 });
+beforeEach(() => {
+  vi.stubGlobal("ResizeObserver", class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  });
+});
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 // This suite checks data and token references; browser verification owns typography.

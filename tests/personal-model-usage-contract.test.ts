@@ -41,11 +41,12 @@ describe("Personal model usage call-log contract", () => {
     expect(callLogs).toContain("isCallLogTimeInSelection(run.timestamp, timeSelection)");
     expect(callLogs).toContain("aggregateCallLogTrend(filteredTrendCalls, contextStart)");
     expect(callLogs).not.toContain("modelFactor");
-    expect(timeRangeHistogram).toContain('<XAxis dataKey="label" height={0} hide />');
-    expect(timeRangeHistogram).toContain('<BarChart accessibilityLayer={false} barCategoryGap={0} data={chartData}');
-    expect(timeRangeHistogram).toContain('h-[68px] min-h-0');
-    expect(timeRangeHistogram).toContain('[&_.recharts-tooltip-wrapper]:!z-tooltip');
-    expect(timeRangeHistogram).toContain('isAnimationActive={false}');
+    expect(timeRangeHistogram).toContain('from "#components/bar-chart"');
+    expect(timeRangeHistogram).toContain('xDataKey="start"');
+    expect(timeRangeHistogram).toContain('keyboardNavigation={false}');
+    expect(timeRangeHistogram).toContain('h-[68px] w-full');
+    expect(timeRangeHistogram).not.toContain('recharts');
+    expect(timeRangeHistogram).toContain('animationDuration={0}');
     expect(timeRangeHistogram).toContain('style={{ left: `${selectionLeft}%`, width: `${selectionWidth}%` }}');
     expect(timeRangeHistogram).toContain('focus-visible:ring-2 focus-visible:ring-focus-ring');
     expect(settings).toContain("const defaultCallLogsData");

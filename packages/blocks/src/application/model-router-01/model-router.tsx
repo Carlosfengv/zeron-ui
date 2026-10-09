@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { chartSeriesColor } from "@zeron/ui/chart-primitives";
+import { SegmentedBar, chartSeriesColor } from "@zeron/ui/chart-primitives";
 import { Button } from "@zeron/ui/button";
 import { Card, CardFooter } from "@zeron/ui/card";
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
@@ -180,7 +180,7 @@ function ModelRouterState({ data, value, defaultValue, onValueChange, actions, o
                 className={cn("focus-visible:outline-2 focus-visible:outline-focus-ring", activeRouteId === route.id && "bg-hover")}>
                 <TableCell className="py-4"><div className="flex items-center gap-2.5"><RouteDot route={route} /><ModelLogo route={route} /><span className="whitespace-nowrap text-body text-fg-default">{route.name}</span><span className="whitespace-nowrap font-mono text-label uppercase text-fg-subtle">{route.provider}</span><span className="sr-only">{metric(route.requestsPerSecond, number)} {labels.requestsUnit}</span></div></TableCell>
                 <TableCell><div className="flex items-center justify-end gap-3">
-                  <span aria-hidden="true" className="h-1 w-10 overflow-hidden rounded-full bg-surface-raised"><span className="block h-full rounded-full" style={{ backgroundColor: chartSeriesColor(route.id, route), width: `${isValidMetric(route.share, true) ? route.share * 100 : 0}%` }} /></span>
+                  <SegmentedBar aria-hidden="true" className="h-1 w-10 rounded-full" mode="capacity" total={1} segments={[{ id: route.id, label: route.name, value: isValidMetric(route.share, true) ? route.share : null, color: chartSeriesColor(route.id, route) }]} valueText={metric(route.share, percent, true)} />
                   <span className="tabular-nums text-fg-default">{metric(route.share, percent, true)}</span>
                 </div></TableCell>
                 <TableCell className="whitespace-nowrap text-right tabular-nums">{metric(route.p50Seconds, decimal)} / {metric(route.p95Seconds, decimal)}</TableCell>

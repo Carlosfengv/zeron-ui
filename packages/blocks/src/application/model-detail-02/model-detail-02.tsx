@@ -15,17 +15,11 @@ import CursorMono from "@lobehub/icons/es/Cursor/components/Mono";
 import HermesAgentMono from "@lobehub/icons/es/HermesAgent/components/Mono";
 import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono";
 import PiMono from "@lobehub/icons/es/Pi/components/Mono";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { curveLinear, curveMonotoneX } from "@visx/curve";
+import { Area, AreaChart } from "@zeron/ui/area-chart";
+import { Bar, BarChart, BarXAxis } from "@zeron/ui/bar-chart";
+import { Line, LineChart } from "@zeron/ui/line-chart";
+import { Grid, XAxis, YAxis, ChartTooltip, TooltipContent } from "@zeron/ui/chart-core";
 import {
   AccordionContent,
   AccordionGroup,
@@ -50,14 +44,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@zeron/ui/card";
-import {
-  chartTrendPreset,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@zeron/ui/chart";
-import { ChartLegend, chartColor, chartSeriesColor, createChartNumberFormatter, type ChartColorIndex } from "@zeron/ui/chart-primitives";
+
+import { ChartDataTable, ChartLegend, chartColor, chartSeriesColor, createChartNumberFormatter, type ChartColorIndex } from "@zeron/ui/chart-primitives";
 import { Container, ContainerBody, ContainerHeader } from "@zeron/ui/container";
 import { DataTable, useDataTable } from "@zeron/ui/data-table";
 import {
@@ -191,13 +179,13 @@ const activityChartConfig = {
   prompt: { label: "Prompt", color: chartColor(1) },
   completion: { label: "Completion", color: chartColor(2) },
   reasoning: { label: "Reasoning", color: chartColor(3) },
-} satisfies ChartConfig;
+};
 
 const appChartConfig = {
   hermes: { label: "Hermes Agent", color: chartColor(1) },
   codex: { label: "Codex", color: chartColor(2) },
   other: { label: "Other apps", color: chartColor(3) },
-} satisfies ChartConfig;
+};
 
 export interface ModelDetail02Props
   extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
@@ -541,7 +529,6 @@ function PricingSection({ data }: { data: ModelAnalyticsDetailData }) {
     () => Object.fromEntries(data.pricing.providers.map((provider) => [provider.id, true])),
   );
   const chartData = trimRange(pricingSeries(data, source, metric), range);
-  const providerChartConfig: ChartConfig = Object.fromEntries(data.pricing.providers.map((provider) => [provider.id, { label: provider.name, color: providerSeriesColor(provider.id) }]));
 
   return (
     <section className="scroll-mt-4 space-y-4" data-model-section id="pricing">
@@ -594,32 +581,14 @@ function PricingSection({ data }: { data: ModelAnalyticsDetailData }) {
           </div>
 
           {chartData.length ? (
-            <ChartContainer
-              aria-label={`${source} ${metric} price history`}
-              className="mt-4 h-[320px] min-h-0"
-              config={providerChartConfig}
-              dataTable={{ caption: `${source} ${metric} price history ($ / 1M tokens)`, columns: ["Date", ...data.pricing.providers.map((provider) => `${provider.name} ($ / 1M tokens)`)], rows: chartData.map((point, index) => ({ id: String(index), label: point.date, values: data.pricing.providers.map((provider) => typeof point[provider.id] === "number" ? money(point[provider.id] as number, 4) : "—") })) }}
-            >
-              <LineChart accessibilityLayer data={[...chartData]} margin={{ left: 4, right: 12, top: 8 }}>
-                <CartesianGrid {...chartTrendPreset.grid} />
-                <XAxis axisLine={false} dataKey="date" tickLine={false} tickMargin={8} />
-                <YAxis axisLine={false} tickFormatter={(value: number) => `$${value}`} tickLine={false} width={52} />
-                <ChartTooltip content={<ChartTooltipContent valueFormatter={(value) => typeof value === "number" ? money(value, 4) : "—"} />} />
-                {data.pricing.providers.map((provider) => (
-                  <Line
-                    connectNulls={false}
-                    dataKey={provider.id}
-                    dot={false}
-                    hide={visibleProviders[provider.id] === false}
-                    isAnimationActive={false}
-                    key={provider.id}
-                    stroke={providerSeriesColor(provider.id)}
-                    strokeWidth={2}
-                    type="monotone"
-                  />
-                ))}
+            <div className="mt-4 min-w-0" aria-label={`${source} ${metric} price history`}>
+              <LineChart className="h-[320px]" aspectRatio="auto" data={chartData.map((point, index) => ({ ...point, chartPosition: index * 86400000 }))} xDataKey="chartPosition" margin={{ left: 56, right: 12, top: 12, bottom: 36 }} animationDuration={0} yDomainTween={false}>
+                <Grid horizontal /><XAxis formatDate={(date) => chartData[Math.round(date.getTime() / 86400000)]?.date ?? ""} /><YAxis formatValue={(value) => money(value)} />
+                {data.pricing.providers.filter(provider => visibleProviders[provider.id] !== false).map(provider => <Line key={provider.id} dataKey={provider.id} stroke={providerSeriesColor(provider.id)} strokeWidth={2} curve={curveMonotoneX} fadeEdges={false} animate={false} showMarkers={chartData.length === 1} />)}
+                <ChartTooltip showDatePill={false} content={({ point }) => <TooltipContent title={String(point.date)} rows={data.pricing.providers.filter(provider => visibleProviders[provider.id] !== false).map(provider => ({ label: provider.name, color: providerSeriesColor(provider.id), value: typeof point[provider.id] === "number" ? money(point[provider.id] as number, 4) : "—" }))} />} />
               </LineChart>
-            </ChartContainer>
+              <ChartDataTable caption={`${source} ${metric} price history ($ / 1M tokens)`} columns={["Date", ...data.pricing.providers.map(provider => `${provider.name} ($ / 1M tokens)`)]} rows={chartData.map((point, index) => ({ id: String(index), label: point.date, values: data.pricing.providers.map(provider => typeof point[provider.id] === "number" ? money(point[provider.id] as number, 4) : "—") }))} />
+            </div>
           ) : (
             <EmptyState>No pricing history is available.</EmptyState>
           )}
@@ -708,7 +677,6 @@ function PerformanceCardView({
   period: string;
 }) {
   const chartData = period === "3d" ? chart.data.slice(-3) : chart.data;
-  const providerChartConfig: ChartConfig = Object.fromEntries(chart.series.map((series) => [series.key, { label: series.label, color: providerSeriesColor(series.key) }]));
   const performanceValue = createChartNumberFormatter("en-US", { maximumFractionDigits: 4 });
   const unit = chart.unit ?? "";
   return (
@@ -736,26 +704,14 @@ function PerformanceCardView({
               ))}
             </InfoItemGroup>
           ) : chartData.length ? (
-            <ChartContainer aria-label={chart.title} className="h-[220px] min-h-0" config={providerChartConfig} dataTable={{ caption: `${chart.title}${unit ? ` (${unit})` : ""}`, columns: ["Date", ...chart.series.map((series) => `${series.label}${unit ? ` (${unit})` : ""}`)], rows: chartData.map((point, index) => ({ id: String(index), label: point.date, values: chart.series.map((series) => typeof point[series.key] === "number" && Number.isFinite(point[series.key]) ? `${performanceValue(point[series.key])}${unit ? ` ${unit}` : ""}` : "—") })) }}>
-              <LineChart accessibilityLayer data={[...chartData]} margin={{ left: 0, right: 8, top: 8 }}>
-                <CartesianGrid {...chartTrendPreset.grid} />
-                <XAxis axisLine={false} dataKey="date" tickLine={false} tickMargin={8} />
-                <YAxis axisLine={false} tickLine={false} width={42} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                {chart.series.map((series) => (
-                  <Line
-                    connectNulls={false}
-                    dataKey={series.key}
-                    dot={false}
-                    isAnimationActive={false}
-                    key={series.key}
-                    stroke={providerSeriesColor(series.key)}
-                    strokeWidth={2}
-                    type="monotone"
-                  />
-                ))}
+            <div className="min-w-0" aria-label={chart.title}>
+              <LineChart className="h-[220px]" aspectRatio="auto" data={chartData.map((point, index) => ({ ...point, chartPosition: index * 86400000 }))} xDataKey="chartPosition" margin={{ left: 48, right: 8, top: 12, bottom: 36 }} animationDuration={0} yDomainTween={false}>
+                <Grid horizontal /><XAxis formatDate={(date) => chartData[Math.round(date.getTime() / 86400000)]?.date ?? ""} /><YAxis />
+                {chart.series.map(series => <Line key={series.key} dataKey={series.key} stroke={providerSeriesColor(series.key)} strokeWidth={2} curve={curveMonotoneX} fadeEdges={false} animate={false} showMarkers={chartData.length === 1} />)}
+                <ChartTooltip showDatePill={false} content={({ point }) => <TooltipContent title={String(point.date)} rows={chart.series.map(series => ({ label: series.label, color: providerSeriesColor(series.key), value: typeof point[series.key] === "number" && Number.isFinite(point[series.key]) ? `${performanceValue(point[series.key])}${unit ? ` ${unit}` : ""}` : "—" }))} />} />
               </LineChart>
-            </ChartContainer>
+              <ChartDataTable caption={`${chart.title}${unit ? ` (${unit})` : ""}`} columns={["Date", ...chart.series.map(series => `${series.label}${unit ? ` (${unit})` : ""}`)]} rows={chartData.map((point, index) => ({ id: String(index), label: point.date, values: chart.series.map(series => typeof point[series.key] === "number" && Number.isFinite(point[series.key]) ? `${performanceValue(point[series.key])}${unit ? ` ${unit}` : ""}` : "—") }))} />
+            </div>
           ) : (
             <EmptyState>No performance history is available.</EmptyState>
           )}
@@ -894,17 +850,14 @@ function AppsSection({ data }: { data: ModelAnalyticsDetailData }) {
             <CardDescription>Daily token volume, billions</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer aria-label="App token activity" className="h-[300px] min-h-0" config={appChartConfig} dataTable={{ caption: "App token activity (billions of tokens)", columns: ["Date", "Hermes Agent (B Tokens)", "Codex (B Tokens)", "Other apps (B Tokens)"], rows: data.appActivity.map((point, index) => ({ id: String(index), label: point.date, values: ["hermes", "codex", "other"].map((key) => typeof point[key] === "number" && Number.isFinite(point[key]) ? `${createChartNumberFormatter("en-US")(point[key])}B` : "—") })) }}>
-              <BarChart accessibilityLayer data={[...data.appActivity]} margin={{ left: 0, right: 8, top: 8 }}>
-                <CartesianGrid {...chartTrendPreset.grid} />
-                <XAxis axisLine={false} dataKey="date" tickLine={false} tickMargin={8} />
-                <YAxis axisLine={false} tickLine={false} width={34} />
-                <ChartTooltip content={<ChartTooltipContent valueFormatter={(value) => typeof value === "number" && Number.isFinite(value) ? `${value.toFixed(1)}B` : "—"} />} />
-                <Bar dataKey="hermes" fill="var(--color-hermes)" isAnimationActive={false} stackId="apps" />
-                <Bar dataKey="codex" fill="var(--color-codex)" isAnimationActive={false} stackId="apps" />
-                <Bar dataKey="other" fill="var(--color-other)" isAnimationActive={false} stackId="apps" />
+            <div className="min-w-0" aria-label="App token activity">
+              <BarChart className="h-[300px]" aspectRatio="auto" data={data.appActivity.map(point => ({ ...point }))} xDataKey="date" stacked margin={{ left: 40, right: 8, top: 12, bottom: 36 }} animationDuration={0}>
+                <Grid horizontal /><BarXAxis /><YAxis />
+                {Object.entries(appChartConfig).map(([key, series]) => <Bar key={key} dataKey={key} fill={series.color} lineCap="butt" animate={false} />)}
+                <ChartTooltip showDatePill={false} showDots={false} content={({ point }) => <TooltipContent title={String(point.date)} rows={Object.entries(appChartConfig).map(([key, series]) => ({ label: series.label, color: series.color, value: typeof point[key] === "number" && Number.isFinite(point[key]) ? `${(point[key] as number).toFixed(1)}B` : "—" }))} />} />
               </BarChart>
-            </ChartContainer>
+              <ChartDataTable caption="App token activity (billions of tokens)" columns={["Date", "Hermes Agent (B Tokens)", "Codex (B Tokens)", "Other apps (B Tokens)"]} rows={data.appActivity.map((point, index) => ({ id: String(index), label: point.date, values: ["hermes", "codex", "other"].map(key => typeof point[key] === "number" && Number.isFinite(point[key]) ? `${createChartNumberFormatter("en-US")(point[key])}B` : "—") }))} />
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -941,17 +894,14 @@ function ActivitySection({ data }: { data: ModelAnalyticsDetailData }) {
           </CardHeader>
           <CardContent>
             {data.activity.length ? (
-              <ChartContainer aria-label="Daily token activity" className="h-[340px] min-h-0" config={activityChartConfig} dataTable={{ caption: "Daily token activity (Tokens)", columns: ["Date", "Prompt (Tokens)", "Completion (Tokens)", "Reasoning (Tokens)"], rows: data.activity.map((point, index) => ({ id: String(index), label: point.date, values: (["prompt", "completion", "reasoning"] as const).map((key) => createChartNumberFormatter("en-US")(point[key])) })) }}>
-                <AreaChart accessibilityLayer data={[...data.activity]} margin={{ left: 0, right: 8, top: 8 }}>
-                  <CartesianGrid {...chartTrendPreset.grid} />
-                  <XAxis axisLine={false} dataKey="date" tickLine={false} tickMargin={8} />
-                  <YAxis axisLine={false} tickFormatter={(value: number) => compactNumber(value)} tickLine={false} width={52} />
-                  <ChartTooltip content={<ChartTooltipContent valueFormatter={(value) => compactNumber(Number(value))} />} />
-                  <Area connectNulls={false} dataKey="prompt" fill="var(--color-prompt)" fillOpacity={0.2} isAnimationActive={false} stackId="tokens" stroke="var(--color-prompt)" />
-                  <Area connectNulls={false} dataKey="completion" fill="var(--color-completion)" fillOpacity={0.2} isAnimationActive={false} stackId="tokens" stroke="var(--color-completion)" />
-                  <Area connectNulls={false} dataKey="reasoning" fill="var(--color-reasoning)" fillOpacity={0.2} isAnimationActive={false} stackId="tokens" stroke="var(--color-reasoning)" />
+              <div className="min-w-0" aria-label="Daily token activity">
+                <AreaChart className="h-[340px]" aspectRatio="auto" data={data.activity.map((point, index) => ({ ...point, chartPosition: index * 86400000 }))} xDataKey="chartPosition" margin={{ left: 56, right: 8, top: 12, bottom: 36 }} animationDuration={0} yDomainTween={false}>
+                  <Grid horizontal /><XAxis formatDate={(date) => data.activity[Math.round(date.getTime() / 86400000)]?.date ?? ""} /><YAxis formatValue={compactNumber} />
+                  {Object.entries(activityChartConfig).map(([key, series]) => <Area key={key} dataKey={key} fill={series.color} stroke={series.color} fillOpacity={0.2} gradientToOpacity={0.2} stackId="tokens" curve={curveLinear} animate={false} showMarkers={data.activity.length === 1} />)}
+                  <ChartTooltip showDatePill={false} content={({ point }) => <TooltipContent title={String(point.date)} rows={Object.entries(activityChartConfig).map(([key, series]) => ({ label: series.label, color: series.color, value: typeof point[key] === "number" ? compactNumber(point[key] as number) : "—" }))} />} />
                 </AreaChart>
-              </ChartContainer>
+                <ChartDataTable caption="Daily token activity (Tokens)" columns={["Date", "Prompt (Tokens)", "Completion (Tokens)", "Reasoning (Tokens)"]} rows={data.activity.map((point, index) => ({ id: String(index), label: point.date, values: (["prompt", "completion", "reasoning"] as const).map(key => createChartNumberFormatter("en-US")(point[key])) }))} />
+              </div>
             ) : (
               <EmptyState>No activity data is available.</EmptyState>
             )}

@@ -16,7 +16,11 @@ describe("reference chart contracts and distribution", () => {
       const fields=node.members.filter(ts.isPropertySignature).map(property=>({name:property.name.getText(source),optional:!!property.questionToken,type:property.type?.getText(source).replace(/\s+/g," ")??"unknown"}));
       // The frozen reference remains unchanged. Selection is an explicit
       // additive API; all original fields still require exact equality.
-      const additions = expected.name === "HeatmapChartProps" ? [{name:"onCellSelect",optional:true,type:"(bin: HeatmapBin) => void"}] : [];
+      const additions = expected.name === "HeatmapChartProps" ? [{name:"onCellSelect",optional:true,type:"(bin: HeatmapBin) => void"}]
+        : expected.name === "LineChartProps" ? [{name:"yDomain",optional:true,type:"ChartYDomain"}]
+        : expected.name === "BarXAxisProps" ? [{name:"formatLabel",optional:true,type:"(value: string, point: Record<string, unknown>) => string"}]
+        : expected.name === "BarProps" ? [{name:"fillForDatum",optional:true,type:"(point: Record<string, unknown>, index: number) => string"}]
+        : expected.name === "BarChartProps" ? [{name:"keyboardNavigation",optional:true,type:"boolean"}] : [];
       expect(fields.filter(field => !additions.some(addition => addition.name === field.name))).toEqual(expected.fields);
       for (const addition of additions) expect(fields.find(field => field.name === addition.name)).toEqual(addition);
     } else {

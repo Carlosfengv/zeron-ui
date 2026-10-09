@@ -46,7 +46,7 @@ export function createSupportAnalyticsDemoRecords(query: SupportAnalyticsQuery, 
         const id = `${query.range}:${channel}:${i}`;
         const newlyResolved = resolved.has(id);
         const status = i < open && !newlyResolved ? "open" : "resolved";
-        const firstReplyMs = (channel === "live-chat" ? 5 : channel === "email" ? 60 : channel === "in-app" ? 35 : 50) * 60000 * replyFactors[bucketIndex] / replyMeanFactor;
+        const firstReplyMs = Math.round((channel === "live-chat" ? 5 : channel === "email" ? 60 : channel === "in-app" ? 35 : 50) * 60000 * replyFactors[bucketIndex] / replyMeanFactor);
         const resolutionMs = status === "resolved" ? (newlyResolved ? 45 : channel === "live-chat" ? 48 : 413) * 60000 : null;
         return { id, number: `#HD-${3370 + channelIndex * 20000 + i}`, customer: names[i % names.length], subject: ["Billing question", "Account access", "Workspace settings", "API connection"][i % 4], channel, status, priority: i % 11 === 1 ? "urgent" : i % 5 === 2 ? "low" : "normal",
           createdAt: start + bucketIndex * bucketMs + (bucketMs * (1 - (position + 1) / (bucketCounts[bucketIndex] + 1))), canResolve: true,

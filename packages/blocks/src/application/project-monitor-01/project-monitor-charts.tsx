@@ -1,8 +1,7 @@
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
-import { ChartContainer, DonutSummary, TimeSeriesChart } from "@zeron/ui/chart";
-import { ChartLegend, chartColor, chartSeriesColor, createChartNumberFormatter } from "@zeron/ui/chart-primitives";
+import { DonutSummary, TimeSeriesChart } from "@zeron/ui/chart";
+import { ChartLegend, SegmentedBar, chartColor, chartSeriesColor, createChartNumberFormatter } from "@zeron/ui/chart-primitives";
 import { MetricCard } from "@zeron/ui/metric-card";
 import { formatMetric, summarizeWindow, validNumber } from "./project-monitor-data";
 import type { ProjectMonitorLabels, ProjectMonitorMetric, ProjectMonitorWindow } from "./project-monitor-types";
@@ -48,12 +47,7 @@ export function LatencyChart({ window, labels, locale }: { window: ProjectMonito
     <div className="space-y-3">
       {entries.map(({ key, label, color }) => <div key={key}>
         <div className="flex items-center justify-between gap-3 text-label"><span className="text-fg-subtle">{label}</span><span className="tabular-nums text-fg-default">{formatMetric(window.latency[key], locale, 0)} {labels.milliseconds}</span></div>
-        <ChartContainer aria-hidden="true" config={{ value: { color } }} className="h-5 min-h-0">
-          <BarChart layout="vertical" data={[{ value: validNumber(window.latency[key]) ? window.latency[key] : 0 }]} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} accessibilityLayer={false}>
-            <XAxis type="number" domain={[0, maximum]} hide /><YAxis type="category" hide />
-            <Bar dataKey="value" fill="var(--color-value)" background={{ fill: "var(--muted)" }} barSize={5} radius={3} isAnimationActive={false} />
-          </BarChart>
-        </ChartContainer>
+        <SegmentedBar mode="capacity" total={maximum} segments={[{ id: key, label, value: validNumber(window.latency[key]) ? window.latency[key] : null, color }]} valueText={`${label}：${formatMetric(window.latency[key], locale, 0)} ${labels.milliseconds}`} className="mt-2 h-1.5" />
       </div>)}
     </div>
   </div>;

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ComponentPropsWithoutRef, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
-import { Bar, BarChart, Cell, XAxis } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "#components/chart";
+import { Bar, BarChart } from "#components/bar-chart";
+import { ChartTooltip } from "#components/chart-core";
 import { cn } from "#system/utils";
 
 export interface TimeRangeHistogramDatum {
@@ -194,10 +194,6 @@ export function TimeRangeHistogram({
   const selectionLabel = formatRange
     ? formatRange(activeRange)
     : `${chartData[activeSelection.startIndex]?.label ?? ""} – ${chartData[activeSelection.endIndex]?.label ?? ""}`;
-  const chartConfig = useMemo<ChartConfig>(
-    () => Object.fromEntries(series.map((item) => [item.dataKey, { label: item.label, color: item.color }])),
-    [series],
-  );
 
   if (data.length === 0) {
     return (
@@ -357,43 +353,29 @@ export function TimeRangeHistogram({
           <span className="pointer-events-auto absolute -left-2 inset-y-0 w-4 cursor-col-resize" data-slot="time-range-histogram-hit-area" />
           <span className="pointer-events-auto absolute -right-2 inset-y-0 w-4 cursor-col-resize" data-slot="time-range-histogram-hit-area" />
         </div>
-        <ChartContainer
-          className={cn(
-            "relative aspect-auto h-[68px] min-h-0 w-full [&_.recharts-layer]:!outline-none [&_.recharts-surface]:!outline-none [&_.recharts-tooltip-wrapper]:!z-tooltip [&_.recharts-wrapper]:!outline-none",
-            chartClassName,
-          )}
-          config={chartConfig}
-        >
-          <BarChart accessibilityLayer={false} barCategoryGap={0} data={chartData} margin={{ bottom: 0, left: 0, right: 0, top: 0 }}>
-            <XAxis dataKey="label" height={0} hide />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  className="w-[170px]"
-                  labelFormatter={(label) => String(label)}
-                  valueFormatter={(tooltipValue, name) => {
-                    const item = series.find((candidate) => candidate.label === name || candidate.dataKey === name);
-                    const numericValue = Number(tooltipValue);
-                    return item && formatValue ? formatValue(numericValue, item) : numericValue.toLocaleString();
-                  }}
-                />
-              }
-              cursor={{ fill: "var(--surface-raised)" }}
-              isAnimationActive={false}
-              wrapperStyle={{ zIndex: "var(--layer-tooltip)" }}
-            />
-            {series.map((item) => (
-              <Bar barSize={barSize} dataKey={item.dataKey} fill={`var(--color-${item.dataKey})`} key={item.dataKey} stackId="time-range-histogram">
-                {chartData.map((bucket, index) => (
-                  <Cell
-                    fill={isSelectedIndex(index) ? `var(--color-${item.dataKey})` : item.inactiveColor ?? "var(--surface-raised)"}
-                    key={`${item.dataKey}-${bucket.start}`}
-                  />
-                ))}
-              </Bar>
-            ))}
+        <div aria-hidden>
+          <BarChart
+            className={cn("relative h-[68px] w-full", chartClassName)}
+            aspectRatio="auto"
+            data={chartData.map(bucket => ({ ...bucket }))}
+            xDataKey="start"
+            stacked
+            barGap={0}
+            barWidth={barSize}
+            margin={{ bottom: 0, left: 0, right: 0, top: 0 }}
+            animationDuration={0}
+            keyboardNavigation={false}
+          >
+            <ChartTooltip showDatePill={false} showDots={false} content={({ point }) => <div className="grid gap-1.5 text-label">
+              <p className="font-medium text-fg-default">{String(point.label)}</p>
+              {series.map(item => <div key={item.dataKey} className="flex items-start justify-between gap-4">
+                <span className="flex min-w-0 items-center gap-1.5 text-fg-muted"><span aria-hidden className="size-2 shrink-0 rounded-xs" style={{ backgroundColor: item.color }} />{item.label}</span>
+                <span className="font-medium tabular-nums text-fg-default">{formatValue ? formatValue(Number(point[item.dataKey]), item) : Number(point[item.dataKey]).toLocaleString()}</span>
+              </div>)}
+            </div>} />
+            {series.map(item => <Bar dataKey={item.dataKey} fill={item.color} fillForDatum={(_, index) => isSelectedIndex(index) ? item.color : item.inactiveColor ?? "var(--surface-raised)"} key={item.dataKey} lineCap="butt" animate={false} />)}
           </BarChart>
-        </ChartContainer>
+        </div>
       </div>
       <div className="mt-1 flex items-center justify-between gap-3 text-label text-fg-subtle">
         <span>{rangeStartLabel ?? data[0]?.label}</span>

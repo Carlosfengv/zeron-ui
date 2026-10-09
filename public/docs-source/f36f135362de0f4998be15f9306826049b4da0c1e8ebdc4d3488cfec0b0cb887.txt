@@ -8,28 +8,17 @@ export type { SupportAnalyticsProps, SupportAnalyticsSnapshot, SupportAnalyticsA
 "use client";
 
 import { useId } from "react";
-import { Bar, BarChart, Line, LineChart, ReferenceLine, XAxis, YAxis, type LabelProps } from "recharts";
+import { curveLinear } from "@visx/curve";
+import { Bar, BarChart, BarXAxis } from "@zeron/ui/bar-chart";
+import { Line, LineChart } from "@zeron/ui/line-chart";
+import { ChartTooltip, TooltipContent, ReferenceLine, LinearGradient } from "@zeron/ui/chart-core";
 import { Badge } from "@zeron/ui/badge";
-import { chartColor } from "@zeron/ui/chart-primitives";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@zeron/ui/chart";
+import { ChartDataTable, chartColor } from "@zeron/ui/chart-primitives";
 import { Empty, EmptyDescription } from "@zeron/ui/empty";
 import { formatCount, formatDate, metricTrendPoints, trendSummary } from "./support-analytics-data";
 import type { SupportAnalyticsLabels, SupportAnalyticsMetric, SupportAnalyticsSnapshot } from "./support-analytics-types";
 
 const averageColor = { base: "var(--inverse-background)", onStrong: "var(--fg-on-inverse)" };
-
-function AverageMarker({ viewBox, text }: LabelProps & { text: string }) {
-  if (!viewBox || !("x" in viewBox) || !("y" in viewBox) || !("width" in viewBox) || typeof viewBox.x !== "number" || typeof viewBox.y !== "number" || typeof viewBox.width !== "number") return null;
-  return <g aria-hidden="true" pointerEvents="none">
-    <foreignObject x={viewBox.x} y={viewBox.y - 12} width={viewBox.width} height={24} overflow="visible">
-      <div className="flex h-full items-center"><div className="relative inline-flex">
-        <span className="absolute -right-0.5 top-1/2 size-1.5 -translate-y-1/2 rotate-45 bg-inverse-background" />
-        <Badge size="sm" variant="strong" color={averageColor} className="relative">{text}</Badge>
-      </div></div>
-    </foreignObject>
-    <circle cx={viewBox.x + viewBox.width} cy={viewBox.y} r={2} fill="var(--fg-default)" />
-  </g>;
-}
 
 export function TicketTrend({ data, labels, locale, timeZone }: { data: SupportAnalyticsSnapshot; labels: SupportAnalyticsLabels; locale: string; timeZone: string }) {
   const gradientId = `support-bars-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
@@ -39,30 +28,27 @@ export function TicketTrend({ data, labels, locale, timeZone }: { data: SupportA
   const radius = points.length > 12 ? 3 : points.length > 7 ? 6 : 8;
   return <div className="min-w-0 space-y-2">
     {!complete && <p className="text-label text-fg-subtle">{labels.average} {labels.unknown} · {labels.incomplete}</p>}
-    <ChartContainer className="h-40" config={{ count: { label: labels[data.channel], color: chartColor(1) } }} aria-label={`${labels.trend} · ${labels[data.channel]} · ${labels[data.range]}${average === null ? "" : ` · ${labels.average} ${formatCount(Math.round(average), locale)}`}`}
-      dataTable={{ caption: labels.trend, summary: labels.values, columns: [labels.date, labels.count], rows: points.map((point) => ({ id: String(point.start), label: formatDate(point.start, locale, timeZone), values: [formatCount(point.count, locale)] })) }}>
-      <BarChart data={points} accessibilityLayer barCategoryGap={points.length > 12 ? "12%" : "6%"} margin={{ top: 8, right: 3, bottom: 0, left: 0 }}>
-        <defs><linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--color-count)" stopOpacity={0.55} /><stop offset="55%" stopColor="var(--color-count)" stopOpacity={0.2} /><stop offset="100%" stopColor="var(--color-count)" stopOpacity={0} /></linearGradient></defs>
-        <XAxis dataKey="start" tickFormatter={date} axisLine={false} tickLine={false} interval="preserveStartEnd" tickMargin={10} minTickGap={data.range === "last-30-days" ? 24 : 8} height={28} />
-        <YAxis hide domain={[0, "auto"]} />
-        <ChartTooltip cursor={{ fill: "var(--hover)" }} content={<ChartTooltipContent hideIndicator labelFormatter={(value) => formatDate(Number(value), locale, timeZone)} valueFormatter={(value) => formatCount(value, locale)} />} />
-        <Bar dataKey="count" fill={`url(#${gradientId})`} radius={[radius, radius, 0, 0]} isAnimationActive={false} />
-        {average !== null && <ReferenceLine y={average} stroke="var(--fg-default)" strokeDasharray="3 4" label={<AverageMarker text={`${labels.average} ${formatCount(Math.round(average), locale)}`} />} />}
+    <div aria-label={`${labels.trend} · ${labels[data.channel]} · ${labels[data.range]}` + (average === null ? "" : ` · ${labels.average} ${formatCount(Math.round(average), locale)}`)}>
+      <BarChart className="h-40" aspectRatio="auto" data={points.map(point => ({ ...point }))} xDataKey="start" barGap={points.length > 12 ? 0.12 : 0.06} margin={{ top: 24, right: 3, bottom: 32, left: 0 }} animationDuration={0}>
+        <LinearGradient id={gradientId} from={chartColor(1)} to={chartColor(1)} fromOpacity={0.55} toOpacity={0} />
+        <BarXAxis formatLabel={(value) => date(Number(value))} maxLabels={data.range === "last-30-days" ? 7 : 12} />
+        <Bar dataKey="count" fill={`url(#${gradientId})`} stroke={chartColor(1)} lineCap={radius} animate={false} />
+        {average !== null && <ReferenceLine y={average} label={<Badge size="sm" variant="strong" color={averageColor}>{`${labels.average} ${formatCount(Math.round(average), locale)}`}</Badge>} />}
+        <ChartTooltip showDatePill={false} showDots={false} content={({ point }) => <TooltipContent title={formatDate(Number(point.start), locale, timeZone)} rows={[{ label: labels[data.channel], color: chartColor(1), value: formatCount(point.count, locale) }]} />} />
       </BarChart>
-    </ChartContainer>
+      <ChartDataTable caption={labels.trend} summary={labels.values} columns={[labels.date, labels.count]} rows={points.map(point => ({ id: String(point.start), label: formatDate(point.start, locale, timeZone), values: [formatCount(point.count, locale)] }))} />
+    </div>
   </div>;
 }
 
 export function MetricTrend({ metric }: { metric: SupportAnalyticsMetric }) {
   const points = metricTrendPoints(metric);
   if (!points.some((point) => point.value !== null)) return <span className="text-label text-fg-subtle">—</span>;
-  return <ChartContainer className="h-8 min-h-0 w-20" config={{ value: { color: chartColor(1) } }} aria-hidden="true">
-    <LineChart data={points} accessibilityLayer={false} margin={{ top: 4, right: 3, bottom: 4, left: 3 }}>
-      <XAxis hide dataKey="timestamp" type="number" domain={["dataMin", "dataMax"]} />
-      <YAxis hide domain={["dataMin", "dataMax"]} />
-      <Line dataKey="value" type="linear" stroke="var(--color-value)" strokeWidth={1.5} dot={false} connectNulls={false} isAnimationActive={false} />
+  return <div className="w-20" aria-hidden="true" inert>
+    <LineChart className="h-8" aspectRatio="auto" data={points.map(point => ({ ...point }))} xDataKey="timestamp" yDomain={["dataMin", "dataMax"]} margin={{ top: 4, right: 3, bottom: 4, left: 3 }} animationDuration={0} yDomainTween={false}>
+      <Line dataKey="value" stroke={chartColor(1)} strokeWidth={1.5} curve={curveLinear} fadeEdges={false} animate={false} />
     </LineChart>
-  </ChartContainer>;
+  </div>;
 }
 
 
@@ -169,7 +155,7 @@ export function createSupportAnalyticsDemoRecords(query: SupportAnalyticsQuery, 
         const id = `${query.range}:${channel}:${i}`;
         const newlyResolved = resolved.has(id);
         const status = i < open && !newlyResolved ? "open" : "resolved";
-        const firstReplyMs = (channel === "live-chat" ? 5 : channel === "email" ? 60 : channel === "in-app" ? 35 : 50) * 60000 * replyFactors[bucketIndex] / replyMeanFactor;
+        const firstReplyMs = Math.round((channel === "live-chat" ? 5 : channel === "email" ? 60 : channel === "in-app" ? 35 : 50) * 60000 * replyFactors[bucketIndex] / replyMeanFactor);
         const resolutionMs = status === "resolved" ? (newlyResolved ? 45 : channel === "live-chat" ? 48 : 413) * 60000 : null;
         return { id, number: `#HD-${3370 + channelIndex * 20000 + i}`, customer: names[i % names.length], subject: ["Billing question", "Account access", "Workspace settings", "API connection"][i % 4], channel, status, priority: i % 11 === 1 ? "urgent" : i % 5 === 2 ? "low" : "normal",
           createdAt: start + bucketIndex * bucketMs + (bucketMs * (1 - (position + 1) / (bucketCounts[bucketIndex] + 1))), canResolve: true,

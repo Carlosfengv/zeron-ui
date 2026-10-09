@@ -26,9 +26,9 @@ const blockCatalogEntries = [
   { name: "design-stack-01", title: "设计工具清单", description: "可编辑的工具清单，支持分类、网站、续费日期、多选、排序和撤销重做。", categories: ["application", "tables"], dependencies: ["avatar", "badge", "button", "checkbox", "container", "data-grid", "icon-context", "utils", "@thesvg/icons", "@tanstack/react-table"] },
   {"name": "file-upload-01", "title": "文件上传", "description": "支持拖拽、文件选择、逐项进度和取消的上传队列。", "categories": ["application", "files"], "dependencies": ["badge", "button", "chart-primitives", "container", "info-item", "inline-notice", "separator", "badge", "icon-context", "utils"]},
   { name: "integration-monitors-01", title: "集成监控", description: "集成监控的状态分类、检查条带、筛选、分页与宿主操作。", categories: ["application", "monitoring"], dependencies: ["avatar", "badge", "button", "container", "data-table", "dropdown", "empty", "alert", "icon-context", "info-item", "inline-notice", "input-group", "menu-item", "select", "skeleton", "status-overview", "tabs", "tooltip", "utils", "@thesvg/icons"] },
-  { name: "support-analytics-01", title: "客服工单分析", description: "工单趋势、服务指标、渠道筛选与最近工单处理。", categories: ["application", "analytics", "support"], dependencies: ["accordion", "avatar", "badge", "button", "chart", "chart-primitives", "container", "dropdown", "empty", "alert", "icon-context", "info-item", "inline-notice", "menu-item", "metric-card", "select", "skeleton", "springs", "table", "tabs", "tooltip", "utils", "recharts", "framer-motion"] },
+  { name: "support-analytics-01", title: "客服工单分析", description: "工单趋势、服务指标、渠道筛选与最近工单处理。", categories: ["application", "analytics", "support"], dependencies: ["accordion", "avatar", "badge", "button", "chart-primitives", "container", "dropdown", "empty", "alert", "icon-context", "info-item", "inline-notice", "menu-item", "metric-card", "select", "skeleton", "springs", "table", "tabs", "tooltip", "utils", "framer-motion", "bar-chart", "line-chart", "chart-core", "@visx/curve@4.0.0"] },
   { name: "transaction-details-01", title: "交易详情", description: "突出金额、交易字段、可折叠账单与附件操作的交易详情。", categories: ["application", "details"], dependencies: ["accordion", "avatar", "badge", "button", "container", "detail-list", "dropdown", "empty", "alert", "icon-context", "info-item", "inline-notice", "menu-item", "skeleton", "tooltip", "utils", "@hugeicons/react", "@hugeicons/core-free-icons"] },
-  { name: "cost-estimate-01", title: "费用估算", description: "四项用量、预设、月付/年付与最低消费的可控费用估算器。", categories: ["application", "analytics", "billing"], dependencies: ["badge", "button", "chart", "container", "empty", "field", "icon-context", "inline-notice", "input", "skeleton", "slider", "tabs", "tooltip", "utils", "recharts"] },
+  { name: "cost-estimate-01", title: "费用估算", description: "四项用量、预设、月付/年付与最低消费的可控费用估算器。", categories: ["application", "analytics", "billing"], dependencies: ["badge", "button", "chart-primitives", "container", "empty", "field", "icon-context", "inline-notice", "input", "skeleton", "slider", "tabs", "tooltip", "utils"] },
   { name: "getting-started-01", title: "入门任务清单", description: "可折叠的入门任务清单，包含完成数量、任务状态与宿主操作入口。", categories: ["application", "onboarding"], dependencies: ["button", "container", "stepper", "icon-context", "utils"] },
   { name: "security-overview-01", title: "安全概览", description: "安全评分、风险趋势、六维态势与受影响资产的可控扫描概览。", categories: ["application", "security", "analytics"], dependencies: ["badge", "button", "container", "area-chart", "radar-chart", "ring-chart", "chart-core", "chart-primitives", "empty", "icon-context", "inline-notice", "metric-card", "select", "skeleton", "tabs", "tooltip", "utils", "alert", "@visx/curve"] },
   { name: "deployment-detail-01", title: "部署详情", description: "网站预览、部署信息、域名、代码来源与阶段检查结果。", categories: ["application", "monitoring"], dependencies: ["avatar", "badge", "button", "card", "dropdown", "empty", "icon-context", "info-item", "inline-notice", "menu-item", "popover", "skeleton", "status-overview", "tooltip", "utils"] },
@@ -52,7 +52,7 @@ const blockCatalogEntries = [
     title: "AI Gateway Overview",
     description: "A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations.",
     categories: ["application", "analytics", "observability"],
-    dependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "recharts"],
+    dependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "area-chart", "bar-chart", "line-chart", "chart-core", "@visx/curve@4.0.0"],
   },
   {
     name: "ai-gateway-session-list-01",
@@ -115,7 +115,7 @@ const blockCatalogEntries = [
     title: "Model Analytics Detail",
     description: "A complete model analytics page with providers, pricing, performance, uptime, benchmarks, apps, activity, and FAQ.",
     categories: ["application", "details", "analytics"],
-    dependencies: ["accordion", "badge", "breadcrumb", "button", "card", "chart", "chart-primitives", "checkbox", "container", "data-table", "icon-context", "info-item", "metric-card", "page-layout", "select", "status-overview", "tabs", "tooltip", "utils", "recharts"],
+    dependencies: ["accordion", "badge", "breadcrumb", "button", "card", "chart-primitives", "checkbox", "container", "data-table", "icon-context", "info-item", "metric-card", "page-layout", "select", "status-overview", "tabs", "tooltip", "utils", "area-chart", "bar-chart", "line-chart", "chart-core", "@visx/curve@4.0.0"],
   },
   {
     name: "cluster-environment-detail-01",
@@ -164,7 +164,7 @@ const blockCatalogEntries = [
     title: "个人设置",
     description: "A personal settings workspace for model services, API keys, credentials, profile details, usage, and call logs.",
     categories: ["application", "settings"],
-    dependencies: ["user-account-01", "app-shell", "top-nav", "page-layout", "nav-menu", "nav-item", "input-group", "table", "field", "badge", "button", "detail-list", "inline-notice", "@lobehub/icons"],
+    dependencies: ["user-account-01", "app-shell", "top-nav", "page-layout", "nav-menu", "nav-item", "input-group", "table", "field", "badge", "button", "detail-list", "inline-notice", "@lobehub/icons", "bar-chart", "chart-core", "heatmap-chart"],
   },
   {
     name: "personal-model-usage-01",
@@ -175,7 +175,7 @@ const blockCatalogEntries = [
   },
   {
     name: "project-monitor-01", title: "项目监控", description: "包含项目概览、资源用量、存储分布与请求报告的中文监控卡片。",
-    categories: ["application", "analytics"], dependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "info-item", "inline-notice", "metric-card", "select", "skeleton", "status-overview", "storage-usage-01", "tabs", "tooltip", "utils", "recharts"],
+    categories: ["application", "analytics"], dependencies: ["badge", "button", "card", "chart", "empty", "icon-context", "info-item", "inline-notice", "metric-card", "select", "skeleton", "status-overview", "storage-usage-01", "tabs", "tooltip", "utils"],
   },
   {
     name: "model-router-01", title: "Model Router", description: "Animated gateway traffic, routing strategies and fallback controls.",
@@ -299,7 +299,7 @@ const blockCatalogEntries = [
     title: "Infinite Log Table",
     description: "A schema-driven virtualized log explorer with dynamic fields and filters, cursor pagination, live tailing, and record detail.",
     categories: ["application", "tables", "observability"],
-    dependencies: ["button", "checkbox", "dialog", "input-group", "mobile-drawer", "recharts", "@tanstack/react-table", "@tanstack/react-virtual", "inline-notice"],
+    dependencies: ["button", "checkbox", "chart-primitives", "dialog", "input-group", "mobile-drawer", "@tanstack/react-table", "@tanstack/react-virtual", "inline-notice"],
   },
 ] as const;
 

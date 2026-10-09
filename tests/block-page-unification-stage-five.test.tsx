@@ -67,11 +67,11 @@ describe("图表与原有交互", () => {
   it("模型分析为新 provider 分配稳定色，缺失价格不显示 0，切换回调仍控制可见性", () => {
     const provider = { ...defaultModelAnalyticsDetail.pricing.providers[0], id: "new-provider", name: "New Provider" };
     const data = { ...defaultModelAnalyticsDetail, pricing: { ...defaultModelAnalyticsDetail.pricing, providers: [provider], effectiveInput: [{ date: "Oct 5", "new-provider": 0 }, { date: "Oct 6" }] } };
-    const { container } = render(<ModelDetail02 data={data} defaultSection="pricing" />);
-    expect(container.querySelector("style")?.textContent).toContain(chartSeriesColor(provider.id));
+    render(<ModelDetail02 data={data} defaultSection="pricing" />);
+    const toggle = screen.getByRole("button", { name: "New Provider" });
+    expect(toggle.querySelector<HTMLElement>("[style]")?.style.backgroundColor).toBe(chartSeriesColor(provider.id));
     const table = screen.getByRole("table", { hidden: true, name: /effective input price history/ });
     expect(within(table).getAllByRole("cell", { hidden: true }).map((cell) => cell.textContent)).toEqual(["$0", "—"]);
-    const toggle = screen.getByRole("button", { name: "New Provider" });
     fireEvent.click(toggle); expect(toggle.getAttribute("aria-pressed")).toBe("false");
   });
 });

@@ -44,6 +44,7 @@ import {
   LatencySparkline,
   MetricSeriesChart,
   ProviderCostDonut,
+  providerChartColor,
   ProviderRequestsChart,
   RequestsAreaChart,
   TokensAreaChart,
@@ -246,7 +247,7 @@ function ProviderCostList({
   onSelect?: (providerId: string) => void;
   providers: AiGatewayProviderUsage[];
 }) {
-  return <ChartLegend onSelect={onSelect} items={providers.map((provider) => ({ id: provider.id, label: provider.name, value: formatCost(provider.costMicros) }))} />;
+  return <ChartLegend onSelect={onSelect} items={providers.map((provider) => ({ id: provider.id, label: provider.name, color: providerChartColor(provider.id), value: formatCost(provider.costMicros) }))} />;
 }
 
 function OperationsList({

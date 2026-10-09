@@ -67,7 +67,7 @@ function ResourceStatusDonut({
 }) {
   const assigned = statuses.reduce((sum, status) => sum + status.value, 0);
   const accessibleSummary = statuses.map((status) => `${status.label} ${formatValue(status.value)}`).join("，");
-  return <DonutSummary className="max-w-48" innerRadius="62.5%" total={total} segments={statuses.map((status, index) => ({ id: `${status.tone}-${index}`, label: status.label, value: status.value, color: statusPresentation[status.tone] }))} aria-label={`${totalLabel} ${formatValue(total)}：${accessibleSummary}，未覆盖 ${formatValue(Math.max(0, total - assigned))}`} center={<><span className="text-heading font-semibold">{formatValue(total)}</span><span className="text-label text-fg-subtle">{totalLabel}</span></>} />;
+  return <DonutSummary className="max-w-48" innerRadius="74.6%" total={total} segments={statuses.map((status, index) => ({ id: `${status.tone}-${index}`, label: status.label, value: status.value, color: statusPresentation[status.tone] }))} aria-label={`${totalLabel} ${formatValue(total)}：${accessibleSummary}，未覆盖 ${formatValue(Math.max(0, total - assigned))}`} center={<><span className="text-heading font-semibold">{formatValue(total)}</span><span className="text-label text-fg-subtle">{totalLabel}</span></>} />;
 }
 
 function ResourceStatusLegend({ statuses, formatValue }: { statuses: readonly ResourceStatusItem[]; formatValue: (value: number) => string }) {

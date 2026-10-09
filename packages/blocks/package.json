@@ -75,7 +75,6 @@
     "@thesvg/icons": "^3.2.15",
     "@zeron/ui": "workspace:*",
     "react-markdown": "^10.1.0",
-    "recharts": "^3.10.1",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "@hugeicons/core-free-icons": "^4.1.1",

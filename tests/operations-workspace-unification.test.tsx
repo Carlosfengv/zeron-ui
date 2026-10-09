@@ -10,8 +10,12 @@ import { MonitoringAlertList } from "@zeron/blocks/monitoring-alert-list-01";
 import { ServiceManagement } from "@zeron/blocks/service-management-01";
 import { ListPagination } from "@zeron/ui/list-pagination";
 
-beforeEach(() => { Object.defineProperty(window, "matchMedia", { configurable: true, value: vi.fn((media: string) => ({ matches: false, media, addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn(), dispatchEvent: vi.fn() })) }); });
-afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+beforeEach(() => {
+  vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} });
+  HTMLElement.prototype.getAnimations = vi.fn(() => []);
+  Object.defineProperty(window, "matchMedia", { configurable: true, value: vi.fn((media: string) => ({ matches: false, media, addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn(), dispatchEvent: vi.fn() })) });
+});
+afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe("阶段四工作区组合", () => {
   for (const [name, Component, active] of [

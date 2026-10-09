@@ -13,20 +13,22 @@ import { ClusterEnvironmentList, defaultClusterEnvironments } from "../packages/
 import { MonitoringAlertList, defaultMonitoringAlertItems } from "../packages/blocks/src/application/monitoring-alert-list-01/monitoring-alert-list";
 
 // Chart data and drawing have dedicated suites; these tests exercise feedback without canvas geometry.
-vi.mock("../packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-charts", () => {
+vi.mock("../packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-charts", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-charts")>();
   const Chart = () => <div data-testid="gateway-chart" />;
-  return { CostBarChart: Chart, ErrorRateChart: Chart, LatencyDistributionChart: Chart, LatencySparkline: Chart,
+  return { ...actual, CostBarChart: Chart, ErrorRateChart: Chart, LatencyDistributionChart: Chart, LatencySparkline: Chart,
     MetricSeriesChart: Chart, ProviderCostDonut: Chart, ProviderRequestsChart: Chart, RequestsAreaChart: Chart,
     TokensAreaChart: Chart, providerColors: ["var(--fg-info)"] };
 });
 vi.mock("../packages/blocks/src/application/storage-usage-01/storage-usage.module.css", () => ({ default: { metricTitle: "metricTitle" } }));
 beforeEach(() => {
+  vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} });
   Object.defineProperty(window, "matchMedia", { configurable: true, value: vi.fn((query: string) => ({
     matches: false, media: query, onchange: null, addListener: vi.fn(), removeListener: vi.fn(),
     addEventListener: vi.fn(), removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
   })) });
 });
-afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 function deferred() {
   let resolve!: () => void;

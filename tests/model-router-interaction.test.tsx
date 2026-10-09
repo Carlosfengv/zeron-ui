@@ -31,7 +31,8 @@ describe("Model Router policy workflow", () => {
     const { container } = render(<ModelRouter data={{ ...data, routes: [{ ...data.routes[0], share: 2 }] }} animated={false} />);
     const cell = container.querySelector('[data-slot="router-table-route"] td:nth-child(2)')!;
     expect(cell.textContent).toBe("—");
-    expect(cell.querySelector<HTMLElement>("[style]")?.style.width).toBe("0%");
+    expect(cell.querySelector('[data-slot="segmented-bar"]')?.getAttribute("data-complete")).toBe("false");
+    expect(cell.querySelector('[data-slot="segmented-bar-segment"]')?.hasAttribute("hidden")).toBe(true);
   });
 
   it("links graph labels, paths and table rows while keeping policy unchanged", () => {

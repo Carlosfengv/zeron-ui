@@ -164,7 +164,8 @@ describe("InfiniteLogTable", () => {
     const timelineSlider = screen.getByRole("slider", { name: "Request trend time range" });
     expect(timelineSlider).toBeTruthy();
     expect(timelineSlider.closest("section")?.parentElement?.classList.contains("z-action")).toBe(true);
-    expect(timelineSlider.querySelector("[data-chart]")?.className).toContain("[&_.recharts-tooltip-wrapper]:!z-tooltip");
+    expect(timelineSlider.querySelector('[data-slot="bar-chart"]')).toBeTruthy();
+    expect(timelineSlider.querySelector(".recharts-wrapper")).toBeNull();
     expect(screen.queryByText("Live")).toBeNull();
     expect(document.querySelectorAll('[role="row"]').length).toBeLessThan(90);
     const firstLogRow = screen.getAllByRole("checkbox", { name: /Select req_/ })[0]?.closest<HTMLElement>('[role="row"]');

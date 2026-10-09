@@ -24,11 +24,12 @@ describe("Model detail availability contract", () => {
     );
 
     expect(item).toMatchObject({
-      dependencies: expect.arrayContaining(["recharts", "tw-animate-css"]),
+      dependencies: expect.arrayContaining(["@visx/curve@4.0.0", "tw-animate-css"]),
       registryDependencies: expect.arrayContaining([
         "button",
         "card",
-        "chart",
+        "line-chart",
+        "chart-core",
         "container",
         "metric-card",
         "status-overview",
@@ -57,14 +58,15 @@ describe("Model detail availability contract", () => {
     expect(source).toContain("https://openrouter.ai/docs/provider-routing");
   });
 
-  it("uses Zeron primitives and the shadcn chart wrapper for the responsive composition", () => {
+  it("uses Zeron primitives and the current Zeron chart components for the responsive composition", () => {
     expect(source).toContain('from "@zeron/ui/container"');
     expect(source).toContain('from "@zeron/ui/metric-card"');
     expect(source).toContain('from "@zeron/ui/card"');
     expect(source).toContain('from "@zeron/ui/status-overview"');
-    expect(source).toContain("<ChartContainer");
-    expect(source).toContain("domain={[75, 100]}");
-    expect(source).toContain("ticks={[75, 82, 89, 96, 100]}");
+    expect(source).toContain("<LineChart");
+    expect(source).toContain("<ChartDataTable");
+    expect(source).toContain("yDomain={[75, 100]}");
+    expect(source).toContain("tickValues={[75, 82, 89, 96, 100]}");
     expect(source).toContain("sm:grid-cols-2");
     expect(source).toContain("pressed: visibleSeries[item.key]");
     expect(source).toContain("<ChartLegend");

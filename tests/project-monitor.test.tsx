@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ProjectMonitor } from "../packages/blocks/src/application/project-monitor-01/project-monitor";
 import { summarizeWindow } from "../packages/blocks/src/application/project-monitor-01/project-monitor-data";
 import { projectMonitorDemoData as data } from "../packages/blocks/src/application/project-monitor-01/project-monitor-demo-data";
@@ -9,7 +9,14 @@ import { projectMonitorDemoData as data } from "../packages/blocks/src/applicati
 // jsdom 验证行为；存储组件的 CSS module 在浏览器中单独验证。
 vi.mock("../packages/blocks/src/application/storage-usage-01/storage-usage.module.css", () => ({ default: { metricTitle: "metricTitle" } }));
 
-afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+beforeEach(() => {
+  vi.stubGlobal("ResizeObserver", class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  });
+});
+afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe("项目监控的数据口径", () => {
   it("总数、趋势、分类与状态计数来自同一组数据", () => {

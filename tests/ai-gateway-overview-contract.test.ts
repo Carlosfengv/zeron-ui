@@ -19,8 +19,8 @@ describe("AiGatewayOverview contract", () => {
 
     expect(capabilities["ai-gateway-overview-01"]).toEqual({ framework: "react", kind: "data-block" });
     expect(item).toMatchObject({
-      dependencies: ["recharts", "tw-animate-css"],
-      registryDependencies: ["badge", "button", "card", "chart", "container", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils", "alert", "chart-primitives"],
+      dependencies: ["tw-animate-css", "@visx/curve@4.0.0"],
+      registryDependencies: ["badge", "button", "card", "chart", "container", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils", "alert", "chart-primitives", "area-chart", "bar-chart", "line-chart", "chart-core"],
     });
     expect(item.files).toHaveLength(8);
     expect(blockIndex).toContain("AiGatewayOverview");
@@ -29,7 +29,7 @@ describe("AiGatewayOverview contract", () => {
     expect(dataAdapter).toContain("isAiGatewayOverviewData");
   });
 
-  it("uses Zeron primitives and the shared shadcn chart wrapper", () => {
+  it("uses current Zeron chart components and shared data access", () => {
     expect(source).toContain('from "@zeron/ui/page-layout"');
     expect(source).toContain('from "@zeron/ui/metric-card"');
     expect(source).toContain('from "@zeron/ui/card"');
@@ -44,14 +44,16 @@ describe("AiGatewayOverview contract", () => {
     expect(source).toContain('variant="pill"');
     expect(source).not.toContain('variant="segment"');
     expect(charts).toContain('from "@zeron/ui/chart"');
-    expect(charts).toContain("<ChartContainer");
-    expect(charts).toContain("accessibilityLayer");
+    expect(charts).toContain('<BarChart');
+    expect(charts).toContain('<AreaChart');
+    expect(charts).not.toContain('from "recharts"');
+    expect(charts).toContain("<ChartDataTable");
     const metricSeriesChart = charts.slice(
       charts.indexOf("export function MetricSeriesChart"),
       charts.indexOf("function latencyBucketLabel"),
     );
-    expect(metricSeriesChart).toContain('dataKey="timestamp"');
-    expect(metricSeriesChart).toContain("tickFormatter={formatValue}");
+    expect(metricSeriesChart).toContain('xDataKey="timestamp"');
+    expect(metricSeriesChart).toContain("formatValue={formatValue}");
     expect(metricSeriesChart).not.toContain(" hide ");
     expect(source).toContain("return sidebarConfig ? (");
     expect(source).toContain('<SidebarProvider breakpointBehavior="drawer">');

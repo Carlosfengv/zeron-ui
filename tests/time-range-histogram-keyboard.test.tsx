@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
 
 import { useState } from "react";
-import { afterEach, expect, test } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { TimeRangeHistogram } from "#components/time-range-histogram";
 
-afterEach(cleanup);
+beforeEach(() => { vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} }); });
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 test("a full histogram range can be narrowed and moved using the keyboard", () => {
   const updates: Array<{ start: number; end: number }> = [];

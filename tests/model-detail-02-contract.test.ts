@@ -43,14 +43,15 @@ describe("ModelDetail02 contract", () => {
     expect(source).not.toContain("GlobalFooter");
   });
 
-  it("uses Zeron components and the shared shadcn chart wrapper", () => {
+  it("uses Zeron components and the current Zeron chart components", () => {
     expect(source).toContain('from "@zeron/ui/page-layout"');
     expect(source).toContain('from "@zeron/ui/breadcrumb"');
     expect(source).toContain('from "@zeron/ui/card"');
-    expect(source).toContain('from "@zeron/ui/chart"');
+    expect(source).toContain('from "@zeron/ui/line-chart"');
     expect(source).toContain('from "@zeron/ui/container"');
     expect(source).toContain('from "@zeron/ui/data-table"');
-    expect(source).toContain("<ChartContainer");
+    expect(source).toContain("<ChartDataTable");
+    expect(source).not.toContain('from "recharts"');
     expect(source.match(/<CardGroup border="outlined" separated>/g)).toHaveLength(3);
     expect(source.match(/<DataTable/g)).toHaveLength(2);
     expect(source).toContain("data.model.facts.map");
@@ -119,12 +120,15 @@ describe("ModelDetail02 contract", () => {
       (entry: { name: string }) => entry.name === "model-detail-02",
     );
     expect(item).toMatchObject({
-      dependencies: ["recharts", "tw-animate-css", "@lobehub/icons"],
+      dependencies: ["tw-animate-css", "@lobehub/icons", "@visx/curve@4.0.0"],
       registryDependencies: expect.arrayContaining([
         "accordion",
         "app-shell",
         "breadcrumb",
-        "chart",
+        "line-chart",
+        "bar-chart",
+        "area-chart",
+        "chart-core",
         "container",
         "data-table",
         "icon-context",

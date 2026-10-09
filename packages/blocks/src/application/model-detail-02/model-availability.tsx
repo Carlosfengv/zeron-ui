@@ -6,22 +6,11 @@ import {
   useState,
   type ComponentPropsWithoutRef,
 } from "react";
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { curveMonotoneX } from "@visx/curve";
+import { Line, LineChart } from "@zeron/ui/line-chart";
+import { Grid, XAxis, YAxis, ChartTooltip, TooltipContent } from "@zeron/ui/chart-core";
 import { Card, CardContent, CardHeader, CardTitle } from "@zeron/ui/card";
-import {
-  chartTrendPreset,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@zeron/ui/chart";
-import { ChartLegend, chartColor } from "@zeron/ui/chart-primitives";
+import { ChartDataTable, ChartLegend, chartColor } from "@zeron/ui/chart-primitives";
 import { Container, ContainerBody } from "@zeron/ui/container";
 import { MetricCard } from "@zeron/ui/metric-card";
 import { StatusOverview } from "@zeron/ui/status-overview";
@@ -73,7 +62,7 @@ const chartConfig = {
     label: "Without Routing",
     color: chartColor(2),
   },
-} satisfies ChartConfig;
+};
 
 const overviewStates = {
   available: "operational",
@@ -235,13 +224,6 @@ function TrendCard({
       }),
     [locale, timeZone]
   );
-  const chartTicks = useMemo(() => {
-    if (chartData.length < 2) return chartData.map((point) => point.timestamp);
-    return Array.from({ length: 7 }, (_, index) => {
-      const pointIndex = Math.round((index / 6) * (chartData.length - 1));
-      return chartData[pointIndex]?.timestamp;
-    }).filter((timestamp): timestamp is number => timestamp !== undefined);
-  }, [chartData]);
 
   const series = [
     {
@@ -265,71 +247,14 @@ function TrendCard({
           </h3>
         </CardHeader>
         <CardContent>
-          <ChartContainer
-            className="aspect-auto h-[320px] min-h-0 w-full text-label"
-            config={chartConfig}
-            aria-label="Availability over the last 24 hours"
-            dataTable={{ caption: `Availability (%) · ${timeZone}`, columns: ["Time", ...series.map((item) => item.label)], rows: chartData.map((point, index) => ({ id: String(index), label: Number.isFinite(point.timestamp) ? tooltipFormatter.format(point.timestamp) : "—", values: [formatPercent(point.routed), formatPercent(point.direct)] })) }}
-          >
-            <LineChart
-              accessibilityLayer
-              data={chartData.filter((point) => Number.isFinite(point.timestamp)).map((point) => ({ ...point, routed: point.routed !== null && Number.isFinite(point.routed) ? point.routed : null, direct: point.direct !== null && Number.isFinite(point.direct) ? point.direct : null }))}
-              margin={{ bottom: 8, left: 0, right: 8, top: 8 }}
-            >
-              <CartesianGrid {...chartTrendPreset.grid} />
-              <XAxis
-                axisLine={false}
-                dataKey="timestamp"
-                domain={["dataMin", "dataMax"]}
-                minTickGap={56}
-                scale="time"
-                tickFormatter={(value: number) => axisFormatter.format(value)}
-                tickLine={false}
-                tickMargin={10}
-                ticks={chartTicks}
-                type="number"
-              />
-              <YAxis
-                axisLine={false}
-                domain={[75, 100]}
-                tickFormatter={(value: number) => `${value}%`}
-                tickLine={false}
-                ticks={[75, 82, 89, 96, 100]}
-                width={44}
-              />
-              <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    labelFormatter={(value) => tooltipFormatter.format(Number(value))}
-                    valueFormatter={(value) => formatPercent(Number(value))}
-                  />
-                }
-                cursor={{ stroke: "var(--border)", strokeDasharray: "3 3" }}
-              />
-              <Line
-                connectNulls={false}
-                activeDot={{ r: 3 }}
-                dataKey="routed"
-                dot={false}
-                hide={!visibleSeries.routed}
-                isAnimationActive={false}
-                stroke="var(--color-routed)"
-                strokeWidth={2}
-                type="monotone"
-              />
-              <Line
-                connectNulls={false}
-                activeDot={{ r: 3 }}
-                dataKey="direct"
-                dot={false}
-                hide={!visibleSeries.direct}
-                isAnimationActive={false}
-                stroke="var(--color-direct)"
-                strokeWidth={2}
-                type="monotone"
-              />
+          <div className="min-w-0" aria-label="Availability over the last 24 hours">
+            <LineChart className="h-[320px]" aspectRatio="auto" data={chartData.filter(point => Number.isFinite(point.timestamp)).map(point => ({ ...point, routed: point.routed !== null && Number.isFinite(point.routed) ? point.routed : null, direct: point.direct !== null && Number.isFinite(point.direct) ? point.direct : null }))} xDataKey="timestamp" yDomain={[75, 100]} margin={{ bottom: 36, left: 48, right: 8, top: 12 }} animationDuration={0} yDomainTween={false}>
+              <Grid horizontal rowTickValues={[75, 82, 89, 96, 100]} /><XAxis numTicks={7} formatDate={date => axisFormatter.format(date)} /><YAxis tickValues={[75, 82, 89, 96, 100]} formatValue={value => `${value}%`} />
+              {series.filter(item => visibleSeries[item.key]).map(item => <Line key={item.key} dataKey={item.key} stroke={chartConfig[item.key].color} strokeWidth={2} curve={curveMonotoneX} fadeEdges={false} animate={false} showMarkers={chartData.length === 1} />)}
+              <ChartTooltip showDatePill={false} indicatorDasharray="3 3" content={({ point }) => <TooltipContent title={tooltipFormatter.format(Number(point.timestamp))} rows={series.filter(item => visibleSeries[item.key]).map(item => ({ label: item.label, color: chartConfig[item.key].color, value: formatPercent(typeof point[item.key] === "number" ? point[item.key] as number : null) }))} />} />
             </LineChart>
-          </ChartContainer>
+            <ChartDataTable caption={`Availability (%) · ${timeZone}`} columns={["Time", ...series.map(item => item.label)]} rows={chartData.map((point, index) => ({ id: String(index), label: Number.isFinite(point.timestamp) ? tooltipFormatter.format(point.timestamp) : "—", values: [formatPercent(point.routed), formatPercent(point.direct)] }))} />
+          </div>
 
           <ChartLegend aria-label="Chart series" className="mt-3" items={series.map((item) => ({ id: item.key, label: item.label, color: chartConfig[item.key].color, value: formatPercent(item.value), pressed: visibleSeries[item.key] }))} onSelect={(id) => {
             if (id !== "routed" && id !== "direct") return;
