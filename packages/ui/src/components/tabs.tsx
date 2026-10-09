@@ -71,7 +71,7 @@ const underlineIndicatorClasses: Record<TabsColor, string> = {
 };
 
 const selectedForegroundClasses: Record<TabsColor, string> = {
-  brand: "text-fg-on-brand",
+  brand: "text-fg-on-primary-action",
   neutral: "text-fg-on-inverse",
   default: "text-fg-default",
 };
