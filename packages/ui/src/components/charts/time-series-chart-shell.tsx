@@ -1,5 +1,7 @@
 "use client";
 
+import { resolveChartYDomain, type ChartYDomain } from "./chart-domain";
+
 import { scaleLinear, scaleTime } from "@visx/scale";
 import { bisector, extent } from "d3-array";
 import { useReducedMotion, type Transition } from "motion/react";
@@ -79,7 +81,7 @@ function collectNumericExtents(
   data: Record<string, unknown>[],
   dataKeys: string[],
   lines: LineConfig[]
-) {
+): [number, number] {
   let minValue = Number.POSITIVE_INFINITY;
   let maxValue = Number.NEGATIVE_INFINITY;
 
@@ -106,24 +108,20 @@ function collectNumericExtents(
     }
   }
 
-  if (minValue === Number.POSITIVE_INFINITY) {
-    return { minValue: 0, maxValue: 100 };
-  }
-
-  return { minValue, maxValue };
+  return [minValue, maxValue];
 }
 
 function resolveTimeSeriesYDomain(
-  data: Record<string, unknown>[],
-  dataKeys: string[],
-  yScaleDomainMax: number | undefined,
-  lines: LineConfig[]
+  [minValue, maxValue]: readonly [number, number],
+  yScaleDomainMax: number | undefined
 ): [number, number] {
   if (isFiniteValue(yScaleDomainMax) && yScaleDomainMax > 0) {
     return [0, yScaleDomainMax * 1.1];
   }
 
-  const { minValue, maxValue } = collectNumericExtents(data, dataKeys, lines);
+  if (!Number.isFinite(minValue) || !Number.isFinite(maxValue)) {
+    return [0, 100];
+  }
 
   if (minValue >= 0) {
     const top = maxValue <= 0 ? 100 : maxValue * 1.1;
@@ -174,6 +172,8 @@ export interface TimeSeriesChartInnerProps {
   /** Loading vs ready — drives chart phase until transition orchestration lands. */
   chartStatus?: ChartStatus;
   loadingLabel?: string;
+  /** Optional Y bounds; real observations outside the bounds expand the domain. */
+  yDomain?: ChartYDomain;
   /** Animate y-domain on status / data transitions. Default: true */
   yDomainTween?: boolean;
   yDomainTweenDuration?: number;
@@ -218,6 +218,7 @@ const TimeSeriesChartCore = memo(function TimeSeriesChartCore({
   yScaleDomainMax,
   chartStatus = DEFAULT_CHART_STATUS,
   loadingLabel,
+  yDomain,
   yDomainTween = true,
   yDomainTweenDuration = DEFAULT_Y_DOMAIN_TWEEN_MS,
   xDomain: requestedXDomain,
@@ -250,9 +251,14 @@ const TimeSeriesChartCore = memo(function TimeSeriesChartCore({
         usesDefaultOnly && yScaleDomainMax != null
           ? yScaleDomainMax
           : undefined;
-      return resolveTimeSeriesYDomain(sourceData, dataKeys, domainMax, lines);
+      const extents = collectNumericExtents(sourceData, dataKeys, lines);
+      return resolveChartYDomain(
+        extents,
+        resolveTimeSeriesYDomain(extents, domainMax),
+        yDomain
+      );
     },
-    [lines, yScaleDomainMax]
+    [lines, yScaleDomainMax, yDomain]
   );
 
   const skeletonData = useMemo(() => {
@@ -359,14 +365,16 @@ const TimeSeriesChartCore = memo(function TimeSeriesChartCore({
     () =>
       computeYDomainsByAxis({
         lines,
+        nice: !yDomain,
         resolveDomain: (dataKeys) => resolveYDomain(skeletonData, dataKeys),
       }),
-    [lines, resolveYDomain, skeletonData]
+    [lines, resolveYDomain, skeletonData, yDomain]
   );
 
   const yDomainTargetByAxis = useMemo(() => {
     const base = computeYDomainsByAxis({
       lines,
+      nice: !yDomain,
       resolveDomain: (dataKeys) =>
         resolveYDomain(xDomain ? visiblePlotData : data, dataKeys),
     });
@@ -398,6 +406,7 @@ const TimeSeriesChartCore = memo(function TimeSeriesChartCore({
     resolveYDomain,
     visiblePlotData,
     xDomain,
+    yDomain,
   ]);
 
   const animatedYDomainsByAxis = useAnimatedYDomains({

@@ -98,6 +98,8 @@ export interface BarChartProps {
   /** Fetch / display status. When `"loading"`, a shimmer skeleton replaces the
    * bars (no chart data required). Default: `"ready"`. */
   status?: ChartStatus;
+  /** Enable chart keyboard inspection. Disable when a parent owns keyboard input. Default: true */
+  keyboardNavigation?: boolean;
 }
 
 const DEFAULT_MARGIN: Margin = { top: 40, right: 40, bottom: 40, left: 40 };
@@ -168,6 +170,7 @@ interface ChartInnerProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
   onPhaseChange?: (phase: ChartPhase) => void;
   status: ChartStatus;
+  keyboardNavigation: boolean;
 }
 
 function ChartInner(props: ChartInnerProps) {
@@ -198,6 +201,7 @@ const ChartCore = memo(function ChartCore({
   containerRef,
   onPhaseChange,
   status,
+  keyboardNavigation,
 }: ChartInnerProps) {
   const { tooltipData, setTooltipData, scheduleTooltip, clearTooltip } =
     useScheduledTooltip<TooltipData>();
@@ -306,6 +310,14 @@ const ChartCore = memo(function ChartCore({
       resolveDomain: (dataKeys) => {
         let max = 0;
         for (const d of data) {
+          if (stacked) {
+            const total = dataKeys.reduce((sum, key) => {
+              const value = d[key];
+              return sum + (typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : 0);
+            }, 0);
+            max = Math.max(max, total);
+            continue;
+          }
           for (const key of dataKeys) {
             const value = d[key];
             if (typeof value === "number" && Number.isFinite(value) && value >= 0 && value > max) {
@@ -316,7 +328,7 @@ const ChartCore = memo(function ChartCore({
         return [0, (max || 100) * 1.1];
       },
     });
-  }, [data, innerHeight, isHorizontal, lines, valueScale]);
+  }, [data, innerHeight, isHorizontal, lines, valueScale, stacked]);
 
   const primaryYScale = getPrimaryYScale(yScales, valueScale);
 
@@ -619,7 +631,8 @@ const ChartCore = memo(function ChartCore({
 
   return (
     <ChartProvider value={contextValue}>
-      <div role="group" aria-label="Bar chart. Use arrow keys to inspect data." tabIndex={canInteract ? 0 : -1} className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" onBlur={clearTooltip} onKeyDown={(event) => {
+      <div role="group" aria-label="Bar chart. Use arrow keys to inspect data." tabIndex={keyboardNavigation ? canInteract ? 0 : -1 : undefined} className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" onBlur={clearTooltip} onKeyDown={(event) => {
+        if (!keyboardNavigation) return;
         const index = chartKeyboardIndex(event, tooltipData?.index ?? null, data.length);
         if (index === null) clearTooltip(); else if (index !== undefined && canInteract) showIndex(index);
       }}>
@@ -691,6 +704,7 @@ export function BarChart({
   children,
   onPhaseChange,
   status = "ready",
+  keyboardNavigation = true,
 }: BarChartProps) {
   const surface = useSurface();
   const reducedMotion = useReducedMotion();
@@ -724,6 +738,7 @@ export function BarChart({
             stacked={stacked}
             stackGap={stackGap}
             status={status}
+            keyboardNavigation={keyboardNavigation}
             width={width}
             xDataKey={xDataKey}
           >

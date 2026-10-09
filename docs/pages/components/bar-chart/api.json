@@ -108,6 +108,12 @@
     "description": "Fetch / display status. When `\"loading\"`, a shimmer skeleton replaces the\nbars (no chart data required). Default: `\"ready\"`."
   },
   {
+    "name": "BarChart.keyboardNavigation",
+    "type": "boolean",
+    "default": "true",
+    "description": "Enable chart keyboard inspection. Disable when a parent owns keyboard input. Default: true"
+  },
+  {
     "name": "Bar.dataKey",
     "type": "string",
     "default": "required",
@@ -124,6 +130,12 @@
     "type": "string",
     "default": "var(--chart-1)",
     "description": "Fill color for the bar. Can be a color, gradient url, or pattern url. Default: var(--chart-1)"
+  },
+  {
+    "name": "Bar.fillForDatum",
+    "type": "(point: Record<string, unknown>, index: number) => string",
+    "default": "—",
+    "description": "Optional fill per datum, for selection or categorical state."
   },
   {
     "name": "Bar.stroke",
@@ -394,6 +406,12 @@
     "type": "string",
     "default": "\"\"",
     "description": "Additional class name for the container."
+  },
+  {
+    "name": "BarXAxis.formatLabel",
+    "type": "(value: string, point: Record<string, unknown>) => string",
+    "default": "—",
+    "description": "Format category labels without changing category identity or ordering."
   },
   {
     "name": "BarXAxis.tickerHalfWidth",

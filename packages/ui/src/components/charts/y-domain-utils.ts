@@ -77,20 +77,23 @@ export function resolveAnimatedYDestinationDomains(
 export function computeYDomainsByAxis({
   lines,
   resolveDomain,
+  nice = true,
 }: {
   lines: LineConfig[];
   resolveDomain: (dataKeys: string[]) => YDomain;
+  nice?: boolean;
 }): Record<string, YDomain> {
   const groups = groupLinesByYAxisId(lines);
   const domains: Record<string, YDomain> = {};
 
   for (const [axisId, axisLines] of groups) {
     const dataKeys = axisLines.map((line) => line.dataKey);
-    domains[normalizeYAxisId(axisId)] = niceYDomain(resolveDomain(dataKeys));
+    const domain = resolveDomain(dataKeys);
+    domains[normalizeYAxisId(axisId)] = nice ? niceYDomain(domain) : domain;
   }
 
   if (!domains.left) {
-    domains.left = niceYDomain([0, 100]);
+    domains.left = nice ? niceYDomain([0, 100]) : resolveDomain([]);
   }
 
   return domains;

@@ -3060,6 +3060,16 @@
       ],
       "files": [
         {
+          "path": "packages/ui/src/components/charts/chart-domain.ts",
+          "type": "registry:ui",
+          "target": "components/ui/charts/chart-domain.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/reference-line.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/reference-line.tsx"
+        },
+        {
           "path": "packages/ui/src/components/chart-core.tsx",
           "type": "registry:ui",
           "target": "components/ui/chart-core.tsx"

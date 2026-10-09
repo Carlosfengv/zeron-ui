@@ -72,6 +72,12 @@
     "description": "Animate y-domain over this duration (ms) on status transitions. Default: 500."
   },
   {
+    "name": "LineChart.yDomain",
+    "type": "ChartYDomain",
+    "default": "—",
+    "description": "Optional explicit Y bounds. Out-of-range observations remain visible."
+  },
+  {
     "name": "LineChart.yDomainTween",
     "type": "boolean",
     "default": "true",

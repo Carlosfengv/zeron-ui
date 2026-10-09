@@ -17,6 +17,8 @@ import {
 const Y_AXIS_POSITION_TWEEN_MS = DEFAULT_Y_DOMAIN_TWEEN_MS;
 
 export interface YAxisProps {
+  /** Explicit value ticks, retaining the chart's scale. */
+  tickValues?: number[];
   /** Scale group id (Recharts `yAxisId`). Default: `"left"`. */
   yAxisId?: string | number;
   /** Which side of the chart to render labels. Default: `"left"`. */
@@ -92,6 +94,7 @@ export function YAxis(props: YAxisProps) {
 }
 
 const YAxisInner = memo(function YAxisInner({
+  tickValues: requestedTicks,
   yAxisId,
   orientation = "left",
   numTicks = Y_AXIS_DEFAULT_TICK_COUNT,
@@ -106,7 +109,7 @@ const YAxisInner = memo(function YAxisInner({
   const axisId = normalizeYAxisId(yAxisId);
 
   const ticks = useMemo(() => {
-    const tickValues = yScale.ticks(resolveYAxisTickCount(numTicks));
+    const tickValues = requestedTicks?.filter(Number.isFinite) ?? yScale.ticks(resolveYAxisTickCount(numTicks));
     return tickValues.map((value) => {
       const y = (yScale(value) ?? 0) + margin.top;
       return {
@@ -129,6 +132,7 @@ const YAxisInner = memo(function YAxisInner({
     formatValue,
     axisId,
     referenceAreas,
+    requestedTicks,
   ]);
 
   return createPortal(

@@ -8,6 +8,8 @@ export * from "./charts/legend";
 export { ChartLegend, type ChartLegendProps } from "./charts/chart-legend";
 export { ChartConfigProvider, type ChartConfigProviderProps } from "./charts/chart-config-context";
 export { ReferenceArea, type ReferenceAreaProps } from "./charts/reference-area";
+export { ReferenceLine, type ReferenceLineProps } from "./charts/reference-line";
+export type { ChartYDomain } from "./charts/chart-domain";
 export { PatternLines, PatternCircles, PatternWaves, PatternHexagons } from "./charts/visx-pattern";
 export { chartCssVars, useChart, useChartStable, useChartHover, type LineConfig, type Margin } from "./charts/chart-context";
 export type { ChartPhase, ChartStatus, LoadingStyle } from "./charts/chart-phase";

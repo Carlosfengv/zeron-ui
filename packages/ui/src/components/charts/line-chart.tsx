@@ -1,5 +1,6 @@
 "use client";
 
+import type { ChartYDomain } from "./chart-domain";
 import { ParentSize } from "@visx/responsive";
 import { useReducedMotion, type Transition } from "motion/react";
 import {
@@ -52,6 +53,8 @@ export interface LineChartProps {
   loadingLabel?: string;
   /** Animate y-domain over this duration (ms) on status transitions. Default: 500. */
   yDomainTweenDuration?: number;
+  /** Optional explicit Y bounds. Out-of-range observations remain visible. */
+  yDomain?: ChartYDomain;
   /** Animate y-domain when status or target domain changes. Default: true */
   yDomainTween?: boolean;
   /** Visible x-domain for brush zoom. */
@@ -153,6 +156,7 @@ interface ChartInnerProps {
   chartStatus: ChartStatus;
   loadingLabel?: string;
   yDomainTweenDuration: number;
+  yDomain?: ChartYDomain;
   yDomainTween: boolean;
   xDomain?: [Date, Date];
   xDomainSlotCount?: number;
@@ -175,6 +179,7 @@ function ChartInner({
   chartStatus,
   loadingLabel,
   yDomainTweenDuration,
+  yDomain,
   yDomainTween,
   xDomain,
   xDomainSlotCount,
@@ -205,6 +210,7 @@ function ChartInner({
       xDataKey={xDataKey}
       xDomain={xDomain}
       xDomainSlotCount={xDomainSlotCount}
+      yDomain={yDomain}
       yDomainTween={yDomainTween}
       yDomainTweenDuration={yDomainTweenDuration}
     >
@@ -226,6 +232,7 @@ export function LineChart({
   status = DEFAULT_CHART_STATUS,
   loadingLabel,
   yDomainTweenDuration = DEFAULT_Y_DOMAIN_TWEEN_MS,
+  yDomain,
   yDomainTween = true,
   xDomain,
   xDomainSlotCount,
@@ -292,6 +299,7 @@ export function LineChart({
             xDataKey={xDataKey}
             xDomain={xDomain}
             xDomainSlotCount={xDomainSlotCount}
+            yDomain={yDomain}
             yDomainTween={yDomainTween}
             yDomainTweenDuration={reducedMotion ? 0 : Math.max(0, Number.isFinite(yDomainTweenDuration) ? yDomainTweenDuration : 500)}
           >

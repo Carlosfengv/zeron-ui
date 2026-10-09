@@ -7,6 +7,8 @@ import { cn } from "#system/utils";
 import { useChart, useChartStable } from "./chart-context";
 
 export interface BarXAxisProps {
+  /** Format category labels without changing category identity or ordering. */
+  formatLabel?: (value: string, point: Record<string, unknown>) => string;
   /** Width of the date ticker box for fade calculation. Default: 50 */
   tickerHalfWidth?: number;
   /** Whether to show all labels or skip some for dense data. Default: false */
@@ -88,6 +90,7 @@ export function BarXAxis(props: BarXAxisProps) {
 }
 
 const BarXAxisInner = memo(function BarXAxisInner({
+  formatLabel,
   tickerHalfWidth = 50,
   showAllLabels = false,
   maxLabels = 12,
@@ -107,7 +110,7 @@ const BarXAxisInner = memo(function BarXAxisInner({
       const bandX = barScale(label) ?? 0;
       // Center the label under the bar group
       const x = bandX + bandWidth / 2 + margin.left;
-      return { label, x };
+      return { label: formatLabel ? formatLabel(label, d) : label, x };
     });
 
     // If showAllLabels is true or we have fewer than maxLabels, show all
@@ -126,6 +129,7 @@ const BarXAxisInner = memo(function BarXAxisInner({
     margin.left,
     showAllLabels,
     maxLabels,
+    formatLabel,
   ]);
 
   const isHovering = tooltipData !== null;
