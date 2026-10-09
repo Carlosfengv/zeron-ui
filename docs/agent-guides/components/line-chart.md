@@ -76,3 +76,5 @@ const data = [
 function BasicDemo() { return <LineChart data={data}><Grid horizontal /><Line dataKey="requests" /><XAxis /><YAxis /><ChartTooltip /></LineChart>; }
 export function Example() { return <BasicDemo />; }
 ```
+
+yDomain 可传 `[数值 | "dataMin", 数值 | "dataMax"]` 指定纵轴边界；范围外的真实观察值仍保留，未传时使用原有自动范围。相同值的上下界扩展为非零范围，非法或逆序边界回退自动范围。

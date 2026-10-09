@@ -32,3 +32,5 @@ XAxis.formatDate(date) 可按宿主 locale / timeZone 格式化标签，并同�
 默认标注与数值支持长文本换行，复合 Legend 的完整标注 / 数值项目限制在容器宽度内；自定义 renderItem / className 覆盖时由宿主保留这一边界。
 
 ChartConfigProvider 提供 spring 配置。useChart/useChartStable/useChartHover 只在图表上下文内使用；稳定绘图与 hover 状态分离，避免移动指针重建所有路径。chartCssVars 将参考颜色字段映射到现有 fg、border、surface、focus-ring 和 chart-N。
+
+ReferenceLine 使用共享坐标尺绘制参考线：y 为数值，x 为日期／毫秒或 BarChart 的分类标识（字符串或数值）；横向 BarChart 中 y 绘制垂直数值线、x 绘制水平分类线。可传 stroke、strokeDasharray、label 和 yAxisId。超出绘图范围或非法坐标不绘制，不改变数值域。YAxis.tickValues 可指定刻度位置；BarXAxis.formatLabel 保留分类身份与顺序，只格式化显示标签。

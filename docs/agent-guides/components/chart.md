@@ -4,7 +4,7 @@ name: chart
 kind: component
 status: stable
 locale: zh-CN
-summary: 基于 Recharts 的容器、趋势与响应式圆环，保留数据语义和可访问数据入口。
+summary: 兼容 Recharts 容器，并通过当前 AreaChart/PieChart 提供趋势与响应式圆环。
 package_import: "@zeron/ui/chart"
 registry_import: "@/components/ui/chart"
 source: packages/ui/src/components/chart.tsx
@@ -19,9 +19,9 @@ related: [chart-primitives, metric-card, time-range-histogram]
 
 普通主系列使用 `chartColor(1)`，比较系列显式配置 1–5 槽位；中性状态使用 `chartColor(6)`，错误或危险状态使用 `chartColor(7)`。动态系列可用 `chartSeriesColor(id)` 在前五色中稳定兜底，有限槽位允许碰撞。图形、图例和关联控件共用颜色。`color` 与 `theme` 显式覆盖仍生效；状态工具和网格、文字、轨道保持独立。
 
-`TimeSeriesChart` 是两个请求趋势消费者验证后的薄组合。data 每项为 `{ timestamp: number, values: Record<string, number | null> }`；series 含稳定 id、label 和可选 color。必填 locale/timeZone/label，domain 可指定真实时间窗口。formatValue 同时用于轴、Tooltip 和数据表。没有汇总、补零、排序、采样或隐式连线；单点保留标记、全零保留真实值、空数组显示无数据。dataSummary 由消费者本地化。绘图关闭非必要动画。
+`TimeSeriesChart` 使用当前 Zeron AreaChart / chart-core 渲染，是请求趋势的薄组合。data 每项为 `{ timestamp: number, values: Record<string, number | null> }`；series 含稳定 id、label 和可选 color。必填 locale/timeZone/label，domain 可指定真实时间窗口。formatValue 同时用于轴、Tooltip 和数据表。业务组合不汇总、不补零、不排序、不隐式连线；绘图沿用 AreaChart 的屏幕采样，数据表保留全部原始观察值；单点保留标记、全零保留真实值、空数组显示无数据。dataSummary 由消费者本地化。绘图关闭非必要动画。
 
-`DonutSummary` 接收 segments（id/label/value/color）、业务 total 和中心 center。total 不传时只有完整非负数列才派生总量；null 表示未知。部分已知总量留中性轨道，超额绘图缩放但不改真实值。调用方提供完整 aria-label，并配 ChartLegend 或可读明细；不依赖鼠标 Tooltip。innerRadius 可按实际用途保留不同环宽。
+`DonutSummary` 使用当前 Zeron PieChart / PieSlice 渲染，接收 segments（id/label/value/color）、业务 total 和中心 center。分段沿用原生圆环示例的 2px 间隙和 4px 圆角；单段不添加间隙。total 不传时只有完整非负数列才派生总量；null 表示未知。部分已知总量留中性轨道，超额绘图缩放但不改真实值。调用方提供完整 aria-label，并配 ChartLegend 或可读明细；不依赖鼠标 Tooltip。innerRadius 可按实际用途保留不同环宽。需要区分的分类应显式分配 1–5 槽位，并在筛选或重排时保持图形与图例的颜色一致。
 
 ```tsx
 import { TimeSeriesChart, DonutSummary } from "@zeron/ui/chart";

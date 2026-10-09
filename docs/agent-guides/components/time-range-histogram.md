@@ -10,7 +10,7 @@ registry_import: "@/components/ui/time-range-histogram"
 source: packages/ui/src/components/time-range-histogram.tsx
 registry: packages/ui/registry.json
 typecheck_examples: true
-related: [chart, chart-primitives]
+related: [bar-chart, chart-core, chart-primitives]
 ---
 
 # Time Range Histogram
@@ -35,4 +35,6 @@ export function RequestRange() {
 }
 ```
 
-安装 `npx zeron-ui add time-range-histogram`，保留 Chart、chart-primitives 与 surfaces 的依赖链。主题切换通过全局变量生效，显式 series.color 覆盖继续接受可信 CSS 色值。
+内部绘图使用 Zeron `BarChart` / `Bar`，通过 `fillForDatum` 表达选区内外颜色。`keyboardNavigation={false}` 使范围选择器独占键盘操作，避免额外图表焦点；鼠标悬停仍显示原始桶标签和系列数值。
+
+安装 `npx zeron-ui add time-range-histogram`，保留 bar-chart、chart-core 与 surfaces 的依赖链。主题切换通过全局变量生效，显式 series.color 覆盖继续接受可信 CSS 色值。

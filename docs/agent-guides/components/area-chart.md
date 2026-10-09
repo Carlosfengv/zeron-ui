@@ -40,3 +40,5 @@ export function Trend() {
   return <AreaChart data={data}><Grid horizontal /><Area dataKey="value" /><XAxis /><YAxis /><ChartTooltip /></AreaChart>;
 }
 ```
+
+yDomain 可传 `[数值 | "dataMin", 数值 | "dataMax"]` 指定纵轴边界；范围外的真实观察值仍保留，堆叠系列按累计几何扩展范围，未传时使用原有自动范围。相同值的上下界扩展为非零范围，非法或逆序边界回退自动范围。

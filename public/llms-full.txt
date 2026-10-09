@@ -2010,7 +2010,7 @@ registry_import: "@/components/blocks/support-analytics-01"
 source: packages/blocks/src/application/support-analytics-01/support-analytics.tsx
 types: packages/blocks/src/application/support-analytics-01/support-analytics-types.ts
 registry: packages/blocks/registry.json
-related: [security-overview-01, project-monitor-01, deployment-detail-01, model-router-01, chart, container]
+related: [security-overview-01, project-monitor-01, deployment-detail-01, model-router-01, bar-chart, line-chart, chart-core, container]
 ---
 
 # 客服工单分析
@@ -2046,9 +2046,9 @@ demo 从完整固定工单集合重算分桶、计数及指标；包含状态演
 
 ## 组件与样式
 
-复用 Container/Header/Body/Footer、Select、Tabs、MetricCard、Chart、ChartDataTable、Table、Accordion、Avatar、InfoItem、Badge、Dropdown/MenuItem、Button、Tooltip、Empty、Alert、InlineNotice、Skeleton。柱图和短趋势通过 ChartContainer 与现有 Recharts 组合；不另写 SVG 交互或补点满足 MetricCard 的 24 点要求。指标当前值、目标与前期值使用同一单位域校验；非法比例不计算环比。短趋势按真实时间间隔绘制，无效数值保留断点，无效时间不绘制，原始数据仍可通过数据表查阅。
+复用 Container/Header/Body/Footer、Select、Tabs、MetricCard、Chart、ChartDataTable、Table、Accordion、Avatar、InfoItem、Badge、Dropdown/MenuItem、Button、Tooltip、Empty、Alert、InlineNotice、Skeleton。柱图和短趋势使用当前 Zeron BarChart / LineChart，与 chart-core 的 Tooltip 和 ReferenceLine 组合；不另写 SVG 交互或补点满足 MetricCard 的 24 点要求。指标当前值、目标与前期值使用同一单位域校验；非法比例不计算环比。短趋势按真实时间间隔绘制，无效数值保留断点，无效时间不绘制，原始数据仍可通过数据表查阅。
 
-柱图保留 demo 的竖向渐变结构，按用户后续要求使用当前主题 brand 色并向底部淡出到透明、顶部圆角和紧凑柱间距。平均值的 strong Badge 使用 inverse-background/fg-on-inverse 公共色变量，作为 ReferenceLine 的公开 label 放在虚线左端，右端带圆点；均线位置使用未舍入值，标签只格式化显示。渐变 ID 按实例独立。7 日显示星期，30 日显示日期，12 周按统计窗口显示 W1–W12，Tooltip 和数据表保留真实日期。不完整数据不画平均线；零值仍显示平均 0。图表高度和圆角属于 Recharts 公开几何参数，UI 与全局样式保持原组件实现。
+柱图保留 demo 的竖向渐变结构，按用户后续要求使用当前主题 brand 色并向底部淡出到透明、顶部圆角和紧凑柱间距。平均值的 strong Badge 使用 inverse-background/fg-on-inverse 公共色变量，作为 ReferenceLine 的公开 label 放在虚线左端；均线位置使用未舍入值，标签只格式化显示。渐变 ID 按实例独立。7 日显示星期，30 日显示日期，12 周按统计窗口显示 W1–W12，Tooltip 和数据表保留真实日期。不完整数据不画平均线；零值仍显示平均 0。图表高度和圆角使用 Zeron Chart 的公开几何参数，UI 与全局样式保持原组件实现。
 
 渠道通过 Badge 筛选：共享的 strong Badge 高亮层使用当前主题的 brand/fg-on-brand 变量，在渠道间滑动；其他项使用默认 solid/gray。选中文字通过 Badge 公开自定义色接口与高亮层配对。每个 block 的高亮标识独立，沿用 Tabs 的 spring.moderate 动效；移动高亮使用变换，不伸缩可见文字。Badge 使用公开 role、tabIndex、aria-pressed 与事件参数支持点击、Enter 和空格，不保留渠道 TabPanel。总量通过 MetricCard 的公开 value 内容从当前显示值递增或递减到新值，使用无回弹的两倍 spring.slow 时长；快速切换从中间值继续过渡，初次显示和未知值立即呈现。屏幕阅读器读取真实目标数值，减少动画偏好下立即显示新数值并关闭滑动；不延迟筛选或数据更新。状态仍为 pill/default，通过 TabItem 的公开 badge 参数将未解决数量设为 strong/red、已解决数量设为 strong/green；未知数量保留默认灰色。状态栏不使用 ContainerBody 的浮动表面包裹；Accordion 保留默认箭头，Tooltip 保留公共浮动样式，完成反馈使用现有 Toast。所有 UI 色值/字号/边界沿用 tokens，图形尺寸是业务可视化几何。图表关闭增长动画，主图和小趋势提供键盘数据表。窄容器只在渠道 Badge 栏、状态 TabsList 与 Table 内横向滚动，焦点使用原生 scrollIntoView 保持可见，不添加整体固定高度。
 
@@ -2349,6 +2349,8 @@ export function Trend() {
 }
 ```
 
+yDomain 可传 `[数值 | "dataMin", 数值 | "dataMax"]` 指定纵轴边界；范围外的真实观察值仍保留，堆叠系列按累计几何扩展范围，未传时使用原有自动范围。相同值的上下界扩展为非零范围，非法或逆序边界回退自动范围。
+
 
 ---
 
@@ -2612,6 +2614,8 @@ registry_import: "@/components/ui/bar-chart"
 
 # bar-chart
 
+`Bar.fillForDatum(point, index)` 可按选区或类别覆盖单个柱子的填充色，`fill` 仍作为系列与 tooltip 的默认颜色。组合到已拥有键盘操作的控件时，可设 `BarChart.keyboardNavigation={false}`；指针 tooltip 仍有效，父控件承担键盘与可访问语义。
+
 安装 `npx zeron-ui add bar-chart chart-primitives button`。React 19、Tailwind 4，保留参考 API 与几何，颜色使用 Zeron Token。
 
 数值必须有限且非负；非法值保留在原始数据，不生成柱形或污染数值域。barGap 是 band 比例（0.2），barWidth、groupGap、stackGap 使用像素。默认四边 40px、入场 1100ms、圆头、grow 动画。纵深辅助层不重复注册系列。
@@ -2873,6 +2877,8 @@ XAxis.formatDate(date) 可按宿主 locale / timeZone 格式化标签，并同�
 
 ChartConfigProvider 提供 spring 配置。useChart/useChartStable/useChartHover 只在图表上下文内使用；稳定绘图与 hover 状态分离，避免移动指针重建所有路径。chartCssVars 将参考颜色字段映射到现有 fg、border、surface、focus-ring 和 chart-N。
 
+ReferenceLine 使用共享坐标尺绘制参考线：y 为数值，x 为日期／毫秒或 BarChart 的分类标识（字符串或数值）；横向 BarChart 中 y 绘制垂直数值线、x 绘制水平分类线。可传 stroke、strokeDasharray、label 和 yAxisId。超出绘图范围或非法坐标不绘制，不改变数值域。YAxis.tickValues 可指定刻度位置；BarXAxis.formatLabel 保留分类身份与顺序，只格式化显示标签。
+
 
 ---
 
@@ -2945,7 +2951,7 @@ name: chart
 kind: component
 status: stable
 locale: zh-CN
-summary: 基于 Recharts 的容器、趋势与响应式圆环，保留数据语义和可访问数据入口。
+summary: 兼容 Recharts 容器，并通过当前 AreaChart/PieChart 提供趋势与响应式圆环。
 package_import: "@zeron/ui/chart"
 registry_import: "@/components/ui/chart"
 source: packages/ui/src/components/chart.tsx
@@ -2960,9 +2966,9 @@ related: [chart-primitives, metric-card, time-range-histogram]
 
 普通主系列使用 `chartColor(1)`，比较系列显式配置 1–5 槽位；中性状态使用 `chartColor(6)`，错误或危险状态使用 `chartColor(7)`。动态系列可用 `chartSeriesColor(id)` 在前五色中稳定兜底，有限槽位允许碰撞。图形、图例和关联控件共用颜色。`color` 与 `theme` 显式覆盖仍生效；状态工具和网格、文字、轨道保持独立。
 
-`TimeSeriesChart` 是两个请求趋势消费者验证后的薄组合。data 每项为 `{ timestamp: number, values: Record<string, number | null> }`；series 含稳定 id、label 和可选 color。必填 locale/timeZone/label，domain 可指定真实时间窗口。formatValue 同时用于轴、Tooltip 和数据表。没有汇总、补零、排序、采样或隐式连线；单点保留标记、全零保留真实值、空数组显示无数据。dataSummary 由消费者本地化。绘图关闭非必要动画。
+`TimeSeriesChart` 使用当前 Zeron AreaChart / chart-core 渲染，是请求趋势的薄组合。data 每项为 `{ timestamp: number, values: Record<string, number | null> }`；series 含稳定 id、label 和可选 color。必填 locale/timeZone/label，domain 可指定真实时间窗口。formatValue 同时用于轴、Tooltip 和数据表。业务组合不汇总、不补零、不排序、不隐式连线；绘图沿用 AreaChart 的屏幕采样，数据表保留全部原始观察值；单点保留标记、全零保留真实值、空数组显示无数据。dataSummary 由消费者本地化。绘图关闭非必要动画。
 
-`DonutSummary` 接收 segments（id/label/value/color）、业务 total 和中心 center。total 不传时只有完整非负数列才派生总量；null 表示未知。部分已知总量留中性轨道，超额绘图缩放但不改真实值。调用方提供完整 aria-label，并配 ChartLegend 或可读明细；不依赖鼠标 Tooltip。innerRadius 可按实际用途保留不同环宽。
+`DonutSummary` 使用当前 Zeron PieChart / PieSlice 渲染，接收 segments（id/label/value/color）、业务 total 和中心 center。分段沿用原生圆环示例的 2px 间隙和 4px 圆角；单段不添加间隙。total 不传时只有完整非负数列才派生总量；null 表示未知。部分已知总量留中性轨道，超额绘图缩放但不改真实值。调用方提供完整 aria-label，并配 ChartLegend 或可读明细；不依赖鼠标 Tooltip。innerRadius 可按实际用途保留不同环宽。需要区分的分类应显式分配 1–5 槽位，并在筛选或重排时保持图形与图例的颜色一致。
 
 ```tsx
 import { TimeSeriesChart, DonutSummary } from "@zeron/ui/chart";
@@ -3658,6 +3664,8 @@ const data = [
 function BasicDemo() { return <LineChart data={data}><Grid horizontal /><Line dataKey="requests" /><XAxis /><YAxis /><ChartTooltip /></LineChart>; }
 export function Example() { return <BasicDemo />; }
 ```
+
+yDomain 可传 `[数值 | "dataMin", 数值 | "dataMax"]` 指定纵轴边界；范围外的真实观察值仍保留，未传时使用原有自动范围。相同值的上下界扩展为非零范围，非法或逆序边界回退自动范围。
 
 
 ---
@@ -4668,7 +4676,7 @@ registry_import: "@/components/ui/time-range-histogram"
 source: packages/ui/src/components/time-range-histogram.tsx
 registry: packages/ui/registry.json
 typecheck_examples: true
-related: [chart, chart-primitives]
+related: [bar-chart, chart-core, chart-primitives]
 ---
 
 # Time Range Histogram
@@ -4693,7 +4701,9 @@ export function RequestRange() {
 }
 ```
 
-安装 `npx zeron-ui add time-range-histogram`，保留 Chart、chart-primitives 与 surfaces 的依赖链。主题切换通过全局变量生效，显式 series.color 覆盖继续接受可信 CSS 色值。
+内部绘图使用 Zeron `BarChart` / `Bar`，通过 `fillForDatum` 表达选区内外颜色。`keyboardNavigation={false}` 使范围选择器独占键盘操作，避免额外图表焦点；鼠标悬停仍显示原始桶标签和系列数值。
+
+安装 `npx zeron-ui add time-range-histogram`，保留 bar-chart、chart-core 与 surfaces 的依赖链。主题切换通过全局变量生效，显式 series.color 覆盖继续接受可信 CSS 色值。
 
 
 ---

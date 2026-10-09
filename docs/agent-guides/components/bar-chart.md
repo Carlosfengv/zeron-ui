@@ -15,6 +15,8 @@ registry_import: "@/components/ui/bar-chart"
 
 # bar-chart
 
+`Bar.fillForDatum(point, index)` 可按选区或类别覆盖单个柱子的填充色，`fill` 仍作为系列与 tooltip 的默认颜色。组合到已拥有键盘操作的控件时，可设 `BarChart.keyboardNavigation={false}`；指针 tooltip 仍有效，父控件承担键盘与可访问语义。
+
 安装 `npx zeron-ui add bar-chart chart-primitives button`。React 19、Tailwind 4，保留参考 API 与几何，颜色使用 Zeron Token。
 
 数值必须有限且非负；非法值保留在原始数据，不生成柱形或污染数值域。barGap 是 band 比例（0.2），barWidth、groupGap、stackGap 使用像素。默认四边 40px、入场 1100ms、圆头、grow 动画。纵深辅助层不重复注册系列。

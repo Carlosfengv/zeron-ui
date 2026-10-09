@@ -3,7 +3,7 @@
     "title": "项目监控",
     "description": "沿用模型路由卡片的设计语言，组合项目概览、资源用量、存储分布和请求报告。导航和操作提示使用中文，项目与资源名称保留原文。",
     "composition": "组件组合",
-    "compositionBody": "使用 Card、Tabs、InfoItem、Badge、StatusOverview、StorageUsage、MetricCard、Chart、Select 和 Button 等现有组件。图表通过 Zeron Chart 组合 Recharts；颜色、字体、间距、边框和阴影沿用当前组件库，支持浅色和深色主题。",
+    "compositionBody": "使用 Card、Tabs、InfoItem、Badge、StatusOverview、StorageUsage、MetricCard、Chart、Select 和 Button 等现有组件。趋势与圆环通过 Zeron AreaChart、PieChart 组合呈现，分位数使用 SegmentedBar 共用标尺；颜色、字体、间距、边框和阴影沿用当前组件库，支持浅色和深色主题。",
     "dataContract": "数据接入",
     "dataContractBody": "项目资料、资源指标、存储与统计窗口由宿主提供。请求总数、趋势、服务占比和成功率从同一组等长分桶计算；缺失数据保留为未知，不补零。存储使用字节，延迟使用毫秒，分位数由服务端聚合。当前预览使用固定示例数据，未连接真实项目。",
     "behavior": "交互与状态",
