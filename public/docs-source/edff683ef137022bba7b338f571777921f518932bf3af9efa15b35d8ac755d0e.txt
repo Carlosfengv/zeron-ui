@@ -1,0 +1,355 @@
+import type { ContextWindowCategory, ContextWindowData } from "./context-window-types";
+
+export const contextWindowCategories: readonly ContextWindowCategory[] = ["system", "tools", "memory", "docs", "history", "free"];
+export const contextWindowColors: Record<ContextWindowCategory, string> = {
+  system: "var(--chart-1)", tools: "var(--chart-2)", memory: "color-mix(in oklab, var(--chart-1) 50%, var(--chart-5))",
+  docs: "var(--chart-4)", history: "var(--chart-5)", free: "var(--chart-6)",
+};
+
+const validTokens = (value: number) => Number.isFinite(value) && value >= 0;
+
+/** Totals come from the same records displayed in Contents, avoiding stale summary counters. */
+export function getContextWindowUsage(data: ContextWindowData) {
+  if (!Number.isFinite(data.capacity) || data.capacity <= 0 || !validTokens(data.systemTokens) || !validTokens(data.toolTokens)) return null;
+  for (const category of ["docs", "memory", "history"] as const) {
+    const ids = new Set<string>();
+    for (const item of data[category]) {
+      if (!item.id || ids.has(item.id) || !validTokens(item.tokens)) return null;
+      ids.add(item.id);
+    }
+  }
+  const totals: Record<ContextWindowCategory, number> = {
+    system: data.systemTokens, tools: data.toolTokens,
+    memory: data.memory.reduce((sum, item) => sum + item.tokens, 0),
+    docs: data.docs.reduce((sum, item) => sum + item.tokens, 0),
+    history: data.history.reduce((sum, item) => sum + item.tokens, 0), free: 0,
+  };
+  const used = totals.system + totals.tools + totals.memory + totals.docs + totals.history;
+  if (!Number.isFinite(used)) return null;
+  totals.free = Math.max(0, data.capacity - used);
+  const ratio = used / data.capacity;
+  if (!Number.isFinite(ratio)) return null;
+  const tokensPerTurn = data.tokensPerTurn;
+  const estimate = tokensPerTurn !== undefined && validTokens(tokensPerTurn) && tokensPerTurn > 0
+    ? Math.floor(totals.free / tokensPerTurn)
+    : null;
+  const headroom = estimate !== null && Number.isFinite(estimate) ? estimate : null;
+  return {
+    totals, used, ratio,
+    status: ratio >= 0.95 ? "danger" as const : ratio >= 0.8 ? "warning" as const : "success" as const,
+    headroom,
+  };
+}
+
+/** Largest-remainder allocation keeps the categorical bitmap at exactly 400 cells. */
+export function allocateContextWindowCells(totals: Record<ContextWindowCategory, number>, capacity: number): ContextWindowCategory[] {
+  const denominator = Math.max(capacity, contextWindowCategories.reduce((sum, category) => sum + totals[category], 0));
+  const counts = contextWindowCategories.map((category) => {
+    const exact = totals[category] / denominator * 400;
+    return { category, count: Math.floor(exact), remainder: exact % 1 };
+  });
+  let remaining = 400 - counts.reduce((sum, value) => sum + value.count, 0);
+  for (const value of [...counts].sort((a, b) => b.remainder - a.remainder)) {
+    if (remaining-- > 0) value.count++;
+  }
+  return counts.flatMap(({ category, count }) => Array<ContextWindowCategory>(count).fill(category));
+}
+
+
+import type { ContextWindowData } from "./context-window-types";
+
+/** Fixed local example. No model service or cache billing API is connected. */
+export function createContextWindowDemoData(): ContextWindowData {
+  return {
+    capacity: 200_000, systemTokens: 3200, toolTokens: 11_900, tokensPerTurn: 1470,
+    docs: [
+      { id: "migration", title: "ledger_v3_migration.sql", source: "REPO", detail: "41m ago", tokens: 18_200 },
+      { id: "webhooks", title: "Payment webhooks guide", source: "RAG", detail: "33m ago", tokens: 14_900 },
+      { id: "reconcile", title: "billing/reconcile.ts", source: "REPO", detail: "27m ago", tokens: 9400 },
+      { id: "incident", title: "Incident 2291 postmortem", source: "RAG", detail: "19m ago", tokens: 6100 },
+      { id: "errors", title: "api-errors.md", source: "REPO", detail: "8m ago", tokens: 3600 },
+    ],
+    memory: [
+      { id: "architecture", title: "Ledger architecture decisions", source: "PROJECT", detail: "2h ago", tokens: 3200 },
+      { id: "preferences", title: "Coding conventions & preferences", source: "USER", detail: "1d ago", tokens: 2100 },
+      { id: "checklist", title: "Migration safety checklist", source: "PROJECT", detail: "49m ago", tokens: 1900 },
+      { id: "schema", title: "Schema constraints", source: "SESSION", detail: "37m ago", tokens: 1300 },
+    ],
+    history: [
+      { id: "turn-8", title: "Diffed v2 and v3 schemas", source: "TURN 8", detail: "1h ago", tokens: 4200 },
+      { id: "turn-40", title: "Drafted the cut-over plan", source: "TURN 40", detail: "26m ago", tokens: 3800 },
+      { id: "turn-43", title: "Compared row counts per shard", source: "TURN 43", detail: "18m ago", tokens: 3700 },
+      { id: "turn-11", title: "Explained the double-post bug", source: "TURN 11", detail: "1h ago", tokens: 3700 },
+      ...Array.from({ length: 44 }, (_, index) => ({ id: `history-${index}`, title: `Migration discussion ${index + 1}`, source: `TURN ${index + 1}`, tokens: index === 43 ? 1189 : 1170 })),
+    ],
+    cache: { hitRate: 0.85, saved: 10.99, cachedTokens: 142_000, newTokens: 570 },
+    session: { model: "Kestrel 2", turn: 48, name: "Ledger-v3 migration" },
+  };
+}
+
+
+import type { ContextWindowLabels } from "./context-window-types";
+
+export const contextWindowEnglishLabels: ContextWindowLabels = {
+  title: "Context window", description: "Token allocation across system instructions, tools, memory, documents and conversation history.",
+  live: "Live", paused: "Paused", settings: "Context settings", close: "Close context window",
+  used: "Context used", healthy: "Healthy", warning: "Filling up", full: "Near capacity", tokens: "tokens",
+  cache: "Prompt cache", saved: "saved", cached: "cached", newTokens: "new", contents: "Contents",
+  empty: "No items in this category.", system: "System", tools: "Tools", docs: "Docs", memory: "Memory", history: "History", free: "Free",
+  compact: "Compact history", compacting: "Compacting history…", pinned: "Pinned",
+  invalid: "Context data is invalid. Check capacity, token counts and item ids.",
+  loading: "Loading context…", retry: "Retry", turn: "Turn", matrix: "Context token allocation",
+  usage: (percent) => `${percent} full`, headroom: (turns) => `~${turns} turns of headroom`,
+  hit: (percent) => `${percent} hit`, summary: (count, tokens, percent) => `${count} items · ${tokens} tokens · ${percent} of window`,
+};
+
+export const contextWindowZhLabels: ContextWindowLabels = {
+  title: "上下文窗口", description: "查看系统指令、工具、记忆、文档与对话历史的 token 分配。",
+  live: "实时", paused: "已暂停", settings: "上下文设置", close: "关闭上下文窗口",
+  used: "已用上下文", healthy: "充足", warning: "接近上限", full: "容量紧张", tokens: "tokens",
+  cache: "提示词缓存", saved: "已节省", cached: "已缓存", newTokens: "新增", contents: "内容",
+  empty: "此分类暂无内容。", system: "系统", tools: "工具", docs: "文档", memory: "记忆", history: "历史", free: "剩余",
+  compact: "压缩历史", compacting: "正在压缩历史…", pinned: "已固定",
+  invalid: "上下文数据无效，请检查容量、token 数量与条目标识。",
+  loading: "正在加载上下文…", retry: "重试", turn: "轮次", matrix: "上下文 token 分配",
+  usage: (percent) => `已占用 ${percent}`, headroom: (turns) => `预计还可对话 ${turns} 轮`,
+  hit: (percent) => `命中 ${percent}`, summary: (count, tokens, percent) => `${count} 项 · ${tokens} tokens · 占窗口 ${percent}`,
+};
+
+
+import type { ReactNode } from "react";
+
+export type ContextWindowTab = "docs" | "memory" | "history";
+export type ContextWindowCategory = "system" | "tools" | ContextWindowTab | "free";
+
+export interface ContextWindowItem {
+  id: string;
+  title: string;
+  tokens: number;
+  /** Already-localized source and age/turn labels supplied by the host. */
+  source?: string;
+  detail?: string;
+  pinned?: boolean;
+}
+
+export interface ContextWindowData {
+  capacity: number;
+  systemTokens: number;
+  toolTokens: number;
+  docs: readonly ContextWindowItem[];
+  memory: readonly ContextWindowItem[];
+  history: readonly ContextWindowItem[];
+  /** Typical tokens added per turn; omit when an estimate is unavailable. */
+  tokensPerTurn?: number;
+  cache?: { hitRate: number | null; saved: number | null; cachedTokens: number | null; newTokens: number | null };
+  session?: { model: string; turn: number; name: string };
+}
+
+export interface ContextWindowLabels {
+  title: string; description: string; live: string; paused: string; settings: string; close: string;
+  used: string; healthy: string; warning: string; full: string; tokens: string; cache: string;
+  saved: string; cached: string; newTokens: string; contents: string; empty: string;
+  system: string; tools: string; docs: string; memory: string; history: string; free: string;
+  compact: string; compacting: string; pinned: string;
+  invalid: string; loading: string; retry: string; turn: string; matrix: string;
+  usage: (percent: string) => string;
+  headroom: (turns: string) => string;
+  hit: (percent: string) => string;
+  summary: (count: string, tokens: string, percent: string) => string;
+}
+
+export interface ContextWindowProps {
+  data: ContextWindowData;
+  title?: string;
+  live?: boolean;
+  loading?: boolean;
+  error?: string;
+  onRetry?: () => void;
+  tab?: ContextWindowTab;
+  defaultTab?: ContextWindowTab;
+  onTabChange?: (tab: ContextWindowTab) => void;
+  onCompact?: () => void;
+  compacting?: boolean;
+  onSettings?: () => void;
+  onClose?: () => void;
+  footerActions?: ReactNode;
+  notice?: string;
+  labels?: Partial<ContextWindowLabels>;
+  /** Localizes percentages, integer counts and currency; token abbreviations use k/M/B. */
+  locale?: string;
+  currency?: string;
+  className?: string;
+}
+
+
+"use client";
+
+import { useId, useMemo, useState } from "react";
+import { Badge } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
+import { InlineNotice } from "@zeron/ui/inline-notice";
+import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
+import { Tooltip, TooltipProvider } from "@zeron/ui/tooltip";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { allocateContextWindowCells, contextWindowCategories, contextWindowColors, getContextWindowUsage } from "./context-window-data";
+import { contextWindowEnglishLabels } from "./context-window-labels";
+import type { ContextWindowCategory, ContextWindowProps, ContextWindowTab } from "./context-window-types";
+
+const contentTabs = ["docs", "memory", "history"] as const;
+const tokenFormatter = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
+const isContentTab = (category: string): category is ContextWindowTab => contentTabs.some((tab) => tab === category);
+
+function validNumber(value: number | null | undefined): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+
+function tokenText(value: number | null | undefined) {
+  return validNumber(value) ? tokenFormatter.format(value).replace(/K$/, "k") : "—";
+}
+
+/** Embedded, controlled context snapshot. All data mutations belong to the host. */
+export function ContextWindow({ data, title, live = false, tab, defaultTab = "docs", onTabChange,
+  onCompact, compacting = false, onSettings, onClose,
+  footerActions, notice, labels: suppliedLabels, locale = "en-US", currency = "USD", loading = false,
+  error, onRetry, className }: ContextWindowProps) {
+  const labels = { ...contextWindowEnglishLabels, ...suppliedLabels };
+  const headingId = useId();
+  const [localTab, setLocalTab] = useState<ContextWindowTab>(defaultTab);
+  const [highlight, setHighlight] = useState<ContextWindowCategory | null>(null);
+  const activeTab = tab ?? localTab;
+  const usage = useMemo(() => getContextWindowUsage(data), [data]);
+  const cells = useMemo(() => usage ? allocateContextWindowCells(usage.totals, data.capacity) : [], [usage, data.capacity]);
+  const { integer, percent, money } = useMemo(() => ({
+    integer: new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }),
+    percent: new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }),
+    money: new Intl.NumberFormat(locale, { style: "currency", currency }),
+  }), [locale, currency]);
+  const cache = data.cache;
+  const hitRate = cache?.hitRate;
+  const validHitRate = validNumber(hitRate) && hitRate <= 1 ? hitRate : null;
+  const hitRateText = validHitRate === null ? "—" : percent.format(validHitRate);
+  const Settings = useIcon("settings"); const Close = useIcon("x"); const Pin = useIcon("pin");
+  const Compact = useIcon("scissors");
+  const Info = useIcon("doc-info-item");
+
+  function changeTab(value: string) {
+    if (!isContentTab(value)) return;
+    if (tab === undefined) setLocalTab(value);
+    onTabChange?.(value);
+  }
+  function categoryDetails(category: ContextWindowCategory) {
+    const records = isContentTab(category) ? data[category] : [];
+    return <div className="max-w-72 space-y-2 text-label">
+      <div className="flex justify-between gap-4 font-medium"><span>{labels[category]}</span><span className="tabular-nums">{tokenText(usage?.totals[category])} {labels.tokens}</span></div>
+      {records.slice(0, 3).map((item) => <div key={item.id} className="flex justify-between gap-4"><span className="min-w-0 truncate opacity-70">{item.title}</span><span className="shrink-0 tabular-nums">{tokenText(item.tokens)}</span></div>)}
+    </div>;
+  }
+
+  return <TooltipProvider><Container data-block="context-window" role="region" aria-labelledby={headingId} className={cn("w-full", className)}>
+    <ContainerHeader className="py-2">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <h2 id={headingId} className="min-w-0 break-words text-body font-medium text-fg-default">{title ?? labels.title}</h2>
+        <Tooltip content={labels.description}><Button type="button" variant="ghost" size="xs" iconOnly aria-label={labels.description}><Info aria-hidden="true" /></Button></Tooltip>
+      </div>
+      <div className="flex items-center gap-1">
+        <Badge status={live ? "success" : "neutral"} variant="dot" size="sm">{live ? labels.live : labels.paused}</Badge>
+        {onSettings && <Tooltip content={labels.settings}><Button type="button" variant="ghost" size="sm" iconOnly aria-label={labels.settings} onClick={onSettings}><Settings aria-hidden="true" /></Button></Tooltip>}
+        {onClose && <Button type="button" variant="ghost" size="sm" iconOnly aria-label={labels.close} onClick={onClose}><Close aria-hidden="true" /></Button>}
+      </div>
+    </ContainerHeader>
+    {loading || error || !usage ? <ContainerBody><div className="flex min-h-48 items-center justify-center gap-3" aria-busy={loading}>
+      <InlineNotice role={loading ? "status" : "alert"}>{loading ? labels.loading : error ?? labels.invalid}</InlineNotice>
+      {!loading && onRetry && <Button type="button" variant="secondary" onClick={onRetry}>{labels.retry}</Button>}
+    </div></ContainerBody> : <>
+      <ContainerBody>
+        <div className="grid min-w-0 gap-5 sm:grid-cols-5">
+          <div className={cn("min-w-0 space-y-2", cache ? "sm:col-span-3" : "sm:col-span-5")}>
+            <div className="flex flex-wrap items-center gap-2"><span className="font-mono text-label uppercase tracking-wider text-fg-subtle">{labels.used}</span><Badge status={usage.status} size="sm">{usage.status === "success" ? labels.healthy : usage.status === "warning" ? labels.warning : labels.full}</Badge></div>
+            <div className="flex flex-wrap items-baseline gap-2"><span className="text-4xl font-medium tracking-tight text-fg-default tabular-nums">{tokenText(usage.used)}</span><span className="text-body text-fg-subtle">/ {tokenText(data.capacity)} {labels.tokens}</span></div>
+            <p className="flex flex-wrap gap-x-2 font-mono text-label text-fg-muted"><span>{labels.usage(percent.format(usage.ratio))}</span>{usage.headroom !== null && <span>· {labels.headroom(integer.format(usage.headroom))}</span>}</p>
+          </div>
+          {cache && (
+            <div className="min-w-0 space-y-2 sm:col-span-2">
+              <div className="flex flex-wrap justify-between gap-2 font-mono text-label text-fg-subtle">
+                <span className="uppercase tracking-wider">{labels.cache}</span>
+                <span>{labels.hit(hitRateText)}</span>
+              </div>
+              <p className="flex items-baseline gap-2">
+                <span className="text-2xl font-medium text-fg-default tabular-nums">{validNumber(cache.saved) ? money.format(cache.saved) : "—"}</span>
+                <span className="text-label text-fg-subtle">{labels.saved}</span>
+              </p>
+              <div
+                className="h-1 overflow-hidden rounded-full bg-surface-raised"
+                role={validHitRate === null ? undefined : "meter"}
+                aria-label={labels.cache}
+                aria-valuemin={validHitRate === null ? undefined : 0}
+                aria-valuemax={validHitRate === null ? undefined : 100}
+                aria-valuenow={validHitRate === null ? undefined : validHitRate * 100}
+                aria-valuetext={validHitRate === null ? undefined : hitRateText}
+              >
+                <div
+                  className="h-full rounded-full bg-fg-muted transition-all duration-moderate motion-reduce:transition-none"
+                  style={{ width: validHitRate === null ? "0%" : `${validHitRate * 100}%` }}
+                />
+              </div>
+              <p className="font-mono text-label text-fg-subtle">{tokenText(cache.cachedTokens)} {labels.cached} · {tokenText(cache.newTokens)} {labels.newTokens}</p>
+            </div>
+          )}
+        </div>
+        <div className="mt-5 space-y-4">
+          {/* Categorical capacity bitmap: unlike the calendar HeatmapChart it has no date or intensity axis. */}
+          <Tooltip content={categoryDetails(highlight ?? "docs")}><div role="img" aria-label={labels.matrix} className="grid gap-0.5" style={{ gridTemplateColumns: "repeat(50, minmax(0, 1fr))" }} onMouseLeave={() => setHighlight(null)}>
+            {cells.map((category, index) => <span key={index} aria-hidden="true" data-context-category={category}
+              onMouseEnter={() => setHighlight(category)} className={cn("aspect-square min-w-0 rounded-xs transition-opacity duration-fast motion-reduce:transition-none", highlight !== null && highlight !== category && "opacity-20")}
+              style={{ backgroundColor: contextWindowColors[category] }} />)}
+          </div></Tooltip>
+          <ul className="grid grid-cols-3 gap-x-1.5 gap-y-3 sm:gap-x-5" aria-label={labels.matrix}>
+            {contextWindowCategories.map((category) => <li key={category} className="min-w-0"><Tooltip content={categoryDetails(category)}><button type="button"
+              className={cn("flex w-full items-center justify-between gap-0.5 rounded-sm text-left outline-none transition-opacity duration-fast focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none sm:gap-2", highlight !== null && highlight !== category && "opacity-30")}
+              aria-label={`${labels[category]}: ${integer.format(usage.totals[category])} ${labels.tokens}, ${percent.format(usage.totals[category] / data.capacity)}`}
+              onMouseEnter={() => setHighlight(category)} onMouseLeave={() => setHighlight(null)} onFocus={() => setHighlight(category)} onBlur={() => setHighlight(null)} onClick={() => { if (isContentTab(category)) changeTab(category); }}>
+              <span className="flex min-w-0 items-center gap-0.5 font-mono text-label uppercase text-fg-subtle sm:gap-1.5"><span aria-hidden="true" className="size-2 shrink-0 rounded-full" style={{ backgroundColor: contextWindowColors[category] }} /><span className="truncate">{labels[category]}</span></span>
+              <span className="flex shrink-0 items-baseline gap-0.5 whitespace-nowrap sm:gap-1.5"><span className="text-label font-medium text-fg-default tabular-nums sm:text-body">{tokenText(usage.totals[category])}</span><span className="text-label text-fg-subtle tabular-nums">{percent.format(usage.totals[category] / data.capacity)}</span></span>
+            </button></Tooltip></li>)}
+          </ul>
+        </div>
+      </ContainerBody>
+      <ContainerBody>
+        <Tabs value={activeTab} onValueChange={changeTab} variant="segment" color="default">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="min-w-0"><h3 className="text-body font-medium text-fg-default">{labels.contents}</h3><p className="mt-1 font-mono text-label text-fg-subtle">{labels.summary(integer.format(data[activeTab].length), tokenText(usage.totals[activeTab]), percent.format(usage.totals[activeTab] / data.capacity))}</p></div>
+            <TabsList aria-label={labels.contents}>{contentTabs.map((category) => <TabItem key={category} value={category} label={labels[category]} />)}</TabsList>
+          </div>
+          {contentTabs.map((category) => {
+            const maxTokens = data[category].reduce((max, item) => Math.max(max, item.tokens), 1);
+            return <TabPanel key={category} value={category}>
+            {data[category].length === 0 ? <p className="py-8 text-center text-body text-fg-muted">{labels.empty}</p> : <ul className="max-h-56 overflow-y-auto" aria-label={labels[category]}>
+              {data[category].map((item) => {
+                return <li key={item.id} className="flex min-w-0 items-center gap-3 border-b-hairline border-border-subtle py-3 last:border-0" data-context-item={item.id}>
+                  <span aria-hidden="true" className="size-2 shrink-0 rounded-full" style={{ backgroundColor: contextWindowColors[category] }} />
+                  <div className="min-w-0 flex-1"><p className="flex min-w-0 items-center gap-1.5 text-body text-fg-default"><span className="truncate" title={item.title}>{item.title}</span>{item.pinned && <Tooltip content={labels.pinned}><span className="shrink-0 text-fg-brand" aria-label={labels.pinned}><Pin className="size-3.5" aria-hidden="true" /></span></Tooltip>}</p><p className="mt-0.5 truncate font-mono text-label text-fg-subtle">{[item.source, item.detail].filter(Boolean).join(" · ")}</p></div>
+                  <div className="hidden h-1 w-12 shrink-0 overflow-hidden rounded-full bg-surface-raised sm:block" aria-hidden="true"><div className="h-full rounded-full transition-all duration-moderate motion-reduce:transition-none" style={{ width: `${item.tokens / maxTokens * 100}%`, backgroundColor: contextWindowColors[category] }} /></div>
+                  <span className="w-12 shrink-0 text-right text-body font-medium text-fg-default tabular-nums">{tokenText(item.tokens)}</span>
+                </li>;
+              })}
+            </ul>}
+          </TabPanel>;
+          })}
+        </Tabs>
+      </ContainerBody>
+    </>}
+    <ContainerFooter className="justify-between">
+      <div className="flex min-w-0 flex-1 items-center gap-2">{footerActions}{data.session && <p className="min-w-0 truncate font-mono text-label uppercase text-fg-subtle" title={`${data.session.model} · ${labels.turn} ${data.session.turn} · ${data.session.name}`}>{data.session.model} · {labels.turn} {integer.format(data.session.turn)} · {data.session.name}</p>}</div>
+      {onCompact && <Button type="button" size="sm" leadingIcon={Compact} loading={compacting} disabled={loading || Boolean(error) || !usage || data.history.every((item) => item.pinned)} onClick={onCompact}>{compacting ? labels.compacting : labels.compact}</Button>}
+    </ContainerFooter>
+    {notice && <div className="px-3 pb-2"><InlineNotice role="status" aria-live="polite">{notice}</InlineNotice></div>}
+  </Container></TooltipProvider>;
+}
+
+
+export { ContextWindow } from "./context-window";
+export { createContextWindowDemoData } from "./context-window-demo-data";
+export { contextWindowEnglishLabels, contextWindowZhLabels } from "./context-window-labels";
+export type { ContextWindowCategory, ContextWindowData, ContextWindowItem, ContextWindowLabels, ContextWindowProps, ContextWindowTab } from "./context-window-types";

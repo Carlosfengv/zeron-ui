@@ -1,4 +1,5 @@
 "use client";
+import { ContextWindowDemo } from "./ContextWindowDemo";
 import { FleetHealthDemo } from "./FleetHealthDemo";
 import { WebsiteAnalyticsDemo } from "./WebsiteAnalyticsDemo";
 
@@ -164,6 +165,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
 
 function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "context-window-01":
+      return <ContextWindowDemo />;
     case "fleet-health-01":
       return <FleetHealthDemo />;
     case "design-stack-01":

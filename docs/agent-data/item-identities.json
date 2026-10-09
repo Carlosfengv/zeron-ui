@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:context-window-01",
+      "type": "registry",
+      "key": "context-window-01",
+      "aliases": [
+        "context-window-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:fleet-health-01",
       "type": "registry",
       "key": "fleet-health-01",

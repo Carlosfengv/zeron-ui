@@ -1,0 +1,12 @@
+{
+  "contextWindowBlock": {
+    "title": "Context Window",
+    "description": "Context capacity, prompt cache, a categorical token bitmap and read-only documents, memories and conversation history.",
+    "composition": "Composition",
+    "compositionBody": "Uses Container, Badge, Button, Tabs, Tooltip and InlineNotice with the existing surface, foreground, border, typography and chart tokens. The 400-cell bitmap represents categorical capacity allocation; it is a business visualization because HeatmapChart requires dates and announces numeric intensity. It introduces no theme variables or shared primitives.",
+    "dataContract": "Data integration",
+    "dataContractBody": "Supply capacity, system/tool token counts and records with stable unique ids, titles and nonnegative token counts. Category totals, used capacity and remaining capacity are computed from those records. Token counts use k/M/B abbreviations with at most one decimal place across interface languages. The host supplies cache measurements, optional typical tokens per turn, session details, pinned states and the compact callback. Compaction does not mutate the snapshot internally. Cache hitRate is a ratio from 0 to 1; null stays unknown. Invalid capacity, counts or duplicate ids show an error.",
+    "behavior": "Behavior and states",
+    "behaviorBody": "Supports local or controlled content tabs, category inspection, read-only content items, compacting feedback, loading, errors and retry. Host actions are omitted when their callbacks are absent. The category legend uses three columns and two rows, with each label and value arranged horizontally. Category colors use the existing blue, cyan, green, purple and neutral chart variables, with a blue-purple mix for memory. The contents list has a bounded scroll region; narrow screens stack the top metrics and truncate long legend labels while preserving their accessible labels. The preview simulates live updates locally and supports pause, reset, export, capacity settings and close/reopen. Compression preserves pinned records and only changes demo data; it does not call a model service."
+  }
+}

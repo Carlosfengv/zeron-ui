@@ -3,6 +3,23 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "context-window-01",
+      "type": "registry:block",
+      "title": "上下文窗口",
+      "description": "上下文容量、提示词缓存、分类 token 矩阵与文档、记忆、历史查看。",
+      "categories": ["application", "agent", "monitoring"],
+      "dependencies": [],
+      "registryDependencies": ["badge", "button", "container", "inline-notice", "tabs", "tooltip", "icon-context", "utils"],
+      "files": [
+        {"path": "packages/blocks/src/application/context-window-01/context-window-data.ts", "type": "registry:component", "target": "components/blocks/context-window-01/context-window-data.ts"},
+        {"path": "packages/blocks/src/application/context-window-01/context-window-demo-data.ts", "type": "registry:component", "target": "components/blocks/context-window-01/context-window-demo-data.ts"},
+        {"path": "packages/blocks/src/application/context-window-01/context-window-labels.ts", "type": "registry:component", "target": "components/blocks/context-window-01/context-window-labels.ts"},
+        {"path": "packages/blocks/src/application/context-window-01/context-window-types.ts", "type": "registry:component", "target": "components/blocks/context-window-01/context-window-types.ts"},
+        {"path": "packages/blocks/src/application/context-window-01/context-window.tsx", "type": "registry:component", "target": "components/blocks/context-window-01/context-window.tsx"},
+        {"path": "packages/blocks/src/application/context-window-01/index.ts", "type": "registry:component", "target": "components/blocks/context-window-01/index.ts"}
+      ]
+    },
+    {
       "name": "fleet-health-01",
       "type": "registry:block",
       "title": "集群健康",

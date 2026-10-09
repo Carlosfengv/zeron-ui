@@ -479,6 +479,11 @@ async function verifyNextBuild({ consumer, component }) {
       '',
     ].join("\n"),
   };
+  examples["context-window-01"] = [
+    '"use client";',
+    'import { ContextWindow, createContextWindowDemoData } from "@/components/blocks/context-window-01";',
+    'export default function Page() { return <ContextWindow data={createContextWindowDemoData()} />; }',
+  ].join("\n");
   examples["fleet-health-01"] = [
     'import { FleetHealth, createFleetHealthDemoData, fleetHealthDemoClusters } from "@/components/blocks/fleet-health-01";',
     'export default function Page() { return <FleetHealth data={createFleetHealthDemoData()} clusterId="kestrel-iad-3" clusters={fleetHealthDemoClusters} />; }',
@@ -782,6 +787,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
       'createRoot(document.getElementById("root")!).render(<ListPagination total={11} page={0} pageSize={5} onPageChange={() => {}} onPageSizeChange={() => {}} />);',
     ].join("\n"),
   };
+  examples["context-window-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { ContextWindow, createContextWindowDemoData } from "@/src/components/blocks/context-window-01";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<ContextWindow data={createContextWindowDemoData()} />);',
+  ].join("\n");
   examples["fleet-health-01"] = [
     'import { createRoot } from "react-dom/client";',
     'import { FleetHealth, createFleetHealthDemoData, fleetHealthDemoClusters } from "@/src/components/blocks/fleet-health-01";',

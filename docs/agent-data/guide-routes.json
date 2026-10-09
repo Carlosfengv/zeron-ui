@@ -22,6 +22,10 @@
       "itemId": "block:cluster-environment-list-01"
     },
     {
+      "path": "blocks/context-window-01.md",
+      "itemId": "block:context-window-01"
+    },
+    {
       "path": "blocks/cost-estimate-01.md",
       "itemId": "block:cost-estimate-01"
     },

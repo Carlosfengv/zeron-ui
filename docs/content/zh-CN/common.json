@@ -119,6 +119,7 @@
     "introductionTitle": "介绍",
     "introductionDescription": "这些组件为何用起来与众不同。",
     "descriptions": {
+      "context-window-01": "上下文容量、缓存与内容查看。",
       "fleet-health-01": "实时推理吞吐、集群用量与 GPU 遥测矩阵。",
       "line-chart": "日期可用 Date、可解析字符串或毫秒时间戳；绘图视图按时间排序且保留原始数据。",
       "area-chart": "保留参考面积几何，支持重叠系列、渐变与时间选区。",

@@ -8,6 +8,7 @@ export const agentGuideLoaders: Record<string, () => Promise<string>> = {
   "blocks/ai-gateway-session-list-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/ai-gateway-session-list-01.md"), "utf8"),
   "blocks/cluster-environment-detail-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/cluster-environment-detail-01.md"), "utf8"),
   "blocks/cluster-environment-list-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/cluster-environment-list-01.md"), "utf8"),
+  "blocks/context-window-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/context-window-01.md"), "utf8"),
   "blocks/cost-estimate-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/cost-estimate-01.md"), "utf8"),
   "blocks/credit-usage-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/credit-usage-01.md"), "utf8"),
   "blocks/deployment-detail-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/deployment-detail-01.md"), "utf8"),

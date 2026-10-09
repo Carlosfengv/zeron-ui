@@ -1,5 +1,13 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "context-window-01": [
+    "packages/blocks/src/application/context-window-01/context-window-data.ts",
+    "packages/blocks/src/application/context-window-01/context-window-demo-data.ts",
+    "packages/blocks/src/application/context-window-01/context-window-labels.ts",
+    "packages/blocks/src/application/context-window-01/context-window-types.ts",
+    "packages/blocks/src/application/context-window-01/context-window.tsx",
+    "packages/blocks/src/application/context-window-01/index.ts"
+  ],
   "fleet-health-01": [
     "packages/blocks/src/application/fleet-health-01/fleet-health.tsx",
     "packages/blocks/src/application/fleet-health-01/fleet-health-types.ts",

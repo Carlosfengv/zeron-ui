@@ -1,4 +1,29 @@
 {
+  "context-window-01": {
+    "keywords": [
+      "上下文",
+      "窗口",
+      "缓存",
+      "token",
+      "context",
+      "window",
+      "cache",
+      "memory",
+      "compact"
+    ],
+    "useCases": [
+      "嵌入式上下文容量、分类 token 用量与内容查看。"
+    ],
+    "whenNotToUse": [
+      "不提供真实模型查询、缓存计费或持久化，宿主接入操作与数据。"
+    ],
+    "keyApi": [
+      "data 提供容量、记录与缓存，所有分类总量从记录计算。",
+      "tab/onTabChange 支持受控与本地分类。",
+      "内容条目为只读展示；onCompact 为宿主压缩操作，演示压缩保留固定条目。",
+      "loading/error/onRetry/compacting/notice 提供异步反馈。"
+    ]
+  },
   "fleet-health-01": {
     "keywords": ["集群", "健康", "GPU", "显存", "温度", "fleet", "health", "inference", "telemetry"],
     "useCases": ["嵌入式 GPU 集群健康、实时推理吞吐与单卡遥测。"],
