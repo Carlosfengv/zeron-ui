@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "fleet-health-01": () => import("./FleetHealthDemo").then(({ FleetHealthDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={780} canvasWidth={800}><FleetHealthDemo /></ResponsivePreview>,
+  })),
   "design-stack-01": () => import("./DesignStackDemo").then(({ DesignStackDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={580} canvasWidth={1040}><DesignStackDemo /></ResponsivePreview>,
   })),

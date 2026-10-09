@@ -119,6 +119,7 @@
     "introductionTitle": "Introduction",
     "introductionDescription": "Why these components feel different.",
     "descriptions": {
+      "fleet-health-01": "Live inference throughput, fleet telemetry and an interactive GPU matrix.",
       "line-chart": "Dates use milliseconds or parseable strings; plotting is chronological and raw rows remain unchanged.",
       "area-chart": "Reference area geometry with overlapping series, gradients and time-range selection.",
       "bar-chart": "Values must be finite and non-negative; invalid values stay in source data but do not create bars or affect domains.",

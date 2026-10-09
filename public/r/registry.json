@@ -6203,6 +6203,70 @@
       }
     },
     {
+      "name": "fleet-health-01",
+      "type": "registry:block",
+      "title": "集群健康",
+      "description": "实时推理吞吐、集群用量与支持利用率、显存和温度视图的 GPU 遥测矩阵。",
+      "categories": [
+        "application",
+        "monitoring",
+        "analytics"
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/live-line-chart.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/fleet-health-01/fleet-health.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/fleet-health-01/fleet-health.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/fleet-health-01/fleet-health-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/fleet-health-01/fleet-health-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/fleet-health-01/fleet-health-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/fleet-health-01/fleet-health-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/fleet-health-01/fleet-health-matrix.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/fleet-health-01/fleet-health-matrix.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/fleet-health-01/fleet-health-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/fleet-health-01/fleet-health-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/fleet-health-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/fleet-health-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "website-analytics-01",
       "type": "registry:block",
       "title": "网站分析",

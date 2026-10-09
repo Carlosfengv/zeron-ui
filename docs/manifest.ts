@@ -99,6 +99,7 @@ const iconEntry = (value: Omit<DocEntry, "collection" | "indexable" | "order"> &
 
 export const docEntries = [
   blockEntry({ slug: "design-stack-01", section: "application", icon: "doc-card", name: "设计工具清单", description: "可编辑单元格、多选、排序与撤销重做。", registryItem: { name: "design-stack-01", type: "registry:block" }, isNew: true, order: 36.75 }),
+  blockEntry({ slug: "fleet-health-01", section: "application", icon: "doc-data-grid", name: "Fleet Health", description: "Live inference throughput, fleet telemetry and an interactive GPU matrix.", registryItem: { name: "fleet-health-01", type: "registry:block" }, isNew: true, order: 36.98 }),
   blockEntry({ slug: "file-upload-01", section: "application", icon: "doc-card", name: "文件上传", description: "拖拽上传、文件进度与队列管理。", registryItem: { name: "file-upload-01", type: "registry:block" }, isNew: true, order: 36.8 }),
   blockEntry({ slug: "getting-started-01", section: "application", icon: "doc-card", name: "入门任务清单", description: "An embedded, collapsible setup checklist with completion counts, task states and host-owned actions.", registryItem: { name: "getting-started-01", type: "registry:block" }, isNew: true, order: 36.95 }),
   entry({ slug: "surfaces", section: "foundations", icon: "doc-surfaces", name: "Surfaces", description: "Five semantic surfaces with purpose-based shadows for light and dark mode." }),

@@ -1,4 +1,5 @@
 "use client";
+import { FleetHealthDemo } from "./FleetHealthDemo";
 import { WebsiteAnalyticsDemo } from "./WebsiteAnalyticsDemo";
 
 import { SalesConversionFunnelDemo } from "./SalesConversionFunnelDemo";
@@ -163,6 +164,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
 
 function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "fleet-health-01":
+      return <FleetHealthDemo />;
     case "design-stack-01":
       return <DesignStackDemo />;
     case "file-upload-01":

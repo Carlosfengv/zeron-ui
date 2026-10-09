@@ -1,5 +1,13 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "fleet-health-01": [
+    "packages/blocks/src/application/fleet-health-01/fleet-health.tsx",
+    "packages/blocks/src/application/fleet-health-01/fleet-health-types.ts",
+    "packages/blocks/src/application/fleet-health-01/fleet-health-data.ts",
+    "packages/blocks/src/application/fleet-health-01/fleet-health-matrix.tsx",
+    "packages/blocks/src/application/fleet-health-01/fleet-health-demo-data.ts",
+    "packages/blocks/src/application/fleet-health-01/index.ts"
+  ],
   "website-analytics-01": [
     "packages/blocks/src/application/website-analytics-01/website-analytics.tsx",
     "packages/blocks/src/application/website-analytics-01/website-analytics-types.ts",

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./fleet-health-01": "./src/application/fleet-health-01/index.ts",
     "./website-analytics-01": "./src/application/website-analytics-01/index.ts",
     "./sales-conversion-funnel-01": "./src/application/sales-conversion-funnel-01/index.ts",
     "./design-stack-01": "./src/application/design-stack-01/index.ts",

@@ -1,4 +1,5 @@
 {
+  "fleet-health-01": {"framework": "react", "kind": "data-block"},
   "website-analytics-01": {"framework": "react", "kind": "data-block"},
   "sales-conversion-funnel-01": {"framework": "react", "kind": "data-block"},
   "design-stack-01": {"framework": "react", "kind": "data-block"},

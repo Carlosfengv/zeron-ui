@@ -1,0 +1,12 @@
+{
+  "fleetHealthBlock": {
+    "title": "集群健康",
+    "description": "实时推理吞吐、用量条和 GPU 交互矩阵组成的集群健康面板。",
+    "composition": "组件组合",
+    "compositionBody": "Container 承载外框、标题与底部操作，两个 ContainerBody 分别承载吞吐指标和 GPU 矩阵。复用 Select、Tabs、Badge、Button、Tooltip、LiveLineChart，使用当前品牌色、语义状态色、细分割线与动画时长。GPU 矩阵是业务表格：现有 HeatmapChart 使用日期分箱和贡献提示，无法直接承载单卡排空、离线状态和丰富的 GPU 遥测详情，因此通过原生表格和 Tooltip 组合保留设备身份、任务与状态，不新增基础组件。",
+    "dataContract": "数据接入",
+    "dataContractBody": "宿主提供快照、稳定节点/GPU id、集群列表与当前集群。趋势样本时间使用 Unix 秒；利用率为 0–100，显存为 GB，温度为 °C，单卡功耗为 W，集群功耗为 kW。null 和无效数值显示未知；离线设备不稀释节点均值，在线测量缺失时均值显示未知。数据流、集群切换、设置和均衡操作由宿主接入。视图与节点聚焦支持受控或本地状态，未提供的操作回调不显示入口。",
+    "behavior": "交互与演示",
+    "behaviorBody": "支持利用率、显存、温度切换；悬停或键盘聚焦 GPU 查看详情，点击节点或 GPU 聚焦该行。方向键逐格浏览，Home/End 跳到行首尾，Ctrl/Command+Home/End 跳到矩阵首尾，Escape 取消行聚焦。过热标记独立按温度阈值判断，默认 84°C。窄屏仅矩阵横向滚动。本地演示每 1.6 秒刷新，支持暂停/继续、切换集群、刷新设置和模拟均衡，不操作真实基础设施。"
+  }
+}

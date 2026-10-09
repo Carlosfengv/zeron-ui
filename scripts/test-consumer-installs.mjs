@@ -479,6 +479,10 @@ async function verifyNextBuild({ consumer, component }) {
       '',
     ].join("\n"),
   };
+  examples["fleet-health-01"] = [
+    'import { FleetHealth, createFleetHealthDemoData, fleetHealthDemoClusters } from "@/components/blocks/fleet-health-01";',
+    'export default function Page() { return <FleetHealth data={createFleetHealthDemoData()} clusterId="kestrel-iad-3" clusters={fleetHealthDemoClusters} />; }',
+  ].join("\n");
   examples["design-stack-01"] = [
     '"use client";',
     'import { DesignStack, designStackDemoItems, useDesignStackHistory } from "@/components/blocks/design-stack-01";',
@@ -778,6 +782,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
       'createRoot(document.getElementById("root")!).render(<ListPagination total={11} page={0} pageSize={5} onPageChange={() => {}} onPageSizeChange={() => {}} />);',
     ].join("\n"),
   };
+  examples["fleet-health-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { FleetHealth, createFleetHealthDemoData, fleetHealthDemoClusters } from "@/src/components/blocks/fleet-health-01";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<FleetHealth data={createFleetHealthDemoData()} clusterId="kestrel-iad-3" clusters={fleetHealthDemoClusters} />);',
+  ].join("\n");
   examples["design-stack-01"] = [
     'import { createRoot } from "react-dom/client";',
     'import { DesignStack, designStackDemoItems, useDesignStackHistory } from "@/src/components/blocks/design-stack-01";',

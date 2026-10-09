@@ -34,6 +34,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [File Manager](https://zeron-ui.vercel.app/ai/items/block%3Afile-manager-01.md): A token-native file-management workspace with icon, list, and Finder-style column views. Registry: file-manager-01.
 - [文件上传](https://zeron-ui.vercel.app/ai/items/block%3Afile-upload-01.md): 拖拽上传、文件进度与队列管理。 Registry: file-upload-01.
 - [Filter Rule Builder](https://zeron-ui.vercel.app/ai/items/block%3Afilter-rule-builder-01.md): A controlled filter workspace with presets, readable rule summaries, and validated draft editing. Registry: filter-rule-builder-01.
+- [集群健康](https://zeron-ui.vercel.app/ai/items/block%3Afleet-health-01.md): Live inference throughput, fleet telemetry and an interactive GPU matrix. Registry: fleet-health-01.
 - [入门任务清单](https://zeron-ui.vercel.app/ai/items/block%3Agetting-started-01.md): An embedded, collapsible setup checklist with completion counts, task states and host-owned actions. Registry: getting-started-01.
 - [Infinite Log Table](https://zeron-ui.vercel.app/ai/items/block%3Ainfinite-log-table-01.md): A schema-driven virtualized log explorer with dynamic fields and filters, cursor pagination, and Live tailing. Registry: infinite-log-table-01.
 - [巡检报告列表](https://zeron-ui.vercel.app/ai/items/block%3Ainspection-report-list-01.md): An operations report workspace with shared navigation, filtering, freshness states, and row actions. Registry: inspection-report-list-01.
@@ -186,6 +187,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [design-stack-01](https://zeron-ui.vercel.app/agent-guides/blocks/design-stack-01.md)
 - [file-upload-01](https://zeron-ui.vercel.app/agent-guides/blocks/file-upload-01.md)
 - [filter-rule-builder-01](https://zeron-ui.vercel.app/agent-guides/blocks/filter-rule-builder-01.md)
+- [fleet-health-01](https://zeron-ui.vercel.app/agent-guides/blocks/fleet-health-01.md)
 - [getting-started-01](https://zeron-ui.vercel.app/agent-guides/blocks/getting-started-01.md)
 - [infinite-log-table-01](https://zeron-ui.vercel.app/agent-guides/blocks/infinite-log-table-01.md)
 - [inspection-report-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/inspection-report-list-01.md)

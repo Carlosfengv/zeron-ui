@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "fleet-health-01", title: "集群健康", description: "实时推理吞吐、集群用量与支持利用率、显存和温度视图的 GPU 遥测矩阵。", categories: ["application", "monitoring", "analytics"], dependencies: ["badge", "button", "container", "inline-notice", "live-line-chart", "select", "tabs", "tooltip", "icon-context", "utils"] },
   { name: "website-analytics-01", title: "网站分析", description: "访客、注册、转化率、跳出率、趋势对比与页面来源排行。", categories: ["application", "analytics", "website"], dependencies: ["area-chart", "bar-chart", "button", "chart-core", "chart-primitives", "checkbox", "container", "inline-notice", "metric-card", "tabs", "icon-context", "utils"] },
   { name: "sales-conversion-funnel-01", title: "销售转化漏斗", description: "成交总数、转化率、阶段数量与团队堆叠面积。", categories: ["application", "analytics", "sales"], dependencies: ["container", "funnel-chart", "icon-context", "utils"] },
   { name: "design-stack-01", title: "设计工具清单", description: "可编辑的工具清单，支持分类、网站、续费日期、多选、排序和撤销重做。", categories: ["application", "tables"], dependencies: ["avatar", "badge", "button", "checkbox", "container", "data-grid", "icon-context", "utils", "@thesvg/icons", "@tanstack/react-table"] },

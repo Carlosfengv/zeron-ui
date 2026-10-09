@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "fleet-health-01": {
+    "url": "/docs-source/563b55eac001e3edf681db78f40d6fad520b56b3cf968b13d5061ce0bb2b0e26.txt"
+  },
   "website-analytics-01": {
     "url": "/docs-source/32d7db9240c837ba0cfa927b771846317c313d43054017d99415ed21fe287532.txt"
   },

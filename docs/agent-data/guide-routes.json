@@ -46,6 +46,10 @@
       "itemId": "block:filter-rule-builder-01"
     },
     {
+      "path": "blocks/fleet-health-01.md",
+      "itemId": "block:fleet-health-01"
+    },
+    {
       "path": "blocks/getting-started-01.md",
       "itemId": "block:getting-started-01"
     },

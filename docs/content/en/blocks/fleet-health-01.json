@@ -1,0 +1,12 @@
+{
+  "fleetHealthBlock": {
+    "title": "Fleet Health",
+    "description": "A GPU fleet health panel with streaming inference throughput, telemetry ticks and an interactive GPU matrix.",
+    "composition": "Composition",
+    "compositionBody": "Container owns the frame, header and footer, with two ContainerBody surfaces for throughput and GPUs. Uses existing Select, Tabs, Badge, Button, Tooltip and LiveLineChart. Brand colors, semantic status colors, hairline borders and motion durations follow the active theme. The GPU matrix is a domain table: the existing calendar HeatmapChart has dated bins and contribution tooltips, without per-device draining/offline status or rich GPU telemetry. This table keeps device identity, job data and status accessible without adding a new primitive.",
+    "dataContract": "Data integration",
+    "dataContractBody": "Provide a snapshot, stable node/GPU ids, cluster choices and cluster id. Streaming samples use Unix seconds. Utilization is 0–100; memory is GB; temperature is °C; power is watts per GPU and kilowatts for the fleet. Null or invalid measurements remain unknown. Offline devices do not dilute node averages; incomplete live measurements produce an unknown average. The host owns the streaming connection, cluster switching, settings and rebalance actions. Metric and node focus can be controlled or local. Missing action callbacks hide those actions.",
+    "behavior": "Behavior and demo",
+    "behaviorBody": "Switch utilization, memory and temperature; hover or focus a GPU for details; click a node or GPU to focus its row. Arrow keys move between GPUs, Home/End move within a row, Ctrl/Command+Home/End move to the matrix endpoints, and Escape clears row focus. A hot indicator uses an independent temperature threshold of 84°C by default. Only the matrix scrolls horizontally on narrow screens. The local demo refreshes every 1.6 seconds, supports pause/resume, cluster switching, refresh settings and simulated rebalance. It never changes production infrastructure."
+  }
+}

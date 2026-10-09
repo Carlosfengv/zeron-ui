@@ -1,4 +1,15 @@
 {
+  "fleet-health-01": {
+    "keywords": ["集群", "健康", "GPU", "显存", "温度", "fleet", "health", "inference", "telemetry"],
+    "useCases": ["嵌入式 GPU 集群健康、实时推理吞吐与单卡遥测。"],
+    "whenNotToUse": ["不提供生产采集连接、GPU 调度或均衡服务；日历贡献图使用 HeatmapChart。"],
+    "keyApi": [
+      "data/clusterId/clusters/onClusterChange 接入宿主快照和集群查询。",
+      "metric/onMetricChange 与 selectedNodeId/onNodeSelect 支持受控或本地状态。",
+      "onRebalance/rebalancing/onSettings 为宿主操作，live 不启动连接。",
+      "null 和无效读数不补零，离线不参与均值；labels/locale 支持本地化。"
+    ]
+  },
   "website-analytics-01": {
     "keywords": ["网站", "分析", "流量", "访客", "来源", "website", "analytics", "traffic", "visitors"],
     "useCases": ["嵌入式网站分析面板：指标、时序对比和页面来源排行。"],
