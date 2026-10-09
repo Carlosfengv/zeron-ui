@@ -15,8 +15,8 @@ related: [chart, badge]
 
 # Chart Primitives
 
-- `ChartColorIndex` 为 1–5；`chartColor(index)` 返回全局 `var(--chart-N)`，非法运行时索引回到槽位 1。五槽位采用 Panel 体系，当前顺序为主题蓝、青、琥珀、绿、紫，默认系列不含中性色，独立于 Badge 和品牌 Token。旧 gray 分类输入适配到默认槽位 1；中性色只用于结构。主系列显式用槽位 1，多系列固定映射。
-- `chartSeriesColor(id)` 按稳定 ID 取五槽位，不随重排、筛选和刷新变化，但允许碰撞。可选第二参数 `{ colorIndex, color }` 按有效索引 → 旧 Badge 分类色适配 → ID 兜底解析。`chartLegacyColor(color)` 仅供旧分类输入兼容，未知色名返回 undefined；不是危险状态映射。`chartStatusColors` 独立提供语义色。
+- `ChartColorIndex` 为 1–7；`chartColor(index)` 返回全局 `var(--chart-N)`，非法运行时索引回到槽位 1。前五槽位为主题蓝、青、琥珀、绿、紫，用于普通比较系列；槽位 6 为浅灰中性色，用于未知、未使用或未分配状态；槽位 7 为红色危险色，用于错误、失败或异常状态。图表色盘独立于 Badge 和品牌 Token。旧 gray 分类输入仍适配到默认槽位 1；中性状态须显式传槽位 6。主系列显式用槽位 1，多系列固定映射。
+- `chartSeriesColor(id)` 按稳定 ID 只取前五槽位，不随重排、筛选和刷新变化，但允许碰撞。可选第二参数 `{ colorIndex, color }` 按有效索引（1–7）→ 旧 Badge 分类色适配 → ID 兜底解析；状态槽位 6、7 必须显式指定。`chartLegacyColor(color)` 仅供旧分类输入兼容，未知色名返回 undefined；不是危险状态映射。`chartStatusColors` 独立提供语义色。
 - 图形、图例和关联控件共用同一变量引用，亮暗切换和全局覆盖自动生效。超过五项保留完整标签与数值，不能自动删减实体；必要时通过线型区分。
 - `createChartNumberFormatter(locale, options)` 保留未知为 —；percent 的输入为比例 0.15，而非百分数 15。金额的 micros/minor-unit 换算由业务层承担。`createChartTimeFormatter(locale, timeZone, options)` 显式指定时区，非法时间保持未知。
 - `ChartLegend` items 含 id/label/color/value/ratio，可选 pressed 提供真实显隐状态；默认静态，不创建隐式显隐状态。onSelect(id) 只执行宿主明确操作；需要显隐时由宿主维护 pressed 并将其应用到图表，组件不会修改数据。长名称换行，不依赖标题提示。占比不完整时由消费者传入 —。

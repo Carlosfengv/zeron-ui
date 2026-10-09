@@ -47,7 +47,7 @@ export function ProjectPreview() {
 
 ## 组件与样式
 
-服务和存储分类可选 `colorIndex` 为 1–5，优先于原必填兼容字段 `color: BadgeColor`。共享工具将旧色名适配到全局槽位；透传到 StorageUsage 时同时保留索引。固定分位数 P50 / P95 / P99 使用槽位 1 / 2 / 3，图形与图例共用解析颜色，真实健康状态独立取色。
+服务和存储分类可选 `colorIndex` 为 1–7，普通分类使用前五色；槽位 6、7 仅在明确表达中性或危险状态时使用。索引优先于原必填兼容字段 `color: BadgeColor`。共享工具将旧色名适配到全局槽位；透传到 StorageUsage 时同时保留索引。固定分位数 P50 / P95 / P99 使用槽位 1 / 2 / 3，图形与图例共用解析颜色，真实健康状态独立取色。
 
 使用 Card、Tabs、InfoItem、Badge、StatusOverview、StorageUsage、MetricCard、Chart、Select、Button、Tooltip、Skeleton、Empty、Badge plain、Alert 和 InlineNotice。服务状态通过 StatusOverview 的 variant="activity" 呈现：名称、细竖条轨道和请求数在宽容器中同排，窄容器中轨道换行。灰色完整竖条表示空闲，较短竖条表示未知；Tooltip 保留准确计数和状态。请求趋势采用 TimeSeriesChart，环图采用 DonutSummary，服务图例采用 ChartLegend；缺失分桶保留断点和未知汇总，趋势数据可通过键盘展开。分位数比较保留专用条形图，与直方图共享分位数分类色但不合并模型。业务布局使用现有间距、字体、边框、阴影和语义颜色；未新增全局样式或色值。
 

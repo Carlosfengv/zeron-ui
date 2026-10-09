@@ -10,6 +10,6 @@
     "known": "已确认",
     "uncovered": "已确认 80 / 总数 100；另有 20 未覆盖，保持灰色。",
     "contract": "使用规则",
-    "guidance": "容量保留真实超额数字，按最大值缩放；分布保留未覆盖总量。ChartLegend 默认静态，onSelect 执行宿主操作。chartColor(1–5) 读取全局色盘：主题蓝、青、琥珀、绿、紫，默认系列不含中性色；chartSeriesColor(id) 稳定但允许碰撞。可选 colorIndex 优先于适配到槽位的旧 Badge 色名。状态色独立；百分比接收 0.15，金额换算由业务负责。"
+    "guidance": "容量保留真实超额数字，按最大值缩放；分布保留未覆盖总量。ChartLegend 默认静态，onSelect 执行宿主操作。chartColor(1–7) 读取全局色盘：前五色用于比较系列，槽位 6 为浅灰中性状态，槽位 7 为红色危险状态。chartSeriesColor(id) 在前五色中稳定分配但允许碰撞；显式 colorIndex 可使用全部七槽位，优先于旧 Badge 色名适配。状态工具独立；百分比接收 0.15，金额换算由业务负责。"
   }
 }

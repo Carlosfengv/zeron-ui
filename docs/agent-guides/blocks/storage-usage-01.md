@@ -22,7 +22,7 @@ import { StorageUsage, storageUsageDemoData } from "@/components/blocks/storage-
 <StorageUsage data={storageUsageDemoData} />
 ```
 
-- `data.capacity` and each item `value` share the chosen `unit` (default GB). Items have stable, unique IDs, labels, a legacy required `BadgeColor`, and optional `colorIndex` (1–5).
+- `data.capacity` and each item `value` share the chosen `unit` (default GB). Items have stable, unique IDs, labels, a legacy required `BadgeColor`, and optional `colorIndex` (1–7). Ordinary categories use slots 1–5; reserve explicit slots 6 and 7 for neutral and danger states.
 - Used capacity is derived from category values. Negative and nonfinite inputs normalize to zero. Never pass a separate inconsistent total.
 - Empty items show 0% and an empty track. Zero capacity with positive usage shows an unknown percentage. Over-capacity usage keeps its actual percentage; category proportions fit the filled track and remaining capacity is zero.
 - The reference's category labels do not sum to its summary; the demo preserves 94% of 20 GB with consistent, proportional category values. These are example data, not a backend integration.

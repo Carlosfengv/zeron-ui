@@ -82,10 +82,12 @@ describe("token contrast helper", () => {
 });
 
 describe("semantic token generation", () => {
-  it("publishes a blue-first five-series palette independently from brand and status tokens", () => {
-    const pairs = [["#0060D2", "#1483FD"], ["#06B6D4", "#22D3EE"], ["#F59E0B", "#FBBF24"], ["#10B981", "#34D399"], ["#8B5CF6", "#A78BFA"]];
+  it("publishes five series slots plus neutral and danger chart slots independently from brand tokens", () => {
+    const pairs = [["#0060D2", "#1483FD"], ["#06B6D4", "#22D3EE"], ["#F59E0B", "#FBBF24"], ["#10B981", "#34D399"], ["#8B5CF6", "#A78BFA"], ["#D4D4D4", "#A3A3A3"], ["#EF4444", "#F87171"]];
     const { theme, light, dark } = registryCssVars();
-    expect(componentColorTokens.filter(({ name }) => name.startsWith("chart-"))).toHaveLength(5);
+    expect(componentColorTokens.filter(({ name }) => name.startsWith("chart-"))).toHaveLength(7);
+    expect(tokenByName(componentColorTokens, "chart-6").classification).toMatchObject({ channel: "component", intent: "neutral" });
+    expect(tokenByName(componentColorTokens, "chart-7").classification).toMatchObject({ channel: "component", intent: "danger" });
     for (const [index, [lightValue, darkValue]] of pairs.entries()) {
       const name = `chart-${index + 1}`;
       expect(tokenByName(componentColorTokens, name)).toMatchObject({ light: lightValue, dark: darkValue });

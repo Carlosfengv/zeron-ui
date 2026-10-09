@@ -1732,6 +1732,26 @@ const tokenData = {
         "channel": "component",
         "intent": "neutral"
       }
+    },
+    {
+      "name": "chart-6",
+      "light": "#D4D4D4",
+      "dark": "#A3A3A3",
+      "usage": "图表中性状态槽位；浅灰色用于未知、未使用或未分配状态",
+      "classification": {
+        "channel": "component",
+        "intent": "neutral"
+      }
+    },
+    {
+      "name": "chart-7",
+      "light": "#EF4444",
+      "dark": "#F87171",
+      "usage": "图表危险状态槽位；红色用于错误、失败或异常状态",
+      "classification": {
+        "channel": "component",
+        "intent": "danger"
+      }
     }
   ],
   "surfaces": [

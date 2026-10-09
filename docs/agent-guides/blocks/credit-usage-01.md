@@ -57,7 +57,7 @@ function BillingSummary() {
 - `currentCycle` 必填，`previousCycle` 可选。缺少上一周期时，对应 Tab 会禁用。
 - `projection` 是服务端或领域层给出的预测结果；Block 不自行预测耗尽日期。
 - `autoSwitch` 决定是否显示自动切换区域；目标模型、阈值和说明都由业务数据提供。
-- 模型可选 `colorIndex` 为 1–5，优先读取全局 Chart 槽位；原必填 `color: BadgeColor` 为兼容字段，适配到槽位，不再读取 Badge HEX。索引和旧色名都非法时按稳定模型 ID 兜底；不表达健康或告警。
+- 模型可选 `colorIndex` 为 1–7，普通模型分类使用前五色；槽位 6、7 仅在明确表达中性或危险状态时使用。原必填 `color: BadgeColor` 为兼容字段，适配到槽位，不再读取 Badge HEX。索引和旧色名都非法时按稳定模型 ID 在前五色中兜底。
 - 使用 `provider` 选择内置的 OpenAI、Claude 或 Gemini 品牌标识；私有模型通过 `logo` 传入真实的产品 Logo，未提供时使用通用模型图标。
 - 日期作为已格式化文本传入；数字与百分比根据 `locale` 格式化。
 - 使用 `formatters.usageSummary`、`formatters.progressValueText` 和 `formatters.autoSwitchTitle` 覆盖完整句子，避免本地化时受英文词序限制。

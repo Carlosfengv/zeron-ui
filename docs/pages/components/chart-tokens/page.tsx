@@ -11,18 +11,18 @@ import { ScrollArea } from "@zeron/ui/scroll-area";
 import { componentColorTokens } from "@zeron/ui/tokens/semantic-tokens.mjs";
 
 type ChartToken = { name: string; light: string; dark: string };
-const palette: ChartToken[] = componentColorTokens.filter((token: ChartToken) => /^chart-[1-5]$/.test(token.name));
+const palette: ChartToken[] = componentColorTokens.filter((token: ChartToken) => /^chart-[1-7]$/.test(token.name));
 const paletteCode = `import { ChartLegend, SegmentedBar, chartColor } from "@zeron/ui/chart-primitives";
 
-const segments = [1, 2, 3, 4, 5].map((index) => ({
+const segments = [1, 2, 3, 4, 5, 6, 7].map((index) => ({
   id: \`chart-\${index}\`, label: \`chart-\${index}\`, value: 20,
-  color: chartColor(index as 1 | 2 | 3 | 4 | 5),
+  color: chartColor(index as 1 | 2 | 3 | 4 | 5 | 6 | 7),
 }));
 
 export function ChartPalette() {
   return <div className="grid gap-4">
-    <SegmentedBar mode="distribution" total={100}
-      segments={segments} valueText="Five chart slots, 20 each" />
+    <SegmentedBar mode="distribution" total={140}
+      segments={segments} valueText="Seven chart slots, 20 each" />
     <ChartLegend items={segments} />
   </div>;
 }`;
@@ -86,8 +86,8 @@ export default function ChartTokensDoc() {
       <div data-component-cover-source>
         <ComponentPreview code={paletteCode}>
           <div className="grid w-full min-w-0 gap-4">
-            <SegmentedBar mode="distribution" total={100} segments={segments} valueText={t("paletteLabel")} />
-            <ChartLegend className="grid-cols-1 sm:grid-cols-5" items={segments} />
+            <SegmentedBar mode="distribution" total={140} segments={segments} valueText={t("paletteLabel")} />
+            <ChartLegend className="grid-cols-1 sm:grid-cols-4 xl:grid-cols-7" items={segments} />
           </div>
         </ComponentPreview>
       </div>
@@ -110,8 +110,8 @@ export default function ChartTokensDoc() {
     <DocSection title={t("layersTitle")}>
       <p className="text-body text-fg-muted">{t("layersBody")}</p>
       <PropsTable labels={{ prop: t("token"), type: t("layer"), default: t("token"), description: t("usage") }} props={[
-        { name: "--chart-1 … --chart-5", type: t("globalLayer"), description: t("globalUsage") },
-        { name: "--color-chart-1 … --color-chart-5", type: t("utilityLayer"), description: t("utilityUsage") },
+        { name: "--chart-1 … --chart-7", type: t("globalLayer"), description: t("globalUsage") },
+        { name: "--color-chart-1 … --color-chart-7", type: t("utilityLayer"), description: t("utilityUsage") },
         { name: "--color-<series>", type: t("instanceLayer"), description: t("instanceUsage") },
       ]} />
     </DocSection>

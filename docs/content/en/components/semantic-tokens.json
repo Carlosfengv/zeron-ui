@@ -1,7 +1,7 @@
 {
   "semanticTokens": {
     "chartColors": "Chart series",
-    "chartColorsBody": "Five global series slots adapt the Panel light and dark palette: theme blue first, cyan second, then amber, green and violet. Neutral colors are reserved for structure. Reference chart-1 through chart-5 independently from brand, status, axes, and tracks. Fills and strokes share a slot; opacity controls emphasis.",
+    "chartColorsBody": "Seven global chart slots adapt the Panel light and dark palette. The first five colors are theme blue, cyan, amber, green, and violet for comparison series. Chart-6 is light gray neutral for unknown or unused states; chart-7 is danger red for errors or failures. Chart colors remain independent of brand, axes, and tracks. Fills and strokes share a slot; opacity controls emphasis.",
     "designToken": "Design token",
     "light": "Light",
     "dark": "Dark",

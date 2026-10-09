@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 
 const chartPalette = {
-  light: ["#0060D2", "#06B6D4", "#F59E0B", "#10B981", "#8B5CF6"],
-  dark: ["#1483FD", "#22D3EE", "#FBBF24", "#34D399", "#A78BFA"],
+  light: ["#0060D2", "#06B6D4", "#F59E0B", "#10B981", "#8B5CF6", "#D4D4D4", "#EF4444"],
+  dark: ["#1483FD", "#22D3EE", "#FBBF24", "#34D399", "#A78BFA", "#A3A3A3", "#F87171"],
 };
 
 /** Check shared geometry against live theme variables and the original data weights. */
@@ -81,16 +81,16 @@ export async function verifyChartTokenColors(page, { theme, scope = "body", requ
       if (!node.style || node.closest("[data-chart-token-probes]")) continue;
       const aliases = new Map();
       const chart = node.closest("[data-chart]");
-      for (const match of (chart?.querySelector("style")?.textContent ?? "").matchAll(/--(color-[^:;{}\s]+):\s*var\(--chart-([1-5])\)/gu)) aliases.set(`--${match[1]}`, Number(match[2]));
+      for (const match of (chart?.querySelector("style")?.textContent ?? "").matchAll(/--(color-[^:;{}\s]+):\s*var\(--chart-([1-7])\)/gu)) aliases.set(`--${match[1]}`, Number(match[2]));
       for (const property of paintProperties) {
         const attribute = property === "stopColor" ? "stop-color" : property;
         const raw = node.style[property] || node.getAttribute(attribute) || "";
         const variable = raw.match(/^var\((--[^,)\s]+)\)$/u)?.[1];
-        const slot = variable?.match(/^--chart-([1-5])$/u)?.[1] ?? aliases.get(variable);
+        const slot = variable?.match(/^--chart-([1-7])$/u)?.[1] ?? aliases.get(variable);
         if (slot) marks.push({ node, property, slot: Number(slot), alpha: 100 });
       }
       for (const name of node.classList) {
-        const match = name.match(/^bg-chart-([1-5])(?:\/(\d+))?$/u);
+        const match = name.match(/^bg-chart-([1-7])(?:\/(\d+))?$/u);
         if (match) marks.push({ node, property: "backgroundColor", slot: Number(match[1]), alpha: Number(match[2] ?? 100) });
       }
     }

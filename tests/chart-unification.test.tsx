@@ -42,7 +42,15 @@ describe("共享调色与格式契约", () => {
     for (const value of ["missing", "toString", "__proto__", null]) expect(chartLegacyColor(value as BadgeColor)).toBeUndefined();
   });
 
-  it.each([0, 6, -1, 1.5, NaN, Infinity, "2", null])("非法索引 %s 不生成缺失的 CSS 变量", (index) => {
+  it.each([6, 7] as const)("状态槽位 %s 可显式使用，自动分类仍保留前五色", (index) => {
+    expect(chartColor(index)).toBe(`var(--chart-${index})`);
+    expect(chartSeriesColor("state", { colorIndex: index, color: "teal" })).toBe(chartColor(index));
+    for (let entity = 0; entity < 100; entity++) {
+      expect(chartCategoricalColors).toContain(chartSeriesColor(`entity-${entity}`));
+    }
+  });
+
+  it.each([0, 8, -1, 1.5, NaN, Infinity, "2", null])("非法索引 %s 不生成缺失的 CSS 变量", (index) => {
     expect(chartColor(index as ChartColorIndex)).toBe(chartColor(1));
     expect(chartSeriesColor("model", { colorIndex: index as ChartColorIndex, color: "teal" })).toBe(chartColor(4));
     expect(chartSeriesColor("model", { colorIndex: index as ChartColorIndex, color: "missing" as BadgeColor })).toBe(chartSeriesColor("model"));

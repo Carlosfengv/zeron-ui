@@ -17,7 +17,7 @@ related: [chart-primitives, metric-card, time-range-histogram]
 
 `ChartContainer/config/ChartTooltip/ChartTooltipContent` 保留原有组合接口。`config` 的 key 使用 CSS 标识符，color/theme 使用可信 CSS 色值。ChartContainer 内只放一个 Recharts 图，不能嵌套 ResponsiveContainer，父容器应 min-w-0 且有可测量高度。`dataTable` 可提供 caption、columns、rows 和 summary，为专用图提供键盘可打开的数据表。
 
-普通主系列使用 `chartColor(1)`，比较系列显式配置 1–5 槽位；动态系列可用 `chartSeriesColor(id)` 稳定兜底，有限槽位允许碰撞。图形、图例和关联控件共用颜色。`color` 与 `theme` 显式覆盖仍生效；状态色和网格、文字、轨道独立于五色盘。
+普通主系列使用 `chartColor(1)`，比较系列显式配置 1–5 槽位；中性状态使用 `chartColor(6)`，错误或危险状态使用 `chartColor(7)`。动态系列可用 `chartSeriesColor(id)` 在前五色中稳定兜底，有限槽位允许碰撞。图形、图例和关联控件共用颜色。`color` 与 `theme` 显式覆盖仍生效；状态工具和网格、文字、轨道保持独立。
 
 `TimeSeriesChart` 是两个请求趋势消费者验证后的薄组合。data 每项为 `{ timestamp: number, values: Record<string, number | null> }`；series 含稳定 id、label 和可选 color。必填 locale/timeZone/label，domain 可指定真实时间窗口。formatValue 同时用于轴、Tooltip 和数据表。没有汇总、补零、排序、采样或隐式连线；单点保留标记、全零保留真实值、空数组显示无数据。dataSummary 由消费者本地化。绘图关闭非必要动画。
 

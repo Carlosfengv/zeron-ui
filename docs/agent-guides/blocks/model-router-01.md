@@ -49,6 +49,6 @@ SVG 粒子表达相对请求密度，不是每个真实请求。零请求线路�
 
 ## Model identity and linked emphasis
 
-路由可选 `colorIndex` 为 1–5，优先于原必填兼容字段 `color: BadgeColor`。共享取色工具将旧色名适配到全局槽位；SVG 主线、光点、圆点与 share 条共用解析颜色。索引不随排序或策略改变，Logo 和状态色保持独立。
+路由可选 `colorIndex` 为 1–7，普通路由分类使用前五色；槽位 6、7 仅在明确表达中性或危险状态时使用。索引优先于原必填兼容字段 `color: BadgeColor`。共享取色工具将旧色名适配到全局槽位；SVG 主线、光点、圆点与 share 条共用解析颜色。索引不随排序或策略改变，Logo 和状态色保持独立。
 
 `route.brand` 选择 claude、openai 或 qwen 的 Lobe 图标，独立于托管 provider；私有品牌可传入 `route.logo`。未指定 brand 时支持 Anthropic/OpenAI provider 回退，其他模型使用通用图标。图表标签、管道和表格行通过稳定的 route.id 双向联动：悬停或键盘聚焦时，图表中当前模型保持 100% 不透明度，其他模型为 40%，离开后恢复。图表标签不添加背景；表格各行始终保持完全不透明，仅对应行显示背景高亮。

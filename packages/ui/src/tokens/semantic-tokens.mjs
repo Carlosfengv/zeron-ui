@@ -34,7 +34,7 @@ function classify(tokens, channel) {
     ...token,
     classification: {
       channel,
-      intent: intentFor(token.name),
+      intent: token.classification?.intent ?? intentFor(token.name),
       variant: token.name.endsWith("-hover") || token.name === "hover"
         ? { interaction: "hover" }
         : token.name.endsWith("-active") || token.name === "active"
@@ -156,6 +156,8 @@ export const componentColorTokens = classify([
   { name: "chart-3", light: "#F59E0B", dark: "#FBBF24", usage: "普通图表系列槽位 3；不表达状态" },
   { name: "chart-4", light: "#10B981", dark: "#34D399", usage: "普通图表系列槽位 4；不表达状态" },
   { name: "chart-5", light: "#8B5CF6", dark: "#A78BFA", usage: "普通图表系列槽位 5；不表达状态" },
+  { name: "chart-6", light: neutral[300], dark: neutral[400], usage: "图表中性状态槽位；浅灰色用于未知、未使用或未分配状态" },
+  { name: "chart-7", light: danger[500], dark: danger[400], usage: "图表危险状态槽位；红色用于错误、失败或异常状态", classification: { intent: "danger" } },
 ], "component");
 
 export const surfaceTokens = classify([

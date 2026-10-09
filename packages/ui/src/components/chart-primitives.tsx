@@ -4,17 +4,19 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import type { BadgeColor } from "#components/badge";
 import { cn } from "#system/utils";
 
+export type ChartColorIndex = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 /** Categories never imply health. Stable IDs, rather than list positions, select a color. */
-export type ChartColorIndex = 1 | 2 | 3 | 4 | 5;
 export const chartCategoricalColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"] as const;
+/** Slots 6 and 7 are reserved for explicit neutral and danger states. */
+const chartColors = [...chartCategoricalColors, "var(--chart-6)", "var(--chart-7)"] as const;
 export const chartStatusColors = { success: "var(--fg-success)", warning: "var(--fg-warning)", danger: "var(--fg-danger)", info: "var(--fg-info)", neutral: "var(--fg-neutral-status)" } as const;
 
 function isChartColorIndex(index: unknown): index is ChartColorIndex {
-  return typeof index === "number" && Number.isInteger(index) && index >= 1 && index <= 5;
+  return typeof index === "number" && Number.isInteger(index) && index >= 1 && index <= chartColors.length;
 }
 
 export function chartColor(index: ChartColorIndex) {
-  return isChartColorIndex(index) ? chartCategoricalColors[index - 1] : chartCategoricalColors[0];
+  return isChartColorIndex(index) ? chartColors[index - 1] : chartColors[0];
 }
 
 const legacyChartIndices = {
