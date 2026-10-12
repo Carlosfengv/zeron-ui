@@ -3,7 +3,7 @@ import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
   "context-window-01": {
-    "url": "/docs-source/edff683ef137022bba7b338f571777921f518932bf3af9efa15b35d8ac755d0e.txt"
+    "url": "/docs-source/67eed8eb31329c997da05ec15af5913f90d1d3261cd36fdeb229c5c6f9c493d0.txt"
   },
   "fleet-health-01": {
     "url": "/docs-source/563b55eac001e3edf681db78f40d6fad520b56b3cf968b13d5061ce0bb2b0e26.txt"
