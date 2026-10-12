@@ -83,7 +83,7 @@ export function ContextWindow({ data, title, live = false, tab, defaultTab = "do
         <div className="grid min-w-0 gap-5 sm:grid-cols-5">
           <div className={cn("min-w-0 space-y-2", cache ? "sm:col-span-3" : "sm:col-span-5")}>
             <div className="flex flex-wrap items-center gap-2"><span className="font-mono text-label uppercase tracking-wider text-fg-subtle">{labels.used}</span><Badge status={usage.status} size="sm">{usage.status === "success" ? labels.healthy : usage.status === "warning" ? labels.warning : labels.full}</Badge></div>
-            <div className="flex flex-wrap items-baseline gap-2"><span className="text-4xl font-medium tracking-tight text-fg-default tabular-nums">{tokenText(usage.used)}</span><span className="text-body text-fg-subtle">/ {tokenText(data.capacity)} {labels.tokens}</span></div>
+            <div className="flex flex-wrap items-baseline gap-2"><span className="text-display font-medium tracking-tight text-fg-default tabular-nums">{tokenText(usage.used)}</span><span className="text-body text-fg-subtle">/ {tokenText(data.capacity)} {labels.tokens}</span></div>
             <p className="flex flex-wrap gap-x-2 font-mono text-label text-fg-muted"><span>{labels.usage(percent.format(usage.ratio))}</span>{usage.headroom !== null && <span>· {labels.headroom(integer.format(usage.headroom))}</span>}</p>
           </div>
           {cache && (
@@ -93,7 +93,7 @@ export function ContextWindow({ data, title, live = false, tab, defaultTab = "do
                 <span>{labels.hit(hitRateText)}</span>
               </div>
               <p className="flex items-baseline gap-2">
-                <span className="text-2xl font-medium text-fg-default tabular-nums">{validNumber(cache.saved) ? money.format(cache.saved) : "—"}</span>
+                <span className="text-heading font-medium text-fg-default tabular-nums">{validNumber(cache.saved) ? money.format(cache.saved) : "—"}</span>
                 <span className="text-label text-fg-subtle">{labels.saved}</span>
               </p>
               <div
