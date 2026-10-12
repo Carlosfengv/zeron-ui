@@ -793,6 +793,7 @@ export class CodeView<LAnnotation = undefined, Caret = undefined> {
 
   private root: HTMLElement | undefined;
   private resizeObserver: ResizeObserver | undefined;
+  private pendingResizeEntries = new Map<Element, ResizeObserverEntry>();
 
   private container: HTMLDivElement | undefined = document.createElement('div');
   private stickyContainer = document.createElement('div');
@@ -1187,6 +1188,8 @@ export class CodeView<LAnnotation = undefined, Caret = undefined> {
   }
 
   public reset(): void {
+    dequeueRender(this.flushResize);
+    this.pendingResizeEntries.clear();
     dequeueRender(this.computeRenderRangeAndEmit);
     this.clearReadySubscription();
     this.restoreScrollInteractions();
@@ -3834,6 +3837,17 @@ export class CodeView<LAnnotation = undefined, Caret = undefined> {
   };
 
   private handleResize = (entries: ResizeObserverEntry[]) => {
+    for (const entry of entries) {
+      this.pendingResizeEntries.set(entry.target, entry);
+    }
+    // Reconciliation writes to observed containers. Run it in the next frame
+    // so those writes cannot re-enter the current ResizeObserver delivery loop.
+    queueRender(this.flushResize);
+  };
+
+  private flushResize = () => {
+    const entries = [...this.pendingResizeEntries.values()];
+    this.pendingResizeEntries.clear();
     let shouldRender = false;
     for (const entry of entries) {
       // If the sticky container resizes (could be from a render, which it will
@@ -3931,9 +3945,7 @@ export class CodeView<LAnnotation = undefined, Caret = undefined> {
       }
     }
 
-    // If the DOM changed in an unexpected way, we should kick
-    // off a synchronous render immediately because it will
-    // ensure no visual jitter if we need to scroll fix
+    // Finish reconciliation and its scroll correction within the same frame.
     if (shouldRender) {
       this.render(true);
     }
