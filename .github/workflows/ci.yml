@@ -5,47 +5,44 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  agent-clean-checkout:
-    runs-on: ubuntu-latest
+  changes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.scope.outputs.code }}
+      clean: ${{ steps.scope.outputs.clean }}
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
         with:
-          version: 10.12.4
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
-      - name: Install browser runner
-        run: pnpm install --frozen-lockfile && pnpm exec playwright install --with-deps chromium
-      - name: Verify fresh isolated Agent checkout
-        run: pnpm agents:verify:clean
-      - name: Upload clean checkout evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: agent-clean-checkout-evidence
-          path: output/agent-clean
-          if-no-files-found: error
-  checks:
-    runs-on: ubuntu-latest
+      - name: Classify changed paths
+        id: scope
+        run: node scripts/ci-changes.mjs
+
+  quality:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
         with:
-          version: 10.12.4
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install test browser for unit and consumer checks
+      - name: Install test browser for rendered controls
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Semantic tokens are up to date
@@ -142,6 +139,36 @@ jobs:
       - name: Test CLI
         run: pnpm cli:test
 
+  consumers:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - group: next-npm
+            next-managers: npm
+            vite-managers: ''
+          - group: next-pnpm
+            next-managers: pnpm
+            vite-managers: ''
+          - group: vite-npm
+            next-managers: ''
+            vite-managers: npm
+    env:
+      ZERON_CONSUMER_PACKAGE_MANAGERS: ${{ matrix.next-managers }}
+      ZERON_VITE_CONSUMER_PACKAGE_MANAGERS: ${{ matrix.vite-managers }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - name: Prepare code engine inputs
+        run: pnpm code-engine:build
+      - name: Install test browser
+        run: pnpm exec playwright install --with-deps chromium
       - name: Install representative consumers
         run: pnpm test:consumer:smoke
 
@@ -152,10 +179,25 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: consumer-style-evidence
+          name: consumer-style-evidence-${{ matrix.group }}
           path: output/consumer-styles
+          retention-days: 14
           if-no-files-found: ignore
 
+  migrations:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - name: Prepare code engine inputs
+        run: pnpm code-engine:build
+      - name: Install test browser
+        run: pnpm exec playwright install --with-deps chromium
       - name: Migrate representative consumers
         run: pnpm test:consumer:migrations
 
@@ -165,8 +207,30 @@ jobs:
         with:
           name: migration-evidence
           path: output/swap-validation
+          retention-days: 14
           if-no-files-found: ignore
 
+  e2e:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - name: Prepare code engine inputs
+        run: pnpm code-engine:build
+      - name: Install test browser
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Restore Next build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-node22-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            next-${{ runner.os }}-node22-${{ hashFiles('pnpm-lock.yaml') }}-
       - name: Build
         id: build
         run: pnpm test:e2e:build
@@ -175,6 +239,7 @@ jobs:
         run: pnpm test:production
 
       - name: Test production browser suites in Chromium
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: pnpm test:e2e:run
 
       - name: Upload E2E reports and failure traces
@@ -185,3 +250,44 @@ jobs:
           path: output/e2e/pr
           retention-days: 14
           if-no-files-found: ignore
+
+  agent-clean-checkout:
+    needs: changes
+    if: needs.changes.outputs.clean == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - name: Install browser runner
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Verify fresh isolated Agent checkout
+        run: pnpm agents:verify:clean
+      - name: Upload clean checkout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-clean-checkout-evidence
+          path: output/agent-clean
+          retention-days: 14
+          if-no-files-found: error
+
+  # Preserve the existing required check, including documentation-only runs.
+  checks:
+    needs: [changes, quality, consumers, migrations, e2e, agent-clean-checkout]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Require successful results for the selected scope
+        env:
+          CI_JOB_RESULTS: ${{ toJSON(needs) }}
+        run: node scripts/check-ci-results.mjs

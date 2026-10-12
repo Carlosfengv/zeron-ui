@@ -41,6 +41,9 @@ const BUSINESS_SOURCE = "export const identity = <T>(value: T): T => value;\n";
 if ([...packageManagers, ...vitePackageManagers].some((manager) => !["npm", "pnpm"].includes(manager))) {
   throw new Error("Consumer package managers must contain only npm and/or pnpm");
 }
+if (!(packageManagers.length * components.length + vitePackageManagers.length * viteComponents.length)) {
+  throw new Error("Consumer matrix must select at least one installation target");
+}
 
 function registryServer() {
   const server = createServer(async (request, response) => {
@@ -891,7 +894,7 @@ try {
     console.log(`Consumer passed: ${manager === "npm" ? "vite" : "vite-pnpm"}/${component}`);
     if (!keepConsumers) await rm(consumer, { recursive: true, force: true });
   }
-  if (!styles) {
+  if (!styles && vitePackageManagers.length > 0) {
     const rejectionConsumer = join(work, "vite-next-rejection");
     await mkdir(rejectionConsumer, { recursive: true });
     await writeViteConsumer(rejectionConsumer);

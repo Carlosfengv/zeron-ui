@@ -212,7 +212,7 @@ describe("E2E workflow integration", () => {
   it("reuses the main CI build and runs every existing project in the extended workflow", async () => {
     const ci = parse(await readFile(".github/workflows/ci.yml", "utf8"));
     const extended = parse(await readFile(".github/workflows/e2e-extended.yml", "utf8"));
-    const steps = ci.jobs.checks.steps;
+    const steps = ci.jobs.e2e.steps;
     expect(steps.find(step => step.id === "build").run).toBe("pnpm test:e2e:build");
     expect(steps.some(step => step.run === "pnpm test:e2e:run")).toBe(true);
     expect(steps.find(step => step.with?.name === "e2e-pr-evidence").if).toBe("always()");
