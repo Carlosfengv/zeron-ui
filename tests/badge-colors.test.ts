@@ -26,22 +26,22 @@ const softDarkColors = {
 } satisfies Record<Exclude<BadgeColor, "gray">, string>;
 const strongLightColors = {
   gray: ["#525252", "#FAFAFA"],
-  red: ["#DC2626", "#FEF2F2"],
-  orange: ["#EA580C", "#FFF7ED"],
-  amber: ["#D97706", "#FFFBEB"],
-  yellow: ["#CA8A04", "#FEFCE8"],
-  lime: ["#65A30D", "#F7FEE7"],
-  green: ["#16A34A", "#F0FDF4"],
-  emerald: ["#059669", "#ECFDF5"],
-  teal: ["#0D9488", "#F0FDFA"],
-  cyan: ["#0891B2", "#ECFEFF"],
+  red: ["#DC2626", "#FFFFFF"],
+  orange: ["#EA580C", "#00040D"],
+  amber: ["#D97706", "#00040D"],
+  yellow: ["#CA8A04", "#00040D"],
+  lime: ["#65A30D", "#00040D"],
+  green: ["#16A34A", "#00040D"],
+  emerald: ["#059669", "#00040D"],
+  teal: ["#0D9488", "#00040D"],
+  cyan: ["#0891B2", "#00040D"],
   blue: ["#2563EB", "#EFF6FF"],
   indigo: ["#4F46E5", "#EEF2FF"],
   violet: ["#7C3AED", "#F5F3FF"],
   purple: ["#9333EA", "#FAF5FF"],
-  fuchsia: ["#C026D3", "#FDF4FF"],
-  pink: ["#DB2777", "#FDF2F8"],
-  rose: ["#E11D48", "#FFF1F2"],
+  fuchsia: ["#C026D3", "#FFFFFF"],
+  pink: ["#DB2777", "#FFFFFF"],
+  rose: ["#E11D48", "#FFFFFF"],
 } satisfies Record<BadgeColor, [string, string]>;
 const strongDarkColors = {
   gray: "#A3A3A3",
@@ -69,7 +69,7 @@ function themedPair(light: string, dark: string) {
 
 describe("badge categorical colors", () => {
   it.each(Object.entries(strongLightColors) as [BadgeColor, [string, string]][])(
-    "uses the %s 600 fill with its 50 foreground in the light theme",
+    "pairs the %s 600 fill with readable text in both themes",
     (color, [lightBackground, lightForeground]) => {
       const strong = badgeCategoricalTokens(color).strong;
       const darkBackground = strongDarkColors[color];
@@ -79,6 +79,7 @@ describe("badge categorical colors", () => {
         background: themedPair(lightBackground, darkBackground),
         border: "transparent",
       });
+      expect(contrastRatio(lightForeground, lightBackground)).toBeGreaterThanOrEqual(4.5);
       expect(contrastRatio("#00040D", darkBackground)).toBeGreaterThanOrEqual(6);
       expect(contrastRatio(lightBackground, "#FFFFFF")).toBeGreaterThanOrEqual(1.5);
       expect(contrastRatio(darkBackground, "#1F1F1F")).toBeGreaterThanOrEqual(3);
