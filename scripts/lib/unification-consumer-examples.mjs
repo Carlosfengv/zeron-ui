@@ -1,5 +1,6 @@
 /** Public imports and real rendered examples for active migration entries. */
 const examples = {
+  "plan-usage-01": ["PlanUsage, planUsageDemoData", "<PlanUsage data={planUsageDemoData} />"],
   "ai-gateway-overview-01": ["AiGatewayOverview, createAiGatewayOverviewDemoData", '<AiGatewayOverview data={createAiGatewayOverviewDemoData("30d")} range="30d" sidebar={false} />'],
   "project-monitor-01": ["ProjectMonitor, projectMonitorDemoData", "<ProjectMonitor data={projectMonitorDemoData} />"],
   "security-overview-01": ["SecurityOverview, securityOverviewDemoData", '<SecurityOverview scopeId="northwind" data={securityOverviewDemoData} range="30d" onRangeChange={() => {}} />'],

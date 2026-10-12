@@ -1,0 +1,12 @@
+{
+  "planUsageBlock": {
+    "title": "套餐与用量",
+    "description": "可嵌入的订阅管理区块，包含周期用量、预测、限额、套餐对比、付款方式与历史账单，完全复用当前 Zeron 组件与样式变量。",
+    "composition": "组件组合",
+    "compositionBody": "七个区域均由 Card 和 CardContent 承载，使用组件默认背景、圆角与内边距，并通过 border-hairline border-border 添加基于现有变量的 0.5px 边框；模型用量复用 SegmentedBar 和 ChartLegend，每日用量使用 BarChart、Bar、ReferenceLine 和 ChartTooltip。Slider、Switch、Badge、Button 与 Table 保留现有外观。窄屏下套餐纵向排列，账单仅在表格区域内横向滚动。 每日用量柱形、用量提醒滑块和账单状态跟随宿主主题色；预测柱形保留浅色区分，退款账单使用柔和的 Badge 变体。 用量条黑色提醒线右侧通过现有 diagonal 图案预设和危险色变量显示红色斜线纹理，随滑块阈值移动，不改变额度数值。",
+    "data": "数据与接入",
+    "dataBody": "data 提供唯一当前套餐、以主货币单位表示的月费、ISO 日期、模型额度以及实际／今日／预测的每日用量。已用额度、余额与模型占比从模型用量计算，预测与重置天数由宿主传入。labels 包含可本地化的文本与完整句子格式器。",
+    "behavior": "交互行为",
+    "behaviorBody": "限额调整、套餐切换、付款更新、账单下载和取消由宿主回调处理，缺少回调或等待期间禁用对应操作。查看套餐会滚动并聚焦套餐区域，显示更早账单会展开传入的全部账单。演示通过确认弹窗更新本地套餐／付款／取消状态，下载示例账单 JSON，未连接真实计费服务。"
+  }
+}

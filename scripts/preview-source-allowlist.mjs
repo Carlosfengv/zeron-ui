@@ -1,5 +1,13 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "plan-usage-01": [
+    "packages/blocks/src/application/plan-usage-01/index.ts",
+    "packages/blocks/src/application/plan-usage-01/plan-usage-types.ts",
+    "packages/blocks/src/application/plan-usage-01/plan-usage-labels.ts",
+    "packages/blocks/src/application/plan-usage-01/plan-usage-demo-data.ts",
+    "packages/blocks/src/application/plan-usage-01/plan-usage-chart.tsx",
+    "packages/blocks/src/application/plan-usage-01/plan-usage.tsx"
+  ],
   "context-window-01": [
     "packages/blocks/src/application/context-window-01/context-window-data.ts",
     "packages/blocks/src/application/context-window-01/context-window-demo-data.ts",
