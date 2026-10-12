@@ -18,6 +18,7 @@ import { SecurityOverviewDemo } from "./SecurityOverviewDemo";
 import { SupportAnalyticsDemo } from "./SupportAnalyticsDemo";
 import { TransactionDetailsDemo } from "./TransactionDetailsDemo";
 import { CostEstimateDemo } from "./CostEstimateDemo";
+import { PlanUsageDemo } from "./PlanUsageDemo";
 import { DeploymentDetailDemo } from "./DeploymentDetailDemo";
 import { useMemo, useState } from "react";
 import { Login01 } from "@zeron/blocks/login-01";
@@ -229,6 +230,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
       return <TransactionDetailsDemo />;
     case "cost-estimate-01":
       return <CostEstimateDemo />;
+    case "plan-usage-01":
+      return <PlanUsageDemo />;
     case "getting-started-01":
       return <GettingStartedDemo />;
     case "deployment-detail-01":

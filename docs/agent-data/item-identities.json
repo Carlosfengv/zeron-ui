@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:plan-usage-01",
+      "type": "registry",
+      "key": "plan-usage-01",
+      "aliases": [
+        "plan-usage-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "component:file-type",
       "type": "registry",
       "key": "file-type",

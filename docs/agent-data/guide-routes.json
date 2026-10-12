@@ -78,6 +78,10 @@
       "itemId": "block:monitoring-alert-list-01"
     },
     {
+      "path": "blocks/plan-usage-01.md",
+      "itemId": "block:plan-usage-01"
+    },
+    {
       "path": "blocks/project-monitor-01.md",
       "itemId": "block:project-monitor-01"
     },

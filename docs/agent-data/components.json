@@ -1,4 +1,29 @@
 {
+  "plan-usage-01": {
+    "keywords": [
+      "套餐",
+      "用量",
+      "订阅",
+      "发票",
+      "账单",
+      "plan",
+      "usage",
+      "billing",
+      "subscription",
+      "invoice"
+    ],
+    "useCases": [
+      "嵌入式订阅套餐、周期用量、限额、付款方式与历史账单管理。"
+    ],
+    "whenNotToUse": [
+      "不提供真实计费服务、支付收集、额度预测或邮件发送，宿主连接业务回调。"
+    ],
+    "keyApi": [
+      "data 提供套餐、周期额度、逐日用量、预测与账单。",
+      "actions 接收限额、套餐、付款、下载和取消操作；pending/error 由宿主控制。",
+      "labels/locale 支持本地化，缺少回调的控制项自动禁用。"
+    ]
+  },
   "file-type": {
     "keywords": ["文件", "格式", "扩展名", "附件", "图标", "file", "type", "extension", "attachment", "icon"],
     "useCases": ["在文件列表、附件和文件详情中显示文件格式图标。"],

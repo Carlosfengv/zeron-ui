@@ -3,6 +3,68 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "plan-usage-01",
+      "type": "registry:block",
+      "title": "套餐与用量",
+      "description": "An embedded subscription workspace with usage, limits, plans, payment details and invoices.",
+      "categories": [
+        "application",
+        "billing",
+        "settings"
+      ],
+      "dependencies": [
+        "@hugeicons/react",
+        "@hugeicons/core-free-icons",
+        "framer-motion"
+      ],
+      "registryDependencies": [
+        "badge",
+        "bar-chart",
+        "button",
+        "chart-core",
+        "chart-primitives",
+        "card",
+        "icon-context",
+        "inline-notice",
+        "slider",
+        "switch",
+        "table",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/plan-usage-01/plan-usage-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/plan-usage-01/plan-usage-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/plan-usage-01/plan-usage-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/plan-usage-01/plan-usage-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/plan-usage-01/plan-usage-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/plan-usage-01/plan-usage-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/plan-usage-01/plan-usage-chart.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/plan-usage-01/plan-usage-chart.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/plan-usage-01/plan-usage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/plan-usage-01/plan-usage.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/plan-usage-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/plan-usage-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "context-window-01",
       "type": "registry:block",
       "title": "上下文窗口",

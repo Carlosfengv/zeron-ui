@@ -1,0 +1,12 @@
+{
+  "planUsageBlock": {
+    "title": "Plan & Usage",
+    "description": "An embedded subscription workspace with cycle usage, projections, limits, plan comparison, payment details and invoices. Composed entirely from existing Zeron components and tokens.",
+    "composition": "Composition",
+    "compositionBody": "Card and CardContent own each of the seven surface regions, using their default background, radius and padding, with border-hairline border-border for a token-derived 0.5px frame. SegmentedBar and ChartLegend show model attribution; BarChart, Bar, ReferenceLine and ChartTooltip show daily usage. Slider, Switch, Badge, Button and Table retain their existing styles. Plans stack on narrow screens; invoices scroll within their own surface. Daily usage bars, the usage alert slider and invoice statuses follow the host brand color; projected bars use a soft tint and refunded invoices use the soft Badge variant. The capacity track to the right of the alert marker uses the existing diagonal pattern preset and danger token; the texture follows the slider without changing credit values.",
+    "data": "Data and integration",
+    "dataBody": "Pass data with a unique current plan, monthly prices in major currency units, ISO calendar dates, model credits and actual/today/projected daily observations. Used and remaining credits and model percentages are derived from model usage. Forecasts and days until reset come from the host. All labels and sentence formatters can be localized.",
+    "behavior": "Behavior",
+    "behaviorBody": "The host owns limit changes, plan selection, payment updates, invoice downloads and cancellation. Missing callbacks and pending operations disable their controls. See plans scrolls to and focuses the plan comparison; Show older reveals the supplied invoices. The interactive demo confirms plan/payment/cancellation changes locally and downloads example invoice JSON. It does not connect to a billing service."
+  }
+}
