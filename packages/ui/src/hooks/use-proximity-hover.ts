@@ -162,6 +162,9 @@ export function useProximityHover<T extends HTMLElement>(
    */
   const scheduleMeasurement = useCallback(
     (attemptsLeft: number) => {
+      // Child cleanup can unregister items after the list's frame cleanup.
+      // A detached container must not start another measurement pass.
+      if (!containerRef.current) return;
       if (remeasureRafIdRef.current !== null) {
         cancelAnimationFrame(remeasureRafIdRef.current);
       }
@@ -174,7 +177,7 @@ export function useProximityHover<T extends HTMLElement>(
         }
       });
     },
-    [runMeasurement]
+    [containerRef, runMeasurement]
   );
 
   const remeasure = useCallback(() => {
