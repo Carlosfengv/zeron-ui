@@ -110,6 +110,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Field](https://zeron-ui.vercel.app/ai/items/component%3Afield.md): Accessible form composition for labels, descriptions, validation messages, groups, and fieldsets. Registry: field.
 - [File Thumbnail](https://zeron-ui.vercel.app/ai/items/component%3Afile-thumbnail.md): Read-only square preview of a File. Images render via object-cover; PDFs render their first page via pdfjs; a spinner shows while either resolves. Adapts its corner radius to the global shape setting. Registry: file-thumbnail.
 - [File Tree](https://zeron-ui.vercel.app/ai/items/component%3Afile-tree.md): File and folder Tree with file-type icons, file-extension restrictions, and file-only cascade selection. Registry: file-tree.
+- [File Type](https://zeron-ui.vercel.app/ai/items/component%3Afile-type.md): Folded file icons for 99 extensions in 11 families, with four styles and six sizes. Registry: file-type.
 - [FilterBuilder](https://zeron-ui.vercel.app/ai/items/component%3Afilter-builder.md): Composable typed filters for complex data views, with text, number, option, boolean, date, async, and custom editors. Registry: filter-builder.
 - [Filter Query Core](https://zeron-ui.vercel.app/ai/items/component%3Afilter-query-core.md): Headless parser, serializer, reconciliation logic, and state hook for reusable structured filter text inputs. Registry: filter-query-core.
 - [Filter Query Input](https://zeron-ui.vercel.app/ai/items/component%3Afilter-query-input.md): Structured cmdk query input with configurable fields, aliases, codecs, and portable filter clauses. Registry: filter-query-input.
@@ -225,6 +226,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [combobox](https://zeron-ui.vercel.app/agent-guides/components/combobox.md)
 - [dialog](https://zeron-ui.vercel.app/agent-guides/components/dialog.md)
 - [field](https://zeron-ui.vercel.app/agent-guides/components/field.md)
+- [file-type](https://zeron-ui.vercel.app/agent-guides/components/file-type.md)
 - [funnel-chart](https://zeron-ui.vercel.app/agent-guides/components/funnel-chart.md)
 - [heatmap-chart](https://zeron-ui.vercel.app/agent-guides/components/heatmap-chart.md)
 - [inline-notice](https://zeron-ui.vercel.app/agent-guides/components/inline-notice.md)

@@ -1,0 +1,31 @@
+{
+  "fileType": {
+    "title": "File Type",
+    "description": "Folded file icons for 99 extensions in 11 families, with four visual styles and six sizes. Uses Zeron's categorical color pairs and semantic surfaces in light and dark themes.",
+    "outline": "Outline", "solid": "Solid", "light": "Light", "mono": "Mono",
+    "sizes": "Sizes", "catalog": "File families", "detection": "File names and fallbacks", "apiReference": "API Reference",
+    "infoItemDemo": "InfoItem attachments · sm",
+    "infoItemDemoDescription": "Use 32px file icons with a file name, description, and size. Place FileType directly beside InfoItemContent to preserve its size.",
+    "tableDemo": "File table · mini",
+    "tableDemoDescription": "Use 18px file icons in compact table rows. Long names truncate while the file type and size remain visible.",
+    "fileNameColumn": "File name", "typeColumn": "Type", "sizeColumn": "Size",
+    "demoDescriptions": {
+      "report": "PDF document", "spreadsheet": "Excel spreadsheet", "design": "Figma design"
+    },
+    "variantSelector": "File icon style",
+    "count": "{extensions} extensions in {families} families",
+    "extension": "Extension with or without a leading dot; case insensitive. Takes precedence over fileName.",
+    "fileName": "Literal file name or path, or an absolute URL. Detects the final extension and supplies the default accessible name; only URL queries and fragments are excluded from detection.",
+    "variant": "Outline: surface and colored badge. Solid: colored page. Light: muted page and colored badge. Mono: neutral badge.",
+    "size": "Square icon bounds: mini 18px, xs 24px, sm 32px, default 40px, lg 48px, xl 56px.",
+    "ariaLabel": "Overrides the default accessible name. aria-labelledby can also reference an existing label.",
+    "ariaHidden": "Hide decorative icons from assistive technology when the adjacent file name already identifies the file.",
+    "className": "Additional classes for external layout. Use size and variant for icon geometry and appearance.",
+    "ref": "Reference to the root SVG element. Other native SVG attributes are forwarded.",
+    "fallbackNote": "Unknown extensions use a neutral badge. Names without a suffix, such as README or .gitignore, show FILE. Long unknown labels are shortened visually while the accessible name stays complete.",
+    "helpers": "Also exports fileTypeFamilies, fileTypeVariants, and resolveFileType. The resolver accepts extension and fileName and returns the normalized extension, full label, family, and categorical color.",
+    "families": {
+      "documents": "Documents", "spreadsheets": "Spreadsheets", "presentations": "Presentations", "images": "Images", "video": "Video", "audio": "Audio", "code": "Code and data", "archives": "Archives", "design": "Design", "applications": "Applications", "fonts": "Fonts"
+    }
+  }
+}

@@ -1891,6 +1891,28 @@
       ]
     },
     {
+      "name": "file-type",
+      "type": "registry:ui",
+      "title": "File Type",
+      "description": "Folded file icons for 99 extensions in 11 families, with outline, solid, light, and mono styles, six sizes, and file-name detection.",
+      "dependencies": [
+        "class-variance-authority",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "badge"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/file-type.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/file-type.tsx"
+        }
+      ]
+    },
+    {
       "name": "file-thumbnail",
       "type": "registry:ui",
       "title": "File Thumbnail",
