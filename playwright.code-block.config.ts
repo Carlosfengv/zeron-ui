@@ -1,14 +1,16 @@
 import { defineConfig, devices } from "@playwright/test";
+import { e2eDefaults } from "./playwright.shared";
 
 export default defineConfig({
+  ...e2eDefaults,
   testDir: "./tests",
   testMatch: "code-block.e2e.ts",
   timeout: 60_000,
   workers: 1,
   use: {
+    ...e2eDefaults.use,
     baseURL: "http://127.0.0.1:3335",
     headless: true,
-    trace: "retain-on-failure",
   },
   projects: [
     {

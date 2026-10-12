@@ -3,15 +3,16 @@ import { readFileSync, readdirSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { getPreviewSourceAssetUrls } from "../docs/lib/block-preview-sources.generated";
 
-// Discover the built Recharts chunk rather than pinning a content hash.
-const chartChunks = readdirSync(".next/static/chunks").filter((file) => file.endsWith(".js") && readFileSync(`.next/static/chunks/${file}`, "utf8").includes("recharts-surface"));
+// Discover the native AreaChart dependency rather than pinning a content hash.
+const chartChunks = readdirSync(".next/static/chunks").filter((file) => file.endsWith(".js") && readFileSync(`.next/static/chunks/${file}`, "utf8").includes('"data-slot":"area-chart"'));
+const chartSurface = '[data-slot="area-chart"] svg';
 const aiPath = "/en/docs/pages/ai-gateway-overview-01";
 
 // A minimum height alone does not establish the containing block required by
 // the gateway's h-full sidebar. Assert geometry, not just rendered navigation.
 async function expectGatewayHeight(demo: Locator) {
   await expect.poll(() => demo.evaluate((node) => Math.round(node.getBoundingClientRect().height))).toBe(1000);
-  await expect.poll(() => demo.locator(":scope > section").evaluate((node) => Math.round(node.getBoundingClientRect().height))).toBe(1000);
+  await expect.poll(() => demo.locator('[data-slot="page-layout"]').evaluate((node) => Math.round(node.getBoundingClientRect().height))).toBe(1000);
 }
 
 for (const width of [1440, 1280, 1279, 390]) {
@@ -21,7 +22,7 @@ for (const width of [1440, 1280, 1279, 390]) {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 960 });
     await page.goto(aiPath);
     const demo = page.locator('[data-detail-demo="ready"]');
-    await expect(demo.locator(".recharts-surface").first()).toBeAttached();
+    await expect(demo.locator(chartSurface).first()).toBeAttached();
     await expectGatewayHeight(demo);
     const trigger = demo.getByRole("button", { name: "Open AI gateway navigation", exact: true });
     if (width >= 1280) {
@@ -61,7 +62,7 @@ for (const width of [1440, 1280, 1279, 390]) {
 
 test("standalone AI gateway retains viewport-height sidebar", async ({ page }) => {
   await page.goto("/en/block-demo/ai-gateway-overview-01");
-  await expect(page.locator(".recharts-surface").first()).toBeAttached();
+  await expect(page.locator(chartSurface).first()).toBeAttached();
   await expect(page.locator("[data-detail-demo]")).toHaveCount(0);
   const layout = page.locator('[data-slot="page-layout"]');
   await expect.poll(() => layout.evaluate((node) => Math.round(node.getBoundingClientRect().height))).toBe(page.viewportSize()!.height);
@@ -88,12 +89,12 @@ test("AI documentation is available while its chart dependency is held", async (
     await expect(page.locator("#artifact-title")).toHaveText("AI Gateway Overview 1");
     await expect(page.getByRole("heading", { name: "Data integration", exact: true })).toBeAttached();
     await expect.poll(() => held).toBeGreaterThan(0);
-    await expect(page.locator(".recharts-surface")).toHaveCount(0);
+    await expect(page.locator(chartSurface)).toHaveCount(0);
     await expect(page.locator('[data-detail-demo="pending"]')).toBeAttached();
     await expect.poll(() => page.locator("[data-detail-demo]").evaluate((node) => Math.round(node.getBoundingClientRect().height))).toBe(1000);
     await expect(page.getByText("Loading preview…", { exact: true })).toBeInViewport();
     release();
-    await expect(page.locator(".recharts-surface").first()).toBeAttached();
+    await expect(page.locator(chartSurface).first()).toBeAttached();
     await expect(page.locator('[data-detail-demo="ready"]')).toBeAttached();
     await expectGatewayHeight(page.locator("[data-detail-demo]"));
   } finally {
@@ -107,7 +108,7 @@ test("AI Code loads only on intent and preserves range across tab changes", asyn
   page.on("request", (request) => { if (request.url().includes("/docs-source/")) sources.push(request.url()); });
   await page.goto(aiPath);
   const preview = page.locator('[data-slot="component-preview-content"]');
-  await expect(preview.locator(".recharts-surface").first()).toBeAttached();
+  await expect(preview.locator(chartSurface).first()).toBeAttached();
   expect(sources).toHaveLength(0);
   await preview.getByRole("tab", { name: "7d", exact: true }).click();
   await expect(preview.getByRole("tab", { name: "7d", exact: true })).toHaveAttribute("aria-selected", "true");
@@ -198,7 +199,7 @@ test("failed AI demo import leaves visible recovery without blocking documentati
   await expect(retry).toBeInViewport();
   fail = false;
   await retry.click();
-  await expect(page.locator(".recharts-surface").first()).toBeAttached();
+  await expect(page.locator(chartSurface).first()).toBeAttached();
   await expectGatewayHeight(page.locator("[data-detail-demo]"));
 });
 
@@ -247,7 +248,7 @@ test("leaving a loading AI demo does not replace newer content when its chunk ar
     await expect(page.locator("#artifact-title")).toHaveCount(0);
     await page.goBack();
     await expect(page.locator("#artifact-title")).toHaveText("AI Gateway Overview 1");
-    await expect(page.locator(".recharts-surface").first()).toBeAttached();
+    await expect(page.locator(chartSurface).first()).toBeAttached();
   } finally {
     release();
     await page.unrouteAll({ behavior: "wait" });

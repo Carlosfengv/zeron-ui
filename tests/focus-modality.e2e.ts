@@ -50,9 +50,10 @@ test("desktop: compounds and previews follow focus-visible semantics", async ({ 
 test("desktop: NavMenu gives its moving indicator only to a visible primary trigger", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium-desktop", "Desktop-only focus checks");
 
-  await page.goto("/docs/components/nav-menu", { waitUntil: "networkidle" });
+  await page.goto("/docs/components/nav-menu");
 
   const nav = page.getByRole("navigation", { name: "Preview navigation" });
+  await expect(nav).toBeVisible();
   const projects = nav.getByRole("link", { name: "Projects" });
   const options = nav.getByRole("button", { name: "Project options" });
   const indicator = nav.locator('[data-slot="nav-item-focus-indicator"]');

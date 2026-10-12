@@ -1,11 +1,14 @@
 import { defineConfig } from "@playwright/test";
+import { e2eDefaults } from "./playwright.shared";
 
 export default defineConfig({
+  ...e2eDefaults,
   testDir: "./tests",
   testMatch: "focus-modality.e2e.ts",
   timeout: 45_000,
   workers: 1,
   use: {
+    ...e2eDefaults.use,
     baseURL: "http://127.0.0.1:3334",
     headless: true,
   },

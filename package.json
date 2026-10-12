@@ -14,7 +14,7 @@
     "docs:routes:check": "node scripts/generate-document-routes.mjs --check",
     "covers:generate": "node scripts/generate-component-covers.mjs",
     "start": "next start",
-    "lint": "eslint app docs lib scripts tests packages eslint.config.mjs eslint.design.config.mjs vitest.config.mts vitest.production.config.mts next.config.ts postcss.config.mjs --max-warnings=0",
+    "lint": "eslint app docs lib scripts tests packages eslint.config.mjs eslint.design.config.mjs playwright*.ts vitest.config.mts vitest.production.config.mts next.config.ts postcss.config.mjs --max-warnings=0",
     "lint:design": "eslint --config eslint.design.config.mjs app docs/pages packages/ui/src packages/blocks/src tests/fixtures/agent-examples",
     "test": "pnpm test:unit && pnpm test:controls:browser",
     "test:i18n:unit": "vitest run --config vitest.config.mts tests/i18n-message-parity.test.ts tests/i18n-document-manifest.test.ts tests/i18n-routing.test.ts",
@@ -69,7 +69,12 @@
     "test:controls:browser": "vitest run --config vitest.config.mts tests/rendered-controls.test.mjs --maxWorkers=1",
     "test:consumer:unification": "node scripts/test-unification-consumers.mjs",
     "docs:charts-api:build": "node scripts/generate-reference-chart-api.mjs",
-    "docs:charts-api:check": "node scripts/generate-reference-chart-api.mjs --check"
+    "docs:charts-api:check": "node scripts/generate-reference-chart-api.mjs --check",
+    "test:e2e:build": "node scripts/run-e2e.mjs --build-only",
+    "test:e2e": "node scripts/run-e2e.mjs --mode pr --build",
+    "test:e2e:run": "node scripts/run-e2e.mjs --mode pr",
+    "test:e2e:full": "node scripts/run-e2e.mjs --mode full --build",
+    "test:e2e:full:run": "node scripts/run-e2e.mjs --mode full"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
