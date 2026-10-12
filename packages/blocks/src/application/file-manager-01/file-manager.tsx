@@ -11,6 +11,7 @@ import { Empty, EmptyDescription } from "@zeron/ui/empty";
 import * as React from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Button } from "@zeron/ui/button";
+import { FileType } from "@zeron/ui/file-type";
 import {
   Dialog,
   DialogContent,
@@ -155,101 +156,6 @@ function kindLabel<TData>(item: FileManagerItem<TData>) {
   return item.extension?.toUpperCase() || "File";
 }
 
-function extension<TData>(item: FileManagerItem<TData>) {
-  if (item.extension) return item.extension.toLowerCase();
-  const lastDot = item.name.lastIndexOf(".");
-  return lastDot > -1 ? item.name.slice(lastDot + 1).toLowerCase() : "";
-}
-
-type StorageUIFileIconKind = "default" | "text" | "table" | "image" | "markdown" | "svg";
-
-function storageUIFileIconKind<TData>(item: FileManagerItem<TData>): StorageUIFileIconKind {
-  const ext = extension(item);
-  if (ext === "svg") return "svg";
-  if (["md", "mdx"].includes(ext)) return "markdown";
-  if (
-    item.mimeType?.startsWith("image/") ||
-    item.mimeType?.startsWith("video/") ||
-    ["png", "jpg", "jpeg", "gif", "webp", "avif", "bmp", "ico", "tif", "tiff"].includes(ext)
-  ) {
-    return "image";
-  }
-  if (
-    item.mimeType?.includes("spreadsheet") ||
-    ["xls", "xlsx", "csv", "tsv", "numbers"].includes(ext)
-  ) {
-    return "table";
-  }
-  if (["txt", "doc", "docx", "pdf", "rtf", "odt"].includes(ext)) return "text";
-  return "default";
-}
-
-/**
- * File glyph paths adapted from StorageUI's @pierre/trees complete icon set
- * (Apache-2.0). Color is deliberately supplied by this project's semantic
- * tokens, so the glyphs inherit every active Zeron theme.
- */
-function StorageUIFileTypeIcon<TData>({
-  item,
-  className,
-}: {
-  item: FileManagerItem<TData>;
-  className?: string;
-}) {
-  const kind = storageUIFileIconKind(item);
-  const tone =
-    kind === "image" || kind === "svg"
-      ? "text-fg-brand"
-      : kind === "table"
-        ? "text-fg-default"
-        : "text-fg-muted";
-
-  return (
-    <svg
-      aria-hidden="true"
-      className={cn("shrink-0", tone, className)}
-      fill="none"
-      viewBox="0 0 16 16"
-    >
-      {kind === "image" ? (
-        <>
-          <path
-            fill="currentColor"
-            d="M12.5 2A2.5 2.5 0 0 1 15 4.5v4.67l-4.05-3.54-4.08 4.08-3-2L1 10.6V4.5A2.5 2.5 0 0 1 3.5 2z"
-            opacity=".3"
-          />
-          <path
-            fill="currentColor"
-            d="M15 10.5v1a2.5 2.5 0 0 1-2.5 2.5h-9a2.5 2.5 0 0 1-2.46-2.04L4 9l3 2 4-4zm-7-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"
-          />
-        </>
-      ) : kind === "markdown" ? (
-        <path fill="currentColor" d="M1 12V4h2l2 2.5L7 4h2v8H7V7.5l-2 2-2-2V12zm9-3 3 3.5L16 9h-2V4h-2v5z" />
-      ) : kind === "svg" ? (
-        <>
-          <path fill="currentColor" d="M5 7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" />
-          <path fill="currentColor" d="M6 1a5 5 0 0 1 4.58 3H7a3 3 0 0 0-3 3v3.58A5 5 0 0 1 6 1" opacity=".5" />
-        </>
-      ) : kind === "table" ? (
-        <>
-          <path fill="currentColor" d="M8 4a3 3 0 0 0 3 3h3v5.5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 12.5v-9A2.5 2.5 0 0 1 4.5 1H8z" opacity=".4" />
-          <path fill="currentColor" d="M11.5 8a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 .5-.5zM5 12h2.5v-1H5zm3.5 0H11v-1H8.5zM5 10h2.5V9H5zm3.5 0H11V9H8.5zm1-9a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 14 5.5V6h-3a2 2 0 0 1-2-2V1z" />
-        </>
-      ) : kind === "text" ? (
-        <>
-          <path fill="currentColor" fillRule="evenodd" d="M8 4a3 3 0 0 0 3 3h3v5.5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 12.5v-9A2.5 2.5 0 0 1 4.5 1H8z" opacity=".4" />
-          <path fill="currentColor" d="M8.5 11a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1zm2-2a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm-1-8a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 14 5.5V6h-3a2 2 0 0 1-2-2V1z" />
-        </>
-      ) : (
-        <>
-          <path fill="currentColor" d="M8 1v3a3 3 0 0 0 3 3h3v5.5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 12.5v-9A2.5 2.5 0 0 1 4.5 1z" opacity=".4" />
-          <path fill="currentColor" d="M9.5 1a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 14 5.5V6h-3a2 2 0 0 1-2-2V1z" />
-        </>
-      )}
-    </svg>
-  );
-}
-
 /**
  * Folder silhouette adapted from StorageUI. Its two layers use currentColor
  * with opacity rather than the source gradient, preserving Zeron's theme tokens.
@@ -357,12 +263,11 @@ export function FileItemVisual<TData>({
             )}
           />
         ) : (
-          <StorageUIFileTypeIcon
-            item={item}
-            className={cn(
-              isLarge ? "size-11" : "size-5",
-              selected && view !== "icon" && "text-fg-on-brand"
-            )}
+          <FileType
+            extension={item.extension || undefined}
+            fileName={item.name}
+            size={isLarge ? "lg" : "mini"}
+            aria-hidden="true"
           />
         ))}
       {pending ? (
