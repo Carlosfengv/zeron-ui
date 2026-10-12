@@ -1,0 +1,49 @@
+name: Extended E2E
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 02:00 Asia/Shanghai on the following calendar day.
+    - cron: '0 18 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-extended-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browsers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies and browsers
+        run: pnpm install --frozen-lockfile && pnpm exec playwright install --with-deps chromium firefox webkit
+      - name: Check committed generated inputs
+        run: pnpm tokens:check && pnpm docs:routes:check && pnpm docs:sources:check && pnpm agents:guides:check
+      - name: Prepare code engine inputs
+        run: pnpm code-engine:build
+      - name: Build once and record source inputs
+        id: build
+        run: pnpm test:e2e:build
+      - name: Run all existing browser projects
+        run: pnpm test:e2e:full:run
+      - name: Upload E2E reports and failure traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-full-evidence-${{ github.sha }}
+          path: output/e2e/full
+          retention-days: 14
+          if-no-files-found: ignore

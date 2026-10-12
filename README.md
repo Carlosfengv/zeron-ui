@@ -309,8 +309,33 @@ steps individually with `pnpm test:unit` and `pnpm test:controls:browser`.
 Production routing suites
 require a completed build: run `pnpm build && pnpm test:production`. They are
 kept separate so a fresh checkout does not try to start a nonexistent build.
-The existing Playwright commands additionally cover browser navigation, focus,
-and CodeBlock interactions.
+Run `pnpm test:e2e` to build once and run all five production Playwright suites
+in Chromium, including documentation navigation, loading recovery, focus, and
+CodeBlock interactions. On a fresh checkout, first prepare the ignored Code
+Engine inputs with `pnpm code-engine:build`; both CI workflows do this before
+building. Run `pnpm test:e2e:full` after installing Firefox and
+WebKit with `pnpm exec playwright install chromium firefox webkit` to include
+CodeBlock's other browser projects. The main CI runs the Chromium suites; the
+Extended E2E workflow runs all projects nightly and can be dispatched manually.
+
+To reuse a build, run `pnpm test:e2e:build`, then `pnpm test:e2e:run` or
+`pnpm test:e2e:full:run`. Reuse fails when source inputs, the lockfile, runtime,
+public build environment (including commit metadata, repository identity, and
+route origins), or build ID no longer match the recorded build.
+Private environment files are excluded from the receipt; rebuild after changing
+them. Existing `test:i18n:e2e`, `test:navigation:e2e`, `test:focus:e2e`,
+`test:code-block:e2e`, and `test:detail:e2e` commands remain available for isolated
+debugging. These older commands do not create a verified reuse receipt.
+
+Each unified run preserves HTML, JUnit, JSON, screenshots, and failure traces in
+`output/e2e/<pr|full>/<run>/<suite>/`. The latest summary is
+`output/e2e/<pr|full>/summary.json`; previous run evidence is retained locally.
+CI uploads the reports for 14 days. Open a suite's HTML report with
+`pnpm exec playwright show-report <suite-output>/html`, or inspect a trace with
+`pnpm exec playwright show-trace <trace.zip>`. Failed, flaky, missing-result, and
+zero-execution suites fail the run, which continues collecting other suites.
+CI forbids focused tests. Configure the existing `checks` job as a required
+branch check to enforce the Chromium results before merging.
 
 After changing Registry sources, regenerate with `pnpm registry:build` and run
 `pnpm registry:check`; commit the resulting `public/r` changes together with

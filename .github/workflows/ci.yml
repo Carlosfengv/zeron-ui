@@ -168,18 +168,20 @@ jobs:
           if-no-files-found: ignore
 
       - name: Build
-        run: pnpm build
+        id: build
+        run: pnpm test:e2e:build
 
       - name: Verify production documentation and MCP HTTP routes
         run: pnpm test:production
 
-      - name: Test navigation loading and interruption
-        run: pnpm exec playwright test --config playwright.navigation-loading.config.ts
+      - name: Test production browser suites in Chromium
+        run: pnpm test:e2e:run
 
-      - name: Upload navigation failure traces
-        if: failure()
+      - name: Upload E2E reports and failure traces
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: navigation-loading-evidence
-          path: test-results
+          name: e2e-pr-evidence
+          path: output/e2e/pr
+          retention-days: 14
           if-no-files-found: ignore
