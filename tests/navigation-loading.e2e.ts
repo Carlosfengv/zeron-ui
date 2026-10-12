@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page, type Request } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
 const header = (page: Page) => page.locator("[data-slot=app-shell-header]");
@@ -8,16 +8,21 @@ const link = (page: Page, href: string) => header(page).locator(`a[href="${href}
 /** Install before goto so viewport prefetch cannot win the race. Each target's
  * real RSC request stays pending until explicitly released; HTML/JS are real. */
 async function holdRoutes(page: Page, paths: string[]) {
+  const unfinished = new Set<Request>();
+  const finished = (request: Request) => unfinished.delete(request);
+  page.on("requestfinished", finished);
+  page.on("requestfailed", finished);
   const gates = new Map(paths.map((path) => {
     let release!: () => void;
     const promise = new Promise<void>((resolve) => { release = resolve; });
-    const gate = { promise, release, requests: 0 };
+    const gate = { promise, release, requests: [] as Request[] };
     return [path, gate] as const;
   }));
   await page.route("**/*", async (route) => {
     const gate = gates.get(new URL(route.request().url()).pathname);
     if (gate && route.request().headers().rsc === "1") {
-      gate.requests++;
+      gate.requests.push(route.request());
+      unfinished.add(route.request());
       await gate.promise;
     }
     await route.continue().catch(() => { /* A superseded request may be canceled. */ });
@@ -25,7 +30,12 @@ async function holdRoutes(page: Page, paths: string[]) {
   return {
     release: (path: string) => gates.get(path)!.release(),
     releaseAll: () => gates.forEach((gate) => gate.release()),
-    requests: (path: string) => gates.get(path)!.requests,
+    requests: (path: string) => gates.get(path)!.requests.length,
+    // Wait for the held responses, including canceled requests. Gallery
+    // prefetches are unrelated to this race and need not become network-idle.
+    settled: async (path: string) => {
+      await expect.poll(() => gates.get(path)!.requests.every((request) => !unfinished.has(request))).toBe(true);
+    },
   };
 }
 
@@ -92,13 +102,14 @@ test("newer A → B → C navigation wins even when B resolves last", async ({ p
     await page.goto("/en/docs");
     await link(page, b).click({ noWaitAfter: true });
     await expect(link(page, b).locator('[data-navigation-pending="true"]')).toBeVisible();
+    await expect.poll(() => held.requests(b)).toBeGreaterThan(0);
     await link(page, c).click({ noWaitAfter: true });
     await expect(link(page, c).locator('[data-navigation-pending="true"]')).toBeVisible();
     held.release(c);
     await expectComplete(page, c);
     held.release(b);
     await page.unrouteAll({ behavior: "wait" });
-    await page.waitForLoadState("networkidle");
+    await held.settled(b);
     await expectComplete(page, c);
   } finally { held.releaseAll(); }
 });
@@ -216,11 +227,12 @@ test("Back interrupts a pending link without letting its late response replace h
     await expectComplete(page, "/en/updates");
     await link(page, target).click({ noWaitAfter: true });
     await expect(pending(page)).toHaveCount(1);
+    await expect.poll(() => held.requests(target)).toBeGreaterThan(0);
     await page.goBack();
     await expectComplete(page, "/en/docs/pages");
     held.release(target);
     await page.unrouteAll({ behavior: "wait" });
-    await page.waitForLoadState("networkidle");
+    await held.settled(target);
     await expectComplete(page, "/en/docs/pages");
     await page.goForward();
     await expectComplete(page, "/en/updates");

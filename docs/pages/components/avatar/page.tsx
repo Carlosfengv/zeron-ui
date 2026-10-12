@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Avatar,
   AvatarBadge,
@@ -13,6 +13,11 @@ import {
   type AvatarSize,
 } from "@zeron/ui/avatar";
 import { Badge } from "@zeron/ui/badge";
+import { badgeCategoricalTokens } from "@zeron/ui/badge-colors";
+import { Button } from "@zeron/ui/button";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@zeron/ui/input-group";
+import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from "@zeron/ui/popover";
+import { useIcon } from "@zeron/icons/context";
 import { Switch } from "@zeron/ui/switch";
 import { AgentGuide } from "@docs/components/content/AgentGuide";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
@@ -31,6 +36,27 @@ import { useTranslations } from "next-intl";
 
 const PROFILE_IMAGE = "/figma/zstack-account-menu/avatar.jpeg";
 const AGENT_IMAGE = "/figma/nav-menu-agent-avatar.png";
+
+const MEMBER_NAMES = [
+  "Mia Chen", "Jonas Weber", "Sara Ahmed", "Alex Johnson",
+  "Emma Wilson", "Noah Kim", "Olivia Martinez", "Liam Patel",
+  "Ava Thompson", "Ethan Lee", "Isabella Garcia", "Lucas Brown",
+  "Sophie Taylor", "James Davis", "Amelia White", "Oliver Clark",
+  "Charlotte Lewis", "Benjamin Hall", "Harper Young", "Henry Allen",
+  "Evelyn King", "Jack Wright", "Abigail Scott", "Daniel Green",
+  "Ella Adams", "Michael Baker", "Grace Nelson", "William Hill",
+  "Chloe Ramirez", "Samuel Campbell", "Lily Mitchell", "David Roberts",
+  "Zoe Carter", "Joseph Phillips", "Nora Evans", "Matthew Turner",
+  "Riley Torres", "Owen Parker", "Hazel Collins", "Leo Edwards",
+  "Aria Stewart", "Felix Morris",
+];
+const MEMBER_COLORS = ["violet", "blue", "orange", "green"] as const;
+const MEMBERS = MEMBER_NAMES.map((name, index) => ({
+  name,
+  firstName: name.split(" ")[0],
+  email: `${name.toLowerCase().replaceAll(" ", ".")}@example.com`,
+  background: badgeCategoricalTokens(MEMBER_COLORS[index % MEMBER_COLORS.length]).soft.background,
+}));
 
 type PlaygroundContent = "details" | "image" | "fallback" | "group";
 
@@ -92,6 +118,88 @@ const groupCode = `<AvatarGroup role="group" aria-label="Project members">
   <Avatar><AvatarFallback>ER</AvatarFallback></Avatar>
   <AvatarGroupCount aria-label="3 more members">+3</AvatarGroupCount>
 </AvatarGroup>`;
+
+const membersCode = `"use client";
+
+import { useRef, useState } from "react";
+import { Avatar, AvatarFallback, AvatarGroup, AvatarWithDetails } from "@zeron/ui/avatar";
+import { badgeCategoricalTokens } from "@zeron/ui/badge-colors";
+import { Button } from "@zeron/ui/button";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@zeron/ui/input-group";
+import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from "@zeron/ui/popover";
+import { useIcon } from "@zeron/icons/context";
+
+const names = ${JSON.stringify(MEMBER_NAMES, null, 2)};
+const colors = ["violet", "blue", "orange", "green"] as const;
+const members = names.map((name, index) => ({
+  name,
+  firstName: name.split(" ")[0],
+  email: name.toLowerCase().replaceAll(" ", ".") + "@example.com",
+  background: badgeCategoricalTokens(colors[index % colors.length]).soft.background,
+}));
+
+export function AvatarMembers() {
+  const [query, setQuery] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
+  const SearchIcon = useIcon("search");
+  const visibleMembers = members.slice(0, 4);
+  const remainingCount = members.length - visibleMembers.length;
+  const search = query.trim().toLowerCase();
+  const filteredMembers = members.filter((member) =>
+    member.name.toLowerCase().includes(search) || member.email.includes(search)
+  );
+  const avatar = (member: (typeof members)[number]) => (
+    <Avatar>
+      <AvatarFallback className="text-fg-default" style={{ backgroundColor: member.background }}>
+        {member.firstName[0]}
+      </AvatarFallback>
+    </Avatar>
+  );
+
+  return (
+    <div className="flex max-w-full items-center gap-3">
+      <AvatarGroup aria-hidden="true">
+        {visibleMembers.map((member) => (
+          <Avatar key={member.email}>
+            <AvatarFallback className="text-fg-default" style={{ backgroundColor: member.background }}>
+              {member.firstName[0]}
+            </AvatarFallback>
+          </Avatar>
+        ))}
+      </AvatarGroup>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5">
+        <span className="text-body text-fg-default">
+          {visibleMembers.map((member) => member.firstName).join(", ")}
+        </span>
+        {remainingCount > 0 && (
+          <Popover onOpenChange={(open) => { if (open) setQuery(""); }}>
+            <PopoverTrigger render={<Button variant="ghost" size="sm" contentSized className="shrink-0 text-fg-muted" aria-label="View all members" />}>
+              +{remainingCount} more
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-80 p-3" initialFocus={searchRef}>
+              <PopoverTitle>{members.length} members</PopoverTitle>
+              <div className="mt-3">
+                <InputGroup size="sm">
+                  <InputGroupAddon><SearchIcon aria-hidden="true" /></InputGroupAddon>
+                  <InputGroupInput ref={searchRef} aria-label="Search members" placeholder="Search name or email…" value={query} onChange={(event) => setQuery(event.target.value)} />
+                </InputGroup>
+              </div>
+              <span className="sr-only" role="status">{filteredMembers.length} members found</span>
+              <ul aria-label="All members" tabIndex={filteredMembers.length > 0 ? 0 : -1} className="mt-2 max-h-[min(18rem,calc(var(--available-height)-7rem))] overflow-y-auto overscroll-contain">
+                {filteredMembers.map((member) => (
+                  <li key={member.email} className="px-1 py-2">
+                    <AvatarWithDetails avatar={avatar(member)} name={member.name} description={member.email} />
+                  </li>
+                ))}
+              </ul>
+              {filteredMembers.length === 0 && <p className="px-2 py-6 text-center text-body text-fg-muted">No members found.</p>}
+            </PopoverContent>
+          </Popover>
+        )}
+      </div>
+    </div>
+  );
+}`;
 
 const sizesCode = `<div className="flex items-center gap-3">
   <Avatar size="sm" shape="rounded"><AvatarFallback>CN</AvatarFallback></Avatar>
@@ -286,6 +394,70 @@ function AvatarPlayground() {
   );
 }
 
+function AvatarMembersExample() {
+  const t = useTranslations("avatar");
+  const [query, setQuery] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
+  const SearchIcon = useIcon("search");
+  const visibleMembers = MEMBERS.slice(0, 4);
+  const remainingCount = MEMBERS.length - visibleMembers.length;
+  const search = query.trim().toLowerCase();
+  const filteredMembers = MEMBERS.filter((member) =>
+    member.name.toLowerCase().includes(search) || member.email.includes(search)
+  );
+  const avatar = (member: (typeof MEMBERS)[number]) => (
+    <Avatar>
+      <AvatarFallback className="text-fg-default" style={{ backgroundColor: member.background }}>
+        {member.firstName[0]}
+      </AvatarFallback>
+    </Avatar>
+  );
+
+  return (
+    <div className="flex max-w-full items-center gap-3">
+      <AvatarGroup aria-hidden="true">
+        {visibleMembers.map((member) => (
+          <Avatar key={member.email}>
+            <AvatarFallback className="text-fg-default" style={{ backgroundColor: member.background }}>
+              {member.firstName[0]}
+            </AvatarFallback>
+          </Avatar>
+        ))}
+      </AvatarGroup>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5">
+        <span className="text-body text-fg-default">
+          {visibleMembers.map((member) => member.firstName).join(", ")}
+        </span>
+        {remainingCount > 0 && (
+          <Popover onOpenChange={(open) => { if (open) setQuery(""); }}>
+            <PopoverTrigger render={<Button variant="ghost" size="sm" contentSized className="shrink-0 text-fg-muted" aria-label={t("viewAllMembers", { count: MEMBERS.length })} />}>
+              {t("morePeople", { count: remainingCount })}
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-80 p-3" initialFocus={searchRef}>
+              <PopoverTitle>{t("memberCount", { count: MEMBERS.length })}</PopoverTitle>
+              <div className="mt-3">
+                <InputGroup size="sm">
+                  <InputGroupAddon><SearchIcon aria-hidden="true" /></InputGroupAddon>
+                  <InputGroupInput ref={searchRef} aria-label={t("searchMembers")} placeholder={t("searchMembersPlaceholder")} value={query} onChange={(event) => setQuery(event.target.value)} />
+                </InputGroup>
+              </div>
+              <span className="sr-only" role="status">{t("memberSearchResults", { count: filteredMembers.length })}</span>
+              <ul aria-label={t("allMembers")} tabIndex={filteredMembers.length > 0 ? 0 : -1} className="mt-2 max-h-[min(18rem,calc(var(--available-height)-7rem))] overflow-y-auto overscroll-contain">
+                {filteredMembers.map((member) => (
+                  <li key={member.email} className="px-1 py-2">
+                    <AvatarWithDetails avatar={avatar(member)} name={member.name} description={member.email} />
+                  </li>
+                ))}
+              </ul>
+              {filteredMembers.length === 0 && <p className="px-2 py-6 text-center text-body text-fg-muted">{t("noMembersFound")}</p>}
+            </PopoverContent>
+          </Popover>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AvatarDoc() {
   const t = useTranslations("avatar");
 
@@ -403,6 +575,13 @@ export default function AvatarDoc() {
             <AvatarGroupCount aria-label={t("moreMembers", { count: 3 })}>+3</AvatarGroupCount>
           </AvatarGroup>
         </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("membersDropdown")}>
+        <ComponentPreview code={membersCode} padding="responsive">
+          <AvatarMembersExample />
+        </ComponentPreview>
+        <p className="text-body text-fg-muted">{t("membersDropdownDescription")}</p>
       </DocSection>
 
       <DocSection title={t("sizes")}>
