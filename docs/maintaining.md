@@ -289,8 +289,29 @@ CI uploads the reports for 14 days. Open a suite's HTML report with
 `pnpm exec playwright show-report <suite-output>/html`, or inspect a trace with
 `pnpm exec playwright show-trace <trace.zip>`. Failed, flaky, missing-result, and
 zero-execution suites fail the run, which continues collecting other suites.
-CI forbids focused tests. Configure the existing `checks` job as a required
-branch check to enforce the Chromium results before merging.
+CI forbids focused tests. Keep the existing `checks` job as the required
+branch check. It aggregates all jobs selected for the change and fails if an
+expected job fails, is cancelled, or is unexpectedly skipped.
+
+CI compares the complete PR diff or push range before installing dependencies.
+Changes limited to root `README.md`, `README.zh-CN.md`, `docs/maintaining.md`,
+and Markdown files under `docs/plans/` run only change detection and the required
+`checks` summary. Other paths, including documentation pages, demos, Agent
+guides, and unknown files, run the code checks. Missing comparison history or
+an empty diff selects all checks rather than bypassing validation.
+
+For code changes, quality checks, production E2E, consumer installations, and
+consumer migrations run in independent jobs. The consumer matrix keeps the
+existing Next+npm, Next+pnpm, and Vite+npm targets in separate jobs, with separate
+style evidence uploads. The production E2E job builds once and reuses its
+verified build; only `.next/cache` is cached across runs, not a completed build.
+New commits cancel older runs of the same PR; main-branch runs are not cancelled.
+
+The full `agents:verify:clean` check runs when dependencies, install/build tools,
+Registry/token generators, migration skills, or CI definitions change. It also
+runs in the Extended E2E workflow nightly at 02:00 Asia/Shanghai and on manual
+dispatch; run that workflow against the release revision before publishing.
+Use `pnpm agents:verify:clean` to run the same isolated checkout check locally.
 
 After changing Registry sources, regenerate with `pnpm registry:build` and run
 `pnpm registry:check`; commit the resulting `public/r` changes together with
