@@ -45,6 +45,7 @@
     "./dialog": "./src/components/dialog.tsx",
     "./dropdown": "./src/components/dropdown.tsx",
     "./file-thumbnail": "./src/components/file-thumbnail.tsx",
+    "./file-type": "./src/components/file-type.tsx",
     "./file-tree": "./src/components/file-tree.tsx",
     "./info-item": "./src/components/info-item.tsx",
     "./input-copy": "./src/components/input-copy.tsx",

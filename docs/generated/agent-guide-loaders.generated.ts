@@ -51,6 +51,7 @@ export const agentGuideLoaders: Record<string, () => Promise<string>> = {
   "components/combobox.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/combobox.md"), "utf8"),
   "components/dialog.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/dialog.md"), "utf8"),
   "components/field.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/field.md"), "utf8"),
+  "components/file-type.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/file-type.md"), "utf8"),
   "components/funnel-chart.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/funnel-chart.md"), "utf8"),
   "components/heatmap-chart.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/heatmap-chart.md"), "utf8"),
   "components/inline-notice.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/inline-notice.md"), "utf8"),

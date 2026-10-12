@@ -143,6 +143,7 @@
       "alert": "Composable in-context callout with semantic statuses, optional icon, supporting detail, and action.",
       "inline-notice": "Quiet inline emphasis that composes with Badge, with an optional semantic emphasized variant.",
       "badge": "Compact label with categorical colors, custom recipes, semantic statuses, and solid, strong, or dot variants.",
+      "file-type": "Folded file icons for 99 extensions in 11 families, with four styles and six sizes.",
       "badge-overflow": "Responsive badge list that collapses hidden items into an overflow count.",
       "breadcrumb": "Composable path navigation with separators, current-page state, and collapsed levels.",
       "button": "Buttons trigger actions and move people through a task. Choose a variant by priority and intent, not color alone.",

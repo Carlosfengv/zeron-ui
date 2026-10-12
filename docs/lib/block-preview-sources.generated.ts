@@ -72,7 +72,7 @@ const blockPreviewSources = {
     "url": "/docs-source/796b3f95668f0fb7661e29ab4a74597a967974bf0754e363b0e9fb08501fb62f.txt"
   },
   "file-manager-01": {
-    "url": "/docs-source/f1d4694c301c959fd8cb0e8b3826fc4f062fafd90ce61158362b45ec97fa36a7.txt"
+    "url": "/docs-source/4bab0a8e393c77713d78cf4fc6521529d4a6266b401336d014b5e020b369051c.txt"
   },
   "filter-rule-builder-01": {
     "url": "/docs-source/6345ad7fedbdbc1a7293f45c65e97d8761d1bf4fb80ec6dbe39bc1f2abc85af6.txt"

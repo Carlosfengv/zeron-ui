@@ -1,0 +1,334 @@
+{
+  "date": "2026-10-12",
+  "baseCommit": "1be034f83ed14dffd21b1f4ad85dc1295ab3e9b4",
+  "branch": "main",
+  "scope": "File Type component, File Manager adoption, and shared categorical strong foreground fix",
+  "status": "reviewed-not-staged",
+  "commits": [
+    {
+      "order": 1,
+      "message": "fix(ui): improve categorical strong color contrast",
+      "files": [
+        "packages/ui/src/components/badge-colors.ts",
+        "tests/badge-colors.test.ts",
+        "public/r/badge.json"
+      ]
+    },
+    {
+      "order": 2,
+      "message": "feat(ui): add accessible file type icons",
+      "dependsOn": 1,
+      "files": [
+        "packages/ui/src/components/file-type.tsx",
+        "packages/ui/package.json",
+        "packages/ui/registry.json",
+        "tests/file-type.test.tsx",
+        "docs/pages/components/file-type/page.tsx",
+        "docs/content/en/components/file-type.json",
+        "docs/content/zh-CN/components/file-type.json",
+        "docs/content/en/common.json",
+        "docs/content/zh-CN/common.json",
+        "docs/manifest.ts",
+        "app/[locale]/docs/components/(detail)/file-type/page.tsx",
+        "docs/agent-guides/components/file-type.md",
+        "docs/agent-data/components.json",
+        "docs/agent-data/item-identities.json",
+        "docs/agent-data/guide-routes.json",
+        "docs/generated/agent-guide-loaders.generated.ts",
+        "docs/generated/component-page-loaders.generated.ts",
+        "docs/generated/page-loaders.generated.ts",
+        "docs/i18n/content-loaders.generated.ts",
+        "public/r/file-type.json",
+        "public/r/registry.json",
+        "public/llms.txt",
+        "public/llms-full.txt",
+        "scripts/test-consumer-installs.mjs",
+        "tests/i18n-document-manifest.test.ts",
+        "public/component-covers/file-type-light.jpg",
+        "public/component-covers/file-type-dark.jpg",
+        "docs/plans/2026-10-12-file-type-review-commit-plan.md",
+        "docs/plans/2026-10-12-file-type-commit-files.json"
+      ]
+    },
+    {
+      "order": 3,
+      "message": "refactor(blocks): reuse FileType icons in file manager",
+      "dependsOn": 2,
+      "files": [
+        "packages/blocks/src/application/file-manager-01/file-manager.tsx",
+        "packages/blocks/registry.json",
+        "public/r/file-manager-01.json",
+        "public/r/registry.json",
+        "docs/lib/block-preview-sources.generated.ts",
+        "public/docs-source/4bab0a8e393c77713d78cf4fc6521529d4a6266b401336d014b5e020b369051c.txt",
+        "public/docs-source/f1d4694c301c959fd8cb0e8b3826fc4f062fafd90ce61158362b45ec97fa36a7.txt"
+      ]
+    }
+  ],
+  "files": [
+    "packages/ui/src/components/badge-colors.ts",
+    "tests/badge-colors.test.ts",
+    "public/r/badge.json",
+    "packages/ui/src/components/file-type.tsx",
+    "packages/ui/package.json",
+    "packages/ui/registry.json",
+    "tests/file-type.test.tsx",
+    "docs/pages/components/file-type/page.tsx",
+    "docs/content/en/components/file-type.json",
+    "docs/content/zh-CN/components/file-type.json",
+    "docs/content/en/common.json",
+    "docs/content/zh-CN/common.json",
+    "docs/manifest.ts",
+    "app/[locale]/docs/components/(detail)/file-type/page.tsx",
+    "docs/agent-guides/components/file-type.md",
+    "docs/agent-data/components.json",
+    "docs/agent-data/item-identities.json",
+    "docs/agent-data/guide-routes.json",
+    "docs/generated/agent-guide-loaders.generated.ts",
+    "docs/generated/component-page-loaders.generated.ts",
+    "docs/generated/page-loaders.generated.ts",
+    "docs/i18n/content-loaders.generated.ts",
+    "public/r/file-type.json",
+    "public/r/registry.json",
+    "public/llms.txt",
+    "public/llms-full.txt",
+    "scripts/test-consumer-installs.mjs",
+    "tests/i18n-document-manifest.test.ts",
+    "public/component-covers/file-type-light.jpg",
+    "public/component-covers/file-type-dark.jpg",
+    "docs/plans/2026-10-12-file-type-review-commit-plan.md",
+    "docs/plans/2026-10-12-file-type-commit-files.json",
+    "packages/blocks/src/application/file-manager-01/file-manager.tsx",
+    "packages/blocks/registry.json",
+    "public/r/file-manager-01.json",
+    "docs/lib/block-preview-sources.generated.ts",
+    "public/docs-source/4bab0a8e393c77713d78cf4fc6521529d4a6266b401336d014b5e020b369051c.txt",
+    "public/docs-source/f1d4694c301c959fd8cb0e8b3826fc4f062fafd90ce61158362b45ec97fa36a7.txt"
+  ],
+  "reviewedSha256": {
+    "packages/ui/src/components/badge-colors.ts": "acaed42112d18cd28cda7ce582965526667ed2cd3fbf033d3751d43236418d88",
+    "tests/badge-colors.test.ts": "edf4ff2d7bca83fadcd056d824c9d8d15e529fd28712351e61301414859ca63e",
+    "public/r/badge.json": "6cde76158ee88ca0c9537ff6e9ed95b00d6fa0d9179b07f16ef0742a99495496",
+    "packages/ui/src/components/file-type.tsx": "cc411c77f87fa377c7f81030afd6f5e77fe43c6fd0985ca0f7d9f2c9e9f46cd1",
+    "packages/ui/package.json": "73891e9cf2d13e5a08ed763e3638bd31a0d84d78be5e07ab85018cd89155dfad",
+    "packages/ui/registry.json": "d9562f77525f0bf057d986010821bc34f46caa7fa47ac99757017a7bfb46f38b",
+    "tests/file-type.test.tsx": "e12b6718b0d52512a1ff971f8c824a53d8402aadf0a57537082c2411dbaf26ff",
+    "docs/pages/components/file-type/page.tsx": "4d93e0bf162612c2b86860d20fe00634258149192da1dd1dac5dd1fd5c21b685",
+    "docs/content/en/components/file-type.json": "089ee66deaacfe8e761a7066b484de51dc9e91df7a581ef3ec46ea3bdf150fdf",
+    "docs/content/zh-CN/components/file-type.json": "05f942cb3074445c2b9990270b369df32368c65d61ef7476506d646920a76722",
+    "docs/content/en/common.json": "e66820eace0336a49e005887bff337c44448ed793fa9f9a12e7c34b65b4c19fa",
+    "docs/content/zh-CN/common.json": "b0a5f05c871a7429c989fb64ae65a60bb18379aa42c5c0c6e5ec67620cd8ac1a",
+    "docs/manifest.ts": "a0bf4812a80c8d5fd3d8434b00151291ee8b0038217b1ef9a179245bdceb1b72",
+    "app/[locale]/docs/components/(detail)/file-type/page.tsx": "978f4d56d51a571d9476c54eb3d89ee5fff5c9375db814ad039a7a6b9bf73020",
+    "docs/agent-guides/components/file-type.md": "82dede9dd58e330c2aa73d8a62e66b4dd8ac30f5294eee9f87c587259c88c4bc",
+    "docs/agent-data/components.json": "fa7a7c61b65e6b31d0ffcb9f0adaffe7221849cec4b5fba20a9818137c901bd5",
+    "docs/agent-data/item-identities.json": "2ea509c4a57ae0abb09f554fd729c234688e9d0310ea4fd6f86f559ed24b128d",
+    "docs/agent-data/guide-routes.json": "658d208f867b2181b7e4d17c9d574afea5472eb352f3d44d844713904b71384b",
+    "docs/generated/agent-guide-loaders.generated.ts": "b7cf60c42d52d257bd749d4400c96ae7e557bad7dcbedb5c84bdcde464deb47c",
+    "docs/generated/component-page-loaders.generated.ts": "cb3b92c976341c2221e24f835c87c98422c2ee23f9ea79dc7ef80358710249f8",
+    "docs/generated/page-loaders.generated.ts": "372be015ca96fe3d5be2e44293577fee4c398dc0453ffeedb515babd95f61566",
+    "docs/i18n/content-loaders.generated.ts": "f6a8318f417f8792eace1492acfa97377c96ebc78585486fdfd3c8fffb6606a5",
+    "public/r/file-type.json": "96404940749724e031f2198af5898e5b314ac130af78713a3547ce6bc1c39922",
+    "public/r/registry.json": "662da8c77cdee7c94726f26396019c10fc44945dfc7be6ade1edf143c9a8e9ab",
+    "public/llms.txt": "6e28cb767b25c5ae690e4e0ca4644932b82e331021a78e4d93ec99516bf12eaf",
+    "public/llms-full.txt": "4207f778e160de9ed74c3a3ddd14ab81a86ac11baec93a4559c0fe209a01950d",
+    "scripts/test-consumer-installs.mjs": "fc0feb5892f1ebab006514a74d218214b6e13f346bb782d55682d0ae1c585145",
+    "tests/i18n-document-manifest.test.ts": "4f0da1a1309a273bd585d759fa6ca1cb9072e5387bb0cfb1e0c79055e1f1cf49",
+    "public/component-covers/file-type-light.jpg": "cbb1da882ed207e1942a36e5f6a42ec081f0e8b7a1b779dbbdd3d1ed7d7f39bd",
+    "public/component-covers/file-type-dark.jpg": "e70214f314489a8eb3aee8152bed66cb9ad6bed04e93a17202af9ad36d3d3972",
+    "docs/plans/2026-10-12-file-type-review-commit-plan.md": "05be3530fe785d0200b43a5b4ae294ff1adfd04ccf8ce85a96ebdf65ec1ec134",
+    "packages/blocks/src/application/file-manager-01/file-manager.tsx": "4bab0a8e393c77713d78cf4fc6521529d4a6266b401336d014b5e020b369051c",
+    "packages/blocks/registry.json": "e9995285ffdbf4ee9041abb9c1fddf3742d918d30a8488dac5d8ddb205d00ede",
+    "public/r/file-manager-01.json": "c892b8e2cd2628ea865ddb5d948abdd4b451e30d7fef16286c17a133298d1766",
+    "docs/lib/block-preview-sources.generated.ts": "246cbbfba50a226ba136af2f534e9d7f7b2b7384949d799b62ec7d3985ef7284",
+    "public/docs-source/4bab0a8e393c77713d78cf4fc6521529d4a6266b401336d014b5e020b369051c.txt": "4bab0a8e393c77713d78cf4fc6521529d4a6266b401336d014b5e020b369051c"
+  },
+  "excludedWorkingTree": [
+    {
+      "status": " M",
+      "path": ".github/workflows/ci.yml"
+    },
+    {
+      "status": " M",
+      "path": "README.md"
+    },
+    {
+      "status": " M",
+      "path": "package.json"
+    },
+    {
+      "status": " M",
+      "path": "packages/blocks/src/application/context-window-01/context-window.tsx"
+    },
+    {
+      "status": " M",
+      "path": "packages/blocks/src/application/fleet-health-01/fleet-health.tsx"
+    },
+    {
+      "status": " M",
+      "path": "packages/blocks/src/application/personal-settings-01/personal-settings.tsx"
+    },
+    {
+      "status": " M",
+      "path": "packages/ui/src/system/code-engine/components/CodeView.ts"
+    },
+    {
+      "status": " M",
+      "path": "playwright.code-block.config.ts"
+    },
+    {
+      "status": " M",
+      "path": "playwright.config.ts"
+    },
+    {
+      "status": " M",
+      "path": "playwright.detail-loading.config.ts"
+    },
+    {
+      "status": " M",
+      "path": "playwright.focus.config.ts"
+    },
+    {
+      "status": " M",
+      "path": "playwright.navigation-loading.config.ts"
+    },
+    {
+      "status": " D",
+      "path": "public/docs-source/4e3b8c50e39c240f98ce65906eb39202ddfe21916edda6cdfea41c0bd4902ac5.txt"
+    },
+    {
+      "status": " D",
+      "path": "public/docs-source/563b55eac001e3edf681db78f40d6fad520b56b3cf968b13d5061ce0bb2b0e26.txt"
+    },
+    {
+      "status": " D",
+      "path": "public/docs-source/edff683ef137022bba7b338f571777921f518932bf3af9efa15b35d8ac755d0e.txt"
+    },
+    {
+      "status": " M",
+      "path": "public/r/code-engine.json"
+    },
+    {
+      "status": " M",
+      "path": "public/r/context-window-01.json"
+    },
+    {
+      "status": " M",
+      "path": "public/r/fleet-health-01.json"
+    },
+    {
+      "status": " M",
+      "path": "public/r/personal-settings-01.json"
+    },
+    {
+      "status": " M",
+      "path": "tests/detail-loading.e2e.ts"
+    },
+    {
+      "status": " M",
+      "path": "tests/docs-collections.e2e.ts"
+    },
+    {
+      "status": " M",
+      "path": "tests/navigation-loading.e2e.ts"
+    },
+    {
+      "status": "??",
+      "path": ".github/workflows/e2e-extended.yml"
+    },
+    {
+      "status": "??",
+      "path": "docs/plans/2026-10-10-e2e-stage-a-implementation.md"
+    },
+    {
+      "status": "??",
+      "path": "docs/plans/2026-10-10-e2e-testing-plan.md"
+    },
+    {
+      "status": "??",
+      "path": "playwright.shared.ts"
+    },
+    {
+      "status": "??",
+      "path": "public/docs-source/50ff592e8137678c709d9ca78e8858aa5f7e9a7081a51e2b3c2dbf2db38a993b.txt"
+    },
+    {
+      "status": "??",
+      "path": "public/docs-source/67eed8eb31329c997da05ec15af5913f90d1d3261cd36fdeb229c5c6f9c493d0.txt"
+    },
+    {
+      "status": "??",
+      "path": "public/docs-source/68700c6ee0a15190dea48cc04e662cbd958067ee4a02a69c31753bea93d25a62.txt"
+    },
+    {
+      "status": "??",
+      "path": "scripts/run-e2e.mjs"
+    },
+    {
+      "status": "??",
+      "path": "tests/code-block/resize-scheduling.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e-runner.test.mjs"
+    }
+  ],
+  "localEvidence": [
+    ".zeron/reports/file-type-review/before.json",
+    ".zeron/reports/file-type-review/after.json",
+    "output/playwright/file-type-review-consumer-final.log",
+    ".zeron/reports/file-type-demos/after.json",
+    ".zeron/reports/file-type-demos/browser.json",
+    ".zeron/reports/file-manager-file-type/after.json",
+    ".zeron/reports/file-manager-file-type/browser.json",
+    "output/playwright/file-manager-file-type-consumer.log",
+    ".zeron/reports/file-type-session-review/edge-before.json",
+    ".zeron/reports/file-type-session-review/edge-after.json",
+    ".zeron/reports/file-type-session-review/consumer.log",
+    ".zeron/reports/file-type-session-review/commit-plan-verification.json",
+    ".zeron/reports/file-type-session-review/review.json"
+  ],
+  "notes": [
+    "The manifest cannot hash itself. Existing included files have final reviewed content hashes; deleted files retain their baseline hashes.",
+    "Hashes describe final content after all three planned commits. Shared files have per-commit hunks, not whole-file staging.",
+    "Other tasks remain in the working tree. Use the explicit groups and hunk boundaries.",
+    "The preview-source manifest includes only the file-manager-01 URL hunk.",
+    "The plan and file list are part of commit 2. File Manager adoption belongs to commit 3."
+  ],
+  "deletedFiles": [
+    "public/docs-source/f1d4694c301c959fd8cb0e8b3826fc4f062fafd90ce61158362b45ec97fa36a7.txt"
+  ],
+  "reviewedDeletedSha256": {
+    "public/docs-source/f1d4694c301c959fd8cb0e8b3826fc4f062fafd90ce61158362b45ec97fa36a7.txt": "f1d4694c301c959fd8cb0e8b3826fc4f062fafd90ce61158362b45ec97fa36a7"
+  },
+  "partialFiles": [
+    {
+      "path": "public/r/registry.json",
+      "perCommit": {
+        "2": "Add only the file-type Registry item.",
+        "3": "Add only the file-type dependency to the file-manager-01 item."
+      }
+    },
+    {
+      "path": "docs/lib/block-preview-sources.generated.ts",
+      "perCommit": {
+        "3": "Update only the file-manager-01 preview-source URL."
+      },
+      "exclude": "ContextWindow, FleetHealth, and PersonalSettings URL hunks."
+    }
+  ],
+  "sessionBaseCommit": "e121ba551a15aa62859dd336f07d8f2b4e2d1f4a",
+  "reviewFindings": [
+    {
+      "priority": "P2",
+      "status": "fixed",
+      "file": "packages/blocks/src/application/file-manager-01/file-manager.tsx",
+      "issue": "Empty extension metadata suppressed file-name detection in FileItemVisual.",
+      "fix": "Pass undefined for empty File Manager extension metadata; retain explicit nonempty overrides.",
+      "evidence": [
+        ".zeron/reports/file-type-session-review/edge-before.json",
+        ".zeron/reports/file-type-session-review/edge-after.json"
+      ]
+    }
+  ]
+}

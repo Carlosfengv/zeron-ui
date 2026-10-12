@@ -1,0 +1,31 @@
+{
+  "fileType": {
+    "title": "File Type",
+    "description": "折角文件图标，覆盖 11 类、99 种扩展名，支持四种样式和六档尺寸。复用 Zeron 分类配色与语义承载面，适配浅色和深色主题。",
+    "outline": "Outline", "solid": "Solid", "light": "Light", "mono": "Mono",
+    "sizes": "尺寸", "catalog": "文件分类", "detection": "文件名识别与回退", "apiReference": "API 参考",
+    "infoItemDemo": "InfoItem 附件列表 · sm",
+    "infoItemDemoDescription": "32px 文件图标搭配文件名、描述和大小。将 FileType 直接放在 InfoItemContent 旁，保留组件尺寸。",
+    "tableDemo": "文件表格 · mini",
+    "tableDemoDescription": "紧凑表格行使用 18px 文件图标。长文件名省略显示，文件格式和大小保持可见。",
+    "fileNameColumn": "文件名", "typeColumn": "格式", "sizeColumn": "大小",
+    "demoDescriptions": {
+      "report": "PDF 文档", "spreadsheet": "Excel 电子表格", "design": "Figma 设计稿"
+    },
+    "variantSelector": "文件图标样式",
+    "count": "{extensions} 种扩展名 · {families} 类",
+    "extension": "扩展名，可带前导点，不区分大小写。优先于 fileName。",
+    "fileName": "原始文件名、路径或绝对 URL。根据最后一个后缀识别格式，同时作为默认可访问名称；仅在 URL 中忽略查询参数与片段。",
+    "variant": "Outline：承载面和分类标签；Solid：分类色纸张；Light：弱化纸张和分类标签；Mono：中性标签。",
+    "size": "图标外框：mini 18px、xs 24px、sm 32px、default 40px、lg 48px、xl 56px。",
+    "ariaLabel": "覆盖默认可访问名称，也可通过 aria-labelledby 引用已有标签。",
+    "ariaHidden": "相邻文件名已能识别文件时，将装饰图标从辅助技术中隐藏。",
+    "className": "附加外部布局类。图标尺寸和外观使用 size、variant。",
+    "ref": "根 SVG 元素引用。其他原生 SVG 属性会透传。",
+    "fallbackNote": "未知扩展名使用中性标签。README、.gitignore 等无后缀文件显示 FILE。较长的未知标签仅在视觉上缩写，可访问名称保留完整内容。",
+    "helpers": "同时导出 fileTypeFamilies、fileTypeVariants 和 resolveFileType；后者接收 extension 和 fileName，返回规范化扩展名、完整标签、所属分类和分类颜色。",
+    "families": {
+      "documents": "文档", "spreadsheets": "电子表格", "presentations": "演示文稿", "images": "图片", "video": "视频", "audio": "音频", "code": "代码与数据", "archives": "压缩包", "design": "设计", "applications": "应用程序", "fonts": "字体"
+    }
+  }
+}

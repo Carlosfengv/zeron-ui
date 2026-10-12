@@ -1,4 +1,15 @@
 {
+  "file-type": {
+    "keywords": ["文件", "格式", "扩展名", "附件", "图标", "file", "type", "extension", "attachment", "icon"],
+    "useCases": ["在文件列表、附件和文件详情中显示文件格式图标。"],
+    "whenNotToUse": ["内容预览使用 FileThumbnail；文件操作与上传由宿主控件承担。"],
+    "keyApi": [
+      "extension 优先于 fileName，大小写不敏感，未知格式使用中性标签。",
+      "variant 为 outline、solid、light、mono。",
+      "size 为 mini 18px、xs 24px、sm 32px、default 40px、lg 48px、xl 56px。",
+      "aria-hidden 隐藏装饰图标；aria-label 可覆盖默认可访问名称。"
+    ]
+  },
   "context-window-01": {
     "keywords": [
       "上下文",

@@ -12,6 +12,7 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "components/file-type": () => import("@docs/content/en/components/file-type.json"),
     "blocks/context-window-01": () => import("@docs/content/en/blocks/context-window-01.json"),
     "blocks/fleet-health-01": () => import("@docs/content/en/blocks/fleet-health-01.json"),
     "blocks/website-analytics-01": () => import("@docs/content/en/blocks/website-analytics-01.json"),
@@ -149,6 +150,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "components/file-type": () => import("@docs/content/zh-CN/components/file-type.json"),
     "blocks/context-window-01": () => import("@docs/content/zh-CN/blocks/context-window-01.json"),
     "blocks/fleet-health-01": () => import("@docs/content/zh-CN/blocks/fleet-health-01.json"),
     "blocks/website-analytics-01": () => import("@docs/content/zh-CN/blocks/website-analytics-01.json"),

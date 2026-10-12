@@ -194,6 +194,10 @@
       "itemId": "component:field"
     },
     {
+      "path": "components/file-type.md",
+      "itemId": "component:file-type"
+    },
+    {
       "path": "components/funnel-chart.md",
       "itemId": "component:funnel-chart"
     },
