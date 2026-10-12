@@ -61,7 +61,7 @@ Add localized demos, interaction coverage and registry/docs integration.
 
 ## 提交范围
 
-功能范围共 39 条文件路径；本计划作为第 40 条路径一并提交。完整候选清单在本地 `output/plan-usage/commit-files.json`。
+最终功能范围共 41 条文件路径；本计划作为第 42 条路径一并提交。完整候选清单在本地 `output/plan-usage/commit-files.json`。
 
 | 分组 | 路径与内容 |
 | --- | --- |
@@ -69,19 +69,19 @@ Add localized demos, interaction coverage and registry/docs integration.
 | 包与 Registry 注册 | `packages/blocks/package.json`、`block-capabilities.json`、`registry.json`、`src/catalog.ts` |
 | 文档与演示 | `docs/components/blocks/PlanUsageDemo.tsx`、`docs/pages/blocks/plan-usage-01/`、两种语言的 `docs/content/*/blocks/plan-usage-01.json`、Agent 指南和生成的详情页路由 |
 | 展示目录 | `docs/catalog/artifacts.ts`、`docs/manifest.ts`、BlockPreview、StandaloneBlockDemo、standalone-blocks |
-| 测试与生成输入 | 两个相关测试文件、`scripts/preview-source-allowlist.mjs`、`scripts/lib/unification-consumer-examples.mjs` |
+| 测试与生成输入 | 四个相关测试文件（交互、文档清单、展示目录、消费者示例）、`scripts/preview-source-allowlist.mjs`、`scripts/lib/unification-consumer-examples.mjs` |
 | 生成产物 | 三个 `docs/agent-data/` 文件、三个 `docs/generated/` 加载器、i18n 加载器、`public/llms*.txt`、两个相关 Registry JSON、预览源码清单及当前 hash 资源 |
 
 `docs/lib/block-preview-sources.generated.ts` 是混合文件，只暂存新增 `plan-usage-01` 条目；保留 fleet-health-01 和 personal-settings-01 的地址变更给原有任务。当前本 block 的预览资源为 `public/docs-source/0794194fd1cb1a3cb63db94bbaf7b865b2d2faa4abcd8a6c9cdc68222ac038d4.txt`。
 
 以下已有改动不属于此次提交：fleet-health-01 和 personal-settings-01 的组件源码、各自 Registry JSON、两组旧预览资源删除及新资源添加。不要整批暂存工作区。
 
-整理期间工作区还出现了其他任务的 CI workflow/action、消费者与验证脚本、维护文档及对应测试修改，这些也排除在候选补丁之外。候选范围以明确的 40 条路径为准，不从整个 dirty tree 自动扩大。
+整理期间工作区还出现了其他任务的 CI workflow/action、消费者与验证脚本、维护文档及对应测试修改，这些也排除在候选补丁之外。候选范围以明确的 42 条路径为准，不从整个 dirty tree 自动扩大。
 
 ## 执行顺序
 
 1. 检查 HEAD 和相关工作区是否变化；若有新修改，刷新清单、生成资源及候选补丁。
-2. 查看候选补丁的 40 条路径，重点核对混合预览清单仅新增 plan-usage-01；源码、Registry 内嵌源码和 hash 资源须一致。
+2. 查看候选补丁的 42 条路径，重点核对混合预览清单仅新增 plan-usage-01；源码、Registry 内嵌源码和 hash 资源须一致。
 3. 提交前在独立副本应用补丁，重跑相关测试、TypeScript、Registry 与预览一致性检查。计划阶段的验证来自工作区和独立消费者安装；之后补做的隔离副本验证见下一节。
 4. 按候选范围暂存，检查 staged diff，再执行上述 commit 标题。
 5. 核对提交文件及剩余工作区，确保其他两个 block 的改动完整保留。
@@ -96,6 +96,12 @@ Add localized demos, interaction coverage and registry/docs integration.
 - 根项目 TypeScript 和完整设计检查通过。
 - Registry 检查通过（164 项），51 个预览资源和 136 个文档加载器一致性通过。
 - 从副本重建 Skill 分发及 Agent 目录后，一致性检查通过（173 项、72 篇指南）。
-- 生成与检查后，候选文件内容保持一致；提交范围仍为 40 条路径，混合预览清单只增加 plan-usage-01。
+- 生成与检查后，候选文件内容保持一致；初始候选范围为 40 条路径，混合预览清单只增加 plan-usage-01。
 
 此前针对最终 Registry 的 Next.js/Vite 独立消费者生产构建结果仍有效；本次隔离验证没有执行整个文档站的生产构建。
+
+## 必需 CI 检查的补充
+
+GitHub main 要求 `checks` 状态检查通过，因此通过 PR #10 合并。全量测试发现展示目录和消费者示例测试仍使用新增 block 之前的固定数量；同步更新两个现有测试，并明确断言 plan-usage-01 的目录归属和消费者数据示例。
+
+补充后独立副本的 6 个相关测试文件、47 项测试通过，新增修改的常规 ESLint 通过。最终范围增加到 42 条路径，组件源码、Registry 及预览资源保持原有验证版本。计划阶段的单次提交建议在执行中增加了一条测试修正提交；两条提交通过同一 PR 交付。
