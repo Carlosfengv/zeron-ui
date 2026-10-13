@@ -1,5 +1,13 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "resource-cost-01": [
+    "packages/blocks/src/application/resource-cost-01/index.ts",
+    "packages/blocks/src/application/resource-cost-01/resource-cost.tsx",
+    "packages/blocks/src/application/resource-cost-01/resource-cost-types.ts",
+    "packages/blocks/src/application/resource-cost-01/resource-cost-data.ts",
+    "packages/blocks/src/application/resource-cost-01/resource-cost-labels.ts",
+    "packages/blocks/src/application/resource-cost-01/resource-cost-demo-data.ts"
+  ],
   "plan-usage-01": [
     "packages/blocks/src/application/plan-usage-01/index.ts",
     "packages/blocks/src/application/plan-usage-01/plan-usage-types.ts",

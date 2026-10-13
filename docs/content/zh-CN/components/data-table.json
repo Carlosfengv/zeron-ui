@@ -20,6 +20,8 @@
     "loadingMessage": "表格加载时播报的无障碍状态消息。",
     "loadingRowCount": "加载期间显示的占位行数量，默认使用当前每页数量。",
     "paginationProps": "配置内置分页区域，包括禁用状态、文案、每页选项和外层布局属性。",
+    "showPagination": "是否渲染分页控件。完整资源树可设为 false，同时使用 manualPagination: true 保持全部展开行可见。",
+    "hierarchy": "支持 getSubRows、getExpandedRowModel、state.expanded 和 onExpandedChange。单元格可通过 row.depth 缩进，并用 row.getToggleExpandedHandler() 展开；算力资源成本 Block 提供完整示例。",
     "renderLoadingCell": "通过行索引、列索引和 TanStack 列自定义加载单元格。",
     "data": "提供给 TanStack Table 的行数据。",
     "columns": "列定义、表头、单元格和筛选元数据。",

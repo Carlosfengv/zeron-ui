@@ -2,6 +2,14 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:resource-cost-01",
+      "type": "registry",
+      "key": "resource-cost-01",
+      "aliases": ["resource-cost-01"],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:plan-usage-01",
       "type": "registry",
       "key": "plan-usage-01",

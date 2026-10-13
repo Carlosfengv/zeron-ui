@@ -1,0 +1,12 @@
+{
+  "resourceCostBlock": {
+    "title": "算力资源成本",
+    "description": "结合资源树和成本占比的 Chart Block。复用 Container、Data Table 与 DonutSummary，展示 GPU 集群、云主机、存储和网络的月度成本。",
+    "composition": "组件与样式",
+    "compositionBody": "Container 组织标题、月度成本、交付周期、风险资源与底部汇总。Data Table 提供表格、列显示与列重排；DonutSummary 显示每个父级占整体成本的比例。表面、文字、分隔线和状态均使用现有语义变量，浅色与深色主题自动适配。",
+    "hierarchy": "多层级表格",
+    "hierarchyBody": "沿用 Data Table 公开的 TanStack 配置：getSubRows 与 getExpandedRowModel 支持任意层级，行缩进跟随 depth。收起、1、2、全部控制展开深度；搜索与状态筛选保留命中项的祖先路径并自动展开。父级成本由完整子树汇总，叶子价格按货币精度舍入后相加；筛选和折叠不重新计算总额。",
+    "integration": "数据与交互",
+    "integrationBody": "宿主传入有唯一编号的资源树、币种、语言和可选操作回调。onExport 接收完整计算树，onInspect 接收原始完整资源子树；缺少回调时隐藏对应入口。示例支持 JSON 下载、详情、加载、空数据和失败重试；价格为固定示例值，未接入真实云平台或计费服务。"
+  }
+}
