@@ -472,6 +472,11 @@ inverse-background  + fg-on-inverse
 警告状态组合 \`warning-surface + fg-warning + warning-border\`；成功状态组合
 \`success-surface + fg-success + success-border\`。
 
+Alert 的 info、warning、danger 状态使用独立的 \`alert-*-surface\` 背景，浅色映射到参考色板
+100 档，深色映射到 950 档；非 default 状态的边框使用对应状态边界，透明度为 0.35。
+大面积异常容器使用 \`danger-surface-subtle\` 或 \`warning-surface-subtle\`，浅色为 50 档，
+深色为 950 档。两类背景保留不同的浅色强调层级，普通 \`*-surface\` 仍供嵌套状态内容使用。
+
 \`brand\` 与 \`focus-ring\` 是两个独立语义。运行时修改品牌色不得同时修改焦点环。
 自定义品牌色时，必须同时覆盖品牌表达配色包
 \`brand / brand-hover / brand-active / fg-on-brand / fg-brand\` 与主要操作配色包

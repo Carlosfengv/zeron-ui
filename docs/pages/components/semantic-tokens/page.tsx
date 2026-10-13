@@ -362,7 +362,8 @@ export default function SemanticTokensPage() {
     ...tokenRows(fillColorTokens, ["selection"]),
   ];
   const feedbackRows = [
-    ...tokenRows(fillColorTokens, ["danger-surface", "warning-surface", "success-surface", "info-surface", "neutral-status-surface"]),
+    ...colorRows(fillColorTokens.filter((token: ColorToken) => token.name.includes("-surface"))),
+    ...colorRows(componentColorTokens.filter((token: ColorToken) => token.name.startsWith("alert-"))),
     ...tokenRows(foregroundColorTokens, ["fg-danger", "fg-warning", "fg-success", "fg-info", "fg-neutral-status"]),
     ...tokenRows(boundaryColorTokens, ["danger-border", "warning-border", "success-border", "info-border", "neutral-status-border"]),
   ];

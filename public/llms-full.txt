@@ -2355,6 +2355,8 @@ related: [empty, inline-notice, button]
 
 status 支持 default、neutral、info、warning、danger。danger 默认 role="alert"，其他默认 role="status"；静态示例和旧错误使用 role="group"。新错误只选择一个播报 owner。组件不发请求，也不拥有重试状态。
 
+非 default 状态的边框使用对应状态 token，透明度为 0.35。info、warning、danger 的背景使用 `alert-*-surface`：浅色映射到现有色板 100 档，深色映射到 950 档。default 使用 `surface-floating`，neutral 使用 `neutral-status-surface`。组件通过语义 token 引用色板，不直接写色值。大面积异常 Card 使用 `danger-surface-subtle` 或 `warning-surface-subtle`，浅色为 50 档、深色为 950 档；Alert 与 Card 保留各自的浅色背景层级。
+
 ```tsx
 import { Alert, AlertTitle, AlertDescription, AlertAction } from "@zeron/ui/alert";
 import { Button } from "@zeron/ui/button";
