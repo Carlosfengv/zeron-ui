@@ -78,10 +78,10 @@
   --destructive: light-dark(#F73920, #FC4932);
   --destructive-hover: light-dark(#F9654B, #FD725B);
   --destructive-active: light-dark(#FA8F78, #FD9983);
-  --danger-surface-subtle: light-dark(#FEF2F2, #7F1D1D);
+  --danger-surface-subtle: light-dark(#FEF2F2, #450A0A);
   --danger-surface: light-dark(#FEE2E2, #991B1B);
   --danger-surface-raised: light-dark(#FECACA, #B91C1C);
-  --warning-surface-subtle: light-dark(#FFFBEB, #78350F);
+  --warning-surface-subtle: light-dark(#FFFBEB, #451A03);
   --warning-surface: light-dark(#FEF3C7, #92400E);
   --warning-surface-raised: light-dark(#FDE68A, #B45309);
   --success-surface: light-dark(#EAF8EF, #123B25);
@@ -110,6 +110,9 @@
   --scrollbar-thumb: light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.08));
   --scrollbar-thumb-hover: light-dark(rgb(0 0 0 / 0.12), rgb(255 255 255 / 0.12));
   --scrollbar-thumb-active: light-dark(rgb(0 0 0 / 0.16), rgb(255 255 255 / 0.16));
+  --alert-info-surface: light-dark(#DBEAFE, #0C2846);
+  --alert-warning-surface: light-dark(#FEF3C7, #451A03);
+  --alert-danger-surface: light-dark(#FEE2E2, #450A0A);
   --card-background: light-dark(#FFFFFF, #292929);
   --chart-1: light-dark(#0060D2, #1483FD);
   --chart-2: light-dark(#06B6D4, #22D3EE);
@@ -301,6 +304,9 @@
   --color-scrollbar-thumb: var(--scrollbar-thumb);
   --color-scrollbar-thumb-hover: var(--scrollbar-thumb-hover);
   --color-scrollbar-thumb-active: var(--scrollbar-thumb-active);
+  --color-alert-info-surface: var(--alert-info-surface);
+  --color-alert-warning-surface: var(--alert-warning-surface);
+  --color-alert-danger-surface: var(--alert-danger-surface);
   --color-card: var(--card-background);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);

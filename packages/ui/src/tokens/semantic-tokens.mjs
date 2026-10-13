@@ -96,10 +96,10 @@ export const fillColorTokens = classify([
   { name: "destructive", light: "#F73920", dark: "#FC4932", usage: "错误、删除和危险状态的高强调填充；按钮应使用 destructive-action" },
   { name: "destructive-hover", light: "#F9654B", dark: "#FD725B", usage: "通用危险强调填充的悬停状态；须与 fg-on-danger 保持可读对比度" },
   { name: "destructive-active", light: "#FA8F78", dark: "#FD9983", usage: "通用危险强调填充的按下状态；须与 fg-on-danger 保持可读对比度" },
-  { name: "danger-surface-subtle", light: danger[50], dark: danger[900], usage: "错误、失败和风险状态的最低强调背景；用于大面积状态容器" },
+  { name: "danger-surface-subtle", light: danger[50], dark: danger[950], usage: "错误、失败和风险状态的最低强调背景；用于大面积状态容器" },
   { name: "danger-surface", light: danger[100], dark: danger[800], usage: "错误、失败和风险信息的低强调背景" },
   { name: "danger-surface-raised", light: danger[200], dark: danger[700], usage: "错误、失败和风险信息内的次级强调背景；用于嵌套告警内容" },
-  { name: "warning-surface-subtle", light: warning[50], dark: warning[900], usage: "警告状态的最低强调背景；用于大面积状态容器" },
+  { name: "warning-surface-subtle", light: warning[50], dark: warning[950], usage: "警告状态的最低强调背景；用于大面积状态容器" },
   { name: "warning-surface", light: warning[100], dark: warning[800], usage: "警告信息的低强调背景" },
   { name: "warning-surface-raised", light: warning[200], dark: warning[700], usage: "警告信息内的次级强调背景；用于嵌套告警内容" },
   { name: "success-surface", light: "#EAF8EF", dark: "#123B25", usage: "成功、完成和正向结果信息的低强调背景" },
@@ -150,6 +150,9 @@ export const supportColorTokens = classify([
 ], "support");
 
 export const componentColorTokens = classify([
+  { name: "alert-info-surface", light: info[100], dark: info[950], usage: "Alert 信息状态的背景；浅色使用色板 100，深色使用色板 950" },
+  { name: "alert-warning-surface", light: warning[100], dark: warning[950], usage: "Alert 警告状态的背景；浅色使用色板 100，深色使用色板 950" },
+  { name: "alert-danger-surface", light: danger[100], dark: danger[950], usage: "Alert 错误状态的背景；浅色使用色板 100，深色使用色板 950" },
   { name: "card-background", utility: "card", light: neutral[0], dark: "#292929", usage: "Card 与卡片式资源项的默认背景填充" },
   { name: "chart-1", light: "#0060D2", dark: "#1483FD", usage: "普通图表系列槽位 1；默认主系列采用主题蓝，独立于品牌和状态 Token" },
   { name: "chart-2", light: "#06B6D4", dark: "#22D3EE", usage: "普通图表系列槽位 2；不表达状态" },

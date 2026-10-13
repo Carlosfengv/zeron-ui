@@ -521,7 +521,7 @@ const tokenData = {
     {
       "name": "danger-surface-subtle",
       "light": "#FEF2F2",
-      "dark": "#7F1D1D",
+      "dark": "#450A0A",
       "usage": "错误、失败和风险状态的最低强调背景；用于大面积状态容器",
       "classification": {
         "channel": "fill",
@@ -551,7 +551,7 @@ const tokenData = {
     {
       "name": "warning-surface-subtle",
       "light": "#FFFBEB",
-      "dark": "#78350F",
+      "dark": "#451A03",
       "usage": "警告状态的最低强调背景；用于大面积状态容器",
       "classification": {
         "channel": "fill",
@@ -1326,7 +1326,7 @@ const tokenData = {
     {
       "name": "danger-surface-subtle",
       "light": "#FEF2F2",
-      "dark": "#7F1D1D",
+      "dark": "#450A0A",
       "usage": "错误、失败和风险状态的最低强调背景；用于大面积状态容器",
       "classification": {
         "channel": "fill",
@@ -1356,7 +1356,7 @@ const tokenData = {
     {
       "name": "warning-surface-subtle",
       "light": "#FFFBEB",
-      "dark": "#78350F",
+      "dark": "#451A03",
       "usage": "警告状态的最低强调背景；用于大面积状态容器",
       "classification": {
         "channel": "fill",
@@ -1672,6 +1672,36 @@ const tokenData = {
     }
   ],
   "componentColors": [
+    {
+      "name": "alert-info-surface",
+      "light": "#DBEAFE",
+      "dark": "#0C2846",
+      "usage": "Alert 信息状态的背景；浅色使用色板 100，深色使用色板 950",
+      "classification": {
+        "channel": "component",
+        "intent": "info"
+      }
+    },
+    {
+      "name": "alert-warning-surface",
+      "light": "#FEF3C7",
+      "dark": "#451A03",
+      "usage": "Alert 警告状态的背景；浅色使用色板 100，深色使用色板 950",
+      "classification": {
+        "channel": "component",
+        "intent": "warning"
+      }
+    },
+    {
+      "name": "alert-danger-surface",
+      "light": "#FEE2E2",
+      "dark": "#450A0A",
+      "usage": "Alert 错误状态的背景；浅色使用色板 100，深色使用色板 950",
+      "classification": {
+        "channel": "component",
+        "intent": "danger"
+      }
+    },
     {
       "name": "card-background",
       "utility": "card",
