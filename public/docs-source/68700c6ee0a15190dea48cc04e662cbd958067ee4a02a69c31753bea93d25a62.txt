@@ -124,7 +124,7 @@ export function FleetHealth({ data, clusterId, clusters, onClusterChange, metric
       </Tabs>
     </ContainerBody>
     {notice && <div className="px-3"><InlineNotice role="status">{notice}</InlineNotice></div>}
-    <ContainerFooter>
+    <ContainerFooter className="py-0">
       <div className="mr-auto flex min-w-0 flex-wrap items-center gap-2">{footerActions}<Badge variant="plain" status={live ? "success" : "neutral"} size="sm">{live ? labels.live : labels.paused}</Badge>
         <span className="font-mono text-label uppercase text-fg-subtle">· {labels.every} {format(refreshIntervalMs / 1000, 1)} s{region ? ` · ${region}` : ""}</span>
       </div>
