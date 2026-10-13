@@ -16,10 +16,10 @@ export type AlertStatus = "default" | "neutral" | "info" | "warning" | "danger";
 const statusClasses: Record<AlertStatus, string> = {
   default: "border-border bg-surface-floating text-fg-default",
   neutral:
-    "border-neutral-status-border bg-neutral-status-surface text-fg-neutral-status",
-  info: "border-info-border bg-info-surface text-fg-info",
-  warning: "border-warning-border bg-warning-surface text-fg-warning",
-  danger: "border-danger-border bg-danger-surface text-fg-danger",
+    "border-neutral-status-border/35 bg-neutral-status-surface text-fg-neutral-status",
+  info: "border-info-border/35 bg-alert-info-surface text-fg-info",
+  warning: "border-warning-border/35 bg-alert-warning-surface text-fg-warning",
+  danger: "border-danger-border/35 bg-alert-danger-surface text-fg-danger",
 };
 
 interface AlertContextValue {
