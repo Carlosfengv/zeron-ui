@@ -108,7 +108,7 @@ const blockPreviewSources = {
     "url": "/docs-source/d5ebf2785cfca9ca75d1d0c8f2c0199674644407d7b20e1d80853e0960361fdc.txt"
   },
   "personal-settings-01": {
-    "url": "/docs-source/4e3b8c50e39c240f98ce65906eb39202ddfe21916edda6cdfea41c0bd4902ac5.txt"
+    "url": "/docs-source/2b00818dd52b1431eaee924d85ff3759f6275add17a7ecfe9d061d3253593780.txt"
   },
   "personal-usage-01": {
     "url": "/docs-source/5d4274f2e367a125cb5cc0c84079685e60db17bd9fcb588a0b98daff649b833e.txt"
