@@ -5,6 +5,7 @@
   "sales-conversion-funnel-01": {"framework": "react", "kind": "data-block"},
   "design-stack-01": {"framework": "react", "kind": "data-block"},
   "cost-estimate-01": {"framework": "react", "kind": "data-block"},
+  "resource-cost-01": {"framework": "react", "kind": "data-block"},
   "transaction-details-01": {"framework": "react", "kind": "data-block"},
   "getting-started-01": {"framework": "react", "kind": "data-block"},
   "security-overview-01": {"framework": "react", "kind": "data-block"},

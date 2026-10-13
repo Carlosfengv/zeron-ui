@@ -3,6 +3,23 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "resource-cost-01",
+      "type": "registry:block",
+      "title": "算力资源成本",
+      "description": "GPU 集群与云主机的多层级资源成本、占比、交付与容量状态。",
+      "categories": ["application", "analytics", "billing", "tables"],
+      "dependencies": ["@tanstack/react-table"],
+      "registryDependencies": ["badge", "button", "button-group", "chart", "container", "data-table", "dropdown", "empty", "icon-context", "inline-notice", "input-group", "menu-item", "select", "utils"],
+      "files": [
+        {"path": "packages/blocks/src/application/resource-cost-01/index.ts", "type": "registry:component", "target": "components/blocks/resource-cost-01/index.ts"},
+        {"path": "packages/blocks/src/application/resource-cost-01/resource-cost.tsx", "type": "registry:component", "target": "components/blocks/resource-cost-01/resource-cost.tsx"},
+        {"path": "packages/blocks/src/application/resource-cost-01/resource-cost-types.ts", "type": "registry:component", "target": "components/blocks/resource-cost-01/resource-cost-types.ts"},
+        {"path": "packages/blocks/src/application/resource-cost-01/resource-cost-data.ts", "type": "registry:component", "target": "components/blocks/resource-cost-01/resource-cost-data.ts"},
+        {"path": "packages/blocks/src/application/resource-cost-01/resource-cost-labels.ts", "type": "registry:component", "target": "components/blocks/resource-cost-01/resource-cost-labels.ts"},
+        {"path": "packages/blocks/src/application/resource-cost-01/resource-cost-demo-data.ts", "type": "registry:component", "target": "components/blocks/resource-cost-01/resource-cost-demo-data.ts"}
+      ]
+    },
+    {
       "name": "plan-usage-01",
       "type": "registry:block",
       "title": "套餐与用量",

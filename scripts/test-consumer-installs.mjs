@@ -271,6 +271,12 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "resource-cost-01": [
+      '"use client";',
+      'import { ResourceCost, resourceCostDemoItems } from "@/components/blocks/resource-cost-01";',
+      'export default function Page() { return <ResourceCost items={resourceCostDemoItems} />; }',
+      '',
+    ].join("\n"),
     "radar-chart": "\"use client\";\nimport {useState} from \"react\";\nimport {RadarChart,RadarGrid,RadarAxis,RadarLabels,RadarArea} from \"@/components/ui/radar-chart\";\nimport {ChartLegend} from \"@/components/ui/chart-core\";\nconst metrics=[{key:\"speed\",label:\"Speed\"},{key:\"quality\",label:\"Quality\"},{key:\"coverage\",label:\"Coverage\"}];const data=[{label:\"Current\",color:\"var(--chart-1)\",values:{speed:80,quality:70,coverage:60}}];\nexport default function Page(){const [hovered,setHovered]=useState<number|null>(null);return <><RadarChart data={data} metrics={metrics} hoveredIndex={hovered} onHoverChange={setHovered}><RadarGrid/><RadarAxis/><RadarArea index={0}/><RadarLabels/></RadarChart><ChartLegend items={data.map(item=>({label:item.label,color:item.color,value:0}))} showValue={false} hoveredIndex={hovered} onHover={setHovered}/></>;}\n",
     "ring-chart": "\"use client\";\nimport {useState} from \"react\";\nimport {RingChart,Ring,RingCenter} from \"@/components/ui/ring-chart\";\nconst data=[{label:\"Requests\",value:72,maxValue:100},{label:\"Storage\",value:48,maxValue:80}];\nexport default function Page(){const [half,setHalf]=useState(false);return <><button onClick={()=>setHalf(value=>!value)}>Update geometry</button><RingChart data={data} size={180} geometryScrubbing={half} endAngle={half?Math.PI/2:3*Math.PI/2}><><Ring index={0}/><Ring index={1} lineCap=\"butt\"/><RingCenter>{({value,label})=><span>{label}: {value}</span>}</RingCenter></></RingChart></>;}\n",
     "line-chart": "\"use client\";\nimport {LineChart,Line} from \"@/components/ui/line-chart\";\nimport {Grid,XAxis,YAxis,ChartTooltip} from \"@/components/ui/chart-core\";\nconst data=[{date:\"2026-10-01\",value:10},{date:\"2026-10-02\",value:20}];\nexport default function Page(){return <LineChart data={data}><Grid horizontal/><Line dataKey=\"value\"/><XAxis/><YAxis/><ChartTooltip/></LineChart>;}\n",
@@ -845,6 +851,13 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
   examples["model-detail-02"] = "import { ModelDetail02 } from \"@/src/components/blocks/model-detail-02\";\nexport default function App() { return <ModelDetail02 />; }\n";
   examples["file-manager-01"] = "import { FileManager } from \"@/src/components/blocks/file-manager-01\";\nexport default function App() { return <FileManager items={[]} error=\"Install verified\" />; }\n";
   const unifiedSource = unificationConsumerExample(component, "vite");
+  examples["resource-cost-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { ResourceCost, resourceCostDemoItems } from "@/src/components/blocks/resource-cost-01";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<ResourceCost items={resourceCostDemoItems} />);',
+    '',
+  ].join("\n");
   let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component];
   if (!source) throw new Error(`No Vite entry example is defined for ${component}`);
   if (verifyUnification && !unifiedSource && !styles) {

@@ -348,6 +348,7 @@ const dataTableProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "loadingMessage", type: "ReactNode", default: '"Loading data."', description: t("loadingMessage") },
   { name: "loadingRowCount", type: "number", default: "Current page size", description: t("loadingRowCount") },
   { name: "paginationProps", type: "Omit<DataTablePaginationProps<TData>, \"table\">", description: t("paginationProps") },
+  { name: "showPagination", type: "boolean", default: "true", description: t("showPagination") },
   { name: "renderLoadingCell", type: "(context) => ReactNode", description: t("renderLoadingCell") },
 ];
 
@@ -355,6 +356,7 @@ const hookProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "data", type: "TData[]", description: t("data") },
   { name: "columns", type: "ColumnDef<TData, unknown>[]", description: t("columns") },
   { name: "initialState", type: "TableOptions<TData>[\"initialState\"]", description: t("initialState") },
+  { name: "getSubRows / getExpandedRowModel", type: "TableOptions<TData>", description: t("hierarchy") },
   { name: "…options", type: "TableOptions<TData>", description: t("options") },
 ];
 

@@ -261,6 +261,8 @@ export type DataTableProps<TData> = React.ComponentProps<"div"> & {
   onRowActivate?: (row: Row<TData>) => void;
   /** Configures the built-in pagination region through its public contract. */
   paginationProps?: Omit<DataTablePaginationProps<TData>, "table">;
+  /** Hide pagination for a complete, unpaginated row model (for example a resource tree). */
+  showPagination?: boolean;
   /** Customizes a loading cell when its final shape is not text-like. */
   renderLoadingCell?: (
     context: DataTableLoadingCellContext<TData>
@@ -307,6 +309,7 @@ function DataTable<TData>({
   loadingRowCount,
   onRowActivate,
   paginationProps,
+  showPagination = true,
   renderLoadingCell,
   table,
   "aria-busy": ariaBusy,
@@ -320,6 +323,9 @@ function DataTable<TData>({
     table.getState().columnFilters.length > 0 &&
     table.getPreFilteredRowModel().rows.length > 0;
   const visibleColumns = table.getVisibleLeafColumns();
+  const hasActionBar = Boolean(
+    !isLoading && actionBar && table.getFilteredSelectedRowModel().rows.length > 0
+  );
   const resolvedLoadingRowCount =
     loadingRowCount ?? table.getState().pagination.pageSize;
 
@@ -548,12 +554,10 @@ function DataTable<TData>({
           </Table>
         </div>
       </div>
-      <div className="flex flex-col gap-2.5">
-        <DataTablePagination {...paginationProps} table={table} />
-        {!isLoading && actionBar &&
-          table.getFilteredSelectedRowModel().rows.length > 0 &&
-          actionBar}
-      </div>
+      {(showPagination || hasActionBar) && <div className="flex flex-col gap-2.5">
+        {showPagination && <DataTablePagination {...paginationProps} table={table} />}
+        {hasActionBar && actionBar}
+      </div>}
     </div>
   );
 }

@@ -18,6 +18,7 @@ import { SecurityOverviewDemo } from "./SecurityOverviewDemo";
 import { SupportAnalyticsDemo } from "./SupportAnalyticsDemo";
 import { TransactionDetailsDemo } from "./TransactionDetailsDemo";
 import { CostEstimateDemo } from "./CostEstimateDemo";
+import { ResourceCostDemo } from "./ResourceCostDemo";
 import { PlanUsageDemo } from "./PlanUsageDemo";
 import { DeploymentDetailDemo } from "./DeploymentDetailDemo";
 import { useMemo, useState } from "react";
@@ -230,6 +231,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
       return <TransactionDetailsDemo />;
     case "cost-estimate-01":
       return <CostEstimateDemo />;
+    case "resource-cost-01":
+      return <ResourceCostDemo />;
     case "plan-usage-01":
       return <PlanUsageDemo />;
     case "getting-started-01":

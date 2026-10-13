@@ -1,0 +1,397 @@
+export { ResourceCost } from "./resource-cost";
+export { calculateResourceCosts, filterResourceCosts, resourceCostExpansion } from "./resource-cost-data";
+export { resourceCostDemoItems } from "./resource-cost-demo-data";
+export { resourceCostZhLabels, resourceCostEnLabels } from "./resource-cost-labels";
+export type { ResourceCostProps, ResourceCostItem, ResourceCostRow, ResourceCostLabels, ResourceCostKind, ResourceCostAvailability } from "./resource-cost-types";
+
+
+"use client";
+
+import { useMemo, useState } from "react";
+import { getExpandedRowModel, type ColumnDef, type ExpandedState } from "@tanstack/react-table";
+import { Badge } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { ButtonGroup } from "@zeron/ui/button-group";
+import { DonutSummary } from "@zeron/ui/chart";
+import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
+import { DataTable, DataTableViewOptions, useDataTable } from "@zeron/ui/data-table";
+import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
+import { Empty, EmptyActions, EmptyDescription } from "@zeron/ui/empty";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@zeron/ui/input-group";
+import { MenuItem } from "@zeron/ui/menu-item";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { calculateResourceCosts, filterResourceCosts, getResourceCostTotal, resourceCostExpansion } from "./resource-cost-data";
+import { resourceCostZhLabels } from "./resource-cost-labels";
+import type { ResourceCostAvailability, ResourceCostProps, ResourceCostRow } from "./resource-cost-types";
+
+const statuses: ResourceCostAvailability[] = ["available", "reserved", "provisioning", "limited"];
+const tones = { available: "neutral", reserved: "info", provisioning: "warning", limited: "danger" } as const;
+
+export function ResourceCost({ items, title, description, summaryLabel, currency = "CNY", locale = "zh-CN", defaultDepth = 2, defaultExpanded: configuredExpansion,
+  state = "ready", errorMessage, labels: overrides, onRetry, onExport, onInspect, className, ...props }: ResourceCostProps) {
+  const labels = useMemo(() => ({ ...resourceCostZhLabels, ...overrides }), [overrides]);
+  const Search = useIcon("search"); const Close = useIcon("x"); const Download = useIcon("arrow-down");
+  const ChevronRight = useIcon("chevron-right"); const ChevronDown = useIcon("chevron-down");
+  const Clock = useIcon("clock"); const More = useIcon("ellipsis");
+  const Cluster = useIcon("doc-surfaces"); const Pool = useIcon("doc-data-grid"); const Gpu = useIcon("brain");
+  const Compute = useIcon("monitor"); const Storage = useIcon("file-archive"); const Network = useIcon("globe");
+  const [search, setSearch] = useState("");
+  const [availability, setAvailability] = useState<ResourceCostAvailability | "all">("all");
+  const [expansion, setExpansion] = useState<{ depth: number | "all" | null; expanded?: ExpandedState }>({ depth: configuredExpansion === undefined ? defaultDepth : null });
+  const formatting = useMemo(() => {
+    try {
+      const money = new Intl.NumberFormat(locale, { style: "currency", currency });
+      const unitPrice = new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 20 });
+      const percent = new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1 });
+      return { money, unitPrice, percent, fractionDigits: money.resolvedOptions().maximumFractionDigits };
+    } catch { return null; }
+  }, [locale, currency]);
+  const money = formatting?.money; const percent = formatting?.percent;
+  const rows = useMemo(() => {
+    if (state !== "ready") return [];
+    if (!formatting) return null;
+    try { return calculateResourceCosts(items, formatting.fractionDigits); }
+    catch { return null; }
+  }, [items, formatting, state]);
+  const summary = useMemo(() => ({
+    total: getResourceCostTotal(rows ?? [], formatting?.fractionDigits),
+    count: rows?.reduce((sum, row) => sum + row.leafCount, 0) ?? 0,
+    risks: rows?.reduce((sum, row) => sum + row.riskCount, 0) ?? 0,
+    days: rows?.reduce((max, row) => Math.max(max, row.readyInDays), 0) ?? 0,
+  }), [rows, formatting]);
+  const filtered = Boolean(search.trim()) || availability !== "all";
+  const data = useMemo(() => filterResourceCosts(rows ?? [], search, availability), [rows, search, availability]);
+  const defaultExpanded = useMemo(() => configuredExpansion ?? resourceCostExpansion(rows ?? [], defaultDepth), [rows, defaultDepth, configuredExpansion]);
+  const expanded = useMemo(() => expansion.depth === null ? expansion.expanded ?? defaultExpanded : resourceCostExpansion(data, expansion.depth), [expansion, defaultExpanded, data]);
+  const ready = state === "ready" && rows !== null;
+
+  const columns = useMemo<ColumnDef<ResourceCostRow, unknown>[]>(() => {
+    const icons = { cluster: Cluster, pool: Pool, gpu: Gpu, compute: Compute, storage: Storage, network: Network };
+    return [
+      { accessorKey: "name", header: labels.resource, enableHiding: false, meta: { label: labels.resource }, cell: ({ row }) => {
+        const item = row.original; const Icon = icons[item.kind]; const Chevron = row.getIsExpanded() ? ChevronDown : ChevronRight;
+        return <div className="flex min-w-64 items-center gap-2 py-1 text-fg-default" style={{ paddingInlineStart: row.depth * 24 }}>
+          {row.getCanExpand() ? <Button iconOnly size="xs" variant="ghost" aria-label={`${row.getIsExpanded() ? labels.collapseRow : labels.expand} ${item.name}`} aria-expanded={row.getIsExpanded()} onClick={row.getToggleExpandedHandler()}><Chevron aria-hidden /></Button> : <span aria-hidden className="size-6 shrink-0" />}
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-lg border-hairline border-border bg-surface-raised text-fg-muted"><Icon aria-hidden className="size-4" /></span>
+          <span className={cn("whitespace-nowrap", item.isGroup && "font-medium")}>{item.name}</span>
+        </div>;
+      } },
+      { accessorKey: "code", header: labels.code, meta: { label: labels.code }, cell: ({ row }) => <span className="font-mono text-label text-fg-subtle">{row.original.code}</span> },
+      { accessorKey: "quantity", header: () => <div className="text-right">{labels.quantity}</div>, meta: { label: labels.quantity }, cell: ({ row }) => <div className="text-right tabular-nums text-fg-default">{row.original.quantity}</div> },
+      { accessorKey: "unitCost", header: () => <div className="text-right">{labels.unitCost}</div>, meta: { label: labels.unitCost }, cell: ({ row }) => <div className="text-right tabular-nums">{row.original.isGroup ? "—" : formatting?.unitPrice.format(row.original.unitCost!)}</div> },
+      { accessorKey: "totalCost", header: () => <div className="text-right">{labels.totalCost}</div>, enableHiding: false, meta: { label: labels.totalCost }, cell: ({ row }) => {
+        const item = row.original; const share = summary.total > 0 ? item.totalCost / summary.total : 0;
+        return <div className="flex items-center justify-end gap-3 tabular-nums">
+          {item.isGroup && <span className="flex items-center gap-2 text-label text-fg-subtle"><DonutSummary className="size-5 shrink-0" total={summary.total} segments={[{ id: item.id, label: item.name, value: item.totalCost, color: "var(--fg-default)" }]} aria-label={labels.share(percent?.format(share) ?? "—")} /><span className="w-12 text-right">{percent?.format(share)}</span></span>}
+          <span className="min-w-24 text-right font-medium text-fg-default">{money?.format(item.totalCost)}</span>
+        </div>;
+      } },
+      { accessorKey: "readyInDays", header: labels.readyIn, meta: { label: labels.readyIn }, cell: ({ row }) => <Badge size="sm" variant="dot" status={row.original.readyInDays >= 5 ? "warning" : "neutral"} leadingIcon={<Clock aria-hidden className="size-3.5" />}>{labels.days(row.original.readyInDays)}</Badge> },
+      { accessorKey: "availability", header: labels.availability, meta: { label: labels.availability }, cell: ({ row }) => <Badge size="sm" status={tones[row.original.availability]}>{labels[row.original.availability]}</Badge> },
+      ...(onInspect ? [{ id: "actions", header: () => <span className="sr-only">{labels.actions}</span>, enableHiding: false, cell: ({ row }: { row: { original: ResourceCostRow } }) => <DropdownMenu>
+        <DropdownTrigger render={<Button iconOnly size="sm" variant="ghost" aria-label={`${labels.actions} · ${row.original.name}`}><More aria-hidden /></Button>} />
+        <DropdownContent align="end"><MenuItem index={0} label={labels.inspect} onSelect={() => {
+          const find = (items: readonly ResourceCostRow[]): ResourceCostRow | undefined => {
+            for (const item of items) { if (item.id === row.original.id) return item; const child = item.children && find(item.children); if (child) return child; }
+          };
+          onInspect(find(rows ?? []) ?? row.original);
+        }} /></DropdownContent>
+      </DropdownMenu> }] : []),
+    ];
+  }, [labels, formatting, money, percent, summary.total, onInspect, rows, Cluster, Pool, Gpu, Compute, Storage, Network, ChevronDown, ChevronRight, Clock, More]);
+  const { table } = useDataTable({ columns, data, getRowId: (row) => row.id, getSubRows: (row) => row.children,
+    getExpandedRowModel: getExpandedRowModel(), manualPagination: true, autoResetExpanded: false, enableSorting: false,
+    state: { expanded }, onExpandedChange: (updater) => {
+      setExpansion((current) => {
+        const previous = current.depth === null ? current.expanded ?? defaultExpanded : resourceCostExpansion(data, current.depth);
+        return { depth: null, expanded: typeof updater === "function" ? updater(previous) : updater };
+      });
+    },
+  });
+
+  function selectDepth(depth: number | "all") { setExpansion({ depth }); }
+  function revealMatches() { setExpansion({ depth: "all" }); }
+  function resetFilters() { setSearch(""); setAvailability("all"); setExpansion({ depth: configuredExpansion === undefined ? defaultDepth : null }); }
+
+  return <Container {...props} data-block="resource-cost" data-state={state} className={cn("w-full", className)}>
+    <ContainerHeader className="gap-4 py-3">
+      <div className="min-w-0"><h2 className="text-body font-medium text-fg-default">{title ?? labels.title}</h2>{description && <p className="mt-1 break-words text-body text-fg-subtle">{description}</p>}</div>
+      <div className="flex flex-wrap items-center gap-4 text-label text-fg-muted">
+        <span className="flex items-center gap-2">{labels.monthlyCost}<Badge size="sm" color="gray">{ready ? money?.format(summary.total) : "—"}</Badge></span>
+        <span className="flex items-center gap-2">{labels.readyIn}<Badge size="sm" color="gray">{ready ? labels.days(summary.days) : "—"}</Badge></span>
+        <span className="flex items-center gap-2">{labels.atRisk}<Badge size="sm" status={ready && summary.risks > 0 ? "warning" : "neutral"}>{ready ? summary.risks : "—"}</Badge></span>
+        {onExport && <Button variant="secondary" size="sm" leadingIcon={Download} disabled={!ready || !rows?.length} onClick={() => onExport(rows!)}>{labels.export}</Button>}
+      </div>
+    </ContainerHeader>
+    <ContainerBody className="p-3">
+      {state === "error" || rows === null ? <div className="space-y-3 p-4"><InlineNotice tone="danger" variant="emphasized" role="alert"><InlineNoticeContent>{errorMessage ?? (rows === null ? labels.invalid : labels.error)}</InlineNoticeContent></InlineNotice>{onRetry && <Button size="sm" variant="secondary" onClick={onRetry}>{labels.retry}</Button>}</div> : <DataTable table={table} showPagination={false} isLoading={state === "loading"} loadingMessage={labels.loading} loadingRowCount={8} emptyState={<Empty reason={filtered ? "no-results" : "no-data"} scope="inline"><EmptyDescription>{filtered ? labels.noResults : labels.empty}</EmptyDescription>{filtered && <EmptyActions><Button size="sm" variant="secondary" onClick={resetFilters}>{labels.reset}</Button></EmptyActions>}</Empty>}>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="w-full min-w-0 sm:w-72"><InputGroup><InputGroupAddon><Search aria-hidden /></InputGroupAddon><InputGroupInput type="search" aria-label={labels.search} placeholder={labels.search} value={search} disabled={state === "loading"} onChange={(event) => { setSearch(event.target.value); revealMatches(); }} />{search && <InputGroupAddon align="inline-end"><InputGroupButton iconOnly aria-label={labels.clearSearch} onClick={() => { setSearch(""); revealMatches(); }}><Close aria-hidden /></InputGroupButton></InputGroupAddon>}</InputGroup></div>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2"><span className="mr-1 text-label text-fg-subtle">{labels.depth}</span><ButtonGroup aria-label={labels.depth}>{([0, 1, 2, "all"] as const).map((value) => <Button key={value} variant="secondary" active={expansion.depth === value} aria-pressed={expansion.depth === value} disabled={state === "loading" || !rows.length} onClick={() => selectDepth(value)}>{value === 0 ? labels.collapse : value === "all" ? labels.all : value}</Button>)}</ButtonGroup></div>
+            <div className="flex items-center gap-2"><Select value={availability} disabled={state === "loading"} onValueChange={(value) => { setAvailability(value as ResourceCostAvailability | "all"); revealMatches(); }}><SelectTrigger aria-label={labels.availability} className="min-w-28" /><SelectContent><SelectItem value="all">{labels.allStatuses}</SelectItem>{statuses.map((status) => <SelectItem key={status} value={status}>{labels[status]}</SelectItem>)}</SelectContent></Select>
+            <DataTableViewOptions table={table} labels={{ customizeColumns: labels.display, dragToReorder: labels.reorderColumns, reorderColumn: labels.reorderColumn, reorderAndToggle: labels.display, showColumn: (name) => `${labels.display} ${name}` }} /></div>
+          </div>
+        </div>
+      </DataTable>}
+    </ContainerBody>
+    <ContainerFooter className="justify-between gap-3">
+      <div className="flex min-w-0 flex-wrap items-center gap-2"><span className="text-body font-medium text-fg-default">{summaryLabel ?? title ?? labels.title}</span><Badge size="sm" variant="dot">{ready ? labels.resources(summary.count) : "—"}</Badge></div>
+      <div className="flex items-center gap-6 tabular-nums"><span className="text-body font-medium text-fg-default">{ready ? money?.format(summary.total) : "—"}</span><span className="text-label text-fg-muted">{ready ? labels.days(summary.days) : "—"}</span></div>
+      {filtered && <p className="w-full text-label text-fg-subtle">{labels.filtered}</p>}
+    </ContainerFooter>
+  </Container>;
+}
+
+
+import type { ComponentPropsWithoutRef } from "react";
+import type { ExpandedState } from "@tanstack/react-table";
+
+export type ResourceCostAvailability = "available" | "reserved" | "provisioning" | "limited";
+export type ResourceCostKind = "cluster" | "pool" | "gpu" | "compute" | "storage" | "network";
+
+export interface ResourceCostItem {
+  /** Stable and unique across the entire tree. */
+  id: string;
+  name: string;
+  code: string;
+  kind: ResourceCostKind;
+  quantity: number;
+  /** Monthly price per unit in the main currency unit. Required for leaves. */
+  unitCost?: number;
+  availability?: ResourceCostAvailability;
+  readyInDays?: number;
+  children?: readonly ResourceCostItem[];
+}
+
+export interface ResourceCostRow extends Omit<ResourceCostItem, "children" | "availability" | "readyInDays"> {
+  availability: ResourceCostAvailability;
+  readyInDays: number;
+  totalCost: number;
+  leafCount: number;
+  riskCount: number;
+  isGroup: boolean;
+  children?: ResourceCostRow[];
+}
+
+export interface ResourceCostLabels {
+  title: string;
+  monthlyCost: string;
+  readyIn: string;
+  atRisk: string;
+  export: string;
+  search: string;
+  clearSearch: string;
+  depth: string;
+  collapse: string;
+  all: string;
+  availability: string;
+  allStatuses: string;
+  display: string;
+  reorderColumns: string;
+  reorderColumn: (name: string) => string;
+  resource: string;
+  code: string;
+  quantity: string;
+  unitCost: string;
+  totalCost: string;
+  available: string;
+  reserved: string;
+  provisioning: string;
+  limited: string;
+  expand: string;
+  collapseRow: string;
+  actions: string;
+  inspect: string;
+  empty: string;
+  noResults: string;
+  reset: string;
+  loading: string;
+  error: string;
+  invalid: string;
+  retry: string;
+  resources: (count: number) => string;
+  days: (count: number) => string;
+  share: (percent: string) => string;
+  filtered: string;
+}
+
+export interface ResourceCostProps extends Omit<ComponentPropsWithoutRef<"div">, "title"> {
+  items: readonly ResourceCostItem[];
+  title?: string;
+  description?: string;
+  summaryLabel?: string;
+  currency?: string;
+  locale?: string;
+  /** Default expansion opens ancestors above this zero-based row depth. */
+  defaultDepth?: number | "all";
+  /** Optional per-resource initial expansion, taking precedence over defaultDepth. */
+  defaultExpanded?: ExpandedState;
+  state?: "ready" | "loading" | "error";
+  errorMessage?: string;
+  labels?: Partial<ResourceCostLabels>;
+  onRetry?: () => void;
+  /** Receives the full calculated tree, regardless of search or expansion. */
+  onExport?: (rows: readonly ResourceCostRow[]) => void;
+  onInspect?: (row: ResourceCostRow) => void;
+}
+
+
+import type { ExpandedState } from "@tanstack/react-table";
+import type { ResourceCostAvailability, ResourceCostItem, ResourceCostKind, ResourceCostRow } from "./resource-cost-types";
+
+const availabilityRank: Record<ResourceCostAvailability, number> = { available: 0, reserved: 1, provisioning: 2, limited: 3 };
+const resourceKinds = new Set<ResourceCostKind>(["cluster", "pool", "gpu", "compute", "storage", "network"]);
+const zero = BigInt(0); const two = BigInt(2); const ten = BigInt(10);
+
+function decimalParts(value: number) {
+  const [mantissa, exponent = "0"] = value.toString().split("e");
+  const [whole, fraction = ""] = mantissa.split(".");
+  return { coefficient: BigInt(whole + fraction), exponent: Number(exponent) - fraction.length };
+}
+
+/** Decimal HALF_UP avoids binary floating-point ties such as 1.005 * 100. */
+function minorCost(quantity: number, unitCost: number, fractionDigits: number) {
+  const quantityParts = decimalParts(quantity);
+  const priceParts = decimalParts(unitCost);
+  const numerator = quantityParts.coefficient * priceParts.coefficient;
+  const exponent = quantityParts.exponent + priceParts.exponent + fractionDigits;
+  if (exponent >= 0) return numerator * ten ** BigInt(exponent);
+  const denominator = ten ** BigInt(-exponent);
+  return (numerator * two + denominator) / (denominator * two);
+}
+
+function mainCurrencyUnits(minor: bigint, fractionDigits: number) {
+  if (minor > BigInt(Number.MAX_SAFE_INTEGER)) throw new Error("Resource cost exceeds supported precision.");
+  const value = Number(minor) / 10 ** fractionDigits;
+  if (minorCost(1, value, fractionDigits) !== minor) throw new Error("Resource cost cannot be represented precisely.");
+  return value;
+}
+
+function validateFractionDigits(fractionDigits: number) {
+  if (!Number.isInteger(fractionDigits) || fractionDigits < 0 || fractionDigits > 20) throw new Error("Invalid currency precision.");
+}
+
+export function getResourceCostTotal(rows: readonly ResourceCostRow[], fractionDigits = 2) {
+  validateFractionDigits(fractionDigits);
+  return mainCurrencyUnits(rows.reduce((sum, row) => sum + minorCost(1, row.totalCost, fractionDigits), zero), fractionDigits);
+}
+
+/** Round leaf prices to currency precision before aggregating. Never sum parent costs again. */
+export function calculateResourceCosts(items: readonly ResourceCostItem[], fractionDigits = 2): ResourceCostRow[] {
+  validateFractionDigits(fractionDigits);
+  const ids = new Set<string>();
+  function visit(item: ResourceCostItem): { row: ResourceCostRow; minor: bigint } {
+    if (typeof item.id !== "string" || !item.id.trim() || ids.has(item.id)) throw new Error("Resource IDs must be unique nonempty strings.");
+    ids.add(item.id);
+    if (typeof item.name !== "string" || typeof item.code !== "string" || !resourceKinds.has(item.kind) ||
+      (item.availability !== undefined && !Object.hasOwn(availabilityRank, item.availability))) throw new Error("Invalid resource type or availability.");
+    if (!Number.isFinite(item.quantity) || item.quantity < 0 ||
+      !Number.isInteger(item.readyInDays ?? 0) || (item.readyInDays ?? 0) < 0) throw new Error("Invalid resource quantity or lead time.");
+    const visitedChildren = item.children?.length ? item.children.map(visit) : undefined;
+    const children = visitedChildren?.map(({ row }) => row);
+    if (!children && (!Number.isFinite(item.unitCost) || item.unitCost! < 0)) throw new Error("Leaf resources require a nonnegative finite unit price.");
+    const minor = visitedChildren
+      ? visitedChildren.reduce((sum, child) => sum + child.minor, zero)
+      : minorCost(item.quantity, item.unitCost!, fractionDigits);
+    const availability = children
+      ? children.reduce<ResourceCostAvailability>((worst, row) => availabilityRank[row.availability] > availabilityRank[worst] ? row.availability : worst, "available")
+      : item.availability ?? "available";
+    const row = { ...item, children, isGroup: Boolean(children), totalCost: mainCurrencyUnits(minor, fractionDigits), availability,
+      readyInDays: children ? children.reduce((max, child) => Math.max(max, child.readyInDays), 0) : item.readyInDays ?? 0,
+      leafCount: children ? children.reduce((sum, row) => sum + row.leafCount, 0) : 1,
+      riskCount: children ? children.reduce((sum, row) => sum + row.riskCount, 0) : Number(availability === "limited" || availability === "provisioning") };
+    return { row, minor };
+  }
+  const visited = items.map(visit);
+  mainCurrencyUnits(visited.reduce((sum, item) => sum + item.minor, zero), fractionDigits);
+  return visited.map(({ row }) => row);
+}
+
+/** Retain matching descendants and their ancestors, without changing original aggregate costs. */
+export function filterResourceCosts(rows: readonly ResourceCostRow[], search: string, availability: ResourceCostAvailability | "all", ancestorMatches = false): ResourceCostRow[] {
+  const term = search.trim().toLocaleLowerCase();
+  return rows.flatMap((row) => {
+    const matchesSearch = ancestorMatches || !term || `${row.name} ${row.code}`.toLocaleLowerCase().includes(term);
+    const children = row.children ? filterResourceCosts(row.children, search, availability, matchesSearch) : undefined;
+    const matchesStatus = availability === "all" || row.availability === availability;
+    if (!children?.length && !(matchesSearch && matchesStatus && !row.isGroup)) return [];
+    return [{ ...row, children }];
+  });
+}
+
+export function resourceCostExpansion(rows: readonly ResourceCostRow[], depth: number | "all"): ExpandedState {
+  if (depth === "all") return true;
+  const maxDepth = depth;
+  const expanded: Record<string, boolean> = {};
+  function visit(items: readonly ResourceCostRow[], level: number) {
+    for (const item of items) {
+      if (item.children?.length && level < maxDepth) {
+        expanded[item.id] = true;
+        visit(item.children, level + 1);
+      }
+    }
+  }
+  visit(rows, 0);
+  return expanded;
+}
+
+
+import type { ResourceCostLabels } from "./resource-cost-types";
+
+export const resourceCostZhLabels: ResourceCostLabels = {
+  title: "算力资源清单", monthlyCost: "月度成本", readyIn: "最长交付", atRisk: "风险资源", export: "导出",
+  search: "搜索资源名称或编号…", clearSearch: "清除搜索", depth: "层级", collapse: "收起", all: "全部",
+  availability: "资源状态", allStatuses: "全部状态", display: "显示", reorderColumns: "拖动以调整列顺序", reorderColumn: (name) => `调整 ${name} 的列顺序`, resource: "资源", code: "编号", quantity: "数量",
+  unitCost: "月单价", totalCost: "月度成本", available: "可用", reserved: "已预留", provisioning: "交付中", limited: "库存紧张",
+  expand: "展开", collapseRow: "收起", actions: "资源操作", inspect: "查看资源详情", empty: "暂无资源", noResults: "没有匹配的资源",
+  reset: "重置筛选", loading: "正在加载资源…", error: "资源加载失败", invalid: "资源配置无效，请检查编号、类型、数量、单价、币种和语言。", retry: "重试",
+  resources: (count) => `${count} 项资源`, days: (count) => count === 0 ? "即刻" : `${count} 天`,
+  share: (percent) => `占整体月度成本 ${percent}`, filtered: "筛选结果保留父级路径，汇总与占比仍按完整清单计算。",
+};
+
+export const resourceCostEnLabels: ResourceCostLabels = {
+  title: "Compute resources", monthlyCost: "Monthly cost", readyIn: "Ready in", atRisk: "At risk", export: "Export",
+  search: "Search resources or IDs…", clearSearch: "Clear search", depth: "Depth", collapse: "Collapse", all: "All",
+  availability: "Availability", allStatuses: "All statuses", display: "Display", reorderColumns: "Drag to reorder columns", reorderColumn: (name) => `Reorder ${name}`, resource: "Resource", code: "ID", quantity: "Qty",
+  unitCost: "Unit / month", totalCost: "Monthly cost", available: "Available", reserved: "Reserved", provisioning: "Provisioning", limited: "Limited capacity",
+  expand: "Expand", collapseRow: "Collapse", actions: "Resource actions", inspect: "Inspect resource", empty: "No resources yet", noResults: "No matching resources",
+  reset: "Reset filters", loading: "Loading resources…", error: "Unable to load resources", invalid: "Invalid resource configuration. Check IDs, types, quantities, prices, currency and locale.", retry: "Retry",
+  resources: (count) => `${count} resources`, days: (count) => count === 0 ? "Now" : `${count}d`,
+  share: (percent) => `${percent} of the complete monthly cost`, filtered: "Matches keep their ancestors. Totals and shares refer to the complete resource list.",
+};
+
+
+import type { ResourceCostItem } from "./resource-cost-types";
+
+export const resourceCostDemoItems: ResourceCostItem[] = [
+  { id: "training", name: "LLM Training Cluster", code: "CLU-100", kind: "cluster", quantity: 1, children: [
+    { id: "h100-pool", name: "H100 GPU Pool", code: "POOL-110", kind: "pool", quantity: 1, children: [
+      { id: "h100-sxm", name: "NVIDIA H100 · 80 GB", code: "GPU-111", kind: "gpu", quantity: 8, unitCost: 12600, availability: "limited", readyInDays: 7 },
+      { id: "training-host", name: "Training Host · 128 vCPU", code: "VM-112", kind: "compute", quantity: 2, unitCost: 2800, availability: "reserved", readyInDays: 3 },
+    ] },
+    { id: "training-storage", name: "NVMe Checkpoint Storage · 4 TB", code: "VOL-113", kind: "storage", quantity: 2, unitCost: 1600, availability: "available", readyInDays: 0 },
+    { id: "training-network", name: "InfiniBand Fabric · 400 Gbps", code: "NET-114", kind: "network", quantity: 1, unitCost: 4600, availability: "provisioning", readyInDays: 5 },
+  ] },
+  { id: "inference", name: "Inference Cluster", code: "CLU-200", kind: "cluster", quantity: 1, children: [
+    { id: "l40-pool", name: "L40S GPU Pool", code: "POOL-210", kind: "pool", quantity: 1, children: [
+      { id: "l40s", name: "NVIDIA L40S · 48 GB", code: "GPU-211", kind: "gpu", quantity: 4, unitCost: 5200, availability: "available", readyInDays: 0 },
+      { id: "inference-host", name: "Inference Host · 64 vCPU", code: "VM-212", kind: "compute", quantity: 2, unitCost: 1800, availability: "available", readyInDays: 0 },
+    ] },
+    { id: "inference-network", name: "Public Bandwidth · 100 Mbps", code: "NET-220", kind: "network", quantity: 2, unitCost: 900, availability: "available", readyInDays: 0 },
+  ] },
+  { id: "fine-tuning", name: "Fine-tuning Workspace", code: "CLU-300", kind: "cluster", quantity: 1, children: [
+    { id: "a100", name: "NVIDIA A100 · 80 GB", code: "GPU-310", kind: "gpu", quantity: 2, unitCost: 8600, availability: "reserved", readyInDays: 2 },
+    { id: "fine-tuning-host", name: "Fine-tuning Host · 32 vCPU", code: "VM-320", kind: "compute", quantity: 1, unitCost: 1200, availability: "available", readyInDays: 0 },
+  ] },
+  { id: "storage", name: "Shared Data Storage", code: "SYS-400", kind: "storage", quantity: 1, children: [
+    { id: "dataset", name: "Dataset Storage · 10 TB", code: "OBJ-410", kind: "storage", quantity: 1, unitCost: 3200, availability: "available", readyInDays: 0 },
+    { id: "backup", name: "Snapshot Backup · 5 TB", code: "OBJ-420", kind: "storage", quantity: 1, unitCost: 1400, availability: "available", readyInDays: 0 },
+  ] },
+  { id: "control", name: "Control Plane", code: "SYS-500", kind: "compute", quantity: 1, children: [
+    { id: "control-host", name: "Controller · 8 vCPU", code: "VM-510", kind: "compute", quantity: 3, unitCost: 480, availability: "available", readyInDays: 0 },
+  ] },
+];

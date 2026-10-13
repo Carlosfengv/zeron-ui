@@ -20,6 +20,8 @@
     "loadingMessage": "Accessible status announced while the table is loading.",
     "loadingRowCount": "Number of placeholder rows shown while loading. Defaults to the current page size.",
     "paginationProps": "Configures the built-in pagination region, including disabled state, labels, page-size options, and outer layout props.",
+    "showPagination": "Whether to render pagination controls. For a complete resource tree, set false and use manualPagination: true to keep all expanded rows visible.",
+    "hierarchy": "Supports getSubRows, getExpandedRowModel, state.expanded and onExpandedChange. Cells can indent by row.depth and use row.getToggleExpandedHandler(). See the Compute Resource Cost block for a complete example.",
     "renderLoadingCell": "Customizes a loading cell using its row index, column index, and TanStack column.",
     "data": "Rows supplied to TanStack Table.",
     "columns": "Column definitions, headers, cells, and filter metadata.",

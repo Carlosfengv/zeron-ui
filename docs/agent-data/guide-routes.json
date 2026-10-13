@@ -86,6 +86,10 @@
       "itemId": "block:project-monitor-01"
     },
     {
+      "path": "blocks/resource-cost-01.md",
+      "itemId": "block:resource-cost-01"
+    },
+    {
       "path": "blocks/resource-detail-page-01.md",
       "itemId": "block:resource-detail-page-01"
     },

@@ -6242,6 +6242,77 @@
       }
     },
     {
+      "name": "resource-cost-01",
+      "type": "registry:block",
+      "title": "算力资源成本",
+      "description": "GPU 集群与云主机的多层级资源成本、占比、交付与容量状态。",
+      "categories": [
+        "application",
+        "analytics",
+        "billing",
+        "tables"
+      ],
+      "dependencies": [
+        "@tanstack/react-table@^8.21.3"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/button-group.json",
+        "https://zeron-ui.vercel.app/r/chart.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/data-table.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/input-group.json",
+        "https://zeron-ui.vercel.app/r/menu-item.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/resource-cost-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-cost-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-cost-01/resource-cost.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/resource-cost-01/resource-cost.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-cost-01/resource-cost-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-cost-01/resource-cost-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-cost-01/resource-cost-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-cost-01/resource-cost-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-cost-01/resource-cost-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-cost-01/resource-cost-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/resource-cost-01/resource-cost-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/resource-cost-01/resource-cost-demo-data.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "plan-usage-01",
       "type": "registry:block",
       "title": "套餐与用量",

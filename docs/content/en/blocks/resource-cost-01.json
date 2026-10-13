@@ -1,0 +1,12 @@
+{
+  "resourceCostBlock": {
+    "title": "Compute Resource Cost",
+    "description": "A chart block combining a resource tree with cost shares. Container, Data Table and DonutSummary display monthly GPU, cloud compute, storage and network costs.",
+    "composition": "Components and styling",
+    "compositionBody": "Container owns the title, monthly cost, delivery lead time, risk count and summary. Data Table supplies rows, column visibility and ordering. DonutSummary shows each group's share of the complete monthly cost. Existing semantic surface, text, divider and status tokens support light and dark themes.",
+    "hierarchy": "Hierarchical tables",
+    "hierarchyBody": "Data Table forwards the public TanStack getSubRows and getExpandedRowModel options for arbitrary nesting. Rows indent by depth; Collapse, 1, 2 and All control expansion. Search and availability filters retain ancestors and reveal matching paths. Leaf costs round to currency precision before aggregation. Filtering and collapsing preserve complete totals and shares.",
+    "integration": "Data and interactions",
+    "integrationBody": "The host supplies a tree with unique IDs, currency, locale and optional action callbacks. onExport receives the complete calculated tree; onInspect receives the complete original resource subtree. Omitted callbacks hide their actions. The demo provides JSON downloads, inspection, loading, empty and retry states. Prices are examples and no live billing service is connected."
+  }
+}
