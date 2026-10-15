@@ -1,6 +1,8 @@
 {
   "heatmapchart": {
-    "description": "Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation",
+    "description": "Composable calendar heatmaps and an hourly matrix extension, sharing chart tokens and keyboard inspection.",
+    "matrix": "HeatmapMatrix: hourly activity",
+    "matrixDescription": "Import HeatmapMatrix from the same heatmap-chart entry for labeled rectangular cells, incident dots, lock indicators and an optional profile slot. Supply equal-length dated bins; zero is idle and NaN is missing. The matrix uses the chart sequential scale (max defaults to 8), semantic 14px body text and an instant theme-color boundary for dense grids. Aggregation and time-zone formatting belong to the host.",
     "basic": "Year calendar and level legend",
     "quarters": "Monday start and quarter separators",
     "sizing": "Fill layout and fixed cells",

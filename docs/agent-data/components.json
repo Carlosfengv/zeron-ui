@@ -45,6 +45,29 @@
       "now/markers 提供现在指示线和事件标记。"
     ]
   },
+  "account-activity-01": {
+    "keywords": [
+      "账号",
+      "活跃度",
+      "额度",
+      "热力图",
+      "account",
+      "activity",
+      "quota",
+      "heatmap"
+    ],
+    "useCases": [
+      "多账号小时活动、周趋势、范围选择与额度周期复盘。"
+    ],
+    "whenNotToUse": [
+      "不提供账号连接、实时采集或额度预测。"
+    ],
+    "keyApi": [
+      "data 提供账号、毫秒时间戳读数、额度周期和耗尽事件。",
+      "query/onQueryChange 或 defaultQuery 控制四种视图、账号、日期和选区。",
+      "locale/timeZone/labels 负责本地化，state/onRetry 负责加载与错误。"
+    ]
+  },
   "plan-usage-01": {
     "keywords": [
       "套餐",
@@ -874,17 +897,23 @@
     "keywords": [
       "heatmap-chart",
       "heatmap",
-      "输入是包含日期格的周列，不是数字矩阵，也不会自动聚合"
+      "输入是包含日期格的周列，不是数字矩阵，也不会自动聚合",
+      "HeatmapMatrix",
+      "hourly matrix",
+      "activity matrix",
+      "incidents"
     ],
     "useCases": [
-      "输入是包含日期格的周列，不是数字矩阵，也不会自动聚合。weekStartDay 只旋转显示行，不改变日期身份。默认 fluid 布局、间隙 2px、圆角 2px、入场 1600ms。阈值保持 <=0、1、2、3、>=4，颜色由 chart-1 与 muted 派生。图表与外部图例传入同一 levelStyles，各实例纹理 ID 隔离。"
+      "输入是包含日期格的周列，不是数字矩阵，也不会自动聚合。weekStartDay 只旋转显示行，不改变日期身份。默认 fluid 布局、间隙 2px、圆角 2px、入场 1600ms。阈值保持 <=0、1、2、3、>=4，颜色由 chart-1 与 muted 派生。图表与外部图例传入同一 levelStyles，各实例纹理 ID 隔离。",
+      "HeatmapMatrix: labeled hourly/category matrices with incident dots, lock indicators and an optional profile."
     ],
     "whenNotToUse": [
       "需要 Recharts 原生 Props 或自动业务聚合。"
     ],
     "keyApi": [
       "Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation. weekStartDay rotates display rows without changing date identity. Default fluid layout, 2px gaps, 2px corners and 1600ms entrance. Thresholds remain <=0, 1, 2, 3, >=4; shades derive from chart-1 and muted. Pass the same levelStyles to cells/chart and external legend. Every instance owns its texture IDs.",
-      "ChartLegend layout/overflow 由 API 配置。"
+      "ChartLegend layout/overflow 由 API 配置。",
+      "HeatmapMatrix is exported from the same heatmap-chart entry. Equal-length HeatmapColumn[] preserves NaN missing values and observed zeroes; columns/rowLabels, points/lockedCells and profile configure composition; max/height/minWidth default to 8/432/0; onCellSelect returns the original bin."
     ]
   },
   "live-line-chart": {

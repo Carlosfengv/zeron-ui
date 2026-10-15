@@ -213,7 +213,7 @@
       "zlrlist": "A ZS Live Recovery protection-group workspace with responsive navigation, Figma-aligned list and detail views.",
       "chart": "Shared trends and donuts with stable series colors, explicit time windows and accessible values.",
       "chart-primitives": "Legends, stable colors, formatters, segmented bars and data tables without a chart engine dependency.",
-      "heatmap-chart": "Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation.",
+      "heatmap-chart": "Composable calendar heatmaps and an hourly matrix extension, sharing chart tokens and keyboard inspection.",
       "live-line-chart": "Point time is Unix seconds.",
       "radar-chart": "Compare normalized metrics across one or more series.",
       "ring-chart": "Display independent progress as concentric rings."

@@ -20,6 +20,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 
 ## Catalog
 
+- [账号活动分析](https://zeron-ui.vercel.app/ai/items/block%3Aaccount-activity-01.md): 多账号活跃度、周趋势、日期范围与额度耗尽分析。 Registry: account-activity-01.
 - [Agent Message Trace](https://zeron-ui.vercel.app/ai/items/block%3Aagent-message-trace-01.md): A responsive, resizable agent trace workspace with a virtualized timeline and span inspector. Registry: agent-message-trace-01.
 - [Agent Session Detail](https://zeron-ui.vercel.app/ai/items/block%3Aagent-session-detail-01.md): A session detail workspace with agent navigation, session switching, and an embedded execution trace. Registry: agent-session-detail-01.
 - [Agent Trace](https://zeron-ui.vercel.app/ai/items/block%3Aagent-trace-01.md): A turn-aware agent execution trace with local JSON upload and raw-record inspection. Registry: agent-trace-01.
@@ -119,7 +120,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Filter Query Core](https://zeron-ui.vercel.app/ai/items/component%3Afilter-query-core.md): Headless parser, serializer, reconciliation logic, and state hook for reusable structured filter text inputs. Registry: filter-query-core.
 - [Filter Query Input](https://zeron-ui.vercel.app/ai/items/component%3Afilter-query-input.md): Structured cmdk query input with configurable fields, aliases, codecs, and portable filter clauses. Registry: filter-query-input.
 - [FunnelChart](https://zeron-ui.vercel.app/ai/items/component%3Afunnel-chart.md): Layered horizontal and vertical funnels with controlled hover, gradients and keyboard navigation. Registry: funnel-chart.
-- [HeatmapChart](https://zeron-ui.vercel.app/ai/items/component%3Aheatmap-chart.md): Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation. Registry: heatmap-chart.
+- [HeatmapChart](https://zeron-ui.vercel.app/ai/items/component%3Aheatmap-chart.md): Composable calendar heatmaps and a HeatmapMatrix extension for labeled hourly activity, incidents and lock indicators. Registry: heatmap-chart.
 - [Info Item](https://zeron-ui.vercel.app/ai/items/component%3Ainfo-item.md): Composable information row with leading media, primary and supporting text, and a flexible trailing value or detail. Registry: info-item.
 - [Inline Notice](https://zeron-ui.vercel.app/ai/items/component%3Ainline-notice.md): Quiet inline emphasis that composes with Badge, with an optional semantic emphasized variant. Registry: inline-notice.
 - [Input](https://zeron-ui.vercel.app/ai/items/component%3Ainput.md): Text input with three variants, five sizes, and accessible validation states. Registry: input.
@@ -183,6 +184,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 
 ## Detailed agent guides
 
+- [account-activity-01](https://zeron-ui.vercel.app/agent-guides/blocks/account-activity-01.md)
 - [agent-message-trace-01](https://zeron-ui.vercel.app/agent-guides/blocks/agent-message-trace-01.md)
 - [ai-gateway-overview-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-overview-01.md)
 - [ai-gateway-session-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-session-list-01.md)

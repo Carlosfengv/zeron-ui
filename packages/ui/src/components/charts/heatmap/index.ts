@@ -16,6 +16,7 @@ export {
   resolveHeatmapEnterFadeDurationSec,
 } from "./heatmap-animation";
 export { HeatmapCells, type HeatmapCellsProps } from "./heatmap-cells";
+export { HeatmapMatrix, type HeatmapMatrixProps, type HeatmapMatrixColumn, type HeatmapMatrixPoint, type HeatmapMatrixProfile } from "./heatmap-matrix";
 export {
   HeatmapChart,
   type HeatmapChartProps,

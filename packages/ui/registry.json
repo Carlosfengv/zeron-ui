@@ -3786,7 +3786,7 @@
       "name": "heatmap-chart",
       "type": "registry:ui",
       "title": "HeatmapChart",
-      "description": "Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation. weekStartDay rotates display rows without changing date identity. Default fluid layout, 2px gaps, 2px corners and 1600ms entrance. Thresholds remain <=0, 1, 2, 3, >=4; shades derive from chart-1 and muted. Pass the same levelStyles to cells/chart and external legend. Every instance owns its texture IDs.",
+      "description": "Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation. weekStartDay rotates display rows without changing date identity. Default fluid layout, 2px gaps, 2px corners and 1600ms entrance. Thresholds remain <=0, 1, 2, 3, >=4; shades derive from chart-1 and muted. Pass the same levelStyles to cells/chart and external legend. Every instance owns its texture IDs. HeatmapMatrix composes labeled rectangular cells, incident markers, lock indicators and an optional profile; it accepts equal-length dated bins and preserves missing observations.",
       "dependencies": [
         "@visx/responsive@4.0.0",
         "tw-animate-css",
@@ -3902,6 +3902,11 @@
           "path": "packages/ui/src/components/charts/heatmap/use-delayed-tooltip-data.ts",
           "type": "registry:ui",
           "target": "components/ui/charts/heatmap/use-delayed-tooltip-data.ts"
+        },
+        {
+          "path": "packages/ui/src/components/charts/heatmap/heatmap-matrix.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/heatmap/heatmap-matrix.tsx"
         }
       ]
     },

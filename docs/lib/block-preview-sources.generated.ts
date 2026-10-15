@@ -11,6 +11,9 @@ const blockPreviewSources = {
   "resource-cost-01": {
     "url": "/docs-source/9400bdbf3f43e7ba3212f086c11fab2acfc04bb22c64a73aaf9bb628c833f88b.txt"
   },
+  "account-activity-01": {
+    "url": "/docs-source/d2360a9da7d040fe88cae14072e6dda3bdffeb4820dcb75ade460023c5ea0b9b.txt"
+  },
   "plan-usage-01": {
     "url": "/docs-source/0794194fd1cb1a3cb63db94bbaf7b865b2d2faa4abcd8a6c9cdc68222ac038d4.txt"
   },

@@ -4,6 +4,7 @@ import type { DocPageLoader } from "./page-loader-types";
 
 export const blockPageLoaders: Record<string, DocPageLoader> = {
   "blocks/usage-timeline-01": () => import("@docs/pages/blocks/usage-timeline-01/page"),
+  "blocks/account-activity-01": () => import("@docs/pages/blocks/account-activity-01/page"),
   "blocks/usage-forecast-01": () => import("@docs/pages/blocks/usage-forecast-01/page"),
   "blocks/resource-cost-01": () => import("@docs/pages/blocks/resource-cost-01/page"),
   "blocks/plan-usage-01": () => import("@docs/pages/blocks/plan-usage-01/page"),

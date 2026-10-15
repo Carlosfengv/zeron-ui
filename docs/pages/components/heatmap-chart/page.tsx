@@ -9,6 +9,7 @@ import { PropsTable } from "@docs/components/content/PropsTable";
 import { ChartDataTable } from "@zeron/ui/chart-primitives";
 import { useTranslations } from "next-intl";
 import { Link } from "@/app/_i18n/navigation";
+import { HeatmapMatrixDemo, heatmapMatrixCode } from "@docs/components/charts/heatmap-matrix-demo";
 
 const rangeStart = new Date(2026, 0, 1);
 const rangeEnd = new Date(2026, 11, 31);
@@ -48,6 +49,7 @@ export default function HeatmapChartDoc() {
     <DocSection title={t("basic") }><figure aria-label={t("basic")} className="min-w-0 w-full"><ComponentPreview code={basicCode} padding="responsive" preservePreview><BasicDemo /></ComponentPreview></figure></DocSection>
     <DocSection title={t("quarters") }><figure aria-label={t("quarters")} className="min-w-0 w-full"><ComponentPreview code={quartersCode} padding="responsive" preservePreview><QuartersDemo /></ComponentPreview></figure></DocSection>
     <DocSection title={t("sizing") }><figure aria-label={t("sizing")} className="min-w-0 w-full"><ComponentPreview code={sizingCode} padding="responsive" preservePreview><SizingDemo /></ComponentPreview></figure></DocSection>
+    <div id="matrix" className="scroll-mt-20"><DocSection title={t("matrix")}><p className="text-body text-fg-muted">{t("matrixDescription")}</p><ComponentPreview code={heatmapMatrixCode} padding="responsive" preservePreview><HeatmapMatrixDemo /></ComponentPreview></DocSection></div>
     <DocSection title={t("patterns") }><figure aria-label={t("patterns")} className="min-w-0 w-full"><ComponentPreview code={patternsCode} padding="responsive" preservePreview><PatternsDemo /></ComponentPreview></figure></DocSection>
     <DocSection title={t("range") }><figure aria-label={t("range")} className="min-w-0 w-full"><ComponentPreview code={rangeCode} padding="responsive" preservePreview><RangeDemo /></ComponentPreview></figure></DocSection>
     <DocSection title={t("loading") }><figure aria-label={t("loading")} className="min-w-0 w-full"><ComponentPreview code={loadingCode} padding="responsive" preservePreview><LoadingDemo /></ComponentPreview></figure></DocSection>

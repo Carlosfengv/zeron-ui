@@ -28,8 +28,8 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(140);
-    expect(detailDocEntries).toHaveLength(140);
+    expect(pageDocEntries).toHaveLength(141);
+    expect(detailDocEntries).toHaveLength(141);
     expect(pageDocEntries.find((entry) => entry.slug === "usage-forecast-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "usage-timeline-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "time-window-timeline")?.collection).toBe("components");
@@ -38,7 +38,7 @@ describe("documentation manifest", () => {
     expect(pageDocEntries.some((entry) => entry.slug === "availability-monitor-01")).toBe(false);
     expect(pageDocEntries.find((entry) => entry.slug === "website-analytics-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "sales-conversion-funnel-01")?.collection).toBe("blocks");
-    expect(legacyDocRedirects).toHaveLength(81);
+    expect(legacyDocRedirects).toHaveLength(82);
     expect(pageDocEntries.some(entry => entry.slug === "error-state" || entry.slug === "status-indicator")).toBe(false);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });
@@ -54,6 +54,8 @@ describe("documentation manifest", () => {
     expect(["line-chart", "area-chart", "bar-chart", "pie-chart", "heatmap-chart", "live-line-chart", "radar-chart", "ring-chart", "funnel-chart"].every(slug => charts.find(entry => entry.slug === slug)?.registryItem?.name === slug)).toBe(true);
     expect(pageDocEntries.some(entry => entry.slug === "donut-chart")).toBe(false);
     expect(legacyDocRedirects.find(entry => entry.legacySlug === "donut-chart")?.destination).toEqual({ collection: "components", slug: "pie-chart" });
+    expect(pageDocEntries.some(entry => entry.slug === "activity-matrix-chart")).toBe(false);
+    expect(legacyDocRedirects.find(entry => entry.legacySlug === "activity-matrix-chart")?.destination).toEqual({ collection: "components", slug: "heatmap-chart" });
     expect(pageDocEntries.some((entry) => entry.slug === "status-bar-chart")).toBe(false);
   });
 

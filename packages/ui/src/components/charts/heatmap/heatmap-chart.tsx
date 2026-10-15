@@ -87,6 +87,8 @@ export interface HeatmapChartProps {
    * `fill` — expands cells to fill the parent.
    */
   layout?: HeatmapLayout;
+  /** In fill layout, size row height and column width independently. Fixed binSize takes precedence. */
+  stretchCells?: boolean;
   /** Chart margins */
   margin?: Partial<Margin>;
   /** Fixed cell size in pixels. When 0, cells are square and sized to fit the plot. Default: 0 */
@@ -149,6 +151,7 @@ function computeHeatmapDimensions({
   rowCount,
   binSize,
   layout,
+  stretchCells,
   separator,
 }: {
   width: number;
@@ -158,6 +161,7 @@ function computeHeatmapDimensions({
   rowCount: number;
   binSize: number;
   layout: HeatmapLayout;
+  stretchCells: boolean;
   separator: Pick<HeatmapSeparatorLayout, "spacing" | "atColumns"> | null;
 }) {
   const innerWidth = Math.max(width - margin.left - margin.right, 0);
@@ -178,6 +182,9 @@ function computeHeatmapDimensions({
     const cellSize = Math.max((innerWidth - totalSpacing) / columnCount, 0);
     binWidth = cellSize;
     binHeight = cellSize;
+  } else if (stretchCells) {
+    binWidth = Math.max((innerWidth - totalSpacing) / columnCount, 0);
+    binHeight = availableHeight / rowCount;
   } else {
     const cellSize = Math.min(
       Math.max((innerWidth - totalSpacing) / columnCount, 0),
@@ -223,6 +230,7 @@ interface HeatmapChartInnerProps {
   binSize: number;
   gap: number;
   layout: HeatmapLayout;
+  stretchCells: boolean;
   colorScale: (count: number | null | undefined) => string;
   fillScale: (count: number | null | undefined) => string;
   levelStyles: HeatmapLevelStyles;
@@ -257,6 +265,7 @@ function HeatmapChartInner({
   binSize,
   gap,
   layout,
+  stretchCells,
   colorScale,
   fillScale,
   levelStyles,
@@ -325,12 +334,14 @@ function HeatmapChartInner({
         rowCount,
         binSize,
         layout,
+        stretchCells,
         separator: separatorLayout,
       }),
     [
       binSize,
       columnCount,
       layout,
+      stretchCells,
       margin,
       parentHeight,
       rowCount,
@@ -672,6 +683,7 @@ export function HeatmapChart({
   xDomain,
   sizingColumnCount,
   layout = "fluid",
+  stretchCells = false,
   margin: marginProp,
   binSize = 0,
   gap = 2,
@@ -711,8 +723,8 @@ export function HeatmapChart({
     [colorScaleProp, levelStyles]
   );
   const fillScale = useMemo(
-    () => buildHeatmapFillScale(levelStyles, scope),
-    [levelStyles, scope]
+    () => colorScaleProp && !levelStylesProp ? colorScaleProp : buildHeatmapFillScale(levelStyles, scope),
+    [colorScaleProp, levelStylesProp, levelStyles, scope]
   );
 
   const { chartPhase, isLoaded, revealEpoch, revealMode, animateCells } =
@@ -737,8 +749,12 @@ export function HeatmapChart({
         className
       )}
       data-slot="heatmap-chart"
+      data-theme-transition="instant"
       ref={parentRef}
-      style={{ aspectRatio, "--zeron-chart-surface": `var(--surface-${surface})` } as React.CSSProperties}
+      // Hundreds of cells should resolve CSS theme colors in one paint instead
+      // of joining the host's per-element color cross-fade. Enter/hover motion
+      // remains owned by the heatmap lifecycle and is unaffected.
+      style={{ aspectRatio, "--zeron-chart-surface": `var(--surface-${surface})`, "--zeron-theme-color-duration": "0ms" } as React.CSSProperties}
     >
       <ChartSourceData data={sourceRows} />
           <HeatmapChartInner
@@ -758,6 +774,7 @@ export function HeatmapChart({
             height={parentHeight}
             isLoaded={isLoaded}
             layout={layout}
+            stretchCells={stretchCells}
             levelStyles={levelStyles}
             loadingCellMaxOpacity={loadingCellMaxOpacity}
             loadingCellRandomness={loadingCellRandomness}

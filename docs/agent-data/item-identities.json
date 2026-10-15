@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "items": [
     { "id": "block:usage-forecast-01", "type": "registry", "key": "usage-forecast-01", "aliases": ["usage-forecast-01"], "status": "active", "retirementReason": null },
+    {"id": "component:activity-matrix-chart", "type": "registry", "key": "activity-matrix-chart", "aliases": ["activity-matrix-chart"], "status": "retired", "retirementReason": "Merged into heatmap-chart; use the HeatmapMatrix extension from the heatmap-chart entry."},
+    {"id": "block:account-activity-01", "type": "registry", "key": "account-activity-01", "aliases": ["account-activity-01"], "status": "active", "retirementReason": null},
     {
       "id": "block:usage-timeline-01",
       "type": "registry",

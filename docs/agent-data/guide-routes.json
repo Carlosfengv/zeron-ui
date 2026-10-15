@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "routes": [
+    {"path": "blocks/account-activity-01.md", "itemId": "block:account-activity-01"},
     {
       "path": "blocks/agent-message-trace-01.md",
       "itemId": "block:agent-message-trace-01"

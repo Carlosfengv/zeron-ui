@@ -131,7 +131,7 @@ export const docEntries = [
   entry({ slug: "area-chart", section: "charts", icon: "doc-data-grid", name: "AreaChart", description: "Reference area charts with overlapping series, gradients and brush selection.", isNew: true, gridSize: "large", order: 200, registryItem: { name: "area-chart", type: "registry:ui" } }),
   entry({ slug: "bar-chart", section: "charts", icon: "doc-data-grid", name: "BarChart", description: "Vertical and horizontal bar charts for category comparisons.", isNew: true, gridSize: "large", order: 300, registryItem: { name: "bar-chart", type: "registry:ui" } }),
   entry({ slug: "pie-chart", section: "charts", icon: "doc-data-grid", name: "PieChart", description: "Pie and donut charts with center summaries, legends and explicit unassigned totals.", isNew: true, gridSize: "medium", order: 400, registryItem: { name: "pie-chart", type: "registry:ui" } }),
-  entry({ slug: "heatmap-chart", section: "charts", icon: "doc-data-grid", name: "HeatmapChart", description: "Input is week columns containing dated bins, not a numeric matrix or an automatic aggregation.", isNew: true, gridSize: "large", order: 510, registryItem: { name: "heatmap-chart", type: "registry:ui" } }),
+  entry({ slug: "heatmap-chart", section: "charts", icon: "doc-data-grid", name: "HeatmapChart", description: "Composable calendar heatmaps and a HeatmapMatrix extension for labeled hourly activity, incidents and lock indicators.", isNew: true, gridSize: "large", order: 510, registryItem: { name: "heatmap-chart", type: "registry:ui" } }),
   entry({ slug: "live-line-chart", section: "charts", icon: "doc-data-grid", name: "LiveLineChart", description: "Point time is Unix seconds.", isNew: true, gridSize: "large", order: 515, registryItem: { name: "live-line-chart", type: "registry:ui" } }),
   entry({ slug: "radar-chart", section: "charts", icon: "doc-data-grid", name: "RadarChart", description: "Compare multiple series across normalized metrics with configurable grid, axes and labels.", isNew: true, gridSize: "medium", order: 520, registryItem: { name: "radar-chart", type: "registry:ui" } }),
   entry({ slug: "ring-chart", section: "charts", icon: "doc-data-grid", name: "RingChart", description: "Independent concentric progress rings with center summaries and linked legends.", isNew: true, gridSize: "medium", order: 525, registryItem: { name: "ring-chart", type: "registry:ui" } }),
@@ -215,6 +215,7 @@ export const docEntries = [
   blockEntry({ slug: "deployment-detail-01", section: "application", icon: "doc-card", name: "部署详情", description: "网站预览、域名、来源与部署阶段检查结果。", registryItem: { name: "deployment-detail-01", type: "registry:block" }, isNew: true, order: 36.8 }),
   blockEntry({ slug: "usage-forecast-01", section: "application", icon: "doc-data-table", name: "账户用量预测", description: "多账户额度预测、耗尽风险与近期用量趋势。", registryItem: { name: "usage-forecast-01", type: "registry:block" }, isNew: true, order: 36.52 }),
   blockEntry({ slug: "credit-usage-01", section: "application", icon: "doc-card", name: "Credit Usage", description: "A compact credit-cycle summary with model attribution, depletion guidance, and plan controls.", registryItem: { name: "credit-usage-01", type: "registry:block" }, isNew: true, order: 36.5 }),
+  blockEntry({ slug: "account-activity-01", section: "application", icon: "doc-data-table", name: "账号活动分析", description: "多账号活跃度、周趋势、日期范围与额度耗尽分析。", registryItem: { name: "account-activity-01", type: "registry:block" }, isNew: true, order: 36.52 }),
   blockEntry({ slug: "plan-usage-01", section: "application", icon: "doc-card", name: "套餐与用量", description: "套餐、周期用量、限额、付款方式与历史账单。", registryItem: { name: "plan-usage-01", type: "registry:block" }, isNew: true, order: 36.51 }),
   blockEntry({ slug: "storage-usage-01", section: "application", icon: "doc-card", name: "Storage Usage", description: "A compact storage summary with category segments, remaining capacity, and a wrapping legend.", registryItem: { name: "storage-usage-01", type: "registry:block" }, isNew: true, order: 36.6 }),
   blockEntry({ slug: "personal-usage-01", section: "application", icon: "doc-data-table", name: "个人使用情况", description: "A standalone dashboard for calls, activity, and token usage.", registryItem: { name: "personal-usage-01", type: "registry:block" }, isNew: true, order: 37 }),
@@ -246,6 +247,7 @@ export const legacyDocRedirects: readonly DocLegacyRedirect[] = [
     .map(({ slug }) => ({ legacySlug: slug, destination: { collection: "components" as const, slug } })),
   { legacySlug: "tabs-subtle", destination: { collection: "components", slug: "tabs" } },
   { legacySlug: "donut-chart", destination: { collection: "components", slug: "pie-chart" } },
+  { legacySlug: "activity-matrix-chart", destination: { collection: "components", slug: "heatmap-chart" } },
 ];
 
 export const navigationDocEntries = docEntries.filter((entry) => !entry.hideFromNavigation);

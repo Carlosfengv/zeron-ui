@@ -1,0 +1,12 @@
+{
+  "accountActivityBlock": {
+    "title": "Account Activity",
+    "description": "A multi-account activity and quota workspace with hourly matrices, weekly comparisons, date-range inspection and account profiles.",
+    "composition": "Composition",
+    "compositionBody": "Card, Tabs, Select, Slider, Button and Tooltip retain Zeron styles. The HeatmapMatrix extension of HeatmapChart provides rectangular hourly cells, axes, incidents and lock indicators. Native AreaChart, LineChart and ChartBrush render trends and shared range selections. Heatmaps and usage windows reuse the chart-1 sequential scale; trends use chart-1 and chart-2, quota incidents use chart-7, and selections follow the brand color. Dense charts update theme colors together without per-cell cross-fades. Provider logos belong to the demo and can be supplied through account.logo.",
+    "data": "Data and integration",
+    "dataBody": "Supply accounts, timestamped activity samples, quota windows with percentage readings, and run-out events with unlock times. All timestamps are epoch milliseconds and the period end is exclusive. Zero activity is idle; null is missing. The host chooses the reporting timezone and supplies the observations. Days, weekly boundaries and range-slider steps follow that timezone, including daylight saving changes. Account rows use independent scales, support fractional units and skip locked or invalid samples. Overlapping lock intervals are merged for duration totals; carried locks remain distinct from run-out events. The demo contains deterministic example data and no external account connections.",
+    "behavior": "Behavior",
+    "behaviorBody": "Switch Matrix, Weeks, Range and By Account; filter an account or day type; expand quota windows; drag any range lane to update the shared selection; or adjust both range slider handles with the keyboard. In Range, account names toggle inclusion in the detail panel. Pass query and onQueryChange for controlled integration, or defaultQuery for local state. Empty, loading, error and retry states are available. Charts support keyboard inspection and native tooltips. Dense charts scroll locally on narrow screens while the controls wrap."
+  }
+}
