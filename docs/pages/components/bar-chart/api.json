@@ -18,6 +18,12 @@
     "description": "Chart margins"
   },
   {
+    "name": "BarChart.yDomain",
+    "type": "ChartYDomain",
+    "default": "—",
+    "description": "Optional value bounds. Real observations and stacked totals remain visible."
+  },
+  {
     "name": "BarChart.animationDuration",
     "type": "number",
     "default": "1100",
@@ -406,6 +412,12 @@
     "type": "string",
     "default": "\"\"",
     "description": "Additional class name for the container."
+  },
+  {
+    "name": "BarXAxis.labelClassName",
+    "type": "string",
+    "default": "text-label",
+    "description": "Public typography slot for category labels. Default: text-label."
   },
   {
     "name": "BarXAxis.formatLabel",

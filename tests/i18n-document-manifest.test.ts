@@ -28,8 +28,9 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(139);
-    expect(detailDocEntries).toHaveLength(139);
+    expect(pageDocEntries).toHaveLength(140);
+    expect(detailDocEntries).toHaveLength(140);
+    expect(pageDocEntries.find((entry) => entry.slug === "usage-forecast-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "usage-timeline-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "time-window-timeline")?.collection).toBe("components");
     expect(pageDocEntries.find((entry) => entry.slug === "plan-usage-01")?.collection).toBe("blocks");

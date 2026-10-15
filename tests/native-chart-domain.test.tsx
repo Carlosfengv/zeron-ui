@@ -51,6 +51,26 @@ it("scales stacked bars to their sum and positions reference annotations on the 
   expect(Number(lines[1].getAttribute("x1"))).toBeCloseTo(260);
 });
 
+it.each(["vertical", "horizontal"] as const)("retains a higher allowance line and real outliers with %s bar value bounds", async (orientation) => {
+  const chart = (value: number, domain: [number, number]) => <BarChart data={[{ name: "A", value }]} orientation={orientation} yDomain={domain} animationDuration={0}><Bar dataKey="value" animate={false} /><ReferenceLine y={22} /><DomainProbe /></BarChart>;
+  const view = render(chart(12, [0, 25]));
+  await settle();
+  expect(JSON.parse(view.getByTestId("domain").textContent!)[1]).toBeGreaterThanOrEqual(25);
+  expect(view.container.querySelectorAll('[data-slot="chart-reference-line"] line')).toHaveLength(1);
+  view.rerender(chart(40, [0, 25]));
+  await settle();
+  expect(JSON.parse(view.getByTestId("domain").textContent!)[1]).toBeGreaterThanOrEqual(40);
+  view.rerender(chart(0, [0, 1]));
+  await settle();
+  expect(JSON.parse(view.getByTestId("domain").textContent!)).toEqual([0, 1]);
+});
+
+it("keeps stacked totals visible when explicit bar bounds are smaller", async () => {
+  const view = render(<BarChart data={[{ name: "A", first: 60, second: 40 }]} stacked yDomain={[0, 50]} animationDuration={0}><Bar dataKey="first" animate={false} /><Bar dataKey="second" animate={false} /><DomainProbe /></BarChart>);
+  await settle();
+  expect(JSON.parse(view.getByTestId("domain").textContent!)[1]).toBeGreaterThanOrEqual(100);
+});
+
 it("expands explicit area bounds to stacked totals while retaining bounds for missing observations", async () => {
   const chart = (first: number | null, second: number | null) => <AreaChart data={[{ date: "2026-10-01", first, second }]} yDomain={[0, 80]} animationDuration={0} yDomainTween={false}><Area dataKey="first" stackId="total" animate={false} /><Area dataKey="second" stackId="total" animate={false} /><DomainProbe /></AreaChart>;
   const view = render(chart(60, 40));

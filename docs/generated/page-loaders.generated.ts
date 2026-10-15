@@ -6,6 +6,7 @@ export type { DocPageModule, DocPageLoader } from "./page-loader-types";
 export const pageLoaders: Record<string, DocPageLoader> = {
   "blocks/usage-timeline-01": () => import("@docs/pages/blocks/usage-timeline-01/page"),
   "components/time-window-timeline": () => import("@docs/pages/components/time-window-timeline/page"),
+  "blocks/usage-forecast-01": () => import("@docs/pages/blocks/usage-forecast-01/page"),
   "blocks/resource-cost-01": () => import("@docs/pages/blocks/resource-cost-01/page"),
   "blocks/plan-usage-01": () => import("@docs/pages/blocks/plan-usage-01/page"),
   "components/file-type": () => import("@docs/pages/components/file-type/page"),

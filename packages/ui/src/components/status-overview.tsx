@@ -73,8 +73,10 @@ interface StatusOverviewBaseProps
   variant?: "card" | "activity" | "chart";
   /** Per-status colors for chart mode. Defaults to chart-1 through chart-4 and a neutral unknown state. */
   chartColors?: StatusOverviewChartColors;
+  /** Optional chart rail height in pixels. Card and activity retain their defaults. */
+  railHeight?: number;
   ariaLabel: string;
-  /** Pass null in activity mode for a full-width rail with results below it. */
+  /** Null allows a rail-only chart, or a full-width activity rail with results below. */
   label: ReactNode;
   rangeLabel?: ReactNode;
   summary?: StatusOverviewSummary;
@@ -135,7 +137,8 @@ function StatusSegmentRail({
   content,
   variant,
   chartColors,
-}: Pick<StatusOverviewProps, "ariaLabel" | "content" | "variant" | "chartColors">) {
+  railHeight,
+}: Pick<StatusOverviewProps, "ariaLabel" | "content" | "variant" | "chartColors" | "railHeight">) {
   const activity = variant === "activity";
   const chart = variant === "chart";
   const items = content.items;
@@ -281,6 +284,7 @@ function StatusSegmentRail({
           role="grid"
           tabIndex={0}
           className={cn("relative min-w-0 cursor-crosshair outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-focus-ring", activity ? "h-6" : "h-control-md")}
+          style={railHeight === undefined ? undefined : { height: railHeight }}
         >
           <div
             data-slot="status-overview-rail-row"
@@ -371,11 +375,14 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
     className,
     variant = "card",
     chartColors,
+    railHeight,
     ...sectionProps
   } = props;
   const state = stateProp ?? "ready";
   const activity = variant === "activity";
   const chart = variant === "chart";
+  const showHeader = !chart || label != null || rangeLabel != null || summary != null;
+  const resolvedRailHeight = chart && typeof railHeight === "number" && Number.isFinite(railHeight) && railHeight > 0 ? railHeight : undefined;
   const unlabeledActivity = activity && label == null && rangeLabel == null;
   const loading = state === "loading";
   const unavailable = state === "unavailable" || state === "error";
@@ -402,7 +409,7 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
       )}
     >
       <div className={cn(activity && "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2", activity && !unlabeledActivity && (trailing ? "@xl/status:grid-cols-[6rem_minmax(0,1fr)_auto]" : "@sm/status:grid-cols-[6rem_minmax(0,1fr)_3rem]"))}>
-      <div data-slot="status-overview-header" className={activity ? "contents" : "flex min-w-0 flex-wrap items-start justify-between gap-x-4 gap-y-2"}>
+      {showHeader && <div data-slot="status-overview-header" className={activity ? "contents" : "flex min-w-0 flex-wrap items-start justify-between gap-x-4 gap-y-2"}>
         {!unlabeledActivity && <div className={cn("flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5", activity && "col-start-1 row-start-1")}>
           <span data-slot="status-overview-label" className={activity ? "break-words font-mono text-label uppercase text-fg-subtle" : "font-medium text-body text-fg-default"}>{label}</span>
           {rangeLabel && <span data-slot="status-overview-range" className="text-body text-fg-subtle">{rangeLabel}</span>}
@@ -418,18 +425,18 @@ const StatusOverview = forwardRef<HTMLElement, StatusOverviewProps>((props, ref)
             )}
           </div>
         )}
-      </div>
+      </div>}
 
       {activity && trailing && !unavailable && (
         <div data-slot="status-overview-trailing" className={cn("col-span-2 flex min-w-0 flex-wrap items-center justify-end gap-2", unlabeledActivity ? "row-start-2" : "row-start-3 @xl/status:col-span-1 @xl/status:col-start-3 @xl/status:row-start-1")}>
           {loading ? <Skeleton className="h-6 w-24 rounded" /> : trailing}
         </div>
       )}
-      <div className={cn("min-w-0", activity && "col-span-2", activity && (unlabeledActivity ? "row-start-1" : "row-start-2"), activity && !unlabeledActivity && (trailing ? "@xl/status:col-span-1 @xl/status:col-start-2 @xl/status:row-start-1" : "@sm/status:col-span-1 @sm/status:col-start-2 @sm/status:row-start-1"), chart ? "mt-5" : !activity && "mt-3")}>
-        {loading && <Skeleton data-slot="status-overview-skeleton" className={cn("rounded-sm", activity ? "h-6" : "h-control-md")} />}
-        {showRail && <StatusSegmentRail ariaLabel={ariaLabel} content={content} variant={variant} chartColors={chartColors} />}
+      <div className={cn("min-w-0", activity && "col-span-2", activity && (unlabeledActivity ? "row-start-1" : "row-start-2"), activity && !unlabeledActivity && (trailing ? "@xl/status:col-span-1 @xl/status:col-start-2 @xl/status:row-start-1" : "@sm/status:col-span-1 @sm/status:col-start-2 @sm/status:row-start-1"), chart ? showHeader && "mt-5" : !activity && "mt-3")}>
+        {loading && <Skeleton data-slot="status-overview-skeleton" className={cn("rounded-sm", activity ? "h-6" : "h-control-md")} style={resolvedRailHeight === undefined ? undefined : { height: resolvedRailHeight }} />}
+        {showRail && <StatusSegmentRail ariaLabel={ariaLabel} content={content} variant={variant} chartColors={chartColors} railHeight={resolvedRailHeight} />}
         {showData && empty && (
-          <div data-slot="status-overview-state-message" role="status" className="grid min-h-control-md place-items-center text-label text-fg-subtle">
+          <div data-slot="status-overview-state-message" role="status" className="grid min-h-control-md place-items-center text-label text-fg-subtle" style={resolvedRailHeight === undefined ? undefined : { minHeight: resolvedRailHeight }}>
             {emptyContent}
           </div>
         )}

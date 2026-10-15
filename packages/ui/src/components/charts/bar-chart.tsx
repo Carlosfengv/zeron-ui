@@ -16,6 +16,7 @@ import {
 } from "react";
 import { ChartSourceData } from "./chart-source-data";
 import { chartKeyboardIndex } from "./chart-keyboard";
+import { resolveChartYDomain, type ChartYDomain } from "./chart-domain";
 import { useSurface } from "#system/surface-context";
 import { cn } from "#system/utils";
 import { DEFAULT_ANIMATION_EASING } from "./animation";
@@ -66,6 +67,8 @@ export interface BarChartProps {
   xDataKey?: string;
   /** Chart margins */
   margin?: Partial<Margin>;
+  /** Optional value bounds. Real observations and stacked totals remain visible. */
+  yDomain?: ChartYDomain;
   /** Animation duration in milliseconds. Default: 1100 */
   animationDuration?: number;
   /** CSS easing for bar grow transitions. */
@@ -156,6 +159,7 @@ interface ChartInnerProps {
   data: Record<string, unknown>[];
   xDataKey: string;
   margin: Margin;
+  yDomain?: ChartYDomain;
   animationDuration: number;
   animationEasing: string;
   enterTransition?: Transition;
@@ -187,6 +191,7 @@ const ChartCore = memo(function ChartCore({
   data,
   xDataKey,
   margin,
+  yDomain,
   animationDuration,
   animationEasing,
   enterTransition,
@@ -274,7 +279,7 @@ const ChartCore = memo(function ChartCore({
           max = sum;
         }
       }
-      return max || 100;
+      return max;
     }
     // For grouped bars, find max single value
     let max = 0;
@@ -286,7 +291,7 @@ const ChartCore = memo(function ChartCore({
         }
       }
     }
-    return max || 100;
+    return max;
   }, [data, lines, stacked]);
 
   // Value scale (linear) - for the value axis
@@ -294,10 +299,10 @@ const ChartCore = memo(function ChartCore({
     const range = isHorizontal ? [0, innerWidth] : [innerHeight, 0];
     return scaleLinear({
       range,
-      domain: [0, maxValue * 1.1],
+      domain: resolveChartYDomain([0, maxValue], [0, (maxValue || 100) * 1.1], yDomain),
       nice: true,
     });
-  }, [innerWidth, innerHeight, maxValue, isHorizontal]);
+  }, [innerWidth, innerHeight, maxValue, isHorizontal, yDomain]);
 
   const yScales = useMemo(() => {
     if (isHorizontal) {
@@ -325,10 +330,10 @@ const ChartCore = memo(function ChartCore({
             }
           }
         }
-        return [0, (max || 100) * 1.1];
+        return resolveChartYDomain([0, max], [0, (max || 100) * 1.1], yDomain);
       },
     });
-  }, [data, innerHeight, isHorizontal, lines, valueScale, stacked]);
+  }, [data, innerHeight, isHorizontal, lines, valueScale, stacked, yDomain]);
 
   const primaryYScale = getPrimaryYScale(yScales, valueScale);
 
@@ -689,6 +694,7 @@ export function BarChart({
   data,
   xDataKey = "name",
   margin: marginProp,
+  yDomain,
   animationDuration = 1100,
   animationEasing = DEFAULT_ANIMATION_EASING,
   enterTransition,
@@ -731,6 +737,7 @@ export function BarChart({
             enterTransition={reducedMotion ? {duration:0} : enterTransition}
             height={height}
             margin={margin}
+            yDomain={yDomain}
             onPhaseChange={onPhaseChange}
             orientation={orientation}
             revealSignature={revealSignature}

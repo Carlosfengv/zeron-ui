@@ -500,6 +500,10 @@ async function verifyNextBuild({ consumer, component }) {
       '',
     ].join("\n"),
   };
+  examples["usage-forecast-01"] = [
+    'import { UsageForecast, usageForecastDemoAccounts, usageForecastDemoNow } from "@/components/blocks/usage-forecast-01";',
+    'export default function Page() { return <UsageForecast accounts={usageForecastDemoAccounts} now={usageForecastDemoNow} />; }',
+  ].join("\n");
   examples["context-window-01"] = [
     '"use client";',
     'import { ContextWindow, createContextWindowDemoData } from "@/components/blocks/context-window-01";',
@@ -817,6 +821,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { ContextWindow, createContextWindowDemoData } from "@/src/components/blocks/context-window-01";',
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<ContextWindow data={createContextWindowDemoData()} />);',
+  ].join("\n");
+  examples["usage-forecast-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { UsageForecast, usageForecastDemoAccounts, usageForecastDemoNow } from "@/src/components/blocks/usage-forecast-01";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<UsageForecast accounts={usageForecastDemoAccounts} now={usageForecastDemoNow} />);',
   ].join("\n");
   examples["fleet-health-01"] = [
     'import { createRoot } from "react-dom/client";',

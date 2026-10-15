@@ -6335,6 +6335,81 @@
       }
     },
     {
+      "name": "usage-forecast-01",
+      "type": "registry:block",
+      "title": "账户用量预测",
+      "description": "多账户额度预测、耗尽时间、重置周期与近期消耗趋势。",
+      "categories": [
+        "application",
+        "analytics",
+        "billing"
+      ],
+      "dependencies": [
+        "@lobehub/icons@^5.16.0",
+        "@visx/curve@4.0.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/area-chart.json",
+        "https://zeron-ui.vercel.app/r/bar-chart.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/line-chart.json",
+        "https://zeron-ui.vercel.app/r/skeleton.json",
+        "https://zeron-ui.vercel.app/r/status-overview.json",
+        "https://zeron-ui.vercel.app/r/table.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/usage-forecast-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/usage-forecast-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/usage-forecast-01/usage-forecast.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/usage-forecast-01/usage-forecast.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/usage-forecast-01/usage-forecast-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/usage-forecast-01/usage-forecast-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/usage-forecast-01/usage-forecast-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/usage-forecast-01/usage-forecast-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/usage-forecast-01/usage-forecast-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/usage-forecast-01/usage-forecast-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/usage-forecast-01/usage-forecast-charts.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/usage-forecast-01/usage-forecast-charts.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/usage-forecast-01/usage-forecast-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/usage-forecast-01/usage-forecast-demo-data.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "resource-cost-01",
       "type": "registry:block",
       "title": "算力资源成本",

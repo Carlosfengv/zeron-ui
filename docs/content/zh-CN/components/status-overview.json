@@ -61,13 +61,14 @@
     "staleMessage": "数据更新于 8 分钟前。",
     "errorMessage": "无法加载服务状态历史。",
     "p0": "整个状态区域及其唯一键盘 Rail 的无障碍名称。",
-    "p1": "显示在左上角的主标签。activity 模式中传 null 并省略 rangeLabel，轨道独占首行，结果显示在下方。",
+    "p1": "显示在左上角的主标签。activity 模式中传 null 并省略 rangeLabel，轨道独占首行，结果显示在下方。chart 模式中传 null，且无 rangeLabel 或 summary 时，省略标题及其间距，适合行内展示。",
     "p2": "显示在主标签旁的可选时间范围或辅助标签。",
     "p3": "由调用方计算的汇总标签、数值和语义状态色。",
     "p4": "带统一 epoch 范围和等时长桶的 Timeline，或有序的当前节点快照。",
     "p5": "当前数据模式没有 item 时显示的已本地化内容。",
     "p6": "控制数据可用性和加载状态的呈现。",
     "p7": "stale、unavailable 和 error 状态必填的已本地化说明。",
-    "p10": "chart 模式的状态颜色覆盖：默认正常为 var(--chart-1)、降级为 var(--chart-2)、中断为 var(--chart-3)、维护为 var(--chart-4)，未知为中性色。支持部分覆盖，例如将 operational 设置为 var(--chart-5)；空桶保留中性纹理，card／activity 保留语义状态色。"
+    "p10": "chart 模式的状态颜色覆盖：默认正常为 var(--chart-1)、降级为 var(--chart-2)、中断为 var(--chart-3)、维护为 var(--chart-4)，未知为中性色。支持部分覆盖，例如将 operational 设置为 var(--chart-5)；空桶保留中性纹理，card／activity 保留语义状态色。",
+    "p11": "可选的 chart 轨道高度，单位 px，须为有限正数；表格单元格可传 20。同步作用于正常轨道、加载占位及空态最小高度。省略或传入非法值时沿用默认尺寸；card 和 activity 保持原尺寸。"
   }
 }

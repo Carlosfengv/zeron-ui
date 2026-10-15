@@ -3,6 +3,7 @@
 import { useReducedMotion } from "motion/react";
 import { memo, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { cn } from "#system/utils";
 import { useChartStable, useYScale } from "./chart-context";
 import { DEFAULT_Y_DOMAIN_TWEEN_MS } from "./chart-phase";
 import { LINE_LOADING_PULSE_EASE } from "./line-loading-timing";
@@ -17,6 +18,8 @@ import {
 const Y_AXIS_POSITION_TWEEN_MS = DEFAULT_Y_DOMAIN_TWEEN_MS;
 
 export interface YAxisProps {
+  /** Public typography slot for value labels. Default: text-label. */
+  labelClassName?: string;
   /** Explicit value ticks, retaining the chart's scale. */
   tickValues?: number[];
   /** Scale group id (Recharts `yAxisId`). Default: `"left"`. */
@@ -94,6 +97,7 @@ export function YAxis(props: YAxisProps) {
 }
 
 const YAxisInner = memo(function YAxisInner({
+  labelClassName,
   tickValues: requestedTicks,
   yAxisId,
   orientation = "left",
@@ -160,7 +164,7 @@ const YAxisInner = memo(function YAxisInner({
             }}
           >
             <span
-              className="text-fg-subtle text-label"
+              className={cn("text-fg-subtle text-label", labelClassName)}
               style={tick.labelColor ? { color: tick.labelColor } : undefined}
             >
               {tick.label}

@@ -52,6 +52,9 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "usage-timeline-01": () => import("./UsageTimelineDemo").then(({ UsageTimelineDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={1500} canvasWidth={1240}><UsageTimelineDemo /></ResponsivePreview>,
   })),
+  "usage-forecast-01": () => import("./UsageForecastDemo").then(({ UsageForecastDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={1280} canvasWidth={1500}><UsageForecastDemo /></ResponsivePreview>,
+  })),
   "resource-cost-01": () => import("./ResourceCostDemo").then(({ ResourceCostDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={800} canvasWidth={1400}><ResourceCostDemo /></ResponsivePreview>,
   })),

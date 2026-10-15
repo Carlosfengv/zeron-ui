@@ -61,13 +61,14 @@
     "staleMessage": "Updated 8 minutes ago.",
     "errorMessage": "Could not load service status history.",
     "p0": "Accessible name for the complete status region and its single keyboard rail.",
-    "p1": "Primary label displayed at the upper left. In activity mode, pass null and omit rangeLabel to let the rail fill the first row, with results below.",
+    "p1": "Primary label displayed at the upper left. In activity mode, pass null and omit rangeLabel to let the rail fill the first row, with results below. In chart mode, null with no rangeLabel or summary omits the header and its gap for inline rails.",
     "p2": "Optional time-range or supporting label beside the primary label.",
     "p3": "Caller-computed summary label, value, and semantic status tone.",
     "p4": "Timeline with a shared epoch range and equal-duration buckets, or an ordered current-node snapshot.",
     "p5": "Localized content rendered whenever the active data mode has no items.",
     "p6": "Controls data availability and loading presentation.",
     "p7": "Required localized explanation for stale, unavailable, and error states.",
-    "p10": "Per-status color overrides in chart mode. Defaults: operational var(--chart-1), degraded var(--chart-2), down var(--chart-3), maintenance var(--chart-4), and neutral unknown. Supports partial overrides, such as setting operational to var(--chart-5). Empty buckets retain their neutral texture; card/activity retain semantic status colors."
+    "p10": "Per-status color overrides in chart mode. Defaults: operational var(--chart-1), degraded var(--chart-2), down var(--chart-3), maintenance var(--chart-4), and neutral unknown. Supports partial overrides, such as setting operational to var(--chart-5). Empty buckets retain their neutral texture; card/activity retain semantic status colors.",
+    "p11": "Optional positive, finite chart rail height in pixels, such as 20 for table cells. Applies to ready rails, loading placeholders and empty-state minimum height. Omitted or invalid values retain the variant default; card and activity keep their existing sizes."
   }
 }
