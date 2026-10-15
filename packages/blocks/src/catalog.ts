@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "usage-forecast-01", title: "账户用量预测", description: "多账户额度预测、耗尽时间、重置周期与近期消耗趋势。", categories: ["application", "analytics", "billing"], dependencies: ["area-chart", "bar-chart", "button", "card", "chart-core", "icon-context", "inline-notice", "line-chart", "skeleton", "status-overview", "table", "tabs", "utils", "@lobehub/icons", "@visx/curve@4.0.0"] },
   { name: "resource-cost-01", title: "算力资源成本", description: "GPU 集群与云主机的多层级资源成本、占比、交付与容量状态。", categories: ["application", "analytics", "billing", "tables"], dependencies: ["badge", "button", "button-group", "chart", "container", "data-table", "dropdown", "empty", "icon-context", "inline-notice", "input-group", "menu-item", "select", "utils", "@tanstack/react-table"] },
   { name: "plan-usage-01", title: "套餐与用量", description: "套餐、周期用量、限额、付款方式与历史账单的订阅管理区块。", categories: ["application", "billing", "settings"], dependencies: ["badge", "bar-chart", "button", "chart-core", "chart-primitives", "card", "icon-context", "inline-notice", "slider", "switch", "table", "utils", "@hugeicons/react", "@hugeicons/core-free-icons"] },
   { name: "context-window-01", title: "上下文窗口", description: "上下文容量、提示词缓存、分类 token 矩阵与内容查看。", categories: ["application", "agent", "monitoring"], dependencies: ["badge","button","container","inline-notice","tabs","tooltip","icon-context","utils"] },

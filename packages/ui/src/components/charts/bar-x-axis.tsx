@@ -7,6 +7,8 @@ import { cn } from "#system/utils";
 import { useChart, useChartStable } from "./chart-context";
 
 export interface BarXAxisProps {
+  /** Public typography slot for category labels. Default: text-label. */
+  labelClassName?: string;
   /** Format category labels without changing category identity or ordering. */
   formatLabel?: (value: string, point: Record<string, unknown>) => string;
   /** Width of the date ticker box for fade calculation. Default: 50 */
@@ -18,6 +20,7 @@ export interface BarXAxisProps {
 }
 
 interface BarXAxisLabelProps {
+  labelClassName?: string;
   label: string;
   x: number;
   crosshairX: number | null;
@@ -26,6 +29,7 @@ interface BarXAxisLabelProps {
 }
 
 function BarXAxisLabel({
+  labelClassName,
   label,
   x,
   crosshairX,
@@ -59,7 +63,7 @@ function BarXAxisLabel({
     >
       <motion.span
         animate={{ opacity }}
-        className={cn("whitespace-nowrap text-fg-subtle text-label")}
+        className={cn("whitespace-nowrap text-fg-subtle text-label", labelClassName)}
         initial={{ opacity: 1 }}
         transition={{ duration: 0.4, ease: "easeInOut" }}
       >
@@ -90,6 +94,7 @@ export function BarXAxis(props: BarXAxisProps) {
 }
 
 const BarXAxisInner = memo(function BarXAxisInner({
+  labelClassName,
   formatLabel,
   tickerHalfWidth = 50,
   showAllLabels = false,
@@ -139,6 +144,7 @@ const BarXAxisInner = memo(function BarXAxisInner({
     <div className="pointer-events-none absolute inset-0">
       {labelsToShow.map((item) => (
         <BarXAxisLabel
+          labelClassName={labelClassName}
           crosshairX={crosshairX}
           isHovering={isHovering}
           key={`${item.label}-${item.x}`}

@@ -21,6 +21,8 @@ registry_import: "@/components/ui/bar-chart"
 
 数值必须有限且非负；非法值保留在原始数据，不生成柱形或污染数值域。barGap 是 band 比例（0.2），barWidth、groupGap、stackGap 使用像素。默认四边 40px、入场 1100ms、圆头、grow 动画。纵深辅助层不重复注册系列。
 
+`BarChart.yDomain` 可指定数值范围，例如 `[0, 25]` 为额度参考线留出空间；支持数字和 `dataMin` / `dataMax`。纵向和横向柱图都使用同一数值域，真实观察值与堆叠总量超出指定范围时自动扩展，不裁切数据。省略时保留自动范围；参考线本身不自动扩展数值域，宿主需将阈值纳入范围。
+
 图表只有一个键盘入口，方向键／Home／End 查看，Escape 清除。原始数据表负责可访问的数值说明。图例 layout／overflow 由调用 API 控制，不添加布局选择控件。共享 Tooltip 从 chart-core 导入，避免和旧 Recharts 契约混用。
 
 受控时间范围示例额外安装 `area-chart chart-brush empty`。BarChart 使用分类轴，没有 `xDomain` API；不可将 ChartBrush 直接放入 BarChart 来选择真实日期。宿主持有 `ChartBrushSelection | null`，通过真实时间戳按 start/end 包含边界过滤主图 data，再按同一时区格式化分类标签。下方 AreaChart 保留完整数据，组合 `ChartBrush selection={selection} onSelectionChange={setSelection}`。清除时恢复全部原始数据，未命中观察值时展示 Empty，不补零；原始数据表同步当前范围。示例使用 UTC 日期，导航条 80px、上下 margin=8、blurPx=0，轨道边框与选区外中性色沿用组件默认行为。

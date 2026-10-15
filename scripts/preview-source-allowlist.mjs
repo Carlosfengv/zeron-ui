@@ -1,5 +1,14 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "usage-forecast-01": [
+    "packages/blocks/src/application/usage-forecast-01/index.ts",
+    "packages/blocks/src/application/usage-forecast-01/usage-forecast.tsx",
+    "packages/blocks/src/application/usage-forecast-01/usage-forecast-types.ts",
+    "packages/blocks/src/application/usage-forecast-01/usage-forecast-data.ts",
+    "packages/blocks/src/application/usage-forecast-01/usage-forecast-labels.ts",
+    "packages/blocks/src/application/usage-forecast-01/usage-forecast-charts.tsx",
+    "packages/blocks/src/application/usage-forecast-01/usage-forecast-demo-data.ts"
+  ],
   "resource-cost-01": [
     "packages/blocks/src/application/resource-cost-01/index.ts",
     "packages/blocks/src/application/resource-cost-01/resource-cost.tsx",

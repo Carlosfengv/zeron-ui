@@ -1,0 +1,12 @@
+{
+  "usageForecastBlock": {
+    "title": "Account Usage Forecast",
+    "description": "A multi-account quota forecast with timeline and table views, depletion alerts, reset markers and account-level usage charts.",
+    "composition": "Components and styling",
+    "compositionBody": "Card, Tabs, Table and native Zeron LineChart and BarChart compose the block. Chart colors take priority: chart-1 for usage, chart-2 for projections, chart-6 for neutral guides, chart-7 for depletion and chart-3 for over-allowance bars. The primary series falls back to the brand token. Legends and tooltips share series colors; semantic surface, text and divider tokens support light and dark themes.",
+    "interaction": "Views and account details",
+    "interactionBody": "Switch between Forecast and Table while keeping the selected account. Sort any table column. The Used column reuses StatusOverview capsule bars: 25 quota increments show approximate usage alongside the exact percentage and even-pace marker. Choose a row to update usage history, projected depletion, lockout duration and recent daily consumption. On narrower screens details stack below the list, with horizontal scrolling contained inside the timeline or table.",
+    "integration": "Data and integration",
+    "integrationBody": "Supply unique account IDs, usage percentages, quota windows and an explicit snapshot time. The block calculates linear forecasts from recent daily rates or elapsed-window averages. View, selection and sorting support controlled state and callbacks. Hosts own account connections and data fetching. The demo includes loading, empty and retry states and uses fixed example data."
+  }
+}

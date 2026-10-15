@@ -1,0 +1,673 @@
+export { UsageForecast } from "./usage-forecast";
+export { usageForecastDemoAccounts, usageForecastDemoNow } from "./usage-forecast-demo-data";
+export { usageForecastEnLabels, usageForecastZhLabels } from "./usage-forecast-labels";
+export type { UsageForecastAccount, UsageForecastDay, UsageForecastHistoryPoint, UsageForecastLabels, UsageForecastProjection, UsageForecastProps, UsageForecastProvider, UsageForecastSort, UsageForecastSortKey, UsageForecastView } from "./usage-forecast-types";
+
+
+"use client";
+
+import { useId, useMemo, useState } from "react";
+import ClaudeColor from "@lobehub/icons/es/Claude/components/Color";
+import CursorMono from "@lobehub/icons/es/Cursor/components/Mono";
+import GithubCopilotMono from "@lobehub/icons/es/GithubCopilot/components/Mono";
+import GrokMono from "@lobehub/icons/es/Grok/components/Mono";
+import GeminiColor from "@lobehub/icons/es/Gemini/components/Color";
+import OpenAIMono from "@lobehub/icons/es/OpenAI/components/Mono";
+import { Button } from "@zeron/ui/button";
+import { Card } from "@zeron/ui/card";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { Skeleton } from "@zeron/ui/skeleton";
+import { StatusOverview } from "@zeron/ui/status-overview";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@zeron/ui/table";
+import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { ForecastLegendItem, UsageForecastDaily, UsageForecastTrend, usageForecastColors, usageForecastHatch } from "./usage-forecast-charts";
+import { projectUsageAccount, sortUsageProjections, USAGE_FORECAST_DAY as DAY, validateUsageForecast } from "./usage-forecast-data";
+import { usageForecastEnLabels } from "./usage-forecast-labels";
+import type { UsageForecastAccount, UsageForecastLabels, UsageForecastProjection, UsageForecastProps, UsageForecastSort, UsageForecastSortKey } from "./usage-forecast-types";
+
+const logos = { anthropic: ClaudeColor, cursor: CursorMono, github: GithubCopilotMono, xai: GrokMono, google: GeminiColor, openai: OpenAIMono };
+
+function AccountLogo({ account, large = false }: { account: UsageForecastAccount; large?: boolean }) {
+  const Fallback = useIcon("brain");
+  const Logo = account.provider ? logos[account.provider] : null;
+  return <span aria-hidden="true" className={cn("flex shrink-0 items-center justify-center text-fg-default", large ? "size-8" : "size-5")}>
+    {account.logo ?? (Logo ? <Logo size={large ? 28 : 20} /> : <Fallback size={large ? 28 : 20} />)}
+  </span>;
+}
+
+function unavailableLabel(projection: UsageForecastProjection, labels: UsageForecastLabels) {
+  return projection.account.status === "disconnected" ? labels.reconnect : labels.tooEarly;
+}
+
+function TimelineStrip({ projection, now, labels }: { projection: UsageForecastProjection; now: number; labels: UsageForecastLabels }) {
+  const start = now - DAY / 5;
+  const span = DAY * 7;
+  const { account, runsOutAt, dailyRate, available } = projection;
+  const resetPosition = (account.resetsAt - start) / span * 100;
+  const outPosition = runsOutAt === null ? null : (runsOutAt - start) / span * 100;
+  return <span className="relative flex h-10 gap-0.5" aria-hidden="true">
+    {Array.from({ length: 28 }, (_, index) => {
+      const timestamp = start + (index + 0.5) / 28 * span;
+      const newWindow = timestamp >= account.resetsAt || !available;
+      const locked = !newWindow && runsOutAt !== null && timestamp >= runsOutAt;
+      const used = Math.max(0, Math.min(100, account.usedPercent + (dailyRate ?? 0) * (timestamp - now) / DAY));
+      const tone = used < 25 ? 25 : used < 50 ? 45 : used < 75 ? 65 : 85;
+      return <span key={index} className={cn("min-w-0 flex-1 rounded-sm", newWindow && "border border-dotted border-border")}
+        style={newWindow ? undefined : locked ? usageForecastHatch : { backgroundColor: `color-mix(in oklab, ${usageForecastColors.used} ${tone}%, transparent)` }} />;
+    })}
+    <span className="absolute -inset-y-1 border-l border-dashed border-fg-subtle opacity-50" style={{ left: `${DAY / 5 / span * 100}%` }} />
+    {available && resetPosition > 0 && resetPosition < 100 && <span className="absolute -inset-y-1 border-l-2 border-fg-muted" style={{ left: `${resetPosition}%` }}>
+      <span className="absolute left-1 top-3 whitespace-nowrap rounded-sm bg-surface-floating/80 px-1 text-body text-fg-muted">{labels.reset}</span>
+    </span>}
+    {outPosition !== null && outPosition >= 0 && outPosition <= 100 && <span className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface-floating" style={{ left: `${outPosition}%`, backgroundColor: usageForecastColors.out }} />}
+  </span>;
+}
+
+function ForecastTimeline({ projections, selectedId, onSelect, now, labels, time, percent, date, detailId, locale, timeZone }: {
+  projections: readonly UsageForecastProjection[]; selectedId?: string; onSelect: (account: UsageForecastAccount) => void;
+  now: number; labels: UsageForecastLabels; time: (n: number) => string; percent: (n: number) => string; date: (n: number) => string;
+  detailId: string; locale: string; timeZone: string;
+}) {
+  const weekday = new Intl.DateTimeFormat(locale, { weekday: "short", timeZone });
+  return <div className="min-w-0">
+    <div className="overflow-x-auto pb-1">
+      <div className="min-w-[660px]">
+        <div className="grid grid-cols-[152px_minmax(0,1fr)_154px] items-end gap-3 pb-2 text-body text-fg-subtle">
+          <span />
+          <div className="relative pt-5"><span className="absolute left-0 top-0 text-fg-default">{labels.now}</span><div className="flex justify-between">{Array.from({ length: 8 }, (_, i) => <span key={i}>{weekday.format(now + i * DAY)}</span>)}</div></div>
+        </div>
+        {projections.map((projection) => <button key={projection.account.id} type="button" aria-pressed={selectedId === projection.account.id}
+          aria-controls={detailId} onClick={() => onSelect(projection.account)}
+          className={cn("grid w-full grid-cols-[152px_minmax(0,1fr)_154px] items-center gap-3 border-b-hairline border-border-subtle px-2 py-2.5 text-left transition-colors duration-fast hover:bg-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring",
+            selectedId === projection.account.id && "bg-selection", !projection.available && "text-fg-subtle")}>
+          <span className="flex min-w-0 items-center gap-2.5"><AccountLogo account={projection.account} /><span className="truncate text-body" title={projection.account.name}>{projection.account.name}</span></span>
+          <TimelineStrip projection={projection} now={now} labels={labels} />
+          <span className="min-w-0 text-body">
+            <span className={cn("block truncate", projection.runsOutAt === null && "text-fg-subtle")}>
+              {!projection.available ? unavailableLabel(projection, labels) : projection.runsOutAt !== null ? `${labels.runsOut} ${time(projection.runsOutAt)}` : `~${percent(projection.projectedPercent ?? 0)} ${labels.atReset}`}
+            </span>
+            {projection.available && <span className="mt-0.5 block truncate text-body text-fg-subtle">{labels.resets} {date(projection.account.resetsAt)}{projection.account.resetsAt > now + DAY * 7 ? " →" : ""}</span>}
+          </span>
+        </button>)}
+      </div>
+    </div>
+    <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-body text-fg-subtle">
+      <span className="flex flex-wrap items-center gap-1.5">{labels.projectedUse}{[25, 45, 65, 85].map((tone) => <span key={tone} aria-hidden className="h-2 w-3 rounded-sm" style={{ backgroundColor: `color-mix(in oklab, ${usageForecastColors.used} ${tone}%, transparent)` }} />)}{labels.under} 25, 50, 75, 100%</span>
+      <ForecastLegendItem kind="out">{labels.runsOut}</ForecastLegendItem><ForecastLegendItem kind="locked">{labels.locked}</ForecastLegendItem>
+      <span className="inline-flex items-center gap-1.5"><span aria-hidden className="h-3 border-l-2 border-fg-muted" />{labels.reset}</span>
+      <span className="inline-flex items-center gap-1.5"><span aria-hidden className="h-2 w-3 rounded-sm border border-dotted border-border" />{labels.newWindow}</span>
+      <span className="text-label">{labels.assumption} {labels.selectRow}</span>
+    </div>
+  </div>;
+}
+
+function AccountUsageMeter({ projection, labels, percent }: {
+  projection: UsageForecastProjection; labels: UsageForecastLabels; percent: (value: number) => string;
+}) {
+  const { account, elapsedPercent } = projection;
+  const value = percent(account.usedPercent);
+  const filled = Math.round(account.usedPercent / 4);
+  const items = Array.from({ length: 25 }, (_, index) => {
+    const label = `${account.name} · ${labels.used} ${value} · ${percent(index * 4)}–${percent((index + 1) * 4)}`;
+    return {
+      id: `${account.id}-quota-${index}`,
+      status: index < filled ? "operational" as const : "unknown" as const,
+      ariaLabel: label,
+      tooltip: <span className="text-body">{label}</span>,
+    };
+  });
+  return <div className="flex items-center gap-3 tabular-nums">
+    <span className="w-9 shrink-0">{value}</span>
+    <div className="relative w-64">
+    <StatusOverview variant="chart" label={null} railHeight={20} ariaLabel={`${account.name} · ${labels.used} ${value}`}
+      chartColors={{ operational: usageForecastColors.used, unknown: "color-mix(in oklab, var(--chart-6) 35%, transparent)" }}
+      content={{ type: "nodes", items }} emptyContent={labels.empty} />
+    <span aria-hidden className="pointer-events-none absolute inset-y-0 border-l-2 border-fg-muted" style={{ left: `${elapsedPercent}%` }} />
+    </div>
+  </div>;
+}
+
+function UsageTable({ projections, selectedId, onSelect, sort, onSort, detailId, labels, percent, number, time, duration, now }: {
+  projections: readonly UsageForecastProjection[]; selectedId?: string; onSelect: (account: UsageForecastAccount) => void;
+  sort: UsageForecastSort; onSort: (key: UsageForecastSortKey) => void; detailId: string; labels: UsageForecastLabels;
+  percent: (n: number) => string; number: (n: number) => string; time: (n: number) => string; duration: (n: number) => string; now: number;
+}) {
+  const ChevronUp = useIcon("chevron-up");
+  const ChevronDown = useIcon("chevron-down");
+  const columns: { key: UsageForecastSortKey; label: string }[] = [{ key: "account", label: labels.account }, { key: "used", label: labels.used }, { key: "pace", label: labels.pace }, { key: "outcome", label: labels.outcome }, { key: "reset", label: labels.resets }];
+  return <div className="min-w-0">
+    <div className="overflow-x-auto">
+      <Table className="min-w-[760px]" aria-label={labels.table}>
+        <TableHeader><TableRow>{columns.map((column) => <TableHead key={column.key} aria-sort={sort.key === column.key ? sort.direction === "asc" ? "ascending" : "descending" : "none"}>
+          <Button variant="ghost" size="md" onClick={() => onSort(column.key)} trailingIcon={sort.key === column.key ? sort.direction === "asc" ? ChevronUp : ChevronDown : undefined}
+            aria-label={`${column.label}${sort.key === column.key ? `, ${sort.direction}` : ""}`}>{column.label}</Button>
+        </TableHead>)}</TableRow></TableHeader>
+        <TableBody>{projections.map((projection, index) => <TableRow key={projection.account.id} index={index}
+          onClick={() => onSelect(projection.account)}
+          className={cn("cursor-pointer", selectedId === projection.account.id && "bg-selection", !projection.available && "text-fg-subtle")}>
+          <TableCell><button type="button" className="flex min-w-0 items-center gap-2.5 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus-ring" aria-pressed={selectedId === projection.account.id} aria-controls={detailId} onClick={(event) => { event.stopPropagation(); onSelect(projection.account); }}>
+            <AccountLogo account={projection.account} /><span>{projection.account.name}</span>
+          </button></TableCell>
+          <TableCell><AccountUsageMeter projection={projection} labels={labels} percent={percent} /></TableCell>
+          <TableCell><span className={cn("tabular-nums", projection.pace !== null && projection.pace > 1 && "text-fg-warning")}>
+            {projection.pace === null ? labels.unknown : `${number(projection.pace)}x`}</span></TableCell>
+          <TableCell><span className={cn("inline-flex items-center gap-2 tabular-nums", projection.runsOutAt === null && "text-fg-subtle")}>
+            {projection.runsOutAt !== null && <span aria-hidden className="size-2 rounded-full" style={{ backgroundColor: usageForecastColors.out }} />}
+            {!projection.available ? unavailableLabel(projection, labels) : projection.runsOutAt !== null ? time(projection.runsOutAt) : `~${percent(projection.projectedPercent ?? 0)}`}
+          </span></TableCell>
+          <TableCell className="whitespace-nowrap text-fg-muted">{labels.in} {duration(projection.account.resetsAt - now)}</TableCell>
+        </TableRow>)}</TableBody>
+      </Table>
+    </div>
+    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-body text-fg-subtle">
+      <ForecastLegendItem kind="out">{labels.locked}</ForecastLegendItem><ForecastLegendItem kind="even">{labels.evenPace}</ForecastLegendItem>
+      <span><span className="text-fg-warning">1.2x</span> {labels.pace}</span><span className="text-label">{labels.sortHint}</span>
+    </div>
+  </div>;
+}
+
+function AccountDetail({ projection, view, labels, now, percent, number, date, time, duration, id }: {
+  projection: UsageForecastProjection; view: string; labels: UsageForecastLabels; now: number;
+  percent: (n: number) => string; number: (n: number) => string; date: (n: number) => string; time: (n: number) => string; duration: (n: number) => string; id: string;
+}) {
+  const { account } = projection;
+  const alignCharts = view === "table" && projection.available;
+  const usageSummary = labels.usedIn(percent(account.usedPercent), percent(projection.elapsedPercent));
+  const header = <div><div className="flex items-center gap-2.5"><AccountLogo account={account} large /><div className="min-w-0"><h3 className="break-words text-title font-medium text-fg-default">{account.name}</h3>{account.description && <p className="mt-0.5 text-body text-fg-subtle">{account.description}</p>}</div></div>
+    <p className={cn("mt-3 text-body text-fg-muted", alignCharts && "@3xl/forecast:hidden")}>{usageSummary}</p></div>;
+  const metrics = <dl className="grid grid-cols-3 gap-3 text-body"><div><dt className="text-body text-fg-subtle">{labels.pace}</dt><dd className="mt-1 font-medium tabular-nums">{projection.pace === null ? "—" : `${number(projection.pace)}x ${labels.even}`}</dd></div>
+    <div><dt className="text-body text-fg-subtle">{projection.runsOutAt !== null ? labels.runsOut : labels.atReset}</dt><dd className="mt-1 font-medium tabular-nums">{projection.runsOutAt !== null ? time(projection.runsOutAt) : projection.projectedPercent !== null ? `~${percent(projection.projectedPercent)}` : "—"}</dd></div>
+    <div><dt className="text-body text-fg-subtle">{labels.locked}</dt><dd className="mt-1 font-medium tabular-nums">{projection.runsOutAt !== null ? duration(projection.lockedMs) : "—"}</dd></div></dl>;
+  return <section id={id} aria-label={account.name} data-slot="usage-forecast-detail" className={cn("min-w-0", view === "forecast" ? "border-t-hairline border-border-subtle pt-5 @5xl/forecast:border-l-hairline @5xl/forecast:border-t-0 @5xl/forecast:pl-5 @5xl/forecast:pt-0" : "mt-6 border-t-hairline border-border-subtle pt-5")}>
+    <div className={cn("grid gap-6", view === "table" && "@3xl/forecast:grid-cols-2 @3xl/forecast:gap-8")}>
+      {/* Shared rows keep headers, usage summaries, plots and legends aligned. */}
+      <div className={cn("flex min-w-0 flex-col gap-5", alignCharts && "@3xl/forecast:row-span-4 @3xl/forecast:grid @3xl/forecast:grid-rows-subgrid")}>{header}
+        {projection.available ? <UsageForecastTrend projection={projection} now={now} labels={labels} percent={percent} date={date} time={time} duration={duration} alignCharts={alignCharts} usageSummary={usageSummary} />
+          : <div className="flex h-56 items-center justify-center rounded-xl border-hairline border-dashed border-border p-5 text-center text-body text-fg-subtle">{unavailableLabel(projection, labels)}</div>}
+      </div>
+      <div className={cn("flex min-w-0 flex-col gap-6", alignCharts && "@3xl/forecast:row-span-4 @3xl/forecast:grid @3xl/forecast:grid-rows-subgrid @3xl/forecast:gap-y-5")}>{metrics}
+        {projection.available ? <div className={cn(view === "forecast" ? "border-t-hairline border-border-subtle pt-5" : "@3xl/forecast:contents")}><UsageForecastDaily projection={projection} labels={labels} number={number} alignCharts={alignCharts} /></div>
+          : <p className="text-body text-fg-subtle">{labels.noForecast}</p>}
+      </div>
+    </div>
+  </section>;
+}
+
+/** Multi-account quota forecasts with switchable timeline/table and shared detail. */
+export function UsageForecast({ accounts, now, locale = "en-US", timeZone = "UTC", labels: suppliedLabels,
+  view: controlledView, defaultView = "forecast", onViewChange, selectedAccountId, defaultSelectedAccountId, onAccountSelect,
+  sort: controlledSort, defaultSort = { key: "outcome", direction: "asc" }, onSortChange,
+  state = "ready", errorMessage, onRetry, className, ...props }: UsageForecastProps) {
+  const [localView, setLocalView] = useState(defaultView);
+  const [localSelected, setLocalSelected] = useState(defaultSelectedAccountId);
+  const [localSort, setLocalSort] = useState(defaultSort);
+  const detailId = useId(); const titleId = useId();
+  const labels = useMemo(() => ({ ...usageForecastEnLabels, ...suppliedLabels }), [suppliedLabels]);
+  const view = controlledView ?? localView; const sort = controlledSort ?? localSort;
+  const valid = useMemo(() => validateUsageForecast(accounts, now), [accounts, now]);
+  const projections = useMemo(() => valid ? accounts.map((account) => projectUsageAccount(account, now)) : [], [accounts, now, valid]);
+  const sorted = useMemo(() => sortUsageProjections(projections, sort, locale), [projections, sort, locale]);
+  const atRisk = useMemo(() => projections.filter((item) => item.runsOutAt !== null).sort((a, b) => a.runsOutAt! - b.runsOutAt!), [projections]);
+  const hasPending = projections.some((item) => !item.available);
+  const selected = projections.find((item) => item.account.id === (selectedAccountId ?? localSelected)) ?? atRisk[0] ?? projections[0];
+  const formats = useMemo(() => ({
+    percent: new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }),
+    number: new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+    date: new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", timeZone }),
+    time: new Intl.DateTimeFormat(locale, { weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone }),
+  }), [locale, timeZone]);
+  const percent = (value: number) => formats.percent.format(value / 100);
+  const number = (value: number) => formats.number.format(value);
+  const date = (value: number) => formats.date.format(value);
+  const time = (value: number) => formats.time.format(value);
+  const duration = (value: number) => {
+    const hours = Math.floor(Math.max(0, value) / 3_600_000);
+    if (hours < 1) return `<1 ${labels.hours}`;
+    if (hours < 48) return `${hours} ${labels.hours}`;
+    return `${Math.floor(hours / 24)} ${labels.days}${hours % 24 ? ` ${hours % 24} ${labels.hours}` : ""}`;
+  };
+  const select = (account: UsageForecastAccount) => { if (selectedAccountId === undefined) setLocalSelected(account.id); onAccountSelect?.(account); };
+  const changeSort = (key: UsageForecastSortKey) => { const next: UsageForecastSort = { key, direction: sort.key === key && sort.direction === "asc" ? "desc" : "asc" }; if (controlledSort === undefined) setLocalSort(next); onSortChange?.(next); };
+  const error = state === "error" || !valid;
+
+  return <section aria-labelledby={titleId} className={cn("@container/forecast w-full min-w-0 text-body", className)} {...props}>
+    <Card className="rounded-3xl border-hairline border-border bg-surface-floating p-4 shadow-raised sm:p-6">
+      <Tabs color="default" variant="pill" value={view} onValueChange={(value) => { const next = value === "table" ? "table" : "forecast"; if (controlledView === undefined) setLocalView(next); onViewChange?.(next); }}>
+        <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0"><h2 id={titleId} className="text-heading font-semibold tracking-tight text-fg-default">{state === "loading" ? labels.loading : error || !accounts.length || (!atRisk.length && hasPending) ? labels.forecast : labels.title(atRisk.length)}</h2>
+            {state === "ready" && !error && accounts.length > 0 && <p className="mt-1 text-body text-fg-subtle">{atRisk[0] ? labels.summary(atRisk[0].account.name, time(atRisk[0].runsOutAt!), duration(atRisk[0].lockedMs)) : hasPending ? labels.pendingSummary ?? usageForecastEnLabels.pendingSummary : labels.healthySummary}</p>}</div>
+          <TabsList aria-label={labels.view}><TabItem value="forecast" label={labels.forecast} /><TabItem value="table" label={labels.table} /></TabsList>
+        </header>
+        {state === "loading" ? <div role="status" aria-label={labels.loading} className="space-y-3 py-3">{Array.from({ length: 7 }, (_, i) => <Skeleton key={i} className="h-10 w-full" />)}</div>
+          : error ? <InlineNotice role="alert" variant="emphasized" tone="danger"><InlineNoticeContent>{errorMessage ?? labels.invalid}</InlineNoticeContent>{onRetry && <Button variant="secondary" onClick={onRetry}>{labels.retry}</Button>}</InlineNotice>
+            : !accounts.length ? <p className="py-16 text-center text-body text-fg-subtle">{labels.empty}</p>
+              : <>
+                <TabPanel value="forecast"><div className="grid gap-6 @5xl/forecast:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)]">
+                  <ForecastTimeline projections={sorted} selectedId={selected?.account.id} onSelect={select} now={now} labels={labels} time={time} percent={percent} date={date} detailId={detailId} locale={locale} timeZone={timeZone} />
+                  {selected && view === "forecast" && <AccountDetail id={detailId} projection={selected} view={view} labels={labels} now={now} percent={percent} number={number} date={date} time={time} duration={duration} />}
+                </div></TabPanel>
+                <TabPanel value="table"><UsageTable projections={sorted} selectedId={selected?.account.id} onSelect={select} sort={sort} onSort={changeSort} detailId={detailId} labels={labels} percent={percent} number={number} time={time} duration={duration} now={now} />
+                  {selected && view === "table" && <AccountDetail id={detailId} projection={selected} view={view} labels={labels} now={now} percent={percent} number={number} date={date} time={time} duration={duration} />}
+                </TabPanel>
+              </>}
+      </Tabs>
+    </Card>
+  </section>;
+}
+
+
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+
+export type UsageForecastView = "forecast" | "table";
+export type UsageForecastProvider = "anthropic" | "cursor" | "github" | "xai" | "google" | "openai";
+export type UsageForecastSortKey = "account" | "used" | "pace" | "outcome" | "reset";
+export interface UsageForecastSort { key: UsageForecastSortKey; direction: "asc" | "desc" }
+export interface UsageForecastHistoryPoint { timestamp: number; usedPercent: number }
+export interface UsageForecastDay {
+  /** Stable, non-empty and unique within this account's recentUsage. */
+  id: string;
+  label: string;
+  usedPercent: number;
+}
+
+export interface UsageForecastAccount {
+  id: string;
+  name: string;
+  description?: string;
+  provider?: UsageForecastProvider;
+  logo?: ReactNode;
+  usedPercent: number;
+  /** Epoch milliseconds for the current quota window. */
+  windowStart: number;
+  resetsAt: number;
+  /** Recent percentage points used per day; zero is a valid idle rate. */
+  dailyRate?: number;
+  status?: "ready" | "new" | "disconnected";
+  history?: readonly UsageForecastHistoryPoint[];
+  recentUsage?: readonly UsageForecastDay[];
+}
+
+export interface UsageForecastProjection {
+  account: UsageForecastAccount;
+  elapsedPercent: number;
+  dailyRate: number | null;
+  pace: number | null;
+  projectedPercent: number | null;
+  runsOutAt: number | null;
+  lockedMs: number;
+  allowance: number;
+  available: boolean;
+}
+
+export interface UsageForecastLabels {
+  title: (count: number) => string;
+  summary: (name: string, time: string, duration: string) => string;
+  healthySummary: string;
+  pendingSummary?: string;
+  forecast: string; table: string; view: string; account: string; used: string;
+  pace: string; outcome: string; resets: string; now: string; reset: string;
+  runsOut: string; atReset: string; locked: string; even: string;
+  currentPace: string; evenPace: string; recentPace: string; perDay: string;
+  allowed: (value: string) => string;
+  usedIn: (used: string, elapsed: string) => string;
+  projectedUse: string; under: string; newWindow: string; assumption: string;
+  selectRow: string; sortHint: string; within: string; over: string;
+  allowedPerDay: string; unknown: string; tooEarly: string; reconnect: string;
+  empty: string; noHistory: string; noRecentUsage: string; noForecast: string;
+  invalid: string; retry: string; loading: string;
+  days: string; hours: string; in: string;
+}
+
+export interface UsageForecastProps extends Omit<ComponentPropsWithoutRef<"section">, "children" | "onSelect"> {
+  accounts: readonly UsageForecastAccount[];
+  /** Explicit snapshot time keeps server rendering and forecasts deterministic. */
+  now: number;
+  locale?: string;
+  timeZone?: string;
+  labels?: Partial<UsageForecastLabels>;
+  view?: UsageForecastView;
+  defaultView?: UsageForecastView;
+  onViewChange?: (view: UsageForecastView) => void;
+  selectedAccountId?: string;
+  defaultSelectedAccountId?: string;
+  onAccountSelect?: (account: UsageForecastAccount) => void;
+  sort?: UsageForecastSort;
+  defaultSort?: UsageForecastSort;
+  onSortChange?: (sort: UsageForecastSort) => void;
+  state?: "ready" | "loading" | "error";
+  errorMessage?: string;
+  onRetry?: () => void;
+}
+
+
+import type { UsageForecastAccount, UsageForecastProjection, UsageForecastSort } from "./usage-forecast-types";
+
+export const USAGE_FORECAST_DAY = 86_400_000;
+
+export function validateUsageForecast(accounts: readonly UsageForecastAccount[], now: number) {
+  if (!Number.isFinite(now) || !Number.isFinite(new Date(now).getTime())) return false;
+  const ids = new Set<string>();
+  return accounts.every((account) => {
+    if (typeof account.id !== "string" || !account.id.trim() || ids.has(account.id)) return false;
+    ids.add(account.id);
+    const dayIds = new Set<string>();
+    return Number.isFinite(account.usedPercent) && account.usedPercent >= 0 && account.usedPercent <= 100
+      && Number.isFinite(new Date(account.windowStart).getTime()) && Number.isFinite(new Date(account.resetsAt).getTime())
+      && account.windowStart <= now && account.resetsAt > now
+      && (account.dailyRate === undefined || (Number.isFinite(account.dailyRate) && account.dailyRate >= 0))
+      && (account.history ?? []).every((point) => Number.isFinite(point.timestamp)
+        && point.timestamp >= account.windowStart && point.timestamp <= now
+        && Number.isFinite(point.usedPercent) && point.usedPercent >= 0 && point.usedPercent <= 100)
+      && (account.recentUsage ?? []).every((day) => {
+        if (typeof day.id !== "string" || !day.id.trim() || dayIds.has(day.id)) return false;
+        dayIds.add(day.id);
+        return Number.isFinite(day.usedPercent) && day.usedPercent >= 0;
+      });
+  });
+}
+
+/** A linear estimate for the current window; never forecasts a future window. */
+export function projectUsageAccount(account: UsageForecastAccount, now: number): UsageForecastProjection {
+  const windowDays = (account.resetsAt - account.windowStart) / USAGE_FORECAST_DAY;
+  const elapsedDays = (now - account.windowStart) / USAGE_FORECAST_DAY;
+  const remainingDays = (account.resetsAt - now) / USAGE_FORECAST_DAY;
+  const ready = !account.status || account.status === "ready";
+  const dailyRate = ready ? (account.dailyRate ?? (elapsedDays > 0 ? account.usedPercent / elapsedDays : null)) : null;
+  // Exhaustion is already known at 100%, even before a rate can be estimated.
+  const available = ready && (dailyRate !== null || account.usedPercent === 100);
+  const projectedPercent = dailyRate === null ? (available ? 100 : null) : account.usedPercent + dailyRate * remainingDays;
+  const exhaustsAt = !available ? null : account.usedPercent === 100 ? now
+    : dailyRate !== null && dailyRate > 0 ? now + (100 - account.usedPercent) / dailyRate * USAGE_FORECAST_DAY : null;
+  const runsOutAt = exhaustsAt !== null && exhaustsAt < account.resetsAt ? exhaustsAt : null;
+  return {
+    account, available, dailyRate, projectedPercent, runsOutAt,
+    elapsedPercent: elapsedDays / windowDays * 100,
+    pace: dailyRate === null ? null : dailyRate / (100 / windowDays),
+    lockedMs: runsOutAt === null ? 0 : account.resetsAt - runsOutAt,
+    allowance: (100 - account.usedPercent) / remainingDays,
+  };
+}
+
+export function sortUsageProjections(items: readonly UsageForecastProjection[], sort: UsageForecastSort, locale: string) {
+  const direction = sort.direction === "asc" ? 1 : -1;
+  const value = (item: UsageForecastProjection) => sort.key === "used" ? item.account.usedPercent
+    : sort.key === "pace" ? item.pace
+    : item.account.resetsAt;
+  return [...items].sort((a, b) => {
+    if (sort.key === "account") return a.account.name.localeCompare(b.account.name, locale) * direction;
+    if (sort.key === "outcome") {
+      const ap = a.projectedPercent;
+      const bp = b.projectedPercent;
+      if (ap === null || bp === null) return ap === bp ? 0 : ap === null ? 1 : -1;
+      if (a.runsOutAt !== null && b.runsOutAt !== null) return (a.runsOutAt - b.runsOutAt) * direction;
+      if (a.runsOutAt !== null || b.runsOutAt !== null) return (a.runsOutAt !== null ? -1 : 1) * direction;
+      return (bp - ap) * direction;
+    }
+    const av = value(a); const bv = value(b);
+    // Unknown projections stay last in both directions.
+    if (av === null || bv === null) return av === bv ? 0 : av === null ? 1 : -1;
+    return (av - bv) * direction;
+  });
+}
+
+
+import type { UsageForecastLabels } from "./usage-forecast-types";
+
+export const usageForecastEnLabels: Required<UsageForecastLabels> = {
+  title: (count) => count ? `${count} ${count === 1 ? "account runs" : "accounts run"} out before reset` : "All accounts on track",
+  summary: (name, time, duration) => `${name} first, ${time}, then locked ${duration}`,
+  healthySummary: "Your current pace stays within the available quota.",
+  pendingSummary: "Some accounts need more usage data or reconnection before they can be forecast.",
+  forecast: "Forecast", table: "Table", view: "Usage view", account: "Account", used: "Used", pace: "Pace",
+  outcome: "Runs out / at reset", resets: "Resets", now: "Now", reset: "Reset", runsOut: "Runs out",
+  atReset: "at reset", locked: "Locked before reset", even: "even", currentPace: "Current pace", evenPace: "Even pace",
+  recentPace: "Recent pace", perDay: "pp used per day", allowed: (value) => `Allowed: ${value} pp a day`,
+  usedIn: (used, elapsed) => `Used ${used} in ${elapsed} of the window`,
+  projectedUse: "Projected use", under: "under", newWindow: "New window, no forecast",
+  assumption: "Assumes the pace holds.", selectRow: "Select a row for detail.", sortHint: "Select a header to sort, a row for detail.",
+  within: "Within allowance", over: "Over", allowedPerDay: "Allowed per day", unknown: "Unknown", tooEarly: "Too early to forecast",
+  reconnect: "Reconnect to forecast", empty: "No accounts to forecast", noHistory: "No usage history available.",
+  noRecentUsage: "No recent daily usage available.", noForecast: "No forecast available for this account.",
+  invalid: "Check account IDs, usage percentages and current quota windows.", retry: "Try again", loading: "Loading accounts…",
+  days: "days", hours: "h", in: "in",
+};
+
+export const usageForecastZhLabels: Required<UsageForecastLabels> = {
+  title: (count) => count ? `${count} 个账户将在重置前耗尽额度` : "所有账户用量正常",
+  summary: (name, time, duration) => `${name} 最先耗尽于${time}，随后停用 ${duration}`,
+  healthySummary: "按当前使用速度，所有账户都能用到额度重置。",
+  pendingSummary: "部分账户需要更多用量数据或重新连接后才能预测。",
+  forecast: "预测", table: "表格", view: "用量视图", account: "账户", used: "已用", pace: "使用速度",
+  outcome: "耗尽时间 / 重置时用量", resets: "重置时间", now: "现在", reset: "重置", runsOut: "耗尽于",
+  atReset: "重置时", locked: "重置前停用", even: "均速", currentPace: "当前速度", evenPace: "平均速度",
+  recentPace: "近期用量", perDay: "每日消耗百分点", allowed: (value) => `每日可用：${value} 个百分点`,
+  usedIn: (used, elapsed) => `已用 ${used}，当前周期已过 ${elapsed}`,
+  projectedUse: "预计用量", under: "低于", newWindow: "新周期，暂无预测",
+  assumption: "假设使用速度保持不变。", selectRow: "选择账户查看详情。", sortHint: "点击表头排序，选择账户查看详情。",
+  within: "额度内", over: "超出", allowedPerDay: "每日可用", unknown: "未知", tooEarly: "数据不足，暂无法预测",
+  reconnect: "重新连接以预测", empty: "暂无可预测的账户", noHistory: "暂无历史用量。",
+  noRecentUsage: "暂无近期每日用量。", noForecast: "该账户暂无预测数据。",
+  invalid: "请检查账户 ID、用量百分比和当前额度周期。", retry: "重试", loading: "正在加载账户…",
+  days: "天", hours: "小时", in: "剩余",
+};
+
+
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { curveLinear, curveMonotoneX } from "@visx/curve";
+import { Area } from "@zeron/ui/area-chart";
+import { Bar, BarChart, BarXAxis } from "@zeron/ui/bar-chart";
+import { ChartTooltip, ReferenceArea, ReferenceLine, TooltipContent, YAxis, useChartStable, type TooltipRow } from "@zeron/ui/chart-core";
+import { Line, LineChart } from "@zeron/ui/line-chart";
+import { cn } from "@zeron/ui/system/utils";
+import type { UsageForecastLabels, UsageForecastProjection } from "./usage-forecast-types";
+
+/** ReferenceLine includes chart margins; native chart children already sit in plot space. */
+function QuotaReferenceLine(props: React.ComponentProps<typeof ReferenceLine>) {
+  const { margin } = useChartStable();
+  return <g transform={`translate(${-margin.left},${-margin.top})`}><ReferenceLine {...props} /></g>;
+}
+
+export const usageForecastColors = {
+  used: "var(--chart-1, var(--brand))",
+  pace: "var(--chart-2, var(--brand))",
+  even: "var(--chart-6)",
+  out: "var(--chart-7)",
+  over: "var(--chart-3)",
+} as const;
+
+export const usageForecastHatch = {
+  backgroundImage: `repeating-linear-gradient(135deg, transparent 0, transparent 5px, color-mix(in oklab, ${usageForecastColors.out} 55%, transparent) 5px, color-mix(in oklab, ${usageForecastColors.out} 55%, transparent) 6px)`,
+};
+
+export function ForecastLegendItem({ children, kind }: { children: React.ReactNode; kind: "used" | "pace" | "even" | "out" | "locked" | "within" | "over" | "allowance" }) {
+  const color = kind === "within" ? usageForecastColors.used : kind === "allowance" ? usageForecastColors.even
+    : kind === "locked" ? usageForecastColors.out : usageForecastColors[kind];
+  return <span className="inline-flex items-center gap-1.5">
+    <span aria-hidden="true" className={cn("inline-block w-3.5 shrink-0", kind === "out" ? "size-2 rounded-full"
+      : kind === "locked" || kind === "within" || kind === "over" ? "h-2 rounded-sm" : "border-t-2",
+    (kind === "pace" || kind === "allowance") && "border-dashed", kind === "even" && "border-dotted")}
+      style={kind === "locked" ? usageForecastHatch : kind === "out" || kind === "within" || kind === "over" ? { backgroundColor: color } : { borderColor: color }} />{children}
+  </span>;
+}
+
+function ForecastAnnotations({ projection, now, timeLabel, lockedLabel }: {
+  projection: UsageForecastProjection; now: number; timeLabel: string; lockedLabel: string;
+}) {
+  const { xScale, yScale, innerWidth, innerHeight } = useChartStable();
+  const out = projection.runsOutAt;
+  const x = out === null ? null : xScale(new Date(out));
+  return <g aria-hidden="true" pointerEvents="none">
+    <circle cx={xScale(new Date(now))} cy={yScale(projection.account.usedPercent)} r={3.5} fill={usageForecastColors.used} stroke="var(--surface-floating)" strokeWidth={2} />
+    {x !== null && <>
+      <line x1={x} x2={innerWidth} y1={yScale(100)} y2={yScale(100)} stroke={usageForecastColors.out} strokeWidth={2.5} />
+      <circle cx={x} cy={yScale(100)} r={4.5} fill={usageForecastColors.out} stroke="var(--surface-floating)" strokeWidth={2} />
+      <text x={Math.min(innerWidth - 30, Math.max(34, x))} y={yScale(100) - 12} textAnchor="middle" fill="var(--fg-default)" fontSize="var(--font-size-body)">{timeLabel}</text>
+      {innerWidth - x > 150 && <text x={x + (innerWidth - x) / 2} y={innerHeight / 2} textAnchor="middle" fill="var(--fg-danger)" fontSize="var(--font-size-body)">{lockedLabel}</text>}
+    </>}
+  </g>;
+}
+
+function UsageForecastTooltip({ title, rows }: { title: string; rows: TooltipRow[] }) {
+  return <><p className="px-3 pt-2.5 text-body font-medium text-fg-default">{title}</p><TooltipContent rows={rows} /></>;
+}
+
+function ForecastTimeLabels({ start, reset, now, elapsedPercent }: {
+  start: string; reset: string; now: string; elapsedPercent: number;
+}) {
+  const axisRef = useRef<HTMLDivElement>(null);
+  const startRef = useRef<HTMLSpanElement>(null);
+  const nowRef = useRef<HTMLSpanElement>(null);
+  const resetRef = useRef<HTMLSpanElement>(null);
+  const [showNow, setShowNow] = useState(false);
+
+  useEffect(() => {
+    const elements = [axisRef.current, startRef.current, nowRef.current, resetRef.current];
+    const measure = () => {
+      const first = startRef.current?.getBoundingClientRect();
+      const current = nowRef.current?.getBoundingClientRect();
+      const last = resetRef.current?.getBoundingClientRect();
+      setShowNow(Boolean(first && current && last && current.left >= first.right + 8 && current.right <= last.left - 8));
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    elements.forEach((element) => { if (element) observer.observe(element); });
+    return () => observer.disconnect();
+  }, [start, reset, now, elapsedPercent]);
+
+  return <div ref={axisRef} className="pointer-events-none absolute bottom-3 left-12 right-2 flex justify-between gap-2 whitespace-nowrap text-body text-fg-subtle">
+    <span ref={startRef}>{start}</span>
+    <span ref={nowRef} className={cn("absolute -translate-x-1/2", !showNow && "invisible")} style={{ left: `${elapsedPercent}%` }}>{now}</span>
+    <span ref={resetRef}>{reset}</span>
+  </div>;
+}
+
+export function UsageForecastTrend({ projection, now, labels, percent, date, time, duration, alignCharts = false, usageSummary }: {
+  projection: UsageForecastProjection; now: number; labels: UsageForecastLabels;
+  percent: (value: number) => string; date: (value: number) => string; time: (value: number) => string; duration: (value: number) => string;
+  alignCharts?: boolean;
+  usageSummary: string;
+}) {
+  const { account, runsOutAt, projectedPercent } = projection;
+  const data = useMemo(() => {
+    const points = new Map<number, Record<string, unknown>>();
+    const add = (timestamp: number, values: Record<string, unknown>) => points.set(timestamp, { ...points.get(timestamp), date: timestamp, ...values });
+    // Missing history stays missing; only the supplied current observation is known.
+    add(account.windowStart, { even: 0 });
+    add(account.resetsAt, { even: 100 });
+    for (const point of account.history ?? []) add(point.timestamp, { used: point.usedPercent });
+    add(now, { used: account.usedPercent, projected: account.usedPercent });
+    if (projectedPercent !== null) add(runsOutAt ?? account.resetsAt, { projected: Math.min(100, projectedPercent) });
+    return [...points.values()].sort((a, b) => Number(a.date) - Number(b.date)).map((point) => ({
+      ...point, even: (Number(point.date) - account.windowStart) / (account.resetsAt - account.windowStart) * 100,
+    }));
+  }, [account, now, projectedPercent, runsOutAt]);
+
+  const tooltipRows = (point: Record<string, unknown>): TooltipRow[] => [
+    ...(typeof point.used === "number" ? [{ label: labels.used, value: percent(point.used), color: usageForecastColors.used }] : []),
+    ...(typeof point.projected === "number" ? [{ label: labels.currentPace, value: percent(point.projected), color: usageForecastColors.pace }] : []),
+  ];
+
+  return <figure className={cn("min-w-0", alignCharts && "@3xl/forecast:row-span-3 @3xl/forecast:grid @3xl/forecast:grid-rows-subgrid")} aria-label={`${account.name} ${labels.forecast}`}>
+    {alignCharts && <div className="hidden @3xl/forecast:block"><p className="text-body text-fg-muted">{usageSummary}</p>{!account.history?.length && <p className="mt-1 text-label text-fg-subtle">{labels.noHistory}</p>}</div>}
+    <div className="relative min-w-0">
+    <LineChart key={account.id} data={data} xDomain={[new Date(account.windowStart), new Date(account.resetsAt)]}
+      yDomain={[0, 100]} yDomainTween={false} className="h-64 w-full" aspectRatio="auto" animationDuration={0}
+      margin={{ top: 30, right: 8, bottom: 44, left: 48 }}>
+      <YAxis tickValues={[0, 50, 100]} formatValue={percent} labelClassName="text-body" />
+      <QuotaReferenceLine y={0} stroke="var(--border)" strokeDasharray="0" />
+      <QuotaReferenceLine y={50} stroke="var(--border-subtle)" strokeDasharray="0" />
+      <QuotaReferenceLine y={100} stroke="var(--border)" />
+      {runsOutAt !== null && <ReferenceArea x1={runsOutAt} x2={account.resetsAt} y1={0} y2={100}
+        pattern="diagonal" patternColor={usageForecastColors.out} patternStrokeWidth={1} fillOpacity={0.5}
+        strokeWidth={0} fadeEdges={false} />}
+      {account.history?.length ? <Area dataKey="used" fill={usageForecastColors.used} stroke={usageForecastColors.used} fillOpacity={0.08}
+        gradientToOpacity={0.08} showLine={false} curve={curveMonotoneX} animate={false} showHighlight={false} /> : null}
+      <Line dataKey="even" stroke={usageForecastColors.even} strokeWidth={1} curve={curveLinear} dashFromIndex={0} dashArray="1,4" fadeEdges={false} animate={false} showHighlight={false} />
+      <Line dataKey="used" stroke={usageForecastColors.used} strokeWidth={2} curve={curveMonotoneX} fadeEdges={false} animate={false} showHighlight={false} />
+      {projectedPercent !== null && <Line dataKey="projected" stroke={usageForecastColors.pace} strokeWidth={1.5} curve={curveLinear} dashFromIndex={0} dashArray="4,4" fadeEdges={false} animate={false} showHighlight={false} />}
+      <QuotaReferenceLine x={now} stroke="var(--border)" />
+      <ForecastAnnotations projection={projection} now={now} timeLabel={runsOutAt === null ? "" : time(runsOutAt)} lockedLabel={duration(projection.lockedMs)} />
+      <ChartTooltip showDatePill={false} rows={tooltipRows}
+        content={({ point }) => <UsageForecastTooltip title={date(Number(point.date))} rows={tooltipRows(point)} />} />
+    </LineChart>
+    <ForecastTimeLabels start={date(account.windowStart)} reset={`${labels.reset} ${date(account.resetsAt)}`} now={labels.now} elapsedPercent={projection.elapsedPercent} />
+    </div>
+    <figcaption className={cn("mt-3 text-body text-fg-subtle", alignCharts && "@3xl/forecast:mt-0")}>
+      {!account.history?.length && <p className={cn("mb-3 text-label", alignCharts && "@3xl/forecast:hidden")}>{labels.noHistory}</p>}
+      <div className="flex flex-wrap gap-x-4 gap-y-2">
+      <ForecastLegendItem kind="used">{labels.used}</ForecastLegendItem>
+      <ForecastLegendItem kind="pace">{labels.currentPace}</ForecastLegendItem>
+      <ForecastLegendItem kind="even">{labels.evenPace}</ForecastLegendItem>
+      <ForecastLegendItem kind="out">{labels.runsOut}</ForecastLegendItem>
+      <ForecastLegendItem kind="locked">{labels.locked}</ForecastLegendItem>
+      </div>
+    </figcaption>
+  </figure>;
+}
+
+function DailyValues() {
+  const { data, barScale, bandWidth, yScale } = useChartStable();
+  return <g aria-hidden="true" pointerEvents="none">
+    {data.map((point) => <text key={String(point.id)} x={(barScale?.(String(point.id)) ?? 0) + (bandWidth ?? 0) / 2}
+      y={yScale(Number(point.usedPercent)) - 7} textAnchor="middle" fill="var(--fg-subtle)" fontSize="var(--font-size-body)">{String(point.usedPercent)}</text>)}
+  </g>;
+}
+
+export function UsageForecastDaily({ projection, labels, number, alignCharts = false }: { projection: UsageForecastProjection; labels: UsageForecastLabels; number: (value: number) => string; alignCharts?: boolean }) {
+  const data = useMemo(() => (projection.account.recentUsage ?? []).map((day) => ({ ...day })), [projection.account.recentUsage]);
+  const color = (point: Record<string, unknown>) => Number(point.usedPercent) > projection.allowance ? usageForecastColors.over : usageForecastColors.used;
+  const tooltipRows = (point: Record<string, unknown>): TooltipRow[] => [{ label: String(point.label), value: `${number(Number(point.usedPercent))} pp`, color: color(point) }];
+  const domainMax = Math.max(1, data.reduce((max, day) => Math.max(max, day.usedPercent), projection.allowance));
+  return <figure className={cn("min-w-0", alignCharts && "@3xl/forecast:row-span-3 @3xl/forecast:grid @3xl/forecast:grid-rows-subgrid")} aria-label={`${projection.account.name} ${labels.recentPace}`}>
+    <figcaption className="text-body text-fg-muted"><span className="font-medium text-fg-default">{labels.recentPace}</span><span className="text-fg-subtle"> · {labels.perDay}</span> · {labels.allowed(number(projection.allowance))}</figcaption>
+    {data.length ? <BarChart key={projection.account.id} data={data} xDataKey="id" yDomain={[0, domainMax * 1.1]} className={cn("mt-4 h-40 w-full", alignCharts && "@3xl/forecast:mt-0 @3xl/forecast:h-64")} aspectRatio="auto"
+      margin={{ top: 24, right: 0, bottom: 44, left: 0 }} barWidth={22} barGap={0.4} animationDuration={0}>
+      <Bar dataKey="usedPercent" fill={usageForecastColors.used} fillForDatum={color} lineCap={3} animate={false} />
+      <QuotaReferenceLine y={0} stroke="var(--border)" strokeDasharray="0" />
+      <QuotaReferenceLine y={projection.allowance} stroke={usageForecastColors.even} strokeDasharray="4,4" />
+      <BarXAxis showAllLabels formatLabel={(_id, point) => String(point.label)} labelClassName="text-body" />
+      <DailyValues />
+      <ChartTooltip showDatePill={false} rows={tooltipRows}
+        content={({ point }) => <UsageForecastTooltip title={String(point.label)} rows={tooltipRows(point)} />} />
+    </BarChart> : <p className={cn("flex h-40 items-center text-body text-fg-subtle", alignCharts && "@3xl/forecast:h-64")}>{labels.noRecentUsage}</p>}
+    <div className={cn("mt-3 flex flex-wrap content-start items-start gap-x-4 gap-y-2 text-body text-fg-subtle", alignCharts && "@3xl/forecast:mt-0")}>
+      <ForecastLegendItem kind="within">{labels.within}</ForecastLegendItem><ForecastLegendItem kind="over">{labels.over}</ForecastLegendItem><ForecastLegendItem kind="allowance">{labels.allowedPerDay}</ForecastLegendItem>
+    </div>
+  </figure>;
+}
+
+
+import { USAGE_FORECAST_DAY as DAY } from "./usage-forecast-data";
+import type { UsageForecastAccount, UsageForecastProvider } from "./usage-forecast-types";
+
+/** Fixed example snapshot; no external account or billing service is connected. */
+export const usageForecastDemoNow = Date.parse("2026-10-15T10:25:00+08:00");
+const now = usageForecastDemoNow;
+const samples = [0, 4, 11, 15, 16, 16, 17, 22, 37, 44, 47, 47, 48, 52, 68, 75, 77, 77, 79, 82];
+function account(id: string, name: string, provider: UsageForecastProvider, usedPercent: number, elapsed: number, remaining: number, projected: number, description?: string): UsageForecastAccount {
+  const windowStart = now - elapsed * DAY;
+  return {
+    id, name, provider, usedPercent, windowStart, resetsAt: now + remaining * DAY, description,
+    dailyRate: (projected - usedPercent) / remaining,
+    history: samples.map((value, index) => ({ timestamp: windowStart + index / (samples.length - 1) * (now - windowStart), usedPercent: value / 82 * usedPercent })),
+    recentUsage: [11, 2, 2, 15, 31, 28, 6].map((value, index) => ({ id: `day-${index}`, label: ["Fri", "Sat", "Sun", "Mon", "Tue", "Wed", "Today"][index], usedPercent: Math.round(value / 82 * usedPercent) })),
+  };
+}
+export const usageForecastDemoAccounts: readonly UsageForecastAccount[] = [
+  account("claude-pro", "Claude Pro", "anthropic", 82, 2.861, 4.139, 200.3, "Claude Pro · Side project"),
+  account("cursor-2", "Cursor (personal 2)", "cursor", 56, 5.8, 25.2, 300, "Cursor Pro · Personal workspace"),
+  account("copilot", "Copilot", "github", 32, 13, 17, 70, "GitHub Copilot · Development"),
+  account("cursor", "Cursor (personal)", "cursor", 39, 17, 13, 68, "Cursor Pro · Main workspace"),
+  account("grok-heavy", "SuperGrok Heavy", "xai", 49, 5.625, 1.375, 60),
+  account("claude-max", "Claude Max", "anthropic", 33, 4, 3, 59),
+  account("google", "Google AI Pro", "google", 32, 5, 2, 49),
+  account("codex-pro", "Codex Pro", "openai", 22, 4, 3, 39),
+  account("grok", "SuperGrok", "xai", 16, 5.625, 1.375, 20),
+  { ...account("codex-plus", "Codex Plus", "openai", 7, 0.4, 6.6, 39), status: "new", history: undefined, recentUsage: undefined },
+  { ...account("antigravity", "Antigravity Starter Quota", "google", 53, 3, 4, 80), status: "disconnected", history: undefined, recentUsage: undefined },
+];
