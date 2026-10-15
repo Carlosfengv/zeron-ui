@@ -25,7 +25,7 @@ test("switching collections keeps links and keyboard paging in the active collec
   await header.getByRole("link", { name: "区块", exact: true }).click();
   await page.getByRole("heading", { name: "区块", exact: true }).click();
   await page.keyboard.press("ArrowRight");
-  await expect(page).toHaveURL("/docs/blocks/context-window-01");
+  await expect(page).toHaveURL("/docs/blocks/usage-timeline-01");
 });
 
 test("local search preserves spaces, URL state and browser history without route requests", async ({ page }) => {

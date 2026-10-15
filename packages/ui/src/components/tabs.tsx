@@ -284,8 +284,10 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
       selectedValue !== undefined ? values.indexOf(selectedValue) : -1;
 
     useEffect(() => {
+      // A controlled host can reject or defer a click. Reconcile that request
+      // even when the accepted selection has not changed.
       setOptimisticIdx(selectedIdx >= 0 ? selectedIdx : null);
-    }, [selectedIdx]);
+    }, [selectedIdx, optimisticIdx]);
 
     const activeSelectedIdx = optimisticIdx;
     const selectedRect =

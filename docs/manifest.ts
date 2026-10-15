@@ -98,6 +98,8 @@ const iconEntry = (value: Omit<DocEntry, "collection" | "indexable" | "order"> &
 });
 
 export const docEntries = [
+  blockEntry({ slug: "usage-timeline-01", section: "application", icon: "doc-data-table", name: "账户用量时间线", description: "按提供商查看账户额度周期、用量与重置事件。", registryItem: { name: "usage-timeline-01", type: "registry:block" }, isNew: true, order: 36.53 }),
+  entry({ slug: "time-window-timeline", section: "data-display", icon: "doc-data-table", name: "TimeWindowTimeline", description: "Grouped time windows with interval meters, elapsed time and event markers.", registryItem: { name: "time-window-timeline", type: "registry:ui" }, isNew: true, gridSize: "large", order: 610 }),
   blockEntry({ slug: "context-window-01", section: "application", icon: "doc-data-grid", name: "Context Window", description: "Context capacity, prompt cache and read-only documents, memory and history.", registryItem: { name: "context-window-01", type: "registry:block" }, isNew: true, order: 36.97 }),
   blockEntry({ slug: "design-stack-01", section: "application", icon: "doc-card", name: "设计工具清单", description: "可编辑单元格、多选、排序与撤销重做。", registryItem: { name: "design-stack-01", type: "registry:block" }, isNew: true, order: 36.75 }),
   blockEntry({ slug: "fleet-health-01", section: "application", icon: "doc-data-grid", name: "Fleet Health", description: "Live inference throughput, fleet telemetry and an interactive GPU matrix.", registryItem: { name: "fleet-health-01", type: "registry:block" }, isNew: true, order: 36.98 }),

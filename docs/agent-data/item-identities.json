@@ -5,6 +5,26 @@
     {"id": "component:activity-matrix-chart", "type": "registry", "key": "activity-matrix-chart", "aliases": ["activity-matrix-chart"], "status": "retired", "retirementReason": "Merged into heatmap-chart; use the HeatmapMatrix extension from the heatmap-chart entry."},
     {"id": "block:account-activity-01", "type": "registry", "key": "account-activity-01", "aliases": ["account-activity-01"], "status": "active", "retirementReason": null},
     {
+      "id": "block:usage-timeline-01",
+      "type": "registry",
+      "key": "usage-timeline-01",
+      "aliases": [
+        "usage-timeline-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:time-window-timeline",
+      "type": "registry",
+      "key": "time-window-timeline",
+      "aliases": [
+        "time-window-timeline"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:resource-cost-01",
       "type": "registry",
       "key": "resource-cost-01",

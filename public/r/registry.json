@@ -4,6 +4,34 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "time-window-timeline",
+      "type": "registry:ui",
+      "title": "TimeWindowTimeline",
+      "description": "Grouped time windows with clipped intervals, usage meters, elapsed shading, a now line and event markers.",
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/time-window-timeline.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/time-window-timeline.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css@^1.4.0"
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
       "name": "surfaces",
       "type": "registry:theme",
       "title": "Semantic Design Tokens",
@@ -6243,6 +6271,71 @@
           "react": "^19.0.0",
           "tailwind": "^4.0.0",
           "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "usage-timeline-01",
+      "type": "registry:block",
+      "title": "账户用量时间线",
+      "description": "按提供商分组的账户额度周期、用量进度、重置事件与双周时间线。",
+      "categories": [
+        "application",
+        "analytics",
+        "billing"
+      ],
+      "dependencies": [
+        "@lobehub/icons@^5.16.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/button-group.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/skeleton.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/time-window-timeline.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/usage-timeline-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/usage-timeline-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/usage-timeline-01/usage-timeline.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/usage-timeline-01/usage-timeline.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/usage-timeline-01/usage-timeline-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/usage-timeline-01/usage-timeline-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/usage-timeline-01/usage-timeline-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/usage-timeline-01/usage-timeline-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/usage-timeline-01/usage-timeline-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/usage-timeline-01/usage-timeline-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/usage-timeline-01/usage-timeline-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/usage-timeline-01/usage-timeline-demo-data.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
         }
       }
     },

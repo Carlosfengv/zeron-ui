@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./time-window-timeline": "./src/components/time-window-timeline.tsx",
     "./accordion": "./src/components/accordion.tsx",
     "./alert": "./src/components/alert.tsx",
     "./app-shell": "./src/components/app-shell.tsx",

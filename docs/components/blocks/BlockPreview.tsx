@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "usage-timeline-01": () => import("./UsageTimelineDemo").then(({ UsageTimelineDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={1500} canvasWidth={1240}><UsageTimelineDemo /></ResponsivePreview>,
+  })),
   "usage-forecast-01": () => import("./UsageForecastDemo").then(({ UsageForecastDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={1280} canvasWidth={1500}><UsageForecastDemo /></ResponsivePreview>,
   })),

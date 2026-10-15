@@ -1,0 +1,7 @@
+{
+  "timeWindowTimeline": {
+    "description": "A reusable grouped time-window timeline with interval meters, elapsed shading, event markers and a continuous now line.",
+    "basic": "Basic usage", "behavior": "Behavior", "api": "API",
+    "behaviorBody": "Supply explicit epoch ranges and labeled ticks. The component clips intervals at viewport boundaries, preserving the visible portion of progress and elapsed time. Earlier and next windows use muted and dashed treatments. Labels remain sticky inside the keyboard-focusable horizontal scroller. The host controls time-zone formatting and data fetching. Invalid ranges, duplicate IDs and invalid percentages show an alert."
+  }
+}

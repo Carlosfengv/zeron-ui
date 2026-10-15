@@ -2350,6 +2350,42 @@ state 支持 ready / loading / error，空 accounts 显示空态；错误可提�
 
 ---
 schema_version: 1
+name: usage-timeline-01
+kind: block
+status: stable
+summary: Provider-grouped quota windows, usage meters and reset events with weekly, five-hour and billing views.
+registry_import: "@/components/blocks/usage-timeline-01"
+source: packages/blocks/src/application/usage-timeline-01/usage-timeline.tsx
+types: packages/blocks/src/application/usage-timeline-01/usage-timeline-types.ts
+registry: packages/blocks/registry.json
+related: [time-window-timeline, badge, button, button-group, tabs]
+---
+
+# UsageTimeline
+
+React data-block without an application shell. Composes TimeWindowTimeline, Badge, Button, ButtonGroup, Tabs, Skeleton and InlineNotice. Period selection uses Tabs’ default pill/brand recipe; navigation and used/remaining toggles use ButtonGroup with default-sized Buttons. Do not recreate the selectors with custom capsule wrappers. The frame/windows/progress follow rounded-xl/rounded-lg/rounded-sm and host radius variables. Timeline bars and their legends prioritize chart-1 (normal), chart-3 (low quota), chart-7 (nearly exhausted), chart-6 (history), chart-2 (early reset) and chart-5 (banked expiry). The now indicator uses brand; surfaces, text and account status badges retain semantic tokens. Overriding the chart palette and brand tokens updates the visualization without changing business state.
+
+```tsx
+import { UsageTimeline, usageTimelineDemoProviders, usageTimelineDemoNow } from "@/components/blocks/usage-timeline-01";
+
+export function AccountWindows() {
+  return <UsageTimeline providers={usageTimelineDemoProviders} now={usageTimelineDemoNow} timeZone="Asia/Shanghai" />;
+}
+```
+
+Providers have unique IDs, names, optional brand/logo and accounts. Account IDs are globally unique. Each account supplies name, email, limits with unique IDs and finite usedPercent (0–100), optional plan, disconnected state and reset/expiry markers. `windows` maps weekly, five-hour and cycle to explicit start/end/usedPercent, plus optional previousStart and nextEnd. An earlier window renders only when its real previousStart is supplied and precedes start; its end is the current start. A next window renders only when nextEnd is supplied and follows end. Missing history is not inferred from the current duration, since billing periods and early resets can have unequal lengths. Missing periods show no-window data. Marker labels are supplied by the host; event markers are plain vertical lines without endpoint circles.
+
+Use an explicit epoch-millisecond `now`. All supplied dates must fit JavaScript’s Date range; computed viewport bounds must also be valid. Out-of-range values show the invalid-data alert. `locale` and `timeZone` control date formatting, calendar-day ticks and navigation. The normal viewport spans 14 calendar days from 7 days before now; five-hour mode spans 24 elapsed hours, with a localized duration label. Calendar arithmetic reuses one formatter and handles daylight saving, including dates whose midnight is skipped by a clock change. An uncontrolled mode change recenters the viewport and reports the request through `onRangeStartChange`. With controlled mode, only `onModeChange` fires: pending or rejected requests cannot mutate the current range. The host can control `rangeStart` when it wants coordinated mode/range changes; an existing manually navigated range otherwise stays in place.
+
+`mode` / `measure` / `rangeStart` are optionally controlled, with defaultMode / defaultMeasure / defaultRangeStart and corresponding on…Change callbacks. Remaining percentages are 100 minus used, while risk color stays based on used (warning >=80, danger >=95). Disconnected rows retain muted snapshot data. Hosts must exclude stale data themselves if desired.
+
+`labels` can override all business copy; exported English and Chinese labels are available. `state` supports ready/loading/error, empty providers show an empty state, invalid data shows an alert, and errors support errorMessage/onRetry. The host owns connections, permissions and fetching. Example accounts are fixed data, without a live service. Narrow views keep horizontal scrolling within the timeline and labels sticky.
+
+
+---
+
+---
+schema_version: 1
 name: user-account-01
 kind: block
 status: stable
@@ -5036,6 +5072,45 @@ export function RequestRange() {
 内部绘图使用 Zeron `BarChart` / `Bar`，通过 `fillForDatum` 表达选区内外颜色。`keyboardNavigation={false}` 使范围选择器独占键盘操作，避免额外图表焦点；鼠标悬停仍显示原始桶标签和系列数值。
 
 安装 `npx zeron-ui add time-range-histogram`，保留 bar-chart、chart-core 与 surfaces 的依赖链。主题切换通过全局变量生效，显式 series.color 覆盖继续接受可信 CSS 色值。
+
+
+---
+
+---
+schema_version: 1
+name: time-window-timeline
+kind: component
+status: stable
+summary: Grouped time windows with meters, elapsed shading, event markers and a continuous now line.
+registry_import: "@/components/ui/time-window-timeline"
+source: packages/ui/src/components/time-window-timeline.tsx
+registry: packages/ui/registry.json
+related: [badge, tabs, time-range-histogram]
+---
+
+# TimeWindowTimeline
+
+Use for quota periods, reservation windows or grouped resource intervals. Supply `ariaLabel`, epoch-millisecond `start` / exclusive `end`, ordered non-overlapping `ticks`, and `groups`. Groups have stable IDs, React labels and rows; row IDs are globally unique. Rows contain React labels and intervals, with optional `muted` and `markers`.
+
+Intervals require `id`, `start < end`, React `label`, and plain-text `ariaLabel`. `variant` is current (default), earlier or next; `tone` is neutral, success (default), warning or danger. An optional finite `value` from 0–100 produces an accessible meter. Progress remains a fraction of the complete interval when clipped. Supply dates and status in `ariaLabel`, including disconnected/stale context if relevant.
+
+`now` / `nowLabel` add elapsed shading and a continuous line within the range; markers have id, at, label and kind reset/expiry. Event markers are plain vertical lines, without endpoint circles. The tick containing now uses aria-current="date". Earlier and next intervals are visually distinct. Timeline colors prioritize chart tokens: success/default uses chart-1, warning chart-3, danger chart-7 and neutral chart-6. Fill, border, elapsed shading and progress derive from the same color. The exported `timeWindowToneColors` mapping keeps legends synchronized. Earlier windows use chart-6; reset/expiry markers use chart-2/chart-5. The now indicator follows brand/fg-on-brand. Text, surfaces and structural dividers retain semantic tokens. `labelWidth` / `minTrackWidth` default to 300 / 840 CSS pixels. The label column stays sticky inside the focusable horizontal scroll region. No dragging or editing is implied.
+
+Hosts own tick generation, locale/time zone, actions and fetching. Empty groups use `emptyContent`; invalid range, duplicate IDs or invalid meters use `invalidContent`. Invalid data produces an alert instead of invalid geometry.
+
+Shape follows the host Tailwind theme: the outer frame uses rounded-xl, local window surfaces and the now label use rounded-lg, and progress tracks/fills use rounded-sm. Structural window outlines use hairline borders. Event lines have no circular endpoint. Do not override the frame or interval shapes with screenshot-specific large or full radii.
+
+```tsx
+import { TimeWindowTimeline } from "@/components/ui/time-window-timeline";
+
+export function Windows() {
+  return <TimeWindowTimeline ariaLabel="Quota windows" start={0} end={100}
+    ticks={[{ id: "range", start: 0, end: 100, label: "Current period" }]}
+    groups={[{ id: "pool", label: "Compute", rows: [{ id: "gpu", label: "GPU pool", intervals: [
+      { id: "current", start: 10, end: 90, label: "32% used", ariaLabel: "GPU pool, 32% used", value: 32 },
+    ] }] }]} now={40} />;
+}
+```
 
 
 ---

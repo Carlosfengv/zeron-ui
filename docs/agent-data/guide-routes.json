@@ -131,6 +131,10 @@
       "itemId": "block:usage-forecast-01"
     },
     {
+      "path": "blocks/usage-timeline-01.md",
+      "itemId": "block:usage-timeline-01"
+    },
+    {
       "path": "blocks/user-account-01.md",
       "itemId": "block:user-account-01"
     },
@@ -293,6 +297,10 @@
     {
       "path": "components/time-range-histogram.md",
       "itemId": "component:time-range-histogram"
+    },
+    {
+      "path": "components/time-window-timeline.md",
+      "itemId": "component:time-window-timeline"
     },
     {
       "path": "components/tree.md",
