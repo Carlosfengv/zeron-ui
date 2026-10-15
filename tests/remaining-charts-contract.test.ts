@@ -16,7 +16,8 @@ describe("reference chart contracts and distribution", () => {
       const fields=node.members.filter(ts.isPropertySignature).map(property=>({name:property.name.getText(source),optional:!!property.questionToken,type:property.type?.getText(source).replace(/\s+/g," ")??"unknown"}));
       // The frozen reference remains unchanged. Documented additive APIs are
       // checked explicitly; all original fields still require exact equality.
-      const additions = expected.name === "HeatmapChartProps" ? [{name:"onCellSelect",optional:true,type:"(bin: HeatmapBin) => void"}]
+      const additions = expected.name === "HeatmapChartProps" ? [{name:"onCellSelect",optional:true,type:"(bin: HeatmapBin) => void"},{name:"stretchCells",optional:true,type:"boolean"}]
+        : expected.name === "HeatmapTooltipProps" ? [{name:"formatHeader",optional:true,type:"(count: number, date: Date) => React.ReactNode"}]
         : expected.name === "LineChartProps" ? [{name:"yDomain",optional:true,type:"ChartYDomain"}]
         : expected.name === "BarXAxisProps" ? [{name:"formatLabel",optional:true,type:"(value: string, point: Record<string, unknown>) => string"},{name:"labelClassName",optional:true,type:"string"}]
         : expected.name === "BarProps" ? [{name:"fillForDatum",optional:true,type:"(point: Record<string, unknown>, index: number) => string"}]

@@ -1,6 +1,8 @@
 {
   "heatmapchart": {
-    "description": "输入是包含日期格的周列，不是数字矩阵，也不会自动聚合。",
+    "description": "可组合的日历热力图与小时矩阵扩展，共享图表颜色变量和键盘查看能力。",
+    "matrix": "HeatmapMatrix：小时活动矩阵",
+    "matrixDescription": "从同一 heatmap-chart 入口导入 HeatmapMatrix，组合矩形格子、轴标签、事件圆点、锁定条和可选侧栏。输入为等长的日期数据列；0 表示空闲，NaN 表示缺失。矩阵使用图表连续色阶（max 默认为 8）和 14px 正文字号变量，密集网格在主题切换时同步换色。聚合与时区格式由调用方处理。",
     "basic": "全年日历与等级图例",
     "quarters": "周一起始与季度间隔",
     "sizing": "填充布局与固定尺寸",

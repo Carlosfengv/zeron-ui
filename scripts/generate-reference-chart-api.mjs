@@ -9,7 +9,7 @@ const groups = {
   "bar-chart": ["bar-chart.tsx", "bar.tsx", "bar-squares.tsx", "bar-depth.tsx", "bar-chart-loading.tsx", "bar-x-axis.tsx", "bar-y-axis.tsx"],
   "pie-chart": ["pie-chart.tsx", "pie-slice.tsx", "pie-center.tsx", "pie-center-shell.tsx", "chart-stat-flow.tsx"],
   "live-line-chart": ["live-line-chart.tsx", "live-line.tsx", "live-x-axis.tsx", "live-y-axis.tsx"],
-  "heatmap-chart": ["heatmap/heatmap-chart.tsx", "heatmap/heatmap-cells.tsx", "heatmap/heatmap-legend.tsx", "heatmap/heatmap-tooltip.tsx", "heatmap/heatmap-separator.tsx", "heatmap/heatmap-chart-loading.tsx", "heatmap/heatmap-x-axis.tsx", "heatmap/heatmap-y-axis.tsx"],
+  "heatmap-chart": ["heatmap/heatmap-chart.tsx", "heatmap/heatmap-matrix.tsx", "heatmap/heatmap-cells.tsx", "heatmap/heatmap-legend.tsx", "heatmap/heatmap-tooltip.tsx", "heatmap/heatmap-separator.tsx", "heatmap/heatmap-chart-loading.tsx", "heatmap/heatmap-x-axis.tsx", "heatmap/heatmap-y-axis.tsx"],
 };
 const check = process.argv.includes("--check");
 const configPath = "packages/ui/tsconfig.json";
@@ -44,6 +44,9 @@ for (const [slug, files] of Object.entries(groups)) {
       for (const symbol of properties) {
         const property = symbol.declarations?.find(ts.isPropertySignature);
         if (!property) continue;
+        // DOM attributes are accepted by the wrapper, but the chart reference
+        // documents only the matrix's own composition API.
+        if (file === "heatmap/heatmap-matrix.tsx" && property.getSourceFile() !== source) continue;
         const doc = (property.jsDoc ?? []).map(comment => typeof comment.comment === "string" ? comment.comment : "").join(" ");
         const defaultMatch = doc.match(/Default:\s*([^\n]+)/i);
         rows.push({

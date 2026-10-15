@@ -203,6 +203,9 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "transaction-details-01": () => import("./TransactionDetailsDemo").then(({ TransactionDetailsDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={960} canvasWidth={760}><TransactionDetailsDemo /></ResponsivePreview>,
   })),
+  "account-activity-01": () => import("./AccountActivityDemo").then(({ AccountActivityDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={1080} canvasWidth={1440}><AccountActivityDemo /></ResponsivePreview>,
+  })),
   "plan-usage-01": () => import("./PlanUsageDemo").then(({ PlanUsageDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={2280} canvasWidth={960}><PlanUsageDemo /></ResponsivePreview>,
   })),

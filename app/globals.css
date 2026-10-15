@@ -424,15 +424,15 @@ p {
 }
 
 /* Theme-toggle cross-fade: ThemeProvider adds `.transitioning` around the
-   class swap so colors tween instead of snapping. */
-html.transitioning *,
-html.transitioning *::before,
-html.transitioning *::after {
-  transition: background-color 180ms ease-in-out,
-              color 180ms ease-in-out,
-              border-color 180ms ease-in-out,
-              fill 180ms ease-in-out,
-              stroke 180ms ease-in-out !important;
+   class swap. Dense charts inherit a zero duration to avoid per-cell tweens. */
+html.transitioning :not([data-theme-transition="instant"], [data-theme-transition="instant"] *),
+html.transitioning :not([data-theme-transition="instant"], [data-theme-transition="instant"] *)::before,
+html.transitioning :not([data-theme-transition="instant"], [data-theme-transition="instant"] *)::after {
+  transition: background-color var(--zeron-theme-color-duration, var(--motion-duration-moderate)) ease-in-out,
+              color var(--zeron-theme-color-duration, var(--motion-duration-moderate)) ease-in-out,
+              border-color var(--zeron-theme-color-duration, var(--motion-duration-moderate)) ease-in-out,
+              fill var(--zeron-theme-color-duration, var(--motion-duration-moderate)) ease-in-out,
+              stroke var(--zeron-theme-color-duration, var(--motion-duration-moderate)) ease-in-out !important;
 }
 
 /* Focus fallback — natively focusable elements no component styles (scroll

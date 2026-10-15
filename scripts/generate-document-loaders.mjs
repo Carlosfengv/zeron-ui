@@ -18,8 +18,8 @@ function syncMap(source, start, entries, indent) {
   if (end < 0) throw new Error(`Missing loader map end: ${start}`);
   const currentBody = source.slice(offset + start.length, end);
   const keys = new Set(entries.map(([key]) => key));
-  const body = currentBody.replace(/^\s*"([\w-]+\/[\w-]+)": \(\) => import\("[^"\n]+"\),\n?/gm,
-    (line, key) => keys.has(key) ? line : "");
+  const body = "\n" + currentBody.replace(/^[\t ]*"([\w-]+\/[\w-]+)": \(\) => import\("[^"\n]+"\),\n?/gm,
+    (line, key) => keys.has(key) ? line : "").replace(/^\n+/, "");
   const additions = [];
   for (const [key, target] of entries) {
     const expected = `"${key}": () => import("${target}"),`;

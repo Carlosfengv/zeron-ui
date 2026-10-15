@@ -1,0 +1,662 @@
+"use client";
+
+import { useMemo, type ReactNode } from "react";
+import { curveLinear, curveStepAfter } from "@visx/curve";
+import { Area, AreaChart } from "@zeron/ui/area-chart";
+import { Line, LineChart } from "@zeron/ui/line-chart";
+import { ChartTooltip, ReferenceArea, useChartStable } from "@zeron/ui/chart-core";
+import { ChartBrush } from "@zeron/ui/chart-brush";
+import { CHART_SCALE_VARS, HeatmapMatrix, type HeatmapColumn } from "@zeron/ui/heatmap-chart";
+import { chartColor, ChartLegend } from "@zeron/ui/chart-primitives";
+import { average, DAY, HOUR, profile, type ActivityCalendar, type ActivityDay, type ActivitySelection } from "./account-activity-data";
+import type { AccountActivityEvent, AccountActivityLabels } from "./account-activity-types";
+
+const noMargin = { top: 0, right: 0, bottom: 0, left: 0 };
+export const MATRIX_HEIGHT = 432;
+export const activityChartColors = { primary: chartColor(1), secondary: chartColor(2), incident: chartColor(7) };
+const activityColors = CHART_SCALE_VARS;
+
+export function windowColor(percent: number | null) {
+  if (percent === null || !Number.isFinite(percent)) return "var(--surface-raised)";
+  return percent >= 100 ? activityChartColors.incident : activityColors[percent < 40 ? 1 : percent < 60 ? 2 : percent < 80 ? 3 : 4];
+}
+
+export function ActivityLegend({ labels, windows = false, relative = false }: { labels: AccountActivityLabels; windows?: boolean; relative?: boolean }) {
+  const values = windows ? ["<40%", "40–60%", "60–80%", "80–99%", labels.hitLimit] : relative ? ["", "", "", "", labels.busiestHour] : ["0", "1–2", "3–4", "5–6", "7+"];
+  return <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-body text-fg-subtle">
+    <span>{windows ? labels.windowPeak : relative ? labels.quietActivity : labels.active}</span>
+    <ChartLegend className="flex flex-wrap gap-x-4 gap-y-2 text-body" items={values.map((label, index) => ({ id: String(index), label,
+      color: windows ? index === 4 ? activityChartColors.incident : activityColors[index + 1] : activityColors[index] }))} />
+    {windows ? <span className="flex items-center gap-2"><span aria-hidden className="h-2.5 w-4 rounded-sm border border-dashed border-brand" />{labels.thisWindow}</span>
+      : <><LegendMark line color={activityChartColors.incident}>{labels.locked}</LegendMark><LegendMark color={activityChartColors.incident}>{labels.ranOut}</LegendMark>{!relative && <><LegendMark line>{labels.weekday}</LegendMark><LegendMark line dashed color={activityChartColors.secondary}>{labels.weekend}</LegendMark></>}<span className="text-label">{labels.missing}</span></>}
+  </div>;
+}
+export function LegendMark({ children, color = activityChartColors.primary, line, dashed }: { children: ReactNode; color?: string; line?: boolean; dashed?: boolean }) {
+  return <span className="inline-flex items-center gap-2 text-body text-fg-subtle"><span aria-hidden className={line ? `w-3 border-t-2 ${dashed ? "border-dashed" : ""}` : "size-2 rounded-full"} style={line ? { borderColor: color } : { backgroundColor: color }} />{children}</span>;
+}
+
+export function ActivityHeatmap({ columns, points = [], locks, max = 8, height, labels, formatHeader, formatLabel }: {
+  columns: HeatmapColumn[]; points?: { column: number; row: number; label?: string }[]; locks?: { column: number; row: number }[];
+  max?: number; height: number; labels: AccountActivityLabels;
+  formatHeader?: (count: number, date: Date) => ReactNode; formatLabel?: (count: number, date: Date) => string;
+}) {
+  return <HeatmapMatrix ariaLabel={labels.matrix} data={columns} points={points} lockedCells={locks} height={height} max={max}
+    formatHeader={formatHeader} formatLabel={formatLabel ?? ((count, date) => `${String(date.getUTCHours()).padStart(2, "0")}:00 · ${Number.isFinite(count) ? count.toLocaleString(undefined, { maximumFractionDigits: 1 }) : labels.unknown} ${labels.active}`)} />;
+}
+
+export function MatrixChart({ selection, days, calendar, labels }: {
+  selection: ActivitySelection; days: ActivityDay[]; calendar: ActivityCalendar; labels: AccountActivityLabels;
+}) {
+  const byHour = new Map(selection.hours.map((point) => [`${point.date}/${point.hour}`, point.active]));
+  const timestamps = new Map(selection.hours.map((point) => [`${point.date}/${point.hour}`, point.timestamp]));
+  const columns = days.map((day, column) => ({ bin: column, bins: Array.from({ length: 24 }, (_, hour) => ({
+    bin: hour, date: new Date(timestamps.get(`${day.date}/${hour}`) ?? calendar.fromCalendar(day.date, hour)), count: byHour.get(`${day.date}/${hour}`) ?? NaN,
+  })) }));
+  const points = selection.events.flatMap((event) => {
+    const part = calendar.parts(event.timestamp), column = days.findIndex((day) => day.date === part.date);
+    return column < 0 ? [] : [{ column, row: part.hour, label: `${labels.ranOut} · ${calendar.date(event.timestamp)}` }];
+  });
+  return <HeatmapMatrix ariaLabel={labels.matrix} data={columns} points={points} height={MATRIX_HEIGHT} minWidth={640} className="pb-2"
+    columns={days.map((day, index) => ({ id: day.date, label: calendar.weekday(day.weekday).replace(/^(星期|周)/, "").slice(0, 1),
+      groupLabel: index % 7 === 0 ? calendar.date(day.timestamp) : undefined, weekend: day.weekday >= 5,
+      locked: selection.locks.filter((event) => event.timestamp < day.end && event.unlockedAt > day.timestamp).length }))}
+    rowLabels={Array.from({ length: 24 }, (_, hour) => hour % 6 === 0 ? `${String(hour).padStart(2, "0")}:00` : "")}
+    lockedLabel={labels.locked} profile={{ title: labels.dayProfile, description: labels.averageActive,
+      content: <DayProfile selection={selection} height={MATRIX_HEIGHT} label={labels.dayProfile} eventHours={selection.events.map((event) => calendar.parts(event.timestamp).hour)} />,
+      footer: <><span>0</span><span>{selection.accounts.length.toFixed(1)}</span></> }}
+    formatHeader={(_, date) => calendar.date(date.getTime())}
+    formatLabel={(count, date) => `${String(calendar.parts(date.getTime()).hour).padStart(2, "0")}:00 · ${Number.isFinite(count) ? count : labels.unknown} ${labels.active}`} />;
+}
+
+function DayProfile({ selection, height, label, eventHours }: { selection: ActivitySelection; height: number; label: string; eventHours: number[] }) {
+  const chartData = useMemo(() => profile(selection), [selection]);
+  return <div className="relative overflow-hidden" style={{ height }} aria-label={label}>
+    <div className="pointer-events-none absolute left-0 top-0" style={{ width: height, height: 152, transform: "translateX(152px) rotate(90deg)", transformOrigin: "0 0" }}>
+      <LineChart data={chartData} xDataKey="timestamp" className="h-full w-full" aspectRatio="auto" margin={noMargin} yDomain={[0, Math.max(1, selection.accounts.length)]} animationDuration={0} yDomainTween={false}>
+        <Line dataKey="weekday" stroke={activityChartColors.primary} strokeWidth={1.5} curve={curveLinear} animate={false} fadeEdges={false} />
+        <Line dataKey="weekend" stroke={activityChartColors.secondary} strokeWidth={1.5} curve={curveLinear} animate={false} fadeEdges={false} dashFromIndex={0} dashArray="4,4" />
+      </LineChart>
+    </div>
+    {[...new Set(eventHours)].map((hour) => <span key={hour} aria-hidden className="absolute right-0 h-0.5 w-1.5 rounded-sm" style={{ top: `${(hour + .5) / 24 * 100}%`, backgroundColor: activityChartColors.incident }} />)}
+  </div>;
+}
+
+type LockInterval = { id: string; start: number; end: number };
+function EventAnnotations({ events, locks, start, end }: { events: readonly AccountActivityEvent[]; locks?: readonly LockInterval[]; start: number; end: number }) {
+  const { xScale, innerHeight } = useChartStable();
+  const intervals = locks ?? events.map((event) => ({ id: event.id, start: event.timestamp, end: event.unlockedAt }));
+  return <g pointerEvents="none">
+    {intervals.filter((lock) => lock.start < end && lock.end > start).map((lock) => <rect key={lock.id}
+      data-slot="account-activity-lock" x={xScale(new Date(Math.max(start, lock.start)))} y={Math.max(0, innerHeight - 3)}
+      width={Math.max(0, xScale(new Date(Math.min(end, lock.end))) - xScale(new Date(Math.max(start, lock.start))))}
+      height={3} fill={activityChartColors.incident} opacity={.65} />)}
+    {events.filter((event) => event.timestamp >= start && event.timestamp < end).map((event) => {
+      const x = xScale(new Date(event.timestamp));
+      return <g key={event.id}><line x1={x} x2={x} y1={7} y2={innerHeight} stroke={activityChartColors.incident} strokeWidth={1.5} /><circle data-slot="account-activity-run-out" cx={x} cy={6} r={3.5} fill={activityChartColors.incident} /></g>;
+    })}
+  </g>;
+}
+
+export function ActivityArea({ points, start, end, max, height = 64, events = [], locks, nights = false, typical = false, selection, onRangeChange, labels }: {
+  points: { timestamp: number; value: number | null }[]; start: number; end: number; max: number; height?: number;
+  events?: readonly AccountActivityEvent[]; locks?: readonly LockInterval[]; nights?: boolean; typical?: boolean;
+  selection?: { start: number; end: number }; onRangeChange?: (range: { start: number; end: number }) => void; labels: AccountActivityLabels;
+}) {
+  const chartData = useMemo(() => points.map((point) => ({ ...point })), [points]);
+  const color = typical ? activityChartColors.primary : activityChartColors.secondary;
+  return <div style={{ height }} className="relative min-w-0">
+    <AreaChart data={chartData} xDataKey="timestamp" aspectRatio="auto" className="h-full w-full" margin={noMargin} xDomain={[new Date(start), new Date(end)]} yDomain={[0, Math.max(1, max)]} animationDuration={0} yDomainTween={false}>
+      {nights && Array.from({ length: Math.ceil((end - start) / DAY) }, (_, index) => <ReferenceArea key={index} x1={start + index * DAY} x2={start + index * DAY + 7 * HOUR} fill="var(--surface-base)" fillOpacity={.65} stroke="transparent" />)}
+      <Area dataKey="value" curve={typical ? curveLinear : curveStepAfter} stroke={color} strokeWidth={typical ? 1.7 : 1.1}
+        fill={color} fillOpacity={.16} gradientToOpacity={.16} animate={false} showHighlight={false} />
+      <EventAnnotations events={events} locks={locks} start={start} end={end} />
+      {selection && <ChartBrush selection={{ start: new Date(selection.start), end: new Date(selection.end) }} selectedBoxStyle={{ fill: "var(--brand)", fillOpacity: .08, stroke: "var(--brand)", strokeWidth: 1 }} onSelectionChange={(range) => { if (range) onRangeChange?.({ start: range.start.getTime(), end: range.end.getTime() }); }} />}
+      {!selection && <ChartTooltip showDatePill={false} rows={(point) => [{ label: labels.active, value: point.value == null ? labels.unknown : Number(point.value).toLocaleString(undefined, { maximumFractionDigits: 1 }), color }]} />}
+    </AreaChart>
+  </div>;
+}
+
+export function ProfileChart({ selection, labels, calendar }: { selection: ActivitySelection; labels: AccountActivityLabels; calendar: ActivityCalendar }) {
+  const points = useMemo(() => profile(selection), [selection]);
+  return <div className="space-y-2">
+    <LineChart data={points} xDataKey="timestamp" className="h-28 w-full" aspectRatio="auto" margin={{ ...noMargin, top: 5, bottom: 5 }} animationDuration={0} yDomainTween={false}>
+      <Line dataKey="weekday" stroke={activityChartColors.primary} curve={curveLinear} strokeWidth={1.7} animate={false} fadeEdges={false} />
+      <Line dataKey="weekend" stroke={activityChartColors.secondary} curve={curveLinear} strokeWidth={1.5} animate={false} fadeEdges={false} dashFromIndex={0} dashArray="4,4" />
+      <ChartTooltip showDatePill={false} rows={(point) => ["weekday", "weekend"].map((key) => ({ label: key === "weekday" ? labels.weekday : labels.weekend, color: key === "weekday" ? activityChartColors.primary : activityChartColors.secondary, value: point[key] == null ? labels.unknown : Number(point[key]).toFixed(1) }))} />
+    </LineChart>
+    <div className="relative h-2" aria-hidden>{[...new Set(selection.events.map((event) => calendar.parts(event.timestamp).hour))].map((hour) => <span key={hour} className="absolute top-0 h-2 w-0.5 rounded-sm" style={{ left: `${hour / 23 * 100}%`, backgroundColor: activityChartColors.incident }} />)}</div>
+    <HourAxis />
+  </div>;
+}
+
+export function HourAxis() { return <div className="flex justify-between text-body tabular-nums text-fg-subtle">{["00:00", "06:00", "12:00", "18:00", "23:00"].map((hour) => <span key={hour}>{hour}</span>)}</div>; }
+
+export function WeekdayHeatmap({ selection, calendar, labels }: { selection: ActivitySelection; calendar: ActivityCalendar; labels: AccountActivityLabels }) {
+  const columns = Array.from({ length: 24 }, (_, hour) => ({ bin: hour, bins: Array.from({ length: 7 }, (_, weekday) => ({ bin: weekday, date: new Date(Date.UTC(2026, 8, 14 + weekday, hour)),
+    count: average(selection.hours.filter((point) => point.weekday === weekday && point.hour === hour).map((point) => point.active)) ?? NaN,
+  })) }));
+  const points = selection.events.map((event) => { const part = calendar.parts(event.timestamp); return { column: part.hour, row: part.weekday }; });
+  return <div className="grid grid-cols-[2rem_minmax(0,1fr)] gap-2"><div /><HourAxis /><div className="flex flex-col justify-around text-body text-fg-subtle">{Array.from({ length: 7 }, (_, weekday) => <span key={weekday}>{calendar.weekday(weekday)}</span>)}</div><ActivityHeatmap columns={columns} points={points} height={196} labels={labels} formatHeader={(_, date) => calendar.weekday((date.getUTCDay() + 6) % 7)} /></div>;
+}
+
+
+import type { AccountActivityData, AccountActivityDayType, AccountActivityEvent, AccountActivityQuery, AccountActivitySample } from "./account-activity-types";
+
+export const HOUR = 3_600_000;
+export const DAY = HOUR * 24;
+export function createActivityCalendar(timeZone: string, locale: string) {
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  const dateFormat = new Intl.DateTimeFormat(locale, { timeZone, month: "short", day: "numeric" });
+  const weekdayFormat = new Intl.DateTimeFormat(locale, { timeZone: "UTC", weekday: "short" });
+  return {
+    fromCalendar(date: string, hour = 0) {
+      const target = Date.parse(`${date}T00:00:00Z`) + hour * HOUR;
+      let guess = target;
+      for (let iteration = 0; iteration < 3; iteration++) {
+        const fields = Object.fromEntries(parts.formatToParts(guess).map((part) => [part.type, part.value]));
+        const observed = Date.parse(`${fields.year}-${fields.month}-${fields.day}T00:00:00Z`) + Number(fields.hour) * HOUR + Number(fields.minute) * 60_000;
+        guess += target - observed;
+      }
+      return guess;
+    },
+    parts(timestamp: number) {
+      const fields = Object.fromEntries(parts.formatToParts(timestamp).map((part) => [part.type, part.value]));
+      const date = `${fields.year}-${fields.month}-${fields.day}`;
+      return { date, hour: Number(fields.hour), weekday: (new Date(`${date}T00:00:00Z`).getUTCDay() + 6) % 7 };
+    },
+    /** Wall-clock coordinate for weekly lanes; retain partial-hour lock endpoints. */
+    coordinate(timestamp: number) {
+      const fields = Object.fromEntries(parts.formatToParts(timestamp).map((part) => [part.type, part.value]));
+      return Date.parse(`${fields.year}-${fields.month}-${fields.day}T00:00:00Z`) + Number(fields.hour) * HOUR + Number(fields.minute) * 60_000;
+    },
+    date: (timestamp: number) => dateFormat.format(timestamp),
+    weekday: (index: number) => weekdayFormat.format(new Date(Date.UTC(2026, 8, 14 + index))),
+  };
+}
+export type ActivityCalendar = ReturnType<typeof createActivityCalendar>;
+export function matchesDay(timestamp: number, type: AccountActivityDayType, calendar: ActivityCalendar) {
+  const weekend = calendar.parts(timestamp).weekday >= 5;
+  return type === "all" || (type === "weekends" ? weekend : !weekend);
+}
+export function isLocked(sample: Pick<AccountActivitySample, "accountId" | "timestamp">, events: readonly AccountActivityEvent[]) {
+  return events.some((event) => event.accountId === sample.accountId && sample.timestamp >= event.timestamp && sample.timestamp < event.unlockedAt);
+}
+export function clippedLockedHours(events: readonly AccountActivityEvent[], start: number, end: number) {
+  // Merge overlapping incidents per account so one blocked hour is counted once.
+  const groups = new Map<string, [number, number][]>();
+  for (const event of events) {
+    const a = Math.max(start, event.timestamp), b = Math.min(end, event.unlockedAt);
+    if (b > a) groups.set(event.accountId, [...(groups.get(event.accountId) ?? []), [a, b]]);
+  }
+  let total = 0;
+  for (const intervals of groups.values()) {
+    intervals.sort((a, b) => a[0] - b[0]);
+    let edge = -Infinity;
+    for (const [a, b] of intervals) { total += Math.max(0, b - Math.max(a, edge)); edge = Math.max(edge, b); }
+  }
+  return total / HOUR;
+}
+export function selectActivity(data: AccountActivityData, query: AccountActivityQuery, calendar: ActivityCalendar, selectedRange = false) {
+  const start = selectedRange ? Math.max(data.start, query.range.start) : data.start;
+  const end = selectedRange ? Math.min(data.end, query.range.end) : data.end;
+  const hidden = new Set(query.hiddenAccountIds);
+  const accounts = data.accounts.filter((account) => (query.accountId === "all" || query.accountId === account.id) && !hidden.has(account.id));
+  const ids = new Set(accounts.map((account) => account.id));
+  // Account readings usually share hourly timestamps. Resolve each timestamp
+  // once per selection instead of formatting it again for every account.
+  const calendarParts = new Map<number, ReturnType<ActivityCalendar["parts"]>>();
+  const partsAt = (timestamp: number) => {
+    let part = calendarParts.get(timestamp);
+    if (!part) { part = calendar.parts(timestamp); calendarParts.set(timestamp, part); }
+    return part;
+  };
+  const accepts = (timestamp: number) => {
+    if (!Number.isFinite(timestamp) || timestamp < start || timestamp >= end) return false;
+    if (query.dayType === "all") return true;
+    const weekend = partsAt(timestamp).weekday >= 5;
+    return query.dayType === "weekends" ? weekend : !weekend;
+  };
+  const samples = data.samples.filter((sample) => ids.has(sample.accountId) && accepts(sample.timestamp));
+  const events = data.events.filter((event) => ids.has(event.accountId) && accepts(event.timestamp));
+  const locks = data.events.filter((event) => ids.has(event.accountId) && event.timestamp < end && event.unlockedAt > start);
+  // One observed hour contributes once even when an account reports multiple samples.
+  const buckets = new Map<string, { date: string; hour: number; weekday: number; timestamp: number; values: Map<string, boolean> }>();
+  for (const sample of samples) {
+    if (sample.value === null || !Number.isFinite(sample.value) || sample.value < 0) continue;
+    const part = partsAt(sample.timestamp), key = `${part.date}/${part.hour}`;
+    let bucket = buckets.get(key);
+    if (!bucket) { bucket = { ...part, timestamp: sample.timestamp, values: new Map() }; buckets.set(key, bucket); }
+    bucket.values.set(sample.accountId, bucket.values.get(sample.accountId) === true || sample.value > 0);
+  }
+  const hours = [...buckets.values()].map(({ values, ...bucket }) => ({ ...bucket, active: [...values.values()].filter(Boolean).length }));
+  const lockRanges = activityDays({ start, end }, calendar).flatMap((day) => {
+    if (!matchesDay(day.timestamp, query.dayType, calendar)) return [];
+    return [{ start: Math.max(start, day.timestamp), end: Math.min(end, day.end) }];
+  });
+  return { start, end, accounts, samples, events, locks, hours, lockRanges };
+}
+export type ActivitySelection = ReturnType<typeof selectActivity>;
+export function average(values: readonly number[]) { return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null; }
+export function profile(selection: ActivitySelection) {
+  return Array.from({ length: 24 }, (_, hour) => ({ timestamp: hour * HOUR,
+    weekday: average(selection.hours.filter((point) => point.hour === hour && point.weekday < 5).map((point) => point.active)),
+    weekend: average(selection.hours.filter((point) => point.hour === hour && point.weekday >= 5).map((point) => point.active)),
+  }));
+}
+export function activityDays(data: Pick<AccountActivityData, "start" | "end">, calendar: ActivityCalendar) {
+  const days: { date: string; timestamp: number; end: number; weekday: number }[] = [];
+  if (!Number.isFinite(data.start) || !Number.isFinite(data.end) || data.end <= data.start) return days;
+  const first = Date.parse(`${calendar.parts(data.start).date}T00:00:00Z`);
+  const last = Date.parse(`${calendar.parts(data.end - 1).date}T00:00:00Z`);
+  for (let date = first; date <= last; date += DAY) {
+    const iso = new Date(date).toISOString().slice(0, 10), timestamp = calendar.fromCalendar(iso);
+    // Some zones have historically skipped an entire calendar date.
+    if (calendar.parts(timestamp).date !== iso) continue;
+    days.push({ date: iso, timestamp, end: calendar.fromCalendar(new Date(date + DAY).toISOString().slice(0, 10)), weekday: (new Date(date).getUTCDay() + 6) % 7 });
+  }
+  return days;
+}
+export type ActivityDay = ReturnType<typeof activityDays>[number];
+
+/** Brush and keyboard ranges must also fit reports shorter than one hour. */
+export function clampActivityRange(data: Pick<AccountActivityData, "start" | "end">, range: AccountActivityQuery["range"]) {
+  const span = Math.min(HOUR, data.end - data.start);
+  const start = Math.max(data.start, Math.min(data.end - span, Number.isFinite(range.start) ? range.start : data.start));
+  const end = Math.max(start + span, Math.min(data.end, Number.isFinite(range.end) ? range.end : data.end));
+  return { start, end };
+}
+
+/** Keep the displayed day and three-hour peak from the same observation group. */
+export function busiestActivity(selection: ActivitySelection, grouping: "dayType" | "weekday" | "all") {
+  const groups = Array.from({ length: grouping === "weekday" ? 7 : grouping === "dayType" ? 2 : 1 }, () => Array.from({ length: 24 }, () => ({ sum: 0, count: 0 })));
+  for (const point of selection.hours) {
+    const day = grouping === "weekday" ? point.weekday : grouping === "dayType" && point.weekday >= 5 ? 1 : 0;
+    const bucket = groups[day][point.hour]; bucket.sum += point.active; bucket.count++;
+  }
+  let best: { hour: number; day: number; score: number } | null = null;
+  for (const [day, hours] of groups.entries()) {
+    for (let hour = 0; hour <= 21; hour++) {
+      const score = hours.slice(hour, hour + 3).reduce((sum, bucket) => sum + (bucket.count ? bucket.sum / bucket.count : 0), 0);
+      if (score > 0 && (!best || score > best.score)) best = { hour, day, score };
+    }
+  }
+  return best;
+}
+export function selectionLockedHours(selection: ActivitySelection, start = selection.start, end = selection.end, accountId?: string) {
+  const events = accountId ? selection.locks.filter((event) => event.accountId === accountId) : selection.locks;
+  return selection.lockRanges.reduce((sum, range) => sum + clippedLockedHours(events, Math.max(start, range.start), Math.min(end, range.end)), 0);
+}
+
+
+import { DAY, HOUR } from "./account-activity-data";
+import type { AccountActivityData, AccountActivityWindow } from "./account-activity-types";
+
+const start = Date.UTC(2026, 8, 15), end = start + 30 * DAY;
+const accounts = [
+  ["cursor", "Cursor (personal)"], ["claude-max", "Claude Max"], ["google", "Google AI Pro"], ["codex-plus", "Codex Plus"],
+  ["grok", "SuperGrok"], ["cursor-2", "Cursor (personal 2)"], ["codex-pro", "Codex Pro"], ["copilot", "Copilot"],
+  ["grok-heavy", "SuperGrok Heavy"], ["claude-pro", "Claude Pro"], ["antigravity", "Antigravity Starter Quota"],
+].map(([id, name]) => ({ id, name }));
+const events = [
+  { id: "e1", accountId: "cursor", timestamp: start + 10 * DAY + 17 * HOUR, unlockedAt: start + 13 * DAY + 8 * HOUR },
+  { id: "e2", accountId: "claude-max", timestamp: start + 18 * DAY + 13 * HOUR, unlockedAt: start + 19 * DAY + 8 * HOUR },
+  { id: "e3", accountId: "claude-max", timestamp: start + 18 * DAY + 17 * HOUR, unlockedAt: start + 18 * DAY + 21 * HOUR },
+  { id: "e4", accountId: "codex-plus", timestamp: start + 22 * DAY + 15 * HOUR, unlockedAt: start + 22 * DAY + 17 * HOUR },
+  { id: "e5", accountId: "codex-pro", timestamp: start + 26 * DAY + 12 * HOUR, unlockedAt: start + 26 * DAY + 14 * HOUR },
+];
+const rhythm = [0, 0, 0, 0, 0, 0, .05, .3, .72, .95, 1, .92, .86, .88, .84, .78, .65, .35, .04, .08, .4, .55, .32, 0];
+const samples = accounts.flatMap((account, index) => Array.from({ length: 30 * 24 }, (_, offset) => {
+  const timestamp = start + offset * HOUR, date = new Date(timestamp), hour = date.getUTCHours(), day = Math.floor(offset / 24);
+  const weekend = [0, 6].includes(date.getUTCDay());
+  const noise = ((day * 13 + hour * 7 + index * 17) % 23) / 23;
+  const intensity = rhythm[hour] * (weekend ? .35 : 1) * (.65 + noise * .35);
+  const active = intensity > .1 && noise < intensity * .96;
+  const locked = events.some((event) => event.accountId === account.id && timestamp >= event.timestamp && timestamp < event.unlockedAt);
+  return { accountId: account.id, timestamp, value: offset === 0 || (day === 29 && hour >= 9) ? null : locked || !active ? 0 : Math.round(intensity * 100) };
+}));
+const windows: AccountActivityWindow[] = accounts.flatMap((account, index) => {
+  const period = index === 0 || index === 5 || index === 7 ? 30 : 7;
+  const origin = start - ((index * 2 + 3) % period) * DAY;
+  return Array.from({ length: Math.ceil((end - origin) / (period * DAY)) }, (_, n) => {
+    const a = origin + n * period * DAY, b = a + period * DAY;
+    const hit = events.some((event) => event.accountId === account.id && event.timestamp >= a && event.timestamp < b);
+    const current = b >= end;
+    const peakPercent = hit ? 100 : Math.round((index < 6 ? 74 : 24) + ((n * 19 + index * 7) % 24));
+    const observedEnd = Math.min(b, end);
+    const readings = Array.from({ length: Math.ceil((observedEnd - a) / (6 * HOUR)) + 1 }, (_, slot) => {
+      const timestamp = Math.min(observedEnd, a + slot * 6 * HOUR);
+      return { timestamp, percent: Math.min(peakPercent, Math.round((timestamp - a) / (observedEnd - a) * peakPercent)) };
+    });
+    return { id: `${account.id}-${n}`, accountId: account.id, start: a, end: b, current, peakPercent, readings };
+  });
+});
+/** Deterministic sample data only; no account connections or external requests. */
+export const accountActivityDemoData: AccountActivityData = { start, end, accounts, samples, events, windows };
+
+
+import type { AccountActivityLabels } from "./account-activity-types";
+
+export const accountActivityDefaultLabels: AccountActivityLabels = {
+  matrix: "Matrix", weeks: "Weeks", range: "Range", accounts: "By Account", views: "Activity view",
+  allAccounts: "All Accounts", accountFilter: "Filter accounts", all: "All days", weekdays: "Weekdays", weekends: "Weekends", dayFilter: "Filter days",
+  active: "Accounts active", averageActive: "avg accounts active", dayProfile: "Day profile", ranOut: "Ran out", locked: "Locked", neverLocked: "Never locked",
+  weekday: "Weekday", weekend: "Weekend", missing: "Dotted: no reading.", quiet: "Quiet", quietActivity: "Quiet", busiestHour: "Busiest hour",
+  typicalWeek: "Typical week", averageHour: "avg per hour", night: "Night, 00–07", peak: "Peak", windowFilling: "Window filling",
+  usageWindows: "Usage per window", usageWindowsHint: "How full each limit window got", windowPeak: "Window peak", hitLimit: "Hit the limit", thisWindow: "This window",
+  selectedDays: "Selected days", selectRange: "Selected date range", rangeHint: "Drag across the lanes to change the range", accountHint: "Click a name to toggle it.",
+  scaleHint: "Each row has its own scale. Averages skip locked hours.", empty: "No activity readings in this selection.", loading: "Loading account activity…",
+  error: "Account activity could not be loaded.", retry: "Try again", unknown: "No reading",
+  busiest: (time, day) => `Busiest ${time} · ${day}`,
+  summary: (events, days, weekdayEvents) => `${events} run-outs in ${days} days, ${weekdayEvents} on weekdays`,
+  rangeSummary: (accounts) => `${accounts} accounts`, runOuts: (count) => `${count} run-out${count === 1 ? "" : "s"}`,
+  lockedHours: (hours) => `Locked ${hours} h`, accountSummary: (name, time) => `${name} runs out around ${time}`,
+  weekAverage: (weeks) => `Mean of ${weeks} weeks`,
+};
+
+
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+
+export type AccountActivityView = "matrix" | "weeks" | "range" | "accounts";
+export type AccountActivityDayType = "all" | "weekdays" | "weekends";
+export interface AccountActivityAccount { id: string; name: string; logo?: ReactNode }
+/** Activity intensity in the host's units. Zero is idle; null is an unavailable reading. */
+export interface AccountActivitySample { accountId: string; timestamp: number; value: number | null }
+export interface AccountActivityEvent { id: string; accountId: string; timestamp: number; unlockedAt: number }
+export interface AccountActivityWindow {
+  id: string; accountId: string; start: number; end: number; peakPercent: number | null;
+  readings: readonly { timestamp: number; percent: number | null }[];
+  current?: boolean;
+}
+export interface AccountActivityData {
+  /** Epoch milliseconds; end is exclusive. Samples should use hourly buckets. */
+  start: number; end: number;
+  accounts: readonly AccountActivityAccount[];
+  samples: readonly AccountActivitySample[];
+  events: readonly AccountActivityEvent[];
+  windows: readonly AccountActivityWindow[];
+}
+export interface AccountActivityQuery {
+  view: AccountActivityView;
+  accountId: string;
+  dayType: AccountActivityDayType;
+  range: { start: number; end: number };
+  hiddenAccountIds: readonly string[];
+}
+export interface AccountActivityLabels {
+  matrix: string; weeks: string; range: string; accounts: string; views: string;
+  allAccounts: string; accountFilter: string; all: string; weekdays: string; weekends: string; dayFilter: string;
+  active: string; averageActive: string; dayProfile: string; ranOut: string; locked: string; neverLocked: string;
+  weekday: string; weekend: string; missing: string; quiet: string; quietActivity: string; busiestHour: string;
+  typicalWeek: string; averageHour: string; night: string; peak: string; windowFilling: string;
+  usageWindows: string; usageWindowsHint: string; windowPeak: string; hitLimit: string; thisWindow: string;
+  selectedDays: string; selectRange: string; rangeHint: string; accountHint: string; scaleHint: string;
+  empty: string; loading: string; error: string; retry: string; unknown: string;
+  busiest: (time: string, day: string) => string;
+  summary: (events: number, days: number, weekdayEvents: number) => string;
+  rangeSummary: (accounts: number) => string;
+  runOuts: (count: number) => string;
+  lockedHours: (hours: string) => string;
+  accountSummary: (name: string, time: string) => string;
+  weekAverage: (weeks: string) => string;
+}
+export interface AccountActivityProps extends Omit<ComponentPropsWithoutRef<"section">, "children" | "onChange"> {
+  data: AccountActivityData;
+  locale?: string;
+  timeZone?: string;
+  labels?: Partial<AccountActivityLabels>;
+  query?: AccountActivityQuery;
+  defaultQuery?: Partial<AccountActivityQuery>;
+  onQueryChange?: (query: AccountActivityQuery) => void;
+  state?: "ready" | "loading" | "error";
+  errorMessage?: string;
+  onRetry?: () => void;
+}
+
+
+"use client";
+
+import { useMemo, useState } from "react";
+import { Button } from "@zeron/ui/button";
+import { Slider } from "@zeron/ui/slider";
+import { Tooltip } from "@zeron/ui/tooltip";
+import { createIconSlot } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { activityChartColors, ActivityArea, ActivityHeatmap, ActivityLegend, HourAxis, LegendMark, ProfileChart, WeekdayHeatmap, windowColor } from "./account-activity-charts";
+import { activityDays, average, clampActivityRange, DAY, HOUR, isLocked, selectionLockedHours, type ActivityCalendar, type ActivitySelection } from "./account-activity-data";
+import type { AccountActivityAccount, AccountActivityData, AccountActivityLabels, AccountActivityQuery } from "./account-activity-types";
+
+const ChevronDown = createIconSlot("chevron-down");
+const ChevronRight = createIconSlot("chevron-right");
+export function AccountName({ account, hidden, onClick }: { account: AccountActivityAccount; hidden?: boolean; onClick?: () => void }) {
+  const content = <span className="flex min-w-0 items-center gap-2"><span aria-hidden className="flex size-4 shrink-0 items-center justify-center text-fg-default">{account.logo}</span><span className="truncate">{account.name}</span></span>;
+  return onClick ? <Button size="md" variant="ghost" className={cn("w-full justify-start", hidden && "opacity-40")} aria-pressed={!hidden} onClick={onClick} title={account.name}>{content}</Button>
+    : <span className="block min-w-0 truncate text-body text-fg-muted" title={account.name}>{content}</span>;
+}
+
+export function WindowUsage({ data, selection, calendar, labels }: { data: AccountActivityData; selection: ActivitySelection; calendar: ActivityCalendar; labels: AccountActivityLabels }) {
+  const [open, setOpen] = useState(true);
+  return <div className="border-t-hairline border-border pt-4">
+    <Button variant="ghost" size="md" aria-expanded={open} onClick={() => setOpen(!open)} leadingIcon={open ? ChevronDown : ChevronRight}>
+      {labels.usageWindows}
+    </Button><span className="ml-2 hidden text-label text-fg-subtle sm:inline">{labels.usageWindowsHint}</span>
+    {open && <div className="mt-4 space-y-6">
+      <div className="overflow-x-auto"><div className="min-w-144 space-y-2.5">
+        {selection.accounts.map((account) => <div key={account.id} className="grid grid-cols-[minmax(0,1fr)_11rem] items-center gap-5">
+          <div className="relative h-5 rounded-sm bg-surface-raised">
+            {data.windows.filter((window) => window.accountId === account.id && window.end > data.start && window.start < data.end).map((window) => {
+              const start = Math.max(data.start, window.start), end = Math.min(data.end, window.end);
+              const description = `${calendar.date(window.start)} – ${calendar.date(window.end - 1)} · ${window.peakPercent === null ? labels.unknown : `${window.peakPercent}%`} ${window.current ? `· ${labels.thisWindow}` : ""}`;
+              return <Tooltip key={window.id} content={description} className="text-body"><span tabIndex={0} role="img" aria-label={`${account.name} · ${description}`}
+                className={cn("absolute inset-y-0 rounded-sm border-2 border-surface-floating outline-none focus-visible:ring-2 focus-visible:ring-focus-ring", window.current && "border border-dashed border-brand")}
+                style={{ left: `${(start - data.start) / (data.end - data.start) * 100}%`, width: `${(end - start) / (data.end - data.start) * 100}%`, backgroundColor: windowColor(window.peakPercent) }} /></Tooltip>;
+            })}
+          </div><AccountName account={account} />
+        </div>)}
+      </div></div><ActivityLegend labels={labels} windows />
+    </div>}
+  </div>;
+}
+
+export function WeeksView({ data, selection, calendar, labels, locale }: { data: AccountActivityData; selection: ActivitySelection; calendar: ActivityCalendar; labels: AccountActivityLabels; locale: string }) {
+  const days = activityDays(data, calendar);
+  const first = new Date(`${days[0].date}T00:00:00Z`); first.setUTCDate(first.getUTCDate() - days[0].weekday);
+  const weekStart = first.getTime(), weekCount = Math.floor((Date.parse(`${days[days.length - 1].date}T00:00:00Z`) - weekStart) / (7 * DAY)) + 1;
+  const byHour = new Map(selection.hours.map((point) => [Date.parse(`${point.date}T00:00:00Z`) + point.hour * HOUR, point.active]));
+  const format = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+  const typical = Array.from({ length: 7 * 24 }, (_, hour) => ({ timestamp: hour * HOUR,
+    value: average(selection.hours.filter((point) => point.weekday === Math.floor(hour / 24) && point.hour === hour % 24).map((point) => point.active)),
+  }));
+  const peakValue = Math.max(0, ...typical.map((point) => point.value ?? 0)), max = Math.max(1, peakValue);
+  return <div className="space-y-6">
+    <div className="overflow-x-auto"><div className="grid min-w-192 grid-cols-[7rem_minmax(0,1fr)_11rem] items-center gap-x-5 gap-y-4">
+      <div /><div className="grid grid-cols-7 text-center text-body text-fg-subtle">{Array.from({ length: 7 }, (_, day) => <span key={day}>{calendar.weekday(day)}</span>)}</div><div />
+      <div className="text-body text-fg-muted">{labels.typicalWeek}<p className="mt-1 text-label text-fg-subtle">{labels.averageHour}</p></div>
+      <ActivityArea points={typical} start={0} end={7 * DAY} max={max} height={100} nights typical labels={labels} />
+      <div className="text-body text-fg-muted">{labels.peak} {format.format(peakValue)}<p className="mt-1 text-label text-fg-subtle">{labels.weekAverage(format.format((data.end - data.start) / DAY / 7))}</p></div>
+      {Array.from({ length: weekCount }, (_, index) => {
+        const start = weekStart + index * 7 * DAY, end = start + 7 * DAY;
+        const points = Array.from({ length: 7 * 24 }, (_, hour) => { const timestamp = start + hour * HOUR; return { timestamp, value: byHour.get(timestamp) ?? null }; });
+        const actualStart = calendar.fromCalendar(new Date(start).toISOString().slice(0, 10)), actualEnd = calendar.fromCalendar(new Date(end).toISOString().slice(0, 10));
+        const events = selection.events.filter((event) => event.timestamp >= actualStart && event.timestamp < actualEnd)
+          .map((event) => ({ ...event, timestamp: calendar.coordinate(event.timestamp) }));
+        const locks = selection.lockRanges.flatMap((range) => selection.locks.flatMap((event) => {
+          const a = Math.max(actualStart, range.start, event.timestamp), b = Math.min(actualEnd, range.end, event.unlockedAt);
+          return b > a ? [{ id: `${event.id}/${range.start}`, start: calendar.coordinate(a), end: calendar.coordinate(b) }] : [];
+        }));
+        const hours = selectionLockedHours(selection, actualStart, actualEnd);
+        return <WeekRow key={start} start={start} end={end} points={points} max={Math.max(max, ...points.map((point) => point.value ?? 0))} events={events} locks={locks} label={calendar.date(actualStart)} summary={events.length || hours ? `${labels.runOuts(events.length)} · ${labels.lockedHours(format.format(hours))}` : labels.quiet} labels={labels} />;
+      })}
+    </div></div>
+    <div className="flex flex-wrap gap-x-5 gap-y-2"><LegendMark color={activityChartColors.secondary}>{labels.active}</LegendMark><LegendMark line color={activityChartColors.incident}>{labels.locked}</LegendMark><LegendMark color={activityChartColors.incident}>{labels.ranOut}</LegendMark><LegendMark color="var(--surface-base)">{labels.night}</LegendMark><LegendMark line>{labels.typicalWeek}</LegendMark></div>
+  </div>;
+}
+function WeekRow({ start, end, points, max, events, locks, label, summary, labels }: {
+  start: number; end: number; points: { timestamp: number; value: number | null }[]; max: number;
+  events: ActivitySelection["events"]; locks: { id: string; start: number; end: number }[]; label: string; summary: string; labels: AccountActivityLabels;
+}) { return <><span className="text-body text-fg-muted">{label}</span><ActivityArea points={points} start={start} end={end} max={max} events={events} locks={locks} nights labels={labels} /><span className={cn("text-body", summary === labels.quiet ? "text-fg-subtle" : "text-fg-muted")}>{summary}</span></>; }
+
+export function RangeView({ data, selection, calendar, labels, query, onChange }: {
+  data: AccountActivityData; selection: ActivitySelection; calendar: ActivityCalendar; labels: AccountActivityLabels; query: AccountActivityQuery; onChange: (patch: Partial<AccountActivityQuery>) => void;
+}) {
+  const accounts = data.accounts.filter((account) => query.accountId === "all" || query.accountId === account.id);
+  const boundaries = useMemo(() => [data.start, ...activityDays({ start: data.start, end: data.end }, calendar).slice(1).map((day) => day.timestamp), data.end], [data.start, data.end, calendar]);
+  const dayCount = boundaries.length - 1;
+  const startDay = Math.max(0, boundaries.findIndex((time) => time > query.range.start) - 1);
+  const endDay = Math.max(startDay + 1, boundaries.findIndex((time) => time >= query.range.end));
+  const changeRange = (range: { start: number; end: number }) => onChange({ range: clampActivityRange(data, range) });
+  const peak = selection.hours.reduce<(typeof selection.hours)[number] | undefined>((best, point) => !best || point.active > best.active ? point : best, undefined);
+  return <div className="grid min-w-0 gap-8 xl:grid-cols-[minmax(0,1.7fr)_minmax(20rem,1fr)]">
+    <div className="min-w-0 space-y-4">
+      <div className="overflow-x-auto"><div className="min-w-160">
+        <div className="mb-2 grid grid-cols-[11rem_minmax(0,1fr)] gap-4"><div /><div className="flex justify-between text-body text-fg-subtle">{Array.from({ length: 6 }, (_, index) => <span key={index}>{calendar.date(data.start + (data.end - data.start - 1) * index / 5)}</span>)}</div></div>
+        <div className="space-y-2.5">{accounts.map((account) => {
+          const windows = data.windows.filter((window) => window.accountId === account.id);
+          const points = windows.flatMap((window) => [...window.readings.map((reading) => ({ timestamp: reading.timestamp, value: reading.percent })), { timestamp: window.end, value: null }]).sort((a, b) => a.timestamp - b.timestamp);
+          const hidden = query.hiddenAccountIds.includes(account.id);
+          return <div key={account.id} className="grid grid-cols-[11rem_minmax(0,1fr)] items-center gap-4">
+            <AccountName account={account} hidden={hidden} onClick={() => onChange({ hiddenAccountIds: hidden ? query.hiddenAccountIds.filter((id) => id !== account.id) : [...query.hiddenAccountIds, account.id] })} />
+            <div className={cn("min-w-0 border-b-hairline border-border", hidden && "opacity-30")}>
+              <ActivityArea points={points} start={data.start} end={data.end} max={100} height={38} events={data.events.filter((event) => event.accountId === account.id)} labels={labels} selection={query.range} onRangeChange={changeRange} />
+            </div>
+          </div>;
+        })}</div>
+      </div></div>
+      <Slider label={labels.selectRange} value={[startDay, endDay]} min={0} max={dayCount} step={1} showValue={false} color="brand"
+        onChange={(value) => { if (Array.isArray(value)) changeRange({ start: boundaries[value[0]], end: boundaries[Math.max(value[0] + 1, value[1])] }); }} />
+      <div className="flex flex-wrap gap-x-5 gap-y-2"><LegendMark color={activityChartColors.secondary}>{labels.windowFilling}</LegendMark><LegendMark line color={activityChartColors.incident}>{labels.locked}</LegendMark><span className="text-label text-fg-subtle">{labels.accountHint}</span></div>
+    </div>
+    <div className="min-w-0 space-y-6 border-t-hairline border-border pt-6 xl:border-l-hairline xl:border-t-0 xl:pl-6 xl:pt-0">
+      <div><h3 className="text-title font-medium text-fg-default">{peak?.active ? labels.busiest(`${String(peak.hour).padStart(2, "0")}:00`, calendar.weekday(peak.weekday)) : selection.hours.length ? labels.quietActivity : labels.empty}</h3><p className="mt-1 text-body text-fg-subtle">{labels.runOuts(selection.events.length)}</p></div>
+      {selection.hours.length ? <><WeekdayHeatmap selection={selection} calendar={calendar} labels={labels} /><ProfileChart selection={selection} labels={labels} calendar={calendar} /></> : <p className="py-12 text-body text-fg-subtle">{labels.empty}</p>}
+      <div className="flex flex-wrap gap-x-5 gap-y-2"><LegendMark line>{labels.weekday}</LegendMark><LegendMark line dashed color={activityChartColors.secondary}>{labels.weekend}</LegendMark><LegendMark color={activityChartColors.incident}>{labels.ranOut}</LegendMark></div>
+    </div>
+  </div>;
+}
+
+export function AccountsView({ selection, calendar, labels, locale }: { selection: ActivitySelection; calendar: ActivityCalendar; labels: AccountActivityLabels; locale: string }) {
+  const lockTotals = new Map(selection.accounts.map((account) => [account.id, selectionLockedHours(selection, selection.start, selection.end, account.id)]));
+  const accounts = [...selection.accounts].sort((a, b) => (lockTotals.get(b.id) ?? 0) - (lockTotals.get(a.id) ?? 0));
+  const { values, lockedHours } = useMemo(() => {
+    const buckets = new Map<string, number[]>();
+    const lockedHours = new Set<string>();
+    for (const point of selection.samples) {
+      const key = `${point.accountId}/${calendar.parts(point.timestamp).hour}`;
+      if (isLocked(point, selection.locks)) { lockedHours.add(key); continue; }
+      if (point.value === null || !Number.isFinite(point.value) || point.value < 0) continue;
+      buckets.set(key, [...(buckets.get(key) ?? []), point.value]);
+    }
+    return { values: new Map([...buckets].map(([key, list]) => [key, average(list)])), lockedHours };
+  }, [selection, calendar]);
+  const maxByAccount = new Map(accounts.map((account) => [account.id, Math.max(0, ...Array.from({ length: 24 }, (_, hour) => values.get(`${account.id}/${hour}`) ?? 0)) || 1]));
+  const rowOrigin = Date.UTC(2026, 8, 14);
+  const accountAt = (date: Date) => accounts[Math.floor((date.getTime() - rowOrigin) / DAY)];
+  const columns = Array.from({ length: 24 }, (_, hour) => ({ bin: hour, bins: accounts.map((account, row) => ({ bin: row, date: new Date(rowOrigin + row * DAY + hour * HOUR), count: values.get(`${account.id}/${hour}`) == null ? NaN : (values.get(`${account.id}/${hour}`) ?? 0) / (maxByAccount.get(account.id) ?? 1) * 8 })) }));
+  const points = selection.events.map((event) => ({ column: calendar.parts(event.timestamp).hour, row: accounts.findIndex((account) => account.id === event.accountId) }));
+  const locks = accounts.flatMap((account, row) => Array.from({ length: 24 }, (_, hour) => ({ column: hour, row })).filter((cell) => lockedHours.has(`${account.id}/${cell.column}`)));
+  const top = Array.from({ length: 24 }, (_, hour) => ({ timestamp: hour * HOUR, value: average(selection.hours.filter((point) => point.hour === hour).map((point) => point.active)) }));
+  const peakValue = Math.max(0, ...top.map((point) => point.value ?? 0)), max = Math.max(1, peakValue), format = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+  return <div className="space-y-6">
+    <div className="overflow-x-auto"><div className="grid min-w-192 grid-cols-[12rem_minmax(0,1fr)_8rem] items-center gap-x-5 gap-y-4">
+      <div className="text-body text-fg-default">{labels.allAccounts}<p className="mt-1 text-label text-fg-subtle">{labels.averageActive}</p></div>
+      <div className="space-y-2"><ActivityArea points={top} start={0} end={23 * HOUR} max={max} height={80} typical labels={labels} /><HourAxis /></div>
+      <span className="text-body text-fg-subtle">{labels.peak} {format.format(peakValue)}<p className="text-label">{labels.active}</p></span>
+      <div className="flex flex-col" style={{ height: accounts.length * 34 }}>{accounts.map((account) => <div className="flex h-full min-h-0 items-center" key={account.id}><AccountName account={account} /></div>)}</div>
+      <ActivityHeatmap columns={columns} points={points} locks={locks} height={accounts.length * 34} labels={labels}
+        formatHeader={(_, date) => accountAt(date)?.name}
+        formatLabel={(_, date) => { const account = accountAt(date), value = account ? values.get(`${account.id}/${date.getUTCHours()}`) : null; return `${String(date.getUTCHours()).padStart(2, "0")}:00 · ${value == null ? labels.unknown : format.format(value)}`; }} />
+      <div className="flex flex-col" style={{ height: accounts.length * 34 }}>{accounts.map((account) => {
+        const hours = lockTotals.get(account.id) ?? 0;
+        return <span key={account.id} className={cn("flex h-full items-center justify-end whitespace-nowrap text-body", hours ? "text-fg-default" : "text-fg-subtle")}>{hours ? labels.lockedHours(format.format(hours)) : labels.neverLocked}</span>;
+      })}</div>
+    </div></div><ActivityLegend labels={labels} relative /><p className="text-label text-fg-subtle">{labels.scaleHint}</p>
+  </div>;
+}
+
+
+"use client";
+
+import { useId, useMemo, useState, type CSSProperties } from "react";
+import { Card, CardContent } from "@zeron/ui/card";
+import { Button } from "@zeron/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
+import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
+import { cn } from "@zeron/ui/system/utils";
+import { ActivityLegend, MatrixChart } from "./account-activity-charts";
+import { AccountsView, RangeView, WeeksView, WindowUsage } from "./account-activity-views";
+import { activityDays, busiestActivity, createActivityCalendar, DAY, selectActivity } from "./account-activity-data";
+import { accountActivityDefaultLabels } from "./account-activity-labels";
+import type { AccountActivityProps, AccountActivityQuery, AccountActivityView } from "./account-activity-types";
+
+const views: AccountActivityView[] = ["matrix", "weeks", "range", "accounts"];
+
+export function AccountActivity({ data, locale = "en-US", timeZone = "UTC", labels: overrides, query: controlled, defaultQuery,
+  onQueryChange, state = "ready", errorMessage, onRetry, className, style, ...props }: AccountActivityProps) {
+  const titleId = useId();
+  const labels = useMemo(() => ({ ...accountActivityDefaultLabels, ...overrides }), [overrides]);
+  const calendar = useMemo(() => createActivityCalendar(timeZone, locale), [timeZone, locale]);
+  const [internal, setInternal] = useState<AccountActivityQuery>(() => ({ view: "matrix", accountId: "all", dayType: "all",
+    range: { start: Math.max(data.start, data.end - 14 * DAY), end: data.end }, hiddenAccountIds: [], ...defaultQuery }));
+  const sourceQuery = controlled ?? internal;
+  const validBounds = Number.isFinite(data.start) && Number.isFinite(data.end) && data.end > data.start;
+  const rangeStart = Math.max(data.start, Math.min(data.end - 1, Number.isFinite(sourceQuery.range.start) ? sourceQuery.range.start : data.start));
+  const query = useMemo(() => ({ ...sourceQuery, range: { start: rangeStart, end: Math.max(rangeStart + 1, Math.min(data.end, Number.isFinite(sourceQuery.range.end) ? sourceQuery.range.end : data.end)) } }), [sourceQuery, rangeStart, data.end]);
+  function update(patch: Partial<AccountActivityQuery>) {
+    const next = { ...query, ...patch };
+    if (!controlled) setInternal(next);
+    onQueryChange?.(next);
+  }
+  const selection = useMemo(() => validBounds && state === "ready" ? selectActivity(data, query, calendar, query.view === "range") : null, [data, query, calendar, validBounds, state]);
+  const days = useMemo(() => validBounds ? activityDays(data, calendar) : [], [data, calendar, validBounds]);
+  const busiest = useMemo(() => {
+    if (!selection) return null;
+    const peak = busiestActivity(selection, query.view === "weeks" ? "weekday" : query.view === "accounts" ? "all" : "dayType");
+    return peak ? { ...peak, time: `${String(peak.hour).padStart(2, "0")}:00–${String(peak.hour + 3).padStart(2, "0")}:00` } : null;
+  }, [selection, query.view]);
+  const incidents = selection?.events ?? [];
+  const mostLimited = selection?.accounts.map((account) => ({ account, events: incidents.filter((event) => event.accountId === account.id) })).sort((a, b) => b.events.length - a.events.length)[0];
+  const eventHours = mostLimited?.events.map((event) => calendar.parts(event.timestamp).hour) ?? [];
+  const eventTime = eventHours.length ? `${String(Math.min(...eventHours)).padStart(2, "0")}:00–${String(Math.min(24, Math.max(...eventHours) + 1)).padStart(2, "0")}:00` : "";
+  const title = state === "loading" ? labels.loading : state === "error" || !validBounds ? labels.error : query.view === "range" ? `${calendar.date(query.range.start)} – ${calendar.date(query.range.end - 1)}`
+    : query.view === "accounts" && mostLimited?.events.length ? labels.accountSummary(mostLimited.account.name, eventTime)
+    : busiest ? labels.busiest(busiest.time, query.view === "weeks" ? calendar.weekday(busiest.day) : busiest.day === 1 ? labels.weekends : labels.weekdays) : selection?.hours.length ? labels.quietActivity : labels.empty;
+  const description = state !== "ready" || !validBounds ? "" : query.view === "range" ? `${labels.rangeSummary(selection?.accounts.length ?? 0)} · ${labels.rangeHint}`
+    : query.view === "accounts" && busiest ? labels.busiest(busiest.time, labels.allAccounts)
+    : labels.summary(incidents.length, days.length, incidents.filter((event) => calendar.parts(event.timestamp).weekday < 5).length);
+
+  return <section {...props} aria-labelledby={titleId} data-slot="account-activity" data-view={query.view} data-theme-transition="instant" className={cn("min-w-0 w-full text-body", className)}
+    style={{ "--zeron-theme-color-duration": "0ms", ...style } as CSSProperties}>
+    <Card className="border-hairline border-border">
+      <CardContent className="p-4 sm:p-6">
+        <Tabs value={query.view} onValueChange={(view) => { if (views.includes(view as AccountActivityView)) update({ view: view as AccountActivityView }); }} variant="segment" color="default" className="min-w-0 space-y-7">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0 flex-1 basis-80"><h2 id={titleId} className="text-title font-medium text-fg-default sm:text-heading">{title}</h2><p className="mt-1 text-label text-fg-subtle" aria-live="polite">{description}</p></div>
+            <div className="flex max-w-full flex-wrap items-center gap-3">
+              {query.view === "accounts" ? <Select value={query.dayType} onValueChange={(dayType) => update({ dayType: dayType as AccountActivityQuery["dayType"] })}>
+                <SelectTrigger aria-label={labels.dayFilter} className="w-36" /><SelectContent>{(["weekdays", "weekends", "all"] as const).map((day) => <SelectItem key={day} value={day}>{labels[day]}</SelectItem>)}</SelectContent>
+              </Select> : <Select value={query.accountId} onValueChange={(accountId) => update({ accountId })}>
+                <SelectTrigger aria-label={labels.accountFilter} className="w-44" /><SelectContent><SelectItem value="all">{labels.allAccounts}</SelectItem>{data.accounts.map((account) => <SelectItem key={account.id} value={account.id}>{account.name}</SelectItem>)}</SelectContent>
+              </Select>}
+              <div className="max-w-full overflow-x-auto"><TabsList aria-label={labels.views}>{views.map((view) => <TabItem key={view} value={view} label={labels[view]} />)}</TabsList></div>
+            </div>
+          </div>
+          {state === "loading" ? <div role="status" className="flex min-h-80 items-center justify-center text-body text-fg-subtle">{labels.loading}</div>
+            : state === "error" || !validBounds ? <div role="alert" className="flex min-h-80 flex-col items-center justify-center gap-4 text-body text-fg-muted"><p>{errorMessage ?? labels.error}</p>{onRetry && <Button variant="secondary" onClick={onRetry}>{labels.retry}</Button>}</div>
+            : selection && <>
+              <TabPanel value="matrix"><div className="space-y-6">{selection.hours.length ? <MatrixChart selection={selection} days={days} calendar={calendar} labels={labels} /> : <EmptyState text={labels.empty} />}<ActivityLegend labels={labels} /><WindowUsage data={data} selection={selection} calendar={calendar} labels={labels} /></div></TabPanel>
+              <TabPanel value="weeks">{selection.hours.length ? <WeeksView data={data} selection={selection} calendar={calendar} labels={labels} locale={locale} /> : <EmptyState text={labels.empty} />}</TabPanel>
+              <TabPanel value="range"><RangeView data={data} selection={selection} calendar={calendar} labels={labels} query={query} onChange={update} /></TabPanel>
+              <TabPanel value="accounts">{selection.hours.length ? <AccountsView selection={selection} calendar={calendar} labels={labels} locale={locale} /> : <EmptyState text={labels.empty} />}</TabPanel>
+            </>}
+        </Tabs>
+      </CardContent>
+    </Card>
+  </section>;
+}
+
+function EmptyState({ text }: { text: string }) { return <p role="status" className="flex min-h-80 items-center justify-center text-body text-fg-subtle">{text}</p>; }
+
+
+export { AccountActivity } from "./account-activity";
+export { accountActivityDemoData } from "./account-activity-demo-data";
+export { accountActivityDefaultLabels } from "./account-activity-labels";
+export type { AccountActivityAccount, AccountActivityData, AccountActivityDayType, AccountActivityEvent, AccountActivityLabels, AccountActivityProps, AccountActivityQuery, AccountActivitySample, AccountActivityView, AccountActivityWindow } from "./account-activity-types";

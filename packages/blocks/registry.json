@@ -3,6 +3,78 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "account-activity-01",
+      "type": "registry:block",
+      "title": "账号活动分析",
+      "description": "Multi-account hourly activity, weekly trends, range selection and quota windows.",
+      "categories": [
+        "application",
+        "analytics",
+        "monitoring"
+      ],
+      "dependencies": [
+        "@visx/curve"
+      ],
+      "registryDependencies": [
+        "area-chart",
+        "line-chart",
+        "heatmap-chart",
+        "chart-core",
+        "chart-brush",
+        "chart-primitives",
+        "card",
+        "tabs",
+        "select",
+        "slider",
+        "button",
+        "tooltip",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/account-activity-01/account-activity-charts.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/account-activity-01/account-activity-charts.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/account-activity-01/account-activity-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/account-activity-01/account-activity-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/account-activity-01/account-activity-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/account-activity-01/account-activity-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/account-activity-01/account-activity-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/account-activity-01/account-activity-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/account-activity-01/account-activity-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/account-activity-01/account-activity-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/account-activity-01/account-activity-views.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/account-activity-01/account-activity-views.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/account-activity-01/account-activity.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/account-activity-01/account-activity.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/account-activity-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/account-activity-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "usage-forecast-01",
       "type": "registry:block",
       "title": "账户用量预测",

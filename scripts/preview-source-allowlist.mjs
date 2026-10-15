@@ -17,6 +17,16 @@ export const previewSourceFiles = {
     "packages/blocks/src/application/resource-cost-01/resource-cost-labels.ts",
     "packages/blocks/src/application/resource-cost-01/resource-cost-demo-data.ts"
   ],
+  "account-activity-01": [
+    "packages/blocks/src/application/account-activity-01/account-activity-charts.tsx",
+    "packages/blocks/src/application/account-activity-01/account-activity-data.ts",
+    "packages/blocks/src/application/account-activity-01/account-activity-demo-data.ts",
+    "packages/blocks/src/application/account-activity-01/account-activity-labels.ts",
+    "packages/blocks/src/application/account-activity-01/account-activity-types.ts",
+    "packages/blocks/src/application/account-activity-01/account-activity-views.tsx",
+    "packages/blocks/src/application/account-activity-01/account-activity.tsx",
+    "packages/blocks/src/application/account-activity-01/index.ts"
+  ],
   "plan-usage-01": [
     "packages/blocks/src/application/plan-usage-01/index.ts",
     "packages/blocks/src/application/plan-usage-01/plan-usage-types.ts",

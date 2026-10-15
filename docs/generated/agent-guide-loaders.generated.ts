@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 export const agentGuideLoaders: Record<string, () => Promise<string>> = {
+  "blocks/account-activity-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/account-activity-01.md"), "utf8"),
   "blocks/agent-message-trace-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/agent-message-trace-01.md"), "utf8"),
   "blocks/ai-gateway-overview-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/ai-gateway-overview-01.md"), "utf8"),
   "blocks/ai-gateway-session-list-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/ai-gateway-session-list-01.md"), "utf8"),
