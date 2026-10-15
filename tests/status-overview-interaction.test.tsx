@@ -62,6 +62,20 @@ describe("StatusOverview", () => {
     expect(screen.getByRole("region", { name: "Custom status palette" }).hasAttribute("chartColors")).toBe(false);
   });
 
+  it("supports a 20px inline chart and preserves its height across loading", () => {
+    const props = { variant: "chart" as const, label: null, railHeight: 20, ariaLabel: "Inline quota", emptyContent: "No usage", content: timelineContent };
+    const { container, rerender } = render(<StatusOverview {...props} />);
+    expect(screen.getByRole("grid").style.height).toBe("20px");
+    expect(container.querySelector('[data-slot="status-overview-header"]')).toBeNull();
+    expect(screen.getByRole("region").hasAttribute("railHeight")).toBe(false);
+    fireEvent.keyDown(screen.getByRole("grid"), { key: "End" });
+    expect(screen.getByRole("grid").getAttribute("aria-activedescendant")).toContain("hour-3");
+    rerender(<StatusOverview {...props} state="loading" />);
+    expect(container.querySelector<HTMLElement>('[data-slot="status-overview-skeleton"]')?.style.height).toBe("20px");
+    rerender(<StatusOverview {...props} railHeight={NaN} />);
+    expect(screen.getByRole("grid").style.height).toBe("");
+  });
+
   it("keeps an unlabeled activity rail accessible with results below", () => {
     render(<StatusOverview ariaLabel="Integration checks" label={null} variant="activity"
       content={{ type: "nodes", items: timelineContent.items, footer: <span>All checks passed</span> }} emptyContent="No checks" />);
