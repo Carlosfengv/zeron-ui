@@ -34,6 +34,7 @@ export const agentGuideLoaders: Record<string, () => Promise<string>> = {
   "blocks/storage-usage-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/storage-usage-01.md"), "utf8"),
   "blocks/support-analytics-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/support-analytics-01.md"), "utf8"),
   "blocks/transaction-details-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/transaction-details-01.md"), "utf8"),
+  "blocks/usage-timeline-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/usage-timeline-01.md"), "utf8"),
   "blocks/user-account-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/user-account-01.md"), "utf8"),
   "blocks/website-analytics-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/website-analytics-01.md"), "utf8"),
   "blocks/zaiops-operations-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/zaiops-operations-01.md"), "utf8"),
@@ -75,5 +76,6 @@ export const agentGuideLoaders: Record<string, () => Promise<string>> = {
   "components/sidebar-identity-row.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/sidebar-identity-row.md"), "utf8"),
   "components/sidebar.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/sidebar.md"), "utf8"),
   "components/time-range-histogram.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/time-range-histogram.md"), "utf8"),
+  "components/time-window-timeline.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/time-window-timeline.md"), "utf8"),
   "components/tree.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/tree.md"), "utf8"),
 };

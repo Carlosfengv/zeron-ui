@@ -1,0 +1,12 @@
+{
+  "usageTimelineBlock": {
+    "title": "Account usage timeline",
+    "description": "Provider-grouped account quota windows, usage meters and reset events on a shared timeline.",
+    "composition": "Components and styling",
+    "compositionBody": "Composes TimeWindowTimeline, Badge, Button, ButtonGroup and Tabs. Periods use standard brand-colored pill Tabs; date navigation and used/remaining selection use standard ButtonGroup controls at their default size. The frame, windows and progress tracks use the project’s rounded-xl, rounded-lg and rounded-sm utilities, following host radius variables. Timeline bars and legends use chart-1, chart-3 and chart-7; historical windows use chart-6, and event markers use chart-2 and chart-5. The now indicator follows the brand color. Surfaces, text and account status badges retain their semantic tokens in light and dark themes.",
+    "interaction": "Windows and navigation",
+    "interactionBody": "Browse 14 calendar days, return to today, switch weekly, five-hour and billing windows, or display used and remaining percentages. Five-hour mode zooms to 24 hours. Quota color always reflects actual usage. On narrow screens the timeline scrolls horizontally while account labels remain visible.",
+    "integration": "Data and integration",
+    "integrationBody": "Provide groups, accounts, quota windows and an explicit snapshot time. Previous windows require a real previousStart; next windows require nextEnd. History is not inferred from the current duration. Controls support controlled values and callbacks; a controlled mode request cannot mutate the current range. Missing periods show no window data. Disconnected rows retain a muted snapshot. Dates outside the supported range show a validation alert; calendar arithmetic handles DST and skipped midnights. Hosts own data fetching and connections; the demo uses fixed example data."
+  }
+}

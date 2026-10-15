@@ -1,4 +1,5 @@
 "use client";
+import { UsageTimelineDemo } from "./UsageTimelineDemo";
 import { ContextWindowDemo } from "./ContextWindowDemo";
 import { FleetHealthDemo } from "./FleetHealthDemo";
 import { WebsiteAnalyticsDemo } from "./WebsiteAnalyticsDemo";
@@ -231,6 +232,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
       return <TransactionDetailsDemo />;
     case "cost-estimate-01":
       return <CostEstimateDemo />;
+    case "usage-timeline-01":
+      return <UsageTimelineDemo />;
     case "resource-cost-01":
       return <ResourceCostDemo />;
     case "plan-usage-01":

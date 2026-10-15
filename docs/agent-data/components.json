@@ -1,4 +1,50 @@
 {
+  "usage-timeline-01": {
+    "keywords": [
+      "账户",
+      "用量",
+      "额度",
+      "周期",
+      "时间轴",
+      "usage",
+      "quota",
+      "timeline",
+      "reset"
+    ],
+    "useCases": [
+      "按提供商分组查看账户额度周期、进度与重置事件。"
+    ],
+    "whenNotToUse": [
+      "不提供真实账户连接、采集或额度预测。"
+    ],
+    "keyApi": [
+      "providers/now 提供分组窗口与快照时间。",
+      "mode/measure/rangeStart 支持受控值与回调。",
+      "locale/timeZone/labels 负责本地化。"
+    ]
+  },
+  "time-window-timeline": {
+    "keywords": [
+      "时间轴",
+      "窗口",
+      "周期",
+      "timeline",
+      "interval",
+      "window",
+      "gantt"
+    ],
+    "useCases": [
+      "通用分组周期窗口、区间计量和时间事件可视化。"
+    ],
+    "whenNotToUse": [
+      "不提供拖拽排期或直方图范围选择。"
+    ],
+    "keyApi": [
+      "start/end/ticks/groups 显式描述可视范围、刻度和分组。",
+      "intervals 提供 variant、tone、value 与 ariaLabel。",
+      "now/markers 提供现在指示线和事件标记。"
+    ]
+  },
   "plan-usage-01": {
     "keywords": [
       "套餐",

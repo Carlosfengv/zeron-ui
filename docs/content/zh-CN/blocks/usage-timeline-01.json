@@ -1,0 +1,12 @@
+{
+  "usageTimelineBlock": {
+    "title": "账户用量时间线",
+    "description": "按提供商分组，在统一时间轴上查看账户额度周期、用量进度和重置事件。",
+    "composition": "组件与样式",
+    "compositionBody": "由通用 TimeWindowTimeline、Badge、Button、ButtonGroup 和 Tabs 组成。周期选择使用标准品牌色 pill Tabs，日期导航与已用/剩余切换使用标准 ButtonGroup 和默认控件尺寸。外框、周期窗口与进度条分别采用项目的 rounded-xl、rounded-lg 和 rounded-sm，跟随宿主圆角变量。时间轴与图例优先使用 chart-1、chart-3 和 chart-7；历史窗口使用 chart-6，事件标记使用 chart-2 与 chart-5。现在指示线跟随品牌主题色，表面、文字与账户状态标签继续使用语义变量，适配明暗主题。",
+    "interaction": "周期与时间导航",
+    "interactionBody": "浏览双周时间范围、回到今天，切换每周、5 小时和计费周期，以及已用或剩余百分比。5 小时模式放大到 24 小时。额度颜色始终根据真实已用量判断。窄屏下时间轴局部横向滚动，账户标签固定在左侧。",
+    "integration": "数据接入",
+    "integrationBody": "宿主提供账户分组、额度窗口与明确快照时间。历史窗口仅在提供真实 previousStart 时展示，下一窗口仅在提供 nextEnd 时展示；不会从当前周期长度推算历史。周期、显示指标和日期导航支持受控值与回调，受控周期请求不会修改当前日期范围。缺少周期数据显示提示，断开连接保留弱化的旧快照。超出可格式化范围的日期显示校验错误；日历处理夏令时和午夜跳时。真实账户连接和请求由宿主管理，演示使用固定示例数据。"
+  }
+}

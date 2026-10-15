@@ -2,6 +2,26 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:usage-timeline-01",
+      "type": "registry",
+      "key": "usage-timeline-01",
+      "aliases": [
+        "usage-timeline-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "component:time-window-timeline",
+      "type": "registry",
+      "key": "time-window-timeline",
+      "aliases": [
+        "time-window-timeline"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:resource-cost-01",
       "type": "registry",
       "key": "resource-cost-01",

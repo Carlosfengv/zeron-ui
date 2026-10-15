@@ -271,6 +271,18 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "usage-timeline-01": [
+      '"use client";',
+      'import { UsageTimeline, usageTimelineDemoProviders, usageTimelineDemoNow } from "@/components/blocks/usage-timeline-01";',
+      'export default function Page() { return <UsageTimeline providers={usageTimelineDemoProviders} now={usageTimelineDemoNow} timeZone="Asia/Shanghai" />; }',
+      '',
+    ].join("\n"),
+    "time-window-timeline": [
+      '"use client";',
+      'import { TimeWindowTimeline } from "@/components/ui/time-window-timeline";',
+      'export default function Page() { return <TimeWindowTimeline ariaLabel="Quota windows" start={0} end={100} now={40} ticks={[{id:"tick",start:0,end:100,label:"Period"}]} groups={[{id:"group",label:"Compute",rows:[{id:"row",label:"GPU pool",intervals:[{id:"window",start:10,end:90,label:"32% used",ariaLabel:"GPU pool: 32% used",value:32}]}]}]} />; }',
+      '',
+    ].join("\n"),
     "resource-cost-01": [
       '"use client";',
       'import { ResourceCost, resourceCostDemoItems } from "@/components/blocks/resource-cost-01";',

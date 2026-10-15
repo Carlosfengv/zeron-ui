@@ -1,5 +1,13 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "usage-timeline-01": [
+    "packages/blocks/src/application/usage-timeline-01/index.ts",
+    "packages/blocks/src/application/usage-timeline-01/usage-timeline.tsx",
+    "packages/blocks/src/application/usage-timeline-01/usage-timeline-types.ts",
+    "packages/blocks/src/application/usage-timeline-01/usage-timeline-labels.ts",
+    "packages/blocks/src/application/usage-timeline-01/usage-timeline-data.ts",
+    "packages/blocks/src/application/usage-timeline-01/usage-timeline-demo-data.ts"
+  ],
   "resource-cost-01": [
     "packages/blocks/src/application/resource-cost-01/index.ts",
     "packages/blocks/src/application/resource-cost-01/resource-cost.tsx",

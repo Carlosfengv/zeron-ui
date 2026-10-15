@@ -28,14 +28,16 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(137);
-    expect(detailDocEntries).toHaveLength(137);
+    expect(pageDocEntries).toHaveLength(139);
+    expect(detailDocEntries).toHaveLength(139);
+    expect(pageDocEntries.find((entry) => entry.slug === "usage-timeline-01")?.collection).toBe("blocks");
+    expect(pageDocEntries.find((entry) => entry.slug === "time-window-timeline")?.collection).toBe("components");
     expect(pageDocEntries.find((entry) => entry.slug === "plan-usage-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "context-window-01")?.collection).toBe("blocks");
     expect(pageDocEntries.some((entry) => entry.slug === "availability-monitor-01")).toBe(false);
     expect(pageDocEntries.find((entry) => entry.slug === "website-analytics-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "sales-conversion-funnel-01")?.collection).toBe("blocks");
-    expect(legacyDocRedirects).toHaveLength(80);
+    expect(legacyDocRedirects).toHaveLength(81);
     expect(pageDocEntries.some(entry => entry.slug === "error-state" || entry.slug === "status-indicator")).toBe(false);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });
