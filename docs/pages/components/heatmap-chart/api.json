@@ -30,6 +30,12 @@
     "description": "`fluid` — width drives square cells; chart height hugs the grid (GitHub-style).\n`fill` — expands cells to fill the parent."
   },
   {
+    "name": "HeatmapChart.stretchCells",
+    "type": "boolean",
+    "default": "false",
+    "description": "In fill layout, size row height and column width independently. Fixed binSize takes precedence."
+  },
+  {
     "name": "HeatmapChart.margin",
     "type": "Partial<Margin>",
     "default": "—",
@@ -160,6 +166,102 @@
     "type": "ReactNode",
     "default": "required",
     "description": "Child components (HeatmapCells, HeatmapXAxis, HeatmapYAxis)"
+  },
+  {
+    "name": "HeatmapMatrix.ariaLabel",
+    "type": "string",
+    "default": "required",
+    "description": "Required composition API."
+  },
+  {
+    "name": "HeatmapMatrix.data",
+    "type": "HeatmapColumn[]",
+    "default": "required",
+    "description": "Equal-length row bins. NaN means missing; zero remains an observed idle value."
+  },
+  {
+    "name": "HeatmapMatrix.columns",
+    "type": "readonly HeatmapMatrixColumn[]",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapMatrix.rowLabels",
+    "type": "readonly ReactNode[]",
+    "default": "—",
+    "description": "One optional label per row; use empty strings for unticked rows."
+  },
+  {
+    "name": "HeatmapMatrix.points",
+    "type": "readonly HeatmapMatrixPoint[]",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapMatrix.lockedCells",
+    "type": "readonly HeatmapMatrixPoint[]",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapMatrix.profile",
+    "type": "HeatmapMatrixProfile",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapMatrix.lockedLabel",
+    "type": "ReactNode",
+    "default": "—",
+    "description": "Shows the per-column lock strip when supplied."
+  },
+  {
+    "name": "HeatmapMatrix.max",
+    "type": "number",
+    "default": "8",
+    "description": "Upper value of the shared sequential chart scale. Default: 8"
+  },
+  {
+    "name": "HeatmapMatrix.height",
+    "type": "number",
+    "default": "432",
+    "description": "Plot height in CSS pixels. Default: 432"
+  },
+  {
+    "name": "HeatmapMatrix.minWidth",
+    "type": "number",
+    "default": "0",
+    "description": "Local horizontal scrolling below this width; zero allows the plot to shrink. Default: 0"
+  },
+  {
+    "name": "HeatmapMatrix.formatHeader",
+    "type": "HeatmapTooltipProps[\"formatHeader\"]",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapMatrix.formatLabel",
+    "type": "HeatmapTooltipProps[\"formatLabel\"]",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapMatrix.onCellSelect",
+    "type": "(bin: HeatmapBin) => void",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapMatrix.emptyContent",
+    "type": "ReactNode",
+    "default": "—",
+    "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapMatrix.invalidContent",
+    "type": "ReactNode",
+    "default": "—",
+    "description": "Optional composition API."
   },
   {
     "name": "HeatmapCells.cornerRadius",
@@ -310,6 +412,12 @@
     "type": "string",
     "default": "—",
     "description": "Optional composition API."
+  },
+  {
+    "name": "HeatmapTooltip.formatHeader",
+    "type": "(count: number, date: Date) => React.ReactNode",
+    "default": "—",
+    "description": "Replace calendar date headings for categorical or hourly matrices."
   },
   {
     "name": "HeatmapTooltip.formatLabel",

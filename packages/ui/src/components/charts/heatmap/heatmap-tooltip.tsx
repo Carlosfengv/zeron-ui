@@ -11,6 +11,8 @@ import {
 import { useDelayedTooltipData } from "./use-delayed-tooltip-data";
 
 export interface HeatmapTooltipProps {
+  /** Replace calendar date headings for categorical or hourly matrices. */
+  formatHeader?: (count: number, date: Date) => React.ReactNode;
   /** Custom contribution line (bottom section). Default: `N contribution(s)`. */
   formatLabel?: (count: number, date: Date) => string;
   /** Custom class name */
@@ -39,6 +41,7 @@ export interface HeatmapTooltipProps {
 }
 
 export const HeatmapTooltip = memo(function HeatmapTooltip({
+  formatHeader,
   formatLabel = formatHeatmapContributionLabel,
   className = "",
   panelStyle,
@@ -73,12 +76,12 @@ export const HeatmapTooltip = memo(function HeatmapTooltip({
     >
       <div className="overflow-hidden">
         <div className="px-3 py-2.5 text-left">
-          <div className="font-medium text-fg-default text-label">
+          {formatHeader ? <div className="font-medium text-fg-default text-label">{formatHeader(count, date)}</div> : <><div className="font-medium text-fg-default text-label">
             {formatHeatmapTooltipDate(date)}
           </div>
           <div className="mt-0.5 text-fg-muted text-label">
             {formatHeatmapTooltipWeekday(date)}
-          </div>
+          </div></>}
           <div className="my-2 border-border border-t" />
           <div className="text-fg-default text-body">
             {formatLabel(count, date)}
