@@ -4,6 +4,26 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "time-window-timeline",
+      "type": "registry:ui",
+      "title": "TimeWindowTimeline",
+      "description": "Grouped time windows with clipped intervals, usage meters, elapsed shading, a now line and event markers.",
+      "registryDependencies": [
+        "surfaces",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/time-window-timeline.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/time-window-timeline.tsx"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "surfaces",
       "type": "registry:theme",
       "title": "Semantic Design Tokens",
