@@ -126,6 +126,10 @@
       "itemId": "block:transaction-details-01"
     },
     {
+      "path": "blocks/usage-forecast-01.md",
+      "itemId": "block:usage-forecast-01"
+    },
+    {
       "path": "blocks/user-account-01.md",
       "itemId": "block:user-account-01"
     },
