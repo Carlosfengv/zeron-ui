@@ -1,4 +1,5 @@
 {
+  "usage-timeline-01": {"framework": "react", "kind": "data-block"},
   "plan-usage-01": {"framework": "react", "kind": "data-block"},
   "fleet-health-01": {"framework": "react", "kind": "data-block"},
   "website-analytics-01": {"framework": "react", "kind": "data-block"},

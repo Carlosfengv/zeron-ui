@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "usage-timeline-01", title: "账户用量时间线", description: "提供商分组、额度周期、用量进度和重置事件的双周时间线。", categories: ["application", "analytics", "billing"], dependencies: ["badge", "button", "button-group", "icon-context", "inline-notice", "skeleton", "tabs", "time-window-timeline", "utils", "@lobehub/icons"] },
   { name: "resource-cost-01", title: "算力资源成本", description: "GPU 集群与云主机的多层级资源成本、占比、交付与容量状态。", categories: ["application", "analytics", "billing", "tables"], dependencies: ["badge", "button", "button-group", "chart", "container", "data-table", "dropdown", "empty", "icon-context", "inline-notice", "input-group", "menu-item", "select", "utils", "@tanstack/react-table"] },
   { name: "plan-usage-01", title: "套餐与用量", description: "套餐、周期用量、限额、付款方式与历史账单的订阅管理区块。", categories: ["application", "billing", "settings"], dependencies: ["badge", "bar-chart", "button", "chart-core", "chart-primitives", "card", "icon-context", "inline-notice", "slider", "switch", "table", "utils", "@hugeicons/react", "@hugeicons/core-free-icons"] },
   { name: "context-window-01", title: "上下文窗口", description: "上下文容量、提示词缓存、分类 token 矩阵与内容查看。", categories: ["application", "agent", "monitoring"], dependencies: ["badge","button","container","inline-notice","tabs","tooltip","icon-context","utils"] },
