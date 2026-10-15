@@ -492,6 +492,10 @@ async function verifyNextBuild({ consumer, component }) {
     'import { UsageForecast, usageForecastDemoAccounts, usageForecastDemoNow } from "@/components/blocks/usage-forecast-01";',
     'export default function Page() { return <UsageForecast accounts={usageForecastDemoAccounts} now={usageForecastDemoNow} />; }',
   ].join("\n");
+  examples["account-activity-01"] = [
+    'import { AccountActivity, accountActivityDemoData } from "@/components/blocks/account-activity-01";',
+    'export default function Page() { return <AccountActivity data={accountActivityDemoData} />; }',
+  ].join("\n");
   examples["context-window-01"] = [
     '"use client";',
     'import { ContextWindow, createContextWindowDemoData } from "@/components/blocks/context-window-01";',
@@ -804,6 +808,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
       'createRoot(document.getElementById("root")!).render(<ListPagination total={11} page={0} pageSize={5} onPageChange={() => {}} onPageSizeChange={() => {}} />);',
     ].join("\n"),
   };
+  examples["account-activity-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { AccountActivity, accountActivityDemoData } from "@/src/components/blocks/account-activity-01";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<AccountActivity data={accountActivityDemoData} />);',
+  ].join("\n");
   examples["context-window-01"] = [
     'import { createRoot } from "react-dom/client";',
     'import { ContextWindow, createContextWindowDemoData } from "@/src/components/blocks/context-window-01";',
