@@ -141,7 +141,7 @@ export function TimeWindowTimeline(props: TimeWindowTimelineProps) {
         <caption id={captionId} className="sr-only">{ariaLabel}</caption>
         <colgroup><col style={{ width: labelSize }} /><col /></colgroup>
         <thead><tr>
-          <th scope="col" className="sticky left-0 z-20 h-16 border-b-hairline border-r-hairline border-border bg-surface-raised px-5 font-normal text-fg-subtle">{labelHeader}</th>
+          <th scope="col" className="sticky left-0 z-raised h-16 border-b-hairline border-r-hairline border-border bg-surface-raised px-5 font-normal text-fg-subtle">{labelHeader}</th>
           <th scope="col" className="relative h-16 border-b-hairline border-border bg-surface-raised p-0 font-normal">
             <span className="sr-only">{ariaLabel}</span>
             {visibleTicks.map((tick) => <span key={tick.id} data-slot="time-window-tick" aria-current={currentTick?.id === tick.id ? "date" : undefined}
@@ -156,7 +156,7 @@ export function TimeWindowTimeline(props: TimeWindowTimelineProps) {
             <span className="sticky left-0 inline-flex items-center gap-2.5 px-5 text-body text-fg-default">{group.label}</span>
           </th></tr>
           {group.rows.map((row) => <tr key={row.id} data-slot="time-window-row" data-muted={row.muted || undefined}>
-            <th scope="row" className="sticky left-0 z-20 border-b-hairline border-r-hairline border-border-subtle bg-surface-floating px-5 py-4 align-middle font-normal">
+            <th scope="row" className="sticky left-0 z-raised border-b-hairline border-r-hairline border-border-subtle bg-surface-floating px-5 py-4 align-middle font-normal">
               <div className={cn("min-w-0", row.muted && "opacity-50")}>{row.label}</div>
             </th>
             <td className="relative h-28 border-b-hairline border-border-subtle p-0">
@@ -168,14 +168,14 @@ export function TimeWindowTimeline(props: TimeWindowTimelineProps) {
                 {row.intervals.map((interval) => <TimelineInterval key={interval.id} interval={interval} start={start} end={end} now={now} />)}
                 {row.markers?.filter((marker) => marker.at >= start && marker.at < end).map((marker) => <span key={marker.id}
                   data-slot="time-window-marker" data-kind={marker.kind ?? "reset"} role="img" aria-label={marker.label} title={marker.label}
-                  className={cn("absolute inset-y-3 z-10 -translate-x-1/2 rounded-full border-2 border-surface-floating", marker.kind === "expiry" ? "w-2" : "w-1.5")}
+                  className={cn("absolute inset-y-3 z-content -translate-x-1/2 rounded-full border-2 border-surface-floating", marker.kind === "expiry" ? "w-2" : "w-1.5")}
                   style={{ left: position(marker.at), backgroundColor: marker.kind === "expiry" ? "var(--chart-5)" : "var(--chart-2)" }} />)}
               </div>
             </td>
           </tr>)}
         </tbody>)}
       </table>
-      {nowVisible && <div aria-hidden="true" className="pointer-events-none absolute bottom-0 right-0 top-16 z-10" style={{ left: labelSize }}>
+      {nowVisible && <div aria-hidden="true" className="pointer-events-none absolute bottom-0 right-0 top-16 z-content" style={{ left: labelSize }}>
         <span data-slot="time-window-now" className="absolute inset-y-0 border-l-2 border-brand/75" style={{ left: position(now) }}>
           <span className="absolute left-0 top-1 -translate-x-1/2 whitespace-nowrap rounded-lg bg-brand px-2 py-0.5 text-label text-fg-on-brand">{nowLabel}</span>
         </span>
