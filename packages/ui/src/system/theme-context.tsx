@@ -66,7 +66,7 @@ function ThemeProvider({
 
   // Single source of truth for the DOM side effects: swap the root classes,
   // bracketed by the `.transitioning` guard (added + reflow-flushed before the
-  // swap so the 180ms colour cross-fade applies). Clearing the previous
+  // swap so the semantic colour cross-fade applies). Clearing the previous
   // timeout first keeps a double-press from removing the class mid-fade.
   useEffect(() => {
     if (!isThemeReady) return;
