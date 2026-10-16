@@ -1,0 +1,10 @@
+{
+  "appearanceSettingsBlock": {
+    "title": "Appearance settings",
+    "description": "Device appearance preferences with theme previews, accent colors, density and motion settings.",
+    "composition": "Composition",
+    "compositionBody": "Container wraps the full settings surface. ContainerHeader displays the title and description; ContainerBody contains the settings. RadioGroup and RadioGroupItem provide theme selection. The first ColorSwatch follows the brand token; the remaining colors reuse the shared categorical palette. Tabs, TabsList and TabItem provide the two independent density choices through the standard pill variant, and Select controls motion. Typography, surfaces, borders, focus rings and control sizes follow current Zeron tokens. Theme miniatures are decorative UI previews with locally scoped light and dark surfaces.",
+    "behavior": "Behavior and integration",
+    "behaviorBody": "Pass value and onValueChange to control all five preferences. The callback receives the complete next value; the host applies and persists theme, accent, density and motion. The demo keeps choices in local state and updates the accent inside each theme preview. It does not change the documentation site's theme or save device settings. Controls are disabled when a change callback is absent. English and Chinese labels are included; the host may customize the description for its product."
+  }
+}

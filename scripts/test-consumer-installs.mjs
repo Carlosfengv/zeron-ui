@@ -522,6 +522,12 @@ async function verifyNextBuild({ consumer, component }) {
     'import { DesignStack, designStackDemoItems, useDesignStackHistory } from "@/components/blocks/design-stack-01";',
     'export default function Page() { const { items, onItemsChange, history } = useDesignStackHistory(designStackDemoItems); return <DesignStack items={items} onItemsChange={onItemsChange} history={history} />; }',
   ].join("\n");
+  examples["appearance-settings-01"] = [
+    '"use client";',
+    'import { useState } from "react";',
+    'import { AppearanceSettings, defaultAppearanceSettings } from "@/components/blocks/appearance-settings-01";',
+    'export default function Page() { const [value, setValue] = useState(defaultAppearanceSettings); return <AppearanceSettings value={value} onValueChange={setValue} />; }',
+  ].join("\n");
   examples["file-upload-01"] = [
     '"use client";',
     'import { FileUpload } from "@/components/blocks/file-upload-01";',
@@ -849,6 +855,14 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { DesignStack, designStackDemoItems, useDesignStackHistory } from "@/src/components/blocks/design-stack-01";',
     'function App() { const { items, onItemsChange, history } = useDesignStackHistory(designStackDemoItems); return <DesignStack items={items} onItemsChange={onItemsChange} history={history} />; }',
     'createRoot(document.getElementById("root")!).render(<App />);',
+  ].join("\n");
+  examples["appearance-settings-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { useState } from "react";',
+    'import { AppearanceSettings, defaultAppearanceSettings } from "@/src/components/blocks/appearance-settings-01";',
+    'import "./index.css";',
+    'function Example() { const [value, setValue] = useState(defaultAppearanceSettings); return <AppearanceSettings value={value} onValueChange={setValue} />; }',
+    'createRoot(document.getElementById("root")!).render(<Example />);',
   ].join("\n");
   examples["file-upload-01"] = [
     'import { createRoot } from "react-dom/client";',

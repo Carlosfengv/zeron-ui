@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "appearance-settings-01", title: "外观设置", description: "主题预览、强调色、侧边栏与任务密度以及动效偏好的可控设置面板。", categories: ["application", "settings"], dependencies: ["badge", "color-picker", "container", "radio-group", "select", "tabs", "icon-context", "utils"] },
   { name: "usage-timeline-01", title: "账户用量时间线", description: "提供商分组、额度周期、用量进度和重置事件的双周时间线。", categories: ["application", "analytics", "billing"], dependencies: ["badge", "button", "button-group", "icon-context", "inline-notice", "skeleton", "tabs", "time-window-timeline", "utils", "@lobehub/icons"] },
   { name: "usage-forecast-01", title: "账户用量预测", description: "多账户额度预测、耗尽时间、重置周期与近期消耗趋势。", categories: ["application", "analytics", "billing"], dependencies: ["area-chart", "bar-chart", "button", "card", "chart-core", "icon-context", "inline-notice", "line-chart", "skeleton", "status-overview", "table", "tabs", "utils", "@lobehub/icons", "@visx/curve@4.0.0"] },
   { name: "resource-cost-01", title: "算力资源成本", description: "GPU 集群与云主机的多层级资源成本、占比、交付与容量状态。", categories: ["application", "analytics", "billing", "tables"], dependencies: ["badge", "button", "button-group", "chart", "container", "data-table", "dropdown", "empty", "icon-context", "inline-notice", "input-group", "menu-item", "select", "utils", "@tanstack/react-table"] },

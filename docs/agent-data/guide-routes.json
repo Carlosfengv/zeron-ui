@@ -15,6 +15,10 @@
       "itemId": "block:ai-gateway-session-list-01"
     },
     {
+      "path": "blocks/appearance-settings-01.md",
+      "itemId": "block:appearance-settings-01"
+    },
+    {
       "path": "blocks/cluster-environment-detail-01.md",
       "itemId": "block:cluster-environment-detail-01"
     },

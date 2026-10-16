@@ -3,6 +3,20 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "appearance-settings-01",
+      "type": "registry:block",
+      "title": "Appearance Settings",
+      "description": "Controlled appearance preferences with theme previews, accent colors, density and motion inside a Container.",
+      "categories": ["application", "settings"],
+      "registryDependencies": ["badge", "color-picker", "container", "radio-group", "select", "tabs", "icon-context", "utils"],
+      "files": [
+        { "path": "packages/blocks/src/application/appearance-settings-01/appearance-settings.tsx", "type": "registry:component", "target": "components/blocks/appearance-settings-01/appearance-settings.tsx" },
+        { "path": "packages/blocks/src/application/appearance-settings-01/appearance-settings-types.ts", "type": "registry:component", "target": "components/blocks/appearance-settings-01/appearance-settings-types.ts" },
+        { "path": "packages/blocks/src/application/appearance-settings-01/appearance-settings-labels.ts", "type": "registry:component", "target": "components/blocks/appearance-settings-01/appearance-settings-labels.ts" },
+        { "path": "packages/blocks/src/application/appearance-settings-01/index.ts", "type": "registry:component", "target": "components/blocks/appearance-settings-01/index.ts" }
+      ]
+    },
+    {
       "name": "usage-timeline-01",
       "type": "registry:block",
       "title": "账户用量时间线",

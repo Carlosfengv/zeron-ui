@@ -1,5 +1,11 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "appearance-settings-01": [
+    "packages/blocks/src/application/appearance-settings-01/index.ts",
+    "packages/blocks/src/application/appearance-settings-01/appearance-settings.tsx",
+    "packages/blocks/src/application/appearance-settings-01/appearance-settings-types.ts",
+    "packages/blocks/src/application/appearance-settings-01/appearance-settings-labels.ts"
+  ],
   "usage-timeline-01": [
     "packages/blocks/src/application/usage-timeline-01/index.ts",
     "packages/blocks/src/application/usage-timeline-01/usage-timeline.tsx",
