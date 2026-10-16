@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./appearance-settings-01": "./src/application/appearance-settings-01/index.ts",
     "./usage-timeline-01": "./src/application/usage-timeline-01/index.ts",
     "./account-activity-01": "./src/application/account-activity-01/index.ts",
     "./usage-forecast-01": "./src/application/usage-forecast-01/index.ts",

@@ -1,4 +1,5 @@
 "use client";
+import { AppearanceSettingsDemo } from "./AppearanceSettingsDemo";
 import { UsageTimelineDemo } from "./UsageTimelineDemo";
 import { UsageForecastDemo } from "./UsageForecastDemo";
 import { ContextWindowDemo } from "./ContextWindowDemo";
@@ -170,6 +171,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
 
 function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "appearance-settings-01":
+      return <AppearanceSettingsDemo />;
     case "context-window-01":
       return <ContextWindowDemo />;
     case "fleet-health-01":

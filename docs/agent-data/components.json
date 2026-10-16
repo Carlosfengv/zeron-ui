@@ -1,4 +1,10 @@
 {
+  "appearance-settings-01": {
+    "keywords": ["外观", "主题", "强调色", "密度", "appearance", "theme", "accent", "density", "motion"],
+    "useCases": ["Container 内的设备外观偏好面板，包含主题缩略图、强调色、侧边栏与任务密度、动效设置。"],
+    "whenNotToUse": ["不负责全局主题切换、持久化或宿主密度与动效实现；由应用接入偏好回调。"],
+    "keyApi": ["value 受控：theme、accent、sidebarDensity、taskDensity、motion。", "onValueChange 返回完整下一状态，缺少回调时禁用控件。", "labels 支持文案覆盖，并导出中英文文案与默认值。"]
+  },
   "usage-timeline-01": {
     "keywords": [
       "账户",

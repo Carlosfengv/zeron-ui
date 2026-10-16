@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "appearance-settings-01": {
+    "url": "/docs-source/9994c5b6ec0f8b52ae4e8cd911b03a5c32a813865e4fc810748157147940dc13.txt"
+  },
   "usage-timeline-01": {
     "url": "/docs-source/1b461f6267e4c3876badd2a86c1fc9dbd932b22676c915a9f69d7488be20ddbd.txt"
   },

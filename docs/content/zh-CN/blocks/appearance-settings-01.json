@@ -1,0 +1,10 @@
+{
+  "appearanceSettingsBlock": {
+    "title": "外观设置",
+    "description": "包含主题预览、强调色、界面密度与动效偏好的设备外观设置区块。",
+    "composition": "组件组合",
+    "compositionBody": "使用 Container 包裹完整设置面板，ContainerHeader 显示标题和描述，ContainerBody 承载设置选项。RadioGroup 与 RadioGroupItem 负责主题选择，ColorSwatch 的第一个选项跟随 brand 主题色，其余选项复用项目共享色板；两组密度选择使用标准 pill 变体的 Tabs、TabsList 与 TabItem，Select 负责动效设置。字号、表面、分割线、焦点与控件尺寸均沿用 Zeron 规范。主题缩略图是装饰性界面预览，浅色与深色表面仅在预览内部生效。",
+    "behavior": "交互与接入",
+    "behaviorBody": "通过 value 和 onValueChange 控制全部五项偏好；回调返回完整的新值，由宿主应用并持久化主题、强调色、密度和动效。演示以本地状态记录选择，并同步更新主题缩略图的强调色，不修改文档站主题或保存设备设置。未提供回调时禁用控件。内置中英文文案，宿主可覆盖描述以适配产品名称。"
+  }
+}

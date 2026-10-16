@@ -3,6 +3,7 @@ import "server-only";
 import type { DocPageLoader } from "./page-loader-types";
 
 export const blockPageLoaders: Record<string, DocPageLoader> = {
+  "blocks/appearance-settings-01": () => import("@docs/pages/blocks/appearance-settings-01/page"),
   "blocks/usage-timeline-01": () => import("@docs/pages/blocks/usage-timeline-01/page"),
   "blocks/account-activity-01": () => import("@docs/pages/blocks/account-activity-01/page"),
   "blocks/usage-forecast-01": () => import("@docs/pages/blocks/usage-forecast-01/page"),
