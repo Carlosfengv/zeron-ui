@@ -1,5 +1,15 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "local-models-01": [
+    "packages/blocks/src/application/local-models-01/index.ts",
+    "packages/blocks/src/application/local-models-01/local-models.tsx",
+    "packages/blocks/src/application/local-models-01/local-models-gpu-picker.tsx",
+    "packages/blocks/src/application/local-models-01/local-models-types.ts",
+    "packages/blocks/src/application/local-models-01/local-models-data.ts",
+    "packages/blocks/src/application/local-models-01/local-models-demo-data.ts",
+    "packages/blocks/src/application/local-models-01/local-models-server.tsx",
+    "packages/blocks/src/application/local-models-01/local-models-server-artwork.tsx"
+  ],
   "appearance-settings-01": [
     "packages/blocks/src/application/appearance-settings-01/index.ts",
     "packages/blocks/src/application/appearance-settings-01/appearance-settings.tsx",

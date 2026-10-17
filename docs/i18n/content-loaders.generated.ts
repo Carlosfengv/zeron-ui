@@ -12,6 +12,7 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "blocks/local-models-01": () => import("@docs/content/en/blocks/local-models-01.json"),
     "blocks/appearance-settings-01": () => import("@docs/content/en/blocks/appearance-settings-01.json"),
     "blocks/usage-timeline-01": () => import("@docs/content/en/blocks/usage-timeline-01.json"),
     "components/time-window-timeline": () => import("@docs/content/en/components/time-window-timeline.json"),
@@ -157,6 +158,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "blocks/local-models-01": () => import("@docs/content/zh-CN/blocks/local-models-01.json"),
     "blocks/appearance-settings-01": () => import("@docs/content/zh-CN/blocks/appearance-settings-01.json"),
     "blocks/usage-timeline-01": () => import("@docs/content/zh-CN/blocks/usage-timeline-01.json"),
     "components/time-window-timeline": () => import("@docs/content/zh-CN/components/time-window-timeline.json"),

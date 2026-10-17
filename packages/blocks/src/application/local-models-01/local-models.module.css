@@ -1,0 +1,53 @@
+.server { --server-ink: light-dark(var(--fg-default), var(--fg-on-inverse)); display: block; width: 100%; height: auto; max-width: 720px; max-height: 520px; overflow: visible; }
+.server path, .server circle { vector-effect: non-scaling-stroke; }
+.artSurface { fill: var(--surface-floating); }
+.artShadeStrong { fill: light-dark(color-mix(in srgb, var(--server-ink) 12%, transparent), color-mix(in srgb, var(--server-ink) 50%, transparent)); }
+.artShadeMedium { fill: light-dark(color-mix(in srgb, var(--server-ink) 8.5%, transparent), color-mix(in srgb, var(--server-ink) 40%, transparent)); }
+.artShadeSoft { fill: light-dark(color-mix(in srgb, var(--server-ink) 5.5%, transparent), color-mix(in srgb, var(--server-ink) 30%, transparent)); }
+.artShadeFaint { fill: light-dark(color-mix(in srgb, var(--server-ink) 3%, transparent), color-mix(in srgb, var(--server-ink) 20%, transparent)); }
+.artTop { fill: light-dark(transparent, color-mix(in srgb, var(--fg-default) 2.5%, transparent)); }
+.artLineFaint { fill: none; stroke: color-mix(in srgb, var(--fg-default) 14%, transparent); }
+.artLine { fill: none; stroke: color-mix(in srgb, var(--fg-default) 28%, transparent); }
+.artLineStrong { fill: none; stroke: color-mix(in srgb, var(--fg-default) 45%, transparent); }
+.artScrew { fill: color-mix(in srgb, var(--fg-default) 45%, transparent); }
+.artOutline, .artOutlineSoft, .artGpuOutline { fill: none; stroke: color-mix(in srgb, var(--fg-default) 45%, transparent); transition: stroke var(--duration-fast); }
+.artOutlineSoft { stroke: color-mix(in srgb, var(--fg-default) 28%, transparent); }
+.artGpuOutline { stroke: color-mix(in srgb, var(--fg-default) 65%, transparent); }
+.artFocus { fill: none; stroke: var(--focus-ring); stroke-width: 3; opacity: 0; }
+.artFanShade { fill: light-dark(color-mix(in srgb, var(--server-ink) 7%, transparent), color-mix(in srgb, var(--server-ink) 30%, transparent)); }
+.artFanShadeSoft { fill: light-dark(color-mix(in srgb, var(--server-ink) 3%, transparent), color-mix(in srgb, var(--server-ink) 18%, transparent)); }
+.artFanShadeFaint { fill: light-dark(color-mix(in srgb, var(--server-ink) 1.5%, transparent), color-mix(in srgb, var(--server-ink) 10%, transparent)); }
+.artFanTop { fill: light-dark(transparent, color-mix(in srgb, var(--fg-default) 7%, transparent)); }
+.artShadow { fill: light-dark(color-mix(in srgb, var(--server-ink) 20%, transparent), color-mix(in srgb, var(--server-ink) 70%, transparent)); }
+.gpu { cursor: pointer; outline: none; }
+.gpu[aria-disabled="true"] { cursor: default; }
+.activeVent, .freeVent { transition: fill var(--duration-fast); }
+.activeVent { fill: color-mix(in srgb, var(--brand) 55%, var(--surface-floating)); }
+.freeVent { fill: color-mix(in srgb, var(--fg-default) 7%, transparent); }
+.selectedGpu .activeVent { fill: var(--brand); }
+.selectedGpu .artGpuOutline, .gpu:hover .artGpuOutline { stroke: var(--brand); }
+.gpu:focus-visible .artFocus { opacity: 1; }
+.overGpu .activeVent { fill: var(--fg-danger); animation: gpuCapacityPulse 1.4s ease-in-out infinite; }
+.overGpu .artGpuOutline { stroke: var(--fg-danger); }
+@keyframes gpuCapacityPulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+.modelRow { width: 100%; display: flex; align-items: center; gap: 12px; border: .5px solid var(--border); border-radius: 12px; padding: 10px 12px; background: var(--surface-floating); text-align: left; cursor: pointer; outline: none; transition: background-color var(--duration-fast), border-color var(--duration-fast); }
+.modelRow:hover { background: var(--hover); }
+.modelRow[aria-pressed="true"] { background: color-mix(in srgb, var(--brand) 5%, var(--surface-floating)); border-color: var(--brand); }
+.modelRow:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.modelRow:disabled { cursor: default; opacity: .6; }
+.provider { width: 38px; height: 38px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: .5px solid var(--border); border-radius: 10px; background: var(--surface-floating); }
+.layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(310px, 1fr); gap: 6px; }
+.illustration { min-height: 420px; display: flex; flex-direction: column; }
+.illustrationArt { display: flex; flex: 1; min-height: 0; align-items: center; justify-content: center; padding: 24px 32px; }
+.capacity { position: relative; }
+.capacityMark { position: absolute; top: -5px; bottom: -5px; width: 1px; background: var(--fg-danger); }
+@media (max-width: 800px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .illustration { min-height: 290px; }
+  .illustrationArt { padding: 0; }
+  .server { max-height: 380px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .activeVent, .freeVent, .artOutline, .artOutlineSoft, .artGpuOutline, .modelRow { transition: none; }
+  .overGpu .activeVent { animation: none; }
+}

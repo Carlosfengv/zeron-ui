@@ -6275,6 +6275,94 @@
       }
     },
     {
+      "name": "local-models-01",
+      "type": "registry:block",
+      "title": "Local Models",
+      "description": "GPU server visualization, controlled local model settings, shared memory estimates and over-capacity recovery.",
+      "categories": [
+        "application",
+        "ai",
+        "settings"
+      ],
+      "dependencies": [
+        "@lobehub/icons@^5.16.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/popover.json",
+        "https://zeron-ui.vercel.app/r/select.json",
+        "https://zeron-ui.vercel.app/r/slider.json",
+        "https://zeron-ui.vercel.app/r/switch.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/local-models-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/local-models-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/local-models-01/local-models.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/local-models-01/local-models.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/local-models-01/local-models-gpu-picker.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/local-models-01/local-models-gpu-picker.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/local-models-01/local-models-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/local-models-01/local-models-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/local-models-01/local-models-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/local-models-01/local-models-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/local-models-01/local-models-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/local-models-01/local-models-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/local-models-01/local-models-server.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/local-models-01/local-models-server.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/local-models-01/local-models-server-artwork.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/local-models-01/local-models-server-artwork.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/local-models-01/local-models.module.css",
+          "type": "registry:file",
+          "target": "components/blocks/local-models-01/local-models.module.css"
+        },
+        {
+          "path": "packages/blocks/src/application/local-models-01/local-models.module.css.d.ts",
+          "type": "registry:file",
+          "target": "components/blocks/local-models-01/local-models.module.css.d.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "appearance-settings-01",
       "type": "registry:block",
       "title": "Appearance Settings",

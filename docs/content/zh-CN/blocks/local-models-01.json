@@ -1,0 +1,12 @@
+{
+  "localModelsBlock": {
+    "title": "本地模型",
+    "description": "包含可交互 GPU 机箱、模型显存估算、容量告警和可控配置草稿的本地模型管理区块。",
+    "composition": "组件组成",
+    "compositionBody": "Container 管理头部、浮动内容面板与底部操作。Precision 与忙时策略使用 pill Tabs；Parallel requests 使用内置标签和数值的 SliderComfortable，并复用 Select、Switch、Alert、Badge 和 SegmentedBar。GPU Memory 弹层展示逐卡模型、显存占用、剩余容量与 Fit to GPUs，并与模型配置和机箱高亮联动。等距 GPU 机箱使用适配主题的 SVG，支持键盘选择显卡。窄屏时左右两栏自动纵向排列。",
+    "dataContract": "数据接入",
+    "dataContractBody": "传入 GPU 容量、模型分配、各精度权重显存、运行开销，以及 32K 上下文每请求的 KV cache。缓存按上下文与并发数线性估算，多卡模型平均分配显存。草稿、已应用配置、保存与云端路由由宿主控制，估算值不是实时遥测。正常示例合计为 146.7 GB，修正了参考图中 146.6 GB 的加总误差。",
+    "states": "容量与交互状态",
+    "statesBody": "演示设置支持正常、显存超限、空列表与保存失败。异常示例为 48 GB 显卡使用 56.3 GB，超出 8.3 GB；共享显卡上的占用也会阻止应用。上下文选项显示缓存估算和缺口。Fit to GPUs 依次减少并发、上下文、权重精度；所有支持配置都放不下时才卸载模型。Discard 恢复已应用配置，保存失败保留草稿。"
+  }
+}

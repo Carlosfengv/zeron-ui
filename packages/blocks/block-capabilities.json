@@ -1,4 +1,5 @@
 {
+  "local-models-01": {"framework": "react", "kind": "data-block"},
   "appearance-settings-01": {"framework": "react", "kind": "data-block"},
   "usage-timeline-01": {"framework": "react", "kind": "data-block"},
   "account-activity-01": {"framework": "react", "kind": "data-block"},

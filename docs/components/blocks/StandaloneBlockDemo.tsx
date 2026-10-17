@@ -1,4 +1,5 @@
 "use client";
+import { LocalModelsDemo } from "./LocalModelsDemo";
 import { AppearanceSettingsDemo } from "./AppearanceSettingsDemo";
 import { UsageTimelineDemo } from "./UsageTimelineDemo";
 import { UsageForecastDemo } from "./UsageForecastDemo";
@@ -217,6 +218,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
       return <PersonalSettingsDemo />;
     case "personal-model-usage-01":
       return <PersonalModelUsage />;
+    case "local-models-01":
+      return <LocalModelsDemo />;
     case "storage-usage-01":
       return <div className={centeredDemoClass}><div className="w-full max-w-4xl"><StorageUsage data={storageUsageDemoData} /></div></div>;
     case "model-router-01":

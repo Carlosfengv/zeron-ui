@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "local-models-01": {
+    "url": "/docs-source/03e6ec1c8406580606b1ebb8c6fdabfd235cb1965ae6eec31b0265142cdb9895.txt"
+  },
   "appearance-settings-01": {
     "url": "/docs-source/9994c5b6ec0f8b52ae4e8cd911b03a5c32a813865e4fc810748157147940dc13.txt"
   },

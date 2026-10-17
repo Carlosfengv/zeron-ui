@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "local-models-01", title: "本地模型", description: "GPU 机箱可视化、模型显存规划、精度和上下文配置、容量告警与草稿应用。", categories: ["application", "ai", "settings"], dependencies: ["alert", "badge", "button", "chart-primitives", "container", "popover", "select", "slider", "switch", "tabs", "icon-context", "utils", "@lobehub/icons"] },
   { name: "appearance-settings-01", title: "外观设置", description: "主题预览、强调色、侧边栏与任务密度以及动效偏好的可控设置面板。", categories: ["application", "settings"], dependencies: ["badge", "color-picker", "container", "radio-group", "select", "tabs", "icon-context", "utils"] },
   { name: "usage-timeline-01", title: "账户用量时间线", description: "提供商分组、额度周期、用量进度和重置事件的双周时间线。", categories: ["application", "analytics", "billing"], dependencies: ["badge", "button", "button-group", "icon-context", "inline-notice", "skeleton", "tabs", "time-window-timeline", "utils", "@lobehub/icons"] },
   { name: "usage-forecast-01", title: "账户用量预测", description: "多账户额度预测、耗尽时间、重置周期与近期消耗趋势。", categories: ["application", "analytics", "billing"], dependencies: ["area-chart", "bar-chart", "button", "card", "chart-core", "icon-context", "inline-notice", "line-chart", "skeleton", "status-overview", "table", "tabs", "utils", "@lobehub/icons", "@visx/curve@4.0.0"] },
