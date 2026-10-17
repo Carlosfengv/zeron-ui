@@ -1,4 +1,10 @@
 {
+  "local-models-01": {
+    "keywords": ["本地模型", "显存", "GPU", "local models", "capacity", "precision", "KV cache"],
+    "useCases": ["配置本地推理模型的精度、上下文、并发与忙时策略，预览 GPU 显存容量。"],
+    "whenNotToUse": ["不负责真实模型加载、云端路由、遥测采集或配置持久化。"],
+    "keyApi": ["data 提供 GPU、模型、支持精度权重与缓存估算。", "value / appliedValue / onValueChange / onApply 管理草稿和已应用快照。", "fitLocalModelsToGpus 生成可审核的容量适配草稿。"]
+  },
   "appearance-settings-01": {
     "keywords": ["外观", "主题", "强调色", "密度", "appearance", "theme", "accent", "density", "motion"],
     "useCases": ["Container 内的设备外观偏好面板，包含主题缩略图、强调色、侧边栏与任务密度、动效设置。"],

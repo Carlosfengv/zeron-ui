@@ -75,6 +75,10 @@
       "itemId": "block:integration-monitors-01"
     },
     {
+      "path": "blocks/local-models-01.md",
+      "itemId": "block:local-models-01"
+    },
+    {
       "path": "blocks/model-router-01.md",
       "itemId": "block:model-router-01"
     },

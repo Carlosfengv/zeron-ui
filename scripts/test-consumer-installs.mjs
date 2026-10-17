@@ -405,6 +405,13 @@ async function verifyNextBuild({ consumer, component }) {
       'export default function Page() { return <ModelRouter data={modelRouterDemoData} />; }',
       '',
     ].join("\n"),
+    "local-models-01": [
+      '"use client";',
+      'import { useState } from "react";',
+      'import { LocalModels, localModelsDemoData, localModelsDemoValue } from "@/components/blocks/local-models-01";',
+      'export default function Page() { const [value, setValue] = useState(localModelsDemoValue); const [applied, setApplied] = useState(localModelsDemoValue); return <LocalModels data={localModelsDemoData} value={value} appliedValue={applied} onValueChange={setValue} onApply={setApplied} />; }',
+      '',
+    ].join("\n"),
     "storage-usage-01": [
       'import { StorageUsage, storageUsageDemoData } from "@/components/blocks/storage-usage-01";',
       'export default function Page() { return <StorageUsage data={storageUsageDemoData} />; }',
@@ -731,6 +738,15 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
       'import { ModelRouter, modelRouterDemoData } from "@/src/components/blocks/model-router-01";',
       'import "./index.css";',
       'createRoot(document.getElementById("root")!).render(<ModelRouter data={modelRouterDemoData} />);',
+      '',
+    ].join("\n"),
+    "local-models-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { useState } from "react";',
+      'import { LocalModels, localModelsDemoData, localModelsDemoValue } from "@/src/components/blocks/local-models-01";',
+      'import "./index.css";',
+      'function Example() { const [value, setValue] = useState(localModelsDemoValue); const [applied, setApplied] = useState(localModelsDemoValue); return <LocalModels data={localModelsDemoData} value={value} appliedValue={applied} onValueChange={setValue} onApply={setApplied} />; }',
+      'createRoot(document.getElementById("root")!).render(<Example />);',
       '',
     ].join("\n"),
     "storage-usage-01": [

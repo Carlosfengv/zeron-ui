@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "local-models-01": () => import("./LocalModelsDemo").then(({ LocalModelsDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={860} canvasWidth={1200}><LocalModelsDemo /></ResponsivePreview>,
+  })),
   "appearance-settings-01": () => import("./AppearanceSettingsDemo").then(({ AppearanceSettingsDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={920} canvasWidth={1100}><AppearanceSettingsDemo /></ResponsivePreview>,
   })),

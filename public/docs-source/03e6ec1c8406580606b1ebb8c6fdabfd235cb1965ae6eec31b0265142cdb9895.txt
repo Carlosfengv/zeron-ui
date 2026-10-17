@@ -1,0 +1,1488 @@
+export { LocalModels } from "./local-models";
+export { localModelsDemoData, localModelsDemoValue, localModelsDemoAppliedValue, localModelsOverflowDemoValue } from "./local-models-demo-data";
+export { getLocalModelMemory, getLocalModelsUsage, countLocalModelChanges, fitLocalModelsToGpus, localModelContexts } from "./local-models-data";
+export type { LocalModel, LocalModelConfig, LocalModelGpu, LocalModelPrecision, LocalModelsData, LocalModelsValue, LocalModelsProps } from "./local-models-types";
+
+
+"use client";
+
+import { useId, useState } from "react";
+import OpenAI from "@lobehub/icons/es/OpenAI/components/Mono";
+import Gemini from "@lobehub/icons/es/Gemini/components/Color";
+import Mistral from "@lobehub/icons/es/Mistral/components/Color";
+import { Alert, AlertTitle, AlertDescription } from "@zeron/ui/alert";
+import { Badge } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { SegmentedBar } from "@zeron/ui/chart-primitives";
+import { Container, ContainerBody, ContainerHeader, ContainerFooter } from "@zeron/ui/container";
+import { Select, SelectTrigger, SelectContent, SelectItem } from "@zeron/ui/select";
+import { SliderComfortable } from "@zeron/ui/slider";
+import { Switch } from "@zeron/ui/switch";
+import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { countLocalModelChanges, fitLocalModelsToGpus, getLocalModelMemory, getLocalModelPrecisions, getLocalModelsUsage, isLocalModelsConfigurationValid, localModelContexts } from "./local-models-data";
+import { LocalModelsServer } from "./local-models-server";
+import { LocalModelsGpuPicker } from "./local-models-gpu-picker";
+import type { LocalModel, LocalModelConfig, LocalModelPrecision, LocalModelsProps } from "./local-models-types";
+import styles from "./local-models.module.css";
+
+const number = (value: number) => value.toLocaleString("en-US", { maximumFractionDigits: 1 });
+const contextName = (context: number) => `${context / 1024}K tokens`;
+const memoryColors = {
+  weights: "var(--brand)",
+  cache: "color-mix(in srgb, var(--brand) 55%, var(--surface-floating))",
+  runtime: "color-mix(in srgb, var(--brand) 25%, var(--surface-floating))",
+};
+
+function ProviderIcon({ model }: { model: LocalModel }) {
+  return <span className={styles.provider} aria-hidden="true">{model.icon ?? (model.provider === "Google" ? <Gemini size={22} /> : model.provider === "Mistral" ? <Mistral size={22} /> : model.provider === "OpenAI" ? <OpenAI size={22} /> : <span className="text-body font-medium">{model.provider.slice(0, 1)}</span>)}</span>;
+}
+
+function ConfigTabs({ label, value, options, disabled, onChange }: {
+  label: string; value: string; options: readonly string[]; disabled: boolean; onChange: (value: string) => void;
+}) {
+  return <Tabs variant="pill" color="brand" value={value} onValueChange={onChange}>
+    <TabsList aria-label={label} className="w-full">{options.map((option) => <TabItem className="flex-1" key={option} value={option} label={option} disabled={disabled} />)}</TabsList>
+    {options.map((option) => <TabPanel key={option} value={option} className="sr-only">{label}: {option}</TabPanel>)}
+  </Tabs>;
+}
+
+/** A controlled local inference planner. Applying a draft is always a host action. */
+export function LocalModels({ data, value, appliedValue, onValueChange, onApply, onDiscard,
+  selectedModelId, defaultSelectedModelId, onSelectedModelChange, onCopy, actions,
+  title = "Local Models", description = "Open weight models on your GPU server", busy = false, error, className }: LocalModelsProps) {
+  const headingId = useId(); const prefix = useId();
+  const [localSelection, setLocalSelection] = useState(defaultSelectedModelId ?? data.models[0]?.id);
+  const [showChanges, setShowChanges] = useState(false);
+  const model = data.models.find((item) => item.id === (selectedModelId ?? localSelection)) ?? data.models[0];
+  const config = model ? value[model.id] : undefined;
+  const usage = getLocalModelsUsage(data, value);
+  const changes = countLocalModelChanges(data, value, appliedValue);
+  const Chip = useIcon("doc-semantic-tokens"); const Copy = useIcon("copy"); const Edit = useIcon("pencil");
+  const File = useIcon("file-text"); const Fit = useIcon("check");
+  function select(id: string) { setLocalSelection(id); onSelectedModelChange?.(id); }
+  function selectGpu(gpuId: string) {
+    if (busy) return;
+    const assigned = data.models.filter((item) => item.gpuIds.includes(gpuId));
+    const target = assigned.find((item) => value[item.id]?.enabled) ?? assigned[0];
+    if (target) select(target.id);
+  }
+  function update(patch: Partial<LocalModelConfig>) {
+    if (model && config && !busy) onValueChange({ ...value, [model.id]: { ...config, ...patch } });
+  }
+  const memory = model && config ? getLocalModelMemory(model, config) : null;
+  const modelGpus = model ? usage.gpus.filter((gpu) => model.gpuIds.includes(gpu.id)) : [];
+  const capacity = modelGpus.reduce((sum, gpu) => sum + gpu.capacity, 0);
+  const ownTotal = memory?.total ?? 0;
+  const otherUsed = modelGpus.reduce((sum, gpu) => sum + gpu.used, 0) - ownTotal;
+  // Tightest GPU is authoritative when a multi-GPU model shares a device.
+  const shortage = modelGpus.length ? Math.max(0, ...modelGpus.map((gpu) => gpu.used - gpu.capacity)) * modelGpus.length : 0;
+  const free = Math.max(0, capacity - ownTotal - otherUsed);
+  const gpuLabel = modelGpus.map((gpu) => gpu.label).join(" + ");
+  const invalid = !isLocalModelsConfigurationValid(data, value);
+  const blocked = usage.gpus.filter((gpu) => gpu.used > gpu.capacity);
+
+  return <Container className={cn("w-full", className)} data-block="local-models" role="region" aria-labelledby={headingId} aria-busy={busy}>
+    <ContainerHeader className="gap-4 py-3">
+      <div className="flex min-w-0 items-center gap-3"><span className={styles.provider}><Chip className="size-5" aria-hidden="true" /></span><div className="min-w-0"><h2 id={headingId} className="text-body font-semibold text-fg-default">{title}</h2><p className="text-body text-fg-muted">{description}</p></div></div>
+      <div className="flex flex-wrap items-center gap-2">
+        <LocalModelsGpuPicker data={data} value={value} usage={usage} selectedGpuIds={model?.gpuIds ?? []} disabled={busy} fitDisabled={invalid} onSelectGpu={selectGpu} onFit={() => onValueChange(fitLocalModelsToGpus(data, value))} />
+        {usage.excess > 0 && <Button variant="tertiary" leadingIcon={Fit} disabled={busy || invalid} onClick={() => onValueChange(fitLocalModelsToGpus(data, value))}>Fit to GPUs</Button>}
+        <Button variant="tertiary" leadingIcon={Edit} active={showChanges} aria-expanded={showChanges} aria-controls={`${prefix}-changes`} onClick={() => setShowChanges(!showChanges)}>Changes <span className="text-fg-muted">{changes}</span></Button>
+        {onCopy && <Button variant="tertiary" iconOnly aria-label="Copy configuration" disabled={busy} onClick={() => onCopy(value)}><Copy aria-hidden="true" /></Button>}
+        {actions}
+      </div>
+    </ContainerHeader>
+    {showChanges && <ContainerBody id={`${prefix}-changes`} className="flex-none"><h3 className="mb-2 text-body font-medium">Pending changes</h3><ul className="space-y-1 text-label text-fg-muted">{data.models.filter((item) => countLocalModelChanges({ ...data, models: [item] }, value, appliedValue)).map((item) => <li key={item.id}>{item.name}: {value[item.id] ? `${value[item.id].enabled ? "Loaded" : "Unloaded"} · ${value[item.id].precision} · ${contextName(value[item.id].context)} · ${value[item.id].parallel} requests · ${value[item.id].overflow}` : "Missing configuration"}</li>)}</ul>{changes === 0 && <p className="text-label text-fg-muted">No pending changes</p>}</ContainerBody>}
+    {error && <ContainerBody className="flex-none"><Alert status="danger"><AlertTitle>{error}</AlertTitle></Alert></ContainerBody>}
+    {invalid && <ContainerBody className="flex-none"><Alert status="danger"><AlertTitle>Invalid configuration</AlertTitle><AlertDescription>Use unique model/GPU IDs, positive GPU capacities, finite nonnegative memory estimates, supported precisions, valid GPU allocations, a positive context window, and 1–16 parallel requests.</AlertDescription></Alert></ContainerBody>}
+    <div className={styles.layout}>
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <ContainerBody className={cn("p-0", styles.illustration)}>
+          <div className={styles.illustrationArt}><LocalModelsServer gpus={data.gpus} usage={usage.gpus} selectableGpuIds={data.gpus.filter((gpu) => data.models.some((item) => item.gpuIds.includes(gpu.id))).map((gpu) => gpu.id)} selectedGpuIds={model?.gpuIds ?? []} disabled={busy} onSelectGpu={selectGpu} /></div>
+          <div className="flex flex-wrap items-center justify-between gap-2 px-5 pb-5 text-label text-fg-muted"><span>Click a card to pick its model</span>{model && <span><span className="font-medium text-fg-default">{model.name}</span><span className="mx-2 text-fg-subtle">·</span>{number(ownTotal)} GB on {gpuLabel}</span>}</div>
+        </ContainerBody>
+        <ContainerBody className="flex-none p-4"><div className="space-y-2" aria-label="Local models">{data.models.map((item) => {
+          const c = value[item.id]; const itemMemory = c ? getLocalModelMemory(item, c) : null;
+          const itemGpus = usage.gpus.filter((gpu) => item.gpuIds.includes(gpu.id));
+          const itemShort = c?.enabled ? Math.max(0, ...itemGpus.map((gpu) => gpu.used - gpu.capacity)) * itemGpus.length : 0;
+          const itemCapacity = itemGpus.reduce((sum, gpu) => sum + gpu.capacity, 0);
+          return <button key={item.id} type="button" className={styles.modelRow} aria-label={`Select ${item.name}`} aria-pressed={model?.id === item.id} onClick={() => select(item.id)} disabled={busy}>
+            <ProviderIcon model={item} /><span className="min-w-0 flex-1"><span className="block truncate text-body font-medium text-fg-default">{item.name}</span><span className="block truncate text-label text-fg-muted">{itemGpus.map((gpu) => gpu.label).join(" + ")} · {item.tokensToday === "0" ? "Idle today" : `${item.tokensToday} tokens today`}</span></span>
+            <span className="shrink-0 text-right">{!c?.enabled ? <Badge variant="dot" color="gray">Unloaded</Badge> : itemShort > 0 ? <Badge status="danger">Over by {number(itemShort)} GB</Badge> : <><span className="block text-label font-medium tabular-nums text-fg-default">{number(itemMemory?.total ?? 0)} GB</span><span className="mt-1 block w-16 sm:w-20"><SegmentedBar mode="capacity" total={itemCapacity} className="h-1.5" segments={[{ id: "used", label: item.name, value: itemMemory?.total ?? 0, color: memoryColors.weights }]} valueText={`${item.name}: ${number(itemMemory?.total ?? 0)} of ${number(itemCapacity)} GB`} /></span></>}</span>
+          </button>;
+        })}{data.models.length === 0 && <p className="p-4 text-body text-fg-muted">No local models. Add a model to configure your GPU server.</p>}</div></ContainerBody>
+      </div>
+      <ContainerBody className="p-5">
+        {model && config && memory ? <div className="space-y-6">
+          <div className="flex items-center gap-3"><ProviderIcon model={model} /><div className="min-w-0 flex-1"><h3 className="truncate text-body font-medium text-fg-default">{model.name}</h3><p className="text-label text-fg-muted">{model.provider} · {model.parameters} params</p></div><Switch checked={config.enabled} onCheckedChange={(enabled) => update({ enabled })} label={`Enable ${model.name}`} labelVisibility="sr-only" disabled={busy} /></div>
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-baseline justify-between gap-2"><p className="text-body text-fg-muted"><span className="text-display font-semibold tracking-tight tabular-nums text-fg-default">{number(memory.total)}</span> GB</p><span className="text-label text-fg-muted">of {number(capacity)} GB on {gpuLabel}</span></div>
+            <div className={styles.capacity}><SegmentedBar mode="capacity" total={capacity} className="h-2" valueText={`${number(memory.total)} GB used. ${shortage > 0 ? `${number(shortage)} GB short` : `${number(free)} GB free`}.`} segments={[
+              { id: "weights", label: "Weights", value: memory.weights, color: memoryColors.weights },
+              { id: "cache", label: "KV cache", value: memory.cache, color: memoryColors.cache },
+              { id: "runtime", label: "Runtime", value: memory.runtime, color: memoryColors.runtime },
+              { id: "other", label: "Other models", value: Math.max(0, otherUsed), color: "var(--border)" },
+            ]} />{shortage > 0 && <span className={styles.capacityMark} style={{ left: `${Math.min(100, capacity / (memory.total + Math.max(0, otherUsed)) * 100)}%` }} />}</div>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-label text-fg-muted">{[["Weights", memory.weights, memoryColors.weights], ["KV cache", memory.cache, memoryColors.cache], [shortage > 0 ? "Short" : "Free", shortage || free, shortage > 0 ? "var(--fg-danger)" : "var(--border)"]] .map(([label, amount, color]) => <span key={label} className="inline-flex items-center gap-1.5"><span aria-hidden="true" className="size-1.5 rounded-full" style={{ backgroundColor: String(color) }} />{label}<span className="ml-0.5 tabular-nums text-fg-default">{number(Number(amount))}</span></span>)}</div>
+            {memory.runtime > 0 && <p className="sr-only">Runtime: {number(memory.runtime)} GB. Other models: {number(Math.max(0, otherUsed))} GB.</p>}
+          </div>
+          {shortage > 0 && <Alert status="danger"><AlertTitle>Doesn&apos;t fit on {gpuLabel}</AlertTitle><AlertDescription>Needs {number(shortage)} GB more. Lower the context or parallel requests, or pick a smaller precision.</AlertDescription></Alert>}
+          <div className="space-y-2"><h4 id={`${prefix}-precision`} className="text-body font-medium text-fg-default">Precision</h4><ConfigTabs label="Precision" value={config.precision} options={getLocalModelPrecisions(model)} disabled={busy || !config.enabled} onChange={(precision) => update({ precision: precision as LocalModelPrecision })} /></div>
+          <div className="space-y-2"><label id={`${prefix}-context`} className="text-body font-medium text-fg-default">Context window</label><Select value={String(config.context)} onValueChange={(context) => update({ context: Number(context) })} disabled={busy || !config.enabled}>
+            <SelectTrigger aria-labelledby={`${prefix}-context`} icon={File} />
+            <SelectContent><p className="px-3 py-2 text-label text-fg-muted">KV cache for {config.parallel} requests</p>{localModelContexts.map((context) => {
+              const candidate = { ...config, context }; const estimate = getLocalModelMemory(model, candidate);
+              const projected = getLocalModelsUsage(data, { ...value, [model.id]: candidate });
+              const short = Math.max(0, ...projected.gpus.filter((gpu) => model.gpuIds.includes(gpu.id)).map((gpu) => gpu.used - gpu.capacity)) * model.gpuIds.length;
+              return <SelectItem key={context} value={String(context)} label={contextName(context)}><div className="min-w-0 py-1"><div className="flex justify-between gap-6"><span>{contextName(context)}</span><span className={cn("text-label tabular-nums", short > 0 ? "text-fg-danger" : "text-fg-muted")}>{number(estimate.cache)} GB</span></div><p className={cn("mt-1 text-label", short > 0 ? "text-fg-danger" : "text-fg-muted")}>{short > 0 ? `Over by ${number(short)} GB` : `About ${context / 1024 * 1.5} pages`}</p></div></SelectItem>;
+            })}</SelectContent></Select></div>
+          <div className="space-y-2"><SliderComfortable value={config.parallel} onChange={(parallel: number) => update({ parallel })} min={1} max={16} step={1} label="Parallel requests" color="brand" disabled={busy || !config.enabled} /><p className="text-body text-fg-muted">Each request holds its own KV cache</p></div>
+          <div className="space-y-2"><h4 className="text-body font-medium text-fg-default">When every slot is busy</h4><ConfigTabs label="When every slot is busy" value={config.overflow === "queue" ? "Queue" : "Use Cloud"} options={["Queue", "Use Cloud"]} disabled={busy || !config.enabled} onChange={(overflow) => update({ overflow: overflow === "Queue" ? "queue" : "cloud" })} /><p className="text-body text-fg-muted">{config.overflow === "queue" ? "Requests wait for a free slot" : "Overflow requests use your cloud provider"}</p></div>
+        </div> : <div className="flex min-h-64 items-center justify-center text-body text-fg-muted">{data.models.length ? "Select a model with a valid configuration" : "No model selected"}</div>}
+      </ContainerBody>
+    </div>
+    <ContainerFooter className="justify-between gap-3">
+      <p role="status" className={cn("text-label", blocked.length ? "text-fg-danger" : "text-fg-muted")}>{blocked.length ? blocked.map((gpu) => `${gpu.label} over by ${number(gpu.used - gpu.capacity)} GB`).join(" · ") : `${changes} models edited`}</p>
+      <div className="flex gap-2"><Button variant="tertiary" disabled={busy || !changes} onClick={() => { onValueChange(appliedValue); onDiscard?.(); }}>Discard</Button><Button variant="neutral" loading={busy} disabled={!onApply || !changes || usage.excess > 0 || invalid || busy} onClick={() => onApply?.(value)}>Apply</Button></div>
+    </ContainerFooter>
+  </Container>;
+}
+
+
+"use client";
+
+import { useState } from "react";
+import { Button } from "@zeron/ui/button";
+import { SegmentedBar } from "@zeron/ui/chart-primitives";
+import { Popover, PopoverContent, PopoverDescription, PopoverFooter, PopoverHeader, PopoverTitle, PopoverTrigger } from "@zeron/ui/popover";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import type { getLocalModelsUsage } from "./local-models-data";
+import type { LocalModelsData, LocalModelsValue } from "./local-models-types";
+import styles from "./local-models.module.css";
+
+const number = (value: number) => value.toLocaleString("en-US", { maximumFractionDigits: 1 });
+
+export function LocalModelsGpuPicker({ data, value, usage, selectedGpuIds, disabled, fitDisabled, onSelectGpu, onFit }: {
+  data: LocalModelsData;
+  value: LocalModelsValue;
+  usage: ReturnType<typeof getLocalModelsUsage>;
+  selectedGpuIds: readonly string[];
+  disabled: boolean;
+  fitDisabled: boolean;
+  onSelectGpu: (id: string) => void;
+  onFit: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const Chip = useIcon("doc-semantic-tokens"); const Fit = useIcon("check");
+  const free = usage.gpus.reduce((sum, gpu) => sum + Math.max(0, gpu.capacity - gpu.used), 0);
+  const uniformCapacity = usage.gpus.length > 0 && usage.gpus.every((gpu) => gpu.capacity === usage.gpus[0].capacity);
+  const summary = `${data.serverName ?? "GPU server"}, ${usage.gpus.length} cards${uniformCapacity ? ` of ${number(usage.gpus[0].capacity)} GB` : ` · ${number(usage.capacity)} GB total`}`;
+
+  return <Popover open={open} onOpenChange={setOpen}>
+    <PopoverTrigger render={<Button variant="tertiary" leadingIcon={Chip} active={open} disabled={disabled}
+      aria-label="GPU Memory" aria-description={`${number(usage.total)} of ${number(usage.capacity)} GB used`}>
+      {usage.excess > 0 ? <span className="tabular-nums text-fg-danger">Over by {number(usage.excess)} GB</span> : <span className="tabular-nums">{number(usage.total)} <span className="text-fg-muted">/ {number(usage.capacity)} GB</span></span>}
+    </Button>} />
+    <PopoverContent align="end" className="w-96 max-h-[calc(100dvh-2rem)] overflow-y-auto">
+      <PopoverHeader><PopoverTitle>GPU Memory</PopoverTitle><PopoverDescription>{summary}</PopoverDescription></PopoverHeader>
+      <div className="mt-4 space-y-2" aria-label="GPU cards">{usage.gpus.map((gpu) => {
+        const assigned = data.models.filter((model) => model.gpuIds.includes(gpu.id));
+        const loaded = assigned.filter((model) => value[model.id]?.enabled);
+        const names = loaded.length ? loaded.map((model) => model.name).join(", ") : assigned.length ? "Unloaded" : "No models assigned";
+        const over = gpu.used > gpu.capacity;
+        return <button key={gpu.id} type="button" className={styles.modelRow} disabled={disabled || assigned.length === 0}
+          aria-label={`Inspect ${gpu.label}`} aria-description={`${names}. ${number(gpu.used)} of ${number(gpu.capacity)} GB used${over ? `; over by ${number(gpu.used - gpu.capacity)} GB` : ""}`}
+          aria-pressed={selectedGpuIds.includes(gpu.id)} onClick={() => { onSelectGpu(gpu.id); setOpen(false); }}>
+          <span className="min-w-0 flex-1"><span className="block text-body font-medium text-fg-default">{gpu.label}</span><span className="block truncate text-label text-fg-muted" title={names}>{names}</span></span>
+          <span className="shrink-0 text-right"><span className={cn("block text-body font-medium tabular-nums", over ? "text-fg-danger" : "text-fg-default")}>{number(gpu.used)} GB</span>
+            <span className="mt-1 block w-20"><SegmentedBar mode="capacity" total={gpu.capacity} className="h-1.5" segments={[{ id: gpu.id, label: gpu.label, value: gpu.used, color: over ? "var(--fg-danger)" : "var(--brand)" }]} valueText={`${gpu.label}: ${number(gpu.used)} of ${number(gpu.capacity)} GB${over ? `; over by ${number(gpu.used - gpu.capacity)} GB` : ""}`} /></span>
+          </span>
+        </button>;
+      })}{usage.gpus.length === 0 && <p className="py-4 text-body text-fg-muted">No GPUs available</p>}</div>
+      <PopoverFooter className="flex-wrap justify-between">
+        <p role="status" className="text-label text-fg-muted">{number(free)} GB free</p>
+        <Button variant="tertiary" leadingIcon={Fit} disabled={disabled || fitDisabled || usage.gpus.length === 0} onClick={onFit}>Fit to GPUs</Button>
+      </PopoverFooter>
+    </PopoverContent>
+  </Popover>;
+}
+
+
+import type { ReactNode } from "react";
+
+export type LocalModelPrecision = "BF16" | "FP8" | "INT4" | "MXFP4";
+export interface LocalModelConfig {
+  enabled: boolean;
+  precision: LocalModelPrecision;
+  context: number;
+  parallel: number;
+  overflow: "queue" | "cloud";
+}
+export interface LocalModel {
+  id: string;
+  name: string;
+  provider: string;
+  parameters: string;
+  icon?: ReactNode;
+  gpuIds: readonly string[];
+  tokensToday: string;
+  /** Measured or estimated weight memory in GB for each supported precision. */
+  weights: Partial<Record<LocalModelPrecision, number>>;
+  /** GB per request at 32K context. Scales linearly in this estimator. */
+  cachePer32K: number;
+  runtime: number;
+}
+export interface LocalModelGpu { id: string; label: string; capacity: number }
+export interface LocalModelsData {
+  serverName?: string;
+  gpus: readonly LocalModelGpu[];
+  models: readonly LocalModel[];
+}
+export type LocalModelsValue = Record<string, LocalModelConfig>;
+export interface LocalModelsProps {
+  data: LocalModelsData;
+  /** Host-owned draft and last successfully applied configuration. */
+  value: LocalModelsValue;
+  appliedValue: LocalModelsValue;
+  onValueChange: (value: LocalModelsValue) => void;
+  onApply?: (value: LocalModelsValue) => void;
+  onDiscard?: () => void;
+  selectedModelId?: string;
+  defaultSelectedModelId?: string;
+  onSelectedModelChange?: (id: string) => void;
+  onCopy?: (value: LocalModelsValue) => void;
+  actions?: ReactNode;
+  title?: string;
+  description?: string;
+  busy?: boolean;
+  error?: string;
+  className?: string;
+}
+
+
+import type { LocalModel, LocalModelConfig, LocalModelPrecision, LocalModelsData, LocalModelsValue } from "./local-models-types";
+
+export const localModelContexts = [8192, 32768, 131072] as const;
+const precisions: readonly LocalModelPrecision[] = ["BF16", "FP8", "INT4", "MXFP4"];
+const round = (value: number) => Number.isFinite(value * 1000) ? Math.round(value * 1000) / 1000 : value;
+const nonnegative = (value: number) => Number.isFinite(value) ? Math.max(0, value) : 0;
+const validMemory = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value) && value >= 0;
+
+export function getLocalModelPrecisions(model: LocalModel) {
+  return precisions.filter((precision) => validMemory(model.weights[precision]));
+}
+
+/** Validate before applying or fitting; malformed input must never enter reduction loops. */
+export function isLocalModelsConfigurationValid(data: LocalModelsData, value: LocalModelsValue) {
+  const gpuIds = new Set(data.gpus.map((gpu) => gpu.id));
+  const modelIds = new Set(data.models.map((model) => model.id));
+  if (gpuIds.size !== data.gpus.length || modelIds.size !== data.models.length) return false;
+  if (data.gpus.some((gpu) => !gpu.id || !validMemory(gpu.capacity) || gpu.capacity === 0)) return false;
+  const valid = data.models.every((model) => {
+    const config = value[model.id];
+    return Boolean(model.id && config
+      && validMemory(model.cachePer32K) && validMemory(model.runtime)
+      && Object.values(model.weights).every((weight) => weight === undefined || validMemory(weight))
+      && getLocalModelPrecisions(model).includes(config.precision)
+      && Number.isFinite(config.context) && config.context > 0
+      && Number.isInteger(config.parallel) && config.parallel >= 1 && config.parallel <= 16
+      && Number.isFinite((model.weights[config.precision] ?? 0) + model.cachePer32K * config.context / 32768 * config.parallel + model.runtime)
+      && typeof config.enabled === "boolean" && (config.overflow === "queue" || config.overflow === "cloud")
+      && model.gpuIds.length > 0 && new Set(model.gpuIds).size === model.gpuIds.length
+      && model.gpuIds.every((id) => gpuIds.has(id)));
+  });
+  return valid && Number.isFinite(data.gpus.reduce((total, gpu) => total + gpu.capacity, 0))
+    && Number.isFinite(data.models.reduce((total, model) => total + getLocalModelMemory(model, value[model.id]).total, 0));
+}
+
+/** Safe rendering estimates; validation independently prevents applying malformed input. */
+export function getLocalModelMemory(model: LocalModel, config: LocalModelConfig) {
+  if (!config.enabled) return { weights: 0, cache: 0, runtime: 0, total: 0 };
+  const weights = nonnegative(model.weights[config.precision] ?? 0);
+  const cache = nonnegative(round(nonnegative(model.cachePer32K) * nonnegative(config.context) / 32768 * nonnegative(config.parallel)));
+  const runtime = nonnegative(model.runtime);
+  return { weights, cache, runtime, total: nonnegative(round(weights + cache + runtime)) };
+}
+
+/** Count each model once, then distribute its estimate across its assigned devices. */
+export function getLocalModelsUsage(data: LocalModelsData, value: LocalModelsValue) {
+  const usage = data.gpus.map((gpu) => ({ ...gpu, capacity: nonnegative(gpu.capacity), used: 0 }));
+  const byId = new Map(usage.map((gpu) => [gpu.id, gpu]));
+  for (const model of data.models) {
+    const config = value[model.id];
+    if (!config || !model.gpuIds.length) continue;
+    const share = getLocalModelMemory(model, config).total / model.gpuIds.length;
+    for (const id of new Set(model.gpuIds)) {
+      const gpu = byId.get(id);
+      if (gpu) gpu.used += share;
+    }
+  }
+  const total = round(usage.reduce((sum, gpu) => sum + gpu.used, 0));
+  for (const gpu of usage) gpu.used = round(gpu.used);
+  return { gpus: usage, total,
+    capacity: round(usage.reduce((sum, gpu) => sum + gpu.capacity, 0)),
+    excess: round(usage.reduce((sum, gpu) => sum + Math.max(0, gpu.used - gpu.capacity), 0)) };
+}
+
+export function countLocalModelChanges(data: LocalModelsData, value: LocalModelsValue, applied: LocalModelsValue) {
+  return data.models.filter(({ id }) => {
+    const a = value[id]; const b = applied[id];
+    if (!a || !b) return a !== b;
+    return a.enabled !== b.enabled || a.precision !== b.precision || a.context !== b.context || a.parallel !== b.parallel || a.overflow !== b.overflow;
+  }).length;
+}
+
+/** Reduce every affected model before considering unloading any model. */
+export function fitLocalModelsToGpus(data: LocalModelsData, value: LocalModelsValue): LocalModelsValue {
+  const next = Object.fromEntries(Object.entries(value).map(([id, config]) => [id, { ...config }]));
+  if (!isLocalModelsConfigurationValid(data, value)) return next;
+  const over = (model: LocalModel) => getLocalModelsUsage(data, next).gpus.some((gpu) => model.gpuIds.includes(gpu.id) && round(gpu.used - gpu.capacity) > 0);
+  const enabled = data.models.filter((model) => next[model.id].enabled);
+  for (const model of enabled) {
+    const config = next[model.id];
+    if (model.cachePer32K === 0) continue;
+    while (over(model) && config.parallel > 1) config.parallel--;
+  }
+  for (const model of enabled) {
+    const config = next[model.id];
+    if (model.cachePer32K === 0) continue;
+    while (over(model) && config.context > localModelContexts[0]) {
+      config.context = [...localModelContexts].reverse().find((context) => context < config.context) ?? localModelContexts[0];
+    }
+  }
+  for (const model of enabled) {
+    const config = next[model.id];
+    const options = getLocalModelPrecisions(model).sort((a, b) => model.weights[b]! - model.weights[a]!);
+    for (const precision of options) {
+      if (!over(model)) break;
+      if (model.weights[precision]! < model.weights[config.precision]!) config.precision = precision;
+    }
+  }
+  for (const model of enabled) if (getLocalModelMemory(model, next[model.id]).total > 0 && over(model)) next[model.id].enabled = false;
+  return next;
+}
+
+
+import type { LocalModelsData, LocalModelsValue } from "./local-models-types";
+
+export const localModelsDemoData: LocalModelsData = {
+  serverName: "nimbus-gpu-01",
+  gpus: Array.from({ length: 4 }, (_, i) => ({ id: String(i), label: `GPU ${i}`, capacity: 48 })),
+  models: [
+    { id: "gpt-oss-120b", name: "gpt-oss-120b", provider: "OpenAI", parameters: "117B", gpuIds: ["0", "1"], tokensToday: "3.42M", weights: { BF16: 234, MXFP4: 63.5 }, cachePer32K: 3, runtime: 1.8 },
+    { id: "gpt-oss-20b", name: "gpt-oss-20b", provider: "OpenAI", parameters: "21B", gpuIds: ["2"], tokensToday: "6.81M", weights: { BF16: 41.9, MXFP4: 12.8 }, cachePer32K: 0.8, runtime: 1.6 },
+    { id: "mistral-small", name: "Mistral Small 3.1", provider: "Mistral", parameters: "24B", gpuIds: ["2"], tokensToday: "0", weights: { BF16: 48, FP8: 24, INT4: 12 }, cachePer32K: 1.4, runtime: 1.2 },
+    { id: "gemma-3-27b", name: "Gemma 3 27B", provider: "Google", parameters: "27B", gpuIds: ["3"], tokensToday: "1.29M", weights: { BF16: 54.8, FP8: 28.4, INT4: 14.2 }, cachePer32K: 3.05, runtime: 1.6 },
+  ],
+};
+export const localModelsDemoValue: LocalModelsValue = {
+  "gpt-oss-120b": { enabled: true, precision: "MXFP4", context: 32768, parallel: 4, overflow: "queue" },
+  "gpt-oss-20b": { enabled: true, precision: "MXFP4", context: 32768, parallel: 16, overflow: "queue" },
+  "mistral-small": { enabled: false, precision: "FP8", context: 32768, parallel: 4, overflow: "queue" },
+  "gemma-3-27b": { enabled: true, precision: "FP8", context: 32768, parallel: 4, overflow: "queue" },
+};
+export const localModelsDemoAppliedValue: LocalModelsValue = {
+  ...localModelsDemoValue,
+  "gpt-oss-120b": { ...localModelsDemoValue["gpt-oss-120b"], parallel: 2 },
+  "gemma-3-27b": { ...localModelsDemoValue["gemma-3-27b"], context: 8192 },
+};
+export const localModelsOverflowDemoValue: LocalModelsValue = {
+  ...localModelsDemoValue,
+  "gpt-oss-20b": { ...localModelsDemoValue["gpt-oss-20b"], precision: "BF16" },
+};
+
+
+"use client";
+
+import { useId } from "react";
+import { cn } from "@zeron/ui/system/utils";
+import type { LocalModelGpu } from "./local-models-types";
+import { LocalModelsServerArtwork } from "./local-models-server-artwork";
+import styles from "./local-models.module.css";
+
+export function LocalModelsServer({ gpus, usage, selectableGpuIds, selectedGpuIds, onSelectGpu, disabled = false }: {
+  gpus: readonly LocalModelGpu[];
+  usage?: readonly (LocalModelGpu & { used: number })[];
+  selectableGpuIds?: readonly string[];
+  selectedGpuIds: readonly string[];
+  onSelectGpu: (id: string) => void;
+  disabled?: boolean;
+}) {
+  const shadowId = useId();
+  return <svg viewBox="7 8 577 402" className={styles.server} role="group"
+    aria-label="GPU server. Select a graphics card to inspect its model."
+    strokeWidth="0.7" strokeLinejoin="round" strokeLinecap="round">
+    <LocalModelsServerArtwork shadowId={shadowId} renderGpu={(index, body, vents) => {
+      const gpu = gpus[index];
+      const device = usage?.find((item) => item.id === gpu?.id);
+      const selected = gpu ? selectedGpuIds.includes(gpu.id) : false;
+      const over = device ? device.used > device.capacity : false;
+      const occupied = device ? Math.min(vents.length, Math.max(device.used > 0 ? 1 : 0, Math.floor(device.used / Math.max(device.capacity, 1) * vents.length))) : 0;
+      if (!gpu) return <g key={index} aria-hidden="true">{body}{vents.map((d, slot) => <path key={slot} d={d} className={styles.freeVent} />)}</g>;
+      const cardDisabled = disabled || (selectableGpuIds !== undefined && !selectableGpuIds.includes(gpu.id));
+      return <g key={gpu.id} role="button" tabIndex={cardDisabled ? -1 : 0} aria-label={`Select ${gpu.label}`}
+        aria-pressed={selected} aria-disabled={cardDisabled || undefined} data-gpu-id={gpu.id} data-occupied-slots={occupied}
+        className={cn(styles.gpu, selected && styles.selectedGpu, over && styles.overGpu)}
+        onClick={() => { if (!cardDisabled) onSelectGpu(gpu.id); }}
+        onKeyDown={(event) => { if (!cardDisabled && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); onSelectGpu(gpu.id); } }}>
+        <title>{`${gpu.label} · ${device ? `${device.used.toFixed(1)} / ` : ""}${gpu.capacity} GB`}</title>
+        {body}
+        {vents.map((d, slot) => <path key={slot} d={d} className={slot < occupied ? styles.activeVent : styles.freeVent} />)}
+      </g>;
+    }} />
+  </svg>;
+}
+
+
+// Geometry adapted from the user-provided nimbus-gpu-01 SVG. Keep paths in drawing order.
+import type { ReactNode } from "react";
+import styles from "./local-models.module.css";
+
+const chassis0 = <>
+  <g aria-hidden="true">
+    <path d="M36.5 286.2L37 285.7L362.4 123L363.2 122.8L364.3 122.8L365.2 123L568.6 224.8L569.2 225.2L569.2 231.5L568.6 231.9L243.3 394.6L242.4 394.9L241.3 394.9L240.5 394.6L37 292.9L36.5 292.4Z" className={styles.artSurface} />
+    <path d="M569.2 231.5L568.6 231.9L568.6 226.2L569.2 225.7ZM568.6 231.9L243.3 394.6L243.3 388.9L568.6 226.2ZM243.3 394.6L242.4 394.9L242.4 389.1L243.3 388.9Z" className={styles.artShadeStrong} />
+    <path d="M242.4 394.9L241.3 394.9L241.3 389.1L242.4 389.1Z" className={styles.artShadeSoft} />
+    <path d="M241.3 394.9L240.5 394.6L240.5 388.9L241.3 389.1ZM240.5 394.6L37 292.9L37 287.1L240.5 388.9ZM37 292.9L36.5 292.4L36.5 286.7L37 287.1Z" className={styles.artShadeFaint} />
+    <path d="M568.6 224.8L569.2 225.2L569.2 225.7L568.6 226.2L243.3 388.9L242.4 389.1L241.3 389.1L240.5 388.9L37 287.1L36.5 286.7L36.5 286.2L37 285.7L362.4 123L363.2 122.8L364.3 122.8L365.2 123Z" className={styles.artTop} />
+    <path d="M569.2 225.7L568.6 226.2L243.3 388.9L242.4 389.1L241.3 389.1L240.5 388.9L37 287.1L36.5 286.7" className={styles.artLineFaint} />
+    <path d="M36.5 286.7L36.5 286.2L37 285.7L362.4 123L363.2 122.8L364.3 122.8L365.2 123L568.6 224.8L569.2 225.2L569.2 225.7M569.2 231.5L568.6 231.9L243.3 394.6L242.4 394.9L241.3 394.9L240.5 394.6L37 292.9L36.5 292.4M569.2 225.7L569.2 231.5M36.5 286.7L36.5 292.4" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M24.7 179.8L25.3 179.4L29.5 177.3L30.4 177L31.4 177L32.3 177.3L41.2 181.7L41.7 182.2L41.7 283.2L41.2 283.6L37 285.7L36.1 286L35.1 286L34.2 285.7L25.3 281.3L24.7 280.8Z" className={styles.artSurface} />
+    <path d="M41.7 283.2L41.2 283.6L41.2 183.1L41.7 182.7ZM41.2 283.6L37 285.7L37 185.3L41.2 183.1ZM37 285.7L36.1 286L36.1 185.5L37 185.3Z" className={styles.artShadeStrong} />
+    <path d="M36.1 286L35.1 286L35.1 185.5L36.1 185.5Z" className={styles.artShadeSoft} />
+    <path d="M35.1 286L34.2 285.7L34.2 185.3L35.1 185.5ZM34.2 285.7L25.3 281.3L25.3 180.8L34.2 185.3ZM25.3 281.3L24.7 280.8L24.7 180.4L25.3 180.8Z" className={styles.artShadeFaint} />
+    <path d="M41.2 181.7L41.7 182.2L41.7 182.7L41.2 183.1L37 185.3L36.1 185.5L35.1 185.5L34.2 185.3L25.3 180.8L24.7 180.4L24.7 179.8L25.3 179.4L29.5 177.3L30.4 177L31.4 177L32.3 177.3Z" className={styles.artTop} />
+    <path d="M41.7 182.7L41.2 183.1L37 185.3L36.1 185.5L35.1 185.5L34.2 185.3L25.3 180.8L24.7 180.4" className={styles.artLineFaint} />
+    <path d="M41.7 182.7L40.4 182.8L36.4 184.9L35.8 185L35.3 185L34.8 184.9L26 180.5L24.7 180.4" className={styles.artLineFaint} />
+    <path d="M24.7 180.4L24.7 179.8L25.3 179.4L29.5 177.3L30.4 177L31.4 177L32.3 177.3L41.2 181.7L41.7 182.2L41.7 182.7M41.7 283.2L41.2 283.6L37 285.7L36.1 286L35.1 286L34.2 285.7L25.3 281.3L24.7 280.8M41.7 182.7L41.7 283.2M24.7 180.4L24.7 280.8" className={styles.artOutline} />
+    <circle cx="29.7" cy="269.2" r="1" className={styles.artScrew} />
+    <circle cx="29.7" cy="197.4" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M39.8 184L40.3 183.6L362.6 22.4L363.3 22.2L364.2 22.2L364.9 22.4L366.1 23L366.5 23.4L366.5 124.3L366.1 124.7L43.8 285.9L43 286.1L42.2 286.1L41.4 285.9L40.3 285.3L39.8 284.9Z" className={styles.artSurface} />
+    <path d="M366.5 124.3L366.1 124.7L366.1 24.2L366.5 23.8ZM366.1 124.7L43.8 285.9L43.8 185.4L366.1 24.2ZM43.8 285.9L43 286.1L43 185.6L43.8 185.4Z" className={styles.artShadeStrong} />
+    <path d="M43 286.1L42.2 286.1L42.2 185.6L43 185.6ZM42.2 286.1L41.4 285.9L41.4 185.4L42.2 185.6Z" className={styles.artShadeSoft} />
+    <path d="M41.4 285.9L40.3 285.3L40.3 184.8L41.4 185.4ZM40.3 285.3L39.8 284.9L39.8 184.4L40.3 184.8Z" className={styles.artShadeFaint} />
+    <path d="M366.1 23L366.5 23.4L366.5 23.8L366.1 24.2L43.8 185.4L43 185.6L42.2 185.6L41.4 185.4L40.3 184.8L39.8 184.4L39.8 184L40.3 183.6L362.6 22.4L363.3 22.2L364.2 22.2L364.9 22.4Z" className={styles.artTop} />
+    <path d="M366.5 23.8L366.1 24.2L43.8 185.4L43 185.6L42.2 185.6L41.4 185.4L40.3 184.8L39.8 184.4" className={styles.artLineFaint} />
+    <path d="M39.8 184.4L39.8 184L40.3 183.6L362.6 22.4L363.3 22.2L364.2 22.2L364.9 22.4L366.1 23L366.5 23.4L366.5 23.8M366.5 124.3L366.1 124.7L43.8 285.9L43 286.1L42.2 286.1L41.4 285.9L40.3 285.3L39.8 284.9M366.5 23.8L366.5 124.3M39.8 184.4L39.8 284.9" className={styles.artOutline} />
+    <path d="M366.5 35.3L366.1 35.7L43.8 196.9L43 197.1L42.2 197.1L41.4 196.9L40.3 196.3L39.8 195.9" className={styles.artLineFaint} />
+    <path d="M90.7 236.6L87.4 238.2L87.4 192.3L90.7 190.6Z" className={styles.artLine} />
+    <path d="M83.6 240.1L80.3 241.7L80.3 195.8L83.6 194.2Z" className={styles.artLine} />
+    <path d="M76.6 243.6L73.3 245.2L73.3 199.3L76.6 197.7Z" className={styles.artLine} />
+    <path d="M69.6 247.1L66.3 248.8L66.3 202.8L69.6 201.2Z" className={styles.artLine} />
+    <path d="M62.5 250.6L59.3 252.3L59.3 206.3L62.5 204.7Z" className={styles.artLine} />
+    <path d="M55.5 254.2L52.2 255.8L52.2 209.9L55.5 208.2Z" className={styles.artLine} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M364.5 25.2L364.9 24.8L366.1 24.2L366.8 24L367.7 24L368.5 24.2L568.9 124.4L569.3 124.8L569.3 225.7L568.9 226.1L567.7 226.7L567 226.9L566.1 226.9L565.4 226.7L364.9 126.4L364.5 126.1Z" className={styles.artSurface} />
+    <path d="M569.3 225.7L568.9 226.1L568.9 125.6L569.3 125.2ZM568.9 226.1L567.7 226.7L567.7 126.2L568.9 125.6ZM567.7 226.7L567 226.9L567 126.4L567.7 126.2Z" className={styles.artShadeStrong} />
+    <path d="M567 226.9L566.1 226.9L566.1 126.4L567 126.4ZM566.1 226.9L565.4 226.7L565.4 126.2L566.1 126.4Z" className={styles.artShadeSoft} />
+    <path d="M565.4 226.7L364.9 126.4L364.9 26L565.4 126.2ZM364.9 126.4L364.5 126.1L364.5 25.6L364.9 26Z" className={styles.artShadeFaint} />
+    <path d="M568.9 124.4L569.3 124.8L569.3 125.2L568.9 125.6L567.7 126.2L567 126.4L566.1 126.4L565.4 126.2L364.9 26L364.5 25.6L364.5 25.2L364.9 24.8L366.1 24.2L366.8 24L367.7 24L368.5 24.2Z" className={styles.artTop} />
+    <path d="M569.3 125.2L568.9 125.6L567.7 126.2L567 126.4L566.1 126.4L565.4 126.2L364.9 26L364.5 25.6" className={styles.artLineFaint} />
+    <path d="M364.5 25.6L364.5 25.2L364.9 24.8L366.1 24.2L366.8 24L367.7 24L368.5 24.2L568.9 124.4L569.3 124.8L569.3 125.2M569.3 225.7L568.9 226.1L567.7 226.7L567 226.9L566.1 226.9L565.4 226.7L364.9 126.4L364.5 126.1M569.3 125.2L569.3 225.7M364.5 25.6L364.5 126.1" className={styles.artOutline} />
+    <path d="M368.2 76.4L371 77.8L371 52L368.2 50.6Z" className={styles.artLine} />
+    <path d="M373.8 79.2L376.7 80.6L376.7 54.8L373.8 53.4Z" className={styles.artLine} />
+    <path d="M379.5 82L382.3 83.4L382.3 57.6L379.5 56.2Z" className={styles.artLine} />
+    <path d="M385.1 84.9L387.9 86.3L387.9 60.4L385.1 59Z" className={styles.artLine} />
+    <path d="M390.7 87.7L393.5 89.1L393.5 63.2L390.7 61.8Z" className={styles.artLine} />
+    <path d="M396.3 90.5L399.2 91.9L399.2 66L396.3 64.6Z" className={styles.artLine} />
+    <path d="M402 93.3L404.8 94.7L404.8 68.9L402 67.5Z" className={styles.artLine} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M272.1 132.9L272.6 132.4L363.5 87L364.4 86.7L365.4 86.7L366.3 87L384.6 96.1L385.1 96.5L385.1 137.3L384.6 137.7L293.7 183.2L292.8 183.4L291.7 183.4L290.9 183.2L272.6 174L272.1 173.6Z" className={styles.artSurface} />
+    <path d="M385.1 137.3L384.6 137.7L384.6 97.5L385.1 97.1ZM384.6 137.7L293.7 183.2L293.7 143L384.6 97.5ZM293.7 183.2L292.8 183.4L292.8 143.2L293.7 143Z" className={styles.artShadeStrong} />
+    <path d="M292.8 183.4L291.7 183.4L291.7 143.2L292.8 143.2ZM291.7 183.4L290.9 183.2L290.9 143L291.7 143.2Z" className={styles.artShadeSoft} />
+    <path d="M290.9 183.2L272.6 174L272.6 133.8L290.9 143ZM272.6 174L272.1 173.6L272.1 133.4L272.6 133.8Z" className={styles.artShadeFaint} />
+    <path d="M384.6 96.1L385.1 96.5L385.1 97.1L384.6 97.5L293.7 143L292.8 143.2L291.7 143.2L290.9 143L272.6 133.8L272.1 133.4L272.1 132.9L272.6 132.4L363.5 87L364.4 86.7L365.4 86.7L366.3 87Z" className={styles.artTop} />
+    <path d="M385.1 97.1L384.6 97.5L293.7 143L292.8 143.2L291.7 143.2L290.9 143L272.6 133.8L272.1 133.4" className={styles.artLineFaint} />
+    <path d="M385.1 97.1L383.6 97.1L292.9 142.5L292.4 142.6L292.1 142.6L291.7 142.5L273.6 133.4L272.1 133.4" className={styles.artLineFaint} />
+    <path d="M272.1 133.4L272.1 132.9L272.6 132.4L363.5 87L364.4 86.7L365.4 86.7L366.3 87L384.6 96.1L385.1 96.5L385.1 97.1M385.1 137.3L384.6 137.7L293.7 183.2L292.8 183.4L291.7 183.4L290.9 183.2L272.6 174L272.1 173.6M385.1 97.1L385.1 137.3M272.1 133.4L272.1 173.6" className={styles.artOutline} />
+    <path d="M366.3 102.2L366.7 102.7L366.3 103.1L335.4 118.6L334.5 118.8L333.5 118.6L321.3 112.5L320.9 112L321.3 111.6L352.3 96.1L353.2 95.9L354.2 96.1Z" className={styles.artLineFaint} />
+    <path d="M385.1 105.7L384.6 106.1L293.7 151.6L292.8 151.9L291.7 151.9L290.9 151.6L272.6 142.5L272.1 142" className={styles.artLineFaint} />
+    <path d="M289.2 163.4L289 161.3L288.5 159.1L287.6 156.9L286.4 154.8L285 153L283.4 151.5L281.7 150.5L280 149.9L278.5 149.8L277 150.1L275.9 151L275 152.3L274.4 154L274.2 155.9L274.4 158L275 160.3L275.9 162.5L277 164.5L278.5 166.3L280 167.8L281.7 168.8L283.4 169.5L285 169.6L286.4 169.2L287.6 168.3L288.5 167L289 165.4Z" className={styles.artLine} />
+    <path d="M284.1 160.8L283.7 159.2L282.9 157.8L281.7 156.8L280.5 156.6L279.7 157.2L279.4 158.5L279.7 160.1L280.5 161.6L281.7 162.5L282.9 162.7L283.7 162.1Z" className={styles.artLine} />
+    <circle cx="278.2" cy="132" r="1" className={styles.artScrew} />
+    <circle cx="294.6" cy="140.2" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M295.5 144.6L296 144.2L387 98.7L387.9 98.4L388.9 98.4L389.8 98.7L408.1 107.8L408.6 108.3L408.6 149L408.1 149.4L317.1 194.9L316.2 195.2L315.2 195.2L314.3 194.9L296 185.8L295.5 185.3Z" className={styles.artSurface} />
+    <path d="M408.6 149L408.1 149.4L408.1 109.2L408.6 108.8ZM408.1 149.4L317.1 194.9L317.1 154.7L408.1 109.2Z" className={styles.artShadeStrong} />
+    <path d="M317.1 194.9L316.2 195.2L316.2 155L317.1 154.7Z" className={styles.artShadeMedium} />
+    <path d="M316.2 195.2L315.2 195.2L315.2 155L316.2 155ZM315.2 195.2L314.3 194.9L314.3 154.7L315.2 155Z" className={styles.artShadeSoft} />
+    <path d="M314.3 194.9L296 185.8L296 145.6L314.3 154.7ZM296 185.8L295.5 185.3L295.5 145.1L296 145.6Z" className={styles.artShadeFaint} />
+    <path d="M408.1 107.8L408.6 108.3L408.6 108.8L408.1 109.2L317.1 154.7L316.2 155L315.2 155L314.3 154.7L296 145.6L295.5 145.1L295.5 144.6L296 144.2L387 98.7L387.9 98.4L388.9 98.4L389.8 98.7Z" className={styles.artTop} />
+    <path d="M408.6 108.8L408.1 109.2L317.1 154.7L316.2 155L315.2 155L314.3 154.7L296 145.6L295.5 145.1" className={styles.artLineFaint} />
+    <path d="M408.6 108.8L407 108.8L316.3 154.2L315.9 154.3L315.5 154.3L315.1 154.2L297.1 145.2L295.5 145.1" className={styles.artLineFaint} />
+    <path d="M295.5 145.1L295.5 144.6L296 144.2L387 98.7L387.9 98.4L388.9 98.4L389.8 98.7L408.1 107.8L408.6 108.3L408.6 108.8M408.6 149L408.1 149.4L317.1 194.9L316.2 195.2L315.2 195.2L314.3 194.9L296 185.8L295.5 185.3M408.6 108.8L408.6 149M295.5 145.1L295.5 185.3" className={styles.artOutline} />
+    <path d="M389.8 113.9L390.2 114.4L389.8 114.9L358.8 130.3L357.9 130.5L357 130.3L344.8 124.2L344.4 123.8L344.8 123.3L375.7 107.8L376.7 107.6L377.6 107.8Z" className={styles.artLineFaint} />
+    <path d="M408.6 117.4L408.1 117.8L317.1 163.3L316.2 163.6L315.2 163.6L314.3 163.3L296 154.2L295.5 153.7" className={styles.artLineFaint} />
+    <path d="M312.7 175.1L312.5 173L311.9 170.8L311 168.6L309.8 166.5L308.4 164.7L306.8 163.3L305.2 162.2L303.5 161.6L301.9 161.5L300.5 161.9L299.3 162.7L298.4 164L297.8 165.7L297.7 167.6L297.8 169.8L298.4 172L299.3 174.2L300.5 176.2L301.9 178L303.5 179.5L305.2 180.6L306.8 181.2L308.4 181.3L309.8 180.9L311 180L311.9 178.7L312.5 177.1Z" className={styles.artLine} />
+    <path d="M307.5 172.6L307.2 171L306.3 169.5L305.2 168.5L304 168.3L303.1 168.9L302.8 170.2L303.1 171.8L304 173.3L305.2 174.3L306.3 174.5L307.2 173.8Z" className={styles.artLine} />
+    <circle cx="301.6" cy="143.7" r="1" className={styles.artScrew} />
+    <circle cx="318.1" cy="151.9" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M163.1 228.8L163.6 228.4L240.5 189.9L241.3 189.7L242.4 189.7L243.3 189.9L278 207.3L278.5 207.7L278.5 211.7L278 212.1L201.1 250.6L200.2 250.8L199.2 250.8L198.3 250.6L163.6 233.2L163.1 232.8Z" className={styles.artSurface} />
+    <path d="M278.5 211.7L278 212.1L278 208.7L278.5 208.2ZM278 212.1L201.1 250.6L201.1 247.1L278 208.7Z" className={styles.artShadeStrong} />
+    <path d="M201.1 250.6L200.2 250.8L200.2 247.4L201.1 247.1Z" className={styles.artShadeMedium} />
+    <path d="M200.2 250.8L199.2 250.8L199.2 247.4L200.2 247.4Z" className={styles.artShadeSoft} />
+    <path d="M199.2 250.8L198.3 250.6L198.3 247.1L199.2 247.4ZM198.3 250.6L163.6 233.2L163.6 229.8L198.3 247.1ZM163.6 233.2L163.1 232.8L163.1 229.3L163.6 229.8Z" className={styles.artShadeFaint} />
+    <path d="M278 207.3L278.5 207.7L278.5 208.2L278 208.7L201.1 247.1L200.2 247.4L199.2 247.4L198.3 247.1L163.6 229.8L163.1 229.3L163.1 228.8L163.6 228.4L240.5 189.9L241.3 189.7L242.4 189.7L243.3 189.9Z" className={styles.artTop} />
+    <path d="M278.5 208.2L278 208.7L201.1 247.1L200.2 247.4L199.2 247.4L198.3 247.1L163.6 229.8L163.1 229.3" className={styles.artLineFaint} />
+    <path d="M163.1 229.3L163.1 228.8L163.6 228.4L240.5 189.9L241.3 189.7L242.4 189.7L243.3 189.9L278 207.3L278.5 207.7L278.5 208.2M278.5 211.7L278 212.1L201.1 250.6L200.2 250.8L199.2 250.8L198.3 250.6L163.6 233.2L163.1 232.8M278.5 208.2L278.5 211.7M163.1 229.3L163.1 232.8" className={styles.artOutlineSoft} />
+    <circle cx="241.9" cy="192.7" r="1" className={styles.artScrew} />
+    <circle cx="199.7" cy="244.3" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M173.6 266.9L174.1 266.5L411.6 147.7L412.5 147.5L413.5 147.5L414.4 147.7L560.4 220.8L561 221.2L561 225.2L560.4 225.6L323 344.3L322.1 344.6L321.1 344.6L320.2 344.3L174.1 271.3L173.6 270.9Z" className={styles.artSurface} />
+    <path d="M561 225.2L560.4 225.6L560.4 222.2L561 221.7ZM560.4 225.6L323 344.3L323 340.9L560.4 222.2ZM323 344.3L322.1 344.6L322.1 341.2L323 340.9Z" className={styles.artShadeStrong} />
+    <path d="M322.1 344.6L321.1 344.6L321.1 341.2L322.1 341.2Z" className={styles.artShadeSoft} />
+    <path d="M321.1 344.6L320.2 344.3L320.2 340.9L321.1 341.2ZM320.2 344.3L174.1 271.3L174.1 267.9L320.2 340.9ZM174.1 271.3L173.6 270.9L173.6 267.4L174.1 267.9Z" className={styles.artShadeFaint} />
+    <path d="M560.4 220.8L561 221.2L561 221.7L560.4 222.2L323 340.9L322.1 341.2L321.1 341.2L320.2 340.9L174.1 267.9L173.6 267.4L173.6 266.9L174.1 266.5L411.6 147.7L412.5 147.5L413.5 147.5L414.4 147.7Z" className={styles.artTop} />
+    <path d="M561 221.7L560.4 222.2L323 340.9L322.1 341.2L321.1 341.2L320.2 340.9L174.1 267.9L173.6 267.4" className={styles.artLineFaint} />
+    <path d="M173.6 267.4L173.6 266.9L174.1 266.5L411.6 147.7L412.5 147.5L413.5 147.5L414.4 147.7L560.4 220.8L561 221.2L561 221.7M561 225.2L560.4 225.6L323 344.3L322.1 344.6L321.1 344.6L320.2 344.3L174.1 271.3L173.6 270.9M561 221.7L561 225.2M173.6 267.4L173.6 270.9" className={styles.artOutlineSoft} />
+    <circle cx="180.9" cy="266.6" r="1" className={styles.artScrew} />
+    <circle cx="322.7" cy="337.5" r="1" className={styles.artScrew} />
+    <circle cx="246.6" cy="299.4" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M416.6 65.6L417 65.3L417.9 64.9L418.5 64.7L419.2 64.7L419.8 64.9L439 74.5L439.4 74.8L439.4 155.2L439.4 155.5L439 155.8L438.1 156.3L437.5 156.5L436.8 156.5L436.2 156.3L417 146.7L416.6 146.4Z" className={styles.artSurface} />
+    <path d="M439.4 155.5L439 155.8L439 75.4L439.4 75.1ZM439 155.8L438.1 156.3L438.1 75.9L439 75.4Z" className={styles.artShadeStrong} />
+    <path d="M438.1 156.3L437.5 156.5L437.5 76.1L438.1 75.9ZM437.5 156.5L436.8 156.5L436.8 76.1L437.5 76.1Z" className={styles.artShadeMedium} />
+    <path d="M436.8 156.5L436.2 156.3L436.2 75.9L436.8 76.1ZM436.2 156.3L417 146.7L417 66.3L436.2 75.9ZM417 146.7L416.6 146.4L416.6 66L417 66.3Z" className={styles.artShadeFaint} />
+    <path d="M439 74.5L439.4 74.8L439.4 75.1L439 75.4L438.1 75.9L437.5 76.1L436.8 76.1L436.2 75.9L417 66.3L416.6 66L416.6 65.6L417 65.3L417.9 64.9L418.5 64.7L419.2 64.7L419.8 64.9Z" className={styles.artTop} />
+    <path d="M439.4 75.1L439 75.4L438.1 75.9L437.5 76.1L436.8 76.1L436.2 75.9L417 66.3L416.6 66" className={styles.artLineFaint} />
+    <path d="M416.6 66L416.6 65.6L417 65.3L417.9 64.9L418.5 64.7L419.2 64.7L419.8 64.9L439 74.5L439.4 74.8L439.4 75.1M439.4 155.5L439 155.8L438.1 156.3L437.5 156.5L436.8 156.5L436.2 156.3L417 146.7L416.6 146.4M439.4 75.1L439.4 155.5M416.6 66L416.6 146.4" className={styles.artOutline} />
+    <circle cx="428" cy="70.4" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M313.1 202L313.6 201.6L413.9 151.4L414.8 151.2L415.8 151.2L416.7 151.4L421 153.5L421.5 154L421.5 162.5L421 163L320.6 213.1L319.7 213.4L318.7 213.4L317.8 213.1L313.6 211L313.1 210.6Z" className={styles.artSurface} />
+    <path d="M421.5 162.5L421 163L421 154.9L421.5 154.5ZM421 163L320.6 213.1L320.6 205.1L421 154.9Z" className={styles.artShadeStrong} />
+    <path d="M320.6 213.1L319.7 213.4L319.7 205.4L320.6 205.1Z" className={styles.artShadeMedium} />
+    <path d="M319.7 213.4L318.7 213.4L318.7 205.4L319.7 205.4ZM318.7 213.4L317.8 213.1L317.8 205.1L318.7 205.4Z" className={styles.artShadeSoft} />
+    <path d="M317.8 213.1L313.6 211L313.6 203L317.8 205.1ZM313.6 211L313.1 210.6L313.1 202.5L313.6 203Z" className={styles.artShadeFaint} />
+    <path d="M421 153.5L421.5 154L421.5 154.5L421 154.9L320.6 205.1L319.7 205.4L318.7 205.4L317.8 205.1L313.6 203L313.1 202.5L313.1 202L313.6 201.6L413.9 151.4L414.8 151.2L415.8 151.2L416.7 151.4Z" className={styles.artTop} />
+    <path d="M421.5 154.5L421 154.9L320.6 205.1L319.7 205.4L318.7 205.4L317.8 205.1L313.6 203L313.1 202.5" className={styles.artLineFaint} />
+    <path d="M313.1 202.5L313.1 202L313.6 201.6L413.9 151.4L414.8 151.2L415.8 151.2L416.7 151.4L421 153.5L421.5 154L421.5 154.5M421.5 162.5L421 163L320.6 213.1L319.7 213.4L318.7 213.4L317.8 213.1L313.6 211L313.1 210.6M421.5 154.5L421.5 162.5M313.1 202.5L313.1 210.6" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M451.8 83.6L451.8 83.2L452.1 82.9L453.1 82.5L453.7 82.3L454.4 82.3L455 82.5L474.2 92.1L474.5 92.4L474.5 173.1L474.2 173.4L473.2 173.9L472.6 174L472 174L471.4 173.9L452.1 164.3L451.8 164Z" className={styles.artSurface} />
+    <path d="M474.5 173.1L474.2 173.4L474.2 93L474.5 92.7ZM474.2 173.4L473.2 173.9L473.2 93.5L474.2 93Z" className={styles.artShadeStrong} />
+    <path d="M473.2 173.9L472.6 174L472.6 93.6L473.2 93.5ZM472.6 174L472 174L472 93.6L472.6 93.6Z" className={styles.artShadeMedium} />
+    <path d="M472 174L471.4 173.9L471.4 93.5L472 93.6ZM471.4 173.9L452.1 164.3L452.1 83.9L471.4 93.5ZM452.1 164.3L451.8 164L451.8 83.6L452.1 83.9Z" className={styles.artShadeFaint} />
+    <path d="M474.2 92.1L474.5 92.4L474.5 92.7L474.2 93L473.2 93.5L472.6 93.6L472 93.6L471.4 93.5L452.1 83.9L451.8 83.6L451.8 83.2L452.1 82.9L453.1 82.5L453.7 82.3L454.4 82.3L455 82.5Z" className={styles.artTop} />
+    <path d="M474.5 92.7L474.2 93L473.2 93.5L472.6 93.6L472 93.6L471.4 93.5L452.1 83.9L451.8 83.6" className={styles.artLineFaint} />
+    <path d="M451.8 83.6L451.8 83.2L452.1 82.9L453.1 82.5L453.7 82.3L454.4 82.3L455 82.5L474.2 92.1L474.5 92.4L474.5 92.7M474.5 173.1L474.2 173.4L473.2 173.9L472.6 174L472 174L471.4 173.9L452.1 164.3L451.8 164M474.5 92.7L474.5 173.1M451.8 83.6L451.8 164" className={styles.artOutline} />
+    <circle cx="463.2" cy="88" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M214.6 206.6L215.1 206.2L240.5 193.5L241.3 193.2L242.4 193.2L243.3 193.5L248.4 196.1L248.9 196.5L248.9 199.3L248.4 199.8L223.1 212.4L222.2 212.7L221.2 212.7L220.3 212.4L215.1 209.9L214.6 209.4Z" className={styles.artSurface} />
+    <path d="M248.9 199.3L248.4 199.8L248.4 197.5L248.9 197ZM248.4 199.8L223.1 212.4L223.1 210.1L248.4 197.5ZM223.1 212.4L222.2 212.7L222.2 210.4L223.1 210.1Z" className={styles.artShadeStrong} />
+    <path d="M222.2 212.7L221.2 212.7L221.2 210.4L222.2 210.4Z" className={styles.artShadeSoft} />
+    <path d="M221.2 212.7L220.3 212.4L220.3 210.1L221.2 210.4ZM220.3 212.4L215.1 209.9L215.1 207.6L220.3 210.1ZM215.1 209.9L214.6 209.4L214.6 207.1L215.1 207.6Z" className={styles.artShadeFaint} />
+    <path d="M248.4 196.1L248.9 196.5L248.9 197L248.4 197.5L223.1 210.1L222.2 210.4L221.2 210.4L220.3 210.1L215.1 207.6L214.6 207.1L214.6 206.6L215.1 206.2L240.5 193.5L241.3 193.2L242.4 193.2L243.3 193.5Z" className={styles.artTop} />
+    <path d="M248.9 197L248.4 197.5L223.1 210.1L222.2 210.4L221.2 210.4L220.3 210.1L215.1 207.6L214.6 207.1" className={styles.artLineFaint} />
+    <path d="M214.6 207.1L214.6 206.6L215.1 206.2L240.5 193.5L241.3 193.2L242.4 193.2L243.3 193.5L248.4 196.1L248.9 196.5L248.9 197M248.9 199.3L248.4 199.8L223.1 212.4L222.2 212.7L221.2 212.7L220.3 212.4L215.1 209.9L214.6 209.4M248.9 197L248.9 199.3M214.6 207.1L214.6 209.4" className={styles.artOutline} />
+    <circle cx="243.3" cy="196.1" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M487 100.8L487.3 100.5L488.2 100L488.8 99.9L489.5 99.9L490.1 100L509.3 109.6L509.7 109.9L509.7 190.7L509.3 191L508.4 191.4L507.8 191.6L507.1 191.6L506.5 191.4L487.3 181.8L487 181.5Z" className={styles.artSurface} />
+    <path d="M509.7 190.7L509.3 191L509.3 110.6L509.7 110.3ZM509.3 191L508.4 191.4L508.4 111.1L509.3 110.6Z" className={styles.artShadeStrong} />
+    <path d="M508.4 191.4L507.8 191.6L507.8 111.2L508.4 111.1ZM507.8 191.6L507.1 191.6L507.1 111.2L507.8 111.2Z" className={styles.artShadeMedium} />
+    <path d="M507.1 191.6L506.5 191.4L506.5 111.1L507.1 111.2ZM506.5 191.4L487.3 181.8L487.3 101.4L506.5 111.1ZM487.3 181.8L487 181.5L487 101.1L487.3 101.4Z" className={styles.artShadeFaint} />
+    <path d="M509.3 109.6L509.7 109.9L509.7 110.3L509.3 110.6L508.4 111.1L507.8 111.2L507.1 111.2L506.5 111.1L487.3 101.4L487 101.1L487 100.8L487.3 100.5L488.2 100L488.8 99.9L489.5 99.9L490.1 100Z" className={styles.artTop} />
+    <path d="M509.7 110.3L509.3 110.6L508.4 111.1L507.8 111.2L507.1 111.2L506.5 111.1L487.3 101.4L487 101.1" className={styles.artLineFaint} />
+    <path d="M487 101.1L487 100.8L487.3 100.5L488.2 100L488.8 99.9L489.5 99.9L490.1 100L509.3 109.6L509.7 109.9L509.7 110.3M509.7 190.7L509.3 191L508.4 191.4L507.8 191.6L507.1 191.6L506.5 191.4L487.3 181.8L487 181.5M509.7 110.3L509.7 190.7M487 101.1L487 181.5" className={styles.artOutline} />
+    <circle cx="498.3" cy="105.5" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M226.3 212.5L226.9 212L252.2 199.4L253.1 199.1L254.1 199.1L255 199.4L260.1 201.9L260.7 202.4L260.7 205.2L260.1 205.6L234.8 218.3L233.9 218.6L232.9 218.6L232 218.3L226.9 215.7L226.3 215.3L226.3 214.8Z" className={styles.artSurface} />
+    <path d="M260.7 205.2L260.1 205.6L260.1 203.3L260.7 202.9ZM260.1 205.6L234.8 218.3L234.8 216L260.1 203.3ZM234.8 218.3L233.9 218.6L233.9 216.3L234.8 216Z" className={styles.artShadeStrong} />
+    <path d="M233.9 218.6L232.9 218.6L232.9 216.3L233.9 216.3Z" className={styles.artShadeSoft} />
+    <path d="M232.9 218.6L232 218.3L232 216L232.9 216.3ZM232 218.3L226.9 215.7L226.9 213.4L232 216ZM226.9 215.7L226.3 215.3L226.3 213L226.9 213.4Z" className={styles.artShadeFaint} />
+    <path d="M260.1 201.9L260.7 202.4L260.7 202.9L260.1 203.3L234.8 216L233.9 216.3L232.9 216.3L232 216L226.9 213.4L226.3 213L226.3 212.5L226.9 212L252.2 199.4L253.1 199.1L254.1 199.1L255 199.4Z" className={styles.artTop} />
+    <path d="M260.7 202.9L260.1 203.3L234.8 216L233.9 216.3L232.9 216.3L232 216L226.9 213.4L226.3 213" className={styles.artLineFaint} />
+    <path d="M226.3 213L226.3 212.5L226.9 212L252.2 199.4L253.1 199.1L254.1 199.1L255 199.4L260.1 201.9L260.7 202.4L260.7 202.9M260.7 205.2L260.1 205.6L234.8 218.3L233.9 218.6L232.9 218.6L232 218.3L226.9 215.7L226.3 215.3M260.7 202.9L260.7 205.2M226.3 213L226.3 215.3" className={styles.artOutline} />
+    <circle cx="255" cy="201.9" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M187.7 218.4L188.2 217.9L204.1 209.9L205 209.7L206 209.7L206.9 209.9L222.9 217.9L223.4 218.4L223.4 222.9L222.9 223.3L206.9 231.3L206 231.6L205 231.6L204.1 231.3L188.2 223.3L187.7 222.9Z" className={styles.artSurface} />
+    <path d="M223.4 222.9L222.9 223.3L222.9 219.3L223.4 218.9ZM222.9 223.3L206.9 231.3L206.9 227.3L222.9 219.3ZM206.9 231.3L206 231.6L206 227.5L206.9 227.3Z" className={styles.artShadeStrong} />
+    <path d="M206 231.6L205 231.6L205 227.5L206 227.5Z" className={styles.artShadeSoft} />
+    <path d="M205 231.6L204.1 231.3L204.1 227.3L205 227.5ZM204.1 231.3L188.2 223.3L188.2 219.3L204.1 227.3ZM188.2 223.3L187.7 222.9L187.7 218.9L188.2 219.3Z" className={styles.artShadeFaint} />
+    <path d="M222.9 217.9L223.4 218.4L223.4 218.9L222.9 219.3L206.9 227.3L206 227.5L205 227.5L204.1 227.3L188.2 219.3L187.7 218.9L187.7 218.4L188.2 217.9L204.1 209.9L205 209.7L206 209.7L206.9 209.9Z" className={styles.artTop} />
+    <path d="M223.4 218.9L222.9 219.3L206.9 227.3L206 227.5L205 227.5L204.1 227.3L188.2 219.3L187.7 218.9" className={styles.artLineFaint} />
+    <path d="M223.4 218.9L222.1 219L206.3 226.9L205.8 227.1L205.3 227.1L204.7 226.9L189 219L187.7 218.9" className={styles.artLineFaint} />
+    <path d="M187.7 218.9L187.7 218.4L188.2 217.9L204.1 209.9L205 209.7L206 209.7L206.9 209.9L222.9 217.9L223.4 218.4L223.4 218.9M223.4 222.9L222.9 223.3L206.9 231.3L206 231.6L205 231.6L204.1 231.3L188.2 223.3L187.7 222.9M223.4 218.9L223.4 222.9M187.7 218.9L187.7 222.9" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M522.1 118.4L522.5 118.1L523.4 117.6L524 117.4L524.7 117.4L525.3 117.6L544.5 127.2L544.8 127.5L544.8 208.3L544.5 208.6L543.6 209L543 209.2L542.3 209.2L541.7 209L522.5 199.4L522.1 199.1Z" className={styles.artSurface} />
+    <path d="M544.8 208.3L544.5 208.6L544.5 128.2L544.8 127.9ZM544.5 208.6L543.6 209L543.6 128.6L544.5 128.2Z" className={styles.artShadeStrong} />
+    <path d="M543.6 209L543 209.2L543 128.8L543.6 128.6ZM543 209.2L542.3 209.2L542.3 128.8L543 128.8Z" className={styles.artShadeMedium} />
+    <path d="M542.3 209.2L541.7 209L541.7 128.6L542.3 128.8ZM541.7 209L522.5 199.4L522.5 119L541.7 128.6ZM522.5 199.4L522.1 199.1L522.1 118.7L522.5 119Z" className={styles.artShadeFaint} />
+    <path d="M544.5 127.2L544.8 127.5L544.8 127.9L544.5 128.2L543.6 128.6L543 128.8L542.3 128.8L541.7 128.6L522.5 119L522.1 118.7L522.1 118.4L522.5 118.1L523.4 117.6L524 117.4L524.7 117.4L525.3 117.6Z" className={styles.artTop} />
+    <path d="M544.8 127.9L544.5 128.2L543.6 128.6L543 128.8L542.3 128.8L541.7 128.6L522.5 119L522.1 118.7" className={styles.artLineFaint} />
+    <path d="M522.1 118.7L522.1 118.4L522.5 118.1L523.4 117.6L524 117.4L524.7 117.4L525.3 117.6L544.5 127.2L544.8 127.5L544.8 127.9M544.8 208.3L544.5 208.6L543.6 209L543 209.2L542.3 209.2L541.7 209L522.5 199.4L522.1 199.1M544.8 127.9L544.8 208.3M522.1 118.7L522.1 199.1" className={styles.artOutline} />
+    <circle cx="533.5" cy="123.1" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M287.1 223.2L287.5 222.8L288.6 222.3L289.3 222.1L290.1 222.1L290.8 222.3L291.9 222.8L292.3 223.2L292.3 230.5L291.9 230.8L290.8 231.3L290.1 231.5L289.3 231.5L288.6 231.3L287.5 230.8L287.1 230.5Z" className={styles.artSurface} />
+    <path d="M292.3 230.5L291.9 230.8L291.9 223.9L292.3 223.6ZM291.9 230.8L290.8 231.3L290.8 224.5L291.9 223.9ZM290.8 231.3L290.1 231.5L290.1 224.7L290.8 224.5Z" className={styles.artShadeStrong} />
+    <path d="M290.1 231.5L289.3 231.5L289.3 224.7L290.1 224.7ZM289.3 231.5L288.6 231.3L288.6 224.5L289.3 224.7Z" className={styles.artShadeSoft} />
+    <path d="M288.6 231.3L287.5 230.8L287.5 223.9L288.6 224.5ZM287.5 230.8L287.1 230.5L287.1 223.6L287.5 223.9Z" className={styles.artShadeFaint} />
+    <path d="M291.9 222.8L292.3 223.2L292.3 223.6L291.9 223.9L290.8 224.5L290.1 224.7L289.3 224.7L288.6 224.5L287.5 223.9L287.1 223.6L287.1 223.2L287.5 222.8L288.6 222.3L289.3 222.1L290.1 222.1L290.8 222.3Z" className={styles.artTop} />
+    <path d="M292.3 223.6L291.9 223.9L290.8 224.5L290.1 224.7L289.3 224.7L288.6 224.5L287.5 223.9L287.1 223.6" className={styles.artLineFaint} />
+    <path d="M287.1 223.6L287.1 223.2L287.5 222.8L288.6 222.3L289.3 222.1L290.1 222.1L290.8 222.3L291.9 222.8L292.3 223.2L292.3 223.6M292.3 230.5L291.9 230.8L290.8 231.3L290.1 231.5L289.3 231.5L288.6 231.3L287.5 230.8L287.1 230.5M292.3 223.6L292.3 230.5M287.1 223.6L287.1 230.5" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M293.7 226.4L294.1 226.1L295.2 225.5L295.8 225.3L296.6 225.3L297.3 225.5L298.4 226.1L298.8 226.4L298.8 233.7L298.4 234.1L297.3 234.6L296.6 234.8L295.8 234.8L295.2 234.6L294.1 234.1L293.7 233.7Z" className={styles.artSurface} />
+    <path d="M298.8 233.7L298.4 234.1L298.4 227.2L298.8 226.8ZM298.4 234.1L297.3 234.6L297.3 227.7L298.4 227.2Z" className={styles.artShadeStrong} />
+    <path d="M297.3 234.6L296.6 234.8L296.6 227.9L297.3 227.7Z" className={styles.artShadeMedium} />
+    <path d="M296.6 234.8L295.8 234.8L295.8 227.9L296.6 227.9ZM295.8 234.8L295.2 234.6L295.2 227.7L295.8 227.9Z" className={styles.artShadeSoft} />
+    <path d="M295.2 234.6L294.1 234.1L294.1 227.2L295.2 227.7ZM294.1 234.1L293.7 233.7L293.7 226.8L294.1 227.2Z" className={styles.artShadeFaint} />
+    <path d="M298.4 226.1L298.8 226.4L298.8 226.8L298.4 227.2L297.3 227.7L296.6 227.9L295.8 227.9L295.2 227.7L294.1 227.2L293.7 226.8L293.7 226.4L294.1 226.1L295.2 225.5L295.8 225.3L296.6 225.3L297.3 225.5Z" className={styles.artTop} />
+    <path d="M298.8 226.8L298.4 227.2L297.3 227.7L296.6 227.9L295.8 227.9L295.2 227.7L294.1 227.2L293.7 226.8" className={styles.artLineFaint} />
+    <path d="M293.7 226.8L293.7 226.4L294.1 226.1L295.2 225.5L295.8 225.3L296.6 225.3L297.3 225.5L298.4 226.1L298.8 226.4L298.8 226.8M298.8 233.7L298.4 234.1L297.3 234.6L296.6 234.8L295.8 234.8L295.2 234.6L294.1 234.1L293.7 233.7M298.8 226.8L298.8 233.7M293.7 226.8L293.7 233.7" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M300.2 229.7L300.6 229.4L301.7 228.8L302.4 228.6L303.2 228.6L303.9 228.8L305 229.4L305.4 229.7L305.4 237L305 237.4L303.9 237.9L303.2 238.1L302.4 238.1L301.7 237.9L300.6 237.4L300.2 237Z" className={styles.artSurface} />
+    <path d="M305.4 237L305 237.4L305 230.5L305.4 230.1ZM305 237.4L303.9 237.9L303.9 231L305 230.5Z" className={styles.artShadeStrong} />
+    <path d="M303.9 237.9L303.2 238.1L303.2 231.2L303.9 231Z" className={styles.artShadeMedium} />
+    <path d="M303.2 238.1L302.4 238.1L302.4 231.2L303.2 231.2ZM302.4 238.1L301.7 237.9L301.7 231L302.4 231.2Z" className={styles.artShadeSoft} />
+    <path d="M301.7 237.9L300.6 237.4L300.6 230.5L301.7 231ZM300.6 237.4L300.2 237L300.2 230.1L300.6 230.5Z" className={styles.artShadeFaint} />
+    <path d="M305 229.4L305.4 229.7L305.4 230.1L305 230.5L303.9 231L303.2 231.2L302.4 231.2L301.7 231L300.6 230.5L300.2 230.1L300.2 229.7L300.6 229.4L301.7 228.8L302.4 228.6L303.2 228.6L303.9 228.8Z" className={styles.artTop} />
+    <path d="M305.4 230.1L305 230.5L303.9 231L303.2 231.2L302.4 231.2L301.7 231L300.6 230.5L300.2 230.1" className={styles.artLineFaint} />
+    <path d="M300.2 230.1L300.2 229.7L300.6 229.4L301.7 228.8L302.4 228.6L303.2 228.6L303.9 228.8L305 229.4L305.4 229.7L305.4 230.1M305.4 237L305 237.4L303.9 237.9L303.2 238.1L302.4 238.1L301.7 237.9L300.6 237.4L300.2 237M305.4 230.1L305.4 237M300.2 230.1L300.2 237" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M306.8 233L307.2 232.7L308.3 232.1L309 231.9L309.8 231.9L310.5 232.1L311.6 232.7L312 233L312 240.3L311.6 240.6L310.5 241.2L309.8 241.4L309 241.4L308.3 241.2L307.2 240.6L306.8 240.3Z" className={styles.artSurface} />
+    <path d="M312 240.3L311.6 240.6L311.6 233.8L312 233.4ZM311.6 240.6L310.5 241.2L310.5 234.3L311.6 233.8Z" className={styles.artShadeStrong} />
+    <path d="M310.5 241.2L309.8 241.4L309.8 234.5L310.5 234.3Z" className={styles.artShadeMedium} />
+    <path d="M309.8 241.4L309 241.4L309 234.5L309.8 234.5ZM309 241.4L308.3 241.2L308.3 234.3L309 234.5Z" className={styles.artShadeSoft} />
+    <path d="M308.3 241.2L307.2 240.6L307.2 233.8L308.3 234.3ZM307.2 240.6L306.8 240.3L306.8 233.4L307.2 233.8Z" className={styles.artShadeFaint} />
+    <path d="M311.6 232.7L312 233L312 233.4L311.6 233.8L310.5 234.3L309.8 234.5L309 234.5L308.3 234.3L307.2 233.8L306.8 233.4L306.8 233L307.2 232.7L308.3 232.1L309 231.9L309.8 231.9L310.5 232.1Z" className={styles.artTop} />
+    <path d="M312 233.4L311.6 233.8L310.5 234.3L309.8 234.5L309 234.5L308.3 234.3L307.2 233.8L306.8 233.4" className={styles.artLineFaint} />
+    <path d="M306.8 233.4L306.8 233L307.2 232.7L308.3 232.1L309 231.9L309.8 231.9L310.5 232.1L311.6 232.7L312 233L312 233.4M312 240.3L311.6 240.6L310.5 241.2L309.8 241.4L309 241.4L308.3 241.2L307.2 240.6L306.8 240.3M312 233.4L312 240.3M306.8 233.4L306.8 240.3" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M270.9 226.7L271.4 226.2L278 222.9L278.9 222.7L279.9 222.7L280.8 222.9L310.8 237.9L311.3 238.4L311.3 248.1L310.8 248.5L304.2 251.8L303.3 252.1L302.3 252.1L301.4 251.8L271.4 236.8L270.9 236.4Z" className={styles.artSurface} />
+    <path d="M311.3 248.1L310.8 248.5L310.8 239.3L311.3 238.9ZM310.8 248.5L304.2 251.8L304.2 242.6L310.8 239.3Z" className={styles.artShadeStrong} />
+    <path d="M304.2 251.8L303.3 252.1L303.3 242.9L304.2 242.6Z" className={styles.artShadeMedium} />
+    <path d="M303.3 252.1L302.3 252.1L302.3 242.9L303.3 242.9Z" className={styles.artShadeSoft} />
+    <path d="M302.3 252.1L301.4 251.8L301.4 242.6L302.3 242.9ZM301.4 251.8L271.4 236.8L271.4 227.6L301.4 242.6ZM271.4 236.8L270.9 236.4L270.9 227.2L271.4 227.6Z" className={styles.artShadeFaint} />
+    <path d="M310.8 237.9L311.3 238.4L311.3 238.9L310.8 239.3L304.2 242.6L303.3 242.9L302.3 242.9L301.4 242.6L271.4 227.6L270.9 227.2L270.9 226.7L271.4 226.2L278 222.9L278.9 222.7L279.9 222.7L280.8 222.9Z" className={styles.artTop} />
+    <path d="M311.3 238.9L310.8 239.3L304.2 242.6L303.3 242.9L302.3 242.9L301.4 242.6L271.4 227.6L270.9 227.2" className={styles.artLineFaint} />
+    <path d="M311.3 238.9L310 239L303.6 242.2L303.1 242.4L302.6 242.4L302 242.2L272.2 227.3L270.9 227.2" className={styles.artLineFaint} />
+    <path d="M270.9 227.2L270.9 226.7L271.4 226.2L278 222.9L278.9 222.7L279.9 222.7L280.8 222.9L310.8 237.9L311.3 238.4L311.3 238.9M311.3 248.1L310.8 248.5L304.2 251.8L303.3 252.1L302.3 252.1L301.4 251.8L271.4 236.8L270.9 236.4M311.3 238.9L311.3 248.1M270.9 227.2L270.9 236.4" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M313.4 236.3L313.8 235.9L314.8 235.4L315.5 235.2L316.3 235.2L317 235.4L318.1 235.9L318.5 236.3L318.5 243.6L318.1 243.9L317 244.5L316.3 244.7L315.5 244.7L314.8 244.5L313.8 243.9L313.4 243.6Z" className={styles.artSurface} />
+    <path d="M318.5 243.6L318.1 243.9L318.1 237L318.5 236.7ZM318.1 243.9L317 244.5L317 237.6L318.1 237Z" className={styles.artShadeStrong} />
+    <path d="M317 244.5L316.3 244.7L316.3 237.8L317 237.6Z" className={styles.artShadeMedium} />
+    <path d="M316.3 244.7L315.5 244.7L315.5 237.8L316.3 237.8ZM315.5 244.7L314.8 244.5L314.8 237.6L315.5 237.8Z" className={styles.artShadeSoft} />
+    <path d="M314.8 244.5L313.8 243.9L313.8 237L314.8 237.6ZM313.8 243.9L313.4 243.6L313.4 236.7L313.8 237Z" className={styles.artShadeFaint} />
+    <path d="M318.1 235.9L318.5 236.3L318.5 236.7L318.1 237L317 237.6L316.3 237.8L315.5 237.8L314.8 237.6L313.8 237L313.4 236.7L313.4 236.3L313.8 235.9L314.8 235.4L315.5 235.2L316.3 235.2L317 235.4Z" className={styles.artTop} />
+    <path d="M318.5 236.7L318.1 237L317 237.6L316.3 237.8L315.5 237.8L314.8 237.6L313.8 237L313.4 236.7" className={styles.artLineFaint} />
+    <path d="M313.4 236.7L313.4 236.3L313.8 235.9L314.8 235.4L315.5 235.2L316.3 235.2L317 235.4L318.1 235.9L318.5 236.3L318.5 236.7M318.5 243.6L318.1 243.9L317 244.5L316.3 244.7L315.5 244.7L314.8 244.5L313.8 243.9L313.4 243.6M318.5 236.7L318.5 243.6M313.4 236.7L313.4 243.6" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M294.3 243L294.8 242.5L306.1 236.9L307 236.7L308 236.7L308.9 236.9L324.8 244.9L325.4 245.3L325.4 250.4L324.8 250.9L313.6 256.5L312.7 256.8L311.7 256.8L310.8 256.5L294.8 248.5L294.3 248.1Z" className={styles.artSurface} />
+    <path d="M325.4 250.4L324.8 250.9L324.8 246.3L325.4 245.8ZM324.8 250.9L313.6 256.5L313.6 251.9L324.8 246.3Z" className={styles.artShadeStrong} />
+    <path d="M313.6 256.5L312.7 256.8L312.7 252.2L313.6 251.9Z" className={styles.artShadeMedium} />
+    <path d="M312.7 256.8L311.7 256.8L311.7 252.2L312.7 252.2Z" className={styles.artShadeSoft} />
+    <path d="M311.7 256.8L310.8 256.5L310.8 251.9L311.7 252.2ZM310.8 256.5L294.8 248.5L294.8 243.9L310.8 251.9ZM294.8 248.5L294.3 248.1L294.3 243.5L294.8 243.9Z" className={styles.artShadeFaint} />
+    <path d="M324.8 244.9L325.4 245.3L325.4 245.8L324.8 246.3L313.6 251.9L312.7 252.2L311.7 252.2L310.8 251.9L294.8 243.9L294.3 243.5L294.3 243L294.8 242.5L306.1 236.9L307 236.7L308 236.7L308.9 236.9Z" className={styles.artTop} />
+    <path d="M325.4 245.8L324.8 246.3L313.6 251.9L312.7 252.2L311.7 252.2L310.8 251.9L294.8 243.9L294.3 243.5" className={styles.artLineFaint} />
+    <path d="M325.4 245.8L324.1 246L313 251.5L312.4 251.7L311.9 251.7L311.4 251.5L295.6 243.6L294.3 243.5" className={styles.artLineFaint} />
+    <path d="M294.3 243.5L294.3 243L294.8 242.5L306.1 236.9L307 236.7L308 236.7L308.9 236.9L324.8 244.9L325.4 245.3L325.4 245.8M325.4 250.4L324.8 250.9L313.6 256.5L312.7 256.8L311.7 256.8L310.8 256.5L294.8 248.5L294.3 248.1M325.4 245.8L325.4 250.4M294.3 243.5L294.3 248.1" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M185.3 237.8L185.6 237.5L249.4 205.6L250 205.4L250.6 205.4L251.2 205.6L252.2 206.1L252.5 206.3L252.5 232.5L252.2 232.8L188.4 264.7L187.8 264.9L187.1 264.9L186.5 264.7L185.6 264.2L185.3 263.9Z" className={styles.artSurface} />
+    <path d="M252.5 232.5L252.2 232.8L252.2 207L252.5 206.7ZM252.2 232.8L188.4 264.7L188.4 238.9L252.2 207ZM188.4 264.7L187.8 264.9L187.8 239L188.4 238.9Z" className={styles.artShadeStrong} />
+    <path d="M187.8 264.9L187.1 264.9L187.1 239L187.8 239ZM187.1 264.9L186.5 264.7L186.5 238.9L187.1 239Z" className={styles.artShadeSoft} />
+    <path d="M186.5 264.7L185.6 264.2L185.6 238.4L186.5 238.9ZM185.6 264.2L185.3 263.9L185.3 238.1L185.6 238.4Z" className={styles.artShadeFaint} />
+    <path d="M252.2 206.1L252.5 206.3L252.5 206.7L252.2 207L188.4 238.9L187.8 239L187.1 239L186.5 238.9L185.6 238.4L185.3 238.1L185.3 237.8L185.6 237.5L249.4 205.6L250 205.4L250.6 205.4L251.2 205.6Z" className={styles.artTop} />
+    <path d="M252.5 206.7L252.2 207L188.4 238.9L187.8 239L187.1 239L186.5 238.9L185.6 238.4L185.3 238.1" className={styles.artLineFaint} />
+    <path d="M185.3 238.1L185.3 237.8L185.6 237.5L249.4 205.6L250 205.4L250.6 205.4L251.2 205.6L252.2 206.1L252.5 206.3L252.5 206.7M252.5 232.5L252.2 232.8L188.4 264.7L187.8 264.9L187.1 264.9L186.5 264.7L185.6 264.2L185.3 263.9M252.5 206.7L252.5 232.5M185.3 238.1L185.3 263.9" className={styles.artOutline} />
+    <circle cx="249.4" cy="207" r="1" className={styles.artScrew} />
+    <circle cx="188.4" cy="237.5" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M189.9 240.1L190.3 239.8L254.1 207.9L254.6 207.8L255.3 207.8L255.9 207.9L256.9 208.4L257.2 208.7L257.2 234.9L256.9 235.2L193.1 267.1L192.5 267.2L191.8 267.2L191.2 267.1L190.3 266.6L189.9 266.3Z" className={styles.artSurface} />
+    <path d="M257.2 234.9L256.9 235.2L256.9 209.3L257.2 209ZM256.9 235.2L193.1 267.1L193.1 241.2L256.9 209.3ZM193.1 267.1L192.5 267.2L192.5 241.4L193.1 241.2Z" className={styles.artShadeStrong} />
+    <path d="M192.5 267.2L191.8 267.2L191.8 241.4L192.5 241.4ZM191.8 267.2L191.2 267.1L191.2 241.2L191.8 241.4Z" className={styles.artShadeSoft} />
+    <path d="M191.2 267.1L190.3 266.6L190.3 240.7L191.2 241.2ZM190.3 266.6L189.9 266.3L189.9 240.4L190.3 240.7Z" className={styles.artShadeFaint} />
+    <path d="M256.9 208.4L257.2 208.7L257.2 209L256.9 209.3L193.1 241.2L192.5 241.4L191.8 241.4L191.2 241.2L190.3 240.7L189.9 240.4L189.9 240.1L190.3 239.8L254.1 207.9L254.6 207.8L255.3 207.8L255.9 207.9Z" className={styles.artTop} />
+    <path d="M257.2 209L256.9 209.3L193.1 241.2L192.5 241.4L191.8 241.4L191.2 241.2L190.3 240.7L189.9 240.4" className={styles.artLineFaint} />
+    <path d="M189.9 240.4L189.9 240.1L190.3 239.8L254.1 207.9L254.6 207.8L255.3 207.8L255.9 207.9L256.9 208.4L257.2 208.7L257.2 209M257.2 234.9L256.9 235.2L193.1 267.1L192.5 267.2L191.8 267.2L191.2 267.1L190.3 266.6L189.9 266.3M257.2 209L257.2 234.9M189.9 240.4L189.9 266.3" className={styles.artOutline} />
+    <circle cx="254.1" cy="209.3" r="1" className={styles.artScrew} />
+    <circle cx="193.1" cy="239.8" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M194.6 242.8L194.6 242.4L195 242.2L258.7 210.3L259.3 210.1L260 210.1L260.6 210.3L261.6 210.7L261.9 211L261.9 237.2L261.6 237.5L197.8 269.4L197.2 269.6L196.5 269.6L195.9 269.4L195 268.9L194.6 268.6Z" className={styles.artSurface} />
+    <path d="M261.9 237.2L261.6 237.5L261.6 211.7L261.9 211.4ZM261.6 237.5L197.8 269.4L197.8 243.6L261.6 211.7ZM197.8 269.4L197.2 269.6L197.2 243.7L197.8 243.6Z" className={styles.artShadeStrong} />
+    <path d="M197.2 269.6L196.5 269.6L196.5 243.7L197.2 243.7ZM196.5 269.6L195.9 269.4L195.9 243.6L196.5 243.7Z" className={styles.artShadeSoft} />
+    <path d="M195.9 269.4L195 268.9L195 243.1L195.9 243.6ZM195 268.9L194.6 268.6L194.6 242.8L195 243.1Z" className={styles.artShadeFaint} />
+    <path d="M261.6 210.7L261.9 211L261.9 211.4L261.6 211.7L197.8 243.6L197.2 243.7L196.5 243.7L195.9 243.6L195 243.1L194.6 242.8L194.6 242.4L195 242.2L258.7 210.3L259.3 210.1L260 210.1L260.6 210.3Z" className={styles.artTop} />
+    <path d="M261.9 211.4L261.6 211.7L197.8 243.6L197.2 243.7L196.5 243.7L195.9 243.6L195 243.1L194.6 242.8" className={styles.artLineFaint} />
+    <path d="M194.6 242.8L194.6 242.4L195 242.2L258.7 210.3L259.3 210.1L260 210.1L260.6 210.3L261.6 210.7L261.9 211L261.9 211.4M261.9 237.2L261.6 237.5L197.8 269.4L197.2 269.6L196.5 269.6L195.9 269.4L195 268.9L194.6 268.6M261.9 211.4L261.9 237.2M194.6 242.8L194.6 268.6" className={styles.artOutline} />
+    <circle cx="258.7" cy="211.7" r="1" className={styles.artScrew} />
+    <circle cx="197.8" cy="242.2" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M207.6 227.9L208.1 227.4L256.9 203.1L257.8 202.8L258.8 202.8L259.7 203.1L289.7 218.1L290.2 218.5L290.2 258.1L290.2 258.6L289.7 259.1L240.9 283.5L240 283.7L239 283.7L238.1 283.5L208.1 268.5L207.6 268Z" className={styles.artSurface} />
+    <path d="M290.2 258.6L289.7 259.1L289.7 219.5L290.2 219ZM289.7 259.1L240.9 283.5L240.9 243.8L289.7 219.5Z" className={styles.artShadeStrong} />
+    <path d="M240.9 283.5L240 283.7L240 244.1L240.9 243.8Z" className={styles.artShadeMedium} />
+    <path d="M240 283.7L239 283.7L239 244.1L240 244.1Z" className={styles.artShadeSoft} />
+    <path d="M239 283.7L238.1 283.5L238.1 243.8L239 244.1ZM238.1 283.5L208.1 268.5L208.1 228.8L238.1 243.8ZM208.1 268.5L207.6 268L207.6 228.4L208.1 228.8Z" className={styles.artShadeFaint} />
+    <path d="M289.7 218.1L290.2 218.5L290.2 219L289.7 219.5L240.9 243.8L240 244.1L239 244.1L238.1 243.8L208.1 228.8L207.6 228.4L207.6 227.9L208.1 227.4L256.9 203.1L257.8 202.8L258.8 202.8L259.7 203.1Z" className={styles.artTop} />
+    <path d="M290.2 219L289.7 219.5L240.9 243.8L240 244.1L239 244.1L238.1 243.8L208.1 228.8L207.6 228.4" className={styles.artLineFaint} />
+    <path d="M207.6 228.4L207.6 227.9L208.1 227.4L256.9 203.1L257.8 202.8L258.8 202.8L259.7 203.1L289.7 218.1L290.2 218.5L290.2 219M290.2 258.6L289.7 259.1L240.9 283.5L240 283.7L239 283.7L238.1 283.5L208.1 268.5L207.6 268M290.2 219L290.2 258.6M207.6 228.4L207.6 268" className={styles.artOutline} />
+    <path d="M261.6 204L210 229.8" className={styles.artLine} />
+    <path d="M210 269.4L210 229.8" className={styles.artLine} />
+    <path d="M264.8 205.6L213.3 231.4" className={styles.artLine} />
+    <path d="M213.3 271L213.3 231.4" className={styles.artLine} />
+    <path d="M268.1 207.3L216.5 233.1" className={styles.artLine} />
+    <path d="M216.5 272.7L216.5 233.1" className={styles.artLine} />
+    <path d="M271.4 208.9L219.8 234.7" className={styles.artLine} />
+    <path d="M219.8 274.3L219.8 234.7" className={styles.artLine} />
+    <path d="M274.7 210.6L223.1 236.3" className={styles.artLine} />
+    <path d="M223.1 276L223.1 236.3" className={styles.artLine} />
+    <path d="M278 212.2L226.4 238" className={styles.artLine} />
+    <path d="M226.4 277.6L226.4 238" className={styles.artLine} />
+    <path d="M281.2 213.8L229.7 239.6" className={styles.artLine} />
+    <path d="M229.7 279.2L229.7 239.6" className={styles.artLine} />
+    <path d="M284.5 215.5L233 241.3" className={styles.artLine} />
+    <path d="M233 280.9L233 241.3" className={styles.artLine} />
+    <path d="M287.8 217.1L236.2 242.9" className={styles.artLine} />
+    <path d="M236.2 282.5L236.2 242.9" className={styles.artLine} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M366.8 263L367.2 262.7L368.3 262.1L369 261.9L369.8 261.9L370.5 262.1L371.6 262.7L372 263L372 270.3L371.6 270.6L370.5 271.2L369.8 271.4L369 271.4L368.3 271.2L367.2 270.6L366.8 270.3Z" className={styles.artSurface} />
+    <path d="M372 270.3L371.6 270.6L371.6 263.8L372 263.4ZM371.6 270.6L370.5 271.2L370.5 264.3L371.6 263.8Z" className={styles.artShadeStrong} />
+    <path d="M370.5 271.2L369.8 271.4L369.8 264.5L370.5 264.3Z" className={styles.artShadeMedium} />
+    <path d="M369.8 271.4L369 271.4L369 264.5L369.8 264.5ZM369 271.4L368.3 271.2L368.3 264.3L369 264.5Z" className={styles.artShadeSoft} />
+    <path d="M368.3 271.2L367.2 270.6L367.2 263.8L368.3 264.3ZM367.2 270.6L366.8 270.3L366.8 263.4L367.2 263.8Z" className={styles.artShadeFaint} />
+    <path d="M371.6 262.7L372 263L372 263.4L371.6 263.8L370.5 264.3L369.8 264.5L369 264.5L368.3 264.3L367.2 263.8L366.8 263.4L366.8 263L367.2 262.7L368.3 262.1L369 261.9L369.8 261.9L370.5 262.1Z" className={styles.artTop} />
+    <path d="M372 263.4L371.6 263.8L370.5 264.3L369.8 264.5L369 264.5L368.3 264.3L367.2 263.8L366.8 263.4" className={styles.artLineFaint} />
+    <path d="M366.8 263.4L366.8 263L367.2 262.7L368.3 262.1L369 261.9L369.8 261.9L370.5 262.1L371.6 262.7L372 263L372 263.4M372 270.3L371.6 270.6L370.5 271.2L369.8 271.4L369 271.4L368.3 271.2L367.2 270.6L366.8 270.3M372 263.4L372 270.3M366.8 263.4L366.8 270.3" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M102.1 171.9L102.6 171.5L118.6 163.5L119.5 163.2L120.5 163.2L121.4 163.5L156.1 180.9L156.6 181.3L156.6 267.4L156.6 267.9L156.1 268.4L140.1 276.4L139.2 276.6L138.2 276.6L137.3 276.4L102.6 259L102.1 258.6Z" className={styles.artSurface} />
+    <path d="M156.6 267.9L156.1 268.4L156.1 182.3L156.6 181.8ZM156.1 268.4L140.1 276.4L140.1 190.2L156.1 182.3Z" className={styles.artShadeStrong} />
+    <path d="M140.1 276.4L139.2 276.6L139.2 190.5L140.1 190.2Z" className={styles.artShadeMedium} />
+    <path d="M139.2 276.6L138.2 276.6L138.2 190.5L139.2 190.5Z" className={styles.artShadeSoft} />
+    <path d="M138.2 276.6L137.3 276.4L137.3 190.2L138.2 190.5ZM137.3 276.4L102.6 259L102.6 172.9L137.3 190.2ZM102.6 259L102.1 258.6L102.1 172.4L102.6 172.9Z" className={styles.artShadeFaint} />
+    <path d="M156.1 180.9L156.6 181.3L156.6 181.8L156.1 182.3L140.1 190.2L139.2 190.5L138.2 190.5L137.3 190.2L102.6 172.9L102.1 172.4L102.1 171.9L102.6 171.5L118.6 163.5L119.5 163.2L120.5 163.2L121.4 163.5Z" className={styles.artTop} />
+    <path d="M156.6 181.8L156.1 182.3L140.1 190.2L139.2 190.5L138.2 190.5L137.3 190.2L102.6 172.9L102.1 172.4" className={styles.artLineFaint} />
+    <path d="M156.6 181.8L155 181.9L139.3 189.7L138.9 189.8L138.5 189.8L138.1 189.7L103.7 172.5L102.1 172.4" className={styles.artLineFaint} />
+    <path d="M102.1 172.4L102.1 171.9L102.6 171.5L118.6 163.5L119.5 163.2L120.5 163.2L121.4 163.5L156.1 180.9L156.6 181.3L156.6 181.8M156.6 267.9L156.1 268.4L140.1 276.4L139.2 276.6L138.2 276.6L137.3 276.4L102.6 259L102.1 258.6M156.6 181.8L156.6 267.9M102.1 172.4L102.1 258.6" className={styles.artOutline} />
+    <path d="M135.4 232.4L135.3 229.8L134.9 227.2L134.3 224.5L133.4 221.8L132.2 219.2L130.9 216.7L129.4 214.3L127.7 212.1L125.9 210.1L124 208.3L122 206.8L120 205.7L117.9 204.8L116 204.3L114 204.2L112.2 204.3L110.5 204.9L109 205.8L107.7 206.9L106.6 208.4L105.7 210.2L105 212.2L104.6 214.5L104.5 216.9L104.6 219.4L105 222.1L105.7 224.7L106.6 227.4L107.7 230L109 232.5L110.5 234.9L112.2 237.2L114 239.2L116 240.9L117.9 242.4L120 243.6L122 244.4L124 244.9L125.9 245.1L127.7 244.9L129.4 244.4L130.9 243.5L132.2 242.3L133.4 240.8L134.3 239L134.9 237L135.3 234.8Z" className={styles.artLine} />
+    <path d="M124.2 226.7L124 225L123.4 223.3L122.4 221.7L121.3 220.4L120 219.5L118.7 219.1L117.5 219.2L116.6 219.9L116 221L115.7 222.5L116 224.2L116.6 226L117.5 227.6L118.7 228.9L120 229.8L121.3 230.2L122.4 230L123.4 229.4L124 228.2Z" className={styles.artLineStrong} />
+    <path d="M122.9 222.5L130.9 216.7" className={styles.artLine} />
+    <path d="M117 219.5L109 205.8" className={styles.artLine} />
+    <path d="M117 226.8L109 232.5" className={styles.artLine} />
+    <path d="M122.9 229.8L130.9 243.5" className={styles.artLine} />
+    <circle cx="105" cy="255" r="1" className={styles.artScrew} />
+    <circle cx="135" cy="270" r="1" className={styles.artScrew} />
+    <circle cx="105" cy="179.2" r="1" className={styles.artScrew} />
+    <circle cx="135" cy="194.2" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M373.4 266.3L373.8 265.9L374.9 265.4L375.6 265.2L376.4 265.2L377 265.4L378.1 265.9L378.5 266.3L378.5 273.6L378.1 273.9L377 274.5L376.4 274.7L375.6 274.7L374.9 274.5L373.8 273.9L373.4 273.6Z" className={styles.artSurface} />
+    <path d="M378.5 273.6L378.1 273.9L378.1 267L378.5 266.7ZM378.1 273.9L377 274.5L377 267.6L378.1 267Z" className={styles.artShadeStrong} />
+    <path d="M377 274.5L376.4 274.7L376.4 267.8L377 267.6Z" className={styles.artShadeMedium} />
+    <path d="M376.4 274.7L375.6 274.7L375.6 267.8L376.4 267.8ZM375.6 274.7L374.9 274.5L374.9 267.6L375.6 267.8Z" className={styles.artShadeSoft} />
+    <path d="M374.9 274.5L373.8 273.9L373.8 267L374.9 267.6ZM373.8 273.9L373.4 273.6L373.4 266.7L373.8 267Z" className={styles.artShadeFaint} />
+    <path d="M378.1 265.9L378.5 266.3L378.5 266.7L378.1 267L377 267.6L376.4 267.8L375.6 267.8L374.9 267.6L373.8 267L373.4 266.7L373.4 266.3L373.8 265.9L374.9 265.4L375.6 265.2L376.4 265.2L377 265.4Z" className={styles.artTop} />
+    <path d="M378.5 266.7L378.1 267L377 267.6L376.4 267.8L375.6 267.8L374.9 267.6L373.8 267L373.4 266.7" className={styles.artLineFaint} />
+    <path d="M373.4 266.7L373.4 266.3L373.8 265.9L374.9 265.4L375.6 265.2L376.4 265.2L377 265.4L378.1 265.9L378.5 266.3L378.5 266.7M378.5 273.6L378.1 273.9L377 274.5L376.4 274.7L375.6 274.7L374.9 274.5L373.8 273.9L373.4 273.6M378.5 266.7L378.5 273.6M373.4 266.7L373.4 273.6" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M379.9 269.6L380.3 269.2L381.4 268.7L382.1 268.5L382.9 268.5L383.6 268.7L384.7 269.2L385.1 269.6L385.1 276.9L384.7 277.2L383.6 277.8L382.9 278L382.1 278L381.4 277.8L380.3 277.2L379.9 276.9Z" className={styles.artSurface} />
+    <path d="M385.1 276.9L384.7 277.2L384.7 270.3L385.1 270ZM384.7 277.2L383.6 277.8L383.6 270.9L384.7 270.3Z" className={styles.artShadeStrong} />
+    <path d="M383.6 277.8L382.9 278L382.9 271.1L383.6 270.9Z" className={styles.artShadeMedium} />
+    <path d="M382.9 278L382.1 278L382.1 271.1L382.9 271.1ZM382.1 278L381.4 277.8L381.4 270.9L382.1 271.1Z" className={styles.artShadeSoft} />
+    <path d="M381.4 277.8L380.3 277.2L380.3 270.3L381.4 270.9ZM380.3 277.2L379.9 276.9L379.9 270L380.3 270.3Z" className={styles.artShadeFaint} />
+    <path d="M384.7 269.2L385.1 269.6L385.1 270L384.7 270.3L383.6 270.9L382.9 271.1L382.1 271.1L381.4 270.9L380.3 270.3L379.9 270L379.9 269.6L380.3 269.2L381.4 268.7L382.1 268.5L382.9 268.5L383.6 268.7Z" className={styles.artTop} />
+    <path d="M385.1 270L384.7 270.3L383.6 270.9L382.9 271.1L382.1 271.1L381.4 270.9L380.3 270.3L379.9 270" className={styles.artLineFaint} />
+    <path d="M379.9 270L379.9 269.6L380.3 269.2L381.4 268.7L382.1 268.5L382.9 268.5L383.6 268.7L384.7 269.2L385.1 269.6L385.1 270M385.1 276.9L384.7 277.2L383.6 277.8L382.9 278L382.1 278L381.4 277.8L380.3 277.2L379.9 276.9M385.1 270L385.1 276.9M379.9 270L379.9 276.9" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M237.8 264L238.1 263.7L301.9 231.8L302.5 231.7L303.2 231.7L303.8 231.8L304.7 232.3L305 232.6L305 258.4L305 258.8L304.7 259.1L240.9 291L240.3 291.1L239.6 291.1L239.1 291L238.1 290.5L237.8 290.2Z" className={styles.artSurface} />
+    <path d="M305 258.8L304.7 259.1L304.7 233.2L305 232.9ZM304.7 259.1L240.9 291L240.9 265.1L304.7 233.2ZM240.9 291L240.3 291.1L240.3 265.3L240.9 265.1Z" className={styles.artShadeStrong} />
+    <path d="M240.3 291.1L239.6 291.1L239.6 265.3L240.3 265.3ZM239.6 291.1L239.1 291L239.1 265.1L239.6 265.3Z" className={styles.artShadeSoft} />
+    <path d="M239.1 291L238.1 290.5L238.1 264.7L239.1 265.1ZM238.1 290.5L237.8 290.2L237.8 264.4L238.1 264.7Z" className={styles.artShadeFaint} />
+    <path d="M304.7 232.3L305 232.6L305 232.9L304.7 233.2L240.9 265.1L240.3 265.3L239.6 265.3L239.1 265.1L238.1 264.7L237.8 264.4L237.8 264L238.1 263.7L301.9 231.8L302.5 231.7L303.2 231.7L303.8 231.8Z" className={styles.artTop} />
+    <path d="M305 232.9L304.7 233.2L240.9 265.1L240.3 265.3L239.6 265.3L239.1 265.1L238.1 264.7L237.8 264.4" className={styles.artLineFaint} />
+    <path d="M237.8 264.4L237.8 264L238.1 263.7L301.9 231.8L302.5 231.7L303.2 231.7L303.8 231.8L304.7 232.3L305 232.6L305 232.9M305 258.8L304.7 259.1L240.9 291L240.3 291.1L239.6 291.1L239.1 291L238.1 290.5L237.8 290.2M305 232.9L305 258.8M237.8 264.4L237.8 290.2" className={styles.artOutline} />
+    <circle cx="301.9" cy="233.2" r="1" className={styles.artScrew} />
+    <circle cx="240.9" cy="263.7" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M242.5 266.4L242.8 266.1L306.6 234.2L307.2 234L307.8 234L308.4 234.2L309.4 234.7L309.7 234.9L309.7 261.1L309.4 261.4L245.6 293.3L245 293.5L244.3 293.5L243.7 293.3L242.8 292.8L242.5 292.5Z" className={styles.artSurface} />
+    <path d="M309.7 261.1L309.4 261.4L309.4 235.6L309.7 235.3ZM309.4 261.4L245.6 293.3L245.6 267.5L309.4 235.6ZM245.6 293.3L245 293.5L245 267.6L245.6 267.5Z" className={styles.artShadeStrong} />
+    <path d="M245 293.5L244.3 293.5L244.3 267.6L245 267.6ZM244.3 293.5L243.7 293.3L243.7 267.5L244.3 267.6Z" className={styles.artShadeSoft} />
+    <path d="M243.7 293.3L242.8 292.8L242.8 267L243.7 267.5ZM242.8 292.8L242.5 292.5L242.5 266.7L242.8 267Z" className={styles.artShadeFaint} />
+    <path d="M309.4 234.7L309.7 234.9L309.7 235.3L309.4 235.6L245.6 267.5L245 267.6L244.3 267.6L243.7 267.5L242.8 267L242.5 266.7L242.5 266.4L242.8 266.1L306.6 234.2L307.2 234L307.8 234L308.4 234.2Z" className={styles.artTop} />
+    <path d="M309.7 235.3L309.4 235.6L245.6 267.5L245 267.6L244.3 267.6L243.7 267.5L242.8 267L242.5 266.7" className={styles.artLineFaint} />
+    <path d="M242.5 266.7L242.5 266.4L242.8 266.1L306.6 234.2L307.2 234L307.8 234L308.4 234.2L309.4 234.7L309.7 234.9L309.7 235.3M309.7 261.1L309.4 261.4L245.6 293.3L245 293.5L244.3 293.5L243.7 293.3L242.8 292.8L242.5 292.5M309.7 235.3L309.7 261.1M242.5 266.7L242.5 292.5" className={styles.artOutline} />
+    <circle cx="306.6" cy="235.6" r="1" className={styles.artScrew} />
+    <circle cx="245.6" cy="266.1" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M386.5 272.9L386.9 272.5L388 272L388.7 271.8L389.5 271.8L390.2 272L391.3 272.5L391.7 272.9L391.7 280.1L391.3 280.5L390.2 281L389.5 281.2L388.7 281.2L388 281L386.9 280.5L386.5 280.1Z" className={styles.artSurface} />
+    <path d="M391.7 280.1L391.3 280.5L391.3 273.6L391.7 273.3ZM391.3 280.5L390.2 281L390.2 274.2L391.3 273.6Z" className={styles.artShadeStrong} />
+    <path d="M390.2 281L389.5 281.2L389.5 274.4L390.2 274.2Z" className={styles.artShadeMedium} />
+    <path d="M389.5 281.2L388.7 281.2L388.7 274.4L389.5 274.4ZM388.7 281.2L388 281L388 274.2L388.7 274.4Z" className={styles.artShadeSoft} />
+    <path d="M388 281L386.9 280.5L386.9 273.6L388 274.2ZM386.9 280.5L386.5 280.1L386.5 273.3L386.9 273.6Z" className={styles.artShadeFaint} />
+    <path d="M391.3 272.5L391.7 272.9L391.7 273.3L391.3 273.6L390.2 274.2L389.5 274.4L388.7 274.4L388 274.2L386.9 273.6L386.5 273.3L386.5 272.9L386.9 272.5L388 272L388.7 271.8L389.5 271.8L390.2 272Z" className={styles.artTop} />
+    <path d="M391.7 273.3L391.3 273.6L390.2 274.2L389.5 274.4L388.7 274.4L388 274.2L386.9 273.6L386.5 273.3" className={styles.artLineFaint} />
+    <path d="M386.5 273.3L386.5 272.9L386.9 272.5L388 272L388.7 271.8L389.5 271.8L390.2 272L391.3 272.5L391.7 272.9L391.7 273.3M391.7 280.1L391.3 280.5L390.2 281L389.5 281.2L388.7 281.2L388 281L386.9 280.5L386.5 280.1M391.7 273.3L391.7 280.1M386.5 273.3L386.5 280.1" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M247.1 269L247.1 268.7L247.5 268.4L311.3 236.5L311.8 236.4L312.5 236.4L313.1 236.5L314.1 237L314.4 237.3L314.4 263.5L314.1 263.8L250.3 295.7L249.7 295.8L249 295.8L248.4 295.7L247.5 295.2L247.1 294.9Z" className={styles.artSurface} />
+    <path d="M314.4 263.5L314.1 263.8L314.1 237.9L314.4 237.6ZM314.1 263.8L250.3 295.7L250.3 269.8L314.1 237.9ZM250.3 295.7L249.7 295.8L249.7 270L250.3 269.8Z" className={styles.artShadeStrong} />
+    <path d="M249.7 295.8L249 295.8L249 270L249.7 270ZM249 295.8L248.4 295.7L248.4 269.8L249 270Z" className={styles.artShadeSoft} />
+    <path d="M248.4 295.7L247.5 295.2L247.5 269.3L248.4 269.8ZM247.5 295.2L247.1 294.9L247.1 269L247.5 269.3Z" className={styles.artShadeFaint} />
+    <path d="M314.1 237L314.4 237.3L314.4 237.6L314.1 237.9L250.3 269.8L249.7 270L249 270L248.4 269.8L247.5 269.3L247.1 269L247.1 268.7L247.5 268.4L311.3 236.5L311.8 236.4L312.5 236.4L313.1 236.5Z" className={styles.artTop} />
+    <path d="M314.4 237.6L314.1 237.9L250.3 269.8L249.7 270L249 270L248.4 269.8L247.5 269.3L247.1 269" className={styles.artLineFaint} />
+    <path d="M247.1 269L247.1 268.7L247.5 268.4L311.3 236.5L311.8 236.4L312.5 236.4L313.1 236.5L314.1 237L314.4 237.3L314.4 237.6M314.4 263.5L314.1 263.8L250.3 295.7L249.7 295.8L249 295.8L248.4 295.7L247.5 295.2L247.1 294.9M314.4 237.6L314.4 263.5M247.1 269L247.1 294.9" className={styles.artOutline} />
+    <circle cx="311.3" cy="237.9" r="1" className={styles.artScrew} />
+    <circle cx="250.3" cy="268.4" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M350.6 266.5L351.1 266.1L357.7 262.8L358.6 262.5L359.6 262.5L360.5 262.8L390.5 277.8L391 278.2L391 287.9L390.5 288.4L383.9 291.7L383 291.9L382 291.9L381.1 291.7L351.1 276.7L350.6 276.2Z" className={styles.artSurface} />
+    <path d="M391 287.9L390.5 288.4L390.5 279.2L391 278.8ZM390.5 288.4L383.9 291.7L383.9 282.5L390.5 279.2ZM383.9 291.7L383 291.9L383 282.7L383.9 282.5Z" className={styles.artShadeStrong} />
+    <path d="M383 291.9L382 291.9L382 282.7L383 282.7Z" className={styles.artShadeSoft} />
+    <path d="M382 291.9L381.1 291.7L381.1 282.5L382 282.7ZM381.1 291.7L351.1 276.7L351.1 267.5L381.1 282.5ZM351.1 276.7L350.6 276.2L350.6 267L351.1 267.5Z" className={styles.artShadeFaint} />
+    <path d="M390.5 277.8L391 278.2L391 278.8L390.5 279.2L383.9 282.5L383 282.7L382 282.7L381.1 282.5L351.1 267.5L350.6 267L350.6 266.5L351.1 266.1L357.7 262.8L358.6 262.5L359.6 262.5L360.5 262.8Z" className={styles.artTop} />
+    <path d="M391 278.8L390.5 279.2L383.9 282.5L383 282.7L382 282.7L381.1 282.5L351.1 267.5L350.6 267" className={styles.artLineFaint} />
+    <path d="M391 278.8L389.7 278.9L383.3 282.1L382.8 282.3L382.3 282.3L381.7 282.1L351.9 267.2L350.6 267" className={styles.artLineFaint} />
+    <path d="M350.6 267L350.6 266.5L351.1 266.1L357.7 262.8L358.6 262.5L359.6 262.5L360.5 262.8L390.5 277.8L391 278.2L391 278.8M391 287.9L390.5 288.4L383.9 291.7L383 291.9L382 291.9L381.1 291.7L351.1 276.7L350.6 276.2M391 278.8L391 287.9M350.6 267L350.6 276.2" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M393.1 276.1L393.5 275.8L394.5 275.2L395.2 275L396 275L396.7 275.2L397.8 275.8L398.2 276.1L398.2 276.5L398.2 283.4L397.8 283.8L396.7 284.3L396 284.5L395.2 284.5L394.5 284.3L393.5 283.8L393.1 283.4Z" className={styles.artSurface} />
+    <path d="M398.2 283.4L397.8 283.8L397.8 276.9L398.2 276.5ZM397.8 283.8L396.7 284.3L396.7 277.4L397.8 276.9Z" className={styles.artShadeStrong} />
+    <path d="M396.7 284.3L396 284.5L396 277.6L396.7 277.4Z" className={styles.artShadeMedium} />
+    <path d="M396 284.5L395.2 284.5L395.2 277.6L396 277.6ZM395.2 284.5L394.5 284.3L394.5 277.4L395.2 277.6Z" className={styles.artShadeSoft} />
+    <path d="M394.5 284.3L393.5 283.8L393.5 276.9L394.5 277.4ZM393.5 283.8L393.1 283.4L393.1 276.5L393.5 276.9Z" className={styles.artShadeFaint} />
+    <path d="M397.8 275.8L398.2 276.1L398.2 276.5L397.8 276.9L396.7 277.4L396 277.6L395.2 277.6L394.5 277.4L393.5 276.9L393.1 276.5L393.1 276.1L393.5 275.8L394.5 275.2L395.2 275L396 275L396.7 275.2Z" className={styles.artTop} />
+    <path d="M398.2 276.5L397.8 276.9L396.7 277.4L396 277.6L395.2 277.6L394.5 277.4L393.5 276.9L393.1 276.5" className={styles.artLineFaint} />
+    <path d="M393.1 276.5L393.1 276.1L393.5 275.8L394.5 275.2L395.2 275L396 275L396.7 275.2L397.8 275.8L398.2 276.1L398.2 276.5M398.2 283.4L397.8 283.8L396.7 284.3L396 284.5L395.2 284.5L394.5 284.3L393.5 283.8L393.1 283.4M398.2 276.5L398.2 283.4M393.1 276.5L393.1 283.4" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M117.3 171.7L117.9 171.3L126.8 166.8L127.7 166.6L128.7 166.6L129.6 166.8L140.8 172.4L141.3 172.9L141.3 177.2L141.3 177.7L140.8 178.2L131.9 182.6L131 182.9L130 182.9L129.1 182.6L117.9 177L117.3 176.5Z" className={styles.artSurface} />
+    <path d="M141.3 177.7L140.8 178.2L140.8 173.8L141.3 173.4ZM140.8 178.2L131.9 182.6L131.9 178.3L140.8 173.8ZM131.9 182.6L131 182.9L131 178.6L131.9 178.3Z" className={styles.artShadeStrong} />
+    <path d="M131 182.9L130 182.9L130 178.6L131 178.6Z" className={styles.artShadeSoft} />
+    <path d="M130 182.9L129.1 182.6L129.1 178.3L130 178.6ZM129.1 182.6L117.9 177L117.9 172.7L129.1 178.3ZM117.9 177L117.3 176.5L117.3 172.2L117.9 172.7Z" className={styles.artShadeFaint} />
+    <path d="M140.8 172.4L141.3 172.9L141.3 173.4L140.8 173.8L131.9 178.3L131 178.6L130 178.6L129.1 178.3L117.9 172.7L117.3 172.2L117.3 171.7L117.9 171.3L126.8 166.8L127.7 166.6L128.7 166.6L129.6 166.8Z" className={styles.artTop} />
+    <path d="M141.3 173.4L140.8 173.8L131.9 178.3L131 178.6L130 178.6L129.1 178.3L117.9 172.7L117.3 172.2" className={styles.artLineFaint} />
+    <path d="M141.3 173.4L140 173.5L131.3 177.9L130.8 178.1L130.3 178.1L129.7 177.9L118.6 172.4L117.3 172.2" className={styles.artLineFaint} />
+    <path d="M117.3 172.2L117.3 171.7L117.9 171.3L126.8 166.8L127.7 166.6L128.7 166.6L129.6 166.8L140.8 172.4L141.3 172.9L141.3 173.4M141.3 177.7L140.8 178.2L131.9 182.6L131 182.9L130 182.9L129.1 182.6L117.9 177L117.3 176.5M141.3 173.4L141.3 177.7M117.3 172.2L117.3 176.5" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M265 277.6L265.3 277.3L329.1 245.4L329.7 245.3L330.3 245.3L330.9 245.4L331.9 245.9L332.2 246.2L332.2 272.4L331.9 272.7L268.1 304.6L267.5 304.7L266.8 304.7L266.2 304.6L265.3 304.1L265 303.8Z" className={styles.artSurface} />
+    <path d="M332.2 272.4L331.9 272.7L331.9 246.8L332.2 246.5ZM331.9 272.7L268.1 304.6L268.1 278.7L331.9 246.8ZM268.1 304.6L267.5 304.7L267.5 278.9L268.1 278.7Z" className={styles.artShadeStrong} />
+    <path d="M267.5 304.7L266.8 304.7L266.8 278.9L267.5 278.9ZM266.8 304.7L266.2 304.6L266.2 278.7L266.8 278.9Z" className={styles.artShadeSoft} />
+    <path d="M266.2 304.6L265.3 304.1L265.3 278.3L266.2 278.7ZM265.3 304.1L265 303.8L265 278L265.3 278.3Z" className={styles.artShadeFaint} />
+    <path d="M331.9 245.9L332.2 246.2L332.2 246.5L331.9 246.8L268.1 278.7L267.5 278.9L266.8 278.9L266.2 278.7L265.3 278.3L265 278L265 277.6L265.3 277.3L329.1 245.4L329.7 245.3L330.3 245.3L330.9 245.4Z" className={styles.artTop} />
+    <path d="M332.2 246.5L331.9 246.8L268.1 278.7L267.5 278.9L266.8 278.9L266.2 278.7L265.3 278.3L265 278" className={styles.artLineFaint} />
+    <path d="M265 278L265 277.6L265.3 277.3L329.1 245.4L329.7 245.3L330.3 245.3L330.9 245.4L331.9 245.9L332.2 246.2L332.2 246.5M332.2 272.4L331.9 272.7L268.1 304.6L267.5 304.7L266.8 304.7L266.2 304.6L265.3 304.1L265 303.8M332.2 246.5L332.2 272.4M265 278L265 303.8" className={styles.artOutline} />
+    <circle cx="329.1" cy="246.8" r="1" className={styles.artScrew} />
+    <circle cx="268.1" cy="277.3" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M141.5 191.6L142 191.2L157.9 183.2L158.8 182.9L159.9 182.9L160.8 183.2L195.4 200.5L196 201L196 287.1L196 287.6L195.4 288.1L179.5 296.1L178.6 296.3L177.6 296.3L176.7 296.1L142 278.7L141.5 278.3Z" className={styles.artSurface} />
+    <path d="M196 287.6L195.4 288.1L195.4 201.9L196 201.5ZM195.4 288.1L179.5 296.1L179.5 209.9L195.4 201.9Z" className={styles.artShadeStrong} />
+    <path d="M179.5 296.1L178.6 296.3L178.6 210.2L179.5 209.9Z" className={styles.artShadeMedium} />
+    <path d="M178.6 296.3L177.6 296.3L177.6 210.2L178.6 210.2Z" className={styles.artShadeSoft} />
+    <path d="M177.6 296.3L176.7 296.1L176.7 209.9L177.6 210.2ZM176.7 296.1L142 278.7L142 192.6L176.7 209.9ZM142 278.7L141.5 278.3L141.5 192.1L142 192.6Z" className={styles.artShadeFaint} />
+    <path d="M195.4 200.5L196 201L196 201.5L195.4 201.9L179.5 209.9L178.6 210.2L177.6 210.2L176.7 209.9L142 192.6L141.5 192.1L141.5 191.6L142 191.2L157.9 183.2L158.8 182.9L159.9 182.9L160.8 183.2Z" className={styles.artTop} />
+    <path d="M196 201.5L195.4 201.9L179.5 209.9L178.6 210.2L177.6 210.2L176.7 209.9L142 192.6L141.5 192.1" className={styles.artLineFaint} />
+    <path d="M196 201.5L194.4 201.5L178.7 209.4L178.3 209.5L177.9 209.5L177.5 209.4L143.1 192.2L141.5 192.1" className={styles.artLineFaint} />
+    <path d="M141.5 192.1L141.5 191.6L142 191.2L157.9 183.2L158.8 182.9L159.9 182.9L160.8 183.2L195.4 200.5L196 201L196 201.5M196 287.6L195.4 288.1L179.5 296.1L178.6 296.3L177.6 296.3L176.7 296.1L142 278.7L141.5 278.3M196 201.5L196 287.6M141.5 192.1L141.5 278.3" className={styles.artOutline} />
+    <path d="M174.8 252L174.7 249.5L174.3 246.9L173.6 244.2L172.7 241.5L171.6 238.9L170.3 236.4L168.8 234L167.1 231.8L165.3 229.8L163.4 228L161.4 226.5L159.3 225.4L157.3 224.5L155.3 224L153.4 223.8L151.6 224L149.9 224.6L148.4 225.4L147.1 226.6L145.9 228.1L145.1 229.9L144.4 231.9L144 234.2L143.9 236.6L144 239.1L144.4 241.7L145.1 244.4L145.9 247.1L147.1 249.7L148.4 252.2L149.9 254.6L151.6 256.9L153.4 258.9L155.3 260.6L157.3 262.1L159.3 263.3L161.4 264.1L163.4 264.6L165.3 264.8L167.1 264.6L168.8 264.1L170.3 263.2L171.6 262L172.7 260.5L173.6 258.7L174.3 256.7L174.7 254.5Z" className={styles.artLine} />
+    <path d="M163.6 246.4L163.4 244.7L162.8 243L161.8 241.4L160.7 240L159.3 239.1L158 238.7L156.9 238.9L155.9 239.6L155.3 240.7L155.1 242.2L155.3 243.9L155.9 245.6L156.9 247.3L158 248.6L159.3 249.5L160.7 249.9L161.8 249.7L162.8 249.1L163.4 247.9Z" className={styles.artLineStrong} />
+    <path d="M162.3 242.1L170.3 236.4" className={styles.artLine} />
+    <path d="M156.4 239.2L148.4 225.4" className={styles.artLine} />
+    <path d="M156.4 246.5L148.4 252.2" className={styles.artLine} />
+    <path d="M162.3 249.5L170.3 263.2" className={styles.artLine} />
+    <circle cx="144.3" cy="274.7" r="1" className={styles.artScrew} />
+    <circle cx="174.4" cy="289.7" r="1" className={styles.artScrew} />
+    <circle cx="144.3" cy="198.9" r="1" className={styles.artScrew} />
+    <circle cx="174.4" cy="213.9" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M269.7 280L270 279.7L333.8 247.8L334.4 247.6L335 247.6L335.6 247.8L336.6 248.2L336.9 248.5L336.9 274.7L336.6 275L272.8 306.9L272.2 307.1L271.5 307.1L270.9 306.9L270 306.4L269.7 306.1Z" className={styles.artSurface} />
+    <path d="M336.9 274.7L336.6 275L336.6 249.2L336.9 248.9ZM336.6 275L272.8 306.9L272.8 281.1L336.6 249.2ZM272.8 306.9L272.2 307.1L272.2 281.2L272.8 281.1Z" className={styles.artShadeStrong} />
+    <path d="M272.2 307.1L271.5 307.1L271.5 281.2L272.2 281.2ZM271.5 307.1L270.9 306.9L270.9 281.1L271.5 281.2Z" className={styles.artShadeSoft} />
+    <path d="M270.9 306.9L270 306.4L270 280.6L270.9 281.1ZM270 306.4L269.7 306.1L269.7 280.3L270 280.6Z" className={styles.artShadeFaint} />
+    <path d="M336.6 248.2L336.9 248.5L336.9 248.9L336.6 249.2L272.8 281.1L272.2 281.2L271.5 281.2L270.9 281.1L270 280.6L269.7 280.3L269.7 280L270 279.7L333.8 247.8L334.4 247.6L335 247.6L335.6 247.8Z" className={styles.artTop} />
+    <path d="M336.9 248.9L336.6 249.2L272.8 281.1L272.2 281.2L271.5 281.2L270.9 281.1L270 280.6L269.7 280.3" className={styles.artLineFaint} />
+    <path d="M269.7 280.3L269.7 280L270 279.7L333.8 247.8L334.4 247.6L335 247.6L335.6 247.8L336.6 248.2L336.9 248.5L336.9 248.9M336.9 274.7L336.6 275L272.8 306.9L272.2 307.1L271.5 307.1L270.9 306.9L270 306.4L269.7 306.1M336.9 248.9L336.9 274.7M269.7 280.3L269.7 306.1" className={styles.artOutline} />
+    <circle cx="333.8" cy="249.2" r="1" className={styles.artScrew} />
+    <circle cx="272.8" cy="279.7" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M274.3 282.3L274.7 282L338.4 250.1L339 250L339.7 250L340.3 250.1L341.3 250.6L341.6 250.9L341.6 277.1L341.3 277.4L277.5 309.2L276.9 309.4L276.2 309.4L275.6 309.2L274.7 308.8L274.3 308.5Z" className={styles.artSurface} />
+    <path d="M341.6 277.1L341.3 277.4L341.3 251.5L341.6 251.2ZM341.3 277.4L277.5 309.2L277.5 283.4L341.3 251.5ZM277.5 309.2L276.9 309.4L276.9 283.6L277.5 283.4Z" className={styles.artShadeStrong} />
+    <path d="M276.9 309.4L276.2 309.4L276.2 283.6L276.9 283.6ZM276.2 309.4L275.6 309.2L275.6 283.4L276.2 283.6Z" className={styles.artShadeSoft} />
+    <path d="M275.6 309.2L274.7 308.8L274.7 282.9L275.6 283.4ZM274.7 308.8L274.3 308.5L274.3 282.6L274.7 282.9Z" className={styles.artShadeFaint} />
+    <path d="M341.3 250.6L341.6 250.9L341.6 251.2L341.3 251.5L277.5 283.4L276.9 283.6L276.2 283.6L275.6 283.4L274.7 282.9L274.3 282.6L274.3 282.3L274.7 282L338.4 250.1L339 250L339.7 250L340.3 250.1Z" className={styles.artTop} />
+    <path d="M341.6 251.2L341.3 251.5L277.5 283.4L276.9 283.6L276.2 283.6L275.6 283.4L274.7 282.9L274.3 282.6" className={styles.artLineFaint} />
+    <path d="M274.3 282.6L274.3 282.3L274.7 282L338.4 250.1L339 250L339.7 250L340.3 250.1L341.3 250.6L341.6 250.9L341.6 251.2M341.6 277.1L341.3 277.4L277.5 309.2L276.9 309.4L276.2 309.4L275.6 309.2L274.7 308.8L274.3 308.5M341.6 251.2L341.6 277.1M274.3 282.6L274.3 308.5" className={styles.artOutline} />
+    <circle cx="338.4" cy="251.5" r="1" className={styles.artScrew} />
+    <circle cx="277.5" cy="282" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M21.5 212.5L22 212.1L24.8 210.7L25.7 210.4L26.7 210.4L27.6 210.7L31.8 212.8L32.3 213.2L32.3 256.8L31.8 257.3L29 258.7L28.1 258.9L27.1 258.9L26.2 258.7L22 256.6L21.5 256.1Z" className={styles.artSurface} />
+    <path d="M32.3 256.8L31.8 257.3L31.8 214.2L32.3 213.7ZM31.8 257.3L29 258.7L29 215.6L31.8 214.2ZM29 258.7L28.1 258.9L28.1 215.9L29 215.6Z" className={styles.artShadeStrong} />
+    <path d="M28.1 258.9L27.1 258.9L27.1 215.9L28.1 215.9Z" className={styles.artShadeSoft} />
+    <path d="M27.1 258.9L26.2 258.7L26.2 215.6L27.1 215.9ZM26.2 258.7L22 256.6L22 213.5L26.2 215.6ZM22 256.6L21.5 256.1L21.5 213L22 213.5Z" className={styles.artShadeFaint} />
+    <path d="M31.8 212.8L32.3 213.2L32.3 213.7L31.8 214.2L29 215.6L28.1 215.9L27.1 215.9L26.2 215.6L22 213.5L21.5 213L21.5 212.5L22 212.1L24.8 210.7L25.7 210.4L26.7 210.4L27.6 210.7Z" className={styles.artTop} />
+    <path d="M32.3 213.7L31.8 214.2L29 215.6L28.1 215.9L27.1 215.9L26.2 215.6L22 213.5L21.5 213" className={styles.artLineFaint} />
+    <path d="M32.3 213.7L31 213.9L28.4 215.2L27.9 215.4L27.3 215.4L26.8 215.2L22.8 213.2L21.5 213" className={styles.artLineFaint} />
+    <path d="M21.5 213L21.5 212.5L22 212.1L24.8 210.7L25.7 210.4L26.7 210.4L27.6 210.7L31.8 212.8L32.3 213.2L32.3 213.7M32.3 256.8L31.8 257.3L29 258.7L28.1 258.9L27.1 258.9L26.2 258.7L22 256.6L21.5 256.1M32.3 213.7L32.3 256.8M21.5 213L21.5 256.1" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M156.7 191.4L157.2 191L166.1 186.5L167 186.3L168.1 186.3L169 186.5L180.2 192.1L180.7 192.6L180.7 197.4L180.2 197.8L171.3 202.3L170.4 202.6L169.4 202.6L168.5 202.3L157.2 196.7L156.7 196.2Z" className={styles.artSurface} />
+    <path d="M180.7 197.4L180.2 197.8L180.2 193.5L180.7 193.1ZM180.2 197.8L171.3 202.3L171.3 198L180.2 193.5Z" className={styles.artShadeStrong} />
+    <path d="M171.3 202.3L170.4 202.6L170.4 198.3L171.3 198Z" className={styles.artShadeMedium} />
+    <path d="M170.4 202.6L169.4 202.6L169.4 198.3L170.4 198.3Z" className={styles.artShadeSoft} />
+    <path d="M169.4 202.6L168.5 202.3L168.5 198L169.4 198.3ZM168.5 202.3L157.2 196.7L157.2 192.4L168.5 198ZM157.2 196.7L156.7 196.2L156.7 191.9L157.2 192.4Z" className={styles.artShadeFaint} />
+    <path d="M180.2 192.1L180.7 192.6L180.7 193.1L180.2 193.5L171.3 198L170.4 198.3L169.4 198.3L168.5 198L157.2 192.4L156.7 191.9L156.7 191.4L157.2 191L166.1 186.5L167 186.3L168.1 186.3L169 186.5Z" className={styles.artTop} />
+    <path d="M180.7 193.1L180.2 193.5L171.3 198L170.4 198.3L169.4 198.3L168.5 198L157.2 192.4L156.7 191.9" className={styles.artLineFaint} />
+    <path d="M180.7 193.1L179.4 193.2L170.7 197.6L170.2 197.8L169.6 197.8L169.1 197.6L158 192.1L156.7 191.9" className={styles.artLineFaint} />
+    <path d="M156.7 191.9L156.7 191.4L157.2 191L166.1 186.5L167 186.3L168.1 186.3L169 186.5L180.2 192.1L180.7 192.6L180.7 193.1M180.7 197.4L180.2 197.8L171.3 202.3L170.4 202.6L169.4 202.6L168.5 202.3L157.2 196.7L156.7 196.2M180.7 193.1L180.7 197.4M156.7 191.9L156.7 196.2" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M180.9 211.3L181.4 210.9L197.3 202.9L198.2 202.6L199.2 202.6L200.1 202.9L234.8 220.2L235.3 220.7L235.3 307.3L234.8 307.8L218.9 315.7L218 316L217 316L216.1 315.7L181.4 298.4L180.9 297.9Z" className={styles.artSurface} />
+    <path d="M235.3 307.3L234.8 307.8L234.8 221.6L235.3 221.2ZM234.8 307.8L218.9 315.7L218.9 229.6L234.8 221.6Z" className={styles.artShadeStrong} />
+    <path d="M218.9 315.7L218 316L218 229.9L218.9 229.6Z" className={styles.artShadeMedium} />
+    <path d="M218 316L217 316L217 229.9L218 229.9Z" className={styles.artShadeSoft} />
+    <path d="M217 316L216.1 315.7L216.1 229.6L217 229.9ZM216.1 315.7L181.4 298.4L181.4 212.3L216.1 229.6ZM181.4 298.4L180.9 297.9L180.9 211.8L181.4 212.3Z" className={styles.artShadeFaint} />
+    <path d="M234.8 220.2L235.3 220.7L235.3 221.2L234.8 221.6L218.9 229.6L218 229.9L217 229.9L216.1 229.6L181.4 212.3L180.9 211.8L180.9 211.3L181.4 210.9L197.3 202.9L198.2 202.6L199.2 202.6L200.1 202.9Z" className={styles.artTop} />
+    <path d="M235.3 221.2L234.8 221.6L218.9 229.6L218 229.9L217 229.9L216.1 229.6L181.4 212.3L180.9 211.8" className={styles.artLineFaint} />
+    <path d="M235.3 221.2L233.8 221.2L218.1 229.1L217.7 229.2L217.3 229.2L216.9 229.1L182.4 211.9L180.9 211.8" className={styles.artLineFaint} />
+    <path d="M180.9 211.8L180.9 211.3L181.4 210.9L197.3 202.9L198.2 202.6L199.2 202.6L200.1 202.9L234.8 220.2L235.3 220.7L235.3 221.2M235.3 307.3L234.8 307.8L218.9 315.7L218 316L217 316L216.1 315.7L181.4 298.4L180.9 297.9M235.3 221.2L235.3 307.3M180.9 211.8L180.9 297.9" className={styles.artOutline} />
+    <path d="M214.2 271.7L214.1 269.2L213.7 266.6L213 263.9L212.1 261.2L211 258.6L209.7 256.1L208.1 253.7L206.5 251.5L204.7 249.5L202.7 247.7L200.8 246.2L198.7 245.1L196.7 244.2L194.7 243.7L192.8 243.5L191 243.7L189.3 244.3L187.8 245.1L186.5 246.3L185.3 247.8L184.4 249.6L183.8 251.6L183.4 253.9L183.3 256.3L183.4 258.8L183.8 261.4L184.4 264.1L185.3 266.8L186.5 269.4L187.8 271.9L189.3 274.3L191 276.5L192.8 278.5L194.7 280.3L196.7 281.8L198.7 283L200.8 283.8L202.7 284.3L204.7 284.5L206.5 284.3L208.1 283.7L209.7 282.9L211 281.7L212.1 280.2L213 278.4L213.7 276.4L214.1 274.1Z" className={styles.artLine} />
+    <path d="M203 266.1L202.7 264.4L202.1 262.7L201.2 261.1L200 259.7L198.7 258.8L197.4 258.4L196.3 258.6L195.3 259.3L194.7 260.4L194.5 261.9L194.7 263.6L195.3 265.3L196.3 266.9L197.4 268.3L198.7 269.2L200 269.6L201.2 269.4L202.1 268.7L202.7 267.6Z" className={styles.artLineStrong} />
+    <path d="M201.7 261.8L209.7 256.1" className={styles.artLine} />
+    <path d="M195.7 258.9L187.8 245.1" className={styles.artLine} />
+    <path d="M195.7 266.2L187.8 271.9" className={styles.artLine} />
+    <path d="M201.7 269.1L209.7 282.9" className={styles.artLine} />
+    <circle cx="183.7" cy="294.4" r="1" className={styles.artScrew} />
+    <circle cx="213.7" cy="309.4" r="1" className={styles.artScrew} />
+    <circle cx="183.7" cy="218.6" r="1" className={styles.artScrew} />
+    <circle cx="213.7" cy="233.6" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M196.1 211.1L196.6 210.7L205.5 206.2L206.4 205.9L207.5 205.9L208.3 206.2L219.6 211.8L220.1 212.3L220.1 217.1L219.6 217.5L210.7 222L209.8 222.3L208.8 222.3L207.9 222L196.6 216.4L196.1 215.9Z" className={styles.artSurface} />
+    <path d="M220.1 217.1L219.6 217.5L219.6 213.2L220.1 212.8ZM219.6 217.5L210.7 222L210.7 217.7L219.6 213.2Z" className={styles.artShadeStrong} />
+    <path d="M210.7 222L209.8 222.3L209.8 217.9L210.7 217.7Z" className={styles.artShadeMedium} />
+    <path d="M209.8 222.3L208.8 222.3L208.8 217.9L209.8 217.9Z" className={styles.artShadeSoft} />
+    <path d="M208.8 222.3L207.9 222L207.9 217.7L208.8 217.9ZM207.9 222L196.6 216.4L196.6 212.1L207.9 217.7ZM196.6 216.4L196.1 215.9L196.1 211.6L196.6 212.1Z" className={styles.artShadeFaint} />
+    <path d="M219.6 211.8L220.1 212.3L220.1 212.8L219.6 213.2L210.7 217.7L209.8 217.9L208.8 217.9L207.9 217.7L196.6 212.1L196.1 211.6L196.1 211.1L196.6 210.7L205.5 206.2L206.4 205.9L207.5 205.9L208.3 206.2Z" className={styles.artTop} />
+    <path d="M220.1 212.8L219.6 213.2L210.7 217.7L209.8 217.9L208.8 217.9L207.9 217.7L196.6 212.1L196.1 211.6" className={styles.artLineFaint} />
+    <path d="M220.1 212.8L218.8 212.9L210.1 217.3L209.5 217.5L209 217.5L208.5 217.3L197.4 211.8L196.1 211.6" className={styles.artLineFaint} />
+    <path d="M196.1 211.6L196.1 211.1L196.6 210.7L205.5 206.2L206.4 205.9L207.5 205.9L208.3 206.2L219.6 211.8L220.1 212.3L220.1 212.8M220.1 217.1L219.6 217.5L210.7 222L209.8 222.3L208.8 222.3L207.9 222L196.6 216.4L196.1 215.9M220.1 212.8L220.1 217.1M196.1 211.6L196.1 215.9" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M220.3 231L220.8 230.5L236.7 222.6L237.6 222.3L238.6 222.3L239.5 222.6L274.2 239.9L274.7 240.4L274.7 327L274.2 327.5L258.3 335.4L257.4 335.7L256.4 335.7L255.5 335.4L220.8 318.1L220.3 317.6Z" className={styles.artSurface} />
+    <path d="M274.7 327L274.2 327.5L274.2 241.3L274.7 240.9ZM274.2 327.5L258.3 335.4L258.3 249.3L274.2 241.3ZM258.3 335.4L257.4 335.7L257.4 249.6L258.3 249.3Z" className={styles.artShadeStrong} />
+    <path d="M257.4 335.7L256.4 335.7L256.4 249.6L257.4 249.6Z" className={styles.artShadeSoft} />
+    <path d="M256.4 335.7L255.5 335.4L255.5 249.3L256.4 249.6ZM255.5 335.4L220.8 318.1L220.8 232L255.5 249.3ZM220.8 318.1L220.3 317.6L220.3 231.5L220.8 232Z" className={styles.artShadeFaint} />
+    <path d="M274.2 239.9L274.7 240.4L274.7 240.9L274.2 241.3L258.3 249.3L257.4 249.6L256.4 249.6L255.5 249.3L220.8 232L220.3 231.5L220.3 231L220.8 230.5L236.7 222.6L237.6 222.3L238.6 222.3L239.5 222.6Z" className={styles.artTop} />
+    <path d="M274.7 240.9L274.2 241.3L258.3 249.3L257.4 249.6L256.4 249.6L255.5 249.3L220.8 232L220.3 231.5" className={styles.artLineFaint} />
+    <path d="M274.7 240.9L273.2 240.9L257.5 248.8L257 248.9L256.7 248.9L256.3 248.8L221.8 231.6L220.3 231.5" className={styles.artLineFaint} />
+    <path d="M220.3 231.5L220.3 231L220.8 230.5L236.7 222.6L237.6 222.3L238.6 222.3L239.5 222.6L274.2 239.9L274.7 240.4L274.7 240.9M274.7 327L274.2 327.5L258.3 335.4L257.4 335.7L256.4 335.7L255.5 335.4L220.8 318.1L220.3 317.6M274.7 240.9L274.7 327M220.3 231.5L220.3 317.6" className={styles.artOutline} />
+    <path d="M253.6 291.4L253.5 288.9L253.1 286.3L252.4 283.6L251.5 280.9L250.4 278.3L249.1 275.8L247.5 273.4L245.8 271.2L244 269.1L242.1 267.4L240.1 265.9L238.1 264.7L236.1 263.9L234.1 263.4L232.2 263.2L230.4 263.4L228.7 264L227.2 264.8L225.8 266L224.7 267.5L223.8 269.3L223.2 271.3L222.8 273.6L222.6 276L222.8 278.5L223.2 281.1L223.8 283.8L224.7 286.5L225.8 289.1L227.2 291.6L228.7 294L230.4 296.2L232.2 298.2L234.1 300L236.1 301.5L238.1 302.6L240.1 303.5L242.1 304L244 304.2L245.8 304L247.5 303.4L249.1 302.6L250.4 301.4L251.5 299.9L252.4 298.1L253.1 296.1L253.5 293.8Z" className={styles.artLine} />
+    <path d="M242.3 285.8L242.1 284.1L241.5 282.4L240.6 280.8L239.4 279.4L238.1 278.5L236.8 278.1L235.6 278.3L234.7 279L234.1 280.1L233.9 281.6L234.1 283.3L234.7 285L235.6 286.6L236.8 288L238.1 288.9L239.4 289.3L240.6 289.1L241.5 288.4L242.1 287.3Z" className={styles.artLineStrong} />
+    <path d="M241.1 281.5L249.1 275.8" className={styles.artLine} />
+    <path d="M235.1 278.5L227.2 264.8" className={styles.artLine} />
+    <path d="M235.1 285.9L227.2 291.6" className={styles.artLine} />
+    <path d="M241.1 288.8L249.1 302.6" className={styles.artLine} />
+    <circle cx="223.1" cy="314.1" r="1" className={styles.artScrew} />
+    <circle cx="253.1" cy="329.1" r="1" className={styles.artScrew} />
+    <circle cx="223.1" cy="238.3" r="1" className={styles.artScrew} />
+    <circle cx="253.1" cy="253.3" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M410.6 83.2L411.1 82.7L417.2 79.7L418.1 79.4L419.1 79.4L420 79.7L464.1 101.7L464.6 102.2L464.6 107.3L464.1 107.7L458 110.8L457.1 111L456.1 111L455.2 110.8L411.1 88.7L410.6 88.3Z" className={styles.artSurface} />
+    <path d="M464.6 107.3L464.1 107.7L464.1 103.1L464.6 102.7ZM464.1 107.7L458 110.8L458 106.2L464.1 103.1Z" className={styles.artShadeStrong} />
+    <path d="M458 110.8L457.1 111L457.1 106.4L458 106.2Z" className={styles.artShadeMedium} />
+    <path d="M457.1 111L456.1 111L456.1 106.4L457.1 106.4ZM456.1 111L455.2 110.8L455.2 106.2L456.1 106.4Z" className={styles.artShadeSoft} />
+    <path d="M455.2 110.8L411.1 88.7L411.1 84.1L455.2 106.2ZM411.1 88.7L410.6 88.3L410.6 83.7L411.1 84.1Z" className={styles.artShadeFaint} />
+    <path d="M464.1 101.7L464.6 102.2L464.6 102.7L464.1 103.1L458 106.2L457.1 106.4L456.1 106.4L455.2 106.2L411.1 84.1L410.6 83.7L410.6 83.2L411.1 82.7L417.2 79.7L418.1 79.4L419.1 79.4L420 79.7Z" className={styles.artTop} />
+    <path d="M464.6 102.7L464.1 103.1L458 106.2L457.1 106.4L456.1 106.4L455.2 106.2L411.1 84.1L410.6 83.7" className={styles.artLineFaint} />
+    <path d="M464.6 102.7L463 102.7L457.2 105.6L456.8 105.8L456.4 105.8L456 105.6L412.2 83.7L410.6 83.7" className={styles.artLineFaint} />
+    <path d="M410.6 83.7L410.6 83.2L411.1 82.7L417.2 79.7L418.1 79.4L419.1 79.4L420 79.7L464.1 101.7L464.6 102.2L464.6 102.7M464.6 107.3L464.1 107.7L458 110.8L457.1 111L456.1 111L455.2 110.8L411.1 88.7L410.6 88.3M464.6 102.7L464.6 107.3M410.6 83.7L410.6 88.3" className={styles.artOutline} />
+    <circle cx="418.9" cy="83.5" r="1" className={styles.artScrew} />
+    <circle cx="456.4" cy="102.3" r="1" className={styles.artScrew} />
+  </g>
+</>;
+
+const chassis1 = <>
+  <g aria-hidden="true">
+    <path d="M348.2 219.6L348.8 219.2L449.1 169L450 168.7L451 168.7L451.9 169L456.1 171.1L456.6 171.6L456.6 180.1L456.1 180.6L355.8 230.7L354.9 231L353.9 231L353 230.7L348.8 228.6L348.2 228.2Z" className={styles.artSurface} />
+    <path d="M456.6 180.1L456.1 180.6L456.1 172.5L456.6 172.1ZM456.1 180.6L355.8 230.7L355.8 222.7L456.1 172.5Z" className={styles.artShadeStrong} />
+    <path d="M355.8 230.7L354.9 231L354.9 222.9L355.8 222.7Z" className={styles.artShadeMedium} />
+    <path d="M354.9 231L353.9 231L353.9 222.9L354.9 222.9ZM353.9 231L353 230.7L353 222.7L353.9 222.9Z" className={styles.artShadeSoft} />
+    <path d="M353 230.7L348.8 228.6L348.8 220.6L353 222.7ZM348.8 228.6L348.2 228.2L348.2 220.1L348.8 220.6Z" className={styles.artShadeFaint} />
+    <path d="M456.1 171.1L456.6 171.6L456.6 172.1L456.1 172.5L355.8 222.7L354.9 222.9L353.9 222.9L353 222.7L348.8 220.6L348.2 220.1L348.2 219.6L348.8 219.2L449.1 169L450 168.7L451 168.7L451.9 169Z" className={styles.artTop} />
+    <path d="M456.6 172.1L456.1 172.5L355.8 222.7L354.9 222.9L353.9 222.9L353 222.7L348.8 220.6L348.2 220.1" className={styles.artLineFaint} />
+    <path d="M348.2 220.1L348.2 219.6L348.8 219.2L449.1 169L450 168.7L451 168.7L451.9 169L456.1 171.1L456.6 171.6L456.6 172.1M456.6 180.1L456.1 180.6L355.8 230.7L354.9 231L353.9 231L353 230.7L348.8 228.6L348.2 228.2M456.6 172.1L456.6 180.1M348.2 220.1L348.2 228.2" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M302.5 138.9L303 138.5L306.3 136.9L307.2 136.6L308.3 136.6L309.1 136.9L315.7 140.1L316.2 140.6L316.2 144.6L316.2 145.1L315.7 145.6L312.4 147.2L311.5 147.5L310.5 147.5L309.6 147.2L303 143.9L302.5 143.5Z" className={styles.artSurface} />
+    <path d="M316.2 145.1L315.7 145.6L315.7 141.6L316.2 141.1ZM315.7 145.6L312.4 147.2L312.4 143.2L315.7 141.6Z" className={styles.artShadeStrong} />
+    <path d="M312.4 147.2L311.5 147.5L311.5 143.4L312.4 143.2Z" className={styles.artShadeMedium} />
+    <path d="M311.5 147.5L310.5 147.5L310.5 143.4L311.5 143.4ZM310.5 147.5L309.6 147.2L309.6 143.2L310.5 143.4Z" className={styles.artShadeSoft} />
+    <path d="M309.6 147.2L303 143.9L303 139.9L309.6 143.2ZM303 143.9L302.5 143.5L302.5 139.5L303 139.9Z" className={styles.artShadeFaint} />
+    <path d="M315.7 140.1L316.2 140.6L316.2 141.1L315.7 141.6L312.4 143.2L311.5 143.4L310.5 143.4L309.6 143.2L303 139.9L302.5 139.5L302.5 138.9L303 138.5L306.3 136.9L307.2 136.6L308.3 136.6L309.1 136.9Z" className={styles.artTop} />
+    <path d="M316.2 141.1L315.7 141.6L312.4 143.2L311.5 143.4L310.5 143.4L309.6 143.2L303 139.9L302.5 139.5" className={styles.artLineFaint} />
+    <path d="M316.2 141.1L314.9 141.2L311.8 142.8L311.3 143L310.8 143L310.2 142.8L303.8 139.6L302.5 139.5" className={styles.artLineFaint} />
+    <path d="M302.5 139.5L302.5 138.9L303 138.5L306.3 136.9L307.2 136.6L308.3 136.6L309.1 136.9L315.7 140.1L316.2 140.6L316.2 141.1M316.2 145.1L315.7 145.6L312.4 147.2L311.5 147.5L310.5 147.5L309.6 147.2L303 143.9L302.5 143.5M316.2 141.1L316.2 145.1M302.5 139.5L302.5 143.5" className={styles.artOutline} />
+  </g>
+</>;
+
+const chassis2 = <>
+  <g aria-hidden="true">
+    <path d="M383.4 237.2L383.9 236.7L484.3 186.6L485.1 186.3L486.2 186.3L487.1 186.6L491.3 188.7L491.8 189.1L491.8 197.7L491.3 198.1L391 248.3L390.1 248.6L389 248.6L388.1 248.3L383.9 246.2L383.4 245.7Z" className={styles.artSurface} />
+    <path d="M491.8 197.7L491.3 198.1L491.3 190.1L491.8 189.7ZM491.3 198.1L391 248.3L391 240.3L491.3 190.1Z" className={styles.artShadeStrong} />
+    <path d="M391 248.3L390.1 248.6L390.1 240.5L391 240.3Z" className={styles.artShadeMedium} />
+    <path d="M390.1 248.6L389 248.6L389 240.5L390.1 240.5ZM389 248.6L388.1 248.3L388.1 240.3L389 240.5Z" className={styles.artShadeSoft} />
+    <path d="M388.1 248.3L383.9 246.2L383.9 238.2L388.1 240.3ZM383.9 246.2L383.4 245.7L383.4 237.7L383.9 238.2Z" className={styles.artShadeFaint} />
+    <path d="M491.3 188.7L491.8 189.1L491.8 189.7L491.3 190.1L391 240.3L390.1 240.5L389 240.5L388.1 240.3L383.9 238.2L383.4 237.7L383.4 237.2L383.9 236.7L484.3 186.6L485.1 186.3L486.2 186.3L487.1 186.6Z" className={styles.artTop} />
+    <path d="M491.8 189.7L491.3 190.1L391 240.3L390.1 240.5L389 240.5L388.1 240.3L383.9 238.2L383.4 237.7" className={styles.artLineFaint} />
+    <path d="M383.4 237.7L383.4 237.2L383.9 236.7L484.3 186.6L485.1 186.3L486.2 186.3L487.1 186.6L491.3 188.7L491.8 189.1L491.8 189.7M491.8 197.7L491.3 198.1L391 248.3L390.1 248.6L389 248.6L388.1 248.3L383.9 246.2L383.4 245.7M491.8 189.7L491.8 197.7M383.4 237.7L383.4 245.7" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M337.7 156.5L338.2 156.1L341.5 154.4L342.4 154.2L343.4 154.2L344.3 154.4L350.9 157.7L351.4 158.2L351.4 162.7L350.9 163.2L347.6 164.8L346.7 165L345.7 165L344.8 164.8L338.2 161.5L337.7 161.1Z" className={styles.artSurface} />
+    <path d="M351.4 162.7L350.9 163.2L350.9 159.1L351.4 158.7ZM350.9 163.2L347.6 164.8L347.6 160.8L350.9 159.1Z" className={styles.artShadeStrong} />
+    <path d="M347.6 164.8L346.7 165L346.7 161L347.6 160.8Z" className={styles.artShadeMedium} />
+    <path d="M346.7 165L345.7 165L345.7 161L346.7 161ZM345.7 165L344.8 164.8L344.8 160.8L345.7 161Z" className={styles.artShadeSoft} />
+    <path d="M344.8 164.8L338.2 161.5L338.2 157.5L344.8 160.8ZM338.2 161.5L337.7 161.1L337.7 157L338.2 157.5Z" className={styles.artShadeFaint} />
+    <path d="M350.9 157.7L351.4 158.2L351.4 158.7L350.9 159.1L347.6 160.8L346.7 161L345.7 161L344.8 160.8L338.2 157.5L337.7 157L337.7 156.5L338.2 156.1L341.5 154.4L342.4 154.2L343.4 154.2L344.3 154.4Z" className={styles.artTop} />
+    <path d="M351.4 158.7L350.9 159.1L347.6 160.8L346.7 161L345.7 161L344.8 160.8L338.2 157.5L337.7 157" className={styles.artLineFaint} />
+    <path d="M351.4 158.7L350.1 158.8L347 160.4L346.4 160.5L345.9 160.5L345.4 160.4L339 157.2L337.7 157" className={styles.artLineFaint} />
+    <path d="M337.7 157L337.7 156.5L338.2 156.1L341.5 154.4L342.4 154.2L343.4 154.2L344.3 154.4L350.9 157.7L351.4 158.2L351.4 158.7M351.4 162.7L350.9 163.2L347.6 164.8L346.7 165L345.7 165L344.8 164.8L338.2 161.5L337.7 161.1M351.4 158.7L351.4 162.7M337.7 157L337.7 161.1" className={styles.artOutline} />
+  </g>
+</>;
+
+const chassis3 = <>
+  <g aria-hidden="true">
+    <path d="M418.6 254.8L419.1 254.3L519.4 204.2L520.3 203.9L521.3 203.9L522.2 204.2L526.4 206.3L527 206.7L527 215.3L526.4 215.7L426.1 265.9L425.2 266.1L424.2 266.1L423.3 265.9L419.1 263.8L418.6 263.3Z" className={styles.artSurface} />
+    <path d="M527 215.3L526.4 215.7L526.4 207.7L527 207.2ZM526.4 215.7L426.1 265.9L426.1 257.8L526.4 207.7ZM426.1 265.9L425.2 266.1L425.2 258.1L426.1 257.8Z" className={styles.artShadeStrong} />
+    <path d="M425.2 266.1L424.2 266.1L424.2 258.1L425.2 258.1ZM424.2 266.1L423.3 265.9L423.3 257.8L424.2 258.1Z" className={styles.artShadeSoft} />
+    <path d="M423.3 265.9L419.1 263.8L419.1 255.7L423.3 257.8ZM419.1 263.8L418.6 263.3L418.6 255.3L419.1 255.7Z" className={styles.artShadeFaint} />
+    <path d="M526.4 206.3L527 206.7L527 207.2L526.4 207.7L426.1 257.8L425.2 258.1L424.2 258.1L423.3 257.8L419.1 255.7L418.6 255.3L418.6 254.8L419.1 254.3L519.4 204.2L520.3 203.9L521.3 203.9L522.2 204.2Z" className={styles.artTop} />
+    <path d="M527 207.2L526.4 207.7L426.1 257.8L425.2 258.1L424.2 258.1L423.3 257.8L419.1 255.7L418.6 255.3" className={styles.artLineFaint} />
+    <path d="M418.6 255.3L418.6 254.8L419.1 254.3L519.4 204.2L520.3 203.9L521.3 203.9L522.2 204.2L526.4 206.3L527 206.7L527 207.2M527 215.3L526.4 215.7L426.1 265.9L425.2 266.1L424.2 266.1L423.3 265.9L419.1 263.8L418.6 263.3M527 207.2L527 215.3M418.6 255.3L418.6 263.3" className={styles.artOutlineSoft} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M372.9 174.1L373.4 173.7L376.7 172L377.5 171.8L378.6 171.8L379.5 172L386 175.3L386.5 175.8L386.5 180.3L386 180.7L382.7 182.4L381.9 182.6L380.8 182.6L379.9 182.4L373.4 179.1L372.9 178.6Z" className={styles.artSurface} />
+    <path d="M386.5 180.3L386 180.7L386 176.7L386.5 176.3ZM386 180.7L382.7 182.4L382.7 178.4L386 176.7Z" className={styles.artShadeStrong} />
+    <path d="M382.7 182.4L381.9 182.6L381.9 178.6L382.7 178.4Z" className={styles.artShadeMedium} />
+    <path d="M381.9 182.6L380.8 182.6L380.8 178.6L381.9 178.6ZM380.8 182.6L379.9 182.4L379.9 178.4L380.8 178.6Z" className={styles.artShadeSoft} />
+    <path d="M379.9 182.4L373.4 179.1L373.4 175.1L379.9 178.4ZM373.4 179.1L372.9 178.6L372.9 174.6L373.4 175.1Z" className={styles.artShadeFaint} />
+    <path d="M386 175.3L386.5 175.8L386.5 176.3L386 176.7L382.7 178.4L381.9 178.6L380.8 178.6L379.9 178.4L373.4 175.1L372.9 174.6L372.9 174.1L373.4 173.7L376.7 172L377.5 171.8L378.6 171.8L379.5 172Z" className={styles.artTop} />
+    <path d="M386.5 176.3L386 176.7L382.7 178.4L381.9 178.6L380.8 178.6L379.9 178.4L373.4 175.1L372.9 174.6" className={styles.artLineFaint} />
+    <path d="M386.5 176.3L385.2 176.4L382.1 178L381.6 178.1L381.1 178.1L380.5 178L374.2 174.8L372.9 174.6" className={styles.artLineFaint} />
+    <path d="M372.9 174.6L372.9 174.1L373.4 173.7L376.7 172L377.5 171.8L378.6 171.8L379.5 172L386 175.3L386.5 175.8L386.5 176.3M386.5 180.3L386 180.7L382.7 182.4L381.9 182.6L380.8 182.6L379.9 182.4L373.4 179.1L372.9 178.6M386.5 176.3L386.5 180.3M372.9 174.6L372.9 178.6" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M287.3 267.7L287.8 267.3L336.6 242.9L337.5 242.6L338.5 242.6L339.4 242.9L369.4 257.9L369.9 258.4L369.9 298.5L369.4 298.9L320.6 323.3L319.7 323.6L318.7 323.6L317.8 323.3L287.8 308.3L287.3 307.9Z" className={styles.artSurface} />
+    <path d="M369.9 298.5L369.4 298.9L369.4 259.3L369.9 258.9ZM369.4 298.9L320.6 323.3L320.6 283.7L369.4 259.3ZM320.6 323.3L319.7 323.6L319.7 284L320.6 283.7Z" className={styles.artShadeStrong} />
+    <path d="M319.7 323.6L318.7 323.6L318.7 284L319.7 284Z" className={styles.artShadeSoft} />
+    <path d="M318.7 323.6L317.8 323.3L317.8 283.7L318.7 284ZM317.8 323.3L287.8 308.3L287.8 268.7L317.8 283.7ZM287.8 308.3L287.3 307.9L287.3 268.2L287.8 268.7Z" className={styles.artShadeFaint} />
+    <path d="M369.4 257.9L369.9 258.4L369.9 258.9L369.4 259.3L320.6 283.7L319.7 284L318.7 284L317.8 283.7L287.8 268.7L287.3 268.2L287.3 267.7L287.8 267.3L336.6 242.9L337.5 242.6L338.5 242.6L339.4 242.9Z" className={styles.artTop} />
+    <path d="M369.9 258.9L369.4 259.3L320.6 283.7L319.7 284L318.7 284L317.8 283.7L287.8 268.7L287.3 268.2" className={styles.artLineFaint} />
+    <path d="M287.3 268.2L287.3 267.7L287.8 267.3L336.6 242.9L337.5 242.6L338.5 242.6L339.4 242.9L369.4 257.9L369.9 258.4L369.9 258.9M369.9 298.5L369.4 298.9L320.6 323.3L319.7 323.6L318.7 323.6L317.8 323.3L287.8 308.3L287.3 307.9M369.9 258.9L369.9 298.5M287.3 268.2L287.3 307.9" className={styles.artOutline} />
+    <path d="M341.3 243.8L289.7 269.6" className={styles.artLine} />
+    <path d="M289.7 309.2L289.7 269.6" className={styles.artLine} />
+    <path d="M344.5 245.5L293 271.3" className={styles.artLine} />
+    <path d="M293 310.9L293 271.3" className={styles.artLine} />
+    <path d="M347.8 247.1L296.2 272.9" className={styles.artLine} />
+    <path d="M296.2 312.5L296.2 272.9" className={styles.artLine} />
+    <path d="M351.1 248.8L299.5 274.6" className={styles.artLine} />
+    <path d="M299.5 314.2L299.5 274.6" className={styles.artLine} />
+    <path d="M354.4 250.4L302.8 276.2" className={styles.artLine} />
+    <path d="M302.8 315.8L302.8 276.2" className={styles.artLine} />
+    <path d="M357.7 252L306.1 277.8" className={styles.artLine} />
+    <path d="M306.1 317.5L306.1 277.8" className={styles.artLine} />
+    <path d="M360.9 253.7L309.4 279.5" className={styles.artLine} />
+    <path d="M309.4 319.1L309.4 279.5" className={styles.artLine} />
+    <path d="M364.2 255.3L312.7 281.1" className={styles.artLine} />
+    <path d="M312.7 320.7L312.7 281.1" className={styles.artLine} />
+    <path d="M367.5 257L315.9 282.8" className={styles.artLine} />
+    <path d="M315.9 322.4L315.9 282.8" className={styles.artLine} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M317.5 304.2L317.5 303.9L317.8 303.6L381.6 271.7L382.2 271.5L382.9 271.5L383.5 271.7L384.4 272.2L384.7 272.5L384.7 298.6L384.4 298.9L320.6 330.8L320 331L319.3 331L318.8 330.8L317.8 330.3L317.5 330.1Z" className={styles.artSurface} />
+    <path d="M384.7 298.6L384.4 298.9L384.4 273.1L384.7 272.8ZM384.4 298.9L320.6 330.8L320.6 305L384.4 273.1Z" className={styles.artShadeStrong} />
+    <path d="M320.6 330.8L320 331L320 305.1L320.6 305Z" className={styles.artShadeMedium} />
+    <path d="M320 331L319.3 331L319.3 305.1L320 305.1ZM319.3 331L318.8 330.8L318.8 305L319.3 305.1Z" className={styles.artShadeSoft} />
+    <path d="M318.8 330.8L317.8 330.3L317.8 304.5L318.8 305ZM317.8 330.3L317.5 330.1L317.5 304.2L317.8 304.5Z" className={styles.artShadeFaint} />
+    <path d="M384.4 272.2L384.7 272.5L384.7 272.8L384.4 273.1L320.6 305L320 305.1L319.3 305.1L318.8 305L317.8 304.5L317.5 304.2L317.5 303.9L317.8 303.6L381.6 271.7L382.2 271.5L382.9 271.5L383.5 271.7Z" className={styles.artTop} />
+    <path d="M384.7 272.8L384.4 273.1L320.6 305L320 305.1L319.3 305.1L318.8 305L317.8 304.5L317.5 304.2" className={styles.artLineFaint} />
+    <path d="M317.5 304.2L317.5 303.9L317.8 303.6L381.6 271.7L382.2 271.5L382.9 271.5L383.5 271.7L384.4 272.2L384.7 272.5L384.7 272.8M384.7 298.6L384.4 298.9L320.6 330.8L320 331L319.3 331L318.8 330.8L317.8 330.3L317.5 330.1M384.7 272.8L384.7 298.6M317.5 304.2L317.5 330.1" className={styles.artOutline} />
+    <circle cx="381.6" cy="273.1" r="1" className={styles.artScrew} />
+    <circle cx="320.6" cy="303.6" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M322.2 306.6L322.2 306.2L322.5 305.9L386.3 274L386.9 273.9L387.5 273.9L388.1 274L389.1 274.5L389.4 274.8L389.4 300.6L389.4 301L389.1 301.3L325.3 333.2L324.7 333.3L324 333.3L323.4 333.2L322.5 332.7L322.2 332.4Z" className={styles.artSurface} />
+    <path d="M389.4 301L389.1 301.3L389.1 275.4L389.4 275.1ZM389.1 301.3L325.3 333.2L325.3 307.3L389.1 275.4Z" className={styles.artShadeStrong} />
+    <path d="M325.3 333.2L324.7 333.3L324.7 307.5L325.3 307.3Z" className={styles.artShadeMedium} />
+    <path d="M324.7 333.3L324 333.3L324 307.5L324.7 307.5ZM324 333.3L323.4 333.2L323.4 307.3L324 307.5Z" className={styles.artShadeSoft} />
+    <path d="M323.4 333.2L322.5 332.7L322.5 306.9L323.4 307.3ZM322.5 332.7L322.2 332.4L322.2 306.6L322.5 306.9Z" className={styles.artShadeFaint} />
+    <path d="M389.1 274.5L389.4 274.8L389.4 275.1L389.1 275.4L325.3 307.3L324.7 307.5L324 307.5L323.4 307.3L322.5 306.9L322.2 306.6L322.2 306.2L322.5 305.9L386.3 274L386.9 273.9L387.5 273.9L388.1 274Z" className={styles.artTop} />
+    <path d="M389.4 275.1L389.1 275.4L325.3 307.3L324.7 307.5L324 307.5L323.4 307.3L322.5 306.9L322.2 306.6" className={styles.artLineFaint} />
+    <path d="M322.2 306.6L322.2 306.2L322.5 305.9L386.3 274L386.9 273.9L387.5 273.9L388.1 274L389.1 274.5L389.4 274.8L389.4 275.1M389.4 301L389.1 301.3L325.3 333.2L324.7 333.3L324 333.3L323.4 333.2L322.5 332.7L322.2 332.4M389.4 275.1L389.4 301M322.2 306.6L322.2 332.4" className={styles.artOutline} />
+    <circle cx="386.3" cy="275.4" r="1" className={styles.artScrew} />
+    <circle cx="325.3" cy="305.9" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M326.8 308.6L327.2 308.3L391 276.4L391.5 276.2L392.2 276.2L392.8 276.4L393.8 276.8L394.1 277.1L394.1 303.3L393.8 303.6L330 335.5L329.4 335.7L328.7 335.7L328.1 335.5L327.2 335L326.8 334.7Z" className={styles.artSurface} />
+    <path d="M394.1 303.3L393.8 303.6L393.8 277.8L394.1 277.5ZM393.8 303.6L330 335.5L330 309.7L393.8 277.8Z" className={styles.artShadeStrong} />
+    <path d="M330 335.5L329.4 335.7L329.4 309.8L330 309.7Z" className={styles.artShadeMedium} />
+    <path d="M329.4 335.7L328.7 335.7L328.7 309.8L329.4 309.8ZM328.7 335.7L328.1 335.5L328.1 309.7L328.7 309.8Z" className={styles.artShadeSoft} />
+    <path d="M328.1 335.5L327.2 335L327.2 309.2L328.1 309.7ZM327.2 335L326.8 334.7L326.8 308.9L327.2 309.2Z" className={styles.artShadeFaint} />
+    <path d="M393.8 276.8L394.1 277.1L394.1 277.5L393.8 277.8L330 309.7L329.4 309.8L328.7 309.8L328.1 309.7L327.2 309.2L326.8 308.9L326.8 308.6L327.2 308.3L391 276.4L391.5 276.2L392.2 276.2L392.8 276.4Z" className={styles.artTop} />
+    <path d="M394.1 277.5L393.8 277.8L330 309.7L329.4 309.8L328.7 309.8L328.1 309.7L327.2 309.2L326.8 308.9" className={styles.artLineFaint} />
+    <path d="M326.8 308.9L326.8 308.6L327.2 308.3L391 276.4L391.5 276.2L392.2 276.2L392.8 276.4L393.8 276.8L394.1 277.1L394.1 277.5M394.1 303.3L393.8 303.6L330 335.5L329.4 335.7L328.7 335.7L328.1 335.5L327.2 335L326.8 334.7M394.1 277.5L394.1 303.3M326.8 308.9L326.8 334.7" className={styles.artOutline} />
+    <circle cx="391" cy="277.8" r="1" className={styles.artScrew} />
+    <circle cx="330" cy="308.3" r="1" className={styles.artScrew} />
+  </g>
+</>;
+
+const chassis4 = <>
+  <g aria-hidden="true">
+    <path d="M408 191.7L408.5 191.2L411.8 189.6L412.7 189.3L413.7 189.3L414.6 189.6L421.2 192.9L421.7 193.3L421.7 197.4L421.7 197.9L421.2 198.3L417.9 200L417 200.2L416 200.2L415.1 200L408.5 196.7L408 196.2Z" className={styles.artSurface} />
+    <path d="M421.7 197.9L421.2 198.3L421.2 194.3L421.7 193.8ZM421.2 198.3L417.9 200L417.9 195.9L421.2 194.3ZM417.9 200L417 200.2L417 196.2L417.9 195.9Z" className={styles.artShadeStrong} />
+    <path d="M417 200.2L416 200.2L416 196.2L417 196.2ZM416 200.2L415.1 200L415.1 195.9L416 196.2Z" className={styles.artShadeSoft} />
+    <path d="M415.1 200L408.5 196.7L408.5 192.7L415.1 195.9ZM408.5 196.7L408 196.2L408 192.2L408.5 192.7Z" className={styles.artShadeFaint} />
+    <path d="M421.2 192.9L421.7 193.3L421.7 193.8L421.2 194.3L417.9 195.9L417 196.2L416 196.2L415.1 195.9L408.5 192.7L408 192.2L408 191.7L408.5 191.2L411.8 189.6L412.7 189.3L413.7 189.3L414.6 189.6Z" className={styles.artTop} />
+    <path d="M421.7 193.8L421.2 194.3L417.9 195.9L417 196.2L416 196.2L415.1 195.9L408.5 192.7L408 192.2" className={styles.artLineFaint} />
+    <path d="M421.7 193.8L420.4 194L417.3 195.5L416.8 195.7L416.2 195.7L415.7 195.5L409.3 192.4L408 192.2" className={styles.artLineFaint} />
+    <path d="M408 192.2L408 191.7L408.5 191.2L411.8 189.6L412.7 189.3L413.7 189.3L414.6 189.6L421.2 192.9L421.7 193.3L421.7 193.8M421.7 197.9L421.2 198.3L417.9 200L417 200.2L416 200.2L415.1 200L408.5 196.7L408 196.2M421.7 193.8L421.7 197.9M408 192.2L408 196.2" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M242.6 374.4L243 374L561.8 214.6L562.6 214.4L563.4 214.4L564.2 214.6L565.4 215.2L565.8 215.6L565.8 227.5L565.4 227.8L246.6 387.2L245.8 387.5L245 387.5L244.2 387.2L243 386.7L242.6 386.3L242.6 385.9Z" className={styles.artSurface} />
+    <path d="M565.8 227.5L565.4 227.8L565.4 216.4L565.8 216ZM565.4 227.8L246.6 387.2L246.6 375.8L565.4 216.4ZM246.6 387.2L245.8 387.5L245.8 376L246.6 375.8Z" className={styles.artShadeStrong} />
+    <path d="M245.8 387.5L245 387.5L245 376L245.8 376ZM245 387.5L244.2 387.2L244.2 375.8L245 376Z" className={styles.artShadeSoft} />
+    <path d="M244.2 387.2L243 386.7L243 375.2L244.2 375.8ZM243 386.7L242.6 386.3L242.6 374.8L243 375.2Z" className={styles.artShadeFaint} />
+    <path d="M565.4 215.2L565.8 215.6L565.8 216L565.4 216.4L246.6 375.8L245.8 376L245 376L244.2 375.8L243 375.2L242.6 374.8L242.6 374.4L243 374L561.8 214.6L562.6 214.4L563.4 214.4L564.2 214.6Z" className={styles.artTop} />
+    <path d="M565.8 216L565.4 216.4L246.6 375.8L245.8 376L245 376L244.2 375.8L243 375.2L242.6 374.8" className={styles.artLineFaint} />
+    <path d="M242.6 374.8L242.6 374.4L243 374L561.8 214.6L562.6 214.4L563.4 214.4L564.2 214.6L565.4 215.2L565.8 215.6L565.8 216M565.8 227.5L565.4 227.8L246.6 387.2L245.8 387.5L245 387.5L244.2 387.2L243 386.7L242.6 386.3M565.8 216L565.8 227.5M242.6 374.8L242.6 386.3" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M235.5 230.8L236 230.3L244.9 225.9L245.8 225.6L246.8 225.6L247.7 225.9L259 231.5L259.5 232L259.5 236.8L259 237.2L250.1 241.7L249.2 241.9L248.1 241.9L247.3 241.7L236 236.1L235.5 235.6Z" className={styles.artSurface} />
+    <path d="M259.5 236.8L259 237.2L259 232.9L259.5 232.5ZM259 237.2L250.1 241.7L250.1 237.4L259 232.9Z" className={styles.artShadeStrong} />
+    <path d="M250.1 241.7L249.2 241.9L249.2 237.6L250.1 237.4Z" className={styles.artShadeMedium} />
+    <path d="M249.2 241.9L248.1 241.9L248.1 237.6L249.2 237.6Z" className={styles.artShadeSoft} />
+    <path d="M248.1 241.9L247.3 241.7L247.3 237.4L248.1 237.6ZM247.3 241.7L236 236.1L236 231.8L247.3 237.4ZM236 236.1L235.5 235.6L235.5 231.3L236 231.8Z" className={styles.artShadeFaint} />
+    <path d="M259 231.5L259.5 232L259.5 232.5L259 232.9L250.1 237.4L249.2 237.6L248.1 237.6L247.3 237.4L236 231.8L235.5 231.3L235.5 230.8L236 230.3L244.9 225.9L245.8 225.6L246.8 225.6L247.7 225.9Z" className={styles.artTop} />
+    <path d="M259.5 232.5L259 232.9L250.1 237.4L249.2 237.6L248.1 237.6L247.3 237.4L236 231.8L235.5 231.3" className={styles.artLineFaint} />
+    <path d="M259.5 232.5L258.2 232.6L249.5 237L248.9 237.2L248.4 237.2L247.9 237L236.8 231.4L235.5 231.3" className={styles.artLineFaint} />
+    <path d="M235.5 231.3L235.5 230.8L236 230.3L244.9 225.9L245.8 225.6L246.8 225.6L247.7 225.9L259 231.5L259.5 232L259.5 232.5M259.5 236.8L259 237.2L250.1 241.7L249.2 241.9L248.1 241.9L247.3 241.7L236 236.1L235.5 235.6M259.5 232.5L259.5 236.8M235.5 231.3L235.5 235.6" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M259.6 250.7L260.1 250.2L276.1 242.3L277 242L278 242L278.9 242.3L313.6 259.6L314.1 260.1L314.1 346.7L313.6 347.2L297.7 355.1L296.8 355.4L295.7 355.4L294.8 355.1L260.1 337.8L259.6 337.3Z" className={styles.artSurface} />
+    <path d="M314.1 346.7L313.6 347.2L313.6 261L314.1 260.6ZM313.6 347.2L297.7 355.1L297.7 269L313.6 261ZM297.7 355.1L296.8 355.4L296.8 269.3L297.7 269Z" className={styles.artShadeStrong} />
+    <path d="M296.8 355.4L295.7 355.4L295.7 269.3L296.8 269.3Z" className={styles.artShadeSoft} />
+    <path d="M295.7 355.4L294.8 355.1L294.8 269L295.7 269.3ZM294.8 355.1L260.1 337.8L260.1 251.6L294.8 269ZM260.1 337.8L259.6 337.3L259.6 251.2L260.1 251.6Z" className={styles.artShadeFaint} />
+    <path d="M313.6 259.6L314.1 260.1L314.1 260.6L313.6 261L297.7 269L296.8 269.3L295.7 269.3L294.8 269L260.1 251.6L259.6 251.2L259.6 250.7L260.1 250.2L276.1 242.3L277 242L278 242L278.9 242.3Z" className={styles.artTop} />
+    <path d="M314.1 260.6L313.6 261L297.7 269L296.8 269.3L295.7 269.3L294.8 269L260.1 251.6L259.6 251.2" className={styles.artLineFaint} />
+    <path d="M314.1 260.6L312.5 260.6L296.8 268.5L296.4 268.6L296.1 268.6L295.7 268.5L261.2 251.2L259.6 251.2" className={styles.artLineFaint} />
+    <path d="M259.6 251.2L259.6 250.7L260.1 250.2L276.1 242.3L277 242L278 242L278.9 242.3L313.6 259.6L314.1 260.1L314.1 260.6M314.1 346.7L313.6 347.2L297.7 355.1L296.8 355.4L295.7 355.4L294.8 355.1L260.1 337.8L259.6 337.3M314.1 260.6L314.1 346.7M259.6 251.2L259.6 337.3" className={styles.artOutline} />
+    <path d="M293 311.1L292.8 308.6L292.4 306L291.8 303.3L290.9 300.6L289.8 298L288.4 295.5L286.9 293.1L285.2 290.8L283.4 288.8L281.5 287.1L279.5 285.6L277.5 284.4L275.5 283.6L273.5 283.1L271.6 282.9L269.8 283.1L268.1 283.6L266.6 284.5L265.2 285.7L264.1 287.2L263.2 289L262.6 291L262.2 293.2L262 295.6L262.2 298.2L262.6 300.8L263.2 303.5L264.1 306.2L265.2 308.8L266.6 311.3L268.1 313.7L269.8 315.9L271.6 317.9L273.5 319.7L275.5 321.2L277.5 322.3L279.5 323.2L281.5 323.7L283.4 323.9L285.2 323.7L286.9 323.1L288.4 322.3L289.8 321.1L290.9 319.6L291.8 317.8L292.4 315.8L292.8 313.5Z" className={styles.artLine} />
+    <path d="M281.7 305.5L281.5 303.8L280.9 302.1L280 300.4L278.8 299.1L277.5 298.2L276.2 297.8L275 298L274.1 298.6L273.5 299.8L273.3 301.3L273.5 303L274.1 304.7L275 306.3L276.2 307.6L277.5 308.6L278.8 309L280 308.8L280.9 308.1L281.5 307Z" className={styles.artLineStrong} />
+    <path d="M280.5 301.2L288.4 295.5" className={styles.artLine} />
+    <path d="M274.5 298.2L266.6 284.5" className={styles.artLine} />
+    <path d="M274.5 305.5L266.6 311.3" className={styles.artLine} />
+    <path d="M280.5 308.5L288.4 322.3" className={styles.artLine} />
+    <circle cx="262.5" cy="333.8" r="1" className={styles.artScrew} />
+    <circle cx="292.5" cy="348.8" r="1" className={styles.artScrew} />
+    <circle cx="262.5" cy="258" r="1" className={styles.artScrew} />
+    <circle cx="292.5" cy="273" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M274.9 251L274.9 250.5L275.4 250L284.3 245.6L285.2 245.3L286.2 245.3L287.1 245.6L298.4 251.2L298.9 251.7L298.9 256.5L298.4 256.9L289.5 261.4L288.6 261.6L287.5 261.6L286.6 261.4L275.4 255.7L274.9 255.3Z" className={styles.artSurface} />
+    <path d="M298.9 256.5L298.4 256.9L298.4 252.6L298.9 252.2ZM298.4 256.9L289.5 261.4L289.5 257.1L298.4 252.6ZM289.5 261.4L288.6 261.6L288.6 257.3L289.5 257.1Z" className={styles.artShadeStrong} />
+    <path d="M288.6 261.6L287.5 261.6L287.5 257.3L288.6 257.3Z" className={styles.artShadeSoft} />
+    <path d="M287.5 261.6L286.6 261.4L286.6 257.1L287.5 257.3ZM286.6 261.4L275.4 255.7L275.4 251.4L286.6 257.1ZM275.4 255.7L274.9 255.3L274.9 251L275.4 251.4Z" className={styles.artShadeFaint} />
+    <path d="M298.4 251.2L298.9 251.7L298.9 252.2L298.4 252.6L289.5 257.1L288.6 257.3L287.5 257.3L286.6 257.1L275.4 251.4L274.9 251L274.9 250.5L275.4 250L284.3 245.6L285.2 245.3L286.2 245.3L287.1 245.6Z" className={styles.artTop} />
+    <path d="M298.9 252.2L298.4 252.6L289.5 257.1L288.6 257.3L287.5 257.3L286.6 257.1L275.4 251.4L274.9 251" className={styles.artLineFaint} />
+    <path d="M298.9 252.2L297.6 252.3L288.8 256.7L288.3 256.8L287.8 256.8L287.2 256.7L276.2 251.1L274.9 251" className={styles.artLineFaint} />
+    <path d="M274.9 251L274.9 250.5L275.4 250L284.3 245.6L285.2 245.3L286.2 245.3L287.1 245.6L298.4 251.2L298.9 251.7L298.9 252.2M298.9 256.5L298.4 256.9L289.5 261.4L288.6 261.6L287.5 261.6L286.6 261.4L275.4 255.7L274.9 255.3M298.9 252.2L298.9 256.5M274.9 251L274.9 255.3" className={styles.artOutline} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M44.7 247.1L44.7 246.6L45.2 246.1L90.4 223.5L91.3 223.2L92.4 223.2L93.2 223.5L288.5 321.1L289 321.6L289 362.3L288.5 362.7L243.3 385.4L242.4 385.6L241.3 385.6L240.5 385.4L45.2 287.7L44.7 287.3Z" className={styles.artSurface} />
+    <path d="M289 362.3L288.5 362.7L288.5 322.5L289 322.1ZM288.5 362.7L243.3 385.4L243.3 345.2L288.5 322.5ZM243.3 385.4L242.4 385.6L242.4 345.4L243.3 345.2Z" className={styles.artShadeStrong} />
+    <path d="M242.4 385.6L241.3 385.6L241.3 345.4L242.4 345.4Z" className={styles.artShadeSoft} />
+    <path d="M241.3 385.6L240.5 385.4L240.5 345.2L241.3 345.4ZM240.5 385.4L45.2 287.7L45.2 247.5L240.5 345.2ZM45.2 287.7L44.7 287.3L44.7 247.1L45.2 247.5Z" className={styles.artShadeFaint} />
+    <path d="M288.5 321.1L289 321.6L289 322.1L288.5 322.5L243.3 345.2L242.4 345.4L241.3 345.4L240.5 345.2L45.2 247.5L44.7 247.1L44.7 246.6L45.2 246.1L90.4 223.5L91.3 223.2L92.4 223.2L93.2 223.5Z" className={styles.artTop} />
+    <path d="M289 322.1L288.5 322.5L243.3 345.2L242.4 345.4L241.3 345.4L240.5 345.2L45.2 247.5L44.7 247.1" className={styles.artLineFaint} />
+    <path d="M44.7 247.1L44.7 246.6L45.2 246.1L90.4 223.5L91.3 223.2L92.4 223.2L93.2 223.5L288.5 321.1L289 321.6L289 322.1M289 362.3L288.5 362.7L243.3 385.4L242.4 385.6L241.3 385.6L240.5 385.4L45.2 287.7L44.7 287.3M289 322.1L289 362.3M44.7 247.1L44.7 287.3" className={styles.artOutline} />
+    <path d="M115.7 234.8L67.7 258.8" className={styles.artLine} />
+    <path d="M135.4 244.6L87.4 268.6" className={styles.artLine} />
+    <path d="M155.1 254.5L107.1 278.5" className={styles.artLine} />
+    <path d="M174.8 264.3L126.8 288.3" className={styles.artLine} />
+    <path d="M194.5 274.1L146.5 298.2" className={styles.artLine} />
+    <path d="M214.2 284L166.1 308" className={styles.artLine} />
+    <path d="M233.9 293.8L185.8 317.9" className={styles.artLine} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M36.3 185.7L36.7 185.4L37.9 184.8L38.7 184.6L39.5 184.6L40.3 184.8L244.2 286.8L244.6 287.1L244.6 287.6L244.6 388L244.2 388.4L243 389L242.3 389.2L241.4 389.2L240.7 389L36.7 287L36.3 286.7Z" className={styles.artSurface} />
+    <path d="M244.6 388L244.2 388.4L244.2 287.9L244.6 287.6ZM244.2 388.4L243 389L243 288.5L244.2 287.9ZM243 389L242.3 389.2L242.3 288.7L243 288.5Z" className={styles.artShadeStrong} />
+    <path d="M242.3 389.2L241.4 389.2L241.4 288.7L242.3 288.7ZM241.4 389.2L240.7 389L240.7 288.5L241.4 288.7Z" className={styles.artShadeSoft} />
+    <path d="M240.7 389L36.7 287L36.7 186.5L240.7 288.5ZM36.7 287L36.3 286.7L36.3 186.2L36.7 186.5Z" className={styles.artShadeFaint} />
+    <path d="M244.2 286.8L244.6 287.1L244.6 287.6L244.2 287.9L243 288.5L242.3 288.7L241.4 288.7L240.7 288.5L36.7 186.5L36.3 186.2L36.3 185.7L36.7 185.4L37.9 184.8L38.7 184.6L39.5 184.6L40.3 184.8Z" className={styles.artTop} />
+    <path d="M244.6 287.6L244.2 287.9L243 288.5L242.3 288.7L241.4 288.7L240.7 288.5L36.7 186.5L36.3 186.2" className={styles.artLineFaint} />
+    <path d="M244.6 287.6L243.2 287.5L242.2 288L241.9 288.1L241.8 288.1L241.5 288L37.8 186.1L36.3 186.2" className={styles.artLineFaint} />
+    <path d="M36.3 186.2L36.3 185.7L36.7 185.4L37.9 184.8L38.7 184.6L39.5 184.6L40.3 184.8L244.2 286.8L244.6 287.1L244.6 287.6M244.6 388L244.2 388.4L243 389L242.3 389.2L241.4 389.2L240.7 389L36.7 287L36.3 286.7M244.6 287.6L244.6 388M36.3 186.2L36.3 286.7" className={styles.artOutline} />
+    <path d="M244.6 299L244.2 299.4L243 300L242.3 300.2L241.4 300.2L240.7 300L36.7 198L36.3 197.7" className={styles.artLineFaint} />
+    <path d="M204.4 370.8L204.4 281.8" className={styles.artLineFaint} />
+    <path d="M45.4 277L62.8 285.7L62.8 222.5L45.4 213.8Z" className={styles.artLine} />
+    <path d="M49.2 274.3L59 279.2L59 272.3L49.2 267.4Z" className={styles.artLine} />
+    <path d="M65.1 286.9L82.5 295.5L82.5 232.4L65.1 223.7Z" className={styles.artLine} />
+    <path d="M68.9 284.1L78.7 289.1L78.7 282.2L68.9 277.2Z" className={styles.artLine} />
+    <path d="M84.8 296.7L102.2 305.4L102.2 242.2L84.8 233.5Z" className={styles.artLine} />
+    <path d="M88.6 294L98.4 298.9L98.4 292L88.6 287.1Z" className={styles.artLine} />
+    <path d="M104.5 306.5L121.8 315.2L121.8 252.1L104.5 243.4Z" className={styles.artLine} />
+    <path d="M108.2 303.8L118.1 308.7L118.1 301.9L108.2 296.9Z" className={styles.artLine} />
+    <path d="M124.2 316.4L141.5 325.1L141.5 261.9L124.2 253.2Z" className={styles.artLine} />
+    <path d="M127.9 313.7L137.8 318.6L137.8 311.7L127.9 306.8Z" className={styles.artLine} />
+    <path d="M143.9 326.2L161.2 334.9L161.2 271.7L143.9 263.1Z" className={styles.artLine} />
+    <path d="M147.6 323.5L157.5 328.4L157.5 321.5L147.6 316.6Z" className={styles.artLine} />
+    <path d="M163.6 336.1L180.9 344.8L180.9 281.6L163.6 272.9Z" className={styles.artLine} />
+    <path d="M167.3 333.4L177.2 338.3L177.2 331.4L167.3 326.5Z" className={styles.artLine} />
+    <path d="M183.3 345.9L200.6 354.6L200.6 291.4L183.3 282.8Z" className={styles.artLine} />
+    <path d="M187 343.2L196.9 348.1L196.9 341.2L187 336.3Z" className={styles.artLine} />
+    <path d="M224 314.6L223.9 313.2L223.5 311.6L222.7 310.1L221.8 308.8L220.7 307.7L219.6 307L218.4 306.6L217.4 306.6L216.4 307L215.7 307.8L215.3 308.9L215.1 310.2L215.3 311.7L215.7 313.2L216.4 314.7L217.4 316L218.4 317.1L219.6 317.9L220.7 318.3L221.8 318.3L222.7 317.8L223.5 317.1L223.9 316Z" className={styles.artLineStrong} />
+    <path d="M221.7 313.5L221.5 312.4L221.1 311.3L220.4 310.4L219.6 309.8L218.8 309.6L218.1 309.8L217.6 310.5L217.5 311.4L217.6 312.4L218.1 313.5L218.8 314.4L219.6 315L220.4 315.2L221.1 315L221.5 314.4Z" className={styles.artLine} />
+    <path d="M210.2 356.5L229 365.9L229 348.7L210.2 339.3Z" className={styles.artLineFaint} />
+    <circle cx="54.1" cy="225.1" r="1" className={styles.artScrew} />
+    <circle cx="73.8" cy="234.9" r="1" className={styles.artScrew} />
+    <circle cx="93.5" cy="244.8" r="1" className={styles.artScrew} />
+    <circle cx="113.2" cy="254.6" r="1" className={styles.artScrew} />
+    <circle cx="132.9" cy="264.5" r="1" className={styles.artScrew} />
+    <circle cx="152.6" cy="274.3" r="1" className={styles.artScrew} />
+    <circle cx="172.2" cy="284.1" r="1" className={styles.artScrew} />
+    <circle cx="191.9" cy="294" r="1" className={styles.artScrew} />
+    <circle cx="214.7" cy="325.7" r="1" className={styles.artScrew} />
+    <circle cx="224.5" cy="330.7" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M242.8 288.8L243.3 288.4L247.5 286.3L248.4 286L249.4 286L250.3 286.3L259.2 290.7L259.7 291.2L259.7 392.2L259.2 392.6L255 394.7L254.1 395L253.1 395L252.2 394.7L243.3 390.3L242.8 389.8Z" className={styles.artSurface} />
+    <path d="M259.7 392.2L259.2 392.6L259.2 292.1L259.7 291.7ZM259.2 392.6L255 394.7L255 294.3L259.2 292.1ZM255 394.7L254.1 395L254.1 294.5L255 294.3Z" className={styles.artShadeStrong} />
+    <path d="M254.1 395L253.1 395L253.1 294.5L254.1 294.5Z" className={styles.artShadeSoft} />
+    <path d="M253.1 395L252.2 394.7L252.2 294.3L253.1 294.5ZM252.2 394.7L243.3 390.3L243.3 289.8L252.2 294.3ZM243.3 390.3L242.8 389.8L242.8 289.4L243.3 289.8Z" className={styles.artShadeFaint} />
+    <path d="M259.2 290.7L259.7 291.2L259.7 291.7L259.2 292.1L255 294.3L254.1 294.5L253.1 294.5L252.2 294.3L243.3 289.8L242.8 289.4L242.8 288.8L243.3 288.4L247.5 286.3L248.4 286L249.4 286L250.3 286.3Z" className={styles.artTop} />
+    <path d="M259.7 291.7L259.2 292.1L255 294.3L254.1 294.5L253.1 294.5L252.2 294.3L243.3 289.8L242.8 289.4" className={styles.artLineFaint} />
+    <path d="M259.7 291.7L258.4 291.8L254.4 293.9L253.8 294L253.3 294L252.8 293.9L244.1 289.5L242.8 289.4" className={styles.artLineFaint} />
+    <path d="M242.8 289.4L242.8 288.8L243.3 288.4L247.5 286.3L248.4 286L249.4 286L250.3 286.3L259.2 290.7L259.7 291.2L259.7 291.7M259.7 392.2L259.2 392.6L255 394.7L254.1 395L253.1 395L252.2 394.7L243.3 390.3L242.8 389.8M259.7 291.7L259.7 392.2M242.8 289.4L242.8 389.8" className={styles.artOutline} />
+    <circle cx="247.7" cy="378.2" r="1" className={styles.artScrew} />
+    <circle cx="247.7" cy="306.4" r="1" className={styles.artScrew} />
+  </g>
+  <g aria-hidden="true">
+    <path d="M239.5 321.5L240 321.1L242.8 319.7L243.7 319.4L244.7 319.4L245.6 319.7L249.8 321.8L250.3 322.2L250.3 365.8L249.8 366.3L247 367.7L246.1 367.9L245.1 367.9L244.2 367.7L240 365.6L239.5 365.1Z" className={styles.artSurface} />
+    <path d="M250.3 365.8L249.8 366.3L249.8 323.2L250.3 322.8ZM249.8 366.3L247 367.7L247 324.6L249.8 323.2ZM247 367.7L246.1 367.9L246.1 324.9L247 324.6Z" className={styles.artShadeStrong} />
+    <path d="M246.1 367.9L245.1 367.9L245.1 324.9L246.1 324.9Z" className={styles.artShadeSoft} />
+    <path d="M245.1 367.9L244.2 367.7L244.2 324.6L245.1 324.9ZM244.2 367.7L240 365.6L240 322.5L244.2 324.6ZM240 365.6L239.5 365.1L239.5 322.1L240 322.5Z" className={styles.artShadeFaint} />
+    <path d="M249.8 321.8L250.3 322.2L250.3 322.8L249.8 323.2L247 324.6L246.1 324.9L245.1 324.9L244.2 324.6L240 322.5L239.5 322.1L239.5 321.5L240 321.1L242.8 319.7L243.7 319.4L244.7 319.4L245.6 319.7Z" className={styles.artTop} />
+    <path d="M250.3 322.8L249.8 323.2L247 324.6L246.1 324.9L245.1 324.9L244.2 324.6L240 322.5L239.5 322.1" className={styles.artLineFaint} />
+    <path d="M250.3 322.8L249 322.9L246.4 324.2L245.9 324.4L245.4 324.4L244.8 324.2L240.8 322.2L239.5 322.1" className={styles.artLineFaint} />
+    <path d="M239.5 322.1L239.5 321.5L240 321.1L242.8 319.7L243.7 319.4L244.7 319.4L245.6 319.7L249.8 321.8L250.3 322.2L250.3 322.8M250.3 365.8L249.8 366.3L247 367.7L246.1 367.9L245.1 367.9L244.2 367.7L240 365.6L239.5 365.1M250.3 322.8L250.3 365.8M239.5 322.1L239.5 365.1" className={styles.artOutline} />
+  </g>
+</>;
+
+const gpu0 = <>
+  <path d="M295 140.9L295.5 140.4L414.6 80.9L415.5 80.6L416.6 80.6L417.4 80.9L435.7 90L436.2 90.5L436.2 154.1L435.7 154.6L316.6 214.1L315.8 214.4L314.7 214.4L313.8 214.1L295.5 205L295 204.5Z" className={styles.artSurface} />
+  <path d="M436.2 154.1L435.7 154.6L435.7 91.4L436.2 91ZM435.7 154.6L316.6 214.1L316.6 151L435.7 91.4Z" className={styles.artShadeStrong} />
+  <path d="M316.6 214.1L315.8 214.4L315.8 151.2L316.6 151Z" className={styles.artShadeMedium} />
+  <path d="M315.8 214.4L314.7 214.4L314.7 151.2L315.8 151.2ZM314.7 214.4L313.8 214.1L313.8 151L314.7 151.2Z" className={styles.artShadeSoft} />
+  <path d="M313.8 214.1L295.5 205L295.5 141.8L313.8 151ZM295.5 205L295 204.5L295 141.4L295.5 141.8Z" className={styles.artShadeFaint} />
+  <path d="M435.7 90L436.2 90.5L436.2 91L435.7 91.4L316.6 151L315.8 151.2L314.7 151.2L313.8 151L295.5 141.8L295 141.4L295 140.9L295.5 140.4L414.6 80.9L415.5 80.6L416.6 80.6L417.4 80.9Z" className={styles.artTop} />
+  <path d="M436.2 91L435.7 91.4L316.6 151L315.8 151.2L314.7 151.2L313.8 151L295.5 141.8L295 141.4" className={styles.artLineFaint} />
+  <path d="M436.2 91L434.2 90.8L315.4 150.2L315.2 150.3L315.2 150.3L315 150.2L297.1 141.2L295 141.4" className={styles.artLine} />
+  <path d="M295 141.4L295 140.9L295.5 140.4L414.6 80.9L415.5 80.6L416.6 80.6L417.4 80.9L435.7 90L436.2 90.5L436.2 91M436.2 154.1L435.7 154.6L316.6 214.1L315.8 214.4L314.7 214.4L313.8 214.1L295.5 205L295 204.5M436.2 91L436.2 154.1M295 141.4L295 204.5" className={styles.artGpuOutline} />
+  <path d="M419.1 94.6L419.5 95.1L419.1 95.5L320.9 144.6L319.9 144.8L319 144.6L308.2 139.2L307.8 138.8L308.2 138.3L406.4 89.2L407.4 89L408.3 89.2Z" className={styles.artLineFaint} />
+  <path d="M436.2 98.2L435.7 98.6L316.6 158.1L315.8 158.4L314.7 158.4L313.8 158.1L295.5 149L295 148.6" className={styles.artLineFaint} />
+  <path d="M424.7 145.7L387.2 164.5L387.2 138.6L424.7 119.9Z" className={styles.artLineFaint} />
+  <path d="M354.4 186.6L352 187.8L352 153.4L354.4 152.2Z" className={styles.artLine} />
+  <path d="M349.5 189.1L347.1 190.3L347.1 155.8L349.5 154.6Z" className={styles.artLine} />
+  <path d="M344.5 191.6L342.2 192.7L342.2 158.3L344.5 157.1Z" className={styles.artLine} />
+  <path d="M339.6 194L337.3 195.2L337.3 160.7L339.6 159.6Z" className={styles.artLine} />
+  <path d="M334.7 196.5L332.3 197.7L332.3 163.2L334.7 162Z" className={styles.artLine} />
+  <path d="M329.8 198.9L327.4 200.1L327.4 165.7L329.8 164.5Z" className={styles.artLine} />
+  <path d="M324.8 201.4L322.5 202.6L322.5 168.1L324.8 167Z" className={styles.artLine} />
+  <path d="M297.9 194.7L311.5 201.5L311.5 195.7L297.9 188.9Z" className={styles.artLine} />
+  <path d="M297.9 183.2L311.5 190L311.5 184.2L297.9 177.4Z" className={styles.artLine} />
+  <path d="M297.9 171.7L311.5 178.5L311.5 172.8L297.9 166Z" className={styles.artLine} />
+  <circle cx="432.7" cy="150.4" r="1" className={styles.artScrew} />
+  <circle cx="319.7" cy="206.9" r="1" className={styles.artScrew} />
+  <circle cx="432.7" cy="105.6" r="1" className={styles.artScrew} />
+  <circle cx="319.7" cy="162.1" r="1" className={styles.artScrew} />
+  <path d="M295 140.9L295.5 140.4L414.6 80.9L415.5 80.6L416.6 80.6L417.4 80.9L435.7 90L436.2 90.5L436.2 154.1L435.7 154.6L316.6 214.1L315.8 214.4L314.7 214.4L313.8 214.1L295.5 205L295 204.5Z" className={styles.artFocus} />
+</>;
+
+const gpu1 = <>
+  <path d="M330.2 158.4L330.7 158L449.8 98.5L450.7 98.2L451.7 98.2L452.6 98.5L470.9 107.6L471.4 108L471.4 171.7L470.9 172.2L351.8 231.7L350.9 232L349.9 232L349 231.7L330.7 222.6L330.2 222.1Z" className={styles.artSurface} />
+  <path d="M471.4 171.7L470.9 172.2L470.9 109L471.4 108.6ZM470.9 172.2L351.8 231.7L351.8 168.5L470.9 109Z" className={styles.artShadeStrong} />
+  <path d="M351.8 231.7L350.9 232L350.9 168.8L351.8 168.5Z" className={styles.artShadeMedium} />
+  <path d="M350.9 232L349.9 232L349.9 168.8L350.9 168.8ZM349.9 232L349 231.7L349 168.5L349.9 168.8Z" className={styles.artShadeSoft} />
+  <path d="M349 231.7L330.7 222.6L330.7 159.4L349 168.5ZM330.7 222.6L330.2 222.1L330.2 159L330.7 159.4Z" className={styles.artShadeFaint} />
+  <path d="M470.9 107.6L471.4 108L471.4 108.6L470.9 109L351.8 168.5L350.9 168.8L349.9 168.8L349 168.5L330.7 159.4L330.2 159L330.2 158.4L330.7 158L449.8 98.5L450.7 98.2L451.7 98.2L452.6 98.5Z" className={styles.artTop} />
+  <path d="M471.4 108.6L470.9 109L351.8 168.5L350.9 168.8L349.9 168.8L349 168.5L330.7 159.4L330.2 159" className={styles.artLineFaint} />
+  <path d="M471.4 108.6L469.3 108.4L350.6 167.8L350.4 167.8L350.4 167.8L350.2 167.8L332.3 158.8L330.2 159" className={styles.artLine} />
+  <path d="M330.2 159L330.2 158.4L330.7 158L449.8 98.5L450.7 98.2L451.7 98.2L452.6 98.5L470.9 107.6L471.4 108L471.4 108.6M471.4 171.7L470.9 172.2L351.8 231.7L350.9 232L349.9 232L349 231.7L330.7 222.6L330.2 222.1M471.4 108.6L471.4 171.7M330.2 159L330.2 222.1" className={styles.artGpuOutline} />
+  <path d="M454.2 112.2L454.6 112.6L454.2 113.1L356 162.2L355.1 162.4L354.2 162.2L343.4 156.8L343 156.4L343.4 155.9L441.6 106.8L442.5 106.6L443.5 106.8Z" className={styles.artLineFaint} />
+  <path d="M471.4 115.7L470.9 116.2L351.8 175.7L350.9 176L349.9 176L349 175.7L330.7 166.6L330.2 166.1" className={styles.artLineFaint} />
+  <path d="M459.9 163.3L422.4 182.1L422.4 156.2L459.9 137.5Z" className={styles.artLineFaint} />
+  <path d="M389.5 204.2L387.2 205.4L387.2 170.9L389.5 169.8Z" className={styles.artLine} />
+  <path d="M384.6 206.7L382.3 207.9L382.3 173.4L384.6 172.2Z" className={styles.artLine} />
+  <path d="M379.7 209.1L377.4 210.3L377.4 175.9L379.7 174.7Z" className={styles.artLine} />
+  <path d="M374.8 211.6L372.4 212.8L372.4 178.3L374.8 177.2Z" className={styles.artLine} />
+  <path d="M369.9 214.1L367.5 215.2L367.5 180.8L369.9 179.6Z" className={styles.artLine} />
+  <path d="M364.9 216.5L362.6 217.7L362.6 183.2L364.9 182.1Z" className={styles.artLine} />
+  <path d="M360 219L357.7 220.2L357.7 185.7L360 184.5Z" className={styles.artLine} />
+  <path d="M333.1 212.3L346.6 219L346.6 213.3L333.1 206.5Z" className={styles.artLine} />
+  <path d="M333.1 200.8L346.6 207.6L346.6 201.8L333.1 195Z" className={styles.artLine} />
+  <path d="M333.1 189.3L346.6 196.1L346.6 190.3L333.1 183.5Z" className={styles.artLine} />
+  <circle cx="467.8" cy="167.9" r="1" className={styles.artScrew} />
+  <circle cx="354.9" cy="224.4" r="1" className={styles.artScrew} />
+  <circle cx="467.8" cy="123.2" r="1" className={styles.artScrew} />
+  <circle cx="354.9" cy="179.7" r="1" className={styles.artScrew} />
+  <path d="M330.2 158.4L330.7 158L449.8 98.5L450.7 98.2L451.7 98.2L452.6 98.5L470.9 107.6L471.4 108L471.4 171.7L470.9 172.2L351.8 231.7L350.9 232L349.9 232L349 231.7L330.7 222.6L330.2 222.1Z" className={styles.artFocus} />
+</>;
+
+const gpu2 = <>
+  <path d="M365.4 176L365.9 175.6L485 116L485.8 115.8L486.9 115.8L487.8 116L506.1 125.2L506.6 125.6L506.6 189.3L506.1 189.7L387 249.3L386.1 249.5L385 249.5L384.2 249.3L365.9 240.1L365.4 239.7Z" className={styles.artSurface} />
+  <path d="M506.6 189.3L506.1 189.7L506.1 126.6L506.6 126.1ZM506.1 189.7L387 249.3L387 186.1L506.1 126.6Z" className={styles.artShadeStrong} />
+  <path d="M387 249.3L386.1 249.5L386.1 186.4L387 186.1Z" className={styles.artShadeMedium} />
+  <path d="M386.1 249.5L385 249.5L385 186.4L386.1 186.4ZM385 249.5L384.2 249.3L384.2 186.1L385 186.4Z" className={styles.artShadeSoft} />
+  <path d="M384.2 249.3L365.9 240.1L365.9 177L384.2 186.1ZM365.9 240.1L365.4 239.7L365.4 176.5L365.9 177Z" className={styles.artShadeFaint} />
+  <path d="M506.1 125.2L506.6 125.6L506.6 126.1L506.1 126.6L387 186.1L386.1 186.4L385 186.4L384.2 186.1L365.9 177L365.4 176.5L365.4 176L365.9 175.6L485 116L485.8 115.8L486.9 115.8L487.8 116Z" className={styles.artTop} />
+  <path d="M506.6 126.1L506.1 126.6L387 186.1L386.1 186.4L385 186.4L384.2 186.1L365.9 177L365.4 176.5" className={styles.artLineFaint} />
+  <path d="M506.6 126.1L504.5 126L385.8 185.3L385.6 185.4L385.6 185.4L385.4 185.3L367.4 176.4L365.4 176.5" className={styles.artLine} />
+  <path d="M365.4 176.5L365.4 176L365.9 175.6L485 116L485.8 115.8L486.9 115.8L487.8 116L506.1 125.2L506.6 125.6L506.6 126.1M506.6 189.3L506.1 189.7L387 249.3L386.1 249.5L385 249.5L384.2 249.3L365.9 240.1L365.4 239.7M506.6 126.1L506.6 189.3M365.4 176.5L365.4 239.7" className={styles.artGpuOutline} />
+  <path d="M489.4 129.7L489.8 130.2L489.4 130.7L391.2 179.8L390.3 180L389.3 179.8L378.5 174.4L378.1 173.9L378.5 173.5L476.8 124.4L477.7 124.2L478.6 124.4Z" className={styles.artLineFaint} />
+  <path d="M506.6 133.3L506.1 133.8L387 193.3L386.1 193.6L385 193.6L384.2 193.3L365.9 184.2L365.4 183.7" className={styles.artLineFaint} />
+  <path d="M495 180.9L457.5 199.7L457.5 173.8L495 155.1Z" className={styles.artLineFaint} />
+  <path d="M424.7 221.8L422.4 223L422.4 188.5L424.7 187.4Z" className={styles.artLine} />
+  <path d="M419.8 224.3L417.4 225.4L417.4 191L419.8 189.8Z" className={styles.artLine} />
+  <path d="M414.9 226.7L412.5 227.9L412.5 193.4L414.9 192.3Z" className={styles.artLine} />
+  <path d="M409.9 229.2L407.6 230.4L407.6 195.9L409.9 194.7Z" className={styles.artLine} />
+  <path d="M405 231.6L402.7 232.8L402.7 198.4L405 197.2Z" className={styles.artLine} />
+  <path d="M400.1 234.1L397.8 235.3L397.8 200.8L400.1 199.7Z" className={styles.artLine} />
+  <path d="M395.2 236.6L392.8 237.7L392.8 203.3L395.2 202.1Z" className={styles.artLine} />
+  <path d="M368.2 229.8L381.8 236.6L381.8 230.9L368.2 224.1Z" className={styles.artLine} />
+  <path d="M368.2 218.3L381.8 225.1L381.8 219.4L368.2 212.6Z" className={styles.artLine} />
+  <path d="M368.2 206.9L381.8 213.7L381.8 207.9L368.2 201.1Z" className={styles.artLine} />
+  <circle cx="503" cy="185.5" r="1" className={styles.artScrew} />
+  <circle cx="390" cy="242" r="1" className={styles.artScrew} />
+  <circle cx="503" cy="140.7" r="1" className={styles.artScrew} />
+  <circle cx="390" cy="197.2" r="1" className={styles.artScrew} />
+  <path d="M365.4 176L365.9 175.6L485 116L485.8 115.8L486.9 115.8L487.8 116L506.1 125.2L506.6 125.6L506.6 189.3L506.1 189.7L387 249.3L386.1 249.5L385 249.5L384.2 249.3L365.9 240.1L365.4 239.7Z" className={styles.artFocus} />
+</>;
+
+const gpu3 = <>
+  <path d="M400.5 194.1L400.5 193.6L401 193.2L520.1 133.6L521 133.4L522 133.4L522.9 133.6L541.2 142.8L541.7 143.2L541.7 206.9L541.2 207.3L422.1 266.9L421.2 267.1L420.2 267.1L419.3 266.9L401 257.7L400.5 257.3Z" className={styles.artSurface} />
+  <path d="M541.7 206.9L541.2 207.3L541.2 144.2L541.7 143.7ZM541.2 207.3L422.1 266.9L422.1 203.7L541.2 144.2ZM422.1 266.9L421.2 267.1L421.2 204L422.1 203.7Z" className={styles.artFanShade} />
+  <path d="M421.2 267.1L420.2 267.1L420.2 204L421.2 204ZM420.2 267.1L419.3 266.9L419.3 203.7L420.2 204Z" className={styles.artFanShadeSoft} />
+  <path d="M419.3 266.9L401 257.7L401 194.6L419.3 203.7ZM401 257.7L400.5 257.3L400.5 194.1L401 194.6Z" className={styles.artFanShadeFaint} />
+  <path d="M541.2 142.8L541.7 143.2L541.7 143.7L541.2 144.2L422.1 203.7L421.2 204L420.2 204L419.3 203.7L401 194.6L400.5 194.1L400.5 193.6L401 193.2L520.1 133.6L521 133.4L522 133.4L522.9 133.6Z" className={styles.artFanTop} />
+  <path d="M541.7 143.7L541.2 144.2L422.1 203.7L421.2 204L420.2 204L419.3 203.7L401 194.6L400.5 194.1" className={styles.artLineFaint} />
+  <path d="M541.7 143.7L539.6 143.6L420.9 202.9L420.7 203L420.7 203L420.5 202.9L402.6 194L400.5 194.1" className={styles.artLine} />
+  <path d="M400.5 194.1L400.5 193.6L401 193.2L520.1 133.6L521 133.4L522 133.4L522.9 133.6L541.2 142.8L541.7 143.2L541.7 143.7M541.7 206.9L541.2 207.3L422.1 266.9L421.2 267.1L420.2 267.1L419.3 266.9L401 257.7L400.5 257.3M541.7 143.7L541.7 206.9M400.5 194.1L400.5 257.3" className={styles.artGpuOutline} />
+  <path d="M524.6 147.3L525 147.8L524.6 148.3L426.4 197.4L425.4 197.6L424.5 197.4L413.7 192L413.3 191.5L413.7 191L511.9 141.9L512.9 141.7L513.8 141.9Z" className={styles.artLineFaint} />
+  <path d="M541.7 150.9L541.2 151.3L422.1 210.9L421.2 211.1L420.2 211.1L419.3 210.9L401 201.7L400.5 201.3" className={styles.artLineFaint} />
+  <path d="M530.2 198.5L492.7 217.2L492.7 191.4L530.2 172.6Z" className={styles.artLineFaint} />
+  <path d="M459.9 239.4L457.5 240.6L457.5 206.1L459.9 204.9Z" className={styles.artLine} />
+  <path d="M455 241.8L452.6 243L452.6 208.6L455 207.4Z" className={styles.artLine} />
+  <path d="M450 244.3L447.7 245.5L447.7 211L450 209.9Z" className={styles.artLine} />
+  <path d="M445.1 246.8L442.8 247.9L442.8 213.5L445.1 212.3Z" className={styles.artLine} />
+  <path d="M440.2 249.2L437.8 250.4L437.8 215.9L440.2 214.8Z" className={styles.artLine} />
+  <path d="M435.3 251.7L432.9 252.9L432.9 218.4L435.3 217.2Z" className={styles.artLine} />
+  <path d="M430.3 254.2L428 255.3L428 220.9L430.3 219.7Z" className={styles.artLine} />
+  <path d="M403.4 247.4L417 254.2L417 248.5L403.4 241.7Z" className={styles.artLine} />
+  <path d="M403.4 235.9L417 242.7L417 237L403.4 230.2Z" className={styles.artLine} />
+  <path d="M403.4 224.4L417 231.2L417 225.5L403.4 218.7Z" className={styles.artLine} />
+  <circle cx="538.2" cy="203.1" r="1" className={styles.artScrew} />
+  <circle cx="425.2" cy="259.6" r="1" className={styles.artScrew} />
+  <circle cx="538.2" cy="158.3" r="1" className={styles.artScrew} />
+  <circle cx="425.2" cy="214.8" r="1" className={styles.artScrew} />
+  <path d="M400.5 194.1L400.5 193.6L401 193.2L520.1 133.6L521 133.4L522 133.4L522.9 133.6L541.2 142.8L541.7 143.2L541.7 206.9L541.2 207.3L422.1 266.9L421.2 267.1L420.2 267.1L419.3 266.9L401 257.7L400.5 257.3Z" className={styles.artFocus} />
+</>;
+
+const vents: readonly (readonly string[])[] = [
+  [
+    "M415.3 94.6L415.7 95.1L415.3 95.5L407.8 99.3L406.9 99.5L406 99.3L398.9 95.8L398.5 95.3L398.9 94.8L406.4 91.1L407.4 90.9L408.3 91.1Z",
+    "M403.1 100.7L403.5 101.1L403.1 101.6L395.6 105.4L394.7 105.6L393.8 105.4L386.7 101.9L386.3 101.4L386.7 100.9L394.2 97.2L395.2 97L396.1 97.2Z",
+    "M391 106.8L391.3 107.2L391 107.7L383.5 111.5L382.5 111.7L381.6 111.5L374.5 107.9L374.2 107.5L374.5 107L382 103.3L383 103.1L383.9 103.3Z",
+    "M378.8 112.9L379.2 113.3L378.8 113.8L371.3 117.6L370.3 117.8L369.4 117.6L362.4 114L362 113.6L362.4 113.1L369.9 109.4L370.8 109.2L371.7 109.4Z",
+    "M366.6 119L367 119.4L366.6 119.9L359.1 123.7L358.1 123.8L357.2 123.7L350.2 120.1L349.8 119.7L350.2 119.2L357.7 115.4L358.6 115.3L359.5 115.4Z",
+    "M354.4 125.1L354.8 125.5L354.4 126L346.9 129.7L345.9 129.9L345 129.7L338 126.2L337.6 125.8L338 125.3L345.5 121.5L346.4 121.3L347.4 121.5Z",
+    "M342.2 131.2L342.6 131.6L342.2 132.1L334.7 135.8L333.8 136L332.8 135.8L325.8 132.3L325.4 131.9L325.8 131.4L333.3 127.6L334.2 127.4L335.2 127.6Z",
+    "M330 137.2L330.4 137.7L330 138.2L322.5 141.9L321.6 142.1L320.6 141.9L313.6 138.4L313.2 138L313.6 137.5L321.1 133.7L322 133.5L323 133.7Z"
+  ],
+  [
+    "M450.5 112.2L450.9 112.6L450.5 113.1L443 116.9L442.1 117L441.1 116.9L434.1 113.3L433.7 112.9L434.1 112.4L441.6 108.6L442.5 108.5L443.5 108.6Z",
+    "M438.3 118.3L438.7 118.7L438.3 119.2L430.8 122.9L429.9 123.1L428.9 122.9L421.9 119.4L421.5 119L421.9 118.5L429.4 114.7L430.3 114.5L431.3 114.7Z",
+    "M426.1 124.4L426.5 124.8L426.1 125.3L418.6 129L417.7 129.2L416.7 129L409.7 125.5L409.3 125.1L409.7 124.6L417.2 120.8L418.1 120.6L419.1 120.8Z",
+    "M413.9 130.4L414.3 130.9L413.9 131.4L406.4 135.1L405.5 135.3L404.6 135.1L397.5 131.6L397.1 131.2L397.5 130.7L405 126.9L406 126.7L406.9 126.9Z",
+    "M401.7 136.5L402.1 137L401.7 137.5L394.2 141.2L393.3 141.4L392.4 141.2L385.3 137.7L384.9 137.2L385.3 136.8L392.8 133L393.8 132.8L394.7 133Z",
+    "M389.5 142.6L389.9 143.1L389.5 143.6L382 147.3L381.1 147.5L380.2 147.3L373.1 143.8L372.8 143.3L373.1 142.9L380.6 139.1L381.6 138.9L382.5 139.1Z",
+    "M377.4 148.7L377.7 149.2L377.4 149.7L369.9 153.4L368.9 153.6L368 153.4L360.9 149.9L360.6 149.4L360.9 149L368.5 145.2L369.4 145L370.3 145.2Z",
+    "M365.2 154.8L365.6 155.3L365.2 155.8L357.7 159.5L356.7 159.7L355.8 159.5L348.8 156L348.4 155.5L348.8 155.1L356.3 151.3L357.2 151.1L358.1 151.3Z"
+  ],
+  [
+    "M485.7 129.7L486 130.2L485.7 130.7L478.2 134.4L477.2 134.6L476.3 134.4L469.3 130.9L468.9 130.4L469.3 130L476.8 126.2L477.7 126L478.6 126.2Z",
+    "M473.5 135.8L473.9 136.3L473.5 136.8L466 140.5L465 140.7L464.1 140.5L457.1 137L456.7 136.5L457.1 136.1L464.6 132.3L465.5 132.1L466.4 132.3Z",
+    "M461.3 141.9L461.7 142.4L461.3 142.9L453.8 146.6L452.8 146.8L451.9 146.6L444.9 143.1L444.5 142.6L444.9 142.2L452.4 138.4L453.3 138.2L454.2 138.4Z",
+    "M449.1 148L449.5 148.5L449.1 149L441.6 152.7L440.7 152.9L439.7 152.7L432.7 149.2L432.3 148.7L432.7 148.3L440.2 144.5L441.1 144.3L442.1 144.5Z",
+    "M436.9 154.1L437.3 154.6L436.9 155.1L429.4 158.8L428.5 159L427.5 158.8L420.5 155.3L420.1 154.8L420.5 154.4L428 150.6L428.9 150.4L429.9 150.6Z",
+    "M424.7 160.2L425.1 160.7L424.7 161.2L417.2 164.9L416.3 165.1L415.3 164.9L408.3 161.4L407.9 160.9L408.3 160.5L415.8 156.7L416.7 156.5L417.7 156.7Z",
+    "M412.5 166.3L412.9 166.8L412.5 167.3L405 171L404.1 171.2L403.1 171L396.1 167.5L395.7 167L396.1 166.6L403.6 162.8L404.6 162.6L405.5 162.8Z",
+    "M400.3 172.4L400.7 172.9L400.3 173.3L392.8 177.1L391.9 177.3L391 177.1L383.9 173.6L383.5 173.1L383.9 172.6L391.4 168.9L392.4 168.7L393.3 168.9Z"
+  ],
+  [
+    "M520.8 147.3L521.2 147.8L520.8 148.3L513.3 152L512.4 152.2L511.4 152L504.4 148.5L504 148L504.4 147.6L511.9 143.8L512.9 143.6L513.8 143.8Z",
+    "M508.6 153.4L509 153.9L508.6 154.4L501.1 158.1L500.2 158.3L499.3 158.1L492.2 154.6L491.8 154.1L492.2 153.7L499.7 149.9L500.7 149.7L501.6 149.9Z",
+    "M496.4 159.5L496.8 160L496.4 160.5L488.9 164.2L488 164.4L487.1 164.2L480 160.7L479.6 160.2L480 159.8L487.5 156L488.5 155.8L489.4 156Z",
+    "M484.3 165.6L484.6 166.1L484.3 166.6L476.8 170.3L475.8 170.5L474.9 170.3L467.8 166.8L467.5 166.3L467.8 165.8L475.3 162.1L476.3 161.9L477.2 162.1Z",
+    "M472.1 171.7L472.5 172.2L472.1 172.6L464.6 176.4L463.6 176.6L462.7 176.4L455.7 172.9L455.3 172.4L455.7 171.9L463.2 168.2L464.1 168L465 168.2Z",
+    "M459.9 177.8L460.3 178.3L459.9 178.7L452.4 182.5L451.4 182.7L450.5 182.5L443.5 179L443.1 178.5L443.5 178L451 174.3L451.9 174.1L452.8 174.3Z",
+    "M447.7 183.9L448.1 184.4L447.7 184.8L440.2 188.6L439.2 188.8L438.3 188.6L431.3 185.1L430.9 184.6L431.3 184.1L438.8 180.4L439.7 180.2L440.7 180.4Z",
+    "M435.5 190L435.9 190.5L435.5 190.9L428 194.7L427.1 194.9L426.1 194.7L419.1 191.2L418.7 190.7L419.1 190.2L426.6 186.5L427.5 186.3L428.5 186.5Z"
+  ]
+];
+
+export function LocalModelsServerArtwork({ shadowId, renderGpu }: {
+  shadowId: string;
+  renderGpu: (index: number, body: ReactNode, vents: readonly string[]) => ReactNode;
+}) {
+  return <>
+    <defs><filter id={shadowId} x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7" /></filter></defs>
+    <path d="M20.4 291.3L20.8 289.3L21.9 287.5L23.7 285.7L26.2 284.2L338 128.4L341 127.1L344.4 126.2L348.2 125.6L352 125.4L355.9 125.6L359.7 126.2L363.1 127.1L366.1 128.4L572.4 231.5L574.9 233L576.7 234.7L577.8 236.6L578.2 238.5L577.8 240.5L576.7 242.3L574.9 244.1L572.4 245.6L260.6 401.5L257.6 402.7L254.2 403.6L250.4 404.2L246.6 404.4L242.7 404.2L238.9 403.6L235.5 402.7L232.5 401.5L26.2 298.3L23.7 296.8L21.9 295.1L20.8 293.2Z" filter={`url(#${shadowId})`} aria-hidden="true" className={styles.artShadow} />
+    {chassis0}
+    {renderGpu(0, gpu0, vents[0])}
+    {chassis1}
+    {renderGpu(1, gpu1, vents[1])}
+    {chassis2}
+    {renderGpu(2, gpu2, vents[2])}
+    {chassis3}
+    {renderGpu(3, gpu3, vents[3])}
+    {chassis4}
+  </>;
+}

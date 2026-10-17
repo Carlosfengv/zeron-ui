@@ -1,4 +1,5 @@
 export const standaloneBlockSlugs = [
+  "local-models-01",
   "appearance-settings-01",
   "usage-timeline-01",
   "usage-forecast-01",
