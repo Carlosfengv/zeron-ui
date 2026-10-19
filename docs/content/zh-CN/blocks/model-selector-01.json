@@ -1,0 +1,12 @@
+{
+  "modelSelectorBlock": {
+    "title": "模型选择",
+    "description": "对比模型的速度、质量和费用，配置扩展思考、联网搜索，并查看当前模型的延迟与费用。",
+    "composition": "组件组合",
+    "compositionBody": "复用 Popover、Button、Avatar、Command、Container、Switch 和 Kbd。模型列表与设置位于浮起的内容区，延迟、费用与键盘提示放在容器底部；颜色、文字、间距、圆角、阴影和动效全部使用当前组件库。Opus、Sonnet、Haiku 使用 LobeHub Icons 的 Claude logo，Auto 保留自动选择符号。面板最大宽度收紧为 360px，演示输入框保持原来的 512px 最大宽度，窄屏继续自适应。预览通过 InputMessage 的 leftSlot 接入选择器。",
+    "dataContract": "数据接入",
+    "dataContractBody": "models 接收具有唯一稳定 id 的模型列表，包含名称、说明、图标、可选的 1–5 档相对评分以及首字延迟和每百万 tokens 费用。费用档位越高表示越昂贵。受控 value 包含 modelId、extendedThinking 和 webSearch，onValueChange 返回完整的新值。数值与货币按 locale 和 currency 格式化，缺失估算显示“动态变化”。演示中的模型、价格与评分为依据截图创建的示例数据。",
+    "behavior": "交互与状态",
+    "behaviorBody": "方向键切换高亮模型，回车确认后关闭面板并回到触发按钮；Escape 或点击外部关闭。宿主更新模型或重新打开面板时同步键盘高亮，同时保留输入节点与焦点；再次选择当前模型只关闭，不重复触发变更。屏幕阅读器可以读取用途说明和完整评分，并区分宿主确认的模型与键盘高亮。设置开关即时更新并保持面板打开。支持受控或非受控展开、禁用选项、空列表和未匹配选择值。弹层适配窄屏，由内部内容区承担滚动，保留外层阴影和底部摘要。真实模型请求与持久化由宿主处理，预览仅在本地提交消息，不连接模型服务。"
+  }
+}

@@ -1,5 +1,12 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "model-selector-01": [
+    "packages/blocks/src/application/model-selector-01/index.ts",
+    "packages/blocks/src/application/model-selector-01/model-selector.tsx",
+    "packages/blocks/src/application/model-selector-01/model-selector-types.ts",
+    "packages/blocks/src/application/model-selector-01/model-selector-labels.ts",
+    "packages/blocks/src/application/model-selector-01/model-selector-demo-data.ts"
+  ],
   "agent-tasks-01": [
     "packages/blocks/src/application/agent-tasks-01/index.ts",
     "packages/blocks/src/application/agent-tasks-01/agent-tasks.tsx",
