@@ -111,6 +111,10 @@ export interface TemporalPickerCommonProps {
   "aria-labelledby"?: string;
   "aria-describedby"?: string;
   className?: string;
+  /** Applies classes to the public Button content wrapper in the trigger. */
+  triggerContentClassName?: string;
+  /** Applies classes to the public Button label wrapper in the trigger. */
+  triggerLabelClassName?: string;
 }
 
 export interface TemporalPresetContext {

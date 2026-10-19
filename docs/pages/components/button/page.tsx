@@ -31,6 +31,8 @@ function getButtonProps(t: ReturnType<typeof useTranslations>): PropDef[] {
     { name: "active", type: "boolean", default: "false", description: t("activeDescription") },
     { name: "leadingIcon", type: "IconComponent", description: t("leadingIconDescription") },
     { name: "trailingIcon", type: "IconComponent", description: t("trailingIconDescription") },
+    { name: "contentClassName", type: "string", description: t("contentClassNameDescription") },
+    { name: "labelClassName", type: "string", description: t("labelClassNameDescription") },
     { name: "asChild", type: "boolean", default: "false", description: t("asChildDescription") },
     { name: "disabled", type: "boolean", default: "false", description: t("disabledDescription") },
   ];

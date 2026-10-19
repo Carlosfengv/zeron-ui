@@ -261,7 +261,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(f
       />
     </div>
   );
-  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectDate}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} isOpen={core.isOpen} onRequestClose={core.cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
+  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectDate}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} isOpen={core.isOpen} onRequestClose={core.cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerContentClassName={props.triggerContentClassName} triggerLabelClassName={props.triggerLabelClassName} triggerId={props.id}>{panel}</TemporalPickerShell>;
 });
 
 type DateRangeDraft = Partial<DateRangeValue>;
@@ -344,7 +344,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       />
     </div>
   );
-  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectDate}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} isOpen={core.isOpen} onRequestClose={cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
+  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectDate}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} isOpen={core.isOpen} onRequestClose={cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerContentClassName={props.triggerContentClassName} triggerLabelClassName={props.triggerLabelClassName} triggerId={props.id}>{panel}</TemporalPickerShell>;
 });
 
 function timeValid(value: ISOTimeString | undefined, minValue?: ISOTimeString, maxValue?: ISOTimeString) {
@@ -379,7 +379,7 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(f
       <TemporalPickerActions disabled={props.disabled} applyDisabled={!valid(core.draft) || temporalValueEquals(core.draft, core.committedValue)} clearable={props.clearable !== false && Boolean(core.committedValue || core.draft)} messages={core.messages} onApply={() => valid(core.draft) && core.submit(core.draft, { source: "apply", presetId: activePresetId })} onCancel={core.cancel} onClear={() => { clearActivePreset(); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
     </div>
   );
-  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} icon="clock" isOpen={core.isOpen} onRequestClose={core.cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
+  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} icon="clock" isOpen={core.isOpen} onRequestClose={core.cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerContentClassName={props.triggerContentClassName} triggerLabelClassName={props.triggerLabelClassName} triggerId={props.id}>{panel}</TemporalPickerShell>;
 });
 
 type TimeRangeDraft = Partial<TimeRangeValue>;
@@ -433,5 +433,5 @@ export const TimeRangePicker = React.forwardRef<HTMLButtonElement, TimeRangePick
       <TemporalPickerActions disabled={props.disabled} applyDisabled={!valid(draft) || temporalValueEquals(draft as TimeRangeValue | undefined, core.committedValue)} clearable={props.clearable !== false && Boolean(core.committedValue || draft.from || draft.to)} messages={core.messages} onApply={() => valid(draft) && core.submit(draft, { source: "apply", presetId: activePresetId })} onCancel={cancel} onClear={() => { clearActivePreset(); setDraft({}); core.submit(undefined, { source: "clear" }); }} showApply={core.commitMode === "apply"} />
     </div>
   );
-  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} icon="clock" isOpen={core.isOpen} onRequestClose={cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerId={props.id}>{panel}</TemporalPickerShell>;
+  return <TemporalPickerShell ariaDescribedBy={props["aria-describedby"]} ariaLabel={props["aria-label"] ?? `${core.messages.selectTime}: ${String(summary)}`} ariaLabelledBy={props["aria-labelledby"]} className={props.className} disabled={props.disabled} icon="clock" isOpen={core.isOpen} onRequestClose={cancel} onRequestOpen={core.open} presentation={props.presentation} readOnly={props.readOnly} ref={ref} size={props.size} summary={summary} triggerContentClassName={props.triggerContentClassName} triggerLabelClassName={props.triggerLabelClassName} triggerId={props.id}>{panel}</TemporalPickerShell>;
 });

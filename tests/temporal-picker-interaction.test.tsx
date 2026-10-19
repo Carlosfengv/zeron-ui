@@ -11,6 +11,7 @@ import {
   TimeField,
   TimePicker,
   TimeRangePicker,
+  assertISODate,
   assertISODateTime,
   assertISOTime,
   createFixedTimeRangePreset,
@@ -144,6 +145,27 @@ describe("TimeField", () => {
 });
 
 describe("Temporal picker commitment", () => {
+  it("exposes public trigger content and label styling hooks", () => {
+    render(
+      <DatePicker
+        aria-label="Snapshot date"
+        presentation="popover"
+        triggerContentClassName="consumer-trigger-content"
+        triggerLabelClassName="consumer-trigger-label"
+        value={assertISODate("2026-10-19")}
+      />,
+    );
+
+    const trigger = screen.getByRole("button", { name: "Snapshot date" });
+    const content = trigger.querySelector(".consumer-trigger-content");
+    const label = trigger.querySelector(".consumer-trigger-label");
+
+    expect(content).not.toBeNull();
+    expect(label).not.toBeNull();
+    expect(content?.closest("button")).toBe(trigger);
+    expect(label?.closest("button")).toBe(trigger);
+  });
+
   it("supports custom trigger formatting without changing the committed ISO value", () => {
     const dateTimeValue = assertISODateTime("2026-09-10T08:30:00.000Z");
     const dateTimeFormatter = vi.fn(() => "2026/09/10 16:30");

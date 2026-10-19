@@ -72,6 +72,8 @@
     "activeDescription": "Forces the pressed/held visual — e.g. while a dropdown or popover the button opened is showing.",
     "leadingIconDescription": "Icon displayed before the label.",
     "trailingIconDescription": "Icon displayed after the label.",
+    "contentClassNameDescription": "Applies classes to the public content wrapper inside the button.",
+    "labelClassNameDescription": "Applies classes to the public text label wrapper inside the button.",
     "asChildDescription": "Merge props onto the child element instead of rendering a native button element.",
     "disabledDescription": "Disables the button.",
     "clickMe": "Click me"

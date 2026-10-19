@@ -104,6 +104,10 @@ interface ButtonProps
   tone?: ButtonTone;
   /** Uses content-driven height and padding for multi-line or inline actions. */
   contentSized?: boolean;
+  /** Applies classes to the public content wrapper inside the button. */
+  contentClassName?: string;
+  /** Applies classes to the public text label wrapper inside the button. */
+  labelClassName?: string;
 }
 
 type ButtonTone = "default" | "warning";
@@ -143,6 +147,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       active = false,
       tone = "default",
       contentSized = false,
+      contentClassName,
+      labelClassName,
       disabled,
       children,
       style,
@@ -192,7 +198,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         />
         <span
           data-slot="button-content"
-          className="relative inline-flex items-center justify-center gap-[inherit]"
+          className={cn("relative inline-flex items-center justify-center gap-[inherit]", contentClassName)}
         >
           {loading ? (
             <>
@@ -200,7 +206,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 {LeadingIcon && !iconOnly && (
                   <LeadingIcon data-slot="button-leading-icon" size={iconSize} strokeWidth={2} />
                 )}
-                <span data-slot="button-label">{label}</span>
+                <span data-slot="button-label" className={labelClassName}>{label}</span>
                 {TrailingIcon && !iconOnly && (
                   <TrailingIcon data-slot="button-trailing-icon" size={iconSize} strokeWidth={2} />
                 )}
@@ -245,7 +251,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                   className="transition-[stroke-width] duration-fast group-hover:stroke-[2]"
                 />
               )}
-              <span data-slot="button-label">{label}</span>
+              <span data-slot="button-label" className={labelClassName}>{label}</span>
               {TrailingIcon && (
                 <TrailingIcon
                   data-slot="button-trailing-icon"

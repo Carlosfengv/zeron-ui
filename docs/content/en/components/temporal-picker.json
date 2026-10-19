@@ -42,6 +42,7 @@
     "p6": "Controls displayed date and time formatting plus the calendar language tag.",
     "p7": "Injects the reference instant used when resolving relative presets.",
     "p8": "Disabled blocks interaction; read-only renders the committed summary without an editable trigger.",
-    "p9": "Formats only the committed value shown by the trigger or read-only summary. It does not change the emitted ISO value; date-time formatters also receive the resolved IANA time zone."
+    "p9": "Formats only the committed value shown by the trigger or read-only summary. It does not change the emitted ISO value; date-time formatters also receive the resolved IANA time zone.",
+    "p10": "Applies classes to the public Button content and label wrappers inside the trigger."
   }
 }
