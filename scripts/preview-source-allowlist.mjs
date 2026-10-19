@@ -1,5 +1,12 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "agent-tasks-01": [
+    "packages/blocks/src/application/agent-tasks-01/index.ts",
+    "packages/blocks/src/application/agent-tasks-01/agent-tasks.tsx",
+    "packages/blocks/src/application/agent-tasks-01/agent-tasks-types.ts",
+    "packages/blocks/src/application/agent-tasks-01/agent-tasks-labels.ts",
+    "packages/blocks/src/application/agent-tasks-01/agent-tasks-demo-data.ts"
+  ],
   "local-models-01": [
     "packages/blocks/src/application/local-models-01/index.ts",
     "packages/blocks/src/application/local-models-01/local-models.tsx",

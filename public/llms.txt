@@ -23,6 +23,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [账号活动分析](https://zeron-ui.vercel.app/ai/items/block%3Aaccount-activity-01.md): 多账号活跃度、周趋势、日期范围与额度耗尽分析。 Registry: account-activity-01.
 - [Agent Message Trace](https://zeron-ui.vercel.app/ai/items/block%3Aagent-message-trace-01.md): A responsive, resizable agent trace workspace with a virtualized timeline and span inspector. Registry: agent-message-trace-01.
 - [Agent Session Detail](https://zeron-ui.vercel.app/ai/items/block%3Aagent-session-detail-01.md): A session detail workspace with agent navigation, session switching, and an embedded execution trace. Registry: agent-session-detail-01.
+- [Agent Tasks](https://zeron-ui.vercel.app/ai/items/block%3Aagent-tasks-01.md): Agent task queue with status filters, expandable activity and task actions. Registry: agent-tasks-01.
 - [Agent Trace](https://zeron-ui.vercel.app/ai/items/block%3Aagent-trace-01.md): A turn-aware agent execution trace with local JSON upload and raw-record inspection. Registry: agent-trace-01.
 - [AI Gateway Overview](https://zeron-ui.vercel.app/ai/items/block%3Aai-gateway-overview-01.md): A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations. Registry: ai-gateway-overview-01.
 - [AI Gateway Session List](https://zeron-ui.vercel.app/ai/items/block%3Aai-gateway-session-list-01.md): A controlled AI gateway session workspace with shared navigation, entity filters, error-only filtering, compact usage values, and responsive pagination. Registry: ai-gateway-session-list-01.
@@ -188,6 +189,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 
 - [account-activity-01](https://zeron-ui.vercel.app/agent-guides/blocks/account-activity-01.md)
 - [agent-message-trace-01](https://zeron-ui.vercel.app/agent-guides/blocks/agent-message-trace-01.md)
+- [agent-tasks-01](https://zeron-ui.vercel.app/agent-guides/blocks/agent-tasks-01.md)
 - [ai-gateway-overview-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-overview-01.md)
 - [ai-gateway-session-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-session-list-01.md)
 - [appearance-settings-01](https://zeron-ui.vercel.app/agent-guides/blocks/appearance-settings-01.md)

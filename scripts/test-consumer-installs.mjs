@@ -529,6 +529,10 @@ async function verifyNextBuild({ consumer, component }) {
     'import { DesignStack, designStackDemoItems, useDesignStackHistory } from "@/components/blocks/design-stack-01";',
     'export default function Page() { const { items, onItemsChange, history } = useDesignStackHistory(designStackDemoItems); return <DesignStack items={items} onItemsChange={onItemsChange} history={history} />; }',
   ].join("\n");
+  examples["agent-tasks-01"] = [
+    'import { AgentTasks, agentTasksDemoData } from "@/components/blocks/agent-tasks-01";',
+    'export default function Page() { return <AgentTasks tasks={agentTasksDemoData} defaultExpandedTaskId="migration" />; }',
+  ].join("\n");
   examples["appearance-settings-01"] = [
     '"use client";',
     'import { useState } from "react";',
@@ -871,6 +875,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { DesignStack, designStackDemoItems, useDesignStackHistory } from "@/src/components/blocks/design-stack-01";',
     'function App() { const { items, onItemsChange, history } = useDesignStackHistory(designStackDemoItems); return <DesignStack items={items} onItemsChange={onItemsChange} history={history} />; }',
     'createRoot(document.getElementById("root")!).render(<App />);',
+  ].join("\n");
+  examples["agent-tasks-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { AgentTasks, agentTasksDemoData } from "@/src/components/blocks/agent-tasks-01";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<AgentTasks tasks={agentTasksDemoData} defaultExpandedTaskId="migration" />);',
   ].join("\n");
   examples["appearance-settings-01"] = [
     'import { createRoot } from "react-dom/client";',
