@@ -50,6 +50,7 @@
     "legendMore": "More ({count})",
     "legendLess": "Show less",
     "p22": "Default: one item per row. Inline keeps label/value pairs together. Wrap allows new rows; collapse puts items that do not fit behind an expandable disclosure.",
-    "p23": "Limit visible items while collapsed and customize the expand/collapse label. Collapsed items are excluded from keyboard navigation; expansion reveals every item."
+    "p23": "Limit visible items while collapsed and customize the expand/collapse label. Collapsed items are excluded from keyboard navigation; expansion reveals every item.",
+    "p24": "Original observations for assistive technology when data uses transformed plotting coordinates. Defaults to data; series geometry, axes, and tooltip data still use data."
   }
 }

@@ -55,6 +55,16 @@ function StackProbe() {
 }
 
 describe("area chart observations and geometry", () => {
+  it("can describe original observations independently of transformed plotting coordinates", async () => {
+    const original = [{ date: "2026-10-01", seats: 186 }];
+    const view = await render(<AreaChart data={[{ date: "2026-10-01", shifted: 46 }]} accessibleData={original} animationDuration={0}><Area dataKey="shifted" /><DomainProbe /></AreaChart>);
+    const source = view.container.querySelector('[data-slot="chart-source-data"]')!;
+    expect(source.textContent).toContain("seats: 186");
+    expect(source.textContent).not.toContain("shifted: 46");
+    expect(Number(view.getByTestId("domain").textContent!.split(",")[1])).toBeLessThan(100);
+    view.rerender(<AreaChart data={[{ date: "2026-10-01", shifted: 46 }]} animationDuration={0}><Area dataKey="shifted" /></AreaChart>);
+    expect(view.container.querySelector('[data-slot="chart-source-data"]')?.textContent).toContain("shifted: 46");
+  });
   it("uses stacked totals for scales and keyboard dots while keeping raw tooltip values", async () => {
     const rows = [{ date: "2026-10-01", a: 2, b: 5 }, { date: "2026-10-02", a: 3, b: 4 }];
     const view = await render(<AreaChart data={rows} animationDuration={0} yDomainTween={false}><Area dataKey="a" stackId="total" /><Area dataKey="b" stackId="total" showMarkers /><ChartTooltip /><StackProbe /></AreaChart>);
