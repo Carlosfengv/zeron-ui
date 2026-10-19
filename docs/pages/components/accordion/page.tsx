@@ -125,7 +125,7 @@ export default function AccordionDoc() {
       <DocSection title={t("standalone")}>
         <p className="text-body text-fg-muted">{t("standaloneDescription")}</p>
         <ComponentPreview code={standaloneCode}>
-          <div className="min-h-[120px] flex items-center">
+          <div className="min-h-[120px] flex w-full items-center">
             <Accordion type="single" collapsible defaultValue="item-1">
               <AccordionItem value="item-1">
                 <AccordionTrigger>What is this component?</AccordionTrigger>

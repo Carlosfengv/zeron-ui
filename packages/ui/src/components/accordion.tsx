@@ -388,7 +388,7 @@ const AccordionGroup = forwardRef<HTMLDivElement, AccordionGroupProps>(
                   setActiveIndex(null);
                 }}
                 className={cn(
-                  "relative flex flex-col gap-0.5 w-72 max-w-full",
+                  "relative flex flex-col gap-0.5 w-full min-w-0",
                   className
                 )}
                 {...(htmlProps as HTMLAttributes<HTMLDivElement>)}
@@ -587,7 +587,7 @@ const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
               {...restRoot}
               ref={ref}
               className={cn(
-                "w-72 max-w-full flex flex-col gap-0.5",
+                "w-full min-w-0 flex flex-col gap-0.5",
                 className
               )}
               {...props}
