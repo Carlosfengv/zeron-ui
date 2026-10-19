@@ -13,21 +13,24 @@ for (const locale of ["en", "zh-CN"]) {
       await expect(dialog).toBeVisible();
       await expect(dialog).toHaveAttribute("data-placement", placement);
 
-      const bounds = await dialog.boundingBox();
-      const viewport = await page.evaluate(() => ({
-        width: document.documentElement.clientWidth,
-        height: document.documentElement.clientHeight,
-      }));
-      if (!bounds) throw new Error("Dialog bounds should be measurable");
+      const backdrop = page.locator('[data-slot="dialog-backdrop"]');
+      const backdropBounds = await backdrop.boundingBox();
+      if (!backdropBounds) throw new Error("Dialog backdrop should be measurable");
       await expect
         .poll(async () => {
           const currentBounds = await dialog.boundingBox();
-          if (!currentBounds) return false;
+          const currentBackdropBounds = await backdrop.boundingBox();
+          if (!currentBounds || !currentBackdropBounds) return false;
           return placement === "right"
-            ? Math.abs(currentBounds.x + currentBounds.width - viewport.width) <= 8 &&
-                currentBounds.y < 8
-            : currentBounds.x < 8 &&
-                Math.abs(currentBounds.y + currentBounds.height - viewport.height) <= 8;
+            ? Math.abs(
+                currentBounds.x + currentBounds.width -
+                  (currentBackdropBounds.x + currentBackdropBounds.width)
+              ) <= 8 && Math.abs(currentBounds.y - currentBackdropBounds.y) <= 8
+            : Math.abs(currentBounds.x - currentBackdropBounds.x) <= 8 &&
+                Math.abs(
+                  currentBounds.y + currentBounds.height -
+                    (currentBackdropBounds.y + currentBackdropBounds.height)
+                ) <= 8;
         })
         .toBe(true);
 
@@ -50,14 +53,13 @@ for (const locale of ["en", "zh-CN"]) {
             const closeBounds = await closeButton.boundingBox();
             return (
               closeBounds !== null &&
-              closeBounds.y >= 0 &&
-              closeBounds.y + closeBounds.height <= viewport.height
+              closeBounds.y >= backdropBounds.y &&
+              closeBounds.y + closeBounds.height <= backdropBounds.y + backdropBounds.height
             );
           })
           .toBe(true);
       }
 
-      const backdrop = page.locator('[data-slot="dialog-backdrop"]');
       const backdropClass = await backdrop.getAttribute("class");
       expect(backdropClass).toContain(
         placement === "right" ? "backdrop-blur-none" : "backdrop-blur-[2px]"
