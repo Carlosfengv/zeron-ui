@@ -515,6 +515,10 @@ async function verifyNextBuild({ consumer, component }) {
     'import { AccountActivity, accountActivityDemoData } from "@/components/blocks/account-activity-01";',
     'export default function Page() { return <AccountActivity data={accountActivityDemoData} />; }',
   ].join("\n");
+  examples["agent-tasks-01"] = [
+    'import { AgentTasks, agentTasksDemoData } from "@/components/blocks/agent-tasks-01";',
+    'export default function Page() { return <AgentTasks tasks={agentTasksDemoData} defaultExpandedTaskId="migration" />; }',
+  ].join("\n");
   examples["context-window-01"] = [
     '"use client";',
     'import { ContextWindow, createContextWindowDemoData } from "@/components/blocks/context-window-01";',
@@ -847,6 +851,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { AccountActivity, accountActivityDemoData } from "@/src/components/blocks/account-activity-01";',
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<AccountActivity data={accountActivityDemoData} />);',
+  ].join("\n");
+  examples["agent-tasks-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { AgentTasks, agentTasksDemoData } from "@/src/components/blocks/agent-tasks-01";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<AgentTasks tasks={agentTasksDemoData} defaultExpandedTaskId="migration" />);',
   ].join("\n");
   examples["context-window-01"] = [
     'import { createRoot } from "react-dom/client";',

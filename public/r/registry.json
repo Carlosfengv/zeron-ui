@@ -6275,6 +6275,64 @@
       }
     },
     {
+      "name": "agent-tasks-01",
+      "type": "registry:block",
+      "title": "Agent Tasks",
+      "description": "Compact agent task queue with status filters, expandable activity timelines and host-owned actions.",
+      "categories": [
+        "application",
+        "agent",
+        "monitoring"
+      ],
+      "dependencies": [
+        "@hugeicons/react@^1.1.6",
+        "@hugeicons/core-free-icons@^4.1.1"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/agent-tasks-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-tasks-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-tasks-01/agent-tasks.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-tasks-01/agent-tasks.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-tasks-01/agent-tasks-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-tasks-01/agent-tasks-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-tasks-01/agent-tasks-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-tasks-01/agent-tasks-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-tasks-01/agent-tasks-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-tasks-01/agent-tasks-demo-data.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "local-models-01",
       "type": "registry:block",
       "title": "Local Models",

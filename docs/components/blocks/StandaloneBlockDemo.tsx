@@ -1,4 +1,5 @@
 "use client";
+import { AgentTasksDemo } from "./AgentTasksDemo";
 import { LocalModelsDemo } from "./LocalModelsDemo";
 import { AppearanceSettingsDemo } from "./AppearanceSettingsDemo";
 import { UsageTimelineDemo } from "./UsageTimelineDemo";
@@ -172,6 +173,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
 
 function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "agent-tasks-01":
+      return <AgentTasksDemo />;
     case "appearance-settings-01":
       return <AppearanceSettingsDemo />;
     case "context-window-01":

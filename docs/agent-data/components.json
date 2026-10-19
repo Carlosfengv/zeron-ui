@@ -1,4 +1,28 @@
 {
+  "agent-tasks-01": {
+    "keywords": [
+      "任务",
+      "队列",
+      "待处理",
+      "时间线",
+      "agent",
+      "tasks",
+      "running",
+      "activity"
+    ],
+    "useCases": [
+      "在 Agent 工作区或会话中嵌入按状态筛选的任务队列与执行时间线。"
+    ],
+    "whenNotToUse": [
+      "不执行真实 Agent，也不负责生产审批、导航或任务持久化。"
+    ],
+    "keyApi": [
+      "tasks 提供标题、模型、时长、状态及可选有序 events。",
+      "filter 和 expandedTaskId 可选受控；相应回调仅发出交互意图。",
+      "onOpenTask/onNewTask 由宿主接入，未传时禁用操作。",
+      "labels 支持本地化，失败和待处理均计入 Needs you。"
+    ]
+  },
   "local-models-01": {
     "keywords": ["本地模型", "显存", "GPU", "local models", "capacity", "precision", "KV cache"],
     "useCases": ["配置本地推理模型的精度、上下文、并发与忙时策略，预览 GPU 显存容量。"],
