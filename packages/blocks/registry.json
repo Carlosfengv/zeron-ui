@@ -6,10 +6,10 @@
       "name": "model-selector-01",
       "type": "registry:block",
       "title": "Model Selector",
-      "description": "Controlled model selection with relative ratings, thinking and search settings, latency and pricing estimates.",
+      "description": "Controlled model selection with relative ratings, thinking and search settings.",
       "categories": ["application", "ai", "agent"],
       "dependencies": ["@lobehub/icons"],
-      "registryDependencies": ["avatar", "button", "command", "container", "kbd", "popover", "switch", "icon-context", "utils"],
+      "registryDependencies": ["avatar", "button", "command", "popover", "switch", "icon-context", "utils"],
       "files": [
         { "path": "packages/blocks/src/application/model-selector-01/index.ts", "type": "registry:component", "target": "components/blocks/model-selector-01/index.ts" },
         { "path": "packages/blocks/src/application/model-selector-01/model-selector.tsx", "type": "registry:component", "target": "components/blocks/model-selector-01/model-selector.tsx" },

@@ -6278,7 +6278,7 @@
       "name": "model-selector-01",
       "type": "registry:block",
       "title": "Model Selector",
-      "description": "Controlled model selection with relative ratings, thinking and search settings, latency and pricing estimates.",
+      "description": "Controlled model selection with relative ratings, thinking and search settings.",
       "categories": [
         "application",
         "ai",
@@ -6291,8 +6291,6 @@
         "https://zeron-ui.vercel.app/r/avatar.json",
         "https://zeron-ui.vercel.app/r/button.json",
         "https://zeron-ui.vercel.app/r/command.json",
-        "https://zeron-ui.vercel.app/r/container.json",
-        "https://zeron-ui.vercel.app/r/kbd.json",
         "https://zeron-ui.vercel.app/r/popover.json",
         "https://zeron-ui.vercel.app/r/switch.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",

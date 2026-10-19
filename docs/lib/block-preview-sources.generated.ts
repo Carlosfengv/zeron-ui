@@ -3,7 +3,7 @@ import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
   "model-selector-01": {
-    "url": "/docs-source/54b429df5f3e96061e6d4b865b0c4d5f6236b164f078db32855db31963130ce9.txt"
+    "url": "/docs-source/13442235a1132f3419bdf9939006e2304893de7d2f1724274dd0d50bcc4b6cae.txt"
   },
   "agent-tasks-01": {
     "url": "/docs-source/5b5f56399ba1e28568498e5ea6437fd7a28014df43fb4c48b1eb2fe2ae3173fb.txt"
