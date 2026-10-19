@@ -2804,7 +2804,7 @@ Area 的 stackId 将同一 Y 轴、同一分组中的系列按子组件顺序堆
 
 Area 的 dashFromIndex/dashArray 控制尾段，markers 提供半径/描边/环样式；fadeEdges 可为 true、false、left、right。PatternArea 只绘制填充，配合 Area(fillOpacity=0) 绘制线；PatternLines 等 defs 的 id 必须实例唯一，例如 useId。AreaChartLoading 是独立加载骨架，支持 pulse/sweep 与自定义 label。
 
-图表只有一个 Tab 停靠点，方向键/Home/End 导航，Escape/blur 清除 Tooltip；SVG defs 和 portal 均绑定本实例。Brush 手柄另有两个 slider 停靠点。ChartDataTable 应展示原始字段而非绘图补值。
+图表只有一个 Tab 停靠点，方向键/Home/End 导航，Escape/blur 清除 Tooltip；SVG defs 和 portal 均绑定本实例。Brush 手柄另有两个 slider 停靠点。ChartDataTable 应展示原始字段而非绘图补值。AreaChart.accessibleData 可提供辅助技术读取的原始观测数组，默认使用 data；适用于浮动区间、坐标原点平移等业务适配。该属性只替换隐藏的原始观测说明，不改变绘图、坐标域或 Tooltip 的 data；调用方仍须将可见轴与 Tooltip 格式化回真实单位。
 
 ```tsx
 "use client";

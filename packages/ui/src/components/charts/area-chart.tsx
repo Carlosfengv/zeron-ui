@@ -31,6 +31,8 @@ import { TimeSeriesChartInner } from "./time-series-chart-shell";
 export interface AreaChartProps {
   /** Data array - each item should have a date field and numeric values */
   data: Record<string, unknown>[];
+  /** Original observations for assistive technology when plotting transformed coordinates. Defaults to data. */
+  accessibleData?: readonly Record<string, unknown>[];
   /** Key in data for the x-axis (date). Default: "date" */
   xDataKey?: string;
   /** Chart margins */
@@ -193,6 +195,7 @@ function ChartInner({
 
 export function AreaChart({
   data,
+  accessibleData = data,
   xDataKey = "date",
   margin: marginProp,
   animationDuration = 1100,
@@ -237,9 +240,9 @@ export function AreaChart({
   );
   const sourceData = useMemo(() => (
     <div className="sr-only" data-slot="chart-source-data">
-      {data.map((row, index) => <p key={index}>{Object.entries(row).map(([key, value]) => `${key}: ${rawChartValue(value)}`).join(", ")}</p>)}
+      {accessibleData.map((row, index) => <p key={index}>{Object.entries(row).map(([key, value]) => `${key}: ${rawChartValue(value)}`).join(", ")}</p>)}
     </div>
-  ), [data]);
+  ), [accessibleData]);
 
   return (
     <div
