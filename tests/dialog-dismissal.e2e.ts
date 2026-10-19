@@ -14,8 +14,11 @@ for (const locale of ["en", "zh-CN"]) {
       await expect(dialog).toHaveAttribute("data-placement", placement);
 
       const bounds = await dialog.boundingBox();
-      const viewport = page.viewportSize();
-      if (!bounds || !viewport) throw new Error("Dialog bounds should be measurable");
+      const viewport = await page.evaluate(() => ({
+        width: document.documentElement.clientWidth,
+        height: document.documentElement.clientHeight,
+      }));
+      if (!bounds) throw new Error("Dialog bounds should be measurable");
       await expect
         .poll(async () => {
           const currentBounds = await dialog.boundingBox();

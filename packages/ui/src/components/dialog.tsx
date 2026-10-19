@@ -241,7 +241,7 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
               >
                 <SurfaceProvider role={dialogSurface}>
                   {showCloseButton && placement !== "center" && (
-                    <div className="sticky top-0 z-10 -mb-8 flex justify-end">
+                    <div className="sticky top-0 z-popover -mb-8 flex justify-end">
                       <DialogPrimitive.Close
                         aria-label={closeButtonLabel}
                         disabled={closeButtonDisabled}
