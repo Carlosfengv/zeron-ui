@@ -4,8 +4,22 @@ import { useMemo, useState } from "react";
 import { useLocale } from "next-intl";
 import { ModelSelector, createModelSelectorDemoModels, modelSelectorDemoValue, modelSelectorZhLabels } from "@zeron/blocks/model-selector-01";
 import { InputMessage } from "@zeron/ui/input-message";
+import { PopoverPortalContainer } from "@zeron/ui/popover";
 
-export function ModelSelectorDemo() {
+export function ModelSelectorCover() {
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
+
+  // Fixed popovers must share the cover's scaling and clipping context.
+  return (
+    <div ref={setPortalContainer} className="relative isolate h-full transform-gpu">
+      <PopoverPortalContainer value={portalContainer}>
+        {portalContainer && <ModelSelectorDemo cover />}
+      </PopoverPortalContainer>
+    </div>
+  );
+}
+
+export function ModelSelectorDemo({ cover = false }: { cover?: boolean }) {
   const locale = useLocale();
   const zh = locale.startsWith("zh");
   const [value, setValue] = useState(modelSelectorDemoValue);
@@ -23,7 +37,7 @@ export function ModelSelectorDemo() {
           placeholder={zh ? "尽管提问…" : "Ask anything…"}
           sendLabel={zh ? "发送消息" : "Send message"}
           textareaProps={{ "aria-label": zh ? "消息" : "Message" }}
-          leftSlot={<ModelSelector models={models} value={value} onValueChange={setValue} labels={zh ? modelSelectorZhLabels : undefined} locale={locale} open={open} onOpenChange={setOpen} />}
+          leftSlot={<ModelSelector models={models} value={value} onValueChange={setValue} labels={zh ? modelSelectorZhLabels : undefined} locale={locale} open={cover || open} onOpenChange={cover ? undefined : setOpen} />}
           onSend={(text) => {
             setOpen(false);
             setNotice(zh ? `本地演示：已使用 ${models.find((model) => model.id === value.modelId)?.name} 提交「${text}」` : `Local demo: submitted “${text}” with ${models.find((model) => model.id === value.modelId)?.name}`);

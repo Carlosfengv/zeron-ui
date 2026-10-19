@@ -49,8 +49,8 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
-  "model-selector-01": () => import("./ModelSelectorDemo").then(({ ModelSelectorDemo }) => ({
-    default: () => <ResponsivePreview canvasHeight={720} canvasWidth={1280}><ModelSelectorDemo /></ResponsivePreview>,
+  "model-selector-01": () => import("./ModelSelectorDemo").then(({ ModelSelectorCover }) => ({
+    default: () => <ResponsivePreview canvasHeight={720} canvasWidth={1280}><ModelSelectorCover /></ResponsivePreview>,
   })),
   "agent-tasks-01": () => import("./AgentTasksDemo").then(({ AgentTasksDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={720} canvasWidth={960}><AgentTasksDemo /></ResponsivePreview>,
