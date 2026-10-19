@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "items": [
+    { "id": "block:model-selector-01", "type": "registry", "key": "model-selector-01", "aliases": ["model-selector-01"], "status": "active", "retirementReason": null },
     { "id": "block:agent-tasks-01", "type": "registry", "key": "agent-tasks-01", "aliases": ["agent-tasks-01"], "status": "active", "retirementReason": null },
     { "id": "block:local-models-01", "type": "registry", "key": "local-models-01", "aliases": ["local-models-01"], "status": "active", "retirementReason": null },
     { "id": "block:appearance-settings-01", "type": "registry", "key": "appearance-settings-01", "aliases": ["appearance-settings-01"], "status": "active", "retirementReason": null },

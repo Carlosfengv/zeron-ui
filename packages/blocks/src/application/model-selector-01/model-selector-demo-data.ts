@@ -1,0 +1,21 @@
+import { createElement } from "react";
+import ClaudeColor from "@lobehub/icons/es/Claude/components/Color";
+import type { ModelSelectorModel, ModelSelectorValue } from "./model-selector-types";
+
+/** Screenshot fixtures, not live model availability, benchmarks or prices. */
+export function createModelSelectorDemoModels(locale = "en"): ModelSelectorModel[] {
+  const zh = locale.startsWith("zh");
+  const claudeLogo = createElement(ClaudeColor, { size: 16, "aria-hidden": true });
+  return [
+    { id: "opus-5.5", name: "Opus 5.5", icon: claudeLogo, description: zh ? "处理最复杂的问题" : "Hardest problems", ratings: { speed: 2, quality: 5, cost: 5 }, firstTokenSeconds: 1.8, costPerMillionTokens: 75 },
+    { id: "sonnet-5.5", name: "Sonnet 5.5", icon: claudeLogo, description: zh ? "日常工作" : "Everyday work", ratings: { speed: 4, quality: 4, cost: 3 }, firstTokenSeconds: 0.9, costPerMillionTokens: 15 },
+    { id: "haiku-5.5", name: "Haiku 5.5", icon: claudeLogo, description: zh ? "快速、轻量" : "Quick and light", ratings: { speed: 5, quality: 3, cost: 1 }, firstTokenSeconds: 0.3, costPerMillionTokens: 5 },
+    { id: "auto", name: "Auto", icon: "✦", description: zh ? "为每条消息自动选择" : "Picks per message" },
+  ];
+}
+
+export const modelSelectorDemoValue: ModelSelectorValue = {
+  modelId: "sonnet-5.5",
+  extendedThinking: false,
+  webSearch: false,
+};

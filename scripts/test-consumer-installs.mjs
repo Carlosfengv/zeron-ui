@@ -520,6 +520,12 @@ async function verifyNextBuild({ consumer, component }) {
     'import { ContextWindow, createContextWindowDemoData } from "@/components/blocks/context-window-01";',
     'export default function Page() { return <ContextWindow data={createContextWindowDemoData()} />; }',
   ].join("\n");
+  examples["model-selector-01"] = [
+    '"use client";',
+    'import { useState } from "react";',
+    'import { ModelSelector, createModelSelectorDemoModels, modelSelectorDemoValue } from "@/components/blocks/model-selector-01";',
+    'export default function Page() { const [value, setValue] = useState(modelSelectorDemoValue); return <ModelSelector models={createModelSelectorDemoModels()} value={value} onValueChange={setValue} defaultOpen />; }',
+  ].join("\n");
   examples["fleet-health-01"] = [
     'import { FleetHealth, createFleetHealthDemoData, fleetHealthDemoClusters } from "@/components/blocks/fleet-health-01";',
     'export default function Page() { return <FleetHealth data={createFleetHealthDemoData()} clusterId="kestrel-iad-3" clusters={fleetHealthDemoClusters} />; }',
@@ -857,6 +863,14 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { ContextWindow, createContextWindowDemoData } from "@/src/components/blocks/context-window-01";',
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<ContextWindow data={createContextWindowDemoData()} />);',
+  ].join("\n");
+  examples["model-selector-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { useState } from "react";',
+    'import { ModelSelector, createModelSelectorDemoModels, modelSelectorDemoValue } from "@/src/components/blocks/model-selector-01";',
+    'import "./index.css";',
+    'function Demo() { const [value, setValue] = useState(modelSelectorDemoValue); return <ModelSelector models={createModelSelectorDemoModels()} value={value} onValueChange={setValue} defaultOpen />; }',
+    'createRoot(document.getElementById("root")!).render(<Demo />);',
   ].join("\n");
   examples["usage-forecast-01"] = [
     'import { createRoot } from "react-dom/client";',

@@ -5,6 +5,7 @@ import { AppearanceSettingsDemo } from "./AppearanceSettingsDemo";
 import { UsageTimelineDemo } from "./UsageTimelineDemo";
 import { UsageForecastDemo } from "./UsageForecastDemo";
 import { ContextWindowDemo } from "./ContextWindowDemo";
+import { ModelSelectorDemo } from "./ModelSelectorDemo";
 import { FleetHealthDemo } from "./FleetHealthDemo";
 import { WebsiteAnalyticsDemo } from "./WebsiteAnalyticsDemo";
 
@@ -179,6 +180,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
       return <AppearanceSettingsDemo />;
     case "context-window-01":
       return <ContextWindowDemo />;
+    case "model-selector-01":
+      return <ModelSelectorDemo />;
     case "fleet-health-01":
       return <FleetHealthDemo />;
     case "design-stack-01":

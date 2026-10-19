@@ -83,6 +83,7 @@
       "path": "blocks/model-router-01.md",
       "itemId": "block:model-router-01"
     },
+    {"path": "blocks/model-selector-01.md", "itemId": "block:model-selector-01"},
     {
       "path": "blocks/monitoring-alert-list-01.md",
       "itemId": "block:monitoring-alert-list-01"
