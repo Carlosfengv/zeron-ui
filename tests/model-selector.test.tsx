@@ -79,15 +79,17 @@ describe("ModelSelector", () => {
     expect(onValueChange).not.toHaveBeenCalled();
   });
 
-  it("formats zero estimates correctly and supports localized labels and automatic routing", async () => {
-    const models = createModelSelectorDemoModels("zh-CN").map((model) => ({ ...model, firstTokenSeconds: 0, costPerMillionTokens: 0 }));
+  it("shows model choices and settings without the summary footer, including localized labels and automatic routing", async () => {
+    const models = createModelSelectorDemoModels("zh-CN");
     const { rerender } = render(<ModelSelector models={models} value={modelSelectorDemoValue} onValueChange={vi.fn()} labels={modelSelectorZhLabels} locale="zh-CN" currency="CNY" open />);
     expect(await screen.findByRole("switch", { name: "联网搜索" })).toBeTruthy();
-    expect(screen.getByText("~0s")).toBeTruthy();
-    expect(screen.getByText(/¥0|￥0/)).toBeTruthy();
+    expect(screen.getByRole("switch", { name: "扩展思考" })).toBeTruthy();
+    expect(screen.queryByRole("contentinfo")).toBeNull();
+    expect(screen.queryByText("首字延迟")).toBeNull();
     rerender(<ModelSelector models={createModelSelectorDemoModels()} value={{ ...modelSelectorDemoValue, modelId: "auto" }} onValueChange={vi.fn()} open />);
-    expect(screen.getByRole("contentinfo").textContent).toContain("Varies first token");
-    expect(screen.getByRole("contentinfo").textContent).toContain("Varies / M tokens");
+    expect(screen.getByRole("option", { name: "Auto" }).getAttribute("aria-current")).toBe("true");
+    expect(screen.getByRole("button", { name: "Auto" })).toBeTruthy();
+    expect(screen.queryByText(/first token|M tokens/)).toBeNull();
   });
 
   it("syncs keyboard navigation with host selection changes while the popover stays open", async () => {
