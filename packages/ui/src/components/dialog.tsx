@@ -19,10 +19,14 @@ import { surfaceClasses } from "#system/surface-classes";
 import { Button } from "#components/button";
 import { usePortalContainer } from "#system/portal-container-context";
 
+export type DialogChangeEventDetails = DialogPrimitive.Root.ChangeEventDetails;
+export type DialogChangeEventReason = DialogPrimitive.Root.ChangeEventReason;
+
 interface DialogProps {
   open?: boolean;
   defaultOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: (open: boolean, eventDetails: DialogChangeEventDetails) => void;
+  disablePointerDismissal?: boolean;
   modal?: boolean;
   children?: ReactNode;
 }
@@ -32,15 +36,15 @@ function Dialog({
   open,
   defaultOpen,
   onOpenChange,
+  disablePointerDismissal = false,
   modal,
 }: DialogProps) {
-  // Base UI's Root handles controlled/uncontrolled state internally. We only
-  // narrow the (open, eventDetails) callback to (open) for our public prop.
   return (
     <DialogPrimitive.Root
       open={open}
       defaultOpen={defaultOpen}
-      onOpenChange={(next) => onOpenChange?.(next)}
+      onOpenChange={onOpenChange}
+      disablePointerDismissal={disablePointerDismissal}
       modal={modal}
     >
       {children}
@@ -53,6 +57,12 @@ const DialogClose = DialogPrimitive.Close;
 
 interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
   size?: "sm" | "lg";
+  /** Whether to render the built-in close button. Defaults to true. */
+  showCloseButton?: boolean;
+  /** Accessible name for the built-in close button. Defaults to "Close". */
+  closeButtonLabel?: string;
+  /** Whether the built-in close button is disabled. Defaults to false. */
+  closeButtonDisabled?: boolean;
   /** Portal target. When set, the overlay and panel render inside this element
    *  (positioned `absolute`) instead of covering the viewport (`fixed`). Pair
    *  with a `position: relative; overflow: hidden` container — and usually
@@ -62,7 +72,19 @@ interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
-  ({ className, children, size = "sm", container, ...props }, ref) => {
+  (
+    {
+      className,
+      children,
+      size = "sm",
+      container,
+      showCloseButton = true,
+      closeButtonLabel = "Close",
+      closeButtonDisabled = false,
+      ...props
+    },
+    ref
+  ) => {
     const XIcon = useIcon("x");
     const substrate = useSurface();
     const dialogSurface = resolveSurface(substrate, "overlay");
@@ -157,19 +179,23 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
               >
                 <SurfaceProvider role={dialogSurface}>
                   {children}
-                  <DialogPrimitive.Close
-                    render={
-                      <Button
-                        variant="ghost"
-                        iconOnly
-                        size="sm"
-                        className="absolute right-3 top-3"
-                      >
-                        <XIcon />
-                        <span className="sr-only">Close</span>
-                      </Button>
-                    }
-                  />
+                  {showCloseButton && (
+                    <DialogPrimitive.Close
+                      aria-label={closeButtonLabel}
+                      disabled={closeButtonDisabled}
+                      render={
+                        <Button
+                          variant="ghost"
+                          iconOnly
+                          size="sm"
+                          className="absolute right-3 top-3"
+                        >
+                          <XIcon />
+                          <span className="sr-only">{closeButtonLabel}</span>
+                        </Button>
+                      }
+                    />
+                  )}
                 </SurfaceProvider>
               </motion.div>
             );

@@ -4,7 +4,7 @@ import { e2eDefaults } from "./playwright.shared";
 export default defineConfig({
   ...e2eDefaults,
   testDir: "./tests",
-  testMatch: ["i18n-navigation.e2e.ts", "docs-collections.e2e.ts"],
+  testMatch: ["i18n-navigation.e2e.ts", "docs-collections.e2e.ts", "dialog-dismissal.e2e.ts"],
   timeout: 45_000,
   workers: 1,
   use: {

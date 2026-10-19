@@ -55,10 +55,39 @@ const largeCode = `<Dialog>
   </DialogContent>
 </Dialog>`;
 
+const dismissalCode = `<Dialog
+  disablePointerDismissal
+  onOpenChange={(open, eventDetails) => {
+    if (!open) console.info(eventDetails.reason);
+  }}
+>
+  <DialogTrigger render={<Button variant="tertiary">Open settings</Button>} />
+  <DialogContent showCloseButton={false}>
+    <DialogHeader>
+      <DialogTitle>Settings</DialogTitle>
+    </DialogHeader>
+    <DialogFooter>
+      <DialogClose render={<Button variant="ghost">Close settings</Button>} />
+    </DialogFooter>
+  </DialogContent>
+</Dialog>`;
+
 export default function DialogDoc() {
   const t = useTranslations("dialog");
+  const dialogProps: PropDef[] = [
+    { name: "open", type: "boolean", description: t("open") },
+    { name: "defaultOpen", type: "boolean", default: "false", description: t("defaultOpen") },
+    { name: "onOpenChange", type: "(open: boolean, eventDetails: DialogChangeEventDetails) => void", description: t("onOpenChange") },
+    { name: "disablePointerDismissal", type: "boolean", default: "false", description: t("disablePointerDismissal") },
+    { name: "modal", type: "boolean", default: "true", description: t("modal") },
+    { name: "children", type: "ReactNode", description: t("children") },
+  ];
   const dialogContentProps: PropDef[] = [
     { name: "size", type: '"sm" | "lg"', default: '"sm"', description: t("size") },
+    { name: "showCloseButton", type: "boolean", default: "true", description: t("showCloseButton") },
+    { name: "closeButtonLabel", type: "string", default: '"Close"', description: t("closeButtonLabel") },
+    { name: "closeButtonDisabled", type: "boolean", default: "false", description: t("closeButtonDisabled") },
+    { name: "container", type: "HTMLElement | null", description: t("container") },
     { name: "children", type: "ReactNode", description: t("children") },
   ];
   return (
@@ -125,6 +154,31 @@ export default function DialogDoc() {
             </DialogContent>
           </Dialog>
         </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("dismissalAndCloseButton")}>
+        <ComponentPreview code={dismissalCode}>
+          <Dialog
+            disablePointerDismissal
+            onOpenChange={(open, eventDetails) => {
+              if (!open) console.info(eventDetails.reason);
+            }}
+          >
+            <DialogTrigger render={<Button variant="tertiary">Open settings</Button>} />
+            <DialogContent showCloseButton={false}>
+              <DialogHeader>
+                <DialogTitle>Settings</DialogTitle>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose render={<Button variant="ghost">Close settings</Button>} />
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={`${t("apiReference")} — Dialog`}>
+        <PropsTable props={dialogProps} />
       </DocSection>
 
       <DocSection title={`${t("apiReference")} — DialogContent`}>
