@@ -77,6 +77,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [流量规则](https://zeron-ui.vercel.app/ai/items/block%3Atraffic-rules-01.md): A responsive gateway workspace for managing traffic rules, limits, validation, and execution workflows. Registry: traffic-rules-01.
 - [交易详情](https://zeron-ui.vercel.app/ai/items/block%3Atransaction-details-01.md): 突出金额、交易字段、可折叠账单与附件操作。 Registry: transaction-details-01.
 - [账户用量预测](https://zeron-ui.vercel.app/ai/items/block%3Ausage-forecast-01.md): 多账户额度预测、耗尽风险与近期用量趋势。 Registry: usage-forecast-01.
+- [预算用量预测](https://zeron-ui.vercel.app/ai/items/block%3Ausage-forecast-02.md): API、存储与席位的预算预测、超额费用和告警阈值。 Registry: usage-forecast-02.
 - [账户用量时间线](https://zeron-ui.vercel.app/ai/items/block%3Ausage-timeline-01.md): 按提供商查看账户额度周期、用量与重置事件。 Registry: usage-timeline-01.
 - [User Account](https://zeron-ui.vercel.app/ai/items/block%3Auser-account-01.md): Controlled appearance, language, settings, notifications and sign-out entry points. Registry: user-account-01.
 - [网站分析](https://zeron-ui.vercel.app/ai/items/block%3Awebsite-analytics-01.md): 访客、注册、转化率、跳出率、趋势对比与页面来源排行。 Registry: website-analytics-01.
@@ -225,6 +226,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [support-analytics-01](https://zeron-ui.vercel.app/agent-guides/blocks/support-analytics-01.md)
 - [transaction-details-01](https://zeron-ui.vercel.app/agent-guides/blocks/transaction-details-01.md)
 - [usage-forecast-01](https://zeron-ui.vercel.app/agent-guides/blocks/usage-forecast-01.md)
+- [usage-forecast-02](https://zeron-ui.vercel.app/agent-guides/blocks/usage-forecast-02.md)
 - [usage-timeline-01](https://zeron-ui.vercel.app/agent-guides/blocks/usage-timeline-01.md)
 - [user-account-01](https://zeron-ui.vercel.app/agent-guides/blocks/user-account-01.md)
 - [website-analytics-01](https://zeron-ui.vercel.app/agent-guides/blocks/website-analytics-01.md)

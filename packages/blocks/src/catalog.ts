@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "usage-forecast-02", title: "预算用量预测", description: "API、存储、席位预算预测、超额报价、预测区间与告警阈值。", categories: ["application", "analytics", "billing"], dependencies: ["area-chart", "button", "chart-core", "chart-primitives", "container", "icon-context", "inline-notice", "line-chart", "tabs", "utils", "@visx/curve@4.0.0"] },
   { name: "model-selector-01", title: "模型选择", description: "模型评分对比、扩展思考与联网搜索。", categories: ["application", "ai", "agent"], dependencies: ["avatar", "button", "command", "popover", "switch", "icon-context", "utils", "@lobehub/icons"] },
   { name: "agent-tasks-01", title: "Agent 任务", description: "带状态筛选、展开时间线与宿主操作的紧凑 Agent 任务队列。", categories: ["application", "agent", "monitoring"], dependencies: ["badge", "button", "container", "tabs", "icon-context", "utils", "@hugeicons/react", "@hugeicons/core-free-icons"] },
   { name: "local-models-01", title: "本地模型", description: "GPU 机箱可视化、模型显存规划、精度和上下文配置、容量告警与草稿应用。", categories: ["application", "ai", "settings"], dependencies: ["alert", "badge", "button", "chart-primitives", "container", "popover", "select", "slider", "switch", "tabs", "icon-context", "utils", "@lobehub/icons"] },

@@ -1,0 +1,510 @@
+export { UsageBudgetForecast } from "./usage-budget-forecast";
+export { usageBudgetForecastDemoData } from "./usage-budget-forecast-demo-data";
+export { usageBudgetForecastEnLabels, usageBudgetForecastZhLabels } from "./usage-budget-forecast-labels";
+export type { UsageBudgetForecastData, UsageBudgetForecastLabels, UsageBudgetForecastProps, UsageBudgetMetric, UsageBudgetPoint, UsageBudgetProjectionPoint, UsageBudgetThreshold } from "./usage-budget-forecast-types";
+
+
+"use client";
+
+import { useId, useMemo, useState } from "react";
+import { Button } from "@zeron/ui/button";
+import { Container, ContainerBody } from "@zeron/ui/container";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { UsageBudgetForecastChart } from "./usage-budget-forecast-chart";
+import { findUsageBudgetCrossing, usageBudgetModel, USAGE_BUDGET_DAY, validateUsageBudgetData } from "./usage-budget-forecast-data";
+import { usageBudgetForecastEnLabels } from "./usage-budget-forecast-labels";
+import type { UsageBudgetForecastData, UsageBudgetForecastLabels, UsageBudgetForecastProps, UsageBudgetMetric, UsageBudgetThreshold } from "./usage-budget-forecast-types";
+
+const thresholds: readonly UsageBudgetThreshold[] = [50, 80, 100];
+const defaultThresholds: readonly UsageBudgetThreshold[] = [80, 100];
+
+function metricAlerts(preferences: Readonly<Record<string, readonly UsageBudgetThreshold[]>>, id: string) {
+  return Object.hasOwn(preferences, id) ? preferences[id] ?? defaultThresholds : defaultThresholds;
+}
+
+function thresholdText(metric: UsageBudgetMetric, threshold: number, labels: UsageBudgetForecastLabels, date: (timestamp: number) => string) {
+  const amount = metric.budget * threshold / 100;
+  if (metric.history[0].value >= amount) return labels.since(date(metric.history[0].timestamp));
+  const reached = findUsageBudgetCrossing(metric.history, amount);
+  if (reached !== null) return labels.reached(date(reached));
+  const expected = findUsageBudgetCrossing(metric.forecast, amount);
+  return expected !== null ? labels.expected(date(expected)) : labels.notExpected;
+}
+
+function MetricContent({ data, metric, labels, locale, alerts, onAlertsChange }: {
+  data: UsageBudgetForecastData; metric: UsageBudgetMetric; labels: UsageBudgetForecastLabels; locale: string;
+  alerts: readonly UsageBudgetThreshold[]; onAlertsChange: (thresholds: UsageBudgetThreshold[]) => void;
+}) {
+  const Check = useIcon("check");
+  const { date, number, format, money, rateMoney } = useMemo(() => {
+    const dateFormatter = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", timeZone: "UTC" });
+    const number = new Intl.NumberFormat(locale, { maximumFractionDigits: metric.fractionDigits });
+    const currency = (digits: number) => new Intl.NumberFormat(locale, { style: "currency", currency: metric.overage.currency, minimumFractionDigits: digits, maximumFractionDigits: 20 });
+    return { date: (timestamp: number) => dateFormatter.format(timestamp), number,
+      format: (value: number) => `${number.format(value)}${metric.unit === "M" ? "" : " "}${metric.unit}`,
+      money: currency(0).format, rateMoney: currency(metric.overage.rate < 1 ? 2 : 0).format };
+  }, [locale, metric.fractionDigits, metric.unit, metric.overage.currency, metric.overage.rate]);
+  const model = useMemo(() => usageBudgetModel(metric), [metric]);
+  const end = date(data.periodEnd);
+  const upperDate = (timestamp: number) => date(Math.min(data.periodEnd, Math.ceil(timestamp / USAGE_BUDGET_DAY) * USAGE_BUDGET_DAY));
+  let title: string;
+  let description: string;
+  if (model.status === "exceeded") {
+    title = model.historyCrossing === null ? labels.exceededSinceTitle(date(metric.history[0].timestamp)) : labels.exceededTitle(date(model.historyCrossing));
+    description = model.current.value === metric.budget ? labels.atBudgetDescription(format(model.projected.value), end)
+      : labels.exceededDescription(Math.max(0, model.usedPercent - 100), format(model.projected.value), end);
+  } else if (model.status === "expected") {
+    const crossing = model.expectedCrossing!;
+    const days = Math.floor(data.periodEnd / USAGE_BUDGET_DAY) - Math.floor(crossing / USAGE_BUDGET_DAY);
+    const earliest = date(model.earliestCrossing ?? crossing);
+    title = labels.expectedTitle(date(crossing));
+    description = model.latestCrossing === null ? labels.openRangeDescription(days, earliest) : labels.expectedDescription(days, earliest, upperDate(model.latestCrossing));
+  } else {
+    title = labels.underTitle;
+    description = labels.underDescription(format(model.projected.value), end, model.projectedPercent, model.earliestCrossing !== null ? upperDate(model.earliestCrossing) : undefined);
+  }
+  return <div className="space-y-7">
+    <div aria-live="polite" aria-atomic="true" className="space-y-1">
+      <h3 className="text-body font-medium text-fg-default">{title}</h3>
+      <p className="text-label text-fg-muted">{description}</p>
+    </div>
+    <dl className="grid gap-4 @xl/budget:grid-cols-3 @xl/budget:gap-6">
+      {[
+        { label: labels.used, value: number.format(model.current.value), unit: metric.unit, detail: labels.ofBudget(model.usedPercent), danger: false },
+        { label: labels.projected(end), value: number.format(model.projected.value), unit: metric.unit, detail: labels.likely(`${format(model.projected.lower)}–${format(model.projected.upper)}`), danger: false },
+        { label: labels.cost, value: money(metric.overage.amount), detail: metric.overage.amount > 0 ? labels.rate(rateMoney(metric.overage.rate), metric.overage.per, metric.unit === "M" ? (locale.startsWith("zh") ? "次调用" : "calls") : metric.unit === "seats" ? "seat" : metric.unit) : labels.within, danger: metric.overage.amount > 0 },
+      ].map((item, index) => <div key={item.label} className={cn("min-w-0", index > 0 && "border-t-hairline border-border-subtle pt-4 @xl/budget:border-l-hairline @xl/budget:border-t-0 @xl/budget:pl-6 @xl/budget:pt-0")}>
+        <dt className="text-body text-fg-muted">{item.label}</dt>
+        <dd className={cn("mt-1 flex flex-wrap items-baseline gap-x-1", item.danger ? "text-fg-danger" : "text-fg-default")}>
+          <span className="min-w-0 break-words text-heading font-semibold tabular-nums">{item.value}</span>{item.unit && <span className="text-body font-medium text-fg-muted"> {item.unit}</span>}
+        </dd>
+        <dd className="mt-1 text-label text-fg-subtle">{item.detail}</dd>
+      </div>)}
+    </dl>
+    <UsageBudgetForecastChart data={data} metric={metric} model={model} labels={labels} date={date} format={format} />
+    <fieldset className="flex min-w-0 flex-wrap items-center gap-3 border-t-hairline border-border-subtle pt-5">
+      <legend className="sr-only">{labels.alerts}</legend><span aria-hidden="true" className="text-body text-fg-muted">{labels.alerts}</span>
+      {thresholds.map(threshold => <Button key={threshold} variant="tertiary" contentSized className="max-w-full" active={alerts.includes(threshold)} aria-pressed={alerts.includes(threshold)}
+        leadingIcon={alerts.includes(threshold) ? Check : undefined} aria-label={labels.alert(threshold, metric.label)} aria-description={thresholdText(metric, threshold, labels, date)}
+        onClick={() => onAlertsChange(thresholds.filter(value => value === threshold ? !alerts.includes(threshold) : alerts.includes(value)))}>
+        <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 whitespace-normal text-left"><span className="font-medium tabular-nums">{threshold}%</span><span className="min-w-0 break-all text-label text-fg-subtle">{thresholdText(metric, threshold, labels, date)}</span></span>
+      </Button>)}
+    </fieldset>
+  </div>;
+}
+
+/** A single-period usage forecast with independent metric selection and alert preferences. */
+export function UsageBudgetForecast({ data, locale: requestedLocale = "en-US", labels: suppliedLabels, metricId, defaultMetricId, onMetricChange,
+  alerts, defaultAlerts = {}, onAlertsChange, state = "ready", errorMessage, onRetry, className, ...props }: UsageBudgetForecastProps) {
+  const [localMetric, setLocalMetric] = useState(defaultMetricId);
+  const [localAlerts, setLocalAlerts] = useState(defaultAlerts);
+  const titleId = useId();
+  const labels = useMemo(() => ({ ...usageBudgetForecastEnLabels, ...suppliedLabels }), [suppliedLabels]);
+  const locale = useMemo(() => { try { return new Intl.NumberFormat(requestedLocale).resolvedOptions().locale; } catch { return "en-US"; } }, [requestedLocale]);
+  const valid = useMemo(() => validateUsageBudgetData(data), [data]);
+  const selected = data.metrics.find(metric => metric.id === (metricId ?? localMetric)) ?? data.metrics[0];
+  const changeAlerts = (id: string, values: UsageBudgetThreshold[]) => {
+    if (alerts === undefined) setLocalAlerts(previous => ({ ...previous, [id]: values }));
+    onAlertsChange?.(id, values);
+  };
+  const date = (timestamp: number) => new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", timeZone: "UTC" }).format(timestamp);
+  return <section aria-labelledby={titleId} data-slot="usage-budget-forecast" className={cn("@container/budget min-w-0", className)} {...props}>
+    <Container><ContainerBody>
+      {(state !== "ready" || !valid || !selected) && <h2 id={titleId} className="sr-only">{labels.title}</h2>}
+      {state === "loading" ? <div className="flex min-h-80 items-center justify-center" role="status"><InlineNotice><InlineNoticeContent>{labels.loading}</InlineNoticeContent></InlineNotice></div>
+        : state === "error" || !valid ? <div className="flex min-h-80 flex-col items-center justify-center gap-4"><InlineNotice variant="emphasized" tone="danger" role="alert"><InlineNoticeContent>{!valid ? labels.invalid : errorMessage ?? labels.error}</InlineNoticeContent></InlineNotice>{onRetry && <Button onClick={onRetry}>{labels.retry}</Button>}</div>
+        : !selected ? <p className="flex min-h-80 items-center justify-center text-body text-fg-subtle">{labels.empty}</p>
+        : <Tabs value={selected.id} onValueChange={value => { if (metricId === undefined) setLocalMetric(value); onMetricChange?.(value); }} variant="pill" color="default">
+          <div className="mb-7 flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0 space-y-1"><h2 id={titleId} className="text-body font-medium text-fg-default">{labels.title}</h2><p className="break-words text-label text-fg-subtle">{data.organization} · {data.plan} · {labels.renews(date(data.renewsAt))}</p></div>
+            <TabsList aria-label={labels.metric}>{data.metrics.map(metric => <TabItem key={metric.id} value={metric.id} label={metric.label} />)}</TabsList>
+          </div>
+          {data.metrics.map(metric => <TabPanel key={metric.id} value={metric.id}><MetricContent data={data} metric={metric} labels={labels} locale={locale} alerts={metricAlerts(alerts ?? localAlerts, metric.id)} onAlertsChange={values => changeAlerts(metric.id, values)} /></TabPanel>)}
+        </Tabs>}
+    </ContainerBody></Container>
+  </section>;
+}
+
+
+import type { ComponentPropsWithoutRef } from "react";
+
+export type UsageBudgetThreshold = 50 | 80 | 100;
+export interface UsageBudgetPoint { timestamp: number; value: number }
+export interface UsageBudgetProjectionPoint extends UsageBudgetPoint { lower: number; upper: number }
+
+export interface UsageBudgetMetric {
+  id: string;
+  label: string;
+  /** Display units; numeric observations remain in these units (e.g. millions, TB, seats). */
+  unit: string;
+  fractionDigits: number;
+  budget: number;
+  history: readonly UsageBudgetPoint[];
+  forecast: readonly UsageBudgetProjectionPoint[];
+  /** A billing quote, independent of rounded chart observations. */
+  overage: { amount: number; currency: string; rate: number; per: number };
+  /** Optional stable chart bounds and ticks; must enclose all observations and the budget. */
+  domain?: readonly [number, number];
+  ticks?: readonly number[];
+}
+
+export interface UsageBudgetForecastData {
+  organization: string;
+  plan: string;
+  periodStart: number;
+  periodEnd: number;
+  renewsAt: number;
+  now: number;
+  metrics: readonly UsageBudgetMetric[];
+}
+
+export interface UsageBudgetForecastLabels {
+  title: string;
+  renews: (date: string) => string;
+  metric: string;
+  used: string;
+  projected: (date: string) => string;
+  cost: string;
+  ofBudget: (percent: number) => string;
+  likely: (range: string) => string;
+  within: string;
+  rate: (price: string, per: number, unit: string) => string;
+  underTitle: string;
+  expectedTitle: (date: string) => string;
+  exceededTitle: (date: string) => string;
+  exceededSinceTitle: (date: string) => string;
+  underDescription: (value: string, date: string, percent: number, riskDate?: string) => string;
+  expectedDescription: (days: number, from: string, to: string) => string;
+  openRangeDescription: (days: number, from: string) => string;
+  exceededDescription: (percent: number, value: string, date: string) => string;
+  atBudgetDescription: (value: string, date: string) => string;
+  today: string;
+  budget: string;
+  actual: string;
+  forecast: string;
+  range: string;
+  over: string;
+  alerts: string;
+  alert: (percent: number, metric: string) => string;
+  reached: (date: string) => string;
+  since: (date: string) => string;
+  expected: (date: string) => string;
+  notExpected: string;
+  chart: string;
+  viewData: string;
+  date: string;
+  loading: string;
+  empty: string;
+  error: string;
+  invalid: string;
+  retry: string;
+}
+
+export interface UsageBudgetForecastProps extends Omit<ComponentPropsWithoutRef<"section">, "children"> {
+  data: UsageBudgetForecastData;
+  locale?: string;
+  labels?: Partial<UsageBudgetForecastLabels>;
+  metricId?: string;
+  defaultMetricId?: string;
+  onMetricChange?: (metricId: string) => void;
+  /** Threshold subscriptions are independent for each metric. No notifications are sent by this block. */
+  alerts?: Readonly<Record<string, readonly UsageBudgetThreshold[]>>;
+  defaultAlerts?: Readonly<Record<string, readonly UsageBudgetThreshold[]>>;
+  onAlertsChange?: (metricId: string, thresholds: UsageBudgetThreshold[]) => void;
+  state?: "ready" | "loading" | "error";
+  errorMessage?: string;
+  onRetry?: () => void;
+}
+
+
+import type { UsageBudgetForecastData, UsageBudgetMetric, UsageBudgetPoint, UsageBudgetProjectionPoint } from "./usage-budget-forecast-types";
+
+export const USAGE_BUDGET_DAY = 86_400_000;
+
+/** First upward intersection. An initial observation above the threshold is not a known crossing. */
+export function findUsageBudgetCrossing(points: readonly UsageBudgetPoint[], target: number): number | null {
+  if (points[0]?.value === target) return points[0].timestamp;
+  for (let index = 1; index < points.length; index++) {
+    const point = points[index];
+    const previous = points[index - 1];
+    if (previous.value >= target || point.value < target) continue;
+    return previous.timestamp + (point.timestamp - previous.timestamp) * (target - previous.value) / (point.value - previous.value);
+  }
+  return null;
+}
+
+export function usageBudgetModel(metric: UsageBudgetMetric) {
+  const current = metric.history.at(-1)!;
+  const projected = metric.forecast.at(-1)!;
+  const historyCrossing = findUsageBudgetCrossing(metric.history, metric.budget);
+  const expectedCrossing = findUsageBudgetCrossing(metric.forecast, metric.budget);
+  const earliestCrossing = metric.forecast[0].upper >= metric.budget ? metric.forecast[0].timestamp
+    : findUsageBudgetCrossing(metric.forecast.map(point => ({ ...point, value: point.upper })), metric.budget);
+  const latestCrossing = findUsageBudgetCrossing(metric.forecast.map(point => ({ ...point, value: point.lower })), metric.budget);
+  return { current, projected, historyCrossing, expectedCrossing, earliestCrossing, latestCrossing,
+    status: current.value >= metric.budget ? "exceeded" as const : expectedCrossing !== null ? "expected" as const : "within" as const,
+    usedPercent: Math.floor(current.value / metric.budget * 100), projectedPercent: Math.floor(projected.value / metric.budget * 100) };
+}
+
+/** Streaming bounds avoid argument-count limits on dense histories. */
+export function usageBudgetExtent(metric: UsageBudgetMetric): [number, number] {
+  let minimum = metric.budget;
+  let maximum = metric.budget;
+  for (const point of metric.history) {
+    minimum = Math.min(minimum, point.value);
+    maximum = Math.max(maximum, point.value);
+  }
+  for (const point of metric.forecast) {
+    minimum = Math.min(minimum, point.lower);
+    maximum = Math.max(maximum, point.upper);
+  }
+  return [minimum, maximum];
+}
+
+/** Add exact intersections so line colors and interval fills meet the budget without gaps. */
+function withBudgetIntersections<T extends UsageBudgetPoint>(points: readonly T[], budget: number, keys: readonly (keyof T)[]): T[] {
+  return points.flatMap((point, index) => {
+    const next = points[index + 1];
+    if (!next) return [point];
+    const fractions = new Set<number>();
+    for (const key of keys) {
+      const a = Number(point[key]); const b = Number(next[key]);
+      if ((a < budget && b > budget) || (a > budget && b < budget)) fractions.add((budget - a) / (b - a));
+    }
+    return [point, ...[...fractions].sort((a, b) => a - b).map(fraction => {
+      const interpolated = { ...point, timestamp: point.timestamp + (next.timestamp - point.timestamp) * fraction };
+      for (const key of keys) {
+        const a = Number(point[key]); const b = Number(next[key]);
+        const value = a + (b - a) * fraction;
+        Object.assign(interpolated, { [key]: Math.abs(value - budget) < 1e-9 ? budget : value });
+      }
+      return interpolated;
+    })];
+  });
+}
+
+export function usageBudgetChartData(metric: UsageBudgetMetric): Record<string, unknown>[] {
+  const rows = new Map<number, Record<string, unknown>>();
+  const add = (timestamp: number, values: Record<string, unknown>) => rows.set(timestamp, { ...rows.get(timestamp), date: timestamp, ...values });
+  for (const point of withBudgetIntersections(metric.history, metric.budget, ["value"])) {
+    add(point.timestamp, { actual: point.value <= metric.budget ? point.value : null, actualOver: point.value >= metric.budget ? point.value : null, observed: point.value });
+  }
+  for (const point of withBudgetIntersections<UsageBudgetProjectionPoint>(metric.forecast, metric.budget, ["value", "lower", "upper"])) {
+    add(point.timestamp, { forecast: point.value <= metric.budget ? point.value : null, forecastOver: point.value >= metric.budget ? point.value : null,
+      projected: point.value, lower: point.lower, upper: point.upper, rangeBase: point.lower,
+      rangeWithin: Math.max(0, Math.min(point.upper, metric.budget) - point.lower), rangeOver: Math.max(0, point.upper - Math.max(point.lower, metric.budget)) });
+  }
+  return [...rows.values()].sort((a, b) => Number(a.date) - Number(b.date));
+}
+
+export function validateUsageBudgetData(data: UsageBudgetForecastData): boolean {
+  const finite = (value: number) => Number.isFinite(value);
+  const validTime = (value: number) => finite(value) && Math.abs(value) <= 8.64e15;
+  if (![data.periodStart, data.periodEnd, data.renewsAt, data.now].every(validTime) || data.periodStart > data.now || data.now >= data.periodEnd || data.renewsAt < data.periodEnd) return false;
+  const ids = new Set<string>();
+  return data.metrics.every(metric => {
+    if (!metric.id.trim() || ids.has(metric.id) || !finite(metric.budget) || metric.budget <= 0 || !Number.isInteger(metric.fractionDigits) || metric.fractionDigits < 0 || metric.fractionDigits > 6) return false;
+    ids.add(metric.id);
+    if (!/^[A-Z]{3}$/.test(metric.overage.currency) || ![metric.overage.amount, metric.overage.rate, metric.overage.per].every(value => finite(value) && value >= 0) || metric.overage.per === 0) return false;
+    const validPoints = (points: readonly UsageBudgetPoint[], start: number, end: number) => points.length > 0 && points.every((point, index) => validTime(point.timestamp) && point.timestamp >= start && point.timestamp <= end && finite(point.value) && point.value >= 0 && (!index || point.timestamp > points[index - 1].timestamp));
+    if (!validPoints(metric.history, data.periodStart, data.now) || !validPoints(metric.forecast, data.now, data.periodEnd)) return false;
+    if (metric.history.at(-1)!.timestamp !== data.now || metric.forecast[0].timestamp !== data.now || metric.forecast.at(-1)!.timestamp !== data.periodEnd || metric.history.at(-1)!.value !== metric.forecast[0].value) return false;
+    if (!metric.forecast.every(point => finite(point.lower) && finite(point.upper) && point.lower >= 0 && point.lower <= point.value && point.value <= point.upper)) return false;
+    const [minimum, maximum] = usageBudgetExtent(metric);
+    if (![metric.history.at(-1)!.value, metric.forecast.at(-1)!.value].every(value => finite(value / metric.budget * 100))) return false;
+    if (metric.domain && (metric.domain.length !== 2 || !metric.domain.every(finite) || !finite(metric.domain[1] - metric.domain[0]) || metric.domain[0] >= metric.domain[1] || minimum < metric.domain[0] || maximum > metric.domain[1])) return false;
+    if (!metric.domain && !finite(maximum * 1.12)) return false;
+    return !metric.ticks || metric.ticks.every((tick, index) => finite(tick) && (!index || tick > metric.ticks![index - 1]) && (!metric.domain || tick >= metric.domain[0] && tick <= metric.domain[1]));
+  });
+}
+
+
+import type { UsageBudgetForecastLabels } from "./usage-budget-forecast-types";
+
+export const usageBudgetForecastEnLabels: UsageBudgetForecastLabels = {
+  title: "Usage forecast", renews: date => `Renews ${date}`, metric: "Usage metric",
+  used: "Used so far", projected: date => `Projected by ${date}`, cost: "Cost above budget",
+  ofBudget: percent => `${percent}% of budget`, likely: range => `Likely ${range}`, within: "Within budget",
+  rate: (price, per, unit) => `At ${price} per ${per === 1 ? "" : `${per} `}${unit}`,
+  underTitle: "At this pace you stay under budget",
+  expectedTitle: date => `At this pace you reach the budget on ${date}`,
+  exceededTitle: date => `You passed the budget on ${date}`,
+  exceededSinceTitle: date => `Usage has been at or above budget since ${date}`,
+  underDescription: (value, date, percent, riskDate) => `Heading for ${value} by ${date}, ${percent}% of budget.${riskDate ? ` A busy week could cross it on ${riskDate}.` : ""}`,
+  expectedDescription: (days, from, to) => `${days} days before the period closes, likely between ${from} and ${to}.`,
+  openRangeDescription: (days, from) => `${days} days before the period closes. The upper estimate reaches budget on ${from}; the lower estimate could stay under budget.`,
+  exceededDescription: (percent, value, date) => `Usage is ${percent === 0 ? "less than 1" : percent}% over today and heading for ${value} by ${date}.`,
+  atBudgetDescription: (value, date) => `Usage is at budget today and heading for ${value} by ${date}.`,
+  today: "Today", budget: "Budget", actual: "Actual", forecast: "Forecast", range: "Likely range", over: "Over budget",
+  alerts: "Alert at", alert: (percent, metric) => `Alert at ${percent}% for ${metric}`,
+  reached: date => `Reached ${date}`, since: date => `Since ${date}`, expected: date => `Expected ${date}`, notExpected: "Not expected",
+  chart: "Usage and budget forecast", viewData: "View daily data", date: "Date",
+  loading: "Loading usage forecast…", empty: "No usage metrics available.", error: "Usage forecast could not be loaded.", invalid: "Usage data is invalid. Check the period, observations, and forecast range.", retry: "Try again",
+};
+
+export const usageBudgetForecastZhLabels: UsageBudgetForecastLabels = {
+  title: "用量预测", renews: date => `${date}续订`, metric: "用量指标",
+  used: "当前用量", projected: date => `${date}预计用量`, cost: "预计超额费用",
+  ofBudget: percent => `预算的 ${percent}%`, likely: range => `预计区间 ${range}`, within: "预算范围内",
+  rate: (price, per, unit) => `每 ${per === 1 ? "" : `${per} `}${unit} ${price}`,
+  underTitle: "按当前速度，用量将保持在预算内",
+  expectedTitle: date => `按当前速度，将于${date}达到预算`,
+  exceededTitle: date => `已于${date}达到预算`,
+  exceededSinceTitle: date => `从${date}起，用量已达到或超过预算`,
+  underDescription: (value, date, percent, riskDate) => `预计${date}用量为 ${value}，占预算 ${percent}%。${riskDate ? `繁忙时可能于${riskDate}触及预算。` : ""}`,
+  expectedDescription: (days, from, to) => `比周期结束提前 ${days} 天，预计触及时间在${from}至${to}之间。`,
+  openRangeDescription: (days, from) => `比周期结束提前 ${days} 天。预测上界于${from}触及预算，下界可能保持在预算内。`,
+  exceededDescription: (percent, value, date) => `当前用量已超出预算${percent === 0 ? "不足 1" : ` ${percent}`}%，预计${date}达到 ${value}。`,
+  atBudgetDescription: (value, date) => `当前用量已达到预算，预计${date}达到 ${value}。`,
+  today: "今天", budget: "预算", actual: "实际用量", forecast: "预测用量", range: "预计区间", over: "超出预算",
+  alerts: "告警阈值", alert: (percent, metric) => `${metric}达到 ${percent}% 时告警`,
+  reached: date => `${date}已达到`, since: date => `${date}起已达到`, expected: date => `预计${date}达到`, notExpected: "预计不会触及",
+  chart: "用量与预算预测趋势", viewData: "查看每日数据", date: "日期",
+  loading: "正在加载用量预测…", empty: "暂无用量指标。", error: "暂时无法加载用量预测。", invalid: "用量数据无效，请检查周期、采样和预测区间。", retry: "重试",
+};
+
+
+"use client";
+
+import { useMemo } from "react";
+import { curveLinear } from "@visx/curve";
+import { Area, AreaChart } from "@zeron/ui/area-chart";
+import { ChartTooltip, Grid, ReferenceLine, TooltipContent, XAxis, YAxis, useChartStable, type TooltipRow } from "@zeron/ui/chart-core";
+import { ChartDataTable } from "@zeron/ui/chart-primitives";
+import { Line } from "@zeron/ui/line-chart";
+import { findUsageBudgetCrossing, usageBudgetChartData, usageBudgetExtent, type usageBudgetModel } from "./usage-budget-forecast-data";
+import type { UsageBudgetForecastData, UsageBudgetForecastLabels, UsageBudgetMetric } from "./usage-budget-forecast-types";
+
+const colors = { actual: "var(--fg-default)", range: "var(--fg-subtle)", over: "var(--fg-danger)" };
+
+function BudgetReference(props: React.ComponentProps<typeof ReferenceLine>) {
+  const { margin } = useChartStable();
+  return <g transform={`translate(${-margin.left},${-margin.top})`}><ReferenceLine {...props} /></g>;
+}
+
+function ForecastRegion({ now }: { now: number }) {
+  const { xScale, innerWidth, innerHeight } = useChartStable();
+  const x = xScale(new Date(now));
+  return <rect aria-hidden="true" pointerEvents="none" x={x} y={0} width={Math.max(0, innerWidth - x)} height={innerHeight} fill="var(--surface-raised)" opacity={0.45} />;
+}
+
+/** Annotations use the public chart scales; the library owns all series and interactions. */
+function BudgetAnnotations({ data, metric, model, labels, date, format }: ChartProps) {
+  const { xScale, yScale, innerWidth, innerHeight } = useChartStable();
+  const todayX = xScale(new Date(data.now));
+  const baseline = metric.domain?.[0] ?? 0;
+  const budgetY = yScale(metric.budget - baseline);
+  const crossing = model.historyCrossing ?? model.expectedCrossing;
+  const crossingX = crossing === null ? null : xScale(new Date(crossing));
+  const eighty = findUsageBudgetCrossing(metric.history, metric.budget * 0.8);
+  const eightyY = yScale(metric.budget * 0.8 - baseline);
+  return <g aria-hidden="true" pointerEvents="none" fontSize="var(--font-size-label)">
+    <line x1={todayX} x2={todayX} y1={-8} y2={innerHeight} stroke="var(--border)" />
+    <text x={Math.min(innerWidth - 20, todayX)} y={-18} textAnchor="middle" fill="var(--fg-muted)">{labels.today}</text>
+    <circle cx={todayX} cy={yScale(model.current.value - baseline)} r={4.5} fill={colors.actual} stroke="var(--surface-floating)" strokeWidth={2.5} />
+    {innerWidth > 420 && <foreignObject x={8} y={budgetY - 14} width={200} height={32}>
+      <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-floating px-3 py-1 text-label text-fg-muted">{labels.budget}<span className="font-medium text-fg-default">{format(metric.budget)}</span></span>
+    </foreignObject>}
+    {eighty !== null && eightyY >= 0 && eightyY <= innerHeight && (crossing === null || Math.abs(xScale(new Date(eighty)) - (crossingX ?? 0)) > 75) && <>
+      <line x1={xScale(new Date(eighty))} x2={xScale(new Date(eighty))} y1={yScale(metric.budget * 0.8 - baseline) - 8} y2={yScale(metric.budget * 0.8 - baseline) + 8} stroke={colors.actual} strokeWidth={1.5} />
+      <text x={Math.max(14, xScale(new Date(eighty)) - 10)} y={yScale(metric.budget * 0.8 - baseline) - 12} textAnchor={xScale(new Date(eighty)) < 32 ? "start" : "end"} fill="var(--fg-muted)">80%</text>
+    </>}
+    {crossingX !== null && <>
+      <line x1={crossingX} x2={crossingX} y1={budgetY + 7} y2={innerHeight} stroke={colors.over} strokeDasharray="3 4" />
+      <circle cx={crossingX} cy={budgetY} r={5.5} fill="var(--surface-floating)" stroke={colors.over} strokeWidth={2} />
+      <text x={Math.max(56, Math.min(innerWidth - 56, crossingX))} y={budgetY - 17} textAnchor="middle" fill={colors.over}>100% · {date(crossing!)}</text>
+    </>}
+  </g>;
+}
+
+interface ChartProps {
+  data: UsageBudgetForecastData;
+  metric: UsageBudgetMetric;
+  model: ReturnType<typeof usageBudgetModel>;
+  labels: UsageBudgetForecastLabels;
+  date: (timestamp: number) => string;
+  format: (value: number) => string;
+}
+
+export function UsageBudgetForecastChart(props: ChartProps) {
+  const { data, metric, labels, date, format } = props;
+  const baseline = metric.domain?.[0] ?? 0;
+  const maximum = useMemo(() => usageBudgetExtent(metric)[1], [metric]);
+  // Native stacks include zero. Translate plotted ordinates to the requested origin,
+  // then restore original values in axes, annotations, tooltips, and the data table.
+  const points = useMemo(() => usageBudgetChartData(metric).map(point => {
+    const plotted = { ...point };
+    for (const key of ["actual", "actualOver", "forecast", "forecastOver", "rangeBase"]) {
+      if (typeof plotted[key] === "number") plotted[key] = Number(plotted[key]) - baseline;
+    }
+    return plotted;
+  }), [metric, baseline]);
+  const tooltipRows = (point: Record<string, unknown>): TooltipRow[] => [
+    ...(typeof point.observed === "number" ? [{ label: labels.actual, value: format(point.observed), color: point.observed > metric.budget ? colors.over : colors.actual }] : []),
+    ...(typeof point.projected === "number" ? [{ label: labels.forecast, value: format(point.projected), color: point.projected > metric.budget ? colors.over : colors.actual }, { label: labels.range, value: `${format(Number(point.lower))}–${format(Number(point.upper))}`, color: colors.range }] : []),
+    { label: labels.budget, value: format(metric.budget), color: colors.actual },
+  ];
+  const tableRows = useMemo(() => [...metric.history.map(point => ({ id: String(point.timestamp), label: date(point.timestamp), values: [format(point.value), "—", "—"] })),
+    ...metric.forecast.slice(1).map(point => ({ id: String(point.timestamp), label: date(point.timestamp), values: ["—", format(point.value), `${format(point.lower)}–${format(point.upper)}`] }))], [metric, date, format]);
+  const accessibleData = useMemo(() => tableRows.map(row => ({ [labels.date]: row.label, [labels.actual]: row.values[0], [labels.forecast]: row.values[1], [labels.range]: row.values[2] })), [tableRows, labels.date, labels.actual, labels.forecast, labels.range]);
+  return <figure className="min-w-0" aria-label={`${metric.label} · ${labels.chart}`}>
+    <div className="mb-2 text-label text-fg-muted @3xl/budget:hidden">{labels.budget}<span className="ml-2 font-medium tabular-nums text-fg-default">{format(metric.budget)}</span></div>
+    <AreaChart key={metric.id} data={points} accessibleData={accessibleData} xDomain={[new Date(data.periodStart), new Date(data.periodEnd)]} yDomain={metric.domain ? [0, metric.domain[1] - baseline] : [0, maximum * 1.12]}
+      yDomainTween={false} animationDuration={0} aspectRatio="auto" className="h-72 w-full @3xl/budget:h-80" margin={{ top: 36, right: 20, bottom: 36, left: 54 }}>
+      <ForecastRegion now={data.now} />
+      <Grid horizontal vertical={false} rowTickValues={metric.ticks?.map(value => value - baseline)} stroke="var(--border-subtle)" strokeDasharray="0" fadeHorizontal={false} />
+      <YAxis tickValues={metric.ticks?.map(value => value - baseline)} formatValue={value => metric.unit === "seats" || metric.unit === "席位" ? String(value + baseline) : format(value + baseline)} />
+      <XAxis formatDate={value => date(value.getTime())} numTicks={5} />
+      <Area dataKey="rangeBase" stackId="interval" fillOpacity={0} showLine={false} showHighlight={false} animate={false} curve={curveLinear} />
+      <Area dataKey="rangeWithin" stackId="interval" fill={colors.range} fillOpacity={0.16} gradientToOpacity={0.16} showLine={false} showHighlight={false} animate={false} curve={curveLinear} />
+      <Area dataKey="rangeOver" stackId="interval" fill={colors.over} fillOpacity={0.1} gradientToOpacity={0.1} showLine={false} showHighlight={false} animate={false} curve={curveLinear} />
+      <BudgetReference y={metric.budget - baseline} stroke={colors.actual} strokeDasharray="0" />
+      <Line dataKey="actual" stroke={colors.actual} strokeWidth={2} curve={curveLinear} animate={false} fadeEdges={false} showHighlight={false} />
+      <Line dataKey="actualOver" stroke={colors.over} strokeWidth={2} curve={curveLinear} animate={false} fadeEdges={false} showHighlight={false} />
+      <Line dataKey="forecast" stroke={colors.actual} strokeWidth={2} curve={curveLinear} dashFromIndex={0} dashArray="4,5" animate={false} fadeEdges={false} showHighlight={false} />
+      <Line dataKey="forecastOver" stroke={colors.over} strokeWidth={2} curve={curveLinear} dashFromIndex={0} dashArray="4,5" animate={false} fadeEdges={false} showHighlight={false} />
+      <BudgetAnnotations {...props} />
+      <ChartTooltip showDatePill={false} content={({ point }) => <TooltipContent title={date(Number(point.date))} rows={tooltipRows(point)} />} />
+    </AreaChart>
+    <figcaption className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-label text-fg-subtle">
+      {(["actual", "forecast", "range", "over"] as const).map(kind => <span key={kind} className="inline-flex items-center gap-2">
+        <span aria-hidden="true" className={kind === "range" ? "h-2.5 w-3.5 rounded-sm" : `w-4 border-t-2 ${kind === "forecast" ? "border-dashed" : "border-solid"}`} style={kind === "range" ? { backgroundColor: colors.range, opacity: 0.25 } : { borderColor: kind === "over" ? colors.over : colors.actual }} />{labels[kind]}
+      </span>)}
+    </figcaption>
+    <ChartDataTable caption={`${metric.label} · ${labels.chart}`} summary={labels.viewData} columns={[labels.date, labels.actual, labels.forecast, labels.range]} rows={tableRows} />
+  </figure>;
+}
+
+
+import type { UsageBudgetForecastData, UsageBudgetMetric } from "./usage-budget-forecast-types";
+
+const day = (date: number) => Date.UTC(2026, 8, date);
+const history = (values: number[]) => values.map((value, index) => ({ timestamp: day(index + 1), value }));
+const forecast = (values: number[], lower: number, upper: number) => values.map((value, index) => ({
+  timestamp: day(index + 22), value,
+  lower: value - (values.at(-1)! - lower) * index / (values.length - 1),
+  upper: value + (upper - values.at(-1)!) * index / (values.length - 1),
+}));
+
+const metrics: UsageBudgetMetric[] = [
+  { id: "api", label: "API calls", unit: "M", fractionDigits: 1, budget: 38, domain: [0, 50], ticks: [0, 10, 20, 30, 40, 50],
+    history: history([0, 1.7, 3.4, 5.2, 6.7, 7.4, 8.2, 10, 11.6, 13.3, 15, 16.5, 17.2, 19, 20.8, 22.6, 24.4, 26.2, 27.3, 28.6, 30.4, 32.3]),
+    forecast: forecast([32.3, 33.7, 35.2, 36.6, 38, 39.2, 41.1, 43.1, 45.2], 43.3, 47.9),
+    overage: { amount: 1449, currency: "USD", rate: 0.2, per: 1000 } },
+  { id: "storage", label: "Storage", unit: "TB", fractionDigits: 2, budget: 4, domain: [2, 4.5], ticks: [2, 2.5, 3, 3.5, 4, 4.5],
+    history: history([3.12, 3.16, 3.2, 3.24, 3.25, 3.26, 3.3, 3.34, 3.38, 3.26, 3.29, 3.3, 3.31, 3.35, 3.39, 3.42, 3.47, 3.49, 3.5, 3.51, 3.54, 3.57]),
+    forecast: forecast([3.57, 3.61, 3.65, 3.68, 3.69, 3.7, 3.73, 3.77, 3.81], 3.65, 4.04),
+    overage: { amount: 0, currency: "USD", rate: 120, per: 1 } },
+  { id: "seats", label: "Seats", unit: "seats", fractionDigits: 0, budget: 200, domain: [140, 240], ticks: [140, 160, 180, 200, 220, 240],
+    history: history([186, 186, 187, 189, 190, 190, 191, 193, 194, 195, 195, 195, 196, 197, 198, 199, 200, 202, 202, 202, 203, 205]),
+    forecast: forecast([205, 206, 207, 208, 208, 208, 209, 211, 212], 208, 218),
+    overage: { amount: 292, currency: "USD", rate: 24, per: 1 } },
+];
+
+/** Fixed September scenario. Quotes retain screenshot values rather than deriving from rounded estimates. */
+export const usageBudgetForecastDemoData: UsageBudgetForecastData = {
+  organization: "Northwind Labs", plan: "Scale plan", periodStart: day(1), periodEnd: day(30), renewsAt: Date.UTC(2026, 9, 1), now: day(22), metrics,
+};

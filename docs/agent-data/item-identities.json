@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "items": [
+    { "id": "block:usage-forecast-02", "type": "registry", "key": "usage-forecast-02", "aliases": ["usage-forecast-02"], "status": "active", "retirementReason": null },
     { "id": "block:model-selector-01", "type": "registry", "key": "model-selector-01", "aliases": ["model-selector-01"], "status": "active", "retirementReason": null },
     { "id": "block:agent-tasks-01", "type": "registry", "key": "agent-tasks-01", "aliases": ["agent-tasks-01"], "status": "active", "retirementReason": null },
     { "id": "block:local-models-01", "type": "registry", "key": "local-models-01", "aliases": ["local-models-01"], "status": "active", "retirementReason": null },
