@@ -550,6 +550,11 @@ const props = [
     "name": "maxVisibleItems / renderOverflowLabel",
     "type": "number / (hiddenCount, expanded) => ReactNode",
     "default": "undefined / +n more, Show less"
+  },
+  {
+    "name": "AreaChart.accessibleData",
+    "type": "readonly Record<string, unknown>[]",
+    "default": "data"
   }
 ];
 

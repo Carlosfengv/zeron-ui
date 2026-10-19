@@ -1,4 +1,5 @@
 {
+  "usage-forecast-02": {"framework": "react", "kind": "data-block"},
   "model-selector-01": {"framework": "react", "kind": "data-block"},
   "agent-tasks-01": {"framework": "react", "kind": "data-block"},
   "local-models-01": {"framework": "react", "kind": "data-block"},

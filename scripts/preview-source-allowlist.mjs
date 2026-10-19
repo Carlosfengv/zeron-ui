@@ -38,6 +38,15 @@ export const previewSourceFiles = {
     "packages/blocks/src/application/usage-timeline-01/usage-timeline-data.ts",
     "packages/blocks/src/application/usage-timeline-01/usage-timeline-demo-data.ts"
   ],
+  "usage-forecast-02": [
+    "packages/blocks/src/application/usage-forecast-02/index.ts",
+    "packages/blocks/src/application/usage-forecast-02/usage-budget-forecast.tsx",
+    "packages/blocks/src/application/usage-forecast-02/usage-budget-forecast-types.ts",
+    "packages/blocks/src/application/usage-forecast-02/usage-budget-forecast-data.ts",
+    "packages/blocks/src/application/usage-forecast-02/usage-budget-forecast-labels.ts",
+    "packages/blocks/src/application/usage-forecast-02/usage-budget-forecast-chart.tsx",
+    "packages/blocks/src/application/usage-forecast-02/usage-budget-forecast-demo-data.ts"
+  ],
   "usage-forecast-01": [
     "packages/blocks/src/application/usage-forecast-01/index.ts",
     "packages/blocks/src/application/usage-forecast-01/usage-forecast.tsx",

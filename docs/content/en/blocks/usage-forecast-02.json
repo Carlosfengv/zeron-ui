@@ -1,0 +1,12 @@
+{
+  "usageBudgetForecastBlock": {
+    "title": "Usage Budget Forecast",
+    "description": "Forecast API calls, storage, and seats with budget crossings, overage quotes, and alert thresholds.",
+    "composition": "Components and styling",
+    "compositionBody": "Uses Container, Tabs, InlineNotice, Button, and native Zeron AreaChart, Line, Area, Grid, axes, and TooltipContent. Metric tabs use the pill variant and default theme color. Alert thresholds use toggleable tertiary buttons with a check icon and pressed styling when enabled; the whole item is clickable. Public stacked areas compose the interval between forecast bounds; annotations use public chart scales. Existing semantic typography, surfaces, borders, and danger colors support light and dark themes and narrow containers.",
+    "interaction": "Flow and scenarios",
+    "interactionBody": "API calls: 32.3M used against 38M, projected 45.2M, crossing September 26 with a $1,449 quote. Storage: 3.57 TB against 4 TB, projected 3.81 TB within budget, with an upper-bound crossing risk. Seats: 205 against 200, reached September 17, projected 212 with a $292 quote. Metric selection updates the summary, metrics, and chart. Independent 50%, 80%, and 100% alert preferences persist across metric switches. The chart supports keyboard inspection and an expandable daily data table.",
+    "integration": "Mock data and integration",
+    "integrationBody": "Fixed September 22, 2026 snapshot for a September 1–30 period renewing October 1. Historical observations, forecast values, and bounds are supplied independently; crossings and threshold dates are derived. Overage amounts are independent billing quotes that preserve the reference amounts rather than deriving them from rounded estimates. Supports controlled selection and alert callbacks, loading, empty, error, and retry states. The host owns real forecasting, billing, preference persistence, and notifications; this demo changes local preferences."
+  }
+}

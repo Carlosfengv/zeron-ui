@@ -507,6 +507,10 @@ async function verifyNextBuild({ consumer, component }) {
       '',
     ].join("\n"),
   };
+  examples["usage-forecast-02"] = [
+    'import { UsageBudgetForecast, usageBudgetForecastDemoData } from "@/components/blocks/usage-forecast-02";',
+    'export default function Page() { return <UsageBudgetForecast data={usageBudgetForecastDemoData} />; }',
+  ].join("\n");
   examples["usage-forecast-01"] = [
     'import { UsageForecast, usageForecastDemoAccounts, usageForecastDemoNow } from "@/components/blocks/usage-forecast-01";',
     'export default function Page() { return <UsageForecast accounts={usageForecastDemoAccounts} now={usageForecastDemoNow} />; }',
@@ -871,6 +875,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import "./index.css";',
     'function Demo() { const [value, setValue] = useState(modelSelectorDemoValue); return <ModelSelector models={createModelSelectorDemoModels()} value={value} onValueChange={setValue} defaultOpen />; }',
     'createRoot(document.getElementById("root")!).render(<Demo />);',
+  ].join("\n");
+  examples["usage-forecast-02"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { UsageBudgetForecast, usageBudgetForecastDemoData } from "@/src/components/blocks/usage-forecast-02";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<UsageBudgetForecast data={usageBudgetForecastDemoData} />);',
   ].join("\n");
   examples["usage-forecast-01"] = [
     'import { createRoot } from "react-dom/client";',

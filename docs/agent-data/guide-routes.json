@@ -141,6 +141,10 @@
       "itemId": "block:usage-forecast-01"
     },
     {
+      "path": "blocks/usage-forecast-02.md",
+      "itemId": "block:usage-forecast-02"
+    },
+    {
       "path": "blocks/usage-timeline-01.md",
       "itemId": "block:usage-timeline-01"
     },

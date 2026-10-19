@@ -11,6 +11,7 @@
     "./usage-timeline-01": "./src/application/usage-timeline-01/index.ts",
     "./account-activity-01": "./src/application/account-activity-01/index.ts",
     "./usage-forecast-01": "./src/application/usage-forecast-01/index.ts",
+    "./usage-forecast-02": "./src/application/usage-forecast-02/index.ts",
     "./plan-usage-01": "./src/application/plan-usage-01/index.ts",
     "./context-window-01": "./src/application/context-window-01/index.ts",
     "./fleet-health-01": "./src/application/fleet-health-01/index.ts",

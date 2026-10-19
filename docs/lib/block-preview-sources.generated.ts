@@ -17,6 +17,9 @@ const blockPreviewSources = {
   "usage-timeline-01": {
     "url": "/docs-source/1b461f6267e4c3876badd2a86c1fc9dbd932b22676c915a9f69d7488be20ddbd.txt"
   },
+  "usage-forecast-02": {
+    "url": "/docs-source/c2dc1cd37958d02f273dbda9d697ec571f8eed70e1fdfd84a8cb3a9b1b427dfa.txt"
+  },
   "usage-forecast-01": {
     "url": "/docs-source/9a4dc56746c28ee0c848d6c5645ad7ac595fd77caf249b51186d965e6b8529a9.txt"
   },

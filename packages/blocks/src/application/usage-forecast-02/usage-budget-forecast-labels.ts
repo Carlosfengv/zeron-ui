@@ -1,0 +1,43 @@
+import type { UsageBudgetForecastLabels } from "./usage-budget-forecast-types";
+
+export const usageBudgetForecastEnLabels: UsageBudgetForecastLabels = {
+  title: "Usage forecast", renews: date => `Renews ${date}`, metric: "Usage metric",
+  used: "Used so far", projected: date => `Projected by ${date}`, cost: "Cost above budget",
+  ofBudget: percent => `${percent}% of budget`, likely: range => `Likely ${range}`, within: "Within budget",
+  rate: (price, per, unit) => `At ${price} per ${per === 1 ? "" : `${per} `}${unit}`,
+  underTitle: "At this pace you stay under budget",
+  expectedTitle: date => `At this pace you reach the budget on ${date}`,
+  exceededTitle: date => `You passed the budget on ${date}`,
+  exceededSinceTitle: date => `Usage has been at or above budget since ${date}`,
+  underDescription: (value, date, percent, riskDate) => `Heading for ${value} by ${date}, ${percent}% of budget.${riskDate ? ` A busy week could cross it on ${riskDate}.` : ""}`,
+  expectedDescription: (days, from, to) => `${days} days before the period closes, likely between ${from} and ${to}.`,
+  openRangeDescription: (days, from) => `${days} days before the period closes. The upper estimate reaches budget on ${from}; the lower estimate could stay under budget.`,
+  exceededDescription: (percent, value, date) => `Usage is ${percent === 0 ? "less than 1" : percent}% over today and heading for ${value} by ${date}.`,
+  atBudgetDescription: (value, date) => `Usage is at budget today and heading for ${value} by ${date}.`,
+  today: "Today", budget: "Budget", actual: "Actual", forecast: "Forecast", range: "Likely range", over: "Over budget",
+  alerts: "Alert at", alert: (percent, metric) => `Alert at ${percent}% for ${metric}`,
+  reached: date => `Reached ${date}`, since: date => `Since ${date}`, expected: date => `Expected ${date}`, notExpected: "Not expected",
+  chart: "Usage and budget forecast", viewData: "View daily data", date: "Date",
+  loading: "Loading usage forecast…", empty: "No usage metrics available.", error: "Usage forecast could not be loaded.", invalid: "Usage data is invalid. Check the period, observations, and forecast range.", retry: "Try again",
+};
+
+export const usageBudgetForecastZhLabels: UsageBudgetForecastLabels = {
+  title: "用量预测", renews: date => `${date}续订`, metric: "用量指标",
+  used: "当前用量", projected: date => `${date}预计用量`, cost: "预计超额费用",
+  ofBudget: percent => `预算的 ${percent}%`, likely: range => `预计区间 ${range}`, within: "预算范围内",
+  rate: (price, per, unit) => `每 ${per === 1 ? "" : `${per} `}${unit} ${price}`,
+  underTitle: "按当前速度，用量将保持在预算内",
+  expectedTitle: date => `按当前速度，将于${date}达到预算`,
+  exceededTitle: date => `已于${date}达到预算`,
+  exceededSinceTitle: date => `从${date}起，用量已达到或超过预算`,
+  underDescription: (value, date, percent, riskDate) => `预计${date}用量为 ${value}，占预算 ${percent}%。${riskDate ? `繁忙时可能于${riskDate}触及预算。` : ""}`,
+  expectedDescription: (days, from, to) => `比周期结束提前 ${days} 天，预计触及时间在${from}至${to}之间。`,
+  openRangeDescription: (days, from) => `比周期结束提前 ${days} 天。预测上界于${from}触及预算，下界可能保持在预算内。`,
+  exceededDescription: (percent, value, date) => `当前用量已超出预算${percent === 0 ? "不足 1" : ` ${percent}`}%，预计${date}达到 ${value}。`,
+  atBudgetDescription: (value, date) => `当前用量已达到预算，预计${date}达到 ${value}。`,
+  today: "今天", budget: "预算", actual: "实际用量", forecast: "预测用量", range: "预计区间", over: "超出预算",
+  alerts: "告警阈值", alert: (percent, metric) => `${metric}达到 ${percent}% 时告警`,
+  reached: date => `${date}已达到`, since: date => `${date}起已达到`, expected: date => `预计${date}达到`, notExpected: "预计不会触及",
+  chart: "用量与预算预测趋势", viewData: "查看每日数据", date: "日期",
+  loading: "正在加载用量预测…", empty: "暂无用量指标。", error: "暂时无法加载用量预测。", invalid: "用量数据无效，请检查周期、采样和预测区间。", retry: "重试",
+};
