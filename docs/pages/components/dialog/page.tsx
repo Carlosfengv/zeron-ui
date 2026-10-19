@@ -55,11 +55,12 @@ const largeCode = `<Dialog>
   </DialogContent>
 </Dialog>`;
 
-const dismissalCode = `const onOpenChange = (open, eventDetails) => {
-  if (!open) console.info(eventDetails.reason);
-};
-
-<Dialog disablePointerDismissal onOpenChange={onOpenChange}>
+const dismissalCode = `<Dialog
+  disablePointerDismissal
+  onOpenChange={(open, eventDetails) => {
+    if (!open) console.info(eventDetails.reason);
+  }}
+>
   <DialogTrigger render={<Button variant="tertiary">Open settings</Button>} />
   <DialogContent showCloseButton={false}>
     <DialogHeader>

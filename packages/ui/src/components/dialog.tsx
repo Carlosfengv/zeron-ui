@@ -189,8 +189,6 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
                           iconOnly
                           size="sm"
                           className="absolute right-3 top-3"
-                          aria-label={closeButtonLabel}
-                          disabled={closeButtonDisabled}
                         >
                           <XIcon />
                           <span className="sr-only">{closeButtonLabel}</span>
