@@ -62,7 +62,7 @@ const dismissalCode = `<Dialog
   }}
 >
   <DialogTrigger render={<Button variant="tertiary">Open settings</Button>} />
-  <DialogContent showCloseButton={false}>
+  <DialogContent showCloseButton={false} backdropClassName="backdrop-blur-none">
     <DialogHeader>
       <DialogTitle>Settings</DialogTitle>
     </DialogHeader>
@@ -84,6 +84,7 @@ export default function DialogDoc() {
   ];
   const dialogContentProps: PropDef[] = [
     { name: "size", type: '"sm" | "lg"', default: '"sm"', description: t("size") },
+    { name: "backdropClassName", type: "string", description: t("backdropClassName") },
     { name: "showCloseButton", type: "boolean", default: "true", description: t("showCloseButton") },
     { name: "closeButtonLabel", type: "string", default: '"Close"', description: t("closeButtonLabel") },
     { name: "closeButtonDisabled", type: "boolean", default: "false", description: t("closeButtonDisabled") },
@@ -165,7 +166,7 @@ export default function DialogDoc() {
             }}
           >
             <DialogTrigger render={<Button variant="tertiary">Open settings</Button>} />
-            <DialogContent showCloseButton={false}>
+            <DialogContent showCloseButton={false} backdropClassName="backdrop-blur-none">
               <DialogHeader>
                 <DialogTitle>Settings</DialogTitle>
               </DialogHeader>

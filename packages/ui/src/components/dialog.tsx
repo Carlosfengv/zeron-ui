@@ -57,6 +57,8 @@ const DialogClose = DialogPrimitive.Close;
 
 interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
   size?: "sm" | "lg";
+  /** Additional classes applied to the backdrop overlay. */
+  backdropClassName?: string;
   /** Whether to render the built-in close button. Defaults to true. */
   showCloseButton?: boolean;
   /** Accessible name for the built-in close button. Defaults to "Close". */
@@ -76,6 +78,7 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
     {
       className,
       children,
+      backdropClassName,
       size = "sm",
       container,
       showCloseButton = true,
@@ -116,7 +119,8 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
                 {...rest}
                 className={cn(
                   container ? "absolute" : "fixed",
-                  "inset-0 z-popover bg-scrim backdrop-blur-[2px]"
+                  "inset-0 z-popover bg-scrim backdrop-blur-[2px]",
+                  backdropClassName
                 )}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: exiting ? 0 : 1 }}

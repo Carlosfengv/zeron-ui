@@ -23,6 +23,19 @@ afterEach(() => {
 });
 
 describe("Dialog dismissal and close controls", () => {
+  it("applies backdropClassName to the rendered overlay instead of the dialog panel", () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent aria-label="Dialog title" backdropClassName="custom-backdrop-scope">
+          Content
+        </DialogContent>
+      </Dialog>
+    );
+
+    const backdrop = document.querySelector(".custom-backdrop-scope");
+    expect(backdrop).toBeTruthy();
+    expect(backdrop).not.toBe(screen.getByRole("dialog", { name: "Dialog title" }));
+  });
   it("forwards pointer-dismissal control and keeps Escape dismissal available", async () => {
     const onOpenChange = vi.fn();
 
