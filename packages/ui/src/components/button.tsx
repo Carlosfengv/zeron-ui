@@ -260,14 +260,17 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       </>
     );
 
+    const variantClasses = buttonVariants({
+      variant,
+      size: resolvedSize,
+      iconOnly,
+      iconLeft: !iconOnly && !!LeadingIcon,
+      iconRight: !iconOnly && !!TrailingIcon,
+    });
+    // Semantic height utilities are not removed by h-auto in the class merger.
+    // Content-driven modes must omit their fixed size instead of relying on CSS order.
     const rootClassName = cn(
-      buttonVariants({
-        variant,
-        size: resolvedSize,
-        iconOnly,
-        iconLeft: !iconOnly && !!LeadingIcon,
-        iconRight: !iconOnly && !!TrailingIcon,
-      }),
+      contentSized || variant === "link" ? variantClasses.replace(controlSizeClasses[resolvedSize], "") : variantClasses,
       "rounded-lg",
       tone === "warning" && "text-fg-warning",
       contentSized && "h-auto min-h-control-sm px-1.5 py-1",
