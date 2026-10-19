@@ -62,13 +62,33 @@ const dismissalCode = `<Dialog
   }}
 >
   <DialogTrigger render={<Button variant="tertiary">Open settings</Button>} />
-  <DialogContent showCloseButton={false} backdropClassName="backdrop-blur-none">
+  <DialogContent showCloseButton={false}>
     <DialogHeader>
       <DialogTitle>Settings</DialogTitle>
     </DialogHeader>
     <DialogFooter>
       <DialogClose render={<Button variant="ghost">Close settings</Button>} />
     </DialogFooter>
+  </DialogContent>
+</Dialog>`;
+
+const placementCode = `<Dialog>
+  <DialogTrigger render={<Button variant="tertiary">Open side panel</Button>} />
+  <DialogContent placement="right" backdropClassName="backdrop-blur-none">
+    <DialogHeader>
+      <DialogTitle>Side panel</DialogTitle>
+      <DialogDescription>Position the dialog at an edge and customize its backdrop.</DialogDescription>
+    </DialogHeader>
+  </DialogContent>
+</Dialog>`;
+
+const bottomPlacementCode = `<Dialog>
+  <DialogTrigger render={<Button variant="tertiary">Open bottom panel</Button>} />
+  <DialogContent placement="bottom">
+    <DialogHeader>
+      <DialogTitle>Bottom panel</DialogTitle>
+      <DialogDescription>Use bottom placement for a compact action surface.</DialogDescription>
+    </DialogHeader>
   </DialogContent>
 </Dialog>`;
 
@@ -84,7 +104,9 @@ export default function DialogDoc() {
   ];
   const dialogContentProps: PropDef[] = [
     { name: "size", type: '"sm" | "lg"', default: '"sm"', description: t("size") },
+    { name: "placement", type: '"center" | "left" | "right" | "top" | "bottom"', default: '"center"', description: t("placement") },
     { name: "backdropClassName", type: "string", description: t("backdropClassName") },
+    { name: "backdropStyle", type: "CSSProperties", description: t("backdropStyle") },
     { name: "showCloseButton", type: "boolean", default: "true", description: t("showCloseButton") },
     { name: "closeButtonLabel", type: "string", default: '"Close"', description: t("closeButtonLabel") },
     { name: "closeButtonDisabled", type: "boolean", default: "false", description: t("closeButtonDisabled") },
@@ -166,13 +188,42 @@ export default function DialogDoc() {
             }}
           >
             <DialogTrigger render={<Button variant="tertiary">Open settings</Button>} />
-            <DialogContent showCloseButton={false} backdropClassName="backdrop-blur-none">
+            <DialogContent showCloseButton={false}>
               <DialogHeader>
                 <DialogTitle>Settings</DialogTitle>
               </DialogHeader>
               <DialogFooter>
                 <DialogClose render={<Button variant="ghost">Close settings</Button>} />
               </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("placementAndBackdrop")}>
+        <ComponentPreview code={placementCode}>
+          <Dialog>
+            <DialogTrigger render={<Button variant="tertiary">Open side panel</Button>} />
+            <DialogContent placement="right" backdropClassName="backdrop-blur-none">
+              <DialogHeader>
+                <DialogTitle>Side panel</DialogTitle>
+                <DialogDescription>
+                  Position the dialog at an edge and customize its backdrop.
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </ComponentPreview>
+        <ComponentPreview code={bottomPlacementCode}>
+          <Dialog>
+            <DialogTrigger render={<Button variant="tertiary">Open bottom panel</Button>} />
+            <DialogContent placement="bottom">
+              <DialogHeader>
+                <DialogTitle>Bottom panel</DialogTitle>
+                <DialogDescription>
+                  Use bottom placement for a compact action surface.
+                </DialogDescription>
+              </DialogHeader>
             </DialogContent>
           </Dialog>
         </ComponentPreview>
