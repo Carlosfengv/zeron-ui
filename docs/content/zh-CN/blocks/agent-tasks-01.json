@@ -1,0 +1,12 @@
+{
+  "agentTasksBlock": {
+    "title": "Agent 任务",
+    "description": "紧凑的 Agent 任务队列，包含状态筛选、可展开的活动时间线与宿主接管的任务操作。",
+    "composition": "组件组合",
+    "compositionBody": "Container、ContainerBody 和 ContainerFooter 承载外框、浮动内容区和底部摘要；Tabs 与 TabItem 提供带计数的筛选；Badge 和 Button 保留组件库的状态色、尺寸与键盘焦点。活动时间线使用现有品牌、文字和边框语义变量。",
+    "dataContract": "数据接入",
+    "dataContractBody": "传入具有唯一 ID、标题、模型、格式化时长、状态及可选有序事件的任务。失败与待处理状态均计入“待处理”。筛选和展开可由组件本地管理，也可通过 filter/onFilterChange、expandedTaskId/onExpandedTaskChange 受控接入。onOpenTask 和 onNewTask 由宿主实现，未传回调时禁用对应操作。支持覆盖文案和摘要格式。",
+    "behavior": "交互与状态",
+    "behaviorBody": "通过全部、待处理、运行中、已完成筛选；点击任务或按 Enter 展开活动时间线。演示中的“打开”展示任务详情，“新建任务”通过表单添加本地示例任务，不启动真实 Agent，也不连接生产服务。支持空状态、中英文、窄屏、深色模式及减少动态效果偏好。"
+  }
+}

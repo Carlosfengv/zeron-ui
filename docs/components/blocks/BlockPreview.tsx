@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "agent-tasks-01": () => import("./AgentTasksDemo").then(({ AgentTasksDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={720} canvasWidth={960}><AgentTasksDemo /></ResponsivePreview>,
+  })),
   "local-models-01": () => import("./LocalModelsDemo").then(({ LocalModelsDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={860} canvasWidth={1200}><LocalModelsDemo /></ResponsivePreview>,
   })),

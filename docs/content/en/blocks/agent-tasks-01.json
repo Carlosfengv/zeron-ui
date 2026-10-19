@@ -1,0 +1,12 @@
+{
+  "agentTasksBlock": {
+    "title": "Agent Tasks",
+    "description": "A compact agent task queue with status filters, expandable activity timelines and host-owned task actions.",
+    "composition": "Composition",
+    "compositionBody": "Container, ContainerBody and ContainerFooter own the frame, floating work surface and summary. Tabs and TabItem provide the filters and counts. Badge and Button preserve shared status colors, sizes and keyboard focus. The activity timeline uses semantic brand, foreground and border tokens.",
+    "dataContract": "Data contract",
+    "dataContractBody": "Supply tasks with unique IDs, titles, model names, formatted durations, statuses and optional ordered events. Failed and needs-you tasks count toward Needs you. Filter and expansion can be local or controlled through filter/onFilterChange and expandedTaskId/onExpandedTaskChange. onOpenTask and onNewTask belong to the host; actions are disabled when callbacks are absent. Labels and summary formatting are replaceable.",
+    "behavior": "Behavior and states",
+    "behaviorBody": "Filter by All, Needs you, Running or Done. Click or press Enter on a task to expand its activity. Open shows details in the demo. New task adds a local sample task through a form. The demo does not run agents or connect to production services. Empty views, Chinese and English, narrow screens, dark mode and reduced motion are supported."
+  }
+}

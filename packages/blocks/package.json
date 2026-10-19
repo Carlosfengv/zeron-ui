@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./agent-tasks-01": "./src/application/agent-tasks-01/index.ts",
     "./local-models-01": "./src/application/local-models-01/index.ts",
     "./appearance-settings-01": "./src/application/appearance-settings-01/index.ts",
     "./usage-timeline-01": "./src/application/usage-timeline-01/index.ts",
