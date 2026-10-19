@@ -28,12 +28,13 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(145);
-    expect(detailDocEntries).toHaveLength(145);
+    expect(pageDocEntries).toHaveLength(146);
+    expect(detailDocEntries).toHaveLength(146);
     expect(pageDocEntries.find((entry) => entry.slug === "model-selector-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "local-models-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "appearance-settings-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "usage-forecast-01")?.collection).toBe("blocks");
+    expect(pageDocEntries.find((entry) => entry.slug === "usage-forecast-02")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "usage-timeline-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "time-window-timeline")?.collection).toBe("components");
     expect(pageDocEntries.find((entry) => entry.slug === "plan-usage-01")?.collection).toBe("blocks");

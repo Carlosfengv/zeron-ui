@@ -4,6 +4,7 @@ import { LocalModelsDemo } from "./LocalModelsDemo";
 import { AppearanceSettingsDemo } from "./AppearanceSettingsDemo";
 import { UsageTimelineDemo } from "./UsageTimelineDemo";
 import { UsageForecastDemo } from "./UsageForecastDemo";
+import { UsageBudgetForecastDemo } from "./UsageBudgetForecastDemo";
 import { ContextWindowDemo } from "./ContextWindowDemo";
 import { ModelSelectorDemo } from "./ModelSelectorDemo";
 import { FleetHealthDemo } from "./FleetHealthDemo";
@@ -250,6 +251,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
       return <UsageTimelineDemo />;
     case "resource-cost-01":
       return <ResourceCostDemo />;
+    case "usage-forecast-02":
+      return <UsageBudgetForecastDemo />;
     case "usage-forecast-01":
       return <UsageForecastDemo />;
     case "account-activity-01":

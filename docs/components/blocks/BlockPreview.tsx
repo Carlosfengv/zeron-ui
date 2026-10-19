@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "usage-forecast-02": () => import("./UsageBudgetForecastDemo").then(({ UsageBudgetForecastDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1600}><UsageBudgetForecastDemo /></ResponsivePreview>,
+  })),
   "model-selector-01": () => import("./ModelSelectorDemo").then(({ ModelSelectorCover }) => ({
     default: () => <ResponsivePreview canvasHeight={720} canvasWidth={1280}><ModelSelectorCover /></ResponsivePreview>,
   })),
