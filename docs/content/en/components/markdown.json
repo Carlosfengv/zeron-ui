@@ -1,0 +1,25 @@
+{
+  "markdown": {
+    "description": "Safe GFM content with tables, code blocks and an accessible streaming indicator.",
+    "basic": "Rich content",
+    "width": "Parent width and overflow",
+    "widthBody": "Markdown fills its parent, including inside a flex column with items-start. Tables, code blocks, headings, lists and quotes follow the available content width. Wide tables and long code lines scroll within their own blocks; images retain their proportions and never exceed the parent width. Both code modes follow the same width rule. Custom renderers must preserve this layout contract.",
+    "widthSample": "### Responsive blocks\n\n> This quote follows the available content width.\n\n- Text and list items wrap inside the parent.\n- Resize the preview to check the same layout at narrow widths.\n\n| Request identifier | Input tokens | Output tokens | First token latency | Total duration |\n| --- | ---: | ---: | ---: | ---: |\n| production-request-2026-10-20-000001 | 124,800 | 32,640 | 420 ms | 6.82 s |\n| production-request-2026-10-20-000002 | 86,400 | 12,800 | 310 ms | 4.82 s |\n\n```ts\nconst visibleMessages = conversationHistory.filter(message => message.role === \"assistant\").map(message => message.content);\n```\n\n---\n\nLong identifiers also wrap: production_request_2026_10_20_000001_abcdefghijklmnopqrstuvwxyz_abcdefghijklmnopqrstuvwxyz_abcdefghijklmnopqrstuvwxyz.",
+    "streaming": "Streaming response",
+    "streamingLabel": "Generating response",
+    "sample": "The response supports **Markdown** while content is appended.\n\nThe host supplies the accumulated text and streaming state.",
+    "finish": "Finish response",
+    "restart": "Show streaming indicator",
+    "behavior": "Content and ownership",
+    "behaviorBody": "Pass accumulated text as it arrives. GFM tables reuse the bordered, standard Table components with 14px headers and body text via text-body / --font-size-body, preserving column alignment and scrolling within their own region; TableBody omits the last row separator. Fenced code reuses CodeBlock; plain mode uses a lightweight pre element. Raw HTML is not executed and unsafe link protocols are filtered by the Markdown parser. Custom renderers are responsible for their own safety. This component does not fetch a model response.",
+    "api": "API reference",
+    "textProp": "Accumulated Markdown source, including GFM tables and task lists.",
+    "streamingProp": "Shows a reduced-motion-aware status indicator; does not create a network stream.",
+    "streamingLabelProp": "Accessible status text; override for the active language.",
+    "codeMessagesProp": "Localize the existing CodeBlock copy, wrapping and highlighting feedback.",
+    "footnoteLabelsProp": "Localize the footnote heading and the accessible return-link label.",
+    "codeProp": "block uses the existing CodeBlock toolbar and highlighting; plain uses preformatted text.",
+    "componentsProp": "Override individual elements using react-markdown renderers. Exported as MarkdownComponents.",
+    "rootProp": "Applied to the outer container; use for layout and accessible naming."
+  }
+}

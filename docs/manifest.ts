@@ -98,6 +98,7 @@ const iconEntry = (value: Omit<DocEntry, "collection" | "indexable" | "order"> &
 });
 
 export const docEntries = [
+  entry({ slug: "markdown", section: "ai-agent", icon: "doc-chat-message", name: "Markdown", description: "Safe GFM content with tables, code blocks and streaming status.", order: 250, isNew: true }),
   blockEntry({ slug: "grouped-data-table-02", section: "application", icon: "doc-data-table", name: "多维分组表格", description: "可切换分组维度、独立表头、组内预览与新增入口。", registryItem: { name: "grouped-data-table-02", type: "registry:block" }, isNew: true, order: 36.965 }),
   blockEntry({ slug: "grouped-data-table-01", section: "application", icon: "doc-data-table", name: "分组表格", description: "可展开分组、组内预览、搜索筛选与稳定计数的通用表格。", registryItem: { name: "grouped-data-table-01", type: "registry:block" }, isNew: true, order: 36.966 }),
   blockEntry({ slug: "agent-tasks-01", section: "application", icon: "doc-card", name: "Agent Tasks", description: "Agent task queue with status filters, expandable activity and task actions.", registryItem: { name: "agent-tasks-01", type: "registry:block" }, isNew: true, order: 36.8 }),

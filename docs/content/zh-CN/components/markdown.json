@@ -1,0 +1,25 @@
+{
+  "markdown": {
+    "description": "安全渲染 GFM 内容，支持表格、代码块与无障碍流式状态。",
+    "basic": "富文本内容",
+    "width": "父容器宽度与溢出",
+    "widthBody": "Markdown 始终占满父容器，包括 items-start 的纵向 flex 布局。表格、代码块、标题、列表与引用跟随可用正文宽度；宽表格与长代码在各自区域内横向滚动，图片保持比例且不超出父容器。两种代码模式使用相同的宽度规则，自定义渲染器也需遵循此布局约定。",
+    "widthSample": "### 自适应块内容\n\n> 引用内容跟随正文可用宽度。\n\n- 正文和列表在父容器内换行。\n- 缩窄预览，检查同一布局在窄屏下的表现。\n\n| 请求标识 | 输入 token | 输出 token | 首 token 延迟 | 总耗时 |\n| --- | ---: | ---: | ---: | ---: |\n| production-request-2026-10-20-000001 | 124,800 | 32,640 | 420 ms | 6.82 s |\n| production-request-2026-10-20-000002 | 86,400 | 12,800 | 310 ms | 4.82 s |\n\n```ts\nconst visibleMessages = conversationHistory.filter(message => message.role === \"assistant\").map(message => message.content);\n```\n\n---\n\n长标识同样会换行：production_request_2026_10_20_000001_abcdefghijklmnopqrstuvwxyz_abcdefghijklmnopqrstuvwxyz_abcdefghijklmnopqrstuvwxyz。",
+    "streaming": "流式回复",
+    "streamingLabel": "正在生成回复",
+    "sample": "内容逐步追加时同样支持 **Markdown**。\n\n宿主传入已累积的文本与流式状态。",
+    "finish": "完成回复",
+    "restart": "显示生成状态",
+    "behavior": "内容与职责",
+    "behaviorBody": "收到新内容时传入累积文本。GFM 表格复用 Table 的带框标准展示，表头与正文通过 text-body / --font-size-body 使用 14px 字号，保留列对齐并在自身区域横向滚动，最后一行分隔线由 TableBody 统一省略；围栏代码默认复用 CodeBlock，plain 模式使用轻量预格式化文本。默认不执行原始 HTML，Markdown 解析器会过滤不安全的链接协议；自定义渲染器需自行保证安全。组件不负责请求模型。",
+    "api": "API 参考",
+    "textProp": "已累积的 Markdown 文本，支持 GFM 表格与任务列表。",
+    "streamingProp": "显示遵循减少动态效果偏好的状态指示器，不创建网络流。",
+    "streamingLabelProp": "提供状态的无障碍文案，可按当前语言覆盖。",
+    "codeMessagesProp": "本地化现有 CodeBlock 的复制、换行与高亮反馈文案。",
+    "footnoteLabelsProp": "本地化脚注标题与返回引用的无障碍文案。",
+    "codeProp": "block 复用现有 CodeBlock 的工具栏与高亮；plain 使用轻量预格式化文本。",
+    "componentsProp": "覆盖指定元素的 react-markdown 渲染器，类型导出为 MarkdownComponents。",
+    "rootProp": "传递给外层容器，可用于布局和无障碍命名。"
+  }
+}

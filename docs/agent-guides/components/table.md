@@ -10,6 +10,7 @@ source: packages/ui/src/components/table.tsx
 registry: packages/ui/registry.json
 typecheck_examples: true
 related:
+  - markdown
   - data-table
   - skeleton
 ---

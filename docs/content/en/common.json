@@ -119,6 +119,7 @@
     "introductionTitle": "Introduction",
     "introductionDescription": "Why these components feel different.",
     "descriptions": {
+      "markdown": "Safe GFM content with tables, code blocks and an accessible streaming indicator.",
       "appearance-settings-01": "Theme previews, accent colors, interface density and motion preferences.",
       "context-window-01": "Context capacity, cache and content inspection.",
       "fleet-health-01": "Live inference throughput, fleet telemetry and an interactive GPU matrix.",

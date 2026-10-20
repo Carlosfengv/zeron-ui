@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./markdown": "./src/components/markdown.tsx",
     "./time-window-timeline": "./src/components/time-window-timeline.tsx",
     "./accordion": "./src/components/accordion.tsx",
     "./alert": "./src/components/alert.tsx",
@@ -164,6 +165,9 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
+    "remark-breaks": "^4.0.0",
+    "remark-gfm": "^4.0.1",
+    "react-markdown": "^10.1.0",
     "@base-ui/react": "^1.4.1",
     "@hugeicons/core-free-icons": "^4.1.1",
     "@hugeicons/react": "^1.1.6",
