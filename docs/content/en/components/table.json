@@ -1,11 +1,16 @@
 {
   "tableDoc": {
     "basic": "Basic",
+    "bordered": "Compact bordered table",
+    "borderedDescription": "Use variant=bordered for a framed content table and size=sm for compact content. Table owns the frame, header background, cell typography and row separators; TableBody omits the last row separator. Static content rows can omit index.",
     "loading": "Loading",
     "loadingDescription": "Keep the final headers and column structure mounted, then replace only the body while the data is loading.",
     "loadingMessage": "Loading table data",
     "apiReference": "API Reference",
     "tableChildren": "TableHeader and TableBody children.",
+    "tableVariant": "plain keeps the default unframed presentation; bordered adds a rounded frame, horizontal scrolling, a raised header and stronger body text.",
+    "tableSize": "sm uses compact label typography; md preserves standard body typography. Cell padding is shared.",
+    "tableContainer": "External layout classes on the wrapper. className and native table attributes still apply to the table element.",
     "rowIndex": "Row index for proximity hover. Omit for header rows.",
     "rowChildren": "TableCell or TableHead children.",
     "skeletonColumns": "Number of placeholder cells rendered in every row.",

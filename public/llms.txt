@@ -273,6 +273,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [sidebar-account-menu](https://zeron-ui.vercel.app/agent-guides/components/sidebar-account-menu.md)
 - [sidebar-identity-row](https://zeron-ui.vercel.app/agent-guides/components/sidebar-identity-row.md)
 - [sidebar](https://zeron-ui.vercel.app/agent-guides/components/sidebar.md)
+- [table](https://zeron-ui.vercel.app/agent-guides/components/table.md)
 - [time-range-histogram](https://zeron-ui.vercel.app/agent-guides/components/time-range-histogram.md)
 - [time-window-timeline](https://zeron-ui.vercel.app/agent-guides/components/time-window-timeline.md)
 - [tree](https://zeron-ui.vercel.app/agent-guides/components/tree.md)
