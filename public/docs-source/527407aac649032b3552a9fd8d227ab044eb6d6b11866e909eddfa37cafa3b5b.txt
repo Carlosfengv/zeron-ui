@@ -305,7 +305,7 @@ export function useDebouncedValue<T>(value: T, delay = 250) {
 }
 `;
 const before = `import { useState } from "react";
-import { useResults } from "@/lib/search";
+import { useResults } from "../lib/search";
 
 export function Search() {
   const [query, setQuery] = useState("");
@@ -313,7 +313,7 @@ export function Search() {
   return <SearchResults query={query} onQueryChange={setQuery} results={results} />;
 }
 `;
-const after = before.replace('import { useResults }', 'import { useDebouncedValue } from "@/hooks/use-debounced-value";\nimport { useResults }')
+const after = before.replace('import { useResults }', 'import { useDebouncedValue } from "../hooks/use-debounced-value";\nimport { useResults }')
   .replace("  const results = useResults(query);", "  const debounced = useDebouncedValue(query, 250);\n  const results = useResults(debounced);");
 
 /** Local fixture only. phase 0–4 investigates, 5 requests approval, 6 runs, 7 finishes. */
