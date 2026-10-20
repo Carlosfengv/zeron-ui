@@ -217,6 +217,10 @@
       "itemId": "component:combobox"
     },
     {
+      "path": "components/data-table.md",
+      "itemId": "component:data-table"
+    },
+    {
       "path": "components/dialog.md",
       "itemId": "component:dialog"
     },

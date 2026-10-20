@@ -1,5 +1,13 @@
 {
   "dataTable": {
+    "grouping": "分组表格",
+    "groupingDescription": "分组行自动渲染为跨列标题，支持独立展开与多层分组。通过 grouping 自定义标题、组尾和组内展示条数；计数基于筛选后的完整叶子记录。组内预览应同时设置 manualPagination: true 和 showPagination: false。完整的显示更多交互见分组表格 Block。",
+    "groupingOptions": "可选配置：getLabel / getOrder / getRowLimit 以及 renderHeader / renderFooter。渲染上下文包含 row、table、leafRowCount、visibleRowCount；labels 支持展开与收起文案。",
+    "groupingModel": "接入 TanStack 分组模型与 grouping 状态；使用 getExpandedRowModel 管理子行展开。",
+    "density": "单元格密度配方，同步数据行与加载行；不会改变行内控件尺寸。",
+    "expandGroup": "展开 {label}",
+    "collapseGroup": "收起 {label}",
+    "groupPreview": "已展示 {visible} 条，共 {total} 条匹配记录",
     "projectDirectory": "项目目录",
     "bulkSelection": "选中与批量操作",
     "bulkSelectionDescription": "选中一行或多行后，顶部的搜索和筛选会替换为当前选中数量及可用的批量操作。清空选择后会恢复筛选工具栏，并保留原有筛选状态。",
@@ -9,6 +17,7 @@
     "loadingState": "加载状态",
     "loadingStateDescription": "Skeleton 行替换表体时，表头、列宽、固定列位置、分页区域和当前页高度保持稳定。",
     "apiReference": "API 参考",
+    "controlLabels": "通过 DataTableColumnHeader.labels 的 ascending、descending、resetSorting、hideColumn 配置排序菜单文案；DataTableViewOptions.labels 配置列设置文案。DataTableFacetedFilter.labels.clearFilters 配置筛选弹层的清空操作，未传时保留英文默认值。",
     "table": "由 useDataTable 返回的 TanStack 表格实例。",
     "activeRowId": "作为当前活动行高亮显示的 TanStack 行 ID。",
     "onRowActivate": "通过指针、Enter 或空格激活行，且不会拦截行内控件。",

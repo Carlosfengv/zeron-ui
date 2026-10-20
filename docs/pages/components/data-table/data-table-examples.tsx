@@ -1,6 +1,8 @@
 "use client";
 
 import type { ColumnDef, Table as TanstackTable } from "@tanstack/react-table";
+import { getExpandedRowModel, getGroupedRowModel } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { Badge, type BadgeColor } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
@@ -61,6 +63,27 @@ const statusColors: Record<Project["status"], BadgeColor> = {
 };
 
 const projectStatuses = ["Active", "Paused", "Draft"] as const;
+
+export function GroupedProjectsTable() {
+  const t = useTranslations("dataTable");
+  const columns = useMemo<ColumnDef<Project, unknown>[]>(() => [
+    { accessorKey: "name", header: "Project" },
+    { accessorKey: "owner", header: "Owner" },
+    { accessorKey: "status", header: "Status", enableHiding: false },
+  ], []);
+  const { table } = useDataTable({
+    data: projects, columns, getRowId: (project) => project.id,
+    getGroupedRowModel: getGroupedRowModel(), getExpandedRowModel: getExpandedRowModel(),
+    groupedColumnMode: "remove", manualPagination: true,
+    initialState: { grouping: ["status"], expanded: true },
+  });
+  return <DataTable table={table} showPagination={false} grouping={{
+    labels: { expandGroup: (label) => t("expandGroup", { label }), collapseGroup: (label) => t("collapseGroup", { label }) },
+    getRowLimit: () => 2,
+    renderFooter: ({ leafRowCount, visibleRowCount }) => leafRowCount > 2
+      ? <span className="text-label text-fg-subtle">{t("groupPreview", { visible: visibleRowCount, total: leafRowCount })}</span> : null,
+  }} />;
+}
 
 const initialProjectSelection = {
   "PRJ-101": true,

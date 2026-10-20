@@ -413,6 +413,9 @@
   },
   "data-table": {
     "keywords": [
+      "分组",
+      "grouping",
+      "grouped table",
       "资源列表",
       "表格",
       "筛选",
@@ -425,10 +428,15 @@
       "sort"
     ],
     "useCases": [
-      "记录列表的排序、过滤、分页和选择。"
+      "记录列表的排序、过滤、分页、选择和可展开分组。"
     ],
     "whenNotToUse": [
       "静态表格使用 Table；电子表格式编辑使用 DataGrid。"
+    ],
+    "keyApi": [
+      "useDataTable 透传 grouping / expanded 状态与 TanStack 行模型配置。",
+      "grouping 提供分组名称、顺序、展示条数及组头/组尾内容扩展，跨列数随可见列变化。",
+      "density 为 comfortable 或 compact；组内预览使用 manualPagination 与 showPagination=false。"
     ]
   },
   "data-grid": {

@@ -245,6 +245,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [chart](https://zeron-ui.vercel.app/agent-guides/components/chart.md)
 - [code-block](https://zeron-ui.vercel.app/agent-guides/components/code-block.md)
 - [combobox](https://zeron-ui.vercel.app/agent-guides/components/combobox.md)
+- [data-table](https://zeron-ui.vercel.app/agent-guides/components/data-table.md)
 - [dialog](https://zeron-ui.vercel.app/agent-guides/components/dialog.md)
 - [field](https://zeron-ui.vercel.app/agent-guides/components/field.md)
 - [file-type](https://zeron-ui.vercel.app/agent-guides/components/file-type.md)
