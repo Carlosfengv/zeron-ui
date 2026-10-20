@@ -37,7 +37,7 @@ export function ChatDemoContextControl({ locale, open, onOpenChange, notice, onC
   ];
   const [localNotice, setLocalNotice] = useState("");
   return <Popover open={open} onOpenChange={onOpenChange}>
-    <PopoverTrigger render={<Button variant="ghost" size="sm">
+    <PopoverTrigger render={<Button variant="ghost" size="sm" labelClassName="inline-flex items-center gap-1.5">
       <span className="sr-only">{zh ? "上下文用量：" : "Context usage: "}</span>
       <span aria-hidden="true" inert className="pointer-events-none inline-flex size-4 shrink-0">
         <PieChart data={slices} size={16} innerRadius={6} hoverOffset={0} hoveredIndex={null}>
