@@ -2,7 +2,7 @@
   "tableDoc": {
     "basic": "Basic",
     "bordered": "Compact bordered table",
-    "borderedDescription": "Markdown uses the same Table components with variant=bordered and size=sm. Table owns the frame, header background, cell typography and row separators; TableBody omits the last row separator. Static content rows can omit index.",
+    "borderedDescription": "Use variant=bordered for a framed content table and size=sm for compact content. Table owns the frame, header background, cell typography and row separators; TableBody omits the last row separator. Static content rows can omit index.",
     "loading": "Loading",
     "loadingDescription": "Keep the final headers and column structure mounted, then replace only the body while the data is loading.",
     "loadingMessage": "Loading table data",

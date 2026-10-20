@@ -271,6 +271,12 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "chat-markdown-01": [
+      '"use client";',
+      'import { ChatMarkdownResponse, createChatMarkdownDemoText } from "@/components/blocks/chat-markdown-01";',
+      'import { ChatMessageAuthor } from "@/components/ui/chat-message";',
+      'export default function Page() { return <main><ChatMarkdownResponse text={createChatMarkdownDemoText("en")} author={<ChatMessageAuthor model="Installed model" />} /><ChatMarkdownResponse text="**Generating**" streaming /></main>; }',
+    ].join("\n"),
     "usage-timeline-01": [
       '"use client";',
       'import { UsageTimeline, usageTimelineDemoProviders, usageTimelineDemoNow } from "@/components/blocks/usage-timeline-01";',
@@ -665,6 +671,13 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     await assertThemeInstallation({ consumer, cssPath: "src/index.css", component });
   }
   const examples = {
+    "chat-markdown-01": [
+      'import { createRoot } from "react-dom/client";',
+      'import { ChatMarkdownResponse, createChatMarkdownDemoText } from "@/src/components/blocks/chat-markdown-01";',
+      'import { ChatMessageAuthor } from "@/src/components/ui/chat-message";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<main><ChatMarkdownResponse text={createChatMarkdownDemoText("en")} author={<ChatMessageAuthor model="Installed model" />} /><ChatMarkdownResponse text="**Generating**" streaming /></main>);',
+    ].join("\n"),
     ...Object.fromEntries([
       ["zaiops-operations-01", "ZaiopsOperations"],
       ["cluster-environment-list-01", "ClusterEnvironmentList"],

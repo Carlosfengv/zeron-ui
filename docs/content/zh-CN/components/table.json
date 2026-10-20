@@ -2,7 +2,7 @@
   "tableDoc": {
     "basic": "基础用法",
     "bordered": "带框紧凑表格",
-    "borderedDescription": "Markdown 同样复用 Table 组件族，使用 variant=bordered 和 size=sm。外框、表头背景、单元格排版及行分隔线由 Table 统一维护；TableBody 不显示最后一行分隔线。静态内容行可省略 index。",
+    "borderedDescription": "通过 variant=bordered 使用带框内容表格，size=sm 使用紧凑排版。外框、表头背景、单元格排版及行分隔线由 Table 统一维护；TableBody 不显示最后一行分隔线。静态内容行可省略 index。",
     "loading": "加载状态",
     "loadingDescription": "保留最终表头和列结构，只在数据加载期间替换表体，从而减少布局跳动。",
     "loadingMessage": "正在加载表格数据",

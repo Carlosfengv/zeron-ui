@@ -1,7 +1,6 @@
 export const componentCardDescriptions = {
   zh: {
     "message-navigation": "紧凑的消息短线导航，支持对话预览、当前位置与键盘跳转。",
-    markdown: "安全渲染 GFM 内容，支持表格、代码块与无障碍流式状态。",
     "time-window-timeline": "通用分组时间轴，展示周期窗口、用量进度、已过时间与重置事件。",
     "line-chart": "折线图，用于展示变化趋势和比较多个数据系列。",
     "area-chart": "面积图，用于展示趋势、数量规模及堆叠构成。",
@@ -61,6 +60,7 @@ export const componentCardDescriptions = {
     toast: "支持状态、自动关闭、操作与拖拽手势的动画通知栈。",
     tooltip: "带弹簧动画和可配置位置的浮动提示。",
     "ask-user-questions": "分步提问流程，支持单选、多选、可选“其他”输入与跳过。",
+    markdown: "安全渲染 GFM 内容，支持表格、代码块与无障碍流式状态。",
     "chat-message": "带内置动效、用户与助手对齐方式及文件附件的聊天消息气泡。",
     "input-message": "聊天式消息编辑器，支持自适应高度文本域与可配置操作槽位。",
     "thinking-indicator": "带形变 SVG 与循环文案的动画状态指示器。",

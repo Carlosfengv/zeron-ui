@@ -1,5 +1,6 @@
 "use client";
 import { ChatThreadDemo } from "./ChatThreadDemo";
+import { ChatMarkdownDemo } from "./ChatMarkdownDemo";
 import { SectionedDataTableDemo } from "./SectionedDataTableDemo";
 import { GroupedDataTableDemo } from "./GroupedDataTableDemo";
 import { AgentTasksDemo } from "./AgentTasksDemo";
@@ -180,6 +181,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
     case "chat-thread-01":
       return <ChatThreadDemo />;
+    case "chat-markdown-01":
+      return <ChatMarkdownDemo />;
     case "grouped-data-table-02":
       return <SectionedDataTableDemo />;
     case "grouped-data-table-01":

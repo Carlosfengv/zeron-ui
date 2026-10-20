@@ -121,7 +121,6 @@
     "descriptions": {
       "chat-thread-01": "流式会话、消息版本、历史加载与检查点恢复。",
       "message-navigation": "紧凑的消息短线导航，支持对话预览、当前位置与键盘跳转。",
-      "markdown": "安全渲染 GFM 内容，支持表格、代码块与无障碍流式状态。",
       "appearance-settings-01": "主题预览、强调色、界面密度与动效偏好。",
       "context-window-01": "上下文容量、缓存与内容查看。",
       "fleet-health-01": "实时推理吞吐、集群用量与 GPU 遥测矩阵。",
@@ -220,7 +219,9 @@
       "heatmap-chart": "可组合的日历热力图与小时矩阵扩展，共享图表颜色变量和键盘查看能力。",
       "live-line-chart": "数据 time 是 Unix 秒，最新 value 为独立必填属性。",
       "radar-chart": "将归一化指标绘制为雷达图，比较一个或多个系列。",
-      "ring-chart": "通过同心圆环展示多项独立进度。"
+      "ring-chart": "通过同心圆环展示多项独立进度。",
+      "markdown": "安全渲染 GFM 内容，支持表格、代码块与无障碍流式状态。",
+      "chat-markdown-01": "统一 AI 回复的内容排版，支持代码、表格、嵌套列表、任务列表、脚注与流式生成。"
     }
   }
 }

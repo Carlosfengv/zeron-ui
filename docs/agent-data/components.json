@@ -1,29 +1,29 @@
 {
-  "chat-thread-01": {
+  "chat-message": {
     "keywords": [
-      "聊天",
-      "对话",
-      "线程",
       "消息",
+      "聊天",
+      "附件",
+      "编辑",
       "版本",
-      "检查点",
       "chat",
-      "thread",
-      "conversation",
-      "checkpoint"
+      "message",
+      "copy",
+      "branch"
     ],
     "useCases": [
-      "组合现有消息和输入组件，展示流式会话、历史、消息版本与检查点恢复。"
+      "独立组合用户或助手消息、本地或历史附件、复制、异步编辑和版本切换。"
     ],
     "whenNotToUse": [
-      "不负责模型请求、持久化、版本存储或真实文件恢复；这些能力由宿主提供。"
+      "完整会话的滚动、历史和检查点恢复应使用 chat-thread-01；此组件不存储消息或版本。"
     ],
     "keyApi": [
-      "children + composer + empty 组合会话，输入区不重新挂载。",
-      "ChatUserMessage/ChatAssistantMessage 复用 ChatMessage；branch 为从零开始的受控版本选择。",
-      "onLoadOlder 保持阅读锚点，onRestore 支持异步提交和返回 undo。",
-      "暂停 InputMessage.autoDispatchQueue 后再变更历史；composerRef 连接 textareaRef 恢复焦点。",
-      "ChatMarkdown 复用共享 GFM 与 CodeBlock，支持中英文 labels。"
+      "ChatMessage 的 header / attachments / actions / meta 插槽组合公开子组件，无需 ChatThread Provider；header 组合 ChatMessageAuthor，meta 统一负责元信息与操作区的间距、换行和显隐。",
+      "ChatMessageAttachment / ChatMessageAttachments 接受本地 File 与历史 ChatMessageFile，预览和名称共用边框；允许 HTTP(S)、blob 或相对 URL。",
+      "ChatMessageEditor 的 onSave 可返回 Promise；失败保留草稿，中文输入法组词不提交。",
+      "ChatMessageBranchSwitch 接受从零开始的受控 branch；宿主拥有版本及后继消息。",
+      "ChatMessageCopy / ChatMessageAction 复用 Button、Tooltip；labels 可本地化。",
+      "ChatMessageAuthor 使用 model / logo / provider 在正文上方展示该次回复的模型身份；名称 medium 字重、provider 灰色。ChatMessageMeta 使用 metrics（ttftMs、inputTokens、outputTokens、durationMs）显示性能信息，时间单位为毫秒，指标前不重复模型名。"
     ]
   },
   "message-navigation": {
@@ -52,31 +52,31 @@
       "align 默认 right，右侧短线右对齐，左侧使用 left；previewSide 独立控制 Popover 预览方向，className 仅调整外部布局。"
     ]
   },
-  "chat-message": {
+  "chat-thread-01": {
     "keywords": [
-      "消息",
       "聊天",
-      "附件",
-      "编辑",
+      "对话",
+      "线程",
+      "消息",
       "版本",
+      "检查点",
       "chat",
-      "message",
-      "copy",
-      "branch"
+      "thread",
+      "conversation",
+      "checkpoint"
     ],
     "useCases": [
-      "独立组合用户或助手消息、本地或历史附件、复制、异步编辑和版本切换。"
+      "组合现有消息和输入组件，展示流式会话、历史、消息版本与检查点恢复。"
     ],
     "whenNotToUse": [
-      "完整会话的滚动、历史和检查点恢复应使用 chat-thread-01；此组件不存储消息或版本。"
+      "不负责模型请求、持久化、版本存储或真实文件恢复；这些能力由宿主提供。"
     ],
     "keyApi": [
-      "ChatMessage 的 header / attachments / actions / meta 插槽组合公开子组件，无需 ChatThread Provider；header 组合 ChatMessageAuthor，meta 统一负责元信息与操作区的间距、换行和显隐。",
-      "ChatMessageAttachment / ChatMessageAttachments 接受本地 File 与历史 ChatMessageFile，预览和名称共用边框；允许 HTTP(S)、blob 或相对 URL。",
-      "ChatMessageEditor 的 onSave 可返回 Promise；失败保留草稿，中文输入法组词不提交。",
-      "ChatMessageBranchSwitch 接受从零开始的受控 branch；宿主拥有版本及后继消息。",
-      "ChatMessageCopy / ChatMessageAction 复用 Button、Tooltip；labels 可本地化。",
-      "ChatMessageAuthor 使用 model / logo / provider 在正文上方展示该次回复的模型身份；名称 medium 字重、provider 灰色。ChatMessageMeta 使用 metrics（ttftMs、inputTokens、outputTokens、durationMs）显示性能信息，时间单位为毫秒，指标前不重复模型名。"
+      "children + composer + empty 组合会话，输入区不重新挂载。",
+      "ChatUserMessage/ChatAssistantMessage 复用 ChatMessage；branch 为从零开始的受控版本选择。",
+      "onLoadOlder 保持阅读锚点，onRestore 支持异步提交和返回 undo。",
+      "暂停 InputMessage.autoDispatchQueue 后再变更历史；composerRef 连接 textareaRef 恢复焦点。",
+      "ChatMarkdown 复用共享 GFM 与 CodeBlock，支持中英文 labels。"
     ]
   },
   "markdown": {

@@ -170,3 +170,11 @@ InputMessage.header 与外层 gap-1 由工作区计划拥有，不放入本笔�
 | InputMessage、ThinkingSteps、ModelSelector、ContextWindow | 宿主与演示组合，按公共插槽接入 |
 
 详细记录：`output/chat-thread-review/before.json`、`after.json`、`verification.json`、`browser.json`、`desktop.png`、`mobile.png` 及各检查日志。检查范围内没有新增组件复用或样式契约违规；隔离候选与上述未覆盖矩阵仍是实际提交前的验证边界。
+
+## GitHub 发布与同步 main
+
+GitHub main 受必需检查 `checks` 保护，实际发布通过 PR #35 进行，保留六笔功能提交和两笔兼容性、文档导航修复。`943a9745` 候选的完整本地构建、332 个测试文件 / 3,085 项测试通过；GitHub 三种消费端、67 项浏览器回归、完整干净检出验证通过。常规质量任务中的既有 15ms 超时断言出现时序波动，未改动该测试，正常重跑后 CI 全部通过。
+
+等待期间，main 在 `9f800915` 合入独立的 chat-markdown PR。同步合并保留该主分支已有内容，不将其他 Block 的开发改动加入本次 PR。Markdown、Table 及 chat-markdown 源码、文档和安装项与新 main 一致；只合并 Thread 所需的 ChatMessage 扩展、受控导航与相关注册。UI 与 Blocks 类型检查、15 个相关测试文件 / 109 项回归通过，覆盖两个聊天 Block 的共享组件兼容性；重新生成 Registry、文档和 Agent 产物。
+
+同步后的完整生产构建通过，包括 lint、应用类型检查和静态页面生成。差异检查确认 Block 源码仅有 `chat-thread-01` 的 10 个文件，既有 Block Registry 条目全部保持不变。最终合并仍须通过同步后提交的 GitHub 必需检查；不绕过分支保护，不改写 main 或原始混合工作区。

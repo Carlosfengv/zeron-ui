@@ -72,7 +72,8 @@
     "./support-analytics-01": "./src/application/support-analytics-01/index.ts",
     "./integration-monitors-01": "./src/application/integration-monitors-01/index.ts",
     "./operations-workspace-shell-01": "./src/application/operations-workspace-shell-01/index.ts",
-    "./file-upload-01": "./src/application/file-upload-01/index.ts"
+    "./file-upload-01": "./src/application/file-upload-01/index.ts",
+    "./chat-markdown-01": "./src/application/chat-markdown-01/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --project tsconfig.json --noEmit"

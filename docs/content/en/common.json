@@ -121,7 +121,6 @@
     "descriptions": {
       "chat-thread-01": "Streaming conversations, message versions and checkpoint restoration.",
       "message-navigation": "Compact turn markers with rich previews, current-position emphasis and keyboard navigation.",
-      "markdown": "Safe GFM content with tables, code blocks and an accessible streaming indicator.",
       "appearance-settings-01": "Theme previews, accent colors, interface density and motion preferences.",
       "context-window-01": "Context capacity, cache and content inspection.",
       "fleet-health-01": "Live inference throughput, fleet telemetry and an interactive GPU matrix.",
@@ -220,7 +219,9 @@
       "heatmap-chart": "Composable calendar heatmaps and an hourly matrix extension, sharing chart tokens and keyboard inspection.",
       "live-line-chart": "Point time is Unix seconds.",
       "radar-chart": "Compare normalized metrics across one or more series.",
-      "ring-chart": "Display independent progress as concentric rings."
+      "ring-chart": "Display independent progress as concentric rings.",
+      "markdown": "Safe GFM content with tables, code blocks and an accessible streaming indicator.",
+      "chat-markdown-01": "Consistent AI response typography with code, tables, nested lists, tasks, footnotes and streaming."
     }
   }
 }

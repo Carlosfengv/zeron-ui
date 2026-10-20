@@ -10,7 +10,6 @@ source: packages/ui/src/components/table.tsx
 registry: packages/ui/registry.json
 typecheck_examples: true
 related:
-  - markdown
   - data-table
   - skeleton
 ---
@@ -44,5 +43,4 @@ export function ContentTable() {
 - className、style、原生 table 属性和 ref 作用于 table 元素。containerClassName 只用于外层容器的业务布局。
 - 分隔线由 TableRow 绘制，TableBody 统一去掉最后一行的底边框；不要在 Markdown 或业务页面复制这些样式。
 - TableRow 的 index 仅用于邻近悬停。交互列表提供稳定行索引；表头与静态富文本行可省略 index，不会注册悬停行。
-- Markdown 默认复用 bordered + md，使用 text-body / --font-size-body（14px）；列对齐数据通过 TableHead/TableCell 的原生 style 转交，Markdown 本身只控制外部段落间距。
 - 加载时保留表头与列结构，用 TableSkeletonBody 替换表体，并由宿主提供 aria-busy、加载文案与真实加载状态。

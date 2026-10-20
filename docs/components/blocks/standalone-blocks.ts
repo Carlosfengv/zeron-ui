@@ -1,5 +1,6 @@
 export const standaloneBlockSlugs = [
   "chat-thread-01",
+  "chat-markdown-01",
   "grouped-data-table-02",
   "grouped-data-table-01",
   "model-selector-01",

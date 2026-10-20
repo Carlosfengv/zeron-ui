@@ -5,6 +5,9 @@ const blockPreviewSources = {
   "chat-thread-01": {
     "url": "/docs-source/c605b3b0e7b03bf35b5e21b72006c885715a22acdbc210e2c7d2065eaa8fe8c9.txt"
   },
+  "chat-markdown-01": {
+    "url": "/docs-source/090f53dfcc4c1fe68fa1a5baa1355550ea639f014c59dcb2d89ea1e0a216ac48.txt"
+  },
   "grouped-data-table-02": {
     "url": "/docs-source/0072e7fa4020f8b8b57988ba136929e48c7898b6b6bd8d98e5ccd1a9a9d79d94.txt"
   },

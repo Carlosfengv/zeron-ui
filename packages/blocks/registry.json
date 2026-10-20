@@ -85,6 +85,39 @@
       ]
     },
     {
+      "name": "chat-markdown-01",
+      "type": "registry:block",
+      "title": "Chat Markdown",
+      "description": "Readable AI responses with shared Markdown typography, tables, code and streaming.",
+      "categories": [
+        "application",
+        "ai",
+        "agent"
+      ],
+      "registryDependencies": [
+        "chat-message",
+        "markdown",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/chat-markdown-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-markdown-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-markdown-01/chat-markdown-response.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-markdown-01/chat-markdown-response.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-markdown-01/chat-markdown-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-markdown-01/chat-markdown-demo-data.ts"
+        }
+      ]
+    },
+    {
       "name": "grouped-data-table-02",
       "type": "registry:block",
       "title": "Sectioned Data Table",

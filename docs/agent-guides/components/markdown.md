@@ -10,11 +10,11 @@ source: packages/ui/src/components/markdown.tsx
 registry: packages/ui/registry.json
 typecheck_examples: true
 related:
+  - chat-markdown-01
   - table
   - checkbox
   - code-block
   - chat-message
-  - chat-thread-01
 ---
 
 # Markdown
@@ -45,6 +45,5 @@ export function Example() {
 - streamingLabel 默认英文，需要根据当前语言覆盖。状态指示遵循减少动态效果偏好。
 - className 与原生 div 属性只用于布局和无障碍命名，避免覆盖内部语义颜色。
 
-Chat Thread 的 ChatMarkdown 只适配会话文案；Agent Trace 选择 plain 模式。两者共享此 UI 组件。
 
-Chat Markdown Block 提供可直接嵌入的回复组合与完整排版示例。统一正文使用 text-body / leading-6，段落间距 12px；标题前间距按 H1–H6 为 32/24/20/16/16/16px。代码、表格与引用间距 16px，分隔线使用 hairline 与 24px 间距。列表保留起始编号与嵌套关系，任务列表复用只读 Checkbox，不额外显示圆点，图片限制在正文宽度内。脚注引用、目标与返回链接使用每个实例独立的 ID，避免多条回复互相跳转。完整规范见 chat-markdown-01 指南。
+Chat Markdown Block 组合单条回复、身份与复制操作。统一正文使用 text-body 的配套字号与行高（14px / 20px），表格使用 bordered / md（14px）。完整排版规范见 chat-markdown-01 指南。
