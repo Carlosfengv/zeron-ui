@@ -1,0 +1,45 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "chat-markdown-01",
+  "type": "registry:block",
+  "title": "Chat Markdown",
+  "description": "Readable AI responses with shared Markdown typography, tables, code and streaming.",
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/chat-message.json",
+    "https://zeron-ui.vercel.app/r/markdown.json",
+    "https://zeron-ui.vercel.app/r/utils.json"
+  ],
+  "files": [
+    {
+      "path": "packages/blocks/src/application/chat-markdown-01/index.ts",
+      "content": "export { ChatMarkdownResponse } from \"./chat-markdown-response\";\nexport type { ChatMarkdownResponseProps } from \"./chat-markdown-response\";\nexport { createChatMarkdownDemoText } from \"./chat-markdown-demo-data\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/chat-markdown-01/index.ts"
+    },
+    {
+      "path": "packages/blocks/src/application/chat-markdown-01/chat-markdown-response.tsx",
+      "content": "\"use client\";\nimport type { HTMLAttributes, ReactNode } from \"react\";\nimport { ChatMessage, ChatMessageCopy, type ChatMessageCopyProps } from \"@ui/chat-message\";\nimport { Markdown, type MarkdownProps } from \"@ui/markdown\";\nimport { cn } from \"@lib/utils\";\nexport interface ChatMarkdownResponseProps extends Omit<HTMLAttributes<HTMLElement>, \"children\"> {\n    /** Accumulated response text. The host owns generation and cancellation. */\n    text: string;\n    streaming?: boolean;\n    streamingLabel?: string;\n    /** Optional identity, for example ChatMessageAuthor. */\n    author?: ReactNode;\n    /** Overrides the default copy action; null hides actions. Hidden while streaming. */\n    actions?: ReactNode;\n    copyLabels?: ChatMessageCopyProps[\"labels\"];\n    codeVariant?: MarkdownProps[\"codeVariant\"];\n    codeMessages?: MarkdownProps[\"codeMessages\"];\n    footnoteLabel?: string;\n    footnoteBackLabel?: string;\n    components?: MarkdownProps[\"components\"];\n}\n/** One readable assistant response; the host owns its scroll container. */\nexport function ChatMarkdownResponse({ text, streaming = false, streamingLabel, author, actions, copyLabels, codeVariant, codeMessages, footnoteLabel, footnoteBackLabel, components, className, ...props }: ChatMarkdownResponseProps) {\n    const showActions = !streaming && text.trim().length > 0;\n    const responseActions = actions === undefined ? <ChatMessageCopy text={text} labels={copyLabels}/> : actions;\n    return (<article {...props} data-slot=\"chat-markdown-response\" aria-busy={streaming} className={cn(\"mx-auto w-full min-w-0 max-w-3xl\", className)}>\n      <ChatMessage from=\"assistant\" header={author} actionsVisibility=\"always\" actions={showActions ? responseActions : undefined}>\n        <Markdown text={text} streaming={streaming} streamingLabel={streamingLabel} codeVariant={codeVariant} codeMessages={codeMessages} footnoteLabel={footnoteLabel} footnoteBackLabel={footnoteBackLabel} components={components}/>\n      </ChatMessage>\n    </article>);\n}\n",
+      "type": "registry:component",
+      "target": "components/blocks/chat-markdown-01/chat-markdown-response.tsx"
+    },
+    {
+      "path": "packages/blocks/src/application/chat-markdown-01/chat-markdown-demo-data.ts",
+      "content": "/** Original, local example content. No model or external data request. */\nexport function createChatMarkdownDemoText(locale = \"en\"): string {\n    return locale.startsWith(\"zh\") ? `## 让搜索结果跟上你的输入\n\n建议把搜索拆成**即时输入、延迟请求、保留结果**三步。用户可以连续输入，列表则在下一次结果准备好后平稳更新。\n\n> **建议**：先保留上一次结果，再补上加载提示。避免每次输入都清空列表，让用户始终知道自己正在看什么。\n\n### 方案对比\n\n| 体验 | 当前方案 | 调整后 |\n| :--- | :--- | :--- |\n| 输入反馈 | 输入与请求绑定 | 输入立即响应 |\n| 请求时机 | 每次按键发送 | 停顿后发送 |\n| 等待状态 | 清空结果 | 保留上一次结果 |\n| 异常处理 | 覆盖整个列表 | 行内提示，可重试 |\n\n### 一个简单的起点\n\n用一个小型 Hook 稳定输入值，再把它传给现有的查询逻辑。下面的 \\`delay\\` 是可调整的示例值。\n\n\\`\\`\\`ts filename=\"hooks/use-debounced-value.ts\"\nimport { useEffect, useState } from \"react\";\n\nexport function useDebouncedValue<T>(value: T, delay = 250) {\n  const [debounced, setDebounced] = useState(value);\n\n  useEffect(() => {\n    const timer = setTimeout(() => setDebounced(value), delay);\n    return () => clearTimeout(timer);\n  }, [value, delay]);\n\n  return debounced;\n}\n\\`\\`\\`\n\n### 实施步骤\n\n1. 保持输入框即时更新。\n2. 用延迟后的值发起查询。\n   - 清理过期的计时器。\n   - 取消过期请求，或忽略过期结果。\n3. 补齐加载、空结果与失败重试。\n\n#### 上线前检查\n\n- [x] 输入过程中保持键盘焦点\n- [x] 等待时保留上一次结果\n- [ ] 验证慢速网络下的反馈\n- [ ] 检查移动端与键盘操作\n\n---\n\n**验收标准**：连续输入时不跳动，搜索失败后仍可阅读已有结果。~~每次输入都清空列表~~的处理可以移除。[^review]\n\n关于副作用与清理，可阅读 [React 的 Effect 使用指南](https://react.dev/learn/synchronizing-with-effects)。\n\n[^review]: 这是一份本地演示方案；实际请求时机与验收结果由项目验证。\n` : `## Keep search in step with your typing\n\nSplit the experience into **instant input, delayed requests, and persistent results**. People can keep typing while the list updates when the next result is ready.\n\n> **Recommendation**: keep the previous results and add a loading hint. A stable list helps people understand what they are looking at.\n\n### Compare the approaches\n\n| Experience | Current approach | Proposed approach |\n| :--- | :--- | :--- |\n| Input feedback | Coupled to requests | Respond immediately |\n| Request timing | Every keystroke | After a short pause |\n| Loading | Clear the list | Keep previous results |\n| Errors | Replace the entire list | Inline hint with retry |\n\n### A small starting point\n\nStabilize the input with a small Hook, then pass the value to your existing query. The \\`delay\\` below is an adjustable example.\n\n\\`\\`\\`ts filename=\"hooks/use-debounced-value.ts\"\nimport { useEffect, useState } from \"react\";\n\nexport function useDebouncedValue<T>(value: T, delay = 250) {\n  const [debounced, setDebounced] = useState(value);\n\n  useEffect(() => {\n    const timer = setTimeout(() => setDebounced(value), delay);\n    return () => clearTimeout(timer);\n  }, [value, delay]);\n\n  return debounced;\n}\n\\`\\`\\`\n\n### Implementation steps\n\n1. Update the input immediately.\n2. Query using the delayed value.\n   - Clean up outdated timers.\n   - Cancel stale requests or ignore their results.\n3. Cover loading, empty results, and retry.\n\n#### Before shipping\n\n- [x] Preserve keyboard focus while typing\n- [x] Keep previous results while waiting\n- [ ] Verify feedback on a slow connection\n- [ ] Check mobile and keyboard navigation\n\n---\n\n**Acceptance**: typing keeps the list stable, and existing results remain readable after a failure. Remove ~~clearing the list on every keystroke~~.[^review]\n\nRead the [React guide to Effects](https://react.dev/learn/synchronizing-with-effects) for more about setup and cleanup.\n\n[^review]: This is a local example. Validate request timing and acceptance in your project.\n`;\n}\n",
+      "type": "registry:component",
+      "target": "components/blocks/chat-markdown-01/chat-markdown-demo-data.ts"
+    }
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "data-block"
+    }
+  },
+  "categories": [
+    "application",
+    "ai",
+    "agent"
+  ]
+}

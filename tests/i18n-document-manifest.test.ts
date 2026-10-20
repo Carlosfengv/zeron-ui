@@ -28,9 +28,10 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(pageDocEntries.find((entry) => entry.slug === "markdown")?.collection).toBe("components");
+    expect(pageDocEntries.find((entry) => entry.slug === "chat-markdown-01")?.collection).toBe("blocks");
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(149);
-    expect(detailDocEntries).toHaveLength(149);
+    expect(pageDocEntries).toHaveLength(150);
+    expect(detailDocEntries).toHaveLength(150);
     expect(pageDocEntries.find((entry) => entry.slug === "grouped-data-table-02")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "grouped-data-table-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "model-selector-01")?.collection).toBe("blocks");

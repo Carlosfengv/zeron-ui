@@ -10,6 +10,7 @@ source: packages/ui/src/components/markdown.tsx
 registry: packages/ui/registry.json
 typecheck_examples: true
 related:
+  - chat-markdown-01
   - table
   - checkbox
   - code-block
@@ -44,3 +45,5 @@ export function Example() {
 - streamingLabel 默认英文，需要根据当前语言覆盖。状态指示遵循减少动态效果偏好。
 - className 与原生 div 属性只用于布局和无障碍命名，避免覆盖内部语义颜色。
 
+
+Chat Markdown Block 组合单条回复、身份与复制操作。统一正文使用 text-body / leading-6，表格使用 bordered / md（14px）。完整排版规范见 chat-markdown-01 指南。
