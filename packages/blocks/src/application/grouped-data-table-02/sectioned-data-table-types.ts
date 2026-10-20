@@ -6,6 +6,7 @@ export interface SectionedDataTableGroup {
   value: string;
   label: string;
   description?: ReactNode;
+  /** Existing Badge category color, shared by the marker and section surface. Defaults to neutral gray. */
   color?: BadgeColor;
 }
 

@@ -2,7 +2,7 @@
 
 import { getGroupedRowModel, type Table } from "@tanstack/react-table";
 import { useId, useMemo, useState } from "react";
-import { Badge } from "@zeron/ui/badge";
+import { Badge, badgeColors } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
 import { DataTable, DataTableViewOptions, useDataTable } from "@zeron/ui/data-table";
@@ -98,20 +98,23 @@ export function SectionedDataTable<TData>({
             </Empty> : <div className="space-y-3">{groups.map((group, index) => {
               const value = String(group.groupingValue ?? "");
               const definition = definitions.get(value);
+              const color = definition?.color ?? "gray";
+              const backgroundColor = color === "gray" ? "var(--surface-raised)" : `color-mix(in oklab, ${badgeColors[color]} 12%, var(--surface-floating))`;
               const label = definition?.label || value || labels.ungrouped;
               const key = JSON.stringify([dimension.columnId, value]);
               const open = !collapsed[key];
               const count = group.subRows.length;
               const headingId = `${id}-${index}-heading`;
               const bodyId = `${id}-${index}-body`;
-              return <section key={key} aria-labelledby={headingId} data-slot="table-section" data-group-value={value}>
-                <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-surface-raised px-3 py-2">
+              return <section key={key} aria-labelledby={headingId} data-slot="table-section" data-group-value={value}
+                className="overflow-hidden rounded-xl border-hairline border-border" style={{ backgroundColor }}>
+                <div data-slot="table-section-header" data-group-color={color} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
                   <div className="flex min-w-0 w-full flex-wrap items-center gap-2 sm:w-auto sm:flex-1">
                     <h4 id={headingId} className="flex min-w-0 max-w-full items-center gap-2">
                       <Button variant="ghost" size="sm" iconOnly aria-label={open ? labels.collapseGroup(label) : labels.expandGroup(label)} aria-expanded={open} aria-controls={bodyId} onClick={() => setCollapsed((current) => ({ ...current, [key]: !current[key] }))}>
                         {open ? <ChevronDown aria-hidden /> : <ChevronRight aria-hidden />}
                       </Button>
-                      <Badge color={definition?.color ?? "gray"} variant="plain"><span className="break-all whitespace-normal">{label}</span></Badge>
+                      <Badge color={color} variant="plain"><span className="break-all whitespace-normal">{label}</span></Badge>
                       <Badge className="shrink-0" size="sm">{count}</Badge>
                     </h4>
                     {definition?.description && <span className="min-w-0 break-words text-label text-fg-subtle">{definition.description}</span>}
@@ -121,7 +124,7 @@ export function SectionedDataTable<TData>({
                     {onAddToGroup && <Button variant="secondary" size="sm" iconOnly aria-label={labels.addToGroup(label)} onClick={() => onAddToGroup({ columnId: dimension.columnId, value })}><Plus aria-hidden /></Button>}
                   </div>
                 </div>
-                <div id={bodyId} hidden={!open} className="pt-2">
+                <div id={bodyId} hidden={!open} className="px-2 pb-2">
                   {open && <SectionTable data={(revealed[key] ? group.subRows : group.subRows.slice(0, limit)).map((row) => row.original)} source={table} columnId={dimension.columnId} columns={columns} getRowId={getRowId} activeRowId={activeRowId} onRowActivate={onRowActivate} />}
                 </div>
               </section>;
