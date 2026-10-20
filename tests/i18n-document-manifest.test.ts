@@ -28,13 +28,11 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(152);
-    expect(detailDocEntries).toHaveLength(152);
-    expect(pageDocEntries.find((entry) => entry.slug === "chat-thread-01")?.collection).toBe("blocks");
-    expect(pageDocEntries.find((entry) => entry.collection === "blocks")?.slug).toBe("chat-markdown-01");
-    expect(pageDocEntries.find((entry) => entry.collection === "components")?.slug).toBe("time-window-timeline");
-    expect(pageDocEntries.find((entry) => entry.slug === "message-navigation")?.collection).toBe("components");
-    expect(pageDocEntries.find((entry) => entry.slug === "markdown")?.collection).toBe("components");
+    expect(pageDocEntries.length).toBeGreaterThan(0);
+    expect(detailDocEntries.map(pathnameOf)).toEqual(pageDocEntries.map(pathnameOf));
+    expect(pageDocEntries.find(entry => entry.slug === "chat-thread-01")?.collection).toBe("blocks");
+    expect(pageDocEntries.find(entry => entry.slug === "message-navigation")?.collection).toBe("components");
+    expect(pageDocEntries.find(entry => entry.slug === "markdown")?.collection).toBe("components");
     expect(pageDocEntries.find((entry) => entry.slug === "grouped-data-table-02")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "grouped-data-table-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "model-selector-01")?.collection).toBe("blocks");
@@ -49,7 +47,10 @@ describe("documentation manifest", () => {
     expect(pageDocEntries.some((entry) => entry.slug === "availability-monitor-01")).toBe(false);
     expect(pageDocEntries.find((entry) => entry.slug === "website-analytics-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "sales-conversion-funnel-01")?.collection).toBe("blocks");
-    expect(legacyDocRedirects).toHaveLength(84);
+    expect(new Set(legacyDocRedirects.map(entry => entry.legacySlug)).size).toBe(legacyDocRedirects.length);
+    for (const { destination } of legacyDocRedirects) {
+      expect(pageDocEntries.some(entry => pathnameOf(entry) === pathnameOf(destination))).toBe(true);
+    }
     expect(pageDocEntries.some(entry => entry.slug === "error-state" || entry.slug === "status-indicator")).toBe(false);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });

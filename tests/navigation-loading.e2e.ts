@@ -41,12 +41,15 @@ async function holdRoutes(page: Page, paths: string[]) {
 
 async function expectComplete(page: Page, path: string) {
   await expect(page).toHaveURL((url) => url.pathname === path);
+  // Next can retain the outgoing route while its replacement commits. Assert
+  // completion before resolving a heading ID shared by both route trees.
+  await expect(pending(page)).toHaveCount(0);
+  await expect(page.locator("[data-route-loading]")).toHaveCount(0);
   const selector = path.endsWith("/components") ? "#component-gallery-title"
     : /\/(blocks|pages)$/.test(path) ? "#artifact-gallery-title"
       : path.endsWith("/updates") ? "#updates-title" : "main h1";
+  await expect(page.locator(selector)).toHaveCount(1);
   await expect(page.locator(selector)).toBeVisible();
-  await expect(pending(page)).toHaveCount(0);
-  await expect(page.locator("[data-route-loading]")).toHaveCount(0);
   // Scope to route fallbacks: live component previews can intentionally demo Skeleton.
   await expect(page.locator('section[aria-labelledby="updates-title"] [aria-busy="true"]')).toHaveCount(0);
 }

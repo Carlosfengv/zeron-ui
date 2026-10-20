@@ -8,14 +8,17 @@ import { readOwnedFile, serialize, sha256 } from "./agent-utils.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const args = process.argv.slice(2);
-if (args.some((arg) => !["--core", "--keep"].includes(arg))) throw new Error("Usage: check-agent-clean-checkout.mjs [--core] [--keep]");
+if (args.some((arg) => !["--core", "--bootstrap", "--keep"].includes(arg)) || (args.includes("--core") && args.includes("--bootstrap"))) {
+  throw new Error("Usage: check-agent-clean-checkout.mjs [--core | --bootstrap] [--keep]");
+}
+const bootstrap = args.includes("--bootstrap");
 const directory = await mkdtemp(path.join(tmpdir(), "zeron-agent-clean-"));
 const checkout = path.join(directory, "checkout");
 const runId = path.basename(directory);
 const output = path.join(root, "output/agent-clean", runId);
 await mkdir(output, { recursive: true });
 const git = (cwd, parameters) => execFileSync("git", parameters, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
-const report = { schemaVersion: 1, method: "fresh-clone-with-working-tree-overlay", scope: args.includes("--core") ? "core" : "full-ci", status: "running",
+const report = { schemaVersion: 1, method: "fresh-clone-with-working-tree-overlay", scope: bootstrap ? "bootstrap" : args.includes("--core") ? "core" : "full-ci", status: "running",
   node: process.version, baseRevision: git(root, ["rev-parse", "HEAD"]).trim(), checkout, inputSha256: null, catalogVersion: null, checks: [] };
 const absent = ["node_modules", ".next", "public/skills", "public/ai", "docs/generated/agent-runtime", "output", "packages/registry/registry.composed.json"];
 async function verifyAbsent() {
@@ -86,35 +89,40 @@ try {
   await run("preview-sources", ["docs:sources:check"]);
   await run("guides", ["agents:guides:check"]);
   await run("code-engine", ["code-engine:build"]);
-  await run("guide-examples", ["agents:guides:examples:check"]);
+  if (!bootstrap) await run("guide-examples", ["agents:guides:examples:check"]);
   await run("skill-bundle", ["skills:bundle"]);
   await run("skills", ["skills:build"]);
-  await run("skill-candidate", ["skills:release:check"]);
-  await run("ui-types", ["--filter", "@zeron/ui", "typecheck"]);
-  await run("block-types", ["--filter", "@zeron/blocks", "typecheck"]);
+  if (!bootstrap) {
+    await run("skill-candidate", ["skills:release:check"]);
+    await run("ui-types", ["--filter", "@zeron/ui", "typecheck"]);
+    await run("block-types", ["--filter", "@zeron/blocks", "typecheck"]);
+  }
   await run("registry-build", ["registry:build"]);
   git(checkout, ["diff", "--exit-code", "--", "public/r"]);
   if (git(checkout, ["ls-files", "--others", "--exclude-standard", "public/r"]).trim()) throw new Error("Registry build produced unregistered files");
   await run("registry-check", ["registry:check"]);
-  await run("registry-candidate", ["registry:release:check"]);
+  if (!bootstrap) await run("registry-candidate", ["registry:release:check"]);
   await run("agent-check", ["agents:check"]);
   await run("agent-build", ["agents:build", "--mode", "development"]);
-  await run("agent-evaluation", ["agents:evaluate"]);
+  if (!bootstrap) await run("agent-evaluation", ["agents:evaluate"]);
   report.catalogVersion = JSON.parse(await readFile(path.join(checkout, "docs/generated/agent-runtime/current.json"), "utf8")).catalog.catalogVersion;
-  await run("lint", ["lint"]);
-  await run("design-lint", ["lint:design"]);
-  await run("types", ["exec", "tsc", "--noEmit", "--incremental", "false"]);
-  await run("unit", ["test:unit"]);
-  await run("cli", ["cli:test"]);
-  if (!args.includes("--core")) {
-    await run("consumer", ["test:consumer:smoke"], 1800000);
-    await run("browser", ["exec", "playwright", "install", "chromium"]);
-    await run("migration", ["test:consumer:migrations"], 1800000);
-  }
-  await run("build", ["build"]);
-  await run("production", ["test:production"]);
-  if (!args.includes("--core")) {
-    await run("navigation", ["exec", "playwright", "test", "--config", "playwright.navigation-loading.config.ts"]);
+  if (!bootstrap) {
+    await run("lint", ["lint"]);
+    await run("design-lint", ["lint:design"]);
+    await run("types", ["exec", "tsc", "--noEmit", "--incremental", "false"]);
+    await run("unit", ["test:unit"]);
+    await run("cli", ["cli:test"]);
+    if (!args.includes("--core")) {
+      await run("consumer", ["test:consumer:smoke"], 1800000);
+      await run("browser", ["exec", "playwright", "install", "chromium"]);
+      await run("consumer-styles", ["test:consumer:styles"], 1800000);
+      await run("migration", ["test:consumer:migrations"], 1800000);
+    }
+    await run("build", ["build"]);
+    await run("production", ["test:production"]);
+    if (!args.includes("--core")) {
+      await run("navigation", ["exec", "playwright", "test", "--config", "playwright.navigation-loading.config.ts"]);
+    }
   }
   report.status = "passed";
 } catch (error) {

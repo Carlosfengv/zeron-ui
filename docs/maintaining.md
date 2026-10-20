@@ -264,9 +264,9 @@ steps individually with `pnpm test:unit` and `pnpm test:controls:browser`.
 Production routing suites
 require a completed build: run `pnpm build && pnpm test:production`. They are
 kept separate so a fresh checkout does not try to start a nonexistent build.
-Run `pnpm test:e2e` to build once and run all five production Playwright suites
+Run `pnpm test:e2e` to build once and run all six production Playwright suites
 in Chromium, including documentation navigation, loading recovery, focus, and
-CodeBlock interactions. On a fresh checkout, first prepare the ignored Code
+CodeBlock and grouped-table interactions. On a fresh checkout, first prepare the ignored Code
 Engine inputs with `pnpm code-engine:build`; both CI workflows do this before
 building. Run `pnpm test:e2e:full` after installing Firefox and
 WebKit with `pnpm exec playwright install chromium firefox webkit` to include
@@ -300,18 +300,48 @@ and Markdown files under `docs/plans/` run only change detection and the require
 guides, and unknown files, run the code checks. Missing comparison history or
 an empty diff selects all checks rather than bypassing validation.
 
-For code changes, quality checks, production E2E, consumer installations, and
-consumer migrations run in independent jobs. The consumer matrix keeps the
-existing Next+npm, Next+pnpm, and Vite+npm targets in separate jobs, with separate
-style evidence uploads. The production E2E job builds once and reuses its
-verified build; only `.next/cache` is cached across runs, not a completed build.
+### CI validation scopes
+
+All code changes retain the full quality job: lint, design lint, source and
+application types, unit tests, rendered controls, CLI tests, generated-file
+drift checks, and Registry/Skill candidate checks. Consumers, migrations and
+production E2E run in independent jobs selected for the change. The required
+`checks` job rejects missing scope outputs and requires every selected job to pass.
+
+Ordinary UI/Block changes install their Registry entries with Next/pnpm, plus
+a representative dependent when a shared UI entry changes. Components without
+a maintained rendering demo compile their installed public module instead of
+silently skipping production builds. Installation tooling, dependencies,
+tokens, shared styling and unknown inputs retain the wider npm/pnpm/Next/Vite
+matrix and browser style checks. Migrations run for installation and fixture
+changes, rather than every Block edit. Unreadable diffs or Registry inputs
+fall back to all checks.
+
+Browser runs retain one verified production build. UI/Block edits run the
+documentation/detail suites and relevant code, focus or grouped-table suites;
+shared shell, routing and build changes run every suite. Pure unit-test edits
+need no site build. The full mode always includes every registered suite,
+including grouped tables, regardless of the PR selection. To select suites locally:
+
+```bash
+pnpm test:e2e:build
+pnpm test:e2e:run --suites documentation,grouped-table
+pnpm test:e2e:full:run
+```
+
+Only `.next/cache` is cached across runs, not a completed build.
 New commits cancel older runs of the same PR; main-branch runs are not cancelled.
 
-The full `agents:verify:clean` check runs when dependencies, install/build tools,
-Registry/token generators, migration skills, or CI definitions change. It also
-runs in the Extended E2E workflow nightly at 02:00 Asia/Shanghai and on manual
-dispatch; run that workflow against the release revision before publishing.
-Use `pnpm agents:verify:clean` to run the same isolated checkout check locally.
+When dependencies, install/build tools, Registry/token generators, migration
+skills or CI definitions change, the PR clean-checkout job uses
+`pnpm agents:verify:clean --bootstrap`: clone without generated files, install
+locked dependencies, generate the code engine, skills, Registry and Agent runtime,
+then check committed outputs. It does not repeat the independent quality,
+consumer, migration or production jobs. The Extended E2E workflow retains
+`pnpm agents:verify:clean` for the complete fresh-checkout regression, including
+consumer style checks, nightly at 02:00 Asia/Shanghai and on manual dispatch.
+Run that workflow against the release revision before publishing, or use
+`pnpm agents:verify:clean` for the same isolated checkout check locally.
 
 After changing Registry sources, regenerate with `pnpm registry:build` and run
 `pnpm registry:check`; commit the resulting `public/r` changes together with

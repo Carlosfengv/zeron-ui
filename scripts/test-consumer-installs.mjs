@@ -17,6 +17,7 @@ import { consumerRegistryExpectations, snapshotConsumerRegistry } from "./lib/co
 import { consumerStyleExample, verifyConsumerStyles } from "./lib/consumer-style-verification.mjs";
 import { verifyFeedbackConsumer } from "./lib/feedback-consumer-verification.mjs";
 import { unificationConsumerExample } from "./lib/unification-consumer-examples.mjs";
+import { consumerImportExample } from "./lib/consumer-import-example.mjs";
 import { verifyUnificationConsumer } from "./lib/unification-consumer-verification.mjs";
 
 const execFile = promisify(execFileCallback);
@@ -606,8 +607,7 @@ async function verifyNextBuild({ consumer, component }) {
   examples["model-detail-02"] = "\"use client\";\nimport { ModelDetail02 } from \"@/components/blocks/model-detail-02\";\nexport default function Page() { return <ModelDetail02 />; }\n";
   examples["file-manager-01"] = "\"use client\";\nimport { FileManager } from \"@/components/blocks/file-manager-01\";\nexport default function Page() { return <FileManager items={[]} error=\"Install verified\" />; }\n";
   const unifiedSource = unificationConsumerExample(component, "next");
-  let source = styles ? consumerStyleExample("next") : unifiedSource ?? examples[component];
-  if (!source) return;
+  let source = styles ? consumerStyleExample("next") : unifiedSource ?? examples[component] ?? consumerImportExample(registrySnapshot, component, "next");
   if (verifyUnification && !unifiedSource && !styles) {
     source = source.replace("export default function Page", "function InstalledDemo")
       + `\nexport default function Page() { return <main data-consumer="${component}"><InstalledDemo /></main>; }\n`;
@@ -1005,8 +1005,7 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'createRoot(document.getElementById("root")!).render(<ResourceCost items={resourceCostDemoItems} />);',
     '',
   ].join("\n");
-  let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component];
-  if (!source) throw new Error(`No Vite entry example is defined for ${component}`);
+  let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component] ?? consumerImportExample(registrySnapshot, component, "vite");
   if (verifyUnification && !unifiedSource && !styles) {
     source = source.replace(/\.render\(([\s\S]+)\);?\s*$/, `.render(<main data-consumer="${component}">$1</main>);\n`);
   }
