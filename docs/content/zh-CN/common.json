@@ -119,6 +119,7 @@
     "introductionTitle": "介绍",
     "introductionDescription": "这些组件为何用起来与众不同。",
     "descriptions": {
+      "message-navigation": "紧凑的消息短线导航，支持对话预览、当前位置与键盘跳转。",
       "markdown": "安全渲染 GFM 内容，支持表格、代码块与无障碍流式状态。",
       "appearance-settings-01": "主题预览、强调色、界面密度与动效偏好。",
       "context-window-01": "上下文容量、缓存与内容查看。",

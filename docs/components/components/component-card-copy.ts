@@ -1,5 +1,6 @@
 export const componentCardDescriptions = {
   zh: {
+    "message-navigation": "紧凑的消息短线导航，支持对话预览、当前位置与键盘跳转。",
     markdown: "安全渲染 GFM 内容，支持表格、代码块与无障碍流式状态。",
     "time-window-timeline": "通用分组时间轴，展示周期窗口、用量进度、已过时间与重置事件。",
     "line-chart": "折线图，用于展示变化趋势和比较多个数据系列。",

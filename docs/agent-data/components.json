@@ -1,4 +1,30 @@
 {
+  "message-navigation": {
+    "keywords": [
+      "消息导航",
+      "短线",
+      "会话",
+      "侧轨",
+      "message navigation",
+      "rail",
+      "minimap",
+      "conversation"
+    ],
+    "useCases": [
+      "通过紧凑短线预览并跳转到会话轮次，宿主保持自己的滚动容器。"
+    ],
+    "whenNotToUse": [
+      "不是路由导航、滚动条或数量图表；不管理历史加载和对话数据。"
+    ],
+    "keyApi": [
+      "items 提供 id、label、description?、bookmarked?、bookmarkDisabled?、额外 actions?。",
+      "onBookmarkChange(id, bookmarked) 仅请求变更，item.bookmarked 由外部更新；省略回调隐藏收藏按钮。bookmarkLabels / bookmarkIcon 提供文案和图标。",
+      "bookmarked=true 的短线显示品牌色和内侧圆点，当前/预览加长仍生效；只读导航也标记收藏。bookmarkLabels.bookmarked 本地化读屏状态。样式由组件统一管理。",
+      "activeId / onSelect 由宿主控制位置和跳转。",
+      "label / getItemLabel 本地化导航名称。",
+      "align 默认 right，右侧短线右对齐，左侧使用 left；previewSide 独立控制 Popover 预览方向，className 仅调整外部布局。"
+    ]
+  },
   "chat-message": {
     "keywords": [
       "消息",

@@ -141,6 +141,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Markdown](https://zeron-ui.vercel.app/ai/items/component%3Amarkdown.md): Safe GFM content with tables, code blocks and streaming status. Registry: markdown.
 - [Member Tree](https://zeron-ui.vercel.app/ai/items/component%3Amember-tree.md): Organization-focused Tree with department and member rendering, typed selection, and member-only cascade selection. Registry: member-tree.
 - [MenuItem](https://zeron-ui.vercel.app/ai/items/component%3Amenu-item.md): Accessible menu row primitive with icon, selection, and keyboard-menu integration. Registry: menu-item.
+- [Message Navigation](https://zeron-ui.vercel.app/ai/items/component%3Amessage-navigation.md): Compact turn markers with rich previews, current-position emphasis and keyboard navigation. Registry: message-navigation.
 - [Metric Card](https://zeron-ui.vercel.app/ai/items/component%3Ametric-card.md): Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction. Registry: metric-card.
 - [Mobile Drawer](https://zeron-ui.vercel.app/ai/items/component%3Amobile-drawer.md): Slide-in navigation drawer with scrim, focus trap, and scroll lock. Base UI flavor. Registry: mobile-drawer.
 - [Nav Item](https://zeron-ui.vercel.app/ai/items/component%3Anav-item.md): Composable navigation item that supports router links, labels, badges, actions, and sub-navigation. Registry: nav-item.
@@ -263,6 +264,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [list-pagination](https://zeron-ui.vercel.app/agent-guides/components/list-pagination.md)
 - [live-line-chart](https://zeron-ui.vercel.app/agent-guides/components/live-line-chart.md)
 - [markdown](https://zeron-ui.vercel.app/agent-guides/components/markdown.md)
+- [message-navigation](https://zeron-ui.vercel.app/agent-guides/components/message-navigation.md)
 - [metric-card](https://zeron-ui.vercel.app/agent-guides/components/metric-card.md)
 - [nav-item](https://zeron-ui.vercel.app/agent-guides/components/nav-item.md)
 - [nav-menu](https://zeron-ui.vercel.app/agent-guides/components/nav-menu.md)

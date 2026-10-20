@@ -1,0 +1,30 @@
+{
+  "messageNavigation": {
+    "description": "通过紧凑短线浏览对话，支持整轮预览与当前位置高亮。",
+    "basic": "对话导航",
+    "intro": "悬停或聚焦短线，预览问题和回复；点击后更新示例内容，真实对话滚动由宿主控制。示例包含 32 轮，可检查较多消息时的内部滚动。",
+    "behavior": "交互与职责",
+    "behaviorBody": "短线替代按钮方块，当前位置与悬停项变亮、变长。预览复用 Popover，处理视口碰撞并支持 Escape 关闭。方向键、Home、End 移动焦点；Enter、空格选择；Tab 仅进入导航一次。导航内部滚动以显示当前项，不滚动宿主页面；空数据不渲染。在 ChatThread 中，一条短线对应一个用户轮次，预览后续助手回复，窄屏隐藏侧轨。右上角收藏按钮仅向宿主请求变更，点击保持预览打开；额外 actions 必须接入真实宿主操作。",
+    "api": "API 参考",
+    "itemsProp": "稳定且唯一的 id、label，以及可选 description、bookmarked、bookmarkDisabled 和额外 actions。摘要支持富内容，建议保持简短。线长随标题长度轻微变化，不表达定量指标。",
+    "bookmarkProp": "提供 onBookmarkChange 时，预览右上角显示收藏按钮。点击仅发出 (id, nextBookmarked)，宿主更新 item.bookmarked 后才改变显示；组件不自行保存或乐观更新。bookmarkLabels 提供按钮名称和提示文案，bookmarkIcon 替换默认图标。bookmarkDisabled 可在保存期间禁用该项收藏按钮。",
+    "bookmark": "收藏消息",
+    "unbookmark": "取消收藏",
+    "bookmarked": "已收藏",
+    "bookmarkMarkers": "已收藏轮次使用品牌色短线，并在靠内容的一侧增加小圆点。当前项和预览项仍会加长，已收藏项保持品牌色及圆点；左右侧导航的短线外边缘继续对齐。短线标识和无障碍状态说明始终跟随外部 item.bookmarked，包括未提供收藏回调的只读展示；外部传回新值后才更新。可通过 bookmarkLabels.bookmarked 本地化状态说明。",
+    "savedCount": "已收藏 {count} 轮",
+    "selectionProp": "受控的当前位置与选择回调。组件不读取或修改对话内容；滚动、历史与跳转后的焦点由宿主管理。",
+    "labelsProp": "导航与条目的无障碍名称。getItemLabel 的索引从零开始，计数本地化由宿主完成。",
+    "sideProp": "预览优先显示的方向，由 Popover 处理视口边缘碰撞。",
+    "alignProp": "短线共用的对齐边缘。右侧导航使用 right，左侧使用 left；仅影响短线，预览方向仍由 previewSide 单独控制。",
+    "layoutProp": "控制导航位置与最大高度；短线、焦点及预览样式由组件自身维护。",
+    "navLabel": "对话轮次",
+    "turn": "第 {index} 轮",
+    "prompt1": "为什么搜索框输入时会卡顿？",
+    "reply1": "输入本身保持即时更新，对请求做防抖，用户短暂停顿后才触发搜索。",
+    "prompt2": "补一个测试",
+    "reply2": "使用虚拟计时器，验证延迟之前保留旧值，延迟结束之后再更新。",
+    "prompt3": "搜索应该用防抖还是节流？请比较触发时机以及各自适合的场景。",
+    "reply3": "防抖适合搜索和自动保存，节流适合滚动、缩放等连续事件。"
+  }
+}

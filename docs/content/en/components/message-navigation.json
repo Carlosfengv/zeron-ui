@@ -1,0 +1,30 @@
+{
+  "messageNavigation": {
+    "description": "Compact conversation markers with rich previews and current-position emphasis.",
+    "basic": "Conversation navigation",
+    "intro": "Hover or focus a line to preview a question and response. Select one to update the example; the host owns actual transcript scrolling. This example contains 32 turns to demonstrate overflow.",
+    "behavior": "Interaction and ownership",
+    "behaviorBody": "Short lines replace button tiles. The current turn and hovered line become brighter and longer. Previews reuse Popover for collision handling and Escape dismissal. Arrow keys, Home and End move focus; Enter or Space selects. Tab enters the rail once. The rail scrolls internally to reveal the current turn without scrolling its host. Empty data renders nothing. In ChatThread, one line represents a user turn and previews its following assistant reply; narrow layouts hide the rail. The top-right bookmark button requests changes from the host and leaves the preview open. Additional item actions must be connected to host behavior.",
+    "api": "API reference",
+    "itemsProp": "Unique stable id, label, optional description, bookmarked, bookmarkDisabled and additional actions. Descriptions accept rich content; keep them short. Line widths vary subtly with label length and do not encode a quantitative metric.",
+    "bookmarkProp": "The preview shows a bookmark button when onBookmarkChange is provided. Clicking requests (id, nextBookmarked); the host must update item.bookmarked. There is no optimistic state or persistence inside the component. bookmarkLabels localizes the toggle name and tooltip; bookmarkIcon replaces the default icon. bookmarkDisabled disables an item's toggle while saving.",
+    "bookmark": "Bookmark message",
+    "unbookmark": "Remove bookmark",
+    "bookmarked": "Bookmarked",
+    "bookmarkMarkers": "Bookmarked turns use a brand-colored line and a small dot on its inner side. Current and previewed turns still expand to full width, while bookmarked lines keep their color and dot. Markers keep the same outer edge on either side. The marker and its accessible description follow item.bookmarked, including when no bookmark callback is supplied; updates only appear after the host passes back the new state. Use bookmarkLabels.bookmarked to localize the state description.",
+    "savedCount": "{count, plural, =0 {No bookmarked turns} one {# bookmarked turn} other {# bookmarked turns}}",
+    "selectionProp": "Controlled current location and selection callback. The component does not inspect or mutate the transcript; the host owns scrolling, history and focus after navigation.",
+    "labelsProp": "Accessible navigation name and item names. getItemLabel receives a zero-based index; localize counts in the host.",
+    "sideProp": "Preferred preview side. Popover handles viewport collisions.",
+    "alignProp": "Shared edge of the short lines. Use right for a rail on the right, left for a rail on the left. This only aligns markers; previewSide independently controls the preview.",
+    "layoutProp": "Position and maximum height of the rail. Let the component own marker, focus and preview styles.",
+    "navLabel": "Conversation turns",
+    "turn": "Turn {index}",
+    "prompt1": "Why does the search box lag while typing?",
+    "reply1": "Keep the input responsive. Debounce the request so search only runs after a short pause.",
+    "prompt2": "Add a test",
+    "reply2": "Use fake timers to verify that the previous value is retained before the delay, then updated afterwards.",
+    "prompt3": "Should search use debounce or throttle? Please compare the timing and common use cases.",
+    "reply3": "Debounce suits search and autosave. Throttle suits continuous events such as scrolling and resizing."
+  }
+}

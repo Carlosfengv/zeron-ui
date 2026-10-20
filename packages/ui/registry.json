@@ -4,6 +4,31 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "message-navigation",
+      "type": "registry:ui",
+      "title": "Message Navigation",
+      "description": "Compact conversation markers with current-position emphasis, rich hover previews and keyboard navigation.",
+      "registryDependencies": [
+        "surfaces",
+        "popover",
+        "button",
+        "tooltip",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/message-navigation.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/message-navigation.tsx"
+        }
+      ],
+      "dependencies": [
+        "@hugeicons/core-free-icons",
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "markdown",
       "type": "registry:ui",
       "title": "Markdown",

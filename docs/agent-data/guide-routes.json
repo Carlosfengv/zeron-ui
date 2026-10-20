@@ -277,6 +277,10 @@
       "itemId": "component:markdown"
     },
     {
+      "path": "components/message-navigation.md",
+      "itemId": "component:message-navigation"
+    },
+    {
       "path": "components/metric-card.md",
       "itemId": "component:metric-card"
     },
