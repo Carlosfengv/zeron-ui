@@ -127,6 +127,7 @@
     "./ring-chart": "./src/components/ring-chart.tsx"
   },
   "imports": {
+    "#components/code-block": "./src/components/code-block/index.ts",
     "#components/*": "./src/components/*.tsx",
     "#hooks/use-as-ref": "./src/hooks/use-as-ref.ts",
     "#hooks/use-badge-overflow": "./src/hooks/use-badge-overflow.ts",
@@ -139,6 +140,11 @@
     "#hooks/use-touch-primary": "./src/hooks/use-touch-primary.tsx",
     "#system/brand-theme": "./src/system/brand-theme.ts",
     "#system/compose-refs": "./src/system/compose-refs.ts",
+    "#system/code-engine/*.json": "./src/system/code-engine/*.json",
+    "#system/code-engine/*": [
+      "./src/system/code-engine/*.ts",
+      "./src/system/code-engine/*.tsx"
+    ],
     "#system/data-grid-types": "./src/system/data-grid-types.ts",
     "#system/data-grid": "./src/system/data-grid.ts",
     "#system/elevated": "./src/system/elevated.tsx",

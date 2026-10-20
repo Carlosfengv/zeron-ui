@@ -6,6 +6,8 @@
 
 已完成的前五笔：`21c49391`（共享样式）、`e45cbaf2`（Markdown）、`2d8ce411`（ChatMessage）、`5b339c00`（MessageNavigation）、`2f4d57d1`（Thread 核心）。最后一笔补齐 Thread 文档、发现入口与演示。
 
+六笔功能提交后，包级 CI 暴露了 UI 包中 CodeBlock / Code Engine 的内部入口映射缺失，另补一笔必要的兼容修复。该提交同时遵循配对排版 token，更新 Button 命名 hover 的契约断言；仍不修改其他 Block 源码。main 受保护，通过 PR #35 等待必需的 checks 后正常合并，不绕过保护规则。
+
 - 本次仅引入 `chat-thread-01`；未引入 chat-markdown、chat-workspace、subagents、tool-calls、context-window-02、pull-request 等其他 Block。
 - Agent Trace / Agent Session Detail 的 Markdown 与返回最新适配未提交；对应集成测试保留 Thread 的阈值断言，不引入其他 Block 的行为约束。
 - 保留远端 Button 的 contentClassName / labelClassName；只加入 hover 隔离。InputMessage.header、工作区相关布局与其他组件改动不在本次范围。

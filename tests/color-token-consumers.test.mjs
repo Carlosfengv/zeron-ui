@@ -53,9 +53,11 @@ describe("semantic color consumers", () => {
     expect(source).toContain('primary: "text-fg-on-primary-action"');
     expect(source).toContain('neutral: "text-fg-on-neutral-action"');
     expect(source).toContain('destructive: "text-fg-on-destructive-action"');
-    expect(source).toContain("bg-primary-action group-hover:bg-primary-action-hover group-active:bg-primary-action-active");
-    expect(source).toContain("bg-neutral-action group-hover:bg-neutral-action-hover group-active:bg-neutral-action-active");
-    expect(source).toContain("bg-destructive-action group-hover:bg-destructive-action-hover group-active:bg-destructive-action-active");
+    expect(source).toContain("group/button");
+    expect(source).toContain("bg-primary-action group-hover/button:bg-primary-action-hover group-active/button:bg-primary-action-active");
+    expect(source).toContain("bg-neutral-action group-hover/button:bg-neutral-action-hover group-active/button:bg-neutral-action-active");
+    expect(source).toContain("bg-destructive-action group-hover/button:bg-destructive-action-hover group-active/button:bg-destructive-action-active");
+    expect(source).not.toContain("group-hover:bg-primary-action-hover");
   });
 
   it("offers a semantic warning tone without adding a hierarchy variant", () => {
