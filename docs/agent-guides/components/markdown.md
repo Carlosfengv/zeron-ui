@@ -46,4 +46,4 @@ export function Example() {
 - className 与原生 div 属性只用于布局和无障碍命名，避免覆盖内部语义颜色。
 
 
-Chat Markdown Block 组合单条回复、身份与复制操作。统一正文使用 text-body / leading-6，表格使用 bordered / md（14px）。完整排版规范见 chat-markdown-01 指南。
+Chat Markdown Block 组合单条回复、身份与复制操作。统一正文使用 text-body 的配套字号与行高（14px / 20px），表格使用 bordered / md（14px）。完整排版规范见 chat-markdown-01 指南。

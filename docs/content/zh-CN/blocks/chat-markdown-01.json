@@ -5,7 +5,7 @@
     "composition": "组件组合",
     "compositionBody": "ChatMarkdownResponse 复用 ChatMessage、ChatMessageCopy 与共用 Markdown。表格使用 Table 的 bordered / md 模式，表头与正文使用 text-body / --font-size-body（14px）；代码默认使用 CodeBlock 的高亮、复制和换行。author 与 actions 插槽接收现有消息组件；宿主负责滚动区域，不新增应用外壳。",
     "typography": "内容样式规范",
-    "typographyBody": "正文使用 text-body、24px 行高，最大阅读宽度为 max-w-3xl。H1 使用 heading，H2 使用 title，H3–H4 使用 body，H5–H6 使用 label；标题前间距为 16–32px，正文段落间距 12px，表格字体使用 text-body / --font-size-body（14px），表格、代码和引用前后间距 16px，分隔线前后间距 24px。强调使用 semibold，行内代码使用 label 等宽字体与 raised 背景。列表保留起始编号与嵌套关系，任务项为只读状态；图片限制在正文宽度内，脚注使用每实例唯一 ID。颜色、边框、圆角和控件状态全部沿用现有语义变量与组件。",
+    "typographyBody": "正文使用 text-body 的配套 14px 字号与 20px 行高，最大阅读宽度为 max-w-3xl。H1 使用 heading，H2 使用 title，H3–H4 使用 body，H5–H6 使用 label；标题前间距为 16–32px，正文段落间距 12px，表格字体使用 text-body / --font-size-body（14px），表格、代码和引用前后间距 16px，分隔线前后间距 24px。强调使用 semibold，行内代码使用 label 等宽字体与 raised 背景。列表保留起始编号与嵌套关系，任务项为只读状态；图片限制在正文宽度内，脚注使用每实例唯一 ID。颜色、边框、圆角和控件状态全部沿用现有语义变量与组件。",
     "dataContract": "数据与 API",
     "dataContractBody": "text 为必填的累积 Markdown；streaming 与 streamingLabel 提供生成状态。author 可放入 ChatMessageAuthor；actions 替换默认复制操作，传入 null 隐藏操作，空白正文不显示操作；copyLabels 本地化复制反馈。codeVariant 支持 block / plain；codeMessages 本地化代码工具栏，footnoteLabel / footnoteBackLabel 本地化脚注；components 为高级渲染覆盖，使用方负责其安全。className 与原生 article 属性仅用于布局和无障碍标记。安装 npx zeron-ui add chat-markdown-01，导入 ChatMarkdownResponse 后传入 text 即可。",
     "behavior": "演示与安全边界",

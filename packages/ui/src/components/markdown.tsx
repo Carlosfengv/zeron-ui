@@ -120,7 +120,7 @@ export function Markdown({
     ...components,
   }), [codeVariant, codeMessages, components, prefix]);
   return (
-    <div data-slot="markdown" className={cn("w-full min-w-0 max-w-full whitespace-normal break-words text-body leading-6 text-fg-default", className)} {...props}>
+    <div data-slot="markdown" className={cn("w-full min-w-0 max-w-full whitespace-normal break-words text-body text-fg-default", className)} {...props}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkBreaks]}
         remarkRehypeOptions={{ clobberPrefix: prefix, footnoteLabel, footnoteBackLabel }}

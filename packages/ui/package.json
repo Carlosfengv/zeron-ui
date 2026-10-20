@@ -155,7 +155,22 @@
     "#system/tailwind-merge-tokens": "./src/system/tailwind-merge-tokens.ts",
     "#system/utils": "./src/system/utils.ts",
     "#tokens/control-size": "./src/tokens/control-size.ts",
-    "#tokens/*": "./src/tokens/*"
+    "#tokens/*": "./src/tokens/*",
+    "#components/code-block": "./src/components/code-block/index.ts",
+    "#system/code-engine/types": "./src/system/code-engine/types.ts",
+    "#system/code-engine/react/types": "./src/system/code-engine/react/types.ts",
+    "#system/code-engine/react/File": "./src/system/code-engine/react/File.tsx",
+    "#system/code-engine/react/FileDiff": "./src/system/code-engine/react/FileDiff.tsx",
+    "#system/code-engine/react/MultiFileDiff": "./src/system/code-engine/react/MultiFileDiff.tsx",
+    "#system/code-engine/react/PatchDiff": "./src/system/code-engine/react/PatchDiff.tsx",
+    "#system/code-engine/react/CodeView": "./src/system/code-engine/react/CodeView.tsx",
+    "#system/code-engine/react/UnresolvedFile": "./src/system/code-engine/react/UnresolvedFile.tsx",
+    "#system/code-engine/react/utils/useStableCallback": "./src/system/code-engine/react/utils/useStableCallback.ts",
+    "#system/code-engine/renderers/UnresolvedFileHunksRenderer": "./src/system/code-engine/renderers/UnresolvedFileHunksRenderer.ts",
+    "#system/code-engine/theming/color": "./src/system/code-engine/theming/color.ts",
+    "#system/code-engine/theming/index": "./src/system/code-engine/theming/index.ts",
+    "#system/code-engine/theming/themes": "./src/system/code-engine/theming/themes.ts",
+    "#system/code-engine/themes/*.json": "./src/system/code-engine/themes/*.json"
   },
   "scripts": {
     "typecheck": "tsc --project tsconfig.json --noEmit"

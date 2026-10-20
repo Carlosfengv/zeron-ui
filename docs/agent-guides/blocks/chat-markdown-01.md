@@ -43,7 +43,7 @@ Registry 消费项目改用 `@/components/blocks/chat-markdown-01` 与 `@/compon
 | 内容 | 规范 |
 | --- | --- |
 | 阅读区域 | max-w-3xl，居中，min-w-0；宿主拥有滚动与页面边距 |
-| 正文 | text-body、leading-6、fg-default；段落间距 12px，首尾无额外段落外边距 |
+| 正文 | text-body 配套字号与行高（14px / 20px）、fg-default；段落间距 12px，首尾无额外段落外边距 |
 | 标题 | H1 heading / semibold；H2 title / semibold；H3 body / semibold；H4 body / medium；H5 label / semibold；H6 label / medium / muted |
 | 标题间距 | H1 顶部 32px；H2 24px；H3 20px；H4–H6 16px；首标题无顶部间距 |
 | 强调 | strong semibold；em italic；删除线保留语义 |

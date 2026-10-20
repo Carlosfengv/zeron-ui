@@ -132,6 +132,7 @@ Markdown 基础测试、Block 测试和共享按钮测试已拆开，避免基�
 | 3 | `913500a3` | ChatScrollToLatest、24px 阈值、导出、文档和独立测试。 |
 | 4 | `6b7937f6` | 必需的 ChatMessage header、actionsVisibility、满宽正文、Author、Copy / Action；保留原附件实现，不引入 Editor / BranchSwitch / Meta。 |
 | 5 | `feat(blocks): add chat Markdown response block` | 当前 Block、演示、双语规范、发现入口、分发及消费者样例。 |
+| 6 | `fix(ui): honor Markdown source and typography contracts` | 补齐 CodeBlock 及其类型依赖的精确 package imports，支持跨包源码检查；Markdown 正文沿用 text-body 的 14px / 20px 配套变量，同步规范与生成内容，并将当前 Block 加入图库键盘分页验证。 |
 
 其他会话对 Agent Trace、ChatThread、ChatWorkspace、Subagents 等调用方的迁移留在原工作区，未作为本次提交内容带入。候选目录的脚注、操作和滚动测试继续使用真实公开组件组合。
 
@@ -142,5 +143,7 @@ Markdown 基础测试、Block 测试和共享按钮测试已拆开，避免基�
 - 打包 CLI 经 HTTP Registry 安装到独立 pnpm 消费者，Next.js 和 Vite 的类型检查与生产构建均通过，smoke matrix 成功。Vite 保留第三方模块 use-client 指令提示，未声称构建无警告。
 - 候选端口 3922 的中文桌面浅色、英文 390px 深色检查通过：停止/重播/全文、完成后的高度变化、暂停阅读、回到最新内容及焦点、脚注、14px 表格和页面无横向溢出；文档详情路由正常打开。
 - 本轮未重跑完整文档站生产构建。原混合工作区保持原状，其他修改未暂存或提交。
+
+直接推送 main 被必需的 checks 分支保护拒绝后，已改用同一候选分支的 PR #33 完成检查与合并。首次远程检查发现跨包 CodeBlock 内部别名缺失；本地补充的全量测试发现 Markdown 行高覆盖语义排版，均在第 6 笔内修正。图库键盘翻页测试按新增 Block 更新固定序列，继续断言后续三个既有区块。没有放宽工作流、通过条件或分支保护。全量测试需使用仓库规定的 Node 22；本地默认 Node 23 的发布流程拒绝结果不作为源码缺陷修复。
 
 执行证据写入原工作区 `.zeron/reports/chat-markdown-review/commit-verification.json`；review 阶段的 100 项测试与浏览器记录另行保留。
