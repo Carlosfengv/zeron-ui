@@ -24,7 +24,7 @@ import { surfaceClasses } from "#system/surface-classes";
 import { SurfaceProvider } from "#system/surface-context";
 import { ChatMessageAttachment } from "#components/chat-message/attachments";
 import { Button } from "#components/button";
-import { Container, ContainerFooter } from "#components/container";
+import { Container, ContainerFooter, ContainerHeader } from "#components/container";
 import { Tooltip } from "#components/tooltip";
 
 const useIsoLayoutEffect =
@@ -93,6 +93,8 @@ interface InputMessageProps
   /** Content rendered in the bottom-right action area, before the built-in
    *  send button. Same render-fn shape as leftSlot. */
   rightSlot?: InputMessageSlot;
+  /** Context or review guidance rendered in the container header above the editor. */
+  header?: ReactNode;
   /** Session-level controls rendered below the editor in the agent footer.
    *  Use this for contextual controls such as workspace or permission menus. */
   footer?: ReactNode;
@@ -330,6 +332,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
       placeholder = "Ask me anything…",
       leftSlot,
       rightSlot,
+      header,
       footer,
       disclaimer,
       composerClassName,
@@ -775,7 +778,8 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
         style={style}
         {...props}
       >
-        <Container className="rounded-3xl bg-hover p-1">
+        <Container className="gap-1 rounded-3xl bg-hover p-1">
+          {header && <ContainerHeader>{header}</ContainerHeader>}
           <div
             onMouseDown={handleContainerMouseDown}
             onDragOver={handleDragOver}

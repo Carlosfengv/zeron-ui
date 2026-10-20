@@ -78,6 +78,7 @@ related:
 - `iconOnly` 按钮的 child 应是单个图标，并提供 `aria-label`；装饰性图标添加 `aria-hidden`。
 - `dashed` 主要表达尚未添加的项目或未激活的筛选器，通常与有边界的低强调变体搭配。
 - `active` 只表示按钮控制的外部界面仍处于打开或按住状态，例如 Dropdown 正在显示；不要把它当作业务选中状态的通用替代。
+- 内容与标签允许在宿主限定的宽度内收缩；组合标签可使用自身的 truncate 文本，图标仍按插槽尺寸保留。不要用内部 data-slot 选择器修补收缩或图文排列。
 - `tone="warning"` 只为低强调的状态操作增加警告语气，不改变操作层级；通常与 `variant="tertiary"` 一起使用，例如“配置异常”。
 
 ## State behavior

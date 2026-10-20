@@ -1875,6 +1875,7 @@
         }
       ],
       "dependencies": [
+        "@base-ui/react",
         "tw-animate-css"
       ]
     },
@@ -2275,6 +2276,7 @@
       "registryDependencies": [
         "surfaces",
         "badge",
+        "button",
         "utils",
         "springs",
         "icon-context",

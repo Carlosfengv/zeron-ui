@@ -7,6 +7,7 @@
     "parts": "Parts",
     "layoutProp": "Places the title and description in a vertical stack or on one line.",
     "childrenProp": "Composable leading, content, and trailing parts.",
+    "renderProp": "Replace the root with a button or link for an interactive row; keep native keyboard and disabled behavior on that element.",
     "classNameProp": "Additional classes applied to the item.",
     "groupPart": "Optional bordered group that separates adjacent items.",
     "leadingPart": "Fixed-size leading slot for an icon, avatar, or thumbnail.",

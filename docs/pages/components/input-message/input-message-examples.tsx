@@ -643,6 +643,7 @@ const inputMessageProps: PropDef[] = [
   { name: "placeholder", type: "string", default: '"Ask me anything…"', description: "Placeholder shown when the value is empty. While a file is being dragged over the component (and attachments are enabled), the placeholder swaps to “Drop files here to add to chat”." },
   { name: "leftSlot", type: "ReactNode | (ctx) => ReactNode", description: "Content rendered in the bottom-left action area. May be a render-fn that receives `{ openFilePicker, files }` — `openFilePicker(acceptOverride?)` opens the native file picker (optionally scoped to a subset of accept types, e.g. `\"image/*\"`)." },
   { name: "rightSlot", type: "ReactNode | (ctx) => ReactNode", description: "Content rendered in the bottom-right action area, before the built-in send button. Same render-fn shape as `leftSlot`." },
+  { name: "header", type: "ReactNode", description: "Context or review guidance displayed in the container header above the editor. Header actions are independent of editor focus and sending." },
   { name: "footer", type: "ReactNode", description: "Session-level controls rendered below the editor card, such as workspace and permission selectors." },
   { name: "disclaimer", type: "ReactNode", description: "Optional content rendered beneath the composer shell, typically an AI-output disclaimer." },
   { name: "composerClassName", type: "string", description: "Extra classes for the floating editor card inside the agent-composer shell." },

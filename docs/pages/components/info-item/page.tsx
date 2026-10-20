@@ -78,6 +78,7 @@ export default function InfoItemDoc() {
       description: t("layoutProp"),
     },
     { name: "children", type: "ReactNode", description: t("childrenProp") },
+    { name: "render", type: "ReactElement | render function", description: t("renderProp") },
     { name: "className", type: "string", description: t("classNameProp") },
   ];
 
