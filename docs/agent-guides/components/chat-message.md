@@ -13,6 +13,7 @@ related:
   - markdown
   - input-message
   - inline-notice
+  - chat-thread-01
 ---
 
 # ChatMessage

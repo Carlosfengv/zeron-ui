@@ -9,7 +9,7 @@ registry_import: "@/components/ui/message-navigation"
 source: packages/ui/src/components/message-navigation.tsx
 registry: packages/ui/registry.json
 typecheck_examples: true
-related: [popover, button, tooltip, chat-message]
+related: [popover, button, tooltip, chat-message, chat-thread-01]
 ---
 
 # MessageNavigation

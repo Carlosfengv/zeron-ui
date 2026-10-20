@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:chat-thread-01",
+      "type": "registry",
+      "key": "chat-thread-01",
+      "aliases": [
+        "chat-thread-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "component:message-navigation",
       "type": "registry",
       "key": "message-navigation",

@@ -1,4 +1,31 @@
 {
+  "chat-thread-01": {
+    "keywords": [
+      "聊天",
+      "对话",
+      "线程",
+      "消息",
+      "版本",
+      "检查点",
+      "chat",
+      "thread",
+      "conversation",
+      "checkpoint"
+    ],
+    "useCases": [
+      "组合现有消息和输入组件，展示流式会话、历史、消息版本与检查点恢复。"
+    ],
+    "whenNotToUse": [
+      "不负责模型请求、持久化、版本存储或真实文件恢复；这些能力由宿主提供。"
+    ],
+    "keyApi": [
+      "children + composer + empty 组合会话，输入区不重新挂载。",
+      "ChatUserMessage/ChatAssistantMessage 复用 ChatMessage；branch 为从零开始的受控版本选择。",
+      "onLoadOlder 保持阅读锚点，onRestore 支持异步提交和返回 undo。",
+      "暂停 InputMessage.autoDispatchQueue 后再变更历史；composerRef 连接 textareaRef 恢复焦点。",
+      "ChatMarkdown 复用共享 GFM 与 CodeBlock，支持中英文 labels。"
+    ]
+  },
   "message-navigation": {
     "keywords": [
       "消息导航",

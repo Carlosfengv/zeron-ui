@@ -1,0 +1,177 @@
+import type { ChatCheckpointData, ChatFile, ChatResponseMetrics } from "./chat-thread-types";
+
+export interface ChatThreadDemoMessage {
+  id: string;
+  slotId: string;
+  parentId: string | null;
+  role: "user" | "assistant";
+  text: string;
+  files?: ChatFile[];
+  localFiles?: File[];
+  checkpoint?: ChatCheckpointData;
+  reasoning?: string;
+  diff?: boolean;
+  feedback?: "up" | "down" | null;
+  error?: string;
+  stopped?: boolean;
+  model?: string;
+  modelId?: string;
+  provider?: string;
+  metrics?: ChatResponseMetrics;
+}
+
+export interface ChatThreadDemoState {
+  messages: ChatThreadDemoMessage[];
+  /** null explicitly terminates a restored branch. Missing keys choose the latest version. */
+  selection: Record<string, string | null>;
+}
+
+export function getChatThreadDemoPath(
+  state: ChatThreadDemoState,
+): ChatThreadDemoMessage[] {
+  const path: ChatThreadDemoMessage[] = [];
+  const seen = new Set<string>();
+  let parent: string | null = null;
+  while (true) {
+    const siblings: ChatThreadDemoMessage[] = state.messages.filter(
+      (message) => message.parentId === parent,
+    );
+    const selected: string | null | undefined =
+      state.selection[parent ?? "root"];
+    const message: ChatThreadDemoMessage | undefined =
+      selected === null
+        ? undefined
+        : selected
+          ? siblings.find((item) => item.id === selected)
+          : siblings.at(-1);
+    if (!message || seen.has(message.id)) return path;
+    path.push(message);
+    seen.add(message.id);
+    parent = message.id;
+  }
+}
+
+export function createChatThreadDemoData(locale = "en"): ChatThreadDemoState {
+  const zh = locale.startsWith("zh");
+  return {
+    selection: {},
+    messages: [
+      {
+        id: "question-1",
+        slotId: "slot-question-1",
+        parentId: null,
+        role: "user",
+        text: zh
+          ? "为什么搜索框输入时会卡顿？这是性能分析。"
+          : "Why does the search box lag when I type? Here’s the profile.",
+        files: [
+          {
+            id: "profile",
+            name: "profile.png",
+            type: "image/png",
+            url: "/component-covers/area-chart-light.jpg",
+          },
+          {
+            id: "trace",
+            name: "trace.json",
+            size: 184320,
+            type: "application/json",
+          },
+        ],
+        checkpoint: {
+          id: "checkpoint-1",
+          files: ["hooks/use-debounced-value.ts", "search.tsx"],
+        },
+      },
+      {
+        id: "answer-1",
+        model: "Sonnet 5.5",
+        modelId: "sonnet-5.5",
+        provider: "Anthropic",
+        metrics: { ttftMs: 420, inputTokens: 1248, outputTokens: 386, durationMs: 6820 },
+        slotId: "slot-answer-1",
+        parentId: "question-1",
+        role: "assistant",
+        reasoning: zh
+          ? "检查输入更新、请求频率与结果列表的渲染耗时。"
+          : "Check input updates, request frequency and result-list rendering.",
+        text: zh
+          ? '每次按键都会立即请求一次，并重新渲染结果列表。对搜索值做防抖，输入本身仍然即时更新。\n\n- 输入响应保持流畅。\n- 用户短暂停顿后，只发起一次请求。\n\n```ts\nimport { useEffect, useState } from "react";\n\nexport function useDebouncedValue<T>(value: T, delay = 250) {\n  const [debounced, setDebounced] = useState(value);\n  useEffect(() => {\n    const timer = setTimeout(() => setDebounced(value), delay);\n    return () => clearTimeout(timer);\n  }, [value, delay]);\n  return debounced;\n}\n```\n\n将防抖后的值传给搜索函数即可。'
+          : 'Every keystroke fetches immediately and renders a result list. Debounce the **value**, while keeping the input instant.\n\n- The input still updates on every key.\n- Search waits for a short pause, so only one request goes out.\n\n```ts\nimport { useEffect, useState } from "react";\n\nexport function useDebouncedValue<T>(value: T, delay = 250) {\n  const [debounced, setDebounced] = useState(value);\n  useEffect(() => {\n    const timer = setTimeout(() => setDebounced(value), delay);\n    return () => clearTimeout(timer);\n  }, [value, delay]);\n  return debounced;\n}\n```\n\nPass the debounced value to your search function.',
+      },
+      {
+        id: "question-2",
+        slotId: "slot-question-2",
+        parentId: "answer-1",
+        role: "user",
+        text: zh
+          ? "不错，能再补一个测试吗？"
+          : "Nice. Can you add a test for it?",
+        checkpoint: {
+          id: "checkpoint-2",
+          files: ["hooks/use-debounced-value.test.ts"],
+        },
+      },
+      {
+        id: "answer-2-v1",
+        model: "Sonnet 5.5",
+        modelId: "sonnet-5.5",
+        provider: "Anthropic",
+        metrics: { ttftMs: 285, inputTokens: 1720, outputTokens: 112, durationMs: 2160 },
+        slotId: "slot-answer-2",
+        parentId: "question-2",
+        role: "assistant",
+        text: zh
+          ? "先验证初始值，再等待计时器结束检查新值。"
+          : "Check the initial value, then wait for the timer and check the new value.",
+      },
+      {
+        id: "answer-2-v2",
+        model: "Sonnet 5.5",
+        modelId: "sonnet-5.5",
+        provider: "Anthropic",
+        metrics: { ttftMs: 360, inputTokens: 1720, outputTokens: 528, durationMs: 7340 },
+        slotId: "slot-answer-2",
+        parentId: "question-2",
+        role: "assistant",
+        feedback: "up",
+        diff: true,
+        text: zh
+          ? "使用虚拟计时器，测试会更快，也更精确。先输入两个字符，验证 250 毫秒之前仍保留旧值，之后再更新。"
+          : "Fake timers keep it fast and exact. Type two letters and check that the value holds until **250 ms** have passed.",
+      },
+      {
+        id: "question-3",
+        slotId: "slot-question-3",
+        parentId: "answer-2-v2",
+        role: "user",
+        text: zh
+          ? "搜索应该用防抖还是节流？"
+          : "Should search use debounce or throttle?",
+        checkpoint: { id: "checkpoint-3" },
+      },
+      {
+        id: "answer-3",
+        model: "Sonnet 5.5",
+        modelId: "sonnet-5.5",
+        provider: "Anthropic",
+        metrics: { ttftMs: 310, inputTokens: 2340, outputTokens: 286, durationMs: 4820 },
+        slotId: "slot-answer-3",
+        parentId: "question-3",
+        role: "assistant",
+        reasoning: zh
+          ? "比较搜索输入与连续滚动的触发频率。"
+          : "Compare search input with continuous scrolling.",
+        text: zh
+          ? "搜索更适合使用 **防抖**。它会在用户停止输入一小段时间后执行一次请求。\n\n| 对比 | 防抖 | 节流 |\n| --- | --- | --- |\n| 执行时机 | 停顿之后 | 固定间隔 |\n| 输入 react | 1 次请求 | 多次请求 |\n| 适合场景 | 搜索、自动保存 | 滚动、缩放 |\n\n输入框本身仍应即时更新，只延迟背后的搜索工作。"
+          : "Use **debounce** for search. It runs once after the user pauses typing.\n\n| Comparison | Debounce | Throttle |\n| --- | --- | --- |\n| Runs | After a pause | At fixed intervals |\n| Typing react | 1 request | Several requests |\n| Best for | Search, autosave | Scroll, resize |\n\nKeep the input itself instant and only delay the search behind it.",
+      },
+    ],
+  };
+}
+
+export function createChatThreadDemoReply(text: string, locale: string) {
+  return locale.startsWith("zh")
+    ? `关于「${text}」，建议先明确预期行为，再验证输入、状态和输出。\n\n| 检查项 | 预期结果 |\n| --- | --- |\n| 输入反馈 | 立即响应 |\n| 异步请求 | 仅在需要时触发 |\n| 错误恢复 | 保留已有内容并允许重试 |\n\n这样可以逐步定位问题，也方便补充回归测试。`
+    : `For “${text}”, start with the expected behavior, then check the input, state and output.\n\n| Check | Expected result |\n| --- | --- |\n| Input feedback | Immediate |\n| Async requests | Only when needed |\n| Error recovery | Keep content and allow retry |\n\nThis gives you a clear path to diagnose the issue and add a regression test.`;
+}

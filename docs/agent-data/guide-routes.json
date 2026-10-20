@@ -20,6 +20,10 @@
       "itemId": "block:appearance-settings-01"
     },
     {
+      "path": "blocks/chat-thread-01.md",
+      "itemId": "block:chat-thread-01"
+    },
+    {
       "path": "blocks/cluster-environment-detail-01.md",
       "itemId": "block:cluster-environment-detail-01"
     },

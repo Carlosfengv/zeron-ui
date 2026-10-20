@@ -14,6 +14,7 @@ related:
   - checkbox
   - code-block
   - chat-message
+  - chat-thread-01
 ---
 
 # Markdown

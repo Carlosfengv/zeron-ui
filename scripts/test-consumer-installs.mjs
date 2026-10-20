@@ -538,6 +538,17 @@ async function verifyNextBuild({ consumer, component }) {
     'import { ContextWindow, createContextWindowDemoData } from "@/components/blocks/context-window-01";',
     'export default function Page() { return <ContextWindow data={createContextWindowDemoData()} />; }',
   ].join("\n");
+  examples["chat-thread-01"] = [
+    '"use client";',
+    'import { useState } from "react";',
+    'import { ChatThread, ChatUserMessage, ChatAssistantMessage, ChatMarkdown } from "@/components/blocks/chat-thread-01";',
+    'import { Markdown } from "@/components/ui/markdown";',
+    'import { ChatMessageAction, ChatMessageAttachments, ChatMessageCopy, ChatMessageEditor, ChatMessageBranchSwitch } from "@/components/ui/chat-message";',
+    'const tableMarkdown = "| Surface | Status |\\n| --- | ---: |\\n| Chat Thread | Ready |";',
+    'function StandaloneParts() { return <><Markdown text={tableMarkdown} /><ChatMessageCopy text="copy" /><ChatMessageAction label="Edit" onClick={() => {}}>E</ChatMessageAction><ChatMessageAttachments files={[{id:"f",name:"brief.md"}]} /><ChatMessageEditor text="draft" onSave={() => {}} onCancel={() => {}} /><ChatMessageBranchSwitch branch={{index:0,count:2,onChange:() => {}}} /></>; }',
+    'export default function Page() { const [bookmarks, setBookmarks] = useState<string[]>([]); return <div className="h-96"><StandaloneParts /><ChatThread bookmarkedIds={bookmarks} onBookmarkChange={(id, saved) => setBookmarks(saved ? [id] : [])} composer={<textarea aria-label="Draft" />}><ChatUserMessage id="user" text="Verify installation" /><ChatAssistantMessage id="assistant" text="Install verified" model="Test model" modelLogo={<span>✦</span>} provider="Test provider" metrics={{ttftMs:42}} last><ChatMarkdown text={tableMarkdown} /></ChatAssistantMessage></ChatThread></div>; }',
+    '',
+  ].join("\n");
   examples["model-selector-01"] = [
     '"use client";',
     'import { useState } from "react";',
@@ -881,6 +892,19 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { ContextWindow, createContextWindowDemoData } from "@/src/components/blocks/context-window-01";',
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<ContextWindow data={createContextWindowDemoData()} />);',
+  ].join("\n");
+  examples["chat-thread-01"] = [
+    'import {createRoot} from "react-dom/client";',
+    'import { useState } from "react";',
+    'import "./index.css";',
+    'import { ChatThread, ChatUserMessage, ChatAssistantMessage, ChatMarkdown } from "@/src/components/blocks/chat-thread-01";',
+    'import { Markdown } from "@/src/components/ui/markdown";',
+    'import { ChatMessageAction, ChatMessageAttachments, ChatMessageCopy, ChatMessageEditor, ChatMessageBranchSwitch } from "@/src/components/ui/chat-message";',
+    'const tableMarkdown = "| Surface | Status |\\n| --- | ---: |\\n| Chat Thread | Ready |";',
+    'function StandaloneParts() { return <><Markdown text={tableMarkdown} /><ChatMessageCopy text="copy" /><ChatMessageAction label="Edit" onClick={() => {}}>E</ChatMessageAction><ChatMessageAttachments files={[{id:"f",name:"brief.md"}]} /><ChatMessageEditor text="draft" onSave={() => {}} onCancel={() => {}} /><ChatMessageBranchSwitch branch={{index:0,count:2,onChange:() => {}}} /></>; }',
+    'function Demo() { const [bookmarks, setBookmarks] = useState<string[]>([]); return <div className="h-96"><StandaloneParts /><ChatThread bookmarkedIds={bookmarks} onBookmarkChange={(id, saved) => setBookmarks(saved ? [id] : [])} composer={<textarea aria-label="Draft" />}><ChatUserMessage id="user" text="Verify installation" /><ChatAssistantMessage id="assistant" text="Install verified" model="Test model" modelLogo={<span>✦</span>} provider="Test provider" metrics={{ttftMs:42}} last><ChatMarkdown text={tableMarkdown} /></ChatAssistantMessage></ChatThread></div>; }',
+    'createRoot(document.getElementById("root")!).render(<Demo />);',
+    '',
   ].join("\n");
   examples["model-selector-01"] = [
     'import { createRoot } from "react-dom/client";',
