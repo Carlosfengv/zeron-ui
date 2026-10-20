@@ -6389,6 +6389,100 @@
       }
     },
     {
+      "name": "chat-workspace-01",
+      "type": "registry:block",
+      "title": "Chat Workspace",
+      "description": "Resizable conversations and an independent content panel for code review, Markdown, images and web previews.",
+      "categories": [
+        "application",
+        "ai",
+        "agent"
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/chat-thread-01.json",
+        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/code-block.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/file-type.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/info-item.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/markdown.json",
+        "https://zeron-ui.vercel.app/r/menu-item.json",
+        "https://zeron-ui.vercel.app/r/resizable.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-tabs.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-tabs.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-card.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-card.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-code-preview.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-code-preview.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-panel.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-panel.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-preview.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-preview.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-utils.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-utils.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/chat-workspace-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/chat-workspace-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/chat-workspace-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/chat-workspace-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/chat-workspace.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/chat-workspace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "chat-thread-01",
       "type": "registry:block",
       "title": "Chat Thread",

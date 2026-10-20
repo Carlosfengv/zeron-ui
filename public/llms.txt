@@ -30,6 +30,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Appearance Settings](https://zeron-ui.vercel.app/ai/items/block%3Aappearance-settings-01.md): 主题、强调色、界面密度与动效偏好。 Registry: appearance-settings-01.
 - [Chat Markdown](https://zeron-ui.vercel.app/ai/items/block%3Achat-markdown-01.md): Consistent AI response typography, code, tables, task lists and streaming. Registry: chat-markdown-01.
 - [Chat Thread](https://zeron-ui.vercel.app/ai/items/block%3Achat-thread-01.md): Streaming conversations, message versions and checkpoint restoration. Registry: chat-thread-01.
+- [Chat Workspace](https://zeron-ui.vercel.app/ai/items/block%3Achat-workspace-01.md): Resizable conversations with code review, Markdown, image and web previews. Registry: chat-workspace-01.
 - [集群环境详情](https://zeron-ui.vercel.app/ai/items/block%3Acluster-environment-detail-01.md): An inspection-report workspace that combines environment context, resource health, and incident follow-up. Registry: cluster-environment-detail-01.
 - [集群环境列表](https://zeron-ui.vercel.app/ai/items/block%3Acluster-environment-list-01.md): A filterable cluster-environment overview with critical, warning, normal, offline, and data-freshness states. Registry: cluster-environment-list-01.
 - [上下文窗口](https://zeron-ui.vercel.app/ai/items/block%3Acontext-window-01.md): Context capacity, prompt cache and read-only documents, memory and history. Registry: context-window-01.
@@ -203,6 +204,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [appearance-settings-01](https://zeron-ui.vercel.app/agent-guides/blocks/appearance-settings-01.md)
 - [chat-markdown-01](https://zeron-ui.vercel.app/agent-guides/blocks/chat-markdown-01.md)
 - [chat-thread-01](https://zeron-ui.vercel.app/agent-guides/blocks/chat-thread-01.md)
+- [chat-workspace-01](https://zeron-ui.vercel.app/agent-guides/blocks/chat-workspace-01.md)
 - [cluster-environment-detail-01](https://zeron-ui.vercel.app/agent-guides/blocks/cluster-environment-detail-01.md)
 - [cluster-environment-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/cluster-environment-list-01.md)
 - [context-window-01](https://zeron-ui.vercel.app/agent-guides/blocks/context-window-01.md)

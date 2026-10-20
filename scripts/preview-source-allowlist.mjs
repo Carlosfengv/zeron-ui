@@ -1,5 +1,18 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "chat-workspace-01": [
+    "packages/blocks/src/application/chat-workspace-01/artifact-utils.ts",
+    "packages/blocks/src/application/chat-workspace-01/artifact-preview.tsx",
+    "packages/blocks/src/application/chat-workspace-01/artifact-card.tsx",
+    "packages/blocks/src/application/chat-workspace-01/chat-workspace-demo-data.ts",
+    "packages/blocks/src/application/chat-workspace-01/artifact-tabs.tsx",
+    "packages/blocks/src/application/chat-workspace-01/artifact-code-preview.tsx",
+    "packages/blocks/src/application/chat-workspace-01/artifact-panel.tsx",
+    "packages/blocks/src/application/chat-workspace-01/chat-workspace.tsx",
+    "packages/blocks/src/application/chat-workspace-01/artifact-labels.ts",
+    "packages/blocks/src/application/chat-workspace-01/index.ts",
+    "packages/blocks/src/application/chat-workspace-01/chat-workspace-types.ts"
+  ],
   "chat-thread-01": [
     "packages/blocks/src/application/chat-thread-01/index.ts",
     "packages/blocks/src/application/chat-thread-01/chat-thread.tsx",

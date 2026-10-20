@@ -1,0 +1,737 @@
+import type { ArtifactResource, ArtifactView } from "./chat-workspace-types";
+
+export function artifactVersionKey(resource: ArtifactResource) {
+  return JSON.stringify([resource.id, resource.version]);
+}
+
+export function artifactViews(resource: ArtifactResource): ArtifactView[] {
+  if (resource.kind === "code") return resource.previousContent !== undefined ? ["diff", "source"] : ["source"];
+  if (resource.kind === "markdown") return resource.previousContent !== undefined ? ["preview", "source", "diff"] : ["preview", "source"];
+  return resource.kind === "text" ? ["source"] : ["preview"];
+}
+
+export function artifactIsReviewable(resource: ArtifactResource) {
+  return (resource.kind === "code" || resource.kind === "markdown") && resource.previousContent !== undefined && resource.review !== undefined;
+}
+
+export function artifactReviewStatus(resource: ArtifactResource) {
+  return artifactIsReviewable(resource) && "review" in resource ? resource.review : undefined;
+}
+
+/** Ready revisions awaiting a decision, preserving the host's resource order. */
+export function getPendingReviewResources(resources: readonly ArtifactResource[]) {
+  return resources.filter((resource) => artifactReviewStatus(resource) === "pending" && (!resource.status || resource.status === "ready"));
+}
+
+/** Web frames only receive HTTP(S). File/image URLs may also be local blob URLs. */
+export function safeArtifactUrl(url?: string, web = false): string | undefined {
+  if (!url?.trim()) return undefined;
+  try {
+    const parsed = new URL(url, "https://preview.invalid");
+    return (web ? ["http:", "https:"] : ["http:", "https:", "blob:"]).includes(parsed.protocol) ? url : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function artifactText(resource: ArtifactResource) {
+  return "content" in resource ? resource.content : "url" in resource ? safeArtifactUrl(resource.url, resource.kind === "url") : undefined;
+}
+
+export function artifactSizeText(resource: ArtifactResource, locale = "en") {
+  const bytes = resource.size !== undefined && Number.isFinite(resource.size) && resource.size >= 0
+    ? resource.size : "content" in resource ? new TextEncoder().encode(resource.content).byteLength : undefined;
+  if (bytes === undefined) return undefined;
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const unit = bytes > 0 ? Math.max(0, Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1)) : 0;
+  return `${new Intl.NumberFormat(locale, { maximumFractionDigits: unit ? 1 : 0 }).format(bytes / 1024 ** unit)} ${units[unit]}`;
+}
+
+export function downloadArtifact(resource: ArtifactResource) {
+  const remote = safeArtifactUrl(resource.downloadUrl) ?? ("url" in resource ? safeArtifactUrl(resource.url, resource.kind === "url") : undefined);
+  const blob = !remote && "content" in resource ? URL.createObjectURL(new Blob([resource.content], { type: "text/plain;charset=utf-8" })) : undefined;
+  const url = remote ?? blob;
+  if (!url) return;
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = resource.name;
+  link.rel = "noopener noreferrer";
+  link.target = "_blank";
+  link.click();
+  if (blob) setTimeout(() => URL.revokeObjectURL(blob), 1000);
+}
+
+
+"use client";
+
+import { Component, lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import { Button } from "@zeron/ui/button";
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@zeron/ui/empty";
+import { FileType } from "@zeron/ui/file-type";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { safeArtifactUrl } from "./artifact-utils";
+import type { ArtifactLabels, ArtifactPanelProps, ArtifactResource, ArtifactView } from "./chat-workspace-types";
+
+const CodePreview = lazy(() => import("./artifact-code-preview").then((module) => ({ default: module.ArtifactCodePreview })));
+
+function PreviewNotice({ children }: { children: ReactNode }) {
+  return <div className="p-4"><InlineNotice><InlineNoticeContent>{children}</InlineNoticeContent></InlineNotice></div>;
+}
+
+function ImagePreview({ resource, labels }: { resource: Extract<ArtifactResource, { kind: "image" }>; labels: ArtifactLabels }) {
+  const viewport = useRef<HTMLDivElement>(null);
+  const [bounds, setBounds] = useState({ width: 0, height: 0 });
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const url = safeArtifactUrl(resource.url);
+  useEffect(() => {
+    const node = viewport.current;
+    if (!node) return;
+    const measure = () => setBounds({ width: node.clientWidth, height: node.clientHeight });
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  const fit = dimensions.width && bounds.width ? Math.min(Math.max(1, bounds.width - 48) / dimensions.width, Math.max(1, bounds.height - 48) / dimensions.height, 1) : 1;
+  return <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex shrink-0 items-center justify-between gap-3 border-b-hairline border-border px-4 py-2">
+      <span className="text-label text-fg-muted">{dimensions.width ? `${dimensions.width} × ${dimensions.height}` : labels.preview}</span>
+      <div className="flex items-center gap-2">
+        <Button size="xs" variant="ghost" iconOnly aria-label={labels.zoomOut} disabled={zoom <= 0.25 || !dimensions.width} onClick={() => setZoom((value) => Math.max(0.25, value / 1.25))}>−</Button>
+        <span className="w-12 text-center text-label tabular-nums">{Math.round(fit * zoom * 100)}%</span>
+        <Button size="xs" variant="ghost" iconOnly aria-label={labels.zoomIn} disabled={zoom >= 8 || !dimensions.width} onClick={() => setZoom((value) => Math.min(8, value * 1.25))}>+</Button>
+        <Button size="xs" variant="ghost" onClick={() => setZoom(1)}>{labels.fit}</Button>
+      </div>
+    </div>
+    <div ref={viewport} className="relative min-h-0 flex-1 overflow-auto bg-surface-raised" tabIndex={0} aria-label={`${labels.preview}: ${resource.name}`}>
+      {!url ? <PreviewNotice>{labels.unavailableUrl}</PreviewNotice> : failed ? <PreviewNotice><span>{labels.failed} </span><Button size="sm" variant="ghost" onClick={() => { setFailed(false); setDimensions({ width: 0, height: 0 }); setAttempt((value) => value + 1); }}>{labels.retry}</Button></PreviewNotice> :
+        <div className="grid min-h-full min-w-full w-max place-items-center p-6">
+          {!dimensions.width && <span role="status" className="text-label text-fg-muted">{labels.loading}</span>}
+          {/* eslint-disable-next-line @next/next/no-img-element -- natural dimensions drive the zoomable viewer. */}
+          <img key={attempt} src={url} alt={resource.alt ?? resource.name} draggable={false} className="block max-w-none"
+            style={{ width: dimensions.width ? dimensions.width * fit * zoom : undefined, height: dimensions.height ? dimensions.height * fit * zoom : undefined, visibility: dimensions.width ? "visible" : "hidden" }}
+            onLoad={(event) => setDimensions({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })} onError={() => setFailed(true)} />
+        </div>}
+    </div>
+  </div>;
+}
+
+function WebPreview({ resource, labels }: { resource: Extract<ArtifactResource, { kind: "url" }>; labels: ArtifactLabels }) {
+  const [attempt, setAttempt] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const url = safeArtifactUrl(resource.url, true);
+  return <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex shrink-0 items-center gap-2 border-b-hairline border-border px-4 py-2">
+      <span className="min-w-0 flex-1 truncate font-mono text-label text-fg-muted" title={url}>{url ?? labels.unavailableUrl}</span>
+      <Button size="xs" variant="ghost" disabled={!url} onClick={() => { setLoading(true); setAttempt((value) => value + 1); }}>{labels.refresh}</Button>
+    </div>
+    <p className="shrink-0 px-4 py-2 text-label text-fg-muted">{labels.webNotice}</p>
+    {url ? <div className="relative min-h-0 flex-1">
+      {loading && <span role="status" className="absolute left-4 top-3 text-label text-fg-muted">{labels.loading}</span>}
+      <iframe key={attempt} src={url} title={resource.name} sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox" referrerPolicy="no-referrer" className="size-full border-0 bg-surface-floating" onLoad={() => setLoading(false)} />
+    </div> : <PreviewNotice>{labels.unavailableUrl}</PreviewNotice>}
+  </div>;
+}
+
+export function ArtifactPreview({ resource, view, split, labels, renderPreview, onRetry }: {
+  resource: ArtifactResource; view: ArtifactView; split: boolean; labels: ArtifactLabels;
+  renderPreview?: ArtifactPanelProps["renderPreview"]; onRetry?: () => void;
+}) {
+  if (resource.status === "loading") return <PreviewNotice><span role="status">{labels.loading}</span></PreviewNotice>;
+  if (resource.status === "error") return <PreviewNotice><span role="alert">{resource.error ?? labels.failed}</span>{onRetry && <Button variant="ghost" size="sm" onClick={onRetry}>{labels.retry}</Button>}</PreviewNotice>;
+  const custom = renderPreview?.(resource);
+  if (custom !== undefined) return custom;
+  if ("content" in resource) return <Suspense fallback={<PreviewNotice>{labels.loading}</PreviewNotice>}><CodePreview resource={resource} view={view} split={split} /></Suspense>;
+  if (resource.kind === "image") return <ImagePreview key={resource.url} resource={resource} labels={labels} />;
+  if (resource.kind === "url") return <WebPreview key={resource.url} resource={resource} labels={labels} />;
+  return <div className="flex flex-1 items-center justify-center p-6"><Empty reason="no-data" scope="inline" density="compact">
+    <FileType fileName={resource.name} size="xl" />
+    <EmptyHeader><EmptyTitle>{resource.name}</EmptyTitle><EmptyDescription>{labels.unsupported}</EmptyDescription></EmptyHeader>
+    <p className="text-label text-fg-muted">{[resource.mimeType, resource.size !== undefined && `${resource.size.toLocaleString()} B`].filter(Boolean).join(" · ")}</p>
+  </Empty></div>;
+}
+
+export class ArtifactPreviewBoundary extends Component<{ children: ReactNode; labels: ArtifactLabels }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() {
+    return this.state.failed ? <PreviewNotice><span role="alert">{this.props.labels.failed}</span><Button size="sm" variant="ghost" onClick={() => this.setState({ failed: false })}>{this.props.labels.retry}</Button></PreviewNotice> : this.props.children;
+  }
+}
+
+
+"use client";
+
+import { FileType } from "@zeron/ui/file-type";
+import { InfoItem, InfoItemContent, InfoItemDescription, InfoItemTitle, InfoItemTrailing } from "@zeron/ui/info-item";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { resolveArtifactLabels } from "./artifact-labels";
+import { artifactReviewStatus, artifactSizeText, safeArtifactUrl } from "./artifact-utils";
+import type { ArtifactCardProps } from "./chat-workspace-types";
+
+export function ArtifactCard({ resources, title, onOpen, labels: overrides, locale, className, ...props }: ArtifactCardProps) {
+  const labels = resolveArtifactLabels(locale, overrides);
+  const Globe = useIcon("globe");
+  const Arrow = useIcon("arrow-right");
+  return (
+    <div {...props} data-slot="artifact-card" className={cn("min-w-0 overflow-hidden rounded-lg border-hairline border-border bg-surface-floating", className)}>
+      <div className="border-b-hairline border-border px-3 py-2 text-label font-medium">{title ?? labels.resources}</div>
+      <ul className="flex min-w-0 flex-col gap-1 p-2">
+        {resources.map((resource) => {
+          const review = artifactReviewStatus(resource);
+          const description = resource.kind === "url" ? safeArtifactUrl(resource.url, true) ?? labels.unavailableUrl : artifactSizeText(resource, locale);
+          return <li key={resource.id} className="min-w-0">
+            <InfoItem render={<button type="button" />} onClick={() => onOpen(resource)} aria-label={`${labels.preview}: ${resource.name}`}>
+              <span className="flex size-8 shrink-0 items-center justify-center">{resource.kind === "url" ? <Globe size={20} aria-hidden /> : <FileType fileName={resource.name} size="sm" aria-hidden />}</span>
+              <InfoItemContent>
+                <InfoItemTitle className="truncate" title={resource.name}>{resource.name}</InfoItemTitle>
+                {description && <InfoItemDescription className="truncate" title={description}>{description}</InfoItemDescription>}
+              </InfoItemContent>
+              <InfoItemTrailing>{review && <span className="text-label text-fg-muted">{labels[review]}</span>}<Arrow size={14} aria-hidden /></InfoItemTrailing>
+            </InfoItem>
+          </li>;
+        })}
+      </ul>
+    </div>
+  );
+}
+
+
+import type { ArtifactResource } from "./chat-workspace-types";
+
+/** Local fixtures. URL/image hosts may replace these two asset addresses. */
+export function createChatWorkspaceDemoResources(locale = "en", assetBase = "/demos/chat-workspace"): ArtifactResource[] {
+  const zh = locale.toLowerCase().startsWith("zh");
+  return [
+    {
+      id: "theme", version: "1", kind: "code", name: "theme.ts", path: "src/lib/theme.ts", messageId: "result", review: "pending",
+      previousContent: `export type Theme = "light" | "dark";\n\nexport function readTheme(): Theme {\n  return "light";\n}\n\nexport function applyTheme(theme: Theme) {\n  document.documentElement.classList.toggle("dark", theme === "dark");\n}\n`,
+      content: `export type Theme = "light" | "dark" | "system";\n\nconst storageKey = "workspace-theme";\n\nexport function readTheme(): Theme {\n  if (typeof window === "undefined") return "system";\n  const saved = localStorage.getItem(storageKey);\n  return saved === "light" || saved === "dark" ? saved : "system";\n}\n\nexport function applyTheme(theme: Theme) {\n  const dark = theme === "system"\n    ? matchMedia("(prefers-color-scheme: dark)").matches\n    : theme === "dark";\n  document.documentElement.classList.toggle("dark", dark);\n  localStorage.setItem(storageKey, theme);\n}\n`,
+    },
+    {
+      id: "readme", version: "1", kind: "markdown", name: "README.md", path: "docs/README.md", messageId: "result", review: "pending",
+      previousContent: "# Appearance\n\nChoose a light or dark theme.\n",
+      content: zh ? `# 外观设置\n\n让工作区跟随你的习惯。现在支持 **浅色、深色、跟随系统** 三种主题。\n\n## 使用方式\n\n1. 打开「设置 → 外观」。\n2. 选择喜欢的主题。\n3. 选择会保存在当前浏览器，下次访问自动应用。\n\n| 主题 | 行为 |\n| --- | --- |\n| 浅色 | 始终使用浅色外观 |\n| 深色 | 始终使用深色外观 |\n| 跟随系统 | 打开页面时读取系统偏好 |\n\n## 验收清单\n\n- [x] 主题切换即时生效\n- [x] 刷新后保留选择\n- [x] 首次访问默认跟随系统\n\n> 右侧可以预览文档、阅读源码，也可以检查本次变更。\n` : `# Appearance\n\nA workspace that feels like yours. Choose **Light, Dark or System** and keep your preference between visits.\n\n## Getting started\n\n1. Open **Settings → Appearance**.\n2. Choose your preferred theme.\n3. Your choice is saved in this browser and restored on the next visit.\n\n| Theme | Behavior |\n| --- | --- |\n| Light | Always use the light appearance |\n| Dark | Always use the dark appearance |\n| System | Read your system preference when the page opens |\n\n## Acceptance checklist\n\n- [x] Theme changes apply immediately\n- [x] Your choice survives a refresh\n- [x] First visits default to the system preference\n\n> Preview the document, read its source, or review the changes in this panel.\n`,
+    },
+    { id: "design", version: "1", kind: "image", name: "appearance.svg", path: "design/appearance.svg", url: `${assetBase}/appearance.svg`, size: 2883, alt: zh ? "外观设置设计稿，展示浅色、深色与跟随系统三种选项" : "Appearance design showing light, dark and system options", messageId: "result" },
+    { id: "website", version: "1", kind: "url", name: zh ? "页面预览" : "Live preview", url: `${assetBase}/preview.html`, messageId: "result" },
+    { id: "archive", version: "1", kind: "file", name: "release-notes.zip", mimeType: "application/zip", size: 24576, messageId: "result" },
+  ];
+}
+
+
+"use client";
+
+import { useLayoutEffect, useRef, useState } from "react";
+import { Button } from "@zeron/ui/button";
+import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
+import { FileType } from "@zeron/ui/file-type";
+import { MenuItem } from "@zeron/ui/menu-item";
+import { TabItem, Tabs, TabsList } from "@zeron/ui/tabs";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import type { ArtifactLabels, ArtifactPanelProps, ArtifactResource } from "./chat-workspace-types";
+
+/** Keep the selected resource visible and fit complete tabs in their original order. */
+export function visibleArtifactIds(resources: readonly ArtifactResource[], activeId: string, widths: readonly number[], available: number, moreWidth: number, gap: number): Set<string> {
+  if (available <= 0 || widths.length !== resources.length || widths.some((width) => width <= 0)) return new Set(resources.map((resource) => resource.id));
+  if (widths.reduce((sum, width) => sum + width, 0) + Math.max(0, resources.length - 1) * gap <= available) return new Set(resources.map((resource) => resource.id));
+  const activeIndex = Math.max(0, resources.findIndex((resource) => resource.id === activeId));
+  const visible = new Set([resources[activeIndex].id]);
+  let used = widths[activeIndex];
+  const budget = available - moreWidth;
+  resources.forEach((resource, index) => {
+    if (index !== activeIndex && used + gap + widths[index] <= budget) {
+      visible.add(resource.id);
+      used += gap + widths[index];
+    }
+  });
+  return visible;
+}
+
+export function ArtifactTabs({ resources, activeId, labels, onSelect, onClose, addAction }: {
+  resources: readonly ArtifactResource[];
+  activeId: string;
+  labels: ArtifactLabels;
+  onSelect: (id: string) => void;
+} & Pick<ArtifactPanelProps, "onClose" | "addAction">) {
+  const availableRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useState({ available: 0, widths: [] as number[], moreWidth: 0, gap: 0 });
+  const Globe = useIcon("globe");
+  const More = useIcon("ellipsis");
+  const closable = !!onClose;
+  // Content and review updates do not change tab geometry (for example while a reply streams).
+  const measurementKey = JSON.stringify(resources.map(({ id, name, kind }) => [id, name, kind]));
+  useLayoutEffect(() => {
+    const available = availableRef.current;
+    const measurement = measureRef.current;
+    const more = moreRef.current;
+    if (!available || !measurement || !more) return;
+    const measure = () => {
+      const widths = Array.from(measurement.querySelectorAll<HTMLElement>("[data-measure-artifact]")).map((tab) => (tab.closest<HTMLElement>('[data-slot="closable-tab"]') ?? tab).getBoundingClientRect().width);
+      const gap = parseFloat(getComputedStyle(measurement).columnGap) || 0;
+      const actionGap = parseFloat(getComputedStyle(available).columnGap) || 0;
+      const next = { available: available.clientWidth, widths, gap, moreWidth: more.getBoundingClientRect().width + actionGap };
+      setLayout((current) => current.available === next.available && current.moreWidth === next.moreWidth && current.gap === gap && current.widths.length === widths.length && current.widths.every((width, index) => width === widths[index]) ? current : next);
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(available);
+    observer.observe(measurement);
+    observer.observe(more);
+    return () => observer.disconnect();
+  }, [measurementKey, activeId, closable]);
+  const visible = visibleArtifactIds(resources, activeId, layout.widths, layout.available, layout.moreWidth, layout.gap);
+  const leading = (resource: ArtifactResource) => resource.kind === "url" ? <Globe size={16} aria-hidden /> : <FileType fileName={resource.name} variant="mono" size="mini" aria-hidden />;
+  const focusSelected = (id: string) => requestAnimationFrame(() => {
+    Array.from(availableRef.current?.querySelectorAll<HTMLElement>("[data-artifact-id]") ?? []).find((tab) => tab.dataset.artifactId === id)?.focus();
+  });
+  return <div data-slot="artifact-tab-bar" className="relative flex shrink-0 items-center gap-2 border-b-hairline border-border bg-surface-floating p-2">
+    <div ref={availableRef} className="flex min-w-0 flex-1 items-center gap-2">
+      <div className="min-w-0 flex-1">
+        <TabsList aria-label={labels.resources}>
+          {resources.filter((resource) => visible.has(resource.id)).map((resource) => <TabItem key={resource.id} value={resource.id} label={resource.name} title={resource.name} data-artifact-id={resource.id} leading={leading(resource)}
+            closeLabel={labels.close(resource.name)} onClose={onClose ? () => onClose(resource) : undefined}
+            onKeyDown={(event) => { if (onClose && event.key === "Delete") { event.preventDefault(); onClose(resource); } }} />)}
+        </TabsList>
+      </div>
+      {visible.size < resources.length && <DropdownMenu>
+        <DropdownTrigger render={<Button iconOnly size="sm" variant="tertiary" aria-label={labels.more}><More aria-hidden /></Button>} />
+        <DropdownContent align="end" aria-label={labels.resources} checkedIndex={resources.findIndex((resource) => resource.id === activeId)}>
+          {resources.map((resource, index) => <MenuItem key={resource.id} index={index} label={resource.name} leading={leading(resource)} checked={resource.id === activeId}
+            onSelect={() => { onSelect(resource.id); focusSelected(resource.id); }} />)}
+        </DropdownContent>
+      </DropdownMenu>}
+    </div>
+    {addAction && <div className="shrink-0">{addAction}</div>}
+    {/* Measure the same public tabs offscreen; this copy is inert and never navigable. */}
+    <div aria-hidden inert className="pointer-events-none invisible absolute inset-0 overflow-hidden">
+      <div className="flex w-max items-center">
+      <Tabs value={activeId} variant="segment" color="default">
+        <TabsList ref={measureRef}>
+          {resources.map((resource) => <TabItem key={resource.id} value={resource.id} label={resource.name} data-measure-artifact leading={leading(resource)} onClose={onClose ? () => {} : undefined} />)}
+        </TabsList>
+      </Tabs>
+      <div ref={moreRef}><Button iconOnly size="sm" variant="tertiary" tabIndex={-1}><More aria-hidden /></Button></div>
+      </div>
+    </div>
+  </div>;
+}
+
+
+"use client";
+
+import { CodeBlock, CodeDiff } from "@zeron/ui/code-block";
+import { Markdown } from "@zeron/ui/markdown";
+import type { ArtifactResource, ArtifactView } from "./chat-workspace-types";
+
+export function ArtifactCodePreview({ resource, view, split }: { resource: ArtifactResource; view: ArtifactView; split: boolean }) {
+  if (!("content" in resource)) return null;
+  if (view === "preview" && resource.kind === "markdown") return <div className="mx-auto w-full max-w-3xl p-6"><Markdown text={resource.content} /></div>;
+  if (view === "diff" && "previousContent" in resource && resource.previousContent !== undefined) {
+    return <div className="min-w-0 p-3"><CodeDiff oldFile={{ name: resource.kind === "code" ? resource.previousPath ?? resource.path ?? resource.name : resource.path ?? resource.name, contents: resource.previousContent }}
+      newFile={{ name: resource.path ?? resource.name, contents: resource.content }} options={{ diffStyle: split ? "split" : "unified" }} /></div>;
+  }
+  return <div className="min-w-0 p-3"><CodeBlock file={{ name: resource.path ?? resource.name, contents: resource.content }} /></div>;
+}
+
+
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Alert, AlertAction, AlertTitle } from "@zeron/ui/alert";
+import { Button } from "@zeron/ui/button";
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@zeron/ui/empty";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { resolveArtifactLabels } from "./artifact-labels";
+import { ArtifactTabs } from "./artifact-tabs";
+import { ArtifactPreview, ArtifactPreviewBoundary } from "./artifact-preview";
+import { artifactText, artifactVersionKey, artifactViews, downloadArtifact, getPendingReviewResources, safeArtifactUrl } from "./artifact-utils";
+import type { ArtifactLabels, ArtifactPanelProps, ArtifactResource, ArtifactReviewDecision, ArtifactView } from "./chat-workspace-types";
+
+function ArtifactSurface({ resource, labels, onReference, onRetry, renderPreview }: {
+  resource: ArtifactResource; labels: ArtifactLabels;
+} & Pick<ArtifactPanelProps, "onReference" | "onRetry" | "renderPreview">) {
+  const views = artifactViews(resource);
+  const [selectedView, setView] = useState<ArtifactView>(views[0]);
+  const view = views.includes(selectedView) ? selectedView : views[0];
+  const [split, setSplit] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [actionBusy, setActionBusy] = useState(false);
+  const actionLock = useRef(false);
+  const Link = useIcon("link");
+  const Copy = useIcon("copy");
+  const text = artifactText(resource);
+  const url = "url" in resource ? safeArtifactUrl(resource.url, resource.kind === "url") : undefined;
+  const downloadable = resource.kind !== "url" && ("content" in resource || url || safeArtifactUrl(resource.downloadUrl));
+  const run = async (action: () => void | Promise<void>, success: string, failed: string) => {
+    if (actionLock.current) return;
+    actionLock.current = true;
+    setActionBusy(true);
+    setNotice("");
+    try { await action(); setNotice(success); } catch { setNotice(failed); }
+    finally { actionLock.current = false; setActionBusy(false); }
+  };
+  return <>
+    <div className="flex shrink-0 flex-wrap items-center gap-2 border-b-hairline border-border px-4 py-2">
+      <span className="min-w-0 flex-1 truncate font-mono text-label text-fg-muted" title={resource.path ?? resource.name}>{resource.path ?? resource.name}</span>
+      <div className="flex flex-wrap items-center gap-1">
+        {text !== undefined && <Button size="xs" variant="ghost" leadingIcon={Copy} disabled={actionBusy} onClick={() => void run(() => navigator.clipboard.writeText(text), labels.copied, labels.copyFailed)}>{labels.copy}</Button>}
+        {downloadable && <Button size="xs" variant="ghost" onClick={() => downloadArtifact(resource)}>{labels.download}</Button>}
+        {url && <Button size="xs" variant="ghost" asChild><a href={url} target="_blank" rel="noopener noreferrer">{labels.openExternal}</a></Button>}
+        {onReference && <Button size="xs" variant="ghost" leadingIcon={Link} disabled={actionBusy} onClick={() => void run(() => onReference(resource), labels.referenced, labels.referenceFailed)}>{labels.reference}</Button>}
+      </div>
+    </div>
+    {(views.length > 1 || view === "diff") && <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b-hairline border-border px-4 py-2">
+      <Tabs value={view} onValueChange={(value) => setView(value as ArtifactView)} variant="segment" color="neutral">
+        <TabsList aria-label={resource.name}>{views.map((item) => <TabItem key={item} value={item} label={labels[item]} />)}</TabsList>
+      </Tabs>
+      {view === "diff" && <Button variant="ghost" size="xs" aria-pressed={split} onClick={() => setSplit(!split)}>{split ? labels.split : labels.unified}</Button>}
+    </div>}
+    {notice && <div className="px-4 py-2 text-label text-fg-muted" role="status">{notice}</div>}
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-auto" data-slot="artifact-viewport" tabIndex={0} aria-label={`${labels.preview}: ${resource.name}`}>
+      <ArtifactPreviewBoundary key={`${view}:${split}:${resource.status ?? "ready"}`} labels={labels}>
+        <ArtifactPreview resource={resource} view={view} split={split} labels={labels} renderPreview={renderPreview}
+          onRetry={onRetry ? () => void run(() => onRetry(resource), "", labels.failed) : undefined} />
+      </ArtifactPreviewBoundary>
+    </div>
+  </>;
+}
+
+function ArtifactTabPanel({ resource, active, ...props }: {
+  resource: ArtifactResource; active: boolean; labels: ArtifactLabels;
+} & Pick<ArtifactPanelProps, "onReference" | "onRetry" | "renderPreview">) {
+  const [visited, setVisited] = useState(active);
+  useEffect(() => { if (active) setVisited(true); }, [active]);
+  return <TabPanel value={resource.id} keepMounted className={cn("min-h-0 min-w-0 flex-1 flex-col", active ? "flex" : "hidden")}>
+    {(active || visited) && <ArtifactSurface resource={resource} {...props} />}
+  </TabPanel>;
+}
+
+export function ArtifactPanel({ resources, activeId, defaultActiveId, onActiveIdChange, onClose, addAction, onReview, onReference, onRetry, renderPreview, labels: overrides, locale, className, ...props }: ArtifactPanelProps) {
+  const labels = resolveArtifactLabels(locale, overrides);
+  const [selectedId, setSelectedId] = useState(defaultActiveId ?? resources[0]?.id);
+  const requested = activeId === undefined ? selectedId : activeId;
+  const active = resources.find((resource) => resource.id === requested) ?? resources[0];
+  const [reviewing, setReviewing] = useState(false);
+  const [reviewError, setReviewError] = useState(false);
+  const reviewLock = useRef(false);
+  const root = useRef<HTMLElement>(null);
+  const resolvedId = active?.id;
+  useEffect(() => {
+    if (activeId === undefined) setSelectedId(resolvedId);
+  }, [activeId, resolvedId]);
+
+  const select = (id: string) => {
+    if (activeId === undefined) setSelectedId(id);
+    onActiveIdChange?.(id);
+  };
+  const close = (resource: ArtifactResource) => {
+    if (!onClose) return;
+    const index = resources.indexOf(resource);
+    const next = resource.id === active?.id ? resources[index + 1] ?? resources[index - 1] : active;
+    onClose(resource);
+    if (next && next.id !== active?.id) select(next.id);
+    requestAnimationFrame(() => {
+      const tab = Array.from(root.current?.querySelectorAll<HTMLElement>("[data-artifact-id]") ?? []).find((node) => node.dataset.artifactId === next?.id);
+      tab?.focus();
+    });
+  };
+  const pending = getPendingReviewResources(resources);
+  const review = async (items: readonly ArtifactResource[], decision: ArtifactReviewDecision) => {
+    if (!onReview || reviewLock.current || !items.length) return;
+    reviewLock.current = true;
+    setReviewing(true);
+    setReviewError(false);
+    try {
+      const results = await Promise.allSettled(items.map((resource) => Promise.resolve().then(() => onReview(resource, decision))));
+      setReviewError(results.some((result) => result.status === "rejected"));
+    } finally { reviewLock.current = false; setReviewing(false); }
+  };
+
+  return <section {...props} ref={root} aria-label={props["aria-label"] ?? labels.panel} data-slot="artifact-panel" className={cn("flex size-full min-h-0 min-w-0 flex-col overflow-hidden bg-surface-floating text-fg-default", className)}>
+    {active ? <Tabs value={active.id} onValueChange={select} variant="segment" color="default" className="flex min-h-0 flex-1 flex-col">
+      <ArtifactTabs resources={resources} activeId={active.id} labels={labels} onSelect={select} onClose={onClose ? close : undefined} addAction={addAction} />
+      {resources.map((resource) => <ArtifactTabPanel key={artifactVersionKey(resource)} resource={resource} active={resource.id === active.id} labels={labels} onReference={onReference} onRetry={onRetry} renderPreview={renderPreview} />)}
+    </Tabs> : <>
+      {addAction && <div className="flex shrink-0 items-center border-b-hairline border-border bg-surface-floating p-2">{addAction}</div>}
+      <div className="flex flex-1 items-center justify-center p-6"><Empty reason="first-use" scope="inline" density="compact"><EmptyHeader><EmptyTitle>{labels.empty}</EmptyTitle><EmptyDescription>{labels.emptyDescription}</EmptyDescription></EmptyHeader></Empty></div>
+    </>}
+    {onReview && pending.length > 0 && <div data-slot="artifact-review-bar" className="shrink-0 p-3">
+      <Alert status="info" role="group" aria-busy={reviewing}>
+        <AlertTitle role="status">{reviewing ? labels.reviewing : labels.remaining(pending.length)}</AlertTitle>
+        <AlertAction><Button variant="ghost" disabled={reviewing} onClick={() => void review(pending, "reject")}>{labels.rejectAll}</Button><Button variant="neutral" disabled={reviewing} onClick={() => void review(pending, "accept")}>{labels.acceptAll}</Button></AlertAction>
+      </Alert>
+    </div>}
+    {reviewError && <div className="shrink-0 p-3"><InlineNotice variant="emphasized" tone="danger" role="alert"><InlineNoticeContent>{labels.reviewFailed}</InlineNoticeContent></InlineNotice></div>}
+  </section>;
+}
+
+
+"use client";
+
+import { useEffect, useId, useRef, useState, type Ref } from "react";
+import { ChatThread } from "@zeron/blocks/chat-thread-01";
+import { Button } from "@zeron/ui/button";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup, type ResizablePanelProps } from "@zeron/ui/resizable";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { resolveArtifactLabels } from "./artifact-labels";
+import type { ChatWorkspaceProps } from "./chat-workspace-types";
+
+type PanelHandle = NonNullable<ResizablePanelProps["panelRef"]> extends Ref<infer T> ? T : never;
+
+export function ChatWorkspace({
+  artifacts, title, panelOpen, defaultPanelOpen = true, onPanelOpenChange,
+  activePane, defaultActivePane = "chat", onActivePaneChange,
+  chatDefaultSize = "38%", chatMinSize = "280px", artifactMinSize = "320px",
+  onLayoutChanged, workspaceLabels, className, ...threadProps
+}: ChatWorkspaceProps) {
+  const labels = resolveArtifactLabels(threadProps.locale, workspaceLabels);
+  const [internalOpen, setInternalOpen] = useState(defaultPanelOpen);
+  const [internalPane, setInternalPane] = useState(defaultActivePane);
+  const open = panelOpen ?? internalOpen;
+  const pane = activePane ?? internalPane;
+  const [wide, setWide] = useState(true);
+  const root = useRef<HTMLDivElement>(null);
+  const chat = useRef<PanelHandle>(null);
+  const desktopSize = useRef(chatDefaultSize);
+  const chatId = useId();
+  const artifactId = useId();
+  const PanelIcon = useIcon("rectangle-horizontal");
+
+  useEffect(() => {
+    const node = root.current;
+    if (!node) return;
+    const observer = new ResizeObserver(() => setWide(node.clientWidth >= 760));
+    setWide(node.clientWidth >= 760);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    chat.current?.resize(wide ? open ? desktopSize.current : "100%" : open && pane === "artifacts" ? "0%" : "100%");
+  }, [wide, open, pane]);
+
+  const setOpen = (next: boolean) => {
+    if (panelOpen === undefined) setInternalOpen(next);
+    onPanelOpenChange?.(next);
+  };
+  const setPane = (next: "chat" | "artifacts") => {
+    if (activePane === undefined) setInternalPane(next);
+    onActivePaneChange?.(next);
+    if (next === "artifacts") setOpen(true);
+  };
+  const hideChat = !wide && open && pane === "artifacts";
+  const hideArtifacts = !open || (!wide && pane === "chat");
+  useEffect(() => {
+    if (!hideChat) return;
+    const frame = requestAnimationFrame(() => root.current?.querySelector<HTMLElement>('[data-slot="artifact-panel"] [role="tab"][aria-selected="true"]')?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [hideChat]);
+
+  return <div ref={root} data-block="chat-workspace-01" data-layout={wide ? "horizontal" : "single"} className={cn("flex size-full min-h-0 min-w-0 flex-col overflow-hidden bg-surface-floating text-fg-default", className)}>
+    <div className="flex shrink-0 items-center justify-between gap-3 border-b-hairline border-border px-4 py-2">
+      <span className="truncate text-label font-medium">{title ?? labels.workspace}</span>
+      {wide ? <Button variant="ghost" size="sm" leadingIcon={PanelIcon} aria-expanded={open} aria-controls={artifactId} onClick={() => setOpen(!open)}>{open ? labels.hidePanel : labels.showPanel}</Button> :
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" active={!hideChat} aria-pressed={!hideChat} onClick={() => setPane("chat")}>{labels.conversation}</Button>
+          <Button variant="ghost" size="sm" active={hideChat} aria-pressed={hideChat} onClick={() => setPane("artifacts")}>{labels.preview}</Button>
+        </div>}
+    </div>
+    <ResizablePanelGroup orientation="horizontal" disabled={!wide || !open} aria-label={labels.workspace} className="min-h-0 flex-1"
+      onLayoutChanged={(layout, meta) => {
+        if (meta.isUserInteraction && wide && open && layout[chatId] > 10 && layout[chatId] < 90) desktopSize.current = `${layout[chatId]}%`;
+        onLayoutChanged?.(layout, meta);
+      }}>
+      <ResizablePanel id={chatId} panelRef={chat} defaultSize={chatDefaultSize} minSize={wide && open ? chatMinSize : "0%"} className={cn("overflow-hidden", hideChat && "invisible")} inert={hideChat} aria-hidden={hideChat || undefined}>
+        <ChatThread {...threadProps} />
+      </ResizablePanel>
+      <ResizableHandle withHandle aria-label={labels.resize} className={(!wide || !open) ? "hidden" : undefined} />
+      <ResizablePanel id={artifactId} minSize={wide && open ? artifactMinSize : "0%"} className={cn("overflow-hidden", hideArtifacts && "invisible")} inert={hideArtifacts} aria-hidden={hideArtifacts || undefined}>
+        {artifacts}
+      </ResizablePanel>
+    </ResizablePanelGroup>
+  </div>;
+}
+
+
+import type { ArtifactLabels } from "./chat-workspace-types";
+
+export const artifactEnLabels: ArtifactLabels = {
+  panel: "Content preview", resources: "Open content", more: "More open content", empty: "Open something to take a closer look",
+  emptyDescription: "Select a file, image or page from the conversation.",
+  preview: "Preview", source: "Source", diff: "Changes", unified: "Unified", split: "Split",
+  copy: "Copy", copied: "Copied", copyFailed: "Could not copy. Try again.", download: "Download",
+  reference: "Add to conversation", referenced: "Added to your draft", referenceFailed: "Could not add this reference. Try again.",
+  openExternal: "Open externally", refresh: "Refresh", close: (name) => `Close ${name}`,
+  loading: "Loading preview…", failed: "This content could not be loaded.", retry: "Retry",
+  unsupported: "A preview is not available for this file.", unavailableUrl: "A valid preview address is not available.",
+  webNotice: "Some websites prevent embedded previews. You can open the page externally at any time.",
+  zoomIn: "Zoom in", zoomOut: "Zoom out", fit: "Fit", accept: "Accept", reject: "Reject",
+  acceptAll: "Accept all", rejectAll: "Reject all", pending: "Pending", accepted: "Accepted", rejected: "Rejected",
+  reviewing: "Saving review…", reviewFailed: "Some changes could not be reviewed. Retry the remaining changes.",
+  remaining: (count) => `${count} ${count === 1 ? "change" : "changes"} to review`,
+  workspace: "Conversation workspace", conversation: "Conversation", showPanel: "Show content", hidePanel: "Hide content",
+  resize: "Resize conversation and content",
+};
+
+export const artifactZhLabels: ArtifactLabels = {
+  panel: "内容预览", resources: "已打开内容", more: "更多已打开内容", empty: "打开内容，查看详情", emptyDescription: "从对话中选择文件、图片或网页。",
+  preview: "预览", source: "源码", diff: "变更", unified: "统一视图", split: "并排视图",
+  copy: "复制", copied: "已复制", copyFailed: "复制失败，请重试。", download: "下载",
+  reference: "引用到对话", referenced: "已添加到草稿", referenceFailed: "引用失败，请重试。",
+  openExternal: "外部打开", refresh: "刷新", close: (name) => `关闭 ${name}`,
+  loading: "正在加载预览…", failed: "内容加载失败。", retry: "重试", unsupported: "此文件暂不支持预览。",
+  unavailableUrl: "没有可用的预览地址。", webNotice: "部分网站不允许内嵌预览，你可以随时在外部打开。",
+  zoomIn: "放大", zoomOut: "缩小", fit: "适应窗口", accept: "接受", reject: "拒绝", acceptAll: "全部接受", rejectAll: "全部拒绝",
+  pending: "待审阅", accepted: "已接受", rejected: "已拒绝", reviewing: "正在保存审阅…",
+  reviewFailed: "部分变更审阅失败，请重试剩余变更。", remaining: (count) => `${count} 项变更待审阅`,
+  workspace: "对话工作区", conversation: "对话", showPanel: "查看内容", hidePanel: "收起内容", resize: "调整对话与内容的宽度",
+};
+
+export function resolveArtifactLabels(locale?: string, overrides?: Partial<ArtifactLabels>): ArtifactLabels {
+  return { ...(locale?.toLowerCase().startsWith("zh") ? artifactZhLabels : artifactEnLabels), ...overrides };
+}
+
+
+export { ChatWorkspace } from "./chat-workspace";
+export { ArtifactPanel } from "./artifact-panel";
+export { ArtifactCard } from "./artifact-card";
+export { artifactEnLabels, artifactZhLabels } from "./artifact-labels";
+export { createChatWorkspaceDemoResources } from "./chat-workspace-demo-data";
+export { getPendingReviewResources } from "./artifact-utils";
+export type { ArtifactCardProps, ArtifactLabels, ArtifactPanelProps, ArtifactResource, ArtifactReviewDecision, ArtifactReviewStatus, ArtifactView, ChatWorkspaceProps } from "./chat-workspace-types";
+
+
+import type { HTMLAttributes, ReactNode } from "react";
+import type { ChatThreadProps } from "@zeron/blocks/chat-thread-01";
+import type { ResizablePanelGroupProps } from "@zeron/ui/resizable";
+
+export type ArtifactReviewStatus = "pending" | "accepted" | "rejected";
+export type ArtifactReviewDecision = "accept" | "reject";
+export type ArtifactView = "preview" | "source" | "diff";
+
+interface ArtifactBase {
+  /** Unique within a panel. Preserve this ID across content revisions. */
+  id: string;
+  /** Change when content changes; review decisions belong to this version. */
+  version: string;
+  name: string;
+  path?: string;
+  messageId?: string;
+  status?: "ready" | "loading" | "error";
+  error?: string;
+  downloadUrl?: string;
+  /** File size in bytes. Text resources fall back to their UTF-8 content size. */
+  size?: number;
+}
+
+export type ArtifactResource = ArtifactBase & (
+  | { kind: "code"; content: string; previousContent?: string; previousPath?: string; review?: ArtifactReviewStatus }
+  | { kind: "markdown"; content: string; previousContent?: string; review?: ArtifactReviewStatus }
+  | { kind: "text"; content: string }
+  | { kind: "image"; url: string; alt?: string }
+  | { kind: "url"; url: string }
+  | { kind: "file"; url?: string; mimeType?: string }
+);
+
+export interface ArtifactLabels {
+  panel: string;
+  resources: string;
+  more: string;
+  empty: string;
+  emptyDescription: string;
+  preview: string;
+  source: string;
+  diff: string;
+  unified: string;
+  split: string;
+  copy: string;
+  copied: string;
+  copyFailed: string;
+  download: string;
+  reference: string;
+  referenced: string;
+  referenceFailed: string;
+  openExternal: string;
+  refresh: string;
+  close: (name: string) => string;
+  loading: string;
+  failed: string;
+  retry: string;
+  unsupported: string;
+  unavailableUrl: string;
+  webNotice: string;
+  zoomIn: string;
+  zoomOut: string;
+  fit: string;
+  accept: string;
+  reject: string;
+  acceptAll: string;
+  rejectAll: string;
+  pending: string;
+  accepted: string;
+  rejected: string;
+  reviewing: string;
+  reviewFailed: string;
+  remaining: (count: number) => string;
+  workspace: string;
+  conversation: string;
+  showPanel: string;
+  hidePanel: string;
+  resize: string;
+}
+
+export interface ArtifactPanelProps extends Omit<HTMLAttributes<HTMLElement>, "children" | "onSelect"> {
+  /** The open resources, in tab order. The host owns closing and persistence. */
+  resources: readonly ArtifactResource[];
+  activeId?: string | null;
+  defaultActiveId?: string;
+  onActiveIdChange?: (id: string) => void;
+  onClose?: (resource: ArtifactResource) => void;
+  /** Optional action beside the content tabs, such as a plus-button resource picker. */
+  addAction?: ReactNode;
+  /** Resolve after committing this exact resource version; reject on failure. */
+  onReview?: (resource: ArtifactResource, decision: ArtifactReviewDecision) => void | Promise<void>;
+  onReference?: (resource: ArtifactResource) => void | Promise<void>;
+  onRetry?: (resource: ArtifactResource) => void | Promise<void>;
+  /** Return undefined to use the built-in viewer. */
+  renderPreview?: (resource: ArtifactResource) => ReactNode | undefined;
+  labels?: Partial<ArtifactLabels>;
+  locale?: string;
+}
+
+export interface ArtifactCardProps extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
+  resources: readonly ArtifactResource[];
+  title?: string;
+  onOpen: (resource: ArtifactResource) => void;
+  labels?: Partial<ArtifactLabels>;
+  locale?: string;
+}
+
+export interface ChatWorkspaceProps extends ChatThreadProps {
+  /** Usually ArtifactPanel; this slot can also contain a host-owned viewer. */
+  artifacts: ReactNode;
+  title?: string;
+  panelOpen?: boolean;
+  defaultPanelOpen?: boolean;
+  onPanelOpenChange?: (open: boolean) => void;
+  activePane?: "chat" | "artifacts";
+  defaultActivePane?: "chat" | "artifacts";
+  onActivePaneChange?: (pane: "chat" | "artifacts") => void;
+  chatDefaultSize?: string;
+  chatMinSize?: string;
+  artifactMinSize?: string;
+  onLayoutChanged?: ResizablePanelGroupProps["onLayoutChanged"];
+  workspaceLabels?: Partial<ArtifactLabels>;
+}

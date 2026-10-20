@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Appearance preview</title>
+<style>
+:root{color-scheme:light dark;font-family:Arial,sans-serif;background:#f6f7f3;color:#29312a}*{box-sizing:border-box}body{margin:0;padding:36px 28px}main{max-width:760px;margin:auto}small{color:#74806d;font-size:12px;letter-spacing:1px}h1{font-size:32px;line-height:1.2;letter-spacing:-1px;margin:20px 0 12px}p{color:#74806d;font-size:15px;line-height:1.7}fieldset{border:0;padding:0;margin:32px 0}legend{font-size:14px;font-weight:600;margin-bottom:14px}.options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}button{font:inherit;cursor:pointer;text-align:left;padding:12px;border:1px solid #dfe3d9;border-radius:12px;background:#fff;color:#29312a}button[aria-pressed=true]{border:2px solid #6d845b;padding:11px}button:focus-visible{outline:2px solid #6d845b;outline-offset:3px}.sample{height:100px;border-radius:6px;background:#eef1e9;margin-bottom:12px;padding:12px}.sample:before,.sample:after{content:"";display:block;height:8px;background:#ced9c4;border-radius:3px;margin-bottom:10px}.sample:after{height:44px;background:#f9faf7}.dark{background:#252d22}.dark:before{background:#7a9568}.dark:after{background:#3a4732}.system{background:linear-gradient(90deg,#eef1e9 50%,#252d22 50%)}footer{margin-top:28px;padding-top:20px;border-top:1px solid #dfe3d9;font-size:13px;color:#74806d}[data-theme=dark]{background:#20271e;color:#eef1e9}[data-theme=dark] button{background:#2c3527;color:#eef1e9;border-color:#46543e}[data-theme=dark] button[aria-pressed=true]{border-color:#a4bd90}@media(max-width:400px){body{padding:24px 16px}h1{font-size:27px}.options{gap:8px}.sample{height:76px;padding:8px}button{padding:8px}button[aria-pressed=true]{padding:7px}}
+</style>
+<main><small>STUDIO / SETTINGS</small><h1>Make yourself at home.</h1><p>Choose your preferred appearance. Try the options below to see the page change.</p>
+<fieldset><legend>Theme</legend><div class="options"><button data-choice="light" aria-pressed="false"><div class="sample"></div>Light</button><button data-choice="dark" aria-pressed="false"><div class="sample dark"></div>Dark</button><button data-choice="system" aria-pressed="true"><div class="sample system"></div>System</button></div></fieldset>
+<footer role="status">Interactive local preview · preference applies to this preview only.</footer></main>
+<script>
+document.querySelectorAll('[data-choice]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-choice]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));document.documentElement.dataset.theme=button.dataset.choice==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):button.dataset.choice;}));
+</script>
+</html>

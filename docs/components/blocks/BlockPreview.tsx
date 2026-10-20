@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "chat-workspace-01": () => import("./ChatWorkspaceDemo").then(({ ChatWorkspaceDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={800} canvasWidth={1400}><ChatWorkspaceDemo /></ResponsivePreview>,
+  })),
   "chat-thread-01": () => import("./ChatThreadDemo").then(({ ChatThreadDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={800} canvasWidth={1200}><ChatThreadDemo /></ResponsivePreview>,
   })),

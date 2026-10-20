@@ -1,0 +1,8 @@
+{
+  "chatWorkspaceBlock": {
+    "title": "对话工作区",
+    "description": "可拖拽调整的对话与内容工作区，ArtifactPanel 可独立展示代码差异、Markdown、图片和网页预览。",
+    "composition": "组件组合",
+    "compositionBody": "ChatWorkspace 复用 ChatThread 和支持键盘的 Resizable 分栏组件。ChatThread 管理对话滚动和输入区；两处聊天演示共用模型选择、上下文用量与回复内容组件，统一显示模型图标、提供方、思考过程、TTFT、输入/输出 tokens 和耗时，模型身份按每条回复记录。ArtifactPanel 管理内容标签页、视图与审阅操作；ArtifactCard 从消息中打开资源。代码、差异、文档、标签页、滚动与文件图标复用 CodeBlock、CodeDiff、Markdown、Tabs、ScrollArea 和 FileType 的公开能力。"
+  }
+}

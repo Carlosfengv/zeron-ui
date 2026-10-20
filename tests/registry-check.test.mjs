@@ -46,4 +46,29 @@ describe("Registry closure checker", () => {
     }]);
     expect(errors).toContain("code-engine: lib/code-engine/runtime.ts imports hast but hast is not declared in its closure dependencies");
   });
+
+  it("resolves shared source against each closure's own dependencies", () => {
+    const errors = checkRegistry([
+      { name: "shared", meta: metadata, files: [{ target: "lib/shared.ts", content: 'export { value } from "required-package";' }] },
+      { name: "declared", meta: metadata, registryDependencies: ["shared"], dependencies: ["required-package"] },
+      { name: "missing", meta: metadata, registryDependencies: ["shared"] },
+    ]);
+    expect(errors).toEqual([
+      "shared: lib/shared.ts imports required-package but required-package is not declared in its closure dependencies",
+      "missing: lib/shared.ts imports required-package but required-package is not declared in its closure dependencies",
+    ]);
+  });
+
+  it("checks different contents at the same target independently and rechecks revised source", () => {
+    const file = { target: "lib/shared.ts", content: "export const ready = true;" };
+    const safe = { name: "safe", meta: metadata, files: [file] };
+    const invalid = { name: "invalid", meta: metadata, files: [{ ...file, content: 'export { value } from "missing-package";' }] };
+    expect(checkRegistry([safe, invalid])).toEqual([
+      "invalid: lib/shared.ts imports missing-package but missing-package is not declared in its closure dependencies",
+    ]);
+    file.content = invalid.files[0].content;
+    expect(checkRegistry([safe])).toEqual([
+      "safe: lib/shared.ts imports missing-package but missing-package is not declared in its closure dependencies",
+    ]);
+  });
 });
