@@ -8,6 +8,7 @@
     "url": "git+https://github.com/Carlosfengv/zeron-ui.git"
   },
   "scripts": {
+    "test:grouped-table:e2e": "playwright test --config playwright.grouped-data-table.config.ts",
     "dev": "pnpm skills:build && pnpm code-engine:build && pnpm docs:routes:build && pnpm docs:sources:build && pnpm agents:guides:build && pnpm agents:build && next dev --turbopack",
     "build": "node scripts/build-site.mjs",
     "docs:routes:build": "node scripts/generate-document-routes.mjs",

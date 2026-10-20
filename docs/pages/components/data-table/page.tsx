@@ -7,6 +7,7 @@ import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
 import {
   EmptyProjectsTable,
+  GroupedProjectsTable,
   LoadingProjectsTable,
   PinnedProjectsTable,
   ProjectsTable,
@@ -336,8 +337,30 @@ const loadingCode = `import { DataTable } from "@zeron/ui/data-table";
   table={table}
 />`;
 
+const groupingCode = `import { getGroupedRowModel, getExpandedRowModel } from "@tanstack/react-table";
+import { DataTable, useDataTable } from "@zeron/ui/data-table";
+
+function GroupedProjectsTable() {
+  const { table } = useDataTable({
+    data: projects, columns,
+    getRowId: (project) => project.id,
+    getGroupedRowModel: getGroupedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    groupedColumnMode: "remove",
+    manualPagination: true,
+    initialState: { grouping: ["status"], expanded: true },
+  });
+  return <DataTable table={table} showPagination={false} grouping={{
+    getRowLimit: () => 2,
+    renderFooter: ({ leafRowCount, visibleRowCount }) => leafRowCount > 2
+      ? <span>{visibleRowCount} / {leafRowCount}</span> : null,
+  }} />;
+}`;
+
 const dataTableProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "table", type: "Table<TData>", description: t("table") },
+  { name: "grouping", type: "DataTableGroupingOptions<TData>", description: t("groupingOptions") },
+  { name: "density", type: '"comfortable" | "compact"', default: '"comfortable"', description: t("density") },
   { name: "activeRowId", type: "string | null", description: t("activeRowId") },
   { name: "onRowActivate", type: "(row: Row<TData>) => void", description: t("onRowActivate") },
   { name: "children", type: "ReactNode", description: t("children") },
@@ -357,6 +380,7 @@ const hookProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "columns", type: "ColumnDef<TData, unknown>[]", description: t("columns") },
   { name: "initialState", type: "TableOptions<TData>[\"initialState\"]", description: t("initialState") },
   { name: "getSubRows / getExpandedRowModel", type: "TableOptions<TData>", description: t("hierarchy") },
+  { name: "getGroupedRowModel / state.grouping", type: "TableOptions<TData>", description: t("groupingModel") },
   { name: "…options", type: "TableOptions<TData>", description: t("options") },
 ];
 
@@ -383,6 +407,7 @@ export default function DataTableDoc() {
             { value: "directory", label: "Project directory", code: exampleCode, preview: <div className="w-full"><ProjectsTable /></div> },
             { value: "selection", label: "Selection & bulk actions", code: selectionCode, preview: <div className="w-full"><SelectedProjectsTable /></div> },
             { value: "pinned", label: "Pinned columns", code: pinnedColumnsCode, preview: <div className="w-full"><PinnedProjectsTable /></div> },
+            { value: "grouping", label: t("grouping"), code: groupingCode, preview: <div className="w-full"><GroupedProjectsTable /></div> },
             { value: "loading", label: "Loading", code: loadingCode, preview: <div className="w-full"><LoadingProjectsTable /></div> },
             { value: "empty", label: "Empty state", code: emptyStateCode, preview: <div className="w-full"><EmptyProjectsTable /></div> },
           ]}
@@ -427,6 +452,11 @@ export default function DataTableDoc() {
         </ComponentPreview>
       </DocSection>
 
+      <DocSection title={t("grouping")}>
+        <p className="text-body text-fg-muted">{t("groupingDescription")}</p>
+        <ComponentPreview code={groupingCode}><div className="w-full"><GroupedProjectsTable /></div></ComponentPreview>
+      </DocSection>
+
       <DocSection title={t("loadingState")}>
         <p className="text-body text-fg-muted">{t("loadingStateDescription")}</p>
         <ComponentPreview code={loadingCode}>
@@ -437,6 +467,7 @@ export default function DataTableDoc() {
       </DocSection>
 
       <DocSection title={t("apiReference")}>
+        <p className="text-body text-fg-muted">{t("controlLabels")}</p>
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-3">
             <h3 className="text-body text-fg-default">DataTable</h3>

@@ -64,6 +64,14 @@
       "itemId": "block:getting-started-01"
     },
     {
+      "path": "blocks/grouped-data-table-01.md",
+      "itemId": "block:grouped-data-table-01"
+    },
+    {
+      "path": "blocks/grouped-data-table-02.md",
+      "itemId": "block:grouped-data-table-02"
+    },
+    {
       "path": "blocks/infinite-log-table-01.md",
       "itemId": "block:infinite-log-table-01"
     },
@@ -215,6 +223,10 @@
     {
       "path": "components/combobox.md",
       "itemId": "component:combobox"
+    },
+    {
+      "path": "components/data-table.md",
+      "itemId": "component:data-table"
     },
     {
       "path": "components/dialog.md",

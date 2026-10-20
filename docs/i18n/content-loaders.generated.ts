@@ -12,6 +12,8 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "blocks/grouped-data-table-02": () => import("@docs/content/en/blocks/grouped-data-table-02.json"),
+    "blocks/grouped-data-table-01": () => import("@docs/content/en/blocks/grouped-data-table-01.json"),
     "blocks/usage-forecast-02": () => import("@docs/content/en/blocks/usage-forecast-02.json"),
     "blocks/model-selector-01": () => import("@docs/content/en/blocks/model-selector-01.json"),
     "blocks/agent-tasks-01": () => import("@docs/content/en/blocks/agent-tasks-01.json"),
@@ -161,6 +163,8 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "blocks/grouped-data-table-02": () => import("@docs/content/zh-CN/blocks/grouped-data-table-02.json"),
+    "blocks/grouped-data-table-01": () => import("@docs/content/zh-CN/blocks/grouped-data-table-01.json"),
     "blocks/usage-forecast-02": () => import("@docs/content/zh-CN/blocks/usage-forecast-02.json"),
     "blocks/model-selector-01": () => import("@docs/content/zh-CN/blocks/model-selector-01.json"),
     "blocks/agent-tasks-01": () => import("@docs/content/zh-CN/blocks/agent-tasks-01.json"),

@@ -1,4 +1,52 @@
 {
+  "grouped-data-table-02": {
+    "keywords": [
+      "多维分组",
+      "分区表格",
+      "云资源",
+      "分组切换",
+      "sectioned table",
+      "grouping",
+      "dimensions"
+    ],
+    "useCases": [
+      "按运行状态、资源类型或云平台切换分组，各组有独立表头与新增入口。"
+    ],
+    "whenNotToUse": [
+      "不支持远程分页、多层分组或懒加载，需完整客户端数据。"
+    ],
+    "keyApi": [
+      "data / columns / getRowId / dimensions 定义业务清单。",
+      "groupBy / defaultGroupBy / onGroupByChange 控制分组维度。",
+      "onAddToGroup 返回 columnId 与 value，由宿主创建。",
+      "共享搜索、筛选、排序和列设置，组内预览不影响统计。"
+    ]
+  },
+  "grouped-data-table-01": {
+    "keywords": [
+      "分组",
+      "表格",
+      "阶段",
+      "显示更多",
+      "grouped table",
+      "grouping",
+      "pipeline",
+      "expand",
+      "preview"
+    ],
+    "useCases": [
+      "在同一张表内按字段分组，独立展开、搜索、筛选并显示更多记录。"
+    ],
+    "whenNotToUse": [
+      "不提供远程分页分组或懒加载；需要完整客户端数据集。单层分组 Block 不用于多层资源树。"
+    ],
+    "keyApi": [
+      "data / columns / groupBy / getRowId 描述完整业务记录。",
+      "groups 定义稳定值、顺序、文案与已有 Badge 分类色。",
+      "previewRowCount 默认 3，expanded 支持受控和非受控模式。",
+      "renderFilters / renderSummary 与 actions 连接公共筛选器和宿主业务。"
+    ]
+  },
   "agent-tasks-01": {
     "keywords": ["任务", "队列", "待处理", "时间线", "agent", "tasks", "running", "activity"],
     "useCases": ["在 Agent 工作区或会话中嵌入按状态筛选的任务队列与执行时间线。"],
@@ -413,6 +461,9 @@
   },
   "data-table": {
     "keywords": [
+      "分组",
+      "grouping",
+      "grouped table",
       "资源列表",
       "表格",
       "筛选",
@@ -425,10 +476,15 @@
       "sort"
     ],
     "useCases": [
-      "记录列表的排序、过滤、分页和选择。"
+      "记录列表的排序、过滤、分页、选择和可展开分组。"
     ],
     "whenNotToUse": [
       "静态表格使用 Table；电子表格式编辑使用 DataGrid。"
+    ],
+    "keyApi": [
+      "useDataTable 透传 grouping / expanded 状态与 TanStack 行模型配置。",
+      "grouping 提供分组名称、顺序、展示条数及组头/组尾内容扩展，跨列数随可见列变化。",
+      "density 为 comfortable 或 compact；组内预览使用 manualPagination 与 showPagination=false。"
     ]
   },
   "data-grid": {

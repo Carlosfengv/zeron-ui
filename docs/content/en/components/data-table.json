@@ -1,5 +1,13 @@
 {
   "dataTable": {
+    "grouping": "Grouped table",
+    "groupingDescription": "Grouped rows automatically render spanning headers with independent expansion and nested grouping. Customize header, footer, and direct-child preview limits with grouping; counts describe all matching leaf records. For per-group previews, set manualPagination: true and showPagination: false. See the Grouped Data Table block for show-more interactions.",
+    "groupingOptions": "Optional getLabel / getOrder / getRowLimit and renderHeader / renderFooter. Context includes row, table, leafRowCount, and visibleRowCount; labels localize expansion controls.",
+    "groupingModel": "Supply TanStack's grouping model and grouping state, with getExpandedRowModel for child expansion.",
+    "density": "Cell-density recipe applied to records and loading rows without resizing nested controls.",
+    "expandGroup": "Expand {label}",
+    "collapseGroup": "Collapse {label}",
+    "groupPreview": "Showing {visible} of {total} matching records",
     "projectDirectory": "Project Directory",
     "bulkSelection": "Selection and Bulk Actions",
     "bulkSelectionDescription": "Selecting one or more rows replaces the search and filters with the current selection count and its available bulk actions. Clear the selection to restore the filter toolbar without losing its state.",
@@ -9,6 +17,7 @@
     "loadingState": "Loading State",
     "loadingStateDescription": "Headers, column widths, pinned positioning, pagination, and the current page height remain stable while Skeleton rows replace the table body.",
     "apiReference": "API Reference",
+    "controlLabels": "Use DataTableColumnHeader.labels for ascending, descending, resetSorting and hideColumn menu copy; DataTableViewOptions.labels configures column settings. DataTableFacetedFilter.labels.clearFilters configures the clear action inside its popover. Omitted labels retain their English defaults.",
     "table": "TanStack table instance returned by useDataTable.",
     "activeRowId": "TanStack row id highlighted as the current active row.",
     "onRowActivate": "Activates a row by pointer, Enter, or Space without intercepting nested controls.",

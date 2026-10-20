@@ -244,6 +244,10 @@ function useDataTable<TData>({
 }
 
 export type DataTableProps<TData> = React.ComponentProps<"div"> & {
+  /** Public row-density recipe; does not resize controls inside cells. */
+  density?: "comfortable" | "compact";
+  /** Group headers are automatic for TanStack grouped rows; customize their content here. */
+  grouping?: DataTableGroupingOptions<TData>;
   /** Highlights the row whose TanStack id matches this value. */
   activeRowId?: string | null;
   actionBar?: React.ReactNode;
@@ -269,6 +273,125 @@ export type DataTableProps<TData> = React.ComponentProps<"div"> & {
   ) => React.ReactNode;
   table: TanstackTable<TData>;
 };
+
+export type DataTableGroupContext<TData> = {
+  row: Row<TData>;
+  table: TanstackTable<TData>;
+  /** Matching leaf records, independent of expansion, preview limits and pagination. */
+  leafRowCount: number;
+  /** Direct children currently presented beneath this group. */
+  visibleRowCount: number;
+};
+
+export type DataTableGroupingOptions<TData> = {
+  getLabel?: (row: Row<TData>) => string;
+  /** Stable presentation order, independent of sorting the group's records. */
+  getOrder?: (row: Row<TData>) => number;
+  /** Limits direct children for presentation only; leaves the table's data models intact. */
+  getRowLimit?: (row: Row<TData>) => number | undefined;
+  /** Content after the built-in expand/collapse button. */
+  renderHeader?: (context: DataTableGroupContext<TData>) => React.ReactNode;
+  /** Content of a spanning row after an expanded group's visible descendants. */
+  renderFooter?: (context: DataTableGroupContext<TData>) => React.ReactNode;
+  labels?: {
+    expandGroup?: (label: string) => string;
+    collapseGroup?: (label: string) => string;
+  };
+};
+
+type DataTableBodyEntry<TData> =
+  | { kind: "row"; row: Row<TData> }
+  | { kind: "group" | "footer"; context: DataTableGroupContext<TData> };
+
+function getDataTableBodyEntries<TData>(
+  table: TanstackTable<TData>,
+  grouping?: DataTableGroupingOptions<TData>
+): DataTableBodyEntry<TData>[] {
+  const rows = table.getRowModel().rows;
+  if (!rows.some((row) => row.getIsGrouped())) {
+    return rows.map((row) => ({ kind: "row", row }));
+  }
+
+  // Reconstruct only the current row model, so paginated/expanded-out rows are
+  // never reintroduced from subRows. Ordinary tree rows keep their hierarchy.
+  const ids = new Set(rows.map((row) => row.id));
+  const children = new Map<string | undefined, Row<TData>[]>();
+  for (const row of rows) {
+    const parent = row.parentId && ids.has(row.parentId) ? row.parentId : undefined;
+    const siblings = children.get(parent) ?? [];
+    siblings.push(row);
+    children.set(parent, siblings);
+  }
+
+  const entries: DataTableBodyEntry<TData>[] = [];
+  const getOrder = grouping?.getOrder;
+  const orderRows = (siblings: Row<TData>[]) => getOrder && siblings.every((row) => row.getIsGrouped())
+    ? [...siblings].sort((a, b) => getOrder(a) - getOrder(b))
+    : siblings;
+  function visit(siblings: Row<TData>[]) {
+    for (const row of siblings) {
+      const descendants = orderRows(children.get(row.id) ?? []);
+      if (!row.getIsGrouped()) {
+        entries.push({ kind: "row", row });
+        visit(descendants);
+        continue;
+      }
+      const requested = grouping?.getRowLimit?.(row);
+      const limit = requested !== undefined && Number.isFinite(requested)
+        ? Math.max(0, Math.floor(requested))
+        : descendants.length;
+      const visible = row.getIsExpanded() ? descendants.slice(0, limit) : [];
+      const context = {
+        row,
+        table,
+        leafRowCount: row.getLeafRows().filter((leaf) => !leaf.getIsGrouped()).length,
+        visibleRowCount: visible.length,
+      };
+      entries.push({ kind: "group", context });
+      visit(visible);
+      if (row.getIsExpanded() && grouping?.renderFooter) {
+        entries.push({ kind: "footer", context });
+      }
+    }
+  }
+  visit(orderRows(children.get(undefined) ?? []));
+  return entries;
+}
+
+function DataTableGroupHeader<TData>({
+  context,
+  grouping,
+}: {
+  context: DataTableGroupContext<TData>;
+  grouping?: DataTableGroupingOptions<TData>;
+}) {
+  const { row } = context;
+  const expanded = row.getIsExpanded();
+  const Chevron = useIcon(expanded ? "chevron-down" : "chevron-right");
+  const label = grouping?.getLabel?.(row) ?? String(row.groupingValue ?? row.groupingColumnId ?? "");
+  return (
+    <div className="flex min-w-0 items-center gap-2">
+      <Button
+        aria-expanded={expanded}
+        aria-label={expanded
+          ? grouping?.labels?.collapseGroup?.(label) ?? `Collapse ${label}`
+          : grouping?.labels?.expandGroup?.(label) ?? `Expand ${label}`}
+        iconOnly
+        onClick={row.getToggleExpandedHandler()}
+        size="xs"
+        variant="ghost"
+      >
+        <Chevron aria-hidden />
+      </Button>
+      {grouping?.renderHeader ? grouping.renderHeader(context) : (
+        <>
+          <span className="font-medium text-fg-default">{label}</span>
+          <Badge size="sm">{context.leafRowCount}</Badge>
+        </>
+      )}
+    </div>
+  );
+}
 
 export type DataTableLoadingCellContext<TData> = {
   column: Column<TData, unknown>;
@@ -302,8 +425,10 @@ function DataTable<TData>({
   actionBar,
   children,
   className,
+  density = "comfortable",
   emptyMessage = "No results.",
   emptyState,
+  grouping,
   isLoading = false,
   loadingMessage = "Loading data.",
   loadingRowCount,
@@ -323,6 +448,7 @@ function DataTable<TData>({
     table.getState().columnFilters.length > 0 &&
     table.getPreFilteredRowModel().rows.length > 0;
   const visibleColumns = table.getVisibleLeafColumns();
+  const bodyEntries = getDataTableBodyEntries(table, grouping);
   const hasActionBar = Boolean(
     !isLoading && actionBar && table.getFilteredSelectedRowModel().rows.length > 0
   );
@@ -374,6 +500,7 @@ function DataTable<TData>({
     <div
       className={cn("flex w-full min-w-0 flex-col gap-2", className)}
       data-slot="data-table"
+      data-density={density}
       data-loading={isLoading || undefined}
       {...props}
     >
@@ -420,7 +547,7 @@ function DataTable<TData>({
             </TableHeader>
             {isLoading ? (
               <TableSkeletonBody
-                cellClassName="align-middle whitespace-nowrap"
+                cellClassName={cn("align-middle whitespace-nowrap", density === "compact" && "py-1")}
                 columns={Math.max(visibleColumns.length, 1)}
                 rows={resolvedLoadingRowCount}
                 getCellProps={(_, columnIndex) => {
@@ -444,7 +571,33 @@ function DataTable<TData>({
             ) : (
               <TableBody>
                 {table.getRowModel().rows.length ? (
-                  table.getRowModel().rows.map((row, rowIndex) => {
+                  bodyEntries.map((entry, rowIndex) => {
+                    if (entry.kind !== "row") {
+                      const { context } = entry;
+                      const footer = entry.kind === "footer" ? grouping?.renderFooter?.(context) : undefined;
+                      if (entry.kind === "footer" && (footer == null || typeof footer === "boolean")) return null;
+                      return (
+                        <TableRow
+                          data-slot={entry.kind === "group" ? "data-table-group" : "data-table-group-footer"}
+                          data-group-id={context.row.id}
+                          key={`${entry.kind}:${context.row.id}`}
+                        >
+                          <TableCell
+                            className={cn(
+                              "align-middle",
+                              entry.kind === "group" && "bg-surface-raised text-fg-default",
+                              density === "compact" && "py-1"
+                            )}
+                            colSpan={Math.max(visibleColumns.length, 1)}
+                          >
+                            {entry.kind === "group"
+                              ? <DataTableGroupHeader context={context} grouping={grouping} />
+                              : footer}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }
+                    const { row } = entry;
                     const isActive = row.id === activeRowId;
                     const activateRow = () => onRowActivate?.(row);
 
@@ -479,6 +632,7 @@ function DataTable<TData>({
                           <TableCell
                             className={cn(
                               "align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block",
+                              density === "compact" && "py-1",
                               cell.column.getIsPinned() &&
                                 "group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]"
                             )}
@@ -803,6 +957,7 @@ export type DataTableFacetedFilterProps<TData, TValue> = {
   column: Column<TData, TValue>;
   disabled?: boolean;
   icon?: IconComponent;
+  labels?: { clearFilters?: string };
   multiple?: boolean;
   options: DataTableFilterOption[];
   title: string;
@@ -812,6 +967,7 @@ function DataTableFacetedFilter<TData, TValue>({
   column,
   disabled = false,
   icon: FilterIcon,
+  labels,
   multiple = false,
   options,
   title,
@@ -924,7 +1080,7 @@ function DataTableFacetedFilter<TData, TValue>({
             size="md"
             variant="ghost"
           >
-            Clear filters
+            {labels?.clearFilters ?? "Clear filters"}
           </Button>
         )}
       </PopoverContent>

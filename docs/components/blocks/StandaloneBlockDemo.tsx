@@ -1,4 +1,6 @@
 "use client";
+import { SectionedDataTableDemo } from "./SectionedDataTableDemo";
+import { GroupedDataTableDemo } from "./GroupedDataTableDemo";
 import { AgentTasksDemo } from "./AgentTasksDemo";
 import { LocalModelsDemo } from "./LocalModelsDemo";
 import { AppearanceSettingsDemo } from "./AppearanceSettingsDemo";
@@ -175,6 +177,10 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
 
 function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "grouped-data-table-02":
+      return <SectionedDataTableDemo />;
+    case "grouped-data-table-01":
+      return <GroupedDataTableDemo />;
     case "agent-tasks-01":
       return <AgentTasksDemo />;
     case "appearance-settings-01":
