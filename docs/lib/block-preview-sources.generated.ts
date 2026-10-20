@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "chat-workspace-01": {
+    "url": "/docs-source/e1e5cdd8c50c9c2bb07a4da6d6aacb921e64b8110eaf1f09e9a4e8f32c65f060.txt"
+  },
   "chat-thread-01": {
     "url": "/docs-source/c605b3b0e7b03bf35b5e21b72006c885715a22acdbc210e2c7d2065eaa8fe8c9.txt"
   },

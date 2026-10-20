@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#eceeea"/>
+  <rect x="64" y="64" width="1072" height="672" rx="20" fill="#fafbf8"/>
+  <path d="M64 132h1072M304 132v604" stroke="#dfe3dc"/>
+  <g font-family="Arial, sans-serif" fill="#29312a">
+    <text x="96" y="107" font-size="20" font-weight="600">Studio</text>
+    <text x="336" y="107" font-size="15">Settings / Appearance</text>
+    <text x="96" y="183" font-size="14" fill="#7a8278">WORKSPACE</text>
+    <text x="96" y="230" font-size="16">General</text>
+    <rect x="84" y="251" width="200" height="42" rx="8" fill="#e6ebdf"/>
+    <text x="100" y="278" font-size="16" font-weight="600">Appearance</text>
+    <text x="96" y="326" font-size="16">Notifications</text>
+    <text x="96" y="375" font-size="16">Members</text>
+    <text x="356" y="214" font-size="32" font-weight="600">Make yourself at home.</text>
+    <text x="356" y="251" font-size="17" fill="#7a8278">Choose the appearance that works best for you.</text>
+    <text x="356" y="313" font-size="16" font-weight="600">Theme</text>
+    <rect x="356" y="335" width="224" height="171" rx="12" fill="#f0f2ec" stroke="#dce1d7"/>
+    <rect x="374" y="354" width="188" height="134" rx="7" fill="#fff"/>
+    <rect x="374" y="354" width="47" height="134" rx="7" fill="#e9ede4"/>
+    <rect x="433" y="369" width="106" height="8" rx="4" fill="#c9d6bc"/>
+    <rect x="433" y="390" width="106" height="77" rx="5" fill="#f2f4ef"/>
+    <text x="356" y="538" font-size="16">Light</text>
+    <rect x="602" y="335" width="224" height="171" rx="12" fill="#dfe4d9" stroke="#a4b293" stroke-width="2"/>
+    <rect x="620" y="354" width="188" height="134" rx="7" fill="#242a23"/>
+    <rect x="620" y="354" width="47" height="134" rx="7" fill="#30382e"/>
+    <rect x="679" y="369" width="106" height="8" rx="4" fill="#778f62"/>
+    <rect x="679" y="390" width="106" height="77" rx="5" fill="#343d30"/>
+    <text x="602" y="538" font-size="16" font-weight="600">Dark</text>
+    <circle cx="812" cy="533" r="9" fill="#526844"/><path d="m808 533 3 3 5-6" stroke="white" fill="none" stroke-width="1.5"/>
+    <rect x="848" y="335" width="224" height="171" rx="12" fill="#f0f2ec" stroke="#dce1d7"/>
+    <rect x="866" y="354" width="188" height="134" rx="7" fill="#fff"/>
+    <path d="M960 354h87a7 7 0 0 1 7 7v120a7 7 0 0 1-7 7h-87Z" fill="#242a23"/>
+    <rect x="880" y="369" width="72" height="8" rx="4" fill="#c9d6bc"/><rect x="974" y="369" width="64" height="8" rx="4" fill="#778f62"/>
+    <text x="848" y="538" font-size="16">System</text>
+    <path d="M356 581h716" stroke="#dfe3dc"/>
+    <text x="356" y="622" font-size="16" font-weight="600">Your preference, remembered.</text>
+    <text x="356" y="652" font-size="15" fill="#7a8278">Saved in this browser and ready for your next visit.</text>
+  </g>
+</svg>
