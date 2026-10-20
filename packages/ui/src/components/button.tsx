@@ -198,7 +198,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         />
         <span
           data-slot="button-content"
-          className={cn("relative inline-flex items-center justify-center gap-[inherit]", contentClassName)}
+          className={cn("relative inline-flex min-w-0 items-center justify-center gap-[inherit]", contentClassName)}
         >
           {loading ? (
             <>
@@ -206,7 +206,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 {LeadingIcon && !iconOnly && (
                   <LeadingIcon data-slot="button-leading-icon" size={iconSize} strokeWidth={2} />
                 )}
-                <span data-slot="button-label" className={labelClassName}>{label}</span>
+                <span data-slot="button-label" className={cn("min-w-0", labelClassName)}>{label}</span>
                 {TrailingIcon && !iconOnly && (
                   <TrailingIcon data-slot="button-trailing-icon" size={iconSize} strokeWidth={2} />
                 )}
@@ -251,7 +251,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                   className="transition-[stroke-width] duration-fast group-hover/button:stroke-[2]"
                 />
               )}
-              <span data-slot="button-label" className={labelClassName}>{label}</span>
+              <span data-slot="button-label" className={cn("min-w-0", labelClassName)}>{label}</span>
               {TrailingIcon && (
                 <TrailingIcon
                   data-slot="button-trailing-icon"

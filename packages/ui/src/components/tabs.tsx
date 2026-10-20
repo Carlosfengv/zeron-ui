@@ -17,11 +17,12 @@ import {
 } from "react";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { motion, AnimatePresence } from "framer-motion";
-import type { IconComponent } from "#system/icon-context";
+import { useIcon, type IconComponent } from "#system/icon-context";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 import { useProximityHover } from "#hooks/use-proximity-hover";
 import { Badge, type BadgeProps } from "#components/badge";
+import { Button } from "#components/button";
 
 /* ─────────────────────── Contexts ─────────────────────── */
 
@@ -485,13 +486,20 @@ interface TabItemProps
   label: string;
   /** A number, text, Badge element, or Badge props shown after the label. */
   badge?: TabBadge;
+  /** Optional close action, rendered as a sibling button rather than inside the tab. */
+  onClose?: () => void;
+  /** Accessible name for the close action. Localize when onClose is supplied. */
+  closeLabel?: string;
   /** @internal Auto-assigned by TabsList. */
   _index?: number;
 }
 
 const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
-  ({ value, icon: Icon, leading, label, badge, _index = 0, className, onClick, ...props }, ref) => {
+  ({ value, icon: Icon, leading, label, badge, onClose, closeLabel = `Close ${label}`, _index = 0, className, onClick, ...props }, ref) => {
     const internalRef = useRef<HTMLButtonElement>(null);
+    const itemRef = useRef<HTMLDivElement>(null);
+    const closable = onClose !== undefined;
+    const Close = useIcon("x");
     const {
       registerTab,
       hoveredIndex,
@@ -503,9 +511,9 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
     } = useTabsList();
 
     useEffect(() => {
-      registerTab(_index, value, internalRef.current);
+      registerTab(_index, value, itemRef.current ?? internalRef.current);
       return () => registerTab(_index, value, null);
-    }, [_index, value, registerTab]);
+    }, [_index, value, registerTab, closable]);
 
     const isSelected = selectedValue === value;
     const isActive = hoveredIndex === _index || isSelected;
@@ -523,11 +531,11 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
     const labelContent = (
       <span
         data-label={label}
-        className="inline-grid text-body whitespace-nowrap after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:font-semibold after:content-[attr(data-label)]"
+        className="inline-grid min-w-0 text-body whitespace-nowrap after:pointer-events-none after:col-start-1 after:row-start-1 after:invisible after:truncate after:font-semibold after:content-[attr(data-label)]"
       >
         <span
           className={cn(
-            "col-start-1 row-start-1 transition-[color,font-weight] duration-fast motion-reduce:transition-none",
+            "col-start-1 row-start-1 truncate transition-[color,font-weight] duration-fast motion-reduce:transition-none",
             isSelected && variant !== "underline"
               ? selectedForegroundClasses[color]
               : isActive
@@ -541,7 +549,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
       </span>
     );
 
-    return (
+    const trigger = (
       <TabsPrimitive.Tab
         // Composed (not spread-overridable): a consumer onClick must not
         // replace the optimistic indicator jump.
@@ -565,6 +573,7 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
         className={cn(
           // Fixed heights keep every tab variant aligned and easy to target.
           "relative z-content flex items-center cursor-pointer bg-transparent border-none outline-none",
+          onClose && "min-w-0 flex-1",
           badge == null ? "px-3" : "pl-3 pr-1.5",
           variant === "pill" && [
             "h-control-md",
@@ -618,6 +627,15 @@ const TabItem = forwardRef<HTMLButtonElement, TabItemProps>(
         {badgeContent}
       </TabsPrimitive.Tab>
     );
+    if (!onClose) return trigger;
+    return <div ref={itemRef} data-slot="closable-tab" data-proximity-index={_index} className="group/closable-tab relative z-content flex min-w-0 max-w-64 items-center pr-1">
+      {trigger}
+      <span className={cn("shrink-0 transition-opacity duration-fast motion-reduce:transition-none", !isSelected && "opacity-0 group-hover/closable-tab:opacity-100 group-focus-within/closable-tab:opacity-100 pointer-coarse:opacity-100")}>
+        <Button type="button" size="xs" variant="ghost" iconOnly tabIndex={isSelected ? 0 : -1} aria-label={closeLabel} disabled={props.disabled === true}
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => { event.stopPropagation(); onClose(); }}><Close /></Button>
+      </span>
+    </div>;
   }
 );
 

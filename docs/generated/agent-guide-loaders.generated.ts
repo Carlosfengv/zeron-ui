@@ -11,6 +11,7 @@ export const agentGuideLoaders: Record<string, () => Promise<string>> = {
   "blocks/appearance-settings-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/appearance-settings-01.md"), "utf8"),
   "blocks/chat-markdown-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/chat-markdown-01.md"), "utf8"),
   "blocks/chat-thread-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/chat-thread-01.md"), "utf8"),
+  "blocks/chat-workspace-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/chat-workspace-01.md"), "utf8"),
   "blocks/cluster-environment-detail-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/cluster-environment-detail-01.md"), "utf8"),
   "blocks/cluster-environment-list-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/cluster-environment-list-01.md"), "utf8"),
   "blocks/context-window-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/context-window-01.md"), "utf8"),

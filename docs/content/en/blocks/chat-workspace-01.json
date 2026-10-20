@@ -1,0 +1,25 @@
+{
+  "chatWorkspaceBlock": {
+    "title": "Chat Workspace",
+    "description": "A resizable conversation and content workspace with an independently usable ArtifactPanel for code changes, Markdown, images and web previews.",
+    "composition": "Composition",
+    "compositionBody": "ChatWorkspace reuses ChatThread and the keyboard-accessible Resizable components. ChatThread owns the conversation scroll area and composer. Both chat demos share model selection, context usage and response-content components, with model artwork, provider, reasoning, TTFT, token counts and duration. Model identity is recorded per response. ArtifactPanel owns content tabs, viewing modes and review actions; ArtifactCard opens resources from a message. CodeBlock, CodeDiff, Markdown, Tabs, ScrollArea and FileType retain their public styling and behavior.",
+    "usage": "Usage",
+    "standalone": "Standalone content panel",
+    "standaloneBody": "ArtifactPanel needs only a constrained height and resources. It does not need ChatWorkspace or a chat provider. Try each tab below, review a change, or close the active tab with its close button or Delete key.",
+    "api": "Public API",
+    "apiArtifacts": "Slot for ArtifactPanel or a host-provided viewer. Other conversation props are passed through to ChatThread.",
+    "apiResize": "Initial conversation width and minimum desktop pane widths. Drag the divider or focus it and use arrow keys. onLayoutChanged exposes the completed layout.",
+    "apiOpen": "Controlled visibility for the content pane; defaultPanelOpen supports uncontrolled usage. Closing keeps both panes mounted.",
+    "apiPane": "Select the visible pane in containers narrower than 760px. Opening a resource should also select the artifacts pane.",
+    "apiResources": "Open resources in tab order, each with a unique id, content version, name and explicit kind. Include previousContent and review for reviewable code or Markdown changes.",
+    "apiTabs": "Control selection and closing in the host. Reopening an item should activate the same ID rather than duplicate it.",
+    "apiAddAction": "Optional action beside the tabs, also visible in an empty panel. The demo provides a plus-button resource picker. Overflow moves complete tabs into a menu listing all open content, with the active tab always visible.",
+    "apiReview": "Commit operations for the supplied resource version before resolving and update review in resources. Reject on failure. Batch actions retain failed pending items and report partial failures.",
+    "apiExtensions": "Connect draft references, resource retries or a custom preview. Return undefined from renderPreview to use the built-in viewer.",
+    "behavior": "Behavior and accessibility",
+    "behaviorBody": "Narrow containers show one pane at a time and preserve composer identity and the desktop split. Tabs support arrow keys and active-tab closing. Visited previews stay mounted; closing releases them and a new content version resets its viewer. Source, preview and diff modes are available only where applicable. Images support fit, zoom and native panning. Missing or failed content has an explicit fallback. The composer header counts pending review confirmations across all resources, including closed tabs. Its arrow opens and focuses the first pending item without sending or clearing the draft; the header disappears when every item is confirmed.",
+    "boundaries": "Integration and demo boundaries",
+    "boundariesBody": "The host owns streaming, files, versions, history restoration and persistence. Match resources to the current conversation branch, and invalidate stale review decisions when versions change. URL previews use sandboxed HTTP(S) frames with refresh and external opening. Websites may block embedding, and iframe load events do not prove successful rendering. A host browser adapter can be supplied with renderPreview. The demo uses local image and HTML fixtures; replies and review operations are simulated and never edit disk files. Replace demo asset paths in consumer projects."
+  }
+}

@@ -57,6 +57,92 @@
       ]
     },
     {
+      "name": "chat-workspace-01",
+      "type": "registry:block",
+      "title": "Chat Workspace",
+      "description": "Resizable conversations and an independent content panel for code review, Markdown, images and web previews.",
+      "categories": [
+        "application",
+        "ai",
+        "agent"
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "chat-thread-01",
+        "alert",
+        "button",
+        "code-block",
+        "dropdown",
+        "empty",
+        "file-type",
+        "icon-context",
+        "info-item",
+        "inline-notice",
+        "markdown",
+        "menu-item",
+        "resizable",
+        "tabs",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-tabs.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-tabs.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-card.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-card.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-code-preview.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-code-preview.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-panel.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-panel.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-preview.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-preview.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/artifact-utils.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/artifact-utils.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/chat-workspace-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/chat-workspace-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/chat-workspace-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/chat-workspace-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/chat-workspace.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/chat-workspace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-workspace-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-workspace-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "chat-thread-01",
       "type": "registry:block",
       "title": "Chat Thread",

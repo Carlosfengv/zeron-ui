@@ -132,6 +132,21 @@ export function checkRegistry(items, { scope = "all" } = {}) {
 
   if (scope === "packages") return errors;
 
+  // The same file participates in many closures. Reuse only its syntax;
+  // dependency and target resolution must still run in each closure's context.
+  const specifiersByTarget = new Map();
+  const specifiersFor = (file) => {
+    let byContent = specifiersByTarget.get(file.target);
+    if (!byContent) {
+      byContent = new Map();
+      specifiersByTarget.set(file.target, byContent);
+    }
+    if (!byContent.has(file.content)) {
+      byContent.set(file.content, moduleSpecifiers(file.content, file.target));
+    }
+    return byContent.get(file.content);
+  };
+
   for (const item of items) {
     const closure = closureFor(item, byName, errors);
     const files = new Map();
@@ -165,7 +180,7 @@ export function checkRegistry(items, { scope = "all" } = {}) {
     }
 
     for (const file of files.values()) {
-      for (const { specifier, typeOnly } of moduleSpecifiers(file.content, file.target)) {
+      for (const { specifier, typeOnly } of specifiersFor(file)) {
         const internalTarget = resolveInternalTarget(file.target, specifier);
         if (internalTarget) {
           const resolved = [...targetKeys(internalTarget)].some((key) => targetIndex.has(key));

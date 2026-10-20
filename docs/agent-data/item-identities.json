@@ -12,6 +12,16 @@
       "retirementReason": null
     },
     {
+      "id": "block:chat-workspace-01",
+      "type": "registry",
+      "key": "chat-workspace-01",
+      "aliases": [
+        "chat-workspace-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "component:message-navigation",
       "type": "registry",
       "key": "message-navigation",

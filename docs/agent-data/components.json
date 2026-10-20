@@ -24,6 +24,31 @@
       "ToolCallsThread 复用 ChatThread、ChatUserMessage、ChatAssistantMessage、ChatMarkdown 与 composer 插槽。"
     ]
   },
+  "chat-workspace-01": {
+    "keywords": [
+      "对话工作区",
+      "内容预览",
+      "审阅",
+      "图片",
+      "网页",
+      "workspace",
+      "artifact",
+      "diff",
+      "Resizable"
+    ],
+    "useCases": [
+      "组合对话与可拖拽的多内容预览，或独立使用 ArtifactPanel。"
+    ],
+    "whenNotToUse": [
+      "完整浏览器导航、文件写入及持久化需要宿主适配；不替代后端操作。"
+    ],
+    "keyApi": [
+      "ChatWorkspace 复用 ChatThread，artifacts 插槽接入内容面板，支持 Resizable 调宽。",
+      "ArtifactPanel.resources 是显式类型、稳定 id 与 version 的已打开资源列表。",
+      "onReview 异步提交具体版本，onReference 添加草稿引用；宿主持有状态。",
+      "activePane 管理窄屏切换；renderPreview 接入自定义预览。"
+    ]
+  },
   "chat-message": {
     "keywords": [
       "消息",

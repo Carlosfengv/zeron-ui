@@ -5,6 +5,7 @@ export type { DocPageModule, DocPageLoader } from "./page-loader-types";
 
 export const pageLoaders: Record<string, DocPageLoader> = {
   "blocks/tool-calls-01": () => import("@docs/pages/blocks/tool-calls-01/page"),
+  "blocks/chat-workspace-01": () => import("@docs/pages/blocks/chat-workspace-01/page"),
   "blocks/chat-markdown-01": () => import("@docs/pages/blocks/chat-markdown-01/page"),
   "blocks/chat-thread-01": () => import("@docs/pages/blocks/chat-thread-01/page"),
   "components/message-navigation": () => import("@docs/pages/components/message-navigation/page"),

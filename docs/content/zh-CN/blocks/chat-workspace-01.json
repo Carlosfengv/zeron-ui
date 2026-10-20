@@ -1,0 +1,25 @@
+{
+  "chatWorkspaceBlock": {
+    "title": "对话工作区",
+    "description": "可拖拽调整的对话与内容工作区，ArtifactPanel 可独立展示代码差异、Markdown、图片和网页预览。",
+    "composition": "组件组合",
+    "compositionBody": "ChatWorkspace 复用 ChatThread 和支持键盘的 Resizable 分栏组件。ChatThread 管理对话滚动和输入区；两处聊天演示共用模型选择、上下文用量与回复内容组件，统一显示模型图标、提供方、思考过程、TTFT、输入/输出 tokens 和耗时，模型身份按每条回复记录。ArtifactPanel 管理内容标签页、视图与审阅操作；ArtifactCard 从消息中打开资源。代码、差异、文档、标签页、滚动与文件图标复用 CodeBlock、CodeDiff、Markdown、Tabs、ScrollArea 和 FileType 的公开能力。",
+    "usage": "使用方式",
+    "standalone": "独立内容面板",
+    "standaloneBody": "ArtifactPanel 只需要受限高度与资源数据，可脱离 ChatWorkspace 和聊天上下文使用。下方可切换内容、审阅变更，并通过关闭按钮或 Delete 键关闭当前标签页。",
+    "api": "公开接口",
+    "apiArtifacts": "放入 ArtifactPanel 或宿主自定义预览器；其余会话属性透传给 ChatThread。",
+    "apiResize": "设置对话初始宽度和桌面分栏最小宽度。支持拖动分隔线，或聚焦后使用方向键调整；onLayoutChanged 返回调整完成的布局。",
+    "apiOpen": "受控管理内容区开关；非受控场景使用 defaultPanelOpen。收起时保留两个面板的节点。",
+    "apiPane": "容器小于 760px 时选择可见面板。打开资源时应同步切到 artifacts。",
+    "apiResources": "按标签顺序传入已打开资源，每项有唯一 id、内容 version、名称与明确类型。代码或 Markdown 提供 previousContent 与 review 后支持审阅。",
+    "apiTabs": "宿主管理选中和关闭；重复打开同一资源应激活已有 ID。",
+    "apiAddAction": "标签栏旁的可选操作，空面板同样保留。演示用加号打开资源选择菜单。溢出时将完整标签收入更多菜单，菜单展示全部已打开内容，当前标签始终可见。",
+    "apiReview": "对传入的具体资源版本完成操作并更新 resources 中的 review 后再 resolve；失败时 reject。批量操作保留失败的待处理项并报告部分失败。",
+    "apiExtensions": "接入草稿引用、资源重试与自定义预览。renderPreview 返回 undefined 时使用默认预览器。",
+    "behavior": "交互与无障碍",
+    "behaviorBody": "窄容器每次展示一个面板，保留输入区节点和桌面分栏比例。标签页支持方向键与关闭操作。访问过的预览保持挂载，关闭时释放；内容版本变化后重置对应预览。按内容提供源码、预览和差异视图。图片支持适应窗口、缩放与原生滚动平移；缺失、失败和不支持的内容有明确降级展示。输入容器顶部统计全部资源中的待审阅确认项，关闭标签后仍保留计数。箭头会打开并聚焦第一项待审阅内容，不发送消息、不清空草稿；全部确认后提示自动消失。",
+    "boundaries": "接入与演示边界",
+    "boundariesBody": "宿主持有流式请求、文件、版本、历史恢复与持久化。资源应跟随当前对话分支，版本变化后旧审阅结果失效。网页通过沙箱 HTTP(S) iframe 预览，支持刷新与外部打开；网站可能禁止嵌入，load 事件不证明渲染成功。需要浏览器能力时通过 renderPreview 接入宿主适配器。演示使用本地图片和 HTML，回复与审阅均为模拟数据，不修改磁盘文件；消费项目需要替换演示资源地址。"
+  }
+}

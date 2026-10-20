@@ -1,6 +1,7 @@
 "use client";
 import { ToolCallsDemo } from "./ToolCallsDemo";
 import { ChatThreadDemo } from "./ChatThreadDemo";
+import { ChatWorkspaceDemo } from "./ChatWorkspaceDemo";
 import { ChatMarkdownDemo } from "./ChatMarkdownDemo";
 import { SectionedDataTableDemo } from "./SectionedDataTableDemo";
 import { GroupedDataTableDemo } from "./GroupedDataTableDemo";
@@ -182,6 +183,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
     case "tool-calls-01":
       return <ToolCallsDemo />;
+    case "chat-workspace-01":
+      return <ChatWorkspaceDemo />;
     case "chat-thread-01":
       return <ChatThreadDemo />;
     case "chat-markdown-01":

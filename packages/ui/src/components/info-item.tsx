@@ -1,4 +1,7 @@
+"use client";
+
 import { forwardRef, type ComponentPropsWithoutRef } from "react";
+import { useRender } from "@base-ui/react/use-render";
 import { cn } from "#system/utils";
 
 export type InfoItemLayout = "stacked" | "inline";
@@ -21,24 +24,29 @@ const InfoItemGroup = forwardRef<HTMLDivElement, InfoItemGroupProps>(
 
 InfoItemGroup.displayName = "InfoItemGroup";
 
-export interface InfoItemProps extends ComponentPropsWithoutRef<"div"> {
+export interface InfoItemProps extends useRender.ComponentProps<"div"> {
   /** Controls whether the title and description stack or share one line. */
   layout?: InfoItemLayout;
 }
 
 const InfoItem = forwardRef<HTMLDivElement, InfoItemProps>(
-  ({ layout = "stacked", className, ...props }, ref) => (
-    <div
-      ref={ref}
-      data-slot="info-item"
-      data-layout={layout}
-      className={cn(
+  ({ layout = "stacked", className, render, ...props }, ref) => useRender({
+    defaultTagName: "div",
+    render,
+    props: {
+      ref,
+      "data-slot": "info-item",
+      "data-layout": layout,
+      "data-interactive": render !== undefined ? "true" : undefined,
+      className: cn(
         "group/info-item flex min-w-0 items-center gap-3 px-3 py-3",
+        "data-[interactive=true]:w-full data-[interactive=true]:cursor-pointer data-[interactive=true]:rounded-lg data-[interactive=true]:text-left data-[interactive=true]:outline-none data-[interactive=true]:transition-colors data-[interactive=true]:duration-fast data-[interactive=true]:hover:bg-hover data-[interactive=true]:focus-visible:ring-1 data-[interactive=true]:focus-visible:ring-focus-ring data-[interactive=true]:disabled:pointer-events-none data-[interactive=true]:disabled:opacity-50",
         className
-      )}
-      {...props}
-    />
-  )
+      ),
+      ...props,
+    },
+    state: { interactive: render !== undefined },
+  })
 );
 
 InfoItem.displayName = "InfoItem";

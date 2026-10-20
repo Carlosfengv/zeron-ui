@@ -771,6 +771,87 @@ InputMessage 的生成状态仍为 `idle | streaming`。生成期间发送可进
 
 ---
 schema_version: 1
+name: chat-workspace-01
+kind: block
+status: stable
+locale: zh-CN
+summary: 可拖拽的对话与内容工作区，独立 ArtifactPanel 支持代码审阅、Markdown、图片与网页预览。
+package_import: "@zeron/blocks/chat-workspace-01"
+registry_import: "@/components/blocks/chat-workspace-01"
+source: packages/blocks/src/application/chat-workspace-01/chat-workspace.tsx
+types: packages/blocks/src/application/chat-workspace-01/chat-workspace-types.ts
+registry: packages/blocks/registry.json
+typecheck_examples: true
+related: [chat-thread-01, resizable, code-block, markdown, tabs, scroll-area, file-type, input-message]
+---
+
+# Chat Workspace
+
+安装 `npx zeron-ui add chat-workspace-01 input-message`。React 数据 Block，不依赖 Next.js 或 AI SDK。导出 ChatWorkspace、ArtifactPanel、ArtifactCard、getPendingReviewResources 和英文/中文 artifact labels。
+
+```tsx
+"use client";
+import { useState } from "react";
+import { ChatWorkspace, ArtifactPanel, ArtifactCard, type ArtifactResource } from "@zeron/blocks/chat-workspace-01";
+import { ChatAssistantMessage } from "@zeron/blocks/chat-thread-01";
+import { InputMessage } from "@zeron/ui/input-message";
+
+export function WorkspaceExample() {
+  const [draft, setDraft] = useState("");
+  const [activeId, setActiveId] = useState("guide");
+  const [pane, setPane] = useState<"chat" | "artifacts">("chat");
+  const resources: ArtifactResource[] = [{ id: "guide", version: "1", kind: "markdown", name: "README.md", content: "# Guide" }];
+  return <div className="h-96">
+    <ChatWorkspace locale="zh-CN" activePane={pane} onActivePaneChange={setPane}
+      composer={<InputMessage layout="compact" value={draft} onValueChange={setDraft} />}
+      artifacts={<ArtifactPanel locale="zh-CN" resources={resources} activeId={activeId} onActiveIdChange={setActiveId} />}>
+      <ChatAssistantMessage id="reply" text="文档已生成。">
+        <ArtifactCard resources={resources} locale="zh-CN" onOpen={(item) => { setActiveId(item.id); setPane("artifacts"); }} />
+      </ChatAssistantMessage>
+    </ChatWorkspace>
+  </div>;
+}
+```
+
+Registry 使用 `@/components/blocks/chat-workspace-01`、`@/components/blocks/chat-thread-01` 和 `@/components/ui/input-message`。ArtifactPanel 可单独放入受限高度容器，无需聊天 Provider。
+
+## 布局与状态归属
+
+ChatWorkspace 直接复用 ChatThread；composer、children、busy、历史、检查点和 labels 均为 ChatThread 原接口。外层 className 管理整个工作区尺寸，宿主提供受限高度。
+
+分栏使用公开 ResizablePanelGroup、ResizablePanel、ResizableHandle；默认 38% / 62%，chatMinSize="280px"、artifactMinSize="320px"。支持拖动、分隔线方向键及 onLayoutChanged。容器宽度小于 760px 时展示单面板；activePane / onActivePaneChange 选择 chat 或 artifacts，panelOpen / onPanelOpenChange 管理内容区开关，均有 default 对应值。开关与响应式切换不重挂载会话或输入区，返回桌面保留上次比例。
+
+ArtifactPanel 的 resources 是当前打开的资源列表，id 唯一且稳定，version 随内容修订变化。kind 为 code、markdown、text、image、url 或 file。代码/Markdown 有 previousContent 时支持差异；Markdown 默认预览，代码默认差异或源码。显式 review="pending" 才启用变更审阅。普通文件显示 MIME、大小与下载入口，不承诺 Office/PDF 全文预览。
+
+ArtifactCard 的资源行使用 InfoItem，通过 render 的原生 button 根元素保持整行点击与键盘打开预览。标题下方显示文件大小；通用 size 字段以字节为单位，优先使用有限的非负值，代码/Markdown/text 未提供时按当前内容的 UTF-8 字节数计算。图片等远程文件由宿主提供 size，不为读取大小额外请求资源；未知时省略大小。网页项的辅助文字显示 URL，并对长地址省略显示、保留完整 title。右侧继续显示审阅状态与箭头。
+
+activeId / defaultActiveId / onActiveIdChange 管理选择；onClose 负责从宿主列表移除资源。标签使用 segment 圆角选中底板，关闭按钮与标签按钮并列。宽度不足时保留完整标签和当前项，其余收入更多菜单；菜单列出全部已打开资源并标记当前项，不显示横向滚动条。addAction 可放置宿主的加号资源选择菜单，空面板同样保留此入口。重复打开由宿主去重。关闭活动项选择邻近项；Delete 关闭当前聚焦标签。访问过的预览在打开期间保持挂载与阅读位置，关闭后释放；新 version 重置对应预览。renderPreview(resource) 返回 undefined 时回退内建视图，可接入 PDF、浏览器或业务预览器。
+
+## 操作与失败
+
+onReview(resource, decision) 接收 accept / reject。底部只显示一个批量审阅栏，复用 Alert status="info" 的浅蓝背景、边框和 xl 圆角，外层 p-3 保留四周 12px 间距。宿主核对 id/version 并提交真实文件操作、更新资源 review 后再 resolve；失败 reject，Block 不虚构成功。批量操作逐项调用并保留部分失败；待处理期间禁用重复审阅。历史、分支和检查点恢复由宿主同时更新会话与资源；旧版本审阅不得作用于新内容。
+
+onReference(resource) 将结构化资源引用加入宿主草稿，不自动发送。onRetry 处理资源 status="error"；status="loading" 显示加载提示。复制失败有反馈，图片加载失败可重试。Markdown 不启用原始 HTML；预览器对代码错误隔离，失效资源可重试。
+
+资源由宿主移除时，非受控选择会落到剩余首项；之后重新加入旧资源不会自动抢回选择。关闭或修订会释放对应的访问记录，重新打开的非活动资源仍延迟到首次选中再加载。预览渲染出错后，可通过重试、切换视图或加载状态恢复；宿主变更实际内容时仍须更新 version。
+
+`getPendingReviewResources(resources)` 按宿主顺序返回可审阅、已就绪且 review="pending" 的版本，与底部批量审阅的条件一致。演示对完整资源列表计算数量，通过 `InputMessage.header` 放入 ContainerHeader，显示「还有 N 项待审阅确认的内容」和箭头按钮；零项时传入 undefined 隐藏整个 header。点击箭头使用第一项资源 ID 去重打开、展开面板，在窄屏切换到 artifacts 并聚焦选中标签，不发送消息、不清空草稿。关闭标签不等于完成审阅，已关闭的待审阅内容仍计数并可重新打开。
+
+URL 只支持 HTTP(S) 或相对地址的沙箱 iframe；图片和下载额外允许 blob。禁止 javascript/data 等可执行协议。沙箱不赋予 same-origin；网页可运行脚本、提交表单并外部打开，不能访问父页面 DOM。目标网站可能通过 CSP/X-Frame-Options 禁止内嵌，iframe load 不证明成功，始终提供外部打开。刷新仅重载对应网页，不实现跨域导航历史或内容读取。宿主通过 renderPreview 接入完整浏览器能力。
+
+## 演示与验证
+
+createChatWorkspaceDemoResources(locale, assetBase) 返回本地主题代码、Markdown、图片、网页与 ZIP 元数据。assetBase 默认 /demos/chat-workspace；消费项目替换地址或提供自己的资源。演示回复与审阅为本地模拟，不访问模型、不写磁盘。独立面板演示不依赖 ChatWorkspace。
+
+工作区与 chat-thread-01 的文档演示共用 ChatDemoModelControls、ChatDemoContextControl 和 ChatDemoResponseContent，统一模型选择、附件入口、上下文用量、思考过程和 Markdown 输出。回复仍使用 ChatAssistantMessage 的 model、modelLogo、provider、metrics、stopped、onRetry 和 onFeedback，模型身份属于单条回复快照，切换选择器不会改写历史回复。流式结束后显示 TTFT、输入/输出 tokens 和耗时。模型与上下文仅复用固定演示数据；消费项目按需另装 model-selector-01、context-window-01 并连接真实数据。
+
+验证拖动与键盘调宽、收起后 composer 身份、窄屏切换、关闭后重开、修订后的状态重置、批量部分失败、引用不自动发送、图片缩放、URL 刷新和失效协议、空/加载/失败状态，以及 Registry 依赖闭包。样式只做外部布局，保持 Zeron 组件的表面、焦点、控件尺寸与主题。
+
+
+---
+
+---
+schema_version: 1
 name: cluster-environment-detail-01
 kind: block
 status: stable
@@ -3588,6 +3669,7 @@ related:
 - `iconOnly` 按钮的 child 应是单个图标，并提供 `aria-label`；装饰性图标添加 `aria-hidden`。
 - `dashed` 主要表达尚未添加的项目或未激活的筛选器，通常与有边界的低强调变体搭配。
 - `active` 只表示按钮控制的外部界面仍处于打开或按住状态，例如 Dropdown 正在显示；不要把它当作业务选中状态的通用替代。
+- 内容与标签允许在宿主限定的宽度内收缩；组合标签可使用自身的 truncate 文本，图标仍按插槽尺寸保留。不要用内部 data-slot 选择器修补收缩或图文排列。
 - `tone="warning"` 只为低强调的状态操作增加警告语气，不改变操作层级；通常与 `variant="tertiary"` 一起使用，例如“配置异常”。
 
 ## State behavior

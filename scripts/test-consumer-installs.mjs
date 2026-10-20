@@ -549,6 +549,14 @@ async function verifyNextBuild({ consumer, component }) {
     'import { ToolCallsThread, createToolCallsDemoParts } from "@/components/blocks/tool-calls-01";',
     'export default function Page() { return <main style={{ height: "100svh" }}><ToolCallsThread prompt="Check search" parts={createToolCallsDemoParts()} composer={<textarea aria-label="Message" />} /></main>; }',
   ].join("\n");
+  examples["chat-workspace-01"] = [
+    '"use client";',
+    'import { useState } from "react";',
+    'import { ChatWorkspace, ArtifactPanel, ArtifactCard, getPendingReviewResources, type ArtifactResource } from "@/components/blocks/chat-workspace-01";',
+    'import { ChatAssistantMessage } from "@/components/blocks/chat-thread-01";',
+    'const resources: ArtifactResource[] = [{ id: "code", version: "1", kind: "code", name: "test.ts", content: "export const ready = true;", previousContent: "", review: "pending" }, { id: "guide", version: "1", kind: "markdown", name: "README.md", content: "# Install verified" }];',
+    'export default function Page() { const [activeId, setActiveId] = useState("code"); return <><span>{getPendingReviewResources(resources).length} pending</span><div className="h-96"><ChatWorkspace composer={<textarea aria-label="Draft" />} artifacts={<ArtifactPanel resources={resources} activeId={activeId} onActiveIdChange={setActiveId} />}><ChatAssistantMessage id="reply" text="Install verified"><ArtifactCard resources={resources} onOpen={(item) => setActiveId(item.id)} /></ChatAssistantMessage></ChatWorkspace></div><div className="h-96"><ArtifactPanel resources={resources} /></div></>; }',
+  ].join("\n");
   examples["chat-thread-01"] = [
     '"use client";',
     'import { useState } from "react";',
@@ -916,6 +924,16 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { ToolCallsThread, createToolCallsDemoParts } from "@/src/components/blocks/tool-calls-01";',
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<div className="h-96"><ToolCallsThread prompt="Check search" parts={createToolCallsDemoParts()} composer={<textarea aria-label="Message" />} /></div>);',
+  ].join("\n");
+  examples["chat-workspace-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { useState } from "react";',
+    'import { ChatWorkspace, ArtifactPanel, ArtifactCard, getPendingReviewResources, type ArtifactResource } from "@/src/components/blocks/chat-workspace-01";',
+    'import { ChatAssistantMessage } from "@/src/components/blocks/chat-thread-01";',
+    'import "./index.css";',
+    'const resources: ArtifactResource[] = [{ id: "code", version: "1", kind: "code", name: "test.ts", content: "export const ready = true;", previousContent: "", review: "pending" }, { id: "guide", version: "1", kind: "markdown", name: "README.md", content: "# Install verified" }];',
+    'function Example() { const [activeId, setActiveId] = useState("code"); return <><span>{getPendingReviewResources(resources).length} pending</span><div className="h-96"><ChatWorkspace composer={<textarea aria-label="Draft" />} artifacts={<ArtifactPanel resources={resources} activeId={activeId} onActiveIdChange={setActiveId} />}><ChatAssistantMessage id="reply" text="Install verified"><ArtifactCard resources={resources} onOpen={(item) => setActiveId(item.id)} /></ChatAssistantMessage></ChatWorkspace></div><div className="h-96"><ArtifactPanel resources={resources} /></div></>; }',
+    'createRoot(document.getElementById("root")!).render(<Example />);',
   ].join("\n");
   examples["chat-thread-01"] = [
     'import {createRoot} from "react-dom/client";',
