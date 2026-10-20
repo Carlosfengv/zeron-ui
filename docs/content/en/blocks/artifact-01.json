@@ -1,0 +1,20 @@
+{
+  "artifactBlock": {
+    "title": "Artifact",
+    "description": "A shared conversation workspace for generated HTML pages, Markdown documents and code, with live previews and revision history.",
+    "composition": "Composition",
+    "compositionBody": "ArtifactWorkspace reuses ChatWorkspace, ChatThread and Resizable. GeneratedArtifactCard uses the existing ArtifactCard. ArtifactPreviewPanel provides version selection, code, preview and changes through Tabs, CodeBlock, CodeDiff and Markdown. The composer shares model, context and response components with the other conversation demos.",
+    "usage": "Usage",
+    "api": "Public API",
+    "apiArtifact": "A document with a stable ID, title, filename, kind and oldest-first revisions. Each revision has a stable ID, content and an optional ready, streaming or error status.",
+    "apiPreview": "Pass preview controls and callbacks here. Other workspace props, including composer, children, pane selection and layout sizes, pass through to ChatWorkspace. ArtifactPreviewPanel also works independently in a constrained-height container.",
+    "apiRevision": "Controlled version selection. Without revisionId, the panel follows the latest version until the user selects a revision. Invalid IDs fall back to the latest revision. Document changes reset internal selection.",
+    "apiRestore": "Available for historical revisions. The host persists the restoration by appending a new revision before resolving. Uncontrolled selection then follows the latest revision if the user is still viewing the restored version; navigation during the request is preserved. In controlled mode, the host also updates revisionId. Requests lock until completion; failures remain attached to the originating document and revision.",
+    "apiActions": "Retry an error revision or close the preview. The host owns these operations and pane visibility. Copy, download, reload and browser full screen work locally.",
+    "apiCard": "Open the exact version represented by a message card. Also open the panel and select the artifacts pane for narrow containers.",
+    "behavior": "Behavior and accessibility",
+    "behaviorBody": "HTML previews run in an opaque-origin iframe with allow-scripts and no same-origin permission. Visited views stay mounted within the current revision, preserving page inputs and scroll position when switching between Code, Preview and Changes. Unvisited views load on demand. Switching revisions releases the previous views; Reload preview resets only the preview. Streaming content stays in Code until ready. Code-only artifacts omit Preview. Changes compare against the preceding revision. Copy and download use the selected version. Version menus and tabs support keyboard interaction; narrow containers inherit ChatWorkspace’s single-pane layout. Full screen uses the browser API and Escape to exit.",
+    "boundaries": "Integration and demo boundaries",
+    "boundariesBody": "The host owns generation, documents, revision history and persistence. HTML supports self-contained HTML/CSS/JavaScript; JSX and TypeScript display as code and are not compiled. The sandbox separates the document from the host but is not a network isolation service. The demo simulates streaming for three presets: pricing, a launch plan and a debounce hook. Attachments and model selection are local demo controls. It does not call a model or save files to the project."
+  }
+}

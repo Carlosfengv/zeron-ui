@@ -28,6 +28,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [AI Gateway Overview](https://zeron-ui.vercel.app/ai/items/block%3Aai-gateway-overview-01.md): A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations. Registry: ai-gateway-overview-01.
 - [AI Gateway Session List](https://zeron-ui.vercel.app/ai/items/block%3Aai-gateway-session-list-01.md): A controlled AI gateway session workspace with shared navigation, entity filters, error-only filtering, compact usage values, and responsive pagination. Registry: ai-gateway-session-list-01.
 - [Appearance Settings](https://zeron-ui.vercel.app/ai/items/block%3Aappearance-settings-01.md): 主题、强调色、界面密度与动效偏好。 Registry: appearance-settings-01.
+- [Artifact](https://zeron-ui.vercel.app/ai/items/block%3Aartifact-01.md): Generated HTML, Markdown and code with live previews and version history. Registry: artifact-01.
 - [Chat Markdown](https://zeron-ui.vercel.app/ai/items/block%3Achat-markdown-01.md): Consistent AI response typography, code, tables, task lists and streaming. Registry: chat-markdown-01.
 - [Chat Thread](https://zeron-ui.vercel.app/ai/items/block%3Achat-thread-01.md): Streaming conversations, message versions and checkpoint restoration. Registry: chat-thread-01.
 - [Chat Workspace](https://zeron-ui.vercel.app/ai/items/block%3Achat-workspace-01.md): Resizable conversations with code review, Markdown, image and web previews. Registry: chat-workspace-01.
@@ -203,6 +204,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [ai-gateway-overview-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-overview-01.md)
 - [ai-gateway-session-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-session-list-01.md)
 - [appearance-settings-01](https://zeron-ui.vercel.app/agent-guides/blocks/appearance-settings-01.md)
+- [artifact-01](https://zeron-ui.vercel.app/agent-guides/blocks/artifact-01.md)
 - [chat-markdown-01](https://zeron-ui.vercel.app/agent-guides/blocks/chat-markdown-01.md)
 - [chat-thread-01](https://zeron-ui.vercel.app/agent-guides/blocks/chat-thread-01.md)
 - [chat-workspace-01](https://zeron-ui.vercel.app/agent-guides/blocks/chat-workspace-01.md)

@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "artifact-01", title: "内容创作", description: "生成 HTML、Markdown 与代码，支持版本历史、变更对比和实时预览。", categories: ["application", "ai", "agent"], dependencies: ["chat-workspace-01", "button", "code-block", "dropdown", "empty", "icon-context", "inline-notice", "markdown", "menu-item", "tabs", "utils"] },
   { name: "tool-calls-01", title: "工具调用", description: "搜索与读取汇总、代码变更、命令确认与输出，组合 Chat Thread 会话。", categories: ["application", "ai", "agent"], dependencies: ["chat-thread-01", "accordion", "badge", "button", "code-block", "empty", "icon-context", "inline-notice", "utils"] },
   { name: "chat-markdown-01", title: "Markdown 回复", description: "统一 AI 回复排版，支持代码、表格、任务列表、脚注与流式内容。", categories: ["application", "ai", "agent"], dependencies: ["chat-message", "markdown", "utils"] },
   { name: "grouped-data-table-02", title: "多维分组表格", description: "多维切换、独立表头、组内预览和新增入口，共享搜索筛选与排序。", categories: ["application", "tables"], dependencies: ["badge", "button", "container", "data-table", "empty", "icon-context", "inline-notice", "input-group", "tabs", "@tanstack/react-table"] },

@@ -3,6 +3,68 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "artifact-01",
+      "type": "registry:block",
+      "title": "Artifact",
+      "description": "Generated HTML, Markdown and code with revision history and a shared chat workspace.",
+      "categories": [
+        "application",
+        "ai",
+        "agent"
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "chat-workspace-01",
+        "button",
+        "code-block",
+        "dropdown",
+        "empty",
+        "icon-context",
+        "inline-notice",
+        "markdown",
+        "menu-item",
+        "tabs",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/artifact-01/artifact-content.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/artifact-01/artifact-content.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/artifact-01/artifact-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/artifact-01/artifact-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/artifact-01/artifact-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/artifact-01/artifact-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/artifact-01/artifact-preview-panel.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/artifact-01/artifact-preview-panel.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/artifact-01/artifact-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/artifact-01/artifact-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/artifact-01/artifact-workspace.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/artifact-01/artifact-workspace.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/artifact-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/artifact-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "tool-calls-01",
       "type": "registry:block",
       "title": "Tool Calls",

@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "artifact-01": () => import("./ArtifactDemo").then(({ ArtifactDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={810} canvasWidth={1440}><ArtifactDemo /></ResponsivePreview>,
+  })),
   "tool-calls-01": () => import("./ToolCallsDemo").then(({ ToolCallsDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ToolCallsDemo /></ResponsivePreview>,
   })),

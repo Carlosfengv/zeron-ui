@@ -1,4 +1,10 @@
 {
+  "artifact-01": {
+    "keywords": ["artifact", "生成内容", "实时预览", "版本历史", "HTML", "Markdown"],
+    "useCases": ["在现有对话工作区生成并迭代 HTML、Markdown 和代码。"],
+    "whenNotToUse": ["文件审批使用 chat-workspace-01；本 Block 不编译 JSX/TSX，不内置模型服务。"],
+    "keyApi": ["ArtifactWorkspace 复用 ChatWorkspace，previewProps 传入独立 ArtifactPreviewPanel。", "artifact.revisions 按时间正序；revisionId 与 onRevisionChange 控制历史版本。", "onRestore 由宿主追加新修订；HTML 使用隔离 iframe。"]
+  },
   "tool-calls-01": {
     "keywords": [
       "工具调用",

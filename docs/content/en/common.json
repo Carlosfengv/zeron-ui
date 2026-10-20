@@ -222,7 +222,8 @@
       "radar-chart": "Compare normalized metrics across one or more series.",
       "ring-chart": "Display independent progress as concentric rings.",
       "markdown": "Safe GFM content with tables, code blocks and an accessible streaming indicator.",
-      "chat-markdown-01": "Consistent AI response typography with code, tables, nested lists, tasks, footnotes and streaming."
+      "chat-markdown-01": "Consistent AI response typography with code, tables, nested lists, tasks, footnotes and streaming.",
+      "artifact-01": "Generated HTML, Markdown and code with live previews, version history and change comparison."
     }
   }
 }

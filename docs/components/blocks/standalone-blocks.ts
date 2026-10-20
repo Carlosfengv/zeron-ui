@@ -1,4 +1,5 @@
 export const standaloneBlockSlugs = [
+  "artifact-01",
   "tool-calls-01",
   "chat-workspace-01",
   "chat-thread-01",

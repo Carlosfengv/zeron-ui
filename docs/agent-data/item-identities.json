@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "items": [
+    { "id": "block:artifact-01", "type": "registry", "key": "artifact-01", "aliases": ["artifact-01"], "status": "active", "retirementReason": null },
     {
       "id": "block:tool-calls-01",
       "type": "registry",

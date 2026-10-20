@@ -12,6 +12,7 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "blocks/artifact-01": () => import("@docs/content/en/blocks/artifact-01.json"),
     "blocks/tool-calls-01": () => import("@docs/content/en/blocks/tool-calls-01.json"),
     "blocks/chat-workspace-01": () => import("@docs/content/en/blocks/chat-workspace-01.json"),
     "blocks/chat-markdown-01": () => import("@docs/content/en/blocks/chat-markdown-01.json"),
@@ -169,6 +170,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "blocks/artifact-01": () => import("@docs/content/zh-CN/blocks/artifact-01.json"),
     "blocks/tool-calls-01": () => import("@docs/content/zh-CN/blocks/tool-calls-01.json"),
     "blocks/chat-workspace-01": () => import("@docs/content/zh-CN/blocks/chat-workspace-01.json"),
     "blocks/chat-markdown-01": () => import("@docs/content/zh-CN/blocks/chat-markdown-01.json"),
