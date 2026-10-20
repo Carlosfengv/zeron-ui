@@ -2466,7 +2466,8 @@
         "https://zeron-ui.vercel.app/r/use-touch-primary.json",
         "https://zeron-ui.vercel.app/r/file-thumbnail.json",
         "https://zeron-ui.vercel.app/r/button.json",
-        "https://zeron-ui.vercel.app/r/icon-context.json"
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json"
       ],
       "files": [
         {
@@ -2478,6 +2479,16 @@
           "path": "packages/ui/src/components/chat-message/scroll-to-latest.tsx",
           "type": "registry:ui",
           "target": "components/ui/chat-message/scroll-to-latest.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-message/actions.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-message/actions.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-message/author.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-message/author.tsx"
         }
       ],
       "meta": {

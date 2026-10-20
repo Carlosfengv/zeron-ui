@@ -2005,7 +2005,8 @@
         "use-touch-primary",
         "file-thumbnail",
         "button",
-        "icon-context"
+        "icon-context",
+        "tooltip"
       ],
       "files": [
         {
@@ -2017,6 +2018,16 @@
           "path": "packages/ui/src/components/chat-message/scroll-to-latest.tsx",
           "type": "registry:ui",
           "target": "components/ui/chat-message/scroll-to-latest.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-message/actions.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-message/actions.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-message/author.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-message/author.tsx"
         }
       ]
     },
