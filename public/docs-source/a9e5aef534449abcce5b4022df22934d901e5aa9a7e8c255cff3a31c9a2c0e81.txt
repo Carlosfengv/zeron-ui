@@ -1,0 +1,355 @@
+export { ToolCalls } from "./tool-calls";
+export { ToolCallsThread } from "./tool-calls-thread";
+export { toolCallsEnLabels, toolCallsZhLabels } from "./tool-calls-labels";
+export { createToolCallsDemoParts } from "./tool-calls-demo-data";
+export type { ToolCall, ToolCallDecision, ToolCallFile, ToolCallMatch, ToolCallStatus, ToolCallsLabels, ToolCallsPart, ToolCallsProps, ToolCallsThreadProps } from "./tool-calls-types";
+
+
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@zeron/ui/accordion";
+import { Badge } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { CodeBlock, CodeDiff } from "@zeron/ui/code-block";
+import { Empty, EmptyHeader, EmptyTitle } from "@zeron/ui/empty";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { useIcon, type IconName } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { toolCallsEnLabels } from "./tool-calls-labels";
+import type { ToolCall, ToolCallDecision, ToolCallsLabels, ToolCallsProps } from "./tool-calls-types";
+
+const icons: Record<ToolCall["kind"], IconName> = {
+  search: "search", read: "file-text", write: "file", edit: "pencil", command: "play", custom: "settings",
+};
+
+function ToolDetails({ call, labels }: { call: ToolCall; labels: ToolCallsLabels }) {
+  switch (call.kind) {
+    case "search":
+      return <div className="space-y-2">
+        <p className="break-all font-mono text-label text-fg-default">{call.query}</p>
+        {call.matches?.length ? <ul className="space-y-2" aria-label={labels.matches(call.matches.length)}>
+          {call.matches.map((match) => <li key={match.id} className="min-w-0 rounded-lg bg-surface-base p-3">
+            <p className="break-all font-mono text-label text-fg-default">{match.path}{match.line != null && `:${match.line}`}</p>
+            <pre className="mt-1 whitespace-pre-wrap break-all font-mono text-label text-fg-muted">{match.preview}</pre>
+          </li>)}
+        </ul> : <p className="text-label text-fg-muted">{call.status === "completed" ? labels.noMatches : labels.noOutput}</p>}
+      </div>;
+    case "read":
+    case "write":
+      return <CodeBlock file={call.file} options={{ overflow: "wrap" }} />;
+    case "edit":
+      return <CodeDiff oldFile={call.oldFile} newFile={call.newFile} options={{ diffStyle: "unified", overflow: "wrap" }} />;
+    case "command":
+      return <div className="space-y-2">
+        {call.cwd && <p className="break-all text-label text-fg-muted">{labels.directory}: <span className="font-mono">{call.cwd}</span></p>}
+        <CodeBlock file={{ name: "terminal.sh", contents: call.command }} options={{ overflow: "wrap" }} />
+        {call.exitCode != null && <p className="text-label text-fg-muted">{labels.exitCode(call.exitCode)}</p>}
+      </div>;
+    case "custom":
+      return call.input != null ? <section aria-label={labels.input} className="space-y-1">
+        <h4 className="text-label font-medium text-fg-muted">{labels.input}</h4>
+        <CodeBlock file={{ name: "input.json", contents: call.input }} options={{ overflow: "wrap" }} />
+      </section> : null;
+  }
+}
+
+function ToolCallRow({ call, labels, locale, open, onOpenChange, onApproval, onRetry }: {
+  call: ToolCall; labels: ToolCallsLabels; locale: string; open: boolean; onOpenChange: (open: boolean) => void;
+  onApproval: ToolCallsProps["onApproval"]; onRetry: ToolCallsProps["onRetry"];
+}) {
+  const Icon = useIcon(icons[call.kind]);
+  const Allow = useIcon("check");
+  const Deny = useIcon("x");
+  const Retry = useIcon("rotate-ccw");
+  const [pending, setPending] = useState(false);
+  const [actionError, setActionError] = useState(false);
+  const lock = useRef(false);
+  const mounted = useRef(false);
+  const request = useRef(0);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  useEffect(() => {
+    // A new lifecycle state supersedes requests from the previous state.
+    // Immutable refreshes of the same id/status retain their pending action.
+    request.current += 1;
+    lock.current = false;
+    setPending(false);
+    setActionError(false);
+    return () => { request.current += 1; };
+  }, [call.id, call.status]);
+
+  async function act(decision?: ToolCallDecision) {
+    if (lock.current) return;
+    lock.current = true;
+    setPending(true);
+    setActionError(false);
+    const attempt = ++request.current;
+    try {
+      if (decision) await onApproval?.(call, decision);
+      else await onRetry?.(call);
+    } catch {
+      if (mounted.current && request.current === attempt) setActionError(true);
+    } finally {
+      if (mounted.current && request.current === attempt) {
+        lock.current = false;
+        setPending(false);
+      }
+    }
+  }
+
+  let elapsed: string | undefined;
+  if (call.durationMs != null && Number.isFinite(call.durationMs) && call.durationMs >= 0) {
+    let formatter: Intl.NumberFormat;
+    try { formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }); }
+    catch { formatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }); }
+    elapsed = call.durationMs < 1000 ? `${formatter.format(call.durationMs)} ms` : `${formatter.format(call.durationMs / 1000)} s`;
+  }
+  const status = call.status === "failed" ? "danger" : call.status === "completed" ? "success"
+    : call.status === "approval-required" ? "warning" : call.status === "running" ? "info" : "neutral";
+
+  return <Accordion value={open ? "call" : ""} onValueChange={(value: string) => onOpenChange(value === "call")}>
+    <AccordionItem value="call" data-tool-call={call.id} data-tool-state={call.status}>
+      <AccordionTrigger aria-label={`${call.label} · ${labels.status[call.status]}`}>
+        <span className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+          <Icon size={16} className="shrink-0 text-fg-muted" aria-hidden="true" />
+          <span className={cn("min-w-0 flex-1 break-all text-body", call.status === "running" && "motion-safe:animate-pulse")}>{call.label}</span>
+          <span className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+            <Badge variant="plain" size="sm" status={status}><span className="whitespace-normal break-all">{labels.status[call.status]}</span></Badge>
+            {elapsed && <span className="text-label font-normal tabular-nums text-fg-subtle">{elapsed}</span>}
+          </span>
+        </span>
+      </AccordionTrigger>
+      <AccordionContent>
+        <div className="min-w-0 space-y-3">
+          {call.description && <p className="break-words text-body text-fg-muted">{call.description}</p>}
+          <ToolDetails call={call} labels={labels} />
+          {call.output != null && <section aria-label={labels.output} className="space-y-1">
+            <h4 className="text-label font-medium text-fg-muted">{labels.output}</h4>
+            <CodeBlock file={{ name: "output.txt", contents: call.output }} options={{ overflow: "wrap" }} />
+          </section>}
+          {call.error && <InlineNotice tone="danger" variant="emphasized" role="alert"><InlineNoticeContent>{call.error}</InlineNoticeContent></InlineNotice>}
+          {call.kind === "command" && call.status === "approval-required" && <div className="space-y-3">
+            <InlineNotice variant="emphasized" tone="warning"><InlineNoticeContent>{labels.approval}</InlineNoticeContent></InlineNotice>
+            {onApproval && <div className="flex flex-wrap items-center justify-end gap-2" aria-busy={pending}>
+              <Button variant="secondary" size="sm" leadingIcon={Deny} disabled={pending} onClick={() => void act("deny")}>{labels.deny}</Button>
+              <Button variant="primary" size="sm" leadingIcon={Allow} disabled={pending} loading={pending} onClick={() => void act("allow")}>{pending ? labels.deciding : labels.allow}</Button>
+            </div>}
+          </div>}
+          {call.status === "failed" && onRetry && <Button variant="secondary" size="sm" leadingIcon={Retry} loading={pending} disabled={pending} onClick={() => void act()}>{labels.retry}</Button>}
+          {actionError && <InlineNotice variant="emphasized" tone="danger" role="alert"><InlineNoticeContent>{labels.actionFailed}</InlineNoticeContent></InlineNotice>}
+        </div>
+      </AccordionContent>
+    </AccordionItem>
+  </Accordion>;
+}
+
+/** Disclosure and execution data are independent; actions only request host updates. */
+export function ToolCalls({ items, summary, defaultOpen = false, expandedIds, defaultExpandedIds,
+  onExpandedChange, onApproval, onRetry, labels: supplied, locale = "en-US", className, ...props }: ToolCallsProps) {
+  const labels: ToolCallsLabels = { ...toolCallsEnLabels, ...supplied, status: { ...toolCallsEnLabels.status, ...supplied?.status } };
+  const [localExpanded, setLocalExpanded] = useState<string[]>(() => [...(defaultExpandedIds ?? items.filter((item) => item.status === "approval-required" || item.status === "failed" || item.kind === "write" || item.kind === "edit").map((item) => item.id))]);
+  const expanded = expandedIds ?? localExpanded;
+  const List = useIcon("list");
+  const content = items.length ? <ul className="min-w-0 space-y-1" aria-label={labels.title}>
+    {items.map((call) => <li key={call.id} className="min-w-0">
+      <ToolCallRow call={call} labels={labels} locale={locale} open={expanded.includes(call.id)}
+        onOpenChange={(open) => {
+          const ids = open ? [...new Set([...expanded, call.id])] : expanded.filter((id) => id !== call.id);
+          if (expandedIds === undefined) setLocalExpanded(ids);
+          onExpandedChange?.(ids);
+        }} onApproval={onApproval} onRetry={onRetry} />
+    </li>)}
+  </ul> : <Empty reason="no-data"><EmptyHeader><EmptyTitle>{labels.empty}</EmptyTitle></EmptyHeader></Empty>;
+  return <div {...props} data-block="tool-calls-01" className={cn("min-w-0 w-full", className)}>
+    {summary ? <Accordion defaultValue={defaultOpen ? "group" : ""}>
+      <AccordionItem value="group"><AccordionTrigger><span className="flex min-w-0 items-center gap-2"><List size={16} className="shrink-0" aria-hidden="true" /><span className="break-all">{summary}</span></span></AccordionTrigger>
+        <AccordionContent>{content}</AccordionContent>
+      </AccordionItem>
+    </Accordion> : content}
+    <span role="status" className="sr-only">{items.map((item) => `${item.label}: ${labels.status[item.status]}`).join("; ")}</span>
+  </div>;
+}
+
+
+"use client";
+
+import { useId } from "react";
+import { ChatThread, ChatUserMessage, ChatAssistantMessage, ChatMarkdown } from "@zeron/blocks/chat-thread-01";
+import { ToolCalls } from "./tool-calls";
+import type { ToolCallsThreadProps } from "./tool-calls-types";
+
+export function ToolCallsThread({ prompt, parts, userMessageProps, assistantMessageProps, toolCallsProps, ...threadProps }: ToolCallsThreadProps) {
+  const id = useId();
+  const busy = parts.some((part) => part.kind === "text" ? part.streaming : part.items.some((call) => ["queued", "running", "approval-required"].includes(call.status)));
+  const text = parts.filter((part) => part.kind === "text").map((part) => part.text).join("\n\n");
+  return <ChatThread {...threadProps} busy={busy}>
+    <ChatUserMessage {...userMessageProps} id={`${id}-user`} text={prompt} />
+    <ChatAssistantMessage {...assistantMessageProps} id={`${id}-assistant`} text={text} streaming={busy} last>
+      <div className="flex min-w-0 flex-col gap-4">
+        {parts.map((part) => part.kind === "text"
+          ? <ChatMarkdown key={part.id} text={part.text} streaming={part.streaming} />
+          : <ToolCalls key={part.id} locale={threadProps.locale} {...toolCallsProps} items={part.items} summary={part.summary} defaultOpen={part.defaultOpen} defaultExpandedIds={part.defaultExpandedIds} />)}
+      </div>
+    </ChatAssistantMessage>
+  </ChatThread>;
+}
+
+
+import type { HTMLAttributes } from "react";
+import type { ChatAssistantMessageProps, ChatThreadProps, ChatUserMessageProps } from "@zeron/blocks/chat-thread-01";
+
+export type ToolCallStatus = "queued" | "running" | "approval-required" | "completed" | "failed" | "denied" | "cancelled";
+export type ToolCallDecision = "allow" | "deny";
+export interface ToolCallFile { name: string; contents: string }
+export interface ToolCallMatch { id: string; path: string; line?: number; preview: string }
+
+interface ToolCallBase {
+  /** Stable within a list; use a new id for a new execution. */
+  id: string;
+  label: string;
+  status: ToolCallStatus;
+  description?: string;
+  durationMs?: number;
+  output?: string;
+  error?: string;
+}
+
+export type ToolCall = ToolCallBase & (
+  | { kind: "search"; query: string; matches?: readonly ToolCallMatch[] }
+  | { kind: "read" | "write"; file: ToolCallFile }
+  | { kind: "edit"; oldFile: ToolCallFile; newFile: ToolCallFile }
+  | { kind: "command"; command: string; cwd?: string; exitCode?: number }
+  | { kind: "custom"; input?: string }
+);
+
+export interface ToolCallsLabels {
+  title: string;
+  empty: string;
+  status: Record<ToolCallStatus, string>;
+  input: string;
+  output: string;
+  noOutput: string;
+  noMatches: string;
+  directory: string;
+  allow: string;
+  deny: string;
+  deciding: string;
+  retry: string;
+  actionFailed: string;
+  approval: string;
+  matches: (count: number) => string;
+  exitCode: (code: number) => string;
+}
+
+export interface ToolCallsProps extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
+  items: readonly ToolCall[];
+  labels?: Partial<Omit<ToolCallsLabels, "status">> & { status?: Partial<ToolCallsLabels["status"]> };
+  locale?: string;
+  /** Optional collapsed investigation summary. Omit to display the tool list directly. */
+  summary?: string;
+  defaultOpen?: boolean;
+  expandedIds?: readonly string[];
+  defaultExpandedIds?: readonly string[];
+  onExpandedChange?: (ids: string[]) => void;
+  /** Resolve after committing host state. Rejection keeps the request available. */
+  onApproval?: (call: ToolCall, decision: ToolCallDecision) => void | Promise<void>;
+  onRetry?: (call: ToolCall) => void | Promise<void>;
+}
+
+export type ToolCallsPart =
+  | { id: string; kind: "text"; text: string; streaming?: boolean }
+  | { id: string; kind: "tools"; items: readonly ToolCall[]; summary?: string; defaultOpen?: boolean; defaultExpandedIds?: readonly string[] };
+
+export interface ToolCallsThreadProps extends Omit<ChatThreadProps, "children" | "busy"> {
+  prompt: string;
+  parts: readonly ToolCallsPart[];
+  userMessageProps?: Omit<ChatUserMessageProps, "id" | "text" | "children">;
+  assistantMessageProps?: Omit<ChatAssistantMessageProps, "id" | "text" | "children" | "streaming" | "last">;
+  toolCallsProps?: Omit<ToolCallsProps, "items" | "summary" | "defaultOpen" | "defaultExpandedIds">;
+}
+
+
+import type { ToolCallsLabels } from "./tool-calls-types";
+
+export const toolCallsEnLabels: ToolCallsLabels = {
+  title: "Tool calls", empty: "No tool calls yet", input: "Input", output: "Output",
+  noOutput: "No output yet", noMatches: "No matches", directory: "Working directory",
+  allow: "Allow command", deny: "Deny command", deciding: "Submitting…", retry: "Retry tool",
+  actionFailed: "Could not submit this action. Try again.", approval: "Approval required to run this command.",
+  status: { queued: "Queued", running: "Running", "approval-required": "Needs approval", completed: "Completed", failed: "Failed", denied: "Denied", cancelled: "Cancelled" },
+  matches: (count) => `${count} ${count === 1 ? "match" : "matches"}`,
+  exitCode: (code) => `Exit code ${code}`,
+};
+
+export const toolCallsZhLabels: ToolCallsLabels = {
+  title: "工具调用", empty: "暂无工具调用", input: "输入", output: "输出",
+  noOutput: "暂无输出", noMatches: "未找到匹配结果", directory: "工作目录",
+  allow: "允许执行", deny: "拒绝执行", deciding: "正在提交…", retry: "重试工具",
+  actionFailed: "操作提交失败，请重试。", approval: "此命令需要确认后执行。",
+  status: { queued: "排队中", running: "执行中", "approval-required": "等待确认", completed: "已完成", failed: "失败", denied: "已拒绝", cancelled: "已取消" },
+  matches: (count) => `${count} 个匹配结果`, exitCode: (code) => `退出码 ${code}`,
+};
+
+
+import type { ToolCallStatus, ToolCallsPart } from "./tool-calls-types";
+
+const hook = `import { useEffect, useState } from "react";
+
+export function useDebouncedValue<T>(value: T, delay = 250) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debounced;
+}
+`;
+const before = `import { useState } from "react";
+import { useResults } from "@/lib/search";
+
+export function Search() {
+  const [query, setQuery] = useState("");
+  const results = useResults(query);
+  return <SearchResults query={query} onQueryChange={setQuery} results={results} />;
+}
+`;
+const after = before.replace('import { useResults }', 'import { useDebouncedValue } from "@/hooks/use-debounced-value";\nimport { useResults }')
+  .replace("  const results = useResults(query);", "  const debounced = useDebouncedValue(query, 250);\n  const results = useResults(debounced);");
+
+/** Local fixture only. phase 0–4 investigates, 5 requests approval, 6 runs, 7 finishes. */
+export function createToolCallsDemoParts(locale = "en-US", phase = 5, terminal: ToolCallStatus = "completed"): ToolCallsPart[] {
+  const zh = locale.startsWith("zh");
+  const parts: ToolCallsPart[] = [{ id: "intro", kind: "text", streaming: phase < 2, text: zh ? "我先检查搜索的调用方式。" : "I’ll look at how search runs first." }];
+  if (phase < 1) return parts;
+  parts.push({ id: "investigation", kind: "tools", summary: zh ? "搜索 1 次，读取 2 个文件" : "Searched once, read 2 files", items: [
+    { id: "search", kind: "search", label: zh ? "搜索 useResults" : "Searched for useResults", query: "useResults", status: "completed", durationMs: 900,
+      matches: [{ id: "match-1", path: "components/search.tsx", line: 6, preview: "const results = useResults(query);" }, { id: "match-2", path: "lib/search.ts", line: 3, preview: "export function useResults(query: string) {" }] },
+    { id: "read-search", kind: "read", label: zh ? "读取 components/search.tsx" : "Read components/search.tsx", status: "completed", durationMs: 700, file: { name: "components/search.tsx", contents: before } },
+    { id: "read-hook", kind: "read", label: zh ? "读取 lib/search.ts" : "Read lib/search.ts", status: "completed", durationMs: 600,
+      file: { name: "lib/search.ts", contents: 'export function useResults(query: string) {\n  return useQuery({\n    queryKey: ["search", query],\n    queryFn: ({ signal }) => search(query, { signal }),\n    enabled: query.trim().length > 0,\n  });\n}' } },
+  ] });
+  if (phase < 2) return parts;
+  parts.push({ id: "analysis", kind: "text", streaming: phase < 5, text: zh ? "每次输入都会立即触发 useResults 请求。我会对查询值添加 250 ms 防抖，让输入保持流畅，再执行搜索。" : "Every keystroke calls useResults, which fetches right away. I’ll debounce the value by 250 ms so typing stays responsive." });
+  if (phase < 3) return parts;
+  const items: Extract<ToolCallsPart, { kind: "tools" }>["items"][number][] = [
+    { id: "create-hook", kind: "write", label: zh ? "创建 hooks/use-debounced-value.ts" : "Created hooks/use-debounced-value.ts", status: "completed", durationMs: 1300, file: { name: "hooks/use-debounced-value.ts", contents: hook } },
+  ];
+  if (phase >= 4) items.push({ id: "edit-search", kind: "edit", label: zh ? "修改 components/search.tsx" : "Edited components/search.tsx", status: "completed", durationMs: 1400,
+    oldFile: { name: "components/search.tsx", contents: before }, newFile: { name: "components/search.tsx", contents: after } });
+  if (phase >= 5) {
+    const status = phase === 5 ? "approval-required" : phase === 6 ? "running" : terminal;
+    items.push({ id: "test-search", kind: "command", label: zh ? "运行 pnpm test search" : "Run pnpm test search", command: "pnpm test search", cwd: "~/workspace/search-app", status,
+      description: zh ? "运行搜索测试，验证防抖、计时器清理与空查询行为。" : "Run the search tests to verify debouncing, timer cleanup and empty queries.",
+      durationMs: phase >= 7 && (status === "completed" || status === "failed") ? 1240 : undefined,
+      output: phase >= 7 && status === "completed" ? "✓ debounces search requests\n✓ clears the timer on unmount\n✓ skips empty queries\n\n3 tests passed · 1.24 s"
+        : phase >= 7 && status === "failed" ? "FAIL search.test.tsx\nExpected 1 request, received 2." : phase === 6 ? "Running search.test.tsx…" : undefined,
+      error: status === "failed" ? (zh ? "搜索测试未通过，可重试此工具。" : "Search tests failed. You can retry this tool.") : undefined,
+      exitCode: phase >= 7 && (status === "completed" || status === "failed") ? status === "completed" ? 0 : 1 : undefined });
+  }
+  parts.push({ id: "changes", kind: "tools", defaultExpandedIds: ["test-search"], items });
+  if (phase >= 7) parts.push({ id: "result", kind: "text", text: terminal === "completed"
+    ? zh ? "已为查询值添加 **250 ms 防抖**，输入更新仍然即时。三个搜索测试均已通过。" : "Added a **250 ms debounce** while keeping input updates immediate. All three search tests pass."
+    : terminal === "failed" ? zh ? "文件变更已保留，但测试失败。请展开命令输出查看详情，或重试。" : "The file changes are retained, but tests failed. Inspect the command output or retry."
+    : zh ? "已停止命令，本次没有执行测试。文件变更记录仍可查看。" : "The command was stopped without running tests. The file changes remain available to inspect." });
+  return parts;
+}

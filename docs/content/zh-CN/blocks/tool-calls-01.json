@@ -1,0 +1,19 @@
+{
+  "toolCallsBlock": {
+    "title": "工具调用",
+    "description": "结合现有 Chat Thread，展示搜索与读取汇总、文件变更、命令确认和执行输出。",
+    "composition": "组件组合",
+    "compositionBody": "ToolCalls 使用 Accordion 折叠详情、Badge 表达语义执行状态、CodeBlock 展示文件与命令输出、CodeDiff 展示修改、InlineNotice 展示确认与错误，Empty 展示空列表。ToolCallsThread 组合 ChatUserMessage、ChatAssistantMessage 和 ChatMarkdown；ChatThread 保持唯一会话滚动、内容跟随、消息导航和输入区归属。表面、文字、颜色、间距及动效均复用现有 Zeron 组件与变量，宿主需约束高度并设置 min-h-0。",
+    "usage": "使用方式",
+    "api": "API 参考",
+    "itemsProp": "受控工具调用：稳定 id、label、status，可选 description、durationMs、output、error。类型为 search（query、matches）、read/write（file）、edit（oldFile、newFile）、command（command、cwd、exitCode）、custom（input）。状态为 queued、running、approval-required、completed、failed、denied、cancelled。",
+    "summaryProp": "可选调查汇总，折叠整个工具列表；defaultOpen 设置首次展开。省略 summary 直接显示各工具调用。",
+    "expandedProp": "受控展开或非受控初始选择。初始写入、编辑、失败及待确认调用默认展开；default* 仅挂载时生效，增量调用需通过受控 ID 管理。执行数据更新保留用户展开选择。",
+    "actionsProp": "仅待确认命令展示 onApproval(call, 'allow' | 'deny')；失败工具支持 onRetry(call)。回调只请求宿主变更，不在组件内执行命令或更改执行状态。宿主提交状态后 resolve；reject 后保留操作并显示错误。同 id/status 的快照刷新保留提交状态并防止重复触发；执行状态变化后旧请求失效，不会覆盖新一轮重试。",
+    "labelsProp": "工具文案支持部分覆盖及嵌套 status；导出 toolCallsEnLabels、toolCallsZhLabels。locale 格式化耗时，无效或负数耗时省略。",
+    "threadProp": "单轮会话组合，parts 按顺序包含文本段和工具段。文本支持 streaming；工具段支持 items、summary 和初始展开。生成中、排队、运行或待确认时推导 busy；多轮对话直接在现有 ChatAssistantMessage 中放入 ToolCalls。",
+    "identityProp": "必填 composer 并继承 ChatThread 配置。userMessageProps、assistantMessageProps 透传标准消息元数据与操作；toolCallsProps 向各列表传递工具文案、确认、重试及受控展开。会话 labels 与工具 labels 分别配置。",
+    "demo": "演示范围",
+    "demoBody": "重播逐步展示固定的本地搜索排查，在命令处等待确认；允许后生成模拟测试结果，拒绝或停止保留调查内容且不产生成功结果。失败示例展示错误输出并支持重试。新提问会重启固定演示，模拟数据不回答任意问题。演示不调用模型、不执行真实命令、不修改磁盘；真实执行由宿主回调接入。"
+  }
+}

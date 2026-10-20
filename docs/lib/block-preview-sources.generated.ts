@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "tool-calls-01": {
+    "url": "/docs-source/a9e5aef534449abcce5b4022df22934d901e5aa9a7e8c255cff3a31c9a2c0e81.txt"
+  },
   "chat-thread-01": {
     "url": "/docs-source/c605b3b0e7b03bf35b5e21b72006c885715a22acdbc210e2c7d2065eaa8fe8c9.txt"
   },

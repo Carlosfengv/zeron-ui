@@ -146,6 +146,10 @@
       "itemId": "block:support-analytics-01"
     },
     {
+      "path": "blocks/tool-calls-01.md",
+      "itemId": "block:tool-calls-01"
+    },
+    {
       "path": "blocks/transaction-details-01.md",
       "itemId": "block:transaction-details-01"
     },

@@ -119,6 +119,7 @@
     "introductionTitle": "Introduction",
     "introductionDescription": "Why these components feel different.",
     "descriptions": {
+      "tool-calls-01": "Tool inspection, file changes, command approval and execution output in a conversation.",
       "chat-thread-01": "Streaming conversations, message versions and checkpoint restoration.",
       "message-navigation": "Compact turn markers with rich previews, current-position emphasis and keyboard navigation.",
       "appearance-settings-01": "Theme previews, accent colors, interface density and motion preferences.",

@@ -1,4 +1,29 @@
 {
+  "tool-calls-01": {
+    "keywords": [
+      "工具调用",
+      "搜索",
+      "读取",
+      "文件变更",
+      "命令确认",
+      "tool calls",
+      "toolcalls",
+      "approval",
+      "terminal"
+    ],
+    "useCases": [
+      "在现有助手消息中组合工具调用，或用 ToolCallsThread 展示单轮工具执行会话。"
+    ],
+    "whenNotToUse": [
+      "不执行命令或写入文件；真实授权、请求和持久化由宿主接入。"
+    ],
+    "keyApi": [
+      "items 使用稳定 id、kind、label、status，支持搜索、读取、写入、编辑、命令与自定义输入输出。",
+      "onApproval(call, allow/deny) 和 onRetry(call) 只请求宿主变更；Promise 失败保留操作。",
+      "summary 折叠调查组，expandedIds 受控展开；CodeBlock / CodeDiff 保持现有代码展示契约。",
+      "ToolCallsThread 复用 ChatThread、ChatUserMessage、ChatAssistantMessage、ChatMarkdown 与 composer 插槽。"
+    ]
+  },
   "chat-message": {
     "keywords": [
       "消息",

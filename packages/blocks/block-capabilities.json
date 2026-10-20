@@ -1,4 +1,5 @@
 {
+  "tool-calls-01": { "framework": "react", "kind": "data-block" },
   "chat-thread-01": {
     "framework": "react",
     "kind": "data-block"
