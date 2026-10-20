@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:tool-calls-01",
+      "type": "registry",
+      "key": "tool-calls-01",
+      "aliases": [
+        "tool-calls-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:chat-workspace-01",
       "type": "registry",
       "key": "chat-workspace-01",

@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "tool-calls-01": () => import("./ToolCallsDemo").then(({ ToolCallsDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ToolCallsDemo /></ResponsivePreview>,
+  })),
   "chat-workspace-01": () => import("./ChatWorkspaceDemo").then(({ ChatWorkspaceDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={800} canvasWidth={1400}><ChatWorkspaceDemo /></ResponsivePreview>,
   })),

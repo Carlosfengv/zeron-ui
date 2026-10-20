@@ -1,5 +1,13 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "tool-calls-01": [
+    "packages/blocks/src/application/tool-calls-01/index.ts",
+    "packages/blocks/src/application/tool-calls-01/tool-calls.tsx",
+    "packages/blocks/src/application/tool-calls-01/tool-calls-thread.tsx",
+    "packages/blocks/src/application/tool-calls-01/tool-calls-types.ts",
+    "packages/blocks/src/application/tool-calls-01/tool-calls-labels.ts",
+    "packages/blocks/src/application/tool-calls-01/tool-calls-demo-data.ts",
+  ],
   "chat-workspace-01": [
     "packages/blocks/src/application/chat-workspace-01/artifact-utils.ts",
     "packages/blocks/src/application/chat-workspace-01/artifact-preview.tsx",

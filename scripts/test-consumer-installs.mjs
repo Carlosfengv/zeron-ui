@@ -544,6 +544,11 @@ async function verifyNextBuild({ consumer, component }) {
     'import { ContextWindow, createContextWindowDemoData } from "@/components/blocks/context-window-01";',
     'export default function Page() { return <ContextWindow data={createContextWindowDemoData()} />; }',
   ].join("\n");
+  examples["tool-calls-01"] = [
+    '"use client";',
+    'import { ToolCallsThread, createToolCallsDemoParts } from "@/components/blocks/tool-calls-01";',
+    'export default function Page() { return <main style={{ height: "100svh" }}><ToolCallsThread prompt="Check search" parts={createToolCallsDemoParts()} composer={<textarea aria-label="Message" />} /></main>; }',
+  ].join("\n");
   examples["chat-workspace-01"] = [
     '"use client";',
     'import { useState } from "react";',
@@ -913,6 +918,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { ContextWindow, createContextWindowDemoData } from "@/src/components/blocks/context-window-01";',
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<ContextWindow data={createContextWindowDemoData()} />);',
+  ].join("\n");
+  examples["tool-calls-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { ToolCallsThread, createToolCallsDemoParts } from "@/src/components/blocks/tool-calls-01";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<div className="h-96"><ToolCallsThread prompt="Check search" parts={createToolCallsDemoParts()} composer={<textarea aria-label="Message" />} /></div>);',
   ].join("\n");
   examples["chat-workspace-01"] = [
     'import { createRoot } from "react-dom/client";',

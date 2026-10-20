@@ -78,6 +78,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Signup](https://zeron-ui.vercel.app/ai/items/block%3Asignup-01.md): A surface-neutral account creation flow with email, Apple, and Google signup paths. Registry: signup-01.
 - [Storage Usage](https://zeron-ui.vercel.app/ai/items/block%3Astorage-usage-01.md): A compact storage summary with category segments, remaining capacity, and a wrapping legend. Registry: storage-usage-01.
 - [客服工单分析](https://zeron-ui.vercel.app/ai/items/block%3Asupport-analytics-01.md): 工单趋势、服务指标、渠道筛选与最近工单处理。 Registry: support-analytics-01.
+- [Tool Calls](https://zeron-ui.vercel.app/ai/items/block%3Atool-calls-01.md): Tool inspection, file changes, command approval and execution output. Registry: tool-calls-01.
 - [TopNav App Shell](https://zeron-ui.vercel.app/ai/items/block%3Atop-nav-app-shell-01.md): A stacked application shell with a centered TopNav and focused content area. Registry: top-nav-app-shell-01.
 - [流量规则](https://zeron-ui.vercel.app/ai/items/block%3Atraffic-rules-01.md): A responsive gateway workspace for managing traffic rules, limits, validation, and execution workflows. Registry: traffic-rules-01.
 - [交易详情](https://zeron-ui.vercel.app/ai/items/block%3Atransaction-details-01.md): 突出金额、交易字段、可折叠账单与附件操作。 Registry: transaction-details-01.
@@ -236,6 +237,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [service-management-01](https://zeron-ui.vercel.app/agent-guides/blocks/service-management-01.md)
 - [storage-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/storage-usage-01.md)
 - [support-analytics-01](https://zeron-ui.vercel.app/agent-guides/blocks/support-analytics-01.md)
+- [tool-calls-01](https://zeron-ui.vercel.app/agent-guides/blocks/tool-calls-01.md)
 - [transaction-details-01](https://zeron-ui.vercel.app/agent-guides/blocks/transaction-details-01.md)
 - [usage-forecast-01](https://zeron-ui.vercel.app/agent-guides/blocks/usage-forecast-01.md)
 - [usage-forecast-02](https://zeron-ui.vercel.app/agent-guides/blocks/usage-forecast-02.md)

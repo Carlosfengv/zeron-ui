@@ -1,0 +1,19 @@
+{
+  "toolCallsBlock": {
+    "title": "Tool Calls",
+    "description": "Search and file inspection, code changes, command approval and output composed with the existing Chat Thread.",
+    "composition": "Composition",
+    "compositionBody": "ToolCalls uses Accordion for disclosure, Badge for semantic lifecycle states, CodeBlock for files and command output, CodeDiff for edits, InlineNotice for approval and errors, and Empty for an empty list. ToolCallsThread composes these with ChatUserMessage, ChatAssistantMessage and ChatMarkdown. ChatThread owns the conversation scroller, following behavior, navigation and composer. All surfaces, text, colors, spacing and motion come from existing Zeron components and tokens. Give the host a constrained height with min-h-0.",
+    "usage": "Usage",
+    "api": "API reference",
+    "itemsProp": "Controlled calls with a stable id, label, status, optional description, durationMs, output and error. Kinds: search (query, matches), read/write (file), edit (oldFile, newFile), command (command, cwd, exitCode), custom (input). Execution states are queued, running, approval-required, completed, failed, denied and cancelled.",
+    "summaryProp": "Optional investigation summary that collapses the entire list. defaultOpen opens the summary on mount. Omit summary for a direct tool list.",
+    "expandedProp": "Controlled expansion or an initial uncontrolled selection. Initial writes, edits, failures and approval requests open by default. Defaults only apply on mount; use controlled IDs for incremental calls. Execution updates preserve the reader’s disclosure choices.",
+    "actionsProp": "onApproval(call, 'allow' | 'deny') is shown only for commands waiting for approval. onRetry(call) is available for failed tools. Actions request host updates; they never execute commands or change execution state internally. Resolve after committing state; rejection keeps the controls available and shows an error. Pending actions prevent duplicate submission across immutable refreshes of the same id/status. A lifecycle state change supersedes old requests so their results cannot overwrite a newer retry.",
+    "labelsProp": "Partial tool labels, including a nested status map. Exports toolCallsEnLabels and toolCallsZhLabels. locale formats durations; invalid or negative durations are omitted.",
+    "threadProp": "Single-turn conversation convenience with ordered text and tools parts. Text supports streaming; tool parts support items, summary and initial expansion. Busy follows generating text and queued, running or approval-required tools. For multiple turns, place ToolCalls directly in an existing ChatAssistantMessage.",
+    "identityProp": "Required composer and existing ChatThread configuration. Forward the standard prompt and response metadata/actions with userMessageProps and assistantMessageProps. toolCallsProps supplies localized labels, approval, retry and controlled expansion to each tool list. Thread labels and tool labels are separate.",
+    "demo": "Demo scope",
+    "demoBody": "Replay walks through a fixed local search investigation and pauses for command approval. Allow runs simulated tests; deny or stop preserves the inspection without a success result. Error example exposes failed output and a retry action. New prompts restart the fixed demo; the fixture does not answer arbitrary questions. No models, real commands or disk changes are involved. Connect real execution through host callbacks."
+  }
+}
