@@ -1,5 +1,10 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "chat-markdown-01": [
+    "packages/blocks/src/application/chat-markdown-01/index.ts",
+    "packages/blocks/src/application/chat-markdown-01/chat-markdown-response.tsx",
+    "packages/blocks/src/application/chat-markdown-01/chat-markdown-demo-data.ts"
+  ],
   "grouped-data-table-02": [
     "packages/blocks/src/application/grouped-data-table-02/index.ts",
     "packages/blocks/src/application/grouped-data-table-02/sectioned-data-table.tsx",

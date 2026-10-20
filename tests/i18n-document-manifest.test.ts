@@ -27,9 +27,11 @@ describe("documentation manifest", () => {
   });
 
   it("defines the complete public documentation surface exactly once", () => {
+    expect(pageDocEntries.find((entry) => entry.slug === "markdown")?.collection).toBe("components");
+    expect(pageDocEntries.find((entry) => entry.slug === "chat-markdown-01")?.collection).toBe("blocks");
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(148);
-    expect(detailDocEntries).toHaveLength(148);
+    expect(pageDocEntries).toHaveLength(150);
+    expect(detailDocEntries).toHaveLength(150);
     expect(pageDocEntries.find((entry) => entry.slug === "grouped-data-table-02")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "grouped-data-table-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "model-selector-01")?.collection).toBe("blocks");
@@ -44,7 +46,7 @@ describe("documentation manifest", () => {
     expect(pageDocEntries.some((entry) => entry.slug === "availability-monitor-01")).toBe(false);
     expect(pageDocEntries.find((entry) => entry.slug === "website-analytics-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "sales-conversion-funnel-01")?.collection).toBe("blocks");
-    expect(legacyDocRedirects).toHaveLength(82);
+    expect(legacyDocRedirects).toHaveLength(83);
     expect(pageDocEntries.some(entry => entry.slug === "error-state" || entry.slug === "status-indicator")).toBe(false);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });

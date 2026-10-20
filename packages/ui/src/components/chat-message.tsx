@@ -20,6 +20,10 @@ interface ChatMessageProps
    *  User-message only — ignored on assistant replies. Caller pre-formats it
    *  (e.g. `"Wednesday 6:08 PM"`). */
   time?: ReactNode;
+  /** Persistent identity above the message body. */
+  header?: ReactNode;
+  /** Keep reply actions visible independently of hover. */
+  actionsVisibility?: "auto" | "always";
   /** Icon-only action buttons shown in the hover-revealed meta row (e.g. copy,
    *  edit, regenerate). Rendered next to the timestamp. */
   actions?: ReactNode;
@@ -33,7 +37,7 @@ interface ChatMessageProps
 // lets earlier messages slide up smoothly when a new one is appended.
 const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
   (
-    { from, files, thumbnailSize = 64, time, actions, children, className, ...props },
+    { from, files, thumbnailSize = 64, time, header, actions, actionsVisibility = "auto", children, className, ...props },
     ref
   ) => {
     const isUser = from === "user";
@@ -45,18 +49,20 @@ const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
     return (
       <motion.div
         ref={ref}
+        data-slot="chat-message"
         layout="position"
         initial={{ opacity: 0, y: 8, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={spring.moderate}
         style={{ transformOrigin: isUser ? "bottom right" : "bottom left" }}
         className={cn(
-          "group flex max-w-[80%] flex-col gap-1.5",
-          isUser ? "items-end self-end" : "items-start self-start",
+          "group flex min-w-0 flex-col gap-1.5",
+          isUser ? "max-w-[80%] items-end self-end" : "w-full max-w-full items-start self-start",
           className
         )}
         {...props}
       >
+        {header}
         {files && files.length > 0 && (
           <div
             className={cn(
@@ -75,8 +81,9 @@ const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
         )}
         {children != null && children !== "" && (
           <div
+            data-slot="chat-message-body"
             className={cn(
-              "py-2 text-body whitespace-pre-wrap break-words",
+              "min-w-0 max-w-full py-2 text-body whitespace-pre-wrap break-words",
               // User keeps the bubble chrome (rounded fill + horizontal padding);
               // the assistant reply is flush-left plain text with no background.
               isUser
@@ -90,7 +97,7 @@ const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
                     // stays put as the text grows.
                     "px-3.5 text-pretty bg-emphasis text-fg-default"
                   )
-                : "text-fg-default"
+                : "w-full text-fg-default"
             )}
           >
             {children}
@@ -103,9 +110,10 @@ const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
           // The timestamp is a user-message affordance only — assistant replies
           // show their actions alone. User rows read date → icons left-to-right.
           <div
+            data-slot="chat-message-footer"
             className={cn(
-              "flex items-center gap-2 px-1 text-label leading-none text-fg-muted select-none",
-              !isTouch && [
+              "flex min-w-0 max-w-full flex-wrap items-center gap-2 px-1 text-label leading-none text-fg-muted select-none",
+              !isTouch && actionsVisibility !== "always" && [
                 "opacity-0 pointer-events-none transition-opacity duration-moderate",
                 "group-hover:opacity-100 group-hover:pointer-events-auto",
                 "group-focus-within:opacity-100 group-focus-within:pointer-events-auto",
@@ -114,7 +122,7 @@ const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
           >
             {showTime && <span className="tabular-nums">{time}</span>}
             {actions != null && (
-              <span className="flex items-center gap-0.5">{actions}</span>
+              <span className="flex min-w-0 max-w-full flex-wrap items-center gap-x-0.5 gap-y-1">{actions}</span>
             )}
           </div>
         )}
@@ -127,4 +135,10 @@ ChatMessage.displayName = "ChatMessage";
 
 export { ChatMessage };
 export type { ChatMessageProps };
+export { ChatScrollToLatest, CHAT_SCROLL_FOLLOW_THRESHOLD } from "./chat-message/scroll-to-latest";
+export type { ChatScrollToLatestProps } from "./chat-message/scroll-to-latest";
+export { ChatMessageAction, ChatMessageCopy } from "./chat-message/actions";
+export type { ChatMessageActionProps, ChatMessageCopyProps } from "./chat-message/actions";
+export { ChatMessageAuthor } from "./chat-message/author";
+export type { ChatMessageAuthorProps } from "./chat-message/author";
 export default ChatMessage;

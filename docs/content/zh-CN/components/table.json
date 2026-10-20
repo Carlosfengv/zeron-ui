@@ -1,11 +1,16 @@
 {
   "tableDoc": {
     "basic": "基础用法",
+    "bordered": "带框紧凑表格",
+    "borderedDescription": "通过 variant=bordered 使用带框内容表格，size=sm 使用紧凑排版。外框、表头背景、单元格排版及行分隔线由 Table 统一维护；TableBody 不显示最后一行分隔线。静态内容行可省略 index。",
     "loading": "加载状态",
     "loadingDescription": "保留最终表头和列结构，只在数据加载期间替换表体，从而减少布局跳动。",
     "loadingMessage": "正在加载表格数据",
     "apiReference": "API 参考",
     "tableChildren": "TableHeader 和 TableBody 子元素。",
+    "tableVariant": "plain 保留默认无框展示；bordered 增加圆角外框、横向滚动、表头背景与高对比正文。",
+    "tableSize": "sm 使用紧凑的 label 排版；md 保留标准 body 排版。单元格内边距共用。",
+    "tableContainer": "外层容器的布局类名；className 与原生 table 属性仍传给 table 元素。",
     "rowIndex": "用于邻近悬停的行索引；表头行请省略。",
     "rowChildren": "TableCell 或 TableHead 子元素。",
     "skeletonColumns": "每个占位行渲染的单元格数量。",

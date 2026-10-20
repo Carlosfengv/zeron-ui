@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "chat-markdown-01", title: "Markdown 回复", description: "统一 AI 回复排版，支持代码、表格、任务列表、脚注与流式内容。", categories: ["application", "ai", "agent"], dependencies: ["chat-message", "markdown", "utils"] },
   { name: "grouped-data-table-02", title: "多维分组表格", description: "多维切换、独立表头、组内预览和新增入口，共享搜索筛选与排序。", categories: ["application", "tables"], dependencies: ["badge", "button", "container", "data-table", "empty", "icon-context", "inline-notice", "input-group", "tabs", "@tanstack/react-table"] },
   { name: "grouped-data-table-01", title: "分组表格", description: "同一张表内的可展开分组、组内预览、搜索筛选与稳定计数。", categories: ["application", "tables"], dependencies: ["badge", "button", "container", "data-table", "empty", "icon-context", "inline-notice", "input-group", "select", "@tanstack/react-table"] },
   { name: "usage-forecast-02", title: "预算用量预测", description: "API、存储、席位预算预测、超额报价、预测区间与告警阈值。", categories: ["application", "analytics", "billing"], dependencies: ["area-chart", "button", "chart-core", "chart-primitives", "container", "icon-context", "inline-notice", "line-chart", "tabs", "utils", "@visx/curve@4.0.0"] },

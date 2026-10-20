@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "chat-markdown-01": () => import("./ChatMarkdownDemo").then(({ ChatMarkdownDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1200}><ChatMarkdownDemo /></ResponsivePreview>,
+  })),
   "grouped-data-table-02": () => import("./SectionedDataTableDemo").then(({ SectionedDataTableDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={810} canvasWidth={1440}><SectionedDataTableDemo /></ResponsivePreview>,
   })),

@@ -19,6 +19,7 @@
       "path": "blocks/appearance-settings-01.md",
       "itemId": "block:appearance-settings-01"
     },
+    {"path": "blocks/chat-markdown-01.md", "itemId": "block:chat-markdown-01"},
     {
       "path": "blocks/cluster-environment-detail-01.md",
       "itemId": "block:cluster-environment-detail-01"
@@ -216,6 +217,7 @@
       "path": "components/chart.md",
       "itemId": "component:chart"
     },
+    {"path": "components/chat-message.md", "itemId": "component:chat-message"},
     {
       "path": "components/code-block.md",
       "itemId": "component:code-block"
@@ -268,6 +270,7 @@
       "path": "components/live-line-chart.md",
       "itemId": "component:live-line-chart"
     },
+    {"path": "components/markdown.md", "itemId": "component:markdown"},
     {
       "path": "components/metric-card.md",
       "itemId": "component:metric-card"
@@ -319,6 +322,10 @@
     {
       "path": "components/sidebar.md",
       "itemId": "component:sidebar"
+    },
+    {
+      "path": "components/table.md",
+      "itemId": "component:table"
     },
     {
       "path": "components/time-range-histogram.md",

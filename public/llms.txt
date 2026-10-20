@@ -28,6 +28,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [AI Gateway Overview](https://zeron-ui.vercel.app/ai/items/block%3Aai-gateway-overview-01.md): A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations. Registry: ai-gateway-overview-01.
 - [AI Gateway Session List](https://zeron-ui.vercel.app/ai/items/block%3Aai-gateway-session-list-01.md): A controlled AI gateway session workspace with shared navigation, entity filters, error-only filtering, compact usage values, and responsive pagination. Registry: ai-gateway-session-list-01.
 - [Appearance Settings](https://zeron-ui.vercel.app/ai/items/block%3Aappearance-settings-01.md): 主题、强调色、界面密度与动效偏好。 Registry: appearance-settings-01.
+- [Chat Markdown](https://zeron-ui.vercel.app/ai/items/block%3Achat-markdown-01.md): Consistent AI response typography, code, tables, task lists and streaming. Registry: chat-markdown-01.
 - [集群环境详情](https://zeron-ui.vercel.app/ai/items/block%3Acluster-environment-detail-01.md): An inspection-report workspace that combines environment context, resource health, and incident follow-up. Registry: cluster-environment-detail-01.
 - [集群环境列表](https://zeron-ui.vercel.app/ai/items/block%3Acluster-environment-list-01.md): A filterable cluster-environment overview with critical, warning, normal, offline, and data-freshness states. Registry: cluster-environment-list-01.
 - [上下文窗口](https://zeron-ui.vercel.app/ai/items/block%3Acontext-window-01.md): Context capacity, prompt cache and read-only documents, memory and history. Registry: context-window-01.
@@ -138,6 +139,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [LineChart](https://zeron-ui.vercel.app/ai/items/component%3Aline-chart.md): Line charts for trends and comparing multiple series. Registry: line-chart.
 - [List Pagination](https://zeron-ui.vercel.app/ai/items/component%3Alist-pagination.md): Controlled, table-independent pagination for lists, with localized labels and page size controls. Registry: list-pagination.
 - [LiveLineChart](https://zeron-ui.vercel.app/ai/items/component%3Alive-line-chart.md): Point time is Unix seconds. Registry: live-line-chart.
+- [Markdown](https://zeron-ui.vercel.app/ai/items/component%3Amarkdown.md): Safe GFM content with tables, code blocks and streaming status. Registry: markdown.
 - [Member Tree](https://zeron-ui.vercel.app/ai/items/component%3Amember-tree.md): Organization-focused Tree with department and member rendering, typed selection, and member-only cascade selection. Registry: member-tree.
 - [MenuItem](https://zeron-ui.vercel.app/ai/items/component%3Amenu-item.md): Accessible menu row primitive with icon, selection, and keyboard-menu integration. Registry: menu-item.
 - [Metric Card](https://zeron-ui.vercel.app/ai/items/component%3Ametric-card.md): Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction. Registry: metric-card.
@@ -197,6 +199,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [ai-gateway-overview-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-overview-01.md)
 - [ai-gateway-session-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/ai-gateway-session-list-01.md)
 - [appearance-settings-01](https://zeron-ui.vercel.app/agent-guides/blocks/appearance-settings-01.md)
+- [chat-markdown-01](https://zeron-ui.vercel.app/agent-guides/blocks/chat-markdown-01.md)
 - [cluster-environment-detail-01](https://zeron-ui.vercel.app/agent-guides/blocks/cluster-environment-detail-01.md)
 - [cluster-environment-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/cluster-environment-list-01.md)
 - [context-window-01](https://zeron-ui.vercel.app/agent-guides/blocks/context-window-01.md)
@@ -247,6 +250,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [chart-motion](https://zeron-ui.vercel.app/agent-guides/components/chart-motion.md)
 - [chart-primitives](https://zeron-ui.vercel.app/agent-guides/components/chart-primitives.md)
 - [chart](https://zeron-ui.vercel.app/agent-guides/components/chart.md)
+- [chat-message](https://zeron-ui.vercel.app/agent-guides/components/chat-message.md)
 - [code-block](https://zeron-ui.vercel.app/agent-guides/components/code-block.md)
 - [combobox](https://zeron-ui.vercel.app/agent-guides/components/combobox.md)
 - [data-table](https://zeron-ui.vercel.app/agent-guides/components/data-table.md)
@@ -260,6 +264,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [line-chart](https://zeron-ui.vercel.app/agent-guides/components/line-chart.md)
 - [list-pagination](https://zeron-ui.vercel.app/agent-guides/components/list-pagination.md)
 - [live-line-chart](https://zeron-ui.vercel.app/agent-guides/components/live-line-chart.md)
+- [markdown](https://zeron-ui.vercel.app/agent-guides/components/markdown.md)
 - [metric-card](https://zeron-ui.vercel.app/agent-guides/components/metric-card.md)
 - [nav-item](https://zeron-ui.vercel.app/agent-guides/components/nav-item.md)
 - [nav-menu](https://zeron-ui.vercel.app/agent-guides/components/nav-menu.md)
@@ -273,6 +278,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [sidebar-account-menu](https://zeron-ui.vercel.app/agent-guides/components/sidebar-account-menu.md)
 - [sidebar-identity-row](https://zeron-ui.vercel.app/agent-guides/components/sidebar-identity-row.md)
 - [sidebar](https://zeron-ui.vercel.app/agent-guides/components/sidebar.md)
+- [table](https://zeron-ui.vercel.app/agent-guides/components/table.md)
 - [time-range-histogram](https://zeron-ui.vercel.app/agent-guides/components/time-range-histogram.md)
 - [time-window-timeline](https://zeron-ui.vercel.app/agent-guides/components/time-window-timeline.md)
 - [tree](https://zeron-ui.vercel.app/agent-guides/components/tree.md)

@@ -1,4 +1,5 @@
 {
+  "chat-markdown-01": { "framework": "react", "kind": "data-block" },
   "grouped-data-table-02": {
     "framework": "react",
     "kind": "data-block"

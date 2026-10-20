@@ -98,6 +98,7 @@ const iconEntry = (value: Omit<DocEntry, "collection" | "indexable" | "order"> &
 });
 
 export const docEntries = [
+  blockEntry({ slug: "chat-markdown-01", section: "application", icon: "doc-chat-message", name: "Chat Markdown", description: "Consistent AI response typography, code, tables, task lists and streaming.", registryItem: { name: "chat-markdown-01", type: "registry:block" }, isNew: true, order: 36.9765 }),
   blockEntry({ slug: "grouped-data-table-02", section: "application", icon: "doc-data-table", name: "多维分组表格", description: "可切换分组维度、独立表头、组内预览与新增入口。", registryItem: { name: "grouped-data-table-02", type: "registry:block" }, isNew: true, order: 36.965 }),
   blockEntry({ slug: "grouped-data-table-01", section: "application", icon: "doc-data-table", name: "分组表格", description: "可展开分组、组内预览、搜索筛选与稳定计数的通用表格。", registryItem: { name: "grouped-data-table-01", type: "registry:block" }, isNew: true, order: 36.966 }),
   blockEntry({ slug: "agent-tasks-01", section: "application", icon: "doc-card", name: "Agent Tasks", description: "Agent task queue with status filters, expandable activity and task actions.", registryItem: { name: "agent-tasks-01", type: "registry:block" }, isNew: true, order: 36.8 }),
@@ -185,6 +186,7 @@ export const docEntries = [
   entry({ slug: "tooltip", section: "overlay", icon: "doc-tooltip", name: "Tooltip", description: "Floating tooltip with spring-based animations and configurable placement.", gridSize: "small", order: 2800 }),
   entry({ slug: "ask-user-questions", section: "ai-agent", icon: "doc-ask-user-questions", name: "AskUserQuestions", description: "Stepped question flow with single/multi-select, optional 'other' input, and skip." }),
   entry({ slug: "chat-message", section: "ai-agent", icon: "doc-chat-message", name: "ChatMessage", description: "Chat transcript bubble with baked-in motion, user/assistant alignment, and file attachments.", order: 200 }),
+  entry({ slug: "markdown", section: "ai-agent", icon: "doc-chat-message", name: "Markdown", description: "Safe GFM content with tables, code blocks and streaming status.", order: 250, isNew: true }),
   entry({ slug: "input-message", section: "ai-agent", icon: "doc-input-message", name: "InputMessage", description: "Chat-style message composer with auto-resizing textarea and configurable action slots.", order: 300 }),
   entry({ slug: "thinking-indicator", section: "ai-agent", icon: "doc-thinking-indicator", name: "ThinkingIndicator", description: "Animated status indicator with morphing SVG and cycling text.", order: 400 }),
   entry({ slug: "thinking-steps", section: "ai-agent", icon: "doc-thinking-steps", name: "ThinkingSteps", description: "Chain-of-thought display with sequential animation and collapsible steps.", gridSize: "large", order: 500 }),
