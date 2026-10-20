@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { ChatWorkspaceDemo } from "../docs/components/blocks/ChatWorkspaceDemo";
+import { toast } from "@zeron/ui/toast";
 
 vi.mock("next-intl", () => ({ useLocale: () => "zh-CN" }));
+vi.mock("@zeron/ui/toast", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 vi.mock("../packages/blocks/src/application/chat-workspace-01/artifact-code-preview", () => ({
   ArtifactCodePreview: () => <div>Preview content</div>,
 }));
@@ -16,6 +18,75 @@ beforeEach(() => {
   vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(1280);
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
+
+async function sessionAction(name: string) {
+  fireEvent.click(screen.getByRole("button", { name: "会话操作" }));
+  fireEvent.click(await screen.findByRole("menuitem", { name }));
+}
+
+it("renames the session without replacing the composer or clearing its draft", async () => {
+  const { container } = render(<ChatWorkspaceDemo />);
+  const editor = screen.getByRole("textbox") as HTMLTextAreaElement;
+  fireEvent.change(editor, { target: { value: "Keep the session draft" } });
+  await sessionAction("重命名");
+  const dialog = await screen.findByRole("dialog", { name: "重命名会话" });
+  const name = within(dialog).getByRole("textbox", { name: "会话名称" });
+  fireEvent.change(name, { target: { value: "   " } });
+  expect((within(dialog).getByRole("button", { name: "保存" }) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.change(name, { target: { value: "  主题设置迭代  " } });
+  fireEvent.click(within(dialog).getByRole("button", { name: "保存" }));
+  await waitFor(() => expect(container.querySelector('[data-slot="workspace-title"]')?.textContent).toBe("主题设置迭代"));
+  expect(screen.getByRole("textbox")).toBe(editor);
+  expect(editor.value).toBe("Keep the session draft");
+  expect(screen.getByRole("tab", { name: "theme.ts" }).getAttribute("aria-selected")).toBe("true");
+});
+
+it("keeps rename content stable while its closing animation is in progress", async () => {
+  render(<ChatWorkspaceDemo />);
+  await sessionAction("重命名");
+  const dialog = await screen.findByRole("dialog", { name: "重命名会话" });
+  let finish: ((animation: Animation) => void) | undefined;
+  const finished = new Promise<Animation>((resolve) => { finish = resolve; });
+  const animation = { finished } as Animation;
+  vi.spyOn(HTMLElement.prototype, "getAnimations").mockImplementation(function (this: HTMLElement) {
+    return this === dialog ? [animation] : [];
+  });
+  fireEvent.click(within(dialog).getByRole("button", { name: "取消" }));
+  expect(dialog.textContent).toContain("重命名会话");
+  expect(dialog.textContent).not.toContain("分享会话");
+  await act(async () => finish?.(animation));
+});
+
+it("toggles mock pin and archive states and can reverse both actions", async () => {
+  render(<ChatWorkspaceDemo />);
+  await sessionAction("置顶");
+  expect(screen.getByLabelText("已置顶")).toBeTruthy();
+  await sessionAction("取消置顶");
+  expect(screen.queryByLabelText("已置顶")).toBeNull();
+  await sessionAction("归档");
+  expect(toast.success).toHaveBeenCalledWith("已归档（演示）");
+  await sessionAction("取消归档");
+  expect(toast.success).toHaveBeenCalledWith("已取消归档（演示）");
+  expect(screen.getByRole("textbox")).toBeTruthy();
+});
+
+it("offers a mock share link and copies conversation text with failure feedback", async () => {
+  const writeText = vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+  render(<ChatWorkspaceDemo />);
+  await sessionAction("分享");
+  const dialog = await screen.findByRole("dialog", { name: "分享会话" });
+  expect((within(dialog).getByRole("textbox", { name: "演示链接" }) as HTMLInputElement).value).toBe("https://example.com/s/demo-session");
+  expect(within(dialog).getByText("此为演示链接，不会发布或公开对话内容。")).toBeTruthy();
+  fireEvent.click(within(dialog).getByRole("button", { name: "复制链接" }));
+  await waitFor(() => expect(writeText).toHaveBeenCalledWith("https://example.com/s/demo-session"));
+  fireEvent.click(within(dialog).getByRole("button", { name: "取消" }));
+  await sessionAction("复制");
+  await waitFor(() => expect(writeText).toHaveBeenLastCalledWith(expect.stringContaining("session title\n\n我: 为设置页")));
+  writeText.mockRejectedValue(new Error("Clipboard denied"));
+  await sessionAction("复制");
+  await waitFor(() => expect(toast.error).toHaveBeenCalledWith("复制失败，请重试。"));
+});
 
 it("opens the first pending revision after its tab and panel have closed, retaining the draft", async () => {
   const { container } = render(<ChatWorkspaceDemo />);
@@ -50,6 +121,20 @@ it("appends a reopened resource after the remaining open tabs", () => {
   fireEvent.click(screen.getByRole("button", { name: "查看第一项待审阅内容：theme.ts" }));
   const tabs = container.querySelectorAll('[data-slot="artifact-tab-bar"] [data-artifact-id]');
   expect(Array.from(tabs, (tab) => tab.getAttribute("data-artifact-id"))).toEqual(["readme", "design", "website", "archive", "theme"]);
+});
+
+it("closes every open tab in one action and reopens pending work without losing the draft", async () => {
+  const { container } = render(<ChatWorkspaceDemo />);
+  const input = screen.getByRole("textbox") as HTMLTextAreaElement;
+  fireEvent.change(input, { target: { value: "Review this next" } });
+  fireEvent.click(screen.getByRole("button", { name: "更多已打开内容" }));
+  fireEvent.click(await screen.findByRole("menuitem", { name: "关闭全部标签" }));
+  await waitFor(() => expect(screen.getByRole("button", { name: "查看内容" })).toBeTruthy());
+  expect(container.querySelector('[data-slot="container-header"]')?.textContent).toContain("还有 2 项待审阅确认的内容");
+  fireEvent.click(screen.getByRole("button", { name: "查看第一项待审阅内容：theme.ts" }));
+  expect(screen.getByRole("tab", { name: "theme.ts" }).getAttribute("aria-selected")).toBe("true");
+  expect(screen.getByRole("textbox")).toBe(input);
+  expect(input.value).toBe("Review this next");
 });
 
 it("uses ChatThread response identity, reasoning and metrics while retaining workspace artifacts", () => {

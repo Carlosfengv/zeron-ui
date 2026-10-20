@@ -52,9 +52,9 @@ Registry 使用 `@/components/blocks/chat-workspace-01`、`@/components/blocks/c
 
 ChatWorkspace 直接复用 ChatThread；composer、children、busy、历史、检查点和 labels 均为 ChatThread 原接口。外层 className 管理整个工作区尺寸，宿主提供受限高度。
 
-title 使用 14px medium 的 `text-body font-medium`，长标题省略并保留完整 title。可用 headerActions 在右侧内容区开关旁加入宿主会话操作，窄屏同样保留；该插槽不会透传给 ChatThread。
+title 使用 14px medium 的 `text-body font-medium`，长标题省略并保留完整 title。可用 headerActions 在右侧内容区开关旁加入宿主会话操作，窄屏同样保留；该插槽不会透传给 ChatThread。演示提供重命名、置顶／取消置顶、分享、复制会话文本和归档／取消归档；状态仅在本地，分享链接为 mock，不发布内容。复制通过浏览器剪贴板并反馈失败，重命名保留消息、预览与输入草稿。
 
-图片失败后禁用缩放与拖动并释放指针捕获，重试并加载完成后恢复操作。标签完成测量后，即使操作按钮占满可用宽度也只保留活动项，其余仍通过更多菜单访问。
+会话菜单由文档端 `ChatWorkspaceSessionMenu` 单独组合；核心只提供 headerActions 插槽，不引入会话业务或菜单依赖。弹窗分别管理类型与开关，关闭动画保留原来的重命名／分享内容。图片失败后禁用缩放与拖动并释放指针捕获，重试并加载完成后恢复操作。标签完成测量后，即使操作按钮占满可用宽度也只保留活动项，其余仍通过更多菜单访问。
 
 分栏使用公开 ResizablePanelGroup、ResizablePanel、ResizableHandle；默认 38% / 62%，chatMinSize="280px"、artifactMinSize="320px"。支持拖动、分隔线方向键及 onLayoutChanged。容器宽度小于 760px 时展示单面板；activePane / onActivePaneChange 选择 chat 或 artifacts，panelOpen / onPanelOpenChange 管理内容区开关，均有 default 对应值。开关与响应式切换不重挂载会话或输入区，返回桌面保留上次比例。
 
@@ -80,6 +80,6 @@ URL 只支持 HTTP(S) 或相对地址的沙箱 iframe；图片和下载额外允
 
 createChatWorkspaceDemoResources(locale, assetBase) 返回本地主题代码、Markdown、图片、网页与 ZIP 元数据。assetBase 默认 /demos/chat-workspace；消费项目替换地址或提供自己的资源。演示回复与审阅为本地模拟，不访问模型、不写磁盘。独立面板演示不依赖 ChatWorkspace。
 
-工作区与 chat-thread-01 的文档演示共用 ChatDemoModelControls、ChatDemoContextControl 和 ChatDemoResponseContent，统一模型选择、附件入口、上下文用量、思考过程和 Markdown 输出。回复仍使用 ChatAssistantMessage 的 model、modelLogo、provider、metrics、stopped、onRetry 和 onFeedback，模型身份属于单条回复快照，切换选择器不会改写历史回复。流式结束后显示 TTFT、输入/输出 tokens 和耗时。模型与上下文仅复用固定演示数据；消费项目按需另装 model-selector-01、context-window-01 并连接真实数据。
+工作区与 chat-thread-01 的文档演示共用 ChatDemoModelControls、ChatDemoContextControl 和 ChatDemoResponseContent，统一模型选择、附件入口、上下文用量、思考过程和 Markdown 输出。回复仍使用 ChatAssistantMessage 的 model、modelLogo、provider、metrics、stopped、onRetry 和 onFeedback，模型身份属于单条回复快照，切换选择器不会改写历史回复。流式结束后显示 TTFT、输入/输出 tokens 和耗时。模型与上下文仅复用固定演示数据；消费项目按需另装 model-selector-01、context-window-02 并连接真实数据。
 
 验证拖动与键盘调宽、收起后 composer 身份、窄屏切换、关闭后重开、修订后的状态重置、批量部分失败、引用不自动发送、图片缩放、URL 刷新和失效协议、空/加载/失败状态，以及 Registry 依赖闭包。样式只做外部布局，保持 Zeron 组件的表面、焦点、控件尺寸与主题。
