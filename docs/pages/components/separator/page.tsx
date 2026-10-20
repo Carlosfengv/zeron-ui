@@ -11,6 +11,8 @@ const horizontalCode = `import { Separator } from "@zeron/ui/separator";
 
 <Separator />`;
 
+const subtleCode = `<Separator tone="subtle" />`;
+
 const verticalCode = `<div className="flex h-20 items-center">
   <span>Overview</span>
   <Separator orientation="vertical" />
@@ -39,6 +41,12 @@ export default function SeparatorDoc() {
       description: t("orientationProp"),
     },
     {
+      name: "tone",
+      type: '"default" | "subtle"',
+      default: '"default"',
+      description: t("toneProp"),
+    },
+    {
       name: "className",
       type: "string",
       description: t("classNameProp"),
@@ -63,6 +71,12 @@ export default function SeparatorDoc() {
                   <Separator />
                 </div>
               ),
+            },
+            {
+              value: "subtle",
+              label: t("subtle"),
+              code: subtleCode,
+              preview: <div className="w-full max-w-md"><Separator tone="subtle" /></div>,
             },
             {
               value: "vertical",

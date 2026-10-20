@@ -42,6 +42,8 @@ import { CodeWorkerProvider } from "@/components/ui/code-block/worker";
 - `toolbar` 默认开启，提供原文复制和 scroll/wrap 切换。通过 `messages` 本地化按钮文本。
 - `selectedLines` 使用从 1 开始的源码行号。受控选区由调用方保存。
 - `CodeDiff` 传 `oldFile` 与 `newFile`，或传已经解析的 `fileDiff`，不要同时混用两组输入。
+- 默认 Zeron 外观下，组件族共用圆角、边框、背景及文件头样式。默认文件头高 36px、水平内边距 12px、字号使用 text-label，正文使用 13px / 24px 代码排版，文件头与正文无额外间距。CodeBlock 工具栏和 CodeDiff 文件头共用内部 Tailwind 样式；Patch、Conflict、Stream 和 CodeView 的引擎文件头通过组件内部 Shadow DOM 样式对齐同一规范。保留文件路径、重命名路径、增删行数及已有 header 回调；CodeView 的默认虚拟化尺寸同步匹配此规范，显式 itemMetrics 仍优先。
+- 代码正文继续由 Shadow DOM 引擎的专用 CSS 管理高亮、行号和差异布局。chat-thread、Markdown 及文档只负责外部排列和业务数据，直接使用默认组件外观；不要覆盖内部选择器或在调用处重复圆角、边框、背景。
 - `CodePatch` 接受 patch 字符串；无效 patch 的业务提示应由调用方结合错误边界呈现。
 - 大列表使用 `CodeView` 的稳定 item id/version，不要把全部文件手工映射成独立 CodeBlock。
 

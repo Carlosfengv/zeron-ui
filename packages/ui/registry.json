@@ -5331,6 +5331,11 @@
           "target": "components/ui/code-block/code-block-messages.ts"
         },
         {
+          "path": "packages/ui/src/components/code-block/code-block-styles.ts",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-block-styles.ts"
+        },
+        {
           "path": "packages/ui/src/components/code-block/code-block-theme.ts",
           "type": "registry:ui",
           "target": "components/ui/code-block/code-block-theme.ts"
@@ -5354,6 +5359,11 @@
           "path": "packages/ui/src/components/code-block/code-conflict.tsx",
           "type": "registry:ui",
           "target": "components/ui/code-block/code-conflict.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/code-diff-header.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-diff-header.tsx"
         },
         {
           "path": "packages/ui/src/components/code-block/code-diff.tsx",

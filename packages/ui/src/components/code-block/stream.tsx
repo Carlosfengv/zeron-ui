@@ -12,6 +12,7 @@ import { cn } from '#system/utils';
 
 import { getCodeBlockStyle } from './code-block-theme';
 import type { CodeBlockPresentationProps } from './code-block-types';
+import { codeBlockSurfaceClassName } from './code-block-styles';
 
 export interface CodeStreamProps extends CodeBlockPresentationProps {
   source: ReadableStream<string> | (() => ReadableStream<string>);
@@ -73,7 +74,8 @@ export function CodeStream({
     <div
       ref={containerRef}
       className={cn(
-        'overflow-hidden rounded-xl border border-border bg-surface-floating',
+        'overflow-hidden',
+        codeBlockSurfaceClassName,
         className
       )}
       style={getCodeBlockStyle(themeMode, style)}

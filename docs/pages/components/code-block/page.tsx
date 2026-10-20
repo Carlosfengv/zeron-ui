@@ -160,6 +160,7 @@ export default function CodeBlockDoc() {
       <CodeWorkerProvider poolSize={2} highlighterOptions={highlighterOptions}>
         <CodeEditProvider>
           <DocSection title={t("singleFile")}>
+            <p className="text-body text-fg-muted">{t("styleContract")}</p>
             <ComponentPreview code={exampleCode} inspectable={false} padding="responsive">
               <div className="grid w-full min-w-0 gap-2">
                 <CodeBlock<string>
@@ -217,7 +218,7 @@ export default function CodeBlockDoc() {
           <DocSection title={t("virtualizedFiles")}>
             <CodeView
               items={codeViewItems}
-              className="h-96 overflow-auto rounded-xl border border-border bg-surface-floating"
+              className="h-96"
             />
           </DocSection>
 

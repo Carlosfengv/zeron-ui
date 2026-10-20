@@ -321,6 +321,10 @@
       "itemId": "component:sidebar"
     },
     {
+      "path": "components/table.md",
+      "itemId": "component:table"
+    },
+    {
       "path": "components/time-range-histogram.md",
       "itemId": "component:time-range-histogram"
     },

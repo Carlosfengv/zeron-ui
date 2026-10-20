@@ -12,6 +12,7 @@ import { cn } from '#system/utils';
 
 import { getCodeBlockStyle } from './code-block-theme';
 import type { CodeBlockPresentationProps } from './code-block-types';
+import { codeBlockSurfaceClassName } from './code-block-styles';
 
 export type CodeViewProps<
   LAnnotation = undefined,
@@ -40,8 +41,20 @@ function CodeViewInner<LAnnotation = undefined, Caret = undefined>(
     appearance === 'zeron' && 'zeron-code-block'
   );
   const resolvedOptions = useMemo(
-    () => ({ ...options, itemClassName }),
-    [itemClassName, options]
+    () => ({
+      ...options,
+      itemClassName,
+      // Match the product typography/header/body spacing used by the rendered items.
+      itemMetrics: appearance === 'zeron'
+        ? {
+            ...options?.itemMetrics,
+            lineHeight: options?.itemMetrics?.lineHeight ?? 24,
+            diffHeaderHeight: options?.itemMetrics?.diffHeaderHeight ?? 36,
+            spacing: options?.itemMetrics?.spacing ?? 6,
+          }
+        : options?.itemMetrics,
+    }),
+    [appearance, itemClassName, options]
   );
 
   return (
@@ -50,7 +63,8 @@ function CodeViewInner<LAnnotation = undefined, Caret = undefined>(
       ref={ref}
       options={resolvedOptions}
       className={cn(
-        'overflow-auto rounded-xl border border-border bg-surface-floating',
+        'overflow-auto',
+        codeBlockSurfaceClassName,
         className
       )}
       style={getCodeBlockStyle(themeMode, style)}

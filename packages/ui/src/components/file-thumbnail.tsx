@@ -46,10 +46,12 @@ interface FileThumbnailProps {
   file: File;
   /** Side length of the square thumbnail in pixels. */
   size: number;
+  /** Disable the thumbnail border when a containing attachment card owns it. */
+  bordered?: boolean;
   className?: string;
 }
 
-function FileThumbnail({ file, size, className }: FileThumbnailProps) {
+function FileThumbnail({ file, size, bordered = true, className }: FileThumbnailProps) {
   const isImage = file.type.startsWith("image/");
   const isPdf = file.type === "application/pdf";
 
@@ -106,8 +108,10 @@ function FileThumbnail({ file, size, className }: FileThumbnailProps) {
 
   return (
     <div
+      data-slot="file-thumbnail"
       className={cn(
-        "relative shrink-0 overflow-hidden bg-muted border border-border",
+        "relative shrink-0 overflow-hidden bg-muted",
+        bordered && "border border-border",
         "rounded-lg",
         className
       )}

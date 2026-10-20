@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableHeader,
@@ -66,10 +68,25 @@ const loadingCode = `import {
   </Table>
 </div>`;
 
+const borderedCode = `import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@zeron/ui/table";
+
+<Table variant="bordered" size="sm">
+  <TableHeader>
+    <TableRow><TableHead>Surface</TableHead><TableHead>Status</TableHead></TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow><TableCell>Chat Thread</TableCell><TableCell>Ready</TableCell></TableRow>
+    <TableRow><TableCell>Markdown</TableCell><TableCell>Ready</TableCell></TableRow>
+  </TableBody>
+</Table>`;
+
 export default function TableDoc() {
   const t = useTranslations("tableDoc");
   const tableProps: PropDef[] = [
     { name: "children", type: "ReactNode", description: t("tableChildren") },
+    { name: "variant", type: '"plain" | "bordered"', default: '"plain"', description: t("tableVariant") },
+    { name: "size", type: '"sm" | "md"', default: '"md"', description: t("tableSize") },
+    { name: "containerClassName", type: "string", description: t("tableContainer") },
   ];
   const rowProps: PropDef[] = [
     { name: "index", type: "number", description: t("rowIndex") },
@@ -134,6 +151,23 @@ export default function TableDoc() {
                   <TableCell>Manager</TableCell>
                   <TableCell>Active</TableCell>
                 </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("bordered")}>
+        <p className="mb-3 text-body text-fg-muted">{t("borderedDescription")}</p>
+        <ComponentPreview code={borderedCode}>
+          <div className="w-full">
+            <Table variant="bordered" size="sm">
+              <TableHeader>
+                <TableRow><TableHead>Surface</TableHead><TableHead>Status</TableHead></TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow><TableCell>Chat Thread</TableCell><TableCell>Ready</TableCell></TableRow>
+                <TableRow><TableCell>Markdown</TableCell><TableCell>Ready</TableCell></TableRow>
               </TableBody>
             </Table>
           </div>
