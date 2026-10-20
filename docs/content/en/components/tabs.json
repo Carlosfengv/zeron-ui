@@ -54,6 +54,8 @@
     "i1": "Optional leading icon.",
     "i2": "Text label for the tab.",
     "i4": "Decorative content before the label, such as a plain Badge. Takes precedence over icon and keeps its label visible.",
+    "i5": "Renders a separate close button. The host removes the tab and selects its neighbor.",
+    "i6": "Accessible name for the close button. Localize when onClose is supplied.",
     "i3": "Optional count, status, Badge element, or Badge props object. Use '{ children, color, variant }' for Badge colors and dot status.",
     "n0": "Must match a TabItem value.",
     "n1": "Panel content, rendered when the matching tab is active."

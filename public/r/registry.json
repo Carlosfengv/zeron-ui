@@ -2288,6 +2288,7 @@
         }
       ],
       "dependencies": [
+        "@base-ui/react@^1.4.1",
         "tw-animate-css@^1.4.0"
       ],
       "meta": {
@@ -2808,6 +2809,7 @@
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/surfaces.json",
         "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
         "https://zeron-ui.vercel.app/r/utils.json",
         "https://zeron-ui.vercel.app/r/springs.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",
