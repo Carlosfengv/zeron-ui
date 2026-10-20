@@ -35,10 +35,11 @@ it("opens the first pending revision after its tab and panel have closed, retain
 it("updates the count after decisions and removes the header when every revision is confirmed", async () => {
   const { container } = render(<ChatWorkspaceDemo />);
   fireEvent.click(screen.getByRole("button", { name: "关闭 theme.ts" }));
-  fireEvent.click(screen.getByRole("button", { name: "全部接受" }));
+  fireEvent.click(screen.getByRole("button", { name: "批量审阅操作" }));
+  fireEvent.click(await screen.findByRole("menuitem", { name: "全部接受" }));
   await screen.findByText("还有 1 项待审阅确认的内容");
   fireEvent.click(screen.getByRole("button", { name: "查看第一项待审阅内容：theme.ts" }));
-  fireEvent.click(screen.getByRole("button", { name: "全部拒绝" }));
+  fireEvent.click(screen.getByRole("button", { name: "拒绝" }));
   await waitFor(() => expect(container.querySelector('[data-slot="container-header"]')).toBeNull());
   expect(screen.queryByRole("button", { name: /查看第一项待审阅内容/ })).toBeNull();
 });

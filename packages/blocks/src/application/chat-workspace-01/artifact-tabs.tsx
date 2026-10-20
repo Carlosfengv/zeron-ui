@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { Button } from "@zeron/ui/button";
-import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
+import { DropdownContent, DropdownMenu, DropdownSeparator, DropdownTrigger } from "@zeron/ui/dropdown";
 import { FileType } from "@zeron/ui/file-type";
 import { MenuItem } from "@zeron/ui/menu-item";
 import { TabItem, Tabs, TabsList } from "@zeron/ui/tabs";
@@ -11,7 +11,9 @@ import type { ArtifactLabels, ArtifactPanelProps, ArtifactResource } from "./cha
 
 /** Keep the selected resource visible and fit complete tabs in their original order. */
 export function visibleArtifactIds(resources: readonly ArtifactResource[], activeId: string, widths: readonly number[], available: number, moreWidth: number, gap: number): Set<string> {
-  if (available <= 0 || widths.length !== resources.length || widths.some((width) => width <= 0)) return new Set(resources.map((resource) => resource.id));
+  if (!resources.length) return new Set();
+  // Unknown measurements retain SSR markup; a measured zero budget still needs overflow handling.
+  if (widths.length !== resources.length || widths.some((width) => width <= 0)) return new Set(resources.map((resource) => resource.id));
   if (widths.reduce((sum, width) => sum + width, 0) + Math.max(0, resources.length - 1) * gap <= available) return new Set(resources.map((resource) => resource.id));
   const activeIndex = Math.max(0, resources.findIndex((resource) => resource.id === activeId));
   const visible = new Set([resources[activeIndex].id]);
@@ -26,11 +28,13 @@ export function visibleArtifactIds(resources: readonly ArtifactResource[], activ
   return visible;
 }
 
-export function ArtifactTabs({ resources, activeId, labels, onSelect, onClose, addAction }: {
+export function ArtifactTabs({ resources, activeId, labels, onSelect, onClose, onCloseOthers, onCloseAll, addAction }: {
   resources: readonly ArtifactResource[];
   activeId: string;
   labels: ArtifactLabels;
   onSelect: (id: string) => void;
+  onCloseOthers?: () => void;
+  onCloseAll?: () => void;
 } & Pick<ArtifactPanelProps, "onClose" | "addAction">) {
   const availableRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
@@ -61,7 +65,8 @@ export function ArtifactTabs({ resources, activeId, labels, onSelect, onClose, a
     observer.observe(more);
     return () => observer.disconnect();
   }, [measurementKey, activeId, closable]);
-  const visible = visibleArtifactIds(resources, activeId, layout.widths, layout.available, layout.moreWidth, layout.gap);
+  // Closing actions keep the menu present even when every tab fits.
+  const visible = visibleArtifactIds(resources, activeId, layout.widths, layout.available - (closable ? layout.moreWidth : 0), closable ? 0 : layout.moreWidth, layout.gap);
   const leading = (resource: ArtifactResource) => resource.kind === "url" ? <Globe size={16} aria-hidden /> : <FileType fileName={resource.name} variant="mono" size="mini" aria-hidden />;
   const focusSelected = (id: string) => requestAnimationFrame(() => {
     Array.from(availableRef.current?.querySelectorAll<HTMLElement>("[data-artifact-id]") ?? []).find((tab) => tab.dataset.artifactId === id)?.focus();
@@ -75,11 +80,16 @@ export function ArtifactTabs({ resources, activeId, labels, onSelect, onClose, a
             onKeyDown={(event) => { if (onClose && event.key === "Delete") { event.preventDefault(); onClose(resource); } }} />)}
         </TabsList>
       </div>
-      {visible.size < resources.length && <DropdownMenu>
-        <DropdownTrigger render={<Button iconOnly size="sm" variant="tertiary" aria-label={labels.more}><More aria-hidden /></Button>} />
+      {(closable || visible.size < resources.length) && <DropdownMenu>
+        <DropdownTrigger render={<Button iconOnly variant="tertiary" aria-label={labels.more}><More aria-hidden /></Button>} />
         <DropdownContent align="end" aria-label={labels.resources} checkedIndex={resources.findIndex((resource) => resource.id === activeId)}>
           {resources.map((resource, index) => <MenuItem key={resource.id} index={index} label={resource.name} leading={leading(resource)} checked={resource.id === activeId}
             onSelect={() => { onSelect(resource.id); focusSelected(resource.id); }} />)}
+          {closable && <>
+            <DropdownSeparator />
+            <MenuItem index={resources.length} label={labels.closeOthers} disabled={resources.length < 2} onSelect={onCloseOthers} />
+            <MenuItem index={resources.length + 1} label={labels.closeAll} onSelect={onCloseAll} />
+          </>}
         </DropdownContent>
       </DropdownMenu>}
     </div>
@@ -92,7 +102,7 @@ export function ArtifactTabs({ resources, activeId, labels, onSelect, onClose, a
           {resources.map((resource) => <TabItem key={resource.id} value={resource.id} label={resource.name} data-measure-artifact leading={leading(resource)} onClose={onClose ? () => {} : undefined} />)}
         </TabsList>
       </Tabs>
-      <div ref={moreRef}><Button iconOnly size="sm" variant="tertiary" tabIndex={-1}><More aria-hidden /></Button></div>
+      <div ref={moreRef}><Button iconOnly variant="tertiary" tabIndex={-1}><More aria-hidden /></Button></div>
       </div>
     </div>
   </div>;

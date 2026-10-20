@@ -12,7 +12,7 @@ import type { ChatWorkspaceProps } from "./chat-workspace-types";
 type PanelHandle = NonNullable<ResizablePanelProps["panelRef"]> extends Ref<infer T> ? T : never;
 
 export function ChatWorkspace({
-  artifacts, title, panelOpen, defaultPanelOpen = true, onPanelOpenChange,
+  artifacts, title, headerActions, panelOpen, defaultPanelOpen = true, onPanelOpenChange,
   activePane, defaultActivePane = "chat", onActivePaneChange,
   chatDefaultSize = "38%", chatMinSize = "280px", artifactMinSize = "320px",
   onLayoutChanged, workspaceLabels, className, ...threadProps
@@ -28,7 +28,9 @@ export function ChatWorkspace({
   const desktopSize = useRef(chatDefaultSize);
   const chatId = useId();
   const artifactId = useId();
-  const PanelIcon = useIcon("rectangle-horizontal");
+  const CollapseIcon = useIcon("layout-align-right");
+  const ExpandIcon = useIcon("layout-align-left");
+  const PanelIcon = open ? CollapseIcon : ExpandIcon;
 
   useEffect(() => {
     const node = root.current;
@@ -62,12 +64,15 @@ export function ChatWorkspace({
 
   return <div ref={root} data-block="chat-workspace-01" data-layout={wide ? "horizontal" : "single"} className={cn("flex size-full min-h-0 min-w-0 flex-col overflow-hidden bg-surface-floating text-fg-default", className)}>
     <div className="flex shrink-0 items-center justify-between gap-3 border-b-hairline border-border px-4 py-2">
-      <span className="truncate text-label font-medium">{title ?? labels.workspace}</span>
-      {wide ? <Button variant="ghost" size="sm" leadingIcon={PanelIcon} aria-expanded={open} aria-controls={artifactId} onClick={() => setOpen(!open)}>{open ? labels.hidePanel : labels.showPanel}</Button> :
+      <span data-slot="workspace-title" className="min-w-0 flex-1 truncate text-body font-medium" title={title ?? labels.workspace}>{title ?? labels.workspace}</span>
+      <div className="flex shrink-0 items-center gap-1">
+      {headerActions}
+      {wide ? <Button variant="ghost" iconOnly aria-label={open ? labels.hidePanel : labels.showPanel} aria-expanded={open} aria-controls={artifactId} onClick={() => setOpen(!open)}><PanelIcon aria-hidden /></Button> :
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="sm" active={!hideChat} aria-pressed={!hideChat} onClick={() => setPane("chat")}>{labels.conversation}</Button>
           <Button variant="ghost" size="sm" active={hideChat} aria-pressed={hideChat} onClick={() => setPane("artifacts")}>{labels.preview}</Button>
         </div>}
+      </div>
     </div>
     <ResizablePanelGroup orientation="horizontal" disabled={!wide || !open} aria-label={labels.workspace} className="min-h-0 flex-1"
       onLayoutChanged={(layout, meta) => {

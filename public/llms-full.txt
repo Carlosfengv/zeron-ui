@@ -789,6 +789,10 @@ related: [chat-thread-01, resizable, code-block, markdown, tabs, scroll-area, fi
 
 安装 `npx zeron-ui add chat-workspace-01 input-message`。React 数据 Block，不依赖 Next.js 或 AI SDK。导出 ChatWorkspace、ArtifactPanel、ArtifactCard、getPendingReviewResources 和英文/中文 artifact labels。
 
+第二期支持逐文件审阅、待审阅列表与前后循环跳转。底部只有一个审阅操作区，当前待审阅文件提供接受／拒绝，批量操作收入更多菜单。审阅仍通过 onReview(resource, decision) 提交具体版本；保存中禁止重复审阅，但可以切换预览。失败提示对应失败文件及其版本，不延续到新修订。不提供按变更块审阅、行级评论或代码编辑。
+
+标签更多菜单始终可用（启用关闭时），列出全部打开资源，并支持关闭其他／全部标签。可选 onCloseMany(resources) 接收一次关闭的全部资源；提供时所有关闭均使用它，否则逐项调用 onClose。宿主只移除打开项，保留资源目录及待审阅状态。关闭当前项选择右侧邻项，再回退左侧；关闭所有项保留 addAction。图片支持适应窗口、原始尺寸、绝对缩放和鼠标拖动平移；触屏与键盘继续使用原生滚动。手动比例保持稳定，适应窗口模式随容器变化重新计算。
+
 ```tsx
 "use client";
 import { useState } from "react";
@@ -819,6 +823,10 @@ Registry 使用 `@/components/blocks/chat-workspace-01`、`@/components/blocks/c
 
 ChatWorkspace 直接复用 ChatThread；composer、children、busy、历史、检查点和 labels 均为 ChatThread 原接口。外层 className 管理整个工作区尺寸，宿主提供受限高度。
 
+title 使用 14px medium 的 `text-body font-medium`，长标题省略并保留完整 title。可用 headerActions 在右侧内容区开关旁加入宿主会话操作，窄屏同样保留；该插槽不会透传给 ChatThread。
+
+图片失败后禁用缩放与拖动并释放指针捕获，重试并加载完成后恢复操作。标签完成测量后，即使操作按钮占满可用宽度也只保留活动项，其余仍通过更多菜单访问。
+
 分栏使用公开 ResizablePanelGroup、ResizablePanel、ResizableHandle；默认 38% / 62%，chatMinSize="280px"、artifactMinSize="320px"。支持拖动、分隔线方向键及 onLayoutChanged。容器宽度小于 760px 时展示单面板；activePane / onActivePaneChange 选择 chat 或 artifacts，panelOpen / onPanelOpenChange 管理内容区开关，均有 default 对应值。开关与响应式切换不重挂载会话或输入区，返回桌面保留上次比例。
 
 ArtifactPanel 的 resources 是当前打开的资源列表，id 唯一且稳定，version 随内容修订变化。kind 为 code、markdown、text、image、url 或 file。代码/Markdown 有 previousContent 时支持差异；Markdown 默认预览，代码默认差异或源码。显式 review="pending" 才启用变更审阅。普通文件显示 MIME、大小与下载入口，不承诺 Office/PDF 全文预览。
@@ -829,7 +837,7 @@ activeId / defaultActiveId / onActiveIdChange 管理选择；onClose 负责从�
 
 ## 操作与失败
 
-onReview(resource, decision) 接收 accept / reject。底部只显示一个批量审阅栏，复用 Alert status="info" 的浅蓝背景、边框和 xl 圆角，外层 p-3 保留四周 12px 间距。宿主核对 id/version 并提交真实文件操作、更新资源 review 后再 resolve；失败 reject，Block 不虚构成功。批量操作逐项调用并保留部分失败；待处理期间禁用重复审阅。历史、分支和检查点恢复由宿主同时更新会话与资源；旧版本审阅不得作用于新内容。
+onReview(resource, decision) 接收 accept / reject。底部只显示一个审阅栏，包含当前文件操作与更多菜单中的批量操作。复用 Alert status="info" 的浅蓝背景、边框和 xl 圆角，外层 p-3 保留四周 12px 间距，按面板宽度换行而非依赖视口断点。宿主核对 id/version 并提交真实文件操作、更新资源 review 后再 resolve；失败 reject，Block 不虚构成功。批量操作逐项调用并保留部分失败；待处理期间禁用重复审阅。历史、分支和检查点恢复由宿主同时更新会话与资源；旧版本审阅不得作用于新内容。
 
 onReference(resource) 将结构化资源引用加入宿主草稿，不自动发送。onRetry 处理资源 status="error"；status="loading" 显示加载提示。复制失败有反馈，图片加载失败可重试。Markdown 不启用原始 HTML；预览器对代码错误隔离，失效资源可重试。
 
