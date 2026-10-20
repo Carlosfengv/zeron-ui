@@ -77,12 +77,9 @@ export function SectionedDataTable<TData>({
       <div className="flex flex-wrap items-center gap-3">{state === "ready" && renderStats?.(context)}{actions}</div>
     </ContainerHeader>
     <ContainerBody className="p-3">
-      <Tabs value={dimension.columnId} onValueChange={changeDimension} variant="segment" color="default">
+      <Tabs value={dimension.columnId} onValueChange={changeDimension} color="neutral">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <span className="text-label text-fg-muted">{labels.groupBy}</span>
-            <TabsList aria-label={labels.groupBy}>{dimensions.map((item) => <TabItem key={item.columnId} value={item.columnId} label={item.label} />)}</TabsList>
-          </div>
+          <TabsList aria-label={labels.groupBy}>{dimensions.map((item) => <TabItem key={item.columnId} value={item.columnId} label={item.label} />)}</TabsList>
           <div aria-label={labels.search} className="flex w-full flex-wrap items-center gap-2 sm:w-auto" role="toolbar">
             <InputGroup className="w-full sm:w-64"><InputGroupAddon><Search aria-hidden /></InputGroupAddon><InputGroupInput aria-label={labels.search} placeholder={labels.searchPlaceholder} value={search} onChange={(event) => setSearch(event.target.value)} /></InputGroup>
             {renderFilters?.(table)}
