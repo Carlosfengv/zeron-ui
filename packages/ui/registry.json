@@ -4,6 +4,32 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "markdown",
+      "type": "registry:ui",
+      "title": "Markdown",
+      "description": "Safe GFM content with tables, optional CodeBlock rendering and an accessible streaming indicator.",
+      "dependencies": [
+        "react-markdown",
+        "remark-gfm",
+        "remark-breaks",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "checkbox",
+        "code-block",
+        "table",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/markdown.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/markdown.tsx"
+        }
+      ]
+    },
+    {
       "name": "time-window-timeline",
       "type": "registry:ui",
       "title": "TimeWindowTimeline",

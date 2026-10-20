@@ -1,4 +1,26 @@
 {
+  "markdown": {
+    "keywords": [
+      "Markdown",
+      "GFM",
+      "富文本",
+      "代码块",
+      "streaming",
+      "流式"
+    ],
+    "useCases": [
+      "在消息、研究结果或执行记录中渲染 Markdown、表格、代码与流式状态。"
+    ],
+    "whenNotToUse": [
+      "不执行原始 HTML，不请求模型；自定义 components 渲染器需自行保证安全。"
+    ],
+    "keyApi": [
+      "text 为累积文本，streaming 控制状态指示；streamingLabel 按语言覆盖。",
+      "根容器及表格、代码包装层使用父级 100% 宽度；宽表格和长代码在内部滚动，宿主保持 min-w-0；自定义渲染器保留此约定。",
+      "codeVariant 默认 block 复用 CodeBlock；plain 用于紧凑日志。",
+      "components 接受公开的 MarkdownComponents 渲染器。"
+    ]
+  },
   "grouped-data-table-02": {
     "keywords": [
       "多维分组",

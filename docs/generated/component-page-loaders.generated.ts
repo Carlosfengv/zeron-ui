@@ -3,6 +3,7 @@ import "server-only";
 import type { DocPageLoader } from "./page-loader-types";
 
 export const componentPageLoaders: Record<string, DocPageLoader> = {
+  "components/markdown": () => import("@docs/pages/components/markdown/page"),
   "components/time-window-timeline": () => import("@docs/pages/components/time-window-timeline/page"),
   "components/file-type": () => import("@docs/pages/components/file-type/page"),
   "components/heatmap-chart": () => import("@docs/pages/components/heatmap-chart/page"),

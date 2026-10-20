@@ -268,6 +268,7 @@
       "path": "components/live-line-chart.md",
       "itemId": "component:live-line-chart"
     },
+    {"path": "components/markdown.md", "itemId": "component:markdown"},
     {
       "path": "components/metric-card.md",
       "itemId": "component:metric-card"

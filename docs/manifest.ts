@@ -185,6 +185,7 @@ export const docEntries = [
   entry({ slug: "tooltip", section: "overlay", icon: "doc-tooltip", name: "Tooltip", description: "Floating tooltip with spring-based animations and configurable placement.", gridSize: "small", order: 2800 }),
   entry({ slug: "ask-user-questions", section: "ai-agent", icon: "doc-ask-user-questions", name: "AskUserQuestions", description: "Stepped question flow with single/multi-select, optional 'other' input, and skip." }),
   entry({ slug: "chat-message", section: "ai-agent", icon: "doc-chat-message", name: "ChatMessage", description: "Chat transcript bubble with baked-in motion, user/assistant alignment, and file attachments.", order: 200 }),
+  entry({ slug: "markdown", section: "ai-agent", icon: "doc-chat-message", name: "Markdown", description: "Safe GFM content with tables, code blocks and streaming status.", order: 250, isNew: true }),
   entry({ slug: "input-message", section: "ai-agent", icon: "doc-input-message", name: "InputMessage", description: "Chat-style message composer with auto-resizing textarea and configurable action slots.", order: 300 }),
   entry({ slug: "thinking-indicator", section: "ai-agent", icon: "doc-thinking-indicator", name: "ThinkingIndicator", description: "Animated status indicator with morphing SVG and cycling text.", order: 400 }),
   entry({ slug: "thinking-steps", section: "ai-agent", icon: "doc-thinking-steps", name: "ThinkingSteps", description: "Chain-of-thought display with sequential animation and collapsible steps.", gridSize: "large", order: 500 }),

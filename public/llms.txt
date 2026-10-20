@@ -138,6 +138,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [LineChart](https://zeron-ui.vercel.app/ai/items/component%3Aline-chart.md): Line charts for trends and comparing multiple series. Registry: line-chart.
 - [List Pagination](https://zeron-ui.vercel.app/ai/items/component%3Alist-pagination.md): Controlled, table-independent pagination for lists, with localized labels and page size controls. Registry: list-pagination.
 - [LiveLineChart](https://zeron-ui.vercel.app/ai/items/component%3Alive-line-chart.md): Point time is Unix seconds. Registry: live-line-chart.
+- [Markdown](https://zeron-ui.vercel.app/ai/items/component%3Amarkdown.md): Safe GFM content with tables, code blocks and streaming status. Registry: markdown.
 - [Member Tree](https://zeron-ui.vercel.app/ai/items/component%3Amember-tree.md): Organization-focused Tree with department and member rendering, typed selection, and member-only cascade selection. Registry: member-tree.
 - [MenuItem](https://zeron-ui.vercel.app/ai/items/component%3Amenu-item.md): Accessible menu row primitive with icon, selection, and keyboard-menu integration. Registry: menu-item.
 - [Metric Card](https://zeron-ui.vercel.app/ai/items/component%3Ametric-card.md): Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction. Registry: metric-card.
@@ -260,6 +261,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [line-chart](https://zeron-ui.vercel.app/agent-guides/components/line-chart.md)
 - [list-pagination](https://zeron-ui.vercel.app/agent-guides/components/list-pagination.md)
 - [live-line-chart](https://zeron-ui.vercel.app/agent-guides/components/live-line-chart.md)
+- [markdown](https://zeron-ui.vercel.app/agent-guides/components/markdown.md)
 - [metric-card](https://zeron-ui.vercel.app/agent-guides/components/metric-card.md)
 - [nav-item](https://zeron-ui.vercel.app/agent-guides/components/nav-item.md)
 - [nav-menu](https://zeron-ui.vercel.app/agent-guides/components/nav-menu.md)
