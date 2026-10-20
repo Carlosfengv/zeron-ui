@@ -92,8 +92,29 @@ test("renders all interactive examples without hydration errors", async ({ page 
     bottom: "6px",
     fontSize: "13px",
     lineHeight: "24px",
-    top: "6px",
+    top: "0px",
   });
+  const headers = await page.locator("zeron-code-container").evaluateAll((elements) =>
+    elements.slice(0, 4).map((element) => {
+      const header = element.querySelector('[data-slot="code-block-toolbar"], [data-slot="code-diff-header"]')
+        ?? element.shadowRoot?.querySelector('[data-diffs-header]');
+      const body = element.shadowRoot?.querySelector('[data-file], [data-diff]');
+      if (header == null || body == null) throw new Error("Missing code header or body");
+      const style = getComputedStyle(header);
+      return {
+        height: header.getBoundingClientRect().height,
+        fontSize: style.fontSize,
+        lineHeight: style.lineHeight,
+        paddingInline: style.paddingInline,
+        gap: body.getBoundingClientRect().top - header.getBoundingClientRect().bottom,
+        color: style.color,
+        background: style.backgroundColor,
+        border: style.borderBottom,
+      };
+    })
+  );
+  expect(headers[0]).toMatchObject({ height: 36, fontSize: "12px", lineHeight: "16px", paddingInline: "12px", gap: 0 });
+  expect(headers).toEqual(Array.from({ length: 4 }, () => headers[0]));
   await expect(
     page.locator("zeron-code-container:not(.zeron-code-block)")
   ).toHaveCount(0);

@@ -1,5 +1,17 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "chat-thread-01": [
+    "packages/blocks/src/application/chat-thread-01/index.ts",
+    "packages/blocks/src/application/chat-thread-01/chat-thread.tsx",
+    "packages/blocks/src/application/chat-thread-01/chat-thread-types.ts",
+    "packages/blocks/src/application/chat-thread-01/chat-thread-labels.ts",
+    "packages/blocks/src/application/chat-thread-01/chat-thread-context.ts",
+    "packages/blocks/src/application/chat-thread-01/chat-thread-messages.tsx",
+    "packages/blocks/src/application/chat-thread-01/chat-thread-markdown.tsx",
+    "packages/blocks/src/application/chat-thread-01/chat-thread-history.ts",
+    "packages/blocks/src/application/chat-thread-01/use-thread-scroll.ts",
+    "packages/blocks/src/application/chat-thread-01/chat-thread-demo-data.ts"
+  ],
   "chat-markdown-01": [
     "packages/blocks/src/application/chat-markdown-01/index.ts",
     "packages/blocks/src/application/chat-markdown-01/chat-markdown-response.tsx",

@@ -43,7 +43,7 @@ const iconOnlyIconSizeClasses: Partial<Record<ControlSize, string>> = {
 
 const buttonVariants = cva(
   [
-    "group relative isolate inline-flex shrink-0 items-center justify-center whitespace-nowrap outline-none cursor-pointer",
+    "group group/button relative isolate inline-flex shrink-0 items-center justify-center whitespace-nowrap outline-none cursor-pointer",
     "transition-colors duration-fast",
     "disabled:opacity-50 disabled:pointer-events-none",
     "focus-visible:ring-1 focus-visible:ring-focus-ring",
@@ -113,12 +113,12 @@ interface ButtonProps
 type ButtonTone = "default" | "warning";
 
 const bgVariants: Record<string, string> = {
-  primary: "bg-primary-action group-hover:bg-primary-action-hover group-active:bg-primary-action-active",
-  neutral: "bg-neutral-action group-hover:bg-neutral-action-hover group-active:bg-neutral-action-active",
-  destructive: "bg-destructive-action group-hover:bg-destructive-action-hover group-active:bg-destructive-action-active",
-  secondary: "bg-secondary-action group-hover:bg-secondary-action-hover group-active:bg-secondary-action-active",
-  tertiary: "border border-border bg-surface-floating group-hover:bg-hover group-active:bg-active",
-  ghost: "bg-transparent group-hover:bg-hover group-active:bg-active",
+  primary: "bg-primary-action group-hover/button:bg-primary-action-hover group-active/button:bg-primary-action-active",
+  neutral: "bg-neutral-action group-hover/button:bg-neutral-action-hover group-active/button:bg-neutral-action-active",
+  destructive: "bg-destructive-action group-hover/button:bg-destructive-action-hover group-active/button:bg-destructive-action-active",
+  secondary: "bg-secondary-action group-hover/button:bg-secondary-action-hover group-active/button:bg-secondary-action-active",
+  tertiary: "border border-border bg-surface-floating group-hover/button:bg-hover group-active/button:bg-active",
+  ghost: "bg-transparent group-hover/button:bg-hover group-active/button:bg-active",
   link: "bg-transparent",
 };
 
@@ -180,7 +180,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const bgClass = tone === "warning"
       ? active
         ? "border-0 bg-[color-mix(in_srgb,var(--warning-surface)_65%,var(--warning-border))]"
-        : "border-0 bg-warning-surface group-hover:bg-[color-mix(in_srgb,var(--warning-surface)_80%,var(--warning-border))] group-active:bg-[color-mix(in_srgb,var(--warning-surface)_65%,var(--warning-border))]"
+        : "border-0 bg-warning-surface group-hover/button:bg-[color-mix(in_srgb,var(--warning-surface)_80%,var(--warning-border))] group-active/button:bg-[color-mix(in_srgb,var(--warning-surface)_65%,var(--warning-border))]"
       : active
         ? activeBgVariants[variant ?? "primary"]
         : bgVariants[variant ?? "primary"];
@@ -191,7 +191,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           aria-hidden
           data-slot="button-background"
           className={cn(
-            "absolute inset-0 rounded-[inherit] transition-[background-color,transform] duration-fast group-active:scale-[0.98]",
+            "absolute inset-0 rounded-[inherit] transition-[background-color,transform] duration-fast group-active/button:scale-[0.98]",
             bgClass,
             dashed && "border-dashed"
           )}
@@ -235,7 +235,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             <span
               data-slot="button-icon"
               className={cn(
-                "[&_svg]:stroke-[1.5] [&_svg]:transition-[stroke-width] [&_svg]:duration-fast group-hover:[&_svg]:stroke-[2]",
+                "[&_svg]:stroke-[1.5] [&_svg]:transition-[stroke-width] [&_svg]:duration-fast group-hover/button:[&_svg]:stroke-[2]",
                 iconOnlyIconSizeClasses[resolvedSize]
               )}
             >
@@ -248,7 +248,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                   data-slot="button-leading-icon"
                   size={iconSize}
                   strokeWidth={1.5}
-                  className="transition-[stroke-width] duration-fast group-hover:stroke-[2]"
+                  className="transition-[stroke-width] duration-fast group-hover/button:stroke-[2]"
                 />
               )}
               <span data-slot="button-label" className={labelClassName}>{label}</span>
@@ -257,7 +257,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                   data-slot="button-trailing-icon"
                   size={iconSize}
                   strokeWidth={1.5}
-                  className="transition-[stroke-width] duration-fast group-hover:stroke-[2]"
+                  className="transition-[stroke-width] duration-fast group-hover/button:stroke-[2]"
                 />
               )}
             </>

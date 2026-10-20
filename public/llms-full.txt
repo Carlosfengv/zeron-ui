@@ -675,6 +675,102 @@ Registry 消费项目改用 `@/components/blocks/chat-markdown-01` 与 `@/compon
 
 ---
 schema_version: 1
+name: chat-thread-01
+kind: block
+status: stable
+locale: zh-CN
+summary: 可组合的流式会话、消息版本、历史阅读锚点与检查点恢复。
+package_import: "@zeron/blocks/chat-thread-01"
+registry_import: "@/components/blocks/chat-thread-01"
+source: packages/blocks/src/application/chat-thread-01/chat-thread.tsx
+types: packages/blocks/src/application/chat-thread-01/chat-thread-types.ts
+registry: packages/blocks/registry.json
+typecheck_examples: true
+related: [chat-message, message-navigation, input-message, scroll-area, code-block, thinking-steps, model-selector-01, context-window-01, toast, separator, inline-notice, empty, button]
+---
+
+# Chat Thread
+
+安装 `npx zeron-ui add chat-thread-01 input-message`。这是 React 数据 Block，不依赖 Next.js 或 AI SDK。消息、请求、版本、检查点和持久化由宿主持有。
+
+```tsx
+"use client";
+import { useRef, useState } from "react";
+import { ChatThread, ChatUserMessage, ChatAssistantMessage, ChatMarkdown, chatThreadZhLabels } from "@zeron/blocks/chat-thread-01";
+import { InputMessage } from "@zeron/ui/input-message";
+
+export function ThreadExample() {
+  const [draft, setDraft] = useState("");
+  const [messages, setMessages] = useState<{ id: string; text: string }[]>([]);
+  const editor = useRef<HTMLTextAreaElement>(null);
+  return <div className="h-96 min-h-0">
+    <ChatThread labels={chatThreadZhLabels} locale="zh-CN" composerRef={editor}
+      composer={<InputMessage textareaRef={editor} layout="compact" value={draft} onValueChange={setDraft}
+        onSend={(text) => { setMessages((items) => [...items, { id: crypto.randomUUID(), text }]); setDraft(""); }} />}>
+      <ChatAssistantMessage id="welcome" text="可以开始提问。"><ChatMarkdown text="可以开始提问。" /></ChatAssistantMessage>
+      {messages.map((message, index) => <ChatUserMessage key={message.id} id={message.id} text={message.text} pin={index === messages.length - 1} />)}
+    </ChatThread>
+  </div>;
+}
+```
+
+Registry 消费项目将包导入替换为 `@/components/blocks/chat-thread-01` 和 `@/components/ui/input-message`。应用层只挂载一个 `Toaster`。模型选择与上下文控件是独立可选 Block，通过 InputMessage 的公开插槽接入，需要时单独安装。
+
+上下文属于可选的宿主组合。本次文档演示使用主线已有的 context-window-01，通过标准 Button / Popover 接入；它不是 Thread 的强制 Registry 依赖。用量触发器与弹层读取同一 data 快照，圆环复用 PieChart，百分比从实际用量计算。
+
+## 布局与滚动
+
+宿主提供受限高度，Block 使用一个会话滚动视口。空状态与消息状态保持 composer 的 DOM 身份，保留焦点、附件和草稿。`empty` 替换默认空状态标题。
+
+助手消息及正文复用 ChatMessage 的满宽布局，按 article 的 100% 可用宽度显示表格、CodeBlock、CodeDiff 等块内容，不按内容收缩；用户气泡维持 80% 上限。会话整体阅读宽度仍由宿主布局管理，宽表与超长代码在自身区域横向滚动。
+
+Block 整体使用 Floating 表面。默认空状态复用 Empty；历史失败、回复错误和停止提示复用 InlineNotice；检查点与时间分隔线复用 Separator 的 subtle 色调；右侧消息导航复用 MessageNavigation 的紧凑短线、当前位置、键盘与 Popover 预览。恢复弹层使用 PopoverHeader、PopoverTitle、PopoverDescription、PopoverFooter 和默认内边距。元信息经 ChatMessage.meta 插槽排版，Block 仅管理外部布局、会话状态、历史树和滚动锚点，不复制基础组件样式。
+
+消息 `id` 在线程内必须唯一，同一逻辑消息跨版本保持稳定；切换逻辑消息使用新的 ID。`pin` 只标记刚发送的用户轮次。短回复下方保留阅读空间，使该轮次可以位于顶部；回复增长超出视口后继续跟随。用户主动向上阅读后暂停跟随，点击回到最新内容恢复。入口复用 ChatScrollToLatest 的 tertiary / sm 描边按钮、向下箭头和中英文文案，位于输入区上方居中，间距 16px；与其他会话共用 24px 最新位置阈值。代码高亮、图片加载和输入区增高通过布局观测处理。桌面消息导航中每条短线对应一个用户轮次，预览问题和紧随其后的助手回复首段；点击跳转并聚焦用户消息。Tab 只进入侧轨一次，上下方向键与 Home / End 移动焦点，Enter / Space 选择，Escape 关闭预览。导航在消息过多时仅滚动自身；窄屏省略侧轨，保留原生会话滚动与键盘。
+
+`hasOlder`、`loadingOlder` 和 `onLoadOlder` 控制前插历史。回调返回 Promise，或在历史提交前保持 `loadingOlder=true`。加载期间记录可见消息及偏移，完成后恢复；失败时保留消息并显示可重试错误。历史加载期间禁用编辑、重试、版本和检查点恢复，并暂缓已有的撤销操作；恢复或撤销进行中禁用历史加载入口，避免异步变更交错。不要在完成加载后再异步追加消息而提前撤掉 loadingOlder。
+
+`bookmarkedIds` 保存受控的逻辑用户消息 ID，`onBookmarkChange(messageId, bookmarked)` 透传导航预览的收藏请求。提供回调才显示右上角按钮；外部更新 bookmarkedIds 后才改变收藏显示。`bookmarkLabels` 本地化收藏及取消收藏文案。宿主负责持久化、失败处理和版本间的状态策略，组件不自行更改收藏状态。演示使用页面状态模拟收藏。
+
+## 消息组合
+
+`ChatUserMessage` 接收 `text`、`time: Date`、`files: ChatFile[]`、`attachments`、`onEdit`、`branch`、`checkpoint`。远程文件使用 `{ id, name, type?, size?, url? }`；无 URL 的文件显示文件信息。附件只展示，不上传。自定义附件可以复用 `FileThumbnail`；旧 ChatMessage 的 `files: File[]` 保持兼容。
+
+`ChatAssistantMessage` 的 `children` 可放入 ThinkingSteps、工具结果、ChatMarkdown、CodeBlock、CodeDiff 等。`text` 是复制用的纯文本；不提供时不显示复制按钮。`streaming` 隐藏操作，`last` 常显操作。支持 `meta`、`onRetry`、`error`、`stopped`，以及受控 `feedback: "up" | "down" | null` / `onFeedback`。
+
+传 `model`、`modelLogo: ReactNode` 与 `provider`，由 ChatMessageAuthor 在回复正文上方显示模型 Logo、medium 字重的名称和灰色 provider，生成期间保持可见；未知字段可省略。传 `metrics: { ttftMs?, inputTokens?, outputTokens?, durationMs? }`，由底部 ChatMessageMeta 显示本次回复的首 token 延迟、输入/输出 token 与总耗时，TTFT 前不重复模型名称，窄屏自动换行。时间统一使用毫秒，token 为非负整数，自动换算为 k、M、B（最多一位小数），悬停和辅助技术提供带千分位的完整数值；缺失或无效指标省略。`meta` 用于额外的页脚信息。宿主应保存每次回复实际使用的模型、provider 与 Logo 对应关系；演示中的 token 是模拟数据，新生成回复的耗时来自本地计时。
+
+`ChatMarkdown` 适配独立的 `@zeron/ui/markdown`，与 Agent Trace 共享安全 GFM 渲染，代码复用 Zeron CodeBlock；不启用原始 HTML。Registry 通过 markdown 依赖自动安装 UI 组件。工具结果使用应用实际数据通过 children 组合，不要求特定工具协议。
+
+`ChatCopy`、`ChatBranchSwitch`、`ChatAttachments`、`ChatEditor` 为兼容适配器，在 ChatThread 内获取文案。独立使用时从 `@zeron/ui/chat-message` 导入对应的 ChatMessageCopy、ChatMessageBranchSwitch、ChatMessageAttachments 和 ChatMessageEditor，并按需传 labels；ChatAction 是 ChatMessageAction 的兼容导出。ChatCheckpoint 和 ChatDivider 保留为会话组合。
+
+## 版本与业务状态
+
+`branch` 是 `{ index, count, onChange }`，索引从零开始。组件只发出版本选择；宿主保留历史版本及对应后续对话，避免切换文字后保留不属于该版本的答案。编辑回调支持 Promise；失败后保留编辑草稿并显示错误。`busy` 禁用编辑、重试、版本和恢复操作。
+
+InputMessage 的生成状态仍为 `idle | streaming`。生成期间发送可进入受控 `queue`；停止后默认继续释放下一条，与旧组件一致。恢复、编辑、版本切换时设置 `autoDispatchQueue=false`，避免状态切换触发意外发送；需要再次自动派发时由宿主显式恢复。`textareaRef` 提供公开编辑器引用，原根节点 ref 保持兼容。ScrollArea 新增 `viewportRef` / `viewportProps`，桌面与触屏都指向真实视口。
+
+## 检查点与撤销
+
+用户消息传 `checkpoint: { id, label?, files? }` 后显示恢复分隔线。`files` 是各轮次变更的文件路径，由宿主提供；确认时合并选中轮次与后续轮次的路径并去重。确认前显示将移除的消息数、文件数与路径，并淡化对应消息；没有文件时只提供恢复对话选项。
+
+`onRestore(checkpointId, { code })` 负责真实变更。宿主应在成功后移除选中的用户消息及之后的消息，将原文和附件回填输入区，提交后再 resolve；失败时 reject，确认保持打开。`splitThreadHistory(messages, messageId)` 提供不修改原数组的拆分，返回 `{ kept, removed }`，`removed[0]` 是待回填的消息；未知 ID 返回完整 kept 与空 removed。
+
+返回 `{ undo: () => void | Promise<void> }` 可提供撤销。快照应覆盖消息/版本选择、草稿、附件和队列。宿主后续产生新变更时，需使旧撤销失效或提供冲突处理；失败时保留 Undo 操作以便重试。真实文件恢复必须由宿主实现，不可把前端消息截断视为代码恢复完成。
+
+`composerRef` 与 InputMessage 的 `textareaRef` 使用同一引用，恢复成功后聚焦编辑器并置光标到末尾。文案用 `labels` 覆盖，导出 `chatThreadEnLabels` 和 `chatThreadZhLabels`，时间通过 `locale` 格式化。
+
+## 验证与演示
+
+检查新会话节点身份、流式中止、队列冻结、历史锚点、编辑输入法、分支后续对话、异步恢复失败与撤销冲突。触屏操作持续可见；键盘焦点揭示操作；回复使用 log、aria-busy、评价按下状态和实时播报。
+
+演示中的请求、模型、上下文和代码恢复为本地模拟，不请求模型、不上传附件、不修改磁盘。重播、新对话、错误重试、队列、分支、历史加载、恢复和撤销均可交互。接入生产时替换宿主模拟操作，而不是修改基础 UI 控件。
+
+
+---
+
+---
+schema_version: 1
 name: cluster-environment-detail-01
 kind: block
 status: stable
@@ -3682,37 +3778,76 @@ schema_version: 1
 name: chat-message
 kind: component
 status: stable
-summary: 聊天消息布局与由宿主管理的最新内容导航。
+summary: 组合消息气泡、附件、复制、编辑和受控版本切换，无需会话 Provider。
 package_import: "@zeron/ui/chat-message"
 registry_import: "@/components/ui/chat-message"
 source: packages/ui/src/components/chat-message.tsx
 registry: packages/ui/registry.json
 typecheck_examples: true
-related: [button, input-message]
+related:
+  - markdown
+  - input-message
+  - inline-notice
+  - chat-thread-01
 ---
 
 # ChatMessage
 
-安装 `npx zeron-ui add chat-message`，消费项目使用 `@/components/ui/chat-message`。
+## Agent intent
+
+单条用户或助手消息使用 ChatMessage。需要完整会话的历史、滚动和检查点恢复时组合 chat-thread-01。
+
+## Installation and imports
+
+```bash
+npx zeron-ui add chat-message
+```
 
 ```tsx
-import { ChatMessage, ChatScrollToLatest } from "@zeron/ui/chat-message";
+import {
+  ChatMessage, ChatMessageCopy, ChatMessageAction,
+  ChatMessageAttachments, ChatMessageEditor, ChatMessageBranchSwitch, ChatMessageAuthor,
+  type ChatMessageFile, type ChatMessageBranch,
+} from "@zeron/ui/chat-message";
+```
 
-export function Conversation({ away, onLatest }: { away: boolean; onLatest: () => void }) {
-  return <div className="relative min-h-40">
-    <ChatMessage from="assistant">回复内容</ChatMessage>
-    {away && <ChatScrollToLatest locale="zh-CN" onClick={onLatest} />}
-  </div>;
+## Composition
+
+```tsx
+import { ChatMessage, ChatMessageCopy, ChatMessageAttachments } from "@zeron/ui/chat-message";
+
+export function Example() {
+  const text = "请审阅设计说明。";
+  return (
+    <ChatMessage from="user" actionsVisibility="always"
+      attachments={<ChatMessageAttachments label="附件" files={[{ id: "brief", name: "brief.md", size: 2048 }]} />}
+      actions={<ChatMessageCopy text={text} labels={{ copy: "复制", copied: "已复制", copyFailed: "复制失败" }} />}>
+      {text}
+    </ChatMessage>
+  );
 }
 ```
 
-ChatMessage 保留用户消息右对齐、助手正文左对齐与原生 File 附件；time 仅用于用户消息。宿主拥有内容与消息操作。
+## Core rules
 
-助手正文使用父级可用宽度，宿主限制阅读列宽。header 接受 ChatMessageAuthor，model / logo / provider 描述当前回复身份；logo 为装饰，名称和提供商保留可见文本。身份在正文上方独立于操作行显示。actionsVisibility 默认 auto，在悬停、聚焦或触屏时显示；always 保持操作可见。
+- 所有子组件均可独立使用，不需要 ChatThread Provider。基础样式复用 Button、Tooltip、Textarea 和图标系统。
+- `ChatScrollToLatest` 统一会话的“回到最新内容”入口，复用 Button 的 tertiary / sm 与 arrow-down 前置图标，外层为底部居中、16px 间距的定位层。`locale` 默认 en，以 zh 开头时使用中文；`label` 可覆盖文案。`className` 只用于外层定位，例如在线程输入区上方使用 bottom-full pb-4。`onClick` 必填，disabled 可选；按钮固定 type=button，避免提交输入表单。宿主负责显隐、滚动和恢复跟随；使用导出的 `CHAT_SCROLL_FOLLOW_THRESHOLD`（24px）判断是否仍在最新位置。Chat Thread、Chat Workspace、Markdown 回复示例、Agent Trace 与 Agent Session Detail 复用同一入口。
+- `files` 保留本地 File[] 的现有能力。历史文件使用 `attachments` 插槽与 ChatMessageAttachments；描述包含 id、name，可选 size（字节）、type 和 url。URL 允许 HTTP(S)、blob 或相对地址。align 默认为 end；label 提供列表无障碍名称。
+- ChatMessageAction 的 label 为必填无障碍名称；pressed 控制切换操作状态。
+- ChatMessageCopy 复制原始 text，以 live status 播报成功或失败，支持 disabled 与 labels（copy、copied、copyFailed）。
+- ChatMessageEditor 接受 text、onSave、onCancel；onSave 成功或未改动时调用 onCancel 关闭，失败保留草稿。disabled 冻结输入与保存，保留现有草稿，仍可取消；用于宿主变更历史期间阻止提交。Enter 保存、Shift+Enter 换行、Escape 取消；输入法组词不会提交。labels 可覆盖 edit、cancel、save、saveFailed。
+- ChatMessageBranchSwitch 接受 branch（从零开始的 index、count、onChange）；宿主保存版本内容及其后继。无效范围或少于两个版本时隐藏。disabled 冻结切换；labels 可覆盖 previous、next 与 version（接收从一开始的序号及总数）。
+- 富文本使用独立 Markdown；不在 ChatMessage 内隐式解析字符串。actionsVisibility 默认为 auto，触屏始终可见；最新回复可设 always。
+- assistant 消息及正文使用父级/article 的 100% 可用宽度，不按内容收缩或复用 user 的 80% 气泡上限。表格、CodeBlock、CodeDiff 等块内容在此宽度内自适应；超长代码和宽表保留内部横向滚动。会话整体阅读宽度由宿主控制，Block 无需另加消息内部宽度覆盖。
+- 回复身份通过 `header={<ChatMessageAuthor model="Sonnet 5.5" logo={modelLogo} provider="Anthropic" />}` 插槽组合。模型 Logo 为装饰信息，名称为 medium 字重、provider 为灰色；缺失字段省略，长名称自动换行。header 在生成与悬停之外持续可见，样式统一由 ChatMessageAuthor 管理。
+- 回复统计通过 `meta={<ChatMessageMeta metrics={metrics} />}` 插槽组合，ChatMessage 统一维护它与 actions 的间距、换行和显隐。业务或 Block 不另写元信息页脚样式，不在指标前重复模型名称。
+- 回复错误、停止提示与编辑保存失败复用 InlineNotice / InlineNoticeContent。错误使用 emphasized + danger，并显式设置 role=alert；静态或停止提示保持静默。请求、重试与状态切换由宿主负责。
+- ChatMessageAttachment 渲染单个附件卡片，ChatMessageAttachments 渲染附件列表；两者均接受本地 File 与历史 ChatMessageFile，预览、文件名和大小共用一个边框。InputMessage 同样使用该卡片，保留移除操作。FileThumbnail 的 bordered=false 用于由外层卡片统一承载边框。
+- ChatMessageMeta 接受 metrics、locale 与 labels，并保留可选 model 用于自定义页脚信息；普通回复的模型身份使用 ChatMessageAuthor。metrics 包含 ttftMs、inputTokens、outputTokens、durationMs；时间以毫秒传入，token 使用非负整数。token 自动换算为 k、M、B，最多保留一位小数，悬停和辅助技术提供带千分位的完整数值。指标窄屏自动换行；缺失或无效指标省略，保留 0。这些数据与模型身份属于该次回复，不随模型选择器改变。
 
-actions 可组合 ChatMessageCopy 或 ChatMessageAction。ChatMessageCopy 的 text 是要写入剪贴板的原文，labels 本地化 copy / copied / copyFailed，复制结果通过 status 宣读；正文变化或组件卸载后忽略旧复制请求。ChatMessageAction 复用带 Tooltip 的图标按钮，label 提供名称，支持 pressed 与 disabled，明确 type=button。宿主拥有生成状态和操作是否出现。
+## Ownership
 
-ChatScrollToLatest 复用 Button tertiary / sm，向下箭头与文案同排，绝对定位于宿主底部居中、间距 16px。宿主提供 relative 定位区域，并负责显示条件、滚动、焦点和恢复跟随。组件明确 type=button，不提交外层表单；disabled 禁止点击。locale 默认 en，zh 使用“回到最新内容”，其他语言使用“Scroll to latest”；label 可覆盖，className 仅用于浮层定位。CHAT_SCROLL_FOLLOW_THRESHOLD 为共享的 24px 最新位置阈值。
+组件只负责消息呈现与局部编辑交互。模型请求、反馈写入、版本存储、恢复和历史树属于宿主。
 
 
 ---
@@ -3761,6 +3896,8 @@ import { CodeWorkerProvider } from "@/components/ui/code-block/worker";
 - `toolbar` 默认开启，提供原文复制和 scroll/wrap 切换。通过 `messages` 本地化按钮文本。
 - `selectedLines` 使用从 1 开始的源码行号。受控选区由调用方保存。
 - `CodeDiff` 传 `oldFile` 与 `newFile`，或传已经解析的 `fileDiff`，不要同时混用两组输入。
+- 默认 Zeron 外观下，组件族共用圆角、边框、背景及文件头样式。默认文件头高 36px、水平内边距 12px、字号使用 text-label，正文使用 13px / 24px 代码排版，文件头与正文无额外间距。CodeBlock 工具栏和 CodeDiff 文件头共用内部 Tailwind 样式；Patch、Conflict、Stream 和 CodeView 的引擎文件头通过组件内部 Shadow DOM 样式对齐同一规范。保留文件路径、重命名路径、增删行数及已有 header 回调；CodeView 的默认虚拟化尺寸同步匹配此规范，显式 itemMetrics 仍优先。
+- 代码正文继续由 Shadow DOM 引擎的专用 CSS 管理高亮、行号和差异布局。chat-thread、Markdown 及文档只负责外部排列和业务数据，直接使用默认组件外观；不要覆盖内部选择器或在调用处重复圆角、边框、背景。
 - `CodePatch` 接受 patch 字符串；无效 patch 的业务提示应由调用方结合错误边界呈现。
 - 大列表使用 `CodeView` 的稳定 item id/version，不要把全部文件手工映射成独立 CodeBlock。
 
@@ -4657,6 +4794,54 @@ export function Example() {
 
 
 Chat Markdown Block 组合单条回复、身份与复制操作。统一正文使用 text-body 的配套字号与行高（14px / 20px），表格使用 bordered / md（14px）。完整排版规范见 chat-markdown-01 指南。
+
+
+---
+
+---
+schema_version: 1
+name: message-navigation
+kind: component
+status: stable
+summary: 紧凑的消息短线导航，支持整轮预览、当前位置和键盘选择。
+package_import: "@zeron/ui/message-navigation"
+registry_import: "@/components/ui/message-navigation"
+source: packages/ui/src/components/message-navigation.tsx
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [popover, button, tooltip, chat-message, chat-thread-01]
+---
+
+# MessageNavigation
+
+```bash
+npx zeron-ui add message-navigation
+```
+
+```tsx
+import { useState } from "react";
+import { MessageNavigation } from "@zeron/ui/message-navigation";
+
+export function Example() {
+  const [activeId, setActiveId] = useState("first");
+  const [bookmarked, setBookmarked] = useState(false);
+  return <MessageNavigation label="消息" activeId={activeId} onSelect={setActiveId}
+    onBookmarkChange={(_id, next) => setBookmarked(next)}
+    bookmarkLabels={{ bookmark: "收藏消息", unbookmark: "取消收藏", bookmarked: "已收藏" }}
+    items={[{ id: "first", label: "如何优化搜索？", description: "输入即时更新，请求使用防抖。", bookmarked }]} />;
+}
+```
+
+- items 使用唯一稳定 id、label，可选 description 与 actions；摘要支持 ReactNode，保持简短。actions 用于额外宿主操作。
+- 提供 onBookmarkChange 后预览右上角显示标准 Button iconOnly 收藏按钮，并复用 Tooltip。item.bookmarked 完全受控，点击只发出 (id, nextBookmarked)，外部传回新值后才改变显示，不关闭预览或选择消息；省略回调时隐藏按钮。item.bookmarkDisabled 支持保存期间禁用。bookmarkLabels 提供按钮名称及取消收藏提示，bookmarkIcon 可替换默认图标。组件不处理持久化、失败提示或乐观更新。
+- activeId 标记当前阅读位置，onSelect 只发出 ID。宿主持有对话数据、滚动容器和跳转后的焦点；组件不会监听页面全局滚动。
+- 紧凑短线具有不同的标题长度档位，当前项与预览项变亮、变长；不是数量图表。组件拥有短线、焦点和预览样式，调用者只设置外部位置、最大高度和响应式显隐。
+- item.bookmarked=true 时，短线使用品牌色，并在内侧增加圆点，读屏通过 aria-describedby 获知已收藏。当前项及预览项仍会加长，收藏色和圆点同时保留；左右外边缘保持原有对齐。标识仅跟随外部状态，在无 onBookmarkChange 的只读导航中也生效。bookmarkLabels.bookmarked 本地化状态描述；不要通过宿主样式覆盖短线或另加收藏标识。
+- align 默认 right，右侧导航的短线共用右边缘；左侧导航设置 align="left"，短线共用左边缘。此属性仅影响短线，不改变预览方向；previewSide 继续独立控制浮层。
+- 悬停或聚焦显示左侧问题标题和回复摘要，标题单行省略、摘要最多三行。复用 Popover 的表面、定位、碰撞与关闭行为。previewSide 可改为 right。
+- 导航只有一个 Tab 停靠点。上下方向键、Home、End 移动焦点，Enter / Space 选择，Escape 关闭预览。长列表仅滚动自身以显示当前项，不调用 scrollIntoView 滚动宿主。
+- label 和 getItemLabel 提供本地化可访问名称，后者索引从零开始。空数据不渲染，不自行选择不存在的 activeId。
+- chat-thread-01 使用此组件组合用户轮次与后续回复的预览。窄屏是否展示由宿主负责。
 
 
 ---

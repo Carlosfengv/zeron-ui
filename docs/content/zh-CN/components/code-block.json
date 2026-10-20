@@ -2,6 +2,7 @@
   "codeBlock": {
     "description": "由 Zeron 自有源码维护的代码组件，覆盖高亮文件、差异、Patch、合并冲突、流式、SSR、Worker 与编辑。",
     "singleFile": "单文件",
+    "styleContract": "单文件、Diff、Patch、冲突、流式与虚拟列表共用默认外观：36px 文件头、12px 水平内边距，以及 13px / 24px 代码排版。文件头紧贴正文，明暗主题跟随当前页面。",
     "annotationExample": "该行返回对用户可见的状态。",
     "interactionHint": "点击行号选择代码行，点击 token 查看交互结果。",
     "selectedLine": "已选择第 {line} 行",
@@ -26,7 +27,7 @@
     "apiReference": "API 参考",
     "fileDescription": "文件名、语言、原始内容及可选缓存键。",
     "optionsDescription": "高亮、行号、溢出、主题、选区和渲染配置。",
-    "appearanceDescription": "应用到代码表面的视觉预设。",
+    "appearanceDescription": "代码组件族共用的视觉预设，统一文件头、字体、间距、圆角、边框与背景。Zeron 外观跟随页面语义 token，文件头与正文无额外间距。",
     "themeDescription": "当前代码表面的明暗模式解析方式。",
     "toolbarDescription": "显示复制和换行方式工具栏；可用自定义头部替换。",
     "messagesDescription": "覆盖工具栏、复制状态和无障碍标签文案。",

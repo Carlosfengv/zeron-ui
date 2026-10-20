@@ -8,6 +8,7 @@ import { cn } from '#system/utils';
 
 import { getCodeBlockStyle } from './code-block-theme';
 import type { CodeBlockPresentationProps } from './code-block-types';
+import { codeBlockSurfaceClassName } from './code-block-styles';
 
 export type CodePatchProps<LAnnotation = undefined, Caret = undefined> =
   PatchDiffProps<LAnnotation, Caret> & CodeBlockPresentationProps;
@@ -24,7 +25,8 @@ export function CodePatch<LAnnotation = undefined, Caret = undefined>({
       {...props}
       className={cn(
         appearance === 'zeron' && 'zeron-code-block',
-        'block overflow-hidden rounded-xl border border-border bg-surface-floating',
+        'block overflow-hidden',
+        codeBlockSurfaceClassName,
         className
       )}
       style={getCodeBlockStyle(themeMode, style)}

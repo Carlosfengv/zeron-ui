@@ -21,6 +21,10 @@
     },
     {"path": "blocks/chat-markdown-01.md", "itemId": "block:chat-markdown-01"},
     {
+      "path": "blocks/chat-thread-01.md",
+      "itemId": "block:chat-thread-01"
+    },
+    {
       "path": "blocks/cluster-environment-detail-01.md",
       "itemId": "block:cluster-environment-detail-01"
     },
@@ -217,7 +221,10 @@
       "path": "components/chart.md",
       "itemId": "component:chart"
     },
-    {"path": "components/chat-message.md", "itemId": "component:chat-message"},
+    {
+      "path": "components/chat-message.md",
+      "itemId": "component:chat-message"
+    },
     {
       "path": "components/code-block.md",
       "itemId": "component:code-block"
@@ -271,6 +278,10 @@
       "itemId": "component:live-line-chart"
     },
     {"path": "components/markdown.md", "itemId": "component:markdown"},
+    {
+      "path": "components/message-navigation.md",
+      "itemId": "component:message-navigation"
+    },
     {
       "path": "components/metric-card.md",
       "itemId": "component:metric-card"

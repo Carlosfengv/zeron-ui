@@ -12,6 +12,8 @@ import { cn } from '#system/utils';
 
 import { getCodeBlockStyle } from './code-block-theme';
 import type { CodeBlockPresentationProps } from './code-block-types';
+import { CodeDiffHeader } from './code-diff-header';
+import { codeBlockSurfaceClassName } from './code-block-styles';
 
 type CodeDiffBaseProps<LAnnotation, Caret> = DiffBasePropsReact<
   LAnnotation,
@@ -32,15 +34,32 @@ export function CodeDiff<LAnnotation = undefined, Caret = undefined>({
   className,
   style,
   fileDiff,
+  renderCustomHeader,
+  renderHeaderPrefix,
+  renderHeaderFilenameSuffix,
+  renderHeaderMetadata,
   ...props
 }: CodeDiffProps<LAnnotation, Caret>): React.JSX.Element {
+  const defaultHeader = appearance === 'zeron' && renderCustomHeader == null;
   const presentation = {
     className: cn(
       appearance === 'zeron' && 'zeron-code-block',
-      'block overflow-hidden rounded-xl border border-border bg-surface-floating',
+      'block overflow-hidden',
+      codeBlockSurfaceClassName,
       className
     ),
     style: getCodeBlockStyle(themeMode, style),
+    renderCustomHeader: defaultHeader
+      ? (diff: FileDiffMetadata) => <CodeDiffHeader
+          fileDiff={diff}
+          prefix={renderHeaderPrefix?.(diff)}
+          suffix={renderHeaderFilenameSuffix?.(diff)}
+          metadata={renderHeaderMetadata?.(diff)}
+        />
+      : renderCustomHeader,
+    renderHeaderPrefix: defaultHeader ? undefined : renderHeaderPrefix,
+    renderHeaderFilenameSuffix: defaultHeader ? undefined : renderHeaderFilenameSuffix,
+    renderHeaderMetadata: defaultHeader ? undefined : renderHeaderMetadata,
   };
 
   if (fileDiff != null) {

@@ -2,6 +2,26 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "component:message-navigation",
+      "type": "registry",
+      "key": "message-navigation",
+      "aliases": [
+        "message-navigation"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
+      "id": "block:chat-thread-01",
+      "type": "registry",
+      "key": "chat-thread-01",
+      "aliases": [
+        "chat-thread-01"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:chat-markdown-01",
       "type": "registry",
       "key": "chat-markdown-01",

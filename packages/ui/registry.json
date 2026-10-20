@@ -4,6 +4,31 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "message-navigation",
+      "type": "registry:ui",
+      "title": "Message Navigation",
+      "description": "Compact conversation markers with current-position emphasis, rich hover previews and keyboard navigation.",
+      "registryDependencies": [
+        "surfaces",
+        "popover",
+        "button",
+        "tooltip",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/message-navigation.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/message-navigation.tsx"
+        }
+      ],
+      "dependencies": [
+        "@hugeicons/core-free-icons",
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "markdown",
       "type": "registry:ui",
       "title": "Markdown",
@@ -1932,10 +1957,10 @@
         "icon-context",
         "surface-context",
         "surface-classes",
-        "file-thumbnail",
         "button",
         "tooltip",
-        "container"
+        "container",
+        "chat-message"
       ],
       "files": [
         {
@@ -1993,7 +2018,7 @@
       "name": "chat-message",
       "type": "registry:ui",
       "title": "Chat Message",
-      "description": "A single chat transcript entry with baked-in entrance and layout motion. Right-aligned accent bubble for the user, left-aligned muted bubble for the assistant, with optional file attachments. Adapts to the global shape setting.",
+      "description": "Composable chat messages with local and persisted attachments, accessible actions, clipboard feedback, asynchronous editing and controlled version selection.",
       "dependencies": [
         "framer-motion",
         "tw-animate-css"
@@ -2005,8 +2030,10 @@
         "use-touch-primary",
         "file-thumbnail",
         "button",
-        "icon-context",
-        "tooltip"
+        "tooltip",
+        "textarea",
+        "inline-notice",
+        "icon-context"
       ],
       "files": [
         {
@@ -2015,19 +2042,34 @@
           "target": "components/ui/chat-message.tsx"
         },
         {
-          "path": "packages/ui/src/components/chat-message/scroll-to-latest.tsx",
-          "type": "registry:ui",
-          "target": "components/ui/chat-message/scroll-to-latest.tsx"
-        },
-        {
           "path": "packages/ui/src/components/chat-message/actions.tsx",
           "type": "registry:ui",
           "target": "components/ui/chat-message/actions.tsx"
         },
         {
+          "path": "packages/ui/src/components/chat-message/attachments.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-message/attachments.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-message/editor.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-message/editor.tsx"
+        },
+        {
           "path": "packages/ui/src/components/chat-message/author.tsx",
           "type": "registry:ui",
           "target": "components/ui/chat-message/author.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-message/scroll-to-latest.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-message/scroll-to-latest.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-message/meta.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-message/meta.tsx"
         }
       ]
     },
@@ -5375,6 +5417,11 @@
           "target": "components/ui/code-block/code-block-messages.ts"
         },
         {
+          "path": "packages/ui/src/components/code-block/code-block-styles.ts",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-block-styles.ts"
+        },
+        {
           "path": "packages/ui/src/components/code-block/code-block-theme.ts",
           "type": "registry:ui",
           "target": "components/ui/code-block/code-block-theme.ts"
@@ -5398,6 +5445,11 @@
           "path": "packages/ui/src/components/code-block/code-conflict.tsx",
           "type": "registry:ui",
           "target": "components/ui/code-block/code-conflict.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/code-block/code-diff-header.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/code-block/code-diff-header.tsx"
         },
         {
           "path": "packages/ui/src/components/code-block/code-diff.tsx",

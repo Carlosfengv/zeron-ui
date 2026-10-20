@@ -5,7 +5,9 @@
     "inContext": "上下文用法",
     "apiReference": "API 参考",
     "orientationProp": "设置分隔线的视觉方向和无障碍方向语义。",
-    "classNameProp": "应用到分隔线间距容器的附加类名；可使用 after: 工具类调整线条。",
+    "classNameProp": "应用于分隔线间距容器的外部布局类名；线条颜色通过 tone 统一选择。",
+    "toneProp": "default 使用标准 border 令牌，subtle 使用较弱的 border-subtle 令牌；不改变方向和布局间距。",
+    "subtle": "弱分隔线",
     "horizontal": "横向",
     "vertical": "纵向"
   }

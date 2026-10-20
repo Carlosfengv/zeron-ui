@@ -11,6 +11,7 @@ import { resolveCodeBlockMessages } from './code-block-messages';
 import { getCodeBlockStyle } from './code-block-theme';
 import { CodeBlockToolbar } from './code-block-toolbar';
 import type { CodeBlockProps } from './code-block-types';
+import { codeBlockSurfaceClassName } from './code-block-styles';
 
 export function CodeBlock<LAnnotation = undefined, Caret = undefined>({
   appearance = 'zeron',
@@ -88,7 +89,8 @@ export function CodeBlock<LAnnotation = undefined, Caret = undefined>({
       renderCustomHeader={toolbarRenderer}
       className={cn(
         appearance === 'zeron' && 'zeron-code-block',
-        'block overflow-hidden rounded-xl border border-border bg-surface-floating',
+        'block overflow-hidden',
+        codeBlockSurfaceClassName,
         className
       )}
       style={getCodeBlockStyle(themeMode, style)}

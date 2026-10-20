@@ -1,75 +1,64 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChatMessage } from "@zeron/ui/chat-message";
+import { ChatMessage, ChatMessageCopy } from "@zeron/ui/chat-message";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { MessagePartsExample } from "./message-parts-example";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { VariantPlayground } from "@docs/components/playground/variant-playground";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
-import { useIcon } from "@zeron/icons/context";
-import { cn } from "@zeron/ui/system/utils";
 import { useTranslations } from "next-intl";
 
-// Icon-only action buttons for the hover-revealed meta row. Assistant replies
-// get copy + regenerate; user messages get copy + edit. Illustrative only —
-// the buttons carry no behaviour in the docs demo.
-function MessageActions({ from }: { from: "user" | "assistant" }) {
+function MessageActions({ text }: { text: string }) {
   const t = useTranslations("chatMessage");
-  const CopyIcon = useIcon("copy");
-  const SecondIcon = useIcon(from === "user" ? "pencil" : "rotate-ccw");
-  const btn = cn(
-    "inline-flex size-6 items-center justify-center text-fg-muted/60 hover:text-fg-default hover:bg-hover transition-colors duration-fast cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-focus-ring",
-    "rounded-lg"
-  );
-  return (
-    <>
-      <button type="button" aria-label={t("copy")} className={btn}>
-        <CopyIcon size={13} strokeWidth={1.5} />
-      </button>
-      <button
-        type="button"
-        aria-label={from === "user" ? t("edit") : t("regenerate")}
-        className={btn}
-      >
-        <SecondIcon size={13} strokeWidth={1.5} />
-      </button>
-    </>
-  );
+  return <ChatMessageCopy text={text} labels={{ copy: t("copy"), copied: t("copied"), copyFailed: t("copyFailed") }} />;
 }
 
-const conversationCode = `import { ChatMessage } from "./components";
-import { useIcon } from "@zeron/icons/context";
+const conversationCode = `import { ChatMessage, ChatMessageCopy } from "@/components/ui/chat-message";
 
-const Copy = useIcon("copy");
-const RotateCcw = useIcon("rotate-ccw");
+<ChatMessage from="user" time="Wednesday 6:06 PM" actions={<ChatMessageCopy text="What does good design mean?" />}>
+  What does good design mean?
+</ChatMessage>
+<ChatMessage from="assistant" actions={<ChatMessageCopy text="Good design makes a task feel effortless." />}>
+  Good design makes a task feel effortless.
+</ChatMessage>`;
 
-// Timestamp + icon buttons are revealed on hover; their height is always
-// reserved, so the gap between bubbles never shifts. The timestamp is a
-// user-message affordance — assistant replies show their actions alone.
-const actions = (
-  <>
-    <button aria-label="Copy"><Copy size={13} strokeWidth={1.5} /></button>
-    <button aria-label="Regenerate"><RotateCcw size={13} strokeWidth={1.5} /></button>
-  </>
-);
+const partsCode = `import { ChatMessage, ChatMessageAction, ChatMessageAttachments,
+  ChatMessageBranchSwitch, ChatMessageCopy, ChatMessageEditor, ChatMessageAuthor, ChatMessageMeta } from "@/components/ui/chat-message";
+import ClaudeColor from "@lobehub/icons/es/Claude/components/Color";
 
-<div className="flex flex-col gap-2">
-  <ChatMessage from="user" time="Wednesday 6:06 PM" actions={actions}>
-    What does "good design" actually mean? Everyone says it, no one defines it.
-  </ChatMessage>
-  <ChatMessage from="assistant" actions={actions}>
-    Good design is mostly invisible — you only notice it when it's missing. It's less about how something looks and more about how effortlessly it lets you do what you came to do.
-  </ChatMessage>
-  <ChatMessage from="user" time="Wednesday 6:07 PM" actions={actions}>
-    So function over form?
-  </ChatMessage>
-  <ChatMessage from="assistant" actions={actions}>
-    Not quite. Form is part of function — something that feels good to use is, in a real sense, working better. The split between the two is mostly a myth.
-  </ChatMessage>
-  <ChatMessage from="user" time="Wednesday 6:08 PM" actions={actions}>
-    That reframes it completely.
-  </ChatMessage>
-</div>`;
+// The host owns text, version contents, persistence and editor visibility.
+<ChatMessage from="user" actionsVisibility="always"
+  attachments={<ChatMessageAttachments files={attachments} />}
+  actions={<>
+    <ChatMessageCopy text={text} />
+    <ChatMessageAction label="Edit" onClick={() => setEditing(true)}><EditIcon /></ChatMessageAction>
+    <ChatMessageBranchSwitch branch={{ index, count: versions.length, onChange: setIndex }} />
+  </>}>
+  {text}
+</ChatMessage>
+
+{editing && <ChatMessageEditor text={text} onSave={saveMessage} onCancel={() => setEditing(false)} />}
+
+<ChatMessage from="assistant" actionsVisibility="always"
+  header={<ChatMessageAuthor model="Sonnet 5.5" logo={<ClaudeColor size={16} />} provider="Anthropic" />}
+  actions={<ChatMessageCopy text={reply} />}
+  meta={<ChatMessageMeta metrics={metrics} />}>
+  {reply}
+</ChatMessage>`;
+
+const statusCode = `import { ChatMessage } from "@zeron/ui/chat-message";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+
+<ChatMessage from="assistant">
+  {partialReply}
+  <div className="mt-3">
+    <InlineNotice role="alert" variant="emphasized" tone="danger">
+      <InlineNoticeContent>{error}</InlineNoticeContent>
+    </InlineNotice>
+  </div>
+</ChatMessage>`;
 
 const rolesCode = `import { ChatMessage } from "./components";
 
@@ -93,18 +82,15 @@ const chatMessageProps: PropDef[] = [
   { name: "files", type: "File[]", description: "Optional attachments rendered as square thumbnails above the bubble. Images use object-cover; PDFs render their first page via pdfjs." },
   { name: "thumbnailSize", type: "number", default: "64", description: "Side length (in pixels) of each attachment thumbnail." },
   { name: "className", type: "string", description: "Merged onto the outer motion wrapper. Useful for tweaking max-width or spacing." },
+  { name: "attachments", type: "ReactNode", description: "Custom attachment content, including persisted remote files." },
+  { name: "actionsVisibility", type: '"auto" | "always"', default: '"auto"', description: "Keep the latest reply actions visible." },
+  { name: "meta", type: "ReactNode", description: "Additional metadata beside actions, with shared spacing, wrapping and visibility." },
+  { name: "header", type: "ReactNode", description: "Persistent identity above the message content, composed with ChatMessageAuthor." },
 ];
 
 export default function ChatMessageDoc() {
   const t = useTranslations("chatMessage");
-  const localizedProps = [
-    ...chatMessageProps.map((prop, index) => ({ ...prop, description: t(`p${index}`) })),
-    { name: "ChatScrollToLatest", type: "onClick / locale? / label? / disabled? / className?", description: t("latestProp") },
-    { name: "header", type: "ReactNode", description: t("headerProp") },
-    { name: "actionsVisibility", type: '"auto" | "always"', default: '"auto"', description: t("actionsVisibilityProp") },
-    { name: "ChatMessageAuthor", type: "model? / logo? / provider?", description: t("authorProp") },
-    { name: "ChatMessageCopy", type: "text / disabled? / labels?", description: t("copyProp") },
-  ];
+  const localizedProps = chatMessageProps.map((prop, index) => ({ ...prop, description: t(`p${index}`) }));
   // A real File so the attachments demo renders an actual thumbnail. Fetched
   // from the public profile image at mount and wrapped as a File.
   const [sampleFiles, setSampleFiles] = useState<File[]>([]);
@@ -138,7 +124,7 @@ export default function ChatMessageDoc() {
               value: "conversation",
               label: "Conversation",
               code: conversationCode,
-              preview: <div className="w-full max-w-xl flex flex-col gap-2"><ChatMessage from="user" time="Wednesday 6:06 PM" actions={<MessageActions from="user" />}>What does good design actually mean?</ChatMessage><ChatMessage from="assistant" actions={<MessageActions from="assistant" />}>Good design is mostly invisible — you notice it when it is missing.</ChatMessage></div>,
+              preview: <div className="w-full max-w-xl flex flex-col gap-2"><ChatMessage from="user" time="Wednesday 6:06 PM" actions={<MessageActions text={"What does good design actually mean?"} />}>What does good design actually mean?</ChatMessage><ChatMessage from="assistant" actions={<MessageActions text={"Good design is mostly invisible — you notice it when it is missing."} />}>Good design is mostly invisible — you notice it when it is missing.</ChatMessage></div>,
             },
             {
               value: "roles",
@@ -156,14 +142,14 @@ export default function ChatMessageDoc() {
             <ChatMessage
               from="user"
               time="Wednesday 6:06 PM"
-              actions={<MessageActions from="user" />}
+              actions={<MessageActions text={"What does “good design” actually mean? Everyone says it, no one defines it."} />}
             >
               What does &ldquo;good design&rdquo; actually mean? Everyone says
               it, no one defines it.
             </ChatMessage>
             <ChatMessage
               from="assistant"
-              actions={<MessageActions from="assistant" />}
+              actions={<MessageActions text={"Good design is mostly invisible — you only notice it when it’s missing. It’s less about how something looks and more about how effortlessly it lets you do what you came to do."} />}
             >
               Good design is mostly invisible — you only notice it when it&apos;s
               missing. It&apos;s less about how something looks and more about
@@ -172,13 +158,13 @@ export default function ChatMessageDoc() {
             <ChatMessage
               from="user"
               time="Wednesday 6:07 PM"
-              actions={<MessageActions from="user" />}
+              actions={<MessageActions text={"So function over form?"} />}
             >
               So function over form?
             </ChatMessage>
             <ChatMessage
               from="assistant"
-              actions={<MessageActions from="assistant" />}
+              actions={<MessageActions text={"Not quite. Form is part of function — something that feels good to use is, in a real sense, working better. The split between the two is mostly a myth."} />}
             >
               Not quite. Form is part of function — something that feels good to
               use is, in a real sense, working better. The split between the two
@@ -187,7 +173,7 @@ export default function ChatMessageDoc() {
             <ChatMessage
               from="user"
               time="Wednesday 6:08 PM"
-              actions={<MessageActions from="user" />}
+              actions={<MessageActions text={"That reframes it completely."} />}
             >
               That reframes it completely.
             </ChatMessage>
@@ -217,8 +203,43 @@ export default function ChatMessageDoc() {
         </ComponentPreview>
       </DocSection>
 
+      <DocSection title={t("parts")}>
+        <p className="mb-3 text-body text-fg-muted">{t("partsBody")}</p>
+        <ComponentPreview code={partsCode}><MessagePartsExample /></ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("statuses")}>
+        <p className="mb-3 text-body text-fg-muted">{t("statusesBody")}</p>
+        <ComponentPreview code={statusCode}>
+          <div className="flex w-full max-w-xl flex-col gap-4">
+            <ChatMessage from="assistant">
+              {t("sampleReply")}
+              <div className="mt-3">
+                <InlineNotice role="alert" variant="emphasized" tone="danger">
+                  <InlineNoticeContent>{t("sampleError")}</InlineNoticeContent>
+                </InlineNotice>
+              </div>
+            </ChatMessage>
+            <ChatMessage from="assistant">
+              <InlineNotice><InlineNoticeContent>{t("sampleStopped")}</InlineNoticeContent></InlineNotice>
+            </ChatMessage>
+          </div>
+        </ComponentPreview>
+      </DocSection>
+
       <DocSection title={t("apiReference")}>
         <PropsTable props={localizedProps} />
+        <h3 className="mb-2 mt-6 text-body font-semibold">{t("partsApi")}</h3>
+        <PropsTable props={[
+          { name: "ChatMessageAction", type: "label / children / onClick / pressed? / disabled?", description: t("actionProp") },
+          { name: "ChatMessageCopy", type: "text / disabled? / labels?", description: t("copyProp") },
+          { name: "ChatMessageAttachments", type: 'files: readonly (ChatMessageFile | File)[] / thumbnailSize? / align?: "start" | "end" / label?', description: t("filesProp") },
+          { name: "ChatMessageMeta", type: "model? / metrics? / locale? / labels?", description: t("metaProp") },
+          { name: "ChatMessageAuthor", type: "model? / logo? / provider?", description: t("authorProp") },
+          { name: "ChatScrollToLatest", type: "onClick / locale? / label? / disabled? / className?", description: t("latestProp") },
+          { name: "ChatMessageEditor", type: "text / onSave: (text) => void | Promise<void> / onCancel / disabled? / labels?", description: t("editorProp") },
+          { name: "ChatMessageBranchSwitch", type: "branch: ChatMessageBranch / disabled? / labels?", description: t("branchProp") },
+        ]} />
       </DocSection>
     </DocPage>
   );

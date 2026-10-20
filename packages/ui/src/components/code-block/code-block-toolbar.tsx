@@ -12,6 +12,7 @@ import {
   type CodeBlockMessages,
 } from './code-block-messages';
 import type { CodeHighlightState } from '#system/code-engine/types';
+import { codeBlockHeaderClassName } from './code-block-styles';
 
 export interface CodeBlockToolbarProps {
   filename?: string;
@@ -60,6 +61,7 @@ export function CodeBlockToolbar({
   }, []);
   const CopyIcon = useIcon('copy');
   const WrapIcon = useIcon('baseline');
+  const FileIcon = useIcon('file-text');
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>(
     'idle'
   );
@@ -94,14 +96,16 @@ export function CodeBlockToolbar({
 
   return (
     <div
+      data-slot="code-block-toolbar"
       className={cn(
-        'flex min-h-control-lg items-center gap-2 border-b border-border bg-surface-floating px-2',
+        codeBlockHeaderClassName,
         className
       )}
     >
-      <span className="min-w-0 flex-1 truncate text-label font-medium text-fg-default">
-        {filename}
-      </span>
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        {filename != null && <FileIcon aria-hidden className="size-4 shrink-0" />}
+        <bdi title={filename} className="min-w-0 truncate">{filename}</bdi>
+      </div>
       <span
         role="status"
         aria-live="polite"

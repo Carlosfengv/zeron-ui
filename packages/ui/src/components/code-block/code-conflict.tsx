@@ -9,6 +9,7 @@ import { cn } from '#system/utils';
 
 import { getCodeBlockStyle } from './code-block-theme';
 import type { CodeBlockPresentationProps } from './code-block-types';
+import { codeBlockSurfaceClassName } from './code-block-styles';
 
 export type CodeConflictMessages = MergeConflictMessages;
 
@@ -36,7 +37,8 @@ export function CodeConflict<LAnnotation = undefined>({
       options={{ ...options, mergeConflictMessages: messages }}
       className={cn(
         appearance === 'zeron' && 'zeron-code-block',
-        'block overflow-hidden rounded-xl border border-border bg-surface-floating',
+        'block overflow-hidden',
+        codeBlockSurfaceClassName,
         className
       )}
       style={getCodeBlockStyle(themeMode, style)}

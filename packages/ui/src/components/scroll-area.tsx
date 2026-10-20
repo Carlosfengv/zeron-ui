@@ -13,6 +13,8 @@ import {
   useContext,
   type ComponentPropsWithoutRef,
   type ComponentRef,
+  type HTMLAttributes,
+  type Ref,
 } from "react";
 import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area";
 import { cn } from "#system/utils";
@@ -27,8 +29,13 @@ type Orientation = "vertical" | "horizontal" | "both";
 
 interface ScrollAreaProps extends ComponentPropsWithoutRef<"div"> {
   viewportClassName?: string;
+  /** Access to the actual scrolling element on both desktop and touch. */
+  viewportRef?: Ref<HTMLDivElement>;
+  viewportProps?: Omit<HTMLAttributes<HTMLDivElement>, "children" | "className">;
   /** Class applied to the presentation layer that directly wraps the content. */
   contentClassName?: string;
+  /** Props for the content layer; use minWidth: 0 for width-constrained transcripts. */
+  contentProps?: Omit<HTMLAttributes<HTMLDivElement>, "children" | "className">;
   /** Which axes get scrollbars. Defaults to `"vertical"`. */
   orientation?: Orientation;
 }
@@ -42,7 +49,10 @@ const ScrollArea = forwardRef<
       className,
       children,
       viewportClassName,
+      viewportRef,
+      viewportProps,
       contentClassName,
+      contentProps,
       orientation = "vertical",
       ...props
     },
@@ -62,6 +72,7 @@ const ScrollArea = forwardRef<
             {...props}
           >
             <div
+              ref={viewportRef}
               data-slot="scroll-area-viewport"
               className={cn(
                 "size-full rounded-[inherit]",
@@ -71,8 +82,9 @@ const ScrollArea = forwardRef<
                 viewportClassName
               )}
               tabIndex={0}
+              {...viewportProps}
             >
-              {contentClassName ? <div className={contentClassName} role="presentation">{children}</div> : children}
+              {contentClassName || contentProps ? <div className={contentClassName} role="presentation" {...contentProps}>{children}</div> : children}
             </div>
           </div>
         ) : (
@@ -83,12 +95,14 @@ const ScrollArea = forwardRef<
             {...props}
           >
             <ScrollAreaPrimitive.Viewport
+              ref={viewportRef}
               data-slot="scroll-area-viewport"
               className={cn("size-full rounded-[inherit]", viewportClassName)}
+              {...viewportProps}
             >
               {/* Content gives Base UI an intrinsic size to measure
                   horizontal overflow against. */}
-              <ScrollAreaPrimitive.Content className={contentClassName}>
+              <ScrollAreaPrimitive.Content className={contentClassName} {...contentProps}>
                 {children}
               </ScrollAreaPrimitive.Content>
             </ScrollAreaPrimitive.Viewport>

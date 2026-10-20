@@ -119,6 +119,8 @@
     "introductionTitle": "Introduction",
     "introductionDescription": "Why these components feel different.",
     "descriptions": {
+      "chat-thread-01": "Streaming conversations, message versions and checkpoint restoration.",
+      "message-navigation": "Compact turn markers with rich previews, current-position emphasis and keyboard navigation.",
       "appearance-settings-01": "Theme previews, accent colors, interface density and motion preferences.",
       "context-window-01": "Context capacity, cache and content inspection.",
       "fleet-health-01": "Live inference throughput, fleet telemetry and an interactive GPU matrix.",

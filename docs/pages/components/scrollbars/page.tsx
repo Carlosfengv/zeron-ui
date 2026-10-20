@@ -147,6 +147,9 @@ const scrollAreaProps: PropDef[] = [
     description:
       "Classes for the outer container — set the height/width constraint here.",
   },
+  { name: "viewportRef", type: "Ref<HTMLDivElement>", description: "Reference to the actual scrolling viewport on desktop and touch devices." },
+  { name: "viewportProps", type: "HTMLAttributes<HTMLDivElement>", description: "Viewport events, accessibility and keyboard props; className and children remain managed separately." },
+  { name: "contentProps", type: "HTMLAttributes<HTMLDivElement>", description: "Content-layer props. Use style minWidth: 0 for a width-constrained vertical transcript with code or tables." },
 ];
 
 // ---------------------------------------------------------------------------

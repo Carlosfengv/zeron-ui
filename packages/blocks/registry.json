@@ -3,6 +3,88 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "chat-thread-01",
+      "type": "registry:block",
+      "title": "Chat Thread",
+      "description": "Composable streaming conversations with message versions and checkpoint restoration.",
+      "categories": [
+        "application",
+        "ai",
+        "agent"
+      ],
+      "dependencies": [
+        "@hugeicons/react",
+        "@hugeicons/core-free-icons"
+      ],
+      "registryDependencies": [
+        "button",
+        "chat-message",
+        "empty",
+        "icon-context",
+        "inline-notice",
+        "message-navigation",
+        "popover",
+        "scroll-area",
+        "separator",
+        "toast",
+        "tooltip",
+        "utils",
+        "markdown"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/chat-thread-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-thread-01/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-thread-01/chat-thread-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-thread-01/chat-thread-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-thread-01/chat-thread-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-thread-01/chat-thread-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-thread-01/chat-thread-context.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-thread-01/chat-thread-context.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-thread-01/chat-thread-history.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-thread-01/chat-thread-history.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-thread-01/use-thread-scroll.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-thread-01/use-thread-scroll.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-thread-01/chat-thread.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-thread-01/chat-thread.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-thread-01/chat-thread-messages.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-thread-01/chat-thread-messages.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-thread-01/chat-thread-markdown.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/chat-thread-01/chat-thread-markdown.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/chat-thread-01/chat-thread-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/chat-thread-01/chat-thread-demo-data.ts"
+        }
+      ]
+    },
+    {
       "name": "chat-markdown-01",
       "type": "registry:block",
       "title": "Chat Markdown",

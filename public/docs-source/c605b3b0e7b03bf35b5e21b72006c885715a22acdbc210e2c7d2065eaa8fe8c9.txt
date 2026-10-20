@@ -1,0 +1,1474 @@
+export { ChatThread } from "./chat-thread";
+export {
+  ChatAction,
+  ChatAssistantMessage,
+  ChatAttachments,
+  ChatBranchSwitch,
+  ChatCheckpoint,
+  ChatCopy,
+  ChatDivider,
+  ChatEditor,
+  ChatUserMessage,
+} from "./chat-thread-messages";
+export { ChatMarkdown } from "./chat-thread-markdown";
+export { chatThreadEnLabels, chatThreadZhLabels } from "./chat-thread-labels";
+export { splitThreadHistory } from "./chat-thread-history";
+export {
+  createChatThreadDemoData,
+  createChatThreadDemoReply,
+  getChatThreadDemoPath,
+} from "./chat-thread-demo-data";
+export type {
+  ChatThreadDemoMessage,
+  ChatThreadDemoState,
+} from "./chat-thread-demo-data";
+export type {
+  ChatAssistantMessageProps,
+  ChatBranch,
+  ChatCheckpointData,
+  ChatFile,
+  ChatRestoreResult,
+  ChatResponseMetrics,
+  ChatThreadLabels,
+  ChatThreadProps,
+  ChatUserMessageProps,
+} from "./chat-thread-types";
+
+
+"use client";
+
+import { useCallback, useMemo, useRef, useState } from "react";
+import { Button } from "@zeron/ui/button";
+import { ChatScrollToLatest } from "@zeron/ui/chat-message";
+import { Empty, EmptyHeader, EmptyTitle } from "@zeron/ui/empty";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { ScrollArea } from "@zeron/ui/scroll-area";
+import { MessageNavigation } from "@zeron/ui/message-navigation";
+import { Markdown } from "@zeron/ui/markdown";
+import { toast } from "@zeron/ui/toast";
+import { cn } from "@zeron/ui/system/utils";
+import { SurfaceProvider } from "@zeron/ui/system/surface-context";
+import { ThreadContext, type ThreadEntry } from "./chat-thread-context";
+import { chatThreadEnLabels } from "./chat-thread-labels";
+import type { ChatThreadProps } from "./chat-thread-types";
+import { useThreadScroll } from "./use-thread-scroll";
+
+export function ChatThread({
+  children,
+  composer,
+  empty,
+  busy = false,
+  hasOlder = false,
+  loadingOlder = false,
+  onLoadOlder,
+  bookmarkedIds,
+  onBookmarkChange,
+  bookmarkLabels,
+  onRestore,
+  composerRef,
+  labels: overrides,
+  locale = "en-US",
+  className,
+  ...props
+}: ChatThreadProps) {
+  const labels = useMemo(
+    () => ({ ...chatThreadEnLabels, ...overrides }),
+    [overrides],
+  );
+  const [entries, setEntries] = useState<ThreadEntry[]>([]);
+  const [loadPending, setLoadPending] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const [restorePreview, previewRestore] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+  const mutationLock = useRef(false);
+  const loadLock = useRef(false);
+  const olderBusy = loadingOlder || loadPending;
+  const olderBusyRef = useRef(olderBusy);
+  olderBusyRef.current = olderBusy;
+  const scroll = useThreadScroll(entries, children, olderBusy);
+  const isEmpty = entries.length === 0;
+
+  const register = useCallback((entry: ThreadEntry) => {
+    setEntries((current) =>
+      [...current.filter((item) => item.id !== entry.id), entry].sort((a, b) =>
+        a.element.compareDocumentPosition(b.element) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+          ? -1
+          : 1,
+      ),
+    );
+    return () =>
+      setEntries((current) =>
+        current.filter((item) => item.element !== entry.element),
+      );
+  }, []);
+
+  const restore = useCallback(
+    async (id: string, code: boolean) => {
+      if (!onRestore || busy || olderBusy || loadLock.current || mutationLock.current) return false;
+      mutationLock.current = true;
+      setPending(true);
+      try {
+        const result = await onRestore(id, { code });
+        previewRestore(null);
+        // The checkpoint and its focus manager can unmount when the host commits.
+        // Restore editor focus after that cleanup, using the public editor ref.
+        requestAnimationFrame(() => {
+          const textarea = composerRef?.current;
+          textarea?.focus({ preventScroll: true });
+          textarea?.setSelectionRange(
+            textarea.value.length,
+            textarea.value.length,
+          );
+        });
+        const undo = result?.undo;
+        toast.success(
+          labels.restored,
+          undo
+            ? {
+                action: {
+                  label: labels.undo,
+                  dismissOnClick: false,
+                  onClick: async (notification) => {
+                    if (mutationLock.current || loadLock.current || olderBusyRef.current) return;
+                    mutationLock.current = true;
+                    setPending(true);
+                    try {
+                      await undo();
+                      toast.dismiss(notification.id);
+                      toast.success(labels.undone);
+                    } catch {
+                      toast.error(labels.undoFailed);
+                    } finally {
+                      mutationLock.current = false;
+                      setPending(false);
+                    }
+                  },
+                },
+              }
+            : undefined,
+        );
+        return true;
+      } catch {
+        toast.error(labels.restoreFailed);
+        return false;
+      } finally {
+        mutationLock.current = false;
+        setPending(false);
+      }
+    },
+    [onRestore, busy, olderBusy, composerRef, labels],
+  );
+
+  const loadOlder = async () => {
+    if (!onLoadOlder || olderBusy || loadLock.current || mutationLock.current) return;
+    loadLock.current = true;
+    scroll.captureAnchor();
+    setLoadPending(true);
+    setLoadError(false);
+    try {
+      await onLoadOlder();
+    } catch {
+      setLoadError(true);
+    } finally {
+      loadLock.current = false;
+      setLoadPending(false);
+    }
+  };
+
+  const context = useMemo(
+    () => ({
+      labels,
+      locale,
+      busy: busy || olderBusy,
+      pending,
+      entries,
+      restorePreview,
+      previewRestore,
+      register,
+      pin: scroll.pin,
+      restore: onRestore ? restore : undefined,
+    }),
+    [
+      labels,
+      locale,
+      busy,
+      olderBusy,
+      pending,
+      entries,
+      restorePreview,
+      register,
+      scroll.pin,
+      onRestore,
+      restore,
+    ],
+  );
+  const navigationItems = useMemo(() => {
+    const bookmarks = new Set(bookmarkedIds);
+    return entries.flatMap((entry, index) => {
+      if (entry.role !== "user") return [];
+      const next = entries[index + 1];
+      return [{
+        id: entry.id,
+        label: entry.text || labels.conversation,
+        bookmarked: bookmarks.has(entry.id),
+        description: next?.role === "assistant" && next.text
+          ? <Markdown text={next.text.slice(0, 640).split(/\n\s*\n/, 1)[0]} codeVariant="plain" /> : undefined,
+      }];
+    });
+  }, [entries, bookmarkedIds, labels.conversation]);
+
+  return (
+    <ThreadContext.Provider value={context}>
+      <SurfaceProvider role="floating">
+      <div
+        className={cn(
+          "@container/thread relative flex h-full min-h-0 w-full flex-col bg-surface-floating text-fg-default",
+          className,
+        )}
+        data-slot="chat-thread"
+        {...props}
+      >
+        <ScrollArea
+          className={cn("min-h-0 flex-1", isEmpty && "hidden")}
+          contentProps={{ style: { minWidth: 0 } }}
+          onWheelCapture={scroll.onUserIntent}
+          onTouchStartCapture={scroll.onUserIntent}
+          onPointerDownCapture={scroll.onUserIntent}
+          onKeyDownCapture={(event) => {
+            if (
+              [
+                "ArrowUp",
+                "ArrowDown",
+                "PageUp",
+                "PageDown",
+                "Home",
+                "End",
+                " ",
+              ].includes(event.key)
+            )
+              scroll.onUserIntent();
+          }}
+          viewportRef={scroll.bindViewport}
+          viewportClassName="overscroll-contain"
+          viewportProps={{
+            role: "region",
+            "aria-label": labels.conversation,
+            tabIndex: 0,
+            onScroll: scroll.onScroll,
+            style: { overflowAnchor: "none" },
+          }}
+        >
+          <div
+            ref={scroll.bindContent}
+            className="relative mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pb-6 pt-4 @sm/thread:px-8"
+          >
+            {hasOlder && onLoadOlder && (
+              <div className="flex flex-col items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={loadOlder}
+                  disabled={olderBusy || pending}
+                  loading={olderBusy}
+                >
+                  {olderBusy ? labels.loadingOlder : labels.loadOlder}
+                </Button>
+                {loadError && (
+                  <InlineNotice role="alert" variant="emphasized" tone="danger">
+                    <InlineNoticeContent>{labels.loadFailed}</InlineNoticeContent>
+                  </InlineNotice>
+                )}
+              </div>
+            )}
+            <div
+              role="log"
+              aria-label={labels.conversation}
+              aria-live="polite"
+              aria-relevant="additions"
+              aria-busy={busy || olderBusy || pending}
+              className="flex min-w-0 flex-col gap-6"
+            >
+              {children}
+            </div>
+            <div
+              ref={scroll.spacerRef}
+              aria-hidden="true"
+              className="shrink-0"
+            />
+          </div>
+        </ScrollArea>
+        <div
+          className={cn(
+            "items-end justify-center px-6 pb-7 text-center",
+            isEmpty ? "flex flex-1" : "hidden",
+          )}
+        >
+          {empty ?? (
+            <Empty reason="first-use" scope="inline" density="compact">
+              <EmptyHeader><EmptyTitle as="h2">{labels.empty}</EmptyTitle></EmptyHeader>
+            </Empty>
+          )}
+        </div>
+        <div
+          className="relative mx-auto w-full max-w-3xl shrink-0 px-4 pb-4 pt-2 @sm/thread:px-8"
+          data-slot="chat-thread-composer"
+        >
+          {scroll.away && !isEmpty && (
+            <ChatScrollToLatest className="bottom-full pb-4" label={labels.latest} onClick={scroll.latest} />
+          )}
+          {composer}
+        </div>
+        <div aria-hidden="true" className={isEmpty ? "flex-1" : "hidden"} />
+        {navigationItems.length > 0 && (
+          <MessageNavigation
+            label={labels.navigation}
+            activeId={scroll.activeId}
+            onSelect={scroll.jump}
+            onBookmarkChange={onBookmarkChange}
+            bookmarkLabels={bookmarkLabels}
+            getItemLabel={(item, index) => labels.message(index + 1, item.label)}
+            items={navigationItems}
+            className="absolute right-1 top-1/2 z-raised hidden max-h-64 -translate-y-1/2 @3xl/thread:flex"
+          />
+        )}
+      </div>
+      </SurfaceProvider>
+    </ThreadContext.Provider>
+  );
+}
+
+
+import type { HTMLAttributes, ReactNode, RefObject } from "react";
+import type { ChatMessageBranch, ChatMessageFile, ChatMessageMetrics } from "@zeron/ui/chat-message";
+import type { MessageNavigationBookmarkLabels } from "@zeron/ui/message-navigation";
+
+export type ChatFile = ChatMessageFile;
+
+export type ChatBranch = ChatMessageBranch;
+export type ChatResponseMetrics = ChatMessageMetrics;
+
+export interface ChatCheckpointData {
+  id: string;
+  label?: string;
+  files?: readonly string[];
+}
+
+export interface ChatRestoreResult {
+  /** Restore the host's complete snapshot, including draft, files and queue. */
+  undo?: () => void | Promise<void>;
+}
+
+export interface ChatThreadLabels {
+  conversation: string;
+  navigation: string;
+  empty: string;
+  loadOlder: string;
+  loadingOlder: string;
+  loadFailed: string;
+  latest: string;
+  copy: string;
+  copied: string;
+  copyFailed: string;
+  edit: string;
+  cancel: string;
+  save: string;
+  saveFailed: string;
+  retry: string;
+  stopped: string;
+  good: string;
+  bad: string;
+  rated: string;
+  previous: string;
+  next: string;
+  checkpoint: string;
+  restore: string;
+  restoreTitle: string;
+  restoreCode: string;
+  restoreConversation: string;
+  restoring: string;
+  restored: string;
+  restoreFailed: string;
+  undo: string;
+  undone: string;
+  undoFailed: string;
+  streaming: string;
+  message: (index: number, text: string) => string;
+  version: (index: number, count: number) => string;
+  changedFiles: (count: number) => string;
+  restoreImpact: (messages: number, files: number) => string;
+}
+
+export interface ChatThreadProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
+  children?: ReactNode;
+  composer: ReactNode;
+  empty?: ReactNode;
+  busy?: boolean;
+  hasOlder?: boolean;
+  loadingOlder?: boolean;
+  onLoadOlder?: () => void | Promise<void>;
+  /** Logical user-message IDs; the host owns bookmark persistence. */
+  bookmarkedIds?: readonly string[];
+  onBookmarkChange?: (messageId: string, bookmarked: boolean) => void;
+  bookmarkLabels?: Partial<MessageNavigationBookmarkLabels>;
+  /** Resolve only after the host has committed the restore; reject on failure. */
+  onRestore?: (
+    checkpointId: string,
+    options: { code: boolean },
+  ) => void | ChatRestoreResult | Promise<void | ChatRestoreResult>;
+  composerRef?: RefObject<HTMLTextAreaElement | null>;
+  labels?: Partial<ChatThreadLabels>;
+  locale?: string;
+}
+
+export interface ChatUserMessageProps
+  extends Omit<HTMLAttributes<HTMLElement>, "id" | "onChange"> {
+  id: string;
+  text: string;
+  files?: readonly ChatFile[];
+  attachments?: ReactNode;
+  time?: Date;
+  pin?: boolean;
+  branch?: ChatBranch;
+  checkpoint?: ChatCheckpointData;
+  onEdit?: (text: string) => void | Promise<void>;
+}
+
+export interface ChatAssistantMessageProps
+  extends Omit<HTMLAttributes<HTMLElement>, "id" | "children"> {
+  id: string;
+  children?: ReactNode;
+  text?: string;
+  streaming?: boolean;
+  last?: boolean;
+  /** Additional metadata beside the response actions and metrics. */
+  meta?: ReactNode;
+  /** Snapshot of the model used for this response, displayed above its content. */
+  model?: string;
+  modelLogo?: ReactNode;
+  provider?: string;
+  metrics?: ChatResponseMetrics;
+  branch?: ChatBranch;
+  feedback?: "up" | "down" | null;
+  onFeedback?: (feedback: "up" | "down" | null) => void;
+  onRetry?: () => void;
+  error?: string | null;
+  stopped?: boolean;
+}
+
+
+import type { ChatThreadLabels } from "./chat-thread-types";
+
+export const chatThreadEnLabels: ChatThreadLabels = {
+  conversation: "Conversation",
+  navigation: "Messages",
+  empty: "What are we working on?",
+  loadOlder: "Load earlier messages",
+  loadingOlder: "Loading earlier messages…",
+  loadFailed: "Could not load earlier messages. Try again.",
+  latest: "Scroll to latest",
+  copy: "Copy message",
+  copied: "Message copied",
+  copyFailed: "Could not copy. Select and copy the message instead.",
+  edit: "Edit message",
+  cancel: "Cancel",
+  save: "Save and send",
+  saveFailed: "Could not send the edit. Try again.",
+  retry: "Try again",
+  stopped: "Response stopped",
+  good: "Good response",
+  bad: "Bad response",
+  rated: "Feedback updated",
+  previous: "Previous version",
+  next: "Next version",
+  checkpoint: "Checkpoint",
+  restore: "Restore",
+  restoreTitle: "Restore checkpoint?",
+  restoreCode: "Restore conversation and code",
+  restoreConversation: "Conversation only",
+  restoring: "Restoring…",
+  restored: "Checkpoint restored",
+  restoreFailed: "Could not restore the checkpoint. Try again.",
+  undo: "Undo",
+  undone: "Restore undone",
+  undoFailed: "Could not undo the restore. Try again.",
+  streaming: "Streaming response",
+  message: (index, text) => `Message ${index}: ${text}`,
+  version: (index, count) => `Version ${index} of ${count}`,
+  changedFiles: (count) => `${count} ${count === 1 ? "file" : "files"} changed`,
+  restoreImpact: (messages, files) =>
+    `Removes this message and ${Math.max(0, messages - 1)} later messages${files ? `, and reverts ${files} ${files === 1 ? "file" : "files"}` : ""}.`,
+};
+
+export const chatThreadZhLabels: ChatThreadLabels = {
+  conversation: "对话",
+  navigation: "消息导航",
+  empty: "今天一起完成什么？",
+  loadOlder: "加载更早的消息",
+  loadingOlder: "正在加载历史消息…",
+  loadFailed: "历史消息加载失败，请重试。",
+  latest: "回到最新内容",
+  copy: "复制消息",
+  copied: "消息已复制",
+  copyFailed: "复制失败，请选择消息后手动复制。",
+  edit: "编辑消息",
+  cancel: "取消",
+  save: "保存并发送",
+  saveFailed: "编辑发送失败，请重试。",
+  retry: "重试",
+  stopped: "回复已停止",
+  good: "有帮助",
+  bad: "没有帮助",
+  rated: "评价已更新",
+  previous: "上一个版本",
+  next: "下一个版本",
+  checkpoint: "检查点",
+  restore: "恢复",
+  restoreTitle: "恢复到此检查点？",
+  restoreCode: "恢复对话和代码",
+  restoreConversation: "仅恢复对话",
+  restoring: "正在恢复…",
+  restored: "已恢复检查点",
+  restoreFailed: "检查点恢复失败，请重试。",
+  undo: "撤销",
+  undone: "已撤销恢复",
+  undoFailed: "撤销失败，请重试。",
+  streaming: "正在生成回复",
+  message: (index, text) => `消息 ${index}：${text}`,
+  version: (index, count) => `第 ${index} 个版本，共 ${count} 个版本`,
+  changedFiles: (count) => `${count} 个文件已更改`,
+  restoreImpact: (messages, files) =>
+    `将移除此消息及之后的 ${Math.max(0, messages - 1)} 条消息${files ? `，并还原 ${files} 个文件` : ""}。`,
+};
+
+
+"use client";
+
+import { createContext, useContext } from "react";
+import type { ChatCheckpointData, ChatThreadLabels } from "./chat-thread-types";
+
+export interface ThreadEntry {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  element: HTMLElement;
+  checkpoint?: ChatCheckpointData;
+}
+
+export interface ThreadContextValue {
+  labels: ChatThreadLabels;
+  locale: string;
+  busy: boolean;
+  pending: boolean;
+  entries: ThreadEntry[];
+  restorePreview: string | null;
+  register: (entry: ThreadEntry) => () => void;
+  pin: (id: string) => void;
+  previewRestore: (id: string | null) => void;
+  restore?: (id: string, code: boolean) => Promise<boolean>;
+}
+
+export const ThreadContext = createContext<ThreadContextValue | null>(null);
+
+export function useThread() {
+  const context = useContext(ThreadContext);
+  if (!context)
+    throw new Error("Chat messages must be rendered inside ChatThread.");
+  return context;
+}
+
+
+"use client";
+
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type HTMLAttributes,
+} from "react";
+import {
+  ChatMessage,
+  ChatMessageAction as ChatAction,
+  ChatMessageCopy,
+  ChatMessageBranchSwitch,
+  ChatMessageAttachments,
+  ChatMessageEditor,
+  ChatMessageMeta,
+  ChatMessageAuthor,
+} from "@zeron/ui/chat-message";
+import { HugeiconsIcon } from "@hugeicons/react";
+import ThumbsUpIcon from "@hugeicons/core-free-icons/ThumbsUpIcon";
+import ThumbsDownIcon from "@hugeicons/core-free-icons/ThumbsDownIcon";
+import { Button } from "@zeron/ui/button";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { Separator } from "@zeron/ui/separator";
+import {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@zeron/ui/popover";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { useThread } from "./chat-thread-context";
+import type {
+  ChatAssistantMessageProps,
+  ChatBranch,
+  ChatCheckpointData,
+  ChatFile,
+  ChatUserMessageProps,
+} from "./chat-thread-types";
+
+function useMessageEntry(
+  id: string,
+  role: "user" | "assistant",
+  text = "",
+  checkpoint?: ChatCheckpointData,
+) {
+  const context = useThread();
+  const ref = useRef<HTMLElement>(null);
+  const { register } = context;
+  const checkpointRef = useRef(checkpoint);
+  checkpointRef.current = checkpoint;
+  const checkpointKey = JSON.stringify(checkpoint);
+  useLayoutEffect(() => {
+    if (ref.current)
+      return register({
+        id,
+        role,
+        text,
+        element: ref.current,
+        checkpoint: checkpointRef.current,
+      });
+  }, [register, id, role, text, checkpointKey]);
+  const start = context.entries.findIndex(
+    (entry) => entry.id === context.restorePreview,
+  );
+  const index = context.entries.findIndex((entry) => entry.id === id);
+  return { ref, dimmed: start >= 0 && index >= start, context };
+}
+
+// Compatibility adapters keep thread labels at the Block boundary.
+export { ChatMessageAction as ChatAction } from "@zeron/ui/chat-message";
+
+export function ChatCopy({ text }: { text: string }) {
+  const { labels } = useThread();
+  return <ChatMessageCopy text={text} labels={labels} />;
+}
+
+export function ChatBranchSwitch(props: { branch: ChatBranch; disabled?: boolean }) {
+  const { labels } = useThread();
+  return <ChatMessageBranchSwitch {...props} labels={labels} />;
+}
+
+export function ChatAttachments({ files }: { files: readonly ChatFile[] }) {
+  const { labels } = useThread();
+  return <ChatMessageAttachments files={files} label={labels.conversation} />;
+}
+
+export function ChatEditor(props: { text: string; onSave: (text: string) => void | Promise<void>; onCancel: () => void }) {
+  const { labels, busy, pending } = useThread();
+  return <ChatMessageEditor {...props} disabled={busy || pending} labels={labels} />;
+}
+
+export function ChatCheckpoint({
+  messageId,
+  checkpoint,
+}: {
+  messageId: string;
+  checkpoint: ChatCheckpointData;
+}) {
+  const context = useThread();
+  const { labels } = context;
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const restoredRef = useRef(false);
+  const descriptionId = useId();
+  const Pin = useIcon("pin");
+  const index = context.entries.findIndex((entry) => entry.id === messageId);
+  const ownFiles = [...new Set(checkpoint.files ?? [])];
+  const files = [
+    ...new Set(
+      index < 0
+        ? ownFiles
+        : context.entries
+            .slice(index)
+            .flatMap((entry) => entry.checkpoint?.files ?? []),
+    ),
+  ];
+  const affected = index < 0 ? 0 : context.entries.length - index;
+  const { previewRestore } = context;
+  useEffect(() => {
+    if (!open) return;
+    previewRestore(messageId);
+    return () => previewRestore(null);
+  }, [open, messageId, previewRestore]);
+  const canRestore = !!context.restore;
+  return (
+    <div className="flex min-w-0 items-center gap-3 text-label text-fg-muted">
+      <Separator
+        tone="subtle"
+        role="none"
+        className="min-w-3 w-auto flex-1"
+        aria-hidden="true"
+      />
+      <Pin size={12} />
+      <span id={descriptionId} className="min-w-0 truncate">
+        {checkpoint.label ?? labels.checkpoint}
+        {ownFiles.length > 0 && ` · ${labels.changedFiles(ownFiles.length)}`}
+      </span>
+      {canRestore && (
+        <Popover
+          open={open}
+          onOpenChange={(next) => {
+            if (!context.pending) {
+              restoredRef.current = false;
+              setOpen(next);
+            }
+          }}
+        >
+          <PopoverTrigger
+            ref={triggerRef}
+            render={
+              <Button
+                variant="ghost"
+                size="xs"
+                disabled={context.busy || context.pending}
+                aria-label={`${labels.restore}: ${context.entries[index]?.text ?? checkpoint.label ?? labels.checkpoint}`}
+                aria-describedby={descriptionId}
+              >
+                {labels.restore}
+              </Button>
+            }
+          />
+          <PopoverContent
+            align="end"
+            className="max-w-xs"
+            finalFocus={() =>
+              restoredRef.current ? false : triggerRef.current
+            }
+          >
+            <PopoverHeader>
+              <PopoverTitle>{labels.restoreTitle}</PopoverTitle>
+              <PopoverDescription>{labels.restoreImpact(affected, files.length)}</PopoverDescription>
+            </PopoverHeader>
+            {files.length > 0 && (
+              <ul className="my-3 max-h-32 overflow-auto text-label text-fg-muted">
+                {files.map((file) => (
+                  <li key={file} className="break-all font-mono">
+                    {file}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <PopoverFooter className="flex-col items-stretch">
+              {files.length > 0 && (
+                <Button
+                  size="sm"
+                  variant="neutral"
+                  loading={context.pending}
+                  disabled={context.pending}
+                  onClick={async () => {
+                    restoredRef.current = true;
+                    if (await context.restore?.(checkpoint.id, true)) {
+                      setOpen(false);
+                    } else {
+                      restoredRef.current = false;
+                    }
+                  }}
+                >
+                  {context.pending ? labels.restoring : labels.restoreCode}
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant={files.length ? "secondary" : "neutral"}
+                disabled={context.pending}
+                onClick={async () => {
+                  restoredRef.current = true;
+                  if (await context.restore?.(checkpoint.id, false)) {
+                    setOpen(false);
+                  } else {
+                    restoredRef.current = false;
+                  }
+                }}
+              >
+                {labels.restoreConversation}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={context.pending}
+                onClick={() => setOpen(false)}
+              >
+                {labels.cancel}
+              </Button>
+            </PopoverFooter>
+          </PopoverContent>
+        </Popover>
+      )}
+      <Separator
+        tone="subtle"
+        role="none"
+        className="min-w-3 w-auto flex-1"
+        aria-hidden="true"
+      />
+    </div>
+  );
+}
+
+export function ChatUserMessage({
+  id,
+  text,
+  files,
+  attachments,
+  time,
+  pin = false,
+  branch,
+  checkpoint,
+  onEdit,
+  className,
+  ...props
+}: ChatUserMessageProps) {
+  const { ref, dimmed, context } = useMessageEntry(
+    id,
+    "user",
+    text,
+    checkpoint,
+  );
+  const [editing, setEditing] = useState(false);
+  const Edit = useIcon("pencil");
+  const pinMessage = context.pin;
+  useLayoutEffect(() => {
+    if (pin) pinMessage(id);
+  }, [pin, id, pinMessage]);
+  let formattedTime: string | undefined;
+  if (time && Number.isFinite(time.getTime())) {
+    try {
+      formattedTime = new Intl.DateTimeFormat(context.locale, {
+        hour: "numeric",
+        minute: "2-digit",
+      }).format(time);
+    } catch {
+      formattedTime = new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      }).format(time);
+    }
+  }
+  const cancel = () => {
+    setEditing(false);
+    requestAnimationFrame(() => ref.current?.focus({ preventScroll: true }));
+  };
+  const disabled = context.busy || context.pending;
+  return (
+    <article
+      ref={ref}
+      tabIndex={-1}
+      data-thread-message={id}
+      className={cn(
+        "min-w-0 space-y-3 rounded-lg outline-none transition-opacity duration-moderate motion-reduce:transition-none focus-visible:ring-1 focus-visible:ring-focus-ring",
+        dimmed && "opacity-40",
+        className,
+      )}
+      {...props}
+    >
+      {checkpoint && <ChatCheckpoint messageId={id} checkpoint={checkpoint} />}
+      {editing ? (
+        <ChatEditor text={text} onSave={onEdit!} onCancel={cancel} />
+      ) : (
+        <div className="flex flex-col items-end">
+          <ChatMessage
+            from="user"
+            time={formattedTime}
+            attachments={
+              attachments ??
+              (files?.length ? <ChatAttachments files={files} /> : undefined)
+            }
+            actions={
+              <>
+                <ChatCopy text={text} />
+                {onEdit && (
+                  <ChatAction
+                    label={context.labels.edit}
+                    disabled={disabled}
+                    onClick={() => setEditing(true)}
+                  >
+                    <Edit />
+                  </ChatAction>
+                )}
+                {branch && (
+                  <ChatBranchSwitch branch={branch} disabled={disabled} />
+                )}
+              </>
+            }
+          >
+            {text || undefined}
+          </ChatMessage>
+        </div>
+      )}
+    </article>
+  );
+}
+
+export function ChatAssistantMessage({
+  id,
+  children,
+  text,
+  streaming = false,
+  last = false,
+  meta,
+  model,
+  modelLogo,
+  provider,
+  metrics,
+  branch,
+  feedback = null,
+  onFeedback,
+  onRetry,
+  error,
+  stopped = false,
+  className,
+  ...props
+}: ChatAssistantMessageProps) {
+  const { ref, dimmed, context } = useMessageEntry(id, "assistant", text);
+  const [notice, setNotice] = useState("");
+  const Retry = useIcon("rotate-ccw");
+  const disabled = context.busy || context.pending;
+  return (
+    <article
+      ref={ref}
+      tabIndex={-1}
+      data-thread-message={id}
+      className={cn(
+        "min-w-0 rounded-lg outline-none transition-opacity duration-moderate motion-reduce:transition-none focus-visible:ring-1 focus-visible:ring-focus-ring",
+        dimmed && "opacity-40",
+        className,
+      )}
+      {...props}
+    >
+      <ChatMessage
+        from="assistant"
+        actionsVisibility={last || !!error ? "always" : "auto"}
+        header={<ChatMessageAuthor model={model} logo={modelLogo} provider={provider} />}
+        meta={
+          !streaming && (meta != null || metrics) ? (
+            <ChatMessageMeta model={meta} metrics={metrics} locale={context.locale} />
+          ) : undefined
+        }
+        actions={
+          !streaming ? (
+            <>
+              {text != null && <ChatCopy text={text} />}
+              {onRetry && (
+                <ChatAction
+                  label={context.labels.retry}
+                  disabled={disabled}
+                  onClick={onRetry}
+                >
+                  <Retry />
+                </ChatAction>
+              )}
+              {onFeedback && !error && (
+                <>
+                  {(["up", "down"] as const).map((rating) => (
+                    <ChatAction
+                      key={rating}
+                      label={
+                        rating === "up"
+                          ? context.labels.good
+                          : context.labels.bad
+                      }
+                      pressed={feedback === rating}
+                      disabled={disabled}
+                      onClick={() => {
+                        onFeedback(feedback === rating ? null : rating);
+                        setNotice(context.labels.rated);
+                      }}
+                    >
+                      <HugeiconsIcon
+                        icon={rating === "up" ? ThumbsUpIcon : ThumbsDownIcon}
+                        size={16}
+                      />
+                    </ChatAction>
+                  ))}
+                </>
+              )}
+              {branch && (
+                <ChatBranchSwitch branch={branch} disabled={disabled} />
+              )}
+            </>
+          ) : undefined
+        }
+      >
+        {children ?? text}
+        {error && (
+          <div className="mt-3">
+            <InlineNotice role="alert" variant="emphasized" tone="danger">
+              <InlineNoticeContent>{error}</InlineNoticeContent>
+            </InlineNotice>
+          </div>
+        )}
+        {stopped && (
+          <div className="mt-2">
+            <InlineNotice>
+              <InlineNoticeContent>{context.labels.stopped}</InlineNoticeContent>
+            </InlineNotice>
+          </div>
+        )}
+      </ChatMessage>
+      <span role="status" className="sr-only">
+        {notice}
+      </span>
+    </article>
+  );
+}
+
+export function ChatDivider({
+  children,
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      role="separator"
+      className={cn(
+        "flex items-center gap-3 text-label text-fg-muted",
+        className,
+      )}
+      {...props}
+    >
+      <Separator role="none" aria-hidden="true" tone="subtle" className="w-auto flex-1" />
+      <span>{children}</span>
+      <Separator role="none" aria-hidden="true" tone="subtle" className="w-auto flex-1" />
+    </div>
+  );
+}
+
+
+"use client";
+
+import { Markdown } from "@zeron/ui/markdown";
+import { useThread } from "./chat-thread-context";
+
+/** Thread-local labels around the standalone Markdown component. */
+export function ChatMarkdown({ text, streaming = false }: { text: string; streaming?: boolean }) {
+  const { labels } = useThread();
+  return <Markdown text={text} streaming={streaming} streamingLabel={labels.streaming} />;
+}
+
+
+/** The selected user message is included in removed so it can become the draft. */
+export function splitThreadHistory<T extends { id: string }>(
+  messages: readonly T[],
+  messageId: string,
+): { kept: T[]; removed: T[] } {
+  const index = messages.findIndex((message) => message.id === messageId);
+  return index < 0
+    ? { kept: [...messages], removed: [] }
+    : { kept: messages.slice(0, index), removed: messages.slice(index) };
+}
+
+
+"use client";
+
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { CHAT_SCROLL_FOLLOW_THRESHOLD } from "@zeron/ui/chat-message";
+import type { ThreadEntry } from "./chat-thread-context";
+
+/** One scroll owner. Reading history pauses following until the viewport returns to latest. */
+export function useThreadScroll(
+  entries: ThreadEntry[],
+  revision: unknown,
+  loadingOlder: boolean,
+) {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [viewportNode, setViewportNode] = useState<HTMLDivElement | null>(null);
+  const [contentNode, setContentNode] = useState<HTMLDivElement | null>(null);
+  const bindViewport = useCallback((node: HTMLDivElement | null) => {
+    viewportRef.current = node;
+    setViewportNode(node);
+  }, []);
+  const bindContent = useCallback((node: HTMLDivElement | null) => {
+    contentRef.current = node;
+    setContentNode(node);
+  }, []);
+  const spacerRef = useRef<HTMLDivElement>(null);
+  const entriesRef = useRef(entries);
+  entriesRef.current = entries;
+  const mode = useRef<"bottom" | "turn" | "paused">("bottom");
+  const pinnedId = useRef<string | null>(null);
+  const pinnedSeen = useRef(false);
+  const anchor = useRef<{ id: string; offset: number } | null>(null);
+  const loadingRef = useRef(loadingOlder);
+  loadingRef.current = loadingOlder;
+  const [away, setAway] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const updateActive = useCallback(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const users = entriesRef.current.filter((entry) => entry.role === "user");
+    const current =
+      users.findLast(
+        (entry) => entry.element.offsetTop <= viewport.scrollTop + 64,
+      ) ?? users[0];
+    setActiveId(current?.id ?? null);
+  }, []);
+
+  const captureAnchor = useCallback(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const visible = entriesRef.current.find(
+      (entry) =>
+        entry.element.offsetTop + entry.element.offsetHeight >
+        viewport.scrollTop,
+    );
+    if (visible)
+      anchor.current = {
+        id: visible.id,
+        offset: visible.element.offsetTop - viewport.scrollTop,
+      };
+  }, []);
+
+  const writeTop = useCallback(
+    (top: number) => {
+      const viewport = viewportRef.current;
+      if (!viewport) return;
+      viewport.scrollTop = Math.max(0, top);
+      updateActive();
+    },
+    [updateActive],
+  );
+
+  const follow = useCallback(() => {
+    const viewport = viewportRef.current;
+    const content = contentRef.current;
+    const spacer = spacerRef.current;
+    if (
+      !viewport ||
+      !content ||
+      !spacer ||
+      loadingRef.current ||
+      anchor.current
+    )
+      return;
+    const target = entriesRef.current.find(
+      (entry) => entry.id === pinnedId.current,
+    );
+    if (mode.current === "turn" && target) {
+      const naturalHeight = content.scrollHeight - spacer.offsetHeight;
+      const trailing = Math.max(
+        0,
+        viewport.clientHeight - (naturalHeight - target.element.offsetTop),
+      );
+      if (Math.abs(spacer.offsetHeight - trailing) > 1)
+        spacer.style.height = `${trailing}px`;
+      writeTop(
+        Math.max(
+          target.element.offsetTop,
+          naturalHeight - viewport.clientHeight,
+        ),
+      );
+    } else if (mode.current === "bottom") {
+      writeTop(viewport.scrollHeight);
+    }
+  }, [writeTop]);
+
+  const pin = useCallback(
+    (id: string) => {
+      pinnedId.current = id;
+      pinnedSeen.current = entriesRef.current.some((entry) => entry.id === id);
+      mode.current = "turn";
+      setAway(false);
+      follow();
+    },
+    [follow],
+  );
+
+  const latest = useCallback(() => {
+    anchor.current = null;
+    mode.current = "bottom";
+    setAway(false);
+    // Existing turn space is retained so finishing a short response never jumps.
+    writeTop(viewportRef.current?.scrollHeight ?? 0);
+  }, [writeTop]);
+
+  const jump = useCallback(
+    (id: string) => {
+      const entry = entriesRef.current.find((item) => item.id === id);
+      if (!entry) return;
+      mode.current = "paused";
+      setAway(true);
+      writeTop(entry.element.offsetTop);
+      entry.element.focus({ preventScroll: true });
+    },
+    [writeTop],
+  );
+
+  const onScroll = useCallback(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const atBottom =
+      viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop <
+      CHAT_SCROLL_FOLLOW_THRESHOLD;
+    if (!atBottom) mode.current = "paused";
+    else if (mode.current === "paused") mode.current = "bottom";
+    setAway(!atBottom);
+    if (anchor.current && mode.current === "paused") captureAnchor();
+    updateActive();
+  }, [captureAnchor, updateActive]);
+
+  const onUserIntent = useCallback(() => {
+    const viewport = viewportRef.current;
+    if (
+      viewport &&
+      viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop >=
+        CHAT_SCROLL_FOLLOW_THRESHOLD
+    ) {
+      mode.current = "paused";
+      setAway(true);
+    }
+  }, []);
+
+  useLayoutEffect(() => {
+    if (
+      pinnedId.current &&
+      entries.some((entry) => entry.id === pinnedId.current)
+    )
+      pinnedSeen.current = true;
+    if (
+      pinnedId.current &&
+      pinnedSeen.current &&
+      !entries.some((entry) => entry.id === pinnedId.current)
+    ) {
+      pinnedId.current = null;
+      pinnedSeen.current = false;
+      mode.current = "bottom";
+      if (spacerRef.current) spacerRef.current.style.height = "0px";
+    }
+    if (anchor.current && !loadingOlder) {
+      const saved = anchor.current;
+      const entry = entries.find((item) => item.id === saved.id);
+      if (entry) writeTop(entry.element.offsetTop - saved.offset);
+      anchor.current = null;
+      mode.current = "paused";
+      setAway(true);
+    } else {
+      follow();
+    }
+    updateActive();
+  }, [entries, revision, loadingOlder, follow, updateActive, writeTop]);
+
+  useLayoutEffect(() => {
+    const content = contentNode;
+    const viewport = viewportNode;
+    if (!content || !viewport) return;
+    const observer = new ResizeObserver(follow);
+    observer.observe(content);
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, [follow, contentNode, viewportNode]);
+
+  return {
+    viewportRef,
+    contentRef,
+    bindViewport,
+    bindContent,
+    spacerRef,
+    away,
+    activeId,
+    onScroll,
+    onUserIntent,
+    pin,
+    jump,
+    latest,
+    captureAnchor,
+  };
+}
+
+
+import type { ChatCheckpointData, ChatFile, ChatResponseMetrics } from "./chat-thread-types";
+
+export interface ChatThreadDemoMessage {
+  id: string;
+  slotId: string;
+  parentId: string | null;
+  role: "user" | "assistant";
+  text: string;
+  files?: ChatFile[];
+  localFiles?: File[];
+  checkpoint?: ChatCheckpointData;
+  reasoning?: string;
+  diff?: boolean;
+  feedback?: "up" | "down" | null;
+  error?: string;
+  stopped?: boolean;
+  model?: string;
+  modelId?: string;
+  provider?: string;
+  metrics?: ChatResponseMetrics;
+}
+
+export interface ChatThreadDemoState {
+  messages: ChatThreadDemoMessage[];
+  /** null explicitly terminates a restored branch. Missing keys choose the latest version. */
+  selection: Record<string, string | null>;
+}
+
+export function getChatThreadDemoPath(
+  state: ChatThreadDemoState,
+): ChatThreadDemoMessage[] {
+  const path: ChatThreadDemoMessage[] = [];
+  const seen = new Set<string>();
+  let parent: string | null = null;
+  while (true) {
+    const siblings: ChatThreadDemoMessage[] = state.messages.filter(
+      (message) => message.parentId === parent,
+    );
+    const selected: string | null | undefined =
+      state.selection[parent ?? "root"];
+    const message: ChatThreadDemoMessage | undefined =
+      selected === null
+        ? undefined
+        : selected
+          ? siblings.find((item) => item.id === selected)
+          : siblings.at(-1);
+    if (!message || seen.has(message.id)) return path;
+    path.push(message);
+    seen.add(message.id);
+    parent = message.id;
+  }
+}
+
+export function createChatThreadDemoData(locale = "en"): ChatThreadDemoState {
+  const zh = locale.startsWith("zh");
+  return {
+    selection: {},
+    messages: [
+      {
+        id: "question-1",
+        slotId: "slot-question-1",
+        parentId: null,
+        role: "user",
+        text: zh
+          ? "为什么搜索框输入时会卡顿？这是性能分析。"
+          : "Why does the search box lag when I type? Here’s the profile.",
+        files: [
+          {
+            id: "profile",
+            name: "profile.png",
+            type: "image/png",
+            url: "/component-covers/area-chart-light.jpg",
+          },
+          {
+            id: "trace",
+            name: "trace.json",
+            size: 184320,
+            type: "application/json",
+          },
+        ],
+        checkpoint: {
+          id: "checkpoint-1",
+          files: ["hooks/use-debounced-value.ts", "search.tsx"],
+        },
+      },
+      {
+        id: "answer-1",
+        model: "Sonnet 5.5",
+        modelId: "sonnet-5.5",
+        provider: "Anthropic",
+        metrics: { ttftMs: 420, inputTokens: 1248, outputTokens: 386, durationMs: 6820 },
+        slotId: "slot-answer-1",
+        parentId: "question-1",
+        role: "assistant",
+        reasoning: zh
+          ? "检查输入更新、请求频率与结果列表的渲染耗时。"
+          : "Check input updates, request frequency and result-list rendering.",
+        text: zh
+          ? '每次按键都会立即请求一次，并重新渲染结果列表。对搜索值做防抖，输入本身仍然即时更新。\n\n- 输入响应保持流畅。\n- 用户短暂停顿后，只发起一次请求。\n\n```ts\nimport { useEffect, useState } from "react";\n\nexport function useDebouncedValue<T>(value: T, delay = 250) {\n  const [debounced, setDebounced] = useState(value);\n  useEffect(() => {\n    const timer = setTimeout(() => setDebounced(value), delay);\n    return () => clearTimeout(timer);\n  }, [value, delay]);\n  return debounced;\n}\n```\n\n将防抖后的值传给搜索函数即可。'
+          : 'Every keystroke fetches immediately and renders a result list. Debounce the **value**, while keeping the input instant.\n\n- The input still updates on every key.\n- Search waits for a short pause, so only one request goes out.\n\n```ts\nimport { useEffect, useState } from "react";\n\nexport function useDebouncedValue<T>(value: T, delay = 250) {\n  const [debounced, setDebounced] = useState(value);\n  useEffect(() => {\n    const timer = setTimeout(() => setDebounced(value), delay);\n    return () => clearTimeout(timer);\n  }, [value, delay]);\n  return debounced;\n}\n```\n\nPass the debounced value to your search function.',
+      },
+      {
+        id: "question-2",
+        slotId: "slot-question-2",
+        parentId: "answer-1",
+        role: "user",
+        text: zh
+          ? "不错，能再补一个测试吗？"
+          : "Nice. Can you add a test for it?",
+        checkpoint: {
+          id: "checkpoint-2",
+          files: ["hooks/use-debounced-value.test.ts"],
+        },
+      },
+      {
+        id: "answer-2-v1",
+        model: "Sonnet 5.5",
+        modelId: "sonnet-5.5",
+        provider: "Anthropic",
+        metrics: { ttftMs: 285, inputTokens: 1720, outputTokens: 112, durationMs: 2160 },
+        slotId: "slot-answer-2",
+        parentId: "question-2",
+        role: "assistant",
+        text: zh
+          ? "先验证初始值，再等待计时器结束检查新值。"
+          : "Check the initial value, then wait for the timer and check the new value.",
+      },
+      {
+        id: "answer-2-v2",
+        model: "Sonnet 5.5",
+        modelId: "sonnet-5.5",
+        provider: "Anthropic",
+        metrics: { ttftMs: 360, inputTokens: 1720, outputTokens: 528, durationMs: 7340 },
+        slotId: "slot-answer-2",
+        parentId: "question-2",
+        role: "assistant",
+        feedback: "up",
+        diff: true,
+        text: zh
+          ? "使用虚拟计时器，测试会更快，也更精确。先输入两个字符，验证 250 毫秒之前仍保留旧值，之后再更新。"
+          : "Fake timers keep it fast and exact. Type two letters and check that the value holds until **250 ms** have passed.",
+      },
+      {
+        id: "question-3",
+        slotId: "slot-question-3",
+        parentId: "answer-2-v2",
+        role: "user",
+        text: zh
+          ? "搜索应该用防抖还是节流？"
+          : "Should search use debounce or throttle?",
+        checkpoint: { id: "checkpoint-3" },
+      },
+      {
+        id: "answer-3",
+        model: "Sonnet 5.5",
+        modelId: "sonnet-5.5",
+        provider: "Anthropic",
+        metrics: { ttftMs: 310, inputTokens: 2340, outputTokens: 286, durationMs: 4820 },
+        slotId: "slot-answer-3",
+        parentId: "question-3",
+        role: "assistant",
+        reasoning: zh
+          ? "比较搜索输入与连续滚动的触发频率。"
+          : "Compare search input with continuous scrolling.",
+        text: zh
+          ? "搜索更适合使用 **防抖**。它会在用户停止输入一小段时间后执行一次请求。\n\n| 对比 | 防抖 | 节流 |\n| --- | --- | --- |\n| 执行时机 | 停顿之后 | 固定间隔 |\n| 输入 react | 1 次请求 | 多次请求 |\n| 适合场景 | 搜索、自动保存 | 滚动、缩放 |\n\n输入框本身仍应即时更新，只延迟背后的搜索工作。"
+          : "Use **debounce** for search. It runs once after the user pauses typing.\n\n| Comparison | Debounce | Throttle |\n| --- | --- | --- |\n| Runs | After a pause | At fixed intervals |\n| Typing react | 1 request | Several requests |\n| Best for | Search, autosave | Scroll, resize |\n\nKeep the input itself instant and only delay the search behind it.",
+      },
+    ],
+  };
+}
+
+export function createChatThreadDemoReply(text: string, locale: string) {
+  return locale.startsWith("zh")
+    ? `关于「${text}」，建议先明确预期行为，再验证输入、状态和输出。\n\n| 检查项 | 预期结果 |\n| --- | --- |\n| 输入反馈 | 立即响应 |\n| 异步请求 | 仅在需要时触发 |\n| 错误恢复 | 保留已有内容并允许重试 |\n\n这样可以逐步定位问题，也方便补充回归测试。`
+    : `For “${text}”, start with the expected behavior, then check the input, state and output.\n\n| Check | Expected result |\n| --- | --- |\n| Input feedback | Immediate |\n| Async requests | Only when needed |\n| Error recovery | Keep content and allow retry |\n\nThis gives you a clear path to diagnose the issue and add a regression test.`;
+}

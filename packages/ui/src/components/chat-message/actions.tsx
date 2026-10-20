@@ -13,10 +13,23 @@ export interface ChatMessageActionProps {
   disabled?: boolean;
 }
 
+export interface ChatMessageBranch {
+  /** Zero-based active version; the host owns version contents. */
+  index: number;
+  count: number;
+  onChange: (index: number) => void;
+}
+
 export interface ChatMessageCopyProps {
   text: string;
   disabled?: boolean;
   labels?: Partial<{ copy: string; copied: string; copyFailed: string }>;
+}
+
+export interface ChatMessageBranchSwitchProps {
+  branch: ChatMessageBranch;
+  disabled?: boolean;
+  labels?: Partial<{ previous: string; next: string; version: (index: number, count: number) => string }>;
 }
 
 export function ChatMessageAction({
@@ -84,3 +97,45 @@ export function ChatMessageCopy({ text, disabled, labels: overrides }: ChatMessa
   );
 }
 
+export function ChatMessageBranchSwitch({
+  branch,
+  disabled = false,
+  labels: overrides,
+}: ChatMessageBranchSwitchProps) {
+  const labels = { previous: "Previous version", next: "Next version", version: (index: number, count: number) => `Version ${index} of ${count}`, ...overrides };
+  const Previous = useIcon("chevron-left");
+  const Next = useIcon("chevron-right");
+  if (
+    !Number.isInteger(branch.count) ||
+    branch.count < 2 ||
+    !Number.isInteger(branch.index) ||
+    branch.index < 0 ||
+    branch.index >= branch.count
+  )
+    return null;
+  return (
+    <span
+      role="group"
+      aria-label={labels.version(branch.index + 1, branch.count)}
+      className="inline-flex items-center gap-1"
+    >
+      <ChatMessageAction
+        label={labels.previous}
+        disabled={disabled || branch.index === 0}
+        onClick={() => branch.onChange(branch.index - 1)}
+      >
+        <Previous />
+      </ChatMessageAction>
+      <span className="text-label tabular-nums text-fg-muted">
+        {branch.index + 1} / {branch.count}
+      </span>
+      <ChatMessageAction
+        label={labels.next}
+        disabled={disabled || branch.index === branch.count - 1}
+        onClick={() => branch.onChange(branch.index + 1)}
+      >
+        <Next />
+      </ChatMessageAction>
+    </span>
+  );
+}

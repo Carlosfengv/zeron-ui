@@ -5,7 +5,9 @@
     "inContext": "In Context",
     "apiReference": "API Reference",
     "orientationProp": "Sets the visual and accessible orientation of the separator.",
-    "classNameProp": "Additional classes applied to the separator gutter. Target the rule with after: utilities.",
+    "classNameProp": "External layout classes applied to the separator gutter. Use tone to choose the shared divider color.",
+    "toneProp": "default uses the standard border token; subtle uses the quieter border-subtle token. Does not change orientation or the layout gutter.",
+    "subtle": "Subtle",
     "horizontal": "Horizontal",
     "vertical": "Vertical"
   }

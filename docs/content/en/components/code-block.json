@@ -2,6 +2,7 @@
   "codeBlock": {
     "description": "A source-owned code surface for highlighted files, diffs, patches, merge conflicts, streams, SSR, Workers, and editing.",
     "singleFile": "Single file",
+    "styleContract": "Files, diffs, patches, conflicts, streams and virtualized lists share the default appearance: a 36px header, 12px horizontal header padding, and 13px / 24px code typography. Headers meet the body without extra spacing, and colors follow the page theme.",
     "annotationExample": "This line returns the user-visible status.",
     "interactionHint": "Click a line number to select it, or click a token to inspect it.",
     "selectedLine": "Selected line {line}",
@@ -26,7 +27,7 @@
     "apiReference": "API Reference",
     "fileDescription": "File name, language, contents, and optional cache key.",
     "optionsDescription": "Highlighting, line-number, overflow, theme, selection, and render options.",
-    "appearanceDescription": "Visual preset applied to the code surface.",
+    "appearanceDescription": "Shared visual preset for the code component family, covering headers, typography, spacing, radius, borders and backgrounds. Zeron follows page semantic tokens with no extra gap between header and body.",
     "themeDescription": "Color-scheme resolution for this code surface.",
     "toolbarDescription": "Shows the copy and line-wrapping toolbar, replaceable with a custom header.",
     "messagesDescription": "Overrides toolbar, copy-state, and accessible-label text.",
