@@ -30,8 +30,8 @@ function SectionedDataTableDemoContent() {
   const [selected, setSelected] = useState<SectionedDataTableDemoItem | null>(null);
   const Plus = useIcon("plus");
   const dimensions: [SectionedDataTableDimension, ...SectionedDataTableDimension[]] = [
-    { columnId: "status", label: t("status"), groups: statuses.map((value, index) => ({ value, label: t(value), description: t(`${value}Description`), color: (["green", "gray", "blue", "amber", "gray"] as const)[index] })) },
-    { columnId: "kind", label: t("kind"), groups: kinds.map((value, index) => ({ value, label: t(value), description: t(`${value}Description`), color: (["violet", "blue", "amber", "gray", "green"] as const)[index] })) },
+    { columnId: "status", label: t("status"), groups: statuses.map((value, index) => ({ value, label: t(value), description: t(`${value}Description`), color: (["green", "amber", "blue", "violet", "gray"] as const)[index] })) },
+    { columnId: "kind", label: t("kind"), groups: kinds.map((value, index) => ({ value, label: t(value), description: t(`${value}Description`), color: (["violet", "blue", "amber", "cyan", "green"] as const)[index] })) },
     { columnId: "provider", label: t("provider"), groups: (["privateCloud", "aliyun", "tencentCloud", "aws"] as const).map((value, index) => ({ value, label: t(value), color: (["violet", "amber", "blue", "gray"] as const)[index] })) },
   ];
   const addResource = (group?: { columnId: string; value: string }) => {

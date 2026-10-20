@@ -1467,7 +1467,7 @@ export function Resources({ data }: { data: Resource[] }) {
 }
 ```
 
-data 是完整客户端记录集，getRowId 必须稳定唯一。dimensions 必须非空，columnId 指向实际列，访问器返回稳定字符串，不能把本地化文案作为分组值。groups 定义展示顺序和名称、说明、Badge 分类色；未知值仍显示在已配置组之后，空字符串显示 labels.ungrouped。没有记录的组不显示。
+data 是完整客户端记录集，getRowId 必须稳定唯一。dimensions 必须非空，columnId 指向实际列，访问器返回稳定字符串，不能把本地化文案作为分组值。groups 定义展示顺序和名称、说明、Badge 分类色；color 同时用于分组圆点和 section 浅色表面，使用 Badge 公开色板与主题表面变量混合，自动适配深浅主题。标题栏与 DataTable 放在同一个圆角 section 中，表格四周留出分组底色，保留 DataTable 默认的圆角、描边和 surface-floating 背景，固定列也使用默认 floating 背景。颜色跟随稳定分组值，不受筛选、排序或切换维度影响；未配置颜色和未知分组使用中性灰色。未知值仍显示在已配置组之后，空字符串显示 labels.ungrouped。没有记录的组不显示。
 
 groupBy / defaultGroupBy / onGroupByChange 控制分组维度。默认第一个维度，无效 ID 回退到第一个。受控模式只发送意图，等待宿主传回新 groupBy。切换维度保留搜索、筛选、排序和列设置；展开与显示更多状态按 columnId + value 分别记忆。新业务域可由宿主更换 React key 重置状态。
 

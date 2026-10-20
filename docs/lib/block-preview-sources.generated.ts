@@ -15,7 +15,7 @@ const blockPreviewSources = {
     "url": "/docs-source/090f53dfcc4c1fe68fa1a5baa1355550ea639f014c59dcb2d89ea1e0a216ac48.txt"
   },
   "grouped-data-table-02": {
-    "url": "/docs-source/0072e7fa4020f8b8b57988ba136929e48c7898b6b6bd8d98e5ccd1a9a9d79d94.txt"
+    "url": "/docs-source/d50372f8d2310b4fe50770ffc7dbceb9dc104c1f22621213eddcde0a0ee341c8.txt"
   },
   "grouped-data-table-01": {
     "url": "/docs-source/9c0dfa019f32e4e662752bf1249370096756b3b6df451ebe9147e5cd3f7f663e.txt"
