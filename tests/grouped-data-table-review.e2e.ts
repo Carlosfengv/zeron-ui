@@ -26,6 +26,10 @@ for (const slug of ["grouped-data-table-01", "grouped-data-table-02"] as const) 
     await page.goto(`/en/block-demo/${slug}`);
     const block = page.locator('[data-slot="grouped-data-table"], [data-slot="sectioned-data-table"]');
     await expect(block.getByRole("heading").first()).toBeVisible();
+    await page.evaluate(async () => { await document.fonts.ready; });
+    const baselineBodyOverflow = await block.locator('[data-slot="container-body"]').evaluate(
+      (body) => body.scrollWidth - body.clientWidth,
+    );
     await block.evaluate((root) => {
       root.querySelector("h3")!.textContent = "CloudResource".repeat(50);
       if (root.getAttribute("data-slot") === "sectioned-data-table") {
@@ -34,12 +38,21 @@ for (const slug of ["grouped-data-table-01", "grouped-data-table-02"] as const) 
         document.createTreeWalker(label, NodeFilter.SHOW_TEXT).nextNode()!.nodeValue = "InferenceResourceGroup".repeat(30);
       }
     });
-    const sizes = await block.evaluate((root) => {
+    // The body owns internal scrolling; native scrollbar widths can leave it
+    // scrollable before mutation. Long labels must not add overflow there or
+    // escape the header, group heading, block or page.
+    await expect.poll(() => block.evaluate((root, bodyOverflow) => {
       const header = root.querySelector<HTMLElement>('[data-slot="container-header"]')!;
       const body = root.querySelector<HTMLElement>('[data-slot="container-body"]')!;
-      return { headerOverflow: header.scrollWidth - header.clientWidth, bodyOverflow: body.scrollWidth - body.clientWidth };
-    });
-    expect(sizes.headerOverflow).toBeLessThanOrEqual(1);
-    expect(sizes.bodyOverflow).toBeLessThanOrEqual(1);
+      const groupHeading = root.querySelector<HTMLElement>("h4");
+      const documentRoot = root.ownerDocument.documentElement;
+      return Math.max(
+        header.scrollWidth - header.clientWidth,
+        body.scrollWidth - body.clientWidth - bodyOverflow,
+        groupHeading ? groupHeading.scrollWidth - groupHeading.clientWidth : 0,
+        root.scrollWidth - root.clientWidth,
+        documentRoot.scrollWidth - documentRoot.clientWidth,
+      );
+    }, baselineBodyOverflow)).toBeLessThanOrEqual(1);
   });
 }

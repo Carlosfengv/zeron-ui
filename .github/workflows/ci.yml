@@ -19,6 +19,11 @@ jobs:
     outputs:
       code: ${{ steps.scope.outputs.code }}
       clean: ${{ steps.scope.outputs.clean }}
+      consumers: ${{ steps.scope.outputs.consumers }}
+      migrations: ${{ steps.scope.outputs.migrations }}
+      e2e: ${{ steps.scope.outputs.e2e }}
+      suites: ${{ steps.scope.outputs.suites }}
+      consumer-matrix: ${{ steps.scope.outputs.consumer-matrix }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -140,26 +145,19 @@ jobs:
         run: pnpm cli:test
 
   consumers:
+    name: consumers (${{ matrix.group }})
     needs: changes
-    if: needs.changes.outputs.code == 'true'
+    if: needs.changes.outputs.consumers == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - group: next-npm
-            next-managers: npm
-            vite-managers: ''
-          - group: next-pnpm
-            next-managers: pnpm
-            vite-managers: ''
-          - group: vite-npm
-            next-managers: ''
-            vite-managers: npm
+      matrix: ${{ fromJSON(needs.changes.outputs.consumer-matrix) }}
     env:
       ZERON_CONSUMER_PACKAGE_MANAGERS: ${{ matrix.next-managers }}
       ZERON_VITE_CONSUMER_PACKAGE_MANAGERS: ${{ matrix.vite-managers }}
+      ZERON_CONSUMER_COMPONENTS: ${{ matrix.next-components || 'button,card,ask-user-questions,code-block,infinite-log-table-01' }}
+      ZERON_VITE_CONSUMER_COMPONENTS: ${{ matrix.vite-components || 'button,card,ask-user-questions,code-block' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -168,11 +166,13 @@ jobs:
       - name: Prepare code engine inputs
         run: pnpm code-engine:build
       - name: Install test browser
+        if: matrix.styles
         run: pnpm exec playwright install --with-deps chromium
       - name: Install representative consumers
         run: pnpm test:consumer:smoke
 
       - name: Verify initialized consumer styles in browser
+        if: matrix.styles
         run: pnpm test:consumer:styles
 
       - name: Upload consumer style evidence
@@ -186,7 +186,7 @@ jobs:
 
   migrations:
     needs: changes
-    if: needs.changes.outputs.code == 'true'
+    if: needs.changes.outputs.migrations == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -212,7 +212,9 @@ jobs:
 
   e2e:
     needs: changes
-    if: needs.changes.outputs.code == 'true'
+    if: needs.changes.outputs.e2e == 'true'
+    env:
+      ZERON_E2E_SUITES: ${{ needs.changes.outputs.suites }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -255,16 +257,16 @@ jobs:
     needs: changes
     if: needs.changes.outputs.clean == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-workspace
-      - name: Install browser runner
-        run: pnpm exec playwright install --with-deps chromium
-      - name: Verify fresh isolated Agent checkout
-        run: pnpm agents:verify:clean
+      # Full quality, consumer and browser checks already have isolated jobs.
+      # Here only prove that absent generated inputs can be bootstrapped.
+      - name: Verify fresh Agent bootstrap
+        run: pnpm agents:verify:clean --bootstrap
       - name: Upload clean checkout evidence
         if: always()
         uses: actions/upload-artifact@v4

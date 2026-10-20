@@ -80,6 +80,9 @@ test("mobile: compact drawer restores the opening trigger after Escape", async (
   await page.goto("/en/docs");
   const openNavigation = page.getByRole("button", { name: "Open navigation" });
 
+  // The server renders the desktop breakpoint. Wait for useSyncExternalStore
+  // to switch to the mobile drawer before exercising its trigger.
+  await expect(page.locator('[data-slot="sidebar"][data-mobile="false"]')).toHaveCount(0);
   await openNavigation.click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");

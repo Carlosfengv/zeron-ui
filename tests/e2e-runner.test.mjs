@@ -49,10 +49,19 @@ describe("E2E execution policy", () => {
     expect(parseE2eArgs(["--mode", "full", "--build"])).toEqual({ mode: "full", build: true, buildOnly: false });
     for (const args of [["--mode"], ["--mode", "unknown"], ["--skip"], ["--build", "--build"],
       ["--build-only", "--build"], ["--build-only", "--mode", "pr"]]) expect(() => parseE2eArgs(args)).toThrow();
-    expect(selectedSuites("pr")).toHaveLength(5);
+    expect(selectedSuites("pr")).toHaveLength(6);
+    expect(selectedSuites("full").some(suite => suite.name === "grouped-table")).toBe(true);
     expect(selectedSuites("pr").find(suite => suite.name === "code-block").projects)
       .toEqual(["chromium-desktop", "chromium-mobile"]);
     expect(selectedSuites("full").find(suite => suite.name === "code-block").projects).toEqual([]);
+  });
+
+  it("selects only requested PR suites, rejects empty/unknown scope, and never narrows full mode", () => {
+    expect(selectedSuites("pr", "documentation,grouped-table").map(suite => suite.name)).toEqual(["documentation", "grouped-table"]);
+    for (const selection of ["", "unknown", "detail,detail", "detail,"]) expect(() => selectedSuites("pr", selection)).toThrow();
+    expect(() => parseE2eArgs(["--suites"])).toThrow();
+    expect(() => parseE2eArgs(["--build-only", "--suites", "detail"])).toThrow();
+    expect(() => selectedSuites("full", "detail")).toThrow();
   });
 
   it("fails zero execution, flaky results, runner errors, invalid reports and nonzero exits", () => {
@@ -148,14 +157,25 @@ describe("E2E execution policy", () => {
       run: reportsRunner("playwright.focus.config.ts", failure, calls),
     });
     expect(summary.status).toBe("failed");
-    expect(calls).toHaveLength(5);
-    expect(summary.suites.map(suite => suite.status)).toEqual(["passed", "passed", "failed", "passed", "passed"]);
-    expect(new Set(calls.map(call => call.env.PLAYWRIGHT_JSON_OUTPUT_FILE)).size).toBe(5);
+    expect(calls).toHaveLength(6);
+    expect(summary.suites.map(suite => suite.status)).toEqual(["passed", "passed", "failed", "passed", "passed", "passed"]);
+    expect(new Set(calls.map(call => call.env.PLAYWRIGHT_JSON_OUTPUT_FILE)).size).toBe(6);
     const code = calls.find(call => call.config === "playwright.code-block.config.ts");
     expect(code.args.filter(argument => argument.startsWith("--project=")))
       .toEqual(["--project=chromium-desktop", "--project=chromium-mobile"]);
     expect(JSON.parse(await readFile(path.join(root, summary.directory, "summary.json"), "utf8")).status).toBe("failed");
   }, 30000);
+
+  it("runs a scoped CI selection against the verified production build", async () => {
+    await buildForE2e(root, { run: fakeBuild });
+    const calls = [];
+    const summary = await runE2e(root, { mode: "pr", build: false }, {
+      env: { ...process.env, ZERON_E2E_SUITES: "documentation,grouped-table" }, run: reportsRunner(undefined, undefined, calls),
+    });
+    expect(summary.status).toBe("passed");
+    expect(calls.map(call => call.config)).toEqual(["playwright.config.ts", "playwright.grouped-data-table.config.ts"]);
+    expect(calls.every(call => call.env.ZERON_E2E_PRODUCTION === "1")).toBe(true);
+  }, 15000);
 
   it("builds once and preserves earlier run evidence when repeating the full mode", async () => {
     let builds = 0;
@@ -180,7 +200,7 @@ describe("E2E execution policy", () => {
       run: async () => { controller.abort("SIGINT"); return { exitCode: 130 }; },
     });
     expect(summary.status).toBe("interrupted");
-    expect(summary.suites.map(suite => suite.status)).toEqual(["interrupted", "not-run", "not-run", "not-run", "not-run"]);
+    expect(summary.suites.map(suite => suite.status)).toEqual(["interrupted", "not-run", "not-run", "not-run", "not-run", "not-run"]);
   }, 15000);
 
   it.each(["SIGINT", "SIGTERM"])("terminates a real child process and its server descendant on %s", async interruption => {

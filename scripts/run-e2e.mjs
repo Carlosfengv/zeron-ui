@@ -20,6 +20,7 @@ const suites = [
   { name: "focus", config: "playwright.focus.config.ts" },
   { name: "code-block", config: "playwright.code-block.config.ts" },
   { name: "detail", config: "playwright.detail-loading.config.ts" },
+  { name: "grouped-table", config: "playwright.grouped-data-table.config.ts" },
 ];
 
 export function parseE2eArgs(args) {
@@ -30,20 +31,27 @@ export function parseE2eArgs(args) {
     if (seen.has(argument)) throw new Error(`Duplicate E2E argument: ${argument}`);
     seen.add(argument);
     if (argument === "--mode") options.mode = args[++index];
+    else if (argument === "--suites") options.suites = args[++index];
     else if (argument === "--build") options.build = true;
     else if (argument === "--build-only") options.buildOnly = true;
     else throw new Error(`Unknown E2E argument: ${argument}`);
   }
   if (!["pr", "full"].includes(options.mode)) throw new Error("E2E mode must be pr or full");
-  if (options.buildOnly && (options.build || seen.has("--mode"))) {
+  if (seen.has("--suites")) selectedSuites(options.mode, options.suites ?? "");
+  if (options.buildOnly && (options.build || seen.has("--mode") || seen.has("--suites"))) {
     throw new Error("Use --build-only without --mode or --build");
   }
   return options;
 }
 
-export function selectedSuites(mode) {
+export function selectedSuites(mode, selection) {
   if (!["pr", "full"].includes(mode)) throw new Error("E2E mode must be pr or full");
-  return suites.map(suite => ({ ...suite, projects: suite.name === "code-block" && mode === "pr"
+  const names = selection?.split(",");
+  if (selection !== undefined && (mode === "full" || !names.length ||
+      names.some(name => !suites.some(suite => suite.name === name)) || new Set(names).size !== names.length)) {
+    throw new Error("Select nonempty, unique known E2E suites in pr mode only");
+  }
+  return suites.filter(suite => !names || names.includes(suite.name)).map(suite => ({ ...suite, projects: suite.name === "code-block" && mode === "pr"
     ? ["chromium-desktop", "chromium-mobile"] : [] }));
 }
 
@@ -165,7 +173,8 @@ export async function runE2e(root, options, { run = runProcess, env = process.en
   const directory = await mkdtemp(path.join(base, new Date().toISOString().replace(/[:.]/g, "-") + "-"));
   const summary = { schemaVersion: 1, mode: options.mode, startedAt: new Date().toISOString(),
     directory: path.relative(root, directory), status: "running", build: null,
-    suites: selectedSuites(options.mode).map(suite => ({ ...suite, status: "not-run" })) };
+    suites: selectedSuites(options.mode, options.suites ?? (options.mode === "pr" ? env.ZERON_E2E_SUITES : undefined))
+      .map(suite => ({ ...suite, status: "not-run" })) };
   const save = async () => {
     const contents = serialize(summary);
     await writeFile(path.join(directory, "summary.json"), contents);
@@ -181,7 +190,7 @@ export async function runE2e(root, options, { run = runProcess, env = process.en
       await verifyBuild(root, await captureBuildInput(root, env));
       const output = path.join(directory, suite.name);
       await mkdir(output, { recursive: true });
-      const suiteEnv = { ...env, PLAYWRIGHT_HTML_OPEN: "never",
+      const suiteEnv = { ...env, ZERON_E2E_PRODUCTION: "1", PLAYWRIGHT_HTML_OPEN: "never",
         PLAYWRIGHT_HTML_OUTPUT_DIR: path.join(output, "html"),
         PLAYWRIGHT_JUNIT_OUTPUT_FILE: path.join(output, "junit.xml"),
         PLAYWRIGHT_JSON_OUTPUT_FILE: path.join(output, "results.json") };

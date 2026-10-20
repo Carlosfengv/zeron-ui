@@ -4,15 +4,16 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { parse } from "yaml";
-import { changedFiles, classifyChanges, detectChanges } from "../scripts/ci-changes.mjs";
+import { changedFiles, classifyChanges, consumerMatrix, detectChanges, e2eSuites } from "../scripts/ci-changes.mjs";
 import { checkCiResults } from "../scripts/check-ci-results.mjs";
 
 const codeJobs = ["quality", "consumers", "migrations", "e2e"];
+const scopeFlags = ["code", "clean", "consumers", "migrations", "e2e"];
 
 describe("CI change scope", () => {
   it("keeps the README PR and planning prose out of the code pipeline", () => {
     expect(classifyChanges(["README.md", "README.zh-CN.md", "docs/maintaining.md", "docs/plans/nested/plan.md"]))
-      .toEqual({ code: false, clean: false });
+      .toMatchObject({ code: false, clean: false, consumers: false, migrations: false, e2e: false });
   });
 
   it.each(["app/page.tsx", "docs/pages/components/button.tsx", "docs/agent-guides/components/button.md",
@@ -27,11 +28,51 @@ describe("CI change scope", () => {
     "metadata-templates/AGENTS.md", ".agents/skills/zeron-page-builder/SKILL.md",
     ".github/actions/setup-workspace/action.yml", ".github/workflows/ci.yml"])
   ("requires the clean checkout for %s", filename => {
-    expect(classifyChanges([filename])).toEqual({ code: true, clean: true });
+    expect(classifyChanges([filename])).toMatchObject({ code: true, clean: true });
   });
 
   it("selects all checks when no changed paths can be established", () => {
-    expect(classifyChanges([])).toEqual({ code: true, clean: true });
+    expect(classifyChanges([])).toMatchObject({ code: true, clean: true, consumers: true, migrations: true, e2e: true });
+  });
+
+  it("keeps UI quality and scoped installation without rerunning migrations or bootstrap", () => {
+    expect(classifyChanges(["packages/blocks/src/application/new-block/index.ts"]))
+      .toMatchObject({ code: true, clean: false, consumers: true, migrations: false, e2e: true, consumerFull: false, suites: "documentation,detail" });
+    expect(classifyChanges(["tests/button.test.tsx"]))
+      .toMatchObject({ code: true, clean: false, consumers: false, migrations: false, e2e: false });
+    expect(classifyChanges(["scripts/preview-source-allowlist.mjs"]).clean).toBe(false);
+  });
+
+  it("selects specialized browser coverage and fails open for unknown tooling", () => {
+    expect(classifyChanges(["packages/ui/src/components/code-block/code-block.tsx"]).suites).toContain("code-block");
+    expect(classifyChanges(["packages/ui/src/components/data-table.tsx"]).suites).toContain("grouped-table");
+    expect(classifyChanges(["next.config.ts"]).suites).toBe(e2eSuites.join(","));
+    expect(classifyChanges(["new-tool.config.js"]))
+      .toMatchObject({ code: true, clean: true, consumers: true, migrations: true, e2e: true });
+  });
+});
+
+describe("consumer scope from the installed Registry graph", () => {
+  it("installs a changed Block and a representative dependent for shared UI changes", async () => {
+    const matrix = await consumerMatrix(process.cwd(), ["packages/ui/src/components/accordion.tsx"], classifyChanges(["packages/ui/src/components/accordion.tsx"]));
+    expect(matrix.include).toHaveLength(1);
+    expect(matrix.include[0]).toMatchObject({ group: "next-pnpm", "next-managers": "pnpm", "vite-managers": "", styles: false });
+    expect(matrix.include[0]["next-components"].split(",")).toContain("accordion");
+    const block = await consumerMatrix(process.cwd(), ["packages/blocks/src/application/grouped-data-table-01/index.ts"], classifyChanges(["packages/blocks/src/application/grouped-data-table-01/index.ts"]));
+    expect(block.include[0]["next-components"]).toBe("grouped-data-table-01");
+  });
+
+  it("keeps all package managers and excludes Next-only templates from Vite", async () => {
+    const files = ["package.json", "packages/blocks/src/application/login-01/page.tsx"];
+    const matrix = await consumerMatrix(process.cwd(), files, classifyChanges(files));
+    expect(matrix.include.map(row => row.group)).toEqual(["next-npm", "next-pnpm", "vite-npm"]);
+    expect(matrix.include.every(row => row.styles)).toBe(true);
+    expect(matrix.include[0]["next-components"]).toContain("button");
+    expect(matrix.include[2]["vite-components"].split(",")).not.toContain("login-01");
+  });
+
+  it("fails back to the broad matrix if a Registry input cannot be read", async () => {
+    await expect(consumerMatrix("/no-such-registry", [], { consumerFull: false })).rejects.toThrow();
   });
 });
 
@@ -71,7 +112,7 @@ describe("Git comparison for CI", () => {
     const currentBase = commit();
     const files = changedFiles(root, "pull_request", { pull_request: { base: { sha: currentBase }, head: { sha: head } } });
     expect(files).toEqual(["README.md"]);
-    expect(classifyChanges(files)).toEqual({ code: false, clean: false });
+    expect(classifyChanges(files)).toMatchObject({ code: false, clean: false });
   });
 
   it("includes a removed code path when it is renamed into a docs-only path", async () => {
@@ -97,7 +138,7 @@ describe("Git comparison for CI", () => {
     expect(await detectChanges(root, {
       GITHUB_EVENT_NAME: failure === "unsupported-event" ? "workflow_dispatch" : "push",
       GITHUB_EVENT_PATH: eventPath,
-    })).toEqual({ code: true, clean: true, count: null });
+    })).toMatchObject({ code: true, clean: true, consumers: true, migrations: true, e2e: true, count: null });
   });
 
   it("writes documentation-only outputs without installing dependencies", async () => {
@@ -110,20 +151,32 @@ describe("Git comparison for CI", () => {
     const result = spawnSync(process.execPath, [path.resolve("scripts/ci-changes.mjs")], { cwd: root, encoding: "utf8",
       env: { ...process.env, GITHUB_EVENT_NAME: "push", GITHUB_EVENT_PATH: eventPath, GITHUB_OUTPUT: output, GITHUB_STEP_SUMMARY: summary } });
     expect(result.status, result.stderr).toBe(0);
-    expect(await readFile(output, "utf8")).toBe("code=false\nclean=false\n");
+    expect(await readFile(output, "utf8")).toBe('code=false\nclean=false\nconsumers=false\nmigrations=false\ne2e=false\nsuites=\nconsumer-matrix={"include":[]}\n');
     expect(await readFile(summary, "utf8")).toContain("documentation only");
   });
 });
 
-function jobResults(code, clean) {
+function jobResults(code, clean, selected = {}) {
+  const flags = { code, clean, consumers: code, migrations: code, e2e: code, ...selected };
   return {
-    changes: { result: "success", outputs: { code: String(code), clean: String(clean) } },
-    ...Object.fromEntries(codeJobs.map(name => [name, { result: code ? "success" : "skipped" }])),
+    changes: { result: "success", outputs: Object.fromEntries(scopeFlags.map(key => [key, String(flags[key])])) },
+    ...Object.fromEntries(codeJobs.map(name => [name, { result: flags[name === "quality" ? "code" : name] ? "success" : "skipped" }])),
     "agent-clean-checkout": { result: clean ? "success" : "skipped" },
   };
 }
 
 describe("required checks summary", () => {
+  it("requires quality while permitting only the unselected domain jobs to skip", () => {
+    const jobs = jobResults(true, false, { consumers: false, migrations: false, e2e: false });
+    expect(() => checkCiResults(jobs)).not.toThrow();
+    jobs.quality.result = "skipped";
+    expect(() => checkCiResults(jobs)).toThrow("quality");
+    for (const key of scopeFlags) {
+      const incomplete = jobResults(true, true);
+      delete incomplete.changes.outputs[key];
+      expect(() => checkCiResults(incomplete)).toThrow("scope");
+    }
+  });
   it.each([[false, false], [true, false], [true, true]])("accepts successful results for code=%s, clean=%s", (code, clean) => {
     expect(() => checkCiResults(jobResults(code, clean))).not.toThrow();
   });
@@ -155,7 +208,7 @@ describe("CI job wiring", () => {
     expect(new Set(ci.jobs.checks.needs)).toEqual(new Set(Object.keys(ci.jobs).filter(name => name !== "checks")));
     for (const name of codeJobs) {
       expect(ci.jobs[name].needs).toBe("changes");
-      expect(ci.jobs[name].if).toBe("needs.changes.outputs.code == 'true'");
+      expect(ci.jobs[name].if).toBe(`needs.changes.outputs.${name === "quality" ? "code" : name} == 'true'`);
     }
     expect(ci.jobs["agent-clean-checkout"].if).toBe("needs.changes.outputs.clean == 'true'");
     expect(ci.concurrency["cancel-in-progress"]).toBe("${{ github.event_name == 'pull_request' }}");
@@ -164,19 +217,16 @@ describe("CI job wiring", () => {
     expect(gate.run).toBe("node scripts/check-ci-results.mjs");
   });
 
-  it("keeps all three consumer combinations, style checks, and distinct evidence", async () => {
+  it("uses the computed consumer matrix, conditional styles, and distinct evidence", async () => {
     const ci = parse(await readFile(".github/workflows/ci.yml", "utf8"));
     const job = ci.jobs.consumers;
     expect(job.strategy["fail-fast"]).toBe(false);
-    expect(job.strategy.matrix.include).toEqual([
-      { group: "next-npm", "next-managers": "npm", "vite-managers": "" },
-      { group: "next-pnpm", "next-managers": "pnpm", "vite-managers": "" },
-      { group: "vite-npm", "next-managers": "", "vite-managers": "npm" },
-    ]);
+    expect(job.strategy.matrix).toBe("${{ fromJSON(needs.changes.outputs.consumer-matrix) }}");
     expect(job.env.ZERON_CONSUMER_PACKAGE_MANAGERS).toBe("${{ matrix.next-managers }}");
     expect(job.env.ZERON_VITE_CONSUMER_PACKAGE_MANAGERS).toBe("${{ matrix.vite-managers }}");
     expect(job.steps.some(step => step.run === "pnpm test:consumer:smoke")).toBe(true);
     expect(job.steps.some(step => step.run === "pnpm test:consumer:styles")).toBe(true);
+    expect(job.steps.find(step => step.run === "pnpm test:consumer:styles").if).toBe("matrix.styles");
     expect(job.steps.at(-1).with.name).toBe("consumer-style-evidence-${{ matrix.group }}");
   });
 
@@ -193,6 +243,8 @@ describe("CI job wiring", () => {
     expect(extended.on).toEqual({ workflow_dispatch: null, schedule: [{ cron: "0 18 * * *" }] });
     expect(extended.jobs["agent-clean-checkout"].if).toBeUndefined();
     expect(extended.jobs["agent-clean-checkout"].steps.some(step => step.run === "pnpm agents:verify:clean")).toBe(true);
+    expect(ci.jobs["agent-clean-checkout"].steps.some(step => step.run === "pnpm agents:verify:clean --bootstrap")).toBe(true);
+    expect(ci.jobs["agent-clean-checkout"].steps.some(step => step.run?.includes("playwright install"))).toBe(false);
     for (const job of [ci.jobs.e2e, extended.jobs.browsers]) {
       const cache = job.steps.find(step => step.uses === "actions/cache@v4");
       expect(cache.with.path).toBe(".next/cache");

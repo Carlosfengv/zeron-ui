@@ -1,7 +1,8 @@
 import { defineConfig } from "@playwright/test";
 import { e2eDefaults } from "./playwright.shared";
 
-const origin = process.env.GROUPED_TABLE_TEST_ORIGIN;
+const production = process.env.ZERON_E2E_PRODUCTION === "1";
+const origin = production ? undefined : process.env.GROUPED_TABLE_TEST_ORIGIN;
 
 export default defineConfig({
   ...e2eDefaults,
@@ -23,8 +24,8 @@ export default defineConfig({
     { name: "mobile", use: { browserName: "chromium", viewport: { width: 390, height: 844 } } },
   ],
   webServer: origin ? undefined : {
-    command: "pnpm exec next dev --turbopack -p 3361 --hostname 127.0.0.1",
-    env: { NEXT_DEV_DIST_DIR: ".next-dev-grouped-table" },
+    command: production ? "pnpm exec next start -p 3361 --hostname 127.0.0.1" : "pnpm exec next dev --turbopack -p 3361 --hostname 127.0.0.1",
+    env: production ? undefined : { NEXT_DEV_DIST_DIR: ".next-dev-grouped-table" },
     url: "http://127.0.0.1:3361",
     reuseExistingServer: false,
     timeout: 120_000,

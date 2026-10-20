@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { docEntries, pathnameOf } from "../docs/manifest";
 
 test("switching collections keeps links and keyboard paging in the active collection", async ({ page }) => {
   await page.goto("/docs/blocks");
@@ -23,10 +24,14 @@ test("switching collections keeps links and keyboard paging in the active collec
   await expect(page).toHaveURL("/docs/pages/signup-01");
 
   await header.getByRole("link", { name: "区块", exact: true }).click();
+  // Gallery presentation order can differ from the documented keyboard order.
+  // Follow that public manifest without pinning the test to today's first Block.
+  const destinations = docEntries.filter(entry => entry.collection === "blocks").slice(0, 4).map(pathnameOf);
+  expect(destinations).toHaveLength(4);
   await page.getByRole("heading", { name: "区块", exact: true }).click();
-  for (const slug of ["chat-markdown-01", "grouped-data-table-02", "grouped-data-table-01", "agent-tasks-01"]) {
+  for (const destination of destinations) {
     await page.keyboard.press("ArrowRight");
-    await expect(page).toHaveURL(`/docs/blocks/${slug}`);
+    await expect(page).toHaveURL(destination);
   }
 });
 
