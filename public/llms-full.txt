@@ -3314,6 +3314,8 @@ related:
 
 普通图文按钮使用 leadingIcon/trailingIcon，传入兼容 IconComponent 的组件类型，不是 `<Icon />` 元素。children 会进入 button-label；图标槽和标签才是内部 flex 的同级节点。图标放进标签可能因 SVG 的 block 显示而上下错行，根元素 gap/inline-flex 无法修复。
 
+当组合组件需要调整内部文字布局时，使用公开的 `contentClassName` 和 `labelClassName`。不要用 `data-slot` 选择器定位 Button 内部节点。
+
 ```text
 正确：<Button leadingIcon={AddIcon}>创建资源</Button>
 错误：<Button><AddIcon />创建资源</Button>

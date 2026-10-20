@@ -17,4 +17,26 @@ describe("Button tone", () => {
     expect(background?.classList.contains("bg-warning-surface")).toBe(true);
     expect(background?.classList.contains("border-0")).toBe(true);
   });
+
+  it("applies public content and label classes in normal and loading states", () => {
+    render(
+      <>
+        <Button contentClassName="consumer-content" labelClassName="consumer-label">
+          Ready
+        </Button>
+        <Button contentClassName="consumer-content" labelClassName="consumer-label" loading>
+          Loading
+        </Button>
+      </>,
+    );
+
+    const buttons = screen.getAllByRole("button");
+    expect(buttons).toHaveLength(2);
+    for (const button of buttons) {
+      expect(button.querySelector(".consumer-content")).not.toBeNull();
+      expect(button.querySelector(".consumer-label")).not.toBeNull();
+      expect(button.classList.contains("consumer-content")).toBe(false);
+      expect(button.classList.contains("consumer-label")).toBe(false);
+    }
+  });
 });

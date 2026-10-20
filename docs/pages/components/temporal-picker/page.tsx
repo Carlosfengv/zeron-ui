@@ -45,6 +45,8 @@ function Example() {
 const dateCode = `import { DatePicker, DateRangePicker } from "@zeron/ui/temporal-picker";
 
 <DatePicker
+  triggerContentClassName="w-full justify-between"
+  triggerLabelClassName="min-w-0 flex-1 text-left"
   value={single}
   onValueChange={setSingle}
   formatValue={(value) => value.replaceAll("-", "/")}
@@ -83,6 +85,7 @@ const pickerProps: PropDef[] = [
   { name: "now", type: "() => Date", description: "Injects the reference instant used when resolving relative presets." },
   { name: "disabled / readOnly", type: "boolean", default: "false", description: "Disabled blocks interaction; read-only renders the committed summary without an editable trigger." },
   { name: "formatValue", type: "(value, timeZone?) => ReactNode", description: "Formats only the committed value shown by the trigger or read-only summary. It does not change the emitted ISO value." },
+  { name: "triggerContentClassName / triggerLabelClassName", type: "string", description: "Applies classes to the public Button content and label wrappers inside the trigger." },
 ];
 
 function ValuePreview({ value }: { value: unknown }) {

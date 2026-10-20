@@ -25,6 +25,8 @@ interface TemporalPickerShellProps {
   ariaLabelledBy?: string;
   children: React.ReactNode;
   className?: string;
+  triggerContentClassName?: string;
+  triggerLabelClassName?: string;
   disabled?: boolean;
   icon?: "calendar" | "clock";
   inline?: boolean;
@@ -69,6 +71,8 @@ export const TemporalPickerShell = React.forwardRef<HTMLButtonElement, TemporalP
   ariaLabelledBy,
   children,
   className,
+  triggerContentClassName,
+  triggerLabelClassName,
   disabled,
   icon = "calendar",
   isOpen,
@@ -101,6 +105,8 @@ export const TemporalPickerShell = React.forwardRef<HTMLButtonElement, TemporalP
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
       className={cn("min-w-0 max-w-full justify-between", className)}
+      contentClassName={triggerContentClassName}
+      labelClassName={triggerLabelClassName}
       disabled={disabled}
       id={triggerId}
       leadingIcon={Icon}

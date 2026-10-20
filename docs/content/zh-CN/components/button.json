@@ -72,6 +72,8 @@
     "activeDescription": "强制显示按下／按住状态，例如按钮打开的下拉菜单或浮层正在显示时。",
     "leadingIconDescription": "显示在标签前的图标。",
     "trailingIconDescription": "显示在标签后的图标。",
+    "contentClassNameDescription": "为按钮内部公开的内容容器应用样式类。",
+    "labelClassNameDescription": "为按钮内部公开的文本标签容器应用样式类。",
     "asChildDescription": "将属性合并到子元素，而不是渲染原生按钮元素。",
     "disabledDescription": "禁用按钮。",
     "clickMe": "点击我"
