@@ -127,4 +127,6 @@ ChatMessage.displayName = "ChatMessage";
 
 export { ChatMessage };
 export type { ChatMessageProps };
+export { ChatScrollToLatest, CHAT_SCROLL_FOLLOW_THRESHOLD } from "./chat-message/scroll-to-latest";
+export type { ChatScrollToLatestProps } from "./chat-message/scroll-to-latest";
 export default ChatMessage;

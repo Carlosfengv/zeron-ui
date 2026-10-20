@@ -216,6 +216,7 @@
       "path": "components/chart.md",
       "itemId": "component:chart"
     },
+    {"path": "components/chat-message.md", "itemId": "component:chat-message"},
     {
       "path": "components/code-block.md",
       "itemId": "component:code-block"

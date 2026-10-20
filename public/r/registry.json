@@ -2464,13 +2464,20 @@
         "https://zeron-ui.vercel.app/r/utils.json",
         "https://zeron-ui.vercel.app/r/springs.json",
         "https://zeron-ui.vercel.app/r/use-touch-primary.json",
-        "https://zeron-ui.vercel.app/r/file-thumbnail.json"
+        "https://zeron-ui.vercel.app/r/file-thumbnail.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json"
       ],
       "files": [
         {
           "path": "packages/ui/src/components/chat-message.tsx",
           "type": "registry:ui",
           "target": "components/ui/chat-message.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-message/scroll-to-latest.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-message/scroll-to-latest.tsx"
         }
       ],
       "meta": {

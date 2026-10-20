@@ -97,7 +97,10 @@ const chatMessageProps: PropDef[] = [
 
 export default function ChatMessageDoc() {
   const t = useTranslations("chatMessage");
-  const localizedProps = chatMessageProps.map((prop, index) => ({ ...prop, description: t(`p${index}`) }));
+  const localizedProps = [
+    ...chatMessageProps.map((prop, index) => ({ ...prop, description: t(`p${index}`) })),
+    { name: "ChatScrollToLatest", type: "onClick / locale? / label? / disabled? / className?", description: t("latestProp") },
+  ];
   // A real File so the attachments demo renders an actual thumbnail. Fetched
   // from the public profile image at mount and wrapped as a File.
   const [sampleFiles, setSampleFiles] = useState<File[]>([]);
