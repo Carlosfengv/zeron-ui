@@ -7,7 +7,7 @@ summary: 基于 TanStack Table 的数据表，包含筛选、排序、分页、�
 registry_import: "@/components/ui/data-table"
 source: packages/ui/src/components/data-table.tsx
 registry: packages/ui/registry.json
-related: [table, badge, button, grouped-data-table-01]
+related: [table, badge, button, grouped-data-table-01, grouped-data-table-02]
 ---
 
 # DataTable

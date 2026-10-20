@@ -1,4 +1,27 @@
 {
+  "grouped-data-table-02": {
+    "keywords": [
+      "多维分组",
+      "分区表格",
+      "云资源",
+      "分组切换",
+      "sectioned table",
+      "grouping",
+      "dimensions"
+    ],
+    "useCases": [
+      "按运行状态、资源类型或云平台切换分组，各组有独立表头与新增入口。"
+    ],
+    "whenNotToUse": [
+      "不支持远程分页、多层分组或懒加载，需完整客户端数据。"
+    ],
+    "keyApi": [
+      "data / columns / getRowId / dimensions 定义业务清单。",
+      "groupBy / defaultGroupBy / onGroupByChange 控制分组维度。",
+      "onAddToGroup 返回 columnId 与 value，由宿主创建。",
+      "共享搜索、筛选、排序和列设置，组内预览不影响统计。"
+    ]
+  },
   "grouped-data-table-01": {
     "keywords": [
       "分组",

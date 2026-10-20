@@ -1,5 +1,13 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "grouped-data-table-02": [
+    "packages/blocks/src/application/grouped-data-table-02/index.ts",
+    "packages/blocks/src/application/grouped-data-table-02/sectioned-data-table.tsx",
+    "packages/blocks/src/application/grouped-data-table-02/sectioned-data-table-types.ts",
+    "packages/blocks/src/application/grouped-data-table-02/sectioned-data-table-labels.ts",
+    "packages/blocks/src/application/grouped-data-table-02/sectioned-data-table-demo-data.ts",
+    "packages/blocks/src/application/grouped-data-table-01/grouped-data-table-demo-data.ts"
+  ],
   "grouped-data-table-01": [
     "packages/blocks/src/application/grouped-data-table-01/index.ts",
     "packages/blocks/src/application/grouped-data-table-01/grouped-data-table.tsx",

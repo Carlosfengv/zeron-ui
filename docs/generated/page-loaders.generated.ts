@@ -4,6 +4,7 @@ import type { DocPageLoader } from "./page-loader-types";
 export type { DocPageModule, DocPageLoader } from "./page-loader-types";
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "blocks/grouped-data-table-02": () => import("@docs/pages/blocks/grouped-data-table-02/page"),
   "blocks/grouped-data-table-01": () => import("@docs/pages/blocks/grouped-data-table-01/page"),
   "blocks/usage-forecast-02": () => import("@docs/pages/blocks/usage-forecast-02/page"),
   "blocks/model-selector-01": () => import("@docs/pages/blocks/model-selector-01/page"),

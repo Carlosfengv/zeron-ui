@@ -3,6 +3,62 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "grouped-data-table-02",
+      "type": "registry:block",
+      "title": "Sectioned Data Table",
+      "description": "Switchable grouping dimensions with independent section tables, shared filters and sorting, per-group previews and host creation actions.",
+      "categories": [
+        "application",
+        "tables"
+      ],
+      "dependencies": [
+        "@tanstack/react-table"
+      ],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "container",
+        "data-table",
+        "empty",
+        "icon-context",
+        "inline-notice",
+        "input-group",
+        "tabs"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/grouped-data-table-02/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/grouped-data-table-02/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/grouped-data-table-02/sectioned-data-table.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/grouped-data-table-02/sectioned-data-table.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/grouped-data-table-02/sectioned-data-table-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/grouped-data-table-02/sectioned-data-table-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/grouped-data-table-02/sectioned-data-table-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/grouped-data-table-02/sectioned-data-table-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/grouped-data-table-02/sectioned-data-table-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/grouped-data-table-02/sectioned-data-table-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/grouped-data-table-01/grouped-data-table-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/grouped-data-table-01/grouped-data-table-demo-data.ts"
+        }
+      ]
+    },
+    {
       "name": "grouped-data-table-01",
       "type": "registry:block",
       "title": "Grouped Data Table",

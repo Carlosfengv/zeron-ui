@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./grouped-data-table-02": "./src/application/grouped-data-table-02/index.ts",
     "./grouped-data-table-01": "./src/application/grouped-data-table-01/index.ts",
     "./model-selector-01": "./src/application/model-selector-01/index.ts",
     "./agent-tasks-01": "./src/application/agent-tasks-01/index.ts",

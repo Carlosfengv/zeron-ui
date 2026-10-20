@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-for (const slug of ["grouped-data-table-01"] as const) {
+for (const slug of ["grouped-data-table-01", "grouped-data-table-02"] as const) {
   for (const locale of ["zh-CN", "en"] as const) {
     test(`${slug} / ${locale}: localized sorting, facet clearing and resource search`, async ({ page }) => {
       await page.goto(`/${locale}/block-demo/${slug}`);

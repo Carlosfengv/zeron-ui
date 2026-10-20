@@ -2,11 +2,21 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { checkRegistry } from "../packages/registry/scripts/registry-check.mjs";
+import { groupedDataTableDemoItems } from "../packages/blocks/src/application/grouped-data-table-01/grouped-data-table-demo-data";
+import { sectionedDataTableDemoItems } from "../packages/blocks/src/application/grouped-data-table-02/sectioned-data-table-demo-data";
 
 const root = resolve(import.meta.dirname, "..");
 const read = (file: string) => JSON.parse(readFileSync(resolve(root, file), "utf8"));
 
-describe.each(["grouped-data-table-01"])("%s distribution", (slug) => {
+it("shares the cloud fixture definitions without sharing mutable demo records", () => {
+  expect(sectionedDataTableDemoItems).toEqual(groupedDataTableDemoItems);
+  expect(sectionedDataTableDemoItems).not.toBe(groupedDataTableDemoItems);
+  for (let index = 0; index < groupedDataTableDemoItems.length; index++) {
+    expect(sectionedDataTableDemoItems[index]).not.toBe(groupedDataTableDemoItems[index]);
+  }
+});
+
+describe.each(["grouped-data-table-01", "grouped-data-table-02"])("%s distribution", (slug) => {
   it("exports a React data-block with all implementation files", () => {
     expect(read("packages/blocks/package.json").exports[`./${slug}`]).toBe(`./src/application/${slug}/index.ts`);
     expect(read("packages/blocks/block-capabilities.json")[slug]).toEqual({ framework: "react", kind: "data-block" });
@@ -19,6 +29,10 @@ describe.each(["grouped-data-table-01"])("%s distribution", (slug) => {
       `components/blocks/${slug}/${prefix}-labels.ts`,
     ]));
     expect(item.registryDependencies).toContain("data-table");
+    if (slug === "grouped-data-table-02") {
+      expect(item.files.map((file: { target: string }) => file.target)).toContain("components/blocks/grouped-data-table-01/grouped-data-table-demo-data.ts");
+      expect(item.files.some((file: { target: string }) => file.target.endsWith("/grouped-data-table-01/grouped-data-table.tsx"))).toBe(false);
+    }
   });
 
   it("ships a complete installable dependency closure without workspace imports", () => {

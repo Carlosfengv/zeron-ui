@@ -68,6 +68,10 @@
       "itemId": "block:grouped-data-table-01"
     },
     {
+      "path": "blocks/grouped-data-table-02.md",
+      "itemId": "block:grouped-data-table-02"
+    },
+    {
       "path": "blocks/infinite-log-table-01.md",
       "itemId": "block:infinite-log-table-01"
     },

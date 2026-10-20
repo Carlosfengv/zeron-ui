@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "items": [
     {
+      "id": "block:grouped-data-table-02",
+      "type": "registry",
+      "key": "grouped-data-table-02",
+      "aliases": [
+        "grouped-data-table-02"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:grouped-data-table-01",
       "type": "registry",
       "key": "grouped-data-table-01",

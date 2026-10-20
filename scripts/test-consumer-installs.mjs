@@ -522,6 +522,13 @@ async function verifyNextBuild({ consumer, component }) {
     'const columns: ColumnDef<GroupedDataTableDemoItem, unknown>[] = [{accessorKey:"name",header:"Resource",enableHiding:false},{accessorKey:"kind",header:"Resource type",enableHiding:false},{accessorKey:"status",header:"Status"}];',
     'export default function Page() { return <GroupedDataTable data={groupedDataTableDemoItems} columns={columns} getRowId={(item) => item.id} groupBy="kind" />; }',
   ].join("\n");
+  examples["grouped-data-table-02"] = [
+    '"use client";',
+    'import type { ColumnDef } from "@tanstack/react-table";',
+    'import { SectionedDataTable, sectionedDataTableDemoItems, type SectionedDataTableDemoItem } from "@/components/blocks/grouped-data-table-02";',
+    'const columns: ColumnDef<SectionedDataTableDemoItem, unknown>[] = [{accessorKey:"name",header:"Resource",enableHiding:false},{accessorKey:"status",header:"Status",enableHiding:false},{accessorKey:"provider",header:"Provider",enableHiding:false}];',
+    'export default function Page() { return <SectionedDataTable data={sectionedDataTableDemoItems} columns={columns} getRowId={(item) => item.id} dimensions={[{columnId:"status",label:"Status"},{columnId:"provider",label:"Provider"}]} />; }',
+  ].join("\n");
   examples["account-activity-01"] = [
     'import { AccountActivity, accountActivityDemoData } from "@/components/blocks/account-activity-01";',
     'export default function Page() { return <AccountActivity data={accountActivityDemoData} />; }',
