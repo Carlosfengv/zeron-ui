@@ -31,6 +31,8 @@ describe("documentation manifest", () => {
     expect(pageDocEntries).toHaveLength(151);
     expect(detailDocEntries).toHaveLength(151);
     expect(pageDocEntries.find((entry) => entry.slug === "chat-thread-01")?.collection).toBe("blocks");
+    expect(pageDocEntries.find((entry) => entry.collection === "blocks")?.slug).toBe("grouped-data-table-02");
+    expect(pageDocEntries.find((entry) => entry.collection === "components")?.slug).toBe("time-window-timeline");
     expect(pageDocEntries.find((entry) => entry.slug === "message-navigation")?.collection).toBe("components");
     expect(pageDocEntries.find((entry) => entry.slug === "markdown")?.collection).toBe("components");
     expect(pageDocEntries.find((entry) => entry.slug === "grouped-data-table-02")?.collection).toBe("blocks");
