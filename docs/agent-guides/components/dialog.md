@@ -24,7 +24,8 @@ related: [button, field, mobile-drawer]
 - Root 提供 `open`、`defaultOpen`、`onOpenChange(open, eventDetails)`、`disablePointerDismissal`、`modal`。`eventDetails.reason` 区分 `outside-press`、`escape-key`、`close-press` 等原因，`eventDetails.cancel()` 可取消本次变化；事件详情与原因类型分别从 `@zeron/ui/dialog` 导入 `DialogChangeEventDetails`、`DialogChangeEventReason`。只接收 `open` 的既有回调仍可使用。
 - `disablePointerDismissal` 默认 false；设为 true 仅阻止外部指针关闭，Escape 仍可关闭。提交中若需阻止所有关闭方式，由受控 Root 或 `eventDetails.cancel()` 处理。
 - Trigger／Close 复用底层 `render` 组合，例如 `render={<Button ... />}`；不能把其他库的 `asChild` 当成这里的契约。
-- Content 的公开尺寸只有 `sm | lg`，默认 sm。Title／Description 保留对话框的可访问命名与说明。
+- Content 的公开尺寸只有 `sm | lg`，默认 sm；`placement` 可选择 `center | left | right | top | bottom`，默认居中。Title／Description 保留对话框的可访问命名与说明。
+- `backdropClassName` 与 `backdropStyle` 只作用于遮罩表面，适用于有明确设计需求的场景；默认遮罩样式保持不变。
 - `container` 可指定嵌入区域的 Portal 目标；其定位容器和 modal 语义一起设计。普通页面保留默认模式与现有 Portal／主题 Provider。
 - Content 默认包含关闭按钮；`showCloseButton={false}` 隐藏后可用 `DialogClose` 提供自定义关闭入口。`closeButtonLabel` 设置可访问名称（默认 `Close`），`closeButtonDisabled` 仅禁用内建按钮，不阻止 Escape 或外部指针关闭。关闭流程、未保存确认与异步状态由受控 Root 协调，不修改组件内部实现。
 

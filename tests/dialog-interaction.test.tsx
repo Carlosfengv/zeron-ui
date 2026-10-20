@@ -23,6 +23,55 @@ afterEach(() => {
 });
 
 describe("Dialog dismissal and close controls", () => {
+  it.each([
+    ["center", "left-1/2"],
+    ["left", "left-0"],
+    ["right", "right-0"],
+    ["top", "top-0"],
+    ["bottom", "bottom-0"],
+  ] as const)("positions the %s dialog", (placement, expectedClass) => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent placement={placement}>
+          <DialogTitle>Placed dialog</DialogTitle>
+        </DialogContent>
+      </Dialog>
+    );
+
+    const panel = screen.getByRole("dialog", { name: "Placed dialog" });
+    expect(panel.getAttribute("data-placement")).toBe(placement);
+    expect(panel.classList.contains(expectedClass)).toBe(true);
+    expect(panel.classList.contains("left-1/2")).toBe(placement === "center");
+    expect(panel.classList.contains("top-1/2")).toBe(placement === "center");
+    expect(panel.classList.contains("overflow-y-auto")).toBe(placement !== "center");
+  });
+
+  it("supports explicit placement and backdrop customization", () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent
+          placement="right"
+          backdropClassName="backdrop-blur-none custom-dialog-backdrop"
+          backdropStyle={{ backgroundColor: "rgb(1, 2, 3)" }}
+        >
+          <DialogTitle>Side panel</DialogTitle>
+        </DialogContent>
+      </Dialog>
+    );
+
+    const panel = screen.getByRole("dialog", { name: "Side panel" });
+    expect(panel.getAttribute("data-placement")).toBe("right");
+    expect(panel.classList.contains("right-0")).toBe(true);
+
+    const backdrop = document.querySelector<HTMLElement>(
+      '[data-slot="dialog-backdrop"]'
+    );
+    expect(backdrop).not.toBeNull();
+    expect(backdrop?.classList.contains("backdrop-blur-none")).toBe(true);
+    expect(backdrop?.classList.contains("custom-dialog-backdrop")).toBe(true);
+    expect(backdrop?.style.backgroundColor).toBe("rgb(1, 2, 3)");
+  });
+
   it("forwards pointer-dismissal control and keeps Escape dismissal available", async () => {
     const onOpenChange = vi.fn();
 

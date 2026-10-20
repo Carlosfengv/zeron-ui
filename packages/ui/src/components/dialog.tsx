@@ -2,6 +2,7 @@
 
 import {
   forwardRef,
+  type CSSProperties,
   type ReactNode,
   type HTMLAttributes,
 } from "react";
@@ -55,8 +56,16 @@ function Dialog({
 const DialogTrigger = DialogPrimitive.Trigger;
 const DialogClose = DialogPrimitive.Close;
 
-interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
+export type DialogPlacement = "center" | "left" | "right" | "top" | "bottom";
+
+export interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
   size?: "sm" | "lg";
+  /** Where the panel is positioned in the viewport or provided container. */
+  placement?: DialogPlacement;
+  /** Classes applied to the backdrop surface. */
+  backdropClassName?: string;
+  /** Inline styles applied to the backdrop surface. */
+  backdropStyle?: CSSProperties;
   /** Whether to render the built-in close button. Defaults to true. */
   showCloseButton?: boolean;
   /** Accessible name for the built-in close button. Defaults to "Close". */
@@ -71,12 +80,36 @@ interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
   container?: HTMLElement | null;
 }
 
+const edgePlacementClasses = {
+  left: "inset-y-0 left-0 rounded-l-none rounded-r-xl",
+  right: "inset-y-0 right-0 rounded-l-xl rounded-r-none",
+  top: "inset-x-0 top-0 w-full max-w-none rounded-t-none rounded-b-xl",
+  bottom: "inset-x-0 bottom-0 w-full max-w-none rounded-t-xl rounded-b-none",
+} satisfies Record<Exclude<DialogPlacement, "center">, string>;
+
+const edgePlacementOffset = {
+  left: { x: "-100%" },
+  right: { x: "100%" },
+  top: { y: "-100%" },
+  bottom: { y: "100%" },
+} satisfies Record<Exclude<DialogPlacement, "center">, { x?: string; y?: string }>;
+
+const edgePlacementRest = {
+  left: { x: 0 },
+  right: { x: 0 },
+  top: { y: 0 },
+  bottom: { y: 0 },
+} satisfies Record<Exclude<DialogPlacement, "center">, { x?: number; y?: number }>;
+
 const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
   (
     {
       className,
       children,
       size = "sm",
+      placement = "center",
+      backdropClassName,
+      backdropStyle,
       container,
       showCloseButton = true,
       closeButtonLabel = "Close",
@@ -114,10 +147,13 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
             return (
               <motion.div
                 {...rest}
+                data-slot="dialog-backdrop"
                 className={cn(
                   container ? "absolute" : "fixed",
-                  "inset-0 z-popover bg-scrim backdrop-blur-[2px]"
+                  "inset-0 z-popover bg-scrim backdrop-blur-[2px]",
+                  backdropClassName
                 )}
+                style={backdropStyle}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: exiting ? 0 : 1 }}
                 transition={exiting ? spring.slow.exit : spring.slow}
@@ -156,30 +192,70 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
                 >)}
                 className={cn(
                   container ? "absolute" : "fixed",
-                  "left-1/2 top-1/2 z-popover w-[calc(100%-2rem)]",
+                  placement === "center" && "left-1/2 top-1/2",
+                  "z-popover w-[calc(100%-2rem)]",
                   surfaceClasses(dialogSurface, "overlay"),
                   "p-6 focus:outline-none",
                   size === "sm" && "max-w-[400px]",
                   size === "lg" && "max-w-[540px]",
                   "rounded-xl",
+                  placement !== "center" && edgePlacementClasses[placement],
+                  placement === "left" || placement === "right"
+                    ? container
+                      ? "h-full max-h-full"
+                      : "h-dvh max-h-dvh"
+                    : placement === "top" || placement === "bottom"
+                      ? container
+                        ? "max-h-full"
+                        : "max-h-dvh"
+                      : undefined,
+                  placement !== "center" && "overflow-y-auto overscroll-contain",
                   className
                 )}
+                data-placement={placement}
                 style={{
                   ...(baseStyle as React.CSSProperties | undefined),
                   ...(props.style as React.CSSProperties | undefined),
                 }}
-                initial={{ opacity: 0, scale: 0.97, x: "-50%", y: "-50%" }}
-                animate={{
-                  opacity: exiting ? 0 : 1,
-                  scale: exiting ? 0.97 : 1,
-                  x: "-50%",
-                  y: "-50%",
-                }}
+                initial={
+                  placement === "center"
+                    ? { opacity: 0, scale: 0.97, x: "-50%", y: "-50%" }
+                    : { opacity: 0, ...edgePlacementOffset[placement] }
+                }
+                animate={
+                  placement === "center"
+                    ? {
+                        opacity: exiting ? 0 : 1,
+                        scale: exiting ? 0.97 : 1,
+                        x: "-50%",
+                        y: "-50%",
+                      }
+                    : {
+                        opacity: exiting ? 0 : 1,
+                        ...(exiting
+                          ? edgePlacementOffset[placement]
+                          : edgePlacementRest[placement]),
+                      }
+                }
                 transition={exiting ? spring.slow.exit : spring.slow}
               >
                 <SurfaceProvider role={dialogSurface}>
+                  {showCloseButton && placement !== "center" && (
+                    <div className="sticky top-0 z-popover -mb-8 flex justify-end">
+                      <DialogPrimitive.Close
+                        aria-label={closeButtonLabel}
+                        disabled={closeButtonDisabled}
+                        render={
+                          <Button variant="ghost" iconOnly size="sm">
+                            <XIcon />
+                            <span className="sr-only">{closeButtonLabel}</span>
+                          </Button>
+                        }
+                      />
+                    </div>
+                  )}
                   {children}
-                  {showCloseButton && (
+                  {showCloseButton && placement === "center" && (
                     <DialogPrimitive.Close
                       aria-label={closeButtonLabel}
                       disabled={closeButtonDisabled}
