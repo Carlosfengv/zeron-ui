@@ -44,11 +44,13 @@ export function ChatWorkspaceBlockDocClient({ code }: { code: PreviewCode }) {
     <BlockDetailSection title={t("standalone")}><p className="mb-3 text-body text-fg-muted">{t("standaloneBody")}</p><ArtifactPanelDemo /></BlockDetailSection>
     <BlockDetailSection title={t("api")}><PropsTable props={[
       { name: "ChatWorkspace.artifacts", type: "ReactNode", description: t("apiArtifacts") },
+      { name: "title / headerActions", type: "string / ReactNode", description: t("apiHeader") },
       { name: "chatDefaultSize / chatMinSize / artifactMinSize", type: "string", default: "38% / 280px / 320px", description: t("apiResize") },
       { name: "panelOpen / onPanelOpenChange", type: "boolean / (open) => void", description: t("apiOpen") },
       { name: "activePane / onActivePaneChange", type: '"chat" | "artifacts" / (pane) => void', description: t("apiPane") },
       { name: "ArtifactPanel.resources", type: "readonly ArtifactResource[]", description: t("apiResources") },
       { name: "activeId / onActiveIdChange / onClose", type: "string | null / callbacks", description: t("apiTabs") },
+      { name: "onCloseMany", type: "(resources: readonly ArtifactResource[]) => void", description: t("apiCloseMany") },
       { name: "addAction", type: "ReactNode", description: t("apiAddAction") },
       { name: "onReview", type: '(resource, "accept" | "reject") => void | Promise<void>', description: t("apiReview") },
       { name: "onReference / onRetry / renderPreview", type: "callbacks / (resource) => ReactNode | undefined", description: t("apiExtensions") },

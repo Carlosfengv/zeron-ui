@@ -13,6 +13,7 @@ import { InputMessage } from "@zeron/ui/input-message";
 import { MenuItem } from "@zeron/ui/menu-item";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { ChatDemoContextControl, ChatDemoModelControls, ChatDemoResponseContent } from "./ChatDemoParts";
+import { ChatWorkspaceSessionMenu } from "./ChatWorkspaceSessionMenu";
 
 type WorkspaceDemoMessage = Pick<ChatThreadDemoMessage, "id" | "role" | "text" | "localFiles" | "model" | "modelId" | "provider" | "metrics" | "reasoning" | "feedback" | "stopped"> & {
   parentId?: string;
@@ -35,7 +36,7 @@ function ArtifactAddMenu({ resources, onOpen, locale }: { resources: readonly Ar
   const Plus = useIcon("plus");
   const Globe = useIcon("globe");
   return <DropdownMenu>
-    <DropdownTrigger render={<Button iconOnly size="sm" variant="tertiary" aria-label={locale === "zh-CN" ? "打开内容" : "Open content"}><Plus aria-hidden /></Button>} />
+    <DropdownTrigger render={<Button iconOnly variant="tertiary" aria-label={locale === "zh-CN" ? "打开内容" : "Open content"}><Plus aria-hidden /></Button>} />
     <DropdownContent align="end">{resources.map((resource, index) => <MenuItem key={resource.id} index={index} label={resource.name}
       leading={resource.kind === "url" ? <Globe aria-hidden /> : <FileType fileName={resource.name} variant="mono" size="mini" aria-hidden />}
       onSelect={() => onOpen(resource)} />)}</DropdownContent>
@@ -59,7 +60,11 @@ function useDemoArtifacts(locale: string) {
     const byId = new Map(resources.map((resource) => [resource.id, resource]));
     return openIds.flatMap((id) => { const resource = byId.get(id); return resource ? [resource] : []; });
   }, [resources, openIds]);
-  return { resources, openResources, activeId, setActiveId, review, open, close: (resource: ArtifactResource) => setOpenIds((current) => current.filter((id) => id !== resource.id)) };
+  const closeMany = (items: readonly ArtifactResource[]) => {
+    const ids = new Set(items.map((resource) => resource.id));
+    setOpenIds((current) => current.filter((id) => !ids.has(id)));
+  };
+  return { resources, openResources, activeId, setActiveId, review, open, closeMany };
 }
 
 export function ChatWorkspaceDemo() {
@@ -75,6 +80,7 @@ function WorkspaceDemo({ locale }: { locale: string }) {
   const ArrowRight = useIcon("arrow-right");
   const workspace = useRef<HTMLDivElement>(null);
   const [draft, setDraft] = useState("");
+  const [sessionTitle, setSessionTitle] = useState("session title");
   const [files, setFiles] = useState<File[]>([]);
   const models = useMemo(() => createModelSelectorDemoModels(locale), [locale]);
   const [model, setModel] = useState(modelSelectorDemoValue);
@@ -128,9 +134,9 @@ function WorkspaceDemo({ locale }: { locale: string }) {
       Array.from(workspace.current?.querySelectorAll<HTMLElement>("[data-artifact-id]") ?? []).find((tab) => tab.dataset.artifactId === firstPending.id)?.focus();
     });
   };
-  const close = (resource: ArtifactResource) => {
-    artifacts.close(resource);
-    if (artifacts.openResources.length === 1) {
+  const closeMany = (items: readonly ArtifactResource[]) => {
+    artifacts.closeMany(items);
+    if (items.length === artifacts.openResources.length) {
       setPanelOpen(false);
       setPane("chat");
       requestAnimationFrame(() => editor.current?.focus());
@@ -142,9 +148,10 @@ function WorkspaceDemo({ locale }: { locale: string }) {
     requestAnimationFrame(() => editor.current?.focus());
   };
   return <div ref={workspace} className="h-full min-h-0 w-full">
-    <ChatWorkspace title={zh ? "外观设置" : "Appearance settings"} locale={locale} labels={zh ? chatThreadZhLabels : undefined}
+    <ChatWorkspace title={sessionTitle} locale={locale} labels={zh ? chatThreadZhLabels : undefined}
+      headerActions={<ChatWorkspaceSessionMenu title={sessionTitle} onTitleChange={setSessionTitle} messages={messages} locale={locale} />}
       panelOpen={panelOpen} onPanelOpenChange={setPanelOpen} activePane={pane} onActivePaneChange={setPane} busy={!!stream} composerRef={editor}
-      artifacts={<ArtifactPanel locale={locale} resources={artifacts.openResources} activeId={artifacts.activeId} onActiveIdChange={artifacts.setActiveId} onClose={close} onReview={artifacts.review} onReference={reference}
+      artifacts={<ArtifactPanel locale={locale} resources={artifacts.openResources} activeId={artifacts.activeId} onActiveIdChange={artifacts.setActiveId} onCloseMany={closeMany} onReview={artifacts.review} onReference={reference}
         addAction={<ArtifactAddMenu resources={artifacts.resources} onOpen={open} locale={locale} />} />}
       composer={<>
         {references.length > 0 && <div className="mb-2 flex flex-wrap items-center gap-1" aria-label={zh ? "草稿引用" : "Draft references"}>{references.map((resource) => <Button key={`${resource.id}:${resource.version}`} size="xs" variant="secondary" aria-label={`${zh ? "移除引用" : "Remove reference"}: ${resource.name}`} onClick={() => setReferences((current) => current.filter((item) => item !== resource))}>{resource.name} ×</Button>)}</div>}
@@ -191,7 +198,7 @@ export function ArtifactPanelDemo() {
 function StandalonePanelDemo({ locale }: { locale: string }) {
   const artifacts = useDemoArtifacts(locale);
   return <div className="h-[560px] min-w-0 overflow-hidden rounded-xl border-hairline border-border">
-    <ArtifactPanel locale={locale} resources={artifacts.openResources} activeId={artifacts.activeId} onActiveIdChange={artifacts.setActiveId} onReview={artifacts.review} onClose={artifacts.close}
+    <ArtifactPanel locale={locale} resources={artifacts.openResources} activeId={artifacts.activeId} onActiveIdChange={artifacts.setActiveId} onReview={artifacts.review} onCloseMany={artifacts.closeMany}
       addAction={<ArtifactAddMenu resources={artifacts.resources} onOpen={artifacts.open} locale={locale} />} />
   </div>;
 }
