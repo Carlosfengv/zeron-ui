@@ -64,7 +64,7 @@ export function downloadArtifact(resource: ArtifactResource) {
 
 "use client";
 
-import { Component, lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import { Component, lazy, Suspense, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Button } from "@zeron/ui/button";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@zeron/ui/empty";
 import { FileType } from "@zeron/ui/file-type";
@@ -82,7 +82,11 @@ function ImagePreview({ resource, labels }: { resource: Extract<ArtifactResource
   const viewport = useRef<HTMLDivElement>(null);
   const [bounds, setBounds] = useState({ width: 0, height: 0 });
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [zoom, setZoom] = useState(1);
+  // Null tracks the container; numeric values are absolute image scales.
+  const [zoom, setZoom] = useState<number | null>(null);
+  const drag = useRef<{ id: number; x: number; y: number; left: number; top: number } | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const hintId = useId();
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const url = safeArtifactUrl(resource.url);
@@ -91,29 +95,64 @@ function ImagePreview({ resource, labels }: { resource: Extract<ArtifactResource
     if (!node) return;
     const measure = () => setBounds({ width: node.clientWidth, height: node.clientHeight });
     measure();
+    if (typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(measure);
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
   const fit = dimensions.width && bounds.width ? Math.min(Math.max(1, bounds.width - 48) / dimensions.width, Math.max(1, bounds.height - 48) / dimensions.height, 1) : 1;
+  const scale = zoom ?? fit;
+  const imageReady = !!url && !failed && dimensions.width > 0;
+  const canPan = imageReady && (dimensions.width * scale + 48 > bounds.width || dimensions.height * scale + 48 > bounds.height);
+  const resetZoom = (value: number | null) => {
+    setZoom(value);
+    if (viewport.current) { viewport.current.scrollLeft = 0; viewport.current.scrollTop = 0; }
+  };
+  const stopDrag = () => {
+    const current = drag.current;
+    drag.current = null;
+    if (current && viewport.current?.hasPointerCapture?.(current.id)) viewport.current.releasePointerCapture(current.id);
+    setDragging(false);
+  };
   return <div className="flex min-h-0 flex-1 flex-col">
-    <div className="flex shrink-0 items-center justify-between gap-3 border-b-hairline border-border px-4 py-2">
+    <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b-hairline border-border px-4 py-2">
       <span className="text-label text-fg-muted">{dimensions.width ? `${dimensions.width} × ${dimensions.height}` : labels.preview}</span>
-      <div className="flex items-center gap-2">
-        <Button size="xs" variant="ghost" iconOnly aria-label={labels.zoomOut} disabled={zoom <= 0.25 || !dimensions.width} onClick={() => setZoom((value) => Math.max(0.25, value / 1.25))}>−</Button>
-        <span className="w-12 text-center text-label tabular-nums">{Math.round(fit * zoom * 100)}%</span>
-        <Button size="xs" variant="ghost" iconOnly aria-label={labels.zoomIn} disabled={zoom >= 8 || !dimensions.width} onClick={() => setZoom((value) => Math.min(8, value * 1.25))}>+</Button>
-        <Button size="xs" variant="ghost" onClick={() => setZoom(1)}>{labels.fit}</Button>
+      <div className="flex flex-wrap items-center gap-1">
+        <Button variant="ghost" iconOnly aria-label={labels.zoomOut} disabled={scale <= 0.05 || !imageReady} onClick={() => setZoom(Math.max(0.05, scale / 1.25))}>−</Button>
+        <span className="w-12 text-center text-label tabular-nums" aria-live="polite">{Math.round(scale * 100)}%</span>
+        <Button variant="ghost" iconOnly aria-label={labels.zoomIn} disabled={scale >= 8 || !imageReady} onClick={() => setZoom(Math.min(8, Math.max(0.05, scale * 1.25)))}>+</Button>
+        <Button variant="ghost" aria-pressed={zoom === 1} disabled={!imageReady} onClick={() => resetZoom(1)}>{labels.actualSize}</Button>
+        <Button variant="ghost" aria-pressed={zoom === null} disabled={!imageReady} onClick={() => resetZoom(null)}>{labels.fit}</Button>
       </div>
     </div>
-    <div ref={viewport} className="relative min-h-0 flex-1 overflow-auto bg-surface-raised" tabIndex={0} aria-label={`${labels.preview}: ${resource.name}`}>
+    <p id={hintId} className="sr-only">{labels.panImage}</p>
+    <div ref={viewport} data-slot="artifact-image-viewport" className={`relative min-h-0 flex-1 overflow-auto bg-surface-raised ${canPan ? dragging ? "cursor-grabbing" : "cursor-grab" : ""}`} tabIndex={0} aria-label={`${labels.preview}: ${resource.name}`} aria-describedby={hintId}
+      onPointerDown={(event) => {
+        if (event.pointerType !== "mouse" || event.button !== 0 || !dimensions.width || !canPan) return;
+        const node = event.currentTarget;
+        event.preventDefault();
+        node.focus();
+        node.setPointerCapture(event.pointerId);
+        drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, left: node.scrollLeft, top: node.scrollTop };
+        setDragging(true);
+      }}
+      onPointerMove={(event) => {
+        const start = drag.current;
+        if (!start || start.id !== event.pointerId) return;
+        event.currentTarget.scrollLeft = start.left + start.x - event.clientX;
+        event.currentTarget.scrollTop = start.top + start.y - event.clientY;
+      }}
+      onPointerUp={(event) => {
+        if (drag.current?.id !== event.pointerId) return;
+        stopDrag();
+      }} onPointerCancel={stopDrag} onLostPointerCapture={stopDrag}>
       {!url ? <PreviewNotice>{labels.unavailableUrl}</PreviewNotice> : failed ? <PreviewNotice><span>{labels.failed} </span><Button size="sm" variant="ghost" onClick={() => { setFailed(false); setDimensions({ width: 0, height: 0 }); setAttempt((value) => value + 1); }}>{labels.retry}</Button></PreviewNotice> :
         <div className="grid min-h-full min-w-full w-max place-items-center p-6">
           {!dimensions.width && <span role="status" className="text-label text-fg-muted">{labels.loading}</span>}
           {/* eslint-disable-next-line @next/next/no-img-element -- natural dimensions drive the zoomable viewer. */}
           <img key={attempt} src={url} alt={resource.alt ?? resource.name} draggable={false} className="block max-w-none"
-            style={{ width: dimensions.width ? dimensions.width * fit * zoom : undefined, height: dimensions.height ? dimensions.height * fit * zoom : undefined, visibility: dimensions.width ? "visible" : "hidden" }}
-            onLoad={(event) => setDimensions({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })} onError={() => setFailed(true)} />
+            style={{ width: dimensions.width ? dimensions.width * scale : undefined, height: dimensions.height ? dimensions.height * scale : undefined, visibility: dimensions.width ? "visible" : "hidden" }}
+            onLoad={(event) => setDimensions({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })} onError={() => { stopDrag(); setFailed(true); }} />
         </div>}
     </div>
   </div>;
@@ -228,7 +267,7 @@ export function createChatWorkspaceDemoResources(locale = "en", assetBase = "/de
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { Button } from "@zeron/ui/button";
-import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
+import { DropdownContent, DropdownMenu, DropdownSeparator, DropdownTrigger } from "@zeron/ui/dropdown";
 import { FileType } from "@zeron/ui/file-type";
 import { MenuItem } from "@zeron/ui/menu-item";
 import { TabItem, Tabs, TabsList } from "@zeron/ui/tabs";
@@ -237,7 +276,9 @@ import type { ArtifactLabels, ArtifactPanelProps, ArtifactResource } from "./cha
 
 /** Keep the selected resource visible and fit complete tabs in their original order. */
 export function visibleArtifactIds(resources: readonly ArtifactResource[], activeId: string, widths: readonly number[], available: number, moreWidth: number, gap: number): Set<string> {
-  if (available <= 0 || widths.length !== resources.length || widths.some((width) => width <= 0)) return new Set(resources.map((resource) => resource.id));
+  if (!resources.length) return new Set();
+  // Unknown measurements retain SSR markup; a measured zero budget still needs overflow handling.
+  if (widths.length !== resources.length || widths.some((width) => width <= 0)) return new Set(resources.map((resource) => resource.id));
   if (widths.reduce((sum, width) => sum + width, 0) + Math.max(0, resources.length - 1) * gap <= available) return new Set(resources.map((resource) => resource.id));
   const activeIndex = Math.max(0, resources.findIndex((resource) => resource.id === activeId));
   const visible = new Set([resources[activeIndex].id]);
@@ -252,11 +293,13 @@ export function visibleArtifactIds(resources: readonly ArtifactResource[], activ
   return visible;
 }
 
-export function ArtifactTabs({ resources, activeId, labels, onSelect, onClose, addAction }: {
+export function ArtifactTabs({ resources, activeId, labels, onSelect, onClose, onCloseOthers, onCloseAll, addAction }: {
   resources: readonly ArtifactResource[];
   activeId: string;
   labels: ArtifactLabels;
   onSelect: (id: string) => void;
+  onCloseOthers?: () => void;
+  onCloseAll?: () => void;
 } & Pick<ArtifactPanelProps, "onClose" | "addAction">) {
   const availableRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
@@ -287,7 +330,8 @@ export function ArtifactTabs({ resources, activeId, labels, onSelect, onClose, a
     observer.observe(more);
     return () => observer.disconnect();
   }, [measurementKey, activeId, closable]);
-  const visible = visibleArtifactIds(resources, activeId, layout.widths, layout.available, layout.moreWidth, layout.gap);
+  // Closing actions keep the menu present even when every tab fits.
+  const visible = visibleArtifactIds(resources, activeId, layout.widths, layout.available - (closable ? layout.moreWidth : 0), closable ? 0 : layout.moreWidth, layout.gap);
   const leading = (resource: ArtifactResource) => resource.kind === "url" ? <Globe size={16} aria-hidden /> : <FileType fileName={resource.name} variant="mono" size="mini" aria-hidden />;
   const focusSelected = (id: string) => requestAnimationFrame(() => {
     Array.from(availableRef.current?.querySelectorAll<HTMLElement>("[data-artifact-id]") ?? []).find((tab) => tab.dataset.artifactId === id)?.focus();
@@ -301,11 +345,16 @@ export function ArtifactTabs({ resources, activeId, labels, onSelect, onClose, a
             onKeyDown={(event) => { if (onClose && event.key === "Delete") { event.preventDefault(); onClose(resource); } }} />)}
         </TabsList>
       </div>
-      {visible.size < resources.length && <DropdownMenu>
-        <DropdownTrigger render={<Button iconOnly size="sm" variant="tertiary" aria-label={labels.more}><More aria-hidden /></Button>} />
+      {(closable || visible.size < resources.length) && <DropdownMenu>
+        <DropdownTrigger render={<Button iconOnly variant="tertiary" aria-label={labels.more}><More aria-hidden /></Button>} />
         <DropdownContent align="end" aria-label={labels.resources} checkedIndex={resources.findIndex((resource) => resource.id === activeId)}>
           {resources.map((resource, index) => <MenuItem key={resource.id} index={index} label={resource.name} leading={leading(resource)} checked={resource.id === activeId}
             onSelect={() => { onSelect(resource.id); focusSelected(resource.id); }} />)}
+          {closable && <>
+            <DropdownSeparator />
+            <MenuItem index={resources.length} label={labels.closeOthers} disabled={resources.length < 2} onSelect={onCloseOthers} />
+            <MenuItem index={resources.length + 1} label={labels.closeAll} onSelect={onCloseAll} />
+          </>}
         </DropdownContent>
       </DropdownMenu>}
     </div>
@@ -318,7 +367,7 @@ export function ArtifactTabs({ resources, activeId, labels, onSelect, onClose, a
           {resources.map((resource) => <TabItem key={resource.id} value={resource.id} label={resource.name} data-measure-artifact leading={leading(resource)} onClose={onClose ? () => {} : undefined} />)}
         </TabsList>
       </Tabs>
-      <div ref={moreRef}><Button iconOnly size="sm" variant="tertiary" tabIndex={-1}><More aria-hidden /></Button></div>
+      <div ref={moreRef}><Button iconOnly variant="tertiary" tabIndex={-1}><More aria-hidden /></Button></div>
       </div>
     </div>
   </div>;
@@ -347,15 +396,17 @@ export function ArtifactCodePreview({ resource, view, split }: { resource: Artif
 import { useEffect, useRef, useState } from "react";
 import { Alert, AlertAction, AlertTitle } from "@zeron/ui/alert";
 import { Button } from "@zeron/ui/button";
+import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@zeron/ui/empty";
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { MenuItem } from "@zeron/ui/menu-item";
 import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
 import { resolveArtifactLabels } from "./artifact-labels";
 import { ArtifactTabs } from "./artifact-tabs";
 import { ArtifactPreview, ArtifactPreviewBoundary } from "./artifact-preview";
-import { artifactText, artifactVersionKey, artifactViews, downloadArtifact, getPendingReviewResources, safeArtifactUrl } from "./artifact-utils";
+import { artifactReviewStatus, artifactText, artifactVersionKey, artifactViews, downloadArtifact, getPendingReviewResources, safeArtifactUrl } from "./artifact-utils";
 import type { ArtifactLabels, ArtifactPanelProps, ArtifactResource, ArtifactReviewDecision, ArtifactView } from "./chat-workspace-types";
 
 function ArtifactSurface({ resource, labels, onReference, onRetry, renderPreview }: {
@@ -371,6 +422,7 @@ function ArtifactSurface({ resource, labels, onReference, onRetry, renderPreview
   const Link = useIcon("link");
   const Copy = useIcon("copy");
   const text = artifactText(resource);
+  const reviewStatus = artifactReviewStatus(resource);
   const url = "url" in resource ? safeArtifactUrl(resource.url, resource.kind === "url") : undefined;
   const downloadable = resource.kind !== "url" && ("content" in resource || url || safeArtifactUrl(resource.downloadUrl));
   const run = async (action: () => void | Promise<void>, success: string, failed: string) => {
@@ -384,6 +436,7 @@ function ArtifactSurface({ resource, labels, onReference, onRetry, renderPreview
   return <>
     <div className="flex shrink-0 flex-wrap items-center gap-2 border-b-hairline border-border px-4 py-2">
       <span className="min-w-0 flex-1 truncate font-mono text-label text-fg-muted" title={resource.path ?? resource.name}>{resource.path ?? resource.name}</span>
+      {reviewStatus && <span className="shrink-0 text-label text-fg-muted">{labels[reviewStatus]}</span>}
       <div className="flex flex-wrap items-center gap-1">
         {text !== undefined && <Button size="xs" variant="ghost" leadingIcon={Copy} disabled={actionBusy} onClick={() => void run(() => navigator.clipboard.writeText(text), labels.copied, labels.copyFailed)}>{labels.copy}</Button>}
         {downloadable && <Button size="xs" variant="ghost" onClick={() => downloadArtifact(resource)}>{labels.download}</Button>}
@@ -417,16 +470,21 @@ function ArtifactTabPanel({ resource, active, ...props }: {
   </TabPanel>;
 }
 
-export function ArtifactPanel({ resources, activeId, defaultActiveId, onActiveIdChange, onClose, addAction, onReview, onReference, onRetry, renderPreview, labels: overrides, locale, className, ...props }: ArtifactPanelProps) {
+export function ArtifactPanel({ resources, activeId, defaultActiveId, onActiveIdChange, onClose, onCloseMany, addAction, onReview, onReference, onRetry, renderPreview, labels: overrides, locale, className, ...props }: ArtifactPanelProps) {
   const labels = resolveArtifactLabels(locale, overrides);
   const [selectedId, setSelectedId] = useState(defaultActiveId ?? resources[0]?.id);
   const requested = activeId === undefined ? selectedId : activeId;
   const active = resources.find((resource) => resource.id === requested) ?? resources[0];
   const [reviewing, setReviewing] = useState(false);
-  const [reviewError, setReviewError] = useState(false);
+  const [reviewErrors, setReviewErrors] = useState<string[]>([]);
   const reviewLock = useRef(false);
   const root = useRef<HTMLElement>(null);
   const resolvedId = active?.id;
+  const Previous = useIcon("chevron-left");
+  const Next = useIcon("chevron-right");
+  const Down = useIcon("chevron-down");
+  const More = useIcon("ellipsis");
+  const Check = useIcon("check");
   useEffect(() => {
     if (activeId === undefined) setSelectedId(resolvedId);
   }, [activeId, resolvedId]);
@@ -435,44 +493,84 @@ export function ArtifactPanel({ resources, activeId, defaultActiveId, onActiveId
     if (activeId === undefined) setSelectedId(id);
     onActiveIdChange?.(id);
   };
-  const close = (resource: ArtifactResource) => {
-    if (!onClose) return;
-    const index = resources.indexOf(resource);
-    const next = resource.id === active?.id ? resources[index + 1] ?? resources[index - 1] : active;
-    onClose(resource);
+  const focusTab = (id?: string) => requestAnimationFrame(() => {
+    const tab = Array.from(root.current?.querySelectorAll<HTMLElement>("[data-artifact-id]") ?? []).find((node) => node.dataset.artifactId === id);
+    if (tab) tab.focus();
+    else root.current?.querySelector<HTMLElement>("button")?.focus();
+  });
+  const closable = !!(onClose || onCloseMany);
+  const close = (items: readonly ArtifactResource[]) => {
+    if (!closable || !items.length) return;
+    const ids = new Set(items.map((item) => item.id));
+    const index = resources.findIndex((item) => item.id === active?.id);
+    const next = active && !ids.has(active.id) ? active
+      : resources.slice(index + 1).find((item) => !ids.has(item.id)) ?? resources.slice(0, index).reverse().find((item) => !ids.has(item.id));
+    if (onCloseMany) onCloseMany(items);
+    else items.forEach((item) => onClose?.(item));
     if (next && next.id !== active?.id) select(next.id);
-    requestAnimationFrame(() => {
-      const tab = Array.from(root.current?.querySelectorAll<HTMLElement>("[data-artifact-id]") ?? []).find((node) => node.dataset.artifactId === next?.id);
-      tab?.focus();
-    });
+    focusTab(next?.id);
   };
   const pending = getPendingReviewResources(resources);
+  const pendingIndex = pending.findIndex((resource) => resource.id === active?.id);
+  const currentPending = pending[pendingIndex];
+  const failed = pending.filter((resource) => reviewErrors.includes(artifactVersionKey(resource)));
+  const navigatePending = (direction: -1 | 1) => {
+    if (!pending.length) return;
+    const index = pendingIndex < 0 ? (direction === 1 ? 0 : pending.length - 1) : (pendingIndex + direction + pending.length) % pending.length;
+    select(pending[index].id);
+  };
   const review = async (items: readonly ArtifactResource[], decision: ArtifactReviewDecision) => {
     if (!onReview || reviewLock.current || !items.length) return;
     reviewLock.current = true;
     setReviewing(true);
-    setReviewError(false);
+    const itemKeys = new Set(items.map(artifactVersionKey));
+    const pendingKeys = new Set(pending.map(artifactVersionKey));
+    setReviewErrors((current) => current.filter((key) => pendingKeys.has(key) && !itemKeys.has(key)));
     try {
       const results = await Promise.allSettled(items.map((resource) => Promise.resolve().then(() => onReview(resource, decision))));
-      setReviewError(results.some((result) => result.status === "rejected"));
+      const errors = items.filter((_, index) => results[index].status === "rejected").map(artifactVersionKey);
+      setReviewErrors((current) => [...current, ...errors]);
     } finally { reviewLock.current = false; setReviewing(false); }
   };
 
   return <section {...props} ref={root} aria-label={props["aria-label"] ?? labels.panel} data-slot="artifact-panel" className={cn("flex size-full min-h-0 min-w-0 flex-col overflow-hidden bg-surface-floating text-fg-default", className)}>
     {active ? <Tabs value={active.id} onValueChange={select} variant="segment" color="default" className="flex min-h-0 flex-1 flex-col">
-      <ArtifactTabs resources={resources} activeId={active.id} labels={labels} onSelect={select} onClose={onClose ? close : undefined} addAction={addAction} />
+      <ArtifactTabs resources={resources} activeId={active.id} labels={labels} onSelect={select} onClose={closable ? (resource) => close([resource]) : undefined}
+        onCloseOthers={() => close(resources.filter((resource) => resource.id !== active.id))} onCloseAll={() => close(resources)} addAction={addAction} />
       {resources.map((resource) => <ArtifactTabPanel key={artifactVersionKey(resource)} resource={resource} active={resource.id === active.id} labels={labels} onReference={onReference} onRetry={onRetry} renderPreview={renderPreview} />)}
     </Tabs> : <>
       {addAction && <div className="flex shrink-0 items-center border-b-hairline border-border bg-surface-floating p-2">{addAction}</div>}
       <div className="flex flex-1 items-center justify-center p-6"><Empty reason="first-use" scope="inline" density="compact"><EmptyHeader><EmptyTitle>{labels.empty}</EmptyTitle><EmptyDescription>{labels.emptyDescription}</EmptyDescription></EmptyHeader></Empty></div>
     </>}
     {onReview && pending.length > 0 && <div data-slot="artifact-review-bar" className="shrink-0 p-3">
-      <Alert status="info" role="group" aria-busy={reviewing}>
-        <AlertTitle role="status">{reviewing ? labels.reviewing : labels.remaining(pending.length)}</AlertTitle>
-        <AlertAction><Button variant="ghost" disabled={reviewing} onClick={() => void review(pending, "reject")}>{labels.rejectAll}</Button><Button variant="neutral" disabled={reviewing} onClick={() => void review(pending, "accept")}>{labels.acceptAll}</Button></AlertAction>
+      <Alert status="info" role="group" aria-busy={reviewing} className="flex flex-wrap justify-between gap-2">
+        <AlertTitle>
+          <DropdownMenu>
+            <DropdownTrigger render={<Button variant="ghost" trailingIcon={Down} aria-label={labels.reviewList}><span role="status">{reviewing ? labels.reviewing : labels.remaining(pending.length)}</span></Button>} />
+            <DropdownContent align="start" aria-label={labels.reviewList} checkedIndex={pendingIndex < 0 ? undefined : pendingIndex}>
+              {pending.map((resource, index) => <MenuItem key={artifactVersionKey(resource)} index={index} label={resource.name} title={resource.path ?? resource.name} checked={resource.id === active?.id}
+                trailing={failed.includes(resource) ? <span className="text-label text-fg-danger">{labels.failed}</span> : undefined} onSelect={() => { select(resource.id); focusTab(resource.id); }} />)}
+            </DropdownContent>
+          </DropdownMenu>
+        </AlertTitle>
+        <AlertAction className="mt-0 flex-wrap">
+          <Button variant="tertiary" iconOnly aria-label={labels.previousPending} disabled={pending.length < 2 && !!currentPending} onClick={() => navigatePending(-1)}><Previous aria-hidden /></Button>
+          <Button variant="tertiary" iconOnly aria-label={labels.nextPending} disabled={pending.length < 2 && !!currentPending} onClick={() => navigatePending(1)}><Next aria-hidden /></Button>
+          {currentPending ? <>
+            <Button variant="ghost" disabled={reviewing} onClick={() => void review([currentPending], "reject")}>{labels.reject}</Button>
+            <Button variant="neutral" leadingIcon={Check} disabled={reviewing} onClick={() => void review([currentPending], "accept")}>{labels.accept}</Button>
+          </> : <Button variant="neutral" onClick={() => navigatePending(1)}>{labels.startReview}</Button>}
+          <DropdownMenu>
+            <DropdownTrigger render={<Button variant="tertiary" iconOnly aria-label={labels.reviewActions} disabled={reviewing}><More aria-hidden /></Button>} />
+            <DropdownContent align="end">
+              <MenuItem index={0} label={labels.rejectAll} disabled={reviewing} onSelect={() => void review(pending, "reject")} />
+              <MenuItem index={1} label={labels.acceptAll} disabled={reviewing} onSelect={() => void review(pending, "accept")} />
+            </DropdownContent>
+          </DropdownMenu>
+        </AlertAction>
       </Alert>
     </div>}
-    {reviewError && <div className="shrink-0 p-3"><InlineNotice variant="emphasized" tone="danger" role="alert"><InlineNoticeContent>{labels.reviewFailed}</InlineNoticeContent></InlineNotice></div>}
+    {failed.length > 0 && <div className="shrink-0 px-3 pb-3"><InlineNotice variant="emphasized" tone="danger" role="alert"><InlineNoticeContent className="break-words">{labels.reviewFailed} {failed.map((resource) => resource.name).join(", ")}</InlineNoticeContent></InlineNotice></div>}
   </section>;
 }
 
@@ -491,7 +589,7 @@ import type { ChatWorkspaceProps } from "./chat-workspace-types";
 type PanelHandle = NonNullable<ResizablePanelProps["panelRef"]> extends Ref<infer T> ? T : never;
 
 export function ChatWorkspace({
-  artifacts, title, panelOpen, defaultPanelOpen = true, onPanelOpenChange,
+  artifacts, title, headerActions, panelOpen, defaultPanelOpen = true, onPanelOpenChange,
   activePane, defaultActivePane = "chat", onActivePaneChange,
   chatDefaultSize = "38%", chatMinSize = "280px", artifactMinSize = "320px",
   onLayoutChanged, workspaceLabels, className, ...threadProps
@@ -507,7 +605,9 @@ export function ChatWorkspace({
   const desktopSize = useRef(chatDefaultSize);
   const chatId = useId();
   const artifactId = useId();
-  const PanelIcon = useIcon("rectangle-horizontal");
+  const CollapseIcon = useIcon("layout-align-right");
+  const ExpandIcon = useIcon("layout-align-left");
+  const PanelIcon = open ? CollapseIcon : ExpandIcon;
 
   useEffect(() => {
     const node = root.current;
@@ -541,12 +641,15 @@ export function ChatWorkspace({
 
   return <div ref={root} data-block="chat-workspace-01" data-layout={wide ? "horizontal" : "single"} className={cn("flex size-full min-h-0 min-w-0 flex-col overflow-hidden bg-surface-floating text-fg-default", className)}>
     <div className="flex shrink-0 items-center justify-between gap-3 border-b-hairline border-border px-4 py-2">
-      <span className="truncate text-label font-medium">{title ?? labels.workspace}</span>
-      {wide ? <Button variant="ghost" size="sm" leadingIcon={PanelIcon} aria-expanded={open} aria-controls={artifactId} onClick={() => setOpen(!open)}>{open ? labels.hidePanel : labels.showPanel}</Button> :
+      <span data-slot="workspace-title" className="min-w-0 flex-1 truncate text-body font-medium" title={title ?? labels.workspace}>{title ?? labels.workspace}</span>
+      <div className="flex shrink-0 items-center gap-1">
+      {headerActions}
+      {wide ? <Button variant="ghost" iconOnly aria-label={open ? labels.hidePanel : labels.showPanel} aria-expanded={open} aria-controls={artifactId} onClick={() => setOpen(!open)}><PanelIcon aria-hidden /></Button> :
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="sm" active={!hideChat} aria-pressed={!hideChat} onClick={() => setPane("chat")}>{labels.conversation}</Button>
           <Button variant="ghost" size="sm" active={hideChat} aria-pressed={hideChat} onClick={() => setPane("artifacts")}>{labels.preview}</Button>
         </div>}
+      </div>
     </div>
     <ResizablePanelGroup orientation="horizontal" disabled={!wide || !open} aria-label={labels.workspace} className="min-h-0 flex-1"
       onLayoutChanged={(layout, meta) => {
@@ -574,12 +677,15 @@ export const artifactEnLabels: ArtifactLabels = {
   copy: "Copy", copied: "Copied", copyFailed: "Could not copy. Try again.", download: "Download",
   reference: "Add to conversation", referenced: "Added to your draft", referenceFailed: "Could not add this reference. Try again.",
   openExternal: "Open externally", refresh: "Refresh", close: (name) => `Close ${name}`,
+  closeOthers: "Close other tabs", closeAll: "Close all tabs",
   loading: "Loading preview…", failed: "This content could not be loaded.", retry: "Retry",
   unsupported: "A preview is not available for this file.", unavailableUrl: "A valid preview address is not available.",
   webNotice: "Some websites prevent embedded previews. You can open the page externally at any time.",
   zoomIn: "Zoom in", zoomOut: "Zoom out", fit: "Fit", accept: "Accept", reject: "Reject",
+  actualSize: "Actual size", panImage: "Drag to pan, or use the arrow keys to scroll.",
   acceptAll: "Accept all", rejectAll: "Reject all", pending: "Pending", accepted: "Accepted", rejected: "Rejected",
   reviewing: "Saving review…", reviewFailed: "Some changes could not be reviewed. Retry the remaining changes.",
+  reviewActions: "Batch review actions", reviewList: "Pending review items", previousPending: "Previous pending item", nextPending: "Next pending item", startReview: "Review pending items",
   remaining: (count) => `${count} ${count === 1 ? "change" : "changes"} to review`,
   workspace: "Conversation workspace", conversation: "Conversation", showPanel: "Show content", hidePanel: "Hide content",
   resize: "Resize conversation and content",
@@ -591,11 +697,14 @@ export const artifactZhLabels: ArtifactLabels = {
   copy: "复制", copied: "已复制", copyFailed: "复制失败，请重试。", download: "下载",
   reference: "引用到对话", referenced: "已添加到草稿", referenceFailed: "引用失败，请重试。",
   openExternal: "外部打开", refresh: "刷新", close: (name) => `关闭 ${name}`,
+  closeOthers: "关闭其他标签", closeAll: "关闭全部标签",
   loading: "正在加载预览…", failed: "内容加载失败。", retry: "重试", unsupported: "此文件暂不支持预览。",
   unavailableUrl: "没有可用的预览地址。", webNotice: "部分网站不允许内嵌预览，你可以随时在外部打开。",
   zoomIn: "放大", zoomOut: "缩小", fit: "适应窗口", accept: "接受", reject: "拒绝", acceptAll: "全部接受", rejectAll: "全部拒绝",
+  actualSize: "原始尺寸", panImage: "拖动平移，也可使用方向键滚动。",
   pending: "待审阅", accepted: "已接受", rejected: "已拒绝", reviewing: "正在保存审阅…",
   reviewFailed: "部分变更审阅失败，请重试剩余变更。", remaining: (count) => `${count} 项变更待审阅`,
+  reviewActions: "批量审阅操作", reviewList: "待审阅列表", previousPending: "上一项待审阅内容", nextPending: "下一项待审阅内容", startReview: "查看待审阅内容",
   workspace: "对话工作区", conversation: "对话", showPanel: "查看内容", hidePanel: "收起内容", resize: "调整对话与内容的宽度",
 };
 
@@ -666,6 +775,8 @@ export interface ArtifactLabels {
   openExternal: string;
   refresh: string;
   close: (name: string) => string;
+  closeOthers: string;
+  closeAll: string;
   loading: string;
   failed: string;
   retry: string;
@@ -675,6 +786,8 @@ export interface ArtifactLabels {
   zoomIn: string;
   zoomOut: string;
   fit: string;
+  actualSize: string;
+  panImage: string;
   accept: string;
   reject: string;
   acceptAll: string;
@@ -684,6 +797,11 @@ export interface ArtifactLabels {
   rejected: string;
   reviewing: string;
   reviewFailed: string;
+  reviewActions: string;
+  reviewList: string;
+  previousPending: string;
+  nextPending: string;
+  startReview: string;
   remaining: (count: number) => string;
   workspace: string;
   conversation: string;
@@ -699,6 +817,8 @@ export interface ArtifactPanelProps extends Omit<HTMLAttributes<HTMLElement>, "c
   defaultActiveId?: string;
   onActiveIdChange?: (id: string) => void;
   onClose?: (resource: ArtifactResource) => void;
+  /** Handles every close operation atomically when supplied; otherwise calls onClose for each resource. */
+  onCloseMany?: (resources: readonly ArtifactResource[]) => void;
   /** Optional action beside the content tabs, such as a plus-button resource picker. */
   addAction?: ReactNode;
   /** Resolve after committing this exact resource version; reject on failure. */
@@ -723,6 +843,8 @@ export interface ChatWorkspaceProps extends ChatThreadProps {
   /** Usually ArtifactPanel; this slot can also contain a host-owned viewer. */
   artifacts: ReactNode;
   title?: string;
+  /** Host-owned session actions, shown beside the content pane controls. */
+  headerActions?: ReactNode;
   panelOpen?: boolean;
   defaultPanelOpen?: boolean;
   onPanelOpenChange?: (open: boolean) => void;

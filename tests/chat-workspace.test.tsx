@@ -19,10 +19,20 @@ beforeEach(() => {
   vi.stubGlobal("ResizeObserver", TestResizeObserver);
   Object.defineProperty(window, "matchMedia", { configurable: true, value: (media: string) => ({ matches: false, media, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }) });
 });
-afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 const code: ArtifactResource = { id: "code", version: "1", name: "theme.ts", kind: "code", content: "new content", previousContent: "old content", review: "pending" };
 const markdown: ArtifactResource = { id: "doc", version: "1", name: "README.md", kind: "markdown", content: "# Guide", previousContent: "", review: "pending" };
 const web: ArtifactResource = { id: "web", version: "1", name: "Website", kind: "url", url: "https://example.com" };
+
+async function batchReview(label: "Accept all" | "Reject all") {
+  fireEvent.click(screen.getByRole("button", { name: "Batch review actions" }));
+  fireEvent.click(await screen.findByRole("menuitem", { name: label }));
+}
+
+async function tabAction(label: string) {
+  fireEvent.click(screen.getByRole("button", { name: "More open content" }));
+  fireEvent.click(await screen.findByRole("menuitem", { name: label }));
+}
 
 it("finds only ready reviewable pending revisions in resource order", () => {
   expect(getPendingReviewResources([
@@ -150,15 +160,15 @@ describe("ArtifactPanel", () => {
       }} />;
     }
     render(<Example />);
-    expect(screen.queryByRole("button", { name: "Accept" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Reject" })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Accept all" }));
-    fireEvent.click(screen.getByRole("button", { name: "Accept all" }));
+    expect(screen.getByRole("button", { name: "Accept" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Reject" })).toBeTruthy();
+    await batchReview("Accept all");
+    fireEvent.click(screen.getByRole("button", { name: "Accept" }));
     await waitFor(() => expect(calls).toHaveBeenCalledTimes(2));
     release?.();
-    await screen.findByText("Some changes could not be reviewed. Retry the remaining changes.");
+    await screen.findByText(/Some changes could not be reviewed. Retry the remaining changes/);
     expect(screen.getByText("1 change to review")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Accept all" }));
+    await batchReview("Accept all");
     await waitFor(() => expect(calls).toHaveBeenCalledTimes(3));
     expect(calls.mock.calls[2][0]).toBe("doc");
   });
@@ -166,7 +176,7 @@ describe("ArtifactPanel", () => {
   it("passes the exact revision to review and never invents an accepted status", async () => {
     const review = vi.fn().mockResolvedValue(undefined);
     render(<ArtifactPanel resources={[{ ...code, version: "revision-2" }]} onReview={review} />);
-    fireEvent.click(screen.getByRole("button", { name: "Accept all" }));
+    fireEvent.click(screen.getByRole("button", { name: "Accept" }));
     await waitFor(() => expect(review).toHaveBeenCalledTimes(1));
     expect(review.mock.calls[0][0].version).toBe("revision-2");
     expect(screen.queryByText("Accepted")).toBeNull();
@@ -210,6 +220,182 @@ describe("ArtifactPanel", () => {
     expect(screen.getByText("Host browser")).toBeTruthy();
     expect(screen.getByRole("region", { name: "内容预览" })).toBeTruthy();
   });
+
+  it("reviews only the current file and keeps the host's accepted and rejected states", async () => {
+    const calls = vi.fn();
+    function Example() {
+      const [resources, setResources] = useState<ArtifactResource[]>([code, markdown]);
+      return <ArtifactPanel resources={resources} onReview={(resource, decision) => {
+        calls(resource, decision);
+        setResources((current) => current.map((item) => item.id === resource.id && "review" in item ? { ...item, review: decision === "accept" ? "accepted" : "rejected" } : item));
+      }} />;
+    }
+    const { container } = render(<Example />);
+    fireEvent.click(screen.getByRole("button", { name: "Accept" }));
+    await screen.findByText("Accepted");
+    expect(calls).toHaveBeenCalledExactlyOnceWith(code, "accept");
+    expect(container.querySelectorAll('[data-slot="artifact-review-bar"]')).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: "Review pending items" }));
+    expect(screen.getByRole("tab", { name: "README.md" }).getAttribute("aria-selected")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Reject" }));
+    await screen.findByText("Rejected");
+    expect(calls.mock.calls[1]).toEqual([markdown, "reject"]);
+    expect(container.querySelector('[data-slot="artifact-review-bar"]')).toBeNull();
+  });
+
+  it("navigates the pending list in order and wraps past unrelated or unavailable files", async () => {
+    render(<ArtifactPanel resources={[code, web, { ...code, id: "loading", name: "loading.ts", status: "loading" }, markdown]} defaultActiveId="web" onReview={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "Next pending item" }));
+    expect(screen.getByRole("tab", { name: "theme.ts" }).getAttribute("aria-selected")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Previous pending item" }));
+    expect(screen.getByRole("tab", { name: "README.md" }).getAttribute("aria-selected")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Next pending item" }));
+    fireEvent.click(screen.getByRole("button", { name: "Pending review items" }));
+    expect(await screen.findAllByRole("menuitemradio")).toHaveLength(2);
+    fireEvent.click(screen.getByRole("menuitemradio", { name: "README.md" }));
+    expect(screen.getByRole("tab", { name: "README.md" }).getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("locks individual and batch actions during a save, and scopes failures to their exact version", async () => {
+    let fail: ((error: Error) => void) | undefined;
+    const review = vi.fn(() => new Promise<void>((_, reject) => { fail = reject; }));
+    const { rerender } = render(<ArtifactPanel resources={[code, markdown]} onReview={review} />);
+    fireEvent.click(screen.getByRole("button", { name: "Reject" }));
+    fireEvent.click(screen.getByRole("button", { name: "Accept" }));
+    fireEvent.click(screen.getByRole("button", { name: "Next pending item" }));
+    expect((screen.getByRole("button", { name: "Accept" }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole("button", { name: "Batch review actions" }) as HTMLButtonElement).disabled).toBe(true);
+    await waitFor(() => expect(review).toHaveBeenCalledExactlyOnceWith(code, "reject"));
+    fail?.(new Error("conflict"));
+    const error = await screen.findByRole("alert");
+    expect(error.textContent).toContain("theme.ts");
+    rerender(<ArtifactPanel resources={[{ ...code, version: "2" }, markdown]} onReview={review} />);
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.getByRole("tab", { name: "README.md" }).getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("retains other file failures when retrying one failed revision", async () => {
+    const review = vi.fn().mockRejectedValue(new Error("offline"));
+    render(<ArtifactPanel resources={[code, markdown]} onReview={review} />);
+    await batchReview("Accept all");
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent).toContain("theme.ts, README.md");
+    review.mockResolvedValue(undefined);
+    fireEvent.click(screen.getByRole("button", { name: "Accept" }));
+    await waitFor(() => {
+      expect(screen.getByRole("alert").textContent).toContain("README.md");
+      expect(screen.getByRole("alert").textContent).not.toContain("theme.ts");
+    });
+  });
+
+  it("closes other tabs as one operation without reviewing or replacing the active preview", async () => {
+    const closeMany = vi.fn();
+    const review = vi.fn();
+    function Example() {
+      const [resources, setResources] = useState<ArtifactResource[]>([code, web, markdown]);
+      return <ArtifactPanel resources={resources} defaultActiveId="web" onReview={review} onCloseMany={(items) => {
+        closeMany(items);
+        setResources((current) => current.filter((item) => !items.some((closed) => closed.id === item.id)));
+      }} />;
+    }
+    const { container } = render(<Example />);
+    const frame = container.querySelector("iframe");
+    await tabAction("Close other tabs");
+    expect(closeMany).toHaveBeenCalledExactlyOnceWith([code, markdown]);
+    expect(screen.getAllByRole("tab")).toHaveLength(1);
+    expect(container.querySelector("iframe")).toBe(frame);
+    expect(review).not.toHaveBeenCalled();
+  });
+
+  it("falls back to individual close callbacks and leaves controlled resources to the host", async () => {
+    const close = vi.fn();
+    const select = vi.fn();
+    render(<ArtifactPanel resources={[code, web, markdown]} activeId="web" onActiveIdChange={select} onClose={close} />);
+    await tabAction("Close all tabs");
+    expect(close.mock.calls).toEqual([[code], [web], [markdown]]);
+    expect(select).not.toHaveBeenCalled();
+    expect(screen.getByRole("tab", { name: "Website" }).getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("closes every tab atomically while retaining the empty panel's open action", async () => {
+    const closeMany = vi.fn();
+    function Example() {
+      const [resources, setResources] = useState<ArtifactResource[]>([code, web]);
+      return <ArtifactPanel resources={resources} addAction={<button>Open resource</button>} onCloseMany={(items) => { closeMany(items); setResources([]); }} />;
+    }
+    render(<Example />);
+    await tabAction("Close all tabs");
+    expect(closeMany).toHaveBeenCalledExactlyOnceWith([code, web]);
+    expect(screen.queryByRole("tab")).toBeNull();
+    expect(screen.getByRole("button", { name: "Open resource" })).toBeTruthy();
+  });
+
+  it("uses absolute image zoom and keeps it stable on resize until fit is restored", () => {
+    let width = 548;
+    let resize: (() => void) | undefined;
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(function (this: HTMLElement) { return this.dataset.slot === "artifact-image-viewport" ? width : 0; });
+    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(448);
+    vi.stubGlobal("ResizeObserver", class extends TestResizeObserver {
+      constructor(private callback: () => void) { super(); }
+      observe(node: HTMLElement) { if (node.dataset.slot === "artifact-image-viewport") resize = this.callback; }
+    });
+    const { container } = render(<ArtifactPanel resources={[{ id: "image", version: "1", kind: "image", name: "mock.png", url: "/mock.png" }]} />);
+    const image = container.querySelector("img")!;
+    Object.defineProperties(image, { naturalWidth: { value: 1000 }, naturalHeight: { value: 400 } });
+    fireEvent.load(image);
+    expect(image.style.width).toBe("500px");
+    fireEvent.click(screen.getByRole("button", { name: "Actual size" }));
+    expect(image.style.width).toBe("1000px");
+    width = 348;
+    act(() => resize?.());
+    expect(image.style.width).toBe("1000px");
+    fireEvent.click(screen.getByRole("button", { name: "Zoom in" }));
+    expect(image.style.width).toBe("1250px");
+    fireEvent.click(screen.getByRole("button", { name: "Fit" }));
+    expect(image.style.width).toBe("300px");
+    expect(screen.getByRole("button", { name: "Fit" }).getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("pans an image with the mouse, stops after cancellation, and leaves touch scrolling native", () => {
+    vi.stubGlobal("PointerEvent", class extends MouseEvent {
+      pointerId: number;
+      pointerType: string;
+      constructor(type: string, init: PointerEventInit = {}) { super(type, init); this.pointerId = init.pointerId ?? 1; this.pointerType = init.pointerType ?? "mouse"; }
+    });
+    const { container } = render(<ArtifactPanel resources={[{ id: "image", version: "1", kind: "image", name: "mock.png", url: "/mock.png" }]} />);
+    const image = container.querySelector("img")!;
+    Object.defineProperties(image, { naturalWidth: { value: 1000 }, naturalHeight: { value: 400 } });
+    fireEvent.load(image);
+    const viewport = container.querySelector<HTMLElement>('[data-slot="artifact-image-viewport"]')!;
+    viewport.setPointerCapture = vi.fn();
+    viewport.releasePointerCapture = vi.fn();
+    fireEvent.pointerDown(viewport, { button: 0, pointerId: 1, pointerType: "mouse", clientX: 200, clientY: 100 });
+    fireEvent.pointerMove(viewport, { pointerId: 1, clientX: 120, clientY: 50 });
+    expect([viewport.scrollLeft, viewport.scrollTop]).toEqual([80, 50]);
+    fireEvent.pointerCancel(viewport, { pointerId: 1 });
+    fireEvent.pointerMove(viewport, { pointerId: 1, clientX: 0, clientY: 0 });
+    expect([viewport.scrollLeft, viewport.scrollTop]).toEqual([80, 50]);
+    fireEvent.pointerDown(viewport, { button: 0, pointerId: 2, pointerType: "touch", clientX: 200, clientY: 100 });
+    fireEvent.pointerMove(viewport, { pointerId: 2, clientX: 0, clientY: 0 });
+    expect(viewport.setPointerCapture).toHaveBeenCalledExactlyOnceWith(1);
+    expect([viewport.scrollLeft, viewport.scrollTop]).toEqual([80, 50]);
+  });
+
+  it("disables image controls after a decode failure and enables them again after retry", () => {
+    const { container } = render(<ArtifactPanel resources={[{ id: "image", version: "1", kind: "image", name: "mock.png", url: "/mock.png" }]} />);
+    const image = container.querySelector("img")!;
+    Object.defineProperties(image, { naturalWidth: { value: 1000 }, naturalHeight: { value: 400 } });
+    fireEvent.load(image);
+    fireEvent.click(screen.getByRole("button", { name: "Actual size" }));
+    fireEvent.error(image);
+    for (const name of ["Zoom in", "Zoom out", "Actual size", "Fit"]) expect((screen.getByRole("button", { name }) as HTMLButtonElement).disabled).toBe(true);
+    expect(container.querySelector('[data-slot="artifact-image-viewport"]')?.classList.contains("cursor-grab")).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    const next = container.querySelector("img")!;
+    Object.defineProperties(next, { naturalWidth: { value: 1000 }, naturalHeight: { value: 400 } });
+    fireEvent.load(next);
+    expect((screen.getByRole("button", { name: "Zoom in" }) as HTMLButtonElement).disabled).toBe(false);
+  });
 });
 
 describe("artifact tab overflow", () => {
@@ -222,6 +408,11 @@ describe("artifact tab overflow", () => {
     expect([...visibleArtifactIds(resources, "web", [100, 120, 80], 150, 40, 2)]).toEqual(["web"]);
     expect([...visibleArtifactIds(resources, "doc", [100, 256, 80], 100, 40, 2)]).toEqual(["doc"]);
     expect([...visibleArtifactIds(resources, "web", [100, 120, 80], 340, 40, 2)]).toEqual(["code", "doc", "web"]);
+  });
+  it("retains only the active tab when permanent actions exhaust the available width", () => {
+    expect([...visibleArtifactIds(resources, "doc", [100, 120, 80], -8, 0, 2)]).toEqual(["doc"]);
+    expect([...visibleArtifactIds(resources, "web", [100, 120, 80], 0, 0, 2)]).toEqual(["web"]);
+    expect([...visibleArtifactIds([], "missing", [], 0, 32, 2)]).toEqual([]);
   });
   it("lists all resources in the overflow menu, promotes the selection, and expands when space returns", async () => {
     let width = 210;
@@ -247,7 +438,7 @@ describe("artifact tab overflow", () => {
     width = 460;
     act(() => resize?.());
     expect(screen.getAllByRole("tab", { name: /theme.ts|README.md|Website/ })).toHaveLength(3);
-    expect(screen.queryByRole("button", { name: "More open content" })).toBeNull();
+    expect(screen.getByRole("button", { name: "More open content" })).toBeTruthy();
   });
 });
 

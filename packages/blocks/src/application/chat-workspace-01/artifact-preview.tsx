@@ -1,6 +1,6 @@
 "use client";
 
-import { Component, lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import { Component, lazy, Suspense, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Button } from "@zeron/ui/button";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@zeron/ui/empty";
 import { FileType } from "@zeron/ui/file-type";
@@ -18,7 +18,11 @@ function ImagePreview({ resource, labels }: { resource: Extract<ArtifactResource
   const viewport = useRef<HTMLDivElement>(null);
   const [bounds, setBounds] = useState({ width: 0, height: 0 });
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [zoom, setZoom] = useState(1);
+  // Null tracks the container; numeric values are absolute image scales.
+  const [zoom, setZoom] = useState<number | null>(null);
+  const drag = useRef<{ id: number; x: number; y: number; left: number; top: number } | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const hintId = useId();
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const url = safeArtifactUrl(resource.url);
@@ -27,29 +31,64 @@ function ImagePreview({ resource, labels }: { resource: Extract<ArtifactResource
     if (!node) return;
     const measure = () => setBounds({ width: node.clientWidth, height: node.clientHeight });
     measure();
+    if (typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(measure);
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
   const fit = dimensions.width && bounds.width ? Math.min(Math.max(1, bounds.width - 48) / dimensions.width, Math.max(1, bounds.height - 48) / dimensions.height, 1) : 1;
+  const scale = zoom ?? fit;
+  const imageReady = !!url && !failed && dimensions.width > 0;
+  const canPan = imageReady && (dimensions.width * scale + 48 > bounds.width || dimensions.height * scale + 48 > bounds.height);
+  const resetZoom = (value: number | null) => {
+    setZoom(value);
+    if (viewport.current) { viewport.current.scrollLeft = 0; viewport.current.scrollTop = 0; }
+  };
+  const stopDrag = () => {
+    const current = drag.current;
+    drag.current = null;
+    if (current && viewport.current?.hasPointerCapture?.(current.id)) viewport.current.releasePointerCapture(current.id);
+    setDragging(false);
+  };
   return <div className="flex min-h-0 flex-1 flex-col">
-    <div className="flex shrink-0 items-center justify-between gap-3 border-b-hairline border-border px-4 py-2">
+    <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b-hairline border-border px-4 py-2">
       <span className="text-label text-fg-muted">{dimensions.width ? `${dimensions.width} × ${dimensions.height}` : labels.preview}</span>
-      <div className="flex items-center gap-2">
-        <Button size="xs" variant="ghost" iconOnly aria-label={labels.zoomOut} disabled={zoom <= 0.25 || !dimensions.width} onClick={() => setZoom((value) => Math.max(0.25, value / 1.25))}>−</Button>
-        <span className="w-12 text-center text-label tabular-nums">{Math.round(fit * zoom * 100)}%</span>
-        <Button size="xs" variant="ghost" iconOnly aria-label={labels.zoomIn} disabled={zoom >= 8 || !dimensions.width} onClick={() => setZoom((value) => Math.min(8, value * 1.25))}>+</Button>
-        <Button size="xs" variant="ghost" onClick={() => setZoom(1)}>{labels.fit}</Button>
+      <div className="flex flex-wrap items-center gap-1">
+        <Button variant="ghost" iconOnly aria-label={labels.zoomOut} disabled={scale <= 0.05 || !imageReady} onClick={() => setZoom(Math.max(0.05, scale / 1.25))}>−</Button>
+        <span className="w-12 text-center text-label tabular-nums" aria-live="polite">{Math.round(scale * 100)}%</span>
+        <Button variant="ghost" iconOnly aria-label={labels.zoomIn} disabled={scale >= 8 || !imageReady} onClick={() => setZoom(Math.min(8, Math.max(0.05, scale * 1.25)))}>+</Button>
+        <Button variant="ghost" aria-pressed={zoom === 1} disabled={!imageReady} onClick={() => resetZoom(1)}>{labels.actualSize}</Button>
+        <Button variant="ghost" aria-pressed={zoom === null} disabled={!imageReady} onClick={() => resetZoom(null)}>{labels.fit}</Button>
       </div>
     </div>
-    <div ref={viewport} className="relative min-h-0 flex-1 overflow-auto bg-surface-raised" tabIndex={0} aria-label={`${labels.preview}: ${resource.name}`}>
+    <p id={hintId} className="sr-only">{labels.panImage}</p>
+    <div ref={viewport} data-slot="artifact-image-viewport" className={`relative min-h-0 flex-1 overflow-auto bg-surface-raised ${canPan ? dragging ? "cursor-grabbing" : "cursor-grab" : ""}`} tabIndex={0} aria-label={`${labels.preview}: ${resource.name}`} aria-describedby={hintId}
+      onPointerDown={(event) => {
+        if (event.pointerType !== "mouse" || event.button !== 0 || !dimensions.width || !canPan) return;
+        const node = event.currentTarget;
+        event.preventDefault();
+        node.focus();
+        node.setPointerCapture(event.pointerId);
+        drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, left: node.scrollLeft, top: node.scrollTop };
+        setDragging(true);
+      }}
+      onPointerMove={(event) => {
+        const start = drag.current;
+        if (!start || start.id !== event.pointerId) return;
+        event.currentTarget.scrollLeft = start.left + start.x - event.clientX;
+        event.currentTarget.scrollTop = start.top + start.y - event.clientY;
+      }}
+      onPointerUp={(event) => {
+        if (drag.current?.id !== event.pointerId) return;
+        stopDrag();
+      }} onPointerCancel={stopDrag} onLostPointerCapture={stopDrag}>
       {!url ? <PreviewNotice>{labels.unavailableUrl}</PreviewNotice> : failed ? <PreviewNotice><span>{labels.failed} </span><Button size="sm" variant="ghost" onClick={() => { setFailed(false); setDimensions({ width: 0, height: 0 }); setAttempt((value) => value + 1); }}>{labels.retry}</Button></PreviewNotice> :
         <div className="grid min-h-full min-w-full w-max place-items-center p-6">
           {!dimensions.width && <span role="status" className="text-label text-fg-muted">{labels.loading}</span>}
           {/* eslint-disable-next-line @next/next/no-img-element -- natural dimensions drive the zoomable viewer. */}
           <img key={attempt} src={url} alt={resource.alt ?? resource.name} draggable={false} className="block max-w-none"
-            style={{ width: dimensions.width ? dimensions.width * fit * zoom : undefined, height: dimensions.height ? dimensions.height * fit * zoom : undefined, visibility: dimensions.width ? "visible" : "hidden" }}
-            onLoad={(event) => setDimensions({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })} onError={() => setFailed(true)} />
+            style={{ width: dimensions.width ? dimensions.width * scale : undefined, height: dimensions.height ? dimensions.height * scale : undefined, visibility: dimensions.width ? "visible" : "hidden" }}
+            onLoad={(event) => setDimensions({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })} onError={() => { stopDrag(); setFailed(true); }} />
         </div>}
     </div>
   </div>;

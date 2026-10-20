@@ -51,6 +51,8 @@ export interface ArtifactLabels {
   openExternal: string;
   refresh: string;
   close: (name: string) => string;
+  closeOthers: string;
+  closeAll: string;
   loading: string;
   failed: string;
   retry: string;
@@ -60,6 +62,8 @@ export interface ArtifactLabels {
   zoomIn: string;
   zoomOut: string;
   fit: string;
+  actualSize: string;
+  panImage: string;
   accept: string;
   reject: string;
   acceptAll: string;
@@ -69,6 +73,11 @@ export interface ArtifactLabels {
   rejected: string;
   reviewing: string;
   reviewFailed: string;
+  reviewActions: string;
+  reviewList: string;
+  previousPending: string;
+  nextPending: string;
+  startReview: string;
   remaining: (count: number) => string;
   workspace: string;
   conversation: string;
@@ -84,6 +93,8 @@ export interface ArtifactPanelProps extends Omit<HTMLAttributes<HTMLElement>, "c
   defaultActiveId?: string;
   onActiveIdChange?: (id: string) => void;
   onClose?: (resource: ArtifactResource) => void;
+  /** Handles every close operation atomically when supplied; otherwise calls onClose for each resource. */
+  onCloseMany?: (resources: readonly ArtifactResource[]) => void;
   /** Optional action beside the content tabs, such as a plus-button resource picker. */
   addAction?: ReactNode;
   /** Resolve after committing this exact resource version; reject on failure. */
@@ -108,6 +119,8 @@ export interface ChatWorkspaceProps extends ChatThreadProps {
   /** Usually ArtifactPanel; this slot can also contain a host-owned viewer. */
   artifacts: ReactNode;
   title?: string;
+  /** Host-owned session actions, shown beside the content pane controls. */
+  headerActions?: ReactNode;
   panelOpen?: boolean;
   defaultPanelOpen?: boolean;
   onPanelOpenChange?: (open: boolean) => void;
