@@ -57,7 +57,7 @@ function ProjectsTable() {
   });
 
   return (
-    <DataTable table={table}>
+    <DataTable table={table} tableProps={{ "aria-label": "Project Directory" }}>
       <DataTableToolbar table={table} />
     </DataTable>
   );
@@ -359,6 +359,7 @@ function GroupedProjectsTable() {
 
 const dataTableProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "table", type: "Table<TData>", description: t("table") },
+  { name: "tableProps", type: "DataTableTableProps", description: t("tableProps") },
   { name: "grouping", type: "DataTableGroupingOptions<TData>", description: t("groupingOptions") },
   { name: "density", type: '"comfortable" | "compact"', default: '"comfortable"', description: t("density") },
   { name: "activeRowId", type: "string | null", description: t("activeRowId") },

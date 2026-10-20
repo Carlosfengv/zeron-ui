@@ -19,6 +19,7 @@
     "apiReference": "API 参考",
     "controlLabels": "通过 DataTableColumnHeader.labels 的 ascending、descending、resetSorting、hideColumn 配置排序菜单文案；DataTableViewOptions.labels 配置列设置文案。DataTableFacetedFilter.labels.clearFilters 配置筛选弹层的清空操作，未传时保留英文默认值。",
     "table": "由 useDataTable 返回的 TanStack 表格实例。",
+    "tableProps": "传给语义 table 的属性，例如 aria-label、aria-labelledby、aria-describedby、aria-busy、id 和 className。顶层 DOM 属性仍属于外层容器。不能替换表格内容、dangerouslySetInnerHTML 或内部测量 ref。",
     "activeRowId": "作为当前活动行高亮显示的 TanStack 行 ID。",
     "onRowActivate": "通过指针、Enter 或空格激活行，且不会拦截行内控件。",
     "children": "在表格上方渲染的可选工具栏或自定义内容。",

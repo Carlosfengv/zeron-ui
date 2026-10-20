@@ -243,6 +243,11 @@ function useDataTable<TData>({
   return { table };
 }
 
+export type DataTableTableProps = Omit<
+  React.ComponentPropsWithoutRef<typeof Table>,
+  "children" | "dangerouslySetInnerHTML"
+>;
+
 export type DataTableProps<TData> = React.ComponentProps<"div"> & {
   /** Public row-density recipe; does not resize controls inside cells. */
   density?: "comfortable" | "compact";
@@ -272,6 +277,8 @@ export type DataTableProps<TData> = React.ComponentProps<"div"> & {
     context: DataTableLoadingCellContext<TData>
   ) => React.ReactNode;
   table: TanstackTable<TData>;
+  /** Attributes for the semantic table; content and the measurement ref remain internal. */
+  tableProps?: DataTableTableProps;
 };
 
 export type DataTableGroupContext<TData> = {
@@ -437,6 +444,7 @@ function DataTable<TData>({
   showPagination = true,
   renderLoadingCell,
   table,
+  tableProps,
   "aria-busy": ariaBusy,
   ...props
 }: DataTableProps<TData>) {
@@ -520,7 +528,7 @@ function DataTable<TData>({
           onScroll={updateScrollEdges}
           ref={scrollContainerRef}
         >
-          <Table ref={tableElementRef}>
+          <Table {...tableProps} ref={tableElementRef}>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

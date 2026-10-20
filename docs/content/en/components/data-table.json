@@ -19,6 +19,7 @@
     "apiReference": "API Reference",
     "controlLabels": "Use DataTableColumnHeader.labels for ascending, descending, resetSorting and hideColumn menu copy; DataTableViewOptions.labels configures column settings. DataTableFacetedFilter.labels.clearFilters configures the clear action inside its popover. Omitted labels retain their English defaults.",
     "table": "TanStack table instance returned by useDataTable.",
+    "tableProps": "Attributes for the semantic table, such as aria-label, aria-labelledby, aria-describedby, aria-busy, id, and className. Top-level DOM props still belong to the outer container. Table content, dangerouslySetInnerHTML, and the measurement ref cannot be replaced.",
     "activeRowId": "TanStack row id highlighted as the current active row.",
     "onRowActivate": "Activates a row by pointer, Enter, or Space without intercepting nested controls.",
     "children": "Optional toolbar or custom content rendered above the table.",

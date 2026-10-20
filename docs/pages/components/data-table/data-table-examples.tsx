@@ -291,6 +291,7 @@ function ProjectsTableDemo({
 }: {
   forceHorizontalScroll?: boolean;
 }) {
+  const t = useTranslations("dataTable");
   const StatusIcon = useIcon("dot");
   const columns = useMemo(() => getColumns(StatusIcon), [StatusIcon]);
   const { table } = useDataTable({
@@ -312,6 +313,7 @@ function ProjectsTableDemo({
       }
       className={forceHorizontalScroll ? "[&_table]:min-w-[960px]" : undefined}
       table={table}
+      tableProps={{ "aria-label": t("projectDirectory") }}
     >
       <DataTableToolbar table={table} />
     </DataTable>
