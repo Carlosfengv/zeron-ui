@@ -13,6 +13,7 @@ import {
   type HTMLAttributes,
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
+  type Ref,
   type TextareaHTMLAttributes,
 } from "react";
 import { AnimatePresence, motion, Reorder, useReducedMotion } from "framer-motion";
@@ -21,7 +22,7 @@ import { spring } from "#system/springs";
 import { useIcon } from "#system/icon-context";
 import { surfaceClasses } from "#system/surface-classes";
 import { SurfaceProvider } from "#system/surface-context";
-import { FileThumbnail } from "#components/file-thumbnail";
+import { ChatMessageAttachment } from "#components/chat-message/attachments";
 import { Button } from "#components/button";
 import { Container, ContainerFooter } from "#components/container";
 import { Tooltip } from "#components/tooltip";
@@ -135,6 +136,10 @@ interface InputMessageProps
     TextareaHTMLAttributes<HTMLTextAreaElement>,
     "value" | "onChange" | "onKeyDown" | "disabled" | "placeholder"
   >;
+  /** Access to the editor for focus restoration without changing the root ref. */
+  textareaRef?: Ref<HTMLTextAreaElement>;
+  /** Pause automatic queue release during history mutations. Defaults to true. */
+  autoDispatchQueue?: boolean;
   /** Assistant response state. When `"streaming"`, the send button becomes a
    *  Stop control (empty draft) or a Queue action (non-empty draft); on the
    *  `streaming → idle` edge the next queued message auto-dispatches via `onSend`.
@@ -160,7 +165,7 @@ interface InputMessageProps
 }
 
 // ─── File preview tile ────────────────────────────────────────────────────
-// Composer-row tile: a FileThumbnail wrapped with enter/exit motion and a
+// Composer-row tile: a named attachment card wrapped with enter/exit motion and a
 // hover-revealed remove (×) button.
 interface FilePreviewTileProps {
   file: File;
@@ -184,9 +189,9 @@ function FilePreviewTile({ file, onRemove, size }: FilePreviewTileProps) {
       transition={spring.fast}
       // `cursor-default` opts out of the parent's `cursor-text` so hovering
       // a preview tile doesn't look like it'll land in the textarea.
-      className="relative shrink-0 cursor-default group/tile"
+      className="relative min-w-0 max-w-full shrink-0 cursor-default group/tile"
     >
-      <FileThumbnail file={file} size={size} />
+      <ChatMessageAttachment file={file} thumbnailSize={size} />
       <Tooltip content="Remove" side="top">
         <button
           type="button"
@@ -342,6 +347,8 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
       maxFiles,
       filePreviewSize = 80,
       textareaProps,
+      textareaRef: externalTextareaRef,
+      autoDispatchQueue = true,
       status,
       onStop,
       queue,
@@ -359,6 +366,11 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
     const isTouch = useIsTouch();
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const bindTextareaRef = useCallback((node: HTMLTextAreaElement | null) => {
+      textareaRef.current = node;
+      if (typeof externalTextareaRef === "function") return externalTextareaRef(node);
+      if (externalTextareaRef) externalTextareaRef.current = node;
+    }, [externalTextareaRef]);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [focusVisible, setFocusVisible] = useState(false);
     const [dragOver, setDragOver] = useState(false);
@@ -477,7 +489,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
       const prev = prevStatusRef.current;
       prevStatusRef.current = status;
       if (!supportsQueue) return;
-      if (prev === "streaming" && status === "idle" && queueArr.length > 0) {
+      if (autoDispatchQueue && prev === "streaming" && status === "idle" && queueArr.length > 0) {
         const [next, ...rest] = queueArr;
         onQueueChange?.(rest);
         onSend?.(next.text, next.files, { queuedId: next.id });
@@ -485,7 +497,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
           `Message sent.${rest.length ? ` ${rest.length} still queued.` : ""}`
         );
       }
-    }, [status, supportsQueue, queueArr, onQueueChange, onSend]);
+    }, [status, supportsQueue, queueArr, onQueueChange, onSend, autoDispatchQueue]);
 
     // ── Queue item actions ────────────────────────────────────────────
     const editQueued = useCallback(
@@ -878,7 +890,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
           )}
 
           <textarea
-            ref={textareaRef}
+            ref={bindTextareaRef}
             value={value}
             onChange={(e) => {
               // Real typing exits history mode (recall sets the value
