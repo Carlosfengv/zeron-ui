@@ -1,0 +1,20 @@
+{
+  "artifactBlock": {
+    "title": "Artifact 内容创作",
+    "description": "复用对话工作区，生成并预览 HTML 页面、Markdown 文档与代码，支持历史版本和变更对比。",
+    "composition": "组件组合",
+    "compositionBody": "ArtifactWorkspace 复用 ChatWorkspace、ChatThread 与 Resizable；GeneratedArtifactCard 复用已有 ArtifactCard。ArtifactPreviewPanel 使用 Tabs、CodeBlock、CodeDiff 和 Markdown 提供版本、代码、预览与变更视图。输入区共用其他会话演示的模型选择、上下文与回复组件。",
+    "usage": "使用方式",
+    "api": "公开接口",
+    "apiArtifact": "文档包含稳定 id、标题、文件名、kind 和按时间正序排列的 revisions。每个修订包含稳定 id、content，以及可选的 ready、streaming 或 error 状态。",
+    "apiPreview": "传入预览面板的控制参数与回调。composer、children、面板开关、窄屏选择和分栏尺寸等其余参数透传 ChatWorkspace。ArtifactPreviewPanel 也可独立放入受限高度的容器。",
+    "apiRevision": "受控选择版本。不传 revisionId 时默认跟随最新版本，手动选择后保留选择；无效 ID 回退最新版本。文档切换后不沿用其他文档的内部选择。",
+    "apiRestore": "历史版本显示恢复入口。宿主在完成回调前追加新修订并持久化，保留原有历史。非受控模式在成功后跟随最新修订；请求期间若用户已切换版本或文档，则保留用户选择。受控模式由宿主同步更新 revisionId。请求完成前锁定恢复操作，失败提示仅属于发起操作的文档与版本。",
+    "apiActions": "重试失败版本或关闭预览，宿主管理具体操作与面板开关。复制、下载、刷新和浏览器全屏为本地操作。",
+    "apiCard": "打开消息卡片对应的具体版本，同时打开面板；窄容器还应切换到 artifacts 面板。",
+    "behavior": "交互与无障碍",
+    "behaviorBody": "HTML 使用仅允许脚本、不允许同源访问的独立 iframe。当前修订内已访问的视图保持挂载，切换代码、预览和变更时保留页面输入与滚动位置；未访问视图按需加载。切换修订会释放旧视图，刷新预览只重建预览。生成中展示代码，就绪后展示预览。纯代码内容不显示预览标签；变更视图对比上一修订。复制与下载使用当前选择版本。版本菜单与标签支持键盘操作；窄容器继承 ChatWorkspace 的单面板布局。展开使用浏览器全屏能力，可按 Escape 退出。",
+    "boundaries": "接入与演示边界",
+    "boundariesBody": "宿主管理生成请求、文档、版本历史与持久化。HTML 预览支持自包含 HTML/CSS/JavaScript；JSX 和 TypeScript 仅显示源码，不在浏览器中编译。沙箱隔离文档与宿主，但不是网络隔离服务。演示按定价页、发布计划和 debounce hook 三类预设模拟生成，附件和模型选择仅为本地演示控件，不调用真实模型或保存项目文件。"
+  }
+}

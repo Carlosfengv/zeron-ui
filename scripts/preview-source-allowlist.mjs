@@ -1,5 +1,14 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "artifact-01": [
+    "packages/blocks/src/application/artifact-01/artifact-content.tsx",
+    "packages/blocks/src/application/artifact-01/artifact-demo-data.ts",
+    "packages/blocks/src/application/artifact-01/artifact-labels.ts",
+    "packages/blocks/src/application/artifact-01/artifact-preview-panel.tsx",
+    "packages/blocks/src/application/artifact-01/artifact-types.ts",
+    "packages/blocks/src/application/artifact-01/artifact-workspace.tsx",
+    "packages/blocks/src/application/artifact-01/index.ts"
+],
   "tool-calls-01": [
     "packages/blocks/src/application/tool-calls-01/index.ts",
     "packages/blocks/src/application/tool-calls-01/tool-calls.tsx",

@@ -19,6 +19,10 @@
       "path": "blocks/appearance-settings-01.md",
       "itemId": "block:appearance-settings-01"
     },
+    {
+      "path": "blocks/artifact-01.md",
+      "itemId": "block:artifact-01"
+    },
     {"path": "blocks/chat-markdown-01.md", "itemId": "block:chat-markdown-01"},
     {
       "path": "blocks/chat-thread-01.md",

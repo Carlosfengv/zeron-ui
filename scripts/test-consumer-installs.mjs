@@ -549,6 +549,12 @@ async function verifyNextBuild({ consumer, component }) {
     'import { ToolCallsThread, createToolCallsDemoParts } from "@/components/blocks/tool-calls-01";',
     'export default function Page() { return <main style={{ height: "100svh" }}><ToolCallsThread prompt="Check search" parts={createToolCallsDemoParts()} composer={<textarea aria-label="Message" />} /></main>; }',
   ].join("\n");
+  examples["artifact-01"] = [
+    '"use client";',
+    'import { ArtifactWorkspace, ArtifactPreviewPanel, GeneratedArtifactCard, createArtifactDemoDocuments } from "@/components/blocks/artifact-01";',
+    'const artifact = createArtifactDemoDocuments()[0];',
+    'export default function Example() { return <><div className="h-96"><ArtifactWorkspace artifact={artifact} composer={<textarea aria-label="Draft" />}><GeneratedArtifactCard artifact={artifact} onOpen={() => {}} /></ArtifactWorkspace></div><div className="h-96"><ArtifactPreviewPanel artifact={artifact} /></div></>; }',
+  ].join("\n");
   examples["chat-workspace-01"] = [
     '"use client";',
     'import { useState } from "react";',
@@ -924,6 +930,13 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { ToolCallsThread, createToolCallsDemoParts } from "@/src/components/blocks/tool-calls-01";',
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<div className="h-96"><ToolCallsThread prompt="Check search" parts={createToolCallsDemoParts()} composer={<textarea aria-label="Message" />} /></div>);',
+  ].join("\n");
+  examples["artifact-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { ArtifactWorkspace, ArtifactPreviewPanel, GeneratedArtifactCard, createArtifactDemoDocuments } from "@/src/components/blocks/artifact-01";',
+    'import "./index.css";',
+    'const artifact = createArtifactDemoDocuments()[0];',
+    'createRoot(document.getElementById("root")!).render(<><div className="h-96"><ArtifactWorkspace artifact={artifact} composer={<textarea aria-label="Draft" />}><GeneratedArtifactCard artifact={artifact} onOpen={() => {}} /></ArtifactWorkspace></div><div className="h-96"><ArtifactPreviewPanel artifact={artifact} /></div></>);',
   ].join("\n");
   examples["chat-workspace-01"] = [
     'import { createRoot } from "react-dom/client";',

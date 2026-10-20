@@ -1,4 +1,6 @@
 "use client";
+
+import { ArtifactDemo } from "./ArtifactDemo";
 import { ToolCallsDemo } from "./ToolCallsDemo";
 import { ChatThreadDemo } from "./ChatThreadDemo";
 import { ChatWorkspaceDemo } from "./ChatWorkspaceDemo";
@@ -183,6 +185,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
     case "tool-calls-01":
       return <ToolCallsDemo />;
+    case "artifact-01":
+      return <ArtifactDemo />;
     case "chat-workspace-01":
       return <ChatWorkspaceDemo />;
     case "chat-thread-01":
