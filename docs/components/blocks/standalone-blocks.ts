@@ -1,4 +1,5 @@
 export const standaloneBlockSlugs = [
+  "grouped-data-table-01",
   "model-selector-01",
   "agent-tasks-01",
   "local-models-01",

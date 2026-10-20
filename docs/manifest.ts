@@ -98,6 +98,7 @@ const iconEntry = (value: Omit<DocEntry, "collection" | "indexable" | "order"> &
 });
 
 export const docEntries = [
+  blockEntry({ slug: "grouped-data-table-01", section: "application", icon: "doc-data-table", name: "分组表格", description: "可展开分组、组内预览、搜索筛选与稳定计数的通用表格。", registryItem: { name: "grouped-data-table-01", type: "registry:block" }, isNew: true, order: 36.966 }),
   blockEntry({ slug: "agent-tasks-01", section: "application", icon: "doc-card", name: "Agent Tasks", description: "Agent task queue with status filters, expandable activity and task actions.", registryItem: { name: "agent-tasks-01", type: "registry:block" }, isNew: true, order: 36.8 }),
   blockEntry({ slug: "usage-timeline-01", section: "application", icon: "doc-data-table", name: "账户用量时间线", description: "按提供商查看账户额度周期、用量与重置事件。", registryItem: { name: "usage-timeline-01", type: "registry:block" }, isNew: true, order: 36.53 }),
   entry({ slug: "time-window-timeline", section: "data-display", icon: "doc-data-table", name: "TimeWindowTimeline", description: "Grouped time windows with interval meters, elapsed time and event markers.", registryItem: { name: "time-window-timeline", type: "registry:ui" }, isNew: true, gridSize: "large", order: 610 }),

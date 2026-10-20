@@ -1,4 +1,8 @@
 {
+  "grouped-data-table-01": {
+    "framework": "react",
+    "kind": "data-block"
+  },
   "usage-forecast-02": {"framework": "react", "kind": "data-block"},
   "model-selector-01": {"framework": "react", "kind": "data-block"},
   "agent-tasks-01": {"framework": "react", "kind": "data-block"},

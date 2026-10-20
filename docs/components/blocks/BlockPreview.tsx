@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "grouped-data-table-01": () => import("./GroupedDataTableDemo").then(({ GroupedDataTableDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={810} canvasWidth={1440}><GroupedDataTableDemo /></ResponsivePreview>,
+  })),
   "usage-forecast-02": () => import("./UsageBudgetForecastDemo").then(({ UsageBudgetForecastDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1600}><UsageBudgetForecastDemo /></ResponsivePreview>,
   })),

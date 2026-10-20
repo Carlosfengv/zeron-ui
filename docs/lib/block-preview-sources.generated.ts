@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "grouped-data-table-01": {
+    "url": "/docs-source/9c0dfa019f32e4e662752bf1249370096756b3b6df451ebe9147e5cd3f7f663e.txt"
+  },
   "model-selector-01": {
     "url": "/docs-source/13442235a1132f3419bdf9939006e2304893de7d2f1724274dd0d50bcc4b6cae.txt"
   },

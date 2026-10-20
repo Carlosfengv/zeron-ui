@@ -1,4 +1,29 @@
 {
+  "grouped-data-table-01": {
+    "keywords": [
+      "分组",
+      "表格",
+      "阶段",
+      "显示更多",
+      "grouped table",
+      "grouping",
+      "pipeline",
+      "expand",
+      "preview"
+    ],
+    "useCases": [
+      "在同一张表内按字段分组，独立展开、搜索、筛选并显示更多记录。"
+    ],
+    "whenNotToUse": [
+      "不提供远程分页分组或懒加载；需要完整客户端数据集。单层分组 Block 不用于多层资源树。"
+    ],
+    "keyApi": [
+      "data / columns / groupBy / getRowId 描述完整业务记录。",
+      "groups 定义稳定值、顺序、文案与已有 Badge 分类色。",
+      "previewRowCount 默认 3，expanded 支持受控和非受控模式。",
+      "renderFilters / renderSummary 与 actions 连接公共筛选器和宿主业务。"
+    ]
+  },
   "agent-tasks-01": {
     "keywords": ["任务", "队列", "待处理", "时间线", "agent", "tasks", "running", "activity"],
     "useCases": ["在 Agent 工作区或会话中嵌入按状态筛选的任务队列与执行时间线。"],

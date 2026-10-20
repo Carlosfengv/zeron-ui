@@ -1,0 +1,339 @@
+export { GroupedDataTable } from "./grouped-data-table";
+export { groupedDataTableEnLabels, groupedDataTableZhLabels } from "./grouped-data-table-labels";
+export type { GroupedDataTableProps, GroupedDataTableGroup, GroupedDataTableLabels } from "./grouped-data-table-types";
+export { groupedDataTableDemoItems, type GroupedDataTableDemoItem } from "./grouped-data-table-demo-data";
+
+
+"use client";
+
+import { getExpandedRowModel, getGroupedRowModel, type Row } from "@tanstack/react-table";
+import { useMemo, useState } from "react";
+import { Badge } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
+import { DataTable, DataTableViewOptions, useDataTable } from "@zeron/ui/data-table";
+import { Empty, EmptyActions, EmptyDescription } from "@zeron/ui/empty";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@zeron/ui/input-group";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { groupedDataTableZhLabels } from "./grouped-data-table-labels";
+import type { GroupedDataTableProps } from "./grouped-data-table-types";
+
+export function GroupedDataTable<TData>({
+  data,
+  columns,
+  groupBy,
+  getRowId,
+  groups = [],
+  title,
+  description,
+  actions,
+  previewRowCount = 3,
+  expanded: controlledExpanded,
+  defaultExpanded = true,
+  onExpandedChange,
+  state = "ready",
+  errorMessage,
+  onRetry,
+  labels: labelOverrides,
+  renderFilters,
+  renderSummary,
+  activeRowId,
+  onRowActivate,
+  ...props
+}: GroupedDataTableProps<TData>) {
+  const labels = { ...groupedDataTableZhLabels, ...labelOverrides };
+  const Search = useIcon("search");
+  const [search, setSearch] = useState("");
+  const [expanded, setExpanded] = useState(defaultExpanded);
+  const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
+  const rows = useMemo(() => [...data], [data]);
+  const groupingState = useMemo(() => [groupBy], [groupBy]);
+  const groupDefinitions = new Map(groups.map((group, index) => [group.value, { ...group, order: index }]));
+  const limit = Number.isFinite(previewRowCount) ? Math.max(1, Math.floor(previewRowCount)) : 3;
+  const groupKey = (row: Row<TData>) => String(row.groupingValue ?? "");
+  const groupLabel = (row: Row<TData>) => groupDefinitions.get(groupKey(row))?.label || groupKey(row) || labels.ungrouped;
+  const { table } = useDataTable({
+    data: rows,
+    columns,
+    getRowId,
+    getGroupedRowModel: getGroupedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    groupedColumnMode: "remove",
+    manualPagination: true,
+    autoResetExpanded: false,
+    enableRowSelection: false,
+    state: { grouping: groupingState, expanded: controlledExpanded ?? expanded, globalFilter: search },
+    onGlobalFilterChange: setSearch,
+    onExpandedChange: (updater) => {
+      if (controlledExpanded === undefined) setExpanded(updater);
+      onExpandedChange?.(updater);
+    },
+  });
+  const matchingRows = table.getFilteredRowModel().flatRows;
+  const groupRows = table.getPreExpandedRowModel().rows.filter((row) => row.getIsGrouped());
+  const groupCounts = new Map(groupRows.map((row) => [groupKey(row), row.getLeafRows().length]));
+  const allExpanded = groupRows.length > 0 && groupRows.every((row) => row.getIsExpanded());
+  const filtered = search.length > 0 || table.getState().columnFilters.length > 0;
+  const clearFilters = () => { setSearch(""); table.resetColumnFilters(true); };
+  const loading = state === "loading";
+
+  return (
+    <Container data-slot="grouped-data-table" {...props}>
+      <ContainerHeader>
+        <div className="min-w-0 max-w-full space-y-1 py-2">
+          <h3 className="break-words text-title font-medium text-fg-default">{title ?? labels.title}</h3>
+          {description && <p className="break-words text-body text-fg-muted">{description}</p>}
+        </div>
+        {actions}
+      </ContainerHeader>
+      <ContainerBody className="p-3">
+        {state === "error" ? (
+          <div className="space-y-3">
+            <InlineNotice role="alert" tone="danger" variant="emphasized"><InlineNoticeContent>{errorMessage ?? labels.error}</InlineNoticeContent></InlineNotice>
+            {onRetry && <Button onClick={onRetry} variant="secondary">{labels.retry}</Button>}
+          </div>
+        ) : (
+          <DataTable
+            activeRowId={activeRowId}
+            density={density}
+            emptyState={
+              <Empty reason={filtered ? "no-results" : "no-data"} scope="section" density="compact">
+                <EmptyDescription>{filtered ? labels.noResults : labels.empty}</EmptyDescription>
+                {filtered && <EmptyActions><Button onClick={clearFilters} size="sm" variant="secondary">{labels.clearFilters}</Button></EmptyActions>}
+              </Empty>
+            }
+            grouping={{
+              getLabel: groupLabel,
+              getOrder: (row) => groupDefinitions.get(groupKey(row))?.order ?? groups.length,
+              getRowLimit: (row) => revealed[row.id] ? undefined : limit,
+              labels,
+              renderHeader: ({ row, leafRowCount }) => {
+                const definition = groupDefinitions.get(groupKey(row));
+                return <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+                  <Badge color={definition?.color ?? "gray"} variant="plain">{groupLabel(row)}</Badge>
+                  <Badge size="sm">{leafRowCount}</Badge>
+                  {definition?.description && <span className="min-w-0 text-label text-fg-subtle sm:ml-auto">{definition.description}</span>}
+                </div>;
+              },
+              renderFooter: ({ row, leafRowCount, visibleRowCount }) => leafRowCount > limit ? (
+                <Button
+                  aria-expanded={Boolean(revealed[row.id])}
+                  onClick={() => setRevealed((current) => ({ ...current, [row.id]: !current[row.id] }))}
+                  size="sm"
+                  variant="ghost"
+                >
+                  {revealed[row.id] ? labels.showLess(groupLabel(row)) : labels.showMore(leafRowCount - visibleRowCount, groupLabel(row))}
+                </Button>
+              ) : null,
+            }}
+            isLoading={loading}
+            loadingMessage={labels.loading}
+            loadingRowCount={6}
+            onRowActivate={onRowActivate ? (row) => onRowActivate(row.original) : undefined}
+            showPagination={false}
+            table={table}
+          >
+            <div aria-label={labels.search} className="flex flex-wrap items-center justify-between gap-2 pb-2" role="toolbar">
+              <InputGroup className="w-full sm:max-w-xs">
+                <InputGroupAddon><Search aria-hidden /></InputGroupAddon>
+                <InputGroupInput aria-label={labels.search} onChange={(event) => setSearch(event.target.value)} placeholder={labels.searchPlaceholder} value={search} />
+              </InputGroup>
+              <div className="flex flex-wrap items-center gap-2">
+                {renderFilters?.(table)}
+                {filtered && <Button onClick={clearFilters} variant="ghost">{labels.clearFilters}</Button>}
+                <Select onValueChange={(value) => setDensity(value === "compact" ? "compact" : "comfortable")} value={density}>
+                  <SelectTrigger aria-label={labels.density} />
+                  <SelectContent><SelectItem value="comfortable">{labels.comfortable}</SelectItem><SelectItem value="compact">{labels.compact}</SelectItem></SelectContent>
+                </Select>
+                <DataTableViewOptions labels={labels} table={table} />
+                <Button disabled={loading || groupRows.length === 0} onClick={() => table.toggleAllRowsExpanded(!allExpanded)} variant="secondary">
+                  {allExpanded ? labels.collapseAll : labels.expandAll}
+                </Button>
+              </div>
+            </div>
+          </DataTable>
+        )}
+      </ContainerBody>
+      {state === "ready" && <ContainerFooter className="justify-between">
+        <div className="flex flex-wrap items-center gap-3">
+          {groups.map((group) => {
+            const count = groupCounts.get(group.value) ?? 0;
+            return <Badge key={group.value} color={group.color ?? "gray"} variant="plain">{group.label} · {count}</Badge>;
+          })}
+        </div>
+        <span aria-atomic="true" className="text-label text-fg-subtle" role="status">{labels.results(matchingRows.length, data.length)}</span>
+        {renderSummary?.({ rows: matchingRows, total: data.length })}
+      </ContainerFooter>}
+    </Container>
+  );
+}
+
+
+import type { ColumnDef, ExpandedState, OnChangeFn, Row, Table } from "@tanstack/react-table";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import type { BadgeColor } from "@zeron/ui/badge";
+
+export interface GroupedDataTableGroup {
+  /** Stable string value stored in the grouping column. Array order defines group order. */
+  value: string;
+  label: string;
+  description?: ReactNode;
+  color?: BadgeColor;
+}
+
+export interface GroupedDataTableLabels {
+  title: string;
+  search: string;
+  searchPlaceholder: string;
+  expandAll: string;
+  collapseAll: string;
+  expandGroup: (label: string) => string;
+  collapseGroup: (label: string) => string;
+  showMore: (count: number, label: string) => string;
+  showLess: (label: string) => string;
+  results: (matching: number, total: number) => string;
+  clearFilters: string;
+  empty: string;
+  noResults: string;
+  loading: string;
+  error: string;
+  retry: string;
+  ungrouped: string;
+  density: string;
+  comfortable: string;
+  compact: string;
+  customizeColumns: string;
+  dragToReorder: string;
+  reorderAndToggle: string;
+  showColumn: (label: string) => string;
+  reorderColumn: (label: string) => string;
+}
+
+export type GroupedDataTableProps<TData> = Omit<ComponentPropsWithoutRef<"div">, "children"> & {
+  /** Complete client-side dataset. Remote queries must return complete matching groups. */
+  data: readonly TData[];
+  columns: ColumnDef<TData, unknown>[];
+  /** Column ID whose values are stable strings. This block groups one level. */
+  groupBy: string;
+  getRowId: (item: TData) => string;
+  groups?: readonly GroupedDataTableGroup[];
+  title?: ReactNode;
+  description?: ReactNode;
+  actions?: ReactNode;
+  /** Direct records initially shown per expanded group. Positive integer; default 3. */
+  previewRowCount?: number;
+  expanded?: ExpandedState;
+  defaultExpanded?: ExpandedState;
+  onExpandedChange?: OnChangeFn<ExpandedState>;
+  state?: "ready" | "loading" | "error";
+  errorMessage?: ReactNode;
+  onRetry?: () => void;
+  labels?: Partial<GroupedDataTableLabels>;
+  /** Compose domain filters from public DataTable controls. */
+  renderFilters?: (table: Table<TData>) => ReactNode;
+  activeRowId?: string | null;
+  onRowActivate?: (item: TData) => void;
+  /** Custom domain summary; matching records remain available independently of previews. */
+  renderSummary?: (context: { rows: Row<TData>[]; total: number }) => ReactNode;
+};
+
+
+import type { GroupedDataTableLabels } from "./grouped-data-table-types";
+
+export const groupedDataTableZhLabels: GroupedDataTableLabels = {
+  title: "分组表格",
+  search: "搜索记录",
+  searchPlaceholder: "搜索记录…",
+  expandAll: "全部展开",
+  collapseAll: "全部收起",
+  expandGroup: (label) => `展开 ${label}`,
+  collapseGroup: (label) => `收起 ${label}`,
+  showMore: (count, label) => `显示 ${label} 的另外 ${count} 条`,
+  showLess: (label) => `收起 ${label} 的更多记录`,
+  results: (matching, total) => `${matching} 条匹配，共 ${total} 条记录`,
+  clearFilters: "清空筛选",
+  empty: "暂无记录",
+  noResults: "没有匹配的记录",
+  loading: "正在加载记录。",
+  error: "记录加载失败，请重试。",
+  retry: "重试",
+  ungrouped: "未分组",
+  density: "表格密度",
+  comfortable: "舒适",
+  compact: "紧凑",
+  customizeColumns: "自定义列",
+  dragToReorder: "拖动调整列顺序",
+  reorderAndToggle: "调整列顺序与显隐",
+  showColumn: (label) => `显示 ${label} 列`,
+  reorderColumn: (label) => `调整 ${label} 列顺序`,
+};
+
+export const groupedDataTableEnLabels: GroupedDataTableLabels = {
+  title: "Grouped table",
+  search: "Search records",
+  searchPlaceholder: "Search records…",
+  expandAll: "Expand all",
+  collapseAll: "Collapse all",
+  expandGroup: (label) => `Expand ${label}`,
+  collapseGroup: (label) => `Collapse ${label}`,
+  showMore: (count, label) => `Show ${count} more in ${label}`,
+  showLess: (label) => `Show less in ${label}`,
+  results: (matching, total) => `${matching} matching of ${total} records`,
+  clearFilters: "Clear filters",
+  empty: "No records yet",
+  noResults: "No matching records",
+  loading: "Loading records.",
+  error: "Unable to load records. Try again.",
+  retry: "Retry",
+  ungrouped: "Ungrouped",
+  density: "Table density",
+  comfortable: "Comfortable",
+  compact: "Compact",
+  customizeColumns: "Customize columns",
+  dragToReorder: "Drag to reorder columns",
+  reorderAndToggle: "Reorder and toggle columns",
+  showColumn: (label) => `Show ${label} column`,
+  reorderColumn: (label) => `Reorder ${label} column`,
+};
+
+
+export type GroupedDataTableDemoItem = {
+  id: string;
+  name: string;
+  spec: string;
+  provider: "privateCloud" | "aliyun" | "tencentCloud" | "aws";
+  workspace: "modelPlatform" | "algorithmTeam" | "searchTeam" | "dataPlatform" | "cloudOps";
+  region: "shanghai" | "beijing" | "singapore" | "hongkong";
+  capacity: number;
+  capacityUnit: "replicas" | "gpus" | "vcpus" | "tb";
+  utilization: number;
+  status: "running" | "pending" | "scaling" | "maintenance" | "stopped";
+  kind: "inference" | "training" | "gpu" | "compute" | "storage";
+};
+
+/** Fictional service names and illustrative configurations, capacities and utilization. */
+export const groupedDataTableDemoItems: GroupedDataTableDemoItem[] = [
+  { id: "infer-atlas-chat", name: "Atlas Chat · 32B", spec: "INT4 · 32K context", provider: "privateCloud", workspace: "modelPlatform", region: "shanghai", capacity: 4, capacityUnit: "replicas", utilization: 72, status: "running", kind: "inference" },
+  { id: "infer-orion-reasoning", name: "Orion Reasoning · 70B", spec: "BF16 · 64K context", provider: "aliyun", workspace: "algorithmTeam", region: "beijing", capacity: 8, capacityUnit: "replicas", utilization: 86, status: "scaling", kind: "inference" },
+  { id: "infer-atlas-vision", name: "Atlas Vision · 14B", spec: "BF16 · Image + text", provider: "privateCloud", workspace: "modelPlatform", region: "shanghai", capacity: 2, capacityUnit: "replicas", utilization: 0, status: "maintenance", kind: "inference" },
+  { id: "infer-vector-embed", name: "Vector Embed · 8B", spec: "FP16 · 4,096 dimensions", provider: "tencentCloud", workspace: "searchTeam", region: "shanghai", capacity: 3, capacityUnit: "replicas", utilization: 45, status: "running", kind: "inference" },
+  { id: "infer-vector-rerank", name: "Vector Rerank · 4B", spec: "FP16 · 8K context", provider: "aws", workspace: "searchTeam", region: "singapore", capacity: 2, capacityUnit: "replicas", utilization: 38, status: "running", kind: "inference" },
+  { id: "train-atlas-sft", name: "Atlas SFT · v3", spec: "LoRA · 32B · 120K samples", provider: "privateCloud", workspace: "algorithmTeam", region: "shanghai", capacity: 8, capacityUnit: "gpus", utilization: 91, status: "running", kind: "training" },
+  { id: "train-orion-alignment", name: "Orion Alignment · v2", spec: "DPO · 70B · 80K pairs", provider: "aliyun", workspace: "algorithmTeam", region: "beijing", capacity: 16, capacityUnit: "gpus", utilization: 84, status: "running", kind: "training" },
+  { id: "train-vision-finetune", name: "Vision Fine-tuning · v5", spec: "Full tuning · 14B · 240K samples", provider: "tencentCloud", workspace: "modelPlatform", region: "shanghai", capacity: 4, capacityUnit: "gpus", utilization: 0, status: "pending", kind: "training" },
+  { id: "train-embed-distill", name: "Embedding Distillation · v2", spec: "Distillation · 8B → 2B", provider: "aws", workspace: "searchTeam", region: "singapore", capacity: 4, capacityUnit: "gpus", utilization: 0, status: "stopped", kind: "training" },
+  { id: "gpu-h100-prod", name: "H100 Inference Pool", spec: "H100 · 80 GB per GPU", provider: "privateCloud", workspace: "cloudOps", region: "shanghai", capacity: 32, capacityUnit: "gpus", utilization: 78, status: "running", kind: "gpu" },
+  { id: "gpu-a100-train", name: "A100 Training Pool", spec: "A100 · 80 GB per GPU", provider: "aliyun", workspace: "algorithmTeam", region: "beijing", capacity: 16, capacityUnit: "gpus", utilization: 89, status: "running", kind: "gpu" },
+  { id: "gpu-l40s-vision", name: "L40S Vision Pool", spec: "L40S · 48 GB per GPU", provider: "tencentCloud", workspace: "modelPlatform", region: "shanghai", capacity: 8, capacityUnit: "gpus", utilization: 0, status: "maintenance", kind: "gpu" },
+  { id: "gpu-h200-elastic", name: "H200 Elastic Pool", spec: "H200 · Elastic capacity", provider: "privateCloud", workspace: "cloudOps", region: "beijing", capacity: 8, capacityUnit: "gpus", utilization: 81, status: "scaling", kind: "gpu" },
+  { id: "gpu-a10-dev", name: "A10 Development Pool", spec: "A10 · Development workloads", provider: "aws", workspace: "algorithmTeam", region: "singapore", capacity: 4, capacityUnit: "gpus", utilization: 23, status: "running", kind: "gpu" },
+  { id: "vm-api-gateway", name: "Inference API Gateway", spec: "General purpose · 64 GiB RAM", provider: "aliyun", workspace: "modelPlatform", region: "shanghai", capacity: 16, capacityUnit: "vcpus", utilization: 42, status: "running", kind: "compute" },
+  { id: "vm-data-pipeline", name: "Dataset Processing Workers", spec: "Compute optimized · 256 GiB RAM", provider: "privateCloud", workspace: "dataPlatform", region: "beijing", capacity: 64, capacityUnit: "vcpus", utilization: 67, status: "running", kind: "compute" },
+  { id: "vm-agent-sandbox", name: "Agent Sandbox Cluster", spec: "Isolated workloads · 128 GiB RAM", provider: "tencentCloud", workspace: "cloudOps", region: "hongkong", capacity: 32, capacityUnit: "vcpus", utilization: 0, status: "maintenance", kind: "compute" },
+  { id: "store-model-artifacts", name: "Model Artifact Store", spec: "Object storage · Versioning enabled", provider: "aliyun", workspace: "modelPlatform", region: "shanghai", capacity: 120, capacityUnit: "tb", utilization: 62, status: "running", kind: "storage" },
+  { id: "store-training-data", name: "Training Dataset Lake", spec: "Distributed files · Training datasets", provider: "privateCloud", workspace: "dataPlatform", region: "beijing", capacity: 256, capacityUnit: "tb", utilization: 74, status: "running", kind: "storage" },
+  { id: "store-vector-index", name: "RAG Vector Index", spec: "Vector storage · Retrieval workloads", provider: "aws", workspace: "searchTeam", region: "singapore", capacity: 12, capacityUnit: "tb", utilization: 48, status: "running", kind: "storage" },
+];
