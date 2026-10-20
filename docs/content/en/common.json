@@ -119,6 +119,7 @@
     "introductionTitle": "Introduction",
     "introductionDescription": "Why these components feel different.",
     "descriptions": {
+      "chat-thread-01": "Streaming conversations, message versions and checkpoint restoration.",
       "message-navigation": "Compact turn markers with rich previews, current-position emphasis and keyboard navigation.",
       "markdown": "Safe GFM content with tables, code blocks and an accessible streaming indicator.",
       "appearance-settings-01": "Theme previews, accent colors, interface density and motion preferences.",

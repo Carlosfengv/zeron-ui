@@ -1,0 +1,28 @@
+{
+  "chatThreadBlock": {
+    "title": "对话线程",
+    "description": "可组合的流式会话，支持消息编辑、回复版本、历史阅读定位与检查点恢复。",
+    "composition": "组件组合",
+    "compositionBody": "ChatThread 负责唯一的会话滚动区、消息导航和持续挂载的输入区插槽。ChatUserMessage 与 ChatAssistantMessage 复用 ChatMessage，回复元信息由其 meta 插槽统一排版；InputMessage 保留附件、草稿、停止和受控队列。思考步骤、代码、差异、模型选择与上下文用量均通过已有组件组合。整体使用 Floating 表面，默认欢迎语、分隔线、错误与停止提示、紧凑消息导航分别复用 Empty、Separator、InlineNotice 和 MessageNavigation；SurfaceProvider 将 Floating 层级传递给内部浮层。空状态与首条消息出现后使用同一个输入节点，不重新挂载编辑器。宿主需要限制高度，例如在 min-h-0 的 flex 父容器中使用 h-full。",
+    "usage": "基础用法",
+    "usageBody": "安装 chat-thread-01 和 input-message。输入区使用插槽；需要模型与上下文控件时，再单独安装 model-selector-01 和 context-window-02。应用层挂载一个 Toaster，用于恢复与撤销提示。",
+    "api": "API 参考",
+    "apiBookmarks": "使用逻辑用户消息 ID 控制收藏状态。提供 onBookmarkChange 时，导航预览右上角显示收藏按钮；回调仅请求变更，由宿主接受后更新 bookmarkedIds。bookmarkLabels 提供按钮名称和提示文案。持久化及失败处理由宿主负责。",
+    "apiMessages": "按顺序组合 ChatUserMessage、ChatAssistantMessage 与 ChatDivider。同一逻辑消息跨版本保持稳定 ID，且在线程内唯一。",
+    "apiComposer": "输入区持续挂载。没有注册消息时，在输入区上方显示 empty；缺省时使用默认标题。",
+    "apiBusy": "生成回复或执行变更时标记会话忙碌，并禁用会改变历史的消息操作。",
+    "apiOlder": "显示历史加载入口。onLoadOlder 中等待加载完成，或通过 loadingOlder 保持加载状态直到历史消息提交。加载期间禁用会改变历史的消息操作并暂缓撤销；恢复或撤销期间禁用加载入口。失败时保留历史并允许重试。",
+    "apiRestore": "接收检查点 ID 和是否恢复代码。宿主提交成功后再完成回调，失败时抛出错误，可返回 undo 回调。真实文件恢复需要宿主接入。",
+    "apiFocus": "与 InputMessage.textareaRef 传入同一个引用。恢复成功后聚焦编辑器，并将光标放到末尾。",
+    "apiLabels": "通过 labels 本地化操作和播报，数量文案使用函数。locale 用于时间格式化；导出英文与中文文案。",
+    "messagesBody": "ChatUserMessage 接收 id、text、files（id、name、type?、size?、url?）、attachments、time、pin、branch、checkpoint 和 onEdit。pin 将新发送的轮次定位到顶部。ChatAssistantMessage 接收 id、children、用于复制的 text、streaming、last、meta、branch、feedback、onFeedback、onRetry、error 和 stopped。生成期间隐藏操作，last 保持操作可见。branch 为 ( index, count, onChange )，index 从零开始。ChatMarkdown 渲染安全的 GFM 与 Zeron 代码块，也可通过 children 放入自定义思考过程、工具结果和富内容。model、modelLogo 和 provider 描述该回复实际使用的模型身份，由 ChatMessageAuthor 在正文上方显示模型 Logo、medium 字重的名称和灰色 provider，生成期间也保持可见。metrics 接收 ttftMs、inputTokens、outputTokens、durationMs，底部指标不在 TTFT 前重复模型名；时间使用毫秒，token 数为非负整数，缺失或无效值省略。meta 可添加自定义页脚信息。宿主保存每次回复的模型与 provider，切换选择器时保留旧回复身份。本地文件与历史附件均将图片预览、文件名放在同一边框内。",
+    "history": "历史、版本与滚动",
+    "historyBody": "回复增长时跟随滚动；用户离开最新位置后暂停，点击“回到最新内容”恢复。加载更早历史时保留可见消息及其偏移。桌面侧轨复用 MessageNavigation，以紧凑短线表示用户轮次与当前位置，左侧预览问题和后续回复首段；点击跳转并聚焦对应消息。Tab 只进入侧轨一次，方向键、Home、End 移动焦点，Enter、空格选择，Escape 关闭预览。较长导航仅滚动自身，窄屏隐藏侧轨并保留主会话滚动区。版本历史及对应的后续对话由宿主保存，版本箭头只请求切换，不覆盖数据。splitThreadHistory(messages, messageId) 返回 kept 和 removed，removed 包含选中的用户消息；找不到 ID 时保留全部历史。本地演示为各版本分别保留后续对话。",
+    "restore": "检查点恢复与撤销",
+    "restoreBody": "确认前合并并去重选中轮次与后续轮次的文件路径，显示受影响的消息数量，并淡化将被移除的消息。宿主移除选中的用户消息及后续消息，将原文与附件回填输入区。恢复、编辑和版本切换时，通过 autoDispatchQueue=false 暂停 InputMessage 自动发送队列；撤销快照应同时保存草稿、附件、队列和会话。恢复失败保留确认弹层，撤销失败可以重试；后续编辑后应使旧撤销失效，避免覆盖新内容。",
+    "keyboard": "键盘与无障碍",
+    "keyboardBody": "Tab 聚焦时显示消息操作。编辑中 Enter 发送、Shift+Enter 换行、Escape 取消并返回消息；中文输入法组词时不会误发送。聚焦会话后可使用原生滚动键。恢复确认复用 Popover 焦点管理，Escape 返回触发按钮，成功后聚焦输入区。会话使用带标签的 log、忙碌状态、评价按下状态和实时播报。触屏操作持续可见，减少动态效果偏好会关闭消息入场和非必要过渡。",
+    "demo": "演示范围",
+    "demoBody": "重播恢复初始数据，新对话展示空状态。发送后流式生成本地回复，停止会保留已有文本，生成中继续发送会进入现有队列。编辑和重试创建新版本，切换版本会恢复该版本的后续对话。失败示例可体验错误与重试，历史加载、检查点恢复和撤销均可操作。回复、模型数据、上下文压缩与文件恢复使用模拟数据，不请求模型、不修改磁盘文件，也不上传附件。 新回复的时间来自本地模拟过程；初始指标与 token 数为模拟数据。切换模型只影响之后的回复。"
+  }
+}
