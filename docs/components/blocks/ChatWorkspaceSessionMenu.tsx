@@ -4,6 +4,7 @@ import { useId, useRef, useState } from "react";
 import { Button } from "@zeron/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
 import { DropdownContent, DropdownMenu, DropdownSeparator, DropdownTrigger } from "@zeron/ui/dropdown";
+import { Field, FieldLabel } from "@zeron/ui/field";
 import { Input } from "@zeron/ui/input";
 import { MenuItem } from "@zeron/ui/menu-item";
 import { toast } from "@zeron/ui/toast";
@@ -74,11 +75,11 @@ export function ChatWorkspaceSessionMenu({ title, onTitleChange, messages, local
             <DialogTitle>{dialog === "rename" ? zh ? "重命名会话" : "Rename session" : zh ? "分享会话" : "Share session"}</DialogTitle>
             <DialogDescription>{dialog === "rename" ? zh ? "仅更新当前演示的会话标题。" : "Change the title in this local demo." : zh ? "此为演示链接，不会发布或公开对话内容。" : "This is a demo link. The conversation is not published or made public."}</DialogDescription>
           </DialogHeader>
-          <div className="space-y-2">
-            <label htmlFor={inputId} className="text-body font-medium">{dialog === "rename" ? zh ? "会话名称" : "Session name" : zh ? "演示链接" : "Demo link"}</label>
+          <Field>
+            <FieldLabel htmlFor={inputId}>{dialog === "rename" ? zh ? "会话名称" : "Session name" : zh ? "演示链接" : "Demo link"}</FieldLabel>
             {dialog === "rename" ? <Input id={inputId} autoFocus required maxLength={120} value={name} onChange={(event) => setName(event.target.value)} />
               : <Input id={inputId} readOnly value={shareUrl} />}
-          </div>
+          </Field>
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={closeDialog}>{zh ? "取消" : "Cancel"}</Button>
             {dialog === "rename" ? <Button type="submit" variant="neutral" disabled={!name.trim()}>{zh ? "保存" : "Save"}</Button>

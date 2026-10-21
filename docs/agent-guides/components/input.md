@@ -24,7 +24,7 @@ related:
 
 生成表单时，必须遵守以下规则：
 
-- 可见标签使用 FieldLabel，不要用 placeholder 代替标签。
+- 标准纵向字段的可见标签使用 `Field` 与 `FieldLabel`，由 Field 管理标签、控件和说明的间距；不要用 placeholder 代替标签。布局与验收规则见 [Field 指南](field.md)。
 - 校验失败时同时提供错误语义和可见错误消息。
 - 需要前后缀、图标、单位、复制或内嵌操作时，使用 InputGroup，不要把元素绝对定位到 Input 上。
 - 与同一表单中的 Button、Select 使用一致的 control size。

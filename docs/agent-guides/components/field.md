@@ -25,6 +25,7 @@ Field 管理一个字段的语义，不是表单状态库或远程提交引擎�
 - `FieldLabel`、`FieldDescription`、`FieldError` 保留底层关联和校验行为；不要自行复制错误样式或移除可访问关联。
 - `FieldItem` 为选择／开关类控件提供同行组合；不是另一个独立字段 Root。
 - 控件尺寸属于 Input／Select 等公开 API，Field 不通过任意高度类修改控件。
+- 标准纵向标签与控件使用 `Field` + `FieldLabel`，由 Field 的纵向 Flex 与默认 `gap-1.5`（6px）管理间距。原生 `label` 默认为行内元素，上下 margin 不会撑开行间距离；不要用 `label` + `space-y-*` 拼出同款字段，也不要给 Input 增加 margin 来补偿。
 - `FieldGroup` 只负责布局；读取、dirty、保存、重试、服务端字段错误属于业务层。
 
 ## 受控字段
@@ -55,3 +56,5 @@ export function WorkspaceNameField({ value, onChange, error, canEdit }: {
 ## 定制与验收
 
 可以调整字段组列数、宽度和布局间距，不覆盖标签关联、错误颜色或 focus ring。检查点击标签聚焦、键盘顺序、长帮助文案、服务端字段错误、清除／修正错误、只读权限和窄屏。示例类型由 `agents:guides:examples:check` 验证；不据此声称真实保存接口已经接通。消费者按实际 aliases 使用已安装源码。
+
+在实际页面或弹窗中检查标签到控件的间距和控件高度，不能仅凭 `space-y-*` 的计算值或静态测试通过判断布局正常。保留控件公开 size；当前 Input 默认 `md` 为 32px。无可见标签的搜索／工具栏控件仍需提供可访问名称，不强制套用纵向 Field 排列。

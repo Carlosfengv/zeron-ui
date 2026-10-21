@@ -30,6 +30,21 @@ Rules:
 
 Do not assume these props exist in every installed version or in unrelated controls. Check actual public types and component-specific guides before adapting.
 
+## Standard labeled fields use Field
+
+For a standard vertically stacked label and Input, Select or Textarea, use the installed `Field` and `FieldLabel` composition. Let Field own the spacing; keep the control's public size. Input renders the control surface and does not manage a sibling label.
+
+```tsx
+<Field>
+  <FieldLabel>Session name</FieldLabel>
+  <Input value={name} onChange={(event) => setName(event.target.value)} />
+</Field>
+```
+
+Do not recreate this with a native inline `label` and `space-y-*`: the label can have a computed vertical margin without that margin separating the lines. Do not compensate with Input margins, padding or height overrides. Check the installed Field guide for its default gap and label treatment. Search/toolbars with an accessible name but no visible label, and checkbox/radio rows, retain their own documented composition.
+
+In each affected dialog or form, measure the actual label-to-control gap and control height, and verify that clicking the label focuses the control. A passing typecheck or DOM test does not establish spacing.
+
 ## Zeron owns migrated control and icon geometry
 
 An old icon's explicit `size={24}`, `width`/`height`, `strokeWidth`, `style` or `w-*`/`h-*`/`size-*` classes are implementation details, not business behavior to preserve automatically. Remove overrides whose only purpose is matching the old design, including hardcoded color/fill, margins, padding, line height, transforms and radii on the control or its icon. Start with the selected Zeron control size and its icon contract. Keep the action's meaning, icon identity when appropriate, accessible name and callback.
