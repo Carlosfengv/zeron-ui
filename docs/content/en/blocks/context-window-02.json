@@ -1,0 +1,14 @@
+{
+  "contextWindowCompactBlock": {
+    "title": "Context Window · Compact",
+    "description": "A compact card for the model, context usage, category breakdown and remaining capacity.",
+    "composition": "Composition",
+    "compositionBody": "Built on the shared @zeron/ui/context-window AI component. Existing block exports, props, labels and demo factories remain compatible. Uses Container, Badge, Button, Alert and InlineNotice. The floating body holds the model and usage, with remaining capacity in the footer. Usage and capacity share body typography, differing only in weight and color; category labels use the same body size, including the Files button. Its 240-cell bitmap reuses the largest-remainder allocator from the shared ContextWindow component. Neutral tokens represent system, tools and files; brand represents conversation and a light brand mix represents memory. Colors, typography, spacing and radii use the existing design system. Set embedded inside a Popover or another existing surface to render only content and actions, without the Container frame or nested body surface. The host owns padding and the outer border.",
+    "dataContract": "Data integration",
+    "usageIndicator": "Usage indicator",
+    "usageIndicatorBody": "ContextWindowUsage reuses PieChart as a 16px donut beside a localized percentage. Pass the same data snapshot as ContextWindowCompact so the ring, percentage and panel remain consistent. The graphic is decorative and does not add a keyboard stop inside its host button. Invalid snapshots show an em dash; over-capacity snapshots show a full ring and retain the actual percentage.",
+    "dataContractBody": "Shares ContextWindowData from @zeron/ui/context-window with the full panel. Hosts replace the snapshot object when records change. Category and usage totals derive from the same records, with the same capacity and unique-id validation. The model reads session.model. Claude models display the existing color Claude logo by default; hosts may override it or supply another model icon through modelIcon. Token counts use k/M/B; percentages and accessible counts follow locale, falling back to en-US for malformed locales. Over-capacity snapshots retain actual usage and show zero remaining.",
+    "behavior": "Behavior and states",
+    "behaviorBody": "Files expands a read-only list; collapsed files do not create item markup. Long lists support Tab focus and keyboard scrolling. Compact delegates to the host callback and is omitted when it is absent. Compaction is disabled while busy, with empty conversation, or when all conversation records are pinned. Loading uses an info InlineNotice, errors and retry use a danger Alert, and success uses a success InlineNotice. Previous success feedback is hidden while loading, failed, invalid or compacting. The preview simulates compaction locally and preserves pinned records. Narrow layouts wrap the heading and actions."
+  }
+}

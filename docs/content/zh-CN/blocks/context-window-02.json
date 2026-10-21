@@ -1,0 +1,14 @@
+{
+  "contextWindowCompactBlock": {
+    "title": "上下文窗口 · 精简版",
+    "description": "在一张紧凑卡片中查看模型、上下文用量、分类明细与剩余容量。",
+    "composition": "组件组合",
+    "compositionBody": "基于共享的 @zeron/ui/context-window AI component，保留原 block 的导出、属性、文案与演示工厂。复用 Container、Badge、Button、Alert 和 InlineNotice。模型与用量放在浮起的内容区，底部显示剩余容量。用量与容量使用相同正文大小，仅以字重和颜色区分；文件按钮与其他分类标签使用一致的正文字号。240 格矩阵复用共享 ContextWindow 的最大余数分配算法，以中性色表示系统、工具和文件，品牌色表示对话，浅品牌色表示记忆；所有颜色、文字、间距与圆角来自现有样式体系。在 Popover 或已有表面中传 embedded，仅渲染内容与操作，移除 Container 外壳和嵌套内容表面；留白与边框由宿主统一承载。",
+    "dataContract": "数据接入",
+    "usageIndicator": "用量指示器",
+    "usageIndicatorBody": "ContextWindowUsage 复用 PieChart 渲染 16px 圆环及本地化百分比。传入与 ContextWindowCompact 相同的 data 快照，保证圆环、百分比与面板一致。图形是装饰内容，不在按钮内部增加键盘停靠点。无效数据显示破折号；超容量时显示满环并保留实际百分比。",
+    "dataContractBody": "与完整面板共用 @zeron/ui/context-window 导出的 ContextWindowData，宿主使用新对象提供快照更新。分类与总量由记录统一计算，保留相同的容量与唯一标识校验。模型名称读取 session.model，Claude 模型默认搭配彩色 Claude 标志，可通过 modelIcon 覆盖或提供其他模型图标。token 数量统一使用 k/M/B 缩写，百分比和可访问计数按 locale 格式化，非法 locale 回退到 en-US。超出容量仍显示真实用量，剩余为零。",
+    "behavior": "交互与状态",
+    "behaviorBody": "文件行可展开只读列表，收起时不生成文件条目；长列表支持 Tab 聚焦与键盘滚动。压缩对话通过回调交由宿主处理；未提供回调时隐藏操作。压缩中、空对话或全部固定时禁止重复压缩。加载使用 info InlineNotice，错误与重试使用 danger Alert；成功反馈使用 success InlineNotice，加载、失败、无效数据及压缩中隐藏旧成功提示。预览仅在本地模拟压缩，并保留固定内容。窄屏支持标题与操作换行。"
+  }
+}

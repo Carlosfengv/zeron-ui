@@ -4,6 +4,60 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "context-window",
+      "type": "registry:ui",
+      "title": "ContextWindow",
+      "description": "Shared context capacity, detailed and compact token breakdowns, and a decorative usage indicator.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "alert",
+        "badge",
+        "button",
+        "container",
+        "inline-notice",
+        "tabs",
+        "tooltip",
+        "pie-chart",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/context-window.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/context-window.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/data.ts",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/data.ts"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/compact.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/compact.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/usage.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/usage.tsx"
+        }
+      ]
+    },
+    {
       "name": "model-selector",
       "type": "registry:ui",
       "title": "ModelSelector",

@@ -1,4 +1,52 @@
 {
+  "context-window-02": {
+    "keywords": [
+      "上下文",
+      "窗口",
+      "精简",
+      "context",
+      "window",
+      "compact",
+      "tokens",
+      "files",
+      "conversation"
+    ],
+    "useCases": [
+      "在会话侧栏或弹出面板中展示紧凑的上下文容量与分类明细。"
+    ],
+    "whenNotToUse": [
+      "完整缓存指标、内容分类切换与会话管理使用 context-window-01。"
+    ],
+    "keyApi": [
+      "data 复用 ContextWindowData；总量与 240 格矩阵从记录统一计算。",
+      "文件行可展开只读列表；modelIcon 支持可选模型图标。",
+      "ContextWindowUsage 复用 PieChart 渲染紧凑圆环和百分比，与 ContextWindowCompact 传同一 data 快照。",
+      "onCompact 由宿主处理，compacting 禁止重复压缩；底部显示剩余容量。",
+      "loading/error/onRetry/notice 与中英文 labels 提供异步和本地化反馈。"
+    ]
+  },
+  "context-window": {
+    "keywords": [
+      "上下文",
+      "context window",
+      "token capacity",
+      "compact",
+      "usage",
+      "上下文窗口"
+    ],
+    "useCases": [
+      "在聊天面板和工具栏展示共享快照的上下文容量与分类。"
+    ],
+    "whenNotToUse": [
+      "完整聊天演示与固定示例数据使用 context-window-01 或 context-window-02。"
+    ],
+    "keyApi": [
+      "ContextWindow、ContextWindowCompact、ContextWindowUsage 共用 ContextWindowData 与校验。",
+      "onCompact 只发出意图，宿主以新的 data 快照更新；tabs 支持受控状态。",
+      "embedded 在宿主表面内渲染精简内容；modelIcon 接收宿主提供的图标。",
+      "两个旧 block 继续导出原组件、文案、类型和示例数据工厂。"
+    ]
+  },
   "model-selector": {
     "keywords": [
       "模型选择",

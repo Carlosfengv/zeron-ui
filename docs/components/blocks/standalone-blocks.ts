@@ -16,6 +16,7 @@ export const standaloneBlockSlugs = [
   "account-activity-01",
   "plan-usage-01",
   "context-window-01",
+  "context-window-02",
   "fleet-health-01",
   "website-analytics-01",
   "sales-conversion-funnel-01",

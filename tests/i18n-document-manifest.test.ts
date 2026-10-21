@@ -28,8 +28,8 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(156);
-    expect(detailDocEntries).toHaveLength(156);
+    expect(pageDocEntries).toHaveLength(158);
+    expect(detailDocEntries).toHaveLength(158);
     expect(pageDocEntries.find((entry) => entry.slug === "artifact-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "chat-workspace-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "chat-thread-01")?.collection).toBe("blocks");
@@ -52,7 +52,7 @@ describe("documentation manifest", () => {
     expect(pageDocEntries.some((entry) => entry.slug === "availability-monitor-01")).toBe(false);
     expect(pageDocEntries.find((entry) => entry.slug === "website-analytics-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "sales-conversion-funnel-01")?.collection).toBe("blocks");
-    expect(legacyDocRedirects).toHaveLength(85);
+    expect(legacyDocRedirects).toHaveLength(86);
     expect(pageDocEntries.some(entry => entry.slug === "error-state" || entry.slug === "status-indicator")).toBe(false);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });

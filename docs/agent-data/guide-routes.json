@@ -45,6 +45,10 @@
       "itemId": "block:context-window-01"
     },
     {
+      "path": "blocks/context-window-02.md",
+      "itemId": "block:context-window-02"
+    },
+    {
       "path": "blocks/cost-estimate-01.md",
       "itemId": "block:cost-estimate-01"
     },
@@ -244,6 +248,10 @@
     {
       "path": "components/combobox.md",
       "itemId": "component:combobox"
+    },
+    {
+      "path": "components/context-window.md",
+      "itemId": "component:context-window"
     },
     {
       "path": "components/data-table.md",

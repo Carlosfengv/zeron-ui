@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./context-window": "./src/components/context-window.tsx",
+    "./context-window/data": "./src/components/context-window/data.ts",
+    "./context-window/labels": "./src/components/context-window/labels.ts",
     "./model-selector": "./src/components/model-selector.tsx",
     "./message-navigation": "./src/components/message-navigation.tsx",
     "./time-window-timeline": "./src/components/time-window-timeline.tsx",

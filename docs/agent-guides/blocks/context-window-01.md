@@ -11,10 +11,12 @@ source: packages/blocks/src/application/context-window-01/context-window.tsx
 types: packages/blocks/src/application/context-window-01/context-window-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [container, badge, button, tabs, tooltip, inline-notice]
+related: [context-window, container, badge, button, tabs, tooltip, inline-notice]
 ---
 
 # Context Window 01
+
+共享 UI 已下沉到 `@zeron/ui/context-window`（Registry：`@/components/ui/context-window`）。旧 block 的组件、文案、类型与演示工厂继续兼容。通用组件说明见 [ContextWindow](../components/context-window.md)。
 
 安装 `npx zeron-ui add context-window-01`。嵌入现有页面的 React 数据 block，保留宿主布局。Registry 消费项目改用 `@/components/blocks/context-window-01` 入口。
 

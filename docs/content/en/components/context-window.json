@@ -1,0 +1,23 @@
+{
+  "context-window": {
+    "description": "Shared context capacity, detailed and compact token breakdowns, and a decorative usage indicator.",
+    "detailed": "Detailed context panel",
+    "compact": "Compact context panel",
+    "usage": "Usage trigger and embedded panel",
+    "usageBody": "Pass the same snapshot to the indicator and panel. The indicator is decorative inside its host button; supply an accessible context label. embedded leaves the surface and padding to the Popover.",
+    "data": "Shared data and behavior",
+    "dataBody": "capacity must be a finite positive number. systemTokens, toolTokens and every record token count must be finite and nonnegative; ids must be nonempty and unique within each category. Totals, free capacity and both bitmaps use the same records and validation. Invalid snapshots display an error or an em dash. Over-capacity snapshots retain the real percentage and clamp remaining capacity to zero. Supply a new data object when records change. Counts use k/M/B, while percentages and exact counts follow locale. Compaction, cache measurements, retries and persistence belong to the host. These examples only update local demo data and preserve pinned records.",
+    "compatibility": "Existing block compatibility",
+    "compatibilityBody": "context-window-01 retains ContextWindow, labels, types and createContextWindowDemoData. context-window-02 retains ContextWindowCompact, ContextWindowUsage, labels, types and createContextWindowCompactDemoData. Both use this shared UI implementation. The compact block adapter preserves its default Claude logo; shared UI accepts a provider icon through modelIcon. The full panel retains its cache metrics, tabs and footer actions; the compact panel retains file disclosure, embedded mode and feedback states.",
+    "api": "API reference",
+    "dataProp": "One shared ContextWindowData snapshot: capacity, systemTokens, toolTokens, docs, memory, history and optional cache, tokensPerTurn and session.",
+    "tabsProp": "Controlled or local content tabs for the full panel. Category legend clicks emit the same tab intent.",
+    "compactProp": "Host-owned compaction. No callback hides the action; busy or ineligible history disables it. The component never mutates data.",
+    "statesProp": "Loading, errors, retry requests and host feedback. The compact panel hides stale success feedback while loading, invalid, failed or compacting.",
+    "embeddedProp": "Render the compact panel without a nested Container surface; modelIcon is an optional host-supplied provider mark.",
+    "actionsProp": "Full panel live badge and optional settings, close and footer controls. currency formats optional cache savings.",
+    "labelsProp": "Separate full and compact English/Chinese label sets are exported. locale formats percentages and counts; className controls external layout.",
+    "usageProp": "Accepts data, locale and native span attributes. Uses a 16px decorative PieChart with the actual percentage; invalid snapshots show an em dash.",
+    "helpersProp": "Pure shared validation/usage and largest-remainder allocation helpers. The full and compact layouts use 400 and 240 cells respectively. Pass validated totals to the allocator."
+  }
+}

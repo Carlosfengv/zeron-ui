@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "context-window-02": {
+    "url": "/docs-source/f8f458a2694d5c47e0df0484351cd32c0827eee5b91a91f3c3889bfa12aa28b0.txt"
+  },
   "artifact-01": {
     "url": "/docs-source/aa2f7c55a7c56c2187242e0f1c484f46c26bda6905901b8bf3d4c10aed8a30d5.txt"
   },
@@ -54,7 +57,7 @@ const blockPreviewSources = {
     "url": "/docs-source/0794194fd1cb1a3cb63db94bbaf7b865b2d2faa4abcd8a6c9cdc68222ac038d4.txt"
   },
   "context-window-01": {
-    "url": "/docs-source/67eed8eb31329c997da05ec15af5913f90d1d3261cd36fdeb229c5c6f9c493d0.txt"
+    "url": "/docs-source/a5f6f73bae0ad0756f58f54c85c0c556476842e056969d5037e3600029703d8f.txt"
   },
   "fleet-health-01": {
     "url": "/docs-source/68700c6ee0a15190dea48cc04e662cbd958067ee4a02a69c31753bea93d25a62.txt"

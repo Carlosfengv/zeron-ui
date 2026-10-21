@@ -94,6 +94,9 @@ const previewLoaders: Record<string, PreviewLoader> = {
   "resource-cost-01": () => import("./ResourceCostDemo").then(({ ResourceCostDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={800} canvasWidth={1400}><ResourceCostDemo /></ResponsivePreview>,
   })),
+  "context-window-02": () => import("./ContextWindowCompactDemo").then(({ ContextWindowCompactDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={576} canvasWidth={1024}><ContextWindowCompactDemo /></ResponsivePreview>,
+  })),
   "context-window-01": () => import("./ContextWindowDemo").then(({ ContextWindowDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={820} canvasWidth={1000}><ContextWindowDemo /></ResponsivePreview>,
   })),

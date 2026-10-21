@@ -35,6 +35,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [集群环境详情](https://zeron-ui.vercel.app/ai/items/block%3Acluster-environment-detail-01.md): An inspection-report workspace that combines environment context, resource health, and incident follow-up. Registry: cluster-environment-detail-01.
 - [集群环境列表](https://zeron-ui.vercel.app/ai/items/block%3Acluster-environment-list-01.md): A filterable cluster-environment overview with critical, warning, normal, offline, and data-freshness states. Registry: cluster-environment-list-01.
 - [上下文窗口](https://zeron-ui.vercel.app/ai/items/block%3Acontext-window-01.md): Context capacity, prompt cache and read-only documents, memory and history. Registry: context-window-01.
+- [上下文窗口 · 精简版](https://zeron-ui.vercel.app/ai/items/block%3Acontext-window-02.md): Compact context usage, token allocation and conversation actions. Registry: context-window-02.
 - [费用估算](https://zeron-ui.vercel.app/ai/items/block%3Acost-estimate-01.md): 四项用量、预设、月付/年付与最低消费估算。 Registry: cost-estimate-01.
 - [Credit Usage](https://zeron-ui.vercel.app/ai/items/block%3Acredit-usage-01.md): A compact credit-cycle summary with model attribution, depletion guidance, and plan controls. Registry: credit-usage-01.
 - [部署详情](https://zeron-ui.vercel.app/ai/items/block%3Adeployment-detail-01.md): 网站预览、域名、来源与部署阶段检查结果。 Registry: deployment-detail-01.
@@ -118,6 +119,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Combobox](https://zeron-ui.vercel.app/ai/items/component%3Acombobox.md): Filterable single- or multi-select with typed object values, groups, chips, and custom triggers. Registry: combobox.
 - [Command](https://zeron-ui.vercel.app/ai/items/component%3Acommand.md): cmdk-based command primitives with a replaceable input slot for searchable menus and structured query controls. Registry: command.
 - [Container](https://zeron-ui.vercel.app/ai/items/component%3Acontainer.md): Composable raised container with an optional header and footer around a floating content body. Registry: container.
+- [ContextWindow](https://zeron-ui.vercel.app/ai/items/component%3Acontext-window.md): Shared context capacity, detailed and compact breakdowns, and usage indicators. Registry: context-window.
 - [Data Grid](https://zeron-ui.vercel.app/ai/items/component%3Adata-grid.md): Virtualized spreadsheet grid with inline editing, range selection, search, copy and paste, and pinned columns. Registry: data-grid.
 - [Data Table](https://zeron-ui.vercel.app/ai/items/component%3Adata-table.md): TanStack data table with sorting, filters, pagination, selection, visibility, and pinning. Registry: data-table.
 - [Detail List](https://zeron-ui.vercel.app/ai/items/component%3Adetail-list.md): Framed label-value list with grouped sections and separators for compact resource and entity details. Registry: detail-list.
@@ -212,6 +214,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [cluster-environment-detail-01](https://zeron-ui.vercel.app/agent-guides/blocks/cluster-environment-detail-01.md)
 - [cluster-environment-list-01](https://zeron-ui.vercel.app/agent-guides/blocks/cluster-environment-list-01.md)
 - [context-window-01](https://zeron-ui.vercel.app/agent-guides/blocks/context-window-01.md)
+- [context-window-02](https://zeron-ui.vercel.app/agent-guides/blocks/context-window-02.md)
 - [cost-estimate-01](https://zeron-ui.vercel.app/agent-guides/blocks/cost-estimate-01.md)
 - [credit-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/credit-usage-01.md)
 - [deployment-detail-01](https://zeron-ui.vercel.app/agent-guides/blocks/deployment-detail-01.md)
@@ -263,6 +266,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [chat-message](https://zeron-ui.vercel.app/agent-guides/components/chat-message.md)
 - [code-block](https://zeron-ui.vercel.app/agent-guides/components/code-block.md)
 - [combobox](https://zeron-ui.vercel.app/agent-guides/components/combobox.md)
+- [context-window](https://zeron-ui.vercel.app/agent-guides/components/context-window.md)
 - [data-table](https://zeron-ui.vercel.app/agent-guides/components/data-table.md)
 - [dialog](https://zeron-ui.vercel.app/agent-guides/components/dialog.md)
 - [field](https://zeron-ui.vercel.app/agent-guides/components/field.md)

@@ -40,6 +40,21 @@ describe("ContextWindow", () => {
     expect(queryByRole("img", { name: "Context token allocation" })).toBeNull();
   });
 
+  it("supports a compact cell count and category order without changing default allocation", () => {
+    const data = createContextWindowDemoData();
+    const usage = getContextWindowUsage(data)!;
+    const order = ["system", "tools", "docs", "history", "memory", "free"] as const;
+    const cells = allocateContextWindowCells(usage.totals, data.capacity, 240, order);
+    expect(cells).toHaveLength(240);
+    expect([...new Set(cells)]).toEqual(order);
+    for (const category of order) {
+      const actual = cells.filter((cell) => cell === category).length;
+      const exact = usage.totals[category] / data.capacity * 240;
+      expect(Math.abs(actual - exact)).toBeLessThan(1);
+    }
+    expect(allocateContextWindowCells(usage.totals, data.capacity)).toHaveLength(400);
+  });
+
   it("only estimates headroom from positive, representable tokens per turn", () => {
     const data = createContextWindowDemoData();
     for (const tokensPerTurn of [undefined, 0, -1, NaN, Infinity, Number.MIN_VALUE]) {

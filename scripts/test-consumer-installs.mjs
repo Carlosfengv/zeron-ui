@@ -631,6 +631,18 @@ async function verifyNextBuild({ consumer, component }) {
     'import { ModelSelector } from "@/components/ui/model-selector";',
     'export default function Page() { const [value,setValue]=useState({modelId:"auto",extendedThinking:false,webSearch:false}); return <ModelSelector models={[{id:"auto",name:"Auto",description:"Choose per message",icon:"A"}]} value={value} onValueChange={setValue} />; }',
   ].join("\n");
+  examples["context-window"] = [
+    '"use client";',
+    'import { ContextWindow, ContextWindowCompact, ContextWindowUsage, type ContextWindowData } from "@/components/ui/context-window";',
+    'const data: ContextWindowData = {capacity:32000,systemTokens:2000,toolTokens:1000,docs:[{id:"guide",title:"Guide",tokens:6000}],memory:[],history:[]};',
+    'export default function Page() { return <><ContextWindow data={data} /><ContextWindowCompact data={data} /><ContextWindowUsage data={data} /></>; }',
+  ].join("\n");
+  examples["context-window-02"] = [
+    '"use client";',
+    'import { ContextWindowCompact, ContextWindowUsage, createContextWindowCompactDemoData } from "@/components/blocks/context-window-02";',
+    'const data = createContextWindowCompactDemoData();',
+    'export default function Page() { return <><ContextWindowUsage data={data} /><ContextWindowCompact data={data} /></>; }',
+  ].join("\n");
   let source = styles ? consumerStyleExample("next") : unifiedSource ?? examples[component];
   if (!source) return;
   if (verifyUnification && !unifiedSource && !styles) {
@@ -1060,6 +1072,20 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import "./index.css";',
     'function Example() { const [value,setValue]=useState({modelId:"auto",extendedThinking:false,webSearch:false}); return <ModelSelector models={[{id:"auto",name:"Auto",description:"Choose per message",icon:"A"}]} value={value} onValueChange={setValue} />; }',
     'createRoot(document.getElementById("root")!).render(<Example />);',
+  ].join("\n");
+  examples["context-window"] = [
+    "import { createRoot } from \"react-dom/client\";",
+    "import { ContextWindow, ContextWindowCompact, ContextWindowUsage, type ContextWindowData } from \"@/src/components/ui/context-window\";",
+    "const data: ContextWindowData = {capacity:32000,systemTokens:2000,toolTokens:1000,docs:[{id:\"guide\",title:\"Guide\",tokens:6000}],memory:[],history:[]};",
+    "import \"./index.css\";",
+    "createRoot(document.getElementById(\"root\")!).render(<><ContextWindow data={data} /><ContextWindowCompact data={data} /><ContextWindowUsage data={data} /></>);",
+  ].join("\n");
+  examples["context-window-02"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { ContextWindowCompact, ContextWindowUsage, createContextWindowCompactDemoData } from "@/src/components/blocks/context-window-02";',
+    'import "./index.css";',
+    'const data = createContextWindowCompactDemoData();',
+    'createRoot(document.getElementById("root")!).render(<><ContextWindowUsage data={data} /><ContextWindowCompact data={data} /></>);',
   ].join("\n");
   let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component];
   if (!source) throw new Error(`No Vite entry example is defined for ${component}`);

@@ -4,6 +4,8 @@ import type { DocPageLoader } from "./page-loader-types";
 export type { DocPageModule, DocPageLoader } from "./page-loader-types";
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "components/context-window": () => import("@docs/pages/components/context-window/page"),
+  "blocks/context-window-02": () => import("@docs/pages/blocks/context-window-02/page"),
   "components/model-selector": () => import("@docs/pages/components/model-selector/page"),
   "blocks/artifact-01": () => import("@docs/pages/blocks/artifact-01/page"),
   "blocks/tool-calls-01": () => import("@docs/pages/blocks/tool-calls-01/page"),

@@ -1,5 +1,14 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "context-window-02": [
+    "packages/blocks/src/application/context-window-02/context-window-compact.tsx",
+    "packages/blocks/src/application/context-window-02/context-window-compact-types.ts",
+    "packages/blocks/src/application/context-window-02/context-window-compact-labels.ts",
+    "packages/blocks/src/application/context-window-02/context-window-compact-demo-data.ts",
+    "packages/blocks/src/application/context-window-02/index.ts",
+    "packages/blocks/src/application/context-window-01/context-window-data.ts",
+    "packages/blocks/src/application/context-window-01/context-window-types.ts"
+  ],
   "artifact-01": [
     "packages/blocks/src/application/artifact-01/artifact-content.tsx",
     "packages/blocks/src/application/artifact-01/artifact-demo-data.ts",

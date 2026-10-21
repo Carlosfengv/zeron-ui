@@ -3,6 +3,7 @@ import "server-only";
 import type { DocPageLoader } from "./page-loader-types";
 
 export const componentPageLoaders: Record<string, DocPageLoader> = {
+  "components/context-window": () => import("@docs/pages/components/context-window/page"),
   "components/model-selector": () => import("@docs/pages/components/model-selector/page"),
   "components/message-navigation": () => import("@docs/pages/components/message-navigation/page"),
   "components/markdown": () => import("@docs/pages/components/markdown/page"),
