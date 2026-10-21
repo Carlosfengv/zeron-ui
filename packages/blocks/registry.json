@@ -1963,7 +1963,7 @@
       "description": "An MCP resource detail page with safe connection generation and a minimal tool test panel.",
       "categories": ["application", "details"],
       "dependencies": ["tw-animate-css", "@lobehub/icons", "@thesvg/icons"],
-      "registryDependencies": ["badge", "breadcrumb", "button", "card", "inline-notice", "input-copy", "page-layout", "select", "tabs", "textarea", "tooltip", "utils"],
+      "registryDependencies": ["badge", "breadcrumb", "button", "card", "field", "inline-notice", "input-copy", "page-layout", "select", "tabs", "textarea", "tooltip", "utils"],
       "files": [
         {
           "path": "packages/blocks/src/application/mcp-detail-01/mcp-detail-data.ts",
