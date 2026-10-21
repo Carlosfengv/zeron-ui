@@ -12,6 +12,8 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "components/artifact-panel": () => import("@docs/content/en/components/artifact-panel.json"),
+    "components/artifact-preview-panel": () => import("@docs/content/en/components/artifact-preview-panel.json"),
     "components/chat-thread": () => import("@docs/content/en/components/chat-thread.json"),
     "components/artifact-card": () => import("@docs/content/en/components/artifact-card.json"),
     "components/context-window": () => import("@docs/content/en/components/context-window.json"),
@@ -175,6 +177,8 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "components/artifact-panel": () => import("@docs/content/zh-CN/components/artifact-panel.json"),
+    "components/artifact-preview-panel": () => import("@docs/content/zh-CN/components/artifact-preview-panel.json"),
     "components/chat-thread": () => import("@docs/content/zh-CN/components/chat-thread.json"),
     "components/artifact-card": () => import("@docs/content/zh-CN/components/artifact-card.json"),
     "components/context-window": () => import("@docs/content/zh-CN/components/context-window.json"),

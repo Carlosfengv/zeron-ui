@@ -206,6 +206,14 @@
       "itemId": "component:artifact-card"
     },
     {
+      "path": "components/artifact-panel.md",
+      "itemId": "component:artifact-panel"
+    },
+    {
+      "path": "components/artifact-preview-panel.md",
+      "itemId": "component:artifact-preview-panel"
+    },
+    {
       "path": "components/avatar.md",
       "itemId": "component:avatar"
     },

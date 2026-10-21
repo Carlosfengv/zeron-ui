@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "artifact-content-renderer",
+  "type": "registry:lib",
+  "title": "Artifact Content Renderer",
+  "description": "Internal Markdown, code and diff rendering shared by the artifact panels. Install the panel that matches your state model.",
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/code-block.json",
+    "https://zeron-ui.vercel.app/r/markdown.json"
+  ],
+  "files": [
+    {
+      "path": "packages/ui/src/components/artifact-content-renderer.tsx",
+      "content": "\"use client\";\nimport { CodeBlock, CodeDiff, type CodeFile } from \"@ui/code-block\";\nimport { Markdown } from \"@ui/markdown\";\n// Internal rendering only: each panel resolves its own resource/revision and view.\ntype ArtifactContentRendererProps = {\n    mode: \"markdown\";\n    text: string;\n} | {\n    mode: \"code\";\n    file: CodeFile;\n    toolbar?: boolean;\n} | {\n    mode: \"diff\";\n    oldFile: CodeFile;\n    newFile: CodeFile;\n    diffStyle: \"split\" | \"unified\";\n};\nexport function ArtifactContentRenderer(props: ArtifactContentRendererProps) {\n    if (props.mode === \"markdown\") {\n        return <div className=\"mx-auto w-full max-w-3xl p-6\"><Markdown text={props.text}/></div>;\n    }\n    return <div className=\"min-w-0 p-3\">{props.mode === \"diff\"\n            ? <CodeDiff oldFile={props.oldFile} newFile={props.newFile} options={{ diffStyle: props.diffStyle }}/>\n            : <CodeBlock file={props.file} toolbar={props.toolbar}/>}</div>;\n}\n",
+      "type": "registry:lib",
+      "target": "components/ui/artifact-content-renderer.tsx"
+    }
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "ui"
+    }
+  }
+}

@@ -10,7 +10,7 @@ vi.mock("../docs/components/blocks/ChatDemoParts", () => ({
   ChatDemoContextControl: () => null,
   ChatDemoResponseContent: ({ text, children }: { text: string; children?: ReactNode }) => <>{text}{children}</>,
 }));
-vi.mock("../packages/blocks/src/application/artifact-01/artifact-content", () => ({
+vi.mock("../packages/ui/src/components/artifact-preview-panel/content", () => ({
   ArtifactContent: ({ revision }: { revision: { content: string } }) => <pre>{revision.content}</pre>,
 }));
 class TestResizeObserver { observe() {} unobserve() {} disconnect() {} }

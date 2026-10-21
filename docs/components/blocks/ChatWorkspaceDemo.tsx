@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "next-intl";
-import { ChatAssistantMessage, ChatDivider, ChatUserMessage, chatThreadZhLabels, createChatThreadDemoData, createChatThreadDemoReply, type ChatThreadDemoMessage } from "@zeron/blocks/chat-thread-01";
-import { ArtifactCard, ArtifactPanel, ChatWorkspace, createChatWorkspaceDemoResources, getPendingReviewResources, type ArtifactResource, type ArtifactReviewDecision } from "@zeron/blocks/chat-workspace-01";
+import { ChatAssistantMessage, ChatDivider, ChatUserMessage, chatThreadZhLabels } from "@zeron/ui/chat-thread";
+import { createChatThreadDemoData, createChatThreadDemoReply, type ChatThreadDemoMessage } from "@zeron/blocks/chat-thread-01";
+import { ArtifactPanel, getPendingReviewResources, type ArtifactResource, type ArtifactReviewDecision } from "@zeron/ui/artifact-panel";
+import { ArtifactCard, ChatWorkspace, createChatWorkspaceDemoResources } from "@zeron/blocks/chat-workspace-01";
 import { createModelSelectorDemoModels, modelSelectorDemoValue } from "@zeron/blocks/model-selector-01";
 import { Button } from "@zeron/ui/button";
 import { ChatMessageAttachments } from "@zeron/ui/chat-message";

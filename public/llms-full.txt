@@ -615,17 +615,22 @@ source: packages/blocks/src/application/artifact-01/artifact-workspace.tsx
 types: packages/blocks/src/application/artifact-01/artifact-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [chat-workspace-01, chat-thread-01, code-block, markdown, tabs, input-message]
+related: [artifact-preview-panel, artifact-card, chat-workspace-01, chat-thread-01, code-block, markdown, tabs, input-message]
 ---
 
+
+GeneratedArtifactCard 继续通过 Chat Workspace 的兼容适配层使用 AI component ArtifactCard，原有导出和精确版本打开回调保持不变。仅展示资源入口可单独安装 `artifact-card`。
 # Artifact
+
+ArtifactPreviewPanel 已下沉为 [AI component](../components/artifact-preview-panel.md)，原预览、类型、文案、工作区与演示生成器保持兼容。只需预览时安装 `artifact-preview-panel`。
 
 安装 `npx zeron-ui add artifact-01 input-message`。React 数据 Block，无 Next.js 或模型 SDK 依赖。
 
 ```tsx
 "use client";
 import { useState } from "react";
-import { ArtifactWorkspace, type ArtifactDocument } from "@zeron/blocks/artifact-01";
+import { ArtifactWorkspace } from "@zeron/blocks/artifact-01";
+import type { ArtifactDocument } from "@zeron/ui/artifact-preview-panel";
 import { InputMessage } from "@zeron/ui/input-message";
 
 export function ArtifactExample() {
@@ -646,6 +651,8 @@ revisionId / onRevisionChange 支持受控选择。非受控状态默认跟随�
 onClose / onRetry 由宿主处理；关闭面板应同时返回 chat 并恢复输入区焦点。复制和下载使用选择版本，刷新重建 HTML iframe，展开调用浏览器 Fullscreen API。labels 与 locale 提供双语控件文案。
 
 createArtifactDemoDocuments 与 createPricingArtifactHtml 仅提供自包含本地数据。文档演示模拟流式生成、停止、重试、历史恢复，附件与模型不参与真实请求。生产接入需要替换生成、持久化与历史管理。
+
+ArtifactPanel 与 ArtifactPreviewPanel 共用内部 Markdown、代码和差异渲染依赖，Registry 随面板自动安装。原 block 的代码/内容转发模块保持原导出与参数；资源审阅与单文档修订恢复继续由各自面板管理。
 
 
 ---
@@ -853,10 +860,14 @@ source: packages/blocks/src/application/chat-workspace-01/chat-workspace.tsx
 types: packages/blocks/src/application/chat-workspace-01/chat-workspace-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [chat-thread-01, resizable, code-block, markdown, tabs, scroll-area, file-type, input-message]
+related: [artifact-panel, artifact-card, chat-thread-01, resizable, code-block, markdown, tabs, scroll-area, file-type, input-message]
 ---
 
+
+ArtifactCard 已复用 `@zeron/ui/artifact-card`。旧 block 导出继续提供资源数据适配，保留 ArtifactResource、ArtifactCardProps、完整 labels、文件大小、地址过滤与版本审阅规则。仅展示卡片可单独安装 `artifact-card`。
 # Chat Workspace
+
+ArtifactPanel 已下沉为 [AI component](../components/artifact-panel.md)，原面板、类型、文案与工具模块保留兼容导出。只需预览时安装 `artifact-panel`。
 
 安装 `npx zeron-ui add chat-workspace-01 input-message`。React 数据 Block，不依赖 Next.js 或 AI SDK。导出 ChatWorkspace、ArtifactPanel、ArtifactCard、getPendingReviewResources 和英文/中文 artifact labels。
 
@@ -867,8 +878,9 @@ related: [chat-thread-01, resizable, code-block, markdown, tabs, scroll-area, fi
 ```tsx
 "use client";
 import { useState } from "react";
-import { ChatWorkspace, ArtifactPanel, ArtifactCard, type ArtifactResource } from "@zeron/blocks/chat-workspace-01";
-import { ChatAssistantMessage } from "@zeron/blocks/chat-thread-01";
+import { ChatWorkspace, ArtifactCard } from "@zeron/blocks/chat-workspace-01";
+import { ArtifactPanel, type ArtifactResource } from "@zeron/ui/artifact-panel";
+import { ChatAssistantMessage } from "@zeron/ui/chat-thread";
 import { InputMessage } from "@zeron/ui/input-message";
 
 export function WorkspaceExample() {
@@ -888,7 +900,7 @@ export function WorkspaceExample() {
 }
 ```
 
-Registry 使用 `@/components/blocks/chat-workspace-01`、`@/components/blocks/chat-thread-01` 和 `@/components/ui/input-message`。ArtifactPanel 可单独放入受限高度容器，无需聊天 Provider。
+Registry 使用 `@/components/blocks/chat-workspace-01`、`@/components/ui/chat-thread`、`@/components/ui/artifact-panel` 和 `@/components/ui/input-message`。ArtifactPanel 可单独放入受限高度容器，无需聊天 Provider。
 
 ## 布局与状态归属
 
@@ -922,9 +934,11 @@ URL 只支持 HTTP(S) 或相对地址的沙箱 iframe；图片和下载额外允
 
 createChatWorkspaceDemoResources(locale, assetBase) 返回本地主题代码、Markdown、图片、网页与 ZIP 元数据。assetBase 默认 /demos/chat-workspace；消费项目替换地址或提供自己的资源。演示回复与审阅为本地模拟，不访问模型、不写磁盘。独立面板演示不依赖 ChatWorkspace。
 
-工作区与 chat-thread-01 的文档演示共用 ChatDemoModelControls、ChatDemoContextControl 和 ChatDemoResponseContent，统一模型选择、附件入口、上下文用量、思考过程和 Markdown 输出。回复仍使用 ChatAssistantMessage 的 model、modelLogo、provider、metrics、stopped、onRetry 和 onFeedback，模型身份属于单条回复快照，切换选择器不会改写历史回复。流式结束后显示 TTFT、输入/输出 tokens 和耗时。模型与上下文仅复用固定演示数据；消费项目按需另装 model-selector-01、context-window-02 并连接真实数据。
+工作区与 chat-thread-01 的文档演示共用 ChatDemoModelControls、ChatDemoContextControl 和 ChatDemoResponseContent，统一模型选择、附件入口、上下文用量、思考过程和 Markdown 输出。回复仍使用 ChatAssistantMessage 的 model、modelLogo、provider、metrics、stopped、onRetry 和 onFeedback，模型身份属于单条回复快照，切换选择器不会改写历史回复。流式结束后显示 TTFT、输入/输出 tokens 和耗时。模型与上下文仅复用固定演示数据；消费项目按需另装 model-selector、context-window-02 并连接真实数据。
 
 验证拖动与键盘调宽、收起后 composer 身份、窄屏切换、关闭后重开、修订后的状态重置、批量部分失败、引用不自动发送、图片缩放、URL 刷新和失效协议、空/加载/失败状态，以及 Registry 依赖闭包。样式只做外部布局，保持 Zeron 组件的表面、焦点、控件尺寸与主题。
+
+ArtifactPanel 与 ArtifactPreviewPanel 共用内部 Markdown、代码和差异渲染依赖，Registry 随面板自动安装。原 block 的代码/内容转发模块保持原导出与参数；资源审阅与单文档修订恢复继续由各自面板管理。
 
 
 ---
@@ -3445,6 +3459,100 @@ onOpen 返回完整原始对象，泛型保留宿主附加字段。组件不复�
 title、locale、labels 提供标题与本地化，导出 artifactCardEnLabels/artifactCardZhLabels。className、style 与 HTML 属性用于外部布局。内部的文件图标、信息层级、焦点与边框遵循共享组件契约。
 
 chat-workspace-01 的旧 ArtifactCard 仍接受原有 ArtifactCardProps、ArtifactResource 和完整 ArtifactLabels。它作为适配层复用本组件，保留 UTF-8 文件大小、显式 size 优先、网页地址过滤及显示，以及有 previousContent 的版本审阅规则。onOpen 继续返回原始版本资源。artifact-01 的 GeneratedArtifactCard 与 ArtifactWorkspace 导出不变。面板预览和版本操作继续由这些 block 提供。
+
+
+---
+
+---
+schema_version: 1
+name: artifact-panel
+kind: component
+status: stable
+locale: zh-CN
+summary: 多资源预览、标签关闭、图片缩放与准确版本的审阅面板。
+package_import: "@zeron/ui/artifact-panel"
+registry_import: "@/components/ui/artifact-panel"
+source: packages/ui/src/components/artifact-panel.tsx
+types: packages/ui/src/components/artifact-panel/types.ts
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [artifact-preview-panel, artifact-card, chat-workspace-01, tabs, code-block, markdown, file-type]
+---
+
+# ArtifactPanel
+
+安装 `npx zeron-ui add artifact-panel`。独立 AI component，无需聊天 Provider、ChatThread、Resizable、ArtifactCard 或示例数据。Registry 导入为 `@/components/ui/artifact-panel`。
+
+```tsx
+"use client";
+import { ArtifactPanel, type ArtifactPanelProps } from "@zeron/ui/artifact-panel";
+
+export function Preview(props: ArtifactPanelProps) {
+  return <div className="h-96 min-h-0"><ArtifactPanel {...props} locale="zh-CN" /></div>;
+}
+```
+
+resources 是已打开资源的只读有序快照。每项 id 唯一且稳定，version 随内容变化，包含 name、kind，以及可选 path、messageId、status、error、downloadUrl、size。kind 为 code、markdown、text、image、url、file；code/markdown 有 content、可选 previousContent，code 还可传 previousPath，显式 review 为 pending/accepted/rejected。图片有 url/alt，网页有 url，普通文件可传 url/mimeType。普通文件只展示元信息和下载入口，不内置 Office/PDF 全文预览。
+
+activeId/onActiveIdChange 可选受控；省略 activeId 时使用本地选择，defaultActiveId 只作初始值。移除活动资源后回退到剩余项。onCloseMany 存在时统一接收关闭集合，否则逐项调用 onClose；宿主移除打开项，不等于删除资源或完成审阅。关闭当前项优先选择右侧邻项，再回退左侧。更多菜单支持关闭其他与全部，Delete 关闭聚焦标签；溢出时保留当前项，菜单列出所有资源。addAction 在空面板仍显示，重复打开由宿主按 id 去重。
+
+宿主通过 onReview(resource, decision) 提交具体 id/version，decision 为 accept/reject；成功后更新该版本的 review，再 resolve；失败 reject。面板不虚构成功。保存期间锁定重复审阅，仍可浏览其他资源。批量逐项保留部分失败，失败提示绑定版本，不转移到新内容。getPendingReviewResources(resources) 与面板共享就绪、可审阅、pending 的规则，保持宿主顺序；也可从 `@zeron/ui/artifact-panel/utils` 导入。
+
+onReference(resource) 将结构化引用加入宿主草稿，不自动发送；onRetry(resource) 请求宿主重试。renderPreview(resource) 返回 undefined 才回退内置预览，可接入 PDF、浏览器或业务查看器。status=loading/error 显示反馈。已访问的资源保持挂载与局部状态；关闭或更新 version 释放旧预览。
+
+代码/Markdown 差异复用 CodeDiff，文本复用 CodeBlock，Markdown 复用 Markdown。图片支持适应窗口、原始尺寸、绝对比例缩放、鼠标平移与原生触屏/键盘滚动。失败禁用图片控制，重试后恢复。网页使用过滤后的 HTTP(S) 或相对地址及沙箱 iframe，不授予 same-origin；图片/下载额外允许 blob。网站可能禁止内嵌，保留外部打开；刷新只重载对应网页，不实现跨域读取或导航历史。
+
+labels 支持 Partial<ArtifactLabels>，导出 artifactEnLabels、artifactZhLabels，也可从 `/labels` 导入。保留原文案字段以兼容旧工作区。locale 控制语言，className 只管理外部布局；宿主提供受限高度。底部单一审阅区复用 Alert，标签、操作、错误与图标分别复用 Tabs、Button、InlineNotice、FileType 等公共能力。
+
+两种面板仅共用内部 artifact-content-renderer 的 Markdown、CodeBlock、CodeDiff 渲染与内容间距，Registry 自动安装此共享依赖，不需要宿主直接调用。ArtifactPanel 的 ArtifactCodePreview 适配资源的 path/previousPath/previousContent，保留代码内工具栏与统一/分栏差异，空 previousContent 仍可对比。ArtifactPreviewPanel 的 ArtifactContent 适配选中与上一修订，隐藏代码内工具栏，固定统一差异；HTML 沙箱不经过共享渲染器。两种数据模型、状态、延迟加载与宿主操作继续独立。原 `/artifact-panel/code-preview`、`/artifact-preview-panel/content` 和 block 转发模块保留原名称及参数。
+
+旧 `@zeron/blocks/chat-workspace-01` 保留全部面板、资源类型、labels、getPendingReviewResources、卡片适配、ChatWorkspace 与演示数据。原面板、标签、预览、代码、文案和工具模块均转发到此共享实现。ChatWorkspace 继续负责会话分栏。单文档修订历史使用 ArtifactPreviewPanel，两个组件不混用资源状态模型。
+
+
+---
+
+---
+schema_version: 1
+name: artifact-preview-panel
+kind: component
+status: stable
+locale: zh-CN
+summary: HTML、Markdown 与代码的修订预览、变更对比和宿主恢复操作。
+package_import: "@zeron/ui/artifact-preview-panel"
+registry_import: "@/components/ui/artifact-preview-panel"
+source: packages/ui/src/components/artifact-preview-panel.tsx
+types: packages/ui/src/components/artifact-preview-panel/types.ts
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [artifact-panel, artifact-card, artifact-01, code-block, markdown, tabs]
+---
+
+# ArtifactPreviewPanel
+
+安装 `npx zeron-ui add artifact-preview-panel`。独立 AI component，无需 ChatWorkspace、ChatThread 或聊天 block。Registry 导入为 `@/components/ui/artifact-preview-panel`。
+
+```tsx
+"use client";
+import { ArtifactPreviewPanel, type ArtifactPreviewPanelProps } from "@zeron/ui/artifact-preview-panel";
+
+export function RevisionPreview(props: ArtifactPreviewPanelProps) {
+  return <div className="h-96 min-h-0"><ArtifactPreviewPanel {...props} locale="zh-CN" /></div>;
+}
+```
+
+artifact 是宿主持有的 ArtifactDocument 或 null。文档包含 id、title、filename、kind（html/markdown/code）与按时间正序的只读 revisions；修订 id 唯一，包含 content、可选 label、status（ready/streaming/error）与 error。null 或空修订显示空状态。组件不获取模型结果、不编译 JSX/TSX、不保存文档。
+
+revisionId/onRevisionChange 支持可选受控选择。非受控默认跟随最新修订，用户选择后保持历史版本。无效 ID 回退最新。onRestore(document, revision) 只为历史版本提供入口，宿主应追加新修订后再 resolve，不改写原历史；失败 reject。恢复中锁定重复请求，允许浏览其他版本。完成时若用户已切换文档或修订，保留其选择；失败提示绑定原文档与修订。受控模式由宿主同步 revisionId。
+
+streaming 强制显示代码并禁用复制、下载、预览与变更。error 显示宿主错误与可选 onRetry(document, revision)。onClose 请求关闭；处于全屏时先退出全屏。复制/下载使用当前选中修订。刷新只重建当前预览，不影响源码和差异视图。展开调用 Fullscreen API，失败显示反馈。
+
+当前修订内访问过的 Code、Preview、Changes 保持挂载，保留输入、滚动与展开；未访问视图延迟加载。新修订释放旧视图，避免保留无限 iframe。代码复用 CodeBlock，Markdown 复用 Markdown，差异复用 CodeDiff 对比上一修订。HTML 使用 sandbox="allow-scripts" 的 srcDoc iframe，不授予 same-origin；沙箱不代表网络隔离。
+
+labels 支持 Partial<ArtifactPreviewLabels>，导出 artifactPreviewEnLabels 与 artifactPreviewZhLabels，也可从 `/labels` 导入。locale 控制双语文案，className 管理外部布局，宿主提供受限高度。恢复和持久化属于宿主，组件只协调选择、视图与操作意图。
+
+两种面板仅共用内部 artifact-content-renderer 的 Markdown、CodeBlock、CodeDiff 渲染与内容间距，Registry 自动安装此共享依赖，不需要宿主直接调用。ArtifactPanel 的 ArtifactCodePreview 适配资源的 path/previousPath/previousContent，保留代码内工具栏与统一/分栏差异，空 previousContent 仍可对比。ArtifactPreviewPanel 的 ArtifactContent 适配选中与上一修订，隐藏代码内工具栏，固定统一差异；HTML 沙箱不经过共享渲染器。两种数据模型、状态、延迟加载与宿主操作继续独立。原 `/artifact-panel/code-preview`、`/artifact-preview-panel/content` 和 block 转发模块保留原名称及参数。
+
+旧 `@zeron/blocks/artifact-01` 保留 ArtifactPreviewPanel、ArtifactDocument、ArtifactRevision、全部原类型、labels、ArtifactWorkspace、GeneratedArtifactCard 和演示生成器。原预览、内容与文案模块转发到共享实现；ArtifactWorkspace 继续组合 ChatWorkspace 与此组件。多资源审阅使用 ArtifactPanel，不与单文档历史合并成同一个状态模型。
 
 
 ---

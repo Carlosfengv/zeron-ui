@@ -9,9 +9,9 @@ import type { PreviewCode } from "@docs/lib/preview-source";
 
 const example = `"use client";
 import { useState } from "react";
-import { ChatWorkspace, ArtifactPanel, ArtifactCard, type ArtifactResource }
-  from "@/components/blocks/chat-workspace-01";
-import { ChatAssistantMessage } from "@/components/blocks/chat-thread-01";
+import { ChatWorkspace, ArtifactCard } from "@/components/blocks/chat-workspace-01";
+import { ArtifactPanel, type ArtifactResource } from "@/components/ui/artifact-panel";
+import { ChatAssistantMessage } from "@/components/ui/chat-thread";
 import { InputMessage } from "@/components/ui/input-message";
 
 export function Workspace() {

@@ -3,7 +3,7 @@
     "title": "Artifact 内容创作",
     "description": "复用对话工作区，生成并预览 HTML 页面、Markdown 文档与代码，支持历史版本和变更对比。",
     "composition": "组件组合",
-    "compositionBody": "ArtifactWorkspace 复用 ChatWorkspace、ChatThread 与 Resizable；GeneratedArtifactCard 复用已有 ArtifactCard。ArtifactPreviewPanel 使用 Tabs、CodeBlock、CodeDiff 和 Markdown 提供版本、代码、预览与变更视图。输入区共用其他会话演示的模型选择、上下文与回复组件。",
+    "compositionBody": "ArtifactPreviewPanel 已复用 @zeron/ui/artifact-preview-panel，原 block 的预览、类型、文案、工作区与演示生成器均保持兼容。GeneratedArtifactCard 通过兼容适配层复用 AI component artifact-card，原有文档、修订选择与打开回调保持不变。通用卡片可单独安装。ArtifactWorkspace 复用 ChatWorkspace、ChatThread 与 Resizable；GeneratedArtifactCard 复用已有 ArtifactCard。ArtifactPreviewPanel 使用 Tabs、CodeBlock、CodeDiff 和 Markdown 提供版本、代码、预览与变更视图。输入区共用其他会话演示的模型选择、上下文与回复组件。",
     "usage": "使用方式",
     "api": "公开接口",
     "apiArtifact": "文档包含稳定 id、标题、文件名、kind 和按时间正序排列的 revisions。每个修订包含稳定 id、content，以及可选的 ready、streaming 或 error 状态。",

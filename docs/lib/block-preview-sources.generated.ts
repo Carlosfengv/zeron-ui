@@ -6,13 +6,13 @@ const blockPreviewSources = {
     "url": "/docs-source/f8f458a2694d5c47e0df0484351cd32c0827eee5b91a91f3c3889bfa12aa28b0.txt"
   },
   "artifact-01": {
-    "url": "/docs-source/aa2f7c55a7c56c2187242e0f1c484f46c26bda6905901b8bf3d4c10aed8a30d5.txt"
+    "url": "/docs-source/882cfc7e78cd5ce235eca1d346f551b631261276c5e4cae14b0a57abc22de567.txt"
   },
   "tool-calls-01": {
     "url": "/docs-source/527407aac649032b3552a9fd8d227ab044eb6d6b11866e909eddfa37cafa3b5b.txt"
   },
   "chat-workspace-01": {
-    "url": "/docs-source/b0524a01723af7f3b159eb520215eb459e99e3e4f3727fa68c39890a3c88495d.txt"
+    "url": "/docs-source/a9065c005cb58e880b6336813efefe1f14dfdee2538100947953e20f53d4d8d9.txt"
   },
   "chat-thread-01": {
     "url": "/docs-source/75d92093a5e7f64fc1cb812938f701b134fcd63a1ae47ac9bed909bf7e65fff2.txt"

@@ -1,0 +1,23 @@
+{
+  "artifact-preview-panel": {
+    "description": "Generated HTML, Markdown and code previews with revision history, changes and host-owned restoration.",
+    "basic": "Revision selection and restore",
+    "basicBody": "Install artifact-preview-panel independently. Switch Code, Preview and Changes, then restore a historical revision. The example appends a local revision. Input inside the preview survives view switches; reload rebuilds the preview. Close and reset the document to start again.",
+    "states": "Generation, failure and retry",
+    "statesBody": "The host switches this example between streaming, ready and error. Streaming shows code and disables copy, download, preview and changes. Finish generation to preview; simulate a failure and retry through the panel. No model request or JSX/TSX compilation is performed.",
+    "behavior": "Data and behavior",
+    "behaviorBody": "ArtifactDocument supplies id, title, filename, kind and oldest-first revisions. Kinds are html, markdown and code. Each revision has a unique id, content and optional label/status/error. Uncontrolled selection follows the latest revision until the user chooses history; invalid IDs fall back to latest. Restore follows the host’s appended revision after success but preserves selection if the user changes document or revision during the request. Errors belong to their original document/revision. Visited views stay mounted, while new revisions release old views. Copy/download use the selected content. HTML runs in a srcDoc sandbox without same-origin access. Markdown, code and changes reuse existing components; expand uses the Fullscreen API.",
+    "compatibility": "Existing block compatibility",
+    "compatibilityBody": "artifact-01 retains ArtifactPreviewPanel, ArtifactDocument, ArtifactRevision, every original type, label sets, ArtifactWorkspace, GeneratedArtifactCard and demo generators. Original preview, content and label modules forward to shared UI; ArtifactWorkspace uses the AI component directly. Independent installation needs no ChatWorkspace, ChatThread or block. Revision history and multi-resource review retain their separate state models.",
+    "api": "API reference",
+    "artifactProp": "Host-owned document and readonly revisions. null shows the empty state. Append a new revision ID when content changes.",
+    "revisionProp": "Optional controlled selection. Omit revisionId for local state; onRevisionChange reports selection intent.",
+    "restoreProp": "Restore is available for historical revisions. Append a revision before resolving; reject failures. The component never writes files or overwrites history.",
+    "actionsProp": "onRetry receives the current document/revision; onClose runs after leaving full screen.",
+    "labelsProp": "artifactPreviewEnLabels / artifactPreviewZhLabels are exported from the root or /labels. className controls external layout; constrain the height.",
+    "rendering": "Content rendering and component selection",
+    "renderingBody": "ArtifactPreviewPanel owns revision selection and restore for one document; use ArtifactPanel for multi-resource tabs and exact-version review. Both share Markdown, code and diff rendering while keeping separate data types and state. This panel supplies copy/download in its own toolbar and hides the inner code toolbar. Changes always compare the previous revision in a unified diff. HTML srcDoc sandboxing, refresh and retained views remain this panel’s responsibility.",
+    "markdown": "Markdown revisions",
+    "markdownBody": "Switch the same README.md history between formatted preview, source and changes against the preceding revision. Restoring an older version appends a revision; it is a different operation from accepting or rejecting a resource."
+  }
+}

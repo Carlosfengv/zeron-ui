@@ -1,6 +1,18 @@
 {
   "schemaVersion": 1,
   "items": [
+    {
+      "id": "support:artifact-content-renderer",
+      "type": "registry",
+      "key": "artifact-content-renderer",
+      "aliases": [
+        "artifact-content-renderer"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {"id": "component:artifact-preview-panel", "type": "registry", "key": "artifact-preview-panel", "aliases": ["artifact-preview-panel"], "status": "active", "retirementReason": null},
+    {"id": "component:artifact-panel", "type": "registry", "key": "artifact-panel", "aliases": ["artifact-panel"], "status": "active", "retirementReason": null},
     {"id": "component:chat-thread", "type": "registry", "key": "chat-thread", "aliases": ["chat-thread"], "status": "active", "retirementReason": null},
     {"id": "component:artifact-card", "type": "registry", "key": "artifact-card", "aliases": ["artifact-card"], "status": "active", "retirementReason": null},
     { "id": "block:context-window-02", "type": "registry", "key": "context-window-02", "aliases": ["context-window-02"], "status": "active", "retirementReason": null },

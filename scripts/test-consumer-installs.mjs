@@ -552,16 +552,18 @@ async function verifyNextBuild({ consumer, component }) {
   examples["artifact-01"] = [
     '"use client";',
     'import { ArtifactWorkspace, ArtifactPreviewPanel, GeneratedArtifactCard, createArtifactDemoDocuments } from "@/components/blocks/artifact-01";',
+    'import { ArtifactContent } from "@/components/blocks/artifact-01/artifact-content";',
     'const artifact = createArtifactDemoDocuments()[0];',
-    'export default function Example() { return <><div className="h-96"><ArtifactWorkspace artifact={artifact} composer={<textarea aria-label="Draft" />}><GeneratedArtifactCard artifact={artifact} onOpen={() => {}} /></ArtifactWorkspace></div><div className="h-96"><ArtifactPreviewPanel artifact={artifact} /></div></>; }',
+    'export default function Example() { return <><ArtifactContent artifact={artifact} revision={artifact.revisions[0]} view="code" /><div className="h-96"><ArtifactWorkspace artifact={artifact} composer={<textarea aria-label="Draft" />}><GeneratedArtifactCard artifact={artifact} onOpen={() => {}} /></ArtifactWorkspace></div><div className="h-96"><ArtifactPreviewPanel artifact={artifact} /></div></>; }',
   ].join("\n");
   examples["chat-workspace-01"] = [
     '"use client";',
     'import { useState } from "react";',
     'import { ChatWorkspace, ArtifactPanel, ArtifactCard, getPendingReviewResources, type ArtifactResource } from "@/components/blocks/chat-workspace-01";',
-    'import { ChatAssistantMessage } from "@/components/blocks/chat-thread-01";',
+    'import { ChatAssistantMessage } from "@/components/ui/chat-thread";',
+    'import { ArtifactCodePreview } from "@/components/blocks/chat-workspace-01/artifact-code-preview";',
     'const resources: ArtifactResource[] = [{ id: "code", version: "1", kind: "code", name: "test.ts", content: "export const ready = true;", previousContent: "", review: "pending" }, { id: "guide", version: "1", kind: "markdown", name: "README.md", content: "# Install verified" }];',
-    'export default function Page() { const [activeId, setActiveId] = useState("code"); return <><span>{getPendingReviewResources(resources).length} pending</span><div className="h-96"><ChatWorkspace composer={<textarea aria-label="Draft" />} artifacts={<ArtifactPanel resources={resources} activeId={activeId} onActiveIdChange={setActiveId} />}><ChatAssistantMessage id="reply" text="Install verified"><ArtifactCard resources={resources} onOpen={(item) => setActiveId(item.id)} /></ChatAssistantMessage></ChatWorkspace></div><div className="h-96"><ArtifactPanel resources={resources} /></div></>; }',
+    'export default function Page() { const [activeId, setActiveId] = useState("code"); return <><ArtifactCodePreview resource={resources[0]} view="source" split={false} /><span>{getPendingReviewResources(resources).length} pending</span><div className="h-96"><ChatWorkspace composer={<textarea aria-label="Draft" />} artifacts={<ArtifactPanel resources={resources} activeId={activeId} onActiveIdChange={setActiveId} />}><ChatAssistantMessage id="reply" text="Install verified"><ArtifactCard resources={resources} onOpen={(item) => setActiveId(item.id)} /></ChatAssistantMessage></ChatWorkspace></div><div className="h-96"><ArtifactPanel resources={resources} /></div></>; }',
   ].join("\n");
   examples["chat-thread-01"] = [
     '"use client";',
@@ -658,6 +660,20 @@ async function verifyNextBuild({ consumer, component }) {
     'function StandaloneParts() { return <><Markdown text={tableMarkdown} /><ChatMessageCopy text="copy" /><ChatMessageAction label="Edit" onClick={() => {}}>E</ChatMessageAction><ChatMessageAttachments files={[{id:"f",name:"brief.md"}]} /><ChatMessageEditor text="draft" onSave={() => {}} onCancel={() => {}} /><ChatMessageBranchSwitch branch={{index:0,count:2,onChange:() => {}}} /></>; }',
     'export default function Page() { const [bookmarks, setBookmarks] = useState<string[]>([]); return <div className="h-96"><StandaloneParts /><ChatThread bookmarkedIds={bookmarks} onBookmarkChange={(id, saved) => setBookmarks(saved ? [id] : [])} composer={<textarea aria-label="Draft" />}><ChatUserMessage id="user" text="Verify installation" /><ChatAssistantMessage id="assistant" text="Install verified" model="Test model" modelLogo={<span>✦</span>} provider="Test provider" metrics={{ttftMs:42}} last><ChatMarkdown text={tableMarkdown} /></ChatAssistantMessage></ChatThread></div>; }',
     '',
+  ].join("\n");
+  examples["artifact-panel"] = [
+    "\"use client\";",
+    "import { ArtifactPanel, type ArtifactResource } from \"@/components/ui/artifact-panel\";",
+    'import { ArtifactCodePreview } from "@/components/ui/artifact-panel/code-preview";',
+    "const resources: ArtifactResource[] = [{id:\"guide\",version:\"1\",name:\"README.md\",kind:\"markdown\",content:\"# Preview verified\",previousContent:\"# Guide\",review:\"pending\"}];",
+    "export default function Page() { return <><ArtifactCodePreview resource={resources[0]} view=\"diff\" split={true} /><div className=\"h-96\"><ArtifactPanel resources={resources} onReview={() => {}} /></div></>; }",
+  ].join("\n");
+  examples["artifact-preview-panel"] = [
+    "\"use client\";",
+    "import { ArtifactPreviewPanel, type ArtifactDocument } from \"@/components/ui/artifact-preview-panel\";",
+    'import { ArtifactContent } from "@/components/ui/artifact-preview-panel/content";',
+    "const artifact: ArtifactDocument = {id:\"welcome\",title:\"Welcome\",filename:\"welcome.html\",kind:\"html\",revisions:[{id:\"v1\",content:\"<h1>Welcome</h1>\"},{id:\"v2\",content:\"<h1>Welcome back</h1>\"}]};",
+    "export default function Page() { return <><ArtifactContent artifact={artifact} revision={artifact.revisions[1]} previous={artifact.revisions[0]} view=\"changes\" /><div className=\"h-96\"><ArtifactPreviewPanel artifact={artifact} /></div></>; }",
   ].join("\n");
   let source = styles ? consumerStyleExample("next") : unifiedSource ?? examples[component];
   if (!source) return;
@@ -967,19 +983,22 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
   ].join("\n");
   examples["artifact-01"] = [
     'import { createRoot } from "react-dom/client";',
-    'import { ArtifactWorkspace, ArtifactPreviewPanel, GeneratedArtifactCard, createArtifactDemoDocuments } from "@/src/components/blocks/artifact-01";',
     'import "./index.css";',
+    'import { ArtifactWorkspace, ArtifactPreviewPanel, GeneratedArtifactCard, createArtifactDemoDocuments } from "@/src/components/blocks/artifact-01";',
+    'import { ArtifactContent } from "@/src/components/blocks/artifact-01/artifact-content";',
     'const artifact = createArtifactDemoDocuments()[0];',
-    'createRoot(document.getElementById("root")!).render(<><div className="h-96"><ArtifactWorkspace artifact={artifact} composer={<textarea aria-label="Draft" />}><GeneratedArtifactCard artifact={artifact} onOpen={() => {}} /></ArtifactWorkspace></div><div className="h-96"><ArtifactPreviewPanel artifact={artifact} /></div></>);',
+    'function Example() { return <><ArtifactContent artifact={artifact} revision={artifact.revisions[0]} view="code" /><div className="h-96"><ArtifactWorkspace artifact={artifact} composer={<textarea aria-label="Draft" />}><GeneratedArtifactCard artifact={artifact} onOpen={() => {}} /></ArtifactWorkspace></div><div className="h-96"><ArtifactPreviewPanel artifact={artifact} /></div></>; }',
+    'createRoot(document.getElementById("root")!).render(<Example />);',
   ].join("\n");
   examples["chat-workspace-01"] = [
     'import { createRoot } from "react-dom/client";',
     'import { useState } from "react";',
     'import { ChatWorkspace, ArtifactPanel, ArtifactCard, getPendingReviewResources, type ArtifactResource } from "@/src/components/blocks/chat-workspace-01";',
-    'import { ChatAssistantMessage } from "@/src/components/blocks/chat-thread-01";',
+    'import { ChatAssistantMessage } from "@/src/components/ui/chat-thread";',
     'import "./index.css";',
+    'import { ArtifactCodePreview } from "@/src/components/blocks/chat-workspace-01/artifact-code-preview";',
     'const resources: ArtifactResource[] = [{ id: "code", version: "1", kind: "code", name: "test.ts", content: "export const ready = true;", previousContent: "", review: "pending" }, { id: "guide", version: "1", kind: "markdown", name: "README.md", content: "# Install verified" }];',
-    'function Example() { const [activeId, setActiveId] = useState("code"); return <><span>{getPendingReviewResources(resources).length} pending</span><div className="h-96"><ChatWorkspace composer={<textarea aria-label="Draft" />} artifacts={<ArtifactPanel resources={resources} activeId={activeId} onActiveIdChange={setActiveId} />}><ChatAssistantMessage id="reply" text="Install verified"><ArtifactCard resources={resources} onOpen={(item) => setActiveId(item.id)} /></ChatAssistantMessage></ChatWorkspace></div><div className="h-96"><ArtifactPanel resources={resources} /></div></>; }',
+    'function Example() { const [activeId, setActiveId] = useState("code"); return <><ArtifactCodePreview resource={resources[0]} view="source" split={false} /><span>{getPendingReviewResources(resources).length} pending</span><div className="h-96"><ChatWorkspace composer={<textarea aria-label="Draft" />} artifacts={<ArtifactPanel resources={resources} activeId={activeId} onActiveIdChange={setActiveId} />}><ChatAssistantMessage id="reply" text="Install verified"><ArtifactCard resources={resources} onOpen={(item) => setActiveId(item.id)} /></ChatAssistantMessage></ChatWorkspace></div><div className="h-96"><ArtifactPanel resources={resources} /></div></>; }',
     'createRoot(document.getElementById("root")!).render(<Example />);',
   ].join("\n");
   examples["chat-thread-01"] = [
@@ -1121,6 +1140,22 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'function Demo() { const [bookmarks, setBookmarks] = useState<string[]>([]); return <div className="h-96"><StandaloneParts /><ChatThread bookmarkedIds={bookmarks} onBookmarkChange={(id, saved) => setBookmarks(saved ? [id] : [])} composer={<textarea aria-label="Draft" />}><ChatUserMessage id="user" text="Verify installation" /><ChatAssistantMessage id="assistant" text="Install verified" model="Test model" modelLogo={<span>✦</span>} provider="Test provider" metrics={{ttftMs:42}} last><ChatMarkdown text={tableMarkdown} /></ChatAssistantMessage></ChatThread></div>; }',
     'createRoot(document.getElementById("root")!).render(<Demo />);',
     '',
+  ].join("\n");
+  examples["artifact-panel"] = [
+    "import { createRoot } from \"react-dom/client\";",
+    "import \"./index.css\";",
+    "import { ArtifactPanel, type ArtifactResource } from \"@/src/components/ui/artifact-panel\";",
+    'import { ArtifactCodePreview } from "@/src/components/ui/artifact-panel/code-preview";',
+    "const resources: ArtifactResource[] = [{id:\"guide\",version:\"1\",name:\"README.md\",kind:\"markdown\",content:\"# Preview verified\",previousContent:\"# Guide\",review:\"pending\"}];",
+    "createRoot(document.getElementById(\"root\")!).render(<><ArtifactCodePreview resource={resources[0]} view=\"diff\" split={true} /><div className=\"h-96\"><ArtifactPanel resources={resources} onReview={() => {}} /></div></>);",
+  ].join("\n");
+  examples["artifact-preview-panel"] = [
+    "import { createRoot } from \"react-dom/client\";",
+    "import \"./index.css\";",
+    "import { ArtifactPreviewPanel, type ArtifactDocument } from \"@/src/components/ui/artifact-preview-panel\";",
+    'import { ArtifactContent } from "@/src/components/ui/artifact-preview-panel/content";',
+    "const artifact: ArtifactDocument = {id:\"welcome\",title:\"Welcome\",filename:\"welcome.html\",kind:\"html\",revisions:[{id:\"v1\",content:\"<h1>Welcome</h1>\"},{id:\"v2\",content:\"<h1>Welcome back</h1>\"}]};",
+    "createRoot(document.getElementById(\"root\")!).render(<><ArtifactContent artifact={artifact} revision={artifact.revisions[1]} previous={artifact.revisions[0]} view=\"changes\" /><div className=\"h-96\"><ArtifactPreviewPanel artifact={artifact} /></div></>);",
   ].join("\n");
   let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component];
   if (!source) throw new Error(`No Vite entry example is defined for ${component}`);

@@ -11,10 +11,14 @@ source: packages/blocks/src/application/chat-workspace-01/chat-workspace.tsx
 types: packages/blocks/src/application/chat-workspace-01/chat-workspace-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [chat-thread-01, resizable, code-block, markdown, tabs, scroll-area, file-type, input-message]
+related: [artifact-panel, artifact-card, chat-thread-01, resizable, code-block, markdown, tabs, scroll-area, file-type, input-message]
 ---
 
+
+ArtifactCard 已复用 `@zeron/ui/artifact-card`。旧 block 导出继续提供资源数据适配，保留 ArtifactResource、ArtifactCardProps、完整 labels、文件大小、地址过滤与版本审阅规则。仅展示卡片可单独安装 `artifact-card`。
 # Chat Workspace
+
+ArtifactPanel 已下沉为 [AI component](../components/artifact-panel.md)，原面板、类型、文案与工具模块保留兼容导出。只需预览时安装 `artifact-panel`。
 
 安装 `npx zeron-ui add chat-workspace-01 input-message`。React 数据 Block，不依赖 Next.js 或 AI SDK。导出 ChatWorkspace、ArtifactPanel、ArtifactCard、getPendingReviewResources 和英文/中文 artifact labels。
 
@@ -25,8 +29,9 @@ related: [chat-thread-01, resizable, code-block, markdown, tabs, scroll-area, fi
 ```tsx
 "use client";
 import { useState } from "react";
-import { ChatWorkspace, ArtifactPanel, ArtifactCard, type ArtifactResource } from "@zeron/blocks/chat-workspace-01";
-import { ChatAssistantMessage } from "@zeron/blocks/chat-thread-01";
+import { ChatWorkspace, ArtifactCard } from "@zeron/blocks/chat-workspace-01";
+import { ArtifactPanel, type ArtifactResource } from "@zeron/ui/artifact-panel";
+import { ChatAssistantMessage } from "@zeron/ui/chat-thread";
 import { InputMessage } from "@zeron/ui/input-message";
 
 export function WorkspaceExample() {
@@ -46,7 +51,7 @@ export function WorkspaceExample() {
 }
 ```
 
-Registry 使用 `@/components/blocks/chat-workspace-01`、`@/components/blocks/chat-thread-01` 和 `@/components/ui/input-message`。ArtifactPanel 可单独放入受限高度容器，无需聊天 Provider。
+Registry 使用 `@/components/blocks/chat-workspace-01`、`@/components/ui/chat-thread`、`@/components/ui/artifact-panel` 和 `@/components/ui/input-message`。ArtifactPanel 可单独放入受限高度容器，无需聊天 Provider。
 
 ## 布局与状态归属
 
@@ -80,6 +85,8 @@ URL 只支持 HTTP(S) 或相对地址的沙箱 iframe；图片和下载额外允
 
 createChatWorkspaceDemoResources(locale, assetBase) 返回本地主题代码、Markdown、图片、网页与 ZIP 元数据。assetBase 默认 /demos/chat-workspace；消费项目替换地址或提供自己的资源。演示回复与审阅为本地模拟，不访问模型、不写磁盘。独立面板演示不依赖 ChatWorkspace。
 
-工作区与 chat-thread-01 的文档演示共用 ChatDemoModelControls、ChatDemoContextControl 和 ChatDemoResponseContent，统一模型选择、附件入口、上下文用量、思考过程和 Markdown 输出。回复仍使用 ChatAssistantMessage 的 model、modelLogo、provider、metrics、stopped、onRetry 和 onFeedback，模型身份属于单条回复快照，切换选择器不会改写历史回复。流式结束后显示 TTFT、输入/输出 tokens 和耗时。模型与上下文仅复用固定演示数据；消费项目按需另装 model-selector-01、context-window-02 并连接真实数据。
+工作区与 chat-thread-01 的文档演示共用 ChatDemoModelControls、ChatDemoContextControl 和 ChatDemoResponseContent，统一模型选择、附件入口、上下文用量、思考过程和 Markdown 输出。回复仍使用 ChatAssistantMessage 的 model、modelLogo、provider、metrics、stopped、onRetry 和 onFeedback，模型身份属于单条回复快照，切换选择器不会改写历史回复。流式结束后显示 TTFT、输入/输出 tokens 和耗时。模型与上下文仅复用固定演示数据；消费项目按需另装 model-selector、context-window-02 并连接真实数据。
 
 验证拖动与键盘调宽、收起后 composer 身份、窄屏切换、关闭后重开、修订后的状态重置、批量部分失败、引用不自动发送、图片缩放、URL 刷新和失效协议、空/加载/失败状态，以及 Registry 依赖闭包。样式只做外部布局，保持 Zeron 组件的表面、焦点、控件尺寸与主题。
+
+ArtifactPanel 与 ArtifactPreviewPanel 共用内部 Markdown、代码和差异渲染依赖，Registry 随面板自动安装。原 block 的代码/内容转发模块保持原导出与参数；资源审阅与单文档修订恢复继续由各自面板管理。

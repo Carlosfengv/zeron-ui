@@ -1,4 +1,58 @@
 {
+  "artifact-preview-panel": {
+    "keywords": [
+      "artifact",
+      "generated",
+      "revision",
+      "version history",
+      "生成内容",
+      "历史修订",
+      "HTML",
+      "Markdown",
+      "restore"
+    ],
+    "useCases": [
+      "独立显示 HTML、Markdown 或代码的选中修订，切换代码/预览/变更并请求恢复历史版本。"
+    ],
+    "whenNotToUse": [
+      "多资源审阅使用 artifact-panel；本组件不编译 JSX/TSX、不调用模型、不保存或覆盖历史。"
+    ],
+    "keyApi": [
+      "artifact 提供只读有序 revisions；revisionId/onRevisionChange 可选受控。",
+      "onRestore 接收文档与准确修订，宿主追加版本后 resolve，失败 reject。",
+      "streaming 强制代码视图，禁用预览/变更/复制/下载；error 支持宿主重试。",
+      "HTML 使用沙箱 srcDoc，访问过的视图保持状态，新修订释放旧视图。",
+      "独立 UI 不依赖 workspace 或 block，artifact-01 保留原类型、组合与演示生成器。",
+      "与另一面板仅共享内部 Markdown、代码和差异渲染，不合并资源审阅与修订恢复的状态或类型；旧内容模块和 block 转发保持兼容。"
+    ]
+  },
+  "artifact-panel": {
+    "keywords": [
+      "artifact",
+      "preview",
+      "多资源",
+      "内容面板",
+      "审阅",
+      "tabs",
+      "review",
+      "image",
+      "diff"
+    ],
+    "useCases": [
+      "独立显示多个代码、Markdown、图片、网页或文件资源，管理打开标签与准确版本的审阅。"
+    ],
+    "whenNotToUse": [
+      "单文档修订历史使用 artifact-preview-panel；完整会话与分栏使用 chat-workspace-01。"
+    ],
+    "keyApi": [
+      "resources + activeId/onActiveIdChange 管理已打开资源；id 稳定，version 随内容更新。",
+      "onCloseMany/onClose 管理关闭请求，addAction 在空面板仍保留。",
+      "onReview 接收准确 id/version，保存中锁定重复审阅，保留部分失败；getPendingReviewResources 共享筛选条件。",
+      "renderPreview 返回 undefined 时回退，onReference/onRetry 由宿主接入。",
+      "独立 UI 不依赖 block、ChatThread 或演示数据，旧 chat-workspace-01 保留全部导出。",
+      "与另一面板仅共享内部 Markdown、代码和差异渲染，不合并资源审阅与修订恢复的状态或类型；旧内容模块和 block 转发保持兼容。"
+    ]
+  },
   "chat-thread": {
     "keywords": [
       "聊天",

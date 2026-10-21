@@ -1,0 +1,25 @@
+{
+  "artifact-panel": {
+    "description": "多资源内容面板，支持标签管理、代码差异、Markdown、图片与网页预览及逐版本审阅。",
+    "basic": "资源预览与审阅",
+    "basicBody": "独立安装 artifact-panel，无需聊天工作区。README.md 展示 Markdown 预览与源码，settings.ts 展示从 src/config.ts 到 src/settings.ts 的重命名差异，支持统一和分栏。切换标签、审阅、关闭与重置都更新宿主本地快照；引用只记录资源，不发送消息。",
+    "failures": "审阅失败与部分成功",
+    "failuresBody": "此示例首次审阅 README.md 会失败，之后可重试。批量操作可保留其他文件的成功结果，失败提示绑定具体 id/version，不会变成新修订的错误。",
+    "data": "资源与视图",
+    "dataBody": "resources 表示当前已打开的资源，id 稳定且唯一，内容变化时更新 version。kind 为 code、markdown、text、image、url 或 file；代码和 Markdown 提供 previousContent 后支持差异，只有显式 review 与可审阅内容才参与审阅。普通文件展示元信息，不内置 Office/PDF 全文预览。图片支持适应窗口、原始尺寸、绝对缩放与鼠标平移。网页使用过滤后的 HTTP(S) 或相对地址及沙箱 iframe；图片和下载额外支持 blob。检查失败、加载中与自定义预览均保留原有行为。",
+    "ownership": "状态与操作归属",
+    "ownershipBody": "宿主管理打开列表、资源版本、选中项与真实文件操作。关闭标签不代表删除或完成审阅；onCloseMany 存在时统一接收关闭集合，否则逐项调用 onClose。标签溢出保留当前项，其余进入更多菜单。访问过的预览保留状态，关闭或更新 version 后释放。onReview 提交准确版本，成功后由宿主更新 review；保存中锁定重复审阅，允许继续浏览。renderPreview 返回 undefined 才回退默认预览。",
+    "compatibility": "现有 block 兼容",
+    "compatibilityBody": "chat-workspace-01 保留 ArtifactPanel、ArtifactResource、全部原类型、中英文 labels、getPendingReviewResources、卡片适配与演示数据。原面板、预览、标签、文案和工具模块均转发到共享实现。ChatWorkspace 继续负责会话与分栏；独立面板无需安装 ChatThread、Resizable、ArtifactCard 或 block。ArtifactPreviewPanel 负责单文档修订，保留另一套明确的数据契约。",
+    "api": "API 参考",
+    "resourcesProp": "有序的只读资源快照，包含 id、version、name、kind 与对应内容。可选 path、status、error、size、downloadUrl 等；审阅结果属于具体版本。",
+    "activeProp": "可选受控选择；省略 activeId 使用本地选择。宿主移除活动资源后回退剩余项，关闭当前标签优先选择邻项。",
+    "closeProp": "请求宿主移除打开项。onCloseMany 优先，支持关闭当前、其他与全部标签；宿主负责持久化。",
+    "addProp": "标签栏旁的宿主操作，空面板仍显示；示例用于重置资源。",
+    "reviewProp": "逐项与批量均传入准确资源版本，失败时 reject；getPendingReviewResources 与面板使用相同的就绪待审阅条件。",
+    "extendProp": "onReference 加入草稿引用，onRetry 请求重试资源，renderPreview 可接入 PDF、浏览器或业务预览。",
+    "labelsProp": "artifactEnLabels / artifactZhLabels 从主入口或 /labels 导入。className 用于外部布局，宿主提供受限高度。",
+    "rendering": "内容渲染与组件选择",
+    "renderingBody": "ArtifactPanel 管理多资源标签和准确版本的审阅；ArtifactPreviewPanel 管理单文档修订与恢复。两者共用 Markdown、代码和差异的底层渲染，数据类型、视图名称与状态保持各自契约。此面板的代码保留内置工具栏，差异支持统一或分栏，并以 previousPath 展示重命名前的路径；previousContent 为空字符串时仍可对比新文件。图片、网页与 renderPreview 继续由资源面板处理。"
+  }
+}

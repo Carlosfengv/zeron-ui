@@ -1,0 +1,23 @@
+{
+  "artifact-preview-panel": {
+    "description": "生成内容预览面板，支持 HTML、Markdown、代码、修订历史、变更对比与宿主控制的版本恢复。",
+    "basic": "修订切换与恢复",
+    "basicBody": "独立安装 artifact-preview-panel。切换代码、预览与变更，选择历史版本后恢复；示例会追加一个本地修订。预览内的输入在切换视图后保留，刷新会重建当前预览。关闭后可重置文档。",
+    "states": "生成、失败与重试",
+    "statesBody": "示例由宿主切换 streaming、ready、error。生成中仅显示代码，禁用复制、下载、预览与变更；完成后可以预览。模拟失败后使用面板重试恢复。组件不调用模型或编译 JSX/TSX。",
+    "behavior": "数据与行为",
+    "behaviorBody": "ArtifactDocument 包含 id、title、filename、kind 和按时间正序的 revisions；kind 为 html、markdown 或 code。修订 id 唯一，包含 content、可选 label、status 与 error。非受控选择跟随最新修订，用户选择历史后保持该版本；无效 ID 回退最新。恢复成功后跟随宿主追加的修订，恢复期间切换文档或版本不会被旧请求夺回。失败提示绑定原文档和修订。已访问的视图保持挂载，新修订释放旧视图；复制和下载使用选中内容。HTML 在不授予 same-origin 的沙箱 srcDoc iframe 中运行。Markdown、代码、差异分别复用现有组件，展开使用 Fullscreen API。",
+    "compatibility": "现有 block 兼容",
+    "compatibilityBody": "artifact-01 保留 ArtifactPreviewPanel、ArtifactDocument、ArtifactRevision、全部原类型、双语 labels、ArtifactWorkspace、GeneratedArtifactCard 和演示生成器。原预览、内容与文案模块转发到共享实现；ArtifactWorkspace 直接复用 AI component。独立安装无需 ChatWorkspace、ChatThread 或 block，版本历史与多资源审阅的状态模型保持独立。",
+    "api": "API 参考",
+    "artifactProp": "宿主维护的文档与只读修订数组，传 null 显示空状态。内容变更时追加新的修订 ID。",
+    "revisionProp": "可选受控选择。省略 revisionId 使用本地选择，onRevisionChange 通知宿主选择意图。",
+    "restoreProp": "仅历史版本提供恢复入口。宿主应追加新修订后完成回调，失败时 reject；组件不写磁盘或覆盖历史。",
+    "actionsProp": "onRetry 接收当前文档和修订；onClose 请求关闭，离开全屏后调用。",
+    "labelsProp": "artifactPreviewEnLabels / artifactPreviewZhLabels 从主入口或 /labels 导入。className 用于外部布局，宿主限制高度。",
+    "rendering": "内容渲染与组件选择",
+    "renderingBody": "ArtifactPreviewPanel 管理单文档的修订选择与恢复；多资源标签和逐版本审阅使用 ArtifactPanel。两者共用 Markdown、代码和差异的底层渲染，不合并数据类型或状态。此面板由面板工具栏统一提供复制、下载，代码内部工具栏保持隐藏；变更固定以统一视图对比上一修订。HTML 的 srcDoc 沙箱、刷新和视图保留仍由此面板处理。",
+    "markdown": "Markdown 修订",
+    "markdownBody": "同一份 README.md 历史可切换排版预览、源码与上一修订的变更。选择旧版后恢复会追加新修订；这与多资源面板的接受、拒绝属于不同操作。"
+  }
+}

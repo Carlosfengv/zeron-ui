@@ -1,8 +1,8 @@
 "use client";
 
 import { ArtifactCard as SharedArtifactCard } from "@zeron/ui/artifact-card";
-import { resolveArtifactLabels } from "./artifact-labels";
-import { artifactReviewStatus, artifactSizeText, safeArtifactUrl } from "./artifact-utils";
+import { resolveArtifactLabels } from "@zeron/ui/artifact-panel/labels";
+import { artifactReviewStatus, artifactSizeText, safeArtifactUrl } from "@zeron/ui/artifact-panel/utils";
 import type { ArtifactCardProps } from "./chat-workspace-types";
 
 /** Compatibility adapter for full workspace resources and their review rules. */

@@ -96,6 +96,8 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [App Shell](https://zeron-ui.vercel.app/ai/items/component%3Aapp-shell.md): Composable application frame for Sidebar, header, and main content. Registry: app-shell.
 - [AreaChart](https://zeron-ui.vercel.app/ai/items/component%3Aarea-chart.md): Reference area charts with overlapping series, gradients and brush selection. Registry: area-chart.
 - [ArtifactCard](https://zeron-ui.vercel.app/ai/items/component%3Aartifact-card.md): Generated-content cards with file icons, metadata and host-owned previews. Registry: artifact-card.
+- [ArtifactPanel](https://zeron-ui.vercel.app/ai/items/component%3Aartifact-panel.md): Multi-resource previews, tabs and version-scoped review actions. Registry: artifact-panel.
+- [ArtifactPreviewPanel](https://zeron-ui.vercel.app/ai/items/component%3Aartifact-preview-panel.md): Generated content previews with revision history and host-owned restoration. Registry: artifact-preview-panel.
 - [Ask User Questions](https://zeron-ui.vercel.app/ai/items/component%3Aask-user-questions.md): Stepped question flow with single/multi-select, optional 'other' input, and skip. Registry: ask-user-questions.
 - [Auth Layout](https://zeron-ui.vercel.app/ai/items/component%3Aauth-layout.md): Full-height centered composition for authentication flows, with responsive widths and optional header and footer regions. Registry: auth-layout.
 - [Avatar](https://zeron-ui.vercel.app/ai/items/component%3Aavatar.md): Circle and rounded image or fallback primitives for people, agents, and accounts, with status, group, and compact user-detail composition. Registry: avatar.
@@ -257,6 +259,8 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [app-shell](https://zeron-ui.vercel.app/agent-guides/components/app-shell.md)
 - [area-chart](https://zeron-ui.vercel.app/agent-guides/components/area-chart.md)
 - [artifact-card](https://zeron-ui.vercel.app/agent-guides/components/artifact-card.md)
+- [artifact-panel](https://zeron-ui.vercel.app/agent-guides/components/artifact-panel.md)
+- [artifact-preview-panel](https://zeron-ui.vercel.app/agent-guides/components/artifact-preview-panel.md)
 - [avatar](https://zeron-ui.vercel.app/agent-guides/components/avatar.md)
 - [badge](https://zeron-ui.vercel.app/agent-guides/components/badge.md)
 - [bar-chart](https://zeron-ui.vercel.app/agent-guides/components/bar-chart.md)

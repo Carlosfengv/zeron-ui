@@ -4,6 +4,126 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "artifact-content-renderer",
+      "type": "registry:lib",
+      "title": "Artifact Content Renderer",
+      "description": "Internal Markdown, code and diff rendering shared by the artifact panels. Install the panel that matches your state model.",
+      "registryDependencies": [
+        "code-block",
+        "markdown"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-content-renderer.tsx",
+          "type": "registry:lib",
+          "target": "components/ui/artifact-content-renderer.tsx"
+        }
+      ]
+    },
+    {
+      "name": "artifact-preview-panel",
+      "type": "registry:ui",
+      "title": "ArtifactPreviewPanel",
+      "description": "Generated HTML, Markdown and code previews with revision history and host-owned restoration.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "button",
+        "artifact-content-renderer",
+        "dropdown",
+        "empty",
+        "icon-context",
+        "inline-notice",
+        "menu-item",
+        "tabs",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel/content.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel/content.tsx"
+        }
+      ]
+    },
+    {
+      "name": "artifact-panel",
+      "type": "registry:ui",
+      "title": "ArtifactPanel",
+      "description": "Multi-resource content previews with tabs, version-scoped review and host-owned actions.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "alert",
+        "button",
+        "artifact-content-renderer",
+        "dropdown",
+        "empty",
+        "file-type",
+        "icon-context",
+        "inline-notice",
+        "menu-item",
+        "tabs",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-panel.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/utils.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/tabs.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/tabs.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/preview.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/preview.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/code-preview.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/code-preview.tsx"
+        }
+      ]
+    },
+    {
       "name": "chat-thread",
       "type": "registry:ui",
       "title": "ChatThread",

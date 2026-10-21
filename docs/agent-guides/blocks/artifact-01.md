@@ -11,17 +11,22 @@ source: packages/blocks/src/application/artifact-01/artifact-workspace.tsx
 types: packages/blocks/src/application/artifact-01/artifact-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [chat-workspace-01, chat-thread-01, code-block, markdown, tabs, input-message]
+related: [artifact-preview-panel, artifact-card, chat-workspace-01, chat-thread-01, code-block, markdown, tabs, input-message]
 ---
 
+
+GeneratedArtifactCard 继续通过 Chat Workspace 的兼容适配层使用 AI component ArtifactCard，原有导出和精确版本打开回调保持不变。仅展示资源入口可单独安装 `artifact-card`。
 # Artifact
+
+ArtifactPreviewPanel 已下沉为 [AI component](../components/artifact-preview-panel.md)，原预览、类型、文案、工作区与演示生成器保持兼容。只需预览时安装 `artifact-preview-panel`。
 
 安装 `npx zeron-ui add artifact-01 input-message`。React 数据 Block，无 Next.js 或模型 SDK 依赖。
 
 ```tsx
 "use client";
 import { useState } from "react";
-import { ArtifactWorkspace, type ArtifactDocument } from "@zeron/blocks/artifact-01";
+import { ArtifactWorkspace } from "@zeron/blocks/artifact-01";
+import type { ArtifactDocument } from "@zeron/ui/artifact-preview-panel";
 import { InputMessage } from "@zeron/ui/input-message";
 
 export function ArtifactExample() {
@@ -42,3 +47,5 @@ revisionId / onRevisionChange 支持受控选择。非受控状态默认跟随�
 onClose / onRetry 由宿主处理；关闭面板应同时返回 chat 并恢复输入区焦点。复制和下载使用选择版本，刷新重建 HTML iframe，展开调用浏览器 Fullscreen API。labels 与 locale 提供双语控件文案。
 
 createArtifactDemoDocuments 与 createPricingArtifactHtml 仅提供自包含本地数据。文档演示模拟流式生成、停止、重试、历史恢复，附件与模型不参与真实请求。生产接入需要替换生成、持久化与历史管理。
+
+ArtifactPanel 与 ArtifactPreviewPanel 共用内部 Markdown、代码和差异渲染依赖，Registry 随面板自动安装。原 block 的代码/内容转发模块保持原导出与参数；资源审阅与单文档修订恢复继续由各自面板管理。

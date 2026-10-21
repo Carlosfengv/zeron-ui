@@ -9,9 +9,9 @@ import type { PreviewCode } from "@docs/lib/preview-source";
 
 const example = `"use client";
 import { useState } from "react";
-import { ArtifactWorkspace, GeneratedArtifactCard, type ArtifactDocument }
-  from "@/components/blocks/artifact-01";
-import { ChatAssistantMessage } from "@/components/blocks/chat-thread-01";
+import { ArtifactWorkspace, GeneratedArtifactCard } from "@/components/blocks/artifact-01";
+import type { ArtifactDocument } from "@/components/ui/artifact-preview-panel";
+import { ChatAssistantMessage } from "@/components/ui/chat-thread";
 import { InputMessage } from "@/components/ui/input-message";
 
 export function Workspace() {

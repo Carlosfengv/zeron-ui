@@ -1,0 +1,139 @@
+"use client";
+
+export { ArtifactContent } from "@zeron/ui/artifact-preview-panel/content";
+
+
+import type { ArtifactDocument } from "./artifact-types";
+
+/** Self-contained HTML fixture; the sandbox never receives workspace code or credentials. */
+export function createPricingArtifactHtml(yearly = false, savings = false) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple pricing</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, sans-serif; color: #18181b; background: #fafafa; }
+    main { max-width: 1080px; margin: 0 auto; padding: 64px 24px; }
+    h1 { margin: 0; font-size: 36px; letter-spacing: -0.04em; text-align: center; }
+    .lead { margin: 14px auto 36px; max-width: 480px; color: #71717a; text-align: center; line-height: 1.6; }
+    .plans { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+    .plan { display: flex; flex-direction: column; gap: 22px; padding: 24px; border: 1px solid #e4e4e7; border-radius: 16px; background: #fff; }
+    .featured { border-color: #18181b; }
+    .name { font-size: 14px; font-weight: 600; }
+    .price { font-size: 36px; font-weight: 600; letter-spacing: -0.04em; }
+    .price small { font-size: 13px; font-weight: 400; color: #71717a; letter-spacing: 0; }
+    ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; color: #52525b; font-size: 13px; }
+    li::before { content: "✓"; margin-right: 8px; color: #16a34a; }
+    button { min-height: 40px; border: 0; border-radius: 10px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; background: #f4f4f5; padding: 8px 14px; }
+    button:focus-visible { outline: 2px solid #18181b; outline-offset: 3px; }
+    .plan button { margin-top: auto; }
+    .featured button { background: #18181b; color: #fff; }
+    .billing { display: flex; justify-content: center; gap: 4px; margin-bottom: 36px; }
+    .billing button[aria-pressed="true"] { background: #18181b; color: #fff; }
+    .badge { display: inline-block; padding: 4px 8px; border-radius: 16px; color: #15803d; background: #f0fdf4; font-size: 11px; margin-left: 8px; }
+    #notice { text-align: center; color: #52525b; min-height: 24px; font-size: 13px; margin-top: 24px; }
+    @media (max-width: 480px) { main { padding: 36px 16px; } h1 { font-size: 30px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Simple pricing</h1>
+    <p class="lead">Start free, upgrade when your team grows. Every plan includes unlimited projects.</p>
+    ${yearly ? `<div class="billing" role="group" aria-label="Billing period">
+      <button aria-pressed="true" onclick="billing(false, this)">Monthly</button>
+      <button aria-pressed="false" onclick="billing(true, this)">Yearly · 2 months free</button>
+    </div>` : ""}
+    <section class="plans" aria-label="Pricing plans">
+      <article class="plan">
+        <div class="name">Hobby</div>
+        <div class="price">$0 <small>/ month</small></div>
+        <ul><li>3 members</li><li>1 GB storage</li><li>Community support</li></ul>
+        <button onclick="choose('Hobby')">Get started</button>
+      </article>
+      <article class="plan featured">
+        <div class="name">Team${savings ? '<span class="badge">Save 17% yearly</span>' : ""}</div>
+        <div class="price"><span id="team-price">$24</span> <small>/ month</small></div>
+        <ul><li>Unlimited members</li><li>100 GB storage</li><li>Priority support</li></ul>
+        <button onclick="choose('Team')">Start a trial</button>
+      </article>
+      <article class="plan">
+        <div class="name">Enterprise</div>
+        <div class="price">Custom</div>
+        <ul><li>SSO and audit logs</li><li>Unlimited storage</li><li>A named contact</li></ul>
+        <button onclick="choose('Enterprise')">Talk to sales</button>
+      </article>
+    </section>
+    <p id="notice" role="status"></p>
+  </main>
+  <script>
+    function choose(plan) { document.getElementById('notice').textContent = plan + ' selected — preview only.'; }
+    ${yearly ? `function billing(yearly, button) {
+      document.getElementById('team-price').textContent = yearly ? '$20' : '$24';
+      button.parentElement.querySelectorAll('button').forEach(function(item) { item.setAttribute('aria-pressed', String(item === button)); });
+    }` : ""}
+  </script>
+</body>
+</html>`;
+}
+
+export function createArtifactDemoDocuments(locale = "en"): ArtifactDocument[] {
+  const zh = locale.startsWith("zh");
+  return [
+    { id: "pricing", title: zh ? "定价页面" : "Pricing page", filename: "pricing-page.html", kind: "html", revisions: [{ id: "pricing-v1", content: createPricingArtifactHtml() }] },
+    { id: "launch", title: zh ? "发布计划" : "Launch plan", filename: "launch-plan.md", kind: "markdown", revisions: [{ id: "launch-v1", content: zh ? `# 发布计划\n\n让团队从首次体验走向持续使用。\n\n## 发布目标\n\n- 验证定价与产品定位\n- 收集首批团队的使用反馈\n- 建立可持续的支持流程\n\n## 时间安排\n\n| 阶段 | 工作 | 交付物 |\n| --- | --- | --- |\n| 准备 | 内测与性能检查 | 发布清单 |\n| 发布 | 产品介绍与演示 | 产品页面 |\n| 跟进 | 反馈访谈与迭代 | 改进计划 |\n\n## 发布前检查\n\n- [x] 定价页可在移动端使用\n- [x] 月付和年付价格明确\n- [ ] 完成首批用户访谈\n\n> 先观察用户完成首次任务，再决定下一轮优化。` : `# Launch plan\n\nHelp teams move from their first session to everyday use.\n\n## Goals\n\n- Validate pricing and positioning\n- Learn from the first teams\n- Build a sustainable support workflow\n\n## Timeline\n\n| Phase | Work | Deliverable |\n| --- | --- | --- |\n| Prepare | Private beta and performance checks | Release checklist |\n| Launch | Product story and walkthrough | Product page |\n| Follow up | Interviews and improvements | Iteration plan |\n\n## Before launch\n\n- [x] Check mobile pricing\n- [x] Explain monthly and yearly billing\n- [ ] Interview the first teams\n\n> Watch people complete their first task before choosing the next improvement.` }] },
+    { id: "debounce", title: zh ? "Debounce Hook" : "Debounce hook", filename: "use-debounce.ts", kind: "code", revisions: [{ id: "debounce-v1", content: `import { useEffect, useState } from "react";\n\n/** Update a value after input has settled. */\nexport function useDebounce<T>(value: T, delay = 300): T {\n  const [debounced, setDebounced] = useState(value);\n\n  useEffect(() => {\n    const timer = setTimeout(() => setDebounced(value), delay);\n    return () => clearTimeout(timer);\n  }, [value, delay]);\n\n  return debounced;\n}\n` }] },
+  ];
+}
+
+
+export { artifactPreviewEnLabels, artifactPreviewZhLabels, resolveArtifactPreviewLabels } from "@zeron/ui/artifact-preview-panel/labels";
+
+
+"use client";
+
+export { ArtifactPreviewPanel } from "@zeron/ui/artifact-preview-panel";
+
+
+import type { ChatWorkspaceProps } from "@zeron/blocks/chat-workspace-01";
+import type { ArtifactDocument, ArtifactPreviewPanelProps } from "@zeron/ui/artifact-preview-panel";
+
+export type { ArtifactRevision, ArtifactDocument, ArtifactPreviewLabels, ArtifactPreviewPanelProps } from "@zeron/ui/artifact-preview-panel";
+
+export interface ArtifactWorkspaceProps extends Omit<ChatWorkspaceProps, "artifacts"> {
+  artifact: ArtifactDocument | null;
+  previewProps?: Omit<ArtifactPreviewPanelProps, "artifact" | "locale">;
+}
+
+
+"use client";
+
+import { ArtifactCard, ChatWorkspace, type ArtifactResource } from "@zeron/blocks/chat-workspace-01";
+import { ArtifactPreviewPanel } from "@zeron/ui/artifact-preview-panel";
+import { resolveArtifactPreviewLabels } from "@zeron/ui/artifact-preview-panel/labels";
+import type { ArtifactDocument, ArtifactWorkspaceProps } from "./artifact-types";
+
+export function ArtifactWorkspace({ artifact, previewProps, ...props }: ArtifactWorkspaceProps) {
+  return <ChatWorkspace {...props} artifacts={<ArtifactPreviewPanel {...previewProps} artifact={artifact} locale={props.locale} />} />;
+}
+
+/** Uses the same resource card as ChatWorkspace, preserving its button and file contracts. */
+export function GeneratedArtifactCard({ artifact, revisionId, onOpen, locale }: {
+  artifact: ArtifactDocument; revisionId?: string; onOpen: (artifact: ArtifactDocument, revisionId: string) => void; locale?: string;
+}) {
+  const revision = artifact.revisions.find((item) => item.id === revisionId) ?? artifact.revisions.at(-1);
+  if (!revision) return null;
+  const index = artifact.revisions.indexOf(revision) + 1;
+  const labels = resolveArtifactPreviewLabels(locale);
+  const resource: ArtifactResource = { id: artifact.id, version: revision.id, name: artifact.filename, content: revision.content, kind: artifact.kind === "markdown" ? "markdown" : "code" };
+  return <ArtifactCard locale={locale} title={`${artifact.title} · ${revision.status === "streaming" ? labels.writing : `v${index}`}`} resources={[resource]} onOpen={() => onOpen(artifact, revision.id)} />;
+}
+
+
+export { ArtifactWorkspace, GeneratedArtifactCard } from "./artifact-workspace";
+export { ArtifactPreviewPanel } from "./artifact-preview-panel";
+export { artifactPreviewEnLabels, artifactPreviewZhLabels } from "./artifact-labels";
+export { createArtifactDemoDocuments, createPricingArtifactHtml } from "./artifact-demo-data";
+export type { ArtifactDocument, ArtifactRevision, ArtifactPreviewLabels, ArtifactPreviewPanelProps, ArtifactWorkspaceProps } from "./artifact-types";
