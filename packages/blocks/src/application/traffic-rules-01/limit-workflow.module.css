@@ -16,21 +16,6 @@
   gap: 16px;
 }
 
-.fields label {
-  display: block;
-}
-
-.fieldLabel {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
-  color: var(--fg-muted);
-  font-size: var(--font-size-label);
-  font-weight: 500;
-  line-height: var(--line-height-label);
-}
-
 .rowGroup {
   overflow: hidden;
   border: 1px solid var(--border);
@@ -138,11 +123,6 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 8px;
-}
-
-.conditionHeader .fieldLabel {
-  margin-bottom: 0;
 }
 
 .conditionHint {

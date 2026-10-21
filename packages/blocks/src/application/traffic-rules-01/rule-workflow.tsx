@@ -5,6 +5,7 @@ import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
 import { Input } from "@zeron/ui/input";
+import { Field, FieldLabel, Fieldset, FieldsetLegend } from "@zeron/ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
 import { Tooltip } from "@zeron/ui/tooltip";
 import { useIcon, type IconName } from "@zeron/ui/system/icon-context";
@@ -173,7 +174,7 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
           <div className={styles.canvas} ref={canvasRef} tabIndex={0} aria-label="流程画布，可横向和纵向滚动">
             <div className={styles.flow} style={{ zoom: zoom / 100 } as CSSProperties}>
               <WorkflowNode id="start" title="请求进入" description="接收进入网关的请求" icon="globe" expanded={expanded.includes("start")} onToggle={() => toggle("start")} issue={issueFor("start")} footer={<>节点输出 <code>request</code></>}>
-                <div className={styles.fields}><label className={styles.fieldLabel}>规则名称 <Input value={draft.name} aria-label="节点规则名称" placeholder="例如：企业请求优先路由" onChange={(event) => update({ name: event.target.value })} /></label>
+                <div className={styles.fields}><Field><FieldLabel>规则名称</FieldLabel><Input value={draft.name} aria-label="节点规则名称" placeholder="例如：企业请求优先路由" onChange={(event) => update({ name: event.target.value })} /></Field>
                   <div><p>流量入口：进入当前网关的请求</p><p className={styles.help}>请求路径、调用身份和模型信息将作为条件判断的输入。</p></div></div>
               </WorkflowNode>
               <FlowConnector />
@@ -198,8 +199,8 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
                   <Button aria-label={`下移动作：${action.type}`} title="下移" iconOnly size="xs" variant="ghost" disabled={index === actions.length - 1 || actions[index + 1]?.phase !== action.phase} onClick={() => moveAction(action.id,1)}><WorkflowMoveDownIcon /></Button>
                   <Button aria-label={`删除动作：${action.type}`} title="删除" iconOnly size="xs" variant="ghost" onClick={() => update({actions:draft.actions.filter((item) => item.id !== action.id)})}><Trash /></Button>
                 </div>}>
-                  <div className={styles.fields}><label className={styles.fieldLabel}>动作类型<WorkflowSelect label="动作类型" value={action.type} options={actionTypes.map((type) => ({value:type,label:type}))} onChange={(type) => updateAction({...action,type,phase:afterActionTypes.has(type)?"after":"before",primary:"",secondary:""})} /></label>
-                    <div><p className="mb-2 text-fg-muted">{action.type === "转发到" ? "目标模型服务" : "动作参数"}</p><ActionParameters action={action} onChange={updateAction} /></div>
+                  <div className={styles.fields}><Field><FieldLabel>动作类型</FieldLabel><WorkflowSelect label="动作类型" value={action.type} options={actionTypes.map((type) => ({value:type,label:type}))} onChange={(type) => updateAction({...action,type,phase:afterActionTypes.has(type)?"after":"before",primary:"",secondary:""})} /></Field>
+                    <Fieldset><FieldsetLegend>{action.type === "转发到" ? "目标模型服务" : "动作参数"}</FieldsetLegend><ActionParameters action={action} onChange={updateAction} /></Fieldset>
                   </div>
                 </WorkflowNode>
                 <FlowConnector onAdd={() => setAddingAction((current) => current?.afterId === action.id ? null : { afterId: action.id })} />
@@ -217,7 +218,7 @@ export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleForm
               </WorkflowNode>
               <div className="mt-8 w-full max-w-[552px] border-t border-dashed border-border pt-6 flex flex-col items-center">
                 <WorkflowNode id="fallback" title="异常处理" description={`组件不可用时${draft.fallback === "allow" ? "放行，继续网关路由" : "拒绝本次调用"}`} icon="shield" tone="amber" expanded={expanded.includes("fallback")} onToggle={() => toggle("fallback")} issue={issueFor("fallback")}>
-                  <label className={styles.fieldLabel}>组件不可用时<WorkflowSelect label="组件不可用时" value={draft.fallback} options={[{value:"allow",label:"放行，继续网关路由"},{value:"reject",label:"拒绝本次调用"}]} onChange={(fallback)=>update({fallback:fallback as "allow"|"reject"})} /></label>
+                  <Field><FieldLabel>组件不可用时</FieldLabel><WorkflowSelect label="组件不可用时" value={draft.fallback} options={[{value:"allow",label:"放行，继续网关路由"},{value:"reject",label:"拒绝本次调用"}]} onChange={(fallback)=>update({fallback:fallback as "allow"|"reject"})} /></Field>
                   <p className={styles.help}>仅在执行组件不可用时触发。内容检测命中、触发限额时，按对应动作中设置的策略处理。</p>
                 </WorkflowNode>
               </div>

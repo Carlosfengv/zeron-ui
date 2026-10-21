@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Checkbox } from "@zeron/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
 import { Input } from "@zeron/ui/input";
+import { Field, FieldLabel, Fieldset, FieldsetLegend } from "@zeron/ui/field";
 import { RadioGroup, RadioGroupItem } from "@zeron/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
 import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
@@ -72,10 +73,6 @@ function FieldSelect({ ariaLabel, onChange, options, value }: { ariaLabel: strin
   );
 }
 
-function FieldLabel({ children, required }: { children: ReactNode; required?: boolean }) {
-  return <span className={styles.fieldLabel}>{children}{required ? <span className="text-fg-danger">*</span> : null}</span>;
-}
-
 function ConditionRows({ conditions, onChange }: { conditions: LimitCondition[]; onChange: (conditions: LimitCondition[]) => void }) {
   const Chevron = useIcon("chevron-down");
   const Plus = useIcon("plus");
@@ -96,9 +93,9 @@ function ConditionRows({ conditions, onChange }: { conditions: LimitCondition[];
             <Button aria-label={`删除第 ${index + 1} 个条件`} iconOnly onClick={() => onChange(conditions.filter((item) => item.id !== condition.id))} size="xs" type="button" variant="ghost"><Trash /></Button>
           </div>
           {editingId === condition.id ? <div className={styles.conditionEditor}>
-            <label><FieldLabel>条件字段</FieldLabel><FieldSelect ariaLabel={`第 ${index + 1} 个条件字段`} onChange={(field) => update(condition.id, { field })} options={fieldOptions} value={condition.field} /></label>
-            <label><FieldLabel>判断方式</FieldLabel><FieldSelect ariaLabel={`第 ${index + 1} 个条件运算符`} onChange={(operator) => update(condition.id, { operator })} options={operatorOptions} value={condition.operator} /></label>
-            <label><FieldLabel required>匹配值</FieldLabel>{condition.field === "策略集" ? <FieldSelect ariaLabel={`第 ${index + 1} 个条件值`} onChange={(value) => update(condition.id, { value })} options={[...policySets]} value={condition.value} /> : <Input aria-label={`第 ${index + 1} 个条件值`} onChange={(event) => update(condition.id, { value: event.target.value })} placeholder="请输入稳定 ID 或字段值" size="md" value={condition.value} />}</label>
+            <Field><FieldLabel>条件字段</FieldLabel><FieldSelect ariaLabel={`第 ${index + 1} 个条件字段`} onChange={(field) => update(condition.id, { field })} options={fieldOptions} value={condition.field} /></Field>
+            <Field><FieldLabel>判断方式</FieldLabel><FieldSelect ariaLabel={`第 ${index + 1} 个条件运算符`} onChange={(operator) => update(condition.id, { operator })} options={operatorOptions} value={condition.operator} /></Field>
+            <Field><FieldLabel>匹配值 <span aria-hidden className="text-fg-danger">*</span></FieldLabel>{condition.field === "策略集" ? <FieldSelect ariaLabel={`第 ${index + 1} 个条件值`} onChange={(value) => update(condition.id, { value })} options={[...policySets]} value={condition.value} /> : <Input aria-label={`第 ${index + 1} 个条件值`} onChange={(event) => update(condition.id, { value: event.target.value })} placeholder="请输入稳定 ID 或字段值" size="md" value={condition.value} />}</Field>
           </div> : null}
         </div>
       ))}
@@ -127,9 +124,9 @@ function WindowRows({ windows, onChange }: { windows: LimitWindow[]; onChange: (
             <Button aria-label={`删除第 ${index + 1} 个时间窗口`} iconOnly onClick={() => onChange(windows.filter((item) => item.id !== windowItem.id))} size="xs" type="button" variant="ghost"><Trash /></Button>
           </div>
           {editingId === windowItem.id ? <div className={styles.windowEditor}>
-            <label><FieldLabel>窗口单位</FieldLabel><FieldSelect ariaLabel={`第 ${index + 1} 个时间窗口`} onChange={(unit) => update(windowItem.id, { unit })} options={unitOptions} value={windowItem.unit} /></label>
-            <label><FieldLabel required>最多请求数</FieldLabel><Input aria-label={`第 ${index + 1} 个时间窗口频次`} min={1} onChange={(event) => update(windowItem.id, { count: Number(event.target.value) || 1 })} size="md" type="number" value={windowItem.count} /></label>
-            <label><FieldLabel required>突发请求数</FieldLabel><Input aria-label={`第 ${index + 1} 个时间窗口突发数`} min={1} onChange={(event) => update(windowItem.id, { burst: Number(event.target.value) || 1 })} size="md" type="number" value={windowItem.burst} /></label>
+            <Field><FieldLabel>窗口单位</FieldLabel><FieldSelect ariaLabel={`第 ${index + 1} 个时间窗口`} onChange={(unit) => update(windowItem.id, { unit })} options={unitOptions} value={windowItem.unit} /></Field>
+            <Field><FieldLabel>最多请求数 <span aria-hidden className="text-fg-danger">*</span></FieldLabel><Input aria-label={`第 ${index + 1} 个时间窗口频次`} min={1} onChange={(event) => update(windowItem.id, { count: Number(event.target.value) || 1 })} size="md" type="number" value={windowItem.count} /></Field>
+            <Field><FieldLabel>突发请求数 <span aria-hidden className="text-fg-danger">*</span></FieldLabel><Input aria-label={`第 ${index + 1} 个时间窗口突发数`} min={1} onChange={(event) => update(windowItem.id, { burst: Number(event.target.value) || 1 })} size="md" type="number" value={windowItem.burst} /></Field>
           </div> : null}
         </div>
       ))}
@@ -139,6 +136,7 @@ function WindowRows({ windows, onChange }: { windows: LimitWindow[]; onChange: (
 }
 
 function TemporaryThresholdFields({ value, onChange }: { value: GlobalLimit; onChange: (patch: Partial<GlobalLimit>) => void }) {
+  const fieldId = useId();
   const timeZone = "Asia/Shanghai";
   const from = parseISODateTime(`${value.temporaryStart}:00+08:00`);
   const to = parseISODateTime(`${value.temporaryEnd}:00+08:00`);
@@ -164,8 +162,8 @@ function TemporaryThresholdFields({ value, onChange }: { value: GlobalLimit; onC
         ))}
       </div>
       <div className={styles.temporaryDates}>
-        <div><FieldLabel required>开始时间</FieldLabel><DateTimePicker aria-label="临时阈值开始时间" className="w-full" commitMode="apply" granularity="minute" hourCycle={24} locale="zh-CN" maxValue={to} messages={{ apply: "确定", cancel: "取消", clear: "清除", invalidValue: "请输入有效时间", selectDateTime: "选择开始时间" }} minuteStep={1} onValueChange={(next) => updateDateTime("temporaryStart", next)} timeZone={timeZone} value={from} /></div>
-        <div><FieldLabel required>结束时间</FieldLabel><DateTimePicker aria-label="临时阈值结束时间" className="w-full" commitMode="apply" granularity="minute" hourCycle={24} locale="zh-CN" messages={{ apply: "确定", cancel: "取消", clear: "清除", invalidValue: "请输入有效时间", selectDateTime: "选择结束时间" }} minValue={from} minuteStep={1} onValueChange={(next) => updateDateTime("temporaryEnd", next)} timeZone={timeZone} value={to} /></div>
+        <Field><FieldLabel htmlFor={`${fieldId}-start`}>开始时间 <span aria-hidden className="text-fg-danger">*</span></FieldLabel><DateTimePicker id={`${fieldId}-start`} aria-label="临时阈值开始时间" className="w-full" commitMode="apply" granularity="minute" hourCycle={24} locale="zh-CN" maxValue={to} messages={{ apply: "确定", cancel: "取消", clear: "清除", invalidValue: "请输入有效时间", selectDateTime: "选择开始时间" }} minuteStep={1} onValueChange={(next) => updateDateTime("temporaryStart", next)} timeZone={timeZone} value={from} /></Field>
+        <Field><FieldLabel htmlFor={`${fieldId}-end`}>结束时间 <span aria-hidden className="text-fg-danger">*</span></FieldLabel><DateTimePicker id={`${fieldId}-end`} aria-label="临时阈值结束时间" className="w-full" commitMode="apply" granularity="minute" hourCycle={24} locale="zh-CN" messages={{ apply: "确定", cancel: "取消", clear: "清除", invalidValue: "请输入有效时间", selectDateTime: "选择结束时间" }} minValue={from} minuteStep={1} onValueChange={(next) => updateDateTime("temporaryEnd", next)} timeZone={timeZone} value={to} /></Field>
       </div>
     </div>
   );
@@ -194,14 +192,14 @@ function ActionFields({ value, onChange }: { value: GlobalLimit; onChange: (patc
       </RadioGroup>
       {value.action === "queue" ? (
         <div className={styles.parameterGrid}>
-          <label><FieldLabel required>队列容量</FieldLabel><Input max={512} min={1} onChange={(event) => onChange({ queueSize: Number(event.target.value) || 1 })} size="md" type="number" value={value.queueSize} /></label>
-          <label><FieldLabel required>最长等待（毫秒）</FieldLabel><Input max={30000} min={100} onChange={(event) => onChange({ queueWaitMs: Number(event.target.value) || 100 })} size="md" type="number" value={value.queueWaitMs} /></label>
+          <Field><FieldLabel>队列容量 <span aria-hidden className="text-fg-danger">*</span></FieldLabel><Input max={512} min={1} onChange={(event) => onChange({ queueSize: Number(event.target.value) || 1 })} size="md" type="number" value={value.queueSize} /></Field>
+          <Field><FieldLabel>最长等待（毫秒） <span aria-hidden className="text-fg-danger">*</span></FieldLabel><Input max={30000} min={100} onChange={(event) => onChange({ queueWaitMs: Number(event.target.value) || 100 })} size="md" type="number" value={value.queueWaitMs} /></Field>
         </div>
       ) : null}
       {value.action === "reply" ? (
         <div className={styles.parameterGrid}>
-          <label className={styles.fullField}><FieldLabel required>助手回复内容</FieldLabel><Textarea onChange={(event) => onChange({ replyContent: event.target.value })} rows={3} value={value.replyContent} /></label>
-          <label className={styles.fullField}><FieldLabel required>原因代码</FieldLabel><Input maxLength={64} onChange={(event) => onChange({ reasonCode: event.target.value })} size="md" value={value.reasonCode} /></label>
+          <Field className={styles.fullField}><FieldLabel>助手回复内容 <span aria-hidden className="text-fg-danger">*</span></FieldLabel><Textarea onChange={(event) => onChange({ replyContent: event.target.value })} rows={3} value={value.replyContent} /></Field>
+          <Field className={styles.fullField}><FieldLabel>原因代码 <span aria-hidden className="text-fg-danger">*</span></FieldLabel><Input maxLength={64} onChange={(event) => onChange({ reasonCode: event.target.value })} size="md" value={value.reasonCode} /></Field>
         </div>
       ) : null}
     </div>
@@ -258,7 +256,7 @@ function LimitPreview({ issues, onFocusNode, onTabChange, tab, value }: { issues
       <TabPanel className={styles.previewScroll} value="run">
         <div className={styles.testBody}>
           <p>在本地模拟一次计数结果，确认达到限额时网关如何处理请求。</p>
-          <label><FieldLabel>模拟情景</FieldLabel><Select itemDensity="compact" onValueChange={(next) => { setScenario(next as "within" | "exceeded"); setResult(null); }} size="md" value={scenario}><SelectTrigger aria-label="限额模拟情景" className="w-full" /><SelectContent><SelectItem value="within">未达到限额</SelectItem><SelectItem value="exceeded">达到任一窗口上限</SelectItem></SelectContent></Select></label>
+          <Field><FieldLabel>模拟情景</FieldLabel><Select itemDensity="compact" onValueChange={(next) => { setScenario(next as "within" | "exceeded"); setResult(null); }} size="md" value={scenario}><SelectTrigger aria-label="限额模拟情景" className="w-full" /><SelectContent><SelectItem value="within">未达到限额</SelectItem><SelectItem value="exceeded">达到任一窗口上限</SelectItem></SelectContent></Select></Field>
           <Button className="w-full" leadingIcon={Play} onClick={runTest} size="md" type="button" variant="primary">运行测试</Button>
           {issues.length ? <button className={styles.testIssue} onClick={() => onTabChange("check")} type="button">还有 {issues.length} 项配置待完善，查看配置检查</button> : null}
         </div>
@@ -365,15 +363,15 @@ export function LimitForm({ initial, onCancel, onSave }: { initial?: GlobalLimit
               <div aria-label="全局限额流程画布，可横向和纵向滚动" className={flowStyles.canvas} ref={canvasRef} role="region" tabIndex={0}>
                 <div className={cn(flowStyles.flow, styles.flow)} style={{ zoom: zoom / 100 } as CSSProperties}>
                   <WorkflowNode description={`${value.limitType} · ${value.dimension}`} expanded={expanded.includes("start")} footer={<>节点输出 <code>request_count</code></>} icon="globe" id="start" onToggle={() => toggle("start")} title="请求计数入口">
-                    <div className={styles.fields}><label><FieldLabel>限额名称</FieldLabel><Input onChange={(event) => patchValue({ name: event.target.value })} placeholder="例如：生产环境模型调用限速" size="md" value={value.name} /></label><label><FieldLabel required>保护家族</FieldLabel><FieldSelect ariaLabel="保护家族" onChange={(limitType) => patchValue({ limitType })} options={["限速（GCRA）"]} value={value.limitType} /></label></div>
+                    <div className={styles.fields}><Field><FieldLabel>限额名称</FieldLabel><Input onChange={(event) => patchValue({ name: event.target.value })} placeholder="例如：生产环境模型调用限速" size="md" value={value.name} /></Field><Field><FieldLabel>保护家族 <span aria-hidden className="text-fg-danger">*</span></FieldLabel><FieldSelect ariaLabel="保护家族" onChange={(limitType) => patchValue({ limitType })} options={["限速（GCRA）"]} value={value.limitType} /></Field></div>
                   </WorkflowNode>
                   <FlowConnector><span>确定计数对象</span></FlowConnector>
                   <WorkflowNode description={value.conditions.length ? `${value.dimension} · ${value.conditions.length} 个匹配条件` : "尚未配置计数对象"} expanded={expanded.includes("scope")} footer={<>节点输出 <code>quota_key</code><span className="ml-auto">{value.conditions.filter((item) => item.value.trim()).length}/{value.conditions.length} 已配置</span></>} icon="users" id="scope" issue={issueFor("scope")} onToggle={() => toggle("scope")} title="计数对象" tone="purple">
-                    <div className={styles.fields}><label><FieldLabel required>计数维度</FieldLabel><FieldSelect ariaLabel="计数维度" onChange={(dimension) => patchValue({ dimension })} options={[...limitDimensions]} value={value.dimension} /></label><div><div className={styles.conditionHeader}><FieldLabel required>本限额的匹配条件</FieldLabel><span className={styles.conditionHint}>全部条件均需满足（AND）</span></div><ConditionRows conditions={value.conditions} onChange={(conditions) => patchValue({ conditions })} /></div></div>
+                    <div className={styles.fields}><Field><FieldLabel>计数维度 <span aria-hidden className="text-fg-danger">*</span></FieldLabel><FieldSelect ariaLabel="计数维度" onChange={(dimension) => patchValue({ dimension })} options={[...limitDimensions]} value={value.dimension} /></Field><Fieldset><div className={styles.conditionHeader}><FieldsetLegend>本限额的匹配条件 <span aria-hidden className="text-fg-danger">*</span></FieldsetLegend><span className={styles.conditionHint}>全部条件均需满足（AND）</span></div><ConditionRows conditions={value.conditions} onChange={(conditions) => patchValue({ conditions })} /></Fieldset></div>
                   </WorkflowNode>
                   <FlowConnector><span>按窗口累计用量</span></FlowConnector>
                   <WorkflowNode description={value.windows.length ? value.windows.map((item) => `每${item.unit} ${item.count} 次`).join(" · ") : "尚未配置限额窗口"} expanded={expanded.includes("windows")} footer={<>节点输出 <code>quota_exceeded: boolean</code><span className="ml-auto">{value.windows.length} 个窗口</span></>} icon="clock" id="windows" issue={issueFor("windows")} onToggle={() => toggle("windows")} title="限额窗口" tone="purple">
-                    <div className={styles.fields}><div><FieldLabel required>时间窗口</FieldLabel><WindowRows onChange={(windows) => patchValue({ windows })} windows={value.windows} /></div><label className={styles.checkboxRow}><Checkbox checked={value.temporaryEnabled} onCheckedChange={(checked) => patchValue({ temporaryEnabled: Boolean(checked) })} />启用临时阈值</label>{value.temporaryEnabled ? <TemporaryThresholdFields onChange={patchValue} value={value} /> : null}</div>
+                    <div className={styles.fields}><Fieldset><FieldsetLegend>时间窗口 <span aria-hidden className="text-fg-danger">*</span></FieldsetLegend><WindowRows onChange={(windows) => patchValue({ windows })} windows={value.windows} /></Fieldset><label className={styles.checkboxRow}><Checkbox checked={value.temporaryEnabled} onCheckedChange={(checked) => patchValue({ temporaryEnabled: Boolean(checked) })} />启用临时阈值</label>{value.temporaryEnabled ? <TemporaryThresholdFields onChange={patchValue} value={value} /> : null}</div>
                   </WorkflowNode>
                   <FlowConnector><span>超限时执行</span></FlowConnector>
                   <WorkflowNode description={actionTitle(value.action)} expanded={expanded.includes("action")} footer={<>执行条件 <code>quota_exceeded = true</code></>} icon="shield" id="action" issue={issueFor("action")} onToggle={() => toggle("action")} title="超限处置" tone="amber"><ActionFields onChange={patchValue} value={value} /></WorkflowNode>

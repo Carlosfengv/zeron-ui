@@ -84,7 +84,6 @@
 .conditionLabel { min-width: 68px; font-weight: 500; }
 .conditionValue { color: var(--fg-subtle); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .logicBadge { color: var(--fg-subtle); font-size: var(--font-size-label); line-height: var(--line-height-label); border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; }
-.fieldLabel { display: flex; flex-direction: column; gap: 8px; color: var(--fg-muted); font-size: var(--font-size-label); line-height: var(--line-height-label); }
 .help { color: var(--fg-subtle); line-height: var(--line-height-label); margin-top: 8px; font-size: var(--font-size-label); }
 .fields { display: flex; flex-direction: column; gap: 16px; }
 .actionTools { display: flex; align-items: center; gap: 4px; margin-left: 4px; padding-left: 8px; border-left: 1px solid var(--border); }
