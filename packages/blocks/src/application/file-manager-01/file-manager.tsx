@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "@zeron/ui/dialog";
 import { Input } from "@zeron/ui/input";
+import { Field, FieldLabel } from "@zeron/ui/field";
 import {
   Select,
   SelectContent,
@@ -1408,6 +1409,7 @@ function FileManagerDialog<TData>({
   isInvalidDestination: (id: string | null) => boolean;
   onConfirm: () => void;
 }) {
+  const destinationInputId = React.useId();
   if (!dialog) return null;
   const isMove = dialog === "move";
   const title = isMove ? labels.move : dialog === "rename" ? labels.rename : labels.newFolder;
@@ -1422,9 +1424,10 @@ function FileManagerDialog<TData>({
           </DialogDescription>
         </DialogHeader>
         {isMove ? (
-          <label className="grid gap-1.5 text-label text-fg-muted">
-            Destination
+          <Field>
+            <FieldLabel htmlFor={destinationInputId}>Destination</FieldLabel>
             <select
+              id={destinationInputId}
               value={destinationId ?? ""}
               className="h-control-md rounded-lg border border-border bg-transparent px-2 text-body text-fg-default outline-none hover:border-input-hover focus-visible:ring-1 focus-visible:ring-focus-ring"
               onChange={(event) => onDestinationChange(event.target.value || null)}
@@ -1434,17 +1437,17 @@ function FileManagerDialog<TData>({
                 <option key={folder.id} disabled={isInvalidDestination(folder.id)} value={folder.id}>{folder.path ?? folder.name}</option>
               ))}
             </select>
-          </label>
+          </Field>
         ) : (
-          <label className="grid gap-1.5 text-label text-fg-muted">
-            {labels.folderName}
+          <Field>
+            <FieldLabel>{labels.folderName}</FieldLabel>
             <Input autoFocus value={draftName} onChange={(event) => onDraftNameChange(event.target.value)} onKeyDown={(event) => {
               if (event.key === "Enter") {
                 event.preventDefault();
                 if (valid && !pending) onConfirm();
               }
             }} />
-          </label>
+          </Field>
         )}
         <DialogFooter>
           <Button variant="ghost" onClick={() => onDialogChange(false)}>{labels.cancel}</Button>
