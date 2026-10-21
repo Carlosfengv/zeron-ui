@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -9,6 +10,7 @@ import {
   type KeyboardEvent,
 } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "framer-motion";
 import { badgeColors } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
@@ -16,6 +18,8 @@ import { Skeleton } from "@zeron/ui/skeleton";
 import { Tooltip, TooltipProvider } from "@zeron/ui/tooltip";
 import { useIcon, type IconName } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
+import { spring } from "@zeron/ui/system/springs";
+import { useTraceRowMotion, type TraceRowPresenceData } from "./agent-message-trace-motion";
 import {
   agentMessageTraceDuration,
   buildAgentMessageTraceModel,
@@ -34,13 +38,13 @@ import {
   type AgentMessageTraceStatus,
 } from "./agent-message-trace-types";
 
-const HEADER_HEIGHT = 28;
-const ROW_HEIGHT = 28;
+const HEADER_HEIGHT = 40;
+const ROW_HEIGHT = 40;
 const GRID_BASE_CLASS = "grid w-full";
 const gridLayout = {
   compact: {
-    className: "grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,2fr)]",
-    timelineStart: "56.52%",
+    className: "grid-cols-[minmax(0,3fr)_minmax(0,1fr)_minmax(0,2fr)]",
+    timelineStart: "66.6667%",
   },
   medium: {
     className: "grid-cols-[minmax(0,2fr)_minmax(0,1.25fr)_minmax(0,3.75fr)]",
@@ -197,24 +201,24 @@ function TraceHeader({
   locale: string;
 }) {
   return (
-    <div className={cn(GRID_BASE_CLASS, gridClassName, "sticky top-0 z-action h-7 border-b border-border bg-surface-floating text-label font-medium text-fg-muted")} role="row">
-      <div className="flex min-w-0 items-center bg-surface-floating px-2" role="columnheader">
+    <div className={cn(GRID_BASE_CLASS, gridClassName, "sticky top-0 z-action h-10 border-b-hairline border-border-subtle bg-surface-floating text-body text-fg-subtle")} role="row">
+      <div className="flex min-w-0 items-center bg-surface-floating px-5 uppercase tracking-wide" role="columnheader">
         {labels.spanColumn}
       </div>
-      <div className="flex min-w-0 items-center border-l border-border bg-surface-floating px-2" role="columnheader">
-        {labels.operationColumn}
+      <div className="flex min-w-0 items-center border-l-hairline border-border-subtle bg-surface-floating px-3 uppercase tracking-wide" role="columnheader">
+        <span className="truncate" title={labels.operationColumn}>{labels.operationColumn}</span>
       </div>
-      <div className="relative border-l border-border" role="columnheader">
+      <div className="relative border-l-hairline border-border-subtle" role="columnheader">
         {ticks.map((tick, index) => (
           <span
             key={tick.value}
-            className="absolute inset-y-0 text-label font-normal tabular-nums text-fg-subtle"
+            className="absolute inset-y-0 text-body tabular-nums text-fg-subtle"
             style={{ left: `${tick.position * 100}%` }}
           >
             <span aria-hidden className="absolute bottom-0 left-0 h-1.5 border-l border-border" />
             <span className={cn(
-              "absolute top-1 whitespace-nowrap pl-1",
-              index === ticks.length - 1 && "-translate-x-full pl-0 pr-1"
+              "absolute top-3 whitespace-nowrap pl-2",
+              index === ticks.length - 1 && "-translate-x-full pl-0 pr-2"
             )}>
               {formatAgentMessageTraceDuration(tick.value, locale)}
             </span>
@@ -230,12 +234,12 @@ function TreeConnectors({ row }: { row: AgentMessageTraceRow }) {
   if (depth === 0) return null;
 
   return (
-    <span aria-hidden className="pointer-events-none absolute inset-y-0 left-2">
+    <span aria-hidden className="pointer-events-none absolute inset-y-0 left-4">
       {row.ancestorContinuation.map((continues, index) => continues ? (
-        <span key={index} className="absolute inset-y-0 border-l border-border-subtle" style={{ left: `${index * 16 + 8}px` }} />
+        <span key={index} className="absolute inset-y-0 border-l-hairline border-border-subtle" style={{ left: `${index * 20 + 8}px` }} />
       ) : null)}
-      <span className="absolute top-0 h-1/2 border-l border-border-subtle" style={{ left: `${(depth - 1) * 16 + 8}px` }} />
-      <span className="absolute top-1/2 w-3 border-t border-border-subtle" style={{ left: `${(depth - 1) * 16 + 8}px` }} />
+      <span className="absolute top-0 h-1/2 border-l-hairline border-border-subtle" style={{ left: `${(depth - 1) * 20 + 8}px` }} />
+      <span className="absolute top-1/2 w-3 border-t-hairline border-border-subtle" style={{ left: `${(depth - 1) * 20 + 8}px` }} />
     </span>
   );
 }
@@ -257,36 +261,44 @@ function SpanCell({
   const presentation = kindPresentation[node.span.kind];
   const KindIcon = useIcon(presentation.icon);
   const StatusIcon = useIcon(statusIcon[node.span.status]);
+  const ChevronIcon = useIcon("chevron-right");
   const hasChildren = node.childIds.length > 0;
 
   return (
     <div className={cn(
-      "flex min-w-0 items-center overflow-hidden bg-surface-floating px-2 transition-colors duration-fast group-hover/trace-row:bg-hover",
+      "flex min-w-0 items-center overflow-hidden bg-surface-floating px-4 transition-colors duration-fast group-hover/trace-row:bg-hover",
       selected && "bg-selection group-hover/trace-row:bg-selection"
     )} role="gridcell">
       <TreeConnectors row={row} />
-      <div className="relative flex min-w-0 items-center gap-1.5" style={{ paddingLeft: `${node.depth * 16}px` }}>
+      <div className="relative flex min-w-0 items-center gap-2" style={{ paddingLeft: `${node.depth * 20}px` }}>
         {hasChildren ? (
           <button
             type="button"
             aria-label={`${expanded ? labels.collapseAll : labels.expandAll}: ${node.span.name}`}
             aria-expanded={expanded}
-            className="relative grid size-4 shrink-0 place-items-center rounded-full bg-hover text-[10px] font-semibold leading-none text-fg-muted outline-none hover:bg-active hover:text-fg-default focus-visible:ring-1 focus-visible:ring-focus-ring"
+            className="grid size-4 shrink-0 place-items-center rounded text-fg-subtle outline-none hover:bg-active focus-visible:ring-1 focus-visible:ring-focus-ring"
             onClick={(event) => {
               event.stopPropagation();
               onToggle();
             }}
             onKeyDown={(event) => event.stopPropagation()}
           >
-            {node.childIds.length}
+            <ChevronIcon
+              aria-hidden
+              className={cn(
+                "transition-transform duration-fast motion-reduce:transition-none",
+                expanded && "rotate-90",
+              )}
+              size={14}
+            />
           </button>
         ) : (
-          <span aria-hidden className="grid size-4 shrink-0 place-items-center">
-            <span className="size-1.5 rounded-full" style={{ backgroundColor: presentation.color }} />
-          </span>
+          <span aria-hidden className="w-4 shrink-0" />
         )}
-        <KindIcon aria-hidden className="shrink-0" primaryColor={presentation.color} size={14} strokeWidth={1.75} />
-        <span className={cn("min-w-0 truncate text-label text-fg-default", node.span.status === "error" && "text-fg-danger")}>
+        <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-lg border-hairline border-border bg-surface-floating text-fg-muted">
+          <KindIcon primaryColor={presentation.color} size={20} strokeWidth={1.75} />
+        </span>
+        <span className={cn("min-w-0 truncate text-body text-fg-default", hasChildren && "font-medium", node.span.status === "error" && "text-fg-danger")} title={node.span.name}>
           {node.span.name}
         </span>
         {node.span.status !== "success" && (
@@ -331,12 +343,12 @@ function TimelineCell({
   const label = `${span.name} · ${span.operation ?? "—"} · ${statusLabel(span.status, labels)} · ${formatAgentMessageTraceDuration(duration, locale)}`;
 
   return (
-    <div className="relative min-w-0 border-l border-border" role="gridcell">
+    <div className="relative min-w-0 border-l-hairline border-border-subtle" role="gridcell">
       <Tooltip content={<span className="block max-w-72 whitespace-pre-wrap">{label}</span>}>
         <span
           aria-hidden
           className={cn(
-            "absolute top-1/2 h-3.5 -translate-y-1/2 rounded-sm",
+            "absolute top-1/2 h-5 -translate-y-1/2 rounded-md border",
             "ring-offset-1 ring-offset-surface-floating",
             selected && "ring-1 ring-fg-default",
             span.status === "running" && "animate-pulse motion-reduce:animate-none",
@@ -345,14 +357,15 @@ function TimelineCell({
           style={{
             left: `${startPosition}%`,
             width: `max(${width}%, 3px)`,
-            backgroundColor: kindPresentation[span.kind].color,
+            borderColor: `color-mix(in oklab, ${kindPresentation[span.kind].color} 45%, transparent)`,
+            backgroundColor: `color-mix(in oklab, ${kindPresentation[span.kind].color} ${span.kind === "agent" ? 28 : 12}%, transparent)`,
           }}
         />
       </Tooltip>
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute top-1/2 max-w-24 -translate-y-1/2 truncate font-mono text-label tabular-nums text-fg-subtle",
+          "pointer-events-none absolute top-1/2 max-w-24 -translate-y-1/2 truncate text-body tabular-nums text-fg-muted",
           nearEnd ? "mr-1.5" : "ml-1.5"
         )}
         style={nearEnd
@@ -381,6 +394,9 @@ function TraceRow({
   onToggle,
   rowRef,
   style,
+  offset,
+  animateEntrance,
+  reduceMotion,
 }: {
   gridClassName: string;
   row: AgentMessageTraceRow;
@@ -397,14 +413,20 @@ function TraceRow({
   onToggle: () => void;
   rowRef: (element: HTMLDivElement | null) => void;
   style: CSSProperties;
+  offset: number;
+  animateEntrance: boolean;
+  reduceMotion: boolean;
 }) {
+  const present = useIsPresent();
   const span = row.node.span;
   const duration = measuredSpanDuration(span, nowOffsetMs);
   const accessibleLabel = `${span.name}, ${span.operation ?? labels[span.kind]}, ${statusLabel(span.status, labels)}, ${formatAgentMessageTraceDuration(duration, locale)}`;
 
   return (
-    <div
+    <motion.div
       ref={rowRef}
+      aria-hidden={!present || undefined}
+      inert={!present || undefined}
       aria-label={accessibleLabel}
       aria-expanded={row.node.childIds.length > 0 ? expanded : undefined}
       aria-level={row.node.depth + 1}
@@ -413,24 +435,35 @@ function TraceRow({
       className={cn(
         GRID_BASE_CLASS,
         gridClassName,
-        "group/trace-row absolute left-0 h-7 cursor-default border-b border-border-subtle bg-surface-floating outline-none transition-colors duration-fast hover:bg-hover focus-visible:z-control focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-focus-ring",
-        row.node.depth === 0 && "bg-surface-raised",
+        "group/trace-row absolute left-0 top-0 h-10 cursor-pointer bg-surface-floating text-body outline-none transition-colors duration-fast hover:bg-hover focus-visible:z-control focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-focus-ring",
         selected && "bg-selection shadow-[inset_2px_0_0_var(--brand)]"
       )}
+      data-span-id={span.id}
       data-span-kind={span.kind}
       data-span-status={span.status}
       onClick={onSelect}
       onKeyDown={(event) => onKeyDown(event, rowIndex)}
       role="row"
       style={style}
-      tabIndex={tabIndex}
+      tabIndex={present ? tabIndex : -1}
+      initial={reduceMotion || !animateEntrance ? false : { opacity: 0, y: offset + 6 }}
+      animate={{ opacity: 1, y: offset }}
+      exit="removed"
+      variants={{
+        removed: ({ visibleIds, reduceMotion: reduced }: TraceRowPresenceData) => ({
+          opacity: 0,
+          // Virtual scrolling unmounts offscreen rows without a disclosure fade.
+          transition: reduced || visibleIds.has(span.id) ? { duration: 0 } : spring.moderate.exit,
+        }),
+      }}
+      transition={reduceMotion ? { duration: 0 } : spring.moderate}
     >
       <SpanCell expanded={expanded} labels={labels} onToggle={onToggle} row={row} selected={selected} />
       <div className={cn(
-        "flex min-w-0 items-center border-l border-border bg-surface-floating px-2 transition-colors duration-fast group-hover/trace-row:bg-hover",
+        "flex min-w-0 items-center border-l-hairline border-border-subtle bg-surface-floating px-3 transition-colors duration-fast group-hover/trace-row:bg-hover",
         selected && "bg-selection group-hover/trace-row:bg-selection"
       )} role="gridcell">
-        <span className="truncate font-mono text-label text-fg-muted" title={span.operation}>
+        <span className="truncate text-body text-fg-subtle" title={span.operation}>
           {span.operation ?? "—"}
         </span>
       </div>
@@ -442,20 +475,20 @@ function TraceRow({
         selected={selected}
         span={span}
       />
-    </div>
+    </motion.div>
   );
 }
 
 function LoadingTrace({ labels, gridClassName }: { labels: AgentMessageTraceLabels; gridClassName: string }) {
   return (
     <div aria-label={labels.loading} className="overflow-hidden rounded-xl border border-border bg-surface-floating" role="status">
-      <div className={cn(GRID_BASE_CLASS, gridClassName, "h-7 border-b border-border bg-surface-raised")}>
+      <div className={cn(GRID_BASE_CLASS, gridClassName, "h-10 items-center border-b-hairline border-border-subtle bg-surface-floating")}>
         <Skeleton className="m-2 h-3 w-20" />
         <Skeleton className="m-2 h-3 w-16" />
         <Skeleton className="m-2 h-3 w-2/3" />
       </div>
       {Array.from({ length: 8 }, (_, index) => (
-        <div className={cn(GRID_BASE_CLASS, gridClassName, "h-7 border-b border-border-subtle last:border-b-0")} key={index}>
+        <div className={cn(GRID_BASE_CLASS, gridClassName, "h-10 items-center")} key={index}>
           <Skeleton className="mx-2 my-1.5 h-4" style={{ width: `${92 + index % 3 * 18}px` }} />
           <Skeleton className="mx-2 my-1.5 h-4 w-20" />
           <Skeleton className="mx-2 my-2 h-3" style={{ width: `${18 + index % 4 * 8}%` }} />
@@ -485,6 +518,7 @@ export function AgentMessageTraceTimeline({
   className,
   ...props
 }: AgentMessageTraceProps) {
+  const reduceMotion = useReducedMotion() ?? false;
   const labels = useMemo(() => ({ ...defaultLabels, ...labelOverrides }), [labelOverrides]);
   const model = useMemo(() => buildAgentMessageTraceModel(data.spans), [data.spans]);
   const defaultExpandedIds = useMemo(
@@ -522,13 +556,21 @@ export function AgentMessageTraceTimeline({
     [desiredTickCount, duration]
   );
   const rowRefs = useRef(new Map<string, HTMLDivElement>());
+  const getItemKey = useCallback((index: number) => rows[index].node.span.id, [rows]);
   const virtualizer = useVirtualizer({
+    // Keep scroll-range updates from forcing synchronous renders mid-animation.
+    useFlushSync: false,
     count: rows.length,
     getScrollElement: () => viewportRef.current,
     estimateSize: () => ROW_HEIGHT,
     overscan: 12,
     paddingStart: HEADER_HEIGHT,
+    getItemKey,
   });
+  const totalHeight = virtualizer.getTotalSize();
+  const { previousVisibleIds, presenceData, heldHeight, interruptScrollMotion } = useTraceRowMotion(
+    rows, totalHeight, viewportRef, reduceMotion,
+  );
 
   useEffect(() => {
     if (expandedSpanIds !== undefined) return;
@@ -648,30 +690,36 @@ export function AgentMessageTraceTimeline({
           <div
             ref={viewportRef}
             className="relative min-h-0 w-full flex-1 overflow-auto rounded-xl border border-border bg-surface-floating"
-            style={{ maxHeight }}
+            style={{ maxHeight, overflowAnchor: "none" }}
+            onWheelCapture={interruptScrollMotion}
+            onTouchStartCapture={interruptScrollMotion}
+            onKeyDownCapture={(event) => {
+              if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"].includes(event.key)) interruptScrollMotion();
+            }}
           >
             <div
               aria-colcount={3}
               aria-rowcount={rows.length + 1}
               className="relative w-full"
               role="treegrid"
-              style={{ height: `${virtualizer.getTotalSize()}px` }}
+              style={{ height: `${Math.max(totalHeight, heldHeight)}px` }}
             >
               <TraceHeader gridClassName={resolvedGridLayout.className} labels={labels} locale={locale} ticks={ticks} />
               <div
                 aria-hidden
-                className="pointer-events-none absolute bottom-0 right-0 top-7"
+                className="pointer-events-none absolute bottom-0 right-0 top-10"
                 style={{ left: resolvedGridLayout.timelineStart }}
               >
                 {ticks.slice(1).map((tick) => (
                   <span
                     key={tick.value}
-                    className="absolute inset-y-0 border-l border-border-subtle"
+                    className="absolute inset-y-0 border-l-hairline border-border-subtle"
                     style={{ left: `${tick.position * 100}%` }}
                   />
                 ))}
               </div>
               <div className="absolute inset-0" role="rowgroup">
+                <AnimatePresence initial={false} custom={presenceData}>
                 {visibleItems.map((virtualRow) => {
                   const row = rows[virtualRow.index];
                   const spanId = row.node.span.id;
@@ -679,6 +727,9 @@ export function AgentMessageTraceTimeline({
                   return (
                     <TraceRow
                       key={spanId}
+                      offset={virtualRow.start}
+                      animateEntrance={!previousVisibleIds.current.has(spanId)}
+                      reduceMotion={reduceMotion}
                       domainEnd={domainEnd}
                       expanded={expandedSet.has(spanId)}
                       gridClassName={resolvedGridLayout.className}
@@ -695,11 +746,12 @@ export function AgentMessageTraceTimeline({
                         else rowRefs.current.delete(spanId);
                       }}
                       selected={selected}
-                      style={{ height: `${virtualRow.size}px`, transform: `translateY(${virtualRow.start}px)` }}
+                      style={{ height: `${virtualRow.size}px` }}
                       tabIndex={selected || resolvedSelectedId === null && virtualRow.index === 0 ? 0 : -1}
                     />
                   );
                 })}
+                </AnimatePresence>
               </div>
             </div>
           </div>
