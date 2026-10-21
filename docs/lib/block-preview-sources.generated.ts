@@ -138,7 +138,7 @@ const blockPreviewSources = {
     "url": "/docs-source/3efbe0b184c7ee7ad5d8d4ca0cefcd4f9ed7f254267b187fa49f30b3bff31830.txt"
   },
   "mcp-detail-01": {
-    "url": "/docs-source/69ac76f465153ddf6dfae1844ed038423deb8f3fe78967724489f35a329fd959.txt"
+    "url": "/docs-source/cf5ddfd884fe8875e55c5d76a2384338d0acb790a65c23bda89056bee04d6561.txt"
   },
   "member-department-01": {
     "url": "/docs-source/eca3b203f1ad0358e9dd3debceea42a6255741d899aa76795499e05b6a19580e.txt"

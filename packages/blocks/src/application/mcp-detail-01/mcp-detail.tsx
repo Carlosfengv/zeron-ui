@@ -18,6 +18,7 @@ import {
 import { Button } from "@zeron/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@zeron/ui/card";
 import { InlineNotice } from "@zeron/ui/inline-notice";
+import { Field, FieldLabel } from "@zeron/ui/field";
 import { InputCopy } from "@zeron/ui/input-copy";
 import { PageAside, PageBody, PageColumns, PageContent, PageLayout, PagePrimary } from "@zeron/ui/page-layout";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
@@ -264,7 +265,7 @@ function McpDetailSession({
                   {(["transport", "authMethod", "expiration"] as const).map((key) => {
                     const label = key === "transport" ? "传输类型" : key === "authMethod" ? "鉴权类型" : "有效期";
                     const options = key === "transport" ? service.connectionOptions.transports : key === "authMethod" ? service.connectionOptions.authMethods : service.connectionOptions.expirations;
-                    return <label key={key} className="block text-label text-fg-default"><span className="mb-1 block">{label}</span><Select value={connectionOptions[key]} onValueChange={(value) => updateOptions(key, value)} disabled={connectionStatus === "loading"}><SelectTrigger className="w-full" /> <SelectContent>{options.map((option) => <SelectItem key={option.value} value={option.value} disabled={option.disabled}>{option.label}</SelectItem>)}</SelectContent></Select></label>;
+                    return <Field key={key}><FieldLabel>{label}</FieldLabel><Select value={connectionOptions[key]} onValueChange={(value) => updateOptions(key, value)} disabled={connectionStatus === "loading"}><SelectTrigger className="w-full" /> <SelectContent>{options.map((option) => <SelectItem key={option.value} value={option.value} disabled={option.disabled}>{option.label}</SelectItem>)}</SelectContent></Select></Field>;
                   })}
                   <Button type="button" className="w-full" loading={connectionStatus === "loading"} onClick={requestConnection}>获取连接信息</Button>
                   {connectionStatus === "error" && <InlineNotice tone="danger" variant="emphasized">{connectionError} <button type="button" className="underline" onClick={requestConnection}>重试</button></InlineNotice>}
@@ -290,7 +291,15 @@ function McpDetailSession({
                   <section className="mt-5" aria-labelledby="mcp-setup-title"><h3 id="mcp-setup-title" className="text-title text-fg-default">设置</h3><ol className="mt-3 space-y-3">{service.overview.setupSteps.map((step, index) => <li key={step.title} className="rounded-xl bg-hover p-3"><p className="text-body font-medium text-fg-default">{index + 1}. {step.title}</p><p className="mt-1 text-body text-fg-muted">{step.description}</p></li>)}</ol></section>
                 </TabPanel>
                 <TabPanel value="tools" className="mt-5">
-                  {!service.tools.length ? <InlineNotice variant="emphasized" tone="info">该服务尚未公开可测试工具。</InlineNotice> : <div className="space-y-3"><label className="block text-label text-fg-default"><span className="mb-1 block">选择工具</span><Select value={toolName} onValueChange={(value) => { setToolName(value); setToolInput(JSON.stringify(service.tools.find((tool) => tool.name === value)?.defaultInput ?? {}, null, 2)); setToolResult(null); setToolResultIsMock(false); setToolError(null); }} disabled={toolLoading}><SelectTrigger className="w-full" /><SelectContent>{service.tools.map((tool) => <SelectItem key={tool.name} value={tool.name}>{tool.name}</SelectItem>)}</SelectContent></Select></label>{activeTool?.description && <p className="text-body text-fg-muted">{activeTool.description}</p>}<label className="block text-label text-fg-default"><span className="mb-1 block">参数（JSON Object）</span><Textarea value={toolInput} onChange={(event) => setToolInput(event.target.value)} aria-invalid={!!toolError} disabled={toolLoading} className="min-h-40 font-mono text-label" /></label>{toolError && <InlineNotice aria-live="polite" variant="emphasized" tone="danger">{toolError}</InlineNotice>}<Button type="button" loading={toolLoading} onClick={runTool}>运行工具</Button>{toolResultIsMock && <InlineNotice variant="emphasized" tone="info">示例结果，未执行真实工具调用。</InlineNotice>}{toolResult && <pre aria-live="polite" className="overflow-x-auto rounded-xl bg-hover p-3 font-mono text-label text-fg-default">{toolResult}</pre>}</div>}
+                  {!service.tools.length ? <InlineNotice variant="emphasized" tone="info">该服务尚未公开可测试工具。</InlineNotice> : <div className="space-y-3">
+                    <Field><FieldLabel>选择工具</FieldLabel><Select value={toolName} onValueChange={(value) => { setToolName(value); setToolInput(JSON.stringify(service.tools.find((tool) => tool.name === value)?.defaultInput ?? {}, null, 2)); setToolResult(null); setToolResultIsMock(false); setToolError(null); }} disabled={toolLoading}><SelectTrigger className="w-full" /><SelectContent>{service.tools.map((tool) => <SelectItem key={tool.name} value={tool.name}>{tool.name}</SelectItem>)}</SelectContent></Select></Field>
+                    {activeTool?.description && <p className="text-body text-fg-muted">{activeTool.description}</p>}
+                    <Field invalid={!!toolError}><FieldLabel>参数（JSON Object）</FieldLabel><Textarea value={toolInput} onChange={(event) => setToolInput(event.target.value)} aria-invalid={!!toolError} disabled={toolLoading} className="min-h-40 font-mono text-label" /></Field>
+                    {toolError && <InlineNotice aria-live="polite" variant="emphasized" tone="danger">{toolError}</InlineNotice>}
+                    <Button type="button" loading={toolLoading} onClick={runTool}>运行工具</Button>
+                    {toolResultIsMock && <InlineNotice variant="emphasized" tone="info">示例结果，未执行真实工具调用。</InlineNotice>}
+                    {toolResult && <pre aria-live="polite" className="overflow-x-auto rounded-xl bg-hover p-3 font-mono text-label text-fg-default">{toolResult}</pre>}
+                  </div>}
                 </TabPanel>
               </Tabs>
             </PagePrimary>
