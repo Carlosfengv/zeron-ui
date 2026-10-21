@@ -1,21 +1,15 @@
-export { ModelSelector } from "./model-selector";
-export { modelSelectorEnLabels, modelSelectorZhLabels } from "./model-selector-labels";
-export { createModelSelectorDemoModels, modelSelectorDemoValue } from "./model-selector-demo-data";
-export type { ModelSelectorLabels, ModelSelectorModel, ModelSelectorProps, ModelSelectorRating, ModelSelectorValue } from "./model-selector-types";
-
-
 "use client";
 
 import { useId, useRef, useState } from "react";
-import { Avatar, AvatarFallback } from "@zeron/ui/avatar";
-import { Button } from "@zeron/ui/button";
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@zeron/ui/command";
-import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from "@zeron/ui/popover";
-import { Switch } from "@zeron/ui/switch";
-import { useIcon, type IconComponent } from "@zeron/ui/system/icon-context";
-import { cn } from "@zeron/ui/system/utils";
-import { modelSelectorEnLabels } from "./model-selector-labels";
-import type { ModelSelectorProps, ModelSelectorRating } from "./model-selector-types";
+import { Avatar, AvatarFallback } from "#components/avatar";
+import { Button } from "#components/button";
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "#components/command";
+import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from "#components/popover";
+import { Switch } from "#components/switch";
+import { useIcon, type IconComponent } from "#system/icon-context";
+import { cn } from "#system/utils";
+import { modelSelectorEnLabels } from "./model-selector/labels";
+import type { ModelSelectorProps, ModelSelectorRating } from "./model-selector/types";
 
 function Rating({ label, value, selected }: { label: string; value: ModelSelectorRating; selected: boolean }) {
   return (
@@ -183,122 +177,5 @@ export function ModelSelector({
   );
 }
 
-
-import type { ReactNode } from "react";
-import type { PopoverAlign, PopoverSide } from "@zeron/ui/popover";
-
-/** Relative ratings: 1 (lowest) through 5 (highest). Cost means expense. */
-export type ModelSelectorRating = 1 | 2 | 3 | 4 | 5;
-
-export interface ModelSelectorModel {
-  id: string;
-  name: string;
-  description: string;
-  /** A decorative model logo (for example from @lobehub/icons) or short fallback mark. */
-  icon: ReactNode;
-  ratings?: {
-    speed: ModelSelectorRating;
-    quality: ModelSelectorRating;
-    cost: ModelSelectorRating;
-  };
-  /** Omit estimates for automatic routing or unavailable pricing. */
-  firstTokenSeconds?: number;
-  costPerMillionTokens?: number;
-  disabled?: boolean;
-}
-
-export interface ModelSelectorValue {
-  modelId: string;
-  extendedThinking: boolean;
-  webSearch: boolean;
-}
-
-export interface ModelSelectorLabels {
-  chooseModel: string;
-  model: string;
-  speed: string;
-  quality: string;
-  cost: string;
-  varies: string;
-  extendedThinking: string;
-  webSearch: string;
-  firstToken: string;
-  perMillionTokens: string;
-  empty: string;
-  navigate: string;
-  select: string;
-}
-
-export interface ModelSelectorProps {
-  models: readonly ModelSelectorModel[];
-  value: ModelSelectorValue;
-  onValueChange: (value: ModelSelectorValue) => void;
-  open?: boolean;
-  defaultOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  disabled?: boolean;
-  labels?: Partial<ModelSelectorLabels>;
-  locale?: string;
-  currency?: string;
-  side?: PopoverSide;
-  align?: PopoverAlign;
-  className?: string;
-}
-
-
-import type { ModelSelectorLabels } from "./model-selector-types";
-
-export const modelSelectorEnLabels: ModelSelectorLabels = {
-  chooseModel: "Choose a model",
-  model: "Model",
-  speed: "Speed",
-  quality: "Quality",
-  cost: "Cost",
-  varies: "Varies",
-  extendedThinking: "Extended thinking",
-  webSearch: "Web search",
-  firstToken: "first token",
-  perMillionTokens: "/ M tokens",
-  empty: "No models available",
-  navigate: "Navigate models",
-  select: "Select model",
-};
-
-export const modelSelectorZhLabels: ModelSelectorLabels = {
-  chooseModel: "选择模型",
-  model: "模型",
-  speed: "速度",
-  quality: "质量",
-  cost: "费用",
-  varies: "动态变化",
-  extendedThinking: "扩展思考",
-  webSearch: "联网搜索",
-  firstToken: "首字延迟",
-  perMillionTokens: "/ 百万 tokens",
-  empty: "暂无可用模型",
-  navigate: "切换模型",
-  select: "选择模型",
-};
-
-
-import { createElement } from "react";
-import ClaudeColor from "@lobehub/icons/es/Claude/components/Color";
-import type { ModelSelectorModel, ModelSelectorValue } from "./model-selector-types";
-
-/** Screenshot fixtures, not live model availability, benchmarks or prices. */
-export function createModelSelectorDemoModels(locale = "en"): ModelSelectorModel[] {
-  const zh = locale.startsWith("zh");
-  const claudeLogo = createElement(ClaudeColor, { size: 16, "aria-hidden": true });
-  return [
-    { id: "opus-5.5", name: "Opus 5.5", icon: claudeLogo, description: zh ? "处理最复杂的问题" : "Hardest problems", ratings: { speed: 2, quality: 5, cost: 5 }, firstTokenSeconds: 1.8, costPerMillionTokens: 75 },
-    { id: "sonnet-5.5", name: "Sonnet 5.5", icon: claudeLogo, description: zh ? "日常工作" : "Everyday work", ratings: { speed: 4, quality: 4, cost: 3 }, firstTokenSeconds: 0.9, costPerMillionTokens: 15 },
-    { id: "haiku-5.5", name: "Haiku 5.5", icon: claudeLogo, description: zh ? "快速、轻量" : "Quick and light", ratings: { speed: 5, quality: 3, cost: 1 }, firstTokenSeconds: 0.3, costPerMillionTokens: 5 },
-    { id: "auto", name: "Auto", icon: "✦", description: zh ? "为每条消息自动选择" : "Picks per message" },
-  ];
-}
-
-export const modelSelectorDemoValue: ModelSelectorValue = {
-  modelId: "sonnet-5.5",
-  extendedThinking: false,
-  webSearch: false,
-};
+export { modelSelectorEnLabels, modelSelectorZhLabels } from "./model-selector/labels";
+export type { ModelSelectorLabels, ModelSelectorModel, ModelSelectorProps, ModelSelectorRating, ModelSelectorValue } from "./model-selector/types";

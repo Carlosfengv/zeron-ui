@@ -625,6 +625,12 @@ async function verifyNextBuild({ consumer, component }) {
   examples["model-detail-02"] = "\"use client\";\nimport { ModelDetail02 } from \"@/components/blocks/model-detail-02\";\nexport default function Page() { return <ModelDetail02 />; }\n";
   examples["file-manager-01"] = "\"use client\";\nimport { FileManager } from \"@/components/blocks/file-manager-01\";\nexport default function Page() { return <FileManager items={[]} error=\"Install verified\" />; }\n";
   const unifiedSource = unificationConsumerExample(component, "next");
+  examples["model-selector"] = [
+    '"use client";',
+    'import { useState } from "react";',
+    'import { ModelSelector } from "@/components/ui/model-selector";',
+    'export default function Page() { const [value,setValue]=useState({modelId:"auto",extendedThinking:false,webSearch:false}); return <ModelSelector models={[{id:"auto",name:"Auto",description:"Choose per message",icon:"A"}]} value={value} onValueChange={setValue} />; }',
+  ].join("\n");
   let source = styles ? consumerStyleExample("next") : unifiedSource ?? examples[component];
   if (!source) return;
   if (verifyUnification && !unifiedSource && !styles) {
@@ -1046,6 +1052,14 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<ResourceCost items={resourceCostDemoItems} />);',
     '',
+  ].join("\n");
+  examples["model-selector"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { useState } from "react";',
+    'import { ModelSelector } from "@/src/components/ui/model-selector";',
+    'import "./index.css";',
+    'function Example() { const [value,setValue]=useState({modelId:"auto",extendedThinking:false,webSearch:false}); return <ModelSelector models={[{id:"auto",name:"Auto",description:"Choose per message",icon:"A"}]} value={value} onValueChange={setValue} />; }',
+    'createRoot(document.getElementById("root")!).render(<Example />);',
   ].join("\n");
   let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component];
   if (!source) throw new Error(`No Vite entry example is defined for ${component}`);

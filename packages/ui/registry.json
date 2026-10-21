@@ -4,6 +4,42 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "model-selector",
+      "type": "registry:ui",
+      "title": "ModelSelector",
+      "description": "Controlled model selection with relative ratings and conversation settings.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "avatar",
+        "button",
+        "command",
+        "popover",
+        "switch",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/model-selector.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/model-selector.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/model-selector/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/model-selector/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/model-selector/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/model-selector/labels.ts"
+        }
+      ]
+    },
+    {
       "name": "message-navigation",
       "type": "registry:ui",
       "title": "Message Navigation",

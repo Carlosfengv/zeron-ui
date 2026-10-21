@@ -81,6 +81,7 @@ export const agentGuideLoaders: Record<string, () => Promise<string>> = {
   "components/markdown.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/markdown.md"), "utf8"),
   "components/message-navigation.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/message-navigation.md"), "utf8"),
   "components/metric-card.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/metric-card.md"), "utf8"),
+  "components/model-selector.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/model-selector.md"), "utf8"),
   "components/nav-item.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/nav-item.md"), "utf8"),
   "components/nav-menu.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/nav-menu.md"), "utf8"),
   "components/operations-workspace-shell-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/operations-workspace-shell-01.md"), "utf8"),

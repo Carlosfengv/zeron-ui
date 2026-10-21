@@ -149,6 +149,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Message Navigation](https://zeron-ui.vercel.app/ai/items/component%3Amessage-navigation.md): Compact turn markers with rich previews, current-position emphasis and keyboard navigation. Registry: message-navigation.
 - [Metric Card](https://zeron-ui.vercel.app/ai/items/component%3Ametric-card.md): Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction. Registry: metric-card.
 - [Mobile Drawer](https://zeron-ui.vercel.app/ai/items/component%3Amobile-drawer.md): Slide-in navigation drawer with scrim, focus trap, and scroll lock. Base UI flavor. Registry: mobile-drawer.
+- [ModelSelector](https://zeron-ui.vercel.app/ai/items/component%3Amodel-selector.md): Controlled model selection, relative ratings and conversation settings. Registry: model-selector.
 - [Nav Item](https://zeron-ui.vercel.app/ai/items/component%3Anav-item.md): Composable navigation item that supports router links, labels, badges, actions, and sub-navigation. Registry: nav-item.
 - [Nav Menu](https://zeron-ui.vercel.app/ai/items/component%3Anav-menu.md): Router-agnostic navigation primitives shared by Sidebar and TopNav. Registry: nav-menu.
 - [Operations Workspace Shell](https://zeron-ui.vercel.app/ai/items/component%3Aoperations-workspace-shell-01.md): Shared ZAIops organization, navigation, search and account shell; application-owned routing and actions. Registry: operations-workspace-shell-01.
@@ -276,6 +277,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [markdown](https://zeron-ui.vercel.app/agent-guides/components/markdown.md)
 - [message-navigation](https://zeron-ui.vercel.app/agent-guides/components/message-navigation.md)
 - [metric-card](https://zeron-ui.vercel.app/agent-guides/components/metric-card.md)
+- [model-selector](https://zeron-ui.vercel.app/agent-guides/components/model-selector.md)
 - [nav-item](https://zeron-ui.vercel.app/agent-guides/components/nav-item.md)
 - [nav-menu](https://zeron-ui.vercel.app/agent-guides/components/nav-menu.md)
 - [operations-workspace-shell-01](https://zeron-ui.vercel.app/agent-guides/components/operations-workspace-shell-01.md)

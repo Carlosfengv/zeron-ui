@@ -1,4 +1,23 @@
 {
+  "model-selector": {
+    "keywords": [
+      "模型选择",
+      "模型评分",
+      "model selector",
+      "model picker"
+    ],
+    "useCases": [
+      "在 InputMessage 操作槽位或独立工具栏选择模型和会话设置。"
+    ],
+    "whenNotToUse": [
+      "不请求模型或验证服务端能力；模型列表与可用状态由宿主提供。"
+    ],
+    "keyApi": [
+      "models/value/onValueChange 控制选择；value 为 modelId、extendedThinking、webSearch。",
+      "open/defaultOpen/onOpenChange 控制弹层；disabled 禁用整个控件。",
+      "labels 提供双语文案；模型评分可省略，演示数据保留在 model-selector-01。"
+    ]
+  },
   "artifact-01": {
     "keywords": ["artifact", "生成内容", "实时预览", "版本历史", "HTML", "Markdown"],
     "useCases": ["在现有对话工作区生成并迭代 HTML、Markdown 和代码。"],

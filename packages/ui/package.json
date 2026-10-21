@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./model-selector": "./src/components/model-selector.tsx",
     "./message-navigation": "./src/components/message-navigation.tsx",
     "./time-window-timeline": "./src/components/time-window-timeline.tsx",
     "./accordion": "./src/components/accordion.tsx",

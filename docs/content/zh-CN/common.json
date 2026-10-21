@@ -119,6 +119,7 @@
     "introductionTitle": "介绍",
     "introductionDescription": "这些组件为何用起来与众不同。",
     "descriptions": {
+      "model-selector": "受控模型选择器，支持相对评分与会话设置。",
       "tool-calls-01": "会话内的搜索读取、文件变更、命令确认与执行输出。",
       "chat-thread-01": "流式会话、消息版本、历史加载与检查点恢复。",
       "message-navigation": "紧凑的消息短线导航，支持对话预览、当前位置与键盘跳转。",

@@ -451,7 +451,9 @@
       "description": "Controlled model selection with relative ratings, thinking and search settings.",
       "categories": ["application", "ai", "agent"],
       "dependencies": ["@lobehub/icons"],
-      "registryDependencies": ["avatar", "button", "command", "popover", "switch", "icon-context", "utils"],
+      "registryDependencies": [
+        "model-selector"
+      ],
       "files": [
         { "path": "packages/blocks/src/application/model-selector-01/index.ts", "type": "registry:component", "target": "components/blocks/model-selector-01/index.ts" },
         { "path": "packages/blocks/src/application/model-selector-01/model-selector.tsx", "type": "registry:component", "target": "components/blocks/model-selector-01/model-selector.tsx" },

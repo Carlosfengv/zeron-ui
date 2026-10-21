@@ -299,6 +299,10 @@
       "itemId": "component:metric-card"
     },
     {
+      "path": "components/model-selector.md",
+      "itemId": "component:model-selector"
+    },
+    {
       "path": "components/nav-item.md",
       "itemId": "component:nav-item"
     },

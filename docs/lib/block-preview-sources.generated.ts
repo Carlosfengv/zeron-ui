@@ -24,7 +24,7 @@ const blockPreviewSources = {
     "url": "/docs-source/9c0dfa019f32e4e662752bf1249370096756b3b6df451ebe9147e5cd3f7f663e.txt"
   },
   "model-selector-01": {
-    "url": "/docs-source/13442235a1132f3419bdf9939006e2304893de7d2f1724274dd0d50bcc4b6cae.txt"
+    "url": "/docs-source/5093d1cd7c20c8182692ba1253df29f046a916a607e1c1142c634541e6dfe322.txt"
   },
   "agent-tasks-01": {
     "url": "/docs-source/5b5f56399ba1e28568498e5ea6437fd7a28014df43fb4c48b1eb2fe2ae3173fb.txt"
