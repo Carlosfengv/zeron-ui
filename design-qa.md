@@ -1,3 +1,18 @@
+# Agent Message Trace 01 — October 21, 2026
+
+Result: passed for the scoped source and interaction checks.
+
+- Extend the existing block with an optional Live overview; keep Inspector as the default and reuse the flat Span contract, safe tree projection and controlled state.
+- Both views use 14px body text, 40px rows and headers, rotating disclosure arrows and empty leaf spacers. Details use the existing Popover surface API with a solid 0.5px semantic border and no shadow.
+- A shared motion hook handles disclosure transitions, inert exits and bottom scroll-range compensation. Virtual scrolling mounts rows directly, and user scrolling interrupts compensation. Reduced-motion behavior is covered by the Inspector regressions.
+- Live bars, labels, ticks and cursor share one interpolated clock. Trace status follows the deduplicated tree, including orphan roots; keyboard disclosure and detail focus are covered by regression tests.
+- Forty trace / localization tests passed in the isolated checkout, along with public block types and full design lint. Registry artifacts were regenerated from the scoped sources; catalog checks only changed the agent-message-trace-01 entry.
+- The demo supports replay, pause, seeking and both views. Desktop and 390px checks were performed during implementation; the popover surface measured 0.5px border and box-shadow none in the browser.
+- The existing UI inventory remains 14 kinds / 34 uses in the reviewed rendering files. No new workspace dependencies or design tokens were added. Two motion.rect uses need manual source attribution in the inventory reporter; both are existing Framer Motion SVG primitives.
+- A six-round Node benchmark of 1000 duration / cost label pairs measured 25.5–38.8ms before formatter reuse and 0.78–1.32ms afterward. This is a formatting benchmark, not a device-independent frame-rate guarantee.
+
+---
+
 # Account Activity block visual verification
 
 final result: passed

@@ -160,16 +160,10 @@ const previewLoaders: Record<string, PreviewLoader> = {
       </ResponsivePreview>
     ),
   })),
-  "agent-message-trace-01": () => import("@zeron/blocks/agent-message-trace-01").then(({ AgentMessageTrace, agentMessageTraceDemoData }) => ({
+  "agent-message-trace-01": () => import("./AgentMessageTraceDemo").then(({ AgentMessageTraceDemo }) => ({
     default: () => (
       <ResponsivePreview canvasHeight={760} canvasWidth={1160}>
-        <div className="h-full bg-surface-base p-6">
-          <AgentMessageTrace
-            className="h-full min-h-0 w-full rounded-xl"
-            data={agentMessageTraceDemoData}
-            nowOffsetMs={154_000}
-          />
-        </div>
+        <AgentMessageTraceDemo />
       </ResponsivePreview>
     ),
   })),
