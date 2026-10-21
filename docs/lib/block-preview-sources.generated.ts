@@ -30,7 +30,7 @@ const blockPreviewSources = {
     "url": "/docs-source/5b5f56399ba1e28568498e5ea6437fd7a28014df43fb4c48b1eb2fe2ae3173fb.txt"
   },
   "local-models-01": {
-    "url": "/docs-source/03e6ec1c8406580606b1ebb8c6fdabfd235cb1965ae6eec31b0265142cdb9895.txt"
+    "url": "/docs-source/aa8b71572bfb3cd271dfd5307a9e57230fdac16eae74041ba479071ddead9f86.txt"
   },
   "appearance-settings-01": {
     "url": "/docs-source/9994c5b6ec0f8b52ae4e8cd911b03a5c32a813865e4fc810748157147940dc13.txt"

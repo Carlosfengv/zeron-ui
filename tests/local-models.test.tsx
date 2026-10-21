@@ -82,6 +82,23 @@ function Harness({ initial = localModelsDemoValue, onApply = vi.fn() }: { initia
   return <LocalModels data={localModelsDemoData} value={value} appliedValue={localModelsDemoAppliedValue} onValueChange={setValue} onApply={onApply} defaultSelectedModelId="gpt-oss-20b" />;
 }
 describe("local models interactions", () => {
+  it("connects each context label to its own select trigger", () => {
+    render(<><Harness /><Harness /></>);
+    const triggers = screen.getAllByRole("combobox", { name: "Context window" });
+    const labels = screen.getAllByText("Context window", { selector: "label" }) as HTMLLabelElement[];
+    expect(new Set(triggers.map((trigger) => trigger.id)).size).toBe(2);
+    labels.forEach((label, index) => expect(label.control).toBe(triggers[index]));
+  });
+  it.each([[65536, "64K tokens"], [1000, "1,000 tokens"]])("shows a valid host context outside the presets (%s)", async (context, label) => {
+    const config = { ...localModelsDemoValue["gpt-oss-20b"], context: Number(context) };
+    const initial = { ...localModelsDemoValue, "gpt-oss-20b": config };
+    render(<Harness initial={initial} />);
+    expect(screen.getByRole("combobox", { name: "Context window" }).textContent).toContain(label);
+    expect(screen.queryByText("Invalid configuration")).toBeNull();
+    fireEvent.click(screen.getByRole("combobox", { name: "Context window" }));
+    const option = await screen.findByRole("option", { name: (name) => name.startsWith(String(label)) });
+    expect(option.getAttribute("aria-selected")).toBe("true");
+  });
   it("disables unassigned graphics cards and blocks applying invalid memory estimates", () => {
     const { rerender } = render(<LocalModels data={{ ...localModelsDemoData, models: [] }} value={{}} appliedValue={{}} onValueChange={vi.fn()} />);
     expect(screen.getByRole("button", { name: "Select GPU 0" }).getAttribute("aria-disabled")).toBe("true");
