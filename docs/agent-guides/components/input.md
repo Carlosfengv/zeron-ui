@@ -25,6 +25,7 @@ related:
 生成表单时，必须遵守以下规则：
 
 - 标准纵向字段的可见标签使用 `Field` 与 `FieldLabel`，由 Field 管理标签、控件和说明的间距；不要用 placeholder 代替标签。布局与验收规则见 [Field 指南](field.md)。
+- 与 Slider 等其他可聚焦控件联动时，分别管理标签与控件 ID，不共用一个 Field 的自动关联；多个字段的分组和复合控件边界见 [Field 多控件组合](field.md#多控件组合)。InputGroup 的单个输入框及其图标、附加操作仍可作为一个字段。
 - 校验失败时同时提供错误语义和可见错误消息。
 - 需要前后缀、图标、单位、复制或内嵌操作时，使用 InputGroup，不要把元素绝对定位到 Input 上。
 - 与同一表单中的 Button、Select 使用一致的 control size。
