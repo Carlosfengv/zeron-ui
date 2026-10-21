@@ -123,7 +123,7 @@ const blockPreviewSources = {
     "url": "/docs-source/796b3f95668f0fb7661e29ab4a74597a967974bf0754e363b0e9fb08501fb62f.txt"
   },
   "file-manager-01": {
-    "url": "/docs-source/4bab0a8e393c77713d78cf4fc6521529d4a6266b401336d014b5e020b369051c.txt"
+    "url": "/docs-source/01eeed5729c50ca87346f7b767cea7ab18dbd88b2dc52e6d87681994a7309369.txt"
   },
   "filter-rule-builder-01": {
     "url": "/docs-source/6345ad7fedbdbc1a7293f45c65e97d8761d1bf4fb80ec6dbe39bc1f2abc85af6.txt"

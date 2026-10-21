@@ -1289,7 +1289,7 @@
       "description": "A token-native, storage-agnostic file-management workspace with icon, list, and Finder-style column views.",
       "categories": ["application", "storage", "files"],
       "dependencies": ["@tanstack/react-virtual", "tw-animate-css"],
-      "registryDependencies": ["button", "dialog", "file-type", "icon-context", "input", "select", "tabs", "utils", "badge", "skeleton", "empty", "alert", "inline-notice"],
+      "registryDependencies": ["button", "dialog", "field", "file-type", "icon-context", "input", "select", "tabs", "utils", "badge", "skeleton", "empty", "alert", "inline-notice"],
       "files": [
         {
           "path": "packages/blocks/src/application/file-manager-01/file-manager.tsx",
