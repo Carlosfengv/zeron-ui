@@ -21,7 +21,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 ## Catalog
 
 - [账号活动分析](https://zeron-ui.vercel.app/ai/items/block%3Aaccount-activity-01.md): 多账号活跃度、周趋势、日期范围与额度耗尽分析。 Registry: account-activity-01.
-- [Agent Message Trace](https://zeron-ui.vercel.app/ai/items/block%3Aagent-message-trace-01.md): A responsive, resizable agent trace workspace with a virtualized timeline and span inspector. Registry: agent-message-trace-01.
+- [Agent Message Trace](https://zeron-ui.vercel.app/ai/items/block%3Aagent-message-trace-01.md): A live execution waterfall with usage metrics and a resizable span inspector. Registry: agent-message-trace-01.
 - [Agent Session Detail](https://zeron-ui.vercel.app/ai/items/block%3Aagent-session-detail-01.md): A session detail workspace with agent navigation, session switching, and an embedded execution trace. Registry: agent-session-detail-01.
 - [Agent Tasks](https://zeron-ui.vercel.app/ai/items/block%3Aagent-tasks-01.md): Agent task queue with status filters, expandable activity and task actions. Registry: agent-tasks-01.
 - [Agent Trace](https://zeron-ui.vercel.app/ai/items/block%3Aagent-trace-01.md): A turn-aware agent execution trace with local JSON upload and raw-record inspection. Registry: agent-trace-01.

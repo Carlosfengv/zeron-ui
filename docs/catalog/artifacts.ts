@@ -104,8 +104,8 @@ const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation" |
   },
   {
     slug: "agent-message-trace-01", registryName: "agent-message-trace-01",
-    title: "Agent Message Trace", description: "A responsive, resizable agent trace workspace with a virtualized timeline and span inspector.",
-    kind: "block", product: "zenfuse", domains: ["ai agent", "observability"], patterns: ["tree timeline", "virtualized trace", "resizable inspector", "tool calls"], searchTerms: ["agent", "message", "trace", "span", "tool call", "timeline", "inspector", "智能体", "消息", "调用链", "工具调用"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
+    title: "Agent Message Trace", description: "A live execution waterfall with usage metrics and a resizable span inspector.",
+    kind: "block", product: "zenfuse", domains: ["ai agent", "observability"], patterns: ["live waterfall", "usage metrics", "virtualized trace", "resizable inspector", "tool calls"], searchTerms: ["agent", "message", "trace", "span", "tool call", "timeline", "live", "cost", "tokens", "inspector", "智能体", "消息", "调用链", "工具调用", "实时", "费用"], readiness: "copy-ready", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true,
   },
   {
     slug: "agent-trace-01", registryName: "agent-trace-01",

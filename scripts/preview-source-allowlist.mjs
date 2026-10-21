@@ -251,7 +251,8 @@ export const previewSourceFiles = {
     "packages/blocks/src/application/project-monitor-01/project-monitor-demo-data.ts"
   ],
   "agent-message-trace-01": [
-    "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-workspace.tsx"
+    "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-workspace.tsx",
+    "packages/blocks/src/application/agent-message-trace-01/agent-message-trace-live.tsx"
   ],
   "agent-session-detail-01": [
     "packages/blocks/src/application/agent-session-detail-01/agent-session-detail.tsx"

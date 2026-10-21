@@ -1,9 +1,11 @@
 {
   "agentMessageTraceBlock": {
     "title": "Agent Message Trace 1",
-    "description": "用于检查单条消息调用链的自适应工作区，包含虚拟化时间线和可调整尺寸的 Span 详情面板。",
+    "description": "实时执行瀑布图，包含用量汇总、并行 Agent 分支、折叠后的子任务缩略条和节点详情浮层。可切换到原有的可调整尺寸调试工作区。",
+    "variantsTitle": "同一条 Trace，两种视图",
+    "variantsBody": "使用 variant=\"live\" 呈现视频中的实时概览；省略 variant 则使用原有调试详情工作区。两种视图复用同一套扁平 Span 契约、安全调用树、虚拟化与受控选择，因此作为 Agent Message Trace 1 的变体实现，无需新增独立 block。",
     "dataTitle": "数据契约",
-    "dataBody": "传入包含稳定 id、parentId、相对开始时间、数值时长、类型、状态、输入输出、属性和事件的扁平 Span。Block 会自行派生层级、时间线几何、选中状态和详情内容，不要求后端返回预格式化展示数据。",
+    "dataBody": "传入包含稳定 id、parentId、相对时间、状态与输入输出的扁平 Span。可选 usage 仅记录当前调用自身的美元费用和输入输出 Tokens，由组件推导父节点汇总和整条 Trace 指标，避免重复计算。运行中通过 nowOffsetMs 更新；流式订阅和演示播放由宿主负责。",
     "performanceTitle": "大数据 Trace",
     "performanceBody": "组件采用固定行高虚拟化、共享时间网格和受控展开状态。类型过滤会保留匹配节点的父链，避免调用上下文丢失。"
   }
