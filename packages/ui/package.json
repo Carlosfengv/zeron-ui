@@ -4,6 +4,11 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./chat-thread": "./src/components/chat-thread.tsx",
+    "./chat-thread/labels": "./src/components/chat-thread/labels.ts",
+    "./chat-thread/history": "./src/components/chat-thread/history.ts",
+    "./chat-thread/context": "./src/components/chat-thread/context.ts",
+    "./chat-thread/use-thread-scroll": "./src/components/chat-thread/use-thread-scroll.ts",
     "./artifact-card": "./src/components/artifact-card.tsx",
     "./context-window": "./src/components/context-window.tsx",
     "./context-window/data": "./src/components/context-window/data.ts",

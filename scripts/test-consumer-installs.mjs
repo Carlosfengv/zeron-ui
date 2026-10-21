@@ -648,6 +648,17 @@ async function verifyNextBuild({ consumer, component }) {
     'import { ArtifactCard } from "@/components/ui/artifact-card";',
     'export default function Page() { return <ArtifactCard resources={[{id:"page",name:"page.html",kind:"code",description:"Generated page"}]} onOpen={() => {}} />; }',
   ].join("\n");
+  examples["chat-thread"] = [
+    '"use client";',
+    'import { useState } from "react";',
+    'import { ChatThread, ChatUserMessage, ChatAssistantMessage, ChatMarkdown } from "@/components/ui/chat-thread";',
+    'import { Markdown } from "@/components/ui/markdown";',
+    'import { ChatMessageAction, ChatMessageAttachments, ChatMessageCopy, ChatMessageEditor, ChatMessageBranchSwitch } from "@/components/ui/chat-message";',
+    'const tableMarkdown = "| Surface | Status |\\n| --- | ---: |\\n| Chat Thread | Ready |";',
+    'function StandaloneParts() { return <><Markdown text={tableMarkdown} /><ChatMessageCopy text="copy" /><ChatMessageAction label="Edit" onClick={() => {}}>E</ChatMessageAction><ChatMessageAttachments files={[{id:"f",name:"brief.md"}]} /><ChatMessageEditor text="draft" onSave={() => {}} onCancel={() => {}} /><ChatMessageBranchSwitch branch={{index:0,count:2,onChange:() => {}}} /></>; }',
+    'export default function Page() { const [bookmarks, setBookmarks] = useState<string[]>([]); return <div className="h-96"><StandaloneParts /><ChatThread bookmarkedIds={bookmarks} onBookmarkChange={(id, saved) => setBookmarks(saved ? [id] : [])} composer={<textarea aria-label="Draft" />}><ChatUserMessage id="user" text="Verify installation" /><ChatAssistantMessage id="assistant" text="Install verified" model="Test model" modelLogo={<span>✦</span>} provider="Test provider" metrics={{ttftMs:42}} last><ChatMarkdown text={tableMarkdown} /></ChatAssistantMessage></ChatThread></div>; }',
+    '',
+  ].join("\n");
   let source = styles ? consumerStyleExample("next") : unifiedSource ?? examples[component];
   if (!source) return;
   if (verifyUnification && !unifiedSource && !styles) {
@@ -1097,6 +1108,19 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { ArtifactCard } from "@/src/components/ui/artifact-card";',
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<ArtifactCard resources={[{id:"page",name:"page.html",kind:"code",description:"Generated page"}]} onOpen={() => {}} />);',
+  ].join("\n");
+  examples["chat-thread"] = [
+    'import {createRoot} from "react-dom/client";',
+    'import { useState } from "react";',
+    'import "./index.css";',
+    'import { ChatThread, ChatUserMessage, ChatAssistantMessage, ChatMarkdown } from "@/src/components/ui/chat-thread";',
+    'import { Markdown } from "@/src/components/ui/markdown";',
+    'import { ChatMessageAction, ChatMessageAttachments, ChatMessageCopy, ChatMessageEditor, ChatMessageBranchSwitch } from "@/src/components/ui/chat-message";',
+    'const tableMarkdown = "| Surface | Status |\\n| --- | ---: |\\n| Chat Thread | Ready |";',
+    'function StandaloneParts() { return <><Markdown text={tableMarkdown} /><ChatMessageCopy text="copy" /><ChatMessageAction label="Edit" onClick={() => {}}>E</ChatMessageAction><ChatMessageAttachments files={[{id:"f",name:"brief.md"}]} /><ChatMessageEditor text="draft" onSave={() => {}} onCancel={() => {}} /><ChatMessageBranchSwitch branch={{index:0,count:2,onChange:() => {}}} /></>; }',
+    'function Demo() { const [bookmarks, setBookmarks] = useState<string[]>([]); return <div className="h-96"><StandaloneParts /><ChatThread bookmarkedIds={bookmarks} onBookmarkChange={(id, saved) => setBookmarks(saved ? [id] : [])} composer={<textarea aria-label="Draft" />}><ChatUserMessage id="user" text="Verify installation" /><ChatAssistantMessage id="assistant" text="Install verified" model="Test model" modelLogo={<span>✦</span>} provider="Test provider" metrics={{ttftMs:42}} last><ChatMarkdown text={tableMarkdown} /></ChatAssistantMessage></ChatThread></div>; }',
+    'createRoot(document.getElementById("root")!).render(<Demo />);',
+    '',
   ].join("\n");
   let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component];
   if (!source) throw new Error(`No Vite entry example is defined for ${component}`);

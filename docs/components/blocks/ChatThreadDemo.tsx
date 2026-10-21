@@ -2,19 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "next-intl";
-import {
-  ChatAssistantMessage,
-  ChatDivider,
-  ChatThread,
-  ChatUserMessage,
-  ChatAttachments,
-  chatThreadZhLabels,
-  createChatThreadDemoData,
-  createChatThreadDemoReply,
-  getChatThreadDemoPath,
-  type ChatThreadDemoMessage,
-  type ChatThreadDemoState,
-} from "@zeron/blocks/chat-thread-01";
+import { ChatAssistantMessage, ChatDivider, ChatThread, ChatUserMessage, chatThreadZhLabels } from "@zeron/ui/chat-thread";
+import { createChatThreadDemoData, createChatThreadDemoReply, getChatThreadDemoPath, type ChatThreadDemoMessage, type ChatThreadDemoState } from "@zeron/blocks/chat-thread-01";
 import {
   createModelSelectorDemoModels,
   modelSelectorDemoValue,
@@ -371,7 +360,7 @@ export function ChatThreadDemo() {
           <>
             {!!remoteFiles?.length && (
               <div className="mb-2 flex items-center justify-end gap-2">
-                <ChatAttachments files={remoteFiles} />
+                <ChatMessageAttachments files={remoteFiles} label={zh ? "对话" : "Conversation"} />
                 <Button
                   variant="ghost"
                   size="xs"

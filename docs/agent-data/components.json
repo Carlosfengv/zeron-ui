@@ -1,4 +1,33 @@
 {
+  "chat-thread": {
+    "keywords": [
+      "聊天",
+      "对话",
+      "线程",
+      "消息",
+      "版本",
+      "检查点",
+      "chat",
+      "thread",
+      "conversation",
+      "checkpoint"
+    ],
+    "useCases": [
+      "协调完整会话：使用 ChatUserMessage/ChatAssistantMessage 注册消息，组合滚动、历史、导航与宿主控制的检查点。"
+    ],
+    "whenNotToUse": [
+      "仅呈现单条消息或自定义列表使用 chat-message；模型请求、持久化、版本存储与真实文件恢复由宿主提供。"
+    ],
+    "keyApi": [
+      "children + composer + empty 组合会话，输入区不重新挂载。",
+      "ChatUserMessage/ChatAssistantMessage 复用 ChatMessage；branch 为从零开始的受控版本选择。",
+      "onLoadOlder 保持阅读锚点，onRestore 支持异步提交和返回 undo。",
+      "暂停 InputMessage.autoDispatchQueue 后再变更历史；composerRef 连接 textareaRef 恢复焦点。",
+      "ChatMarkdown 复用共享 GFM 与 CodeBlock，支持中英文 labels。",
+      "独立 UI 不依赖 block 或演示数据；原 chat-thread-01 入口保留全部导出，混用组件共享同一 context。",
+      "ChatAction/ChatCopy/ChatBranchSwitch/ChatAttachments/ChatEditor 和 ChatFile/ChatBranch/ChatResponseMetrics 保留为兼容入口；新组合使用 chat-message 的规范名称并保留 labels/disabled。"
+    ]
+  },
   "artifact-card": {
     "keywords": [
       "产物",

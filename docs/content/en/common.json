@@ -188,7 +188,7 @@
       "toast": "Animated notification stack with statuses, automatic dismissal, actions, and drag gestures.",
       "tooltip": "Floating tooltip with spring-based animations and configurable placement.",
       "ask-user-questions": "Stepped question flow with single/multi-select, optional 'other' input, and skip.",
-      "chat-message": "Chat transcript bubble with baked-in motion, user/assistant alignment, and file attachments.",
+      "chat-message": "Standalone message presentation with body, attachments, identity, metrics and actions; no thread context required.",
       "input-message": "Chat-style message composer with auto-resizing textarea and configurable action slots.",
       "thinking-indicator": "Animated status indicator with morphing SVG and cycling text.",
       "thinking-steps": "Chain-of-thought display with sequential animation and collapsible steps.",

@@ -255,24 +255,9 @@
         "ai",
         "agent"
       ],
-      "dependencies": [
-        "@hugeicons/react",
-        "@hugeicons/core-free-icons"
-      ],
+      "dependencies": [],
       "registryDependencies": [
-        "button",
-        "chat-message",
-        "empty",
-        "icon-context",
-        "inline-notice",
-        "message-navigation",
-        "popover",
-        "scroll-area",
-        "separator",
-        "toast",
-        "tooltip",
-        "utils",
-        "markdown"
+        "chat-thread"
       ],
       "files": [
         {

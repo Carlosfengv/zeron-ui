@@ -246,6 +246,10 @@
       "itemId": "component:chat-message"
     },
     {
+      "path": "components/chat-thread.md",
+      "itemId": "component:chat-thread"
+    },
+    {
       "path": "components/code-block.md",
       "itemId": "component:code-block"
     },

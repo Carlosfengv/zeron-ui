@@ -4,6 +4,83 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "chat-thread",
+      "type": "registry:ui",
+      "title": "ChatThread",
+      "description": "Composable conversations with anchored history, streaming messages, persistent composer and host-owned checkpoint restoration.",
+      "dependencies": [
+        "@hugeicons/react@^1.1.6",
+        "@hugeicons/core-free-icons@^4.1.1",
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/chat-message.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/message-navigation.json",
+        "https://zeron-ui.vercel.app/r/popover.json",
+        "https://zeron-ui.vercel.app/r/scroll-area.json",
+        "https://zeron-ui.vercel.app/r/separator.json",
+        "https://zeron-ui.vercel.app/r/toast.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/markdown.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chat-thread.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/context.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/context.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/history.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/history.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/messages.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/messages.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/markdown.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/markdown.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/use-thread-scroll.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/use-thread-scroll.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
       "name": "artifact-card",
       "type": "registry:ui",
       "title": "ArtifactCard",
@@ -6838,24 +6915,9 @@
         "ai",
         "agent"
       ],
-      "dependencies": [
-        "@hugeicons/react@^1.1.6",
-        "@hugeicons/core-free-icons@^4.1.1"
-      ],
+      "dependencies": [],
       "registryDependencies": [
-        "https://zeron-ui.vercel.app/r/button.json",
-        "https://zeron-ui.vercel.app/r/chat-message.json",
-        "https://zeron-ui.vercel.app/r/empty.json",
-        "https://zeron-ui.vercel.app/r/icon-context.json",
-        "https://zeron-ui.vercel.app/r/inline-notice.json",
-        "https://zeron-ui.vercel.app/r/message-navigation.json",
-        "https://zeron-ui.vercel.app/r/popover.json",
-        "https://zeron-ui.vercel.app/r/scroll-area.json",
-        "https://zeron-ui.vercel.app/r/separator.json",
-        "https://zeron-ui.vercel.app/r/toast.json",
-        "https://zeron-ui.vercel.app/r/tooltip.json",
-        "https://zeron-ui.vercel.app/r/utils.json",
-        "https://zeron-ui.vercel.app/r/markdown.json"
+        "https://zeron-ui.vercel.app/r/chat-thread.json"
       ],
       "files": [
         {

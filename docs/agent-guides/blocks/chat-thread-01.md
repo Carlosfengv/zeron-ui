@@ -11,17 +11,19 @@ source: packages/blocks/src/application/chat-thread-01/chat-thread.tsx
 types: packages/blocks/src/application/chat-thread-01/chat-thread-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [chat-message, message-navigation, input-message, scroll-area, code-block, thinking-steps, model-selector-01, context-window-01, toast, separator, inline-notice, empty, button]
+related: [chat-message, message-navigation, input-message, scroll-area, code-block, thinking-steps, model-selector, context-window-02, toast, separator, inline-notice, empty, button]
 ---
 
 # Chat Thread
+
+`ChatThread`、全部消息组合、文案与历史辅助函数已下沉为 [AI component](../components/chat-thread.md)。原 `@zeron/blocks/chat-thread-01` 与所有模块路径保持兼容，演示数据和示例生成器继续由 block 提供。仅安装共享组件时使用 `npx zeron-ui add chat-thread input-message`。
 
 安装 `npx zeron-ui add chat-thread-01 input-message`。这是 React 数据 Block，不依赖 Next.js 或 AI SDK。消息、请求、版本、检查点和持久化由宿主持有。
 
 ```tsx
 "use client";
 import { useRef, useState } from "react";
-import { ChatThread, ChatUserMessage, ChatAssistantMessage, ChatMarkdown, chatThreadZhLabels } from "@zeron/blocks/chat-thread-01";
+import { ChatThread, ChatUserMessage, ChatAssistantMessage, ChatMarkdown, chatThreadZhLabels } from "@zeron/ui/chat-thread";
 import { InputMessage } from "@zeron/ui/input-message";
 
 export function ThreadExample() {
@@ -39,9 +41,30 @@ export function ThreadExample() {
 }
 ```
 
-Registry 消费项目将包导入替换为 `@/components/blocks/chat-thread-01` 和 `@/components/ui/input-message`。应用层只挂载一个 `Toaster`。模型选择与上下文控件是独立可选 Block，通过 InputMessage 的公开插槽接入，需要时单独安装。
+Registry 消费项目将共享组件导入替换为 `@/components/ui/chat-thread` 和 `@/components/ui/input-message`。应用层只挂载一个 `Toaster`。模型选择与上下文控件是独立可选 AI components，通过 InputMessage 的公开插槽接入，需要时单独安装。
 
-上下文属于可选的宿主组合。本次文档演示使用主线已有的 context-window-01，通过标准 Button / Popover 接入；它不是 Thread 的强制 Registry 依赖。用量触发器与弹层读取同一 data 快照，圆环复用 PieChart，百分比从实际用量计算。
+上下文触发器组合 @zeron/ui/context-window 的 ContextWindowUsage 与标准 Button / Popover，和弹层的 ContextWindowCompact 传入同一 data 快照。圆环复用 PieChart，百分比从实际用量计算，不能使用普通圆形图标或写死数值。
+
+## 职责边界
+
+ChatMessage 是无需 Provider 的单条消息呈现；ChatThread 协调会话滚动、历史阅读位置、导航、检查点请求与 composer。ChatUserMessage / ChatAssistantMessage 注册稳定唯一 ID，并复用 ChatMessage 及其公开原语。基础 ChatMessage 不注册消息，直接替代线程消息会使空态判断、导航和锚点缺少条目信息。输入框通过 composer 插槽组合；消息、版本、模型请求与持久化仍属于宿主。
+
+## 兼容别名
+
+以下导出及类型继续保留；源码 @deprecated 只提供推荐入口提示。新组合从 `@zeron/ui/chat-message` 导入规范名称，普通线程消息使用 ChatUserMessage / ChatAssistantMessage 自动协调文案与状态。
+
+| 兼容名称 | 推荐名称 | 替换时保留 |
+| --- | --- | --- |
+| ChatAction | ChatMessageAction | 直接别名，函数身份相同，无需上下文 |
+| ChatCopy | ChatMessageCopy | 线程 copy / copied / copyFailed 文案 |
+| ChatBranchSwitch | ChatMessageBranchSwitch | 线程 previous / next / version 文案及 disabled |
+| ChatAttachments | ChatMessageAttachments | 线程 conversation 文案作为 label |
+| ChatEditor | ChatMessageEditor | 线程编辑文案与 busy 或 pending 对应的 disabled；仍可取消 |
+| ChatFile | ChatMessageFile | 同一附件结构 |
+| ChatBranch | ChatMessageBranch | 同一受控版本结构 |
+| ChatResponseMetrics | ChatMessageMetrics | 同一回复统计结构 |
+
+除 ChatAction 外，上述组件适配器需要 ChatThread 上下文。不能直接改名后丢失继承状态。ChatMarkdown、ChatCheckpoint、ChatDivider 与消息包装组件仍为会话 API，不属于这些兼容别名。
 
 ## 布局与滚动
 
@@ -59,7 +82,7 @@ Block 整体使用 Floating 表面。默认空状态复用 Empty；历史失败�
 
 ## 消息组合
 
-`ChatUserMessage` 接收 `text`、`time: Date`、`files: ChatFile[]`、`attachments`、`onEdit`、`branch`、`checkpoint`。远程文件使用 `{ id, name, type?, size?, url? }`；无 URL 的文件显示文件信息。附件只展示，不上传。自定义附件可以复用 `FileThumbnail`；旧 ChatMessage 的 `files: File[]` 保持兼容。
+`ChatUserMessage` 接收 `text`、`time: Date`、`files: readonly ChatMessageFile[]`（旧 ChatFile 类型别名保持兼容）、`attachments`、`onEdit`、`branch`、`checkpoint`。远程文件使用 `{ id, name, type?, size?, url? }`；无 URL 的文件显示文件信息。附件只展示，不上传。自定义附件可以复用 `FileThumbnail`；旧 ChatMessage 的 `files: File[]` 保持兼容。
 
 `ChatAssistantMessage` 的 `children` 可放入 ThinkingSteps、工具结果、ChatMarkdown、CodeBlock、CodeDiff 等。`text` 是复制用的纯文本；不提供时不显示复制按钮。`streaming` 隐藏操作，`last` 常显操作。支持 `meta`、`onRetry`、`error`、`stopped`，以及受控 `feedback: "up" | "down" | null` / `onFeedback`。
 

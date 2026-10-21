@@ -4,6 +4,75 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "chat-thread",
+      "type": "registry:ui",
+      "title": "ChatThread",
+      "description": "Composable conversations with anchored history, streaming messages, persistent composer and host-owned checkpoint restoration.",
+      "dependencies": [
+        "@hugeicons/react",
+        "@hugeicons/core-free-icons",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "button",
+        "chat-message",
+        "empty",
+        "icon-context",
+        "inline-notice",
+        "message-navigation",
+        "popover",
+        "scroll-area",
+        "separator",
+        "toast",
+        "tooltip",
+        "utils",
+        "markdown"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chat-thread.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/context.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/context.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/history.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/history.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/messages.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/messages.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/markdown.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/markdown.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/use-thread-scroll.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/use-thread-scroll.ts"
+        }
+      ]
+    },
+    {
       "name": "artifact-card",
       "type": "registry:ui",
       "title": "ArtifactCard",

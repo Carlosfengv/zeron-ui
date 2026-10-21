@@ -113,6 +113,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Chart Motion](https://zeron-ui.vercel.app/ai/items/component%3Achart-motion.md): Shared entrance timing for standalone charts. Registry: chart-motion.
 - [Chart Primitives](https://zeron-ui.vercel.app/ai/items/component%3Achart-primitives.md): Legends, stable series colors and segmented bars without a chart engine. Registry: chart-primitives.
 - [Chat Message](https://zeron-ui.vercel.app/ai/items/component%3Achat-message.md): Chat transcript bubble with baked-in motion, user/assistant alignment, and file attachments. Registry: chat-message.
+- [ChatThread](https://zeron-ui.vercel.app/ai/items/component%3Achat-thread.md): Conversation coordination with registered messages, scrolling, history and checkpoints. Registry: chat-thread.
 - [Checkbox (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Acheckbox.md): Compact checkbox with checked, mixed, disabled, validation, and form states. Registry: checkbox.
 - [Checkbox Group (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Acheckbox-group.md): Checkbox group with merged backgrounds for contiguous selections. Registry: checkbox-group.
 - [Code Block](https://zeron-ui.vercel.app/ai/items/component%3Acode-block.md): Highlighted code, diffs, patches, conflicts, streaming, SSR, Workers, and editing. Registry: code-block.
@@ -266,6 +267,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [chart-primitives](https://zeron-ui.vercel.app/agent-guides/components/chart-primitives.md)
 - [chart](https://zeron-ui.vercel.app/agent-guides/components/chart.md)
 - [chat-message](https://zeron-ui.vercel.app/agent-guides/components/chat-message.md)
+- [chat-thread](https://zeron-ui.vercel.app/agent-guides/components/chat-thread.md)
 - [code-block](https://zeron-ui.vercel.app/agent-guides/components/code-block.md)
 - [combobox](https://zeron-ui.vercel.app/agent-guides/components/combobox.md)
 - [context-window](https://zeron-ui.vercel.app/agent-guides/components/context-window.md)
