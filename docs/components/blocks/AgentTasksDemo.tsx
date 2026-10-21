@@ -6,6 +6,7 @@ import { AgentTasks, agentTasksChineseLabels, agentTasksDemoData, type AgentTask
 import { Button } from "@zeron/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";
 import { Input } from "@zeron/ui/input";
+import { Field, FieldLabel } from "@zeron/ui/field";
 
 const chineseTitles: Record<string, string> = {
   crm: "清理重复的 CRM 联系人", migration: "迁移用户表至 Postgres 17", review: "审查 PR #482 – 计费 Webhook",
@@ -54,10 +55,10 @@ export function AgentTasksDemo() {
               <DialogTitle>{chinese ? "新建任务" : "New task"}</DialogTitle>
               <DialogDescription>{chinese ? "本地交互演示，不会启动真实 Agent。" : "Local demo. This will not start a real agent."}</DialogDescription>
             </DialogHeader>
-            <div className="space-y-2 py-4">
-              <label htmlFor={titleInputId} className="text-label font-medium text-fg-default">{chinese ? "任务名称" : "Task name"}</label>
+            <Field className="py-4">
+              <FieldLabel htmlFor={titleInputId}>{chinese ? "任务名称" : "Task name"}</FieldLabel>
               <Input id={titleInputId} autoFocus value={title} onChange={(event) => setTitle(event.target.value)} placeholder={chinese ? "你想完成什么任务？" : "What would you like to do?"} required />
-            </div>
+            </Field>
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setCreating(false)}>{chinese ? "取消" : "Cancel"}</Button>
               <Button type="submit" disabled={!title.trim()}>{chinese ? "创建任务" : "Create task"}</Button>
