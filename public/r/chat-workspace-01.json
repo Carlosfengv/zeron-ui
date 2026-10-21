@@ -14,13 +14,13 @@
     "https://zeron-ui.vercel.app/r/empty.json",
     "https://zeron-ui.vercel.app/r/file-type.json",
     "https://zeron-ui.vercel.app/r/icon-context.json",
-    "https://zeron-ui.vercel.app/r/info-item.json",
     "https://zeron-ui.vercel.app/r/inline-notice.json",
     "https://zeron-ui.vercel.app/r/markdown.json",
     "https://zeron-ui.vercel.app/r/menu-item.json",
     "https://zeron-ui.vercel.app/r/resizable.json",
     "https://zeron-ui.vercel.app/r/tabs.json",
-    "https://zeron-ui.vercel.app/r/utils.json"
+    "https://zeron-ui.vercel.app/r/utils.json",
+    "https://zeron-ui.vercel.app/r/artifact-card.json"
   ],
   "files": [
     {
@@ -31,7 +31,7 @@
     },
     {
       "path": "packages/blocks/src/application/chat-workspace-01/artifact-card.tsx",
-      "content": "\"use client\";\nimport { FileType } from \"@ui/file-type\";\nimport { InfoItem, InfoItemContent, InfoItemDescription, InfoItemTitle, InfoItemTrailing } from \"@ui/info-item\";\nimport { useIcon } from \"@lib/icon-context\";\nimport { cn } from \"@lib/utils\";\nimport { resolveArtifactLabels } from \"./artifact-labels\";\nimport { artifactReviewStatus, artifactSizeText, safeArtifactUrl } from \"./artifact-utils\";\nimport type { ArtifactCardProps } from \"./chat-workspace-types\";\nexport function ArtifactCard({ resources, title, onOpen, labels: overrides, locale, className, ...props }: ArtifactCardProps) {\n    const labels = resolveArtifactLabels(locale, overrides);\n    const Globe = useIcon(\"globe\");\n    const Arrow = useIcon(\"arrow-right\");\n    return (<div {...props} data-slot=\"artifact-card\" className={cn(\"min-w-0 overflow-hidden rounded-lg border-hairline border-border bg-surface-floating\", className)}>\n      <div className=\"border-b-hairline border-border px-3 py-2 text-label font-medium\">{title ?? labels.resources}</div>\n      <ul className=\"flex min-w-0 flex-col gap-1 p-2\">\n        {resources.map((resource) => {\n            const review = artifactReviewStatus(resource);\n            const description = resource.kind === \"url\" ? safeArtifactUrl(resource.url, true) ?? labels.unavailableUrl : artifactSizeText(resource, locale);\n            return <li key={resource.id} className=\"min-w-0\">\n            <InfoItem render={<button type=\"button\"/>} onClick={() => onOpen(resource)} aria-label={`${labels.preview}: ${resource.name}`}>\n              <span className=\"flex size-8 shrink-0 items-center justify-center\">{resource.kind === \"url\" ? <Globe size={20} aria-hidden/> : <FileType fileName={resource.name} size=\"sm\" aria-hidden/>}</span>\n              <InfoItemContent>\n                <InfoItemTitle className=\"truncate\" title={resource.name}>{resource.name}</InfoItemTitle>\n                {description && <InfoItemDescription className=\"truncate\" title={description}>{description}</InfoItemDescription>}\n              </InfoItemContent>\n              <InfoItemTrailing>{review && <span className=\"text-label text-fg-muted\">{labels[review]}</span>}<Arrow size={14} aria-hidden/></InfoItemTrailing>\n            </InfoItem>\n          </li>;\n        })}\n      </ul>\n    </div>);\n}\n",
+      "content": "\"use client\";\nimport { ArtifactCard as SharedArtifactCard } from \"@ui/artifact-card\";\nimport { resolveArtifactLabels } from \"./artifact-labels\";\nimport { artifactReviewStatus, artifactSizeText, safeArtifactUrl } from \"./artifact-utils\";\nimport type { ArtifactCardProps } from \"./chat-workspace-types\";\n/** Compatibility adapter for full workspace resources and their review rules. */\nexport function ArtifactCard({ labels: overrides, locale, ...props }: ArtifactCardProps) {\n    const labels = resolveArtifactLabels(locale, overrides);\n    return <SharedArtifactCard {...props} labels={labels} locale={locale} getReviewStatus={artifactReviewStatus} getDescription={(resource) => resource.kind === \"url\"\n            ? safeArtifactUrl(resource.url, true) ?? labels.unavailableUrl\n            : artifactSizeText(resource, locale)}/>;\n}\n",
       "type": "registry:component",
       "target": "components/blocks/chat-workspace-01/artifact-card.tsx"
     },

@@ -1,0 +1,13 @@
+{
+  "artifact-card": {
+    "description": "Generated-content cards with file icons, metadata and host-owned opening.",
+    "basic": "Generated files and content",
+    "behavior": "Behavior and compatibility",
+    "behaviorBody": "The card only needs id, name and kind, plus optional passive description and review status. onOpen receives the original resource, preserving custom metadata. Description and review adapters can connect an existing data model without copying records. The card does not fetch files, run previews or manage revision history. The existing Chat Workspace ArtifactCard adapter preserves byte-size formatting, filtered URLs, full labels and version-specific review eligibility. ArtifactWorkspace and GeneratedArtifactCard exports remain compatible.",
+    "api": "API reference",
+    "itemsProp": "Readonly records with id, name and kind (code, markdown, text, image, url or file). Optional description is noninteractive metadata; review is pending, accepted or rejected. Content and version are not required.",
+    "openProp": "Requests opening the exact original resource. The host supplies its viewer or selection state.",
+    "adaptersProp": "Optional description and review projections for a host data model. Returning undefined review hides its status.",
+    "labelsProp": "Optional title, locale, partial labels and external layout/HTML attributes. English and Chinese labels are exported."
+  }
+}

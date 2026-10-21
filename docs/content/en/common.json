@@ -119,6 +119,7 @@
     "introductionTitle": "Introduction",
     "introductionDescription": "Why these components feel different.",
     "descriptions": {
+      "artifact-card": "Generated-content cards with file icons, metadata and host-owned previews.",
       "model-selector": "Controlled model selection, relative ratings and conversation settings.",
       "tool-calls-01": "Tool inspection, file changes, command approval and execution output in a conversation.",
       "chat-thread-01": "Streaming conversations, message versions and checkpoint restoration.",

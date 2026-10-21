@@ -12,7 +12,7 @@ const blockPreviewSources = {
     "url": "/docs-source/527407aac649032b3552a9fd8d227ab044eb6d6b11866e909eddfa37cafa3b5b.txt"
   },
   "chat-workspace-01": {
-    "url": "/docs-source/02a97bdd4d2ea8fa2979267da6f1133f3d0d55f222ebd28faa2a7d401a64297f.txt"
+    "url": "/docs-source/b0524a01723af7f3b159eb520215eb459e99e3e4f3727fa68c39890a3c88495d.txt"
   },
   "chat-thread-01": {
     "url": "/docs-source/c605b3b0e7b03bf35b5e21b72006c885715a22acdbc210e2c7d2065eaa8fe8c9.txt"

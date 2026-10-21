@@ -56,6 +56,7 @@ export const agentGuideLoaders: Record<string, () => Promise<string>> = {
   "components/alert.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/alert.md"), "utf8"),
   "components/app-shell.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/app-shell.md"), "utf8"),
   "components/area-chart.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/area-chart.md"), "utf8"),
+  "components/artifact-card.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/artifact-card.md"), "utf8"),
   "components/avatar.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/avatar.md"), "utf8"),
   "components/badge.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/badge.md"), "utf8"),
   "components/bar-chart.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/bar-chart.md"), "utf8"),

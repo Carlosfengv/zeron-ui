@@ -643,6 +643,11 @@ async function verifyNextBuild({ consumer, component }) {
     'const data = createContextWindowCompactDemoData();',
     'export default function Page() { return <><ContextWindowUsage data={data} /><ContextWindowCompact data={data} /></>; }',
   ].join("\n");
+  examples["artifact-card"] = [
+    '"use client";',
+    'import { ArtifactCard } from "@/components/ui/artifact-card";',
+    'export default function Page() { return <ArtifactCard resources={[{id:"page",name:"page.html",kind:"code",description:"Generated page"}]} onOpen={() => {}} />; }',
+  ].join("\n");
   let source = styles ? consumerStyleExample("next") : unifiedSource ?? examples[component];
   if (!source) return;
   if (verifyUnification && !unifiedSource && !styles) {
@@ -1086,6 +1091,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import "./index.css";',
     'const data = createContextWindowCompactDemoData();',
     'createRoot(document.getElementById("root")!).render(<><ContextWindowUsage data={data} /><ContextWindowCompact data={data} /></>);',
+  ].join("\n");
+  examples["artifact-card"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { ArtifactCard } from "@/src/components/ui/artifact-card";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<ArtifactCard resources={[{id:"page",name:"page.html",kind:"code",description:"Generated page"}]} onOpen={() => {}} />);',
   ].join("\n");
   let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component];
   if (!source) throw new Error(`No Vite entry example is defined for ${component}`);

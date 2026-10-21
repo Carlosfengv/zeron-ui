@@ -4,6 +4,39 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "artifact-card",
+      "type": "registry:ui",
+      "title": "ArtifactCard",
+      "description": "Reusable generated-content cards with file icons, metadata and host-owned opening.",
+      "registryDependencies": [
+        "surfaces",
+        "file-type",
+        "info-item",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-card.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-card/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-card/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-card/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-card/labels.ts"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
       "name": "context-window",
       "type": "registry:ui",
       "title": "ContextWindow",

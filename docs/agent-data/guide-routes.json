@@ -202,6 +202,10 @@
       "itemId": "component:area-chart"
     },
     {
+      "path": "components/artifact-card.md",
+      "itemId": "component:artifact-card"
+    },
+    {
       "path": "components/avatar.md",
       "itemId": "component:avatar"
     },

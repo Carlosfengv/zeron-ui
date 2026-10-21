@@ -1,4 +1,23 @@
 {
+  "artifact-card": {
+    "keywords": [
+      "产物",
+      "生成内容",
+      "文件卡片",
+      "artifact card"
+    ],
+    "useCases": [
+      "在任意消息或列表中展示生成文件、图片和网页入口。"
+    ],
+    "whenNotToUse": [
+      "多资源预览与审阅使用 artifact-panel，修订恢复使用 artifact-preview-panel；完整会话布局使用相应 block。"
+    ],
+    "keyApi": [
+      "resources 只需要 id/name/kind，可选 description/review；不要求内容或版本历史。",
+      "onOpen 返回原始记录；getDescription/getReviewStatus 支持适配宿主数据。",
+      "旧 chat-workspace-01 的 ArtifactCard 保留完整资源类型、大小与地址展示及版本审阅规则。"
+    ]
+  },
   "context-window-02": {
     "keywords": [
       "上下文",

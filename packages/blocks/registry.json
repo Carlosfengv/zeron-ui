@@ -186,23 +186,7 @@
         "agent"
       ],
       "dependencies": [],
-      "registryDependencies": [
-        "chat-thread-01",
-        "alert",
-        "button",
-        "code-block",
-        "dropdown",
-        "empty",
-        "file-type",
-        "icon-context",
-        "info-item",
-        "inline-notice",
-        "markdown",
-        "menu-item",
-        "resizable",
-        "tabs",
-        "utils"
-      ],
+      "registryDependencies": ["chat-thread-01", "alert", "button", "code-block", "dropdown", "empty", "file-type", "icon-context", "inline-notice", "markdown", "menu-item", "resizable", "tabs", "utils", "artifact-card"],
       "files": [
         {
           "path": "packages/blocks/src/application/chat-workspace-01/artifact-tabs.tsx",
