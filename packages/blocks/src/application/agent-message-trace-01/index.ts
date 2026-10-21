@@ -15,6 +15,10 @@ export {
   createAgentMessageTraceDemoData,
 } from "./agent-message-trace-demo-data";
 export {
+  agentMessageTraceLiveDemoData,
+  createAgentMessageTraceLiveDemoData,
+} from "./agent-message-trace-live-demo-data";
+export {
   agentMessageTraceDuration,
   buildAgentMessageTraceModel,
   createAgentMessageTraceTicks,
@@ -33,6 +37,7 @@ export {
   type AgentMessageTraceInspectorLabels,
   type AgentMessageTraceKind,
   type AgentMessageTraceLabels,
+  type AgentMessageTraceLiveLabels,
   type AgentMessageTraceMessage,
   type AgentMessageTraceProps,
   type AgentMessageTraceSpan,
