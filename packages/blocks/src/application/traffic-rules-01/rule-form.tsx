@@ -8,6 +8,7 @@ import {
 import { Button } from "@zeron/ui/button";
 import { Dialog, DialogContent } from "@zeron/ui/dialog";
 import { Input } from "@zeron/ui/input";
+import { Field, FieldLabel } from "@zeron/ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
 import { Tooltip } from "@zeron/ui/tooltip";
 import { useIcon } from "@zeron/ui/system/icon-context";
@@ -150,42 +151,37 @@ export function ConditionEditor({
 
   return (
     <div className="grid gap-3 border-t border-border-subtle bg-surface-floating px-4 py-4 sm:grid-cols-[132px_minmax(0,1fr)]">
-      <label className="block text-label font-medium text-fg-subtle">
-        运算符
+      <Field>
+        <FieldLabel>运算符</FieldLabel>
         <SelectField
           ariaLabel={`${definition.label}运算符`}
-          className="mt-1"
           onValueChange={(operator) => onChange({ ...condition, operator })}
           options={definition.operators}
           value={condition.operator}
         />
-      </label>
+      </Field>
       <div className={cn("grid gap-3", needsSecondary && "md:grid-cols-2")}>
-        <label className="block text-label font-medium text-fg-subtle">
-          {definition.primaryLabel}
-          <span className="mt-1 block">
-            <ValueControl
-              ariaLabel={definition.primaryLabel}
-              onChange={(primary) => onChange({ ...condition, primary })}
-              options={definition.primaryOptions}
-              placeholder={definition.primaryPlaceholder}
-              value={condition.primary}
-            />
-          </span>
-        </label>
+        <Field>
+          <FieldLabel>{definition.primaryLabel}</FieldLabel>
+          <ValueControl
+            ariaLabel={definition.primaryLabel}
+            onChange={(primary) => onChange({ ...condition, primary })}
+            options={definition.primaryOptions}
+            placeholder={definition.primaryPlaceholder}
+            value={condition.primary}
+          />
+        </Field>
         {needsSecondary ? (
-          <label className="block text-label font-medium text-fg-subtle">
-            {definition.secondaryLabel}
-            <span className="mt-1 block">
-              <ValueControl
-                ariaLabel={definition.secondaryLabel!}
-                onChange={(secondary) => onChange({ ...condition, secondary })}
-                options={definition.secondaryOptions}
-                placeholder={definition.secondaryPlaceholder!}
-                value={condition.secondary ?? ""}
-              />
-            </span>
-          </label>
+          <Field>
+            <FieldLabel>{definition.secondaryLabel}</FieldLabel>
+            <ValueControl
+              ariaLabel={definition.secondaryLabel!}
+              onChange={(secondary) => onChange({ ...condition, secondary })}
+              options={definition.secondaryOptions}
+              placeholder={definition.secondaryPlaceholder!}
+              value={condition.secondary ?? ""}
+            />
+          </Field>
         ) : null}
       </div>
     </div>
@@ -667,17 +663,16 @@ function RuleFormContent({
     <div className="min-w-0 flex-1 space-y-8 p-4 sm:p-6">
       <section id="rule-basic" className="scroll-mt-4">
         <SectionHeading description="使用能说明规则意图的名称，方便后续检索与审计。" required title="基本信息" />
-        <label className="block text-label font-medium">
-          规则名称 <span className="text-fg-danger">*</span>
+        <Field>
+          <FieldLabel>规则名称 <span aria-hidden className="text-fg-danger">*</span></FieldLabel>
           <Input
-            className="mt-1.5"
             onChange={(event) => onNameChange(event.target.value)}
             placeholder="例如：生产环境高优先级流量"
             required
             size="md"
             value={name}
           />
-        </label>
+        </Field>
       </section>
 
       <section id="rule-conditions" className="scroll-mt-4">

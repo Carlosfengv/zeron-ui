@@ -1640,7 +1640,7 @@
       "description": "A responsive gateway workspace for managing traffic rules, global limits, request validation, and execution workflows.",
       "categories": ["application", "gateway", "tables"],
       "dependencies": ["tw-animate-css", "@hugeicons/core-free-icons", "@tanstack/react-table"],
-      "registryDependencies": ["alert", "badge", "button", "checkbox", "data-table", "detail-list", "dialog", "dropdown", "icon-context", "input", "menu-item", "nav-item", "nav-menu", "page-layout", "portal-container-context", "radio-group", "select", "sidebar", "sidebar-identity-row", "switch", "table", "tabs", "temporal-picker", "textarea", "tooltip", "utils", "inline-notice"],
+      "registryDependencies": ["alert", "badge", "button", "checkbox", "data-table", "detail-list", "dialog", "dropdown", "field", "icon-context", "input", "menu-item", "nav-item", "nav-menu", "page-layout", "portal-container-context", "radio-group", "select", "sidebar", "sidebar-identity-row", "switch", "table", "tabs", "temporal-picker", "textarea", "tooltip", "utils", "inline-notice"],
       "files": [
         {
           "path": "packages/blocks/src/application/traffic-rules-01/gateway-policy-data.ts",

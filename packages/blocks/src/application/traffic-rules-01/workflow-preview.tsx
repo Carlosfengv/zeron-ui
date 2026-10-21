@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { Input } from "@zeron/ui/input";
+import { Field, FieldLabel } from "@zeron/ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
 import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
 import { useIcon } from "@zeron/ui/system/icon-context";
@@ -244,9 +245,9 @@ export function WorkflowPreview({ draft, tab, onTabChange, onClose, onFocusNode,
               {draft.conditions.length ? (
                 <div className="max-h-64 space-y-3 overflow-y-auto overscroll-contain pr-1">
                   {draft.conditions.map((condition, index) => (
-                    <div key={condition.id}>
-                      <div className="mb-1 flex min-h-6 items-center justify-between gap-2">
-                        <label className="min-w-0 break-words text-label text-fg-muted" htmlFor={`${fieldId}-fact-${index}`}>{sampleLabel(condition)}</label>
+                    <Field key={condition.id}>
+                      <div className="flex min-h-6 items-center justify-between gap-2">
+                        <FieldLabel className="min-w-0 break-words" htmlFor={`${fieldId}-fact-${index}`}>{sampleLabel(condition)}</FieldLabel>
                         {Object.hasOwn(requestSamples, condition.id) ? <Button aria-label={`不提供${sampleLabel(condition)}`} onClick={() => changeSample(condition, undefined)} size="xs" type="button" variant="ghost">不提供</Button> : <span className="shrink-0 text-label text-fg-subtle">未提供</span>}
                       </div>
                       <Input
@@ -258,19 +259,19 @@ export function WorkflowPreview({ draft, tab, onTabChange, onClose, onFocusNode,
                         title={`规则条件：${conditionSummary(condition)}`}
                         value={requestSamples[condition.id] ?? ""}
                       />
-                    </div>
+                    </Field>
                   ))}
                 </div>
               ) : <p className="rounded-lg bg-surface-base p-3 text-label text-fg-subtle">在画布中添加条件后，可填写对应的请求事实。</p>}
             </section>
 
-            <div>
-              <label className="mb-1 block text-label text-fg-muted" htmlFor={`${fieldId}-scenario`}>模拟情景</label>
+            <Field>
+              <FieldLabel htmlFor={`${fieldId}-scenario`}>模拟情景</FieldLabel>
               <Select itemDensity="compact" onValueChange={(value) => setScenario(value as Scenario)} size="md" value={scenario}>
                 <SelectTrigger aria-label="模拟情景" className="w-full" id={`${fieldId}-scenario`} />
                 <SelectContent>{scenarios.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
               </Select>
-            </div>
+            </Field>
 
             <Button className="w-full" leadingIcon={Play} onClick={runTest} size="md" type="button" variant="primary">运行测试</Button>
             {issues.length ? <button className={cn("w-full rounded-lg text-left text-label text-fg-warning", focusClass)} onClick={() => onTabChange("check")} type="button">还有 {issues.length} 项配置待完善，查看配置检查</button> : null}
