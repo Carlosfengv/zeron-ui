@@ -31,7 +31,7 @@ const examples = {
   "mcp-detail-01": ["McpDetail", "<McpDetail />"],
   "deployment-detail-01": ["DeploymentDetail, deploymentDetailDemoData", "<DeploymentDetail data={deploymentDetailDemoData} />"],
   "agent-trace-01": ["AgentTrace", "<AgentTrace />"],
-  "agent-message-trace-01": ["AgentMessageTrace, agentMessageTraceDemoData", "<AgentMessageTrace data={agentMessageTraceDemoData} />"],
+  "agent-message-trace-01": ["AgentMessageTrace, agentMessageTraceDemoData, agentMessageTraceLiveDemoData", '<div style={{height:720}}><AgentMessageTrace variant="live" data={agentMessageTraceLiveDemoData} /></div><div style={{height:720}}><AgentMessageTrace data={agentMessageTraceDemoData} /></div>'],
   "agent-session-detail-01": ["AgentSessionDetail", "<AgentSessionDetail />"],
   "traffic-rules-01": ["TrafficRules", "<TrafficRules />"],
   "filter-rule-builder-01": ["FilterRuleBuilder, filterRuleBuilderDemoFields, filterRuleBuilderDemoValue", "<FilterRuleBuilder fields={filterRuleBuilderDemoFields} value={value} onValueChange={setValue} />", "const [value, setValue] = useState(filterRuleBuilderDemoValue);"],

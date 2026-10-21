@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef, CSSProperties } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from "react";
 
 export const agentMessageTraceKinds = ["chat", "agent", "tool"] as const;
 
@@ -36,6 +36,14 @@ export interface AgentMessageTraceSpan {
   finishReason?: string;
   conversationId?: string;
   toolName?: string;
+  /** Optional secondary text beside the span name in the live view. */
+  subtitle?: string;
+  /** This span's own usage only; never include descendants in these numbers. */
+  usage?: {
+    costUsd?: number;
+    inputTokens?: number;
+    outputTokens?: number;
+  };
   /** Milliseconds relative to the beginning of this message trace. */
   startOffsetMs: number;
   /** Running spans may omit duration and use `nowOffsetMs` from the component. */
@@ -135,10 +143,41 @@ export interface AgentMessageTraceInspectorLabels {
 }
 
 export interface AgentMessageTraceWorkspaceProps extends AgentMessageTraceProps {
-  /** Seeds uncontrolled selection. Omit to select the first root span. */
+  /** Inspector remains the default. Live adds metrics, rollups and popover details. */
+  variant?: "inspector" | "live";
+  /** Live-view heading and task description. */
+  heading?: string;
+  headingIcon?: ReactNode;
+  description?: string;
+  liveLabels?: Partial<AgentMessageTraceLiveLabels>;
+  /** Supply trusted provider/tool artwork; the block owns its frame. */
+  renderSpanIcon?: (span: AgentMessageTraceSpan) => ReactNode;
+  /** Inspector defaults to the first root; live defaults to no open popover. */
   defaultSelectedSpanId?: string | null;
   inspectorLabels?: Partial<AgentMessageTraceInspectorLabels>;
   inspectorDefaultSize?: number | string;
   inspectorMinSize?: number | string;
   inspectorMaxSize?: number | string;
+}
+
+export interface AgentMessageTraceLiveLabels {
+  trace: string;
+  duration: string;
+  cost: string;
+  tokens: string;
+  llmCalls: string;
+  toolCalls: string;
+  errors: string;
+  live: string;
+  done: string;
+  failed: string;
+  cancelled: string;
+  started: string;
+  slowest: string;
+  input: string;
+  output: string;
+  inputTokens: string;
+  outputTokens: string;
+  close: string;
+  spanDetails: string;
 }

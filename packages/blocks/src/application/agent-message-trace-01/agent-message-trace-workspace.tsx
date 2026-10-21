@@ -9,6 +9,7 @@ import {
 import { cn } from "@zeron/ui/system/utils";
 import { AgentMessageTraceInspector } from "./agent-message-trace-inspector";
 import { AgentMessageTraceTimeline } from "./agent-message-trace";
+import { AgentMessageTraceLive } from "./agent-message-trace-live";
 import type { AgentMessageTraceWorkspaceProps } from "./agent-message-trace-types";
 
 const HORIZONTAL_BREAKPOINT = 900;
@@ -17,7 +18,7 @@ function firstSelectableSpanId(data: AgentMessageTraceWorkspaceProps["data"]): s
   return data.spans.find((span) => span.parentId === null)?.id ?? data.spans[0]?.id ?? null;
 }
 
-export function AgentMessageTrace({
+function AgentMessageTraceInspectorWorkspace({
   data,
   state,
   errorMessage,
@@ -140,6 +141,20 @@ export function AgentMessageTrace({
       </ResizablePanelGroup>
     </section>
   );
+}
+
+export function AgentMessageTrace({
+  variant = "inspector",
+  heading,
+  headingIcon,
+  description,
+  liveLabels,
+  renderSpanIcon,
+  ...props
+}: AgentMessageTraceWorkspaceProps) {
+  return variant === "live"
+    ? <AgentMessageTraceLive key={props.data.id} {...props} description={description} heading={heading} headingIcon={headingIcon} liveLabels={liveLabels} renderSpanIcon={renderSpanIcon} />
+    : <AgentMessageTraceInspectorWorkspace {...props} />;
 }
 
 export const AgentMessageTraceWorkspace = AgentMessageTrace;
