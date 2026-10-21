@@ -78,7 +78,7 @@ const blockPreviewSources = {
     "url": "/docs-source/e3216c7b2751829596d61e32da13b51123b7aa17887bfbf788b003f36a12f353.txt"
   },
   "cost-estimate-01": {
-    "url": "/docs-source/d30d26aa2e994f735fb3048ec081f3059ad77b6541440eedd4c5ec80384bf7f2.txt"
+    "url": "/docs-source/ac1e603bce46f2a4284f346a00120a47e0f45c0aec29f216fe16cb66cb351f6b.txt"
   },
   "getting-started-01": {
     "url": "/docs-source/aaedb2afa3857a884c90d9879ef7c9398544c8b8655fddcc15a792c0fc1b9a58.txt"
