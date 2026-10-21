@@ -45,6 +45,14 @@ Do not recreate this with a native inline `label` and `space-y-*`: the label can
 
 In each affected dialog or form, measure the actual label-to-control gap and control height, and verify that clicking the label focuses the control. A passing typecheck or DOM test does not establish spacing.
 
+### Keep multiple controls out of a shared Field context
+
+A Field owns the label/identity of one logical control, not a whole row. An Input and Slider remain separate focus targets even when they edit the same value. Sharing one Field can give them the same generated ID. Give each independent field its own Field, arrange fields with FieldGroup, and name related groups with Fieldset / FieldsetLegend. Composites such as Slider retain their own public labeling API outside the Input's Field. A single InputGroup input with icons or action buttons can still be one field; do not split decorations into artificial fields.
+
+Field spacing applies to its layout children. Keep the standard label and control/InputGroup in separate layout children rather than nesting both inside a div and assuming an outer gap reaches them. For controls that do not register with Field, connect the visible FieldLabel to the documented target id explicitly; use instance-safe IDs when composing repeated rows. Do not introduce a local span named FieldLabel or use a control label as a multi-field heading.
+
+Verify unique control IDs and accessible names with the real controls mounted together, including repeated instances and open overlays. Check label focus, value synchronization, validation and disabled behavior. A mocked Slider cannot detect duplicate IDs introduced by its real Field integration. Retain legitimate compact sizes, accessible search/toolbars and intentional inline editors; do not wrap every Input in a vertical Field mechanically.
+
 ## Zeron owns migrated control and icon geometry
 
 An old icon's explicit `size={24}`, `width`/`height`, `strokeWidth`, `style` or `w-*`/`h-*`/`size-*` classes are implementation details, not business behavior to preserve automatically. Remove overrides whose only purpose is matching the old design, including hardcoded color/fill, margins, padding, line height, transforms and radii on the control or its icon. Start with the selected Zeron control size and its icon contract. Keep the action's meaning, icon identity when appropriate, accessible name and callback.

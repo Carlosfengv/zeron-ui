@@ -28,6 +28,38 @@ Field 管理一个字段的语义，不是表单状态库或远程提交引擎�
 - 标准纵向标签与控件使用 `Field` + `FieldLabel`，由 Field 的纵向 Flex 与默认 `gap-1.5`（6px）管理间距。原生 `label` 默认为行内元素，上下 margin 不会撑开行间距离；不要用 `label` + `space-y-*` 拼出同款字段，也不要给 Input 增加 margin 来补偿。
 - `FieldGroup` 只负责布局；读取、dirty、保存、重试、服务端字段错误属于业务层。
 
+## 多控件组合
+
+一个 `Field` 对应一个需要标签关联的逻辑控件，不能把它当成整行或整组控件的布局容器。即使数字输入框和 Slider 编辑同一个业务值，它们也是两个可聚焦控件；放进同一个 Field 可能继承同一个自动 ID，造成重复 ID 和标签目标歧义。
+
+- 多个独立字段分别使用 Field，外层用 `FieldGroup` 排列；具有共同语义的组合用 `Fieldset` / `FieldsetLegend` 命名，不使用一个 FieldLabel 代替整组标题。
+- Slider 等复合控件按自己的公开标签 API 组合，放在另一个控件的 Field 外；业务层可以同步它们的值。InputGroup 的边框、图标和附加操作仍可与其中的一个输入框属于同一个 Field，无需为每个装饰或按钮另建 Field。
+- Field 的 gap 只作用于直接布局子项。标签和控件若藏在同一个内部 div 中，外层 gap 不会为它们提供间距。标准纵向字段让 FieldLabel 和控件（或 InputGroup）占据两个独立布局子项，不叠加 `space-y-*` 或 Input margin 补偿。
+- 自动关联仅适用于支持 Field 的控件。原生 select 或通过按钮触发的复合控件，需要按公开 API 显式连接 `FieldLabel.htmlFor` 与目标 `id`；重复实例用 `useId` 生成 ID。
+- 验收时检查同页多个实例及展开的弹层：控件 ID 唯一，每个可聚焦控件有明确名称，点击标签聚焦预期目标；验证联动、禁用和错误状态。不要通过删除可访问标签来消除重复 ID。
+
+```tsx
+"use client";
+import { Field, FieldLabel, Fieldset, FieldsetLegend } from "@zeron/ui/field";
+import { Input } from "@zeron/ui/input";
+import { Slider } from "@zeron/ui/slider";
+
+export function UsageAdjustment({ value, onChange }: {
+  value: number; onChange: (value: number) => void;
+}) {
+  return <Fieldset>
+    <FieldsetLegend>用量</FieldsetLegend>
+    <Field>
+      <FieldLabel>精确值</FieldLabel>
+      <Input type="number" value={value} onChange={(event) => onChange(Number(event.target.value))} />
+    </Field>
+    <Slider label="用量滑块" value={value} min={0} max={100} onChange={(next) => {
+      if (typeof next === "number") onChange(next);
+    }} />
+  </Fieldset>;
+}
+```
+
 ## 受控字段
 
 ```tsx
