@@ -53,6 +53,10 @@
       "itemId": "block:cost-estimate-01"
     },
     {
+      "path": "blocks/credit-top-up-01.md",
+      "itemId": "block:credit-top-up-01"
+    },
+    {
       "path": "blocks/credit-usage-01.md",
       "itemId": "block:credit-usage-01"
     },

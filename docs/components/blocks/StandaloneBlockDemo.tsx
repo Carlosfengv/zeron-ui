@@ -1,5 +1,6 @@
 "use client";
 
+import { CreditTopUpDemo } from "./CreditTopUpDemo";
 import { ArtifactDemo } from "./ArtifactDemo";
 import { ToolCallsDemo } from "./ToolCallsDemo";
 import { ChatThreadDemo } from "./ChatThreadDemo";
@@ -186,6 +187,8 @@ function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
     case "tool-calls-01":
       return <ToolCallsDemo />;
+    case "credit-top-up-01":
+      return <CreditTopUpDemo />;
     case "artifact-01":
       return <ArtifactDemo />;
     case "chat-workspace-01":

@@ -37,6 +37,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [上下文窗口](https://zeron-ui.vercel.app/ai/items/block%3Acontext-window-01.md): Context capacity, prompt cache and read-only documents, memory and history. Registry: context-window-01.
 - [上下文窗口 · 精简版](https://zeron-ui.vercel.app/ai/items/block%3Acontext-window-02.md): Compact context usage, token allocation and conversation actions. Registry: context-window-02.
 - [费用估算](https://zeron-ui.vercel.app/ai/items/block%3Acost-estimate-01.md): 四项用量、预设、月付/年付与最低消费估算。 Registry: cost-estimate-01.
+- [Credit top-up](https://zeron-ui.vercel.app/ai/items/block%3Acredit-top-up-01.md): 近期用量趋势、月度额度分布、耗尽预测与充值套餐选择。 Registry: credit-top-up-01.
 - [Credit Usage](https://zeron-ui.vercel.app/ai/items/block%3Acredit-usage-01.md): A compact credit-cycle summary with model attribution, depletion guidance, and plan controls. Registry: credit-usage-01.
 - [部署详情](https://zeron-ui.vercel.app/ai/items/block%3Adeployment-detail-01.md): 网站预览、域名、来源与部署阶段检查结果。 Registry: deployment-detail-01.
 - [设计工具清单](https://zeron-ui.vercel.app/ai/items/block%3Adesign-stack-01.md): 可编辑单元格、多选、排序与撤销重做。 Registry: design-stack-01.
@@ -220,6 +221,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [context-window-01](https://zeron-ui.vercel.app/agent-guides/blocks/context-window-01.md)
 - [context-window-02](https://zeron-ui.vercel.app/agent-guides/blocks/context-window-02.md)
 - [cost-estimate-01](https://zeron-ui.vercel.app/agent-guides/blocks/cost-estimate-01.md)
+- [credit-top-up-01](https://zeron-ui.vercel.app/agent-guides/blocks/credit-top-up-01.md)
 - [credit-usage-01](https://zeron-ui.vercel.app/agent-guides/blocks/credit-usage-01.md)
 - [deployment-detail-01](https://zeron-ui.vercel.app/agent-guides/blocks/deployment-detail-01.md)
 - [design-stack-01](https://zeron-ui.vercel.app/agent-guides/blocks/design-stack-01.md)

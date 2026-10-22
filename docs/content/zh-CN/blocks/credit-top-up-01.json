@@ -1,0 +1,12 @@
+{
+  "creditTopUpBlock": {
+    "title": "额度充值",
+    "description": "结合近期用量趋势、月度额度分布与耗尽预测的充值套餐选择面板。",
+    "composition": "组件组合",
+    "compositionBody": "保留视频原型的三类用量卡片与充值双栏结构，复用 Container、Card、ChartContainer、ChartTooltipContent、SegmentedBar、ChartLegend、RadioGroup、Button 和 InlineNotice。点线、面积与柱状趋势通过 Recharts 组合。分类配色以原分段条为基准：客服回复使用 chart-5 紫色、代码审查使用 chart-1 蓝色、研究使用 chart-3 橙色。左侧标题、图标、图表与右侧对应分段和图例统一使用同一分类颜色，茎线与面积填充保留同色低透明度。背景、文字、圆角和状态使用组件库变量。容器变窄时切为单栏，不创建应用外壳。",
+    "dataContract": "数据接入",
+    "dataContractBody": "data 包含月度总额度、日均用量、快照与重置时间、分类用量和充值套餐。periodCredits 参与月度汇总；recentCredits 与 history 是独立的近期指标。耗尽时间按剩余额度除以日均用量计算；不足一天使用专用文案，非有限的套餐天数估计省略。无效 locale 回退 en-US；无效时区回退 UTC，并保留有效 locale。价格由宿主提供，保留币种及最多 20 位小数。支持 packageId / defaultPackageId / onPackageChange 以及中英文 labels。更新 data 和 labels 时提供新对象。演示快照为 2026 年 10 月 22 日。",
+    "behavior": "交互与状态",
+    "behaviorBody": "选择套餐会同步更新主题色主按钮的额度与价格，支持键盘操作。非受控选择在首个可用套餐到达时初始化，列表重排后保留选择；失效 ID 阻止确认。onConfirm 接收完整套餐，等待期间锁定选择与按钮，拒绝后展示错误并允许重试。切换套餐或报价清除旧错误，旧选择的异步失败也不会覆盖当前状态。onCancel 交给宿主处理。缺少确认回调、无可用套餐或禁用时不能提交。提供加载、错误、空数据与提交失败演示，图表支持悬停提示、键盘浏览与屏幕阅读器表格，没有可见的数据展开入口。演示取消和状态切换会清除上一轮错误。支付、权限、最终报价校验和余额刷新由宿主负责。"
+  }
+}

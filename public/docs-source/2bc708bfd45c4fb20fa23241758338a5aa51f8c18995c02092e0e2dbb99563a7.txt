@@ -1,0 +1,362 @@
+export { CreditTopUp } from "./credit-top-up";
+export { creditTopUpEnLabels, creditTopUpZhLabels } from "./credit-top-up-labels";
+export { createCreditTopUpDemoData } from "./credit-top-up-demo-data";
+export type { CreditTopUpData, CreditTopUpLabels, CreditTopUpPackage, CreditTopUpProps, CreditTopUpUsage } from "./credit-top-up-types";
+
+
+"use client";
+
+import { memo, useId, useMemo, useRef, useState } from "react";
+import { Button } from "@zeron/ui/button";
+import { Card, CardContent } from "@zeron/ui/card";
+import { ChartLegend, SegmentedBar, chartColor } from "@zeron/ui/chart-primitives";
+import { Container, ContainerBody } from "@zeron/ui/container";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { RadioGroup, RadioGroupItem } from "@zeron/ui/radio-group";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { CreditTopUpChart } from "./credit-top-up-chart";
+import { creditTopUpCoverage, creditTopUpSummary, validateCreditTopUpData } from "./credit-top-up-data";
+import { creditTopUpEnLabels } from "./credit-top-up-labels";
+import { createCreditTopUpFormatters } from "./credit-top-up-formatters";
+import type { CreditTopUpLabels, CreditTopUpProps, CreditTopUpUsage } from "./credit-top-up-types";
+
+const UsageCard = memo(function UsageCard({ usage, labels, format }: { usage: CreditTopUpUsage; labels: CreditTopUpLabels; format: (value: number) => string }) {
+  const Icon = useIcon(usage.chart === "stem" ? "message-circle" : usage.chart === "area" ? "doc-input" : "file-text");
+  return <Card><CardContent>
+    <div className="grid min-w-0 gap-4 @sm/credit-top-up:grid-cols-2 @sm/credit-top-up:gap-2">
+      <div className="flex min-w-0 flex-col items-start justify-between gap-6">
+        <h3 className="flex min-w-0 max-w-full items-center gap-2 text-body font-medium" style={{ color: chartColor(usage.colorIndex) }}><span aria-hidden="true" className="flex shrink-0">{usage.icon ?? <Icon size={16} />}</span><span className="min-w-0 break-words">{usage.label}</span></h3>
+        <div><p className="flex flex-wrap items-baseline gap-x-1.5"><span className="break-all text-heading font-semibold tabular-nums text-fg-default">{format(usage.recentCredits)}</span><span className="text-label text-fg-muted">{labels.credits}</span></p>{usage.description && <p className="mt-1 break-words text-label text-fg-subtle">{usage.description}</p>}</div>
+      </div>
+      <CreditTopUpChart usage={usage} labels={labels} format={format} />
+    </div>
+  </CardContent></Card>;
+});
+
+/** Usage context and package selection; the host owns checkout and credit balance updates. */
+export function CreditTopUp({ data, locale = "en-US", timeZone = "UTC", labels: suppliedLabels, packageId, defaultPackageId, onPackageChange,
+  onConfirm, onCancel, disabled = false, isSubmitting = false, state = "ready", errorMessage, onRetry, className, ...props }: CreditTopUpProps) {
+  const titleId = useId();
+  const groupId = useId();
+  const firstAvailableId = data.packages.find(item => !item.disabled)?.id;
+  const [localPackageId, setLocalPackageId] = useState(() => defaultPackageId ?? firstAvailableId);
+  const [pending, setPending] = useState(false);
+  const submitting = useRef(false);
+  const labels = useMemo(() => ({ ...creditTopUpEnLabels, ...suppliedLabels }), [suppliedLabels]);
+  const busy = pending || isSubmitting;
+  const { number: format, date, money: price } = useMemo(() => createCreditTopUpFormatters(locale, timeZone), [locale, timeZone]);
+  const { valid, summary, segments } = useMemo(() => ({
+    valid: validateCreditTopUpData(data),
+    summary: creditTopUpSummary(data),
+    segments: data.usage.map(item => ({ id: item.id, label: item.label, value: item.periodCredits, color: chartColor(item.colorIndex) })),
+  }), [data]);
+  // Set the initial default once async data supplies it; retain explicit or stale selections.
+  if (packageId === undefined && localPackageId === undefined && firstAvailableId !== undefined) {
+    setLocalPackageId(firstAvailableId);
+  }
+  const selectedId = packageId ?? localPackageId ?? firstAvailableId;
+  const selected = data.packages.find(item => item.id === selectedId && !item.disabled);
+  const quoteKey = selected ? JSON.stringify([selected.id, selected.credits, selected.price, selected.currency]) : null;
+  const [checkoutFeedback, setCheckoutFeedback] = useState<{ quoteKey: string | null; failed: boolean }>({ quoteKey, failed: false });
+  // A host selection or quote replacement starts a fresh feedback state before commit.
+  if (checkoutFeedback.quoteKey !== quoteKey) {
+    setCheckoutFeedback({ quoteKey, failed: false });
+  }
+  const confirmFailed = checkoutFeedback.quoteKey === quoteKey && checkoutFeedback.failed;
+  const confirm = async () => {
+    if (!selected || !onConfirm || disabled || busy || submitting.current || !valid || state !== "ready") return;
+    submitting.current = true;
+    setPending(true);
+    const requestFeedback = { quoteKey, failed: false };
+    setCheckoutFeedback(requestFeedback);
+    try {
+      await onConfirm(selected);
+    } catch {
+      setCheckoutFeedback(current => current === requestFeedback ? { quoteKey, failed: true } : current);
+    } finally {
+      submitting.current = false;
+      setPending(false);
+    }
+  };
+  return <section {...props} aria-labelledby={titleId} aria-busy={busy || state === "loading"} data-slot="credit-top-up" className={cn("@container/credit-top-up min-w-0", className)}>
+    <Container><ContainerBody>
+      {state === "loading" ? <div role="status" className="flex min-h-80 items-center justify-center"><h2 id={titleId} className="sr-only">{labels.title}</h2><p className="text-body text-fg-muted">{labels.loading}</p></div>
+        : state === "error" || !valid ? <div className="flex min-h-80 flex-col items-center justify-center gap-4"><h2 id={titleId} className="sr-only">{labels.title}</h2><InlineNotice variant="emphasized" tone="danger" role="alert"><InlineNoticeContent>{!valid ? labels.invalid : errorMessage ?? labels.loadError}</InlineNoticeContent></InlineNotice>{onRetry && <Button onClick={onRetry}>{labels.retry}</Button>}</div>
+        : <div className="grid min-w-0 gap-6 @3xl/credit-top-up:grid-cols-2 @3xl/credit-top-up:gap-8">
+          <div className="grid min-w-0 content-start gap-3" role="group" aria-label={labels.activity}>
+            {data.usage.length ? data.usage.map(usage => <UsageCard key={usage.id} usage={usage} labels={labels} format={format} />) : <p className="flex min-h-40 items-center justify-center text-body text-fg-muted">{labels.emptyUsage}</p>}
+          </div>
+          <div className="flex min-w-0 flex-col gap-6">
+            <header className="space-y-2"><h2 id={titleId} className="text-title font-medium text-fg-default">{labels.title}</h2><p className="text-body leading-relaxed text-fg-muted">{data.averageDailyUsage === 0 ? labels.idle(date(data.resetsAt)) : summary.runsOutBeforeReset ? labels.forecast(format(data.averageDailyUsage), date(summary.runsOutAt!), date(data.resetsAt)) : labels.sufficient(format(data.averageDailyUsage), date(data.resetsAt))}</p></header>
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-baseline justify-between gap-2 text-label"><span className="text-fg-muted">{labels.usedIn(data.periodLabel)}</span><span className="tabular-nums text-fg-default">{labels.usageTotal(format(summary.used), format(data.totalCredits))}</span></div>
+              <SegmentedBar mode="capacity" total={data.totalCredits} segments={segments} valueText={labels.usageTotal(format(summary.used), format(data.totalCredits))} />
+              <ChartLegend className="flex flex-wrap gap-x-4 gap-y-2" items={[...segments.map(item => ({ id: `usage:${item.id}`, label: item.label, color: item.color, value: format(item.value) })), { id: "remaining", label: labels.remaining, color: "var(--muted)", value: format(summary.remaining) }]} />
+            </div>
+            {data.packages.length ? <RadioGroup name={groupId} aria-label={labels.packages} value={selectedId ?? ""} disabled={disabled || busy} className="grid gap-3" onValueChange={id => { if (packageId === undefined) setLocalPackageId(id); setCheckoutFeedback({ quoteKey, failed: false }); onPackageChange?.(id); }}>
+              {data.packages.map((item, index) => {
+                const coverage = creditTopUpCoverage(item.credits, data);
+                const coverageText = coverage ? coverage.days < 1 ? labels.lessThanDay : labels.coverage(format(coverage.days), coverage.pastReset) : undefined;
+                const optionId = `${groupId}-${index}`;
+                return <label key={item.id} htmlFor={optionId} className={cn("flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-border px-4 py-4 transition-colors duration-fast hover:bg-hover", selectedId === item.id && "border-brand bg-active", (item.disabled || disabled || busy) && "cursor-not-allowed opacity-50")}>
+                  <RadioGroupItem id={optionId} value={item.id} disabled={item.disabled} />
+                  <span className="min-w-0 flex-1"><span className="block break-words text-body font-medium text-fg-default">{labels.packageCredits(format(item.credits))}</span>{coverageText && <> <span className="mt-1 block break-words text-label text-fg-subtle">{coverageText}</span></>}</span>{" "}
+                  <span className="max-w-1/2 shrink-0 break-all text-right text-body font-medium tabular-nums text-fg-default">{price(item.price, item.currency)}</span>
+                </label>;
+              })}
+            </RadioGroup> : <p className="text-body text-fg-muted">{labels.emptyPackages}</p>}
+            <footer className="mt-auto space-y-3 pt-4">
+              {confirmFailed && <InlineNotice variant="emphasized" tone="danger" role="alert"><InlineNoticeContent>{labels.confirmError}</InlineNoticeContent></InlineNotice>}
+              <div className="grid gap-3 @sm/credit-top-up:grid-cols-2">
+                {onCancel && <Button variant="secondary" size="lg" disabled={busy} onClick={onCancel}>{labels.cancel}</Button>}
+                <Button variant="primary" size="lg" className={cn("min-w-0", !onCancel && "col-span-full")} loading={busy} disabled={disabled || busy || !selected || !onConfirm} onClick={confirm}><span className="block truncate">{selected ? labels.confirm(format(selected.credits), price(selected.price, selected.currency)) : labels.selectPackage}</span></Button>
+              </div>
+            </footer>
+          </div>
+        </div>}
+    </ContainerBody></Container>
+  </section>;
+}
+
+
+"use client";
+
+import { Area, AreaChart, Bar, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@zeron/ui/chart";
+import { chartColor } from "@zeron/ui/chart-primitives";
+import type { CreditTopUpLabels, CreditTopUpUsage } from "./credit-top-up-types";
+
+export function CreditTopUpChart({ usage, labels, format }: { usage: CreditTopUpUsage; labels: CreditTopUpLabels; format: (value: number) => string }) {
+  const color = chartColor(usage.colorIndex);
+  const data = usage.history.map((point, index) => ({ ...point, index }));
+  const axes = <>
+    <CartesianGrid vertical={false} stroke="var(--border-subtle)" strokeDasharray="3 4" />
+    <XAxis dataKey="index" axisLine={false} tickLine={false} tickFormatter={index => data[index]?.label ?? ""} interval="preserveStartEnd" minTickGap={4} tickMargin={8} height={24} />
+    <YAxis axisLine={false} tickLine={false} tickCount={3} width={30} tickFormatter={format} domain={[0, "auto"]} />
+    <ChartTooltip cursor={false} content={<ChartTooltipContent labelFormatter={value => data[Number(value)]?.label ?? ""} valueFormatter={value => `${format(Number(value))} ${labels.credits}`} />} />
+  </>;
+  return <div className="min-w-0">
+    {data.length ? <ChartContainer className="h-36 min-h-0" config={{ value: { label: usage.label, color } }} aria-label={usage.label}>
+      {usage.chart === "area" ? <AreaChart data={data} margin={{ top: 8, right: 20, bottom: 0, left: 0 }} accessibilityLayer>
+        {axes}<Area dataKey="value" type="linear" stroke="var(--color-value)" fill="var(--color-value)" fillOpacity={0.12} strokeWidth={2} dot={{ r: 2.5, fill: "var(--color-value)", strokeWidth: 0 }} isAnimationActive={false} />
+      </AreaChart> : <ComposedChart data={data} margin={{ top: 8, right: 20, bottom: 0, left: 0 }} accessibilityLayer>
+        {axes}<Bar dataKey="value" fill="var(--color-value)" fillOpacity={usage.chart === "stem" ? 0.3 : 1} barSize={usage.chart === "stem" ? 2 : 12} radius={usage.chart === "stem" ? 0 : [4, 4, 0, 0]} isAnimationActive={false} />
+        {usage.chart === "stem" && <Line dataKey="value" stroke="none" tooltipType="none" dot={{ r: 4, fill: "var(--color-value)", strokeWidth: 0 }} activeDot={false} isAnimationActive={false} />}
+      </ComposedChart>}
+    </ChartContainer> : <p className="flex h-36 items-center justify-center text-label text-fg-subtle">{labels.emptyHistory}</p>}
+    {data.length > 0 && <table className="sr-only">
+      <caption>{usage.label}</caption>
+      <thead><tr><th scope="col">{labels.historyColumn}</th><th scope="col">{labels.credits}</th></tr></thead>
+      <tbody>{data.map(point => <tr key={point.index}><th scope="row">{point.label}</th><td>{format(point.value)}</td></tr>)}</tbody>
+    </table>}
+  </div>;
+}
+
+
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import type { ChartColorIndex } from "@zeron/ui/chart-primitives";
+
+export interface CreditTopUpUsage {
+  id: string;
+  label: string;
+  /** Current billing-period usage; independent of the recent activity total. */
+  periodCredits: number;
+  recentCredits: number;
+  description?: string;
+  icon?: ReactNode;
+  /** Stable chart-palette index (1–7), shared by the category title, chart, allocation and legend. */
+  colorIndex: ChartColorIndex;
+  chart: "stem" | "area" | "bar";
+  history: readonly { label: string; value: number }[];
+}
+
+export interface CreditTopUpPackage {
+  id: string;
+  credits: number;
+  /** Host-provided price in major currency units, e.g. 10 for $10. */
+  price: number;
+  currency: string;
+  disabled?: boolean;
+}
+
+export interface CreditTopUpData {
+  periodLabel: string;
+  totalCredits: number;
+  averageDailyUsage: number;
+  /** Epoch milliseconds; forecasts use this snapshot, never the browser clock. */
+  snapshotAt: number;
+  resetsAt: number;
+  usage: readonly CreditTopUpUsage[];
+  packages: readonly CreditTopUpPackage[];
+}
+
+export interface CreditTopUpLabels {
+  title: string;
+  activity: string;
+  credits: string;
+  remaining: string;
+  packages: string;
+  cancel: string;
+  selectPackage: string;
+  loading: string;
+  emptyUsage: string;
+  emptyHistory: string;
+  emptyPackages: string;
+  invalid: string;
+  loadError: string;
+  confirmError: string;
+  retry: string;
+  lessThanDay: string;
+  historyColumn: string;
+  usedIn: (period: string) => string;
+  usageTotal: (used: string, total: string) => string;
+  forecast: (daily: string, runsOut: string, resets: string) => ReactNode;
+  sufficient: (daily: string, resets: string) => ReactNode;
+  idle: (resets: string) => ReactNode;
+  packageCredits: (credits: string) => string;
+  coverage: (days: string, pastReset: boolean) => string;
+  confirm: (credits: string, price: string) => string;
+}
+
+export interface CreditTopUpProps extends Omit<ComponentPropsWithoutRef<"section">, "children" | "onChange"> {
+  data: CreditTopUpData;
+  locale?: string;
+  /** Used for billing dates; defaults to UTC. */
+  timeZone?: string;
+  labels?: Partial<CreditTopUpLabels>;
+  packageId?: string;
+  defaultPackageId?: string;
+  onPackageChange?: (packageId: string) => void;
+  /** Resolve after checkout handoff; reject to show a retryable error. No payment is made by the block. */
+  onConfirm?: (selectedPackage: CreditTopUpPackage) => void | Promise<void>;
+  onCancel?: () => void;
+  disabled?: boolean;
+  isSubmitting?: boolean;
+  state?: "ready" | "loading" | "error";
+  errorMessage?: string;
+  onRetry?: () => void;
+}
+
+
+import type { CreditTopUpData } from "./credit-top-up-types";
+
+const DAY = 86_400_000;
+const nonnegative = (value: number) => Number.isFinite(value) && value >= 0;
+const uniqueIds = (items: readonly { id: string }[]) => items.every(item => item.id.length > 0) && new Set(items.map(item => item.id)).size === items.length;
+
+export function creditTopUpSummary(data: CreditTopUpData) {
+  const used = data.usage.reduce((sum, item) => sum + item.periodCredits, 0);
+  const remaining = Math.max(0, data.totalCredits - used);
+  const runsOutAt = data.averageDailyUsage > 0 ? data.snapshotAt + remaining / data.averageDailyUsage * DAY : null;
+  return { used, remaining, runsOutAt, runsOutBeforeReset: runsOutAt !== null && runsOutAt < data.resetsAt };
+}
+
+export function creditTopUpCoverage(credits: number, data: Pick<CreditTopUpData, "averageDailyUsage" | "snapshotAt" | "resetsAt">) {
+  if (data.averageDailyUsage <= 0) return null;
+  const days = credits / data.averageDailyUsage;
+  if (!Number.isFinite(days)) return null;
+  return { days: days < 1 ? days : Math.round(days), pastReset: data.snapshotAt + days * DAY > data.resetsAt };
+}
+
+/** Reject malformed observations instead of silently turning missing usage into zero. */
+export function validateCreditTopUpData(data: CreditTopUpData) {
+  return nonnegative(data.totalCredits) && nonnegative(data.averageDailyUsage)
+    && Number.isFinite(new Date(data.snapshotAt).getTime()) && Number.isFinite(new Date(data.resetsAt).getTime()) && data.resetsAt > data.snapshotAt
+    && uniqueIds(data.usage) && uniqueIds(data.packages)
+    && data.usage.every(item => nonnegative(item.periodCredits) && nonnegative(item.recentCredits)
+      && [1, 2, 3, 4, 5, 6, 7].includes(item.colorIndex) && ["stem", "area", "bar"].includes(item.chart)
+      && item.history.every(point => nonnegative(point.value)))
+    && Number.isFinite(data.usage.reduce((sum, item) => sum + item.periodCredits, 0))
+    && data.packages.every(item => Number.isSafeInteger(item.credits) && item.credits > 0 && nonnegative(item.price) && /^[A-Z]{3}$/.test(item.currency));
+}
+
+
+/** Resolve locale and time-zone fallbacks independently, and reuse quote formatters. */
+export function createCreditTopUpFormatters(locale: string, timeZone: string) {
+  let number: Intl.NumberFormat;
+  try {
+    number = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+  } catch {
+    number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+  }
+  const resolvedLocale = number.resolvedOptions().locale;
+  const dateOptions: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
+  let date: Intl.DateTimeFormat;
+  try {
+    date = new Intl.DateTimeFormat(resolvedLocale, { ...dateOptions, timeZone });
+  } catch {
+    date = new Intl.DateTimeFormat(resolvedLocale, { ...dateOptions, timeZone: "UTC" });
+  }
+  const currencies = new Map<string, Intl.NumberFormat>();
+  return {
+    number: number.format,
+    date: date.format,
+    money(value: number, currency: string) {
+      const whole = Number.isInteger(value);
+      const key = `${currency}:${whole}`;
+      let formatter = currencies.get(key);
+      if (!formatter) {
+        formatter = new Intl.NumberFormat(resolvedLocale, {
+          style: "currency",
+          currency,
+          maximumFractionDigits: 20,
+          ...(whole ? { minimumFractionDigits: 0 } : {}),
+        });
+        currencies.set(key, formatter);
+      }
+      return formatter.format(value);
+    },
+  };
+}
+
+
+import type { CreditTopUpLabels } from "./credit-top-up-types";
+
+export const creditTopUpEnLabels: CreditTopUpLabels = {
+  title: "Add credits", activity: "Recent activity", credits: "credits", remaining: "Left", packages: "Credit packages",
+  cancel: "Cancel", selectPackage: "Select a package", loading: "Loading credit usage…", emptyUsage: "No recent activity.",
+  emptyHistory: "No trend data.", emptyPackages: "No credit packages available.", invalid: "Credit usage or package data is invalid.",
+  loadError: "Could not load credit usage.", confirmError: "Could not continue. Please try again.", retry: "Try again", lessThanDay: "Less than a day", historyColumn: "Day",
+  usedIn: period => `Used in ${period}`, usageTotal: (used, total) => `${used} of ${total}`,
+  forecast: (daily, runsOut, resets) => <>This week your agents used <strong className="font-medium text-fg-default">{daily} credits a day</strong>. At that pace, monthly credits run out on <strong className="font-medium text-fg-default">{runsOut}</strong>, before they reset on <strong className="font-medium text-fg-default">{resets}</strong>.</>,
+  sufficient: (daily, resets) => <>Your agents used <strong className="font-medium text-fg-default">{daily} credits a day</strong>. Your monthly credits are expected to last until the reset on <strong className="font-medium text-fg-default">{resets}</strong>.</>,
+  idle: resets => `No recent daily usage. Your monthly credits reset on ${resets}.`,
+  packageCredits: credits => `${credits} credits`, coverage: (days, pastReset) => `About ${days} ${days === "1" ? "day" : "days"}${pastReset ? ", past the reset" : ""}`,
+  confirm: (credits, price) => `Add ${credits} · ${price}`,
+};
+
+export const creditTopUpZhLabels: CreditTopUpLabels = {
+  title: "添加额度", activity: "近期用量", credits: "额度", remaining: "剩余", packages: "充值套餐",
+  cancel: "取消", selectPackage: "请选择套餐", loading: "正在加载额度用量…", emptyUsage: "暂无近期用量。",
+  emptyHistory: "暂无趋势数据。", emptyPackages: "暂无可用充值套餐。", invalid: "额度用量或套餐数据无效。",
+  loadError: "额度用量加载失败。", confirmError: "暂时无法继续，请重试。", retry: "重试", lessThanDay: "不足 1 天", historyColumn: "日期",
+  usedIn: period => `${period}已用`, usageTotal: (used, total) => `${used} / ${total}`,
+  forecast: (daily, runsOut, resets) => <>本周智能体平均每天使用 <strong className="font-medium text-fg-default">{daily} 额度</strong>。按此速度，月度额度将在 <strong className="font-medium text-fg-default">{runsOut}</strong> 耗尽，早于 <strong className="font-medium text-fg-default">{resets}</strong> 的重置时间。</>,
+  sufficient: (daily, resets) => <>智能体平均每天使用 <strong className="font-medium text-fg-default">{daily} 额度</strong>，预计月度额度可用至 <strong className="font-medium text-fg-default">{resets}</strong> 重置。</>,
+  idle: resets => `近期暂无日均用量，月度额度将于 ${resets} 重置。`,
+  packageCredits: credits => `${credits} 额度`, coverage: (days, pastReset) => `约 ${days} 天${pastReset ? "，可用至下次重置后" : ""}`,
+  confirm: (credits, price) => `添加 ${credits} · ${price}`,
+};
+
+
+import type { CreditTopUpData } from "./credit-top-up-types";
+
+export function createCreditTopUpDemoData(zh = false): CreditTopUpData {
+  const days = zh ? ["周四", "周五", "周六", "周日", "周一", "周二", "周三"] : ["Thu", "Fri", "Sat", "Sun", "Mon", "Tue", "Wed"];
+  const history = (values: number[]) => values.map((value, index) => ({ label: days[index], value }));
+  return {
+    periodLabel: zh ? "10 月" : "October", totalCredits: 2000, averageDailyUsage: 84,
+    snapshotAt: Date.UTC(2026, 9, 22), resetsAt: Date.UTC(2026, 10, 1),
+    usage: [
+      { id: "support", label: zh ? "客服回复" : "Support replies", periodCredits: 702, recentCredits: 270, description: zh ? "平均每天 41 额度" : "41 per day on average", colorIndex: 5, chart: "stem", history: history([41, 41, 38, 41, 34, 42, 33]) },
+      { id: "code", label: zh ? "代码审查" : "Code review", periodCredits: 389, recentCredits: 216, description: zh ? "比上月多 82 额度" : "82 more than last month", colorIndex: 1, chart: "area", history: history([24, 49, 85, 119, 153, 190, 216]) },
+      { id: "research", label: zh ? "研究" : "Research", periodCredits: 230, recentCredits: 102, description: zh ? "11 个 Notion 页面" : "11 Notion pages", colorIndex: 3, chart: "bar", history: history([8, 12, 18, 14, 19, 17, 14]) },
+    ],
+    packages: [
+      { id: "starter", credits: 500, price: 10, currency: "USD" },
+      { id: "standard", credits: 1000, price: 20, currency: "USD" },
+      { id: "plus", credits: 2500, price: 45, currency: "USD" },
+    ],
+  };
+}

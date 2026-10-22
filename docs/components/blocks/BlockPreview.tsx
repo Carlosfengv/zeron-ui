@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "credit-top-up-01": () => import("./CreditTopUpDemo").then(({ CreditTopUpDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1440}><CreditTopUpDemo /></ResponsivePreview>,
+  })),
   "artifact-01": () => import("./ArtifactDemo").then(({ ArtifactDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={810} canvasWidth={1440}><ArtifactDemo /></ResponsivePreview>,
   })),
