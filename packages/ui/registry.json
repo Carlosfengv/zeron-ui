@@ -5,7 +5,7 @@
   "items": [
     {
       "name": "artifact-content-renderer",
-      "type": "registry:lib",
+      "type": "registry:file",
       "title": "Artifact Content Renderer",
       "description": "Internal Markdown, code and diff rendering shared by the artifact panels. Install the panel that matches your state model.",
       "registryDependencies": [
@@ -15,7 +15,7 @@
       "files": [
         {
           "path": "packages/ui/src/components/artifact-content-renderer.tsx",
-          "type": "registry:lib",
+          "type": "registry:file",
           "target": "components/ui/artifact-content-renderer.tsx"
         }
       ]

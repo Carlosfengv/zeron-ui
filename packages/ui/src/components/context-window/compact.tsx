@@ -82,7 +82,7 @@ export function ContextWindowCompact({ data, embedded = false, title, modelIcon,
         </div>
         <ul className="mt-4 space-y-1" aria-label={labels.contents}>
           {categories.map((category) => <li key={category}>
-            <div className="flex min-h-9 min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-body">
+            <div className="flex min-h-control-lg min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-body">
               <span aria-hidden="true" className="size-2 shrink-0 rounded-xs" style={{ backgroundColor: colors[category] }} />
               {category === "docs" ? <Button type="button" variant="ghost" size="md" contentSized className="-ml-1.5" trailingIcon={filesOpen ? Up : Down}
                 aria-expanded={filesOpen} aria-controls={`${id}-files`} onClick={() => setFilesOpen((open) => !open)}>{labels.docs}</Button>

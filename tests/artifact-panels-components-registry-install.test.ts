@@ -21,8 +21,10 @@ describe("Artifact panel component distribution", () => {
     expect(items.get(name).type).toBe("registry:ui");
     expect(items.has(name === "artifact-panel" ? "artifact-preview-panel" : "artifact-panel")).toBe(false);
     expect(items.get(name).registryDependencies.map(nameOf)).toContain("artifact-content-renderer");
-    expect(items.get("artifact-content-renderer").type).toBe("registry:lib");
-    expect(items.get("artifact-content-renderer").files[0].target).toBe("components/ui/artifact-content-renderer.tsx");
+    expect(items.get("artifact-content-renderer")).toMatchObject({
+      type: "registry:file",
+      files: [{ type: "registry:file", target: "components/ui/artifact-content-renderer.tsx" }],
+    });
     for (const excluded of ["chat-thread", "chat-workspace-01", "artifact-01", "artifact-card", "resizable", "input-message"]) expect(items.has(excluded)).toBe(false);
     const types = items.get(name).files.find((file: { target: string }) => file.target.endsWith("/types.ts")).content;
     expect(types).not.toContain("ChatWorkspaceProps");
