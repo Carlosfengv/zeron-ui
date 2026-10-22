@@ -13,14 +13,14 @@ related:
   - markdown
   - input-message
   - inline-notice
-  - chat-thread-01
+  - chat-thread
 ---
 
 # ChatMessage
 
 ## Agent intent
 
-单条用户或助手消息使用 ChatMessage。需要完整会话的历史、滚动和检查点恢复时组合 chat-thread-01。
+单条用户或助手消息使用 ChatMessage，无需会话 Provider。完整会话使用 [ChatThread](chat-thread.md) 和 ChatUserMessage / ChatAssistantMessage；后两者注册消息 ID，再复用 ChatMessage。基础 ChatMessage 不注册线程消息，不能直接替代线程消息包装组件。旧 chat-thread-01 继续提供兼容导出与演示数据。
 
 ## Installation and imports
 
@@ -69,6 +69,14 @@ export function Example() {
 - 回复错误、停止提示与编辑保存失败复用 InlineNotice / InlineNoticeContent。错误使用 emphasized + danger，并显式设置 role=alert；静态或停止提示保持静默。请求、重试与状态切换由宿主负责。
 - ChatMessageAttachment 渲染单个附件卡片，ChatMessageAttachments 渲染附件列表；两者均接受本地 File 与历史 ChatMessageFile，预览、文件名和大小共用一个边框。InputMessage 同样使用该卡片，保留移除操作。FileThumbnail 的 bordered=false 用于由外层卡片统一承载边框。
 - ChatMessageMeta 接受 metrics、locale 与 labels，并保留可选 model 用于自定义页脚信息；普通回复的模型身份使用 ChatMessageAuthor。metrics 包含 ttftMs、inputTokens、outputTokens、durationMs；时间以毫秒传入，token 使用非负整数。token 自动换算为 k、M、B，最多保留一位小数，悬停和辅助技术提供带千分位的完整数值。指标窄屏自动换行；缺失或无效指标省略，保留 0。这些数据与模型身份属于该次回复，不随模型选择器改变。
+
+## 与会话的边界
+
+ChatMessage 管理单条消息布局与局部操作，ChatThread 管理会话滚动、历史阅读位置、导航、检查点请求及持续挂载的 composer。单条消息示例只展示呈现，不代表已接入完整会话。模型请求、消息/版本存储和真实恢复属于宿主。
+
+ChatScrollToLatest 是会话级导航按钮，继续从 chat-message 导出以兼容现有 API；其显隐、滚动与跟随由宿主或 ChatThread 协调，不属于消息数据管理。
+
+ChatAction、ChatCopy、ChatBranchSwitch、ChatAttachments、ChatEditor 是 chat-thread 的兼容名称。新独立组合使用 ChatMessage* 规范名称；替换适配器时显式传入其原先继承的 labels，并保留 disabled。完整映射见 [ChatThread 兼容说明](chat-thread.md#兼容别名)。
 
 ## Ownership
 

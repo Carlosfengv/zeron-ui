@@ -4,7 +4,7 @@ import { useState } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { ArtifactPreviewPanel, GeneratedArtifactCard, type ArtifactDocument } from "@zeron/blocks/artifact-01";
 
-vi.mock("../packages/blocks/src/application/artifact-01/artifact-content", () => ({
+vi.mock("../packages/ui/src/components/artifact-preview-panel/content", () => ({
   ArtifactContent: ({ revision, previous, view }: { revision: { content: string }; previous?: { content: string }; view: string }) => <div data-testid="artifact-content" data-view={view}>{previous && view === "changes" ? `${previous.content} → ` : ""}{revision.content}</div>,
 }));
 class TestResizeObserver { observe() {} unobserve() {} disconnect() {} }

@@ -1,0 +1,25 @@
+{
+  "artifact-panel": {
+    "description": "Multi-resource panels with tabs, code changes, Markdown, image and web previews, and version-scoped reviews.",
+    "basic": "Resource preview and review",
+    "basicBody": "Install artifact-panel independently, without a chat workspace. README.md demonstrates Markdown preview and source; settings.ts demonstrates a rename from src/config.ts to src/settings.ts with unified or split changes. Tabs, review, close and reset update local host snapshots. Reference records a resource without sending a message.",
+    "failures": "Review failures and partial success",
+    "failuresBody": "The first review of README.md fails in this example; retry succeeds. Batch actions preserve successful decisions for other files. Errors belong to an exact id/version and do not carry into new revisions.",
+    "data": "Resources and views",
+    "dataBody": "resources contains the open items, each with a stable unique id and a version that changes with content. Kinds are code, markdown, text, image, url and file. Code and Markdown support changes when previousContent exists; only explicitly reviewable content participates in review. Generic files show metadata without built-in Office/PDF rendering. Images support Fit, Actual size, absolute zoom and mouse panning. Web previews use filtered HTTP(S) or relative addresses in sandboxed iframes; image/download URLs may also use blob. Loading, failure, retry and custom preview behavior is preserved.",
+    "ownership": "State and action ownership",
+    "ownershipBody": "The host owns open items, resource versions, selection and real file operations. Closing a tab does not delete or review the resource. onCloseMany receives the full close set when supplied; otherwise onClose runs per item. Overflow keeps the active tab and lists the rest in the menu. Visited previews retain state until closed or replaced by a new version. onReview receives an exact version; the host commits review status after success. Saving blocks duplicate reviews while browsing remains available. renderPreview falls back to the built-in viewer only when it returns undefined.",
+    "compatibility": "Existing block compatibility",
+    "compatibilityBody": "chat-workspace-01 retains ArtifactPanel, ArtifactResource, every existing type, label sets, getPendingReviewResources, card adapters and demo data. Original panel, preview, tab, label and utility modules forward to shared UI. ChatWorkspace still owns conversation and split layout. Independent panels need no ChatThread, Resizable, ArtifactCard or block. ArtifactPreviewPanel uses a separate single-document revision contract.",
+    "api": "API reference",
+    "resourcesProp": "Ordered readonly snapshots with id, version, name, kind and matching content. Optional path, status, error, size and downloadUrl; reviews belong to a specific version.",
+    "activeProp": "Optional controlled selection; omitted activeId uses local state. External removal falls back to remaining items; closing the active tab selects a neighbor.",
+    "closeProp": "Requests removal from the host open list. onCloseMany takes precedence for current, other and all-tab closing. Persistence belongs to the host.",
+    "addProp": "Host action beside the tabs, also shown in the empty panel. The example resets resources.",
+    "reviewProp": "Individual and batch review pass the exact version; reject on failure. getPendingReviewResources shares the panel’s ready/pending rules.",
+    "extendProp": "onReference adds a draft reference; onRetry requests a resource retry; renderPreview can integrate PDF, browser or business viewers.",
+    "labelsProp": "artifactEnLabels / artifactZhLabels are exported from the root or /labels. className controls external layout; provide a constrained height.",
+    "rendering": "Content rendering and component selection",
+    "renderingBody": "ArtifactPanel owns multi-resource tabs and exact-version review; ArtifactPreviewPanel owns one document’s revisions and restoration. They share Markdown, code and diff rendering while retaining their own data types, view names and state contracts. This panel keeps the code toolbar, supports unified or split diffs and uses previousPath for renamed code files. An empty previousContent still produces a new-file diff. Images, websites and renderPreview remain resource-panel concerns."
+  }
+}

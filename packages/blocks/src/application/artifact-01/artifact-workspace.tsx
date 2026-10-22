@@ -1,8 +1,8 @@
 "use client";
 
 import { ArtifactCard, ChatWorkspace, type ArtifactResource } from "@zeron/blocks/chat-workspace-01";
-import { ArtifactPreviewPanel } from "./artifact-preview-panel";
-import { resolveArtifactPreviewLabels } from "./artifact-labels";
+import { ArtifactPreviewPanel } from "@zeron/ui/artifact-preview-panel";
+import { resolveArtifactPreviewLabels } from "@zeron/ui/artifact-preview-panel/labels";
 import type { ArtifactDocument, ArtifactWorkspaceProps } from "./artifact-types";
 
 export function ArtifactWorkspace({ artifact, previewProps, ...props }: ArtifactWorkspaceProps) {

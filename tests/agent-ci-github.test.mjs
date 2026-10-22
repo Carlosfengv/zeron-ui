@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { readFile } from "node:fs/promises";
 import { githubEvidenceClient, ciReadToken } from "../scripts/agent-ci-github.mjs";
 import { ciLocatorSchema, ciTrustPolicySchema, ciVerificationReceiptSchema } from "../scripts/agent-ci-contract.mjs";
@@ -88,9 +88,24 @@ describe("fixed GitHub CI HTTP boundary (injected responses only)", () => {
     await expect(client.json(`${base}/x`)).rejects.toHaveProperty("code", "CI_READ_TIMEOUT"); expect(cancelled).toBe(true);
   });
   it("limits a stalled fetch by the total deadline", async () => {
-    const client = githubEvidenceClient(policy, { ...options, maxDurationMs: 15, fetcher: async () => new Promise(() => {}) });
-    await expect(client.json(`${base}/x`)).rejects.toHaveProperty("code", "CI_READ_TIMEOUT");
-    expect(() => client.remaining()).toThrow("CI_JOB_TIMEOUT");
+    vi.useFakeTimers();
+    try {
+      let signal;
+      const client = githubEvidenceClient(policy, { ...options, maxDurationMs: 15, fetcher: async (_url, init) => {
+        signal = init.signal;
+        return new Promise(() => {});
+      } });
+      const rejection = expect(client.json(`${base}/x`)).rejects.toHaveProperty("code", "CI_READ_TIMEOUT");
+      await vi.advanceTimersByTimeAsync(14);
+      expect(signal.aborted).toBe(false);
+      expect(client.remaining()).toBe(1);
+      await vi.advanceTimersByTimeAsync(1);
+      await rejection;
+      expect(signal.aborted).toBe(true);
+      expect(() => client.remaining()).toThrow("CI_JOB_TIMEOUT");
+    } finally {
+      vi.useRealTimers();
+    }
   });
   it("retries a transient API response with bounded attempts", async () => {
     let calls = 0;

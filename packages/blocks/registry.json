@@ -3,6 +3,63 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "context-window-02",
+      "type": "registry:block",
+      "title": "上下文窗口 · 精简版",
+      "description": "紧凑的上下文用量、分类矩阵、文件展开与对话操作。",
+      "categories": [
+        "application",
+        "agent",
+        "monitoring"
+      ],
+      "dependencies": ["@lobehub/icons@^5.16.0"],
+      "registryDependencies": [
+        "context-window"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/context-window-02/context-window-compact.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/context-window-compact.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-02/context-window-usage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/context-window-usage.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-02/context-window-compact-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/context-window-compact-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-02/context-window-compact-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/context-window-compact-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-02/context-window-compact-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/context-window-compact-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-02/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-01/context-window-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-01/context-window-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-01/context-window-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-01/context-window-types.ts"
+        }
+      ]
+    },
+    {
       "name": "artifact-01",
       "type": "registry:block",
       "title": "Artifact",
@@ -15,16 +72,7 @@
       "dependencies": [],
       "registryDependencies": [
         "chat-workspace-01",
-        "button",
-        "code-block",
-        "dropdown",
-        "empty",
-        "icon-context",
-        "inline-notice",
-        "markdown",
-        "menu-item",
-        "tabs",
-        "utils"
+        "artifact-preview-panel"
       ],
       "files": [
         {
@@ -130,20 +178,12 @@
       ],
       "dependencies": [],
       "registryDependencies": [
-        "chat-thread-01",
-        "alert",
+        "chat-thread",
+        "artifact-panel",
+        "artifact-card",
         "button",
-        "code-block",
-        "dropdown",
-        "empty",
-        "file-type",
-        "icon-context",
-        "info-item",
-        "inline-notice",
-        "markdown",
-        "menu-item",
         "resizable",
-        "tabs",
+        "icon-context",
         "utils"
       ],
       "files": [
@@ -214,24 +254,9 @@
         "ai",
         "agent"
       ],
-      "dependencies": [
-        "@hugeicons/react",
-        "@hugeicons/core-free-icons"
-      ],
+      "dependencies": [],
       "registryDependencies": [
-        "button",
-        "chat-message",
-        "empty",
-        "icon-context",
-        "inline-notice",
-        "message-navigation",
-        "popover",
-        "scroll-area",
-        "separator",
-        "toast",
-        "tooltip",
-        "utils",
-        "markdown"
+        "chat-thread"
       ],
       "files": [
         {
@@ -451,7 +476,9 @@
       "description": "Controlled model selection with relative ratings, thinking and search settings.",
       "categories": ["application", "ai", "agent"],
       "dependencies": ["@lobehub/icons"],
-      "registryDependencies": ["avatar", "button", "command", "popover", "switch", "icon-context", "utils"],
+      "registryDependencies": [
+        "model-selector"
+      ],
       "files": [
         { "path": "packages/blocks/src/application/model-selector-01/index.ts", "type": "registry:component", "target": "components/blocks/model-selector-01/index.ts" },
         { "path": "packages/blocks/src/application/model-selector-01/model-selector.tsx", "type": "registry:component", "target": "components/blocks/model-selector-01/model-selector.tsx" },
@@ -483,7 +510,7 @@
       "description": "GPU server visualization, controlled local model settings, shared memory estimates and over-capacity recovery.",
       "categories": ["application", "ai", "settings"],
       "dependencies": ["@lobehub/icons"],
-      "registryDependencies": ["alert", "badge", "button", "chart-primitives", "container", "popover", "select", "slider", "switch", "tabs", "icon-context", "utils"],
+      "registryDependencies": ["alert", "badge", "button", "chart-primitives", "container", "field", "popover", "select", "slider", "switch", "tabs", "icon-context", "utils"],
       "files": [
         { "path": "packages/blocks/src/application/local-models-01/index.ts", "type": "registry:component", "target": "components/blocks/local-models-01/index.ts" },
         { "path": "packages/blocks/src/application/local-models-01/local-models.tsx", "type": "registry:component", "target": "components/blocks/local-models-01/local-models.tsx" },
@@ -704,7 +731,9 @@
       "description": "上下文容量、提示词缓存、分类 token 矩阵与文档、记忆、历史查看。",
       "categories": ["application", "agent", "monitoring"],
       "dependencies": [],
-      "registryDependencies": ["badge", "button", "container", "inline-notice", "tabs", "tooltip", "icon-context", "utils"],
+      "registryDependencies": [
+        "context-window"
+      ],
       "files": [
         {"path": "packages/blocks/src/application/context-window-01/context-window-data.ts", "type": "registry:component", "target": "components/blocks/context-window-01/context-window-data.ts"},
         {"path": "packages/blocks/src/application/context-window-01/context-window-demo-data.ts", "type": "registry:component", "target": "components/blocks/context-window-01/context-window-demo-data.ts"},

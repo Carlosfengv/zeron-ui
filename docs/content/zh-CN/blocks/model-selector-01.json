@@ -3,7 +3,7 @@
     "title": "模型选择",
     "description": "对比模型的速度、质量和费用，配置扩展思考与联网搜索。",
     "composition": "组件组合",
-    "compositionBody": "复用 Popover、Button、Avatar、Command 和 Switch。模型列表和两个会话设置直接组成下拉内容，使用 Popover 自带的表面与阴影；颜色、文字、间距、圆角和动效全部使用当前组件库。Opus、Sonnet、Haiku 使用 LobeHub Icons 的 Claude logo，Auto 保留自动选择符号。面板最大宽度保持 360px，演示输入框保持原来的 512px 最大宽度，窄屏继续自适应。预览通过 InputMessage 的 leftSlot 接入选择器。",
+    "compositionBody": "通用控件现由 AI component ModelSelector 提供，可单独安装 model-selector。旧 block 的组件、类型和文案导出继续兼容；演示模型和默认值保留在 block。复用 Popover、Button、Avatar、Command 和 Switch。模型列表和两个会话设置直接组成下拉内容，使用 Popover 自带的表面与阴影；颜色、文字、间距、圆角和动效全部使用当前组件库。Opus、Sonnet、Haiku 使用 LobeHub Icons 的 Claude logo，Auto 保留自动选择符号。面板最大宽度保持 360px，演示输入框保持原来的 512px 最大宽度，窄屏继续自适应。预览通过 InputMessage 的 leftSlot 接入选择器。",
     "dataContract": "数据接入",
     "dataContractBody": "models 接收具有唯一稳定 id 的模型列表，包含名称、说明、图标和可选的 1–5 档相对评分。费用档位越高表示越昂贵。受控 value 包含 modelId、extendedThinking 和 webSearch，onValueChange 返回完整的新值。模型可选的延迟与价格元数据仍可供宿主使用，当前下拉只展示模型选项和设置。通过 labels 提供本地化文案，演示中的模型与评分为依据截图创建的示例数据。",
     "behavior": "交互与状态",

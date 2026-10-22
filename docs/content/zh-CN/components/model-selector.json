@@ -1,0 +1,17 @@
+{
+  "model-selector": {
+    "description": "受控模型选择器，支持相对评分、扩展思考和联网搜索设置。",
+    "basic": "独立模型选择",
+    "composer": "组合消息输入框",
+    "behavior": "交互与兼容",
+    "behaviorBody": "宿主提供模型可用状态和完整选择值。选择模型时保留会话设置，再次选择当前模型只关闭弹层。键盘高亮跟随宿主选择更新，模型移除或禁用时回退到可用选项。示例使用虚构本地模型，不发送请求。model-selector-01 的原有组件、类型、文案和演示导出继续兼容；新增控件直接从 model-selector 导入。",
+    "api": "API 参考",
+    "modelsProp": "唯一 ID、名称、说明和装饰图标；可选 disabled，以及 1–5 档速度、质量和费用评分。费用评分越高代表越昂贵。",
+    "valueProp": "受控对象，包含 modelId、extendedThinking 和 webSearch；回调返回完整的新值。",
+    "openProp": "受控或默认弹层状态；打开时保留焦点并恢复当前可用选择。",
+    "disabledProp": "禁用触发按钮并隐藏面板；键盘导航跳过不可用模型。",
+    "labelsProp": "局部本地化文案，导出中英文对象；locale 和 currency 继续兼容。",
+    "placementProp": "弹层方向与对齐，className 用于触发按钮位置和外部布局。",
+    "placeholder": "询问项目相关问题…"
+  }
+}

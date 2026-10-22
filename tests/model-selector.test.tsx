@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { ModelSelector, createModelSelectorDemoModels, modelSelectorDemoValue, modelSelectorZhLabels } from "@zeron/blocks/model-selector-01";
+import { ModelSelector, modelSelectorZhLabels } from "@zeron/ui/model-selector";
+import { createModelSelectorDemoModels, modelSelectorDemoValue } from "@zeron/blocks/model-selector-01";
 
 afterEach(cleanup);
 

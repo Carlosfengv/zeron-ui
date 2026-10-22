@@ -6,7 +6,7 @@ import { ArtifactCard, ArtifactPanel, ChatWorkspace, getPendingReviewResources, 
 import { artifactSizeText, safeArtifactUrl } from "../packages/blocks/src/application/chat-workspace-01/artifact-utils";
 import { visibleArtifactIds } from "../packages/blocks/src/application/chat-workspace-01/artifact-tabs";
 
-vi.mock("../packages/blocks/src/application/chat-workspace-01/artifact-code-preview", () => ({
+vi.mock("../packages/ui/src/components/artifact-panel/code-preview", () => ({
   ArtifactCodePreview: ({ resource, view }: { resource: { content: string }; view: string }) => {
     if (resource.content === "broken diff" && view === "diff") throw new Error("Diff renderer failed");
     return <div data-testid="code-preview" data-view={view}>{resource.content}</div>;

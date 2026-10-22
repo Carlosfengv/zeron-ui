@@ -1,0 +1,17 @@
+{
+  "model-selector": {
+    "description": "Controlled model selection with relative ratings, extended thinking and web search settings.",
+    "basic": "Standalone selection",
+    "composer": "Use in a message composer",
+    "behavior": "Behavior and compatibility",
+    "behaviorBody": "The host provides model availability and the complete selected value. Choosing a model preserves conversation settings; choosing the current model only closes the panel. Keyboard highlight follows host selection changes and returns to an available option when a model is removed or disabled. Examples use fictional local models and do not send requests. Existing model-selector-01 component, types, labels and demo exports remain compatible. New controls import directly from model-selector.",
+    "api": "API reference",
+    "modelsProp": "Unique ID, name, description and decorative icon; optional disabled state and relative speed, quality and cost ratings from 1 to 5. Higher cost means greater expense.",
+    "valueProp": "Controlled object with modelId, extendedThinking and webSearch. The callback returns the full next value.",
+    "openProp": "Controlled or default panel visibility. Opening preserves focus and restores the current available selection.",
+    "disabledProp": "Disables the trigger and hides the panel. Individual unavailable models are skipped by keyboard navigation.",
+    "labelsProp": "Partial localized labels; English and Chinese label objects are exported. locale and currency remain accepted for compatibility.",
+    "placementProp": "Popover direction and alignment; className controls trigger placement and external layout.",
+    "placeholder": "Ask about your project…"
+  }
+}

@@ -45,6 +45,10 @@
       "itemId": "block:context-window-01"
     },
     {
+      "path": "blocks/context-window-02.md",
+      "itemId": "block:context-window-02"
+    },
+    {
       "path": "blocks/cost-estimate-01.md",
       "itemId": "block:cost-estimate-01"
     },
@@ -198,6 +202,18 @@
       "itemId": "component:area-chart"
     },
     {
+      "path": "components/artifact-card.md",
+      "itemId": "component:artifact-card"
+    },
+    {
+      "path": "components/artifact-panel.md",
+      "itemId": "component:artifact-panel"
+    },
+    {
+      "path": "components/artifact-preview-panel.md",
+      "itemId": "component:artifact-preview-panel"
+    },
+    {
       "path": "components/avatar.md",
       "itemId": "component:avatar"
     },
@@ -238,12 +254,20 @@
       "itemId": "component:chat-message"
     },
     {
+      "path": "components/chat-thread.md",
+      "itemId": "component:chat-thread"
+    },
+    {
       "path": "components/code-block.md",
       "itemId": "component:code-block"
     },
     {
       "path": "components/combobox.md",
       "itemId": "component:combobox"
+    },
+    {
+      "path": "components/context-window.md",
+      "itemId": "component:context-window"
     },
     {
       "path": "components/data-table.md",
@@ -297,6 +321,10 @@
     {
       "path": "components/metric-card.md",
       "itemId": "component:metric-card"
+    },
+    {
+      "path": "components/model-selector.md",
+      "itemId": "component:model-selector"
     },
     {
       "path": "components/nav-item.md",

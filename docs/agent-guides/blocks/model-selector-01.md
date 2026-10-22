@@ -11,10 +11,12 @@ source: packages/blocks/src/application/model-selector-01/model-selector.tsx
 types: packages/blocks/src/application/model-selector-01/model-selector-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [popover, command, switch, input-message, avatar, button]
+related: [model-selector, popover, command, switch, input-message, avatar, button]
 ---
 
 # Model Selector
+
+通用组件现由 `@zeron/ui/model-selector` 提供，独立安装使用 `npx zeron-ui add model-selector`。本 block 保留原有组件、类型和文案导出，均转向同一 UI 实现；演示模型工厂与默认值继续属于本 block。
 
 安装 `npx zeron-ui add model-selector-01`。React 数据 block，不引入页面布局或模型服务，可嵌入现有消息输入框的操作区。
 

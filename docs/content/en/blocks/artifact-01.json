@@ -3,7 +3,7 @@
     "title": "Artifact",
     "description": "A shared conversation workspace for generated HTML pages, Markdown documents and code, with live previews and revision history.",
     "composition": "Composition",
-    "compositionBody": "ArtifactWorkspace reuses ChatWorkspace, ChatThread and Resizable. GeneratedArtifactCard uses the existing ArtifactCard. ArtifactPreviewPanel provides version selection, code, preview and changes through Tabs, CodeBlock, CodeDiff and Markdown. The composer shares model, context and response components with the other conversation demos.",
+    "compositionBody": "ArtifactPreviewPanel now uses @zeron/ui/artifact-preview-panel; original previews, types, labels, workspace and demo generators remain compatible. GeneratedArtifactCard reuses the artifact-card AI component through its compatibility adapter, preserving documents, selected revisions and opening callbacks. The display component can also be installed independently. ArtifactWorkspace reuses ChatWorkspace, ChatThread and Resizable. GeneratedArtifactCard uses the existing ArtifactCard. ArtifactPreviewPanel provides version selection, code, preview and changes through Tabs, CodeBlock, CodeDiff and Markdown. The composer shares model, context and response components with the other conversation demos.",
     "usage": "Usage",
     "api": "Public API",
     "apiArtifact": "A document with a stable ID, title, filename, kind and oldest-first revisions. Each revision has a stable ID, content and an optional ready, streaming or error status.",

@@ -9,13 +9,15 @@ import { VariantPlayground } from "@docs/components/playground/variant-playgroun
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { useTranslations } from "next-intl";
+import { Link } from "@/app/_i18n/navigation";
 
 function MessageActions({ text }: { text: string }) {
   const t = useTranslations("chatMessage");
   return <ChatMessageCopy text={text} labels={{ copy: t("copy"), copied: t("copied"), copyFailed: t("copyFailed") }} />;
 }
 
-const conversationCode = `import { ChatMessage, ChatMessageCopy } from "@/components/ui/chat-message";
+const conversationCode = `// Standalone messages: no thread Provider, scrolling or history management.
+import { ChatMessage, ChatMessageCopy } from "@/components/ui/chat-message";
 
 <ChatMessage from="user" time="Wednesday 6:06 PM" actions={<ChatMessageCopy text="What does good design mean?" />}>
   What does good design mean?
@@ -60,14 +62,14 @@ import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
   </div>
 </ChatMessage>`;
 
-const rolesCode = `import { ChatMessage } from "./components";
+const rolesCode = `import { ChatMessage } from "@/components/ui/chat-message";
 
 <div className="flex flex-col gap-2">
   <ChatMessage from="user">Right-aligned accent bubble.</ChatMessage>
   <ChatMessage from="assistant">Left-aligned, no background.</ChatMessage>
 </div>`;
 
-const attachmentsCode = `import { ChatMessage } from "./components";
+const attachmentsCode = `import { ChatMessage } from "@/components/ui/chat-message";
 
 // \`files\` is a standard File[] — e.g. straight from InputMessage's onSend.
 <ChatMessage from="user" files={files}>
@@ -114,21 +116,25 @@ export default function ChatMessageDoc() {
     <DocPage
       title="ChatMessage"
       slug="chat-message"
-      description="A single chat transcript entry with baked-in entrance and layout motion. Right-aligned accent bubble for the user, left-aligned plain text for the assistant, with optional file attachments and a hover-revealed meta row."
+      description={t("description")}
     >
+      <DocSection title={t("boundary")}>
+        <p className="text-body text-fg-muted">{t("boundaryBody")}</p>
+        <Link href="/docs/components/chat-thread" className="mt-3 inline-block text-body text-fg-default underline underline-offset-4">{t("threadLink")}</Link>
+      </DocSection>
       <DocSection title="Playground">
         <VariantPlayground
           minHeightClass="min-h-[180px]"
           variants={[
             {
               value: "conversation",
-              label: "Conversation",
+              label: t("conversation"),
               code: conversationCode,
               preview: <div className="w-full max-w-xl flex flex-col gap-2"><ChatMessage from="user" time="Wednesday 6:06 PM" actions={<MessageActions text={"What does good design actually mean?"} />}>What does good design actually mean?</ChatMessage><ChatMessage from="assistant" actions={<MessageActions text={"Good design is mostly invisible — you notice it when it is missing."} />}>Good design is mostly invisible — you notice it when it is missing.</ChatMessage></div>,
             },
             {
               value: "roles",
-              label: "Roles",
+              label: t("roles"),
               code: rolesCode,
               preview: <div className="w-full max-w-xl flex flex-col gap-2"><ChatMessage from="user">Right-aligned accent bubble.</ChatMessage><ChatMessage from="assistant">Left-aligned, no background.</ChatMessage></div>,
             },
@@ -236,9 +242,14 @@ export default function ChatMessageDoc() {
           { name: "ChatMessageAttachments", type: 'files: readonly (ChatMessageFile | File)[] / thumbnailSize? / align?: "start" | "end" / label?', description: t("filesProp") },
           { name: "ChatMessageMeta", type: "model? / metrics? / locale? / labels?", description: t("metaProp") },
           { name: "ChatMessageAuthor", type: "model? / logo? / provider?", description: t("authorProp") },
-          { name: "ChatScrollToLatest", type: "onClick / locale? / label? / disabled? / className?", description: t("latestProp") },
           { name: "ChatMessageEditor", type: "text / onSave: (text) => void | Promise<void> / onCancel / disabled? / labels?", description: t("editorProp") },
           { name: "ChatMessageBranchSwitch", type: "branch: ChatMessageBranch / disabled? / labels?", description: t("branchProp") },
+        ]} />
+      </DocSection>
+      <DocSection title={t("conversationUtilities")}>
+        <p className="mb-3 text-body text-fg-muted">{t("conversationUtilitiesBody")}</p>
+        <PropsTable props={[
+          { name: "ChatScrollToLatest", type: "onClick / locale? / label? / disabled? / className?", description: t("latestProp") },
         ]} />
       </DocSection>
     </DocPage>

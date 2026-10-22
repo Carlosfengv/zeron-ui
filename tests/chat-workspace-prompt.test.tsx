@@ -6,7 +6,7 @@ import { toast } from "@zeron/ui/toast";
 
 vi.mock("next-intl", () => ({ useLocale: () => "zh-CN" }));
 vi.mock("@zeron/ui/toast", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
-vi.mock("../packages/blocks/src/application/chat-workspace-01/artifact-code-preview", () => ({
+vi.mock("../packages/ui/src/components/artifact-panel/code-preview", () => ({
   ArtifactCodePreview: () => <div>Preview content</div>,
 }));
 beforeEach(() => {

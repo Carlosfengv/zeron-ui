@@ -4,6 +4,318 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "artifact-content-renderer",
+      "type": "registry:file",
+      "title": "Artifact Content Renderer",
+      "description": "Internal Markdown, code and diff rendering shared by the artifact panels. Install the panel that matches your state model.",
+      "registryDependencies": [
+        "code-block",
+        "markdown"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-content-renderer.tsx",
+          "type": "registry:file",
+          "target": "components/ui/artifact-content-renderer.tsx"
+        }
+      ]
+    },
+    {
+      "name": "artifact-preview-panel",
+      "type": "registry:ui",
+      "title": "ArtifactPreviewPanel",
+      "description": "Generated HTML, Markdown and code previews with revision history and host-owned restoration.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "button",
+        "artifact-content-renderer",
+        "dropdown",
+        "empty",
+        "icon-context",
+        "inline-notice",
+        "menu-item",
+        "tabs",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel/content.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel/content.tsx"
+        }
+      ]
+    },
+    {
+      "name": "artifact-panel",
+      "type": "registry:ui",
+      "title": "ArtifactPanel",
+      "description": "Multi-resource content previews with tabs, version-scoped review and host-owned actions.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "alert",
+        "button",
+        "artifact-content-renderer",
+        "dropdown",
+        "empty",
+        "file-type",
+        "icon-context",
+        "inline-notice",
+        "menu-item",
+        "tabs",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-panel.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/utils.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/tabs.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/tabs.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/preview.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/preview.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/code-preview.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/code-preview.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chat-thread",
+      "type": "registry:ui",
+      "title": "ChatThread",
+      "description": "Composable conversations with anchored history, streaming messages, persistent composer and host-owned checkpoint restoration.",
+      "dependencies": [
+        "@hugeicons/react",
+        "@hugeicons/core-free-icons",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "button",
+        "chat-message",
+        "empty",
+        "icon-context",
+        "inline-notice",
+        "message-navigation",
+        "popover",
+        "scroll-area",
+        "separator",
+        "toast",
+        "tooltip",
+        "utils",
+        "markdown"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chat-thread.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/context.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/context.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/history.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/history.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/messages.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/messages.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/markdown.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/markdown.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/use-thread-scroll.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/use-thread-scroll.ts"
+        }
+      ]
+    },
+    {
+      "name": "artifact-card",
+      "type": "registry:ui",
+      "title": "ArtifactCard",
+      "description": "Reusable generated-content cards with file icons, metadata and host-owned opening.",
+      "registryDependencies": [
+        "surfaces",
+        "file-type",
+        "info-item",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-card.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-card/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-card/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-card/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-card/labels.ts"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css"
+      ]
+    },
+    {
+      "name": "context-window",
+      "type": "registry:ui",
+      "title": "ContextWindow",
+      "description": "Shared context capacity, detailed and compact token breakdowns, and a decorative usage indicator.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "alert",
+        "badge",
+        "button",
+        "container",
+        "inline-notice",
+        "tabs",
+        "tooltip",
+        "pie-chart",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/context-window.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/context-window.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/data.ts",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/data.ts"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/compact.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/compact.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/usage.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/usage.tsx"
+        }
+      ]
+    },
+    {
+      "name": "model-selector",
+      "type": "registry:ui",
+      "title": "ModelSelector",
+      "description": "Controlled model selection with relative ratings and conversation settings.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "avatar",
+        "button",
+        "command",
+        "popover",
+        "switch",
+        "icon-context",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/model-selector.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/model-selector.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/model-selector/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/model-selector/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/model-selector/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/model-selector/labels.ts"
+        }
+      ]
+    },
+    {
       "name": "message-navigation",
       "type": "registry:ui",
       "title": "Message Navigation",

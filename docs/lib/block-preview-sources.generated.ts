@@ -2,17 +2,20 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "context-window-02": {
+    "url": "/docs-source/f8f458a2694d5c47e0df0484351cd32c0827eee5b91a91f3c3889bfa12aa28b0.txt"
+  },
   "artifact-01": {
-    "url": "/docs-source/aa2f7c55a7c56c2187242e0f1c484f46c26bda6905901b8bf3d4c10aed8a30d5.txt"
+    "url": "/docs-source/882cfc7e78cd5ce235eca1d346f551b631261276c5e4cae14b0a57abc22de567.txt"
   },
   "tool-calls-01": {
     "url": "/docs-source/527407aac649032b3552a9fd8d227ab044eb6d6b11866e909eddfa37cafa3b5b.txt"
   },
   "chat-workspace-01": {
-    "url": "/docs-source/02a97bdd4d2ea8fa2979267da6f1133f3d0d55f222ebd28faa2a7d401a64297f.txt"
+    "url": "/docs-source/a9065c005cb58e880b6336813efefe1f14dfdee2538100947953e20f53d4d8d9.txt"
   },
   "chat-thread-01": {
-    "url": "/docs-source/c605b3b0e7b03bf35b5e21b72006c885715a22acdbc210e2c7d2065eaa8fe8c9.txt"
+    "url": "/docs-source/75d92093a5e7f64fc1cb812938f701b134fcd63a1ae47ac9bed909bf7e65fff2.txt"
   },
   "chat-markdown-01": {
     "url": "/docs-source/090f53dfcc4c1fe68fa1a5baa1355550ea639f014c59dcb2d89ea1e0a216ac48.txt"
@@ -24,13 +27,13 @@ const blockPreviewSources = {
     "url": "/docs-source/9c0dfa019f32e4e662752bf1249370096756b3b6df451ebe9147e5cd3f7f663e.txt"
   },
   "model-selector-01": {
-    "url": "/docs-source/13442235a1132f3419bdf9939006e2304893de7d2f1724274dd0d50bcc4b6cae.txt"
+    "url": "/docs-source/5093d1cd7c20c8182692ba1253df29f046a916a607e1c1142c634541e6dfe322.txt"
   },
   "agent-tasks-01": {
     "url": "/docs-source/5b5f56399ba1e28568498e5ea6437fd7a28014df43fb4c48b1eb2fe2ae3173fb.txt"
   },
   "local-models-01": {
-    "url": "/docs-source/03e6ec1c8406580606b1ebb8c6fdabfd235cb1965ae6eec31b0265142cdb9895.txt"
+    "url": "/docs-source/aa8b71572bfb3cd271dfd5307a9e57230fdac16eae74041ba479071ddead9f86.txt"
   },
   "appearance-settings-01": {
     "url": "/docs-source/9994c5b6ec0f8b52ae4e8cd911b03a5c32a813865e4fc810748157147940dc13.txt"
@@ -54,7 +57,7 @@ const blockPreviewSources = {
     "url": "/docs-source/0794194fd1cb1a3cb63db94bbaf7b865b2d2faa4abcd8a6c9cdc68222ac038d4.txt"
   },
   "context-window-01": {
-    "url": "/docs-source/67eed8eb31329c997da05ec15af5913f90d1d3261cd36fdeb229c5c6f9c493d0.txt"
+    "url": "/docs-source/a5f6f73bae0ad0756f58f54c85c0c556476842e056969d5037e3600029703d8f.txt"
   },
   "fleet-health-01": {
     "url": "/docs-source/68700c6ee0a15190dea48cc04e662cbd958067ee4a02a69c31753bea93d25a62.txt"

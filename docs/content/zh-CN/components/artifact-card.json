@@ -1,0 +1,13 @@
+{
+  "artifact-card": {
+    "description": "展示文件图标、说明与审阅状态，由宿主负责打开的生成内容卡片。",
+    "basic": "生成文件与内容",
+    "behavior": "交互与兼容",
+    "behaviorBody": "卡片仅需要 id、name、kind，可附加非交互说明与审阅状态。onOpen 返回原始资源，保留自定义元数据。说明与审阅投影可以连接现有数据模型，无需复制记录。卡片不获取文件、不运行预览、不管理版本历史。Chat Workspace 原有 ArtifactCard 适配层保留大小格式化、地址过滤、完整文案和具体版本的审阅规则；ArtifactWorkspace 与 GeneratedArtifactCard 导出继续兼容。",
+    "api": "API 参考",
+    "itemsProp": "只读记录，包含 id、name、kind（code、markdown、text、image、url、file），可选非交互 description 和 pending、accepted、rejected 审阅状态。不要求正文与版本。",
+    "openProp": "请求打开原始资源，宿主提供预览器或选择状态。",
+    "adaptersProp": "可选的说明与审阅投影，连接宿主数据模型；审阅投影返回 undefined 时隐藏状态。",
+    "labelsProp": "可选标题、语言、局部文案以及外部布局和 HTML 属性。导出中英文文案。"
+  }
+}

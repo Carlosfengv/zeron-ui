@@ -1,4 +1,8 @@
 {
+  "context-window-02": {
+    "framework": "react",
+    "kind": "data-block"
+  },
   "artifact-01": { "framework": "react", "kind": "data-block" },
   "tool-calls-01": { "framework": "react", "kind": "data-block" },
   "chat-workspace-01": {

@@ -40,6 +40,11 @@ interface ChatMessageProps
 // A single transcript entry with baked-in entrance + layout motion. Pairs with
 // InputMessage's onSend: render one per sent/received message. `layout="position"`
 // lets earlier messages slide up smoothly when a new one is appended.
+/**
+ * One message: role layout, body and optional identity, attachment and action slots.
+ * Independent of ChatThread; the host owns message data and action callbacks.
+ * Use ChatThread with ChatUserMessage/ChatAssistantMessage for conversation coordination.
+ */
 const ChatMessage = forwardRef<HTMLDivElement, ChatMessageProps>(
   (
     { from, files, attachments, thumbnailSize = 64, time, header, actions, meta, actionsVisibility = "auto", children, className, ...props },

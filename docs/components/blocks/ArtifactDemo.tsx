@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "next-intl";
-import { ArtifactWorkspace, GeneratedArtifactCard, createArtifactDemoDocuments, createPricingArtifactHtml, type ArtifactDocument } from "@zeron/blocks/artifact-01";
-import { ChatAssistantMessage, ChatUserMessage, chatThreadZhLabels } from "@zeron/blocks/chat-thread-01";
+import type { ArtifactDocument } from "@zeron/ui/artifact-preview-panel";
+import { ArtifactWorkspace, GeneratedArtifactCard, createArtifactDemoDocuments, createPricingArtifactHtml } from "@zeron/blocks/artifact-01";
+import { ChatAssistantMessage, ChatUserMessage, chatThreadZhLabels } from "@zeron/ui/chat-thread";
 import { createModelSelectorDemoModels, modelSelectorDemoValue } from "@zeron/blocks/model-selector-01";
 import { Button } from "@zeron/ui/button";
 import { ChatMessageAttachments } from "@zeron/ui/chat-message";

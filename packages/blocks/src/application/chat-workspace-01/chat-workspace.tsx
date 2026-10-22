@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type Ref } from "react";
-import { ChatThread } from "@zeron/blocks/chat-thread-01";
+import { ChatThread } from "@zeron/ui/chat-thread";
 import { Button } from "@zeron/ui/button";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup, type ResizablePanelProps } from "@zeron/ui/resizable";
 import { useIcon } from "@zeron/ui/system/icon-context";
 import { cn } from "@zeron/ui/system/utils";
-import { resolveArtifactLabels } from "./artifact-labels";
+import { resolveArtifactLabels } from "@zeron/ui/artifact-panel/labels";
 import type { ChatWorkspaceProps } from "./chat-workspace-types";
 
 type PanelHandle = NonNullable<ResizablePanelProps["panelRef"]> extends Ref<infer T> ? T : never;

@@ -9,6 +9,7 @@ import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { SegmentedBar } from "@zeron/ui/chart-primitives";
 import { Container, ContainerBody, ContainerHeader, ContainerFooter } from "@zeron/ui/container";
+import { Field, FieldLabel } from "@zeron/ui/field";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@zeron/ui/select";
 import { SliderComfortable } from "@zeron/ui/slider";
 import { Switch } from "@zeron/ui/switch";
@@ -22,7 +23,7 @@ import type { LocalModel, LocalModelConfig, LocalModelPrecision, LocalModelsProp
 import styles from "./local-models.module.css";
 
 const number = (value: number) => value.toLocaleString("en-US", { maximumFractionDigits: 1 });
-const contextName = (context: number) => `${context / 1024}K tokens`;
+const contextName = (context: number) => context >= 1024 && context % 1024 === 0 ? `${number(context / 1024)}K tokens` : `${number(context)} tokens`;
 const memoryColors = {
   weights: "var(--brand)",
   cache: "color-mix(in srgb, var(--brand) 55%, var(--surface-floating))",
@@ -51,6 +52,9 @@ export function LocalModels({ data, value, appliedValue, onValueChange, onApply,
   const [showChanges, setShowChanges] = useState(false);
   const model = data.models.find((item) => item.id === (selectedModelId ?? localSelection)) ?? data.models[0];
   const config = model ? value[model.id] : undefined;
+  const contextOptions = config && Number.isFinite(config.context) && config.context > 0
+    ? [...new Set<number>([...localModelContexts, config.context])].sort((a, b) => a - b)
+    : localModelContexts;
   const usage = getLocalModelsUsage(data, value);
   const changes = countLocalModelChanges(data, value, appliedValue);
   const Chip = useIcon("doc-semantic-tokens"); const Copy = useIcon("copy"); const Edit = useIcon("pencil");
@@ -124,14 +128,19 @@ export function LocalModels({ data, value, appliedValue, onValueChange, onApply,
           </div>
           {shortage > 0 && <Alert status="danger"><AlertTitle>Doesn&apos;t fit on {gpuLabel}</AlertTitle><AlertDescription>Needs {number(shortage)} GB more. Lower the context or parallel requests, or pick a smaller precision.</AlertDescription></Alert>}
           <div className="space-y-2"><h4 id={`${prefix}-precision`} className="text-body font-medium text-fg-default">Precision</h4><ConfigTabs label="Precision" value={config.precision} options={getLocalModelPrecisions(model)} disabled={busy || !config.enabled} onChange={(precision) => update({ precision: precision as LocalModelPrecision })} /></div>
-          <div className="space-y-2"><label id={`${prefix}-context`} className="text-body font-medium text-fg-default">Context window</label><Select value={String(config.context)} onValueChange={(context) => update({ context: Number(context) })} disabled={busy || !config.enabled}>
-            <SelectTrigger aria-labelledby={`${prefix}-context`} icon={File} />
-            <SelectContent><p className="px-3 py-2 text-label text-fg-muted">KV cache for {config.parallel} requests</p>{localModelContexts.map((context) => {
+          <Field disabled={busy || !config.enabled}><FieldLabel id={`${prefix}-context`} htmlFor={`${prefix}-context-control`}>Context window</FieldLabel><Select value={String(config.context)} onValueChange={(context) => update({ context: Number(context) })} disabled={busy || !config.enabled}>
+            <SelectTrigger id={`${prefix}-context-control`} aria-labelledby={`${prefix}-context`} icon={File} />
+            <SelectContent><p className="shrink-0 px-2.5 py-2 text-label text-fg-muted">KV cache for {config.parallel} requests</p>{contextOptions.map((context) => {
               const candidate = { ...config, context }; const estimate = getLocalModelMemory(model, candidate);
               const projected = getLocalModelsUsage(data, { ...value, [model.id]: candidate });
               const short = Math.max(0, ...projected.gpus.filter((gpu) => model.gpuIds.includes(gpu.id)).map((gpu) => gpu.used - gpu.capacity)) * model.gpuIds.length;
-              return <SelectItem key={context} value={String(context)} label={contextName(context)}><div className="min-w-0 py-1"><div className="flex justify-between gap-6"><span>{contextName(context)}</span><span className={cn("text-label tabular-nums", short > 0 ? "text-fg-danger" : "text-fg-muted")}>{number(estimate.cache)} GB</span></div><p className={cn("mt-1 text-label", short > 0 ? "text-fg-danger" : "text-fg-muted")}>{short > 0 ? `Over by ${number(short)} GB` : `About ${context / 1024 * 1.5} pages`}</p></div></SelectItem>;
-            })}</SelectContent></Select></div>
+              return <SelectItem key={context} value={String(context)} label={contextName(context)} className="min-h-fit py-2.5">
+                <div className="min-w-0 space-y-1">
+                  <div className="flex items-baseline justify-between gap-4"><span className="truncate">{contextName(context)}</span><span className={cn("shrink-0 text-label tabular-nums", short > 0 ? "text-fg-danger" : "text-fg-muted")}>{number(estimate.cache)} GB</span></div>
+                  <p className={cn("truncate text-label", short > 0 ? "text-fg-danger" : "text-fg-muted")}>{short > 0 ? `Over by ${number(short)} GB` : `About ${number(context / 1024 * 1.5)} pages`}</p>
+                </div>
+              </SelectItem>;
+            })}</SelectContent></Select></Field>
           <div className="space-y-2"><SliderComfortable value={config.parallel} onChange={(parallel: number) => update({ parallel })} min={1} max={16} step={1} label="Parallel requests" color="brand" disabled={busy || !config.enabled} /><p className="text-body text-fg-muted">Each request holds its own KV cache</p></div>
           <div className="space-y-2"><h4 className="text-body font-medium text-fg-default">When every slot is busy</h4><ConfigTabs label="When every slot is busy" value={config.overflow === "queue" ? "Queue" : "Use Cloud"} options={["Queue", "Use Cloud"]} disabled={busy || !config.enabled} onChange={(overflow) => update({ overflow: overflow === "Queue" ? "queue" : "cloud" })} /><p className="text-body text-fg-muted">{config.overflow === "queue" ? "Requests wait for a free slot" : "Overflow requests use your cloud provider"}</p></div>
         </div> : <div className="flex min-h-64 items-center justify-center text-body text-fg-muted">{data.models.length ? "Select a model with a valid configuration" : "No model selected"}</div>}

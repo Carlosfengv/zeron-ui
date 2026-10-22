@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
-import { ChatMarkdown } from "@zeron/blocks/chat-thread-01";
-import { ModelSelector, modelSelectorZhLabels, type ModelSelectorProps } from "@zeron/blocks/model-selector-01";
-import { ContextWindow, createContextWindowDemoData, contextWindowZhLabels } from "@zeron/blocks/context-window-01";
+import { ChatMarkdown } from "@zeron/ui/chat-thread";
+import { ModelSelector, modelSelectorZhLabels, type ModelSelectorProps } from "@zeron/ui/model-selector";
+import { ContextWindowUsage } from "@zeron/ui/context-window";
+import { ContextWindowCompact, createContextWindowCompactDemoData, contextWindowCompactZhLabels } from "@zeron/blocks/context-window-02";
 import { Button } from "@zeron/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@zeron/ui/popover";
-import { PieChart, PieSlice } from "@zeron/ui/pie-chart";
 import { ThinkingIndicator } from "@zeron/ui/thinking-indicator";
 import { ThinkingSteps, ThinkingStepsHeader, ThinkingStepsContent, ThinkingStep, ThinkingStepDetails } from "@zeron/ui/thinking-steps";
 import { useIcon } from "@zeron/ui/system/icon-context";
@@ -27,28 +27,12 @@ export function ChatDemoContextControl({ locale, open, onOpenChange, notice, onC
   onCompact?: () => void;
 }) {
   const zh = locale.startsWith("zh");
-  const context = useMemo(() => createContextWindowDemoData(), []);
-  const used = context.systemTokens + context.toolTokens
-    + [...context.docs, ...context.memory, ...context.history].reduce((sum, item) => sum + item.tokens, 0);
-  const percentage = new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }).format(used / context.capacity);
-  const slices = [
-    { label: "used", value: used, color: "currentColor" },
-    { label: "remaining", value: Math.max(0, context.capacity - used), color: "var(--border)" },
-  ];
+  const context = useMemo(() => createContextWindowCompactDemoData(), []);
   const [localNotice, setLocalNotice] = useState("");
   return <Popover open={open} onOpenChange={onOpenChange}>
-    <PopoverTrigger render={<Button variant="ghost" size="sm" labelClassName="inline-flex items-center gap-1.5">
-      <span className="sr-only">{zh ? "上下文用量：" : "Context usage: "}</span>
-      <span aria-hidden="true" inert className="pointer-events-none inline-flex size-4 shrink-0">
-        <PieChart data={slices} size={16} innerRadius={6} hoverOffset={0} hoveredIndex={null}>
-          <PieSlice index={0} animate={false} showGlow={false} hoverEffect="none" />
-          <PieSlice index={1} animate={false} showGlow={false} hoverEffect="none" />
-        </PieChart>
-      </span>
-      <span>{percentage}</span>
-    </Button>} />
-    <PopoverContent align="end" side="top" className="w-xl max-w-[calc(100vw-2rem)]">
-      <ContextWindow data={context} labels={zh ? contextWindowZhLabels : undefined} locale={locale} notice={notice ?? localNotice}
+    <PopoverTrigger render={<Button variant="ghost" size="sm"><span className="sr-only">{zh ? "上下文用量：" : "Context usage: "}</span><ContextWindowUsage data={context} locale={locale} /></Button>} />
+    <PopoverContent align="end" side="top" className="w-80">
+      <ContextWindowCompact embedded data={context} labels={zh ? contextWindowCompactZhLabels : undefined} locale={locale} notice={notice ?? localNotice}
         onCompact={onCompact ?? (() => setLocalNotice(zh ? "本地演示：已模拟压缩历史。" : "Local demo: history compaction simulated."))} />
     </PopoverContent>
   </Popover>;

@@ -10,6 +10,7 @@ registry: packages/blocks/registry.json
 related:
   - container
   - select
+  - field
   - slider
   - switch
   - alert
@@ -37,6 +38,7 @@ function Example() {
 - KV cache scales linearly from `cachePer32K` with context and parallel requests. Multi-GPU allocations split the model memory evenly. All enabled models on each GPU contribute to capacity validation. Real allocators may need different placement or empirical estimates; these formulas are not live GPU telemetry.
 - `getLocalModelsUsage`, `getLocalModelMemory`, `countLocalModelChanges` and `fitLocalModelsToGpus` are exported. Fit reduces requests, then context, then weight memory across all affected models before considering unloading any model. Models without KV cache retain their request/context settings. Invalid input returns an unchanged cloned draft without entering reduction loops. Review the resulting draft before applying.
 - Apply is disabled for no changes, missing host handler, pending saves, invalid config/placement, or any over-capacity GPU. Validation includes unique IDs and allocations, positive GPU capacities, finite nonnegative memory estimates, supported precision, positive context and 1–16 requests. Unassigned SVG cards are disabled, matching the GPU selector. Loading/unloading, context, precision and overflow handling remain draft changes until applied.
+- Context selection uses Field and FieldLabel with an explicitly associated SelectTrigger. Presets remain 8K, 32K and 128K; a valid host-provided context outside those presets is retained as a selected option with its units. Rich option rows keep cache/shortage metadata on separate lines and preserve the closed trigger’s plain label.
 - Precision and busy-slot handling use `Tabs variant="pill"`. Parallel requests use `SliderComfortable` with the built-in label/value display, integer steps from 1 to 16, and theme-accent fill.
 - The header GPU Memory button opens the library Popover with `data.serverName`, per-GPU loaded models, memory bars, available memory, and Fit. Selecting a GPU selects its first loaded model (or its first assigned unloaded model), closes the popover, and updates the right panel and SVG together. Multi-GPU model selection highlights every allocated card. Unassigned cards remain visible with a disabled selection row; no-GPU data shows an empty state. Per-GPU over-capacity colors remain semantic danger colors.
 - `onCopy` delegates clipboard/export policy to the host. Optional `actions` accepts host actions. `title`, `description`, `icon`, and model metadata accept product-specific content. Built-in control copy is English.

@@ -23,7 +23,7 @@ describe("chat-workspace-01 distribution", () => {
     expect(entry).toContain("export { ArtifactPanel }");
     expect(entry).toContain("export { ChatWorkspace }");
     const dependencies = item.registryDependencies.map((dependency: string) => dependency.split("/").at(-1)!.replace(/\.json$/, ""));
-    expect(dependencies).toEqual(expect.arrayContaining(["chat-thread-01", "resizable", "code-block", "markdown", "info-item"]));
+    expect(dependencies).toEqual(expect.arrayContaining(["chat-thread", "resizable", "artifact-panel", "artifact-card"]));
     expect(blockCatalog.find((block) => block.name === "chat-workspace-01")?.dependencies).toEqual(dependencies);
   });
 

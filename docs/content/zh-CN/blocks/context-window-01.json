@@ -3,7 +3,7 @@
     "title": "上下文窗口",
     "description": "展示上下文容量、提示词缓存、分类 token 矩阵，并查看文档、记忆与对话历史。",
     "composition": "组件组合",
-    "compositionBody": "复用 Container、Badge、Button、Tabs、Tooltip 与 InlineNotice，以及现有表面、文字、边框、排版与 chart 变量。400 格矩阵表达分类容量分配；现有 HeatmapChart 需要日期并读出数值强度，不适合此处无时间轴的分类语义，因此采用业务可视化组合。不新增主题变量或基础组件。",
+    "compositionBody": "基于共享的 @zeron/ui/context-window AI component，保留原 block 的导出、属性、文案与演示工厂。复用 Container、Badge、Button、Tabs、Tooltip 与 InlineNotice，以及现有表面、文字、边框、排版与 chart 变量。400 格矩阵表达分类容量分配；现有 HeatmapChart 需要日期并读出数值强度，不适合此处无时间轴的分类语义，因此采用业务可视化组合。沿用现有主题变量与基础组件。",
     "dataContract": "数据接入",
     "dataContractBody": "宿主提供窗口容量、系统与工具 token 数，以及具有稳定唯一 id、标题和非负 token 数的内容记录。分类总量、已用容量和剩余容量从这些记录统一计算。token 数量在所有界面语言下统一使用 k/M/B 缩写，最多一位小数。缓存测量、每轮典型 token 数、会话信息、固定状态与压缩回调由宿主提供。压缩不会在 block 内直接修改数据。缓存命中率采用 0–1 比例，null 保持未知；无效容量、数量与重复标识会显示错误状态。",
     "behavior": "交互与状态",

@@ -1,0 +1,23 @@
+{
+  "context-window": {
+    "description": "共享上下文容量、完整与精简分类面板，以及紧凑的用量指示器。",
+    "detailed": "完整上下文面板",
+    "compact": "精简上下文面板",
+    "usage": "用量入口与嵌入面板",
+    "usageBody": "用量指示器与面板接收同一份快照。指示器在宿主按钮中仅作装饰，按钮需提供上下文含义的可访问文案。embedded 将表面和留白交给外层 Popover 管理。",
+    "data": "共享数据与行为",
+    "dataBody": "capacity 必须为有限正数；systemTokens、toolTokens 及每条记录的 tokens 必须为有限非负数，同一分类内 id 非空且唯一。总量、剩余容量和两种矩阵共用记录与校验。无效快照显示错误或破折号，超容量保留真实比例并将剩余容量钳制为零。记录变化时传入新的 data 对象。token 使用 k/M/B，百分比与精确数量按 locale 格式化。压缩、缓存测量、重试与持久化均由宿主处理；此处示例只修改本地演示数据，并保留固定记录。",
+    "compatibility": "现有 block 兼容",
+    "compatibilityBody": "context-window-01 保留 ContextWindow、文案、类型与 createContextWindowDemoData；context-window-02 保留 ContextWindowCompact、ContextWindowUsage、文案、类型与 createContextWindowCompactDemoData。两者共用这里的 UI 实现。精简 block 的适配层继续保留默认 Claude 标志，通用组件通过 modelIcon 接收宿主图标。完整面板继续提供缓存、分类切换和页脚操作，精简面板继续提供文件展开、嵌入模式与状态反馈。",
+    "api": "API 参考",
+    "dataProp": "共享 ContextWindowData 快照，包含 capacity、systemTokens、toolTokens、docs、memory、history，可选 cache、tokensPerTurn 与 session。",
+    "tabsProp": "完整面板支持受控或本地内容分类；点击图例发出相同的分类切换意图。",
+    "compactProp": "压缩由宿主处理。缺少回调时隐藏操作，忙碌或无可压缩历史时禁用；组件不修改快照。",
+    "statesProp": "加载、错误、重试意图与宿主反馈。精简面板在加载、无效、失败或压缩中隐藏旧成功反馈。",
+    "embeddedProp": "精简面板嵌入时不产生嵌套 Container 表面；modelIcon 接收可选的宿主模型图标。",
+    "actionsProp": "完整面板的实时状态及可选设置、关闭和页脚操作；currency 控制可选缓存节省金额。",
+    "labelsProp": "完整与精简面板分别导出中英文文案；locale 控制百分比和计数，className 用于外部布局。",
+    "usageProp": "接收 data、locale 及原生 span 属性，用 16px 装饰性 PieChart 与真实百分比展示用量；无效快照显示破折号。",
+    "helpersProp": "共享的纯数据校验、用量计算与最大余数分配工具。完整与精简面板分别使用 400 格和 240 格，分配器接收经过校验的总量。"
+  }
+}

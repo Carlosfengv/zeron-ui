@@ -1,201 +1,17 @@
-import type { ContextWindowCategory, ContextWindowData } from "./context-window-types";
-
-export const contextWindowCategories: readonly ContextWindowCategory[] = ["system", "tools", "memory", "docs", "history", "free"];
-export const contextWindowColors: Record<ContextWindowCategory, string> = {
-  system: "var(--chart-1)", tools: "var(--chart-2)", memory: "color-mix(in oklab, var(--chart-1) 50%, var(--chart-5))",
-  docs: "var(--chart-4)", history: "var(--chart-5)", free: "var(--chart-6)",
-};
-
-const validTokens = (value: number) => Number.isFinite(value) && value >= 0;
-
-/** Totals come from the same records displayed in Contents, avoiding stale summary counters. */
-export function getContextWindowUsage(data: ContextWindowData) {
-  if (!Number.isFinite(data.capacity) || data.capacity <= 0 || !validTokens(data.systemTokens) || !validTokens(data.toolTokens)) return null;
-  for (const category of ["docs", "memory", "history"] as const) {
-    const ids = new Set<string>();
-    for (const item of data[category]) {
-      if (!item.id || ids.has(item.id) || !validTokens(item.tokens)) return null;
-      ids.add(item.id);
-    }
-  }
-  const totals: Record<ContextWindowCategory, number> = {
-    system: data.systemTokens, tools: data.toolTokens,
-    memory: data.memory.reduce((sum, item) => sum + item.tokens, 0),
-    docs: data.docs.reduce((sum, item) => sum + item.tokens, 0),
-    history: data.history.reduce((sum, item) => sum + item.tokens, 0), free: 0,
-  };
-  const used = totals.system + totals.tools + totals.memory + totals.docs + totals.history;
-  if (!Number.isFinite(used)) return null;
-  totals.free = Math.max(0, data.capacity - used);
-  const ratio = used / data.capacity;
-  if (!Number.isFinite(ratio)) return null;
-  const tokensPerTurn = data.tokensPerTurn;
-  const estimate = tokensPerTurn !== undefined && validTokens(tokensPerTurn) && tokensPerTurn > 0
-    ? Math.floor(totals.free / tokensPerTurn)
-    : null;
-  const headroom = estimate !== null && Number.isFinite(estimate) ? estimate : null;
-  return {
-    totals, used, ratio,
-    status: ratio >= 0.95 ? "danger" as const : ratio >= 0.8 ? "warning" as const : "success" as const,
-    headroom,
-  };
-}
-
-/** Largest-remainder allocation keeps the categorical bitmap at exactly 400 cells. */
-export function allocateContextWindowCells(totals: Record<ContextWindowCategory, number>, capacity: number): ContextWindowCategory[] {
-  const denominator = Math.max(capacity, contextWindowCategories.reduce((sum, category) => sum + totals[category], 0));
-  const counts = contextWindowCategories.map((category) => {
-    const exact = totals[category] / denominator * 400;
-    return { category, count: Math.floor(exact), remainder: exact % 1 };
-  });
-  let remaining = 400 - counts.reduce((sum, value) => sum + value.count, 0);
-  for (const value of [...counts].sort((a, b) => b.remainder - a.remainder)) {
-    if (remaining-- > 0) value.count++;
-  }
-  return counts.flatMap(({ category, count }) => Array<ContextWindowCategory>(count).fill(category));
-}
-
-
-import type { ContextWindowData } from "./context-window-types";
-
-/** Fixed local example. No model service or cache billing API is connected. */
-export function createContextWindowDemoData(): ContextWindowData {
-  return {
-    capacity: 200_000, systemTokens: 3200, toolTokens: 11_900, tokensPerTurn: 1470,
-    docs: [
-      { id: "migration", title: "ledger_v3_migration.sql", source: "REPO", detail: "41m ago", tokens: 18_200 },
-      { id: "webhooks", title: "Payment webhooks guide", source: "RAG", detail: "33m ago", tokens: 14_900 },
-      { id: "reconcile", title: "billing/reconcile.ts", source: "REPO", detail: "27m ago", tokens: 9400 },
-      { id: "incident", title: "Incident 2291 postmortem", source: "RAG", detail: "19m ago", tokens: 6100 },
-      { id: "errors", title: "api-errors.md", source: "REPO", detail: "8m ago", tokens: 3600 },
-    ],
-    memory: [
-      { id: "architecture", title: "Ledger architecture decisions", source: "PROJECT", detail: "2h ago", tokens: 3200 },
-      { id: "preferences", title: "Coding conventions & preferences", source: "USER", detail: "1d ago", tokens: 2100 },
-      { id: "checklist", title: "Migration safety checklist", source: "PROJECT", detail: "49m ago", tokens: 1900 },
-      { id: "schema", title: "Schema constraints", source: "SESSION", detail: "37m ago", tokens: 1300 },
-    ],
-    history: [
-      { id: "turn-8", title: "Diffed v2 and v3 schemas", source: "TURN 8", detail: "1h ago", tokens: 4200 },
-      { id: "turn-40", title: "Drafted the cut-over plan", source: "TURN 40", detail: "26m ago", tokens: 3800 },
-      { id: "turn-43", title: "Compared row counts per shard", source: "TURN 43", detail: "18m ago", tokens: 3700 },
-      { id: "turn-11", title: "Explained the double-post bug", source: "TURN 11", detail: "1h ago", tokens: 3700 },
-      ...Array.from({ length: 44 }, (_, index) => ({ id: `history-${index}`, title: `Migration discussion ${index + 1}`, source: `TURN ${index + 1}`, tokens: index === 43 ? 1189 : 1170 })),
-    ],
-    cache: { hitRate: 0.85, saved: 10.99, cachedTokens: 142_000, newTokens: 570 },
-    session: { model: "Kestrel 2", turn: 48, name: "Ledger-v3 migration" },
-  };
-}
-
-
-import type { ContextWindowLabels } from "./context-window-types";
-
-export const contextWindowEnglishLabels: ContextWindowLabels = {
-  title: "Context window", description: "Token allocation across system instructions, tools, memory, documents and conversation history.",
-  live: "Live", paused: "Paused", settings: "Context settings", close: "Close context window",
-  used: "Context used", healthy: "Healthy", warning: "Filling up", full: "Near capacity", tokens: "tokens",
-  cache: "Prompt cache", saved: "saved", cached: "cached", newTokens: "new", contents: "Contents",
-  empty: "No items in this category.", system: "System", tools: "Tools", docs: "Docs", memory: "Memory", history: "History", free: "Free",
-  compact: "Compact history", compacting: "Compacting history…", pinned: "Pinned",
-  invalid: "Context data is invalid. Check capacity, token counts and item ids.",
-  loading: "Loading context…", retry: "Retry", turn: "Turn", matrix: "Context token allocation",
-  usage: (percent) => `${percent} full`, headroom: (turns) => `~${turns} turns of headroom`,
-  hit: (percent) => `${percent} hit`, summary: (count, tokens, percent) => `${count} items · ${tokens} tokens · ${percent} of window`,
-};
-
-export const contextWindowZhLabels: ContextWindowLabels = {
-  title: "上下文窗口", description: "查看系统指令、工具、记忆、文档与对话历史的 token 分配。",
-  live: "实时", paused: "已暂停", settings: "上下文设置", close: "关闭上下文窗口",
-  used: "已用上下文", healthy: "充足", warning: "接近上限", full: "容量紧张", tokens: "tokens",
-  cache: "提示词缓存", saved: "已节省", cached: "已缓存", newTokens: "新增", contents: "内容",
-  empty: "此分类暂无内容。", system: "系统", tools: "工具", docs: "文档", memory: "记忆", history: "历史", free: "剩余",
-  compact: "压缩历史", compacting: "正在压缩历史…", pinned: "已固定",
-  invalid: "上下文数据无效，请检查容量、token 数量与条目标识。",
-  loading: "正在加载上下文…", retry: "重试", turn: "轮次", matrix: "上下文 token 分配",
-  usage: (percent) => `已占用 ${percent}`, headroom: (turns) => `预计还可对话 ${turns} 轮`,
-  hit: (percent) => `命中 ${percent}`, summary: (count, tokens, percent) => `${count} 项 · ${tokens} tokens · 占窗口 ${percent}`,
-};
-
-
-import type { ReactNode } from "react";
-
-export type ContextWindowTab = "docs" | "memory" | "history";
-export type ContextWindowCategory = "system" | "tools" | ContextWindowTab | "free";
-
-export interface ContextWindowItem {
-  id: string;
-  title: string;
-  tokens: number;
-  /** Already-localized source and age/turn labels supplied by the host. */
-  source?: string;
-  detail?: string;
-  pinned?: boolean;
-}
-
-export interface ContextWindowData {
-  capacity: number;
-  systemTokens: number;
-  toolTokens: number;
-  docs: readonly ContextWindowItem[];
-  memory: readonly ContextWindowItem[];
-  history: readonly ContextWindowItem[];
-  /** Typical tokens added per turn; omit when an estimate is unavailable. */
-  tokensPerTurn?: number;
-  cache?: { hitRate: number | null; saved: number | null; cachedTokens: number | null; newTokens: number | null };
-  session?: { model: string; turn: number; name: string };
-}
-
-export interface ContextWindowLabels {
-  title: string; description: string; live: string; paused: string; settings: string; close: string;
-  used: string; healthy: string; warning: string; full: string; tokens: string; cache: string;
-  saved: string; cached: string; newTokens: string; contents: string; empty: string;
-  system: string; tools: string; docs: string; memory: string; history: string; free: string;
-  compact: string; compacting: string; pinned: string;
-  invalid: string; loading: string; retry: string; turn: string; matrix: string;
-  usage: (percent: string) => string;
-  headroom: (turns: string) => string;
-  hit: (percent: string) => string;
-  summary: (count: string, tokens: string, percent: string) => string;
-}
-
-export interface ContextWindowProps {
-  data: ContextWindowData;
-  title?: string;
-  live?: boolean;
-  loading?: boolean;
-  error?: string;
-  onRetry?: () => void;
-  tab?: ContextWindowTab;
-  defaultTab?: ContextWindowTab;
-  onTabChange?: (tab: ContextWindowTab) => void;
-  onCompact?: () => void;
-  compacting?: boolean;
-  onSettings?: () => void;
-  onClose?: () => void;
-  footerActions?: ReactNode;
-  notice?: string;
-  labels?: Partial<ContextWindowLabels>;
-  /** Localizes percentages, integer counts and currency; token abbreviations use k/M/B. */
-  locale?: string;
-  currency?: string;
-  className?: string;
-}
-
-
 "use client";
 
 import { useId, useMemo, useState } from "react";
-import { Badge } from "@zeron/ui/badge";
-import { Button } from "@zeron/ui/button";
-import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
-import { InlineNotice } from "@zeron/ui/inline-notice";
-import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
-import { Tooltip, TooltipProvider } from "@zeron/ui/tooltip";
-import { useIcon } from "@zeron/ui/system/icon-context";
-import { cn } from "@zeron/ui/system/utils";
-import { allocateContextWindowCells, contextWindowCategories, contextWindowColors, getContextWindowUsage } from "./context-window-data";
-import { contextWindowEnglishLabels } from "./context-window-labels";
-import type { ContextWindowCategory, ContextWindowProps, ContextWindowTab } from "./context-window-types";
+import { Badge } from "#components/badge";
+import { Button } from "#components/button";
+import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "#components/container";
+import { InlineNotice } from "#components/inline-notice";
+import { Tabs, TabsList, TabItem, TabPanel } from "#components/tabs";
+import { Tooltip, TooltipProvider } from "#components/tooltip";
+import { useIcon } from "#system/icon-context";
+import { cn } from "#system/utils";
+import { allocateContextWindowCells, contextWindowCategories, contextWindowColors, getContextWindowUsage } from "./context-window/data";
+import { contextWindowEnglishLabels } from "./context-window/labels";
+import type { ContextWindowCategory, ContextWindowProps, ContextWindowTab } from "./context-window/types";
 
 const contentTabs = ["docs", "memory", "history"] as const;
 const tokenFormatter = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
@@ -348,8 +164,8 @@ export function ContextWindow({ data, title, live = false, tab, defaultTab = "do
   </Container></TooltipProvider>;
 }
 
-
-export { ContextWindow } from "./context-window";
-export { createContextWindowDemoData } from "./context-window-demo-data";
-export { contextWindowEnglishLabels, contextWindowZhLabels } from "./context-window-labels";
-export type { ContextWindowCategory, ContextWindowData, ContextWindowItem, ContextWindowLabels, ContextWindowProps, ContextWindowTab } from "./context-window-types";
+export { ContextWindowCompact } from "./context-window/compact";
+export { ContextWindowUsage } from "./context-window/usage";
+export { contextWindowEnglishLabels, contextWindowZhLabels, contextWindowCompactEnglishLabels, contextWindowCompactZhLabels } from "./context-window/labels";
+export { getContextWindowUsage, allocateContextWindowCells, contextWindowCategories, contextWindowColors } from "./context-window/data";
+export type { ContextWindowCategory, ContextWindowData, ContextWindowItem, ContextWindowLabels, ContextWindowProps, ContextWindowTab, ContextWindowCompactLabels, ContextWindowCompactProps, ContextWindowUsageProps } from "./context-window/types";

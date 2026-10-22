@@ -654,17 +654,22 @@ source: packages/blocks/src/application/artifact-01/artifact-workspace.tsx
 types: packages/blocks/src/application/artifact-01/artifact-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [chat-workspace-01, chat-thread-01, code-block, markdown, tabs, input-message]
+related: [artifact-preview-panel, artifact-card, chat-workspace-01, chat-thread-01, code-block, markdown, tabs, input-message]
 ---
 
+
+GeneratedArtifactCard 继续通过 Chat Workspace 的兼容适配层使用 AI component ArtifactCard，原有导出和精确版本打开回调保持不变。仅展示资源入口可单独安装 `artifact-card`。
 # Artifact
+
+ArtifactPreviewPanel 已下沉为 [AI component](../components/artifact-preview-panel.md)，原预览、类型、文案、工作区与演示生成器保持兼容。只需预览时安装 `artifact-preview-panel`。
 
 安装 `npx zeron-ui add artifact-01 input-message`。React 数据 Block，无 Next.js 或模型 SDK 依赖。
 
 ```tsx
 "use client";
 import { useState } from "react";
-import { ArtifactWorkspace, type ArtifactDocument } from "@zeron/blocks/artifact-01";
+import { ArtifactWorkspace } from "@zeron/blocks/artifact-01";
+import type { ArtifactDocument } from "@zeron/ui/artifact-preview-panel";
 import { InputMessage } from "@zeron/ui/input-message";
 
 export function ArtifactExample() {
@@ -685,6 +690,8 @@ revisionId / onRevisionChange 支持受控选择。非受控状态默认跟随�
 onClose / onRetry 由宿主处理；关闭面板应同时返回 chat 并恢复输入区焦点。复制和下载使用选择版本，刷新重建 HTML iframe，展开调用浏览器 Fullscreen API。labels 与 locale 提供双语控件文案。
 
 createArtifactDemoDocuments 与 createPricingArtifactHtml 仅提供自包含本地数据。文档演示模拟流式生成、停止、重试、历史恢复，附件与模型不参与真实请求。生产接入需要替换生成、持久化与历史管理。
+
+ArtifactPanel 与 ArtifactPreviewPanel 共用内部 Markdown、代码和差异渲染依赖，Registry 随面板自动安装。原 block 的代码/内容转发模块保持原导出与参数；资源审阅与单文档修订恢复继续由各自面板管理。
 
 
 ---
@@ -773,17 +780,19 @@ source: packages/blocks/src/application/chat-thread-01/chat-thread.tsx
 types: packages/blocks/src/application/chat-thread-01/chat-thread-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [chat-message, message-navigation, input-message, scroll-area, code-block, thinking-steps, model-selector-01, context-window-01, toast, separator, inline-notice, empty, button]
+related: [chat-message, message-navigation, input-message, scroll-area, code-block, thinking-steps, model-selector, context-window-02, toast, separator, inline-notice, empty, button]
 ---
 
 # Chat Thread
+
+`ChatThread`、全部消息组合、文案与历史辅助函数已下沉为 [AI component](../components/chat-thread.md)。原 `@zeron/blocks/chat-thread-01` 与所有模块路径保持兼容，演示数据和示例生成器继续由 block 提供。仅安装共享组件时使用 `npx zeron-ui add chat-thread input-message`。
 
 安装 `npx zeron-ui add chat-thread-01 input-message`。这是 React 数据 Block，不依赖 Next.js 或 AI SDK。消息、请求、版本、检查点和持久化由宿主持有。
 
 ```tsx
 "use client";
 import { useRef, useState } from "react";
-import { ChatThread, ChatUserMessage, ChatAssistantMessage, ChatMarkdown, chatThreadZhLabels } from "@zeron/blocks/chat-thread-01";
+import { ChatThread, ChatUserMessage, ChatAssistantMessage, ChatMarkdown, chatThreadZhLabels } from "@zeron/ui/chat-thread";
 import { InputMessage } from "@zeron/ui/input-message";
 
 export function ThreadExample() {
@@ -801,9 +810,30 @@ export function ThreadExample() {
 }
 ```
 
-Registry 消费项目将包导入替换为 `@/components/blocks/chat-thread-01` 和 `@/components/ui/input-message`。应用层只挂载一个 `Toaster`。模型选择与上下文控件是独立可选 Block，通过 InputMessage 的公开插槽接入，需要时单独安装。
+Registry 消费项目将共享组件导入替换为 `@/components/ui/chat-thread` 和 `@/components/ui/input-message`。应用层只挂载一个 `Toaster`。模型选择与上下文控件是独立可选 AI components，通过 InputMessage 的公开插槽接入，需要时单独安装。
 
-上下文属于可选的宿主组合。本次文档演示使用主线已有的 context-window-01，通过标准 Button / Popover 接入；它不是 Thread 的强制 Registry 依赖。用量触发器与弹层读取同一 data 快照，圆环复用 PieChart，百分比从实际用量计算。
+上下文触发器组合 @zeron/ui/context-window 的 ContextWindowUsage 与标准 Button / Popover，和弹层的 ContextWindowCompact 传入同一 data 快照。圆环复用 PieChart，百分比从实际用量计算，不能使用普通圆形图标或写死数值。
+
+## 职责边界
+
+ChatMessage 是无需 Provider 的单条消息呈现；ChatThread 协调会话滚动、历史阅读位置、导航、检查点请求与 composer。ChatUserMessage / ChatAssistantMessage 注册稳定唯一 ID，并复用 ChatMessage 及其公开原语。基础 ChatMessage 不注册消息，直接替代线程消息会使空态判断、导航和锚点缺少条目信息。输入框通过 composer 插槽组合；消息、版本、模型请求与持久化仍属于宿主。
+
+## 兼容别名
+
+以下导出及类型继续保留；源码 @deprecated 只提供推荐入口提示。新组合从 `@zeron/ui/chat-message` 导入规范名称，普通线程消息使用 ChatUserMessage / ChatAssistantMessage 自动协调文案与状态。
+
+| 兼容名称 | 推荐名称 | 替换时保留 |
+| --- | --- | --- |
+| ChatAction | ChatMessageAction | 直接别名，函数身份相同，无需上下文 |
+| ChatCopy | ChatMessageCopy | 线程 copy / copied / copyFailed 文案 |
+| ChatBranchSwitch | ChatMessageBranchSwitch | 线程 previous / next / version 文案及 disabled |
+| ChatAttachments | ChatMessageAttachments | 线程 conversation 文案作为 label |
+| ChatEditor | ChatMessageEditor | 线程编辑文案与 busy 或 pending 对应的 disabled；仍可取消 |
+| ChatFile | ChatMessageFile | 同一附件结构 |
+| ChatBranch | ChatMessageBranch | 同一受控版本结构 |
+| ChatResponseMetrics | ChatMessageMetrics | 同一回复统计结构 |
+
+除 ChatAction 外，上述组件适配器需要 ChatThread 上下文。不能直接改名后丢失继承状态。ChatMarkdown、ChatCheckpoint、ChatDivider 与消息包装组件仍为会话 API，不属于这些兼容别名。
 
 ## 布局与滚动
 
@@ -821,7 +851,7 @@ Block 整体使用 Floating 表面。默认空状态复用 Empty；历史失败�
 
 ## 消息组合
 
-`ChatUserMessage` 接收 `text`、`time: Date`、`files: ChatFile[]`、`attachments`、`onEdit`、`branch`、`checkpoint`。远程文件使用 `{ id, name, type?, size?, url? }`；无 URL 的文件显示文件信息。附件只展示，不上传。自定义附件可以复用 `FileThumbnail`；旧 ChatMessage 的 `files: File[]` 保持兼容。
+`ChatUserMessage` 接收 `text`、`time: Date`、`files: readonly ChatMessageFile[]`（旧 ChatFile 类型别名保持兼容）、`attachments`、`onEdit`、`branch`、`checkpoint`。远程文件使用 `{ id, name, type?, size?, url? }`；无 URL 的文件显示文件信息。附件只展示，不上传。自定义附件可以复用 `FileThumbnail`；旧 ChatMessage 的 `files: File[]` 保持兼容。
 
 `ChatAssistantMessage` 的 `children` 可放入 ThinkingSteps、工具结果、ChatMarkdown、CodeBlock、CodeDiff 等。`text` 是复制用的纯文本；不提供时不显示复制按钮。`streaming` 隐藏操作，`last` 常显操作。支持 `meta`、`onRetry`、`error`、`stopped`，以及受控 `feedback: "up" | "down" | null` / `onFeedback`。
 
@@ -869,10 +899,14 @@ source: packages/blocks/src/application/chat-workspace-01/chat-workspace.tsx
 types: packages/blocks/src/application/chat-workspace-01/chat-workspace-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [chat-thread-01, resizable, code-block, markdown, tabs, scroll-area, file-type, input-message]
+related: [artifact-panel, artifact-card, chat-thread-01, resizable, code-block, markdown, tabs, scroll-area, file-type, input-message]
 ---
 
+
+ArtifactCard 已复用 `@zeron/ui/artifact-card`。旧 block 导出继续提供资源数据适配，保留 ArtifactResource、ArtifactCardProps、完整 labels、文件大小、地址过滤与版本审阅规则。仅展示卡片可单独安装 `artifact-card`。
 # Chat Workspace
+
+ArtifactPanel 已下沉为 [AI component](../components/artifact-panel.md)，原面板、类型、文案与工具模块保留兼容导出。只需预览时安装 `artifact-panel`。
 
 安装 `npx zeron-ui add chat-workspace-01 input-message`。React 数据 Block，不依赖 Next.js 或 AI SDK。导出 ChatWorkspace、ArtifactPanel、ArtifactCard、getPendingReviewResources 和英文/中文 artifact labels。
 
@@ -883,8 +917,9 @@ related: [chat-thread-01, resizable, code-block, markdown, tabs, scroll-area, fi
 ```tsx
 "use client";
 import { useState } from "react";
-import { ChatWorkspace, ArtifactPanel, ArtifactCard, type ArtifactResource } from "@zeron/blocks/chat-workspace-01";
-import { ChatAssistantMessage } from "@zeron/blocks/chat-thread-01";
+import { ChatWorkspace, ArtifactCard } from "@zeron/blocks/chat-workspace-01";
+import { ArtifactPanel, type ArtifactResource } from "@zeron/ui/artifact-panel";
+import { ChatAssistantMessage } from "@zeron/ui/chat-thread";
 import { InputMessage } from "@zeron/ui/input-message";
 
 export function WorkspaceExample() {
@@ -904,7 +939,7 @@ export function WorkspaceExample() {
 }
 ```
 
-Registry 使用 `@/components/blocks/chat-workspace-01`、`@/components/blocks/chat-thread-01` 和 `@/components/ui/input-message`。ArtifactPanel 可单独放入受限高度容器，无需聊天 Provider。
+Registry 使用 `@/components/blocks/chat-workspace-01`、`@/components/ui/chat-thread`、`@/components/ui/artifact-panel` 和 `@/components/ui/input-message`。ArtifactPanel 可单独放入受限高度容器，无需聊天 Provider。
 
 ## 布局与状态归属
 
@@ -938,9 +973,11 @@ URL 只支持 HTTP(S) 或相对地址的沙箱 iframe；图片和下载额外允
 
 createChatWorkspaceDemoResources(locale, assetBase) 返回本地主题代码、Markdown、图片、网页与 ZIP 元数据。assetBase 默认 /demos/chat-workspace；消费项目替换地址或提供自己的资源。演示回复与审阅为本地模拟，不访问模型、不写磁盘。独立面板演示不依赖 ChatWorkspace。
 
-工作区与 chat-thread-01 的文档演示共用 ChatDemoModelControls、ChatDemoContextControl 和 ChatDemoResponseContent，统一模型选择、附件入口、上下文用量、思考过程和 Markdown 输出。回复仍使用 ChatAssistantMessage 的 model、modelLogo、provider、metrics、stopped、onRetry 和 onFeedback，模型身份属于单条回复快照，切换选择器不会改写历史回复。流式结束后显示 TTFT、输入/输出 tokens 和耗时。模型与上下文仅复用固定演示数据；消费项目按需另装 model-selector-01、context-window-02 并连接真实数据。
+工作区与 chat-thread-01 的文档演示共用 ChatDemoModelControls、ChatDemoContextControl 和 ChatDemoResponseContent，统一模型选择、附件入口、上下文用量、思考过程和 Markdown 输出。回复仍使用 ChatAssistantMessage 的 model、modelLogo、provider、metrics、stopped、onRetry 和 onFeedback，模型身份属于单条回复快照，切换选择器不会改写历史回复。流式结束后显示 TTFT、输入/输出 tokens 和耗时。模型与上下文仅复用固定演示数据；消费项目按需另装 model-selector、context-window-02 并连接真实数据。
 
 验证拖动与键盘调宽、收起后 composer 身份、窄屏切换、关闭后重开、修订后的状态重置、批量部分失败、引用不自动发送、图片缩放、URL 刷新和失效协议、空/加载/失败状态，以及 Registry 依赖闭包。样式只做外部布局，保持 Zeron 组件的表面、焦点、控件尺寸与主题。
+
+ArtifactPanel 与 ArtifactPreviewPanel 共用内部 Markdown、代码和差异渲染依赖，Registry 随面板自动安装。原 block 的代码/内容转发模块保持原导出与参数；资源审阅与单文档修订恢复继续由各自面板管理。
 
 
 ---
@@ -1036,10 +1073,12 @@ source: packages/blocks/src/application/context-window-01/context-window.tsx
 types: packages/blocks/src/application/context-window-01/context-window-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [container, badge, button, tabs, tooltip, inline-notice]
+related: [context-window, container, badge, button, tabs, tooltip, inline-notice]
 ---
 
 # Context Window 01
+
+共享 UI 已下沉到 `@zeron/ui/context-window`（Registry：`@/components/ui/context-window`）。旧 block 的组件、文案、类型与演示工厂继续兼容。通用组件说明见 [ContextWindow](../components/context-window.md)。
 
 安装 `npx zeron-ui add context-window-01`。嵌入现有页面的 React 数据 block，保留宿主布局。Registry 消费项目改用 `@/components/blocks/context-window-01` 入口。
 
@@ -1063,6 +1102,63 @@ tab/onTabChange 支持受控分类；省略 tab 时保持本地状态。内容�
 矩阵由 400 格表示分类比例，使用最大余数法分配，细小分类可能不足一格；真实数值保留在键盘可访问的图例中。系统、工具、文档、历史固定映射至 chart-1、chart-2、chart-4、chart-5；记忆使用 chart-1 与 chart-5 的等量混色，剩余使用中性槽位 chart-6。分类配色避开黄色 chart-3 与红色 chart-7。矩阵、图例圆点、内容圆点与条目进度共用该映射，读取颜色变量以跟随主题。图例点击文档/记忆/历史可切换内容。Tooltip 展示分类前三条记录。现有 HeatmapChart 要求日期与数值强度，与无时间轴的 token 容量语义不符；此处仅实现业务矩阵，不复制日历热力图。所有颜色与动效使用既有变量与语义时长。
 
 内容列表独立滚动。分类图例使用三列两行，每项名称与数值水平排列，窄屏长名称截断，完整名称与数值仍通过可访问标签提供；顶部统计在窄屏上下排列。示例数据工厂是固定演示快照，不表示模型查询。文档预览本地模拟实时变化和压缩，完整保留固定记录；真实压缩、缓存成本与持久化由宿主接入。
+
+
+---
+
+---
+schema_version: 1
+name: context-window-02
+kind: block
+status: stable
+locale: zh-CN
+summary: 精简的上下文容量卡片，包含模型、分类矩阵、文件展开与对话压缩。
+package_import: "@zeron/blocks/context-window-02"
+registry_import: "@/components/blocks/context-window-02"
+source: packages/blocks/src/application/context-window-02/context-window-compact.tsx
+types: packages/blocks/src/application/context-window-02/context-window-compact-types.ts
+registry: packages/blocks/registry.json
+typecheck_examples: true
+related: [context-window, context-window-01, container, badge, button, alert, inline-notice, pie-chart]
+---
+
+# Context Window 02
+
+共享 UI 已下沉到 `@zeron/ui/context-window`（Registry：`@/components/ui/context-window`）。旧 block 的组件、文案、类型与演示工厂继续兼容。通用组件说明见 [ContextWindow](../components/context-window.md)。
+
+安装 `npx zeron-ui add context-window-02`。用于嵌入会话侧栏、弹出面板或已有页面的紧凑 React 数据 block，保留宿主布局。
+
+```tsx
+"use client";
+import { useState } from "react";
+import { ContextWindowCompact, ContextWindowUsage, createContextWindowCompactDemoData, contextWindowCompactZhLabels } from "@zeron/blocks/context-window-02";
+
+export function ContextWindowCompactPreview() {
+  const [data] = useState(createContextWindowCompactDemoData);
+  return <div className="space-y-3">
+    <ContextWindowUsage data={data} locale="zh-CN" />
+    <ContextWindowCompact data={data} locale="zh-CN" labels={contextWindowCompactZhLabels} />
+  </div>;
+}
+```
+
+Registry 消费项目改用 `@/components/blocks/context-window-02`。`data` 与 context-window-01 共用 ContextWindowData；本 block 只展示 capacity、systemTokens、toolTokens、docs、history、memory 和可选 session.model。总量由记录计算；capacity 必须为有限正数，token 必须为有限非负数，同一类别 id 唯一且非空。无效输入显示错误。超容量保留真实总量与百分比，剩余钳制为零。token 使用 k/M/B，百分比与可访问精确计数按 locale 格式化。
+
+在 Popover 或已有表面中传 `embedded`，仅渲染内容与操作，不生成 Container、ContainerBody 或 ContainerFooter 的背景、边框和留白；外层表面统一管理这些样式。独立使用时默认保留原来的 Container 卡片。
+
+240 格矩阵与 context-window-01 共用最大余数分配；顺序为系统、工具、文件、对话、记忆、剩余。中性色和品牌色来自现有语义变量，无新增主题变量。矩阵是分类容量可视化，无日期轴；真实数量同时提供在文本分类明细中。
+
+`title` 可替换标题；Claude 模型名称默认搭配现有图标库的彩色 Claude 标志，`modelIcon` 可覆盖默认值并为其他模型提供装饰图标。`labels` 支持局部覆盖，提供 English/Zh 两组默认值。locale 语法无效时数值格式回退到 en-US，不中断渲染。宿主以新 data 对象传入更新后的快照，避免原地修改被 memo 缓存保留。
+
+文件行使用 Button 展开本地只读列表，提供 aria-expanded/aria-controls；列表只在展开时创建条目，限高并独立滚动，支持 Tab 聚焦后使用方向键或 PageDown 滚动。
+
+用量与容量使用相同的正文大小，仅用字重和颜色区分；分类明细统一使用正文大小，文件展开按钮通过 Button 的 md 尺寸保持一致。底部显示剩余容量。
+
+`ContextWindowUsage` 用于按钮或工具栏内的紧凑用量读数，接收相同的 data、locale 和原生 span 属性。内部复用 PieChart / PieSlice，以 used 和 remaining 真实数量绘制 16px 圆环，文字由实际 used / capacity 本地化计算；超容量显示满环及实际百分比，非法数据显示破折号。图形关闭入场与悬停效果，并通过 aria-hidden、inert 保持装饰性；外层 Button 负责焦点与展开行为。把该复合读数作为 Button 内容时，提供上下文含义的可访问文案，不再使用普通 circle 图标或固定百分比。
+
+`onCompact` 与 `compacting` 由宿主控制；回调缺失时隐藏压缩操作。压缩中、历史为空、无非零未固定记录时禁用压缩。block 不修改快照。加载使用 info InlineNotice；错误与无效快照使用 danger Alert，onRetry 位于 AlertAction。`notice` 是成功反馈，使用 success InlineNotice + InlineNoticeContent，由常驻的礼貌播报区域统一播报；加载、错误、无效数据或压缩中隐藏旧成功提示。宿主在开始新操作时清空旧 notice。真实压缩、持久化与模型服务均由宿主接入。
+
+Registry 依赖 context-window UI，并保留 context-window-01/context-window-data.ts 与 context-window-types.ts 的兼容转导出，可与完整版并存。精简 block 通过适配层保留默认 Claude 图标；通用 UI 的 modelIcon 由宿主提供。示例工厂是固定的 175.6k / 200k 快照；文档演示在本地模拟压缩并保留固定记录，不连接模型服务。
 
 
 ---
@@ -2007,6 +2103,7 @@ registry: packages/blocks/registry.json
 related:
   - container
   - select
+  - field
   - slider
   - switch
   - alert
@@ -2034,6 +2131,7 @@ function Example() {
 - KV cache scales linearly from `cachePer32K` with context and parallel requests. Multi-GPU allocations split the model memory evenly. All enabled models on each GPU contribute to capacity validation. Real allocators may need different placement or empirical estimates; these formulas are not live GPU telemetry.
 - `getLocalModelsUsage`, `getLocalModelMemory`, `countLocalModelChanges` and `fitLocalModelsToGpus` are exported. Fit reduces requests, then context, then weight memory across all affected models before considering unloading any model. Models without KV cache retain their request/context settings. Invalid input returns an unchanged cloned draft without entering reduction loops. Review the resulting draft before applying.
 - Apply is disabled for no changes, missing host handler, pending saves, invalid config/placement, or any over-capacity GPU. Validation includes unique IDs and allocations, positive GPU capacities, finite nonnegative memory estimates, supported precision, positive context and 1–16 requests. Unassigned SVG cards are disabled, matching the GPU selector. Loading/unloading, context, precision and overflow handling remain draft changes until applied.
+- Context selection uses Field and FieldLabel with an explicitly associated SelectTrigger. Presets remain 8K, 32K and 128K; a valid host-provided context outside those presets is retained as a selected option with its units. Rich option rows keep cache/shortage metadata on separate lines and preserve the closed trigger’s plain label.
 - Precision and busy-slot handling use `Tabs variant="pill"`. Parallel requests use `SliderComfortable` with the built-in label/value display, integer steps from 1 to 16, and theme-accent fill.
 - The header GPU Memory button opens the library Popover with `data.serverName`, per-GPU loaded models, memory bars, available memory, and Fit. Selecting a GPU selects its first loaded model (or its first assigned unloaded model), closes the popover, and updates the right panel and SVG together. Multi-GPU model selection highlights every allocated card. Unassigned cards remain visible with a disabled selection row; no-GPU data shows an empty state. Per-GPU over-capacity colors remain semantic danger colors.
 - `onCopy` delegates clipboard/export policy to the host. Optional `actions` accepts host actions. `title`, `description`, `icon`, and model metadata accept product-specific content. Built-in control copy is English.
@@ -2114,10 +2212,12 @@ source: packages/blocks/src/application/model-selector-01/model-selector.tsx
 types: packages/blocks/src/application/model-selector-01/model-selector-types.ts
 registry: packages/blocks/registry.json
 typecheck_examples: true
-related: [popover, command, switch, input-message, avatar, button]
+related: [model-selector, popover, command, switch, input-message, avatar, button]
 ---
 
 # Model Selector
+
+通用组件现由 `@zeron/ui/model-selector` 提供，独立安装使用 `npx zeron-ui add model-selector`。本 block 保留原有组件、类型和文案导出，均转向同一 UI 实现；演示模型工厂与默认值继续属于本 block。
 
 安装 `npx zeron-ui add model-selector-01`。React 数据 block，不引入页面布局或模型服务，可嵌入现有消息输入框的操作区。
 
@@ -3363,6 +3463,141 @@ yDomain 可传 `[数值 | "dataMin", 数值 | "dataMax"]` 指定纵轴边界；�
 
 ---
 schema_version: 1
+name: artifact-card
+kind: component
+status: stable
+summary: 生成内容卡片，展示文件类型、说明与审阅状态，保留宿主记录的打开回调。
+package_import: "@zeron/ui/artifact-card"
+registry_import: "@/components/ui/artifact-card"
+source: packages/ui/src/components/artifact-card.tsx
+types: packages/ui/src/components/artifact-card/types.ts
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [file-type, info-item, chat-workspace-01, artifact-01, chat-message]
+---
+
+# ArtifactCard
+
+安装 `npx zeron-ui add artifact-card`。无需 Chat Thread、生成正文、版本或预览运行时。
+
+```tsx
+"use client";
+import { ArtifactCard, type ArtifactCardItem } from "@zeron/ui/artifact-card";
+
+type GeneratedFile = ArtifactCardItem & { documentId: string };
+
+export function GeneratedFiles({ files, onOpen }: { files: readonly GeneratedFile[]; onOpen: (id: string) => void }) {
+  return <ArtifactCard resources={files} locale="zh-CN" title="本次生成" onOpen={(file) => onOpen(file.documentId)} />;
+}
+```
+
+Registry 消费项目改用 `@/components/ui/artifact-card`。resources 中每项仅要求唯一稳定 id、name、kind；kind 为 code/markdown/text/image/url/file，可选 description（非交互说明）与 review（pending/accepted/rejected）。URL 项使用网页图标，其余复用 FileType。
+
+onOpen 返回完整原始对象，泛型保留宿主附加字段。组件不复制资源，不获取文件，不自行打开链接、创建 iframe 或管理版本。getDescription(resource) 和 getReviewStatus(resource) 提供显示投影，适配现有业务模型；审阅投影存在时，其 undefined 结果明确隐藏状态。ReactNode 说明不得包含嵌套交互控件，因为 InfoItem 使用原生 button 作为整行根元素。
+
+title、locale、labels 提供标题与本地化，导出 artifactCardEnLabels/artifactCardZhLabels。className、style 与 HTML 属性用于外部布局。内部的文件图标、信息层级、焦点与边框遵循共享组件契约。
+
+chat-workspace-01 的旧 ArtifactCard 仍接受原有 ArtifactCardProps、ArtifactResource 和完整 ArtifactLabels。它作为适配层复用本组件，保留 UTF-8 文件大小、显式 size 优先、网页地址过滤及显示，以及有 previousContent 的版本审阅规则。onOpen 继续返回原始版本资源。artifact-01 的 GeneratedArtifactCard 与 ArtifactWorkspace 导出不变。面板预览和版本操作继续由这些 block 提供。
+
+
+---
+
+---
+schema_version: 1
+name: artifact-panel
+kind: component
+status: stable
+locale: zh-CN
+summary: 多资源预览、标签关闭、图片缩放与准确版本的审阅面板。
+package_import: "@zeron/ui/artifact-panel"
+registry_import: "@/components/ui/artifact-panel"
+source: packages/ui/src/components/artifact-panel.tsx
+types: packages/ui/src/components/artifact-panel/types.ts
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [artifact-preview-panel, artifact-card, chat-workspace-01, tabs, code-block, markdown, file-type]
+---
+
+# ArtifactPanel
+
+安装 `npx zeron-ui add artifact-panel`。独立 AI component，无需聊天 Provider、ChatThread、Resizable、ArtifactCard 或示例数据。Registry 导入为 `@/components/ui/artifact-panel`。
+
+```tsx
+"use client";
+import { ArtifactPanel, type ArtifactPanelProps } from "@zeron/ui/artifact-panel";
+
+export function Preview(props: ArtifactPanelProps) {
+  return <div className="h-96 min-h-0"><ArtifactPanel {...props} locale="zh-CN" /></div>;
+}
+```
+
+resources 是已打开资源的只读有序快照。每项 id 唯一且稳定，version 随内容变化，包含 name、kind，以及可选 path、messageId、status、error、downloadUrl、size。kind 为 code、markdown、text、image、url、file；code/markdown 有 content、可选 previousContent，code 还可传 previousPath，显式 review 为 pending/accepted/rejected。图片有 url/alt，网页有 url，普通文件可传 url/mimeType。普通文件只展示元信息和下载入口，不内置 Office/PDF 全文预览。
+
+activeId/onActiveIdChange 可选受控；省略 activeId 时使用本地选择，defaultActiveId 只作初始值。移除活动资源后回退到剩余项。onCloseMany 存在时统一接收关闭集合，否则逐项调用 onClose；宿主移除打开项，不等于删除资源或完成审阅。关闭当前项优先选择右侧邻项，再回退左侧。更多菜单支持关闭其他与全部，Delete 关闭聚焦标签；溢出时保留当前项，菜单列出所有资源。addAction 在空面板仍显示，重复打开由宿主按 id 去重。
+
+宿主通过 onReview(resource, decision) 提交具体 id/version，decision 为 accept/reject；成功后更新该版本的 review，再 resolve；失败 reject。面板不虚构成功。保存期间锁定重复审阅，仍可浏览其他资源。批量逐项保留部分失败，失败提示绑定版本，不转移到新内容。getPendingReviewResources(resources) 与面板共享就绪、可审阅、pending 的规则，保持宿主顺序；也可从 `@zeron/ui/artifact-panel/utils` 导入。
+
+onReference(resource) 将结构化引用加入宿主草稿，不自动发送；onRetry(resource) 请求宿主重试。renderPreview(resource) 返回 undefined 才回退内置预览，可接入 PDF、浏览器或业务查看器。status=loading/error 显示反馈。已访问的资源保持挂载与局部状态；关闭或更新 version 释放旧预览。
+
+代码/Markdown 差异复用 CodeDiff，文本复用 CodeBlock，Markdown 复用 Markdown。图片支持适应窗口、原始尺寸、绝对比例缩放、鼠标平移与原生触屏/键盘滚动。失败禁用图片控制，重试后恢复。网页使用过滤后的 HTTP(S) 或相对地址及沙箱 iframe，不授予 same-origin；图片/下载额外允许 blob。网站可能禁止内嵌，保留外部打开；刷新只重载对应网页，不实现跨域读取或导航历史。
+
+labels 支持 Partial<ArtifactLabels>，导出 artifactEnLabels、artifactZhLabels，也可从 `/labels` 导入。保留原文案字段以兼容旧工作区。locale 控制语言，className 只管理外部布局；宿主提供受限高度。底部单一审阅区复用 Alert，标签、操作、错误与图标分别复用 Tabs、Button、InlineNotice、FileType 等公共能力。
+
+两种面板仅共用内部 artifact-content-renderer 的 Markdown、CodeBlock、CodeDiff 渲染与内容间距，Registry 自动安装此共享依赖，不需要宿主直接调用。ArtifactPanel 的 ArtifactCodePreview 适配资源的 path/previousPath/previousContent，保留代码内工具栏与统一/分栏差异，空 previousContent 仍可对比。ArtifactPreviewPanel 的 ArtifactContent 适配选中与上一修订，隐藏代码内工具栏，固定统一差异；HTML 沙箱不经过共享渲染器。两种数据模型、状态、延迟加载与宿主操作继续独立。原 `/artifact-panel/code-preview`、`/artifact-preview-panel/content` 和 block 转发模块保留原名称及参数。
+
+旧 `@zeron/blocks/chat-workspace-01` 保留全部面板、资源类型、labels、getPendingReviewResources、卡片适配、ChatWorkspace 与演示数据。原面板、标签、预览、代码、文案和工具模块均转发到此共享实现。ChatWorkspace 继续负责会话分栏。单文档修订历史使用 ArtifactPreviewPanel，两个组件不混用资源状态模型。
+
+
+---
+
+---
+schema_version: 1
+name: artifact-preview-panel
+kind: component
+status: stable
+locale: zh-CN
+summary: HTML、Markdown 与代码的修订预览、变更对比和宿主恢复操作。
+package_import: "@zeron/ui/artifact-preview-panel"
+registry_import: "@/components/ui/artifact-preview-panel"
+source: packages/ui/src/components/artifact-preview-panel.tsx
+types: packages/ui/src/components/artifact-preview-panel/types.ts
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [artifact-panel, artifact-card, artifact-01, code-block, markdown, tabs]
+---
+
+# ArtifactPreviewPanel
+
+安装 `npx zeron-ui add artifact-preview-panel`。独立 AI component，无需 ChatWorkspace、ChatThread 或聊天 block。Registry 导入为 `@/components/ui/artifact-preview-panel`。
+
+```tsx
+"use client";
+import { ArtifactPreviewPanel, type ArtifactPreviewPanelProps } from "@zeron/ui/artifact-preview-panel";
+
+export function RevisionPreview(props: ArtifactPreviewPanelProps) {
+  return <div className="h-96 min-h-0"><ArtifactPreviewPanel {...props} locale="zh-CN" /></div>;
+}
+```
+
+artifact 是宿主持有的 ArtifactDocument 或 null。文档包含 id、title、filename、kind（html/markdown/code）与按时间正序的只读 revisions；修订 id 唯一，包含 content、可选 label、status（ready/streaming/error）与 error。null 或空修订显示空状态。组件不获取模型结果、不编译 JSX/TSX、不保存文档。
+
+revisionId/onRevisionChange 支持可选受控选择。非受控默认跟随最新修订，用户选择后保持历史版本。无效 ID 回退最新。onRestore(document, revision) 只为历史版本提供入口，宿主应追加新修订后再 resolve，不改写原历史；失败 reject。恢复中锁定重复请求，允许浏览其他版本。完成时若用户已切换文档或修订，保留其选择；失败提示绑定原文档与修订。受控模式由宿主同步 revisionId。
+
+streaming 强制显示代码并禁用复制、下载、预览与变更。error 显示宿主错误与可选 onRetry(document, revision)。onClose 请求关闭；处于全屏时先退出全屏。复制/下载使用当前选中修订。刷新只重建当前预览，不影响源码和差异视图。展开调用 Fullscreen API，失败显示反馈。
+
+当前修订内访问过的 Code、Preview、Changes 保持挂载，保留输入、滚动与展开；未访问视图延迟加载。新修订释放旧视图，避免保留无限 iframe。代码复用 CodeBlock，Markdown 复用 Markdown，差异复用 CodeDiff 对比上一修订。HTML 使用 sandbox="allow-scripts" 的 srcDoc iframe，不授予 same-origin；沙箱不代表网络隔离。
+
+labels 支持 Partial<ArtifactPreviewLabels>，导出 artifactPreviewEnLabels 与 artifactPreviewZhLabels，也可从 `/labels` 导入。locale 控制双语文案，className 管理外部布局，宿主提供受限高度。恢复和持久化属于宿主，组件只协调选择、视图与操作意图。
+
+两种面板仅共用内部 artifact-content-renderer 的 Markdown、CodeBlock、CodeDiff 渲染与内容间距，Registry 自动安装此共享依赖，不需要宿主直接调用。ArtifactPanel 的 ArtifactCodePreview 适配资源的 path/previousPath/previousContent，保留代码内工具栏与统一/分栏差异，空 previousContent 仍可对比。ArtifactPreviewPanel 的 ArtifactContent 适配选中与上一修订，隐藏代码内工具栏，固定统一差异；HTML 沙箱不经过共享渲染器。两种数据模型、状态、延迟加载与宿主操作继续独立。原 `/artifact-panel/code-preview`、`/artifact-preview-panel/content` 和 block 转发模块保留原名称及参数。
+
+旧 `@zeron/blocks/artifact-01` 保留 ArtifactPreviewPanel、ArtifactDocument、ArtifactRevision、全部原类型、labels、ArtifactWorkspace、GeneratedArtifactCard 和演示生成器。原预览、内容与文案模块转发到共享实现；ArtifactWorkspace 继续组合 ChatWorkspace 与此组件。多资源审阅使用 ArtifactPanel，不与单文档历史合并成同一个状态模型。
+
+
+---
+
+---
+schema_version: 1
 name: avatar
 kind: component
 status: stable
@@ -4015,14 +4250,14 @@ related:
   - markdown
   - input-message
   - inline-notice
-  - chat-thread-01
+  - chat-thread
 ---
 
 # ChatMessage
 
 ## Agent intent
 
-单条用户或助手消息使用 ChatMessage。需要完整会话的历史、滚动和检查点恢复时组合 chat-thread-01。
+单条用户或助手消息使用 ChatMessage，无需会话 Provider。完整会话使用 [ChatThread](chat-thread.md) 和 ChatUserMessage / ChatAssistantMessage；后两者注册消息 ID，再复用 ChatMessage。基础 ChatMessage 不注册线程消息，不能直接替代线程消息包装组件。旧 chat-thread-01 继续提供兼容导出与演示数据。
 
 ## Installation and imports
 
@@ -4072,9 +4307,140 @@ export function Example() {
 - ChatMessageAttachment 渲染单个附件卡片，ChatMessageAttachments 渲染附件列表；两者均接受本地 File 与历史 ChatMessageFile，预览、文件名和大小共用一个边框。InputMessage 同样使用该卡片，保留移除操作。FileThumbnail 的 bordered=false 用于由外层卡片统一承载边框。
 - ChatMessageMeta 接受 metrics、locale 与 labels，并保留可选 model 用于自定义页脚信息；普通回复的模型身份使用 ChatMessageAuthor。metrics 包含 ttftMs、inputTokens、outputTokens、durationMs；时间以毫秒传入，token 使用非负整数。token 自动换算为 k、M、B，最多保留一位小数，悬停和辅助技术提供带千分位的完整数值。指标窄屏自动换行；缺失或无效指标省略，保留 0。这些数据与模型身份属于该次回复，不随模型选择器改变。
 
+## 与会话的边界
+
+ChatMessage 管理单条消息布局与局部操作，ChatThread 管理会话滚动、历史阅读位置、导航、检查点请求及持续挂载的 composer。单条消息示例只展示呈现，不代表已接入完整会话。模型请求、消息/版本存储和真实恢复属于宿主。
+
+ChatScrollToLatest 是会话级导航按钮，继续从 chat-message 导出以兼容现有 API；其显隐、滚动与跟随由宿主或 ChatThread 协调，不属于消息数据管理。
+
+ChatAction、ChatCopy、ChatBranchSwitch、ChatAttachments、ChatEditor 是 chat-thread 的兼容名称。新独立组合使用 ChatMessage* 规范名称；替换适配器时显式传入其原先继承的 labels，并保留 disabled。完整映射见 [ChatThread 兼容说明](chat-thread.md#兼容别名)。
+
 ## Ownership
 
 组件只负责消息呈现与局部编辑交互。模型请求、反馈写入、版本存储、恢复和历史树属于宿主。
+
+
+---
+
+---
+schema_version: 1
+name: chat-thread
+kind: component
+status: stable
+locale: zh-CN
+summary: 可组合的流式会话、消息版本、历史阅读锚点与检查点恢复。
+package_import: "@zeron/ui/chat-thread"
+registry_import: "@/components/ui/chat-thread"
+source: packages/ui/src/components/chat-thread.tsx
+types: packages/ui/src/components/chat-thread/types.ts
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [chat-message, message-navigation, input-message, scroll-area, code-block, thinking-steps, model-selector, context-window, toast, separator, inline-notice, empty, button]
+---
+
+# Chat Thread
+
+安装 `npx zeron-ui add chat-thread input-message`。这是独立的 AI component，不依赖聊天 block、演示数据、Next.js 或 AI SDK。消息、请求、版本、检查点和持久化由宿主持有。
+
+```tsx
+"use client";
+import { useRef, useState } from "react";
+import { ChatThread, ChatUserMessage, ChatAssistantMessage, ChatMarkdown, chatThreadZhLabels } from "@zeron/ui/chat-thread";
+import { InputMessage } from "@zeron/ui/input-message";
+
+export function ThreadExample() {
+  const [draft, setDraft] = useState("");
+  const [messages, setMessages] = useState<{ id: string; text: string }[]>([]);
+  const editor = useRef<HTMLTextAreaElement>(null);
+  return <div className="h-96 min-h-0">
+    <ChatThread labels={chatThreadZhLabels} locale="zh-CN" composerRef={editor}
+      composer={<InputMessage textareaRef={editor} layout="compact" value={draft} onValueChange={setDraft}
+        onSend={(text) => { setMessages((items) => [...items, { id: crypto.randomUUID(), text }]); setDraft(""); }} />}>
+      <ChatAssistantMessage id="welcome" text="可以开始提问。"><ChatMarkdown text="可以开始提问。" /></ChatAssistantMessage>
+      {messages.map((message, index) => <ChatUserMessage key={message.id} id={message.id} text={message.text} pin={index === messages.length - 1} />)}
+    </ChatThread>
+  </div>;
+}
+```
+
+Registry 消费项目将包导入替换为 `@/components/ui/chat-thread` 和 `@/components/ui/input-message`。应用层只挂载一个 `Toaster`。模型选择与上下文控件是独立可选 AI components，通过 InputMessage 的公开插槽接入，需要时单独安装 model-selector 与 context-window。
+
+上下文触发器组合 @zeron/ui/context-window 的 ContextWindowUsage 与标准 Button / Popover，和弹层的 ContextWindowCompact 传入同一 data 快照。圆环复用 PieChart，百分比从实际用量计算，不能使用普通圆形图标或写死数值。
+
+## 职责边界
+
+ChatMessage 是无需 Provider 的单条消息呈现；ChatThread 协调会话滚动、历史阅读位置、导航、检查点请求与 composer。ChatUserMessage / ChatAssistantMessage 注册稳定唯一 ID，并复用 ChatMessage 及其公开原语。基础 ChatMessage 不注册消息，直接替代线程消息会使空态判断、导航和锚点缺少条目信息。输入框通过 composer 插槽组合；消息、版本、模型请求与持久化仍属于宿主。
+
+## 兼容别名
+
+以下导出及类型继续保留；源码 @deprecated 只提供推荐入口提示。新组合从 `@zeron/ui/chat-message` 导入规范名称，普通线程消息使用 ChatUserMessage / ChatAssistantMessage 自动协调文案与状态。
+
+| 兼容名称 | 推荐名称 | 替换时保留 |
+| --- | --- | --- |
+| ChatAction | ChatMessageAction | 直接别名，函数身份相同，无需上下文 |
+| ChatCopy | ChatMessageCopy | 线程 copy / copied / copyFailed 文案 |
+| ChatBranchSwitch | ChatMessageBranchSwitch | 线程 previous / next / version 文案及 disabled |
+| ChatAttachments | ChatMessageAttachments | 线程 conversation 文案作为 label |
+| ChatEditor | ChatMessageEditor | 线程编辑文案与 busy 或 pending 对应的 disabled；仍可取消 |
+| ChatFile | ChatMessageFile | 同一附件结构 |
+| ChatBranch | ChatMessageBranch | 同一受控版本结构 |
+| ChatResponseMetrics | ChatMessageMetrics | 同一回复统计结构 |
+
+除 ChatAction 外，上述组件适配器需要 ChatThread 上下文。不能直接改名后丢失继承状态。ChatMarkdown、ChatCheckpoint、ChatDivider 与消息包装组件仍为会话 API，不属于这些兼容别名。
+
+## 布局与滚动
+
+宿主提供受限高度，组件使用一个会话滚动视口。空状态与消息状态保持 composer 的 DOM 身份，保留焦点、附件和草稿。`empty` 替换默认空状态标题。
+
+助手消息及正文复用 ChatMessage 的满宽布局，按 article 的 100% 可用宽度显示表格、CodeBlock、CodeDiff 等块内容，不按内容收缩；用户气泡维持 80% 上限。会话整体阅读宽度仍由宿主布局管理，宽表与超长代码在自身区域横向滚动。
+
+组件整体使用 Floating 表面。默认空状态复用 Empty；历史失败、回复错误和停止提示复用 InlineNotice；检查点与时间分隔线复用 Separator 的 subtle 色调；右侧消息导航复用 MessageNavigation 的紧凑短线、当前位置、键盘与 Popover 预览。恢复弹层使用 PopoverHeader、PopoverTitle、PopoverDescription、PopoverFooter 和默认内边距。元信息经 ChatMessage.meta 插槽排版，组件仅管理外部布局、会话状态、历史树和滚动锚点，不复制基础组件样式。
+
+消息 `id` 在线程内必须唯一，同一逻辑消息跨版本保持稳定；切换逻辑消息使用新的 ID。`pin` 只标记刚发送的用户轮次。短回复下方保留阅读空间，使该轮次可以位于顶部；回复增长超出视口后继续跟随。用户主动向上阅读后暂停跟随，点击回到最新内容恢复。入口复用 ChatScrollToLatest 的 tertiary / sm 描边按钮、向下箭头和中英文文案，位于输入区上方居中，间距 16px；与其他会话共用 24px 最新位置阈值。代码高亮、图片加载和输入区增高通过布局观测处理。桌面消息导航中每条短线对应一个用户轮次，预览问题和紧随其后的助手回复首段；点击跳转并聚焦用户消息。Tab 只进入侧轨一次，上下方向键与 Home / End 移动焦点，Enter / Space 选择，Escape 关闭预览。导航在消息过多时仅滚动自身；窄屏省略侧轨，保留原生会话滚动与键盘。
+
+`hasOlder`、`loadingOlder` 和 `onLoadOlder` 控制前插历史。回调返回 Promise，或在历史提交前保持 `loadingOlder=true`。加载期间记录可见消息及偏移，完成后恢复；失败时保留消息并显示可重试错误。历史加载期间禁用编辑、重试、版本和检查点恢复，并暂缓已有的撤销操作；恢复或撤销进行中禁用历史加载入口，避免异步变更交错。不要在完成加载后再异步追加消息而提前撤掉 loadingOlder。
+
+`bookmarkedIds` 保存受控的逻辑用户消息 ID，`onBookmarkChange(messageId, bookmarked)` 透传导航预览的收藏请求。提供回调才显示右上角按钮；外部更新 bookmarkedIds 后才改变收藏显示。`bookmarkLabels` 本地化收藏及取消收藏文案。宿主负责持久化、失败处理和版本间的状态策略，组件不自行更改收藏状态。演示使用页面状态模拟收藏。
+
+## 消息组合
+
+`ChatUserMessage` 接收 `text`、`time: Date`、`files: readonly ChatMessageFile[]`（旧 ChatFile 类型别名保持兼容）、`attachments`、`onEdit`、`branch`、`checkpoint`。远程文件使用 `{ id, name, type?, size?, url? }`；无 URL 的文件显示文件信息。附件只展示，不上传。自定义附件可以复用 `FileThumbnail`；旧 ChatMessage 的 `files: File[]` 保持兼容。
+
+`ChatAssistantMessage` 的 `children` 可放入 ThinkingSteps、工具结果、ChatMarkdown、CodeBlock、CodeDiff 等。`text` 是复制用的纯文本；不提供时不显示复制按钮。`streaming` 隐藏操作，`last` 常显操作。支持 `meta`、`onRetry`、`error`、`stopped`，以及受控 `feedback: "up" | "down" | null` / `onFeedback`。
+
+传 `model`、`modelLogo: ReactNode` 与 `provider`，由 ChatMessageAuthor 在回复正文上方显示模型 Logo、medium 字重的名称和灰色 provider，生成期间保持可见；未知字段可省略。传 `metrics: { ttftMs?, inputTokens?, outputTokens?, durationMs? }`，由底部 ChatMessageMeta 显示本次回复的首 token 延迟、输入/输出 token 与总耗时，TTFT 前不重复模型名称，窄屏自动换行。时间统一使用毫秒，token 为非负整数，自动换算为 k、M、B（最多一位小数），悬停和辅助技术提供带千分位的完整数值；缺失或无效指标省略。`meta` 用于额外的页脚信息。宿主应保存每次回复实际使用的模型、provider 与 Logo 对应关系；演示中的 token 是模拟数据，新生成回复的耗时来自本地计时。
+
+`ChatMarkdown` 适配独立的 `@zeron/ui/markdown`，与 Agent Trace 共享安全 GFM 渲染，代码复用 Zeron CodeBlock；不启用原始 HTML。Registry 通过 markdown 依赖自动安装 UI 组件。工具结果使用应用实际数据通过 children 组合，不要求特定工具协议。
+
+`ChatCopy`、`ChatBranchSwitch`、`ChatAttachments`、`ChatEditor` 为兼容适配器，在 ChatThread 内获取文案。独立使用时从 `@zeron/ui/chat-message` 导入对应的 ChatMessageCopy、ChatMessageBranchSwitch、ChatMessageAttachments 和 ChatMessageEditor，并按需传 labels；ChatAction 是 ChatMessageAction 的兼容导出。ChatCheckpoint 和 ChatDivider 保留为会话组合。
+
+## 版本与业务状态
+
+`branch` 是 `{ index, count, onChange }`，索引从零开始。组件只发出版本选择；宿主保留历史版本及对应后续对话，避免切换文字后保留不属于该版本的答案。编辑回调支持 Promise；失败后保留编辑草稿并显示错误。`busy` 禁用编辑、重试、版本和恢复操作。
+
+InputMessage 的生成状态仍为 `idle | streaming`。生成期间发送可进入受控 `queue`；停止后默认继续释放下一条，与旧组件一致。恢复、编辑、版本切换时设置 `autoDispatchQueue=false`，避免状态切换触发意外发送；需要再次自动派发时由宿主显式恢复。`textareaRef` 提供公开编辑器引用，原根节点 ref 保持兼容。ScrollArea 新增 `viewportRef` / `viewportProps`，桌面与触屏都指向真实视口。
+
+## 检查点与撤销
+
+用户消息传 `checkpoint: { id, label?, files? }` 后显示恢复分隔线。`files` 是各轮次变更的文件路径，由宿主提供；确认时合并选中轮次与后续轮次的路径并去重。确认前显示将移除的消息数、文件数与路径，并淡化对应消息；没有文件时只提供恢复对话选项。
+
+`onRestore(checkpointId, { code })` 负责真实变更。宿主应在成功后移除选中的用户消息及之后的消息，将原文和附件回填输入区，提交后再 resolve；失败时 reject，确认保持打开。`splitThreadHistory(messages, messageId)` 提供不修改原数组的拆分，返回 `{ kept, removed }`，`removed[0]` 是待回填的消息；未知 ID 返回完整 kept 与空 removed。
+
+返回 `{ undo: () => void | Promise<void> }` 可提供撤销。快照应覆盖消息/版本选择、草稿、附件和队列。宿主后续产生新变更时，需使旧撤销失效或提供冲突处理；失败时保留 Undo 操作以便重试。真实文件恢复必须由宿主实现，不可把前端消息截断视为代码恢复完成。
+
+`composerRef` 与 InputMessage 的 `textareaRef` 使用同一引用，恢复成功后聚焦编辑器并置光标到末尾。文案用 `labels` 覆盖，导出 `chatThreadEnLabels` 和 `chatThreadZhLabels`，时间通过 `locale` 格式化。
+
+## 验证与演示
+
+检查新会话节点身份、流式中止、队列冻结、历史锚点、编辑输入法、分支后续对话、异步恢复失败与撤销冲突。触屏操作持续可见；键盘焦点揭示操作；回复使用 log、aria-busy、评价按下状态和实时播报。
+
+演示中的请求、模型、上下文和代码恢复为本地模拟，不请求模型、不上传附件、不修改磁盘。重播、新对话、错误重试、队列、分支、历史加载、恢复和撤销均可交互。接入生产时替换宿主模拟操作，而不是修改基础 UI 控件。
+
+## 兼容与独立入口
+
+旧 `@zeron/blocks/chat-thread-01` 保留全部组件、类型、labels、splitThreadHistory，以及 createChatThreadDemoData、createChatThreadDemoReply、getChatThreadDemoPath 和演示类型。所有兼容模块转发到共享实现，旧消息与新容器可以混用，context 保持同一身份。ToolCallsThread、SubagentsThread 和 ChatWorkspace 直接使用此 AI component。
+
+文案可从 `@zeron/ui/chat-thread/labels` 导入，历史纯函数可从 `@zeron/ui/chat-thread/history` 导入。输入框是可选 composer 插槽，不属于 chat-thread 的 Registry 依赖。应用层只挂载一个 Toaster。独立的消息气泡、附件、编辑、复制、模型身份与统计继续由 chat-message 提供；本组件负责会话组合、滚动和交互协调。
 
 
 ---
@@ -4254,6 +4620,63 @@ export function OwnerPicker({ items, value, onChange, disabled = false }: {
 ## 验收
 
 检查同名不同 ID、对象刷新后选中值、多选移除、清除、键盘选择、Escape、加载／错误／空集合和只读权限。在窄屏与嵌入 Dialog 中验证 Popup 定位、滚动及主题。示例由 `agents:guides:examples:check` 做类型检查；业务行为与视觉验收另行执行。消费者导入必须按实际 aliases 改写，仓库导入不证明安装路径。
+
+
+---
+
+---
+schema_version: 1
+name: context-window
+kind: component
+status: stable
+locale: zh-CN
+summary: 共享上下文快照的完整面板、精简面板和用量指示器，压缩与数据更新由宿主控制。
+package_import: "@zeron/ui/context-window"
+registry_import: "@/components/ui/context-window"
+source: packages/ui/src/components/context-window.tsx
+types: packages/ui/src/components/context-window/types.ts
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [context-window-01, context-window-02, input-message, popover, pie-chart]
+---
+
+# ContextWindow
+
+安装 `npx zeron-ui add context-window`。独立 AI component，无需安装聊天 block 或其演示数据；Registry 消费项目将导入替换为 `@/components/ui/context-window`。
+
+```tsx
+"use client";
+import { useState } from "react";
+import {
+  ContextWindow, ContextWindowCompact, ContextWindowUsage,
+  contextWindowZhLabels, contextWindowCompactZhLabels, type ContextWindowData,
+} from "@zeron/ui/context-window";
+
+export function ContextPanels({ snapshot, onCompact }: { snapshot: ContextWindowData; onCompact: () => void }) {
+  const [tab, setTab] = useState<"docs" | "memory" | "history">("docs");
+  return <div className="space-y-4">
+    <ContextWindowUsage data={snapshot} locale="zh-CN" />
+    <ContextWindow data={snapshot} tab={tab} onTabChange={setTab} locale="zh-CN"
+      labels={contextWindowZhLabels} onCompact={onCompact} />
+    <ContextWindowCompact data={snapshot} locale="zh-CN"
+      labels={contextWindowCompactZhLabels} onCompact={onCompact} />
+  </div>;
+}
+```
+
+三个入口共用 ContextWindowData：正数 capacity、非负 systemTokens/toolTokens 及 docs/memory/history 记录。每类记录的 id 非空且唯一、tokens 有限非负；source/detail 为宿主已本地化文案。可选 cache 提供 0–1 命中率和金额/token 指标，未知值为 null；tokensPerTurn 是预计每轮用量，session 提供模型、轮次和名称。以新的 data 对象更新记录，避免原地修改被 memo 保留。
+
+需要在服务端纯计算时，从 `@zeron/ui/context-window/data`（Registry：`@/components/ui/context-window/data`）导入数据工具；独立文案也可从 `@zeron/ui/context-window/labels` 导入。
+
+getContextWindowUsage(data) 返回共享总量、比例、状态和可选剩余轮次，无效或无法表示的用量返回 null。超容量保留真实比例且剩余为零。allocateContextWindowCells(totals, capacity, cellCount?, categories?) 仅接收已校验总量，使用最大余数法；完整面板 400 格，精简面板 240 格。它们是无日期轴的分类容量矩阵。真实计数也提供在图例、分类与可访问标签中，不以颜色单独传达用量。
+
+完整 ContextWindow 保留缓存、受控或本地分类 tab/defaultTab/onTabChange、只读记录、固定状态及 live、onSettings、onClose、footerActions。locale/currency 格式化百分比、整数与缓存金额；token 用 k/M/B。ContextWindowCompact 支持文件展开、剩余容量、modelIcon 和 embedded；无效 locale 回退 en-US。shared UI 不依赖任何提供方，模型图标由宿主传入。
+
+在 Popover 内使用 embedded 避免嵌套 Container 表面，外层管理边框、留白和展开行为。ContextWindowUsage 接收相同 data、locale 和原生 span 属性；使用 PieChart/PieSlice 绘制装饰性 16px 用量环，图形 aria-hidden/inert，无额外焦点。按钮宿主需添加“上下文用量”等可访问标签。非法快照显示破折号，超容量显示满环及真实比例。
+
+onCompact 只发出意图，组件不修改快照、不调用模型或保存数据；宿主负责 compacting、loading、error、onRetry 与 notice。缺少回调隐藏操作；忙碌、空历史或全部固定时禁用压缩，精简面板还会排除零 token 记录。精简面板在加载、错误、无效或压缩中隐藏旧成功提示。完整与精简面板分别导出 contextWindowEnglishLabels/contextWindowZhLabels、contextWindowCompactEnglishLabels/contextWindowCompactZhLabels，支持局部 labels 覆盖。
+
+旧 @zeron/blocks/context-window-01 和 context-window-02 入口保留所有组件、类型、文案和数据工厂。第一个 block 兼容导出共享完整面板，第二个兼容导出用量指示器并以轻量适配层保留默认 Claude 标志，modelIcon 覆盖规则不变。演示工厂和业务演示留在 block 中，新的 UI 不反向依赖 block。
 
 
 ---
@@ -5168,6 +5591,49 @@ export function RequestMetric({ value, state, updatedAt, canViewDetails, onOpen 
 ## 验收
 
 检查零值、负值、极大数、loading／error／stale、真实单位、明细权限、键盘整卡操作、微图表方向键与样本不足反馈，并查看窄屏。示例类型由 `agents:guides:examples:check` 验证；不证明指标接口、聚合结果或图表交互已经验收。消费者以已安装源码和实际 aliases 为准。
+
+
+---
+
+---
+schema_version: 1
+name: model-selector
+kind: component
+status: stable
+summary: 受控模型选择器，包含可选相对评分、扩展思考和联网搜索设置。
+package_import: "@zeron/ui/model-selector"
+registry_import: "@/components/ui/model-selector"
+source: packages/ui/src/components/model-selector.tsx
+types: packages/ui/src/components/model-selector/types.ts
+registry: packages/ui/registry.json
+typecheck_examples: true
+related: [input-message, popover, command, switch, avatar, model-selector-01]
+---
+
+# ModelSelector
+
+安装 `npx zeron-ui add model-selector`。模型、图标和可用状态由宿主提供；组件不依赖演示模型或品牌图标库。
+
+```tsx
+"use client";
+import { useState } from "react";
+import { ModelSelector, modelSelectorZhLabels, type ModelSelectorModel, type ModelSelectorValue } from "@zeron/ui/model-selector";
+
+export function ModelChoice({ models }: { models: readonly ModelSelectorModel[] }) {
+  const [value, setValue] = useState<ModelSelectorValue>({ modelId: "auto", extendedThinking: false, webSearch: false });
+  return <ModelSelector models={models} value={value} onValueChange={setValue} labels={modelSelectorZhLabels} />;
+}
+```
+
+Registry 消费项目改用 `@/components/ui/model-selector`。放入 InputMessage.leftSlot 即可组合输入框；InputMessage 单独安装。
+
+- models 提供唯一非空 id、name、description、装饰性 icon，可选 disabled 和 ratings（speed/quality/cost，1–5 档）。费用评分越高代表越昂贵，未提供评分显示动态变化。
+- value 包含 modelId、extendedThinking、webSearch；onValueChange 返回完整新对象，选择模型保留两项设置，再次选择当前模型只关闭面板。宿主负责能力校验、网络请求和持久化。
+- open/onOpenChange 或 defaultOpen 控制弹层。disabled 禁用整个控件并隐藏面板；不可用模型跳过键盘导航。空列表显示空状态，无匹配模型显示选择提示，不自动改写 value。
+- 键盘高亮独立于已确认选择；宿主改变 modelId 或重开弹层时同步，选项移除或禁用后回退可用项，保留输入焦点。aria-current 表示已确认选择，aria-describedby 提供说明与评分。
+- labels 支持局部覆盖，导出 modelSelectorEnLabels/modelSelectorZhLabels。locale、currency 和模型的 firstTokenSeconds/costPerMillionTokens 保留兼容，当前精简列表不展示金额或延迟。
+- side/align 控制弹层方位，className 仅控制触发按钮外部布局；窄容器将评分放到说明下方，较宽时并列展示。内部样式复用 Popover、Command、Avatar、Switch 和 Button。
+- model-selector-01 继续提供原有组件、类型、文案和 createModelSelectorDemoModels/modelSelectorDemoValue；其组件导出转向同一 UI 实现。演示工厂和品牌图标依赖保留在 block，不进入基础组件。
 
 
 ---

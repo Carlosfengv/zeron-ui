@@ -1,0 +1,76 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "context-window-02",
+  "type": "registry:block",
+  "title": "上下文窗口 · 精简版",
+  "description": "紧凑的上下文用量、分类矩阵、文件展开与对话操作。",
+  "dependencies": [
+    "@lobehub/icons@^5.16.0"
+  ],
+  "registryDependencies": [
+    "https://zeron-ui.vercel.app/r/context-window.json"
+  ],
+  "files": [
+    {
+      "path": "packages/blocks/src/application/context-window-02/context-window-compact.tsx",
+      "content": "\"use client\";\nimport ClaudeColor from \"@lobehub/icons/es/Claude/components/Color\";\nimport { ContextWindowCompact as SharedContextWindowCompact } from \"@ui/context-window\";\nimport type { ContextWindowCompactProps } from \"./context-window-compact-types\";\n/** Preserve the block's default provider logo; shared UI accepts a host icon. */\nexport function ContextWindowCompact(props: ContextWindowCompactProps) {\n    const modelIcon = props.modelIcon ?? (/^claude(?:[-\\s]|$)/i.test(props.data.session?.model ?? \"\") ? <ClaudeColor size={16}/> : undefined);\n    return <SharedContextWindowCompact {...props} modelIcon={modelIcon}/>;\n}\n",
+      "type": "registry:component",
+      "target": "components/blocks/context-window-02/context-window-compact.tsx"
+    },
+    {
+      "path": "packages/blocks/src/application/context-window-02/context-window-usage.tsx",
+      "content": "\"use client\";\nexport { ContextWindowUsage } from \"@ui/context-window\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/context-window-02/context-window-usage.tsx"
+    },
+    {
+      "path": "packages/blocks/src/application/context-window-02/context-window-compact-types.ts",
+      "content": "export type { ContextWindowCompactLabels, ContextWindowCompactProps, ContextWindowUsageProps } from \"@ui/context-window\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/context-window-02/context-window-compact-types.ts"
+    },
+    {
+      "path": "packages/blocks/src/application/context-window-02/context-window-compact-labels.ts",
+      "content": "export { contextWindowCompactEnglishLabels, contextWindowCompactZhLabels } from \"@ui/context-window/labels\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/context-window-02/context-window-compact-labels.ts"
+    },
+    {
+      "path": "packages/blocks/src/application/context-window-02/context-window-compact-demo-data.ts",
+      "content": "import type { ContextWindowData } from \"../context-window-01/context-window-types\";\n/** Fixed reference snapshot. No model service is connected. */\nexport function createContextWindowCompactDemoData(): ContextWindowData {\n    return {\n        capacity: 200000, systemTokens: 4200, toolTokens: 12800,\n        docs: [\n            { id: \"guide\", title: \"AGENTS.md\", tokens: 6200 },\n            { id: \"tokens\", title: \"tokens.css\", tokens: 12400 },\n            { id: \"components\", title: \"Component library\", tokens: 27500 },\n        ],\n        history: [\n            { id: \"pinned\", title: \"Project instructions\", tokens: 8600, pinned: true },\n            { id: \"conversation\", title: \"Current conversation\", tokens: 100000 },\n        ],\n        memory: [{ id: \"preferences\", title: \"Project preferences\", tokens: 3900 }],\n        session: { model: \"claude-sonnet\", turn: 24, name: \"Component design\" },\n    };\n}\n",
+      "type": "registry:component",
+      "target": "components/blocks/context-window-02/context-window-compact-demo-data.ts"
+    },
+    {
+      "path": "packages/blocks/src/application/context-window-02/index.ts",
+      "content": "export { ContextWindowCompact } from \"./context-window-compact\";\nexport { ContextWindowUsage } from \"./context-window-usage\";\nexport { createContextWindowCompactDemoData } from \"./context-window-compact-demo-data\";\nexport { contextWindowCompactEnglishLabels, contextWindowCompactZhLabels } from \"./context-window-compact-labels\";\nexport type { ContextWindowCompactLabels, ContextWindowCompactProps, ContextWindowUsageProps } from \"./context-window-compact-types\";\nexport type { ContextWindowData, ContextWindowItem } from \"../context-window-01/context-window-types\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/context-window-02/index.ts"
+    },
+    {
+      "path": "packages/blocks/src/application/context-window-01/context-window-data.ts",
+      "content": "export { allocateContextWindowCells, contextWindowCategories, contextWindowColors, getContextWindowUsage } from \"@ui/context-window/data\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/context-window-01/context-window-data.ts"
+    },
+    {
+      "path": "packages/blocks/src/application/context-window-01/context-window-types.ts",
+      "content": "export type { ContextWindowCategory, ContextWindowData, ContextWindowItem, ContextWindowLabels, ContextWindowProps, ContextWindowTab } from \"@ui/context-window\";\n",
+      "type": "registry:component",
+      "target": "components/blocks/context-window-01/context-window-types.ts"
+    }
+  ],
+  "meta": {
+    "zeron": {
+      "framework": "react",
+      "react": "^19.0.0",
+      "tailwind": "^4.0.0",
+      "kind": "data-block"
+    }
+  },
+  "categories": [
+    "application",
+    "agent",
+    "monitoring"
+  ]
+}

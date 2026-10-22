@@ -4,6 +4,374 @@
   "homepage": "https://github.com/zeron-design/zeron-design",
   "items": [
     {
+      "name": "artifact-content-renderer",
+      "type": "registry:file",
+      "title": "Artifact Content Renderer",
+      "description": "Internal Markdown, code and diff rendering shared by the artifact panels. Install the panel that matches your state model.",
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/code-block.json",
+        "https://zeron-ui.vercel.app/r/markdown.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-content-renderer.tsx",
+          "type": "registry:file",
+          "target": "components/ui/artifact-content-renderer.tsx"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "artifact-preview-panel",
+      "type": "registry:ui",
+      "title": "ArtifactPreviewPanel",
+      "description": "Generated HTML, Markdown and code previews with revision history and host-owned restoration.",
+      "dependencies": [
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/artifact-content-renderer.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/menu-item.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-preview-panel/content.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-preview-panel/content.tsx"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "artifact-panel",
+      "type": "registry:ui",
+      "title": "ArtifactPanel",
+      "description": "Multi-resource content previews with tabs, version-scoped review and host-owned actions.",
+      "dependencies": [
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/artifact-content-renderer.json",
+        "https://zeron-ui.vercel.app/r/dropdown.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/file-type.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/menu-item.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-panel.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/utils.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/utils.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/tabs.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/tabs.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/preview.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/preview.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-panel/code-preview.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-panel/code-preview.tsx"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "chat-thread",
+      "type": "registry:ui",
+      "title": "ChatThread",
+      "description": "Composable conversations with anchored history, streaming messages, persistent composer and host-owned checkpoint restoration.",
+      "dependencies": [
+        "@hugeicons/react@^1.1.6",
+        "@hugeicons/core-free-icons@^4.1.1",
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/chat-message.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/message-navigation.json",
+        "https://zeron-ui.vercel.app/r/popover.json",
+        "https://zeron-ui.vercel.app/r/scroll-area.json",
+        "https://zeron-ui.vercel.app/r/separator.json",
+        "https://zeron-ui.vercel.app/r/toast.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/utils.json",
+        "https://zeron-ui.vercel.app/r/markdown.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chat-thread.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/context.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/context.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/history.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/history.ts"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/messages.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/messages.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/markdown.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/markdown.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/chat-thread/use-thread-scroll.ts",
+          "type": "registry:ui",
+          "target": "components/ui/chat-thread/use-thread-scroll.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "artifact-card",
+      "type": "registry:ui",
+      "title": "ArtifactCard",
+      "description": "Reusable generated-content cards with file icons, metadata and host-owned opening.",
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/file-type.json",
+        "https://zeron-ui.vercel.app/r/info-item.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/artifact-card.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-card.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-card/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-card/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/artifact-card/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/artifact-card/labels.ts"
+        }
+      ],
+      "dependencies": [
+        "tw-animate-css@^1.4.0"
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "context-window",
+      "type": "registry:ui",
+      "title": "ContextWindow",
+      "description": "Shared context capacity, detailed and compact token breakdowns, and a decorative usage indicator.",
+      "dependencies": [
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/tooltip.json",
+        "https://zeron-ui.vercel.app/r/pie-chart.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/context-window.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/context-window.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/labels.ts"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/data.ts",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/data.ts"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/compact.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/compact.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/context-window/usage.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/context-window/usage.tsx"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
+      "name": "model-selector",
+      "type": "registry:ui",
+      "title": "ModelSelector",
+      "description": "Controlled model selection with relative ratings and conversation settings.",
+      "dependencies": [
+        "tw-animate-css@^1.4.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/surfaces.json",
+        "https://zeron-ui.vercel.app/r/avatar.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/command.json",
+        "https://zeron-ui.vercel.app/r/popover.json",
+        "https://zeron-ui.vercel.app/r/switch.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/model-selector.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/model-selector.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/model-selector/types.ts",
+          "type": "registry:ui",
+          "target": "components/ui/model-selector/types.ts"
+        },
+        {
+          "path": "packages/ui/src/components/model-selector/labels.ts",
+          "type": "registry:ui",
+          "target": "components/ui/model-selector/labels.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "ui"
+        }
+      }
+    },
+    {
       "name": "message-navigation",
       "type": "registry:ui",
       "title": "Message Navigation",
@@ -6389,6 +6757,73 @@
       }
     },
     {
+      "name": "context-window-02",
+      "type": "registry:block",
+      "title": "上下文窗口 · 精简版",
+      "description": "紧凑的上下文用量、分类矩阵、文件展开与对话操作。",
+      "categories": [
+        "application",
+        "agent",
+        "monitoring"
+      ],
+      "dependencies": [
+        "@lobehub/icons@^5.16.0"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/context-window.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/context-window-02/context-window-compact.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/context-window-compact.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-02/context-window-usage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/context-window-usage.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-02/context-window-compact-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/context-window-compact-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-02/context-window-compact-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/context-window-compact-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-02/context-window-compact-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/context-window-compact-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-02/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-02/index.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-01/context-window-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-01/context-window-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/context-window-01/context-window-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/context-window-01/context-window-types.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "artifact-01",
       "type": "registry:block",
       "title": "Artifact",
@@ -6401,16 +6836,7 @@
       "dependencies": [],
       "registryDependencies": [
         "https://zeron-ui.vercel.app/r/chat-workspace-01.json",
-        "https://zeron-ui.vercel.app/r/button.json",
-        "https://zeron-ui.vercel.app/r/code-block.json",
-        "https://zeron-ui.vercel.app/r/dropdown.json",
-        "https://zeron-ui.vercel.app/r/empty.json",
-        "https://zeron-ui.vercel.app/r/icon-context.json",
-        "https://zeron-ui.vercel.app/r/inline-notice.json",
-        "https://zeron-ui.vercel.app/r/markdown.json",
-        "https://zeron-ui.vercel.app/r/menu-item.json",
-        "https://zeron-ui.vercel.app/r/tabs.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/artifact-preview-panel.json"
       ],
       "files": [
         {
@@ -6532,20 +6958,12 @@
       ],
       "dependencies": [],
       "registryDependencies": [
-        "https://zeron-ui.vercel.app/r/chat-thread-01.json",
-        "https://zeron-ui.vercel.app/r/alert.json",
+        "https://zeron-ui.vercel.app/r/chat-thread.json",
+        "https://zeron-ui.vercel.app/r/artifact-panel.json",
+        "https://zeron-ui.vercel.app/r/artifact-card.json",
         "https://zeron-ui.vercel.app/r/button.json",
-        "https://zeron-ui.vercel.app/r/code-block.json",
-        "https://zeron-ui.vercel.app/r/dropdown.json",
-        "https://zeron-ui.vercel.app/r/empty.json",
-        "https://zeron-ui.vercel.app/r/file-type.json",
-        "https://zeron-ui.vercel.app/r/icon-context.json",
-        "https://zeron-ui.vercel.app/r/info-item.json",
-        "https://zeron-ui.vercel.app/r/inline-notice.json",
-        "https://zeron-ui.vercel.app/r/markdown.json",
-        "https://zeron-ui.vercel.app/r/menu-item.json",
         "https://zeron-ui.vercel.app/r/resizable.json",
-        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
         "https://zeron-ui.vercel.app/r/utils.json"
       ],
       "files": [
@@ -6624,24 +7042,9 @@
         "ai",
         "agent"
       ],
-      "dependencies": [
-        "@hugeicons/react@^1.1.6",
-        "@hugeicons/core-free-icons@^4.1.1"
-      ],
+      "dependencies": [],
       "registryDependencies": [
-        "https://zeron-ui.vercel.app/r/button.json",
-        "https://zeron-ui.vercel.app/r/chat-message.json",
-        "https://zeron-ui.vercel.app/r/empty.json",
-        "https://zeron-ui.vercel.app/r/icon-context.json",
-        "https://zeron-ui.vercel.app/r/inline-notice.json",
-        "https://zeron-ui.vercel.app/r/message-navigation.json",
-        "https://zeron-ui.vercel.app/r/popover.json",
-        "https://zeron-ui.vercel.app/r/scroll-area.json",
-        "https://zeron-ui.vercel.app/r/separator.json",
-        "https://zeron-ui.vercel.app/r/toast.json",
-        "https://zeron-ui.vercel.app/r/tooltip.json",
-        "https://zeron-ui.vercel.app/r/utils.json",
-        "https://zeron-ui.vercel.app/r/markdown.json"
+        "https://zeron-ui.vercel.app/r/chat-thread.json"
       ],
       "files": [
         {
@@ -6953,13 +7356,7 @@
         "@lobehub/icons@^5.16.0"
       ],
       "registryDependencies": [
-        "https://zeron-ui.vercel.app/r/avatar.json",
-        "https://zeron-ui.vercel.app/r/button.json",
-        "https://zeron-ui.vercel.app/r/command.json",
-        "https://zeron-ui.vercel.app/r/popover.json",
-        "https://zeron-ui.vercel.app/r/switch.json",
-        "https://zeron-ui.vercel.app/r/icon-context.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/model-selector.json"
       ],
       "files": [
         {
@@ -7074,6 +7471,7 @@
         "https://zeron-ui.vercel.app/r/button.json",
         "https://zeron-ui.vercel.app/r/chart-primitives.json",
         "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/field.json",
         "https://zeron-ui.vercel.app/r/popover.json",
         "https://zeron-ui.vercel.app/r/select.json",
         "https://zeron-ui.vercel.app/r/slider.json",
@@ -7566,14 +7964,7 @@
       ],
       "dependencies": [],
       "registryDependencies": [
-        "https://zeron-ui.vercel.app/r/badge.json",
-        "https://zeron-ui.vercel.app/r/button.json",
-        "https://zeron-ui.vercel.app/r/container.json",
-        "https://zeron-ui.vercel.app/r/inline-notice.json",
-        "https://zeron-ui.vercel.app/r/tabs.json",
-        "https://zeron-ui.vercel.app/r/tooltip.json",
-        "https://zeron-ui.vercel.app/r/icon-context.json",
-        "https://zeron-ui.vercel.app/r/utils.json"
+        "https://zeron-ui.vercel.app/r/context-window.json"
       ],
       "files": [
         {
