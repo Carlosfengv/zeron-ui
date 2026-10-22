@@ -92,6 +92,20 @@ const bottomPlacementCode = `<Dialog>
   </DialogContent>
 </Dialog>`;
 
+const nestedCode = `<Dialog>
+  <DialogTrigger render={<Button>Open parent dialog</Button>} />
+  <DialogContent size="lg">
+    <DialogTitle>Parent dialog</DialogTitle>
+    <Dialog disablePointerDismissal>
+      <DialogTrigger render={<Button>Open child dialog</Button>} />
+      <DialogContent nestedBackdrop backdropClassName="backdrop-blur-none">
+        <DialogTitle>Child dialog</DialogTitle>
+        <DialogDescription>Escape closes only this dialog and returns focus to its trigger.</DialogDescription>
+      </DialogContent>
+    </Dialog>
+  </DialogContent>
+</Dialog>`;
+
 export default function DialogDoc() {
   const t = useTranslations("dialog");
   const dialogProps: PropDef[] = [
@@ -107,6 +121,7 @@ export default function DialogDoc() {
     { name: "placement", type: '"center" | "left" | "right" | "top" | "bottom"', default: '"center"', description: t("placement") },
     { name: "backdropClassName", type: "string", description: t("backdropClassName") },
     { name: "backdropStyle", type: "CSSProperties", description: t("backdropStyle") },
+    { name: "nestedBackdrop", type: "boolean", default: "false", description: t("nestedBackdrop") },
     { name: "showCloseButton", type: "boolean", default: "true", description: t("showCloseButton") },
     { name: "closeButtonLabel", type: "string", default: '"Close"', description: t("closeButtonLabel") },
     { name: "closeButtonDisabled", type: "boolean", default: "false", description: t("closeButtonDisabled") },
@@ -224,6 +239,25 @@ export default function DialogDoc() {
                   Use bottom placement for a compact action surface.
                 </DialogDescription>
               </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </ComponentPreview>
+      </DocSection>
+
+      <DocSection title={t("nestedDialogs")}>
+        <p>{t("nestedBackdropDescription")}</p>
+        <ComponentPreview code={nestedCode}>
+          <Dialog>
+            <DialogTrigger render={<Button>{t("openParentDialog")}</Button>} />
+            <DialogContent size="lg">
+              <DialogTitle>{t("parentDialog")}</DialogTitle>
+              <Dialog disablePointerDismissal>
+                <DialogTrigger render={<Button>{t("openChildDialog")}</Button>} />
+                <DialogContent nestedBackdrop backdropClassName="backdrop-blur-none">
+                  <DialogTitle>{t("childDialog")}</DialogTitle>
+                  <DialogDescription>{t("nestedDialogHint")}</DialogDescription>
+                </DialogContent>
+              </Dialog>
             </DialogContent>
           </Dialog>
         </ComponentPreview>

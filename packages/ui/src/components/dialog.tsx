@@ -66,6 +66,8 @@ export interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {
   backdropClassName?: string;
   /** Inline styles applied to the backdrop surface. */
   backdropStyle?: CSSProperties;
+  /** Render a backdrop for a nested dialog too. Defaults to false. */
+  nestedBackdrop?: boolean;
   /** Whether to render the built-in close button. Defaults to true. */
   showCloseButton?: boolean;
   /** Accessible name for the built-in close button. Defaults to "Close". */
@@ -110,6 +112,7 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
       placement = "center",
       backdropClassName,
       backdropStyle,
+      nestedBackdrop = false,
       container,
       showCloseButton = true,
       closeButtonLabel = "Close",
@@ -132,6 +135,7 @@ const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
         container={container ?? ambientPortal ?? undefined}
       >
         <DialogPrimitive.Backdrop
+          forceRender={nestedBackdrop}
           render={(backdropProps, state) => {
             const exiting = state.transitionStatus === "ending";
             const {
