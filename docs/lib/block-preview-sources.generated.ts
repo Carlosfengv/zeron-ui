@@ -2,6 +2,9 @@
 import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
+  "credit-top-up-01": {
+    "url": "/docs-source/2bc708bfd45c4fb20fa23241758338a5aa51f8c18995c02092e0e2dbb99563a7.txt"
+  },
   "context-window-02": {
     "url": "/docs-source/f8f458a2694d5c47e0df0484351cd32c0827eee5b91a91f3c3889bfa12aa28b0.txt"
   },

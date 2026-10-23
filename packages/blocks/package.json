@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./credit-top-up-01": "./src/application/credit-top-up-01/index.ts",
     "./context-window-02": "./src/application/context-window-02/index.ts",
     "./artifact-01": "./src/application/artifact-01/index.ts",
     "./tool-calls-01": "./src/application/tool-calls-01/index.ts",

@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "items": [
+    { "id": "block:credit-top-up-01", "type": "registry", "key": "credit-top-up-01", "aliases": ["credit-top-up-01"], "status": "active", "retirementReason": null },
     {
       "id": "support:artifact-content-renderer",
       "type": "registry",

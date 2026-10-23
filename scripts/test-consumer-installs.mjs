@@ -619,6 +619,12 @@ async function verifyNextBuild({ consumer, component }) {
     'export default function Page() { const [range, setRange] = useState<WebsiteAnalyticsRange>("30d"); return <WebsiteAnalytics site="example.com" range={range} onRangeChange={setRange} data={createWebsiteAnalyticsDemoData(range)} />; }',
     '',
   ].join("\n");
+  examples["credit-top-up-01"] = [
+    '"use client";',
+    'import { CreditTopUp, createCreditTopUpDemoData } from "@/components/blocks/credit-top-up-01";',
+    'export default function Page() { return <CreditTopUp data={createCreditTopUpDemoData()} defaultPackageId="standard" onConfirm={() => {}} />; }',
+    '',
+  ].join("\n");
   examples["file-type"] = [
     'import { FileType } from "@/components/ui/file-type";',
     'export default function Page() { return <div><FileType fileName="Report.PDF" /><FileType extension="xlsx" variant="solid" size="mini" /><FileType extension="sketch" variant="light" size="xl" /><FileType extension="unknown" variant="mono" /></div>; }',

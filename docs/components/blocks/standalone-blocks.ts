@@ -1,4 +1,5 @@
 export const standaloneBlockSlugs = [
+  "credit-top-up-01",
   "artifact-01",
   "tool-calls-01",
   "chat-workspace-01",

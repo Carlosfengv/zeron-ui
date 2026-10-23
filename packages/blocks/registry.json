@@ -3,6 +3,73 @@
   "name": "zeron-blocks",
   "items": [
     {
+      "name": "credit-top-up-01",
+      "type": "registry:block",
+      "title": "Credit top-up",
+      "description": "Recent activity, monthly credit allocation, depletion forecast and controlled top-up package selection.",
+      "categories": [
+        "application",
+        "billing",
+        "analytics"
+      ],
+      "dependencies": [
+        "recharts"
+      ],
+      "registryDependencies": [
+        "button",
+        "card",
+        "chart",
+        "chart-primitives",
+        "container",
+        "icon-context",
+        "inline-notice",
+        "radio-group",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-chart.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-chart.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-formatters.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-formatters.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-labels.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-labels.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/index.ts"
+        }
+      ]
+    },
+    {
       "name": "context-window-02",
       "type": "registry:block",
       "title": "上下文窗口 · 精简版",

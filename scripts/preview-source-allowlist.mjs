@@ -1,5 +1,15 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "credit-top-up-01": [
+    "packages/blocks/src/application/credit-top-up-01/index.ts",
+    "packages/blocks/src/application/credit-top-up-01/credit-top-up.tsx",
+    "packages/blocks/src/application/credit-top-up-01/credit-top-up-chart.tsx",
+    "packages/blocks/src/application/credit-top-up-01/credit-top-up-types.ts",
+    "packages/blocks/src/application/credit-top-up-01/credit-top-up-data.ts",
+    "packages/blocks/src/application/credit-top-up-01/credit-top-up-formatters.ts",
+    "packages/blocks/src/application/credit-top-up-01/credit-top-up-labels.tsx",
+    "packages/blocks/src/application/credit-top-up-01/credit-top-up-demo-data.ts"
+  ],
   "context-window-02": [
     "packages/blocks/src/application/context-window-02/context-window-compact.tsx",
     "packages/blocks/src/application/context-window-02/context-window-compact-types.ts",

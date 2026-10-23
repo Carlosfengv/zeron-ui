@@ -6757,6 +6757,81 @@
       }
     },
     {
+      "name": "credit-top-up-01",
+      "type": "registry:block",
+      "title": "Credit top-up",
+      "description": "Recent activity, monthly credit allocation, depletion forecast and controlled top-up package selection.",
+      "categories": [
+        "application",
+        "billing",
+        "analytics"
+      ],
+      "dependencies": [
+        "recharts@^3.10.1"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/card.json",
+        "https://zeron-ui.vercel.app/r/chart.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/radio-group.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-chart.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-chart.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-formatters.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-formatters.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-labels.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-labels.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/credit-top-up.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/credit-top-up.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/credit-top-up-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/credit-top-up-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "context-window-02",
       "type": "registry:block",
       "title": "上下文窗口 · 精简版",
