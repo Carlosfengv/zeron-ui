@@ -1,4 +1,30 @@
 {
+  "agent-runs-01": {
+    "keywords": [
+      "运行",
+      "用量",
+      "模型消耗",
+      "项目费用",
+      "缓存",
+      "Session",
+      "agent runs",
+      "cost",
+      "usage"
+    ],
+    "useCases": [
+      "展示单个项目的 Agent / 模型费用分布、运行趋势与 Session 记录。"
+    ],
+    "whenNotToUse": [
+      "不执行 Agent、不采集用量、不连接计费服务；完整调用链调试使用 agent-session-detail-01。"
+    ],
+    "keyApi": [
+      "data 提供完整时间窗口、agents、models、runs；汇总和图表从 Session usage 派生。",
+      "mode / defaultMode / onModeChange 切换累计与单次费用；pageSize 和 defaultExpandedRunId 控制初始展示。",
+      "onOpenSession 接收完整 Session；onClose、state、onRetry 由宿主接入。",
+      "原生 AreaChart / Grid / Tooltip、SegmentedBar / ChartLegend、Tabs / DataTable 和语义颜色；DataTable 固定表头、内置分页、日期标题与跨列明细；中英文 labels 和时区格式化。",
+      "usage=null 保留未知，缓存命中率使用输入 Token 分母，活动条宽度表示时长。"
+    ]
+  },
   "artifact-preview-panel": {
     "keywords": [
       "artifact",

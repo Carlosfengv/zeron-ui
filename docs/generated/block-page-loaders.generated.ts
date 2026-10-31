@@ -3,6 +3,7 @@ import "server-only";
 import type { DocPageLoader } from "./page-loader-types";
 
 export const blockPageLoaders: Record<string, DocPageLoader> = {
+  "blocks/agent-runs-01": () => import("@docs/pages/blocks/agent-runs-01/page"),
   "blocks/credit-top-up-01": () => import("@docs/pages/blocks/credit-top-up-01/page"),
   "blocks/context-window-02": () => import("@docs/pages/blocks/context-window-02/page"),
   "blocks/artifact-01": () => import("@docs/pages/blocks/artifact-01/page"),

@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "agent-runs-01", title: "Agent 运行用量", description: "项目费用趋势、Agent 活动、模型消耗分布与可展开的 Session 费用明细。", categories: ["application", "ai", "billing", "observability"], dependencies: ["area-chart", "avatar", "badge", "button", "chart-core", "chart-primitives", "container", "data-table", "empty", "icon-context", "inline-notice", "skeleton", "tabs", "utils", "@visx/curve", "@tanstack/react-table"] },
   { name: "credit-top-up-01", title: "额度充值", description: "近期用量趋势、月度额度分布、耗尽预测与充值套餐选择。", categories: ["application", "billing", "analytics"], dependencies: ["button", "card", "chart", "chart-primitives", "container", "icon-context", "inline-notice", "radio-group", "utils", "recharts"] },
   { name: "artifact-01", title: "内容创作", description: "生成 HTML、Markdown 与代码，支持版本历史、变更对比和实时预览。", categories: ["application", "ai", "agent"], dependencies: ["chat-workspace-01", "artifact-preview-panel"] },
   { name: "tool-calls-01", title: "工具调用", description: "搜索与读取汇总、代码变更、命令确认与输出，组合 Chat Thread 会话。", categories: ["application", "ai", "agent"], dependencies: ["chat-thread-01", "accordion", "badge", "button", "code-block", "empty", "icon-context", "inline-notice", "utils"] },

@@ -4,6 +4,7 @@ import type { DocPageLoader } from "./page-loader-types";
 export type { DocPageModule, DocPageLoader } from "./page-loader-types";
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "blocks/agent-runs-01": () => import("@docs/pages/blocks/agent-runs-01/page"),
   "blocks/credit-top-up-01": () => import("@docs/pages/blocks/credit-top-up-01/page"),
   "components/artifact-panel": () => import("@docs/pages/components/artifact-panel/page"),
   "components/artifact-preview-panel": () => import("@docs/pages/components/artifact-preview-panel/page"),

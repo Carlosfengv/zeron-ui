@@ -1,4 +1,8 @@
 {
+  "agent-runs-01": {
+    "framework": "react",
+    "kind": "data-block"
+  },
   "credit-top-up-01": { "framework": "react", "kind": "data-block" },
   "context-window-02": {
     "framework": "react",

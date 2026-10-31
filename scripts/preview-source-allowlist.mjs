@@ -1,5 +1,15 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "agent-runs-01": [
+      "packages/blocks/src/application/agent-runs-01/agent-runs-chart.tsx",
+      "packages/blocks/src/application/agent-runs-01/agent-runs-data.ts",
+      "packages/blocks/src/application/agent-runs-01/agent-runs-demo-data.ts",
+      "packages/blocks/src/application/agent-runs-01/agent-runs-labels.ts",
+      "packages/blocks/src/application/agent-runs-01/agent-runs-sessions.tsx",
+      "packages/blocks/src/application/agent-runs-01/agent-runs-types.ts",
+      "packages/blocks/src/application/agent-runs-01/agent-runs.tsx",
+      "packages/blocks/src/application/agent-runs-01/index.ts"
+  ],
   "credit-top-up-01": [
     "packages/blocks/src/application/credit-top-up-01/index.ts",
     "packages/blocks/src/application/credit-top-up-01/credit-top-up.tsx",

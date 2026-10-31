@@ -1,0 +1,12 @@
+{
+  "agentRunsBlock": {
+    "title": "Agent 运行用量",
+    "description": "在同一视图中查看项目费用、模型算力消耗与 Session 运行记录。",
+    "composition": "组件组合",
+    "compositionBody": "保留参考图的叙事顺序：项目总览、费用趋势、Agent 活动泳道、Agent / 模型分布、按天分组的 Session 记录。图表使用 Zeron 原生 AreaChart、Grid、坐标轴和 TooltipContent；分布使用 SegmentedBar / ChartLegend，控件复用 Tabs、DataTable、Avatar 和 Badge。DataTable 统一拥有表头、记录行、日期标题、跨列明细和分页器。活动色条和趋势共用时间范围，宽度表示时长，极短运行保留最小可见标记。",
+    "dataContract": "数据接入",
+    "dataContractBody": "传入完整时间窗口及其中所有 Session、稳定的 Agent / 模型 ID、毫秒时间戳、币种，以及每次运行的输入、输出、缓存读取和缓存写入 Token 数与费用。费用使用币种主要单位，所有汇总与分布均由同组记录派生。缓存命中率为读取缓存 Token /（普通输入 + 读取缓存 Token）。usage=null 保持未上报；累计费用在运行结束时记账，进行中的已上报费用记于窗口末尾。Agent 用时为各次运行时长之和，可以大于实际历时。真实用量获取、计费和完整会话路由由宿主接入；示例模型名称与费用仅用于展示。低于币种最小单位的非零费用保留最多四位有效数字；无效 locale 与 timeZone 分别独立回退为 en-US 和 UTC。",
+    "behavior": "交互与状态",
+    "behaviorBody": "支持累计 / 单次费用切换、点击活动色条定位并展开 Session、按天分组分页浏览、费用与缓存明细。分页器支持每页数量、页码、首页 / 末页和前后翻页；日期标题与明细不占用 Session 的分页名额。宿主可受控设置 mode，并通过 onModeChange、onOpenSession、onClose 接入行为，通过 state / errorMessage / onRetry 接入加载恢复。data.id 变化重置本地交互。横轴在不足一分钟时显示时分秒、不足一天时显示时分，多日窗口显示日期。图表提供键盘导航与可展开的原始费用数据；窄容器中指标与分布堆叠，表格局部横向滚动，时间列、日期分组标题和当天汇总固定在左侧，展开的费用明细也按可视宽度固定，窄屏自动堆叠。表格内容区独立纵向滚动，表头固定在顶部，分页器保持在内容滚动区外，小屏下每页数量、页码和翻页按钮保持同行。演示包含正常、加载、空数据与失败状态。"
+  }
+}

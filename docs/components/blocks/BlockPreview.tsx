@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "agent-runs-01": () => import("./AgentRunsDemo").then(({ AgentRunsDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={1100} canvasWidth={1440}><AgentRunsDemo /></ResponsivePreview>,
+  })),
   "credit-top-up-01": () => import("./CreditTopUpDemo").then(({ CreditTopUpDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={900} canvasWidth={1440}><CreditTopUpDemo /></ResponsivePreview>,
   })),
