@@ -24,7 +24,7 @@ test("switching collections keeps links and keyboard paging in the active collec
 
   await header.getByRole("link", { name: "区块", exact: true }).click();
   await page.getByRole("heading", { name: "区块", exact: true }).click();
-  for (const slug of ["chat-markdown-01", "grouped-data-table-02", "grouped-data-table-01", "agent-tasks-01"]) {
+  for (const slug of ["agent-runs-01", "chat-markdown-01", "grouped-data-table-02", "grouped-data-table-01", "agent-tasks-01"]) {
     await page.keyboard.press("ArrowRight");
     await expect(page).toHaveURL(`/docs/blocks/${slug}`);
   }

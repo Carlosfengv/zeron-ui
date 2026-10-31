@@ -170,4 +170,6 @@ ZERON_CONSUMER_COMPONENTS=agent-runs-01 ZERON_CONSUMER_PACKAGE_MANAGERS=pnpm ZER
 - `pnpm build` 完整执行成功，静态页面生成完成；Next 与 Vite 的 pnpm 安装矩阵完整通过。生产构建日志保留 docs introduction 页的缺少翻译提示，该页及其 provider / 文案与远端基线一致，未混入此提交。Vite 依赖中的 use client 指令提示也保留在日志中。
 - 基于本地生产服务验证中英文独立演示和文档页。320 / 390 / 768 / 1440px 的分页同行、页面无横向溢出；390px 的时间列 / 日期 / 明细固定、表头与表体交叉层级正确；分页、每页 20 条、模式切换、泳道键盘定位、准确会话回调、加载 / 空态 / 错误 / 重试均通过。中英文的明暗主题完成截图检查，页面运行异常为 0。localhost 的 Vercel 统计脚本返回 404 属于本地服务环境，保留原始控制台记录。
 
-提交阶段的日志、文件清单与浏览器结构证据保存在隔离工作区的 `output/agent-runs-publish/`，截图在 `output/playwright/`，均不进入 Git 提交。完成检查后按用户授权将这两笔提交推送至 main，不使用 force push。
+首次远端 E2E 发现 `tests/docs-collections.e2e.ts` 仍将 chat-markdown-01 硬编码为区块首项；新增 Agent Runs 后实际首项已变化。将 agent-runs-01 加到既有显式键盘导航序列之前，保留原有导航断言。本地生产版本下三个集合导航 / 搜索 / 窄屏测试全部通过。为保留已上传的两笔功能提交，追加 `test(docs): include agent runs in collection keyboard navigation`，只同步该测试与本执行记录。
+
+GitHub main 要求远端 checks，通过 PR #48 完成检查后合并。提交阶段的日志、文件清单与浏览器结构证据保存在隔离工作区的 `output/agent-runs-publish/`，截图在 `output/playwright/`，均不进入 Git 提交。不使用 force push 或绕过保护规则。
