@@ -811,7 +811,9 @@
     "keyApi": [
       "useDataTable 透传 grouping / expanded 状态与 TanStack 行模型配置。",
       "grouping 提供分组名称、顺序、展示条数及组头/组尾内容扩展，跨列数随可见列变化。",
-      "density 为 comfortable 或 compact；组内预览使用 manualPagination 与 showPagination=false。"
+      "density 为 comfortable 或 compact；组内预览使用 manualPagination 与 showPagination=false。",
+      "renderRowHeader({row, previousRow, table}) 提供不占分页名额的日期等展示标题；renderExpandedRow({row, table}) 展示 expanded 状态的跨列明细。",
+      "stickyHeader / scrollAreaMaxHeight 提供有界内容区的纵向滚动与固定表头，工具栏和分页器保持在滚动区外。"
     ]
   },
   "data-grid": {

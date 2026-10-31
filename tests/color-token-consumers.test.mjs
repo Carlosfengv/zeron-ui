@@ -163,7 +163,7 @@ describe("semantic color consumers", () => {
     expect(table).toContain('"border-border"');
     expect(table).not.toContain("border-border-subtle");
     expect(dataTable).toContain(
-      "overflow-hidden border border-border bg-surface-floating"
+      "border border-border bg-surface-floating"
     );
     expect(dataGrid).toContain(
       "overflow-auto border border-border bg-surface-floating"

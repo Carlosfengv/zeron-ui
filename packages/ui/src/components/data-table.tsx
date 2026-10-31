@@ -244,8 +244,14 @@ function useDataTable<TData>({
 }
 
 export type DataTableProps<TData> = React.ComponentProps<"div"> & {
+  /** Embedded tables let a parent own the frame; style.backgroundColor also colors pinned cells. */
+  variant?: "framed" | "embedded";
   /** Public row-density recipe; does not resize controls inside cells. */
   density?: "comfortable" | "compact";
+  /** Keeps the column header visible inside the bounded table scroll area. */
+  stickyHeader?: boolean;
+  /** Caps the table scroll area; stickyHeader defaults to min(65dvh, 40rem). Pagination stays outside. */
+  scrollAreaMaxHeight?: React.CSSProperties["maxHeight"];
   /** Group headers are automatic for TanStack grouped rows; customize their content here. */
   grouping?: DataTableGroupingOptions<TData>;
   /** Highlights the row whose TanStack id matches this value. */
@@ -265,12 +271,21 @@ export type DataTableProps<TData> = React.ComponentProps<"div"> & {
   onRowActivate?: (row: Row<TData>) => void;
   /** Configures the built-in pagination region through its public contract. */
   paginationProps?: Omit<DataTablePaginationProps<TData>, "table">;
+  /** Spanning content before a record, for presentation sections that do not count toward pagination. */
+  renderRowHeader?: (context: DataTableRowContext<TData> & { previousRow?: Row<TData> }) => React.ReactNode;
+  /** Spanning detail content after an expanded record. Expansion is owned by TanStack state. */
+  renderExpandedRow?: (context: DataTableRowContext<TData>) => React.ReactNode;
   /** Hide pagination for a complete, unpaginated row model (for example a resource tree). */
   showPagination?: boolean;
   /** Customizes a loading cell when its final shape is not text-like. */
   renderLoadingCell?: (
     context: DataTableLoadingCellContext<TData>
   ) => React.ReactNode;
+  table: TanstackTable<TData>;
+};
+
+export type DataTableRowContext<TData> = {
+  row: Row<TData>;
   table: TanstackTable<TData>;
 };
 
@@ -434,14 +449,21 @@ function DataTable<TData>({
   loadingRowCount,
   onRowActivate,
   paginationProps,
+  renderRowHeader,
+  renderExpandedRow,
   showPagination = true,
   renderLoadingCell,
+  stickyHeader = false,
+  scrollAreaMaxHeight,
+  style,
   table,
+  variant = "framed",
   "aria-busy": ariaBusy,
   ...props
 }: DataTableProps<TData>) {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const tableElementRef = React.useRef<HTMLTableElement>(null);
+  const pinnedBackgroundColor = variant === "embedded" ? style?.backgroundColor : undefined;
   const [scrollEdges, setScrollEdges] =
     React.useState<HorizontalScrollEdges>(initialHorizontalScrollEdges);
   const isFilteredEmpty =
@@ -502,6 +524,8 @@ function DataTable<TData>({
       data-slot="data-table"
       data-density={density}
       data-loading={isLoading || undefined}
+      data-variant={variant}
+      style={style}
       {...props}
     >
       <span aria-atomic="true" className="sr-only" role="status">
@@ -511,17 +535,19 @@ function DataTable<TData>({
       <div
         aria-busy={ariaBusy ?? (isLoading || undefined)}
         className={cn(
-          "overflow-hidden border border-border bg-surface-floating",
-          "rounded-xl"
+          "overflow-hidden",
+          variant === "framed" && "rounded-xl border border-border bg-surface-floating"
         )}
       >
         <div
-          className="overflow-x-auto"
+          className={cn("overflow-auto", (stickyHeader || scrollAreaMaxHeight !== undefined) && "@container/data-table-scroll-area")}
+          style={{ maxHeight: scrollAreaMaxHeight ?? (stickyHeader ? "min(65dvh, 40rem)" : undefined) }}
+          data-slot="data-table-scroll-area"
           onScroll={updateScrollEdges}
           ref={scrollContainerRef}
         >
           <Table ref={tableElementRef}>
-            <TableHeader>
+            <TableHeader className={stickyHeader ? "sticky top-0 z-raised" : undefined} style={stickyHeader ? { backgroundColor: pinnedBackgroundColor ?? "var(--surface-floating)" } : undefined}>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
@@ -530,6 +556,7 @@ function DataTable<TData>({
                       colSpan={header.colSpan}
                       key={header.id}
                       style={getCommonPinningStyles(header.column, {
+                        backgroundColor: pinnedBackgroundColor,
                         showLeftShadow: scrollEdges.canScrollLeft,
                         showRightShadow: scrollEdges.canScrollRight,
                       })}
@@ -556,6 +583,7 @@ function DataTable<TData>({
 
                   return {
                     style: getCommonPinningStyles(column, {
+                      backgroundColor: pinnedBackgroundColor,
                       showLeftShadow: scrollEdges.canScrollLeft,
                       showRightShadow: scrollEdges.canScrollRight,
                     }),
@@ -600,59 +628,80 @@ function DataTable<TData>({
                     const { row } = entry;
                     const isActive = row.id === activeRowId;
                     const activateRow = () => onRowActivate?.(row);
+                    const previousEntry = bodyEntries[rowIndex - 1];
+                    const header = renderRowHeader?.({ row, table, previousRow: previousEntry?.kind === "row" ? previousEntry.row : undefined });
+                    const details = renderExpandedRow && row.getIsExpanded() ? renderExpandedRow({ row, table }) : undefined;
 
                     return (
-                      <TableRow
-                        aria-selected={isActive || undefined}
-                        className={cn(
-                          "data-[state=selected]:bg-selection",
-                          onRowActivate &&
-                            "cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
+                      <React.Fragment key={row.id}>
+                        {header != null && typeof header !== "boolean" && (
+                          <TableRow data-slot="data-table-row-header" data-row-id={row.id}>
+                            <TableCell className={cn("align-middle bg-surface-raised text-fg-default", density === "compact" && "py-1")} colSpan={Math.max(visibleColumns.length, 1)}>
+                              {header}
+                            </TableCell>
+                          </TableRow>
                         )}
-                        data-state={
-                          row.getIsSelected() || isActive
-                            ? "selected"
-                            : undefined
-                        }
-                        index={rowIndex}
-                        key={row.id}
-                        onClick={(event) => {
-                          if (isInteractiveRowTarget(event.target)) return;
-                          activateRow();
-                        }}
-                        onKeyDown={(event) => {
-                          if (isInteractiveRowTarget(event.target)) return;
-                          if (event.key !== "Enter" && event.key !== " ") return;
-                          event.preventDefault();
-                          activateRow();
-                        }}
-                        tabIndex={onRowActivate ? 0 : undefined}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell
-                            className={cn(
-                              "align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block",
-                              density === "compact" && "py-1",
-                              cell.column.getIsPinned() &&
-                                "group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]"
-                            )}
-                            key={cell.id}
-                            style={getCommonPinningStyles(cell.column, {
-                              backgroundImage:
-                                row.getIsSelected() || isActive
-                                  ? "linear-gradient(var(--selection), var(--selection))"
-                                  : undefined,
-                              showLeftShadow: scrollEdges.canScrollLeft,
-                              showRightShadow: scrollEdges.canScrollRight,
-                            })}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
+                        <TableRow
+                          aria-expanded={renderExpandedRow && row.getCanExpand() ? row.getIsExpanded() : undefined}
+                          aria-selected={isActive || undefined}
+                          className={cn(
+                            "data-[state=selected]:bg-selection",
+                            onRowActivate &&
+                              "cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
+                          )}
+                          data-state={
+                            row.getIsSelected() || isActive
+                              ? "selected"
+                              : undefined
+                          }
+                          index={rowIndex}
+                          data-row-id={row.id}
+                          onClick={(event) => {
+                            if (isInteractiveRowTarget(event.target)) return;
+                            activateRow();
+                          }}
+                          onKeyDown={(event) => {
+                            if (isInteractiveRowTarget(event.target)) return;
+                            if (event.key !== "Enter" && event.key !== " ") return;
+                            event.preventDefault();
+                            activateRow();
+                          }}
+                          tabIndex={onRowActivate ? 0 : undefined}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell
+                              className={cn(
+                                "align-middle whitespace-nowrap [&>[data-slot=checkbox]]:block",
+                                density === "compact" && "py-1",
+                                cell.column.getIsPinned() &&
+                                  "group-[.is-active]/row:[background-image:linear-gradient(var(--hover),var(--hover))]"
+                              )}
+                              key={cell.id}
+                              style={getCommonPinningStyles(cell.column, {
+                                backgroundColor: pinnedBackgroundColor,
+                                backgroundImage:
+                                  row.getIsSelected() || isActive
+                                    ? "linear-gradient(var(--selection), var(--selection))"
+                                    : undefined,
+                                showLeftShadow: scrollEdges.canScrollLeft,
+                                showRightShadow: scrollEdges.canScrollRight,
+                              })}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                        {details != null && typeof details !== "boolean" && (
+                          <TableRow data-slot="data-table-expanded-row" data-row-id={row.id}>
+                            <TableCell className={cn("align-middle whitespace-normal bg-surface-raised", density === "compact" && "py-1")} colSpan={Math.max(visibleColumns.length, 1)}>
+                              {details}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </React.Fragment>
                     );
                   })
                 ) : (
@@ -1138,9 +1187,9 @@ function DataTablePagination<TData>({
           )}
         </div>
       )}
-      <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
-        <div className="flex items-center gap-2 whitespace-nowrap">
-          <span className="text-label text-fg-default">{labels.rowsPerPage}</span>
+      <div className="flex w-full min-w-0 flex-nowrap items-center gap-1.5 sm:w-auto sm:gap-6 lg:gap-8">
+        <div className="flex min-w-20 flex-1 items-center gap-2 whitespace-nowrap sm:flex-none">
+          <span className="min-w-0 truncate text-label text-fg-default" title={labels.rowsPerPage}>{labels.rowsPerPage}</span>
           <Select
             disabled={disabled}
             itemDensity="compact"
@@ -1150,7 +1199,7 @@ function DataTablePagination<TData>({
           >
             <SelectTrigger
               aria-label={labels.rowsPerPage}
-              className="min-w-18 w-18 px-2 text-label"
+              className="min-w-18 w-18 shrink-0 px-2 text-label"
               placeholder={`${pageSize}`}
             />
             <SelectContent>
@@ -1165,13 +1214,13 @@ function DataTablePagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <div className="whitespace-nowrap text-label tabular-nums text-fg-default">
+        <div className="min-w-0 truncate whitespace-nowrap text-label tabular-nums text-fg-default">
           {labels.pageSummary(
             table.getState().pagination.pageIndex + 1,
             pageCount
           )}
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-1.5">
           <Button
             aria-label={labels.firstPage}
             className="hidden lg:inline-flex"

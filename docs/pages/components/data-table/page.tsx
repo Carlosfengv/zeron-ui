@@ -359,6 +359,7 @@ function GroupedProjectsTable() {
 
 const dataTableProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "table", type: "Table<TData>", description: t("table") },
+  { name: "variant", type: '"framed" | "embedded"', default: '"framed"', description: t("variant") },
   { name: "grouping", type: "DataTableGroupingOptions<TData>", description: t("groupingOptions") },
   { name: "density", type: '"comfortable" | "compact"', default: '"comfortable"', description: t("density") },
   { name: "activeRowId", type: "string | null", description: t("activeRowId") },
@@ -371,6 +372,10 @@ const dataTableProps = (t: ReturnType<typeof useTranslations>): PropDef[] => [
   { name: "loadingMessage", type: "ReactNode", default: '"Loading data."', description: t("loadingMessage") },
   { name: "loadingRowCount", type: "number", default: "Current page size", description: t("loadingRowCount") },
   { name: "paginationProps", type: "Omit<DataTablePaginationProps<TData>, \"table\">", description: t("paginationProps") },
+  { name: "stickyHeader", type: "boolean", default: "false", description: t("stickyHeader") },
+  { name: "scrollAreaMaxHeight", type: 'CSSProperties["maxHeight"]', description: t("scrollAreaMaxHeight") },
+  { name: "renderRowHeader", type: "({ row, previousRow, table }) => ReactNode", description: t("renderRowHeader") },
+  { name: "renderExpandedRow", type: "({ row, table }) => ReactNode", description: t("renderExpandedRow") },
   { name: "showPagination", type: "boolean", default: "true", description: t("showPagination") },
   { name: "renderLoadingCell", type: "(context) => ReactNode", description: t("renderLoadingCell") },
 ];
