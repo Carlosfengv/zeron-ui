@@ -1,0 +1,1764 @@
+"use client";
+
+import { useCallback, useMemo, useState } from "react";
+import { curveLinear, curveStepAfter } from "@visx/curve";
+import { Area, AreaChart } from "@zeron/ui/area-chart";
+import {
+  Grid,
+  XAxis,
+  YAxis,
+  ChartTooltip,
+  TooltipContent,
+} from "@zeron/ui/chart-core";
+import { ChartDataTable, chartColor } from "@zeron/ui/chart-primitives";
+import { cn } from "@zeron/ui/system/utils";
+import {
+  agentRunsChartData,
+  runCost,
+  runDuration,
+  type AgentRunsFormatters,
+} from "./agent-runs-data";
+import type {
+  AgentRun,
+  AgentRunsData,
+  AgentRunsLabels,
+  AgentRunsMode,
+} from "./agent-runs-types";
+
+export function AgentRunsChart({
+  data,
+  mode,
+  labels,
+  format,
+  selectedId,
+  onSelect,
+}: {
+  data: AgentRunsData;
+  mode: AgentRunsMode;
+  labels: AgentRunsLabels;
+  format: AgentRunsFormatters;
+  selectedId?: string;
+  onSelect: (id: string) => void;
+}) {
+  const points = useMemo(() => agentRunsChartData(data, mode), [data, mode]);
+  const [focusedIds, setFocusedIds] = useState<Record<string, string>>({});
+  const lanes = useMemo(() => {
+    const byAgent = new Map<string, AgentRun[]>();
+    for (const run of data.runs) {
+      const lane = byAgent.get(run.agentId);
+      if (lane) lane.push(run);
+      else byAgent.set(run.agentId, [run]);
+    }
+    return data.agents.map((agent) => ({
+      agent,
+      runs: (byAgent.get(agent.id) ?? []).sort(
+        (a, b) => a.startedAt - b.startedAt || a.id.localeCompare(b.id),
+      ),
+    }));
+  }, [data.agents, data.runs]);
+  const domain = useMemo<[Date, Date]>(
+    () => [new Date(data.start), new Date(data.end)],
+    [data.start, data.end],
+  );
+  const formatTick = useCallback(
+    (date: Date) => {
+      const span = data.end - data.start;
+      if (span < 60_000) return format.timeWithSeconds(date.getTime());
+      if (span < 86_400_000) return format.time(date.getTime());
+      return format.date(date);
+    },
+    [data.start, data.end, format],
+  );
+  const title = mode === "cumulative" ? labels.cumulative : labels.perRun;
+  const rows = useMemo(
+    () =>
+      points.map((point, index) => ({
+        id: String(index),
+        label: `${format.fullDate(point.date)} ${format.time(point.date)}`,
+        values: [format.money(point.value)],
+      })),
+    [points, format],
+  );
+  const accessibleData = useMemo(
+    () =>
+      rows.map((row) => ({ [labels.time]: row.label, [title]: row.values[0] })),
+    [rows, labels.time, title],
+  );
+  return (
+    <div className="min-w-0" data-slot="agent-runs-chart" data-mode={mode}>
+      <div
+        className="min-w-0"
+        role="group"
+        aria-label={`${labels.chartTitle} · ${title}`}
+      >
+        {points.length ? (
+          <AreaChart
+            data={points}
+            accessibleData={accessibleData}
+            xDomain={domain}
+            xDomainSlotCount={0}
+            margin={{ top: 20, bottom: 30, left: 92, right: 64 }}
+            style={{ height: 240, aspectRatio: "auto" }}
+            yDomain={[0, "dataMax"]}
+            animationDuration={0}
+            yDomainTween={false}
+          >
+            <Grid horizontal />
+            <Area
+              dataKey="value"
+              stroke={chartColor(1)}
+              fill={chartColor(1)}
+              curve={mode === "cumulative" ? curveStepAfter : curveLinear}
+              fillOpacity={0.25}
+              gradientToOpacity={0}
+              showMarkers={mode === "per-run"}
+              markers={{ radius: 2, strokeWidth: 0, ringGap: 0 }}
+              animate={false}
+            />
+            <XAxis tickMode="domain" numTicks={3} formatDate={formatTick} />
+            <YAxis
+              orientation="right"
+              numTicks={4}
+              formatValue={format.axisMoney}
+            />
+            <ChartTooltip
+              showDatePill={false}
+              content={({ point }) => (
+                <TooltipContent
+                  title={`${format.fullDate(Number(point.date))} · ${format.time(Number(point.date))}`}
+                  rows={[
+                    {
+                      label: title,
+                      value: format.money(Number(point.value)),
+                      color: chartColor(1),
+                    },
+                  ]}
+                />
+              )}
+            />
+          </AreaChart>
+        ) : (
+          <p className="flex h-60 items-center justify-center text-body text-fg-muted">
+            {labels.unreported}
+          </p>
+        )}
+      </div>
+      <div className="mt-1 space-y-2" role="group" aria-label={labels.activity}>
+        {lanes.map(({ agent, runs }) => {
+          const tabId =
+            runs.find((item) => item.id === focusedIds[agent.id])?.id ??
+            runs.find((item) => item.id === selectedId)?.id ??
+            runs[0]?.id;
+          return (
+            <div
+              key={agent.id}
+              className="grid min-w-0 grid-cols-[5rem_minmax(0,1fr)] items-center gap-3 pr-16"
+            >
+              <span className="flex min-w-0 items-center gap-2 text-label text-fg-muted">
+                <span
+                  aria-hidden="true"
+                  className="size-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: chartColor(agent.colorIndex) }}
+                />
+                <span className="truncate" title={agent.name}>
+                  {agent.name}
+                </span>
+              </span>
+              <div className="relative h-6 min-w-0 rounded-md bg-surface-raised">
+                {runs.map((run, index) => {
+                  const left =
+                    ((run.startedAt - data.start) / (data.end - data.start)) *
+                    100;
+                  const width =
+                    (runDuration(run, data.end) / (data.end - data.start)) *
+                    100;
+                  const cost = runCost(run);
+                  const description = `${agent.name} · ${run.trigger} · ${format.time(run.startedAt)} · ${format.duration(runDuration(run, data.end))} · ${labels[run.status]} · ${cost === null ? labels.unreported : format.money(cost)}`;
+                  return (
+                    <button
+                      key={run.id}
+                      type="button"
+                      title={description}
+                      aria-label={labels.expand(description)}
+                      aria-pressed={selectedId === run.id}
+                      onClick={() => onSelect(run.id)}
+                      tabIndex={run.id === tabId ? 0 : -1}
+                      onFocus={() =>
+                        setFocusedIds((current) => ({
+                          ...current,
+                          [agent.id]: run.id,
+                        }))
+                      }
+                      onKeyDown={(event) => {
+                        const next =
+                          event.key === "ArrowRight"
+                            ? Math.min(index + 1, runs.length - 1)
+                            : event.key === "ArrowLeft"
+                              ? Math.max(index - 1, 0)
+                              : event.key === "Home"
+                                ? 0
+                                : event.key === "End"
+                                  ? runs.length - 1
+                                  : undefined;
+                        if (next === undefined) return;
+                        event.preventDefault();
+                        event.currentTarget.parentElement
+                          ?.querySelectorAll<HTMLButtonElement>("button")
+                          [next]?.focus();
+                      }}
+                      className={cn(
+                        "absolute inset-y-1 min-w-1 rounded-sm opacity-75 transition-opacity duration-fast hover:opacity-100 focus-visible:z-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring",
+                        selectedId === run.id &&
+                          "z-content opacity-100 ring-2 ring-focus-ring ring-offset-2 ring-offset-surface-floating",
+                        run.status === "cancelled" && "opacity-40",
+                      )}
+                      style={{
+                        left: `${Math.min(left, 99.5)}%`,
+                        width: `${Math.min(width, 100 - left)}%`,
+                        backgroundColor: chartColor(agent.colorIndex),
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <ChartDataTable
+        caption={`${labels.chartTitle} · ${title}`}
+        summary={labels.viewData}
+        columns={[labels.time, title]}
+        rows={rows}
+      />
+    </div>
+  );
+}
+
+
+import type {
+  AgentRun,
+  AgentRunsData,
+  AgentRunsLabels,
+  AgentRunsMode,
+} from "./agent-runs-types";
+
+export const usageKinds = [
+  "input",
+  "output",
+  "cacheRead",
+  "cacheWrite",
+] as const;
+const nonnegative = (value: number) => Number.isFinite(value) && value >= 0;
+const unique = (items: readonly { id: string }[]) =>
+  items.every((item) => item.id.trim()) &&
+  new Set(items.map((item) => item.id)).size === items.length;
+export const runCost = (run: AgentRun) =>
+  run.usage === null
+    ? null
+    : usageKinds.reduce((sum, kind) => sum + run.usage![kind].cost, 0);
+export const runTokens = (run: AgentRun) =>
+  run.usage === null
+    ? null
+    : usageKinds.reduce((sum, kind) => sum + run.usage![kind].tokens, 0);
+export const runDuration = (run: AgentRun, end: number) =>
+  (run.endedAt ?? end) - run.startedAt;
+export function cacheRatio(run: AgentRun) {
+  if (!run.usage) return null;
+  const input = run.usage.input.tokens + run.usage.cacheRead.tokens;
+  return input > 0 ? run.usage.cacheRead.tokens / input : null;
+}
+export function validateAgentRunsData(data: AgentRunsData) {
+  if (
+    !data.id.trim() ||
+    !data.project.name.trim() ||
+    !/^[A-Z]{3}$/.test(data.currency) ||
+    !Number.isFinite(new Date(data.start).getTime()) ||
+    !Number.isFinite(new Date(data.end).getTime()) ||
+    data.end <= data.start ||
+    !unique(data.agents) ||
+    !unique(data.models) ||
+    !unique(data.runs) ||
+    [...data.agents, ...data.models].some(
+      (item) =>
+        !Number.isInteger(item.colorIndex) ||
+        item.colorIndex < 1 ||
+        item.colorIndex > 5,
+    )
+  )
+    return false;
+  const agents = new Set(data.agents.map((agent) => agent.id));
+  const models = new Set(data.models.map((model) => model.id));
+  for (const run of data.runs) {
+    if (
+      !agents.has(run.agentId) ||
+      (run.modelId !== undefined && !models.has(run.modelId)) ||
+      !["running", "completed", "cancelled", "failed"].includes(run.status) ||
+      !Number.isFinite(run.startedAt) ||
+      run.startedAt < data.start ||
+      run.startedAt > data.end ||
+      (run.status === "running"
+        ? run.endedAt !== null
+        : run.endedAt === null) ||
+      (run.endedAt !== null &&
+        (!Number.isFinite(run.endedAt) ||
+          run.endedAt < run.startedAt ||
+          run.endedAt > data.end)) ||
+      (run.cacheSavings !== undefined && !nonnegative(run.cacheSavings))
+    )
+      return false;
+    if (
+      run.usage !== null &&
+      (!run.modelId ||
+        usageKinds.some(
+          (kind) =>
+            !run.usage?.[kind] ||
+            !Number.isSafeInteger(run.usage[kind].tokens) ||
+            run.usage[kind].tokens < 0 ||
+            !nonnegative(run.usage[kind].cost),
+        ))
+    )
+      return false;
+  }
+  const summary = summarizeAgentRuns(data.runs, data.end);
+  return (
+    Number.isFinite(summary.cost) &&
+    Number.isSafeInteger(summary.tokens) &&
+    Number.isFinite(summary.duration)
+  );
+}
+export function summarizeAgentRuns(runs: readonly AgentRun[], end: number) {
+  const agentCosts = new Map<string, number>();
+  const modelCosts = new Map<string, number>();
+  let cost = 0,
+    tokens = 0,
+    output = 0,
+    cacheRead = 0,
+    input = 0,
+    duration = 0,
+    active = 0,
+    cancelled = 0,
+    unreported = 0;
+  for (const run of runs) {
+    duration += runDuration(run, end);
+    if (run.status === "running") active += 1;
+    if (run.status === "cancelled") cancelled += 1;
+    if (!run.usage) {
+      unreported += 1;
+      continue;
+    }
+    const reportedCost = runCost(run)!;
+    cost += reportedCost;
+    tokens += runTokens(run)!;
+    agentCosts.set(
+      run.agentId,
+      (agentCosts.get(run.agentId) ?? 0) + reportedCost,
+    );
+    if (run.modelId !== undefined)
+      modelCosts.set(
+        run.modelId,
+        (modelCosts.get(run.modelId) ?? 0) + reportedCost,
+      );
+    output += run.usage.output.tokens;
+    cacheRead += run.usage.cacheRead.tokens;
+    input += run.usage.input.tokens;
+  }
+  return {
+    cost,
+    tokens,
+    output,
+    duration,
+    active,
+    cancelled,
+    unreported,
+    agentCosts,
+    modelCosts,
+    cacheRatio: input + cacheRead > 0 ? cacheRead / (input + cacheRead) : null,
+  };
+}
+/** A cumulative step is recorded at completion, or the reporting-window end for active usage. */
+export function agentRunsChartData(data: AgentRunsData, mode: AgentRunsMode) {
+  const events = data.runs
+    .filter((run) => run.usage !== null)
+    .map((run) => ({ date: run.endedAt ?? data.end, cost: runCost(run)! }))
+    .sort((a, b) => a.date - b.date);
+  if (!events.length) return [];
+  if (mode === "per-run")
+    return events.map((event) => ({ date: event.date, value: event.cost }));
+  const points = [{ date: data.start, value: 0 }];
+  let cost = 0;
+  for (const event of events) {
+    cost += event.cost;
+    if (points[points.length - 1].date === event.date)
+      points[points.length - 1].value = cost;
+    else points.push({ date: event.date, value: cost });
+  }
+  if (points[points.length - 1].date !== data.end)
+    points.push({ date: data.end, value: cost });
+  return points;
+}
+export function createAgentRunsFormatters(
+  locale: string,
+  timeZone: string,
+  currency: string,
+  labels: AgentRunsLabels,
+) {
+  let resolvedLocale = locale,
+    resolvedZone = timeZone;
+  try {
+    new Intl.NumberFormat(locale);
+  } catch {
+    resolvedLocale = "en-US";
+  }
+  try {
+    new Intl.DateTimeFormat(resolvedLocale, { timeZone }).format(0);
+  } catch {
+    resolvedZone = "UTC";
+  }
+  const number = new Intl.NumberFormat(resolvedLocale);
+  const compact = new Intl.NumberFormat(resolvedLocale, {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  });
+  const money = new Intl.NumberFormat(resolvedLocale, {
+    style: "currency",
+    currency: /^[A-Z]{3}$/.test(currency) ? currency : "USD",
+  });
+  const minorUnit = 10 ** -(money.resolvedOptions().maximumFractionDigits ?? 2);
+  const preciseMoney = new Intl.NumberFormat(resolvedLocale, {
+    style: "currency",
+    currency: money.resolvedOptions().currency,
+    maximumSignificantDigits: 4,
+  });
+  const percent = new Intl.NumberFormat(resolvedLocale, {
+    style: "percent",
+    maximumFractionDigits: 0,
+  });
+  const date = new Intl.DateTimeFormat(resolvedLocale, {
+    timeZone: resolvedZone,
+    month: "short",
+    day: "numeric",
+  });
+  const fullDate = new Intl.DateTimeFormat(resolvedLocale, {
+    timeZone: resolvedZone,
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+  const time = new Intl.DateTimeFormat(resolvedLocale, {
+    timeZone: resolvedZone,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  });
+  const timeWithSeconds = new Intl.DateTimeFormat(resolvedLocale, {
+    timeZone: resolvedZone,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  });
+  const day = new Intl.DateTimeFormat("en-CA", {
+    timeZone: resolvedZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  return {
+    number: number.format,
+    compact: compact.format,
+    money: (value: number) =>
+      value !== 0 && Math.abs(value) < minorUnit
+        ? preciseMoney.format(value)
+        : money.format(value),
+    axisMoney: preciseMoney.format,
+    percent: percent.format,
+    date: (value: number | Date) => date.format(value),
+    fullDate: (value: number) => fullDate.format(value),
+    time: (value: number) => time.format(value),
+    timeWithSeconds: (value: number) => timeWithSeconds.format(value),
+    day: (value: number) => day.format(value),
+    duration: (ms: number) =>
+      ms < 60_000
+        ? labels.underMinute
+        : labels.duration(
+            number.format(Math.floor(ms / 3_600_000)),
+            number.format(Math.floor(ms / 60_000) % 60),
+          ),
+  };
+}
+export type AgentRunsFormatters = ReturnType<typeof createAgentRunsFormatters>;
+
+
+import type { AgentRun, AgentRunsData } from "./agent-runs-types";
+
+/** Deterministic illustrative records; not live model pricing or usage. */
+export function createAgentRunsDemoData(zh = false): AgentRunsData {
+  const start = Date.parse("2026-10-28T14:00:00+08:00");
+  const end = Date.parse("2026-10-31T04:00:00+08:00");
+  const prompts = zh
+    ? [
+        "梳理项目结构与组件依赖",
+        "实现项目概览与导航",
+        "补充边界状态和交互反馈",
+        "对齐图表的主题与坐标轴",
+        "检查响应式布局和键盘操作",
+        "再看一下费用明细",
+        "按照这个设计来改，保留现有组件",
+      ]
+    : [
+        "Map the project structure and component dependencies",
+        "Build the project overview and navigation",
+        "Add edge states and interaction feedback",
+        "Align chart theme and axes",
+        "Check responsive layout and keyboard access",
+        "Take another look at the cost breakdown",
+        "Apply this design using our existing components",
+      ];
+  const runs: AgentRun[] = [];
+  // Cost buckets conserve the reference's agent and model distributions.
+  for (let i = 0; i < 88; i += 1) {
+    const emacs = i >= 86;
+    const modelId = emacs ? "sol" : i >= 72 ? "opus-xhigh" : "opus-high";
+    const cents = emacs
+      ? 142
+      : i >= 72
+        ? i === 85
+          ? 578
+          : i === 84
+            ? 169
+            : 173
+        : i === 71
+          ? 219
+          : 211;
+    const offset =
+      i < 56
+        ? (i / 55) * 13.5
+        : i < 72
+          ? 24 + ((i - 56) / 15) * 4
+          : i < 78
+            ? 49 + ((i - 72) / 5) * 1.2
+            : 55.7 + ((i - 78) / 9) * 1.9;
+    const duration = (7 + ((i * 7) % 24)) * 60_000;
+    const startedAt = start + offset * 3_600_000;
+    const cost = cents / 100;
+    const inputCost = Math.round(cost * 0.01 * 100) / 100;
+    const outputCost = Math.round(cost * 0.35 * 100) / 100;
+    const cacheCost = Math.round(cost * 0.43 * 100) / 100;
+    const cached = 3_000_000 + ((i * 7919) % 3_000_000);
+    runs.push({
+      id: `run-${i + 1}`,
+      trigger: prompts[i % prompts.length],
+      agentId: emacs ? "emacs" : "lambda",
+      modelId,
+      status: [19, 48, 76].includes(i) ? "cancelled" : "completed",
+      startedAt,
+      endedAt: startedAt + duration,
+      usage: {
+        input: { tokens: Math.round(cached / 49), cost: inputCost },
+        output: { tokens: 18_000 + i * 317, cost: outputCost },
+        cacheRead: { tokens: cached, cost: cacheCost },
+        cacheWrite: {
+          tokens: 80_000 + i * 827,
+          cost:
+            Math.round((cost - inputCost - outputCost - cacheCost) * 100) / 100,
+        },
+      },
+      cacheSavings: Math.round(cost * 8.2 * 100) / 100,
+    });
+  }
+  // Pin the most recent completed session to the expanded reference record.
+  runs[85] = {
+    ...runs[85],
+    trigger: zh
+      ? "再看一下这个项目的运行记录"
+      : "Review the project’s run history",
+    startedAt: end - 27 * 60_000,
+    endedAt: end - 4 * 60_000,
+    usage: {
+      input: { tokens: 152, cost: 0 },
+      output: { tokens: 102_700, cost: 2.05 },
+      cacheRead: { tokens: 12_500_000, cost: 2.49 },
+      cacheWrite: { tokens: 247_200, cost: 1.24 },
+    },
+    cacheSavings: 47.39,
+  };
+  runs.push({
+    id: "run-active",
+    trigger: zh
+      ? "按照这个设计来改，保留现有组件"
+      : "Apply this design using our existing components",
+    agentId: "lambda",
+    status: "running",
+    startedAt: end - 5 * 60_000,
+    endedAt: null,
+    usage: null,
+  });
+  return {
+    id: "zeron-project-runs",
+    project: { name: "Zeron UI · Component library", identifier: "ZER-8317" },
+    currency: "USD",
+    start,
+    end,
+    agents: [
+      { id: "lambda", name: "Lambda", colorIndex: 1 },
+      { id: "emacs", name: "Emacs", colorIndex: 2 },
+    ],
+    models: [
+      { id: "opus-high", name: "Opus 5.5 high", colorIndex: 1 },
+      { id: "opus-xhigh", name: "Opus 5.5 xhigh", colorIndex: 2 },
+      { id: "sol", name: "GPT-6.1 Sol", colorIndex: 5 },
+    ],
+    runs,
+  };
+}
+
+
+import type { AgentRunsLabels } from "./agent-runs-types";
+
+export const agentRunsEnLabels: AgentRunsLabels = {
+  title: "Runs",
+  spent: "Total spent",
+  tokens: "Tokens",
+  output: "Output",
+  agentTime: "Agent time",
+  sessions: "Sessions",
+  fromCache: (percent) => `${percent} from cache`,
+  elapsed: (duration) => `${duration} elapsed`,
+  runCount: (count) => `${count} runs`,
+  runStates: (active, cancelled) => `${active} active · ${cancelled} cancelled`,
+  duration: (hours, minutes) => `${hours}h ${minutes}m`,
+  underMinute: "< 1m",
+  cumulative: "Cumulative",
+  perRun: "Per run",
+  chartTitle: "Cost over time",
+  chartMode: "Cost view",
+  activity: "Agent activity",
+  durationHint: "Run width represents duration",
+  byAgent: "By agent",
+  byModel: "By model",
+  time: "Time",
+  trigger: "Trigger",
+  agent: "Agent",
+  model: "Model",
+  durationColumn: "Duration",
+  cost: "Cost",
+  status: "Status",
+  running: "Working",
+  completed: "Completed",
+  cancelled: "Cancelled",
+  failed: "Failed",
+  costBreakdown: "Cost breakdown",
+  input: "Input",
+  cacheRead: "Cache read",
+  cacheWrite: "Cache write",
+  total: "Total",
+  cacheHit: "Cache hit",
+  saved: (cost) => `saved ${cost}`,
+  sessionTime: "Time range",
+  expand: (trigger) => `Expand session: ${trigger}`,
+  collapse: (trigger) => `Collapse session: ${trigger}`,
+  openSession: "Open session",
+  close: "Close runs",
+  viewData: "View cost data",
+  previous: "Previous",
+  next: "Next",
+  pagination: (from, to, total) => `${from}–${to} of ${total} sessions`,
+  firstPage: "First page",
+  lastPage: "Last page",
+  rowsPerPage: "Rows per page",
+  pageSummary: (page, count) => `Page ${page} of ${count}`,
+  unreported: "Usage has not been reported for this session.",
+  reportedOnly:
+    "Totals include reported usage. Active and unreported sessions may add costs.",
+  loading: "Loading runs…",
+  loadError: "Runs could not be loaded.",
+  invalid:
+    "Run data is invalid. Check session times, usage and agent/model references.",
+  retry: "Try again",
+  empty: "No runs in this period",
+  emptyDescription:
+    "Agent sessions and their usage will appear here once work begins.",
+};
+export const agentRunsZhLabels: AgentRunsLabels = {
+  title: "运行记录",
+  spent: "总费用",
+  tokens: "Token 用量",
+  output: "输出 Token",
+  agentTime: "Agent 用时",
+  sessions: "Session 数",
+  fromCache: (percent) => `${percent} 来自缓存`,
+  elapsed: (duration) => `历时 ${duration}`,
+  runCount: (count) => `${count} 次运行`,
+  runStates: (active, cancelled) =>
+    `${active} 个进行中 · ${cancelled} 个已取消`,
+  duration: (hours, minutes) => `${hours} 小时 ${minutes} 分`,
+  underMinute: "不足 1 分钟",
+  cumulative: "累计费用",
+  perRun: "单次费用",
+  chartTitle: "费用趋势",
+  chartMode: "费用视图",
+  activity: "Agent 活动",
+  durationHint: "色条宽度表示运行时长",
+  byAgent: "按 Agent",
+  byModel: "按模型",
+  time: "时间",
+  trigger: "触发指令",
+  agent: "Agent",
+  model: "模型",
+  durationColumn: "时长",
+  cost: "费用",
+  status: "状态",
+  running: "进行中",
+  completed: "已完成",
+  cancelled: "已取消",
+  failed: "失败",
+  costBreakdown: "费用明细",
+  input: "输入",
+  cacheRead: "缓存读取",
+  cacheWrite: "缓存写入",
+  total: "合计",
+  cacheHit: "缓存命中",
+  saved: (cost) => `节省 ${cost}`,
+  sessionTime: "运行时间",
+  expand: (trigger) => `展开 Session：${trigger}`,
+  collapse: (trigger) => `收起 Session：${trigger}`,
+  openSession: "打开会话",
+  close: "关闭运行记录",
+  viewData: "查看费用数据",
+  previous: "上一页",
+  next: "下一页",
+  pagination: (from, to, total) =>
+    `第 ${from}–${to} 条，共 ${total} 个 Session`,
+  firstPage: "第一页",
+  lastPage: "最后一页",
+  rowsPerPage: "每页行数",
+  pageSummary: (page, count) => `第 ${page} 页，共 ${count} 页`,
+  unreported: "该 Session 的用量尚未上报。",
+  reportedOnly:
+    "合计仅包含已上报用量，进行中及未上报的 Session 可能产生后续费用。",
+  loading: "正在加载运行记录…",
+  loadError: "未能加载运行记录。",
+  invalid: "运行数据无效，请检查时间、用量与 Agent / 模型引用。",
+  retry: "重试",
+  empty: "该时间段暂无运行记录",
+  emptyDescription: "Agent 开始工作后，Session 和用量会显示在这里。",
+};
+
+
+"use client";
+
+import { useId, useMemo } from "react";
+import type {
+  ColumnDef,
+  OnChangeFn,
+  PaginationState,
+} from "@tanstack/react-table";
+import { Avatar, AvatarFallback } from "@zeron/ui/avatar";
+import { Badge } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { SegmentedBar, chartColor } from "@zeron/ui/chart-primitives";
+import { DataTable, useDataTable } from "@zeron/ui/data-table";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import {
+  cacheRatio,
+  runCost,
+  runTokens,
+  runDuration,
+  summarizeAgentRuns,
+  usageKinds,
+  type AgentRunsFormatters,
+} from "./agent-runs-data";
+import type {
+  AgentRun,
+  AgentRunsAgent,
+  AgentRunsData,
+  AgentRunsLabels,
+  AgentRunStatus,
+} from "./agent-runs-types";
+
+export function AgentRunIdentity({ agent }: { agent: AgentRunsAgent }) {
+  return (
+    <span className="inline-flex min-w-0 items-center gap-2 text-body text-fg-default">
+      <span aria-hidden="true">
+        {agent.avatar ?? (
+          <Avatar size="sm">
+            <AvatarFallback>{agent.name.slice(0, 1)}</AvatarFallback>
+          </Avatar>
+        )}
+      </span>
+      <span className="truncate" title={agent.name}>
+        {agent.name}
+      </span>
+    </span>
+  );
+}
+const statusTone = {
+  running: "info",
+  completed: "success",
+  cancelled: "neutral",
+  failed: "danger",
+} as const;
+export function AgentRunState({
+  status,
+  labels,
+}: {
+  status: AgentRunStatus;
+  labels: AgentRunsLabels;
+}) {
+  return (
+    <Badge variant="plain" status={statusTone[status]}>
+      {labels[status]}
+    </Badge>
+  );
+}
+function RunDetails({
+  run,
+  data,
+  format,
+  labels,
+  onOpenSession,
+}: {
+  run: AgentRun;
+  data: AgentRunsData;
+  format: AgentRunsFormatters;
+  labels: AgentRunsLabels;
+  onOpenSession?: (run: AgentRun) => void;
+}) {
+  const Arrow = useIcon("arrow-right");
+  const cost = runCost(run);
+  const ratio = cacheRatio(run);
+  const segments = usageKinds.map((kind, index) => ({
+    id: kind,
+    label: labels[kind],
+    color: chartColor((index + 1) as 1 | 2 | 3 | 4),
+    value: run.usage?.[kind].cost ?? null,
+  }));
+  return (
+    <div
+      className="@container/run-detail min-w-0 space-y-5 py-4"
+      data-slot="agent-run-detail"
+    >
+      <p className="break-words text-body text-fg-default">{run.trigger}</p>
+      <div className="grid gap-6 @2xl/run-detail:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] @2xl/run-detail:gap-10">
+        <div className="min-w-0 space-y-3">
+          <h4 className="text-label font-medium text-fg-muted">
+            {labels.costBreakdown}
+          </h4>
+          {run.usage ? (
+            <>
+              <SegmentedBar
+                mode="distribution"
+                segments={segments}
+                valueText={`${labels.costBreakdown} · ${format.money(cost!)}`}
+              />
+              <table className="w-full text-label tabular-nums">
+                <caption className="sr-only">{labels.costBreakdown}</caption>
+                <thead className="sr-only">
+                  <tr>
+                    <th scope="col">{labels.costBreakdown}</th>
+                    <th scope="col">{labels.tokens}</th>
+                    <th scope="col">{labels.cost}</th>
+                    <th scope="col">%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {segments.map((segment) => (
+                    <tr key={segment.id}>
+                      <th
+                        scope="row"
+                        className="py-1 text-left font-normal text-fg-muted"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className="mr-2 inline-block size-2 rounded-full"
+                          style={{ backgroundColor: segment.color }}
+                        />
+                        {segment.label}
+                      </th>
+                      <td className="py-1 text-right text-fg-default">
+                        {format.compact(
+                          run.usage![segment.id as (typeof usageKinds)[number]]
+                            .tokens,
+                        )}
+                      </td>
+                      <td className="py-1 text-right text-fg-default">
+                        {format.money(segment.value!)}
+                      </td>
+                      <td className="py-1 text-right text-fg-subtle">
+                        {cost! > 0
+                          ? format.percent(segment.value! / cost!)
+                          : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <th
+                      scope="row"
+                      className="pt-2 text-left font-medium text-fg-default"
+                    >
+                      {labels.total}
+                    </th>
+                    <td className="pt-2 text-right font-medium text-fg-default">
+                      {format.compact(runTokens(run)!)}
+                    </td>
+                    <td className="pt-2 text-right font-medium text-fg-default">
+                      {format.money(cost!)}
+                    </td>
+                    <td />
+                  </tr>
+                </tbody>
+              </table>
+            </>
+          ) : (
+            <p className="py-4 text-body text-fg-muted">{labels.unreported}</p>
+          )}
+        </div>
+        <div className="min-w-0 space-y-4">
+          <dl className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-4 gap-y-2 text-label">
+            <dt className="text-fg-muted">{labels.status}</dt>
+            <dd>
+              <AgentRunState status={run.status} labels={labels} />
+            </dd>
+            <dt className="text-fg-muted">{labels.model}</dt>
+            <dd className="break-words text-fg-default">
+              {data.models.find((model) => model.id === run.modelId)?.name ??
+                "—"}
+            </dd>
+            <dt className="text-fg-muted">{labels.cacheHit}</dt>
+            <dd className="break-words text-fg-default">
+              {ratio === null ? "—" : format.percent(ratio)}
+              {run.cacheSavings !== undefined && (
+                <span className="block text-fg-muted">
+                  {labels.saved(format.money(run.cacheSavings))}
+                </span>
+              )}
+            </dd>
+            <dt className="text-fg-muted">{labels.sessionTime}</dt>
+            <dd className="break-words tabular-nums text-fg-default">
+              {format.fullDate(run.startedAt)}
+              <br />
+              {format.time(run.startedAt)}–
+              {format.day(run.startedAt) !==
+                format.day(run.endedAt ?? data.end) &&
+                `${format.fullDate(run.endedAt ?? data.end)} `}
+              {format.time(run.endedAt ?? data.end)}
+            </dd>
+          </dl>
+          {onOpenSession && (
+            <Button
+              size="sm"
+              variant="secondary"
+              trailingIcon={Arrow}
+              onClick={() => onOpenSession(run)}
+            >
+              {labels.openSession}
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function AgentRunsSessions({
+  data,
+  labels,
+  format,
+  runs,
+  expandedId,
+  onToggle,
+  pagination,
+  onPaginationChange,
+  onOpenSession,
+}: {
+  data: AgentRunsData;
+  labels: AgentRunsLabels;
+  format: AgentRunsFormatters;
+  runs: readonly AgentRun[];
+  expandedId?: string;
+  onToggle: (id: string) => void;
+  pagination: PaginationState;
+  onPaginationChange: OnChangeFn<PaginationState>;
+  onOpenSession?: (run: AgentRun) => void;
+}) {
+  const id = useId();
+  const Chevron = useIcon("chevron-right");
+  const Down = useIcon("chevron-down");
+  const rows = useMemo(() => [...runs], [runs]);
+  const groups = useMemo(() => {
+    const result = new Map<string, AgentRun[]>();
+    for (const run of runs) {
+      const day = format.day(run.startedAt);
+      const group = result.get(day);
+      if (group) group.push(run);
+      else result.set(day, [run]);
+    }
+    return new Map(
+      [...result].map(([day, group]) => [
+        day,
+        { count: group.length, summary: summarizeAgentRuns(group, data.end) },
+      ]),
+    );
+  }, [runs, format, data.end]);
+  const columns = useMemo<ColumnDef<AgentRun, unknown>[]>(
+    () => [
+      {
+        accessorKey: "startedAt",
+        header: labels.time,
+        size: 80,
+        cell: ({ row }) => (
+          <span className="tabular-nums">
+            {format.time(row.original.startedAt)}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "trigger",
+        header: labels.trigger,
+        size: 380,
+        cell: ({ row }) => {
+          const run = row.original;
+          return (
+            <button
+              type="button"
+              aria-expanded={row.getIsExpanded()}
+              aria-controls={
+                row.getIsExpanded()
+                  ? id + "-" + encodeURIComponent(run.id)
+                  : undefined
+              }
+              aria-label={
+                row.getIsExpanded()
+                  ? labels.collapse(run.trigger)
+                  : labels.expand(run.trigger)
+              }
+              onClick={() => onToggle(run.id)}
+              className="block min-w-64 max-w-sm rounded-sm py-2 text-left text-body text-fg-default transition-colors duration-fast hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-focus-ring"
+            >
+              <span className="block truncate" title={run.trigger}>
+                {run.trigger}
+              </span>
+            </button>
+          );
+        },
+      },
+      {
+        accessorKey: "agentId",
+        header: labels.agent,
+        size: 128,
+        cell: ({ row }) => (
+          <AgentRunIdentity
+            agent={
+              data.agents.find((agent) => agent.id === row.original.agentId)!
+            }
+          />
+        ),
+      },
+      {
+        accessorKey: "modelId",
+        header: labels.model,
+        size: 160,
+        cell: ({ row }) => {
+          const model = data.models.find(
+            (model) => model.id === row.original.modelId,
+          );
+          return (
+            <span
+              className="block max-w-40 truncate text-label"
+              title={model?.name}
+            >
+              {model?.name ?? "—"}
+            </span>
+          );
+        },
+      },
+      {
+        id: "duration",
+        header: labels.durationColumn,
+        size: 128,
+        cell: ({ row }) =>
+          row.original.status === "running" ? (
+            <AgentRunState status={row.original.status} labels={labels} />
+          ) : (
+            <span className="tabular-nums">
+              {format.duration(runDuration(row.original, data.end))}
+            </span>
+          ),
+      },
+      {
+        id: "tokens",
+        header: labels.tokens,
+        size: 96,
+        cell: ({ row }) => {
+          const value = runTokens(row.original);
+          return (
+            <span className="tabular-nums">
+              {value === null ? "—" : format.compact(value)}
+            </span>
+          );
+        },
+      },
+      {
+        id: "cost",
+        header: labels.cost,
+        size: 96,
+        cell: ({ row }) => {
+          const value = runCost(row.original);
+          return (
+            <span className="font-medium tabular-nums text-fg-default">
+              {value === null ? "—" : format.money(value)}
+            </span>
+          );
+        },
+      },
+      {
+        id: "expand",
+        header: () => <span className="sr-only">{labels.costBreakdown}</span>,
+        size: 40,
+        cell: ({ row }) => {
+          const Direction = row.getIsExpanded() ? Down : Chevron;
+          return <Direction size={14} aria-hidden="true" />;
+        },
+      },
+    ],
+    [
+      data.agents,
+      data.models,
+      data.end,
+      format,
+      labels,
+      id,
+      onToggle,
+      Chevron,
+      Down,
+    ],
+  );
+  const expanded = useMemo(
+    () => (expandedId ? { [expandedId]: true } : {}),
+    [expandedId],
+  );
+  const { table } = useDataTable({
+    data: rows,
+    columns,
+    getRowId: (run) => run.id,
+    enableRowSelection: false,
+    initialState: { columnPinning: { left: ["startedAt"] } },
+    getRowCanExpand: () => true,
+    autoResetPageIndex: false,
+    state: { pagination, expanded },
+    onPaginationChange,
+  });
+  return (
+    <div className="min-w-0" data-slot="agent-runs-sessions">
+      <DataTable
+        table={table}
+        variant="embedded"
+        density="compact"
+        stickyHeader
+        className="@container/session-table"
+        style={{ backgroundColor: "var(--surface-floating)" }}
+        role="region"
+        aria-label={labels.sessions}
+        activeRowId={expandedId}
+        onRowActivate={(row) => onToggle(row.original.id)}
+        paginationProps={{
+          pageSizeOptions: [6, 10, 20, 50],
+          labels: {
+            firstPage: labels.firstPage,
+            previousPage: labels.previous,
+            nextPage: labels.next,
+            lastPage: labels.lastPage,
+            rowsPerPage: labels.rowsPerPage,
+            pageSummary: (page, count) =>
+              labels.pageSummary(format.number(page), format.number(count)),
+          },
+        }}
+        renderRowHeader={({ row, previousRow }) => {
+          const day = format.day(row.original.startedAt);
+          if (previousRow && format.day(previousRow.original.startedAt) === day)
+            return null;
+          const group = groups.get(day)!;
+          const hasUsage = group.summary.unreported < group.count;
+          return (
+            <div className="sticky left-0 -mx-3 flex w-[100cqw] flex-wrap items-center justify-between gap-2 bg-surface-raised px-3 py-2">
+              <h3 className="text-label font-medium text-fg-default">
+                {format.fullDate(row.original.startedAt)}
+              </h3>
+              <p className="text-label tabular-nums text-fg-subtle">
+                {labels.runCount(format.number(group.count))} ·{" "}
+                {format.duration(group.summary.duration)} ·{" "}
+                {hasUsage ? format.compact(group.summary.tokens) : "—"}{" "}
+                {labels.tokens} ·{" "}
+                {hasUsage ? format.money(group.summary.cost) : "—"}
+              </p>
+            </div>
+          );
+        }}
+        renderExpandedRow={({ row }) => (
+          <div
+            id={id + "-" + encodeURIComponent(row.id)}
+            className="sticky left-0 -mx-3 w-[100cqw] bg-surface-raised px-3"
+          >
+            <RunDetails
+              run={row.original}
+              data={data}
+              labels={labels}
+              format={format}
+              onOpenSession={onOpenSession}
+            />
+          </div>
+        )}
+      />
+    </div>
+  );
+}
+
+
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import type { ChartColorIndex } from "@zeron/ui/chart-primitives";
+
+export type AgentRunStatus = "running" | "completed" | "cancelled" | "failed";
+export type AgentRunsMode = "cumulative" | "per-run";
+export type AgentRunUsageKind = "input" | "output" | "cacheRead" | "cacheWrite";
+export interface AgentRunUsage {
+  tokens: number;
+  cost: number;
+}
+export interface AgentRunsAgent {
+  id: string;
+  name: string;
+  colorIndex: Exclude<ChartColorIndex, 6 | 7>;
+  avatar?: ReactNode;
+}
+export interface AgentRunsModel {
+  id: string;
+  name: string;
+  colorIndex: Exclude<ChartColorIndex, 6 | 7>;
+}
+export interface AgentRun {
+  id: string;
+  trigger: string;
+  agentId: string;
+  modelId?: string;
+  status: AgentRunStatus;
+  /** Epoch milliseconds. A running session ends visually at data.end. */
+  startedAt: number;
+  endedAt: number | null;
+  /** Null means not yet reported; never interpreted as a zero-cost session. */
+  usage: Record<AgentRunUsageKind, AgentRunUsage> | null;
+  /** Optional savings supplied by the billing service, in major currency units. */
+  cacheSavings?: number;
+}
+export interface AgentRunsData {
+  /** Stable project/window identity; change this to reset local disclosures. */
+  id: string;
+  project: { name: string; identifier?: string };
+  currency: string;
+  /** Complete reporting window, in epoch milliseconds. */
+  start: number;
+  end: number;
+  agents: readonly AgentRunsAgent[];
+  models: readonly AgentRunsModel[];
+  /** Complete sessions for this window. All displayed totals derive from these records. */
+  runs: readonly AgentRun[];
+}
+export interface AgentRunsLabels {
+  title: string;
+  spent: string;
+  tokens: string;
+  output: string;
+  agentTime: string;
+  sessions: string;
+  fromCache: (percent: string) => string;
+  elapsed: (duration: string) => string;
+  runCount: (count: string) => string;
+  runStates: (active: string, cancelled: string) => string;
+  duration: (hours: string, minutes: string) => string;
+  underMinute: string;
+  cumulative: string;
+  perRun: string;
+  chartTitle: string;
+  chartMode: string;
+  activity: string;
+  durationHint: string;
+  byAgent: string;
+  byModel: string;
+  time: string;
+  trigger: string;
+  agent: string;
+  model: string;
+  durationColumn: string;
+  cost: string;
+  status: string;
+  running: string;
+  completed: string;
+  cancelled: string;
+  failed: string;
+  costBreakdown: string;
+  input: string;
+  cacheRead: string;
+  cacheWrite: string;
+  total: string;
+  cacheHit: string;
+  saved: (cost: string) => string;
+  sessionTime: string;
+  expand: (trigger: string) => string;
+  collapse: (trigger: string) => string;
+  previous: string;
+  next: string;
+  /** @deprecated Native DataTable pagination uses pageSummary; retained for existing label objects. */
+  pagination: (from: string, to: string, total: string) => string;
+  firstPage: string;
+  lastPage: string;
+  rowsPerPage: string;
+  pageSummary: (page: string, count: string) => string;
+  openSession: string;
+  close: string;
+  viewData: string;
+  unreported: string;
+  reportedOnly: string;
+  loading: string;
+  loadError: string;
+  invalid: string;
+  retry: string;
+  empty: string;
+  emptyDescription: string;
+}
+export interface AgentRunsProps
+  extends Omit<ComponentPropsWithoutRef<"section">, "children"> {
+  data: AgentRunsData;
+  locale?: string;
+  timeZone?: string;
+  labels?: Partial<AgentRunsLabels>;
+  mode?: AgentRunsMode;
+  defaultMode?: AgentRunsMode;
+  onModeChange?: (mode: AgentRunsMode) => void;
+  defaultExpandedRunId?: string;
+  /** Initial sessions per page, clamped to 1–100. Changes reset the table to its first page. Default: 6. */
+  pageSize?: number;
+  /** Optional host-owned route/navigation into a full session. */
+  onOpenSession?: (run: AgentRun) => void;
+  onClose?: () => void;
+  state?: "ready" | "loading" | "error";
+  errorMessage?: string;
+  onRetry?: () => void;
+}
+
+
+"use client";
+
+import { useCallback, useId, useMemo, useState } from "react";
+import type { OnChangeFn, PaginationState } from "@tanstack/react-table";
+import { Button } from "@zeron/ui/button";
+import {
+  ChartLegend,
+  SegmentedBar,
+  chartColor,
+} from "@zeron/ui/chart-primitives";
+import { Container, ContainerBody } from "@zeron/ui/container";
+import { Empty, EmptyTitle, EmptyDescription } from "@zeron/ui/empty";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { Skeleton } from "@zeron/ui/skeleton";
+import { Tabs, TabsList, TabItem, TabPanel } from "@zeron/ui/tabs";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { AgentRunsChart } from "./agent-runs-chart";
+import { AgentRunsSessions } from "./agent-runs-sessions";
+import {
+  createAgentRunsFormatters,
+  summarizeAgentRuns,
+  validateAgentRunsData,
+} from "./agent-runs-data";
+import { agentRunsEnLabels } from "./agent-runs-labels";
+import type { AgentRunsProps } from "./agent-runs-types";
+
+/** A shell-free project usage block. The host owns fetching, billing and navigation. */
+export function AgentRuns(props: AgentRunsProps) {
+  return <AgentRunsContent key={props.data.id} {...props} />;
+}
+function AgentRunsContent({
+  data,
+  locale = "en-US",
+  timeZone = "UTC",
+  labels: suppliedLabels,
+  mode: suppliedMode,
+  defaultMode = "cumulative",
+  onModeChange,
+  defaultExpandedRunId,
+  pageSize: suppliedPageSize = 6,
+  onOpenSession,
+  onClose,
+  state = "ready",
+  errorMessage,
+  onRetry,
+  className,
+  ...props
+}: AgentRunsProps) {
+  const titleId = useId();
+  const Close = useIcon("x");
+  const [localMode, setMode] = useState(defaultMode);
+  const [expandedId, setExpandedId] = useState(defaultExpandedRunId);
+  const mode = suppliedMode ?? localMode;
+  const labels = useMemo(
+    () => ({ ...agentRunsEnLabels, ...suppliedLabels }),
+    [suppliedLabels],
+  );
+  const format = useMemo(
+    () => createAgentRunsFormatters(locale, timeZone, data.currency, labels),
+    [locale, timeZone, data.currency, labels],
+  );
+  const valid = useMemo(() => validateAgentRunsData(data), [data]);
+  const summary = useMemo(
+    () => (valid ? summarizeAgentRuns(data.runs, data.end) : null),
+    [data, valid],
+  );
+  const runs = useMemo(
+    () =>
+      [...data.runs].sort(
+        (a, b) => b.startedAt - a.startedAt || a.id.localeCompare(b.id),
+      ),
+    [data.runs],
+  );
+  const configuredPageSize = Number.isFinite(suppliedPageSize)
+    ? Math.max(1, Math.min(100, Math.floor(suppliedPageSize)))
+    : 6;
+  const [paginationState, setPaginationState] = useState(() => ({
+    configuredPageSize,
+    value: {
+      pageSize: configuredPageSize,
+      pageIndex: Math.floor(
+        Math.max(
+          0,
+          runs.findIndex((run) => run.id === defaultExpandedRunId),
+        ) / configuredPageSize,
+      ),
+    },
+  }));
+  if (paginationState.configuredPageSize !== configuredPageSize) {
+    setPaginationState({
+      configuredPageSize,
+      value: { pageSize: configuredPageSize, pageIndex: 0 },
+    });
+  }
+  const pagination = useMemo(
+    () => ({
+      ...paginationState.value,
+      pageIndex: Math.min(
+        paginationState.value.pageIndex,
+        Math.max(
+          0,
+          Math.ceil(runs.length / paginationState.value.pageSize) - 1,
+        ),
+      ),
+    }),
+    [paginationState.value, runs.length],
+  );
+  const onPaginationChange = useCallback<OnChangeFn<PaginationState>>(
+    (updater) =>
+      setPaginationState((current) => {
+        const previous = {
+          ...current.value,
+          pageIndex: Math.min(
+            current.value.pageIndex,
+            Math.max(0, Math.ceil(runs.length / current.value.pageSize) - 1),
+          ),
+        };
+        return {
+          configuredPageSize,
+          value: typeof updater === "function" ? updater(previous) : updater,
+        };
+      }),
+    [configuredPageSize, runs.length],
+  );
+  const hasReportedUsage = summary !== null && summary.unreported < runs.length;
+  const toggleRun = useCallback(
+    (id: string) =>
+      setExpandedId((current) => (current === id ? undefined : id)),
+    [],
+  );
+  const selectRun = useCallback(
+    (id: string) => {
+      setExpandedId(id);
+      const index = runs.findIndex((run) => run.id === id);
+      if (index >= 0)
+        setPaginationState((current) => ({
+          ...current,
+          value: {
+            ...current.value,
+            pageIndex: Math.floor(index / current.value.pageSize),
+          },
+        }));
+    },
+    [runs],
+  );
+  return (
+    <section
+      {...props}
+      aria-labelledby={titleId}
+      aria-busy={state === "loading"}
+      data-slot="agent-runs"
+      className={cn("@container/agent-runs min-w-0", className)}
+    >
+      <Container>
+        <ContainerBody>
+          <div className="space-y-6 @lg/agent-runs:p-2">
+            <header className="flex items-start justify-between gap-4">
+              <div className="min-w-0 space-y-1">
+                <h2
+                  id={titleId}
+                  className="text-title font-medium text-fg-default"
+                >
+                  {labels.title}
+                </h2>
+                <p className="break-words text-body text-fg-muted">
+                  {data.project.identifier && (
+                    <>
+                      <span className="text-fg-subtle">
+                        {data.project.identifier}
+                      </span>
+                      <span aria-hidden="true"> · </span>
+                    </>
+                  )}
+                  {data.project.name}
+                </p>
+              </div>
+              {onClose && (
+                <Button
+                  size="sm"
+                  iconOnly
+                  variant="ghost"
+                  leadingIcon={Close}
+                  aria-label={labels.close}
+                  onClick={onClose}
+                />
+              )}
+            </header>
+            {state === "loading" ? (
+              <div role="status" className="space-y-6">
+                <span className="sr-only">{labels.loading}</span>
+                <div className="grid grid-cols-2 gap-6 @3xl/agent-runs:grid-cols-5">
+                  {Array.from({ length: 5 }, (_, index) => (
+                    <div key={index} className="space-y-3">
+                      <Skeleton className="h-3 w-20" />
+                      <Skeleton className="h-8 w-28" />
+                    </div>
+                  ))}
+                </div>
+                <Skeleton className="h-60 w-full" />
+                {Array.from({ length: 4 }, (_, index) => (
+                  <Skeleton key={index} className="h-10 w-full" />
+                ))}
+              </div>
+            ) : state === "error" || !valid ? (
+              <div className="flex min-h-60 flex-col items-center justify-center gap-4">
+                <InlineNotice variant="emphasized" tone="danger" role="alert">
+                  <InlineNoticeContent>
+                    {!valid
+                      ? labels.invalid
+                      : (errorMessage ?? labels.loadError)}
+                  </InlineNoticeContent>
+                </InlineNotice>
+                {onRetry && (
+                  <Button variant="secondary" onClick={onRetry}>
+                    {labels.retry}
+                  </Button>
+                )}
+              </div>
+            ) : !data.runs.length ? (
+              <Empty reason="no-data">
+                <EmptyTitle>{labels.empty}</EmptyTitle>
+                <EmptyDescription>{labels.emptyDescription}</EmptyDescription>
+              </Empty>
+            ) : (
+              summary && (
+                <>
+                  <dl className="grid grid-cols-2 gap-x-6 gap-y-5 @lg/agent-runs:grid-cols-3 @4xl/agent-runs:grid-cols-5">
+                    {[
+                      {
+                        label: labels.spent,
+                        value: hasReportedUsage
+                          ? format.money(summary.cost)
+                          : "—",
+                        detail: `${format.date(data.start)}–${format.date(data.end)}`,
+                      },
+                      {
+                        label: labels.tokens,
+                        value: hasReportedUsage
+                          ? format.compact(summary.tokens)
+                          : "—",
+                        detail:
+                          summary.cacheRatio === null
+                            ? "—"
+                            : labels.fromCache(
+                                format.percent(summary.cacheRatio),
+                              ),
+                      },
+                      {
+                        label: labels.output,
+                        value: hasReportedUsage
+                          ? format.compact(summary.output)
+                          : "—",
+                        detail: undefined,
+                      },
+                      {
+                        label: labels.agentTime,
+                        value: format.duration(summary.duration),
+                        detail: labels.elapsed(
+                          format.duration(data.end - data.start),
+                        ),
+                      },
+                      {
+                        label: labels.sessions,
+                        value: format.number(runs.length),
+                        detail: labels.runStates(
+                          format.number(summary.active),
+                          format.number(summary.cancelled),
+                        ),
+                      },
+                    ].map((item) => (
+                      <div key={item.label} className="min-w-0 space-y-1.5">
+                        <dt className="text-label text-fg-muted">
+                          {item.label}
+                        </dt>
+                        <dd className="break-words text-title font-semibold tabular-nums text-fg-default">
+                          {item.value}
+                        </dd>
+                        {item.detail && (
+                          <dd className="text-label text-fg-subtle">
+                            {item.detail}
+                          </dd>
+                        )}
+                      </div>
+                    ))}
+                  </dl>
+                  <Tabs
+                    value={mode}
+                    variant="segment"
+                    color="default"
+                    onValueChange={(value) => {
+                      const next =
+                        value === "per-run" ? "per-run" : "cumulative";
+                      if (suppliedMode === undefined) setMode(next);
+                      onModeChange?.(next);
+                    }}
+                  >
+                    <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
+                      <TabsList aria-label={labels.chartMode}>
+                        <TabItem value="per-run" label={labels.perRun} />
+                        <TabItem value="cumulative" label={labels.cumulative} />
+                      </TabsList>
+                      <span className="flex items-center gap-2 text-label text-fg-subtle">
+                        <span
+                          className="h-0.5 w-4 rounded-full"
+                          style={{ backgroundColor: chartColor(1) }}
+                        />
+                        {mode === "cumulative"
+                          ? labels.cumulative
+                          : labels.perRun}
+                      </span>
+                    </div>
+                    {(["cumulative", "per-run"] as const).map((value) => (
+                      <TabPanel key={value} value={value}>
+                        {mode === value && (
+                          <AgentRunsChart
+                            data={data}
+                            mode={mode}
+                            labels={labels}
+                            format={format}
+                            selectedId={expandedId}
+                            onSelect={selectRun}
+                          />
+                        )}
+                      </TabPanel>
+                    ))}
+                  </Tabs>
+                  <p className="text-label text-fg-subtle">
+                    {labels.durationHint}
+                    {summary.unreported > 0 || summary.active > 0
+                      ? ` · ${labels.reportedOnly}`
+                      : ""}
+                  </p>
+                  <div className="grid gap-6 border-y-hairline border-border-subtle py-5 @2xl/agent-runs:grid-cols-2 @2xl/agent-runs:gap-10">
+                    {(["agent", "model"] as const).map((kind) => {
+                      const items = (
+                        kind === "agent" ? data.agents : data.models
+                      ).map((item) => ({
+                        id: item.id,
+                        label: item.name,
+                        color: chartColor(item.colorIndex),
+                        value:
+                          (kind === "agent"
+                            ? summary.agentCosts
+                            : summary.modelCosts
+                          ).get(item.id) ?? 0,
+                      }));
+                      const title =
+                        kind === "agent" ? labels.byAgent : labels.byModel;
+                      return (
+                        <div key={kind} className="min-w-0 space-y-3">
+                          <h3 className="text-label font-medium text-fg-muted">
+                            {title}
+                          </h3>
+                          <SegmentedBar
+                            mode="distribution"
+                            segments={items.map((item) => ({
+                              ...item,
+                              value: hasReportedUsage ? item.value : null,
+                            }))}
+                            valueText={`${title} · ${hasReportedUsage ? format.money(summary.cost) : labels.unreported}`}
+                          />
+                          <ChartLegend
+                            className="flex flex-wrap gap-x-5 gap-y-2"
+                            items={items.map((item) => ({
+                              ...item,
+                              value: hasReportedUsage
+                                ? format.money(item.value)
+                                : "—",
+                              ratio:
+                                summary.cost > 0
+                                  ? format.percent(item.value / summary.cost)
+                                  : "—",
+                            }))}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <AgentRunsSessions
+                    data={data}
+                    runs={runs}
+                    labels={labels}
+                    format={format}
+                    expandedId={expandedId}
+                    onToggle={toggleRun}
+                    pagination={pagination}
+                    onPaginationChange={onPaginationChange}
+                    onOpenSession={onOpenSession}
+                  />
+                </>
+              )
+            )}
+          </div>
+        </ContainerBody>
+      </Container>
+    </section>
+  );
+}
+
+
+export { AgentRuns } from "./agent-runs";
+export { agentRunsEnLabels, agentRunsZhLabels } from "./agent-runs-labels";
+export { createAgentRunsDemoData } from "./agent-runs-demo-data";
+export type {
+  AgentRun,
+  AgentRunStatus,
+  AgentRunUsage,
+  AgentRunUsageKind,
+  AgentRunsAgent,
+  AgentRunsModel,
+  AgentRunsData,
+  AgentRunsMode,
+  AgentRunsLabels,
+  AgentRunsProps,
+} from "./agent-runs-types";

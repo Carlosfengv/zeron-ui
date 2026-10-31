@@ -6757,6 +6757,88 @@
       }
     },
     {
+      "name": "agent-runs-01",
+      "type": "registry:block",
+      "title": "Agent runs",
+      "description": "Project cost trends, agent activity, model distributions and expandable session usage.",
+      "categories": [
+        "application",
+        "ai",
+        "billing",
+        "observability"
+      ],
+      "dependencies": [
+        "@visx/curve@4.0.0",
+        "@tanstack/react-table@^8.21.3"
+      ],
+      "registryDependencies": [
+        "https://zeron-ui.vercel.app/r/area-chart.json",
+        "https://zeron-ui.vercel.app/r/avatar.json",
+        "https://zeron-ui.vercel.app/r/badge.json",
+        "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/chart-core.json",
+        "https://zeron-ui.vercel.app/r/chart-primitives.json",
+        "https://zeron-ui.vercel.app/r/container.json",
+        "https://zeron-ui.vercel.app/r/data-table.json",
+        "https://zeron-ui.vercel.app/r/empty.json",
+        "https://zeron-ui.vercel.app/r/icon-context.json",
+        "https://zeron-ui.vercel.app/r/inline-notice.json",
+        "https://zeron-ui.vercel.app/r/skeleton.json",
+        "https://zeron-ui.vercel.app/r/tabs.json",
+        "https://zeron-ui.vercel.app/r/utils.json"
+      ],
+      "files": [
+        {
+          "path": "packages/blocks/src/application/agent-runs-01/agent-runs-chart.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-runs-01/agent-runs-chart.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-runs-01/agent-runs-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-runs-01/agent-runs-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-runs-01/agent-runs-demo-data.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-runs-01/agent-runs-demo-data.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-runs-01/agent-runs-labels.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-runs-01/agent-runs-labels.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-runs-01/agent-runs-sessions.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-runs-01/agent-runs-sessions.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-runs-01/agent-runs-types.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-runs-01/agent-runs-types.ts"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-runs-01/agent-runs.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/agent-runs-01/agent-runs.tsx"
+        },
+        {
+          "path": "packages/blocks/src/application/agent-runs-01/index.ts",
+          "type": "registry:component",
+          "target": "components/blocks/agent-runs-01/index.ts"
+        }
+      ],
+      "meta": {
+        "zeron": {
+          "framework": "react",
+          "react": "^19.0.0",
+          "tailwind": "^4.0.0",
+          "kind": "data-block"
+        }
+      }
+    },
+    {
       "name": "credit-top-up-01",
       "type": "registry:block",
       "title": "Credit top-up",

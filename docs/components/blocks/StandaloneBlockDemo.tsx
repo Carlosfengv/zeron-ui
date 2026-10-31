@@ -1,5 +1,6 @@
 "use client";
 
+import { AgentRunsDemo } from "./AgentRunsDemo";
 import { CreditTopUpDemo } from "./CreditTopUpDemo";
 import { ArtifactDemo } from "./ArtifactDemo";
 import { ToolCallsDemo } from "./ToolCallsDemo";
@@ -185,6 +186,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
 
 function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "agent-runs-01":
+      return <AgentRunsDemo />;
     case "tool-calls-01":
       return <ToolCallsDemo />;
     case "credit-top-up-01":

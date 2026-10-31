@@ -98,6 +98,7 @@ const iconEntry = (value: Omit<DocEntry, "collection" | "indexable" | "order"> &
 });
 
 export const docEntries = [
+  blockEntry({ slug: "agent-runs-01", section: "application", icon: "doc-data-table", name: "Agent 运行用量", description: "项目费用趋势、Agent 活动、模型消耗分布与 Session 费用明细。", registryItem: { name: "agent-runs-01", type: "registry:block" }, isNew: true, order: 36.50 }),
   blockEntry({ slug: "chat-markdown-01", section: "application", icon: "doc-chat-message", name: "Chat Markdown", description: "Consistent AI response typography, code, tables, task lists and streaming.", registryItem: { name: "chat-markdown-01", type: "registry:block" }, isNew: true, order: 36.9765 }),
   blockEntry({ slug: "grouped-data-table-02", section: "application", icon: "doc-data-table", name: "多维分组表格", description: "可切换分组维度、独立表头、组内预览与新增入口。", registryItem: { name: "grouped-data-table-02", type: "registry:block" }, isNew: true, order: 36.965 }),
   blockEntry({ slug: "grouped-data-table-01", section: "application", icon: "doc-data-table", name: "分组表格", description: "可展开分组、组内预览、搜索筛选与稳定计数的通用表格。", registryItem: { name: "grouped-data-table-01", type: "registry:block" }, isNew: true, order: 36.966 }),

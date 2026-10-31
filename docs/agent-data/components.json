@@ -1,4 +1,30 @@
 {
+  "agent-runs-01": {
+    "keywords": [
+      "运行",
+      "用量",
+      "模型消耗",
+      "项目费用",
+      "缓存",
+      "Session",
+      "agent runs",
+      "cost",
+      "usage"
+    ],
+    "useCases": [
+      "展示单个项目的 Agent / 模型费用分布、运行趋势与 Session 记录。"
+    ],
+    "whenNotToUse": [
+      "不执行 Agent、不采集用量、不连接计费服务；完整调用链调试使用 agent-session-detail-01。"
+    ],
+    "keyApi": [
+      "data 提供完整时间窗口、agents、models、runs；汇总和图表从 Session usage 派生。",
+      "mode / defaultMode / onModeChange 切换累计与单次费用；pageSize 和 defaultExpandedRunId 控制初始展示。",
+      "onOpenSession 接收完整 Session；onClose、state、onRetry 由宿主接入。",
+      "原生 AreaChart / Grid / Tooltip、SegmentedBar / ChartLegend、Tabs / DataTable 和语义颜色；DataTable 固定表头、内置分页、日期标题与跨列明细；中英文 labels 和时区格式化。",
+      "usage=null 保留未知，缓存命中率使用输入 Token 分母，活动条宽度表示时长。"
+    ]
+  },
   "artifact-preview-panel": {
     "keywords": [
       "artifact",
@@ -811,7 +837,9 @@
     "keyApi": [
       "useDataTable 透传 grouping / expanded 状态与 TanStack 行模型配置。",
       "grouping 提供分组名称、顺序、展示条数及组头/组尾内容扩展，跨列数随可见列变化。",
-      "density 为 comfortable 或 compact；组内预览使用 manualPagination 与 showPagination=false。"
+      "density 为 comfortable 或 compact；组内预览使用 manualPagination 与 showPagination=false。",
+      "renderRowHeader({row, previousRow, table}) 提供不占分页名额的日期等展示标题；renderExpandedRow({row, table}) 展示 expanded 状态的跨列明细。",
+      "stickyHeader / scrollAreaMaxHeight 提供有界内容区的纵向滚动与固定表头，工具栏和分页器保持在滚动区外。"
     ]
   },
   "data-grid": {

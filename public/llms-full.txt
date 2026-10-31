@@ -280,6 +280,52 @@ Block 填满父级宽高，宿主必须提供有界高度，例如 flex 剩余�
 
 ---
 schema_version: 1
+name: agent-runs-01
+kind: block
+status: stable
+locale: zh-CN
+summary: 项目运行用量，包含费用趋势、Agent 活动、模型分布和可展开的 Session 费用明细。
+package_import: "@zeron/blocks/agent-runs-01"
+registry_import: "@/components/blocks/agent-runs-01"
+source: packages/blocks/src/application/agent-runs-01/agent-runs.tsx
+types: packages/blocks/src/application/agent-runs-01/agent-runs-types.ts
+registry: packages/blocks/registry.json
+related: [area-chart, chart-core, chart-primitives, container, tabs, data-table, avatar, badge, button]
+---
+
+显示精度随数据范围调整：低于币种最小单位的非零费用保留最多四位有效数字，费用轴也保留小额刻度；这只影响显示，不改变原始费用与汇总。横轴在不足一分钟时显示时分秒、不足一天时显示时分，多日窗口显示日期。无效 locale 仅回退为 en-US，无效 timeZone 仅回退为 UTC，两者独立处理。
+
+# Agent 运行用量
+
+React data-block，无应用外壳。导出 AgentRuns、createAgentRunsDemoData、中英文 labels 和公开数据类型，适合嵌入项目详情、Agent 工作台和用量页面。
+
+```tsx
+import { AgentRuns, agentRunsZhLabels, type AgentRunsData } from "@/components/blocks/agent-runs-01";
+
+export function ProjectRuns({ data, openSession }: {
+  data: AgentRunsData;
+  openSession: (id: string) => void;
+}) {
+  return <AgentRuns data={data} labels={agentRunsZhLabels} locale="zh-CN" timeZone="Asia/Shanghai"
+    onOpenSession={run => openSession(run.id)} />;
+}
+```
+
+data 包含项目标识与名称、currency、start/end（毫秒时间戳）、agents、models 和完整 runs。每个 Run 使用稳定 ID、触发指令、Agent / 模型引用、status、startedAt、endedAt 与 usage。四类 usage 为 input/output/cacheRead/cacheWrite，各含非负安全整数 tokens 和非负有限 cost，cost 为币种主要单位。usage=null 表示未上报，保持 —，不伪装成零费用。已上报用量必须有模型引用。running 的 endedAt=null，其他状态必须有结束时间；所有时间位于窗口内。Agent 与模型 colorIndex 使用固定的分类槽位 1–5；图形与图例共用颜色。无效引用、重复 ID、非法数值和逆序时间显示错误。
+
+顶部指标、累计费用、分布、按天汇总和明细均由同一组 Session 派生。Agent 用时为各次运行时长相加，包含并发重叠；历时为窗口长度。缓存命中率为 cacheRead / (input + cacheRead)，不把输出或缓存写入混入分母。未上报数据与进行中记录附带合计范围说明。累计曲线在 Session 结束时记入已上报费用；进行中的已上报费用记在窗口末尾。相同时间的累计事件合并，单次费用保留独立记录。不暗示运行期间的精确实时计费。
+
+mode 支持 cumulative / per-run，受控时由宿主更新；defaultMode 提供本地初值，onModeChange 通知变化。defaultExpandedRunId 指定初始明细；pageSize 设置初始每页 Session 数，默认为 6，限制在 1–100；宿主修改该值时重置到第一页。分页器允许本地切换每页数量。点击活动色条自动切换到对应页并展开，表格按宿主 timeZone 的开始日期分组，按开始时间倒序排列，组汇总为完整日期而非当前分页片段。DataTable / useDataTable 拥有完整记录模型、表头、记录行与内置分页器；startedAt 时间列通过原生 columnPinning 固定在左侧，表头与每行时间不参与横向滚动，其余列在局部滚动区域内移动。日期分组标题与当天汇总使用表格可视区域宽度，并固定在滚动区域左侧，横向滚动时保持可见。表格启用 stickyHeader，将内容区高度限制为 min(65dvh, 40rem)；内容区独立纵向滚动，表头固定在顶部，分页器保留在滚动区外。原生分页提供每页数量、页码、首页 / 末页和前后翻页。renderRowHeader 插入当前页的日期标题，renderExpandedRow 根据 expanded 状态渲染跨列明细，明细面板按表格可视宽度布局并固定在左侧，横向滚动时费用、缓存和状态信息保持完整可见，窄屏自动改为上下排列；标题与明细不计入 Session 分页数量。分页不截断数据或影响汇总。行内触发按钮支持 aria-expanded，未上报明细显示说明。可选 onOpenSession 接收完整记录，onClose 由宿主拥有；不存在无效的默认导航。data.id 变化重置本地状态。
+
+原生 Zeron AreaChart 使用公共 Area / Grid / XAxis / YAxis / ChartTooltip / TooltipContent；累计费用采用阶梯线，单次费用采用折线和标记。ChartDataTable 保留全量事件，图表自身支持方向键 / Home / End / Escape。Agent 泳道使用同一时间域的业务区间布局，不另写绘图引擎；极短色条有最小可见宽度，键盘与 title 可读取真实时长。分布复用 SegmentedBar / ChartLegend；加载复用 Skeleton，错误复用 InlineNotice，空态复用 Empty。窄容器中指标与分布堆叠，Session 表格局部横向滚动。
+
+state=ready/loading/error，errorMessage/onRetry 为宿主加载恢复接口。演示有 89 次运行，其中 1 个进行中、3 个取消，总费用 $183.07；所有金额由示例记录推导。示例模型名与金额仅为视觉演示，不代表真实模型、价格或服务状态。真实用量采集、计费、缓存节省算法和 Session 路由由宿主负责。
+
+
+---
+
+---
+schema_version: 1
 name: agent-tasks-01
 kind: block
 status: stable
@@ -4740,6 +4786,12 @@ related: [table, badge, button, grouped-data-table-01, grouped-data-table-02]
 
 useDataTable 接收 TanStack TableOptions，提供本地或受控的筛选、排序、选择、分页、列顺序、列显隐和固定状态；其他状态如 grouping / expanded 通过 state 透传。加载、空状态、行激活、横向滚动和固定列表现由 DataTable 负责。
 
+variant 默认 framed，保留表格自身的背景、边框和圆角。嵌入已有分组或卡片时使用 variant="embedded"，由父容器拥有表面和外框；通过 style.backgroundColor 传入与父容器相同的背景，固定列及其加载占位也使用该背景。切换外观不重建表格内容，悬停、选中和局部横向滚动保持原有行为。
+
+## 固定表头
+
+`stickyHeader` 将表头固定在表格内容滚动区顶部，默认将该区域最高限制为 `min(65dvh, 40rem)`；分页器和工具栏位于滚动区外。`scrollAreaMaxHeight` 可覆盖这一高度，也可独立用于限定内容区。未启用时不限制高度，保留现有页面滚动。固定表头复用当前表面背景，支持与 columnPinning 同时使用；时间等固定列在表头与表体交叉位置保持可见。表头的固定范围为表格自身内容区，不会悬浮到表格之外。
+
 ## 分组
 
 向 useDataTable 提供 getGroupedRowModel()、getExpandedRowModel() 和 initialState.grouping / expanded；DataTable 自动把 TanStack 的合成组渲染为横跨可见列的标题，保留原生 table 语义。普通记录仍采用 ColumnDef.cell，组行不会触发 onRowActivate。多列 grouping 支持嵌套组；统计只包含匹配叶子记录。
@@ -4750,7 +4802,17 @@ grouping 是可选的 DataTableGroupingOptions：getLabel 提供可访问分组�
 
 density="comfortable" 保留现有单元格间距；density="compact" 使用库内紧凑配方，同步加载单元格，但不改变行内 Button / Input 的尺寸。不要用外部后代选择器修改表格内部几何。
 
+## 记录标题与跨列明细
+
+`renderRowHeader({ row, previousRow, table })` 在普通记录之前渲染跨列内容，可按日期等业务字段插入只读分组标题。previousRow 是当前页的前一普通记录；页首或 TanStack 分组边界为 undefined，因此跨页日期会重复展示标题。返回 null / boolean 不生成标题行。
+
+`renderExpandedRow({ row, table })` 仅在 row.getIsExpanded() 为 true 时调用；通过 getRowCanExpand 与 TanStack expanded 状态控制普通记录展开，返回 null / boolean 不生成明细行。展开内容跨全部可见列，列显隐后同步跨度；不会额外占用分页名额。可组合 onRowActivate 与行内展开按钮，内部控件不会重复激活整行。此插槽不需要把明细伪装成数据记录，也不需要 getSubRows；已有树形与 TanStack 分组契约保持不变。
+
+这两个插槽中的业务内容由宿主提供，TableRow / TableCell、背景、跨列与分页结构由 DataTable 拥有。需要可折叠分组时继续使用 grouping；只读日期分隔与 Session 展开可参考 agent-runs-01。
+
 ## 业务组合
+
+分页器的每页数量、页码和翻页按钮在窄屏保持同行。选择框和按钮保留标准尺寸，空间不足时说明文字与页码单行省略，完整文案仍保留在 DOM / 无障碍内容中；每页说明也有 title。带选择列的选中数量反馈可独立排列，不挤压分页操作。
 
 工具栏通过 children 放置于表格上方。DataTableColumnHeader、DataTableFacetedFilter、DataTableToolbar、DataTableViewOptions 可分别组合；避免重复工具栏和分页。activeRowId / onRowActivate 支持活动行及键盘激活，并排除行内交互控件。getRowId 使用稳定业务 ID。
 

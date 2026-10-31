@@ -28,14 +28,15 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(163);
-    expect(detailDocEntries).toHaveLength(163);
+    expect(pageDocEntries).toHaveLength(164);
+    expect(pageDocEntries.find((entry) => entry.slug === "agent-runs-01")?.collection).toBe("blocks");
+    expect(detailDocEntries).toHaveLength(164);
     expect(pageDocEntries.find((entry) => entry.slug === "credit-top-up-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "artifact-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "chat-workspace-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "chat-thread-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "tool-calls-01")?.collection).toBe("blocks");
-    expect(pageDocEntries.find((entry) => entry.collection === "blocks")?.slug).toBe("chat-markdown-01");
+    expect(pageDocEntries.find((entry) => entry.collection === "blocks")?.slug).toBe("agent-runs-01");
     expect(pageDocEntries.find((entry) => entry.collection === "components")?.slug).toBe("time-window-timeline");
     expect(pageDocEntries.find((entry) => entry.slug === "message-navigation")?.collection).toBe("components");
     expect(pageDocEntries.find((entry) => entry.slug === "markdown")?.collection).toBe("components");

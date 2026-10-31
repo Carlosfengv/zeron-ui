@@ -271,6 +271,13 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "agent-runs-01": [
+      '"use client";',
+      'import { AgentRuns, createAgentRunsDemoData, agentRunsZhLabels, type AgentRunsData } from "@/components/blocks/agent-runs-01";',
+      'const data: AgentRunsData = createAgentRunsDemoData();',
+      'export default function Page() { return <AgentRuns data={data} labels={agentRunsZhLabels} locale="zh-CN" timeZone="Asia/Shanghai" pageSize={6} defaultExpandedRunId="run-86" />; }',
+      '',
+    ].join("\n"),
     "chat-markdown-01": [
       '"use client";',
       'import { ChatMarkdownResponse, createChatMarkdownDemoText } from "@/components/blocks/chat-markdown-01";',
@@ -1162,6 +1169,13 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { ArtifactContent } from "@/src/components/ui/artifact-preview-panel/content";',
     "const artifact: ArtifactDocument = {id:\"welcome\",title:\"Welcome\",filename:\"welcome.html\",kind:\"html\",revisions:[{id:\"v1\",content:\"<h1>Welcome</h1>\"},{id:\"v2\",content:\"<h1>Welcome back</h1>\"}]};",
     "createRoot(document.getElementById(\"root\")!).render(<><ArtifactContent artifact={artifact} revision={artifact.revisions[1]} previous={artifact.revisions[0]} view=\"changes\" /><div className=\"h-96\"><ArtifactPreviewPanel artifact={artifact} /></div></>);",
+  ].join("\n");
+  examples["agent-runs-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { AgentRuns, createAgentRunsDemoData, agentRunsZhLabels, type AgentRunsData } from "@/src/components/blocks/agent-runs-01";',
+    'import "./index.css";',
+    'const data: AgentRunsData = createAgentRunsDemoData();',
+    'createRoot(document.getElementById("root")!).render(<AgentRuns data={data} labels={agentRunsZhLabels} locale="zh-CN" timeZone="Asia/Shanghai" pageSize={6} defaultExpandedRunId="run-86" />);',
   ].join("\n");
   let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component];
   if (!source) throw new Error(`No Vite entry example is defined for ${component}`);
