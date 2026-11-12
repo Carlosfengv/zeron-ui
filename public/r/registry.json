@@ -3283,7 +3283,7 @@
       "title": "Resizable",
       "description": "Accessible, keyboard-operable resizable panels powered by react-resizable-panels.",
       "dependencies": [
-        "react-resizable-panels@^4.12.2",
+        "react-resizable-panels@4.12.3",
         "tw-animate-css@^1.4.0"
       ],
       "registryDependencies": [
