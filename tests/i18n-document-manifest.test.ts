@@ -28,9 +28,10 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(164);
+    expect(pageDocEntries).toHaveLength(165);
     expect(pageDocEntries.find((entry) => entry.slug === "agent-runs-01")?.collection).toBe("blocks");
-    expect(detailDocEntries).toHaveLength(164);
+    expect(detailDocEntries).toHaveLength(165);
+    expect(pageDocEntries.find((entry) => entry.slug === "fallback-chain-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "credit-top-up-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "artifact-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "chat-workspace-01")?.collection).toBe("blocks");

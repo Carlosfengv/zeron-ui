@@ -130,7 +130,7 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
     setQuery(searchParams.get("q") ?? "");
   }, [collection, searchParams]);
   const artifacts = useMemo(() => collectionArtifacts.filter((artifact) => {
-    const searchable = [artifact.title, artifact.description, artifact.kind, artifact.product, artifact.installation?.framework, artifact.installation?.kind, ...artifact.domains, ...artifact.patterns, ...artifact.searchTerms].join(" ").toLowerCase();
+    const searchable = [artifact.title, artifact.titleEn, artifact.description, artifact.kind, artifact.product, artifact.installation?.framework, artifact.installation?.kind, ...artifact.domains, ...artifact.patterns, ...artifact.searchTerms].join(" ").toLowerCase();
     return (!kind || artifact.kind === kind)
       && (!product || artifact.product === product)
       && (!normalizedQuery || searchable.includes(normalizedQuery));
@@ -189,33 +189,36 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
 
             {artifacts.length ? (
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-              {artifacts.map((artifact) => (
-                <Container key={artifact.slug} className="group relative min-w-0 cursor-pointer overflow-hidden transition-colors duration-fast hover:bg-hover">
-                  <IntentPrefetchLink
-                    aria-label={artifact.title}
-                    className="absolute inset-0 z-raised rounded-[inherit] outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
-                    href={"href" in artifact ? artifact.href : `${localePrefix}${artifactPathname(artifact.slug)}`}
-                  />
-                  <ContainerBody
-                    aria-hidden="true"
-                    className="overflow-hidden overscroll-auto p-1"
-                    inert
-                  >
-                    <div className="pointer-events-none">
-                      <BlockPreview name={artifact.slug} />
-                    </div>
-                  </ContainerBody>
-                  <ContainerFooter className="flex-wrap justify-between gap-2 px-3 py-3">
-                    <span className="text-body font-medium text-fg-muted transition-colors group-hover:text-fg-brand group-focus-within:text-fg-brand">{artifact.title}</span>
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <Badge size="sm" variant="dot">{artifactProductLabels[language][artifact.product]}</Badge>
-                      <Badge color="blue" size="sm">{kindLabels[language][artifact.kind]}</Badge>
-                      <Badge color={artifact.readiness === "demo-only" ? "orange" : "gray"} size="sm">{readinessLabels[language][artifact.readiness]}</Badge>
-                      {artifact.installation?.framework === "next" && <Badge color="purple" size="sm">{frameworkLabels[language].next}</Badge>}
-                    </div>
-                  </ContainerFooter>
-                </Container>
-              ))}
+              {artifacts.map((artifact) => {
+                const title = language === "en" ? artifact.titleEn ?? artifact.title : artifact.title;
+                return (
+                  <Container key={artifact.slug} className="group relative min-w-0 cursor-pointer overflow-hidden transition-colors duration-fast hover:bg-hover">
+                    <IntentPrefetchLink
+                      aria-label={title}
+                      className="absolute inset-0 z-raised rounded-[inherit] outline-none focus-visible:ring-1 focus-visible:ring-focus-ring"
+                      href={"href" in artifact ? artifact.href : `${localePrefix}${artifactPathname(artifact.slug)}`}
+                    />
+                    <ContainerBody
+                      aria-hidden="true"
+                      className="overflow-hidden overscroll-auto p-1"
+                      inert
+                    >
+                      <div className="pointer-events-none">
+                        <BlockPreview name={artifact.slug} />
+                      </div>
+                    </ContainerBody>
+                    <ContainerFooter className="flex-wrap justify-between gap-2 px-3 py-3">
+                      <span className="text-body font-medium text-fg-muted transition-colors group-hover:text-fg-brand group-focus-within:text-fg-brand">{title}</span>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <Badge size="sm" variant="dot">{artifactProductLabels[language][artifact.product]}</Badge>
+                        <Badge color="blue" size="sm">{kindLabels[language][artifact.kind]}</Badge>
+                        <Badge color={artifact.readiness === "demo-only" ? "orange" : "gray"} size="sm">{readinessLabels[language][artifact.readiness]}</Badge>
+                        {artifact.installation?.framework === "next" && <Badge color="purple" size="sm">{frameworkLabels[language].next}</Badge>}
+                      </div>
+                    </ContainerFooter>
+                  </Container>
+                );
+              })}
             </div>
             ) : <p className="flex min-h-64 items-center justify-center rounded-xl border border-dashed border-border bg-surface-raised p-6 text-body text-fg-muted">{text.empty}</p>}
           </PageBody>

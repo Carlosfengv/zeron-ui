@@ -37,6 +37,7 @@ const packageManagers = process.env.ZERON_CONSUMER_PACKAGE_MANAGERS?.split(",").
 const vitePackageManagers = process.env.ZERON_VITE_CONSUMER_PACKAGE_MANAGERS?.split(",").filter(Boolean) ?? ["npm"];
 const viteComponents = styles ? ["button"] : process.env.ZERON_VITE_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? ["button", "card", "ask-user-questions", "code-block"];
 const BUSINESS_SOURCE = "export const identity = <T>(value: T): T => value;\n";
+const fallbackChainExample = '<FallbackChain title="Install verified" attempts={[{ id: "model", model: "Primary model", status: "answered", durationMs: 850 }]} />';
 
 if ([...packageManagers, ...vitePackageManagers].some((manager) => !["npm", "pnpm"].includes(manager))) {
   throw new Error("Consumer package managers must contain only npm and/or pnpm");
@@ -688,6 +689,12 @@ async function verifyNextBuild({ consumer, component }) {
     "const artifact: ArtifactDocument = {id:\"welcome\",title:\"Welcome\",filename:\"welcome.html\",kind:\"html\",revisions:[{id:\"v1\",content:\"<h1>Welcome</h1>\"},{id:\"v2\",content:\"<h1>Welcome back</h1>\"}]};",
     "export default function Page() { return <><ArtifactContent artifact={artifact} revision={artifact.revisions[1]} previous={artifact.revisions[0]} view=\"changes\" /><div className=\"h-96\"><ArtifactPreviewPanel artifact={artifact} /></div></>; }",
   ].join("\n");
+  examples["fallback-chain-01"] = [
+    'import { FallbackChain } from "@/components/blocks/fallback-chain-01";',
+    `export default function Page() { return ${fallbackChainExample}; }`,
+    "",
+  ].join("\n");
+
   let source = styles ? consumerStyleExample("next") : unifiedSource ?? examples[component];
   if (!source) return;
   if (verifyUnification && !unifiedSource && !styles) {
@@ -1177,6 +1184,13 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'const data: AgentRunsData = createAgentRunsDemoData();',
     'createRoot(document.getElementById("root")!).render(<AgentRuns data={data} labels={agentRunsZhLabels} locale="zh-CN" timeZone="Asia/Shanghai" pageSize={6} defaultExpandedRunId="run-86" />);',
   ].join("\n");
+  examples["fallback-chain-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { FallbackChain } from "@/src/components/blocks/fallback-chain-01";',
+    'import "./index.css";',
+    `createRoot(document.getElementById("root")!).render(${fallbackChainExample});`,
+  ].join("\n");
+
   let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component];
   if (!source) throw new Error(`No Vite entry example is defined for ${component}`);
   if (verifyUnification && !unifiedSource && !styles) {

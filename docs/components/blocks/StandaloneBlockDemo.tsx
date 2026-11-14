@@ -1,4 +1,5 @@
 "use client";
+import { FallbackChainDemo } from "./FallbackChainDemo";
 
 import { AgentRunsDemo } from "./AgentRunsDemo";
 import { CreditTopUpDemo } from "./CreditTopUpDemo";
@@ -186,6 +187,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
 
 function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "fallback-chain-01":
+      return <FallbackChainDemo />;
     case "agent-runs-01":
       return <AgentRunsDemo />;
     case "tool-calls-01":

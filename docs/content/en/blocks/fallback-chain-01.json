@@ -1,0 +1,10 @@
+{
+  "fallbackChainBlock": {
+    "title": "Fallback Chain",
+    "description": "Follow one request through its ordered model attempts, including failures, elapsed time, cost, and the model that responded.",
+    "dataContract": "Data contract",
+    "dataContractBody": "Provide attempts in routing order with stable IDs. Supply duration, timeout, cost in USD, and output tokens when available. For a running attempt, pass startedAt with an optional now override, using Unix milliseconds.",
+    "interaction": "Details and retry",
+    "interactionBody": "Hover, click, or tap a node to see details. From the keyboard, focus the node and press Enter or Space. In the tree layout, open the response from the summary bar. When the route is exhausted, Retry calls the host callback. The preview includes a local simulation and an all-failed example."
+  }
+}
