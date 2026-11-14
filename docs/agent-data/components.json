@@ -1,4 +1,10 @@
 {
+  "fallback-chain-01": {
+    "keywords": ["fallback", "model routing", "retry", "latency", "模型回退", "限流", "超时"],
+    "useCases": ["在模型网关或请求详情展示一次请求的模型回退顺序、失败原因、费用和响应。"],
+    "whenNotToUse": ["查看单次运行的完整调用时间线时使用 agent-message-trace-01。"],
+    "keyApi": ["attempts 接收按路由顺序排列的状态快照。", "request、response 和 details 提供节点详情，onRetry 通知调用方重试。"]
+  },
   "agent-runs-01": {
     "keywords": [
       "运行",

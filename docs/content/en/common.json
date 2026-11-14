@@ -225,7 +225,8 @@
       "ring-chart": "Display independent progress as concentric rings.",
       "markdown": "Safe GFM content with tables, code blocks and an accessible streaming indicator.",
       "chat-markdown-01": "Consistent AI response typography with code, tables, nested lists, tasks, footnotes and streaming.",
-      "artifact-01": "Generated HTML, Markdown and code with live previews, version history and change comparison."
+      "artifact-01": "Generated HTML, Markdown and code with live previews, version history and change comparison.",
+      "fallback-chain-01": "Model fallback branches, live attempt status, latency, cost, and response details."
     }
   }
 }

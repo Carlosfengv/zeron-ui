@@ -21,6 +21,7 @@ export function getBlockCapability(name: string): BlockCapability {
 }
 
 const blockCatalogEntries = [
+  { name: "fallback-chain-01", title: "模型回退链", description: "一次请求的顺序模型回退、耗时、费用和最终响应。", categories: ["application", "ai", "observability"], dependencies: ["badge", "button", "icon-context", "popover", "utils"] },
   { name: "agent-runs-01", title: "Agent 运行用量", description: "项目费用趋势、Agent 活动、模型消耗分布与可展开的 Session 费用明细。", categories: ["application", "ai", "billing", "observability"], dependencies: ["area-chart", "avatar", "badge", "button", "chart-core", "chart-primitives", "container", "data-table", "empty", "icon-context", "inline-notice", "skeleton", "tabs", "utils", "@visx/curve", "@tanstack/react-table"] },
   { name: "credit-top-up-01", title: "额度充值", description: "近期用量趋势、月度额度分布、耗尽预测与充值套餐选择。", categories: ["application", "billing", "analytics"], dependencies: ["button", "card", "chart", "chart-primitives", "container", "icon-context", "inline-notice", "radio-group", "utils", "recharts"] },
   { name: "artifact-01", title: "内容创作", description: "生成 HTML、Markdown 与代码，支持版本历史、变更对比和实时预览。", categories: ["application", "ai", "agent"], dependencies: ["chat-workspace-01", "artifact-preview-panel"] },

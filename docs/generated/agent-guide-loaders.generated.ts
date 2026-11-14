@@ -23,6 +23,7 @@ export const agentGuideLoaders: Record<string, () => Promise<string>> = {
   "blocks/credit-usage-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/credit-usage-01.md"), "utf8"),
   "blocks/deployment-detail-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/deployment-detail-01.md"), "utf8"),
   "blocks/design-stack-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/design-stack-01.md"), "utf8"),
+  "blocks/fallback-chain-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/fallback-chain-01.md"), "utf8"),
   "blocks/file-upload-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/file-upload-01.md"), "utf8"),
   "blocks/filter-rule-builder-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/filter-rule-builder-01.md"), "utf8"),
   "blocks/fleet-health-01.md": () => readFile(join(process.cwd(), "docs/agent-guides/blocks/fleet-health-01.md"), "utf8"),

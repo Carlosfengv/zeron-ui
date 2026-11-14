@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "items": [
+    {"id": "block:fallback-chain-01", "type": "registry", "key": "fallback-chain-01", "aliases": ["fallback-chain-01"], "status": "active", "retirementReason": null},
     {
       "id": "block:agent-runs-01",
       "type": "registry",

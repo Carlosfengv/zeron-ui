@@ -1,0 +1,10 @@
+{
+  "fallbackChainBlock": {
+    "title": "模型回退链",
+    "description": "跟踪一次请求按顺序尝试模型的过程，查看失败原因、耗时、费用和最终响应的模型。",
+    "dataContract": "数据契约",
+    "dataContractBody": "按路由顺序传入具有稳定 ID 的模型尝试，并按需提供耗时、超时预算、美元费用和输出 Token 数。运行中的尝试可用 startedAt 提供开始时间，用 now 控制时钟，两者均为 Unix 毫秒时间戳。",
+    "interaction": "详情与重试",
+    "interactionBody": "悬停、点击或轻触节点可查看详情。使用键盘时，聚焦节点后按 Enter 或空格。窄屏树形布局从摘要栏打开响应详情。路由耗尽时，重试按钮调用宿主回调。预览包含本地模拟和全部失败示例。"
+  }
+}

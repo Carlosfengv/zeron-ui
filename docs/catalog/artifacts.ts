@@ -22,6 +22,7 @@ export interface ArtifactEntry {
   slug: string;
   registryName: string;
   title: string;
+  titleEn?: string;
   description: string;
   kind: ArtifactKind;
   collection: ArtifactCollection;
@@ -51,6 +52,7 @@ function installationFor(registryName: string): BlockCapability {
  * discovery, documentation and progressive asset splitting.
  */
 const artifactCatalogEntries: ReadonlyArray<Omit<ArtifactEntry, "installation" | "collection">> = [
+  { slug: "fallback-chain-01", registryName: "fallback-chain-01", title: "模型回退链", titleEn: "Fallback Chain", description: "一次请求的顺序模型回退、耗时、费用和最终响应。", kind: "block", product: "shared", domains: ["ai gateway", "observability"], patterns: ["model fallback", "routing diagram", "live status"], searchTerms: ["模型回退", "限流", "超时", "降级", "模型路由", "fallback-chain-01", "attempt", "retry", "latency"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true },
   { slug: "agent-runs-01", registryName: "agent-runs-01", title: "Agent 运行用量", description: "项目费用趋势、Agent 活动、模型分布与 Session 费用明细。", kind: "block", product: "shared", domains: ["ai agent", "billing", "observability"], patterns: ["usage analytics", "cost timeline", "session history"], searchTerms: ["运行", "用量", "费用", "缓存", "session", "agent", "runs", "model", "agent-runs-01"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true },
   { slug: "credit-top-up-01", registryName: "credit-top-up-01", title: "额度充值", description: "近期用量趋势、月度额度分布、耗尽预测与充值套餐选择。", kind: "block", product: "shared", domains: ["billing", "analytics"], patterns: ["credit top-up", "usage charts", "package selection"], searchTerms: ["额度", "充值", "套餐", "credit", "top up", "billing", "credit-top-up-01"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true },
   { slug: "artifact-01", registryName: "artifact-01", title: "内容创作", description: "生成内容的代码、效果预览、版本切换与恢复。", kind: "block", product: "shared", domains: ["ai agent", "chat", "development"], patterns: ["artifact", "live preview", "version history", "resizable panels"], searchTerms: ["artifact", "生成", "内容", "预览", "版本", "html", "markdown", "artifact-01"], readiness: "adapter-required", dataMode: "controlled", devices: ["desktop", "responsive", "mobile"], featured: true },
