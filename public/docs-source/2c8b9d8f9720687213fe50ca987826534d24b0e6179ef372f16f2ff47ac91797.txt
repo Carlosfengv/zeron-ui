@@ -1,0 +1,421 @@
+export { AgentRun } from "./agent-run";
+export { agentRunChineseLabels, agentRunEnglishLabels } from "./agent-run-labels";
+export type { AgentRunControl, AgentRunLabels, AgentRunNode, AgentRunProps, AgentRunSnapshot, AgentRunStatus, AgentRunTool } from "./agent-run-types";
+
+
+"use client";
+
+import { useId, useMemo, useRef, useState, type CSSProperties } from "react";
+import { Badge, type BadgeStatus } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { Card, CardContent } from "@zeron/ui/card";
+import { SegmentedBar, chartColor } from "@zeron/ui/chart-primitives";
+import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
+import { Empty, EmptyTitle } from "@zeron/ui/empty";
+import { InfoItem, InfoItemContent, InfoItemDescription, InfoItemLeading, InfoItemTitle, InfoItemTrailing } from "@zeron/ui/info-item";
+import { MenuItem } from "@zeron/ui/menu-item";
+import { Popover, PopoverContent, PopoverTrigger } from "@zeron/ui/popover";
+import { useIcon, type IconName } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { AgentRunDetails, AgentRunHandoff, AgentRunToolBadge } from "./agent-run-details";
+import { agentRunEnglishLabels } from "./agent-run-labels";
+import type { AgentRunLabels, AgentRunNode, AgentRunProps, AgentRunStatus } from "./agent-run-types";
+import styles from "./agent-run.module.css";
+
+const statusAppearance = {
+  idle: { status: "neutral", icon: "circle" },
+  working: { status: "info", icon: "circle" },
+  done: { status: "success", icon: "check" },
+  paused: { status: "warning", icon: "pause" },
+  stopped: { status: "neutral", icon: "circle-x" },
+  failed: { status: "danger", icon: "circle-x" },
+} as const satisfies Record<AgentRunStatus, { status: BadgeStatus; icon: IconName }>;
+
+function summarizeTree(root: AgentRunNode | null) {
+  let working = 0;
+  const ids = new Set<string>();
+  function visit(node: AgentRunNode) {
+    ids.add(node.id);
+    if (node.status === "working") working += 1;
+    node.children?.forEach(visit);
+  }
+  if (root) visit(root);
+  return { working, ids };
+}
+
+interface AgentRunTreeContext {
+  runId: string;
+  openId: string | null;
+  onOpenChange: (id: string, open: boolean) => void;
+  labels: AgentRunLabels;
+  locale: string;
+  compactNumber: Intl.NumberFormat;
+  fullNumber: Intl.NumberFormat;
+  onMessage: AgentRunProps["onMessage"];
+  onControl: AgentRunProps["onControl"];
+}
+
+function useAgentRunActivity(node: AgentRunNode) {
+  const handoffFrom = node.handoff?.from;
+  const handoffSummary = node.handoff?.summary;
+  const [previous, setPrevious] = useState({ status: node.status, handoffFrom, handoffSummary, pulse: 0 });
+  const handoffChanged = handoffFrom !== previous.handoffFrom || handoffSummary !== previous.handoffSummary;
+  if (previous.status !== node.status || handoffChanged) {
+    const started = node.status === "working" && previous.status !== "working";
+    let pulse = previous.pulse;
+    if (started || (handoffChanged && node.handoff)) pulse += 1;
+    setPrevious({ status: node.status, handoffFrom, handoffSummary, pulse });
+  }
+  return node.status === "paused" || node.status === "stopped" ? 0 : previous.pulse;
+}
+
+function AgentRunCard({ node, color, context, pulse }: { node: AgentRunNode; color: string; context: AgentRunTreeContext; pulse: number }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  const statusId = useId();
+  const summaryId = useId();
+  const compact = node.kind === "tool";
+  const open = context.openId === node.id;
+  const appearance = statusAppearance[node.status];
+  const StatusIcon = useIcon(appearance.icon);
+  const AgentIcon = useIcon(node.icon ?? (compact ? "settings" : "doc-data-grid"));
+  const { labels, compactNumber, fullNumber } = context;
+  const usage = node.usage;
+  const hasUsage = usage && Number.isFinite(usage.tokens) && usage.tokens >= 0 && Number.isFinite(usage.limit) && usage.limit > 0;
+  const nearLimit = hasUsage && usage.tokens / usage.limit >= 0.8;
+
+  return <Popover open={open} onOpenChange={(next) => context.onOpenChange(node.id, next)}>
+    <Card ref={cardRef} className={cn("relative border-hairline border-border-subtle pb-3 shadow-control transition-colors duration-fast hover:bg-hover", open && "border-border", compact ? "min-h-29" : "min-h-40")} data-agent-node={node.id} data-status={node.status}>
+      <InfoItem className="px-3.5 pt-3.5 pb-0">
+        <InfoItemLeading className={styles.nodeIcon} aria-hidden="true"><AgentIcon /></InfoItemLeading>
+        <InfoItemContent>
+          <InfoItemTitle id={titleId} className="truncate" title={node.name}>{node.name}</InfoItemTitle>
+          {!compact && node.model && <InfoItemDescription className="truncate" title={node.model}>{node.model}</InfoItemDescription>}
+        </InfoItemContent>
+        <InfoItemTrailing>
+          <Badge id={statusId} size="sm" status={appearance.status} className={cn(styles.statusBadge, compact && "min-w-5 justify-center gap-0 px-0")} leadingIcon={
+            <span className={styles.statusEnter} key={node.status}><StatusIcon className={cn(
+              node.status === "idle" && styles.idleIcon,
+              node.status === "working" && cn(styles.workingIcon, "motion-safe:animate-spin"),
+            )} /></span>
+          }>
+            <span key={node.status} className={compact ? "sr-only" : styles.statusEnter}>{labels.status[node.status]}</span>
+          </Badge>
+        </InfoItemTrailing>
+      </InfoItem>
+      <CardContent className={cn("grid gap-2 px-3.5", compact ? "pt-2" : "pt-3")}>
+        <InfoItemDescription id={summaryId} className="truncate" title={node.summary}>{node.summary}</InfoItemDescription>
+        {hasUsage && <div className="flex items-center gap-2">
+          <SegmentedBar className={cn(styles.usage, "h-1 flex-1 gap-0")} mode="capacity" total={usage.limit}
+            segmentSlot="agent-run-usage-fill" remainderSlot="agent-run-usage-remainder"
+            style={{ "--agent-run-usage-ratio": Math.min(1, usage.tokens / usage.limit) } as CSSProperties}
+            valueText={`${fullNumber.format(usage.tokens)} / ${fullNumber.format(usage.limit)} ${labels.tokens}`}
+            segments={[{ id: node.id, label: labels.tokens, value: usage.tokens, color: nearLimit ? "var(--warning-strong)" : color }]} />
+          <InfoItemDescription aria-hidden="true" className={cn("shrink-0 tabular-nums transition-colors duration-moderate motion-reduce:transition-none", nearLimit && "text-fg-warning")}>{compactNumber.format(usage.tokens)} / {compactNumber.format(usage.limit)}</InfoItemDescription>
+        </div>}
+        {!compact && <div className="mt-1 flex min-h-5 min-w-0 items-center gap-1.5">
+          {node.tools?.slice(0, 2).map((tool) => <AgentRunToolBadge key={tool.id} tool={tool} compact />)}
+          {node.handoff && <AgentRunHandoff handoff={node.handoff} compact />}
+        </div>}
+      </CardContent>
+      {pulse > 0 && <span key={pulse} className={cn(styles.activityGlow, "rounded-xl")} aria-hidden="true" />}
+      <PopoverTrigger className="absolute inset-0 z-action cursor-pointer rounded-xl outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-focus-ring" aria-labelledby={`${titleId} ${statusId}`} aria-describedby={summaryId} />
+    </Card>
+    <PopoverContent anchor={cardRef} side={compact ? "top" : "bottom"} align="start" sideOffset={8} surfaceShadow="overlay" className={cn(styles.details, "p-0")}>
+      <div className={cn(styles.detailsBody, "grid gap-2.5 overflow-y-auto p-3.5")}>
+        <AgentRunDetails node={node} runId={context.runId} labels={labels} locale={context.locale} onMessage={context.onMessage} onControl={context.onControl} />
+      </div>
+    </PopoverContent>
+  </Popover>;
+}
+
+function AgentRunBranch({ node, color, root = false, context }: {
+  node: AgentRunNode;
+  color: string;
+  root?: boolean;
+  context: AgentRunTreeContext;
+}) {
+  const resolvedColor = node.colorIndex == null ? color : chartColor(node.colorIndex);
+  const children = node.children ?? [];
+  const pulse = useAgentRunActivity(node);
+  return <li className={root ? styles.root : styles.branch} style={{ "--agent-run-color": resolvedColor } as CSSProperties} data-active={node.status === "working"}>
+    <div className={cn(styles.card, pulse > 0 && (pulse % 2 ? styles.activityOdd : styles.activityEven))}>
+      <AgentRunCard node={node} color={resolvedColor} context={context} pulse={pulse} />
+    </div>
+    {children.length > 0 && <ul role="list" className={cn(styles.children, root && children.length <= 3 && styles.branches)}>
+      {children.map((child) => <AgentRunBranch key={child.id} node={child} color={resolvedColor} context={context} />)}
+    </ul>}
+  </li>;
+}
+
+type AgentRunTreeProps = Pick<AgentRunProps, "run" | "onControl" | "onMessage"> & {
+  ids: ReadonlySet<string>;
+  labels: AgentRunLabels;
+  locale: string;
+};
+
+function AgentRunTree({ run, ids, labels, locale, onControl, onMessage }: AgentRunTreeProps) {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const numbers = useMemo(() => ({
+    compactNumber: new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 }),
+    fullNumber: new Intl.NumberFormat(locale),
+  }), [locale]);
+  if (openId !== null && !ids.has(openId)) setOpenId(null);
+  if (!run.root) return <Empty scope="inline" reason="no-data"><EmptyTitle>{labels.empty}</EmptyTitle></Empty>;
+
+  const context: AgentRunTreeContext = {
+    runId: run.id,
+    openId,
+    onOpenChange: (id, open) => setOpenId((current) => open ? id : current === id ? null : current),
+    labels,
+    locale,
+    ...numbers,
+    onMessage,
+    onControl,
+  };
+  return <ul role="list" className={styles.tree}><AgentRunBranch node={run.root} color={chartColor(1)} context={context} root /></ul>;
+}
+
+export function AgentRun({ run, runs, onRunChange, labels = agentRunEnglishLabels, locale = "en", onControl, onMessage, className }: AgentRunProps) {
+  const titleId = useId();
+  const Folder = useIcon("folder");
+  const Chevron = useIcon("chevron-down");
+  const { working, ids } = summarizeTree(run.root);
+  return <section aria-labelledby={titleId} className={cn(styles.panel, "min-w-0 bg-surface-base p-4 sm:p-8", className)} data-block="agent-run">
+    <header className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1">
+      {onRunChange && runs && runs.length > 0 ? <DropdownMenu>
+        <DropdownTrigger render={<Button type="button" variant="ghost" size="md" className="min-w-0 max-w-full" leadingIcon={Folder} trailingIcon={Chevron} aria-label={`${labels.chooseRun}: ${run.title}`} />}>
+          <span id={titleId} className="truncate">{run.title}</span>
+        </DropdownTrigger>
+        <DropdownContent checkedIndex={runs.findIndex((candidate) => candidate.id === run.id)}>
+          {runs.map((candidate, index) => <MenuItem key={candidate.id} index={index} label={candidate.title} icon={Folder} checked={run.id === candidate.id} onSelect={() => onRunChange(candidate.id)} />)}
+        </DropdownContent>
+      </DropdownMenu> : <h2 id={titleId} className="flex min-w-0 items-center gap-2 text-body font-medium text-fg-default"><Folder size={16} aria-hidden="true" /><span className="wrap-anywhere">{run.title}</span></h2>}
+      <p role="status" className="flex shrink-0 gap-3 text-body tabular-nums">
+        <span className={working ? "text-fg-info" : "text-fg-subtle"}>{labels.workingCount(working)}</span>
+        <span className="text-fg-muted">{labels.totalCount(ids.size)}</span>
+      </p>
+    </header>
+    <AgentRunTree key={run.id} run={run} ids={ids} labels={labels} locale={locale} onControl={onControl} onMessage={onMessage} />
+  </section>;
+}
+
+
+"use client";
+
+import ClaudeColor from "@lobehub/icons/es/Claude/components/Color";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Badge } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { Input } from "@zeron/ui/input";
+import { PopoverClose, PopoverDescription, PopoverFooter, PopoverHeader, PopoverTitle } from "@zeron/ui/popover";
+import { Separator } from "@zeron/ui/separator";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import type { AgentRunLabels, AgentRunNode, AgentRunProps, AgentRunTool } from "./agent-run-types";
+
+export function AgentRunToolBadge({ tool, compact }: { tool: AgentRunTool; compact?: boolean }) {
+  const Icon = useIcon(tool.icon);
+  return <Badge size="sm" leadingIcon={<Icon />} title={compact ? tool.label : undefined}>
+    {compact ? <span className="sr-only">{tool.label}</span> : tool.label}
+  </Badge>;
+}
+
+export function AgentRunHandoff({ handoff, compact }: { handoff: NonNullable<AgentRunNode["handoff"]>; compact?: boolean }) {
+  const HandoffIcon = useIcon("corner-down-right");
+  return <span className="flex min-w-0 items-center gap-1 text-label text-fg-muted" title={compact ? `${handoff.from} · ${handoff.summary}` : undefined}>
+    <HandoffIcon className="size-3.5 shrink-0" aria-hidden="true" />
+    <span className={compact ? "truncate" : "wrap-anywhere"}><span className="font-medium">{handoff.from}</span>{" "}{handoff.summary}</span>
+  </span>;
+}
+
+export function AgentRunDetails({ node, runId, labels, locale, onMessage, onControl }: {
+  node: AgentRunNode;
+  runId: string;
+  labels: AgentRunLabels;
+  locale: string;
+  onMessage: AgentRunProps["onMessage"];
+  onControl: AgentRunProps["onControl"];
+}) {
+  const [composing, setComposing] = useState(false);
+  const [message, setMessage] = useState("");
+  const input = useRef<HTMLInputElement>(null);
+  const messageButton = useRef<HTMLButtonElement>(null);
+  const Close = useIcon("x");
+  const modelIcon = node.modelIcon ?? (/^claude(?:[-\s]|$)/i.test(node.model?.trim() ?? "") ? <ClaudeColor size={16} /> : undefined);
+  const { number, currency } = useMemo(() => ({
+    number: new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }),
+    currency: new Intl.NumberFormat(locale, { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+  }), [locale]);
+  const canControl = onControl && node.controllable && (node.status === "working" || node.status === "paused");
+  const paused = node.status === "paused";
+  const metrics = [
+    [labels.elapsed, node.elapsedSeconds == null ? undefined : labels.duration(number.format(node.elapsedSeconds))],
+    [labels.cost, node.costUsd == null ? undefined : currency.format(node.costUsd)],
+    [labels.tokens, node.usage == null ? undefined : number.format(node.usage.tokens)],
+  ].filter(([, value]) => value !== undefined);
+
+  useEffect(() => {
+    if (composing) input.current?.focus();
+  }, [composing]);
+
+  return <>
+    <PopoverHeader className="gap-1.5">
+      <div className="flex items-center justify-between gap-2">
+        <PopoverTitle className="wrap-anywhere">{node.name}</PopoverTitle>
+        <PopoverClose render={<Button type="button" variant="ghost" size="xs" iconOnly aria-label={labels.close}><Close /></Button>} />
+      </div>
+      <PopoverDescription className="wrap-anywhere">{node.assignment ?? node.summary}</PopoverDescription>
+      {node.assignment && node.assignment !== node.summary && <p className="wrap-anywhere text-label text-fg-muted">{node.summary}</p>}
+      {node.model && <Badge size="sm" leadingIcon={modelIcon}>{node.model}</Badge>}
+    </PopoverHeader>
+    {metrics.length > 0 && <>
+      <Separator tone="subtle" />
+      <dl className="flex flex-wrap gap-x-5 gap-y-2 tabular-nums">
+        {metrics.map(([label, value]) => <div key={label} className="min-w-0 flex-1">
+          <dt className="text-label text-fg-muted">{label}</dt><dd className="font-medium">{value}</dd>
+        </div>)}
+      </dl>
+    </>}
+    {(Boolean(node.tools?.length) || node.handoff) && <>
+      <Separator tone="subtle" />
+      <div className="grid gap-2">
+        {Boolean(node.tools?.length) && <div className="flex flex-wrap gap-1">
+          {node.tools?.map((tool) => <AgentRunToolBadge key={tool.id} tool={tool} />)}
+        </div>}
+        {node.handoff && <AgentRunHandoff handoff={node.handoff} />}
+      </div>
+    </>}
+    {(onMessage || canControl) && <PopoverFooter className="mt-1 flex-wrap justify-start gap-1.5">
+      {onMessage && <Button ref={messageButton} type="button" variant="secondary" size="lg" className="flex-1" aria-expanded={composing} onClick={() => setComposing((open) => !open)}>{labels.message}</Button>}
+      {canControl && <>
+        <Button type="button" variant="secondary" size="lg" className="flex-1" onClick={() => onControl(runId, node.id, paused ? "resume" : "pause")}>{paused ? labels.resume : labels.pause}</Button>
+        <Button type="button" variant="secondary" size="lg" className="flex-1" onClick={() => onControl(runId, node.id, "stop")}>{labels.stop}</Button>
+      </>}
+    </PopoverFooter>}
+    {onMessage && composing && <form className="flex gap-2" onSubmit={(event) => {
+      event.preventDefault();
+      const text = message.trim();
+      if (!text) return;
+      onMessage(runId, node.id, text);
+      setMessage("");
+      setComposing(false);
+      messageButton.current?.focus();
+    }}>
+      <Input ref={input} size="sm" value={message} onChange={(event) => setMessage(event.target.value)} aria-label={labels.message} />
+      <Button type="submit" size="sm" disabled={!message.trim()}>{labels.send}</Button>
+    </form>}
+  </>;
+}
+
+
+import type { ReactNode } from "react";
+import type { ChartColorIndex } from "@zeron/ui/chart-primitives";
+import type { IconName } from "@zeron/ui/system/icon-context";
+
+export type AgentRunStatus = "idle" | "working" | "done" | "paused" | "stopped" | "failed";
+export type AgentRunControl = "pause" | "resume" | "stop";
+
+export interface AgentRunTool {
+  id: string;
+  label: string;
+  icon: IconName;
+}
+
+export interface AgentRunNode {
+  /** Stable and unique within the run. */
+  id: string;
+  name: string;
+  status: AgentRunStatus;
+  summary: string;
+  assignment?: string;
+  model?: string;
+  /** Model logo in the details. Claude models have a default logo. */
+  modelIcon?: ReactNode;
+  kind?: "agent" | "tool";
+  icon?: IconName;
+  /** Defaults to the parent's chart color, or chart color 1 at the root. */
+  colorIndex?: ChartColorIndex;
+  usage?: { tokens: number; limit: number };
+  elapsedSeconds?: number;
+  costUsd?: number;
+  tools?: readonly AgentRunTool[];
+  handoff?: { from: string; summary: string };
+  /** Enables run controls in the details when the host supplies onControl. */
+  controllable?: boolean;
+  children?: readonly AgentRunNode[];
+}
+
+export interface AgentRunSnapshot {
+  id: string;
+  title: string;
+  root: AgentRunNode | null;
+}
+
+export interface AgentRunLabels {
+  status: Record<AgentRunStatus, string>;
+  chooseRun: string;
+  close: string;
+  empty: string;
+  elapsed: string;
+  cost: string;
+  tokens: string;
+  message: string;
+  send: string;
+  pause: string;
+  resume: string;
+  stop: string;
+  duration: (seconds: string) => string;
+  workingCount: (count: number) => string;
+  totalCount: (count: number) => string;
+}
+
+export interface AgentRunProps {
+  /** Replace the snapshot as activity arrives, preserving run and node IDs. */
+  run: AgentRunSnapshot;
+  runs?: readonly Pick<AgentRunSnapshot, "id" | "title">[];
+  onRunChange?: (runId: string) => void;
+  onControl?: (runId: string, nodeId: string, control: AgentRunControl) => void;
+  onMessage?: (runId: string, nodeId: string, message: string) => void;
+  labels?: AgentRunLabels;
+  locale?: string;
+  className?: string;
+}
+
+
+import type { AgentRunLabels } from "./agent-run-types";
+
+export const agentRunEnglishLabels: AgentRunLabels = {
+  status: { idle: "Idle", working: "Working", done: "Done", paused: "Paused", stopped: "Stopped", failed: "Failed" },
+  chooseRun: "Switch run",
+  close: "Close details",
+  empty: "No agents in this run yet",
+  elapsed: "Time",
+  cost: "Cost",
+  tokens: "Tokens",
+  message: "Message",
+  send: "Send",
+  pause: "Pause",
+  resume: "Resume",
+  stop: "Stop",
+  duration: (seconds) => `${seconds}s`,
+  workingCount: (count) => `${count} working`,
+  totalCount: (count) => `${count} ${count === 1 ? "agent" : "agents"}`,
+};
+
+export const agentRunChineseLabels: AgentRunLabels = {
+  status: { idle: "待命", working: "运行中", done: "已完成", paused: "已暂停", stopped: "已停止", failed: "失败" },
+  chooseRun: "切换任务",
+  close: "关闭详情",
+  empty: "此任务暂无 Agent",
+  elapsed: "耗时",
+  cost: "费用",
+  tokens: "Token",
+  message: "发消息",
+  send: "发送",
+  pause: "暂停",
+  resume: "继续",
+  stop: "停止",
+  duration: (seconds) => `${seconds} 秒`,
+  workingCount: (count) => `${count} 个运行中`,
+  totalCount: (count) => `${count} 个 Agent`,
+};

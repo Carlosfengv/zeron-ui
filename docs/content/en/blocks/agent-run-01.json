@@ -1,0 +1,10 @@
+{
+  "agentRunBlock": {
+    "title": "Agent Run",
+    "description": "Follow a multi-agent run across a delegation tree with live status, token usage and per-agent details.",
+    "dataContract": "Data contract",
+    "dataContractBody": "Pass the latest run snapshot with stable run and node IDs. Each node contains its status, current activity and optional token usage, model, tools, handoff and children. The host handles updates, run selection and any enabled controls such as sending a message, pausing or stopping.",
+    "behavior": "Preview behavior",
+    "behaviorBody": "The preview plays local snapshots for three scenarios. Handoffs briefly highlight the receiving branch, and token bars and status badges transition as their values change. Select a card to inspect a node while updates continue. Details prefer opening below agents or above tools. The tree stacks vertically in narrow containers and respects reduced motion."
+  }
+}

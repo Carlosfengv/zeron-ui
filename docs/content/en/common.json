@@ -200,6 +200,7 @@
       "filter-rule-builder-01": "A controlled filter workspace with presets, readable rule summaries, and validated draft editing.",
       "ai-gateway-overview-01": "A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations.",
       "agent-message-trace-01": "A responsive, resizable agent trace workspace with a virtualized timeline and span inspector.",
+      "agent-run-01": "A multi-agent delegation tree with live status, token usage and per-agent details.",
       "agent-trace-01": "A turn-aware agent execution trace with local JSON upload and raw-record inspection.",
       "agent-session-detail-01": "A session detail workspace with agent navigation, session switching, and an embedded execution trace.",
       "resource-catalog-01": "A responsive model and MCP marketplace with search, sorting, page-local filters, and resource cards.",

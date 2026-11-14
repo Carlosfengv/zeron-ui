@@ -1,0 +1,324 @@
+.panel {
+  container-type: inline-size;
+}
+
+.tree {
+  --card-width: 18rem;
+  --child-indent: 1.5rem;
+  --child-gap: 0.75rem;
+  --elbow-width: 0.5rem;
+  --edge-width: calc(3 * var(--border-width-hairline));
+  margin: 1.5rem auto 0;
+}
+
+.root,
+.branch,
+.card {
+  position: relative;
+  min-inline-size: 0;
+}
+
+.card:has(+ .children)::after {
+  position: absolute;
+  inset-block-start: calc(100% + 0.25rem);
+  inset-inline-start: calc(var(--child-indent) - var(--elbow-width));
+  z-index: var(--layer-indicator);
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  border: var(--edge-width) solid color-mix(in oklab, var(--agent-run-color) 46%, var(--surface-base));
+  border-radius: 50%;
+  background: var(--surface-base);
+  content: "";
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
+.card:dir(rtl)::after {
+  translate: 50% -50%;
+}
+
+.nodeIcon {
+  background-color: color-mix(in oklab, var(--agent-run-color) 8%, var(--surface-base));
+  color: var(--agent-run-color);
+}
+
+.idleIcon {
+  scale: 0.35;
+  fill: currentColor;
+}
+
+.workingIcon circle {
+  stroke-dasharray: 45 18;
+}
+
+.statusBadge {
+  transition: background-color var(--motion-duration-moderate),
+    border-color var(--motion-duration-moderate), color var(--motion-duration-moderate);
+}
+
+.statusEnter {
+  display: inline-flex;
+  animation: status-in var(--motion-duration-moderate) var(--ease-out, ease-out) both;
+}
+
+@keyframes status-in {
+  from { opacity: 0; translate: 0 2px; }
+  to { opacity: 1; translate: 0; }
+}
+
+.usage {
+  position: relative;
+  background-color: var(--muted);
+}
+
+/* Keep SegmentedBar's capacity semantics and animate its supplied fill slot. */
+.usage > [data-slot="agent-run-usage-fill"] {
+  display: block;
+  position: absolute;
+  inset: 0;
+  transform: scaleX(var(--agent-run-usage-ratio));
+  transform-origin: left center;
+  transition: transform var(--motion-duration-slow) var(--ease-out, ease-out),
+    background-color var(--motion-duration-moderate);
+}
+
+.usage:dir(rtl) > [data-slot="agent-run-usage-fill"] {
+  transform-origin: right center;
+}
+
+.usage > [data-slot="agent-run-usage-remainder"] {
+  visibility: hidden;
+}
+
+.details {
+  inline-size: var(--anchor-width, 18rem);
+  min-inline-size: min(16rem, calc(100vw - 1.5rem));
+  max-inline-size: calc(100vw - 1.5rem);
+}
+
+.detailsBody {
+  max-block-size: min(var(--available-height, 100dvh), calc(100dvh - 1.5rem));
+  overscroll-behavior: contain;
+}
+
+.children {
+  --edge-color: color-mix(in oklab, var(--agent-run-color) 32%, var(--surface-base));
+  --active-edge-color: color-mix(in oklab, var(--agent-run-color) 58%, var(--surface-base));
+  --edge-pulse-color: color-mix(in oklab, var(--agent-run-color) 88%, var(--surface-base));
+  padding-block-start: var(--child-gap);
+  padding-inline-start: var(--child-indent);
+}
+
+.children > .branch + .branch {
+  margin-block-start: var(--child-gap);
+}
+
+.branch {
+  --incoming-edge: var(--edge-color);
+}
+
+.branch[data-active="true"] {
+  --incoming-edge: var(--active-edge-color);
+}
+
+.branch:has(> .activityOdd)::before,
+.branch:has(> .activityOdd)::after,
+.root:has(> .activityOdd) > .branches::before {
+  animation: edge-pulse var(--motion-duration-slow) var(--ease-out, ease-out);
+}
+
+.branch:has(> .activityEven)::before,
+.branch:has(> .activityEven)::after,
+.root:has(> .activityEven) > .branches::before {
+  animation: edge-pulse-next var(--motion-duration-slow) var(--ease-out, ease-out);
+}
+
+.activityOdd,
+.activityEven {
+  --activity-color: color-mix(in oklab, var(--agent-run-color) 18%, transparent);
+}
+
+.activityGlow {
+  position: absolute;
+  z-index: var(--layer-decoration);
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 60%, var(--activity-color));
+  pointer-events: none;
+  animation: activity-glow var(--motion-duration-slow) var(--ease-out, ease-out) both;
+}
+
+@keyframes activity-glow {
+  0%, 100% { opacity: 0; }
+  30% { opacity: 1; }
+}
+
+@keyframes edge-pulse {
+  45% { border-color: var(--edge-pulse-color); }
+}
+
+/* The alternate keyframe lets consecutive handoffs restart on the same node. */
+@keyframes edge-pulse-next {
+  45% { border-color: var(--edge-pulse-color); }
+}
+
+.children > .branch::before,
+.children > .branch:not(:last-child)::after {
+  position: absolute;
+  inset-inline-start: calc(-1 * var(--elbow-width));
+  inline-size: var(--elbow-width);
+  border-inline-start: var(--edge-width) solid var(--incoming-edge);
+  content: "";
+  pointer-events: none;
+  transition: border-color var(--motion-duration-moderate) var(--ease-out, ease-out);
+}
+
+.children > .branch::before {
+  inset-block-start: calc(-1 * var(--child-gap));
+  block-size: calc(var(--child-gap) + var(--control-height-md));
+  border-block-end: var(--edge-width) solid var(--incoming-edge);
+  border-end-start-radius: 0.375rem;
+}
+
+.children > .branch:not(:last-child)::after {
+  inset-block: calc(var(--control-height-md) - 0.375rem) 0;
+}
+
+.children > .branch:has(~ [data-active="true"])::before,
+.children > .branch:has(~ [data-active="true"])::after {
+  border-inline-start-color: var(--active-edge-color);
+}
+
+@container (min-width: 52rem) {
+  .tree {
+    --child-indent: 2.375rem;
+    --column-padding: clamp(1rem, 2.3cqi, 1.5rem);
+    --fan-gap: 3.375rem;
+    --fan-leg: 1.625rem;
+    --junction-radius: 0.625rem;
+    padding-inline-end: 2rem;
+  }
+
+  .root:has(> .branches) > .card {
+    inline-size: var(--card-width);
+    margin-inline: auto;
+  }
+
+  .root:has(> .branches) > .card::after {
+    inset-inline-start: 50%;
+  }
+
+  .branches {
+    --fan-extension: 0px;
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, calc(var(--card-width) + 2 * var(--column-padding)));
+    justify-content: center;
+    padding-block-start: var(--fan-gap);
+    padding-inline-start: 0;
+  }
+
+  .branches:has(> :nth-child(3)) {
+    --fan-extension: 50%;
+  }
+
+  .branches::before {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 50%;
+    block-size: calc(var(--fan-gap) - var(--fan-leg));
+    border-inline-start: var(--edge-width) solid var(--edge-color);
+    content: "";
+    pointer-events: none;
+    transition: border-color var(--motion-duration-moderate) var(--ease-out, ease-out);
+  }
+
+  .children.branches > .branch {
+    padding-inline: var(--column-padding);
+    margin-block-start: 0;
+  }
+
+  .branches > .branch > .children {
+    /* Nested cards use the column gutter as part of their indentation. */
+    margin-inline-end: calc(-1 * var(--child-indent));
+  }
+
+  .children.branches > .branch::before,
+  .children.branches > .branch:not(:last-child)::after {
+    inset: auto;
+    inline-size: auto;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .children.branches > .branch::before {
+    inset-block-start: calc(-1 * var(--fan-leg));
+    block-size: var(--fan-leg);
+    border-block-start: var(--edge-width) solid var(--incoming-edge);
+  }
+
+  .children.branches > .branch:first-child::before {
+    inset-inline: 50% calc(var(--junction-radius) - var(--fan-extension));
+    border-inline-start: var(--edge-width) solid var(--incoming-edge);
+    border-start-start-radius: var(--junction-radius);
+  }
+
+  .children.branches > .branch:last-child::before {
+    inset-inline: calc(var(--junction-radius) - var(--fan-extension)) 50%;
+    border-inline-end: var(--edge-width) solid var(--incoming-edge);
+    border-start-end-radius: var(--junction-radius);
+  }
+
+  /* The outer legs curve into the root stem at the center of the fan. */
+  .children.branches > .branch:not(:only-child):is(:first-child, :last-child)::after {
+    position: absolute;
+    inset-block: auto calc(100% + var(--fan-leg) - var(--edge-width));
+    inline-size: calc(var(--junction-radius) + var(--edge-width));
+    block-size: var(--junction-radius);
+    border: 0;
+    border-block-end: var(--edge-width) solid var(--incoming-edge);
+    content: "";
+    pointer-events: none;
+    transition: border-color var(--motion-duration-moderate) var(--ease-out, ease-out);
+  }
+
+  .children.branches > .branch:first-child:not(:only-child)::after {
+    inset-inline: auto calc(-1 * (var(--fan-extension) + var(--edge-width)));
+    border-inline-end: var(--edge-width) solid var(--incoming-edge);
+    border-end-end-radius: var(--junction-radius);
+  }
+
+  .children.branches > .branch:last-child:not(:only-child)::after {
+    inset-inline: calc(-1 * var(--fan-extension)) auto;
+    border-inline-start: var(--edge-width) solid var(--incoming-edge);
+    border-end-start-radius: var(--junction-radius);
+  }
+
+  .children.branches > .branch:is(:only-child, :not(:first-child, :last-child))::before {
+    inset-inline: 50% auto;
+    border: 0;
+    border-inline-start: var(--edge-width) solid var(--incoming-edge);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusEnter,
+  .activityGlow,
+  .branch:has(> :is(.activityOdd, .activityEven))::before,
+  .branch:has(> :is(.activityOdd, .activityEven))::after,
+  .root:has(> :is(.activityOdd, .activityEven)) > .branches::before {
+    animation: none;
+  }
+
+  .statusBadge,
+  .usage > [data-slot="agent-run-usage-fill"],
+  .children::before,
+  .children > .branch::before,
+  .children > .branch::after {
+    transition: none;
+  }
+
+  .activityGlow {
+    display: none;
+  }
+}

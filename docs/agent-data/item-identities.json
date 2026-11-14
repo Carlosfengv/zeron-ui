@@ -3,6 +3,14 @@
   "items": [
     {"id": "block:fallback-chain-01", "type": "registry", "key": "fallback-chain-01", "aliases": ["fallback-chain-01"], "status": "active", "retirementReason": null},
     {
+      "id": "block:agent-run-01",
+      "type": "registry",
+      "key": "agent-run-01",
+      "aliases": ["agent-run-01"],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "block:agent-runs-01",
       "type": "registry",
       "key": "agent-runs-01",

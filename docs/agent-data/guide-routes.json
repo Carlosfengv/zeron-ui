@@ -7,6 +7,10 @@
       "itemId": "block:agent-message-trace-01"
     },
     {
+      "path": "blocks/agent-run-01.md",
+      "itemId": "block:agent-run-01"
+    },
+    {
       "path": "blocks/agent-runs-01.md",
       "itemId": "block:agent-runs-01"
     },

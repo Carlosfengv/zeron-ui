@@ -5,6 +5,12 @@
     "whenNotToUse": ["查看单次运行的完整调用时间线时使用 agent-message-trace-01。"],
     "keyApi": ["attempts 接收按路由顺序排列的状态快照。", "request、response 和 details 提供节点详情，onRetry 通知调用方重试。"]
   },
+  "agent-run-01": {
+    "keywords": ["Agent", "实时", "任务树", "委派", "状态", "delegation", "live status", "run monitor"],
+    "useCases": ["在 AI 工作台查看一个多 Agent 任务的委派关系、运行状态、Token 用量和节点详情。"],
+    "whenNotToUse": ["跨任务用量分析用 agent-runs-01，跨任务队列用 agent-tasks-01。"],
+    "keyApi": ["run 接收实时运行快照和具有稳定 ID 的嵌套节点。", "runs/onRunChange 切换任务，onControl/onMessage 将用户操作交给宿主。", "使用 Zeron Card、Badge、SegmentedBar、Popover 与主题变量。"]
+  },
   "agent-runs-01": {
     "keywords": [
       "运行",

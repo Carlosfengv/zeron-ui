@@ -38,6 +38,7 @@ const vitePackageManagers = process.env.ZERON_VITE_CONSUMER_PACKAGE_MANAGERS?.sp
 const viteComponents = styles ? ["button"] : process.env.ZERON_VITE_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? ["button", "card", "ask-user-questions", "code-block"];
 const BUSINESS_SOURCE = "export const identity = <T>(value: T): T => value;\n";
 const fallbackChainExample = '<FallbackChain title="Install verified" attempts={[{ id: "model", model: "Primary model", status: "answered", durationMs: 850 }]} />';
+const agentRunExample = 'const run = { id: "verified", title: "Install verified", root: { id: "lead", name: "Lead", status: "working" as const, summary: "Planning", usage: { tokens: 1000, limit: 8000 } } };';
 
 if ([...packageManagers, ...vitePackageManagers].some((manager) => !["npm", "pnpm"].includes(manager))) {
   throw new Error("Consumer package managers must contain only npm and/or pnpm");
@@ -272,6 +273,11 @@ async function assertBusinessSourceUntouched(consumer, component) {
 
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
+    "agent-run-01": [
+      'import { AgentRun } from "@/components/blocks/agent-run-01";',
+      agentRunExample,
+      'export default function Page() { return <AgentRun run={run} />; }',
+    ].join("\n"),
     "agent-runs-01": [
       '"use client";',
       'import { AgentRuns, createAgentRunsDemoData, agentRunsZhLabels, type AgentRunsData } from "@/components/blocks/agent-runs-01";',
@@ -1176,6 +1182,13 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { ArtifactContent } from "@/src/components/ui/artifact-preview-panel/content";',
     "const artifact: ArtifactDocument = {id:\"welcome\",title:\"Welcome\",filename:\"welcome.html\",kind:\"html\",revisions:[{id:\"v1\",content:\"<h1>Welcome</h1>\"},{id:\"v2\",content:\"<h1>Welcome back</h1>\"}]};",
     "createRoot(document.getElementById(\"root\")!).render(<><ArtifactContent artifact={artifact} revision={artifact.revisions[1]} previous={artifact.revisions[0]} view=\"changes\" /><div className=\"h-96\"><ArtifactPreviewPanel artifact={artifact} /></div></>);",
+  ].join("\n");
+  examples["agent-run-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { AgentRun } from "@/src/components/blocks/agent-run-01";',
+    'import "./index.css";',
+    agentRunExample,
+    'createRoot(document.getElementById("root")!).render(<AgentRun run={run} />);',
   ].join("\n");
   examples["agent-runs-01"] = [
     'import { createRoot } from "react-dom/client";',

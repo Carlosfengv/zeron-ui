@@ -7,6 +7,13 @@ export const previewSourceFiles = {
     "packages/blocks/src/application/fallback-chain-01/fallback-chain-labels.ts",
     "packages/blocks/src/application/fallback-chain-01/fallback-chain-branches.tsx"
   ],
+  "agent-run-01": [
+    "packages/blocks/src/application/agent-run-01/index.ts",
+    "packages/blocks/src/application/agent-run-01/agent-run.tsx",
+    "packages/blocks/src/application/agent-run-01/agent-run-details.tsx",
+    "packages/blocks/src/application/agent-run-01/agent-run-types.ts",
+    "packages/blocks/src/application/agent-run-01/agent-run-labels.ts"
+  ],
   "agent-runs-01": [
       "packages/blocks/src/application/agent-runs-01/agent-runs-chart.tsx",
       "packages/blocks/src/application/agent-runs-01/agent-runs-data.ts",
