@@ -50,7 +50,8 @@ describe("Resource Catalog gallery preview", () => {
     expect(blocksGallery).toContain('<BlockPreview name={artifact.slug} />');
     expect(blocksGallery).toContain('className="overflow-hidden overscroll-auto p-1"');
     expect(blocksGallery).toContain('<div className="pointer-events-none">');
-    expect(blocksGallery).toContain('aria-label={artifact.title}');
+    expect(blocksGallery).toContain('language === "en" ? artifact.titleEn ?? artifact.title : artifact.title');
+    expect(blocksGallery).toContain('aria-label={title}');
     expect(artifactPathname("resource-catalog-01")).toBe("/docs/pages/resource-catalog-01");
     expect(getArtifact("resource-catalog-01")?.registryName).toBe("model-mcp-marketplace-01");
   });
