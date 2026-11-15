@@ -49,6 +49,9 @@ function ResponsivePreview({
 }
 
 const previewLoaders: Record<string, PreviewLoader> = {
+  "agent-queue-01": () => import("./AgentQueueDemo").then(({ AgentQueueDemo }) => ({
+    default: () => <ResponsivePreview canvasHeight={640} canvasWidth={900}><AgentQueueDemo catalog /></ResponsivePreview>,
+  })),
   "fallback-chain-01": () => import("./FallbackChainDemo").then(({ FallbackChainDemo }) => ({
     default: () => <ResponsivePreview canvasHeight={506.25} canvasWidth={900}><FallbackChainDemo catalog /></ResponsivePreview>,
   })),

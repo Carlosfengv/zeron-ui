@@ -1,4 +1,5 @@
 {
+  "agent-queue-01": { "framework": "react", "kind": "data-block" },
   "fallback-chain-01": { "framework": "react", "kind": "data-block" },
   "agent-run-01": { "framework": "react", "kind": "data-block" },
   "agent-runs-01": {

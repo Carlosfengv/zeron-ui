@@ -1,4 +1,10 @@
 {
+  "agent-queue-01": {
+    "keywords": ["queue", "worker", "concurrency", "backlog", "rate limit", "队列", "并发", "积压", "限流"],
+    "useCases": ["查看 Agent 任务如何从等待队列流向工作槽，以及限流时的积压和吞吐量。"],
+    "whenNotToUse": ["需要按状态浏览任务与活动记录时使用 agent-tasks-01。"],
+    "keyApi": ["jobs 和 workers 接收宿主数据。now、depthHistory、rateLimits 使用同一毫秒时钟。", "通过 onPausedChange、onConcurrencyChange、onPromote 和 onCancel 接入宿主操作。"]
+  },
   "fallback-chain-01": {
     "keywords": ["fallback", "model routing", "retry", "latency", "模型回退", "限流", "超时"],
     "useCases": ["在模型网关或请求详情展示一次请求的模型回退顺序、失败原因、费用和响应。"],

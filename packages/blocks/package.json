@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./agent-queue-01": "./src/application/agent-queue-01/index.ts",
     "./fallback-chain-01": "./src/application/fallback-chain-01/index.ts",
     "./agent-run-01": "./src/application/agent-run-01/index.ts",
     "./agent-runs-01": "./src/application/agent-runs-01/index.ts",
@@ -99,6 +100,7 @@
     "@thesvg/icons": "^3.2.15",
     "@zeron/ui": "workspace:*",
     "react-markdown": "^10.1.0",
+    "recharts": "^3.10.1",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "@hugeicons/core-free-icons": "^4.1.1",

@@ -1,4 +1,5 @@
 export const standaloneBlockSlugs = [
+  "agent-queue-01",
   "fallback-chain-01",
   "agent-run-01",
   "agent-runs-01",

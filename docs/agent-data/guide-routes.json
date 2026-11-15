@@ -6,6 +6,7 @@
       "path": "blocks/agent-message-trace-01.md",
       "itemId": "block:agent-message-trace-01"
     },
+    {"path": "blocks/agent-queue-01.md", "itemId": "block:agent-queue-01"},
     {
       "path": "blocks/agent-run-01.md",
       "itemId": "block:agent-run-01"

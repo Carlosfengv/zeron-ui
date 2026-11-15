@@ -1,5 +1,13 @@
 // Only these reviewed documentation sources are published. Never derive paths from requests.
 export const previewSourceFiles = {
+  "agent-queue-01": [
+    "packages/blocks/src/application/agent-queue-01/index.ts",
+    "packages/blocks/src/application/agent-queue-01/agent-queue.tsx",
+    "packages/blocks/src/application/agent-queue-01/agent-queue-types.ts",
+    "packages/blocks/src/application/agent-queue-01/agent-queue-labels.ts",
+    "packages/blocks/src/application/agent-queue-01/agent-queue-data.ts",
+    "packages/blocks/src/application/agent-queue-01/agent-queue-depth.tsx"
+  ],
   "fallback-chain-01": [
     "packages/blocks/src/application/fallback-chain-01/index.ts",
     "packages/blocks/src/application/fallback-chain-01/fallback-chain.tsx",
