@@ -236,10 +236,12 @@ export function AgentQueue({
       onKeyDown={(event) => handleJobKey(event, job)}
       aria-label={description.join(", ")}
       render={<Button asChild size="sm" variant="tertiary" active={selected?.id === job.id}
-        className="w-full focus-visible:z-control" contentClassName="static w-full" labelClassName="w-full">
+        className={cn("w-full focus-visible:z-control", styles.jobButton)} contentClassName="static w-full" labelClassName="w-full">
         <motion.button type="button" layout={reducedMotion ? false : "position"} layoutId={reducedMotion ? undefined : triggerId(job)} transition={spring.slow}>
-          {progress !== undefined && <span className={styles.progress} aria-hidden="true" data-kind={job.kind}
-            data-stalled={stalled || undefined} style={{ transform: `scaleX(${progress})` }} />}
+          {progress !== undefined && <span className={styles.progressTrack} aria-hidden="true">
+            <span className={styles.progress} data-kind={job.kind}
+              data-stalled={stalled || undefined} style={{ transform: `scaleX(${progress})` }} />
+          </span>}
           <span className={styles.jobContent} aria-hidden="true">
             <JobIcon job={job} />
             <span className={styles.jobName} dir="auto">{job.name}</span>

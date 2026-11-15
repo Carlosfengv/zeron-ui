@@ -3,7 +3,7 @@ import type { PreviewSourceReference } from "./preview-source";
 
 const blockPreviewSources = {
   "agent-queue-01": {
-    "url": "/docs-source/93f4716c17505d97bdab4f1e1194759ddf1caf7aa875bb8a597d8f3fd53658dd.txt"
+    "url": "/docs-source/c1ad9d36aeff2ad4110bc062844906ad1e6b4937479b33adcf46f3945137e25a.txt"
   },
   "fallback-chain-01": {
     "url": "/docs-source/4778f1329dffd9f70f9d358f184e4ff90cea322f501ab63f575913a7e0f588f9.txt"
