@@ -1234,6 +1234,37 @@
       ]
     },
     {
+      "name": "decision-tree",
+      "type": "registry:ui",
+      "title": "Decision Tree",
+      "description": "A queue of agent decisions with branching options, flagged consequences, recommended paths, and custom instructions.",
+      "dependencies": [
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "alert",
+        "avatar",
+        "badge",
+        "button",
+        "empty",
+        "input-group",
+        "kbd",
+        "tooltip",
+        "icon-context",
+        "springs",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/decision-tree.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/decision-tree.tsx"
+        }
+      ]
+    },
+    {
       "name": "avatar",
       "type": "registry:ui",
       "title": "Avatar",

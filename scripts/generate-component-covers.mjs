@@ -75,7 +75,9 @@ async function coverSubject(target) {
 }
 
 async function captureCover(page, slug, theme) {
-  await page.goto(`${origin}/docs/components/${slug}`, { waitUntil: "networkidle" });
+  const isDecisionTree = slug === "decision-tree";
+  if (isDecisionTree) await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto(`${origin}/docs/components/${slug}`, { waitUntil: isDecisionTree ? "load" : "networkidle" });
   await page.evaluate((requestedTheme) => {
     const root = document.documentElement;
     root.classList.remove("light", "dark", "transitioning");
@@ -133,9 +135,26 @@ async function captureCover(page, slug, theme) {
         scale: var(--component-cover-scale, 1);
         transform-origin: center !important;
       }
+      ${isDecisionTree ? `
+        [data-component-cover-capture] {
+          position: relative;
+          padding: 0 !important;
+        }
+        [data-component-cover-capture] > [data-component-cover-subject] {
+          position: absolute;
+          inset: 50% auto auto 50%;
+          width: 800px !important;
+          padding: 0 !important;
+          scale: none !important;
+          transform: translate(-50%, -50%) scale(.72);
+        }
+      ` : ""}
     `,
   });
-  if (subject) {
+  if (isDecisionTree) {
+    await target.locator('[data-slot="decision-tree"] > div svg.absolute path').first().waitFor();
+    await page.emulateMedia({ reducedMotion: null });
+  } else if (subject) {
     const subjectBox = await subject.boundingBox();
     if (subjectBox?.width && subjectBox.height) {
       const scale = Math.min(2.4, Math.max(1, Math.min(560 / subjectBox.width, 304 / subjectBox.height)));

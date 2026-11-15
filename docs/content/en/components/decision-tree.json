@@ -1,0 +1,65 @@
+{
+  "decisionTree": {
+    "description": "Let users choose how an agent should proceed, with visible consequences, risk notes, recommended branches, and optional follow-up choices.",
+    "preview": "Interactive example",
+    "title": "Decisions",
+    "reset": "Reset example",
+    "reply": "Got it. I’ll start with that instruction.",
+    "keyboard": "Keyboard shortcuts",
+    "shortcuts": "Focus the tree and use the number shown beside an option to choose it. Use ← and → (or K and J) to browse decisions, F to focus the next consequence note, and Escape to close the input, tooltip, or follow-up. In the instruction field, Enter sends and Shift+Enter adds a line.",
+    "api": "API reference",
+    "waiting": "{count, plural, one {# waiting for you} other {# waiting for you}}",
+    "position": "{current} of {count}",
+    "optionCount": "{count, plural, one {# option} other {# options}}",
+    "picked": "Selected: {option}",
+    "pickedNext": "Selected: {option}. Next: {question}",
+    "labels": {
+      "agentPick": "Agent’s pick", "highRisk": "High risk", "mediumRisk": "Medium risk",
+      "previous": "Previous decision", "next": "Next decision", "other": "Other…",
+      "instruction": "Tell the agent what to do instead…", "send": "Send instruction", "cancel": "Cancel",
+      "pickBranch": "Pick a branch", "followUp": "Then", "submitting": "Submitting…",
+      "approved": "Approved · running", "sent": "Sent to the agent", "failed": "Couldn’t submit. Try again.",
+      "empty": "No decisions waiting"
+    },
+    "props": {
+      "decisions": "Pending questions with stable IDs, agent details, optional risk, and numbered options. New IDs are appended. An option can have effects or one follow-up question.",
+      "onChoose": "Receives the full selected path or a custom instruction. Return a string to show an agent reply to an instruction. A rejected submission stays in the queue for retry.",
+      "allowOther": "Offer a free-text instruction as the last branch.",
+      "title": "Heading above the tree.",
+      "labels": "Override interface strings and count formatters for localization.",
+      "ref": "Methods for hover, choose, setOther, send, next, previous, and peek. Branch indices start at zero and follow the current step.",
+      "className": "Additional root classes. The layout switches below a 640 px container width."
+    },
+    "decisions": [
+      {
+        "id": "checkout-482", "agent": "Incident agent", "model": "Ops model", "risk": "high",
+        "question": "Checkout errors reached 18% after deploy #482. How should we recover?",
+        "context": "2,140 errors in 12 minutes. About $3,200 in orders at risk per hour.",
+        "options": [
+          { "label": "Roll back to #481", "pick": true, "next": { "question": "Who should we notify?", "options": [
+            { "label": "Post on the status page", "pick": true, "effects": "Public updates every 15 min" },
+            { "label": "Notify the incident team", "effects": "Internal incident channel only" }
+          ] } },
+          { "label": "Ship a hotfix", "next": { "question": "Wait for the test run?", "options": [
+            { "label": "Ship immediately", "effects": { "text": "Skips 1,284 tests", "note": "The integration suite is still running, including checks for payments and refunds.", "source": "Checkout CI · deploy #482" } },
+            { "label": "Wait for tests", "effects": "14 min. Checkout errors continue." }
+          ] } },
+          { "label": "Turn off the flag", "effects": ["Disables the new checkout for 30%", "Traffic returns to the previous checkout"] }
+        ]
+      },
+      {
+        "id": "renewal", "agent": "Sales agent", "model": "Planning model", "risk": "medium",
+        "question": "Acme asked for 25% off an $84,000 renewal. How should I respond?",
+        "context": "212 seats renew in nine days.",
+        "options": [
+          { "label": "Counter with 15% off", "pick": true, "next": { "question": "Which term should we offer?", "options": [
+            { "label": "Two years", "pick": true, "effects": "$71,400 annually through 2028" },
+            { "label": "One year", "effects": "$71,400. Renews at full price." }
+          ] } },
+          { "label": "Escalate to sales lead", "effects": "Send the call notes and pricing history" },
+          { "label": "Accept 25% off", "effects": { "text": "$63,000 annually", "note": "Discounts above 20% require sales leadership sign-off." } }
+        ]
+      }
+    ]
+  }
+}

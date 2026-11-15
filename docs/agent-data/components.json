@@ -165,6 +165,14 @@
       "loading/error/onRetry/notice 与中英文 labels 提供异步和本地化反馈。"
     ]
   },
+  "decision-tree": {
+    "keywords": ["决策树", "Agent 决策", "decision tree", "approval", "follow-up"],
+    "useCases": ["提供多条 Agent 执行路径，由用户查看后果并做决定。"],
+    "keyApi": [
+      "decisions 以稳定 id 标识待处理项；options 支持推荐、后果及一级追问。",
+      "onChoose 接收完整路径或自由输入；异步拒绝后可以重试。"
+    ]
+  },
   "context-window": {
     "keywords": [
       "上下文",

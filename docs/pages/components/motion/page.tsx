@@ -90,6 +90,7 @@ const REFERENCE_TIERS = [
       { label: "Dialog",              slug: "/docs/components/dialog" },
       { label: "Ask-user questions",  slug: "/docs/components/ask-user-questions" },
       { label: "Thinking steps",      slug: "/docs/components/thinking-steps" },
+      { label: "Decision tree connectors", slug: "/docs/components/decision-tree" },
     ],
   },
 ];

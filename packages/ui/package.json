@@ -29,6 +29,7 @@
     "./alert": "./src/components/alert.tsx",
     "./app-shell": "./src/components/app-shell.tsx",
     "./ask-user-questions": "./src/components/ask-user-questions.tsx",
+    "./decision-tree": "./src/components/decision-tree.tsx",
     "./auth-layout": "./src/components/auth-layout.tsx",
     "./avatar": "./src/components/avatar.tsx",
     "./badge-colors": "./src/components/badge-colors.ts",
