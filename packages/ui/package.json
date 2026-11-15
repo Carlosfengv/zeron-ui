@@ -19,6 +19,7 @@
     "./chat-thread/context": "./src/components/chat-thread/context.ts",
     "./chat-thread/use-thread-scroll": "./src/components/chat-thread/use-thread-scroll.ts",
     "./artifact-card": "./src/components/artifact-card.tsx",
+    "./context-map": "./src/components/context-map.tsx",
     "./context-window": "./src/components/context-window.tsx",
     "./context-window/data": "./src/components/context-window/data.ts",
     "./context-window/labels": "./src/components/context-window/labels.ts",

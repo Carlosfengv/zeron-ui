@@ -179,6 +179,15 @@
       "onChoose 接收完整路径或自由输入；异步拒绝后可以重试。"
     ]
   },
+  "context-map": {
+    "keywords": ["上下文地图", "上下文窗口", "context map", "treemap", "token usage", "compaction"],
+    "useCases": ["按文件、对话、工具结果等来源查看 token 占用，并对比上下文压缩前后的快照。"],
+    "keyApi": [
+      "blocks 按输入顺序布局；每个区块的稳定 id 用于快照间的过渡。",
+      "agents、agent 和 onAgentChange 用于切换会话，宿主传入当前 Agent 的 blocks 和 compaction。",
+      "compaction.before 提供压缩前快照，summarized、dropped 标明去向，summary 指向当前摘要区块。"
+    ]
+  },
   "context-window": {
     "keywords": [
       "上下文",

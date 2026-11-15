@@ -189,6 +189,7 @@
       "tooltip": "Floating tooltip with spring-based animations and configurable placement.",
       "ask-user-questions": "Stepped question flow with single/multi-select, optional 'other' input, and skip.",
       "decision-tree": "Branching agent decisions with visible consequences, risk notes and recommended paths.",
+      "context-map": "Explore token usage in an interactive treemap with agent switching and before/after compaction.",
       "chat-message": "Standalone message presentation with body, attachments, identity, metrics and actions; no thread context required.",
       "input-message": "Chat-style message composer with auto-resizing textarea and configurable action slots.",
       "thinking-indicator": "Animated status indicator with morphing SVG and cycling text.",

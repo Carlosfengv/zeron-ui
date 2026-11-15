@@ -28,11 +28,11 @@ describe("documentation manifest", () => {
 
   it("defines the complete public documentation surface exactly once", () => {
     expect(collectionDefinitions.map(({ id }) => id)).toEqual(["components", "blocks", "pages", "icons"]);
-    expect(pageDocEntries).toHaveLength(168);
+    expect(pageDocEntries).toHaveLength(169);
     expect(pageDocEntries.find((entry) => entry.slug === "agent-queue-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "agent-run-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "agent-runs-01")?.collection).toBe("blocks");
-    expect(detailDocEntries).toHaveLength(168);
+    expect(detailDocEntries).toHaveLength(169);
     expect(pageDocEntries.find((entry) => entry.slug === "fallback-chain-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "credit-top-up-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "artifact-01")?.collection).toBe("blocks");
@@ -55,10 +55,18 @@ describe("documentation manifest", () => {
     expect(pageDocEntries.find((entry) => entry.slug === "time-window-timeline")?.collection).toBe("components");
     expect(pageDocEntries.find((entry) => entry.slug === "plan-usage-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "context-window-01")?.collection).toBe("blocks");
+    expect(pageDocEntries.find((entry) => entry.slug === "context-map")).toMatchObject({
+      collection: "components",
+      registryItem: { name: "context-map", type: "registry:ui" },
+    });
     expect(pageDocEntries.some((entry) => entry.slug === "availability-monitor-01")).toBe(false);
     expect(pageDocEntries.find((entry) => entry.slug === "website-analytics-01")?.collection).toBe("blocks");
     expect(pageDocEntries.find((entry) => entry.slug === "sales-conversion-funnel-01")?.collection).toBe("blocks");
-    expect(legacyDocRedirects).toHaveLength(91);
+    expect(legacyDocRedirects).toHaveLength(92);
+    expect(legacyDocRedirects.find((entry) => entry.legacySlug === "context-map")?.destination).toEqual({
+      collection: "components",
+      slug: "context-map",
+    });
     expect(pageDocEntries.some(entry => entry.slug === "error-state" || entry.slug === "status-indicator")).toBe(false);
     expect(new Set(pageDocEntries.map(pathnameOf)).size).toBe(pageDocEntries.length);
   });
