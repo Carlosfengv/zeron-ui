@@ -110,6 +110,9 @@ function ContextMapTile({
   const kind = tile.block?.kind ?? "free";
   const amount = format.number.format(tile.tokens) + " " + labels.tokens;
   const metadata = tile.fate ?? tile.block?.kind;
+  const ink = kind === "free" || tile.fate === "dropped"
+    ? "var(--fg-muted)"
+    : "color-mix(in oklab, var(--context-tile-tint) 63%, var(--fg-default))";
   const name = [tile.label, tile.block && labels[kind], amount, tile.fate && labels[tile.fate]].filter(Boolean).join(", ");
 
   return (
@@ -124,7 +127,7 @@ function ContextMapTile({
       aria-hidden={!present || undefined}
       inert={!present}
       className={cn("absolute list-none", active && "z-10", !present && "pointer-events-none")}
-      style={{ ...rect, "--context-tile-tint": tileColors[kind] } as CSSProperties}
+      style={{ ...rect, "--context-tile-tint": tileColors[kind], "--context-tile-ink": ink } as CSSProperties}
     >
       <button
         type="button"
@@ -143,22 +146,22 @@ function ContextMapTile({
         onClick={(event) => onSelect({ key: tile.key, element: event.currentTarget }, tile.block)}
         className={cn(
           "@container/tile block size-full cursor-pointer overflow-hidden rounded-md border-hairline border-[color-mix(in_oklab,var(--context-tile-tint)_24%,transparent)]",
-          "bg-[color-mix(in_oklab,var(--context-tile-tint)_10%,transparent)] text-left text-[color-mix(in_oklab,var(--context-tile-tint)_63%,var(--fg-default))] transition-colors duration-fast motion-reduce:transition-none",
+          "bg-[color-mix(in_oklab,var(--context-tile-tint)_10%,transparent)] text-left text-(color:--context-tile-ink) transition-colors duration-fast motion-reduce:transition-none",
           "hover:bg-[color-mix(in_oklab,var(--context-tile-tint)_16%,transparent)] aria-pressed:border-(--context-tile-tint)",
-          kind === "free" && "border-dashed bg-transparent bg-[repeating-linear-gradient(135deg,transparent_0px,transparent_6px,color-mix(in_oklab,var(--context-tile-tint)_10%,transparent)_6px,color-mix(in_oklab,var(--context-tile-tint)_10%,transparent)_7px)] text-fg-muted",
+          kind === "free" && "border-dashed bg-transparent bg-[repeating-linear-gradient(135deg,transparent_0px,transparent_6px,color-mix(in_oklab,var(--context-tile-tint)_10%,transparent)_6px,color-mix(in_oklab,var(--context-tile-tint)_10%,transparent)_7px)]",
           tile.fate === "summarized" && "border-dashed border-(--context-tile-tint)",
-          tile.fate === "dropped" && "border-border-subtle bg-muted text-fg-muted hover:bg-muted",
+          tile.fate === "dropped" && "border-border-subtle bg-muted hover:bg-muted",
           buttonFocus,
         )}
       >
         {height >= 24 && (
           <span aria-hidden="true" className="pointer-events-none absolute inset-0 hidden overflow-hidden px-2 py-1.5 @min-[2.25rem]/tile:block">
-            <span className={cn(detailPart, "text-xs leading-4 font-medium", tile.fate === "dropped" && "line-through")}>
+            <span className={cn(detailPart, "text-label font-medium", tile.fate === "dropped" && "line-through")}>
               {tile.block?.icon}
               <span className="min-w-0 flex-1 overflow-hidden whitespace-nowrap [mask-image:linear-gradient(to_right,black_calc(100%-8px),transparent)]">{tile.label}</span>
             </span>
             {height >= 40 && (
-              <span className="block truncate text-[11.5px] leading-4 tabular-nums">
+              <span className="block truncate text-label tabular-nums">
                 {format.compact(tile.tokens)}
                 {metadata && <span className="hidden @min-[6.75rem]/tile:inline"> · {labels[metadata]}</span>}
               </span>
@@ -325,7 +328,7 @@ export const ContextMap = forwardRef<HTMLDivElement, ContextMapProps>(function C
         id={snapshotId}
         role={compaction ? "tabpanel" : undefined}
         aria-labelledby={compaction ? snapshotId + "-" + snapshot : undefined}
-        className="relative h-[220px] rounded-xl border-hairline border-border bg-surface-floating p-[3px] @min-[30rem]/context-map:h-[280px]"
+        className="relative h-[220px] rounded-xl border-hairline border-border bg-surface-floating p-0.75 @min-[30rem]/context-map:h-[280px]"
       >
         <ul ref={mapRef} role="list" aria-labelledby={headingId} className="relative size-full" data-slot="context-map-tiles">
           <AnimatePresence initial={false}>
@@ -362,7 +365,7 @@ export const ContextMap = forwardRef<HTMLDivElement, ContextMapProps>(function C
         </ul>
       </div>
       {compaction !== undefined && (
-        <div data-slot="context-map-compaction" className="mt-2 flex min-h-4 flex-wrap items-center gap-x-3 gap-y-1 text-label leading-4 text-fg-muted tabular-nums">
+        <div data-slot="context-map-compaction" className="mt-2 flex min-h-4 flex-wrap items-center gap-x-3 gap-y-1 text-label text-fg-muted tabular-nums">
           {fates ? (
             <>
               <span className="font-medium text-fg-default">{format.compact(sumContextTokens(before))} → {format.compact(sumContextTokens(current))}</span>
