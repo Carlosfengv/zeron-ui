@@ -10,6 +10,7 @@ declare const styles: {
   readonly flow: string;
   readonly header: string;
   readonly heading: string;
+  readonly jobButton: string;
   readonly jobContent: string;
   readonly jobIcon: string;
   readonly jobName: string;
@@ -18,6 +19,7 @@ declare const styles: {
   readonly panel: string;
   readonly priority: string;
   readonly progress: string;
+  readonly progressTrack: string;
   readonly queue: string;
   readonly queueEmpty: string;
   readonly queueName: string;

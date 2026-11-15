@@ -152,17 +152,30 @@
 .progress[data-kind="human"], .jobIcon[data-kind="human"] { --job-tint: var(--chart-1); }
 .progress[data-stalled] { --progress-tint: var(--chart-3); }
 
-.progress {
+.progressTrack {
   position: absolute;
   inset: 1px;
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--radius-lg) - 1px);
+  overflow: hidden;
   pointer-events: none;
+}
+
+.progress {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
   transform-origin: left;
   background: linear-gradient(90deg, color-mix(in oklab, var(--progress-tint, var(--job-tint)) 12%, transparent), color-mix(in oklab, var(--progress-tint, var(--job-tint)) 24%, transparent));
   transition: transform var(--motion-duration-slow) linear;
 }
 
 .progress:dir(rtl) { transform-origin: right; }
+
+.jobButton {
+  --job-icon-size: 1.125rem;
+  padding-inline: calc((var(--control-height-sm) - var(--job-icon-size)) / 2);
+}
+
 .jobContent { position: relative; display: flex; align-items: center; gap: 0.375rem; text-align: start; }
 .jobName { flex: 1; }
 .elapsed, .retry { flex: none; color: var(--fg-subtle); }
@@ -173,7 +186,7 @@
   color: color-mix(in oklab, var(--job-tint) 70%, var(--fg-default));
 }
 
-.jobIcon { width: 1.125rem; height: 1.125rem; }
+.jobIcon { width: var(--job-icon-size); height: var(--job-icon-size); }
 .jobIcon :is(svg, img) { width: 0.75rem; height: 0.75rem; }
 .priority { width: 1rem; height: 1rem; background: var(--warning-surface-subtle); color: var(--fg-warning); }
 .results { display: grid; align-content: start; gap: 0.5rem; padding-top: 1.625rem; }
@@ -182,8 +195,7 @@
 .chart { padding-top: 0.125rem; }
 .axis { display: flex; justify-content: space-between; padding-inline: 1.625rem 0.3125rem; color: var(--fg-subtle); font-size: var(--font-size-label); line-height: var(--line-height-label); }
 
-.details { display: grid; gap: 0.625rem; width: min(17.5rem, calc(100vw - 2rem)); }
-.details header > .jobIcon { width: 1.75rem; height: 1.75rem; }
+.details { --job-icon-size: 1.75rem; display: grid; gap: 0.625rem; width: min(17.5rem, calc(100vw - 2rem)); }
 .details header > .jobIcon :is(svg, img) { width: 1rem; height: 1rem; }
 .detailMetrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; padding: 0.5rem; overflow-wrap: anywhere; }
 
