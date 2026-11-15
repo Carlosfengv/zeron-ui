@@ -4,6 +4,7 @@ import type { DocPageLoader } from "./page-loader-types";
 export type { DocPageModule, DocPageLoader } from "./page-loader-types";
 
 export const pageLoaders: Record<string, DocPageLoader> = {
+  "blocks/agent-queue-01": () => import("@docs/pages/blocks/agent-queue-01/page"),
   "components/decision-tree": () => import("@docs/pages/components/decision-tree/page"),
   "blocks/agent-run-01": () => import("@docs/pages/blocks/agent-run-01/page"),
   "blocks/fallback-chain-01": () => import("@docs/pages/blocks/fallback-chain-01/page"),

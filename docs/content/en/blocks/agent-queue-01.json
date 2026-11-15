@@ -1,0 +1,10 @@
+{
+  "agentQueueBlock": {
+    "title": "Agent Queue",
+    "description": "Follow jobs from the queue into worker slots and see backlog, throughput, and provider rate limits in one panel.",
+    "dataContract": "Data contract",
+    "dataContractBody": "Provide jobs, workers, and millisecond timestamps on a shared clock. Waiting jobs are sorted by priority, queue order, and enqueue time. Supply rate-limit intervals and a backpressure threshold to annotate the depth chart. When keeping only recent jobs, pass cumulative totals and optional depth samples.",
+    "behavior": "Behavior and controls",
+    "behaviorBody": "Select a queued or running job to inspect its details. Use the arrow keys to move through jobs and Escape to close details. Pause and resume, concurrency, promotion, and cancellation call host handlers. This preview runs a local simulation with periodic rate limits and retries."
+  }
+}

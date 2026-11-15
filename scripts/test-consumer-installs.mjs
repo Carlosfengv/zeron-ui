@@ -39,6 +39,7 @@ const viteComponents = styles ? ["button"] : process.env.ZERON_VITE_CONSUMER_COM
 const BUSINESS_SOURCE = "export const identity = <T>(value: T): T => value;\n";
 const fallbackChainExample = '<FallbackChain title="Install verified" attempts={[{ id: "model", model: "Primary model", status: "answered", durationMs: 850 }]} />';
 const agentRunExample = 'const run = { id: "verified", title: "Install verified", root: { id: "lead", name: "Lead", status: "working" as const, summary: "Planning", usage: { tokens: 1000, limit: 8000 } } };';
+const agentQueueExample = '<AgentQueue now={1000} name="Install verified" jobs={[{ id: "job", name: "Index docs", kind: "tool", status: "queued", enqueuedAt: 0 }]} workers={[{ id: "worker", name: "Worker" }]} />';
 
 if ([...packageManagers, ...vitePackageManagers].some((manager) => !["npm", "pnpm"].includes(manager))) {
   throw new Error("Consumer package managers must contain only npm and/or pnpm");
@@ -609,6 +610,10 @@ async function verifyNextBuild({ consumer, component }) {
     'import { AgentTasks, agentTasksDemoData } from "@/components/blocks/agent-tasks-01";',
     'export default function Page() { return <AgentTasks tasks={agentTasksDemoData} defaultExpandedTaskId="migration" />; }',
   ].join("\n");
+  examples["agent-queue-01"] = [
+    'import { AgentQueue } from "@/components/blocks/agent-queue-01";',
+    `export default function Page() { return ${agentQueueExample}; }`,
+  ].join("\n");
   examples["appearance-settings-01"] = [
     '"use client";',
     'import { useState } from "react";',
@@ -1077,6 +1082,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import { AgentTasks, agentTasksDemoData } from "@/src/components/blocks/agent-tasks-01";',
     'import "./index.css";',
     'createRoot(document.getElementById("root")!).render(<AgentTasks tasks={agentTasksDemoData} defaultExpandedTaskId="migration" />);',
+  ].join("\n");
+  examples["agent-queue-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { AgentQueue } from "@/src/components/blocks/agent-queue-01";',
+    'import "./index.css";',
+    `createRoot(document.getElementById("root")!).render(${agentQueueExample});`,
   ].join("\n");
   examples["appearance-settings-01"] = [
     'import { createRoot } from "react-dom/client";',

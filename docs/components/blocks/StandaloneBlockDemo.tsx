@@ -1,4 +1,5 @@
 "use client";
+import { AgentQueueDemo } from "./AgentQueueDemo";
 import { FallbackChainDemo } from "./FallbackChainDemo";
 
 import { AgentRunDemo } from "./AgentRunDemo";
@@ -188,6 +189,8 @@ export function StandaloneBlockDemo({ slug }: { slug: StandaloneBlockSlug }) {
 
 function StandaloneBlockContent({ slug }: { slug: StandaloneBlockSlug }) {
   switch (slug) {
+    case "agent-queue-01":
+      return <AgentQueueDemo />;
     case "fallback-chain-01":
       return <FallbackChainDemo />;
     case "agent-run-01":
