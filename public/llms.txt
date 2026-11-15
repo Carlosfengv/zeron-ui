@@ -130,6 +130,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [ContextWindow](https://zeron-ui.vercel.app/ai/items/component%3Acontext-window.md): Shared context capacity, detailed and compact breakdowns, and usage indicators. Registry: context-window.
 - [Data Grid](https://zeron-ui.vercel.app/ai/items/component%3Adata-grid.md): Virtualized spreadsheet grid with inline editing, range selection, search, copy and paste, and pinned columns. Registry: data-grid.
 - [Data Table](https://zeron-ui.vercel.app/ai/items/component%3Adata-table.md): TanStack data table with sorting, filters, pagination, selection, visibility, and pinning. Registry: data-table.
+- [Decision Tree](https://zeron-ui.vercel.app/ai/items/component%3Adecision-tree.md): Branching agent decisions with visible consequences, risk notes and recommended paths. Registry: decision-tree.
 - [Detail List](https://zeron-ui.vercel.app/ai/items/component%3Adetail-list.md): Framed label-value list with grouped sections and separators for compact resource and entity details. Registry: detail-list.
 - [Dialog (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Adialog.md): Modal dialog with smooth enter/exit animations and overlay. Registry: dialog.
 - [Dropdown](https://zeron-ui.vercel.app/ai/items/component%3Adropdown.md): Menu-style dropdown with proximity hover and animated backgrounds. Registry: dropdown.
@@ -284,6 +285,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [combobox](https://zeron-ui.vercel.app/agent-guides/components/combobox.md)
 - [context-window](https://zeron-ui.vercel.app/agent-guides/components/context-window.md)
 - [data-table](https://zeron-ui.vercel.app/agent-guides/components/data-table.md)
+- [decision-tree](https://zeron-ui.vercel.app/agent-guides/components/decision-tree.md)
 - [dialog](https://zeron-ui.vercel.app/agent-guides/components/dialog.md)
 - [field](https://zeron-ui.vercel.app/agent-guides/components/field.md)
 - [file-type](https://zeron-ui.vercel.app/agent-guides/components/file-type.md)

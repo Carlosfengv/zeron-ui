@@ -287,6 +287,10 @@
       "itemId": "component:data-table"
     },
     {
+      "path": "components/decision-tree.md",
+      "itemId": "component:decision-tree"
+    },
+    {
       "path": "components/dialog.md",
       "itemId": "component:dialog"
     },

@@ -3,6 +3,7 @@ import "server-only";
 import type { DocPageLoader } from "./page-loader-types";
 
 export const componentPageLoaders: Record<string, DocPageLoader> = {
+  "components/decision-tree": () => import("@docs/pages/components/decision-tree/page"),
   "components/artifact-panel": () => import("@docs/pages/components/artifact-panel/page"),
   "components/artifact-preview-panel": () => import("@docs/pages/components/artifact-preview-panel/page"),
   "components/chat-thread": () => import("@docs/pages/components/chat-thread/page"),

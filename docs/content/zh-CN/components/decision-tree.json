@@ -1,0 +1,65 @@
+{
+  "decisionTree": {
+    "description": "以决策树呈现 Agent 的候选路径、后果、风险和推荐选项，支持追问与自定义指令。",
+    "preview": "交互示例",
+    "title": "待决策事项",
+    "reset": "重置示例",
+    "reply": "收到，我会先按这条指令处理。",
+    "keyboard": "键盘操作",
+    "shortcuts": "聚焦决策树后，按选项旁的数字选择分支。用 ← 和 →（或 K 和 J）切换待办，按 F 查看下一条风险备注，按 Esc 关闭输入框、备注或追问。输入指令时，Enter 发送，Shift+Enter 换行。",
+    "api": "API 参考",
+    "waiting": "{count} 项待处理",
+    "position": "{current} / {count}",
+    "optionCount": "{count} 个选项",
+    "picked": "已选择：{option}",
+    "pickedNext": "已选择：{option}。下一步：{question}",
+    "labels": {
+      "agentPick": "Agent 推荐", "highRisk": "高风险", "mediumRisk": "中风险",
+      "previous": "上一项", "next": "下一项", "other": "其他…",
+      "instruction": "告诉 Agent 你希望怎么做…", "send": "发送指令", "cancel": "取消",
+      "pickBranch": "选择分支", "followUp": "选择下一步", "submitting": "提交中…",
+      "approved": "已批准 · 执行中", "sent": "已发送给 Agent", "failed": "提交失败，请重试。",
+      "empty": "暂无待决策事项"
+    },
+    "props": {
+      "decisions": "包含稳定 ID、Agent 信息、可选风险级别和分支的队列。新 ID 会排到末尾。分支可以附上后果或一级追问。",
+      "onChoose": "接收完整决策路径或自定义指令。对自定义指令返回字符串可展示 Agent 回复。提交失败时保留该事项供重试。",
+      "allowOther": "是否在最后一个分支提供自由输入。",
+      "title": "决策树顶部的标题。",
+      "labels": "用于覆盖界面文案和数量格式，支持本地化。",
+      "ref": "提供 hover、choose、setOther、send、next、previous 和 peek。选项索引从 0 开始，按当前步骤计算。",
+      "className": "根节点的附加样式。容器宽度低于 640 px 时使用纵向布局。"
+    },
+    "decisions": [
+      {
+        "id": "checkout-482", "agent": "事故响应 Agent", "model": "运维模型", "risk": "high",
+        "question": "部署 #482 后，结账错误率升至 18%。应该如何恢复？",
+        "context": "12 分钟内出现 2,140 次错误，每小时约有 3,200 美元订单受到影响。",
+        "options": [
+          { "label": "回滚至 #481", "pick": true, "next": { "question": "应该通知谁？", "options": [
+            { "label": "更新公开状态页", "pick": true, "effects": "每 15 分钟公布一次进展" },
+            { "label": "仅通知事故处理团队", "effects": "只发到内部事故频道" }
+          ] } },
+          { "label": "上线热修复", "next": { "question": "要等测试跑完吗？", "options": [
+            { "label": "立即上线", "effects": { "text": "跳过 1,284 项测试", "note": "集成测试仍在运行，其中包括支付和退款检查。", "source": "结账 CI · 部署 #482" } },
+            { "label": "等待测试完成", "effects": "预计 14 分钟，期间结账仍会报错。" }
+          ] } },
+          { "label": "关闭功能开关", "effects": ["为 30% 的用户关闭新版结账", "流量将回到旧版结账"] }
+        ]
+      },
+      {
+        "id": "renewal", "agent": "销售 Agent", "model": "规划模型", "risk": "medium",
+        "question": "Acme 希望 84,000 美元的续约降价 25%。应该如何回复？",
+        "context": "212 个席位将在 9 天后到期。",
+        "options": [
+          { "label": "改报 15% 折扣", "pick": true, "next": { "question": "应该给多长的合同？", "options": [
+            { "label": "两年", "pick": true, "effects": "至 2028 年，每年 71,400 美元" },
+            { "label": "一年", "effects": "71,400 美元，下次续约恢复原价。" }
+          ] } },
+          { "label": "提交给销售负责人", "effects": "附上通话纪要和历史报价" },
+          { "label": "接受 25% 折扣", "effects": { "text": "每年 63,000 美元", "note": "超过 20% 的折扣需要销售管理层审批。" } }
+        ]
+      }
+    ]
+  }
+}
