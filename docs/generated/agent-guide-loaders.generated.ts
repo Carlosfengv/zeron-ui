@@ -77,6 +77,7 @@ export const agentGuideLoaders: Record<string, () => Promise<string>> = {
   "components/chat-thread.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/chat-thread.md"), "utf8"),
   "components/code-block.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/code-block.md"), "utf8"),
   "components/combobox.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/combobox.md"), "utf8"),
+  "components/context-map.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/context-map.md"), "utf8"),
   "components/context-window.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/context-window.md"), "utf8"),
   "components/data-table.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/data-table.md"), "utf8"),
   "components/decision-tree.md": () => readFile(join(process.cwd(), "docs/agent-guides/components/decision-tree.md"), "utf8"),

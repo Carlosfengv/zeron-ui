@@ -37,6 +37,7 @@
     {"id": "component:chat-thread", "type": "registry", "key": "chat-thread", "aliases": ["chat-thread"], "status": "active", "retirementReason": null},
     {"id": "component:artifact-card", "type": "registry", "key": "artifact-card", "aliases": ["artifact-card"], "status": "active", "retirementReason": null},
     { "id": "block:context-window-02", "type": "registry", "key": "context-window-02", "aliases": ["context-window-02"], "status": "active", "retirementReason": null },
+    {"id": "component:context-map", "type": "registry", "key": "context-map", "aliases": ["context-map"], "status": "active", "retirementReason": null},
     {"id": "component:context-window", "type": "registry", "key": "context-window", "aliases": ["context-window"], "status": "active", "retirementReason": null},
     {"id": "component:decision-tree", "type": "registry", "key": "decision-tree", "aliases": ["decision-tree"], "status": "active", "retirementReason": null},
     {"id": "component:model-selector", "type": "registry", "key": "model-selector", "aliases": ["model-selector"], "status": "active", "retirementReason": null},

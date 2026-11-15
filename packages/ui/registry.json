@@ -226,6 +226,41 @@
       ]
     },
     {
+      "name": "context-map",
+      "type": "registry:ui",
+      "title": "Context Map",
+      "description": "Interactive token treemap with per-block details, agent switching, and before/after compaction.",
+      "dependencies": [
+        "framer-motion",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "badge",
+        "button",
+        "dropdown",
+        "icon-context",
+        "menu-item",
+        "popover",
+        "separator",
+        "springs",
+        "tabs",
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/context-map.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/context-map.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/context-map/data.ts",
+          "type": "registry:ui",
+          "target": "components/ui/context-map/data.ts"
+        }
+      ]
+    },
+    {
       "name": "context-window",
       "type": "registry:ui",
       "title": "ContextWindow",

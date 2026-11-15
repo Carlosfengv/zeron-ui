@@ -128,6 +128,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Combobox](https://zeron-ui.vercel.app/ai/items/component%3Acombobox.md): Filterable single- or multi-select with typed object values, groups, chips, and custom triggers. Registry: combobox.
 - [Command](https://zeron-ui.vercel.app/ai/items/component%3Acommand.md): cmdk-based command primitives with a replaceable input slot for searchable menus and structured query controls. Registry: command.
 - [Container](https://zeron-ui.vercel.app/ai/items/component%3Acontainer.md): Composable raised container with an optional header and footer around a floating content body. Registry: container.
+- [Context Map](https://zeron-ui.vercel.app/ai/items/component%3Acontext-map.md): Interactive token treemap with per-block details, agent switching, and before/after compaction. Registry: context-map.
 - [ContextWindow](https://zeron-ui.vercel.app/ai/items/component%3Acontext-window.md): Shared context capacity, detailed and compact breakdowns, and usage indicators. Registry: context-window.
 - [Data Grid](https://zeron-ui.vercel.app/ai/items/component%3Adata-grid.md): Virtualized spreadsheet grid with inline editing, range selection, search, copy and paste, and pinned columns. Registry: data-grid.
 - [Data Table](https://zeron-ui.vercel.app/ai/items/component%3Adata-table.md): TanStack data table with sorting, filters, pagination, selection, visibility, and pinning. Registry: data-table.
@@ -285,6 +286,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [chat-thread](https://zeron-ui.vercel.app/agent-guides/components/chat-thread.md)
 - [code-block](https://zeron-ui.vercel.app/agent-guides/components/code-block.md)
 - [combobox](https://zeron-ui.vercel.app/agent-guides/components/combobox.md)
+- [context-map](https://zeron-ui.vercel.app/agent-guides/components/context-map.md)
 - [context-window](https://zeron-ui.vercel.app/agent-guides/components/context-window.md)
 - [data-table](https://zeron-ui.vercel.app/agent-guides/components/data-table.md)
 - [decision-tree](https://zeron-ui.vercel.app/agent-guides/components/decision-tree.md)

@@ -280,6 +280,10 @@
       "itemId": "component:combobox"
     },
     {
+      "path": "components/context-map.md",
+      "itemId": "component:context-map"
+    },
+    {
       "path": "components/context-window.md",
       "itemId": "component:context-window"
     },

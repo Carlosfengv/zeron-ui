@@ -40,6 +40,7 @@ const BUSINESS_SOURCE = "export const identity = <T>(value: T): T => value;\n";
 const fallbackChainExample = '<FallbackChain title="Install verified" attempts={[{ id: "model", model: "Primary model", status: "answered", durationMs: 850 }]} />';
 const agentRunExample = 'const run = { id: "verified", title: "Install verified", root: { id: "lead", name: "Lead", status: "working" as const, summary: "Planning", usage: { tokens: 1000, limit: 8000 } } };';
 const agentQueueExample = '<AgentQueue now={1000} name="Install verified" jobs={[{ id: "job", name: "Index docs", kind: "tool", status: "queued", enqueuedAt: 0 }]} workers={[{ id: "worker", name: "Worker" }]} />';
+const contextMapExample = '<ContextMap blocks={[{ id: "system", label: "System prompt", kind: "system", tokens: 100 }]} limit={1000} compaction={{ before: [{ id: "chat", label: "Chat", kind: "chat", tokens: 900 }], dropped: ["chat"] }} />';
 
 if ([...packageManagers, ...vitePackageManagers].some((manager) => !["npm", "pnpm"].includes(manager))) {
   throw new Error("Consumer package managers must contain only npm and/or pnpm");
@@ -658,6 +659,10 @@ async function verifyNextBuild({ consumer, component }) {
     'import { ModelSelector } from "@/components/ui/model-selector";',
     'export default function Page() { const [value,setValue]=useState({modelId:"auto",extendedThinking:false,webSearch:false}); return <ModelSelector models={[{id:"auto",name:"Auto",description:"Choose per message",icon:"A"}]} value={value} onValueChange={setValue} />; }',
   ].join("\n");
+  examples["context-map"] = [
+    'import { ContextMap } from "@/components/ui/context-map";',
+    `export default function Page() { return ${contextMapExample}; }`,
+  ].join("\n");
   examples["context-window"] = [
     '"use client";',
     'import { ContextWindow, ContextWindowCompact, ContextWindowUsage, type ContextWindowData } from "@/components/ui/context-window";',
@@ -1144,6 +1149,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import "./index.css";',
     'function Example() { const [value,setValue]=useState({modelId:"auto",extendedThinking:false,webSearch:false}); return <ModelSelector models={[{id:"auto",name:"Auto",description:"Choose per message",icon:"A"}]} value={value} onValueChange={setValue} />; }',
     'createRoot(document.getElementById("root")!).render(<Example />);',
+  ].join("\n");
+  examples["context-map"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { ContextMap } from "@/src/components/ui/context-map";',
+    'import "./index.css";',
+    `createRoot(document.getElementById("root")!).render(${contextMapExample});`,
   ].join("\n");
   examples["context-window"] = [
     "import { createRoot } from \"react-dom/client\";",
