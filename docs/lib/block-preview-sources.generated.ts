@@ -63,7 +63,7 @@ const blockPreviewSources = {
     "url": "/docs-source/9a4dc56746c28ee0c848d6c5645ad7ac595fd77caf249b51186d965e6b8529a9.txt"
   },
   "resource-cost-01": {
-    "url": "/docs-source/73d0747770dee1893b8e112da832bcff2c8f1b76fcdc8cb3742cf40819dd5adf.txt"
+    "url": "/docs-source/15bf5882d8f34b8e04a9a21b145000a0e1bf39f7445b9c53c5f3f986b365b79f.txt"
   },
   "account-activity-01": {
     "url": "/docs-source/d2360a9da7d040fe88cae14072e6dda3bdffeb4820dcb75ade460023c5ea0b9b.txt"
@@ -111,7 +111,7 @@ const blockPreviewSources = {
     "url": "/docs-source/62cbcc9f4bf52f8c41b9e79fbce22a57cee3d9f109738ce35bce0a352b110347.txt"
   },
   "project-monitor-01": {
-    "url": "/docs-source/4292cab9fc1ffe99f15a8341f20b2e9d555cc578c10b043f142bed40e6cb25bd.txt"
+    "url": "/docs-source/dbf7f431984e28dfbb5eb6d72cd2104c9397465366163edde9d35c1ea12690cd.txt"
   },
   "agent-message-trace-01": {
     "url": "/docs-source/dfa929a32ad011c2713014ea51b8ad51b45bd4ba8606647e52a60519f4d4aeb1.txt"
@@ -174,7 +174,7 @@ const blockPreviewSources = {
     "url": "/docs-source/d5ebf2785cfca9ca75d1d0c8f2c0199674644407d7b20e1d80853e0960361fdc.txt"
   },
   "personal-settings-01": {
-    "url": "/docs-source/6cc3ea81314660c1ddff72520757fea1272c7bba94fda6b4c4a3d847bf9c799e.txt"
+    "url": "/docs-source/6d50ae75e26b60d06b92c97f3b3bca78159ea72b83ed8a4ae9154d3849a10334.txt"
   },
   "personal-usage-01": {
     "url": "/docs-source/5d4274f2e367a125cb5cc0c84079685e60db17bd9fcb588a0b98daff649b833e.txt"
@@ -201,7 +201,7 @@ const blockPreviewSources = {
     "url": "/docs-source/3c00722e88fbbd1baf500e66d94f087b20dbc7a19e1e5c2577fa4fd31510fdfc.txt"
   },
   "resource-status-all-01": {
-    "url": "/docs-source/fda37b39d50c34d44162742bcbd0edf40a0f63f9dc33eb348e6394617243e53d.txt"
+    "url": "/docs-source/ae2d1dfe1283f3728f0ffe9ff469161ffb2a2e14d4529e8139aed3e33144e0cd.txt"
   },
   "rule-flow-editor-01": {
     "url": "/docs-source/bccf1eaadc4af65cbad064d272b6b48f03287e22879112e45af5becb4f4ef548.txt"

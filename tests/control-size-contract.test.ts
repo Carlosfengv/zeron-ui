@@ -7,6 +7,7 @@ import {
   controlSizes,
 } from "../packages/ui/src/tokens/control-size";
 import { controlHeightTokens } from "../packages/ui/src/tokens/semantic-tokens.mjs";
+import { cn } from "@zeron/ui/system/utils";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const buttonSource = readFileSync(
@@ -37,6 +38,13 @@ describe("Control Size contract", () => {
       lg: "h-control-lg",
       xl: "h-control-xl",
     });
+  });
+
+  it("merges semantic and standard height classes in the same group", () => {
+    expect(cn("h-control-md", "h-auto")).toBe("h-auto");
+    expect(cn("min-h-control-sm h-badge-md", "min-h-0")).toBe("h-badge-md min-h-0");
+    expect(cn("h-auto min-h-0", "h-badge-sm min-h-badge-lg")).toBe("h-badge-sm min-h-badge-lg");
+    expect(cn("h-control-xl sm:h-control-lg", "sm:h-auto")).toBe("h-control-xl sm:h-auto");
   });
 
   it("uses the specified icon sizes in small icon-only buttons", () => {

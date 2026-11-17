@@ -145,7 +145,8 @@
     "./heatmap-chart": "./src/components/heatmap-chart.tsx",
     "./radar-chart": "./src/components/radar-chart.tsx",
     "./ring-chart": "./src/components/ring-chart.tsx",
-    "./markdown": "./src/components/markdown.tsx"
+    "./markdown": "./src/components/markdown.tsx",
+    "./chart-summary": "./src/components/chart-summary.tsx"
   },
   "imports": {
     "#components/*": "./src/components/*.tsx",

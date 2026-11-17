@@ -3227,15 +3227,39 @@
         "surfaces",
         "utils",
         "chart-primitives",
-        "area-chart",
-        "pie-chart",
-        "chart-core"
+        "chart-summary"
       ],
       "files": [
         {
           "path": "packages/ui/src/components/chart.tsx",
           "type": "registry:ui",
           "target": "components/ui/chart.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chart-summary",
+      "type": "registry:ui",
+      "title": "Chart Summary",
+      "description": "Visx time-series and donut summaries with accessible data, locale-aware feedback, and an optional host copy override.",
+      "dependencies": [
+        "@visx/curve",
+        "@visx/responsive",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "chart-primitives",
+        "area-chart",
+        "pie-chart",
+        "chart-core"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/chart-summary.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/chart-summary.tsx"
         }
       ]
     },

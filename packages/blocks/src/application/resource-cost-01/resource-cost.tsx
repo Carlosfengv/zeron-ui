@@ -5,7 +5,7 @@ import { getExpandedRowModel, type ColumnDef, type ExpandedState } from "@tansta
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { ButtonGroup } from "@zeron/ui/button-group";
-import { DonutSummary } from "@zeron/ui/chart";
+import { DonutSummary } from "@zeron/ui/chart-summary";
 import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
 import { DataTable, DataTableViewOptions, useDataTable } from "@zeron/ui/data-table";
 import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";

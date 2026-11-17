@@ -7,6 +7,9 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+import { build } from "esbuild";
+import postcss from "postcss";
+import tailwindcss from "@tailwindcss/postcss";
 import { inspectRenderedControls, parseControlCheckArgs } from "../.agents/skills/zeron-page-builder/scripts/check-rendered-controls.mjs";
 
 let browser;
@@ -20,6 +23,62 @@ async function measure(html) {
   try { await page.setContent(css + html); return await page.evaluate(inspectRenderedControls); }
   finally { await page.close(); }
 }
+
+async function renderFixture(page, fixture) {
+  const stylesheet = fileURLToPath(new URL("../app/globals.css", import.meta.url));
+  const [style, script] = await Promise.all([
+    readFile(stylesheet, "utf8").then(css => postcss([tailwindcss()]).process(css, { from: stylesheet })),
+    build({
+      entryPoints: [fileURLToPath(new URL(`./fixtures/${fixture}.tsx`, import.meta.url))],
+      bundle: true,
+      jsx: "automatic",
+      define: { "process.env.NODE_ENV": '"production"' },
+      write: false,
+    }),
+  ]);
+  await page.setContent('<!doctype html><div id="root"></div>');
+  await page.addStyleTag({ content: style.css });
+  await page.addScriptTag({ content: script.outputFiles[0].text });
+}
+
+it("renders fixed, content-sized and link controls at their intended heights", async () => {
+  const page = await browser.newPage();
+  try {
+    await renderFixture(page, "control-heights");
+    async function measureControl(role, name) {
+      return page.getByRole(role, { name }).evaluate(element => ({
+        height: element.getBoundingClientRect().height,
+        minHeight: getComputedStyle(element).minHeight,
+      }));
+    }
+    expect(await measureControl("button", "Fixed button")).toMatchObject({ height: 32 });
+    expect(await measureControl("combobox", "Fixed select")).toMatchObject({ height: 32 });
+    const richButton = await measureControl("button", "Content button");
+    expect(richButton.minHeight).toBe("28px");
+    expect(richButton.height).toBeGreaterThan(32);
+    expect(await measureControl("button", "Short button")).toEqual({ height: 24, minHeight: "0px" });
+    const richSelect = await measureControl("combobox", "Content select");
+    expect(richSelect.minHeight).toBe("0px");
+    expect(richSelect.height).toBeGreaterThan(32);
+    const linkButton = await measureControl("link", "Link button");
+    expect(linkButton.minHeight).toBe("0px");
+    expect(linkButton.height).toBeGreaterThan(0);
+    expect(linkButton.height).toBeLessThan(32);
+  } finally {
+    await page.close();
+  }
+}, 30000);
+
+async function expectIndicator(indicator, item) {
+  await expect.poll(async () => {
+    if (!(await indicator.count()) || !(await item.count())) return false;
+    const [marker, target] = await Promise.all([indicator.boundingBox(), item.boundingBox()]);
+    return Boolean(marker && target && ["x", "y", "height", "width"].every(
+      key => Math.abs(marker[key] - target[key]) < 2,
+    ));
+  }).toBe(true);
+}
+
 describe("portable current-state control observations (actual Chromium)", () => {
   it("executes through a symlink and writes an unchecked report when a route is unavailable", async () => {
     const directory = await mkdtemp(path.join(tmpdir(), "zeron-control-cli-"));

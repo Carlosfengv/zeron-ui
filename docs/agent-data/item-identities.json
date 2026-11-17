@@ -1834,6 +1834,14 @@
       "retirementReason": null
     },
     {
+      "id": "component:chart-summary",
+      "type": "registry",
+      "key": "chart-summary",
+      "aliases": ["chart-summary"],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "component:chart-core",
       "type": "registry",
       "key": "chart-core",

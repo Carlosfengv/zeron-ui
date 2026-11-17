@@ -119,6 +119,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [Chart Core](https://zeron-ui.vercel.app/ai/items/component%3Achart-core.md): Time-series shell, axes, tooltip, legends and SVG patterns. Registry: chart-core.
 - [Chart Motion](https://zeron-ui.vercel.app/ai/items/component%3Achart-motion.md): Shared entrance timing for standalone charts. Registry: chart-motion.
 - [Chart Primitives](https://zeron-ui.vercel.app/ai/items/component%3Achart-primitives.md): Legends, stable series colors and segmented bars without a chart engine. Registry: chart-primitives.
+- [Chart Summary](https://zeron-ui.vercel.app/ai/items/component%3Achart-summary.md): Visx time-series and donut summaries with accessible data, locale-aware feedback, and an optional host copy override. Registry: chart-summary.
 - [Chat Message](https://zeron-ui.vercel.app/ai/items/component%3Achat-message.md): Chat transcript bubble with baked-in motion, user/assistant alignment, and file attachments. Registry: chat-message.
 - [ChatThread](https://zeron-ui.vercel.app/ai/items/component%3Achat-thread.md): Conversation coordination with registered messages, scrolling, history and checkpoints. Registry: chat-thread.
 - [Checkbox (Base UI)](https://zeron-ui.vercel.app/ai/items/component%3Acheckbox.md): Compact checkbox with checked, mixed, disabled, validation, and form states. Registry: checkbox.

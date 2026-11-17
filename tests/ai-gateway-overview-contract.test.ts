@@ -20,7 +20,7 @@ describe("AiGatewayOverview contract", () => {
     expect(capabilities["ai-gateway-overview-01"]).toEqual({ framework: "react", kind: "data-block" });
     expect(item).toMatchObject({
       dependencies: ["tw-animate-css", "@visx/curve@4.0.0"],
-      registryDependencies: ["badge", "button", "card", "chart", "container", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils", "alert", "chart-primitives", "area-chart", "bar-chart", "line-chart", "chart-core"],
+      registryDependencies: ["badge", "button", "card", "chart-summary", "container", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils", "alert", "chart-primitives", "area-chart", "bar-chart", "line-chart", "chart-core"],
     });
     expect(item.files).toHaveLength(8);
     expect(blockIndex).toContain("AiGatewayOverview");
@@ -43,7 +43,7 @@ describe("AiGatewayOverview contract", () => {
     expect(source).toContain('availableRanges = ["1d", "7d", "30d", "90d"]');
     expect(source).toContain('variant="pill"');
     expect(source).not.toContain('variant="segment"');
-    expect(charts).toContain('from "@zeron/ui/chart"');
+    expect(charts).toContain('from "@zeron/ui/chart-summary"');
     expect(charts).toContain('<BarChart');
     expect(charts).toContain('<AreaChart');
     expect(charts).not.toContain('from "recharts"');

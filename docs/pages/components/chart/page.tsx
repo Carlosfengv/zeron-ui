@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { DonutSummary, TimeSeriesChart } from "@zeron/ui/chart";
+import { DonutSummary, TimeSeriesChart } from "@zeron/ui/chart-summary";
 import { ChartLegend, chartColor, chartSeriesColor, createChartNumberFormatter } from "@zeron/ui/chart-primitives";
 import { Button } from "@zeron/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
@@ -25,7 +25,7 @@ export default function ChartDoc() {
   const items = (scenario === "empty" ? [] : [{ id: "gateway", label: t("gateway"), value: scenario === "zero" ? 0 : 72 }, { id: "functions", label: t("longName"), value: scenario === "partial" ? null : scenario === "zero" ? 0 : 28 }]);
   const segments = reversed ? [...items].reverse() : items;
   const total = scenario === "empty" || scenario === "zero" ? 0 : 100;
-  const format = createChartNumberFormatter("zh-CN");
+  const format = createChartNumberFormatter(locale);
   return <DocPage title="Chart" slug="chart" description={t("description")}>
     <DocSection title={t("types")}>
       <nav aria-label={t("types")} className="grid gap-3 text-body sm:grid-cols-2">
@@ -40,10 +40,10 @@ export default function ChartDoc() {
         <Button variant="secondary" onClick={() => setWideWindow(!wideWindow)}>{wideWindow ? t("intraday") : t("daily")}</Button>
       </div>
       <ComponentPreview code={'<TimeSeriesChart data={data} series={[{ id: "requests", label: "Requests", color: chartColor(1) }]} locale="en" timeZone="UTC" label="Requests" />'}>
-        <div className="w-full min-w-0"><TimeSeriesChart data={data} series={[{ id: "requests", label: t("requests"), color: chartColor(1) }]} locale="zh-CN" timeZone={timeZone} domain={[start, start + step * 5]} label={t("requests")} dataSummary={t("viewData")} /></div>
+        <div className="w-full min-w-0"><TimeSeriesChart data={data} series={[{ id: "requests", label: t("requests"), color: chartColor(1) }]} locale={locale} timeZone={timeZone} domain={[start, start + step * 5]} label={t("requests")} dataSummary={t("viewData")} /></div>
       </ComponentPreview>
       <ComponentPreview code={'<DonutSummary segments={segments} total={100} aria-label="Distribution" center="100" />'}>
-        <div className="flex w-full min-w-0 flex-col items-center gap-6 sm:flex-row"><DonutSummary className="shrink-0" segments={segments} total={total} aria-label={`${t("distribution")} ${total}${scenario === "partial" ? ` · ${t("incomplete")}` : ""}`} center={<><strong className="text-heading">{total}</strong><span className="text-label text-fg-subtle">{t("total")}</span></>} /><ChartLegend className="w-full min-w-0 sm:flex-1" items={segments.map((item) => ({ ...item, color: chartSeriesColor(item.id), value: format(item.value), ratio: scenario === "partial" || total === 0 ? "—" : createChartNumberFormatter("zh-CN", { style: "percent" })(item.value! / total) }))} /></div>
+        <div className="flex w-full min-w-0 flex-col items-center gap-6 sm:flex-row"><DonutSummary className="shrink-0" segments={segments} total={total} aria-label={`${t("distribution")} ${total}${scenario === "partial" ? ` · ${t("incomplete")}` : ""}`} center={<><strong className="text-heading">{total}</strong><span className="text-label text-fg-subtle">{t("total")}</span></>} /><ChartLegend className="w-full min-w-0 sm:flex-1" items={segments.map((item) => ({ ...item, color: chartSeriesColor(item.id), value: format(item.value), ratio: scenario === "partial" || total === 0 ? "—" : createChartNumberFormatter(locale, { style: "percent" })(item.value! / total) }))} /></div>
       </ComponentPreview>
       {scenario === "partial" && <p className="text-label text-fg-warning">{t("incomplete")}</p>}
     </DocSection>

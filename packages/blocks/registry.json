@@ -1283,7 +1283,7 @@
         "badge",
         "button",
         "button-group",
-        "chart",
+        "chart-summary",
         "container",
         "data-table",
         "dropdown",
@@ -2109,7 +2109,7 @@
         "badge",
         "button",
         "card",
-        "chart",
+        "chart-summary",
         "empty",
         "icon-context",
         "info-item",
@@ -2283,7 +2283,7 @@
         "badge",
         "button",
         "card",
-        "chart",
+        "chart-summary",
         "container",
         "empty",
         "icon-context",
@@ -3150,7 +3150,7 @@
         "app-shell",
         "badge",
         "button",
-        "chart",
+        "chart-summary",
         "container",
         "detail-list",
         "field",
@@ -4026,14 +4026,13 @@
         "metrics"
       ],
       "dependencies": [
-        "tw-animate-css",
-        "recharts"
+        "tw-animate-css"
       ],
       "registryDependencies": [
         "card",
         "utils",
         "chart-primitives",
-        "chart"
+        "chart-summary"
       ],
       "files": [
         {

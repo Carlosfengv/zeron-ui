@@ -1,6 +1,6 @@
 "use client";
 
-import { DonutSummary, TimeSeriesChart } from "@zeron/ui/chart";
+import { DonutSummary, TimeSeriesChart } from "@zeron/ui/chart-summary";
 import { ChartLegend, SegmentedBar, chartColor, chartSeriesColor, createChartNumberFormatter } from "@zeron/ui/chart-primitives";
 import { MetricCard } from "@zeron/ui/metric-card";
 import { formatMetric, summarizeWindow, validNumber } from "./project-monitor-data";

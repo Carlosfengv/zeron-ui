@@ -7,7 +7,7 @@ import { resourceCostDemoItems } from "../packages/blocks/src/application/resour
 import type { ResourceCostItem } from "../packages/blocks/src/application/resource-cost-01/resource-cost-types";
 
 // Browser checks cover ring geometry; these tests exercise the real table and controls.
-vi.mock("@zeron/ui/chart", () => ({ DonutSummary: (props: { "aria-label"?: string }) => <span role="img" aria-label={props["aria-label"]} /> }));
+vi.mock("@zeron/ui/chart-summary", () => ({ DonutSummary: (props: { "aria-label"?: string }) => <span role="img" aria-label={props["aria-label"]} /> }));
 
 afterEach(cleanup);
 

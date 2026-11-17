@@ -5,7 +5,7 @@ import { Area, AreaChart } from "@zeron/ui/area-chart";
 import { Bar, BarChart, BarXAxis, BarYAxis } from "@zeron/ui/bar-chart";
 import { Line, LineChart } from "@zeron/ui/line-chart";
 import { Grid, XAxis, YAxis, ChartTooltip, TooltipContent, ReferenceLine, useChartStable } from "@zeron/ui/chart-core";
-import { DonutSummary, TimeSeriesChart } from "@zeron/ui/chart";
+import { DonutSummary, TimeSeriesChart } from "@zeron/ui/chart-summary";
 import { ChartDataTable, chartColor, chartSeriesColor, chartStatusColors, createChartNumberFormatter, createChartTimeFormatter, type ChartDataTableProps } from "@zeron/ui/chart-primitives";
 import type { AiGatewayLatencyBucket, AiGatewayMetricSeries, AiGatewayProviderUsage, AiGatewayTimeSeriesPoint } from "./ai-gateway-overview-types";
 

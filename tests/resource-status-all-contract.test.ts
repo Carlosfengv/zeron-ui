@@ -22,8 +22,8 @@ describe("Resource Status All 1 block contract", () => {
     );
     expect(item).toMatchObject({
       type: "registry:block",
-      dependencies: ["tw-animate-css", "recharts"],
-      registryDependencies: ["card", "utils", "chart-primitives", "chart"],
+      dependencies: ["tw-animate-css"],
+      registryDependencies: ["card", "utils", "chart-primitives", "chart-summary"],
     });
     expect(item.files).toHaveLength(2);
   });
@@ -31,7 +31,7 @@ describe("Resource Status All 1 block contract", () => {
   it("uses the designed hierarchy and shared chart tokens", () => {
     expect(source).toContain('<Card');
     expect(source).toContain('<CardContent');
-    expect(source).toContain('import { DonutSummary } from "@zeron/ui/chart"');
+    expect(source).toContain('import { DonutSummary } from "@zeron/ui/chart-summary"');
     expect(source).toContain('<DonutSummary');
     expect(source).toContain('<ChartLegend');
     expect(source).toContain('max-w-[701px]');
