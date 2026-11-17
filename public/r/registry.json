@@ -1199,22 +1199,22 @@
       "registryDependencies": [],
       "files": [
         {
-          "path": "packages/ui/src/system/icon-context.tsx",
+          "path": "packages/icons/src/icon-context.tsx",
           "type": "registry:lib",
           "target": "lib/icon-context.tsx"
         },
         {
-          "path": "packages/ui/src/system/huge-icon.tsx",
+          "path": "packages/icons/src/huge-icon.tsx",
           "type": "registry:lib",
           "target": "lib/huge-icon.tsx"
         },
         {
-          "path": "packages/ui/src/system/icon-catalog.ts",
+          "path": "packages/icons/src/icon-catalog.ts",
           "type": "registry:lib",
           "target": "lib/icon-catalog.ts"
         },
         {
-          "path": "packages/ui/src/system/hugeicons.d.ts",
+          "path": "packages/icons/src/hugeicons.d.ts",
           "type": "registry:lib",
           "target": "lib/hugeicons.d.ts"
         }
@@ -1243,22 +1243,22 @@
       ],
       "files": [
         {
-          "path": "packages/ui/src/system/pro-icon-provider.tsx",
+          "path": "packages/icons/src/pro-icon-provider.tsx",
           "type": "registry:lib",
           "target": "lib/pro-icon-provider.tsx"
         },
         {
-          "path": "packages/ui/src/system/icon-variants/stroke-standard.tsx",
+          "path": "packages/icons/src/icon-variants/stroke-standard.tsx",
           "type": "registry:lib",
           "target": "lib/icon-variants/stroke-standard.tsx"
         },
         {
-          "path": "packages/ui/src/system/icon-variants/bulk-rounded.tsx",
+          "path": "packages/icons/src/icon-variants/bulk-rounded.tsx",
           "type": "registry:lib",
           "target": "lib/icon-variants/bulk-rounded.tsx"
         },
         {
-          "path": "packages/ui/src/system/icon-variants/duotone-rounded.tsx",
+          "path": "packages/icons/src/icon-variants/duotone-rounded.tsx",
           "type": "registry:lib",
           "target": "lib/icon-variants/duotone-rounded.tsx"
         }

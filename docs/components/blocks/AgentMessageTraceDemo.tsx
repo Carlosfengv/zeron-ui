@@ -1,5 +1,7 @@
 "use client";
 
+import { useDocIcon } from "@docs/icons/doc-icons";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import ClaudeColor from "@lobehub/icons/es/Claude/components/Color";
@@ -48,7 +50,7 @@ const chineseLabels: AgentMessageTraceLiveLabels = {
 function TraceBrandIcon({ span }: { span: AgentMessageTraceSpan }) {
   const SearchIcon = useIcon("search");
   const GlobeIcon = useIcon("globe");
-  const DatabaseIcon = useIcon("doc-table");
+  const DatabaseIcon = useDocIcon("doc-table");
   if (span.provider === "Anthropic") return <ClaudeColor size={20} />;
   if (span.provider === "OpenAI") return <OpenAIMono size={20} />;
   if (span.provider === "GitHub") return <GithubMono size={20} />;

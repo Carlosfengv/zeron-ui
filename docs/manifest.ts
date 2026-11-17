@@ -1,4 +1,5 @@
 import type { IconName } from "@zeron/icons/context";
+import type { DocIconName } from "./icons/doc-icons";
 import { artifactCollectionFor } from "./catalog/artifact-collections";
 
 export const docCollections = ["components", "blocks", "pages", "icons"] as const;
@@ -57,7 +58,7 @@ export interface DocEntry {
   /** Existing source/message locations can stay stable when public URLs change. */
   sourceCollection?: Exclude<DocCollection, "pages">;
   name: string;
-  icon: IconName;
+  icon: DocIconName | IconName;
   description?: string;
   indexable: boolean;
   /** Keep the route available while omitting the page from directories and navigation. */

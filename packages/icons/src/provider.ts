@@ -1,1 +1,1 @@
-export { ProIconProvider } from "@zeron/ui/system/pro-icon-provider";
+export { ProIconProvider } from "./pro-icon-provider";

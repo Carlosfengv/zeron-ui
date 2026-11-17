@@ -63,7 +63,7 @@ export function LocalModels({ data, value, appliedValue, onValueChange, onApply,
     : localModelContexts;
   const usage = getLocalModelsUsage(data, value);
   const changes = countLocalModelChanges(data, value, appliedValue);
-  const Chip = useIcon("doc-semantic-tokens"); const Copy = useIcon("copy"); const Edit = useIcon("pencil");
+  const Chip = useIcon("chip"); const Copy = useIcon("copy"); const Edit = useIcon("pencil");
   const File = useIcon("file-text"); const Fit = useIcon("check");
   function select(id: string) { setLocalSelection(id); onSelectedModelChange?.(id); }
   function selectGpu(gpuId: string) {
@@ -185,7 +185,7 @@ export function LocalModelsGpuPicker({ data, value, usage, selectedGpuIds, disab
   onFit: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const Chip = useIcon("doc-semantic-tokens"); const Fit = useIcon("check");
+  const Chip = useIcon("chip"); const Fit = useIcon("check");
   const free = usage.gpus.reduce((sum, gpu) => sum + Math.max(0, gpu.capacity - gpu.used), 0);
   const uniformCapacity = usage.gpus.length > 0 && usage.gpus.every((gpu) => gpu.capacity === usage.gpus[0].capacity);
   const summary = `${data.serverName ?? "GPU server"}, ${usage.gpus.length} cards${uniformCapacity ? ` of ${number(usage.gpus[0].capacity)} GB` : ` · ${number(usage.capacity)} GB total`}`;

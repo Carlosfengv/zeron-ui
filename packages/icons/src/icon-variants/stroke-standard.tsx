@@ -1,45 +1,15 @@
-import { createIconMap } from "#system/icon-catalog";
-import DashboardSquare01Icon from "@hugeicons-pro/core-stroke-standard/DashboardSquare01Icon";
-import BookOpen01Icon from "@hugeicons-pro/core-stroke-standard/BookOpen01Icon";
+import { createIconMap } from "../icon-catalog";
 import Layers01Icon from "@hugeicons-pro/core-stroke-standard/Layers01Icon";
 import TokenSquareIcon from "@hugeicons-pro/core-stroke-standard/TokenSquareIcon";
-import ScrollVerticalIcon from "@hugeicons-pro/core-stroke-standard/ScrollVerticalIcon";
-import Motion01Icon from "@hugeicons-pro/core-stroke-standard/Motion01Icon";
 import BrowserIcon from "@hugeicons-pro/core-stroke-standard/BrowserIcon";
 import LayoutAlignLeftIcon from "@hugeicons-pro/core-stroke-standard/LayoutAlignLeftIcon";
 import LayoutAlignRightIcon from "@hugeicons-pro/core-stroke-standard/LayoutAlignRightIcon";
 import LayoutThreeColumnIcon from "@hugeicons-pro/core-stroke-standard/LayoutThreeColumnIcon";
-import SidebarLeftIcon from "@hugeicons-pro/core-stroke-standard/SidebarLeftIcon";
-import SidebarTopIcon from "@hugeicons-pro/core-stroke-standard/SidebarTopIcon";
-import ExpandParagraphIcon from "@hugeicons-pro/core-stroke-standard/ExpandParagraphIcon";
-import BadgeIcon from "@hugeicons-pro/core-stroke-standard/BadgeIcon";
-import MoreHorizontalCircle01Icon from "@hugeicons-pro/core-stroke-standard/MoreHorizontalCircle01Icon";
-import Route01Icon from "@hugeicons-pro/core-stroke-standard/Route01Icon";
-import MouseLeftClick01Icon from "@hugeicons-pro/core-stroke-standard/MouseLeftClick01Icon";
-import Cards01Icon from "@hugeicons-pro/core-stroke-standard/Cards01Icon";
-import CheckmarkSquare02Icon from "@hugeicons-pro/core-stroke-standard/CheckmarkSquare02Icon";
-import ColorPickerIcon from "@hugeicons-pro/core-stroke-standard/ColorPickerIcon";
 import GridTableIcon from "@hugeicons-pro/core-stroke-standard/GridTableIcon";
 import LayoutTable02Icon from "@hugeicons-pro/core-stroke-standard/LayoutTable02Icon";
-import PanelTopBottomDashedIcon from "@hugeicons-pro/core-stroke-standard/PanelTopBottomDashedIcon";
-import DropdownFieldTypeIcon from "@hugeicons-pro/core-stroke-standard/DropdownFieldTypeIcon";
-import InputTextIcon from "@hugeicons-pro/core-stroke-standard/InputTextIcon";
-import InputLongTextIcon from "@hugeicons-pro/core-stroke-standard/InputLongTextIcon";
 import InformationCircleIcon from "@hugeicons-pro/core-stroke-standard/InformationCircleIcon";
-import KeyboardIcon from "@hugeicons-pro/core-stroke-standard/KeyboardIcon";
-import CursorInWindowIcon from "@hugeicons-pro/core-stroke-standard/CursorInWindowIcon";
-import RadioButtonIcon from "@hugeicons-pro/core-stroke-standard/RadioButtonIcon";
-import Select01Icon from "@hugeicons-pro/core-stroke-standard/Select01Icon";
-import SlidersHorizontalIcon from "@hugeicons-pro/core-stroke-standard/SlidersHorizontalIcon";
+import InputTextIcon from "@hugeicons-pro/core-stroke-standard/InputTextIcon";
 import WorkflowCircle01Icon from "@hugeicons-pro/core-stroke-standard/WorkflowCircle01Icon";
-import ToggleOnIcon from "@hugeicons-pro/core-stroke-standard/ToggleOnIcon";
-import Table01Icon from "@hugeicons-pro/core-stroke-standard/Table01Icon";
-import ViewAgendaIcon from "@hugeicons-pro/core-stroke-standard/ViewAgendaIcon";
-import BubbleChatPreviewIcon from "@hugeicons-pro/core-stroke-standard/BubbleChatPreviewIcon";
-import UserQuestion01Icon from "@hugeicons-pro/core-stroke-standard/UserQuestion01Icon";
-import MessageEdit01Icon from "@hugeicons-pro/core-stroke-standard/MessageEdit01Icon";
-import AiBrain03Icon from "@hugeicons-pro/core-stroke-standard/AiBrain03Icon";
-import LeftToRightListNumberIcon from "@hugeicons-pro/core-stroke-standard/LeftToRightListNumberIcon";
 import ArrowDown01Icon from "@hugeicons-pro/core-stroke-standard/ArrowDown01Icon";
 import ArrowLeft01Icon from "@hugeicons-pro/core-stroke-standard/ArrowLeft01Icon";
 import ArrowLeftDoubleIcon from "@hugeicons-pro/core-stroke-standard/ArrowLeftDoubleIcon";
@@ -119,47 +89,17 @@ import Upload01Icon from "@hugeicons-pro/core-stroke-standard/Upload01Icon";
 /** Loaded on demand so this style never contributes to the initial bundle. */
 export const strokeStandardIcons = createIconMap(
   {
-  DashboardSquare01Icon,
-  BookOpen01Icon,
   Layers01Icon,
   TokenSquareIcon,
-  ScrollVerticalIcon,
-  Motion01Icon,
   BrowserIcon,
   LayoutAlignLeftIcon,
   LayoutAlignRightIcon,
   LayoutThreeColumnIcon,
-  SidebarLeftIcon,
-  SidebarTopIcon,
-  ExpandParagraphIcon,
-  BadgeIcon,
-  MoreHorizontalCircle01Icon,
-  Route01Icon,
-  MouseLeftClick01Icon,
-  Cards01Icon,
-  CheckmarkSquare02Icon,
-  ColorPickerIcon,
   GridTableIcon,
   LayoutTable02Icon,
-  PanelTopBottomDashedIcon,
-  DropdownFieldTypeIcon,
-  InputTextIcon,
-  InputLongTextIcon,
   InformationCircleIcon,
-  KeyboardIcon,
-  CursorInWindowIcon,
-  RadioButtonIcon,
-  Select01Icon,
-  SlidersHorizontalIcon,
+  InputTextIcon,
   WorkflowCircle01Icon,
-  ToggleOnIcon,
-  Table01Icon,
-  ViewAgendaIcon,
-  BubbleChatPreviewIcon,
-  UserQuestion01Icon,
-  MessageEdit01Icon,
-  AiBrain03Icon,
-  LeftToRightListNumberIcon,
   ArrowDown01Icon,
   ArrowLeft01Icon,
   ArrowLeftDoubleIcon,

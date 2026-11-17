@@ -15,7 +15,7 @@ import { fleetHealthLabels, fleetMetricColor, fleetMetricValue } from "./fleet-h
 import { FleetHealthMatrix } from "./fleet-health-matrix";
 import type { FleetHealthMetric, FleetHealthProps } from "./fleet-health-types";
 
-const Info = createIconSlot("doc-info-item"); const Server = createIconSlot("monitor");
+const Info = createIconSlot("info"); const Server = createIconSlot("monitor");
 const Settings = createIconSlot("settings");
 
 /** Domain visualization: segmented telemetry, not a control or a capacity claim when unknown. */

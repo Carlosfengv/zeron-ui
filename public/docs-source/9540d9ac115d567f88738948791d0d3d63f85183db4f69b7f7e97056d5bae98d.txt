@@ -90,7 +90,7 @@ function ModelRouterState({ data, value, defaultValue, onValueChange, actions, o
   const invalidFallback = policy.fallback.enabled && (policy.fallback.from === policy.fallback.to
     || !data.routes.some((route) => route.id === policy.fallback.from)
     || !data.routes.some((route) => route.id === policy.fallback.to));
-  const Info = useIcon("doc-info-item");
+  const Info = useIcon("info");
   const Settings = useIcon("settings");
   const Close = useIcon("x");
   const Pause = useIcon("pause");

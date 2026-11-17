@@ -78,7 +78,7 @@ function AgentRunCard({ node, color, context, pulse }: { node: AgentRunNode; col
   const open = context.openId === node.id;
   const appearance = statusAppearance[node.status];
   const StatusIcon = useIcon(appearance.icon);
-  const AgentIcon = useIcon(node.icon ?? (compact ? "settings" : "doc-data-grid"));
+  const AgentIcon = useIcon(node.icon ?? (compact ? "settings" : "grid"));
   const { labels, compactNumber, fullNumber } = context;
   const usage = node.usage;
   const hasUsage = usage && Number.isFinite(usage.tokens) && usage.tokens >= 0 && Number.isFinite(usage.limit) && usage.limit > 0;

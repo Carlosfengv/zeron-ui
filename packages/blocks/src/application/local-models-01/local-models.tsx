@@ -57,7 +57,7 @@ export function LocalModels({ data, value, appliedValue, onValueChange, onApply,
     : localModelContexts;
   const usage = getLocalModelsUsage(data, value);
   const changes = countLocalModelChanges(data, value, appliedValue);
-  const Chip = useIcon("doc-semantic-tokens"); const Copy = useIcon("copy"); const Edit = useIcon("pencil");
+  const Chip = useIcon("chip"); const Copy = useIcon("copy"); const Edit = useIcon("pencil");
   const File = useIcon("file-text"); const Fit = useIcon("check");
   function select(id: string) { setLocalSelection(id); onSelectedModelChange?.(id); }
   function selectGpu(gpuId: string) {

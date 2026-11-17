@@ -16,7 +16,7 @@ import { createCreditTopUpFormatters } from "./credit-top-up-formatters";
 import type { CreditTopUpLabels, CreditTopUpProps, CreditTopUpUsage } from "./credit-top-up-types";
 
 const UsageCard = memo(function UsageCard({ usage, labels, format }: { usage: CreditTopUpUsage; labels: CreditTopUpLabels; format: (value: number) => string }) {
-  const Icon = useIcon(usage.chart === "stem" ? "message-circle" : usage.chart === "area" ? "doc-input" : "file-text");
+  const Icon = useIcon(usage.chart === "stem" ? "message-circle" : usage.chart === "area" ? "text-input" : "file-text");
   return <Card><CardContent>
     <div className="grid min-w-0 gap-4 @sm/credit-top-up:grid-cols-2 @sm/credit-top-up:gap-2">
       <div className="flex min-w-0 flex-col items-start justify-between gap-6">

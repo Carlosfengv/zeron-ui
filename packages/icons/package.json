@@ -6,6 +6,8 @@
   "exports": {
     "./catalog": "./src/catalog.ts",
     "./context": "./src/context.ts",
+    "./huge-icon": "./src/huge-icon.tsx",
+    "./icon-catalog": "./src/icon-catalog.ts",
     "./provider": "./src/provider.ts"
   },
   "scripts": {
@@ -15,7 +17,8 @@
     "react": "^19.0.0"
   },
   "dependencies": {
-    "@zeron/ui": "workspace:*"
+    "@hugeicons/core-free-icons": "^4.1.1",
+    "@hugeicons/react": "^1.1.6"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",

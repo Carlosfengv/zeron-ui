@@ -129,7 +129,7 @@ function RunResult({ result, onFocusNode }: { result: Simulation; onFocusNode: (
 
 function ConfigurationCheck({ draft, onFocusNode }: { draft: RuleWorkflowDraft; onFocusNode: (nodeId: string) => void }) {
   const Check = useIcon("check");
-  const Info = useIcon("doc-info-item");
+  const Info = useIcon("info");
   const Arrow = useIcon("chevron-right");
   const issues = validateWorkflow(draft);
   const affectedNodes = new Set(issues.map((issue) => issue.nodeId));

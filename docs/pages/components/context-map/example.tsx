@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ContextMap, contextMapZhLabels, type ContextAgent, type ContextBlock, type ContextMapView } from "@zeron/ui/context-map";
 import { useIcon } from "@zeron/icons/context";
+import { useDocIcon } from "@docs/icons/doc-icons";
 import { Button } from "@zeron/ui/button";
 import { FileType } from "@zeron/ui/file-type";
 import { PreviewToolbarPortal } from "@docs/components/content/PreviewToolbar";
@@ -22,9 +23,9 @@ export function ContextMapExample({ chinese, compare = false }: { chinese: boole
   const [phase, setPhase] = useState<"idle" | "compacting" | "done">(compare ? "done" : "idle");
   const [visibleCount, setVisibleCount] = useState<number>();
   const [playing, setPlaying] = useState(false);
-  const Claude = useIcon("doc-thinking-steps");
+  const Claude = useDocIcon("doc-thinking-steps");
   const Search = useIcon("search");
-  const Chat = useIcon("doc-chat-message");
+  const Chat = useDocIcon("doc-chat-message");
   const Replay = useIcon("rotate-ccw");
   const agents: ContextAgent[] = [
     { id: "checkout", label: t("checkout"), limit: 200000, model: "Claude Opus", modelIcon: <Claude className="text-fg-warning" /> },

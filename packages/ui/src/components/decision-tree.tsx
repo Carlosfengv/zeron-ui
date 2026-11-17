@@ -252,7 +252,7 @@ const DecisionTree = forwardRef<DecisionTreeHandle, DecisionTreeProps>(function 
   const activeIndex = cursor.id ? queue.indexOf(cursor.id) : -1;
   const index = activeIndex < 0 ? cursor.index % Math.max(queue.length, 1) : activeIndex;
   const decision = byId.get(queue[index]);
-  const BranchIcon = useIcon("doc-stepper");
+  const BranchIcon = useIcon("workflow");
   const PreviousIcon = useIcon("chevron-left");
   const NextIcon = useIcon("chevron-right");
 

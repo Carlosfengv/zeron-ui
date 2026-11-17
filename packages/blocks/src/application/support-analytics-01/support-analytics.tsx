@@ -48,7 +48,7 @@ function SupportAnalyticsContent({ scopeId, data, range, channel, onRangeChange,
   state = "ready", refreshing = false, retainDataOnError = false, statusMessage, actions, labels: overrides, locale = "zh-CN", timeZone = "Asia/Shanghai", now, className,
   defaultView: _defaultView, defaultTicketsExpanded: _defaultTicketsExpanded, ...props }: SupportAnalyticsProps) {
   const labels = { ...supportAnalyticsLabels, ...overrides };
-  const More = useIcon("ellipsis"); const Info = useIcon("doc-info-item"); const Refresh = useIcon("rotate-ccw");
+  const More = useIcon("ellipsis"); const Info = useIcon("info"); const Refresh = useIcon("rotate-ccw");
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   const guard = useRef(new Set<string>());

@@ -1,0 +1,62 @@
+import assert from "node:assert/strict";
+import { renderToStaticMarkup } from "react-dom/server";
+import { IconProvider, defaultIcons, useIcons, type IconComponent } from "@/src/lib/icon-context";
+import { Toast } from "@/src/components/ui/toast";
+import { FileManager } from "@/src/components/blocks/file-manager-01";
+
+const aliases = {
+  "doc-app-shell": "browser",
+  "doc-data-grid": "grid",
+  "doc-data-table": "table",
+  "doc-info-item": "info",
+  "doc-page-layout": "layout-columns",
+  "doc-semantic-tokens": "chip",
+  "doc-stepper": "workflow",
+  "doc-surfaces": "layers",
+};
+
+const phase = process.argv[2];
+const migrated = phase !== "legacy";
+const oldOverrides = {
+  "doc-info-item": () => <svg data-override="old-info" />,
+  "doc-data-grid": () => <svg data-override="old-grid" />,
+  "doc-page-layout": () => <svg data-override="old-columns" />,
+};
+const newOverrides = {
+  ...oldOverrides,
+  info: () => <svg data-override="new-info" />,
+  grid: () => <svg data-override="new-grid" />,
+  "layout-columns": () => <svg data-override="new-columns" />,
+};
+
+function SlotProbe() {
+  const icons: Record<string, IconComponent> = useIcons();
+  const defaults: Record<string, IconComponent> = defaultIcons;
+  return Object.entries(aliases).map(([legacy, current]) => {
+    const Icon = icons[legacy];
+    assert.equal(typeof Icon, "function", legacy);
+    if (migrated) {
+      assert.equal(defaults[legacy], defaults[current], legacy);
+      assert.equal(Icon, icons[current], legacy);
+    }
+    return <Icon key={legacy} />;
+  });
+}
+
+function verifyOverrides(overrides: typeof oldOverrides, expected: string) {
+  const html = renderToStaticMarkup(<IconProvider icons={overrides}>
+    <SlotProbe />
+    <section id="toast"><ul><Toast toast={{ id: "upgrade", title: "Upgrade toast", status: "info" }} /></ul></section>
+    <section id="files"><FileManager items={[]} /></section>
+  </IconProvider>);
+
+  const toast = html.match(/<section id="toast">([\s\S]*?)<\/section>/)?.[1] ?? "";
+  const files = html.match(/<section id="files">([\s\S]*)<\/section>/)?.[1] ?? "";
+  assert.ok(toast.includes(`data-override="${expected}-info"`), phase + " Toast");
+  assert.ok(files.includes(`data-override="${expected}-grid"`), phase + " File Manager grid");
+  assert.ok(files.includes(`data-override="${expected}-columns"`), phase + " File Manager columns");
+}
+
+verifyOverrides(oldOverrides, "old");
+if (migrated) verifyOverrides(newOverrides, "new");
+console.log(`Icon upgrade render passed: ${phase}`);

@@ -29,7 +29,7 @@ function actionIcon(action: ActionItem): IconName {
   if (action.type === "拒绝本次调用") return "x";
   if (action.type.includes("头")) return "file-text";
   if (action.type === "镜像复制") return "copy";
-  return "doc-stepper";
+  return "workflow";
 }
 
 function actionDescription(action: ActionItem) {
@@ -47,7 +47,7 @@ function DiscardDialog({ onKeep, onDiscard }: { onKeep: () => void; onDiscard: (
 }
 
 export function RuleWorkflow({ initial, onSave, onCancel }: { initial?: RuleFormValue; onSave: (rule: RuleFormValue) => void; onCancel: () => void }) {
-  const Workflow = useIcon("doc-stepper");
+  const Workflow = useIcon("workflow");
   const Check = useIcon("check");
   const Play = useIcon("play");
   const Plus = useIcon("plus");

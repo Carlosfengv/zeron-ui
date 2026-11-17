@@ -23,7 +23,7 @@ import type { CostEstimateField, CostEstimateProps } from "./cost-estimate-types
 export function CostEstimate({ value, onValueChange, rateCard, regions, presets = [], limits = costEstimateDefaultLimits, defaultInputs, state = "ready", statusMessage,
   saveState = { status: "idle" }, actions, labels: overrides, title, locale = "zh-CN", className, ...props }: CostEstimateProps) {
   const labels = { ...costEstimateLabels, ...overrides };
-  const Info = useIcon("doc-info-item"); const Save = useIcon("arrow-down");
+  const Info = useIcon("info"); const Save = useIcon("arrow-down");
   const [invalidDrafts, setInvalidDrafts] = useState<CostEstimateField[]>([]);
   const [revision, setRevision] = useState(0);
   const saving = useRef(false);

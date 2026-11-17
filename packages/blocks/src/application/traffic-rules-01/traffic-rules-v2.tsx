@@ -81,7 +81,7 @@ function RuleStatusSwitch({ rule, onAction }: { rule: Rule; onAction: (action: N
 }
 
 function EmptyTableState({ description, onCreate, title }: { description: string; onCreate: () => void; title: string }) {
-  const EmptyIcon = useIcon("doc-data-table");
+  const EmptyIcon = useIcon("table");
   return <div className="grid min-h-[280px] place-items-center px-4 py-10"><div className="flex max-w-[480px] flex-col items-center text-center"><span className="grid size-16 place-items-center rounded-2xl bg-surface-raised text-fg-muted"><EmptyIcon aria-hidden className="size-7" /></span><p className="mt-3 text-body font-medium">{title}</p><p className="mt-1 text-label text-fg-subtle">{description}</p><Button className="mt-3" onClick={onCreate} size="sm" type="button" variant="primary">{title.includes("限额") ? "新增限额" : "新建规则"}</Button></div></div>;
 }
 

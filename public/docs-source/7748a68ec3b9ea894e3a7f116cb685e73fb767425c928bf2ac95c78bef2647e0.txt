@@ -839,9 +839,9 @@ function FileManagerToolbar<TData>({
   const TrashIcon = useIcon("trash");
   const DownloadIcon = useIcon("arrow-right");
   const MoveIcon = useIcon("corner-down-right");
-  const GridIcon = useIcon("doc-data-grid");
+  const GridIcon = useIcon("grid");
   const ListIcon = useIcon("list");
-  const ColumnsIcon = useIcon("doc-page-layout");
+  const ColumnsIcon = useIcon("layout-columns");
   const hasSelection = manager.selectedItems.length > 0;
   const viewOptions: Array<{ value: FileManagerView; label: string; Icon: IconComponent }> = [
     { value: "icon", label: labels.iconView, Icon: GridIcon },

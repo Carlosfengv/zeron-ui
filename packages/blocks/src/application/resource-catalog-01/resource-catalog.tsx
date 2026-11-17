@@ -132,7 +132,7 @@ function CatalogIcon({ icon, size = 20 }: { icon: IconName; size?: number }) {
   const LibraryIcon = useIcon("square-library");
   const RocketIcon = useIcon("rocket");
   const MonitorIcon = useIcon("monitor");
-  const BrowserIcon = useIcon("doc-app-shell");
+  const BrowserIcon = useIcon("browser");
   const MessageIcon = useIcon("message-circle");
   const SettingsIcon = useIcon("settings");
   const PaletteIcon = useIcon("palette");
@@ -144,7 +144,7 @@ function CatalogIcon({ icon, size = 20 }: { icon: IconName; size?: number }) {
     "square-library": LibraryIcon,
     rocket: RocketIcon,
     monitor: MonitorIcon,
-    "doc-app-shell": BrowserIcon,
+    "browser": BrowserIcon,
     "message-circle": MessageIcon,
     settings: SettingsIcon,
     palette: PaletteIcon,

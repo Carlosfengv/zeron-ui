@@ -17,6 +17,7 @@ import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { Switch } from "@zeron/ui/switch";
 import { useIcon } from "@zeron/icons/context";
+import { useDocIcon } from "@docs/icons/doc-icons";
 import { useTranslations } from "next-intl";
 import {
   PLAY_SWITCH,
@@ -136,7 +137,7 @@ function buildAlertCode({
 
 function AlertPlayground() {
   const t = useTranslations("alert");
-  const InformationCircle = useIcon("doc-info-item");
+  const InformationCircle = useDocIcon("doc-info-item");
   const [status, setStatus] = useState<AlertStatus>("default");
   const [withIcon, setWithIcon] = useState(true);
   const [withDescription, setWithDescription] = useState(true);
@@ -240,7 +241,7 @@ export default function AlertDoc() {
     setRecovered(true);
     setRetrying(false);
   }
-  const InformationCircle = useIcon("doc-info-item");
+  const InformationCircle = useDocIcon("doc-info-item");
   const Bell = useIcon("bell");
   const Lightbulb = useIcon("lightbulb");
   const Shield = useIcon("shield");

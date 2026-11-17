@@ -9,6 +9,7 @@ import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger }
 import { NavMenu } from "@zeron/ui/nav-menu";
 import { PageBody, PageContent, PageLayout, PageSidebar } from "@zeron/ui/page-layout";
 import { useIcon, type IconName } from "@zeron/icons/context";
+import { useDocIcon, type DocIconName } from "@docs/icons/doc-icons";
 import { BlockPreview } from "@docs/components/blocks/BlockPreview";
 import { IntentPrefetchLink } from "@docs/components/shell/site/intent-prefetch-link";
 import { artifactKinds, artifactProductLabels, artifactProducts, type ArtifactKind, type ArtifactProduct } from "@docs/catalog/artifacts";
@@ -56,7 +57,7 @@ const frameworkLabels = {
   zh: { next: "Next.js", react: "React" },
 } as const;
 
-const kindIcons: Record<ArtifactKind | "all", IconName> = {
+const kindIcons: Record<ArtifactKind | "all", DocIconName | IconName> = {
   all: "square-library",
   block: "doc-card",
   page: "doc-page-layout",
@@ -84,12 +85,12 @@ function FilterNavItem({
 }: {
   active: boolean;
   count: number;
-  icon?: IconName;
+  icon?: DocIconName | IconName;
   label: string;
   onSelect: () => void;
   value: string;
 }) {
-  const Icon = useIcon(icon ?? "square-library");
+  const Icon = useDocIcon(icon ?? "square-library");
 
   return (
     <NavItem active={active} className="max-lg:w-auto" value={value}>
