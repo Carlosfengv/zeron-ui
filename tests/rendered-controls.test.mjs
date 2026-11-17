@@ -79,6 +79,120 @@ async function expectIndicator(indicator, item) {
   }).toBe(true);
 }
 
+it("keeps wrapped Tabs keyboard order, selection and indicators aligned through keyed changes", async () => {
+  const page = await browser.newPage();
+  try {
+    await renderFixture(page, "compound-controls");
+    const indexed = page.getByRole("region", { name: "index tabs" });
+    const indexedA = indexed.getByRole("tab", { name: "A", exact: true });
+    const indexedC = indexed.getByRole("tab", { name: "C", exact: true });
+    await expectIndicator(indexed.locator('[data-slot="tabs-selection-indicator"]'), indexedA);
+    await indexedA.evaluate(node => { node.dataset.original = "true"; });
+    await indexed.getByRole("button", { name: "Reorder" }).click();
+    await expect.poll(() => indexedC.getAttribute("aria-selected")).toBe("true");
+    expect(await indexedA.getAttribute("data-original")).toBe("true");
+    await expectIndicator(indexed.locator('[data-slot="tabs-selection-indicator"]'), indexedC);
+    await indexedA.click();
+    await expect.poll(() => indexed.getByLabel("Requested tab").textContent()).toBe("A:1");
+    await indexedC.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect.poll(() => indexedA.evaluate(node => document.activeElement === node)).toBe(true);
+    await expectIndicator(indexed.locator('[data-slot="tabs-focus-indicator"]'), indexedA);
+    await expectIndicator(indexed.locator('[data-slot="tabs-selection-indicator"]'), indexedC);
+    await page.keyboard.press("ArrowRight");
+    await expect.poll(() => indexed.getByLabel("Requested tab").textContent()).toBe("B:2");
+    await indexed.getByRole("button", { name: "Remove first" }).click();
+    await expect.poll(() => indexedA.getAttribute("aria-selected")).toBe("true");
+    await indexed.getByRole("button", { name: "Insert D" }).click();
+    await expect.poll(() => indexed.getByRole("tab", { name: "D" }).getAttribute("aria-selected")).toBe("true");
+
+    const valued = page.getByRole("region", { name: "value tabs" });
+    const valuedA = valued.getByRole("tab", { name: "A", exact: true });
+    const valuedB = valued.getByRole("tab", { name: /B, longer/ });
+    const valuedC = valued.getByRole("tab", { name: "C" });
+    await valued.getByRole("button", { name: "Reorder" }).click();
+    await expectIndicator(valued.locator('[data-slot="tabs-selection-indicator"]'), valuedA);
+    await valuedA.focus();
+    await page.keyboard.press("ArrowLeft");
+    await expect.poll(() => valuedC.evaluate(node => document.activeElement === node)).toBe(true);
+    await expectIndicator(valued.locator('[data-slot="tabs-focus-indicator"]'), valuedC);
+    expect(await valued.getByLabel("Requested tab").textContent()).toBe(":");
+    await page.keyboard.press("Enter");
+    await expect.poll(() => valued.getByLabel("Requested tab").textContent()).toBe("C:0");
+    expect(await valuedA.getAttribute("aria-selected")).toBe("true");
+    await valuedB.hover();
+    await expectIndicator(valued.locator('[data-slot="tabs-hover-indicator"]'), valuedB);
+    await expectIndicator(valued.locator('[data-slot="tabs-selection-indicator"]'), valuedA);
+
+    const free = page.getByRole("region", { name: "uncontrolled tabs" });
+    await free.getByRole("button", { name: "Reorder" }).click();
+    const freeA = free.getByRole("tab", { name: "A", exact: true });
+    await expect.poll(() => freeA.getAttribute("aria-selected")).toBe("true");
+    await free.getByRole("tab", { name: "C" }).click();
+    await free.getByRole("button", { name: "Remove first" }).click();
+    await expect.poll(() => freeA.getAttribute("aria-selected")).toBe("true");
+    await free.getByRole("button", { name: "Restore" }).click();
+    await expectIndicator(free.locator('[data-slot="tabs-selection-indicator"]'), freeA);
+  } finally {
+    await page.close();
+  }
+}, 30000);
+
+it("uses the explicit Select collection for wrapped rich labels, dynamic indexes and keyboard typeahead", async () => {
+  const page = await browser.newPage();
+  try {
+    await renderFixture(page, "compound-controls");
+    const trigger = page.getByRole("combobox", { name: "Wrapped options" });
+    const popup = page.getByRole("listbox");
+    const alpha = popup.getByRole("option", { name: "Alpha rich" });
+    const beta = popup.getByRole("option", { name: "Beta disabled" });
+    const gamma = popup.getByRole("option", { name: "Gamma rich" });
+    const delta = popup.getByRole("option", { name: "Delta rich" });
+    const selection = popup.locator('[data-slot="select-selection-indicator"]');
+    const hover = popup.locator('[data-slot="select-hover-indicator"]');
+    expect(await trigger.locator("strong").textContent()).toBe("Alpha rich");
+    await trigger.focus();
+    await page.keyboard.press("ArrowDown");
+    await expectIndicator(selection, alpha);
+    expect(await beta.getAttribute("aria-disabled")).toBe("true");
+    expect(await beta.getAttribute("data-proximity-index")).toBe("1");
+    await gamma.hover();
+    await expectIndicator(hover, gamma);
+    await alpha.focus();
+    await page.keyboard.press("x");
+    await expect.poll(() => gamma.evaluate(node => document.activeElement === node)).toBe(true);
+    await page.keyboard.press("Enter");
+    await expect.poll(() => trigger.locator("strong").textContent()).toBe("Gamma rich");
+    await popup.waitFor({ state: "hidden" });
+    await page.getByRole("button", { name: "Filter and reorder" }).click();
+    await expect.poll(() => trigger.locator("strong").textContent()).toBe("Gamma rich");
+    await trigger.focus();
+    await page.keyboard.press("ArrowDown");
+    await expectIndicator(selection, gamma);
+    expect(await gamma.getAttribute("data-proximity-index")).toBe("0");
+    expect(await beta.getAttribute("data-proximity-index")).toBe("2");
+    expect(await alpha.count()).toBe(0);
+    await delta.hover();
+    await expectIndicator(hover, delta);
+    await delta.focus();
+    await page.keyboard.press("x");
+    await expect.poll(() => gamma.evaluate(node => document.activeElement === node)).toBe(true);
+    await page.keyboard.press("Escape");
+    await popup.waitFor({ state: "hidden" });
+
+    const plain = page.getByRole("combobox", { name: "Default collection" });
+    expect(await plain.textContent()).toContain("Plain option");
+    await plain.focus();
+    await page.keyboard.press("ArrowDown");
+    await expectIndicator(selection, popup.getByRole("option", { name: "Plain option" }));
+    await page.keyboard.press("o");
+    await page.keyboard.press("Enter");
+    await expect.poll(() => plain.textContent()).toContain("Other option");
+  } finally {
+    await page.close();
+  }
+}, 30000);
+
 describe("portable current-state control observations (actual Chromium)", () => {
   it("executes through a symlink and writes an unchecked report when a route is unavailable", async () => {
     const directory = await mkdtemp(path.join(tmpdir(), "zeron-control-cli-"));

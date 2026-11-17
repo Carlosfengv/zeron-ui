@@ -193,7 +193,14 @@
     "#system/code-engine/theming/color": "./src/system/code-engine/theming/color.ts",
     "#system/code-engine/theming/index": "./src/system/code-engine/theming/index.ts",
     "#system/code-engine/theming/themes": "./src/system/code-engine/theming/themes.ts",
-    "#system/code-engine/themes/*.json": "./src/system/code-engine/themes/*.json"
+    "#system/code-engine/themes/*.json": "./src/system/code-engine/themes/*.json",
+    "#components/badge-colors": "./src/components/badge-colors.ts",
+    "#components/data-grid": "./src/components/data-grid/index.ts",
+    "#components/filter-builder": "./src/components/filter-builder/index.ts",
+    "#components/filter-query-core": "./src/components/filter-query-core/index.ts",
+    "#components/filter-query-input": "./src/components/filter-query-input/index.ts",
+    "#components/temporal-picker": "./src/components/temporal-picker/index.ts",
+    "#components/tree": "./src/components/tree/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --project tsconfig.json --noEmit"

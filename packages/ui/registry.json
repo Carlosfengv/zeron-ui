@@ -2655,6 +2655,7 @@
         "surfaces",
         "badge",
         "button",
+        "compose-refs",
         "utils",
         "springs",
         "icon-context",

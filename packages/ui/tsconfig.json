@@ -29,6 +29,9 @@
       ],
       "#tokens/*": [
         "src/tokens/*"
+      ],
+      "#components/temporal-picker": [
+        "src/components/temporal-picker/index.ts"
       ]
     }
   },

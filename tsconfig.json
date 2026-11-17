@@ -43,6 +43,9 @@
       ],
       "#tokens/*": [
         "./packages/ui/src/tokens/*"
+      ],
+      "#components/temporal-picker": [
+        "./packages/ui/src/components/temporal-picker/index.ts"
       ]
     }
   },

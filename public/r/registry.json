@@ -3260,6 +3260,7 @@
         "https://zeron-ui.vercel.app/r/surfaces.json",
         "https://zeron-ui.vercel.app/r/badge.json",
         "https://zeron-ui.vercel.app/r/button.json",
+        "https://zeron-ui.vercel.app/r/compose-refs.json",
         "https://zeron-ui.vercel.app/r/utils.json",
         "https://zeron-ui.vercel.app/r/springs.json",
         "https://zeron-ui.vercel.app/r/icon-context.json",

@@ -85,6 +85,8 @@ export type SelectItemDensity = "compact" | "regular" | "comfortable";
 
 interface SelectProps {
   children: ReactNode;
+  /** The current rendered options in order, including disabled options. Values must be unique. */
+  items?: readonly { value: string; label: ReactNode }[];
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
@@ -102,8 +104,8 @@ interface SelectProps {
  * Walk the children tree collecting `{ value, label }` pairs from SelectItem
  * elements. Passed to Base UI's `items` prop so the trigger can resolve the
  * label of an initial value before the popup has ever mounted (items only
- * render while open). Non-string labels fall back to the raw value, matching
- * the previous labelMap behaviour.
+ * render while open). Use the explicit items prop when a custom component
+ * creates options that are not visible in the supplied children.
  */
 function collectSelectItems(
   node: ReactNode,
@@ -133,6 +135,7 @@ function collectSelectItems(
 
 function Select({
   children,
+  items: suppliedItems,
   value,
   defaultValue,
   onValueChange,
@@ -151,7 +154,7 @@ function Select({
   const actionsRef = useRef<SelectPrimitive.Root.Actions | null>(null);
   const currentValue = value !== undefined ? value : internalValue;
 
-  const items = useMemo(() => collectSelectItems(children), [children]);
+  const items = useMemo(() => suppliedItems ?? collectSelectItems(children), [children, suppliedItems]);
   const itemIndexByValue = useMemo(
     () => new Map(items.map((item, index) => [item.value, index])),
     [items]
@@ -427,7 +430,9 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
       remeasure,
     } = useProximityHover(containerRef);
 
-    const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+    const [focusedItem, setFocusedItem] = useState<{ value: string; fallbackIndex?: number } | null>(null);
+    const focusedIndex = focusedItem ? itemIndexByValue.get(focusedItem.value) ?? focusedItem.fallbackIndex : undefined;
+    const highlightedIndex = focusedIndex ?? activeIndex;
     // Item discovery already owns the indexes used by proximity registration.
     // Read selection synchronously instead of querying the DOM two frames later.
     const checkedIndex = open ? itemIndexByValue.get(value) : undefined;
@@ -471,22 +476,22 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
     useEffect(() => {
       if (open) return;
       setActiveIndex(null);
-      setFocusedIndex(null);
+      setFocusedItem(null);
     }, [open, setActiveIndex]);
 
     // Overlays read rects only once the hook reports the item set fully
     // measured. Positioning one from an incomplete pass mounts it at the wrong
     // row, and the correcting pass then springs it across the list.
     const activeRect =
-      isMeasured && activeIndex !== null ? itemRects[activeIndex] : null;
+      isMeasured && highlightedIndex !== null ? itemRects[highlightedIndex] : null;
     const checkedRect =
       isMeasured && checkedIndex != null ? itemRects[checkedIndex] : null;
     const focusRect =
-      isMeasured && focusedIndex !== null ? itemRects[focusedIndex] : null;
+      isMeasured && focusedIndex !== undefined ? itemRects[focusedIndex] : null;
 
     const contentCtx = useMemo(
-      () => ({ registerItem, activeIndex, checkedIndex }),
-      [registerItem, activeIndex, checkedIndex]
+      () => ({ registerItem, activeIndex: highlightedIndex, checkedIndex }),
+      [registerItem, highlightedIndex, checkedIndex]
     );
 
     const renderPopup = useCallback(
@@ -537,11 +542,13 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                   popupProps.onMouseEnter?.(event);
                   if (event.defaultPrevented) return;
                   handlers.onMouseEnter();
-                  setFocusedIndex(null);
+                  setFocusedItem(null);
                 }}
                 onMouseMove={(event) => {
                   popupProps.onMouseMove?.(event);
-                  if (!event.defaultPrevented) handlers.onMouseMove(event);
+                  if (event.defaultPrevented) return;
+                  setFocusedItem(null);
+                  handlers.onMouseMove(event);
                 }}
                 onMouseLeave={(event) => {
                   popupProps.onMouseLeave?.(event);
@@ -550,17 +557,15 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                 onFocus={(e) => {
                   popupProps.onFocus?.(e);
                   if (e.defaultPrevented) return;
-                  const indexAttr = (e.target as HTMLElement)
-                    .closest("[data-proximity-index]")
-                    ?.getAttribute("data-proximity-index");
-                  if (indexAttr != null) {
-                    const idx = Number(indexAttr);
-                    setActiveIndex(idx);
-                    setFocusedIndex(
-                      (e.target as HTMLElement).matches(":focus-visible")
-                        ? idx
-                        : null
-                    );
+                  const target = e.target as HTMLElement;
+                  const option = target.closest<HTMLElement>('[role="option"][data-proximity-index]');
+                  if (option?.dataset.value !== undefined) {
+                    const value = option.dataset.value;
+                    const index = Number(option.dataset.proximityIndex);
+                    setActiveIndex(index);
+                    setFocusedItem(target.matches(":focus-visible")
+                      ? { value, fallbackIndex: itemIndexByValue.has(value) ? undefined : index }
+                      : null);
                   }
                 }}
                 onBlur={(e) => {
@@ -568,7 +573,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                   if (e.defaultPrevented) return;
                   if (containerRef.current?.contains(e.relatedTarget as Node))
                     return;
-                  setFocusedIndex(null);
+                  setFocusedItem(null);
                   setActiveIndex(null);
                 }}
                 className={cn(
@@ -589,6 +594,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                   <AnimatePresence>
                     {checkedRect && (
                       <motion.div
+                        data-slot="select-selection-indicator"
                         className={`absolute rounded-lg bg-selection pointer-events-none`}
                         // Position lives in `animate` so an in-session value
                         // change springs the marker to the picked row (the
@@ -619,6 +625,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                   <AnimatePresence>
                     {activeRect && (
                       <motion.div
+                        data-slot="select-hover-indicator"
                         key={sessionRef.current}
                         className={`absolute rounded-lg bg-hover pointer-events-none`}
                         initial={{
@@ -650,6 +657,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
                   <AnimatePresence>
                     {focusRect && (
                       <motion.div
+                        data-slot="select-focus-indicator"
                         className={`absolute rounded-lg pointer-events-none z-raised outline outline-1 outline-focus-ring outline-offset-2`}
                         initial={false}
                         animate={{
