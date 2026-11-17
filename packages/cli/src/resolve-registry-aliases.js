@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import ts from "typescript";
 import { assertProjectPath } from "./project-paths.js";
+import { getTypeScript } from "./typescript-api.js";
 
 const PLACEHOLDER_ALIASES = new Set(["ui", "lib", "hooks", "components"]);
 
@@ -33,7 +33,7 @@ function replacementFor(specifier, aliases) {
   return specifier;
 }
 
-function scriptKindFor(filename) {
+function scriptKindFor(ts, filename) {
   if (/\.tsx$/i.test(filename)) return ts.ScriptKind.TSX;
   if (/\.jsx$/i.test(filename)) return ts.ScriptKind.JSX;
   if (/\.(?:[cm]?js)$/i.test(filename)) return ts.ScriptKind.JS;
@@ -59,7 +59,8 @@ export function resolveRegistryAliases(source, aliases, filename = "registry-ite
   // SVG (or another non-code asset) as TypeScript would make a safe install
   // fail even though there are no module specifiers to rewrite.
   if (!isSourceFile(filename)) return source;
-  const sourceFile = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, true, scriptKindFor(filename));
+  const ts = getTypeScript();
+  const sourceFile = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, true, scriptKindFor(ts, filename));
   if (sourceFile.parseDiagnostics.length) {
     throw new Error(`Cannot safely resolve registry aliases in ${filename}: source has syntax errors`);
   }

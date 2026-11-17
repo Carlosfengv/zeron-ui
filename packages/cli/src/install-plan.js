@@ -1,11 +1,11 @@
 import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import ts from "typescript";
 import { componentUrl, normalizeRegistryUrl, validateComponentName } from "./registry.js";
 import { assertProjectPath } from "./project-paths.js";
 import { resolveRegistryAliases } from "./resolve-registry-aliases.js";
 import { registryBinaryBytes } from "./registry-binary.js";
+import { getTypeScript } from "./typescript-api.js";
 
 const TARGET_PREFIXES = [
   ["components/ui/", "ui", ""],
@@ -97,6 +97,7 @@ function dependencyName(dependency) {
 }
 
 function projectCompilerOptions(cwd) {
+  const ts = getTypeScript();
   const configPath = ["tsconfig.json", "jsconfig.json"].map((file) => path.join(cwd, file)).find(ts.sys.fileExists);
   if (!configPath) return undefined;
   const parsed = ts.getParsedCommandLineOfConfigFile(configPath, {}, { ...ts.sys, onUnRecoverableConfigFileDiagnostic: (d) => { throw new Error(ts.flattenDiagnosticMessageText(d.messageText, " ")); } });
@@ -109,7 +110,7 @@ function projectCompilerOptions(cwd) {
  * Never guess for arbitrary aliases or change a project's TypeScript paths.
  */
 export async function alignInitializedAliases(cwd) {
-  if (!ts.sys.directoryExists(path.join(cwd, "src"))) return;
+  if (!getTypeScript().sys.directoryExists(path.join(cwd, "src"))) return;
   const configPath = path.join(cwd, "components.json");
   for (const file of ["components.json", "package.json", "tsconfig.json", "jsconfig.json"]) {
     await assertProjectPath(cwd, path.join(cwd, file));
@@ -158,7 +159,7 @@ export async function buildInstallPlan({ cwd, names, baseUrl, overwrite = false,
     for (const [target, hashes] of Object.entries(record.fileHashes ?? {})) installedFiles.set(target, hashes);
   }
   const compilerOptions = projectCompilerOptions(cwd);
-  const isSrcDir = ts.sys.directoryExists(path.join(cwd, "src"));
+  const isSrcDir = getTypeScript().sys.directoryExists(path.join(cwd, "src"));
   // The engine can use all aliases to select a workspace, even when no files
   // from that alias occur in this particular item.
   const aliasPaths = [];

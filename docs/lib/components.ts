@@ -1,10 +1,9 @@
-import type { IconName } from "@zeron/icons/context";
 import { navigationDocEntries, type DocEntry } from "@docs/manifest";
 
 export interface ComponentEntry {
   slug: string;
   name: string;
-  icon: IconName;
+  icon: DocEntry["icon"];
   description: string;
   isNew?: boolean;
   isUpdated?: boolean;

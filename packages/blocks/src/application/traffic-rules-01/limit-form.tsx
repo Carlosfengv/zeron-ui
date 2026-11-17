@@ -238,7 +238,7 @@ function limitResult(value: GlobalLimit) {
 function LimitPreview({ issues, onFocusNode, onTabChange, tab, value }: { issues: LimitIssue[]; onFocusNode: (id: string) => void; onTabChange: (tab: "test" | "check") => void; tab: "test" | "check"; value: GlobalLimit }) {
   const Check = useIcon("check");
   const Checklist = useIcon("list-checks");
-  const Info = useIcon("doc-info-item");
+  const Info = useIcon("info");
   const Play = useIcon("play");
   const [scenario, setScenario] = useState<"within" | "exceeded">("within");
   const [result, setResult] = useState<"within" | "exceeded" | null>(null);

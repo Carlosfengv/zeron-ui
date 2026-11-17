@@ -6,11 +6,11 @@ export {
   useIcon,
   useIconContext,
   useIcons,
-} from "@zeron/ui/system/icon-context";
+} from "./icon-context";
 export type {
   IconComponent,
   IconComponentProps,
   IconName,
   IconVariant,
   IconVariantLoader,
-} from "@zeron/ui/system/icon-context";
+} from "./icon-context";

@@ -1,0 +1,525 @@
+"use client";
+
+import { Alert, AlertTitle, AlertDescription, AlertAction } from "@zeron/ui/alert";
+
+import { useRef, useState } from "react";
+import { Button } from "@zeron/ui/button";
+import { Card, CardFooter, CardHeader } from "@zeron/ui/card";
+import { InlineNotice, InlineNoticeAction, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@zeron/ui/select";
+import { Skeleton } from "@zeron/ui/skeleton";
+import { TabItem, TabPanel, Tabs, TabsList } from "@zeron/ui/tabs";
+import { Tooltip } from "@zeron/ui/tooltip";
+import { useIcon } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { projectMonitorLabels, validTimestamp } from "./project-monitor-data";
+import { MonitorPanel, OverviewView, ReportsView, StorageView } from "./project-monitor-views";
+import type { ProjectMonitorProps, ProjectMonitorTab } from "./project-monitor-types";
+
+/** 项目切换重置本地视图与复制反馈，受控值仍由宿主负责。 */
+export function ProjectMonitor(props: ProjectMonitorProps) {
+  return <ProjectMonitorContent key={props.data.project.id} {...props} />;
+}
+
+function ProjectMonitorContent({ data, tab, defaultTab = "overview", onTabChange, range, defaultRange, onRangeChange,
+  state = "ready", refreshing = false, retainDataOnError = false, statusMessage, actions, advisor, visibleSections, labels: suppliedLabels, locale = "zh-CN", timeZone = "Asia/Shanghai", className, ...props }: ProjectMonitorProps) {
+  const labels = { ...projectMonitorLabels, ...suppliedLabels };
+  const [localTab, setLocalTab] = useState<ProjectMonitorTab>(defaultTab);
+  const [localRange, setLocalRange] = useState(defaultRange ?? data.windows[0]?.id);
+  const [copyFeedback, setCopyFeedback] = useState<{ endpoint: string; message: string } | null>(null);
+  const copying = useRef(false);
+  const Copy = useIcon("copy");
+  const Settings = useIcon("settings");
+  const Clock = useIcon("clock");
+  const Refresh = useIcon("rotate-ccw");
+  const hasAdvisor = advisor !== undefined && advisor !== null;
+  const tabs: ProjectMonitorTab[] = hasAdvisor ? ["overview", "storage", "reports", "advisor"] : ["overview", "storage", "reports"];
+  const requestedTab = tab ?? localTab;
+  const activeTab = tabs.includes(requestedTab) ? requestedTab : "overview";
+  const requestedRange = range ?? localRange;
+  const selectedWindow = data.windows.find((window) => window.id === requestedRange) ?? (range === undefined ? data.windows[0] : undefined);
+  const loading = state === "loading";
+  const [pending, setPending] = useState<"refresh" | "retry" | null>(null);
+  const inFlight = useRef(false);
+  const [actionError, setActionError] = useState<{ data: typeof data; message: string } | null>(null);
+  const currentError = actionError?.data === data ? actionError.message : undefined;
+  const busy = loading || refreshing || pending !== null;
+  const failed = state === "error" || currentError !== undefined;
+  const replacesData = state === "error" && !retainDataOnError;
+  async function runAction(kind: "refresh" | "retry") {
+    const callback = kind === "refresh" ? actions?.onRefresh : actions?.onRetry;
+    if (!callback || inFlight.current || loading || refreshing) return;
+    inFlight.current = true;
+    setPending(kind);
+    setActionError(null);
+    try { await callback(); }
+    catch (cause) { setActionError({ data, message: cause instanceof Error && cause.message ? cause.message : labels.error }); }
+    finally { inFlight.current = false; setPending(null); }
+  }
+  const retryAction = actions?.onRetry ? <Button variant="secondary" disabled={busy} loading={pending === "retry"} onClick={() => void runAction("retry")}>{labels.retry}</Button> : undefined;
+  const date = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone });
+  const updated = validTimestamp(data.updatedAt) ? date.format(data.updatedAt) : labels.unknown;
+
+  async function copyEndpoint() {
+    if (copying.current) return;
+    copying.current = true;
+    const endpoint = data.project.endpoint;
+    try {
+      await navigator.clipboard.writeText(endpoint);
+      setCopyFeedback({ endpoint, message: labels.copied });
+    } catch {
+      setCopyFeedback({ endpoint, message: labels.copyError });
+    } finally {
+      copying.current = false;
+    }
+  }
+
+  const rangeControl = data.windows.length > 0 ? <Select value={selectedWindow?.id ?? ""} onValueChange={(id) => {
+    if (range === undefined) setLocalRange(id);
+    onRangeChange?.(id);
+  }} size="sm" disabled={loading}>
+    <SelectTrigger aria-label={labels.range} wrapperClassName="max-w-full" />
+    <SelectContent>{data.windows.map((window) => <SelectItem key={window.id} value={window.id} label={window.label}>{window.label}</SelectItem>)}</SelectContent>
+  </Select> : null;
+  const viewProps = { data, labels, locale, timeZone };
+  return <Card {...props} aria-busy={busy || undefined} data-slot="project-monitor" data-state={state}
+    className={cn("@container w-full max-w-3xl overflow-hidden rounded-2xl bg-surface-raised pb-0", className)}>
+    <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-4 px-5 py-5">
+      <div className="min-w-0 flex-1 basis-44">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1"><h2 className="min-w-0 max-w-full break-words text-title font-semibold text-fg-default">{data.project.name}</h2><span className="min-w-0 max-w-full break-words text-label text-fg-subtle">{data.project.region}</span></div>
+        <div className="mt-1 flex min-w-0 items-center gap-1"><span className="min-w-0 break-all font-mono text-label text-fg-muted">{data.project.endpoint}</span><Tooltip content={labels.copy}><Button aria-label={labels.copy} iconOnly size="xs" variant="ghost" onClick={copyEndpoint} disabled={!data.project.endpoint}><Copy /></Button></Tooltip></div>
+        <p role="status" className="text-label text-fg-muted">{copyFeedback?.endpoint === data.project.endpoint ? copyFeedback.message : null}</p>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {actions?.onRefresh && <Button aria-label={labels.refresh ?? "刷新数据"} iconOnly size="sm" variant="tertiary" disabled={busy} loading={refreshing || pending === "refresh"} onClick={() => void runAction("refresh")}><Refresh /></Button>}
+        {actions?.onOpenDashboard && <Button onClick={actions.onOpenDashboard}>{labels.openDashboard}</Button>}
+      </div>
+    </CardHeader>
+    <Tabs value={activeTab} onValueChange={(value) => {
+      if (!tabs.includes(value as ProjectMonitorTab)) return;
+      if (tab === undefined) setLocalTab(value as ProjectMonitorTab);
+      onTabChange?.(value as ProjectMonitorTab);
+    }} variant="pill" color="neutral" className="min-w-0">
+      <TabsList aria-label={labels.navigation} className="mx-3 mb-2">{tabs.map((item) => <TabItem key={item} value={item} label={labels[item]} />)}</TabsList>
+      <div className="mx-1">
+        {state === "stale" && !failed && <div className="mb-1"><InlineNotice variant="emphasized" tone="warning"><InlineNoticeContent>{statusMessage ?? labels.stale}</InlineNoticeContent></InlineNotice></div>}
+        {!loading && !replacesData && busy && <div className="mb-1"><InlineNotice variant="emphasized" tone="info"><span aria-hidden="true" className="inline-flex h-5 shrink-0 items-center [&_svg]:size-4"><span className="inline-flex animate-spin motion-reduce:animate-none"><Refresh /></span></span><InlineNoticeContent>{labels.refreshing ?? "正在刷新，保留上次获取的结果。"}</InlineNoticeContent></InlineNotice></div>}
+        {!replacesData && failed && <div className="mb-1"><InlineNotice variant="emphasized" tone="danger" role={currentError ? "alert" : undefined}><InlineNoticeContent>{currentError ?? statusMessage ?? labels.error} {labels.previousData ?? "当前显示上次获取的结果。"}</InlineNoticeContent>{retryAction && <InlineNoticeAction>{retryAction}</InlineNoticeAction>}</InlineNotice></div>}
+        {loading ? <TabPanel value={activeTab}><MonitorPanel><div role="status" className="space-y-5"><span className="sr-only">{labels.loading}</span><Skeleton className="h-8 w-36" /><Skeleton className="h-40 w-full" /><Skeleton className="h-24 w-full" /></div></MonitorPanel></TabPanel>
+          : replacesData ? <TabPanel value={activeTab}><MonitorPanel><div className="flex min-w-0 w-full items-center justify-center min-h-60 px-4 py-8"><Alert status="danger" role={Boolean(currentError) ? "alert" : "group"} className="w-full max-w-xl"><AlertTitle>{labels.error}</AlertTitle><AlertDescription>{currentError ?? statusMessage}</AlertDescription><AlertAction>{retryAction}</AlertAction></Alert></div></MonitorPanel></TabPanel>
+            : <>
+              <TabPanel value="overview"><OverviewView {...viewProps} window={selectedWindow} rangeControl={rangeControl} visibleSections={visibleSections} /></TabPanel>
+              <TabPanel value="storage"><StorageView {...viewProps} /></TabPanel>
+              <TabPanel value="reports"><ReportsView window={selectedWindow} labels={labels} locale={locale} timeZone={timeZone} rangeControl={rangeControl} /></TabPanel>
+              {hasAdvisor && <TabPanel value="advisor"><MonitorPanel>{advisor}</MonitorPanel></TabPanel>}
+            </>}
+      </div>
+    </Tabs>
+    <CardFooter className="flex-wrap justify-between gap-3 px-5 py-4">
+      <p className="flex items-center gap-2 text-label text-fg-subtle"><Clock size={14} /><span>{labels.updated} {updated}</span></p>
+      {actions?.onCustomize && <Button variant="tertiary" size="sm" leadingIcon={Settings} onClick={actions.onCustomize}>{labels.customize}</Button>}
+    </CardFooter>
+  </Card>;
+}
+
+
+"use client";
+
+import type { ReactNode } from "react";
+import { Badge } from "@zeron/ui/badge";
+import { Empty, EmptyDescription } from "@zeron/ui/empty";
+import { InfoItem, InfoItemContent, InfoItemDescription, InfoItemGroup, InfoItemLeading, InfoItemTitle, InfoItemTrailing, InfoItemValue } from "@zeron/ui/info-item";
+import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";
+import { StatusOverview } from "@zeron/ui/status-overview";
+import { useIcon, type IconName } from "@zeron/ui/system/icon-context";
+import { cn } from "@zeron/ui/system/utils";
+import { StorageUsage } from "@zeron/blocks/storage-usage-01";
+import { bucketTotal, formatBytes, formatMetric, summarizeWindow, validNumber, validTimestamp } from "./project-monitor-data";
+import { LatencyChart, RequestTrend, ResourceMetric, ServiceDistribution } from "./project-monitor-charts";
+import type { ProjectMonitorData, ProjectMonitorLabels, ProjectMonitorProps, ProjectMonitorWindow } from "./project-monitor-types";
+
+export function MonitorPanel({ children, className, label }: { children: ReactNode; className?: string; label?: string }) {
+  return <section aria-label={label} className={cn("rounded-xl border-hairline border-border bg-surface-floating p-5", className)}>{children}</section>;
+}
+
+export function NoMonitorData({ children }: { children: ReactNode }) {
+  return <Empty reason="no-data" scope="inline" density="compact"><EmptyDescription>{children}</EmptyDescription></Empty>;
+}
+
+function MissingWindow({ labels, rangeControl }: { labels: ProjectMonitorLabels; rangeControl: ReactNode }) {
+  return <MonitorPanel>
+    {rangeControl && <div className="mb-5 flex justify-end">{rangeControl}</div>}
+    <NoMonitorData>{labels.noData}</NoMonitorData>
+  </MonitorPanel>;
+}
+
+function ProjectFact({ label, value, icon = "square-library" }: { label: string; value: ReactNode; icon?: IconName }) {
+  const Icon = useIcon(icon);
+  return <InfoItem className="px-0"><InfoItemLeading><Icon /></InfoItemLeading><InfoItemContent><InfoItemDescription>{label}</InfoItemDescription><InfoItemTitle className="break-words">{value}</InfoItemTitle></InfoItemContent></InfoItem>;
+}
+
+interface ViewProps { data: ProjectMonitorData; labels: ProjectMonitorLabels; locale: string; timeZone: string }
+interface WindowProps { window: ProjectMonitorWindow; labels: ProjectMonitorLabels; locale: string; timeZone: string; rangeControl: ReactNode }
+
+export function RequestSummary({ window, labels, locale, rangeControl, peak = false }: Omit<WindowProps, "timeZone"> & { peak?: boolean }) {
+  const summary = summarizeWindow(window);
+  return <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1"><strong data-slot="project-request-total" className="text-heading font-semibold tabular-nums text-fg-default">{formatMetric(summary.total, locale, 0)}</strong><span className="text-label text-fg-subtle">{labels.requests}{peak && ` · ${labels.peak} ${formatMetric(summary.peak, locale, 0)}`}</span></div>
+    {rangeControl}
+  </div>;
+}
+
+function ServiceActivity({ window, labels, locale, timeZone, rangeControl }: WindowProps) {
+  const summary = summarizeWindow(window);
+  const time = new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", timeZone });
+  return <MonitorPanel label={labels.activity}>
+    <RequestSummary window={window} labels={labels} locale={locale} rangeControl={rangeControl} />
+    {!summary.complete && <InlineNotice variant="emphasized" tone="warning"><InlineNoticeContent>{labels.incomplete}</InlineNoticeContent></InlineNotice>}
+    <div className="space-y-4">
+      {summary.services.map((service) => <StatusOverview key={service.id} variant="activity" ariaLabel={`${service.name} · ${labels.activity}`} label={service.name}
+        summary={{ label: labels.requests, value: formatMetric(service.total, locale, 0) }} emptyContent={labels.noData}
+        content={{ type: "timeline", start: window.start, end: window.end, items: service.buckets.map((bucket, index) => {
+          const total = bucketTotal(bucket);
+          const status = total === null ? "unknown" : total === 0 ? "empty" : bucket!.errors > 0 ? "down" : bucket!.warning > 0 ? "degraded" : "operational";
+          const duration = (window.end - window.start) / service.buckets.length;
+          const timestamp = window.start + duration * index;
+          const at = validTimestamp(timestamp) ? time.format(timestamp) : labels.unknown;
+          const periodId = validTimestamp(timestamp) ? `${timestamp}-${duration}` : `unknown-${index}`;
+          return { id: `${service.id}-${window.id}-${periodId}`, status, ariaLabel: `${service.name}，${at}，${total === null ? labels.noData : `${formatMetric(total, locale, 0)} ${labels.requests}；${labels.success} ${bucket!.success}，${labels.warning} ${bucket!.warning}，${labels.errors} ${bucket!.errors}`}` };
+        }) }} />)}
+    </div>
+    {summary.complete && <div className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2">
+      {([ ["success", "success"], ["warning", "warning"], ["errors", "danger"] ] as const).map(([key, status]) => <Badge key={key} variant="dot" status={status}>{labels[key]} · {summary.total ? new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1 }).format(summary.totals[key] / summary.total) : "—"}</Badge>)}
+    </div>}
+  </MonitorPanel>;
+}
+
+export function OverviewView({ data, labels, locale, timeZone, window, rangeControl, visibleSections }: ViewProps & { window?: ProjectMonitorWindow; rangeControl: ReactNode; visibleSections: ProjectMonitorProps["visibleSections"] }) {
+  const health = data.project.health;
+  const status = { healthy: "success", degraded: "warning", down: "danger", unknown: "neutral" } as const;
+  return <div className="space-y-1">
+    <MonitorPanel>
+      <div className="grid gap-x-8 @md:grid-cols-2">
+        <ProjectFact label={labels.health} icon="shield" value={<Badge variant="dot" status={status[health]}>{health === "unknown" ? labels.unknownHealth : labels[health]}</Badge>} />
+        {data.project.facts.map((fact) => <ProjectFact key={fact.id} label={fact.label} value={fact.value ?? labels.unknown} icon={fact.icon} />)}
+      </div>
+    </MonitorPanel>
+    {visibleSections?.resources !== false && <MonitorPanel label={labels.resources}>
+      {data.metrics.length ? <div className="grid grid-cols-2 gap-x-5 gap-y-6 @md:grid-cols-3 @2xl:grid-cols-5">{data.metrics.map((metric) => <ResourceMetric key={metric.id} metric={metric} locale={locale} />)}</div> : <NoMonitorData>{labels.noData}</NoMonitorData>}
+    </MonitorPanel>}
+    {visibleSections?.activity !== false && (window ? <ServiceActivity window={window} labels={labels} locale={locale} timeZone={timeZone} rangeControl={rangeControl} /> : <MissingWindow labels={labels} rangeControl={rangeControl} />)}
+  </div>;
+}
+
+export function StorageView({ data, labels, locale, timeZone }: ViewProps) {
+  const Folder = useIcon("folder");
+  const Globe = useIcon("globe");
+  const Lock = useIcon("lock");
+  const { storage } = data;
+  const available = validNumber(storage.capacityBytes) && storage.categories.every((category) => validNumber(category.bytes));
+  const date = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone });
+  return <div className="space-y-1">
+    {available ? <StorageUsage className="rounded-xl border-hairline border-border bg-surface-floating p-5" label={labels.storageUsage} unit="GB" locale={locale}
+      data={{ capacity: storage.capacityBytes! / 1e9, items: storage.categories.map((category) => ({ id: category.id, label: category.label, value: category.bytes! / 1e9, color: category.color, colorIndex: category.colorIndex })) }}
+      formatters={{ usageSummary: (used, capacity, unit) => `已用 ${used} ${unit} / 共 ${capacity} ${unit}`, remaining: (remaining, unit) => `剩余 ${remaining} ${unit}` }} />
+      : <MonitorPanel label={labels.storageUsage}><NoMonitorData>{labels.noData}</NoMonitorData></MonitorPanel>}
+    <InfoItemGroup aria-label={labels.buckets} className="border-hairline border-border p-2">
+      {storage.buckets.length ? storage.buckets.map((bucket) => <InfoItem key={bucket.id} className="flex-wrap gap-y-2 py-4">
+        <InfoItemLeading><Folder /></InfoItemLeading>
+        <InfoItemContent><InfoItemTitle className="break-words">{bucket.name}</InfoItemTitle><InfoItemDescription className="flex flex-wrap items-center gap-1.5">{bucket.access === "public" ? <Globe size={12} /> : <Lock size={12} />}{bucket.access === "public" ? labels.public : labels.private} · {formatMetric(bucket.files, locale, 0)} {labels.files}</InfoItemDescription></InfoItemContent>
+        <InfoItemTrailing><div className="space-y-1"><InfoItemValue>{formatBytes(bucket.bytes, locale)}</InfoItemValue><p className="text-label text-fg-subtle">{validTimestamp(bucket.updatedAt) ? date.format(bucket.updatedAt) : labels.unknown}</p></div></InfoItemTrailing>
+      </InfoItem>) : <NoMonitorData>{labels.noData}</NoMonitorData>}
+    </InfoItemGroup>
+  </div>;
+}
+
+export function ReportsView({ window, labels, locale, timeZone, rangeControl }: Omit<WindowProps, "window"> & { window?: ProjectMonitorWindow }) {
+  if (!window) return <MissingWindow labels={labels} rangeControl={rangeControl} />;
+  const summary = summarizeWindow(window);
+  return <div className="space-y-1">
+    <MonitorPanel>
+      <RequestSummary window={window} labels={labels} locale={locale} rangeControl={rangeControl} peak />
+      {!summary.complete && <InlineNotice variant="emphasized" tone="warning"><InlineNoticeContent>{labels.incomplete}</InlineNoticeContent></InlineNotice>}
+      {summary.points.length ? <RequestTrend window={window} labels={labels} locale={locale} timeZone={timeZone} /> : <NoMonitorData>{labels.noData}</NoMonitorData>}
+    </MonitorPanel>
+    <MonitorPanel><div className="grid gap-8 @2xl:grid-cols-2"><ServiceDistribution window={window} labels={labels} locale={locale} /><LatencyChart window={window} labels={labels} locale={locale} /></div></MonitorPanel>
+  </div>;
+}
+
+
+"use client";
+
+import { DonutSummary, TimeSeriesChart } from "@zeron/ui/chart-summary";
+import { ChartLegend, SegmentedBar, chartColor, chartSeriesColor, createChartNumberFormatter } from "@zeron/ui/chart-primitives";
+import { MetricCard } from "@zeron/ui/metric-card";
+import { formatMetric, summarizeWindow, validNumber } from "./project-monitor-data";
+import type { ProjectMonitorLabels, ProjectMonitorMetric, ProjectMonitorWindow } from "./project-monitor-types";
+
+export function ResourceMetric({ metric, locale }: { metric: ProjectMonitorMetric; locale: string }) {
+  const hasCapacity = validNumber(metric.capacity) && metric.capacity > 0;
+  const available = validNumber(metric.value);
+  const percentage = hasCapacity && available ? Math.min(1, metric.value! / metric.capacity!) : null;
+  const value = formatMetric(metric.value, locale);
+  if (!hasCapacity) return <MetricCard label={metric.label} value={value} unit={metric.unit} state={available ? "ready" : "unavailable"} statusMessage={available ? undefined : "暂无可用数据"} className="h-full justify-center border-0 bg-transparent p-0 text-center" />;
+  const text = metric.unit === "%" ? `${value}%` : `${value}/${formatMetric(metric.capacity, locale)}`;
+  return <figure className="min-w-0 text-center" aria-label={`${metric.label}：${text}`}>
+    <DonutSummary className="mx-auto w-24" segments={[{ id: "used", label: metric.label, value: percentage, color: chartColor(1) }]} total={1} innerRadius="83%" aria-label={`${metric.label}：${text}`} center={<span className="text-body font-semibold">{text}</span>} />
+    <figcaption className="mt-3 text-label text-fg-subtle">{metric.label}</figcaption>
+  </figure>;
+}
+
+export function RequestTrend({ window, labels, locale, timeZone }: { window: ProjectMonitorWindow; labels: ProjectMonitorLabels; locale: string; timeZone: string }) {
+  const { points } = summarizeWindow(window);
+  return <TimeSeriesChart data={points.map((point) => ({ timestamp: point.timestamp, values: { requests: point.requests } }))} series={[{ id: "requests", label: labels.requests, color: chartColor(1) }]} domain={[window.start, window.end]} locale={locale} timeZone={timeZone} label={`${window.label} · ${labels.requests}，缺失时段保留断点`} dataSummary="查看数据" />;
+}
+
+export function ServiceDistribution({ window, labels, locale }: { window: ProjectMonitorWindow; labels: ProjectMonitorLabels; locale: string }) {
+  const { services, total, complete } = summarizeWindow(window);
+  const segments = services.map((service) => ({ id: service.id, label: service.name, value: service.total, color: chartSeriesColor(service.id, service) }));
+  const formatPercent = createChartNumberFormatter(locale, { style: "percent", maximumFractionDigits: 1 });
+  return <div className="min-w-0">
+    <h3 className="mb-5 text-label font-medium text-fg-subtle">{labels.serviceDistribution}</h3>
+    <div className="flex flex-col items-center gap-5 @sm:flex-row">
+      <DonutSummary className="w-32 shrink-0" segments={segments} total={total} aria-label={`${labels.total}：${formatMetric(total, locale, 0)}${complete ? "" : ` · ${labels.incomplete}`}`} center={<><strong className="text-body font-semibold">{formatMetric(total, locale, 0)}</strong><span className="text-label text-fg-subtle">{labels.requests}</span></>} />
+      <ChartLegend className="w-full @sm:w-auto @sm:flex-1" items={segments.map((service) => ({ ...service, value: formatMetric(service.value, locale, 0), ratio: complete && total! > 0 ? formatPercent(service.value! / total!) : "—" }))} />
+    </div>
+    {!complete && <p className="mt-3 text-label text-fg-subtle">{labels.incomplete}</p>}
+  </div>;
+}
+
+export function LatencyChart({ window, labels, locale }: { window: ProjectMonitorWindow; labels: ProjectMonitorLabels; locale: string }) {
+  const entries = [{ key: "p50", label: "P50", color: chartColor(1) }, { key: "p95", label: "P95", color: chartColor(2) }, { key: "p99", label: "P99", color: chartColor(3) }] as const;
+  // 超过约定标尺仍显示真实值，所有分位数始终共用一个标尺。
+  const maximum = Math.max(validNumber(window.latencyScaleMs) ? window.latencyScaleMs : 0, ...entries.map(({ key }) => validNumber(window.latency[key]) ? window.latency[key]! : 0), 1);
+  return <div className="min-w-0">
+    <h3 className="mb-5 text-label font-medium text-fg-subtle">{labels.latency} · {window.label}</h3>
+    <div className="space-y-3">
+      {entries.map(({ key, label, color }) => <div key={key}>
+        <div className="flex items-center justify-between gap-3 text-label"><span className="text-fg-subtle">{label}</span><span className="tabular-nums text-fg-default">{formatMetric(window.latency[key], locale, 0)} {labels.milliseconds}</span></div>
+        <SegmentedBar mode="capacity" total={maximum} segments={[{ id: key, label, value: validNumber(window.latency[key]) ? window.latency[key] : null, color }]} valueText={`${label}：${formatMetric(window.latency[key], locale, 0)} ${labels.milliseconds}`} className="mt-2 h-1.5" />
+      </div>)}
+    </div>
+  </div>;
+}
+
+
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import type { BadgeColor } from "@zeron/ui/badge";
+import type { ChartColorIndex } from "@zeron/ui/chart-primitives";
+import type { IconName } from "@zeron/ui/system/icon-context";
+
+export type ProjectMonitorTab = "overview" | "storage" | "reports" | "advisor";
+export type ProjectMonitorState = "ready" | "loading" | "stale" | "error";
+
+export interface ProjectMonitorMetric {
+  id: string;
+  label: string;
+  /** value 和 capacity 使用相同单位；未知值为 null，不能用零代替。 */
+  value: number | null;
+  capacity?: number | null;
+  unit: string;
+}
+
+export interface ProjectMonitorBucket {
+  id: string;
+  name: string;
+  access: "public" | "private";
+  files: number | null;
+  bytes: number | null;
+  updatedAt: number | null;
+}
+
+export interface ProjectMonitorService {
+  id: string;
+  name: string;
+  /** @deprecated Legacy categorical name; colorIndex takes precedence. */
+  color: BadgeColor;
+  colorIndex?: ChartColorIndex;
+  /** 每一项对应时间窗口内连续、等长的一个时间桶。null 表示未收到数据。 */
+  buckets: readonly ({ success: number; warning: number; errors: number } | null)[];
+}
+
+export interface ProjectMonitorWindow {
+  id: string;
+  label: string;
+  start: number;
+  end: number;
+  services: readonly ProjectMonitorService[];
+  /** 服务端聚合分位数，单位毫秒。 */
+  latency: { p50: number | null; p95: number | null; p99: number | null };
+  /** 延迟条形图的共同标尺，单位毫秒。 */
+  latencyScaleMs: number;
+}
+
+export interface ProjectMonitorData {
+  project: {
+    id: string;
+    name: string;
+    region: string;
+    endpoint: string;
+    health: "healthy" | "degraded" | "down" | "unknown";
+    facts: readonly { id: string; label: string; value: string | null; icon?: IconName }[];
+  };
+  metrics: readonly ProjectMonitorMetric[];
+  storage: {
+    /** 存储值统一使用字节。 */
+    capacityBytes: number | null;
+    categories: readonly { id: string; label: string; bytes: number | null; color: BadgeColor; colorIndex?: ChartColorIndex }[];
+    buckets: readonly ProjectMonitorBucket[];
+  };
+  windows: readonly ProjectMonitorWindow[];
+  updatedAt: number | null;
+}
+
+export interface ProjectMonitorLabels {
+  overview: string; storage: string; reports: string; advisor: string;
+  navigation: string; openDashboard: string; copy: string; copied: string; copyError: string;
+  customize: string; updated: string; unknown: string; health: string;
+  healthy: string; degraded: string; down: string; unknownHealth: string;
+  resources: string; requests: string; total: string; peak: string; range: string;
+  activity: string; success: string; warning: string; errors: string; noRequests: string;
+  noData: string; storageUsage: string; buckets: string; public: string; private: string;
+  files: string; serviceDistribution: string; latency: string; milliseconds: string;
+  loading: string; stale: string; error: string; retry: string; incomplete: string;
+  refreshing?: string; refresh?: string; previousData?: string;
+}
+
+export interface ProjectMonitorProps extends Omit<ComponentPropsWithoutRef<"div">, "children" | "defaultValue" | "onChange" | "onClick"> {
+  data: ProjectMonitorData;
+  tab?: ProjectMonitorTab;
+  defaultTab?: ProjectMonitorTab;
+  onTabChange?: (tab: ProjectMonitorTab) => void;
+  range?: string;
+  defaultRange?: string;
+  onRangeChange?: (range: string) => void;
+  state?: ProjectMonitorState;
+  /** Background progress can coexist with stale data. */
+  refreshing?: boolean;
+  /** Keep an existing snapshot when a subsequent request fails. Defaults to the existing replacement behavior. */
+  retainDataOnError?: boolean;
+  statusMessage?: string;
+  actions?: { onOpenDashboard?: () => void; onCustomize?: () => void; onRetry?: () => void; onRefresh?: () => void };
+  visibleSections?: { resources?: boolean; activity?: boolean };
+  advisor?: ReactNode;
+  labels?: Partial<ProjectMonitorLabels>;
+  locale?: string;
+  timeZone?: string;
+}
+
+
+import type { ProjectMonitorService, ProjectMonitorWindow } from "./project-monitor-types";
+
+export const projectMonitorLabels = {
+  overview: "概览", storage: "存储", reports: "报告", advisor: "优化建议",
+  navigation: "项目监控视图", openDashboard: "打开控制台", copy: "复制项目地址", copied: "项目地址已复制", copyError: "复制失败，请选择地址后手动复制",
+  customize: "自定义", updated: "更新于", unknown: "—", health: "运行状态",
+  healthy: "运行正常", degraded: "性能下降", down: "服务异常", unknownHealth: "状态未知",
+  resources: "资源用量", requests: "请求", total: "总请求数", peak: "单时段峰值", range: "统计时间范围",
+  activity: "服务活动", success: "成功", warning: "告警", errors: "错误", noRequests: "暂无请求",
+  noData: "暂无可用数据", storageUsage: "存储用量", buckets: "存储桶", public: "公开", private: "私有",
+  files: "个文件", serviceDistribution: "服务占比", latency: "请求延迟", milliseconds: "毫秒",
+  loading: "正在加载项目数据", stale: "数据更新延迟，当前显示上次获取的结果。", error: "项目数据加载失败，请稍后重试。", retry: "重新加载", incomplete: "部分时段数据缺失，统计暂不可用。",
+};
+
+export function validNumber(value: number | null | undefined): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+
+export function validTimestamp(value: number | null | undefined): value is number {
+  return typeof value === "number" && Number.isFinite(new Date(value).getTime());
+}
+
+export function bucketTotal(bucket: ProjectMonitorService["buckets"][number]): number | null {
+  return bucket && [bucket.success, bucket.warning, bucket.errors].every(validNumber)
+    ? bucket.success + bucket.warning + bucket.errors : null;
+}
+
+/** 两个视图共享唯一的请求来源；任何缺失分桶都不会被解释为零。 */
+export function summarizeWindow(window: ProjectMonitorWindow) {
+  const count = window.services[0]?.buckets.length ?? 0;
+  const validRange = validTimestamp(window.start) && validTimestamp(window.end) && window.end > window.start;
+  const aligned = count > 0 && window.services.every((service) => service.buckets.length === count);
+  const services = window.services.map((service) => {
+    const values = service.buckets.map(bucketTotal);
+    return { ...service, total: values.length && values.every(validNumber) ? values.reduce((sum, value) => sum + value, 0) : null };
+  });
+  const complete = validRange && aligned && services.every((service) => validNumber(service.total));
+  const points = validRange && aligned ? Array.from({ length: count }, (_, index) => {
+    const values = window.services.map((service) => bucketTotal(service.buckets[index]));
+    return { timestamp: window.start + (window.end - window.start) * index / count, requests: values.every(validNumber) ? values.reduce((sum, value) => sum + value, 0) : null };
+  }) : [];
+  const totals = { success: 0, warning: 0, errors: 0 };
+  if (complete) for (const service of window.services) for (const bucket of service.buckets) {
+    if (bucket) { totals.success += bucket.success; totals.warning += bucket.warning; totals.errors += bucket.errors; }
+  }
+  return { services, points, complete, total: complete ? totals.success + totals.warning + totals.errors : null,
+    peak: complete ? Math.max(...points.map((point) => point.requests ?? 0)) : null, totals };
+}
+
+export function formatMetric(value: number | null | undefined, locale: string, maximumFractionDigits = 1) {
+  return validNumber(value) ? new Intl.NumberFormat(locale, { maximumFractionDigits }).format(value) : "—";
+}
+
+export function formatBytes(bytes: number | null, locale: string) {
+  if (!validNumber(bytes)) return "—";
+  const unit = bytes >= 1e9 ? "GB" : bytes >= 1e6 ? "MB" : bytes >= 1e3 ? "KB" : "字节";
+  const divisor = unit === "GB" ? 1e9 : unit === "MB" ? 1e6 : unit === "KB" ? 1e3 : 1;
+  return `${formatMetric(bytes / divisor, locale, 2)} ${unit}`;
+}
+
+
+import type { ProjectMonitorData } from "./project-monitor-types";
+
+export const projectMonitorDemoData: ProjectMonitorData = {
+  project: {
+    id: "solstice", name: "Solstice", region: "US-EAST-1", endpoint: "solstice.example.com",
+    health: "healthy",
+    facts: [
+      { id: "compute", label: "计算规格", value: "Nano", icon: "monitor" },
+      { id: "repository", label: "代码仓库", value: "novaform-labs/solstice", icon: "square-library" },
+      { id: "branch", label: "最近分支", value: "暂无分支", icon: "corner-down-right" },
+      { id: "migration", label: "最近迁移", value: "invoice_retry_backfill", icon: "list-checks" },
+      { id: "backup", label: "最近备份", value: "今天 10:00", icon: "file-archive" },
+    ],
+  },
+  metrics: [
+    { id: "cpu", label: "处理器", value: 16, capacity: 100, unit: "%" },
+    { id: "memory", label: "内存", value: 62, capacity: 100, unit: "%" },
+    { id: "disk", label: "磁盘", value: 18, capacity: 100, unit: "%" },
+    { id: "connections", label: "连接数", value: 19, capacity: 60, unit: "个" },
+    { id: "bandwidth", label: "带宽", value: 4.7, unit: "MB/s" },
+  ],
+  storage: {
+    capacityBytes: 8e9,
+    categories: [
+      { id: "images", label: "图片", bytes: 1.12e9, color: "orange", colorIndex: 1 },
+      { id: "documents", label: "文档", bytes: .64e9, color: "blue", colorIndex: 2 },
+      { id: "backups", label: "备份", bytes: .41e9, color: "green", colorIndex: 3 },
+      { id: "other", label: "其他", bytes: .24e9, color: "gray", colorIndex: 4 },
+    ],
+    buckets: [
+      { id: "avatars", name: "avatars", access: "public", files: 1284, bytes: 412e6, updatedAt: Date.UTC(2026, 9, 5, 3, 10) },
+      { id: "uploads", name: "uploads", access: "private", files: 8931, bytes: 1292e6, updatedAt: Date.UTC(2026, 9, 5, 2, 58) },
+      { id: "exports", name: "exports", access: "private", files: 212, bytes: 296e6, updatedAt: Date.UTC(2026, 9, 5, 2, 12) },
+      { id: "backups", name: "backups", access: "private", files: 38, bytes: 410e6, updatedAt: Date.UTC(2026, 9, 4, 3, 12) },
+    ],
+  },
+  windows: [60, 360, 1440].map((minutes, rangeIndex) => ({
+    id: `${minutes}m`, label: minutes === 60 ? "最近 60 分钟" : minutes === 360 ? "最近 6 小时" : "最近 24 小时",
+    start: Date.UTC(2026, 9, 5, 3, 12) - minutes * 60000, end: Date.UTC(2026, 9, 5, 3, 12),
+    services: ([
+      { id: "gateway", name: "Gateway", color: "blue", colorIndex: 1 },
+      { id: "auth", name: "Auth", color: "orange", colorIndex: 2 },
+      { id: "functions", name: "Function", color: "green", colorIndex: 3 },
+      { id: "storage", name: "Storage", color: "purple", colorIndex: 4 },
+    ] as const).map((service, serviceIndex) => ({ ...service,
+      buckets: Array.from({ length: 60 }, (_, index) => ({
+        success: (index * 7 + serviceIndex * 3) % (serviceIndex + 4) === 0 ? 0 : Math.max(0, Math.round((2 + Math.sin(index * .7 + serviceIndex) * 2) * (4 - serviceIndex) * (rangeIndex + 1))),
+        warning: (index + serviceIndex * 5) % 23 === 0 ? rangeIndex + 1 : 0,
+        errors: serviceIndex === 3 && index === 17 ? rangeIndex + 1 : 0,
+      })),
+    })),
+    latency: { p50: 84 + rangeIndex * 8, p95: 312 + rangeIndex * 31, p99: 890 + rangeIndex * 45 }, latencyScaleMs: 1000,
+  })),
+  updatedAt: Date.UTC(2026, 9, 5, 3, 12),
+};

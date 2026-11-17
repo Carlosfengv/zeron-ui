@@ -20,7 +20,7 @@ import {
   useReducedMotion,
   useSpring,
   type MotionValue,
-} from "framer-motion";
+} from "motion/react";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";

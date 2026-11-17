@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import ts from "typescript";
 import { describe, expect, it } from "vitest";
 
 const ROOT = new URL("..", import.meta.url).pathname;
@@ -17,6 +18,12 @@ function sourceFiles(relativeDir) {
   };
   visit(join(ROOT, relativeDir));
   return files;
+}
+
+function privateUiImports(source) {
+  return ts.preProcessFile(source, true, true).importedFiles
+    .map(({ fileName }) => fileName)
+    .filter((specifier) => /(?:^|\/)(?:packages\/ui|@zeron\/ui)\/src(?:\/|$)/.test(specifier));
 }
 
 describe("public import boundaries", () => {
@@ -61,8 +68,24 @@ describe("public import boundaries", () => {
 
   it("consumes UI only through public workspace exports", () => {
     for (const file of consumers) {
-      expect(readFileSync(file, "utf-8"), file).not.toContain("packages/ui/src/");
+      expect(privateUiImports(readFileSync(file, "utf-8")), file).toEqual([]);
     }
+  });
+
+  it("detects private module specifiers and ignores file paths used as data", () => {
+    expect(privateUiImports([
+      'const gitPath = "packages/ui/src/components";',
+      'import { Button } from "@zeron/ui/button";',
+      'import Card from "@/packages/ui/src/components/card";',
+      'export { Badge } from "../../packages/ui/src/components/badge";',
+      'type InputProps = import("@zeron/ui/src/components/input").InputProps;',
+      'const dialog = import("@/packages/ui/src/components/dialog");',
+    ].join("\n"))).toEqual([
+      "@/packages/ui/src/components/card",
+      "../../packages/ui/src/components/badge",
+      "@zeron/ui/src/components/input",
+      "@/packages/ui/src/components/dialog",
+    ]);
   });
 
   it("keeps licensed HugeIcons packages behind the optional Registry item", () => {
@@ -94,7 +117,8 @@ describe("public import boundaries", () => {
       for (const file of files) {
         expect(
           file.path.startsWith("packages/ui/src/system/") ||
-            file.path.startsWith("packages/ui/src/tokens/"),
+            file.path.startsWith("packages/ui/src/tokens/") ||
+            (["icon-context", "pro-icon-provider"].includes(item.name) && file.path.startsWith("packages/icons/src/")),
           file.path
         ).toBe(true);
       }

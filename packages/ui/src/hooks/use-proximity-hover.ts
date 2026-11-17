@@ -112,15 +112,20 @@ export function useProximityHover<T extends HTMLElement>(
         everyItemHasLayout = false;
         return;
       }
-      // Use offset* instead of getBoundingClientRect so measurements are
-      // unaffected by CSS transforms (e.g. scaleY animation on the parent
-      // motion.div). offsetTop/offsetLeft are layout values relative to the
-      // offsetParent (the scroll container), matching the coordinate space
-      // used by `position: absolute` children.
+      // Walk positioned wrappers so the offsets stay relative to the
+      // container. Layout offsets ignore the popup's entrance transform.
+      let top = element.offsetTop;
+      let left = element.offsetLeft;
+      let parent = element.offsetParent;
+      while (parent instanceof HTMLElement && parent !== container && container.contains(parent)) {
+        top += parent.offsetTop + parent.clientTop - parent.scrollTop;
+        left += parent.offsetLeft + parent.clientLeft - parent.scrollLeft;
+        parent = parent.offsetParent;
+      }
       rects[index] = {
-        top: element.offsetTop,
+        top,
         height: element.offsetHeight,
-        left: element.offsetLeft,
+        left,
         width: element.offsetWidth,
         radius: readRadius(element),
       };

@@ -64,7 +64,7 @@ export const defaultOperationsNavigation: readonly OperationsNavigationItem[] = 
 export const defaultOperationsServiceNavigation: readonly OperationsNavigationItem[] = [
   { value: "service-progress", label: "服务进度", iconName: "clock" },
   { value: "service-authorizations", label: "服务授权", iconName: "user" },
-  { value: "operation-history", label: "操作记录", iconName: "doc-surfaces" },
+  { value: "operation-history", label: "操作记录", iconName: "layers" },
 ];
 const defaultSessions: readonly OperationsSession[] = [
   { id: "network", name: "使用 specialist-network - 新会话", updatedAt: "2分钟" },

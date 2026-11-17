@@ -26,6 +26,11 @@ const COMPONENT_PALETTE_MESSAGE =
 const RAW_COMPONENT_COLOR_MESSAGE =
   "Core components must not embed raw colors. Use a semantic token or a CSS value derived from var(--...).";
 
+const motionImportRestriction = {
+  group: ["framer-motion", "framer-motion/**"],
+  message: "Use motion/react for React animation imports.",
+};
+
 const shadcnRestrictedRules = {
   "no-restricted-syntax": [
     "error",
@@ -111,6 +116,7 @@ export default [
       ...tsPlugin.configs.recommended.rules,
       ...nextPlugin.configs.recommended.rules,
       ...nextPlugin.configs["core-web-vitals"].rules,
+      "no-restricted-imports": ["error", { patterns: [motionImportRestriction] }],
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
@@ -130,6 +136,7 @@ export default [
         "error",
         {
           patterns: [
+            motionImportRestriction,
             {
               group: ["@/registry/default", "@/registry/default/*", "@/registry/default/**"],
               message:

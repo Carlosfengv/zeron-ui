@@ -48,7 +48,7 @@ export function ContextWindow({ data, title, live = false, tab, defaultTab = "do
   const hitRateText = validHitRate === null ? "—" : percent.format(validHitRate);
   const Settings = useIcon("settings"); const Close = useIcon("x"); const Pin = useIcon("pin");
   const Compact = useIcon("scissors");
-  const Info = useIcon("doc-info-item");
+  const Info = useIcon("info");
 
   function changeTab(value: string) {
     if (!isContentTab(value)) return;

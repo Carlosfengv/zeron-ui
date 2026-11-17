@@ -14,7 +14,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import { Collapsible } from "@base-ui/react/collapsible";
 import { useDirection } from "@base-ui/react/direction-provider";
 import { cn } from "#system/utils";

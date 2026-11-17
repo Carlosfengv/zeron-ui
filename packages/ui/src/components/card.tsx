@@ -14,7 +14,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 import { useIcon, type IconComponent } from "#system/icon-context";

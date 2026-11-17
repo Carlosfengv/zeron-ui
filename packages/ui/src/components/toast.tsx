@@ -13,7 +13,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Button } from "#components/button";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
@@ -336,7 +336,7 @@ const Toast = memo(function Toast({
   const substrate = useSurface();
   const surface = resolveSurface(substrate, "floating");
   const BellIcon = useIcon("bell");
-  const InfoIcon = useIcon("doc-info-item");
+  const InfoIcon = useIcon("info");
   const LoadingIcon = useIcon("loader");
   const SuccessIcon = useIcon("check");
   const ErrorIcon = useIcon("circle-x");

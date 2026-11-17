@@ -12,6 +12,7 @@ const commonLoaders: Record<AppLocale, Loader> = {
 
 const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
   en: {
+    "docs/introduction": () => import("@docs/content/en/components/introduction.json"),
     "components/context-map": () => import("@docs/content/en/components/context-map.json"),
     "blocks/agent-queue-01": () => import("@docs/content/en/blocks/agent-queue-01.json"),
     "components/decision-tree": () => import("@docs/content/en/components/decision-tree.json"),
@@ -184,6 +185,7 @@ const pageLoaders: Record<AppLocale, Record<string, Loader>> = {
     "icons/providers": () => import("@docs/content/en/icons/providers.json"),
   },
   "zh-CN": {
+    "docs/introduction": () => import("@docs/content/zh-CN/components/introduction.json"),
     "components/context-map": () => import("@docs/content/zh-CN/components/context-map.json"),
     "blocks/agent-queue-01": () => import("@docs/content/zh-CN/blocks/agent-queue-01.json"),
     "components/decision-tree": () => import("@docs/content/zh-CN/components/decision-tree.json"),

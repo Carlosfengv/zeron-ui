@@ -3,7 +3,7 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { useDirection } from "@base-ui/react/direction-provider";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { cn } from "#system/utils";
 import { spring, exitFallbackMs } from "#system/springs";
 import {

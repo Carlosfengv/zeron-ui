@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -14,12 +18,25 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "#components/*": ["src/components/*"],
-      "#hooks/*": ["src/hooks/*"],
-      "#system/*": ["src/system/*"],
-      "#tokens/*": ["src/tokens/*"]
+      "#components/*": [
+        "src/components/*"
+      ],
+      "#hooks/*": [
+        "src/hooks/*"
+      ],
+      "#system/*": [
+        "src/system/*"
+      ],
+      "#tokens/*": [
+        "src/tokens/*"
+      ],
+      "#components/temporal-picker": [
+        "src/components/temporal-picker/index.ts"
+      ]
     }
   },
-  "include": ["src/**/*"],
-  "exclude": ["src/system/icon-variants/**/*"]
+  "include": [
+    "src/**/*",
+    "../icons/src/hugeicons.d.ts"
+  ]
 }

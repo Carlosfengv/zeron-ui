@@ -65,7 +65,7 @@ function RuleInfo({ rule, detail, onToggle, onLocate }: {
         <h3>快速定位</h3>
         <nav className="flex flex-col gap-1" aria-label="规则详情章节">
           <SectionLink icon="list-checks" label="条件判断" count={detail.conditions.length} onClick={() => onLocate("conditions")} />
-          <SectionLink icon="doc-stepper" label="处置动作" count={detail.actions.length} onClick={() => onLocate(detail.actions[0]?.id ?? "result")} />
+          <SectionLink icon="workflow" label="处置动作" count={detail.actions.length} onClick={() => onLocate(detail.actions[0]?.id ?? "result")} />
           <SectionLink icon="check-square" label="处理结果" onClick={() => onLocate("result")} />
           <SectionLink icon="shield" label="异常处理" onClick={() => onLocate("fallback")} />
         </nav>
@@ -83,7 +83,7 @@ export function RuleDetailView({ rule, onBack, onEdit, onHistory, onDelete, onTo
   rule: RuleFormValue; onBack: () => void; onEdit: () => void; onHistory: () => void; onDelete: () => void; onToggle: () => void;
 }) {
   const Close = useIcon("x");
-  const Workflow = useIcon("doc-stepper");
+  const Workflow = useIcon("workflow");
   const Play = useIcon("play");
   const Edit = useIcon("pencil");
   const More = useIcon("ellipsis");

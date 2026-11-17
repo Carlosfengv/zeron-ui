@@ -21,7 +21,7 @@ import {
   AnimatePresence,
   useReducedMotion,
   type MotionValue,
-} from "framer-motion";
+} from "motion/react";
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";

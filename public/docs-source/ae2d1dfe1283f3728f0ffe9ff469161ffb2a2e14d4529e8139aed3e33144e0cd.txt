@@ -1,0 +1,144 @@
+"use client";
+
+import type { ComponentPropsWithoutRef } from "react";
+import { DonutSummary } from "@zeron/ui/chart-summary";
+import { ChartLegend, chartColor } from "@zeron/ui/chart-primitives";
+import { Card, CardContent } from "@zeron/ui/card";
+import { cn } from "@zeron/ui/system/utils";
+
+export type ResourceStatusTone = "normal" | "warning" | "critical" | "unknown";
+
+export interface ResourceStatusItem {
+  label: string;
+  value: number;
+  tone: ResourceStatusTone;
+  /** Whether the status has a determinate state for coverage calculation. */
+  countsTowardCoverage?: boolean;
+}
+
+export interface ResourceStatusAllProps
+  extends Omit<ComponentPropsWithoutRef<"div">, "children" | "onClick"> {
+  /** Short description shown above the aggregate count. */
+  title?: string;
+  /** Label displayed inside the circular distribution. */
+  totalLabel?: string;
+  /** Label for the determinate-status coverage summary. */
+  coverageLabel?: string;
+  /** Defaults to the sum of all supplied status values. */
+  total?: number;
+  /** Status distribution shown in both the chart and the detailed legend. */
+  statuses?: readonly ResourceStatusItem[];
+  /** Formats aggregate and status counts. The default preserves Figma's plain numerals. */
+  formatValue?: (value: number) => string;
+}
+
+const statusPresentation: Record<ResourceStatusTone, string> = {
+  normal: chartColor(1),
+  warning: chartColor(3),
+  critical: chartColor(5),
+  unknown: chartColor(2),
+};
+
+export const defaultResourceStatuses = [
+  { label: "正常", value: 1390, tone: "normal", countsTowardCoverage: true },
+  { label: "告警", value: 73, tone: "warning", countsTowardCoverage: true },
+  { label: "严重", value: 10, tone: "critical", countsTowardCoverage: true },
+  { label: "未知", value: 28, tone: "unknown", countsTowardCoverage: false },
+] as const satisfies readonly ResourceStatusItem[];
+
+function positiveFinite(value: number) {
+  return Number.isFinite(value) ? Math.max(0, value) : 0;
+}
+
+function formatPercentage(value: number) {
+  return `${value.toFixed(1)}%`;
+}
+
+function ResourceStatusDonut({
+  statuses,
+  total,
+  totalLabel,
+  formatValue,
+}: {
+  statuses: readonly ResourceStatusItem[];
+  total: number;
+  totalLabel: string;
+  formatValue: (value: number) => string;
+}) {
+  const assigned = statuses.reduce((sum, status) => sum + status.value, 0);
+  const accessibleSummary = statuses.map((status) => `${status.label} ${formatValue(status.value)}`).join("，");
+  return <DonutSummary className="max-w-48" innerRadius="74.6%" total={total} segments={statuses.map((status, index) => ({ id: `${status.tone}-${index}`, label: status.label, value: status.value, color: statusPresentation[status.tone] }))} aria-label={`${totalLabel} ${formatValue(total)}：${accessibleSummary}，未覆盖 ${formatValue(Math.max(0, total - assigned))}`} center={<><span className="text-heading font-semibold">{formatValue(total)}</span><span className="text-label text-fg-subtle">{totalLabel}</span></>} />;
+}
+
+function ResourceStatusLegend({ statuses, formatValue }: { statuses: readonly ResourceStatusItem[]; formatValue: (value: number) => string }) {
+  return <ChartLegend className="w-full grid-cols-2 gap-x-2 gap-y-2 max-[420px]:grid-cols-1" items={statuses.map((status, index) => ({ id: `${status.tone}-${index}`, label: status.label, color: statusPresentation[status.tone], value: formatValue(status.value) }))} />;
+}
+
+/** A status summary with a circular distribution, detailed counts, and coverage. */
+export function ResourceStatusAll({
+  "aria-label": ariaLabel = "资源状态总览",
+  className,
+  title = "报告资源总数",
+  totalLabel = "资源总数",
+  coverageLabel = "状态可判断覆盖率",
+  total: providedTotal,
+  statuses = defaultResourceStatuses,
+  formatValue = String,
+  ...props
+}: ResourceStatusAllProps) {
+  const normalizedStatuses = statuses.map((status) => ({
+    ...status,
+    value: positiveFinite(status.value),
+  }));
+  const total = positiveFinite(
+    providedTotal ?? normalizedStatuses.reduce((sum, status) => sum + status.value, 0)
+  );
+  const covered = normalizedStatuses.reduce(
+    (sum, status) =>
+      (status.countsTowardCoverage ?? status.tone !== "unknown")
+        ? sum + status.value
+        : sum,
+    0
+  );
+  const coveragePercentage = total > 0 ? Math.min(100, (covered / total) * 100) : 0;
+
+  return (
+    <Card
+      aria-label={ariaLabel}
+      className={cn(
+        "@container w-full max-w-[701px] min-h-0 overflow-hidden rounded-xl border-hairline border-border bg-surface-floating p-0",
+        className
+      )}
+      {...props}
+    >
+      <CardContent className="flex min-w-0 flex-col gap-1 p-0 @min-[600px]:min-h-[248px] @min-[600px]:flex-row @min-[600px]:items-stretch">
+        <div className="flex min-w-0 shrink-0 items-center justify-center p-7 @min-[600px]:w-[248px]">
+          <ResourceStatusDonut
+            statuses={normalizedStatuses}
+            total={total}
+            totalLabel={totalLabel}
+            formatValue={formatValue}
+          />
+        </div>
+
+        <section className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-5" aria-label={title}>
+          <p className="text-body text-fg-muted">{title}</p>
+          <p className="text-heading font-bold tabular-nums text-fg-brand">
+            {formatValue(total)}
+          </p>
+          <span aria-hidden="true" className="h-2 shrink-0" />
+          <ResourceStatusLegend statuses={normalizedStatuses} formatValue={formatValue} />
+          {total > normalizedStatuses.reduce((sum, status) => sum + status.value, 0) && <p className="text-label text-fg-subtle">未覆盖 {formatValue(total - normalizedStatuses.reduce((sum, status) => sum + status.value, 0))}</p>}
+          {total < normalizedStatuses.reduce((sum, status) => sum + status.value, 0) && <p className="text-label text-fg-warning">分类计数超过资源总数，请核对统计范围。</p>}
+          <span aria-hidden="true" className="h-2 shrink-0" />
+          <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 text-body text-fg-subtle">
+            <span className="min-w-0">{coverageLabel}</span>
+            <span className="shrink-0 whitespace-nowrap tabular-nums">
+              {formatValue(covered)} / {formatValue(total)} · {formatPercentage(coveragePercentage)}
+            </span>
+          </div>
+        </section>
+      </CardContent>
+    </Card>
+  );
+}

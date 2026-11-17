@@ -26,7 +26,7 @@ function actionIcon(title: string): IconName {
   if (title === "应用限额") return "clock";
   if (title.includes("头")) return "file-text";
   if (title === "复制流量到") return "copy";
-  return "doc-stepper";
+  return "workflow";
 }
 
 export function RuleWorkflowSummary({ detail, enabled, expanded, onToggle }: {

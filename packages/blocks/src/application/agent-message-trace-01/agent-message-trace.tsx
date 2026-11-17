@@ -10,7 +10,7 @@ import {
   type KeyboardEvent,
 } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "motion/react";
 import { badgeColors } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { InlineNotice, InlineNoticeContent } from "@zeron/ui/inline-notice";

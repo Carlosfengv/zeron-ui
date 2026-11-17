@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 import {

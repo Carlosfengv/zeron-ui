@@ -4,7 +4,7 @@ import {
   forwardRef, useEffect, useId, useMemo, useRef, useState,
   type CSSProperties,
 } from "react";
-import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "motion/react";
 import { Badge } from "#components/badge";
 import { Button } from "#components/button";
 import { DropdownContent, DropdownMenu, DropdownTrigger } from "#components/dropdown";
@@ -182,7 +182,7 @@ export const ContextMap = forwardRef<HTMLDivElement, ContextMapProps>(function C
   const headingId = useId();
   const descriptionId = useId();
   const snapshotId = useId();
-  const MapIcon = useIcon("doc-data-grid");
+  const MapIcon = useIcon("grid");
   const Chevron = useIcon("chevron-down");
   const reduced = useReducedMotion();
   const [localView, setLocalView] = useState<ContextMapView>("after");

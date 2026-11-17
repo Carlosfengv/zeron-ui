@@ -23,7 +23,7 @@ function HealthSummary() {
 }
 
 function EnvironmentIcon() {
-  const Layers = useIcon("doc-surfaces");
+  const Layers = useIcon("layers");
   return <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-info-surface text-fg-brand"><Layers size={18} strokeWidth={1.5} /></span>;
 }
 

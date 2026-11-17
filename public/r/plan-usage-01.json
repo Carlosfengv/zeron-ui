@@ -7,7 +7,7 @@
   "dependencies": [
     "@hugeicons/react@^1.1.6",
     "@hugeicons/core-free-icons@^4.1.1",
-    "framer-motion@^12.34.0"
+    "motion@^12.42.2"
   ],
   "registryDependencies": [
     "https://zeron-ui.vercel.app/r/badge.json",

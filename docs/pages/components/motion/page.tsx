@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, type Transition } from "framer-motion";
+import { motion, AnimatePresence, type Transition } from "motion/react";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { spring } from "@zeron/ui/system/springs";

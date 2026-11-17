@@ -45,7 +45,7 @@ function notify(message: string, status: "info" | "success" | "error" = "info", 
   toast[status](message, { id, ...(status === "error" ? { duration: 0 } : {}) });
 }
 
-const nodeIcons: Record<NodeKind, IconName> = { trigger: "play", action: "doc-stepper", agent: "brain", branch: "corner-down-right" };
+const nodeIcons: Record<NodeKind, IconName> = { trigger: "play", action: "workflow", agent: "brain", branch: "corner-down-right" };
 function Glyph({ name, className }: { name: IconName; className?: string }) { const Icon = useIcon(name); return <Icon aria-hidden className={className ?? styles.glyph} />; }
 function IconButton({ name, label, onClick, disabled = false }: { name: IconName; label: string; onClick: () => void; disabled?: boolean }) {
   return <Tooltip content={label}><Button aria-label={label} iconOnly size="sm" variant="ghost" onClick={onClick} disabled={disabled}><Glyph name={name} /></Button></Tooltip>;
@@ -112,11 +112,11 @@ function NodeKindButton({ kind, disabled, onClick }: { kind: NodeKind; disabled:
 function WorkspaceNav({ onHelp }: { onHelp: () => void }) {
   const { theme, setTheme } = useThemeContext();
   return <AppShellSidebar><Sidebar collapsible="icon" variant="sidebar">
-    <SidebarHeader><div className={styles.logo} aria-label="Zeron 工作流"><Glyph name="doc-stepper" /></div></SidebarHeader>
+    <SidebarHeader><div className={styles.logo} aria-label="Zeron 工作流"><Glyph name="workflow" /></div></SidebarHeader>
     <SidebarContent><NavMenu activeValue="workflow" aria-label="工作区导航">
       <NavItem value="home"><NavItemTrigger href="/" tooltip="组件库首页"><NavItemLeading><Glyph name="home" /></NavItemLeading><NavItemContent><NavItemLabel>组件库首页</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>
       <NavItem value="pages"><NavItemTrigger href="/docs/pages" tooltip="页面与模块"><NavItemLeading><Glyph name="square-library" /></NavItemLeading><NavItemContent><NavItemLabel>页面与模块</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>
-      <NavItem value="workflow"><NavItemTrigger href="/workflow" tooltip="自动化工作流"><NavItemLeading><Glyph name="doc-stepper" /></NavItemLeading><NavItemContent><NavItemLabel>自动化工作流</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>
+      <NavItem value="workflow"><NavItemTrigger href="/workflow" tooltip="自动化工作流"><NavItemLeading><Glyph name="workflow" /></NavItemLeading><NavItemContent><NavItemLabel>自动化工作流</NavItemLabel></NavItemContent></NavItemTrigger></NavItem>
     </NavMenu></SidebarContent>
     <SidebarFooter><div className={styles.navFooter}><IconButton name={theme === "dark" ? "sun" : "moon"} label="切换明暗主题" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} /><IconButton name="lightbulb" label="使用说明" onClick={onHelp} /></div></SidebarFooter>
   </Sidebar></AppShellSidebar>;

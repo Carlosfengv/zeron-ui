@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from "react";
-import { animate } from "framer-motion";
+import { animate } from "motion/react";
 import { spring } from "@zeron/ui/system/springs";
 import type { AgentMessageTraceRow } from "./agent-message-trace-model";
 

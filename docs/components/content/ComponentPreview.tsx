@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabItem } from "@zeron/ui/tabs";
 import { Tooltip } from "@zeron/ui/tooltip";
 import { Switch } from "@zeron/ui/switch";
 import { Button } from "@zeron/ui/button";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
 import { figmaCaptureToast } from "@docs/components/content/FigmaCaptureToaster";
 import { InspectOverlay } from "@docs/components/playground/InspectOverlay";

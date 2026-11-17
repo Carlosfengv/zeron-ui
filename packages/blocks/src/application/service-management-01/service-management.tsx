@@ -138,7 +138,7 @@ export function ServiceManagement({ workspace, authorizations = defaultServiceAu
   const activeView = view ?? internalView;
   const Clock = useIcon("clock");
   const User = useIcon("user");
-  const Layers = useIcon("doc-surfaces");
+  const Layers = useIcon("layers");
   const current = activeView === "service-progress" ? { icon: Clock, title: "服务进度" } : activeView === "service-authorizations" ? { icon: User, title: "服务授权" } : { icon: Layers, title: "操作记录" };
   const setView = (next: ServiceManagementView) => { if (view === undefined) setInternalView(next); onViewChange?.(next); };
   return <OperationsWorkspaceShell workspace={{ ...workspace, serviceNavigation: (workspace?.serviceNavigation ?? defaultOperationsServiceNavigation).map(item => ({ ...item, onSelect: item.value === "service-progress" || item.value === "service-authorizations" || item.value === "operation-history" ? () => { item.onSelect?.(); setView(item.value as ServiceManagementView); } : item.onSelect })) }} activeNavigation={activeView} title={current.title} icon={current.icon} className={cn("min-h-[42rem]", className)} {...props}><PageContent><PageBody className="max-w-[101.25rem] p-3">{activeView === "service-progress" ? <ServiceProgress tickets={tickets} /> : activeView === "service-authorizations" ? <ServiceAuthorizations authorizations={authorizations} /> : <OperationHistory operations={operations} />}</PageBody></PageContent></OperationsWorkspaceShell>;

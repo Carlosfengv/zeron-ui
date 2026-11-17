@@ -1,0 +1,622 @@
+export { AgentQueue } from "./agent-queue";
+export { agentQueueChineseLabels, agentQueueEnglishLabels } from "./agent-queue-labels";
+export type {
+  AgentQueueDepthSample, AgentQueueJob, AgentQueueJobKind, AgentQueueJobStatus,
+  AgentQueueLabels, AgentQueuePriority, AgentQueueProps, AgentQueueRateLimit, AgentQueueWorker,
+} from "./agent-queue-types";
+
+
+"use client";
+
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import { MinusSignIcon, Robot01Icon, SparklesIcon, Wrench01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Badge } from "@zeron/ui/badge";
+import { Button } from "@zeron/ui/button";
+import { ButtonGroup, ButtonGroupText } from "@zeron/ui/button-group";
+import { MetricCard } from "@zeron/ui/metric-card";
+import { Popover, PopoverClose, PopoverContent, PopoverTitle, PopoverTrigger } from "@zeron/ui/popover";
+import { ScrollArea } from "@zeron/ui/scroll-area";
+import { useIcon, type IconComponent } from "@zeron/ui/system/icon-context";
+import { spring } from "@zeron/ui/system/springs";
+import { SurfaceProvider } from "@zeron/ui/system/surface-context";
+import { cn } from "@zeron/ui/system/utils";
+import { compareWaitingJobs, getDepthPoints, getJobProgress, getQueueMetrics } from "./agent-queue-data";
+import { AgentQueueDepth } from "./agent-queue-depth";
+import { agentQueueEnglishLabels } from "./agent-queue-labels";
+import type { AgentQueueJob, AgentQueueLabels, AgentQueueProps, AgentQueueRateLimit, AgentQueueWorker } from "./agent-queue-types";
+import styles from "./agent-queue.module.css";
+
+const Minus: IconComponent = (props) => <HugeiconsIcon icon={MinusSignIcon} {...props} />;
+const kindIcons = { llm: SparklesIcon, tool: Wrench01Icon, agent: Robot01Icon };
+
+function JobIcon({ job }: { job: AgentQueueJob }) {
+  const Human = useIcon("user");
+  return <span aria-hidden="true" className={styles.jobIcon} data-kind={job.kind}>
+    {job.icon ?? (job.kind === "human" ? <Human size={12} /> : <HugeiconsIcon icon={kindIcons[job.kind]} size={12} />)}
+  </span>;
+}
+
+function Result({ status, count, label }: { status: "done" | "failed"; count: number; label: string }) {
+  const Check = useIcon("check");
+  const Cross = useIcon("x");
+  const failed = status === "failed";
+  const Icon = failed ? Cross : Check;
+  return <MetricCard
+    className="self-stretch"
+    label={label}
+    labelClassName="text-label"
+    value={count}
+    valueClassName="text-title font-medium"
+    tone={failed ? "critical" : "default"}
+    leading={<span aria-hidden="true" className={cn("grid size-5 shrink-0 place-items-center rounded-sm", failed ? "bg-danger-surface-subtle text-fg-danger" : "bg-success-surface text-fg-success")}><Icon size={12} /></span>}
+  />;
+}
+
+function JobDetails({ job, worker, position, waiting, elapsed, progress, labels, onPromote, onCancel, close }: {
+  job: AgentQueueJob;
+  worker?: AgentQueueWorker;
+  position: number;
+  waiting: number;
+  elapsed: string;
+  progress?: number;
+  labels: AgentQueueLabels;
+  onPromote: AgentQueueProps["onPromote"];
+  onCancel: AgentQueueProps["onCancel"];
+  close: () => void;
+}) {
+  const Cross = useIcon("x");
+  const Up = useIcon("arrow-up");
+  const queued = job.status === "queued";
+  const status = job.status === "queued" ? labels.waiting : labels[job.status];
+  const priority = job.priority ?? "normal";
+  const attempt = job.attempt ?? 1;
+  const fields = [[status, elapsed], [labels.priority, labels.priorities[priority]]];
+  if (queued) fields.splice(1, 0, [labels.position, labels.outOf(position, waiting)]);
+  if (job.status === "running" && progress !== undefined) fields.splice(1, 0, [labels.running, `${Math.round(progress * 100)}%`]);
+  if (worker) fields.push([labels.workers, worker.name]);
+  if (job.attempt !== undefined || job.maxAttempts !== undefined) fields.push([labels.attempt, job.maxAttempts ? labels.outOf(attempt, job.maxAttempts) : `${attempt}`]);
+  const canPromote = onPromote && queued && position > 1;
+  const canCancel = onCancel && (queued || job.status === "running");
+
+  return <PopoverContent align="start" sideOffset={5} className={styles.details}>
+    <header className="flex items-start gap-2">
+      <JobIcon job={job} />
+      <div className="min-w-0 flex-1">
+        <PopoverTitle className="break-words">{job.name}</PopoverTitle>
+        <p className="text-label text-fg-subtle">{labels.kinds[job.kind]}</p>
+      </div>
+      <Badge size="sm" status={queued ? "neutral" : job.status === "failed" ? "danger" : job.status === "done" ? "success" : "info"}>{status}</Badge>
+      <PopoverClose render={<Button size="xs" variant="ghost" iconOnly aria-label={labels.closeDetails}><Cross aria-hidden="true" /></Button>} />
+    </header>
+    {job.detail != null && <div className="break-words text-label text-fg-muted">{job.detail}</div>}
+    {job.error && <p className="break-words text-label text-fg-danger">{job.error}</p>}
+    <dl className={cn(styles.detailMetrics, "bg-surface-floating")}>
+      {fields.map(([label, value], index) => <div key={index}><dt className={styles.caption}>{label}</dt><dd>{value}</dd></div>)}
+    </dl>
+    {(canPromote || canCancel) && <div className="flex flex-wrap gap-2">
+      {canPromote && <Button size="xs" variant="tertiary" leadingIcon={Up} onClick={() => onPromote(job)}>{labels.promote}</Button>}
+      {canCancel && <Button size="xs" variant="tertiary" leadingIcon={Cross} onClick={() => { close(); onCancel(job); }}>{labels.cancel}</Button>}
+    </div>}
+  </PopoverContent>;
+}
+
+export function AgentQueue({
+  jobs, workers, now: suppliedNow, paused = false, onPausedChange, onConcurrencyChange, minConcurrency = 1,
+  maxConcurrency = 8, rateLimits = [], backpressure, windowMs = 120_000, depthHistory, totals,
+  openId, defaultOpenId = null, onOpenChange, onPromote, onCancel, title, name, labels: suppliedLabels, className,
+}: AgentQueueProps) {
+  const labels = { ...agentQueueEnglishLabels, ...suppliedLabels };
+  const id = useId();
+  const reducedMotion = useReducedMotion();
+  const Play = useIcon("play");
+  const Pause = useIcon("pause");
+  const Plus = useIcon("plus");
+  const Brain = useIcon("brain");
+  const Up = useIcon("arrow-up");
+  const [clock, setClock] = useState<number>();
+  const [localOpen, setLocalOpen] = useState(defaultOpenId);
+  const [focusId, setFocusId] = useState<string | null>(null);
+  const triggerRefs = useRef(new Map<string, HTMLButtonElement>());
+  const previous = useRef<{ limited: boolean; above: boolean; failed: number; attempts: Map<string, number> } | null>(null);
+  const [announcement, setAnnouncement] = useState("");
+  const needsClock = jobs.length > 0 || rateLimits.length > 0 || Boolean(depthHistory?.length);
+
+  useEffect(() => {
+    if (suppliedNow !== undefined) return;
+    const tick = () => setClock(Date.now());
+    tick();
+    if (!needsClock) return;
+    const interval = window.setInterval(tick, 250);
+    return () => window.clearInterval(interval);
+  }, [suppliedNow, needsClock]);
+
+  const now = suppliedNow ?? clock ?? 0;
+  const historyWindow = Number.isFinite(windowMs) && windowMs > 0 ? windowMs : 120_000;
+  const from = now - historyWindow;
+  const waiting = useMemo(() => jobs.filter((job) => job.status === "queued").sort(compareWaitingJobs), [jobs]);
+  const workersById = new Map(workers.map((worker) => [worker.id, worker]));
+  const jobsByWorker = new Map<string, AgentQueueJob>();
+  const unassigned: AgentQueueJob[] = [];
+  for (const job of jobs) {
+    if (job.status !== "running") continue;
+    if (job.worker && workersById.has(job.worker) && !jobsByWorker.has(job.worker)) jobsByWorker.set(job.worker, job);
+    else unassigned.push(job);
+  }
+  const running = workers.flatMap((worker) => jobsByWorker.get(worker.id) ?? []).concat(unassigned);
+  const navigable = [...running, ...waiting];
+  const selected = navigable.find((job) => job.id === (openId === undefined ? localOpen : openId));
+  const tabbable = navigable.find((job) => job.id === focusId) ?? selected ?? navigable[0];
+  const limits = rateLimits.filter((limit) => limit.from < now && limit.until > from && limit.until > limit.from);
+  const activeLimit = rateLimits.reduce<AgentQueueRateLimit | undefined>((active, limit) => (
+    limit.from <= now && now < limit.until && (!active || limit.until > active.until) ? limit : active
+  ), undefined);
+  const stalled = paused || Boolean(activeLimit);
+  const threshold = backpressure !== undefined && Number.isFinite(backpressure) && backpressure >= 0 ? backpressure : undefined;
+  const above = threshold !== undefined && waiting.length > threshold;
+  const metrics = getQueueMetrics(jobs, now, historyWindow);
+  const failed = totals?.failed ?? metrics.failed;
+  const points = getDepthPoints(jobs, depthHistory, from, now, waiting.length);
+  const [pauseTime, setPauseTime] = useState<number>();
+
+  useEffect(() => {
+    setPauseTime((time) => paused ? time ?? now : undefined);
+  }, [now, paused]);
+
+  useEffect(() => {
+    const prior = previous.current;
+    const attempts = new Map(jobs.map((job) => [job.id, job.attempt ?? 1]));
+    previous.current = { limited: Boolean(activeLimit), above, failed, attempts };
+    if (!prior) return;
+    const messages: string[] = [];
+    if (Boolean(activeLimit) !== prior.limited) {
+      messages.push(activeLimit ? labels.rateLimited(labels.duration(activeLimit.until - now)) : labels.rateLimitLifted);
+    }
+    if (above && !prior.above && threshold !== undefined) messages.push(labels.backpressure(threshold));
+    if (failed > prior.failed) messages.push(labels.failures(failed));
+    for (const job of waiting) {
+      const earlier = prior.attempts.get(job.id);
+      if (earlier !== undefined && job.attempt && job.attempt > earlier) messages.push(`${job.name}: ${labels.retry(job.attempt)}`);
+    }
+    if (messages.length) setAnnouncement(messages.join(". "));
+  }, [activeLimit, above, failed, jobs, labels, now, threshold, waiting]);
+
+  function jobProgress(job: AgentQueueJob) {
+    const stoppedAt = Math.min(now, pauseTime ?? now, activeLimit?.from ?? now);
+    return getJobProgress(job, stoppedAt);
+  }
+
+  function changeOpen(job?: AgentQueueJob) {
+    if (openId === undefined) setLocalOpen(job?.id ?? null);
+    onOpenChange?.(job?.id ?? null, job);
+  }
+
+  function handleJobKey(event: KeyboardEvent<HTMLButtonElement>, job: AgentQueueJob) {
+    const index = navigable.indexOf(job);
+    let next: number;
+    switch (event.key) {
+      case "ArrowDown": case "ArrowRight": next = Math.min(index + 1, navigable.length - 1); break;
+      case "ArrowUp": case "ArrowLeft": next = Math.max(index - 1, 0); break;
+      case "Home": next = 0; break;
+      case "End": next = navigable.length - 1; break;
+      default: return;
+    }
+    event.preventDefault();
+    triggerRefs.current.get(navigable[next].id)?.focus();
+  }
+
+  function triggerId(job: AgentQueueJob) {
+    return `${id}-job-${encodeURIComponent(job.id)}`;
+  }
+
+  function jobElapsed(job: AgentQueueJob) {
+    return labels.duration(Math.max(0, now - (job.status === "queued" ? job.enqueuedAt : job.startedAt ?? job.enqueuedAt)));
+  }
+
+  function renderJob(job: AgentQueueJob, position?: number) {
+    const elapsed = jobElapsed(job);
+    const progress = position === undefined ? jobProgress(job) : undefined;
+    const status = position === undefined ? labels.running : labels.waiting;
+    const description = [job.name, labels.kinds[job.kind], `${status} ${elapsed}`];
+    if (position !== undefined) description.push(`${labels.position} ${labels.outOf(position, waiting.length)}`);
+    if (progress !== undefined) description.push(`${Math.round(progress * 100)}%`);
+    if (job.priority === "high") description.push(`${labels.priority} ${labels.priorities.high}`);
+    if (job.attempt && job.attempt > 1) description.push(labels.retry(job.attempt));
+
+    return <PopoverTrigger
+      id={triggerId(job)}
+      ref={(element) => {
+        if (element) triggerRefs.current.set(job.id, element);
+        else triggerRefs.current.delete(job.id);
+      }}
+      data-job-id={job.id}
+      tabIndex={tabbable?.id === job.id ? 0 : -1}
+      onFocus={() => setFocusId(job.id)}
+      onKeyDown={(event) => handleJobKey(event, job)}
+      aria-label={description.join(", ")}
+      render={<Button asChild size="sm" variant="tertiary" active={selected?.id === job.id}
+        className={cn("w-full focus-visible:z-control", styles.jobButton)} contentClassName="static w-full" labelClassName="w-full">
+        <motion.button type="button" layout={reducedMotion ? false : "position"} layoutId={reducedMotion ? undefined : triggerId(job)} transition={spring.slow}>
+          {progress !== undefined && <span className={styles.progressTrack} aria-hidden="true">
+            <span className={styles.progress} data-kind={job.kind}
+              data-stalled={stalled || undefined} style={{ transform: `scaleX(${progress})` }} />
+          </span>}
+          <span className={styles.jobContent} aria-hidden="true">
+            <JobIcon job={job} />
+            <span className={styles.jobName} dir="auto">{job.name}</span>
+            {job.priority === "high" && <span className={styles.priority}><Up size={10} /></span>}
+            {job.attempt !== undefined && job.attempt > 1 && <span className={styles.retry}>{labels.retry(job.attempt)}</span>}
+            <span className={styles.elapsed}>{elapsed}</span>
+          </span>
+        </motion.button>
+      </Button>}
+    />;
+  }
+
+  const panelTitle = title ?? labels.title;
+  const mode = activeLimit ? labels.rateLimited(labels.duration(activeLimit.until - now)) : paused ? labels.paused : labels.live;
+
+  return <SurfaceProvider role="floating"><section aria-labelledby={`${id}-title`} className={cn(styles.panel, className)} data-block="agent-queue">
+    <header className={styles.header}>
+      <div className={styles.heading}>
+        <h2 id={`${id}-title`} className={styles.title}>{panelTitle}</h2>
+        {name && <span className={styles.queueName} title={name}>{name}</span>}
+        <Badge size="sm" status={activeLimit ? "warning" : paused ? "neutral" : "info"} title={activeLimit?.label}>
+          {mode}
+        </Badge>
+      </div>
+      {(onPausedChange || onConcurrencyChange) && <div className={styles.controls}>
+        {onPausedChange && <Button size="sm" variant="tertiary" leadingIcon={paused ? Play : Pause} aria-pressed={paused} onClick={() => onPausedChange(!paused)}>
+          {paused ? labels.resume : labels.pause}
+        </Button>}
+        {onConcurrencyChange && <ButtonGroup aria-label={labels.workers}>
+          <Button size="sm" variant="tertiary" iconOnly aria-label={labels.decrease} disabled={workers.length <= minConcurrency} onClick={() => onConcurrencyChange(workers.length - 1)}><Minus aria-hidden="true" /></Button>
+          <ButtonGroupText><output aria-label={labels.workers}>{workers.length}</output></ButtonGroupText>
+          <Button size="sm" variant="tertiary" iconOnly aria-label={labels.increase} disabled={workers.length >= maxConcurrency} onClick={() => onConcurrencyChange(workers.length + 1)}><Plus aria-hidden="true" /></Button>
+        </ButtonGroup>}
+      </div>}
+    </header>
+
+    <dl className={styles.metrics}>
+      <div><dt className={styles.caption}>{labels.waiting}</dt><dd className={above ? "text-fg-warning" : undefined}>{waiting.length}</dd></div>
+      <div><dt className={styles.caption}>{labels.running}</dt><dd>{running.length}<span>/{workers.length}</span></dd></div>
+      <div><dt className={styles.caption}>{labels.throughput}</dt><dd>{metrics.throughput}<span>{labels.perMinute}</span></dd></div>
+      <div><dt className={styles.caption}>{labels.waitP95}</dt><dd>{metrics.waitP95 === undefined ? "—" : labels.duration(metrics.waitP95)}</dd></div>
+    </dl>
+
+    <Popover open={Boolean(selected)} triggerId={selected ? triggerId(selected) : null} onOpenChange={(open, details) => {
+      const next = open ? navigable.find((job) => job.id === (details.trigger as HTMLElement | undefined)?.dataset.jobId) : undefined;
+      if (!open || next) changeOpen(next);
+    }}>
+      <div className={styles.flow}>
+        <div className={styles.queue}>
+          <h3 className={styles.caption}>{panelTitle}{" "}<b>{waiting.length}</b></h3>
+          {waiting.length ? <ScrollArea className="mt-2.5" viewportClassName={cn("h-auto", styles.queueViewport)} viewportProps={{ tabIndex: -1 }}>
+            <ol className={styles.waiting}>
+              {waiting.map((job, index) => <li key={job.id}>{renderJob(job, index + 1)}</li>)}
+            </ol>
+          </ScrollArea> : <p className={styles.queueEmpty}>{labels.empty}</p>}
+        </div>
+
+        <div className={styles.workers}>
+          <h3 className={styles.caption}>{labels.workers}{" "}<b>{jobsByWorker.size}/{workers.length}</b></h3>
+          <ul className={styles.slots}>
+            {workers.map((worker) => {
+              const job = jobsByWorker.get(worker.id);
+              return <li className={styles.slot} key={worker.id}>
+                <span className={styles.worker} title={worker.name}>
+                  <span className={styles.workerIcon} aria-hidden="true">{worker.icon ?? <Brain size={14} />}</span>
+                  <span className={styles.workerName}>{worker.name}</span>
+                  <span className={styles.mobileWorkerName}>{worker.name}</span>
+                </span>
+                {job ? renderJob(job) : <span className={styles.rail}>{stalled ? labels.paused : labels.idle}</span>}
+              </li>;
+            })}
+            {unassigned.map((job) => <li className={styles.slot} key={`unassigned-${job.id}`}>
+              <span className={styles.worker} title={labels.unassigned}>
+                <span className={styles.workerIcon} aria-hidden="true"><Brain size={14} /></span>
+                <span className={styles.workerName}>{labels.unassigned}</span><span className={styles.mobileWorkerName}>{labels.unassigned}</span>
+              </span>
+              {renderJob(job)}
+            </li>)}
+          </ul>
+        </div>
+        <div className={styles.results}>
+          <Result status="done" count={totals?.done ?? metrics.done} label={labels.done} />
+          <Result status="failed" count={failed} label={labels.failed} />
+        </div>
+      </div>
+      {selected && <JobDetails job={selected} worker={selected.worker ? workersById.get(selected.worker) : undefined}
+        waiting={waiting.length} position={waiting.indexOf(selected) + 1} elapsed={jobElapsed(selected)}
+        progress={jobProgress(selected)} labels={labels} onPromote={onPromote} onCancel={onCancel} close={() => changeOpen()} />}
+    </Popover>
+
+    <AgentQueueDepth points={points} from={from} now={now} limits={limits} backpressure={threshold} labels={labels} />
+    <span className="sr-only" role="status">{announcement}</span>
+  </section></SurfaceProvider>;
+}
+
+
+import type { ReactNode } from "react";
+
+export type AgentQueueJobKind = "llm" | "tool" | "agent" | "human";
+export type AgentQueueJobStatus = "queued" | "running" | "done" | "failed";
+export type AgentQueuePriority = "high" | "normal" | "low";
+
+export interface AgentQueueJob {
+  id: string;
+  name: string;
+  kind: AgentQueueJobKind;
+  status: AgentQueueJobStatus;
+  enqueuedAt: number;
+  startedAt?: number;
+  endedAt?: number;
+  worker?: string;
+  priority?: AgentQueuePriority;
+  /** Optional sort key within the same priority group. Lower values are first. */
+  queueOrder?: number;
+  /** A fraction from 0 to 1. When absent, `estimate` can drive the bar. */
+  progress?: number;
+  /** Estimated execution time in milliseconds. */
+  estimate?: number;
+  attempt?: number;
+  maxAttempts?: number;
+  detail?: ReactNode;
+  icon?: ReactNode;
+  error?: string;
+}
+
+export interface AgentQueueWorker {
+  id: string;
+  name: string;
+  icon?: ReactNode;
+}
+
+export interface AgentQueueRateLimit {
+  from: number;
+  until: number;
+  label?: string;
+}
+
+export interface AgentQueueDepthSample {
+  at: number;
+  depth: number;
+}
+
+export interface AgentQueueLabels {
+  title: string;
+  waiting: string;
+  running: string;
+  workers: string;
+  throughput: string;
+  perMinute: string;
+  waitP95: string;
+  done: string;
+  failed: string;
+  live: string;
+  idle: string;
+  empty: string;
+  unassigned: string;
+  paused: string;
+  pause: string;
+  resume: string;
+  increase: string;
+  decrease: string;
+  depth: string;
+  now: string;
+  position: string;
+  priority: string;
+  attempt: string;
+  promote: string;
+  cancel: string;
+  closeDetails: string;
+  kinds: Record<AgentQueueJobKind, string>;
+  priorities: Record<AgentQueuePriority, string>;
+  duration: (milliseconds: number) => string;
+  ago: (duration: string) => string;
+  outOf: (value: number, total: number) => string;
+  rateLimited: (remaining: string) => string;
+  rateLimitLifted: string;
+  backpressure: (depth: number) => string;
+  failures: (total: number) => string;
+  retry: (attempt: number) => string;
+  depthSummary: (waiting: number, peak: number, rateLimits: number) => string;
+}
+
+export interface AgentQueueProps {
+  jobs: readonly AgentQueueJob[];
+  workers: readonly AgentQueueWorker[];
+  /** Time in milliseconds on the same clock as the jobs, events and samples. */
+  now?: number;
+  paused?: boolean;
+  onPausedChange?: (paused: boolean) => void;
+  onConcurrencyChange?: (workers: number) => void;
+  minConcurrency?: number;
+  maxConcurrency?: number;
+  rateLimits?: readonly AgentQueueRateLimit[];
+  backpressure?: number;
+  /** Length of the history window in milliseconds. Defaults to two minutes. */
+  windowMs?: number;
+  /** Supply samples when `jobs` holds a partial history. Otherwise depth is derived from job timings. */
+  depthHistory?: readonly AgentQueueDepthSample[];
+  totals?: { done: number; failed: number };
+  openId?: string | null;
+  defaultOpenId?: string | null;
+  onOpenChange?: (id: string | null, job?: AgentQueueJob) => void;
+  onPromote?: (job: AgentQueueJob) => void;
+  onCancel?: (job: AgentQueueJob) => void;
+  title?: string;
+  name?: string;
+  labels?: Partial<AgentQueueLabels>;
+  className?: string;
+}
+
+
+import type { AgentQueueLabels } from "./agent-queue-types";
+
+function duration(milliseconds: number, seconds: string, minutes: string) {
+  const value = Math.max(0, milliseconds) / 1000;
+  if (value < 10) return `${Math.floor(value * 10) / 10}${seconds}`;
+  if (value < 60) return `${Math.floor(value)}${seconds}`;
+  const remainder = Math.floor(value % 60);
+  return `${Math.floor(value / 60)}${minutes}${remainder ? ` ${remainder}${seconds}` : ""}`;
+}
+
+export const agentQueueEnglishLabels: AgentQueueLabels = {
+  title: "Queue", waiting: "Waiting", running: "Running", workers: "Workers", throughput: "Throughput",
+  perMinute: "/min", waitP95: "Wait p95", done: "Done", failed: "Failed", live: "Live", idle: "Idle",
+  empty: "No jobs waiting", unassigned: "Unassigned", paused: "Paused", pause: "Pause", resume: "Resume",
+  increase: "One worker more", decrease: "One worker less", depth: "Queue depth", now: "now",
+  position: "Position", priority: "Priority", attempt: "Attempt", promote: "Move to front", cancel: "Cancel",
+  closeDetails: "Close details",
+  kinds: { llm: "LLM call", tool: "Tool call", agent: "Sub-agent", human: "Human review" },
+  priorities: { high: "High", normal: "Normal", low: "Low" },
+  duration: (ms) => duration(ms, "s", "m"),
+  ago: (value) => `${value} ago`,
+  outOf: (value, total) => `${value} of ${total}`,
+  rateLimited: (remaining) => `Rate limited · ${remaining}`,
+  rateLimitLifted: "Rate limit lifted",
+  backpressure: (depth) => `Queue depth above ${depth}`,
+  failures: (total) => `${total} failed jobs`,
+  retry: (attempt) => `Retry ${attempt}`,
+  depthSummary: (waiting, peak, limits) => `Queue depth: ${waiting} waiting now, peak ${peak}, ${limits} rate-limited periods`,
+};
+
+export const agentQueueChineseLabels: AgentQueueLabels = {
+  title: "队列", waiting: "等待", running: "运行中", workers: "工作槽", throughput: "吞吐量",
+  perMinute: "/分钟", waitP95: "等待 P95", done: "已完成", failed: "失败", live: "实时", idle: "空闲",
+  empty: "暂无等待任务", unassigned: "未分配", paused: "已暂停", pause: "暂停", resume: "恢复",
+  increase: "增加一个工作槽", decrease: "减少一个工作槽", depth: "队列深度", now: "现在",
+  position: "队列位置", priority: "优先级", attempt: "尝试次数", promote: "移到队首", cancel: "取消任务",
+  closeDetails: "关闭详情",
+  kinds: { llm: "模型调用", tool: "工具调用", agent: "子 Agent", human: "人工审核" },
+  priorities: { high: "高", normal: "普通", low: "低" },
+  duration: (ms) => duration(ms, "秒", "分"),
+  ago: (value) => `${value}前`,
+  outOf: (value, total) => `${value} / ${total}`,
+  rateLimited: (remaining) => `限流中 · ${remaining}`,
+  rateLimitLifted: "限流已解除",
+  backpressure: (depth) => `队列深度已超过 ${depth}`,
+  failures: (total) => `${total} 个任务失败`,
+  retry: (attempt) => `重试 ${attempt}`,
+  depthSummary: (waiting, peak, limits) => `队列深度：当前 ${waiting} 个任务等待，峰值 ${peak}，限流 ${limits} 次`,
+};
+
+
+import type { AgentQueueDepthSample, AgentQueueJob } from "./agent-queue-types";
+
+const priorityOrder = { high: 0, normal: 1, low: 2 };
+
+export function compareWaitingJobs(first: AgentQueueJob, second: AgentQueueJob) {
+  return priorityOrder[first.priority ?? "normal"] - priorityOrder[second.priority ?? "normal"]
+    || (first.queueOrder ?? 0) - (second.queueOrder ?? 0)
+    || first.enqueuedAt - second.enqueuedAt;
+}
+
+export function getJobProgress(job: AgentQueueJob, now: number) {
+  const progress = job.progress ?? (job.estimate && job.estimate > 0 && job.startedAt !== undefined
+    ? Math.min(0.99, (now - job.startedAt) / job.estimate)
+    : undefined);
+  return progress !== undefined && Number.isFinite(progress) ? Math.min(1, Math.max(0, progress)) : undefined;
+}
+
+export function getQueueMetrics(jobs: readonly AgentQueueJob[], now: number, windowMs: number) {
+  const metrics = { throughput: 0, done: 0, failed: 0, waitP95: undefined as number | undefined };
+  const waits: number[] = [];
+  for (const job of jobs) {
+    if (job.status === "done" || job.status === "failed") {
+      metrics[job.status]++;
+      if (job.endedAt !== undefined && job.endedAt > now - 60_000 && job.endedAt <= now) metrics.throughput++;
+    }
+    if (job.status !== "queued" && job.startedAt !== undefined && job.startedAt >= now - windowMs && job.startedAt <= now) {
+      waits.push(Math.max(0, job.startedAt - job.enqueuedAt));
+    }
+  }
+  waits.sort((a, b) => a - b);
+  metrics.waitP95 = waits[Math.ceil(waits.length * 0.95) - 1];
+  return metrics;
+}
+
+export function getDepthPoints(
+  jobs: readonly AgentQueueJob[], history: readonly AgentQueueDepthSample[] | undefined,
+  from: number, now: number, waiting: number,
+): AgentQueueDepthSample[] {
+  let depth = 0;
+  const points: AgentQueueDepthSample[] = [];
+  if (history) {
+    for (const sample of history.slice().sort((a, b) => a.at - b.at)) {
+      if (sample.at <= from) depth = sample.depth;
+      else if (sample.at < now) points.push(sample);
+    }
+  } else {
+    const changes = new Map<number, number>();
+    const addChange = (at: number, change: number) => {
+      if (at <= from) depth += change;
+      else if (at < now) changes.set(at, (changes.get(at) ?? 0) + change);
+    };
+    for (const job of jobs) {
+      const exit = job.status === "queued" ? Infinity : job.startedAt ?? job.endedAt ?? job.enqueuedAt;
+      if (exit <= Math.max(from, job.enqueuedAt) || job.enqueuedAt >= now) continue;
+      addChange(job.enqueuedAt, 1);
+      addChange(exit, -1);
+    }
+    let current = depth;
+    for (const [at, change] of Array.from(changes).sort(([a], [b]) => a - b)) {
+      current += change;
+      points.push({ at, depth: current });
+    }
+  }
+  return [{ at: from, depth }, ...points, { at: now, depth: waiting }];
+}
+
+
+import { useId } from "react";
+import { Area, AreaChart, CartesianGrid, ReferenceArea, ReferenceDot, ReferenceLine, XAxis, YAxis } from "recharts";
+import { ChartContainer } from "@zeron/ui/chart";
+import type { AgentQueueDepthSample, AgentQueueLabels, AgentQueueRateLimit } from "./agent-queue-types";
+import styles from "./agent-queue.module.css";
+
+const depthColor = "var(--color-depth)";
+
+export function AgentQueueDepth({ points, from, now, limits, backpressure, labels }: {
+  points: readonly AgentQueueDepthSample[];
+  from: number;
+  now: number;
+  limits: readonly AgentQueueRateLimit[];
+  backpressure?: number;
+  labels: AgentQueueLabels;
+}) {
+  const gradient = `queue-depth-${useId().replace(/:/g, "")}`;
+  const current = points.at(-1)?.depth ?? 0;
+  const peak = points.reduce((max, point) => Math.max(max, point.depth), 0);
+  const ceiling = Math.max(4, Math.ceil((Math.max(peak, backpressure ?? 0) + 1) / 4) * 4);
+  const ticks = [0, backpressure || ceiling / 2, ceiling];
+
+  return (
+    <figure className={styles.depth}>
+      <figcaption className={styles.caption}>{labels.depth}</figcaption>
+      <div className={styles.chart} role="img" aria-label={labels.depthSummary(current, peak, limits.length)}>
+        <ChartContainer aria-hidden="true" className="h-32 min-h-0" config={{ depth: { label: labels.depth, color: "var(--chart-5)" } }}>
+          <AreaChart data={points} accessibilityLayer={false} margin={{ left: 0, right: 5, top: 8, bottom: 8 }}>
+            <defs>
+              <linearGradient id={gradient} x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor={depthColor} stopOpacity={0.22} />
+                <stop offset="100%" stopColor={depthColor} stopOpacity={0.09} />
+              </linearGradient>
+            </defs>
+            <XAxis type="number" dataKey="at" domain={[from, now]} hide />
+            <YAxis domain={[0, ceiling]} ticks={ticks} interval={0} width={26} axisLine={false} tickLine={false} tick={{ fill: "var(--fg-subtle)" }} />
+            <CartesianGrid vertical={false} horizontalValues={ticks.filter((tick) => tick !== backpressure)} syncWithTicks stroke="var(--border)" strokeWidth={0.5} />
+            {limits.map((limit, index) => <ReferenceArea key={index} x1={Math.max(limit.from, from)} x2={Math.min(limit.until, now)}
+              fill="var(--chart-3)" fillOpacity={0.08} stroke="none" />)}
+            {backpressure !== undefined && <ReferenceLine y={backpressure} stroke="var(--border)" strokeDasharray="3 3" />}
+            <Area type="linear" dataKey="depth" stroke={depthColor} strokeWidth={1.25} fill={`url(#${gradient})`} isAnimationActive={false} />
+            <ReferenceDot x={now} y={current} r={3} fill={depthColor} stroke="var(--surface-floating)" strokeWidth={1} />
+          </AreaChart>
+        </ChartContainer>
+        <div className={styles.axis} aria-hidden="true"><span>{labels.ago(labels.duration(now - from))}</span><span>{labels.now}</span></div>
+      </div>
+    </figure>
+  );
+}

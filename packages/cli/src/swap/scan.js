@@ -1,9 +1,10 @@
 import path from "node:path";
 import { isBuiltin } from "node:module";
-import ts from "typescript";
+import { getTypeScript } from "../typescript-api.js";
 import { hash, loadProject, portable, projectFiles, readProjectFile } from "./project.js";
 
 export async function scanProject(cwd) {
+  const ts = getTypeScript();
   cwd = path.resolve(cwd);
   const unknowns = [];
   const project = await loadProject(cwd, unknowns);

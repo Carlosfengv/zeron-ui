@@ -9,7 +9,8 @@ import { StorageUsage, storageUsageDemoData } from "@zeron/blocks/storage-usage-
 import { modelRouterDemoData } from "@zeron/blocks/model-router-01";
 import { RouterFlow } from "../packages/blocks/src/application/model-router-01/router-flow";
 import { costEstimateColorIndices } from "../packages/blocks/src/application/cost-estimate-01/cost-estimate-data";
-import { ChartContainer, TimeSeriesChart } from "@zeron/ui/chart";
+import { ChartContainer, DonutSummary as LegacyDonutSummary, TimeSeriesChart as LegacyTimeSeriesChart } from "@zeron/ui/chart";
+import { DonutSummary, TimeSeriesChart, type TimeSeriesChartProps } from "@zeron/ui/chart-summary";
 import { ResourceStatusAll } from "@zeron/blocks/resource-status-all-01";
 import { ResourceMetricList, defaultResourceMetrics } from "@zeron/blocks/resource-metric-list-01";
 import { ProviderCostDonut } from "../packages/blocks/src/application/ai-gateway-overview-01/ai-gateway-overview-charts";
@@ -227,11 +228,37 @@ describe("真实消费者的数据边界", () => {
     rerender(<TimeSeriesChart data={[{ timestamp: at, values: { requests: null } }, { timestamp: at + 3600000, values: { requests: 12 } }]} series={[{ id: "requests", label: "请求" }]} locale="en-GB" timeZone="Asia/Shanghai" domain={[at, at + 7200000]} label="请求趋势" />);
     expect(screen.getByRole("table", { hidden: true }).textContent).toContain("09:00");
     expect(screen.getAllByRole("cell", { hidden: true }).map((cell) => cell.textContent)).toEqual(["—", "12"]);
-    rerender(<TimeSeriesChart data={[]} series={[{ id: "requests", label: "请求" }]} locale="en" timeZone="UTC" label="请求趋势" />);
-    expect(screen.getByText("暂无数据 / No data")).toBeTruthy();
-    rerender(<TimeSeriesChart data={[{ timestamp: NaN, values: { requests: 12 } }]} series={[{ id: "requests", label: "请求" }]} locale="en" timeZone="UTC" label="请求趋势" />);
-    expect(screen.getByText("部分时间无效，请查看数据 / Invalid timestamps; view data")).toBeTruthy();
+  });
+
+  it("re-exports the native summaries from the existing chart entry", () => {
+    expect(LegacyTimeSeriesChart).toBe(TimeSeriesChart);
+    expect(LegacyDonutSummary).toBe(DonutSummary);
+  });
+
+  const chartProps = { series: [{ id: "requests", label: "Requests" }], timeZone: "UTC", label: "Requests per hour" } satisfies Omit<TimeSeriesChartProps, "data" | "locale">;
+  const invalidPoint = { timestamp: NaN, values: { requests: 12 } };
+
+  it.each([
+    ["en-GB", "No data", "Invalid timestamps; view data"],
+    ["zh-Hant", "暂无数据", "部分时间无效，请查看数据"],
+  ])("localizes empty and partially invalid data for %s", (locale, empty, warning) => {
+    const { rerender } = render(<TimeSeriesChart {...chartProps} locale={locale} data={[]} />);
+    expect(screen.getByText(empty)).toBeTruthy();
+    expect(screen.queryByText(warning)).toBeNull();
+    rerender(<TimeSeriesChart {...chartProps} locale={locale} data={[invalidPoint, { timestamp: 0, values: { requests: 4 } }]} />);
+    expect(screen.getByText(warning)).toBeTruthy();
+    expect(screen.queryByText(empty)).toBeNull();
+    expect(screen.getAllByRole("cell", { hidden: true }).map(cell => cell.textContent)).toEqual(["12", "4"]);
+  });
+
+  it("uses caller labels independently and keeps invalid rows accessible", () => {
+    const { rerender } = render(<TimeSeriesChart {...chartProps} locale="zh-CN" data={[invalidPoint]} labels={{ invalidTimestamps: "Check the supplied dates" }} />);
+    expect(screen.getByText("Check the supplied dates")).toBeTruthy();
+    expect(screen.getByText("暂无数据")).toBeTruthy();
     expect(screen.getByRole("cell", { hidden: true }).textContent).toBe("12");
+    rerender(<TimeSeriesChart {...chartProps} locale="en" data={[invalidPoint]} labels={{ empty: "No usable dates yet" }} />);
+    expect(screen.getByText("No usable dates yet")).toBeTruthy();
+    expect(screen.getByText("Invalid timestamps; view data")).toBeTruthy();
   });
 
   it.each([false, true])("资源圆环图例和分段条按类别共用槽位，重排=%s", (reversed) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComponentPropsWithoutRef } from "react";
-import { DonutSummary } from "@zeron/ui/chart";
+import { DonutSummary } from "@zeron/ui/chart-summary";
 import { ChartLegend, chartColor } from "@zeron/ui/chart-primitives";
 import { Card, CardContent } from "@zeron/ui/card";
 import { cn } from "@zeron/ui/system/utils";

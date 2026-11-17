@@ -11,7 +11,8 @@ import { Input } from "@zeron/ui/input";
 import { NavItem, NavItemContent, NavItemLabel, NavItemLeading, NavItemTrigger } from "@zeron/ui/nav-item";
 import { NavMenu } from "@zeron/ui/nav-menu";
 import { PageBody, PageContent, PageLayout, PageSidebar } from "@zeron/ui/page-layout";
-import { useIcon, type IconName } from "@zeron/icons/context";
+import { useIcon } from "@zeron/icons/context";
+import { useDocIcon } from "@docs/icons/doc-icons";
 import { navigationDocEntries, type DocEntry } from "@docs/manifest";
 import { RightPanel } from "@docs/components/shell/site/right-panel";
 import { componentCardDescription } from "@docs/components/components/component-card-copy";
@@ -82,7 +83,7 @@ const sectionLabels = {
   },
 } as const;
 
-const sectionIcons: Record<ComponentSection | "all", IconName> = {
+const sectionIcons: Record<ComponentSection | "all", DocEntry["icon"]> = {
   all: "square-library",
   foundations: "doc-semantic-tokens",
   layout: "doc-page-layout",
@@ -119,12 +120,12 @@ function CategoryLink({ active, count, disabled = false, icon, label, onSelect, 
   active: boolean;
   count: number;
   disabled?: boolean;
-  icon: IconName;
+  icon: DocEntry["icon"];
   label: string;
   onSelect: () => void;
   value: string;
 }) {
-  const Icon = useIcon(icon);
+  const Icon = useDocIcon(icon);
   return (
     <NavItem active={active} className="max-lg:w-auto" disabled={disabled} value={value}>
       <NavItemTrigger render={<button type="button" />} onClick={onSelect}>
@@ -216,7 +217,7 @@ function ComponentDirectorySidebar({
 }
 
 function ComponentNavigationItem({ active, entry, href }: { active: boolean; entry: DocEntry; href: string }) {
-  const Icon = useIcon(entry.icon);
+  const Icon = useDocIcon(entry.icon);
   return (
     <NavItem active={active} value={entry.slug}>
       <NavItemTrigger render={<Link href={href} />}>

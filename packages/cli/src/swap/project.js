@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFile, readdir, realpath } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
-import ts from "typescript";
+import { getTypeScript } from "../typescript-api.js";
 
 export const hash = (value) => createHash("sha256").update(value).digest("hex");
 export const portable = (value) => value.split(path.sep).join("/");
@@ -47,6 +47,7 @@ export async function projectFiles(cwd, unknowns) {
 }
 
 export async function loadProject(cwd, unknowns) {
+  const ts = getTypeScript();
   const pkg = JSON.parse(await readFile(path.join(cwd, "package.json"), "utf8"));
   const dependencies = { ...pkg.dependencies, ...pkg.devDependencies };
   const require = createRequire(path.join(cwd, "package.json"));

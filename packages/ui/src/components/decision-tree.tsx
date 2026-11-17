@@ -4,7 +4,7 @@ import {
   forwardRef, useEffect, useId, useImperativeHandle, useLayoutEffect, useRef, useState,
   type ComponentPropsWithoutRef, type KeyboardEvent, type ReactNode,
 } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import { Alert, AlertDescription } from "#components/alert";
 import { Avatar, AvatarFallback } from "#components/avatar";
 import { Badge } from "#components/badge";
@@ -252,7 +252,7 @@ const DecisionTree = forwardRef<DecisionTreeHandle, DecisionTreeProps>(function 
   const activeIndex = cursor.id ? queue.indexOf(cursor.id) : -1;
   const index = activeIndex < 0 ? cursor.index % Math.max(queue.length, 1) : activeIndex;
   const decision = byId.get(queue[index]);
-  const BranchIcon = useIcon("doc-stepper");
+  const BranchIcon = useIcon("workflow");
   const PreviousIcon = useIcon("chevron-left");
   const NextIcon = useIcon("chevron-right");
 

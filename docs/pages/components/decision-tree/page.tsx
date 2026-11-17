@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { DecisionTree, type Decision, type DecisionTreeLabels } from "@zeron/ui/decision-tree";
 import { Button } from "@zeron/ui/button";
 import { useIcon } from "@zeron/icons/context";
+import { useDocIcon } from "@docs/icons/doc-icons";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { DocPage, DocSection } from "@docs/components/content/DocPage";
 import { PropsTable } from "@docs/components/content/PropsTable";
@@ -50,7 +51,7 @@ export default function DecisionTreeDoc() {
   const Sales = useIcon("users");
   const Restore = useIcon("rotate-ccw");
   const Fix = useIcon("pencil");
-  const Flag = useIcon("doc-switch");
+  const Flag = useDocIcon("doc-switch");
   const Status = useIcon("globe");
   const Team = useIcon("message-circle");
   const decisions: readonly Decision[] = (t.raw("decisions") as Decision[]).map((decision, index) => {

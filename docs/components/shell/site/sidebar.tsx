@@ -19,8 +19,8 @@ import {
   useSidebar,
 } from "@zeron/ui/sidebar";
 import { cn } from "@zeron/ui/system/utils";
-import { useIcon, type IconName } from "@zeron/icons/context";
-import { navigationDocEntries, sectionDefinitions, pathnameOf, type DocCollection } from "@docs/manifest";
+import { useDocIcon } from "@docs/icons/doc-icons";
+import { navigationDocEntries, sectionDefinitions, pathnameOf, type DocCollection, type DocEntry } from "@docs/manifest";
 import { artifactCatalog } from "@docs/catalog/artifacts";
 import { SettingsContent } from "@docs/components/shell/site/right-panel";
 import { internalPathname, localizePathname } from "@docs/components/shell/site/locale-path";
@@ -42,12 +42,12 @@ function SiteNavItem({
 }: {
   href: string;
   label: string;
-  icon: IconName;
+  icon: DocEntry["icon"];
   isNew?: boolean;
   isUpdated?: boolean;
   dotColor?: string;
 }) {
-  const Icon = useIcon(icon);
+  const Icon = useDocIcon(icon);
 
   return (
     <NavItem value={href}>

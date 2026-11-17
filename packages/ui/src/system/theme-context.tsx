@@ -89,8 +89,7 @@ function ThemeProvider({
     }
   }, [isThemeReady, theme]);
 
-  // Keep both the select control and the keyboard shortcut persistent across
-  // refreshes. Write from the state effect so every change path stays covered.
+  // Write from the state effect so every theme change persists across refreshes.
   useEffect(() => {
     if (!isThemeReady) return;
 
@@ -100,23 +99,6 @@ function ThemeProvider({
       // Storage is optional; the in-session theme remains functional.
     }
   }, [isThemeReady, theme]);
-
-  // Global keyboard shortcut: D toggles explicitly between light and dark.
-  // The system preference remains available from the settings control, but a
-  // shortcut must always result in a visible light/dark change.
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() !== "d") return;
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const tag = (e.target as HTMLElement)?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable) return;
-      e.preventDefault();
-      // Just update state — the [theme] effect above applies the DOM.
-      setThemeState((prev) => (prev === "dark" ? "light" : "dark"));
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, []);
 
   const value = useMemo(() => ({ theme, setTheme }), [theme, setTheme]);
 

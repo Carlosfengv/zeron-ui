@@ -3,6 +3,7 @@ import { extendTailwindMerge } from "tailwind-merge";
 
 import {
   mergeBorderWidthTokenNames,
+  mergeHeightTokenNames,
   mergeMotionDurationTokenNames,
   mergeTypographyTokenNames,
 } from "#system/tailwind-merge-tokens";
@@ -24,6 +25,8 @@ const mergeTailwindClasses = extendTailwindMerge({
       "border-w-b": [{ "border-b": mergeBorderWidthTokenNames }],
       "border-w-l": [{ "border-l": mergeBorderWidthTokenNames }],
       duration: [{ duration: mergeMotionDurationTokenNames }],
+      h: [{ h: mergeHeightTokenNames }],
+      "min-h": [{ "min-h": mergeHeightTokenNames }],
     },
     theme: {
       text: [...mergeTypographyTokenNames],

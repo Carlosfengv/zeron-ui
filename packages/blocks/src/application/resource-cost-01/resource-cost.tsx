@@ -5,7 +5,7 @@ import { getExpandedRowModel, type ColumnDef, type ExpandedState } from "@tansta
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
 import { ButtonGroup } from "@zeron/ui/button-group";
-import { DonutSummary } from "@zeron/ui/chart";
+import { DonutSummary } from "@zeron/ui/chart-summary";
 import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
 import { DataTable, DataTableViewOptions, useDataTable } from "@zeron/ui/data-table";
 import { DropdownContent, DropdownMenu, DropdownTrigger } from "@zeron/ui/dropdown";
@@ -29,7 +29,7 @@ export function ResourceCost({ items, title, description, summaryLabel, currency
   const Search = useIcon("search"); const Close = useIcon("x"); const Download = useIcon("arrow-down");
   const ChevronRight = useIcon("chevron-right"); const ChevronDown = useIcon("chevron-down");
   const Clock = useIcon("clock"); const More = useIcon("ellipsis");
-  const Cluster = useIcon("doc-surfaces"); const Pool = useIcon("doc-data-grid"); const Gpu = useIcon("brain");
+  const Cluster = useIcon("layers"); const Pool = useIcon("grid"); const Gpu = useIcon("brain");
   const Compute = useIcon("monitor"); const Storage = useIcon("file-archive"); const Network = useIcon("globe");
   const [search, setSearch] = useState("");
   const [availability, setAvailability] = useState<ResourceCostAvailability | "all">("all");

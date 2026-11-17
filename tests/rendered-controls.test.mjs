@@ -7,6 +7,9 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+import { build } from "esbuild";
+import postcss from "postcss";
+import tailwindcss from "@tailwindcss/postcss";
 import { inspectRenderedControls, parseControlCheckArgs } from "../.agents/skills/zeron-page-builder/scripts/check-rendered-controls.mjs";
 
 let browser;
@@ -20,6 +23,176 @@ async function measure(html) {
   try { await page.setContent(css + html); return await page.evaluate(inspectRenderedControls); }
   finally { await page.close(); }
 }
+
+async function renderFixture(page, fixture) {
+  const stylesheet = fileURLToPath(new URL("../app/globals.css", import.meta.url));
+  const [style, script] = await Promise.all([
+    readFile(stylesheet, "utf8").then(css => postcss([tailwindcss()]).process(css, { from: stylesheet })),
+    build({
+      entryPoints: [fileURLToPath(new URL(`./fixtures/${fixture}.tsx`, import.meta.url))],
+      bundle: true,
+      jsx: "automatic",
+      define: { "process.env.NODE_ENV": '"production"' },
+      write: false,
+    }),
+  ]);
+  await page.setContent('<!doctype html><div id="root"></div>');
+  await page.addStyleTag({ content: style.css });
+  await page.addScriptTag({ content: script.outputFiles[0].text });
+}
+
+it("renders fixed, content-sized and link controls at their intended heights", async () => {
+  const page = await browser.newPage();
+  try {
+    await renderFixture(page, "control-heights");
+    async function measureControl(role, name) {
+      return page.getByRole(role, { name }).evaluate(element => ({
+        height: element.getBoundingClientRect().height,
+        minHeight: getComputedStyle(element).minHeight,
+      }));
+    }
+    expect(await measureControl("button", "Fixed button")).toMatchObject({ height: 32 });
+    expect(await measureControl("combobox", "Fixed select")).toMatchObject({ height: 32 });
+    const richButton = await measureControl("button", "Content button");
+    expect(richButton.minHeight).toBe("28px");
+    expect(richButton.height).toBeGreaterThan(32);
+    expect(await measureControl("button", "Short button")).toEqual({ height: 24, minHeight: "0px" });
+    const richSelect = await measureControl("combobox", "Content select");
+    expect(richSelect.minHeight).toBe("0px");
+    expect(richSelect.height).toBeGreaterThan(32);
+    const linkButton = await measureControl("link", "Link button");
+    expect(linkButton.minHeight).toBe("0px");
+    expect(linkButton.height).toBeGreaterThan(0);
+    expect(linkButton.height).toBeLessThan(32);
+  } finally {
+    await page.close();
+  }
+}, 30000);
+
+async function expectIndicator(indicator, item) {
+  await expect.poll(async () => {
+    if (!(await indicator.count()) || !(await item.count())) return false;
+    const [marker, target] = await Promise.all([indicator.boundingBox(), item.boundingBox()]);
+    return Boolean(marker && target && ["x", "y", "height", "width"].every(
+      key => Math.abs(marker[key] - target[key]) < 2,
+    ));
+  }).toBe(true);
+}
+
+it("keeps wrapped Tabs keyboard order, selection and indicators aligned through keyed changes", async () => {
+  const page = await browser.newPage();
+  try {
+    await renderFixture(page, "compound-controls");
+    const indexed = page.getByRole("region", { name: "index tabs" });
+    const indexedA = indexed.getByRole("tab", { name: "A", exact: true });
+    const indexedC = indexed.getByRole("tab", { name: "C", exact: true });
+    await expectIndicator(indexed.locator('[data-slot="tabs-selection-indicator"]'), indexedA);
+    await indexedA.evaluate(node => { node.dataset.original = "true"; });
+    await indexed.getByRole("button", { name: "Reorder" }).click();
+    await expect.poll(() => indexedC.getAttribute("aria-selected")).toBe("true");
+    expect(await indexedA.getAttribute("data-original")).toBe("true");
+    await expectIndicator(indexed.locator('[data-slot="tabs-selection-indicator"]'), indexedC);
+    await indexedA.click();
+    await expect.poll(() => indexed.getByLabel("Requested tab").textContent()).toBe("A:1");
+    await indexedC.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect.poll(() => indexedA.evaluate(node => document.activeElement === node)).toBe(true);
+    await expectIndicator(indexed.locator('[data-slot="tabs-focus-indicator"]'), indexedA);
+    await expectIndicator(indexed.locator('[data-slot="tabs-selection-indicator"]'), indexedC);
+    await page.keyboard.press("ArrowRight");
+    await expect.poll(() => indexed.getByLabel("Requested tab").textContent()).toBe("B:2");
+    await indexed.getByRole("button", { name: "Remove first" }).click();
+    await expect.poll(() => indexedA.getAttribute("aria-selected")).toBe("true");
+    await indexed.getByRole("button", { name: "Insert D" }).click();
+    await expect.poll(() => indexed.getByRole("tab", { name: "D" }).getAttribute("aria-selected")).toBe("true");
+
+    const valued = page.getByRole("region", { name: "value tabs" });
+    const valuedA = valued.getByRole("tab", { name: "A", exact: true });
+    const valuedB = valued.getByRole("tab", { name: /B, longer/ });
+    const valuedC = valued.getByRole("tab", { name: "C" });
+    await valued.getByRole("button", { name: "Reorder" }).click();
+    await expectIndicator(valued.locator('[data-slot="tabs-selection-indicator"]'), valuedA);
+    await valuedA.focus();
+    await page.keyboard.press("ArrowLeft");
+    await expect.poll(() => valuedC.evaluate(node => document.activeElement === node)).toBe(true);
+    await expectIndicator(valued.locator('[data-slot="tabs-focus-indicator"]'), valuedC);
+    expect(await valued.getByLabel("Requested tab").textContent()).toBe(":");
+    await page.keyboard.press("Enter");
+    await expect.poll(() => valued.getByLabel("Requested tab").textContent()).toBe("C:0");
+    expect(await valuedA.getAttribute("aria-selected")).toBe("true");
+    await valuedB.hover();
+    await expectIndicator(valued.locator('[data-slot="tabs-hover-indicator"]'), valuedB);
+    await expectIndicator(valued.locator('[data-slot="tabs-selection-indicator"]'), valuedA);
+
+    const free = page.getByRole("region", { name: "uncontrolled tabs" });
+    await free.getByRole("button", { name: "Reorder" }).click();
+    const freeA = free.getByRole("tab", { name: "A", exact: true });
+    await expect.poll(() => freeA.getAttribute("aria-selected")).toBe("true");
+    await free.getByRole("tab", { name: "C" }).click();
+    await free.getByRole("button", { name: "Remove first" }).click();
+    await expect.poll(() => freeA.getAttribute("aria-selected")).toBe("true");
+    await free.getByRole("button", { name: "Restore" }).click();
+    await expectIndicator(free.locator('[data-slot="tabs-selection-indicator"]'), freeA);
+  } finally {
+    await page.close();
+  }
+}, 30000);
+
+it("uses the explicit Select collection for wrapped rich labels, dynamic indexes and keyboard typeahead", async () => {
+  const page = await browser.newPage();
+  try {
+    await renderFixture(page, "compound-controls");
+    const trigger = page.getByRole("combobox", { name: "Wrapped options" });
+    const popup = page.getByRole("listbox");
+    const alpha = popup.getByRole("option", { name: "Alpha rich" });
+    const beta = popup.getByRole("option", { name: "Beta disabled" });
+    const gamma = popup.getByRole("option", { name: "Gamma rich" });
+    const delta = popup.getByRole("option", { name: "Delta rich" });
+    const selection = popup.locator('[data-slot="select-selection-indicator"]');
+    const hover = popup.locator('[data-slot="select-hover-indicator"]');
+    expect(await trigger.locator("strong").textContent()).toBe("Alpha rich");
+    await trigger.focus();
+    await page.keyboard.press("ArrowDown");
+    await expectIndicator(selection, alpha);
+    expect(await beta.getAttribute("aria-disabled")).toBe("true");
+    expect(await beta.getAttribute("data-proximity-index")).toBe("1");
+    await gamma.hover();
+    await expectIndicator(hover, gamma);
+    await alpha.focus();
+    await page.keyboard.press("x");
+    await expect.poll(() => gamma.evaluate(node => document.activeElement === node)).toBe(true);
+    await page.keyboard.press("Enter");
+    await expect.poll(() => trigger.locator("strong").textContent()).toBe("Gamma rich");
+    await popup.waitFor({ state: "hidden" });
+    await page.getByRole("button", { name: "Filter and reorder" }).click();
+    await expect.poll(() => trigger.locator("strong").textContent()).toBe("Gamma rich");
+    await trigger.focus();
+    await page.keyboard.press("ArrowDown");
+    await expectIndicator(selection, gamma);
+    expect(await gamma.getAttribute("data-proximity-index")).toBe("0");
+    expect(await beta.getAttribute("data-proximity-index")).toBe("2");
+    expect(await alpha.count()).toBe(0);
+    await delta.hover();
+    await expectIndicator(hover, delta);
+    await delta.focus();
+    await page.keyboard.press("x");
+    await expect.poll(() => gamma.evaluate(node => document.activeElement === node)).toBe(true);
+    await page.keyboard.press("Escape");
+    await popup.waitFor({ state: "hidden" });
+
+    const plain = page.getByRole("combobox", { name: "Default collection" });
+    expect(await plain.textContent()).toContain("Plain option");
+    await plain.focus();
+    await page.keyboard.press("ArrowDown");
+    await expectIndicator(selection, popup.getByRole("option", { name: "Plain option" }));
+    await page.keyboard.press("o");
+    await page.keyboard.press("Enter");
+    await expect.poll(() => plain.textContent()).toContain("Other option");
+  } finally {
+    await page.close();
+  }
+}, 30000);
+
 describe("portable current-state control observations (actual Chromium)", () => {
   it("executes through a symlink and writes an unchecked report when a route is unavailable", async () => {
     const directory = await mkdtemp(path.join(tmpdir(), "zeron-control-cli-"));

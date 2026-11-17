@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test:grouped-table:e2e": "playwright test --config playwright.grouped-data-table.config.ts",
-    "dev": "pnpm skills:build && pnpm code-engine:build && pnpm docs:routes:build && pnpm docs:sources:build && pnpm agents:guides:build && pnpm agents:build && next dev --turbopack",
+    "dev": "node scripts/dev.mjs",
     "build": "node scripts/build-site.mjs",
     "docs:routes:build": "node scripts/generate-document-routes.mjs",
     "docs:routes:check": "node scripts/generate-document-routes.mjs --check",
@@ -30,6 +30,8 @@
     "registry:build": "pnpm tokens:build && pnpm code-engine:build && pnpm --filter @zeron/registry build",
     "registry:release": "node scripts/create-registry-release.mjs",
     "registry:check": "node packages/registry/scripts/registry-check.mjs",
+    "catalog:build": "node scripts/generate-block-catalog.mjs",
+    "catalog:check": "node scripts/generate-block-catalog.mjs --check",
     "test:consumer:smoke": "node scripts/test-consumer-installs.mjs",
     "test:consumer:styles": "node scripts/test-consumer-installs.mjs --styles",
     "test:consumer:all": "node scripts/test-consumer-installs.mjs --all",
@@ -75,7 +77,8 @@
     "test:e2e": "node scripts/run-e2e.mjs --mode pr --build",
     "test:e2e:run": "node scripts/run-e2e.mjs --mode pr",
     "test:e2e:full": "node scripts/run-e2e.mjs --mode full --build",
-    "test:e2e:full:run": "node scripts/run-e2e.mjs --mode full"
+    "test:e2e:full:run": "node scripts/run-e2e.mjs --mode full",
+    "dev:prepare": "node scripts/dev.mjs --prepare-only"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -99,7 +102,6 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.4.0",
     "dialkit": "^1.1.0",
-    "framer-motion": "^12.34.0",
     "motion": "^12.42.2",
     "next": "15.5.24",
     "next-intl": "^4.13.6",

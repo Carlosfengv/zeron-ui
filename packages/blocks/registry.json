@@ -8,7 +8,7 @@
       "title": "Agent Queue",
       "description": "Live job queue with worker slots, throughput, result counts and a depth chart with rate-limit annotations.",
       "categories": ["application", "ai", "agent", "monitoring"],
-      "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons", "framer-motion", "recharts"],
+      "dependencies": ["@hugeicons/react", "@hugeicons/core-free-icons", "motion", "recharts"],
       "registryDependencies": ["badge", "button", "button-group", "chart", "icon-context", "metric-card", "popover", "scroll-area", "springs", "surface-context", "utils"],
       "files": [
         { "path": "packages/blocks/src/application/agent-queue-01/index.ts", "type": "registry:component", "target": "components/blocks/agent-queue-01/index.ts" },
@@ -847,7 +847,7 @@
       "description": "GPU 集群与云主机的多层级资源成本、占比、交付与容量状态。",
       "categories": ["application", "analytics", "billing", "tables"],
       "dependencies": ["@tanstack/react-table"],
-      "registryDependencies": ["badge", "button", "button-group", "chart", "container", "data-table", "dropdown", "empty", "icon-context", "inline-notice", "input-group", "menu-item", "select", "utils"],
+      "registryDependencies": ["badge", "button", "button-group", "chart-summary", "container", "data-table", "dropdown", "empty", "icon-context", "inline-notice", "input-group", "menu-item", "select", "utils"],
       "files": [
         {"path": "packages/blocks/src/application/resource-cost-01/index.ts", "type": "registry:component", "target": "components/blocks/resource-cost-01/index.ts"},
         {"path": "packages/blocks/src/application/resource-cost-01/resource-cost.tsx", "type": "registry:component", "target": "components/blocks/resource-cost-01/resource-cost.tsx"},
@@ -870,7 +870,7 @@
       "dependencies": [
         "@hugeicons/react",
         "@hugeicons/core-free-icons",
-        "framer-motion"
+        "motion"
       ],
       "registryDependencies": [
         "badge",
@@ -1093,7 +1093,7 @@
       "title": "客服工单分析",
       "description": "工单趋势、服务指标、渠道筛选与最近工单处理。",
       "categories": ["application", "analytics", "support"],
-      "dependencies": ["framer-motion", "@visx/curve@4.0.0"],
+      "dependencies": ["motion", "@visx/curve@4.0.0"],
       "registryDependencies": ["accordion", "avatar", "badge", "button", "chart-primitives", "container", "dropdown", "empty", "alert", "icon-context", "info-item", "inline-notice", "menu-item", "metric-card", "select", "skeleton", "springs", "table", "tabs", "tooltip", "utils", "bar-chart", "line-chart", "chart-core"],
       "files": [
         {
@@ -1353,7 +1353,7 @@
       "description": "包含项目概览、资源用量、存储分布与请求报告的中文监控卡片。",
       "categories": ["application", "analytics"],
       "dependencies": [],
-      "registryDependencies": ["badge", "button", "card", "chart", "empty", "icon-context", "info-item", "inline-notice", "metric-card", "select", "skeleton", "status-overview", "storage-usage-01", "tabs", "tooltip", "utils", "alert", "chart-primitives"],
+      "registryDependencies": ["badge", "button", "card", "chart-summary", "empty", "icon-context", "info-item", "inline-notice", "metric-card", "select", "skeleton", "status-overview", "storage-usage-01", "tabs", "tooltip", "utils", "alert", "chart-primitives"],
       "files": [
         {
           "path": "packages/blocks/src/application/project-monitor-01/project-monitor.tsx",
@@ -1462,7 +1462,7 @@
       "description": "A complete AI gateway analytics workspace with responsive navigation, traffic, spend, tokens, latency, reliability, providers, and operations.",
       "categories": ["application", "analytics", "observability"],
       "dependencies": ["tw-animate-css", "@visx/curve@4.0.0"],
-      "registryDependencies": ["badge", "button", "card", "chart", "container", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils", "alert", "chart-primitives", "area-chart", "bar-chart", "line-chart", "chart-core"],
+      "registryDependencies": ["badge", "button", "card", "chart-summary", "container", "empty", "icon-context", "inline-notice", "metric-card", "nav-item", "nav-menu", "page-layout", "sidebar", "sidebar-identity-row", "skeleton", "tabs", "utils", "alert", "chart-primitives", "area-chart", "bar-chart", "line-chart", "chart-core"],
       "files": [
         {
           "path": "packages/blocks/src/application/ai-gateway-workspace-types.ts",
@@ -1579,7 +1579,7 @@
       "title": "Agent Message Trace",
       "description": "An agent message trace with a live metrics waterfall, collapsed-span rollups and popover details, plus a resizable inspector workspace.",
       "categories": ["application", "agent", "observability"],
-      "dependencies": ["@tanstack/react-virtual", "@hugeicons/core-free-icons", "@hugeicons/react", "framer-motion", "tw-animate-css"],
+      "dependencies": ["@tanstack/react-virtual", "@hugeicons/core-free-icons", "@hugeicons/react", "motion", "tw-animate-css"],
       "registryDependencies": ["badge", "button", "detail-list", "empty", "icon-context", "inline-notice", "input-copy", "popover", "resizable", "scroll-area", "skeleton", "switch", "tabs", "tooltip", "utils"],
       "files": [
         {
@@ -2015,7 +2015,7 @@
       "description": "A personal settings workspace for model services, API keys, credentials, profile details, usage, and call logs.",
       "categories": ["application", "settings"],
       "dependencies": ["tw-animate-css", "@lobehub/icons", "@tanstack/react-table", "@thesvg/icons"],
-      "registryDependencies": ["user-account-01", "app-shell", "badge", "button", "chart", "container", "detail-list", "field", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "select", "separator", "table", "tabs", "time-range-histogram", "top-nav", "utils", "dialog", "dropdown", "data-table", "info-item", "menu-item", "metric-card", "sidebar-identity-row", "switch", "chart-primitives", "bar-chart", "chart-core", "heatmap-chart"],
+      "registryDependencies": ["user-account-01", "app-shell", "badge", "button", "chart-summary", "container", "detail-list", "field", "icon-context", "inline-notice", "input-group", "nav-item", "nav-menu", "page-layout", "select", "separator", "table", "tabs", "time-range-histogram", "top-nav", "utils", "dialog", "dropdown", "data-table", "info-item", "menu-item", "metric-card", "sidebar-identity-row", "switch", "chart-primitives", "bar-chart", "chart-core", "heatmap-chart"],
       "files": [
         {
           "path": "packages/blocks/src/application/personal-settings-01/personal-settings.tsx",
@@ -2562,8 +2562,8 @@
       "title": "Resource Status All 1",
       "description": "A resource-status summary with a circular distribution, detailed counts, and determinate-state coverage.",
       "categories": ["application", "metrics"],
-      "dependencies": ["tw-animate-css", "recharts"],
-      "registryDependencies": ["card", "utils", "chart-primitives", "chart"],
+      "dependencies": ["tw-animate-css"],
+      "registryDependencies": ["card", "utils", "chart-primitives", "chart-summary"],
       "files": [
         {
           "path": "packages/blocks/src/application/resource-status-all-01/resource-status-all.tsx",

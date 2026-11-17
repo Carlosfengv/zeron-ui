@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { blockCatalog } from "@zeron/blocks/catalog";
 import { getArtifact } from "../docs/catalog/artifacts";
 import { artifactPathname } from "../docs/catalog/artifact-collections";
 
@@ -13,7 +14,6 @@ const resourceCatalog = readFileSync(
   join(ROOT, "packages/blocks/src/application/resource-catalog-01/resource-catalog.tsx"),
   "utf8"
 );
-const blockCatalog = readFileSync(join(ROOT, "packages/blocks/src/catalog.ts"), "utf8");
 const blockRegistry = readFileSync(join(ROOT, "packages/blocks/registry.json"), "utf8");
 const blocksPackage = readFileSync(join(ROOT, "packages/blocks/package.json"), "utf8");
 const blockDetailPage = readFileSync(
@@ -21,7 +21,6 @@ const blockDetailPage = readFileSync(
   "utf8"
 );
 const blocksGallery = readFileSync(join(ROOT, "docs/components/blocks/BlocksGallery.tsx"), "utf8");
-const artifactCatalog = readFileSync(join(ROOT, "docs/catalog/artifacts.ts"), "utf8");
 const resourceCatalogDoc = readFileSync(
   join(ROOT, "docs/pages/blocks/resource-catalog-01/ResourceCatalogBlockDocClient.tsx"),
   "utf8"
@@ -39,13 +38,11 @@ describe("Resource Catalog gallery preview", () => {
   });
 
   it("keeps the documentation slug and marketplace installation name in the Pages collection", () => {
-    expect(blockCatalog).toContain('name: "model-mcp-marketplace-01"');
-    expect(blockCatalog).toContain('slug: "resource-catalog-01"');
+    expect(blockCatalog.find(block => block.name === "model-mcp-marketplace-01")).toMatchObject({ slug: "resource-catalog-01" });
     expect(blockRegistry).toContain('"name": "model-mcp-marketplace-01"');
-    expect(blockDetailPage).toContain('registryName = slug');
+    expect(blockDetailPage).toContain('registryName = registryNameForBlockSlug(slug)');
     expect(blockDetailPage).toContain('npx zeron-ui add ${registryName}');
-    expect(resourceCatalogDoc).toContain('registryName="model-mcp-marketplace-01"');
-    expect(artifactCatalog).toContain('slug: "resource-catalog-01", registryName: "model-mcp-marketplace-01"');
+    expect(resourceCatalogDoc).toContain('slug="resource-catalog-01"');
     expect(blocksGallery).toContain("galleryArtifacts");
     expect(blocksGallery).toContain('<BlockPreview name={artifact.slug} />');
     expect(blocksGallery).toContain('className="overflow-hidden overscroll-auto p-1"');

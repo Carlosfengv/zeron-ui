@@ -45,22 +45,25 @@ describe("package Registry sources", () => {
   });
 
   it("uses public lib and hooks paths as canonical Registry sources", () => {
-    const sourceRules = {
-      "registry:lib": "packages/ui/src/",
-      "registry:hook": "packages/ui/src/hooks/",
-    };
+    const iconItems = new Set(["icon-context", "pro-icon-provider"]);
     const runtimeFiles = uiRegistry.items.flatMap((item) =>
-      (item.files ?? []).filter((file) => file.type in sourceRules)
+      (item.files ?? []).filter((file) => file.type === "registry:lib" || file.type === "registry:hook")
+        .map((file) => ({ file, item: item.name }))
     );
-    for (const file of runtimeFiles) {
-      const source = sourceRules[file.type];
+    for (const { file, item } of runtimeFiles) {
+      let source = "packages/ui/src/system/";
+      let target = "lib/";
+      if (file.type === "registry:hook") {
+        source = "packages/ui/src/hooks/";
+        target = "hooks/";
+      } else if (iconItems.has(item)) {
+        source = "packages/icons/src/";
+      } else if (file.path.startsWith("packages/ui/src/tokens/")) {
+        source = "packages/ui/src/tokens/";
+        target = "lib/tokens/";
+      }
       expect(file.path.startsWith(source), file.path).toBe(true);
-      const target = file.type === "registry:hook"
-        ? `hooks/${file.path.slice("packages/ui/src/hooks/".length)}`
-        : file.path.startsWith("packages/ui/src/tokens/")
-          ? `lib/tokens/${file.path.slice("packages/ui/src/tokens/".length)}`
-          : `lib/${file.path.slice("packages/ui/src/system/".length)}`;
-      expect(file.target, `${file.path}: target`).toBe(target);
+      expect(file.target, `${file.path}: target`).toBe(target + file.path.slice(source.length));
     }
   });
 

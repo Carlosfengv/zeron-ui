@@ -1,7 +1,7 @@
 "use client";
 
 import { forwardRef, useState, useCallback, useRef, useEffect, useId, type HTMLAttributes } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { cn } from "#system/utils";
 import { useIcon } from "#system/icon-context";
 import { spring } from "#system/springs";

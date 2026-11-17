@@ -15,7 +15,7 @@ import { UserAccount } from "../user-account-01";
 import { AppShell, AppShellHeader, AppShellMain } from "@zeron/ui/app-shell";
 import { Badge } from "@zeron/ui/badge";
 import { Button } from "@zeron/ui/button";
-import { DonutSummary } from "@zeron/ui/chart";
+import { DonutSummary } from "@zeron/ui/chart-summary";
 import { ChartDataTable, ChartLegend, SegmentedBar, chartColor, chartCategoricalColors, createChartTimeFormatter } from "@zeron/ui/chart-primitives";
 import { Container, ContainerBody, ContainerFooter, ContainerHeader } from "@zeron/ui/container";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@zeron/ui/dialog";

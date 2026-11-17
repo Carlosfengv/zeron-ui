@@ -11,7 +11,7 @@ import {
   type Ref,
   type HTMLAttributes,
 } from "react";
-import { motion, useMotionValue, animate, type Transition } from "framer-motion";
+import { motion, useMotionValue, animate, type Transition } from "motion/react";
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";

@@ -2,16 +2,18 @@
 
 import {
   createContext,
+  lazy,
+  Suspense,
   useContext,
   useId,
   useState,
   type ReactNode,
 } from "react";
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
-import { motion } from "framer-motion";
 import { cn } from "#system/utils";
-import { spring } from "#system/springs";
 import { usePortalContainer } from "#system/portal-container-context";
+
+const TooltipMotionPopup = lazy(() => import("./tooltip-motion-popup"));
 
 // ---------------------------------------------------------------------------
 // Portal container context
@@ -163,39 +165,23 @@ function Tooltip({
             role="tooltip"
             id={contentId}
             render={(props, state) => {
-              const exiting = state.transitionStatus === "ending";
-              const {
-                style: baseStyle,
-                // motion.div has incompatible drag/animation event signatures —
-                // strip the React-DOM versions so they don't fight motion's own.
-                onDrag: _onDrag,
-                onDragStart: _onDragStart,
-                onDragEnd: _onDragEnd,
-                onAnimationStart: _onAnimationStart,
-                onAnimationEnd: _onAnimationEnd,
-                onAnimationIteration: _onAnimationIteration,
-                ...rest
-              } = props as React.HTMLAttributes<HTMLDivElement>;
+              const popupProps = {
+                ...props,
+                className: cn(
+                  "bg-inverse-background text-fg-on-inverse text-label px-2 py-1",
+                  "rounded-lg font-medium",
+                  className,
+                ),
+              };
               return (
-                <motion.div
-                  {...rest}
-                  className={cn(
-                    "bg-inverse-background text-fg-on-inverse text-label px-2 py-1",
-                    "rounded-lg",
-                    "font-medium",
-                    className
-                  )}
-                  style={{
-                    ...(baseStyle as React.CSSProperties | undefined)
-                  }}
-                  initial={{ opacity: 0, ...slideOffset }}
-                  animate={
-                    exiting
-                      ? { opacity: 0, ...slideOffset }
-                      : { opacity: 1, x: 0, y: 0 }
-                  }
-                  transition={exiting ? spring.fast.exit : spring.fast}
-                />
+                <Suspense fallback={<div {...popupProps} />}>
+                  <TooltipMotionPopup
+                    {...popupProps}
+                    slideOffset={slideOffset}
+                    starting={state.transitionStatus === "starting"}
+                    exiting={state.transitionStatus === "ending"}
+                  />
+                </Suspense>
               );
             }}
           >
