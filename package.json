@@ -30,6 +30,8 @@
     "registry:build": "pnpm tokens:build && pnpm code-engine:build && pnpm --filter @zeron/registry build",
     "registry:release": "node scripts/create-registry-release.mjs",
     "registry:check": "node packages/registry/scripts/registry-check.mjs",
+    "catalog:build": "node scripts/generate-block-catalog.mjs",
+    "catalog:check": "node scripts/generate-block-catalog.mjs --check",
     "test:consumer:smoke": "node scripts/test-consumer-installs.mjs",
     "test:consumer:styles": "node scripts/test-consumer-installs.mjs --styles",
     "test:consumer:all": "node scripts/test-consumer-installs.mjs --all",

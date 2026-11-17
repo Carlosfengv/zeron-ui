@@ -16,6 +16,7 @@ import { InstallCommand } from "@docs/components/content/InstallCommand";
 import { DocPager } from "@docs/components/navigation/DocPager";
 import { docEntries } from "@docs/manifest";
 import { artifactProductLabels, getArtifact } from "@docs/catalog/artifacts";
+import { registryNameForBlockSlug } from "@docs/catalog/registry-name-for-block-slug";
 import {
   localizePathname,
 } from "@docs/components/shell/site/locale-path";
@@ -40,7 +41,7 @@ export function BlockDetailPageView({
   preview,
   preservePreview = true,
   slug,
-  registryName = slug,
+  registryName = registryNameForBlockSlug(slug),
   title,
   localePrefix,
   installationLabel,

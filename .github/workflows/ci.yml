@@ -48,6 +48,9 @@ jobs:
       - name: Semantic tokens are up to date
         run: pnpm tokens:check
 
+      - name: Blocks Catalog is up to date
+        run: pnpm catalog:check
+
       - name: Committed route and guide mappings are up to date
         run: pnpm docs:routes:check && pnpm docs:sources:check && pnpm agents:guides:check
 

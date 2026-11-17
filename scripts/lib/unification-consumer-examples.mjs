@@ -1,3 +1,5 @@
+import blockRegistrySlugs from "../../docs/catalog/block-registry-slugs.json" with { type: "json" };
+
 /** Public imports and real rendered examples for active migration entries. */
 const examples = {
   "plan-usage-01": ["PlanUsage, planUsageDemoData", "<PlanUsage data={planUsageDemoData} />"],
@@ -62,7 +64,7 @@ export function unificationConsumerExample(component, framework) {
   const [exports, element, state = ""] = spec;
   const prefix = framework === "vite" ? "@/src" : "@";
   const category = Object.hasOwn(primitives, component) ? "ui" : "blocks";
-  const directory = component === "model-mcp-marketplace-01" ? "resource-catalog-01" : component;
+  const directory = blockRegistrySlugs[component] ?? component;
   return [
     ...(framework === "next" ? ['"use client";'] : ['import { createRoot } from "react-dom/client";', 'import "./index.css";']),
     'import { useState } from "react";',
