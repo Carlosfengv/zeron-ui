@@ -29,7 +29,7 @@ it("installs the React agent runs block with native charts and complete session 
     blockCatalog.find((item) => item.name === "agent-runs-01")?.dependencies,
   ).toEqual([
     ...dependencies,
-    ...block.dependencies.map((name: string) => name.replace(/@[^@/]+$/, "")),
+    ...block.dependencies,
   ]);
   expect(block.files).toHaveLength(8);
   expect(

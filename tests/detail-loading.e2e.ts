@@ -73,18 +73,24 @@ test("standalone AI gateway retains viewport-height sidebar", async ({ page }) =
   }
 });
 
-test("AI documentation is available while its chart dependency is held", async ({ page }) => {
-  expect(chartChunks.length).toBeGreaterThan(0);
+test("AI documentation is available while its demo code is held", async ({ page }) => {
+  const manifest = JSON.parse(readFileSync(".next/react-loadable-manifest.json", "utf8")) as Record<string, { files: string[] }>;
+  const demo = "docs/pages/blocks/ai-gateway-overview-01/AiGatewayOverviewBlockDocClient.tsx -> ./AiGatewayOverviewDemo";
+  const sharedChunks = new Set(Object.entries(manifest).flatMap(([key, entry]) => key === demo ? [] : entry.files));
+  const demoChunks = manifest[demo].files.filter((file) => !sharedChunks.has(file));
+  expect(demoChunks.length).toBeGreaterThan(0);
   let release!: () => void;
   const gate = new Promise<void>((resolve) => { release = resolve; });
   let held = 0;
+  let holdDemo = false;
   await page.route("**/*", async (route) => {
     if (route.request().headers()["next-router-prefetch"] === "1") return route.abort();
-    if (chartChunks.some((chunk) => route.request().url().endsWith(`/${chunk}`))) { held++; await gate; }
+    if (holdDemo && demoChunks.some((chunk) => route.request().url().endsWith(`/${chunk}`))) { held++; await gate; }
     await route.continue().catch(() => {});
   });
   try {
     await page.goto("/en/docs/pages");
+    holdDemo = true;
     await page.locator(`a[href="${aiPath}"]`).first().click();
     await expect(page.locator("#artifact-title")).toHaveText("AI Gateway Overview 1");
     await expect(page.getByRole("heading", { name: "Data integration", exact: true })).toBeAttached();

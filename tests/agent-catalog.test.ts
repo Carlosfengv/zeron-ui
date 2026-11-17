@@ -164,7 +164,10 @@ describe("catalog query against the generated full catalog", () => {
   });
   it("paginates a large reference completely without exceeding response or Markdown block budgets", () => {
     const fixture = structuredClone(current);
-    addSkillReference(fixture, "references/large.md", "# Large example\n\n```tsx\n" + Array.from({ length: 7000 }, (_, index) => `// row ${index}: 中文`).join("\n") + "\n```\n");
+    const expectedRows = Array.from({ length: 4000 }, (_, index) => `// row ${index}: 中文资料分页边界`);
+    const reference = "# Large example\n\n```tsx\n" + expectedRows.join("\n") + "\n```\n";
+    expect(Buffer.byteLength(reference)).toBeGreaterThan(65536);
+    addSkillReference(fixture, "references/large.md", reference);
     const instance = createCatalogQuery(loadSnapshots({ currentVersion: fixture.catalog.catalogVersion, versions: [fixture] }));
     let cursor: string | null = null;
     const pages: string[] = [];
@@ -180,8 +183,8 @@ describe("catalog query against the generated full catalog", () => {
       if (cursor) expect(result.data.truncated).toBe(true);
     } while (cursor);
     expect(pages.length).toBeGreaterThan(1);
-    const combined = pages.join("\n");
-    for (let index = 0; index < 7000; index++) expect(combined).toContain(`// row ${index}: 中文`);
+    const rows = pages.flatMap((text) => text.match(/^\/\/ row \d+: 中文资料分页边界$/gm) ?? []);
+    expect(rows).toEqual(expectedRows);
   });
   it("rejects forged runtime installation metadata or missing relationships", () => {
     const fixture = structuredClone(verifiedFixture().versions[0]);

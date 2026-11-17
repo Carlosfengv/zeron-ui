@@ -171,7 +171,9 @@ test("unavailable component code keeps visible feedback and the shared header", 
     await route.continue().catch(() => { /* Page teardown can cancel a held request. */ });
   });
   try {
-    await page.goto("/en/updates");
+    // A visible link can preload component chunks before the load event.
+    await page.goto("/en/updates", { waitUntil: "commit" });
+    await page.waitForFunction(() => localStorage.getItem("zeron-design.theme") !== null);
     const originalHeader = await header(page).elementHandle();
     expect(originalHeader).not.toBeNull();
     await link(page, "/en/docs/components").click({ noWaitAfter: true });

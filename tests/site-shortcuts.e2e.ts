@@ -13,17 +13,21 @@ function dispatchSiteKeys(page: Page) {
   )));
 }
 
-test("public updates switch themes and covers, and internal pages leave single keys alone", async ({ page }) => {
+test("public shortcuts switch themes and gallery covers, and internal pages leave single keys alone", async ({ page }) => {
   await page.goto("/en/updates");
   await waitForThemeProvider(page);
   const theme = page.locator("html");
-  const cover = page.locator("picture img").first();
-  await expect(cover).toHaveAttribute("src", /-light\.jpg$/);
   expect(await dispatchSiteKeys(page)).toEqual([true, false]);
   await expect(theme).toHaveClass(/\bdark\b/);
-  await expect(cover).toHaveAttribute("src", /-dark\.jpg$/);
   await page.keyboard.press("d");
   await expect(theme).toHaveClass(/\blight\b/);
+
+  await page.goto("/en/docs/components");
+  const cover = page.locator('img[src*="/component-covers/"]').first();
+  await expect(cover).toHaveAttribute("src", /-light\.jpg$/);
+  await page.keyboard.press("d");
+  await expect(cover).toHaveAttribute("src", /-dark\.jpg$/);
+  await page.keyboard.press("d");
   await expect(cover).toHaveAttribute("src", /-light\.jpg$/);
 
   await page.evaluate(() => localStorage.clear());
