@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test:grouped-table:e2e": "playwright test --config playwright.grouped-data-table.config.ts",
-    "dev": "pnpm skills:build && pnpm code-engine:build && pnpm docs:routes:build && pnpm docs:sources:build && pnpm agents:guides:build && pnpm agents:build && next dev --turbopack",
+    "dev": "node scripts/dev.mjs",
     "build": "node scripts/build-site.mjs",
     "docs:routes:build": "node scripts/generate-document-routes.mjs",
     "docs:routes:check": "node scripts/generate-document-routes.mjs --check",
@@ -77,7 +77,8 @@
     "test:e2e": "node scripts/run-e2e.mjs --mode pr --build",
     "test:e2e:run": "node scripts/run-e2e.mjs --mode pr",
     "test:e2e:full": "node scripts/run-e2e.mjs --mode full --build",
-    "test:e2e:full:run": "node scripts/run-e2e.mjs --mode full"
+    "test:e2e:full:run": "node scripts/run-e2e.mjs --mode full",
+    "dev:prepare": "node scripts/dev.mjs --prepare-only"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

@@ -34,6 +34,9 @@ const nextConfig: NextConfig = {
   // otherwise write to `.next`, and a production build can invalidate the
   // active Turbopack cache and turn every dev request into a 500 response.
   distDir: process.env.NODE_ENV === "development" ? process.env.NEXT_DEV_DIST_DIR ?? ".next-dev" : ".next",
+  typescript: {
+    tsconfigPath: (process.env.NODE_ENV === "development" && process.env.ZERON_NEXT_DEV_TSCONFIG) || "tsconfig.json",
+  },
   // An unrelated lockfile in the parent directory otherwise makes Next scan
   // the whole home workspace during development, which can leave the test
   // server compiling indefinitely.

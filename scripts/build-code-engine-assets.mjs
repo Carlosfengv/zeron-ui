@@ -160,7 +160,8 @@ async function codeEngineRegistryItems() {
 }
 
 async function updateRegistry() {
-  const registry = JSON.parse(await fs.readFile(registryPath, "utf8"))
+  const current = await fs.readFile(registryPath, "utf8")
+  const registry = JSON.parse(current)
   const generatedItems = await codeEngineRegistryItems()
   const generatedNames = new Set(generatedItems.map((item) => item.name))
   const currentGeneratedItems = registry.items.filter((item) => generatedNames.has(item.name))
@@ -176,7 +177,8 @@ async function updateRegistry() {
     ...registry.items.filter((item) => !generatedNames.has(item.name)),
     ...generatedItems,
   ]
-  await fs.writeFile(registryPath, `${JSON.stringify(registry, null, 2)}\n`)
+  const next = `${JSON.stringify(registry, null, 2)}\n`
+  if (current !== next) await fs.writeFile(registryPath, next)
 }
 
 const [baseCSS, editorCSS, workerJavaScript] = await Promise.all([

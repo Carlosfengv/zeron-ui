@@ -7,6 +7,7 @@
  * preinstalled dependency can never hide a broken Registry closure.
  */
 
+import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { access, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -14,6 +15,7 @@ import { basename, join } from "node:path";
 import { execFile as execFileCallback } from "node:child_process";
 import { promisify } from "node:util";
 import { consumerRegistryExpectations, snapshotConsumerRegistry } from "./lib/consumer-registry-expectations.mjs";
+import { assertChartInstall, chartConsumerExample, verifyInstalledCharts, verifyMountedChart } from "./lib/chart-consumer-verification.mjs";
 import { consumerStyleExample, verifyConsumerStyles } from "./lib/consumer-style-verification.mjs";
 import { verifyFeedbackConsumer } from "./lib/feedback-consumer-verification.mjs";
 import { unificationConsumerExample } from "./lib/unification-consumer-examples.mjs";
@@ -27,29 +29,36 @@ const styles = process.argv.includes("--styles");
 const keepConsumers = process.env.ZERON_CONSUMER_KEEP === "1";
 const verifyFeedback = process.env.ZERON_CONSUMER_FEEDBACK === "1";
 const verifyUnification = process.env.ZERON_CONSUMER_UNIFICATION === "1";
+const viteReactCatalog = process.env.ZERON_VITE_PNPM_CATALOG;
+const legacyIconRegistry = process.env.ZERON_CONSUMER_LEGACY_ICON_REGISTRY;
+const legacyChartRegistry = process.env.ZERON_CONSUMER_LEGACY_CHART_REGISTRY;
+const legacyUpgrade = legacyIconRegistry || legacyChartRegistry;
 const registrySnapshot = await snapshotConsumerRegistry(REGISTRY_DIR);
 const registryItems = JSON.parse(registrySnapshot.get("registry.json")).items;
 const allRegistryItems = registryItems.map((item) => item.name).filter((name) => typeof name === "string");
 const components = styles ? ["button"] : process.env.ZERON_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? (all
   ? allRegistryItems
-  : ["button", "card", "ask-user-questions", "code-block", "infinite-log-table-01"]);
+  : legacyUpgrade ? [] : ["button", "card", "ask-user-questions", "code-block", "infinite-log-table-01"]);
 const packageManagers = process.env.ZERON_CONSUMER_PACKAGE_MANAGERS?.split(",").filter(Boolean) ?? ["npm", "pnpm"];
 const vitePackageManagers = process.env.ZERON_VITE_CONSUMER_PACKAGE_MANAGERS?.split(",").filter(Boolean) ?? ["npm"];
-const viteComponents = styles ? ["button"] : process.env.ZERON_VITE_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? ["button", "card", "ask-user-questions", "code-block"];
+const viteComponents = styles ? ["button"] : process.env.ZERON_VITE_CONSUMER_COMPONENTS?.split(",").filter(Boolean) ?? (legacyUpgrade ? [] : ["button", "card", "ask-user-questions", "code-block"]);
 const BUSINESS_SOURCE = "export const identity = <T>(value: T): T => value;\n";
-const fallbackChainExample = '<FallbackChain title="Install verified" attempts={[{ id: "model", model: "Primary model", status: "answered", durationMs: 850 }]} />';
+const contextMapExample = '<ContextMap blocks={[{ id: "system", label: "System prompt", kind: "system", tokens: 100 }]} limit={1000} compaction={{ before: [{ id: "chat", label: "Chat", kind: "chat", tokens: 900 }], dropped: ["chat"] }} />';
 const agentRunExample = 'const run = { id: "verified", title: "Install verified", root: { id: "lead", name: "Lead", status: "working" as const, summary: "Planning", usage: { tokens: 1000, limit: 8000 } } };';
 const agentQueueExample = '<AgentQueue now={1000} name="Install verified" jobs={[{ id: "job", name: "Index docs", kind: "tool", status: "queued", enqueuedAt: 0 }]} workers={[{ id: "worker", name: "Worker" }]} />';
-const contextMapExample = '<ContextMap blocks={[{ id: "system", label: "System prompt", kind: "system", tokens: 100 }]} limit={1000} compaction={{ before: [{ id: "chat", label: "Chat", kind: "chat", tokens: 900 }], dropped: ["chat"] }} />';
+const fallbackChainExample = '<FallbackChain title="Install verified" attempts={[{ id: "model", model: "Primary model", status: "answered", durationMs: 850 }]} />';
 
 if ([...packageManagers, ...vitePackageManagers].some((manager) => !["npm", "pnpm"].includes(manager))) {
   throw new Error("Consumer package managers must contain only npm and/or pnpm");
 }
-if (!(packageManagers.length * components.length + vitePackageManagers.length * viteComponents.length)) {
+if (viteReactCatalog && (!["default", "modern"].includes(viteReactCatalog) || !vitePackageManagers.includes("pnpm"))) {
+  throw new Error("ZERON_VITE_PNPM_CATALOG expects default or modern with a pnpm Vite consumer");
+}
+if (!legacyUpgrade && !(packageManagers.length * components.length + vitePackageManagers.length * viteComponents.length)) {
   throw new Error("Consumer matrix must select at least one installation target");
 }
 
-function registryServer() {
+function registryServer(getSnapshot = () => registrySnapshot) {
   const server = createServer(async (request, response) => {
     const name = basename(new URL(request.url ?? "/", "http://localhost").pathname);
     if (!/^[a-z0-9-]+\.json$/.test(name)) {
@@ -58,7 +67,7 @@ function registryServer() {
     }
     try {
       const origin = `http://${request.headers.host}`;
-      const source = registrySnapshot.get(name);
+      const source = getSnapshot().get(name);
       if (!source) { response.writeHead(404).end(); return; }
       const data = source.replaceAll("https://zeron-ui.vercel.app/r", origin);
       response.writeHead(200, { "content-type": "application/json" }).end(data);
@@ -122,7 +131,7 @@ async function writeConsumer(directory, packageManager, { starter = false } = {}
   await command(packageManager, ["install", "--ignore-scripts"], { cwd: directory });
 }
 
-async function writeViteConsumer(directory, manager = "npm") {
+async function writeViteConsumer(directory, manager = "npm", reactSpec = "19.2.0") {
   await mkdir(join(directory, "src"), { recursive: true });
   await writeFile(join(directory, "package.json"), JSON.stringify({
     name: "zeron-vite-consumer-fixture",
@@ -130,7 +139,7 @@ async function writeViteConsumer(directory, manager = "npm") {
     packageManager: manager === "pnpm" ? "pnpm@10.12.4" : undefined,
     type: "module",
     scripts: { build: "vite build" },
-    dependencies: { react: "19.2.0", "react-dom": "19.2.0" },
+    dependencies: { react: reactSpec, "react-dom": reactSpec },
     devDependencies: {
       "@tailwindcss/vite": "4.3.3",
       "@types/node": "20.19.9",
@@ -273,20 +282,173 @@ async function assertBusinessSourceUntouched(consumer, component) {
   }
 }
 
+async function assertFreeIconInstall(consumer, component) {
+  if (!["icon-context", "toast", "file-manager-01"].includes(component)) return;
+  const { dependencies, optionalDependencies, devDependencies } = JSON.parse(await readFile(join(consumer, "package.json"), "utf8"));
+  for (const name of Object.keys({ ...dependencies, ...optionalDependencies, ...devDependencies })) {
+    assert.ok(!name.startsWith("@zeron/") && !name.startsWith("@hugeicons-pro/"), `${component} unexpectedly installed ${name}`);
+  }
+  const scope = await exists(join(consumer, "src/index.css")) ? "src" : "";
+  for (const file of ["icon-context.tsx", "icon-catalog.ts", "huge-icon.tsx"]) {
+    const source = await readFile(join(consumer, scope, "lib", file), "utf8");
+    assert.doesNotMatch(source, /from ["']@zeron\//);
+  }
+}
+
+async function verifyIconUpgrade(consumer, tarball) {
+  const { build } = await import("esbuild");
+  let activeSnapshot = await snapshotConsumerRegistry(legacyIconRegistry);
+  const upgradeServer = await registryServer(() => activeSnapshot);
+  const registry = `http://127.0.0.1:${upgradeServer.address().port}`;
+  const cli = async (...args) => command("npm", [
+    "exec", "--yes", "--package", tarball, "--", "zeron-ui", "add", ...args, "--cwd", consumer, "--registry", registry,
+  ], { cwd: consumer, env: { ...process.env, XDG_CACHE_HOME: join(work, "cache") } });
+  const entries = ["src/components/ui/toast.tsx", "src/components/blocks/file-manager-01/file-manager.tsx"];
+  const readEntries = () => Promise.all(entries.map((file) => readFile(join(consumer, file), "utf8")));
+  const check = async (phase) => {
+    await command("npx", ["tsc", "--noEmit"], { cwd: consumer });
+    await build({
+      absWorkingDir: consumer, entryPoints: ["src/verify-icon-upgrade.tsx"], outfile: "verify-icon-upgrade.mjs",
+      bundle: true, platform: "node", format: "esm", packages: "external", jsx: "automatic", loader: { ".css": "local-css" },
+    });
+    await command(process.execPath, ["verify-icon-upgrade.mjs", phase], { cwd: consumer });
+    await assertBusinessSourceUntouched(consumer, phase);
+  };
+  try {
+    await writeViteConsumer(consumer);
+    await writeFile(join(consumer, "business.ts"), BUSINESS_SOURCE);
+    await writeFile(join(consumer, "src", "verify-icon-upgrade.tsx"),
+      await readFile(join(ROOT, "tests/fixtures/registry-icon-upgrade.tsx.txt"), "utf8"));
+    await cli("toast", "file-manager-01", "--yes");
+    const legacyEntries = await readEntries();
+    assert.match(legacyEntries[0], /useIcon\("doc-info-item"\)/);
+    assert.match(legacyEntries[1], /useIcon\("doc-data-grid"\)/);
+    await check("legacy");
+
+    activeSnapshot = registrySnapshot;
+    await cli("icon-context", "--dry-run", "--overwrite");
+    await cli("icon-context", "--yes", "--overwrite");
+    assert.deepEqual(await readEntries(), legacyEntries, "Updating the Provider should preserve installed component files");
+    await check("provider-only");
+
+    await cli("toast", "file-manager-01", "--dry-run", "--overwrite");
+    await cli("toast", "file-manager-01", "--yes", "--overwrite");
+    const updatedEntries = await readEntries();
+    assert.match(updatedEntries[0], /useIcon\("info"\)/);
+    assert.match(updatedEntries[1], /useIcon\("grid"\)/);
+    await check("current");
+    await assertFreeIconInstall(consumer, "icon-context");
+    console.log("Consumer passed: staged icon Provider upgrade");
+  } finally {
+    await new Promise((resolveClose) => upgradeServer.close(resolveClose));
+  }
+}
+
+async function verifyChartUpgrade(consumer, tarball) {
+  let activeSnapshot = await snapshotConsumerRegistry(legacyChartRegistry);
+  const upgradeServer = await registryServer(() => activeSnapshot);
+  const registry = `http://127.0.0.1:${upgradeServer.address().port}`;
+  const block = "project-monitor-01";
+  const cli = (...args) => command("npm", [
+    "exec", "--yes", "--package", tarball, "--", "zeron-ui", "add", block, ...args, "--cwd", consumer, "--registry", registry,
+  ], { cwd: consumer, env: { ...process.env, XDG_CACHE_HOME: join(work, "cache") } });
+  const legacyChart = join(consumer, "src/components/ui/chart.tsx");
+  const summary = join(consumer, "src/components/ui/chart-summary.tsx");
+  const blockCharts = join(consumer, "src/components/blocks", block, "project-monitor-charts.tsx");
+  async function check() {
+    await command("npx", ["tsc", "--noEmit"], { cwd: consumer });
+    await command("npm", ["run", "build"], { cwd: consumer });
+    await verifyInstalledCharts(consumer, async page => {
+      await page.locator('[data-chart="chart-existing-page"] path.recharts-area-area').waitFor();
+      await page.getByRole("img", { name: "Existing breakdown" }).locator("svg path").first().waitFor();
+      await page.locator('[data-slot="project-monitor"] [data-slot="time-series-chart"]').first().waitFor();
+    });
+    await assertBusinessSourceUntouched(consumer, block);
+  }
+  try {
+    await writeViteConsumer(consumer);
+    await writeFile(join(consumer, "business.ts"), BUSINESS_SOURCE);
+    const host = await readFile(join(ROOT, "tests/fixtures/registry-chart-upgrade.tsx.txt"), "utf8");
+    const hostPath = join(consumer, "src/main.tsx");
+    await writeFile(hostPath, host);
+    await cli("--yes");
+    const originalChart = await readFile(legacyChart, "utf8");
+    assert.match(await readFile(blockCharts, "utf8"), /components\/ui\/chart["']/);
+    assert.equal(await exists(summary), false);
+    await check();
+
+    activeSnapshot = registrySnapshot;
+    await cli("--dry-run", "--overwrite");
+    await cli("--yes", "--overwrite");
+    assert.equal(await readFile(legacyChart, "utf8"), originalChart);
+    assert.equal(await readFile(hostPath, "utf8"), host);
+    assert.match(await readFile(blockCharts, "utf8"), /components\/ui\/chart-summary["']/);
+    assert.equal(await exists(summary), true);
+    await check();
+    console.log(`Consumer passed: staged ${block} upgrade alongside its existing chart page`);
+  } finally {
+    await new Promise((resolveClose) => upgradeServer.close(resolveClose));
+  }
+}
+
+function iconConsumerExample(component, framework) {
+  const prefix = framework === "next" ? "@/" : "@/src/";
+  const examples = {
+    "icon-context": [
+      `import { IconProvider, useIcon } from "${prefix}lib/icon-context";`,
+      'function Glyph() { const Info = useIcon("info"); return <Info aria-label="Installed icon" />; }',
+      'function Page() { return <IconProvider><Glyph /></IconProvider>; }',
+    ],
+    toast: [
+      `import { Toast } from "${prefix}components/ui/toast";`,
+      'function Page() { return <ul><Toast toast={{ id: "install", title: "Install verified", status: "info" }} /></ul>; }',
+    ],
+    "file-manager-01": [
+      `import { FileManager } from "${prefix}components/blocks/file-manager-01";`,
+      'function Page() { return <FileManager items={[]} />; }',
+    ],
+  };
+  if (!examples[component]) return undefined;
+  return [
+    '"use client";',
+    ...examples[component],
+    ...(framework === "next" ? ['export default Page;'] : [
+      'import { createRoot } from "react-dom/client";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<Page />);',
+    ]),
+  ].join("\n");
+}
+
+function compoundConsumerExample(component, framework) {
+  const prefix = framework === "next" ? "@/" : "@/src/";
+  const examples = {
+    tabs: [
+      `import { Tabs, TabsList, TabItem } from "${prefix}components/ui/tabs";`,
+      'function WrappedTab() { return <div><TabItem value="a" label="First" /></div>; }',
+      'function Page() { return <Tabs selectedIndex={0}><TabsList><><WrappedTab /><TabItem value="b" label="Second" /></></TabsList></Tabs>; }',
+    ],
+    select: [
+      `import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from "${prefix}components/ui/select";`,
+      'const items = [{ value: "verified", label: <strong>Install verified</strong> }];',
+      'function Options() { return <SelectGroup>{items.map(item => <SelectItem key={item.value} value={item.value} textValue="Install verified">{item.label}</SelectItem>)}</SelectGroup>; }',
+      'function Page() { return <Select items={items} defaultValue="verified"><SelectTrigger aria-label="Pick one" /><SelectContent><Options /></SelectContent></Select>; }',
+    ],
+  };
+  if (!examples[component]) return undefined;
+  return [
+    '"use client";',
+    ...(framework === "next" ? examples[component].map(line => line.replace(/^function Page/, "export default function Page")) : [
+      ...examples[component],
+      'import { createRoot } from "react-dom/client";',
+      'import "./index.css";',
+      'createRoot(document.getElementById("root")!).render(<Page />);',
+    ]),
+  ].join("\n");
+}
+
 async function verifyNextBuild({ consumer, component }) {
   const examples = {
-    "agent-run-01": [
-      'import { AgentRun } from "@/components/blocks/agent-run-01";',
-      agentRunExample,
-      'export default function Page() { return <AgentRun run={run} />; }',
-    ].join("\n"),
-    "agent-runs-01": [
-      '"use client";',
-      'import { AgentRuns, createAgentRunsDemoData, agentRunsZhLabels, type AgentRunsData } from "@/components/blocks/agent-runs-01";',
-      'const data: AgentRunsData = createAgentRunsDemoData();',
-      'export default function Page() { return <AgentRuns data={data} labels={agentRunsZhLabels} locale="zh-CN" timeZone="Asia/Shanghai" pageSize={6} defaultExpandedRunId="run-86" />; }',
-      '',
-    ].join("\n"),
     "chat-markdown-01": [
       '"use client";',
       'import { ChatMarkdownResponse, createChatMarkdownDemoText } from "@/components/blocks/chat-markdown-01";',
@@ -529,6 +691,28 @@ async function verifyNextBuild({ consumer, component }) {
       '',
     ].join("\n"),
   };
+  examples["credit-top-up-01"] = [
+    '"use client";',
+    'import { CreditTopUp, createCreditTopUpDemoData } from "@/components/blocks/credit-top-up-01";',
+    'export default function Page() { return <CreditTopUp data={createCreditTopUpDemoData()} defaultPackageId="standard" onConfirm={() => {}} />; }',
+    '',
+  ].join("\n");
+  examples["agent-runs-01"] = [
+      '"use client";',
+      'import { AgentRuns, createAgentRunsDemoData, agentRunsZhLabels, type AgentRunsData } from "@/components/blocks/agent-runs-01";',
+      'const data: AgentRunsData = createAgentRunsDemoData();',
+      'export default function Page() { return <AgentRuns data={data} labels={agentRunsZhLabels} locale="zh-CN" timeZone="Asia/Shanghai" pageSize={6} defaultExpandedRunId="run-86" />; }',
+      '',
+  ].join("\n");
+  examples["agent-run-01"] = [
+    'import { AgentRun } from "@/components/blocks/agent-run-01";',
+    agentRunExample,
+    'export default function Page() { return <AgentRun run={run} />; }',
+  ].join("\n");
+  examples["agent-orchestration-01"] = [
+    'import { AgentOrchestration, createAgentOrchestrationDemoData } from "@/components/blocks/agent-orchestration-01";',
+    'export default function Page() { return <AgentOrchestration data={createAgentOrchestrationDemoData()} currentTime={26.4} />; }',
+  ].join("\n");
   examples["usage-forecast-02"] = [
     'import { UsageBudgetForecast, usageBudgetForecastDemoData } from "@/components/blocks/usage-forecast-02";',
     'export default function Page() { return <UsageBudgetForecast data={usageBudgetForecastDemoData} />; }',
@@ -611,6 +795,11 @@ async function verifyNextBuild({ consumer, component }) {
     'import { AgentTasks, agentTasksDemoData } from "@/components/blocks/agent-tasks-01";',
     'export default function Page() { return <AgentTasks tasks={agentTasksDemoData} defaultExpandedTaskId="migration" />; }',
   ].join("\n");
+  examples["fallback-chain-01"] = [
+    'import { FallbackChain } from "@/components/blocks/fallback-chain-01";',
+    `export default function Page() { return ${fallbackChainExample}; }`,
+    "",
+  ].join("\n");
   examples["agent-queue-01"] = [
     'import { AgentQueue } from "@/components/blocks/agent-queue-01";',
     `export default function Page() { return ${agentQueueExample}; }`,
@@ -639,20 +828,13 @@ async function verifyNextBuild({ consumer, component }) {
     'export default function Page() { const [range, setRange] = useState<WebsiteAnalyticsRange>("30d"); return <WebsiteAnalytics site="example.com" range={range} onRangeChange={setRange} data={createWebsiteAnalyticsDemoData(range)} />; }',
     '',
   ].join("\n");
-  examples["credit-top-up-01"] = [
-    '"use client";',
-    'import { CreditTopUp, createCreditTopUpDemoData } from "@/components/blocks/credit-top-up-01";',
-    'export default function Page() { return <CreditTopUp data={createCreditTopUpDemoData()} defaultPackageId="standard" onConfirm={() => {}} />; }',
-    '',
-  ].join("\n");
   examples["file-type"] = [
     'import { FileType } from "@/components/ui/file-type";',
     'export default function Page() { return <div><FileType fileName="Report.PDF" /><FileType extension="xlsx" variant="solid" size="mini" /><FileType extension="sketch" variant="light" size="xl" /><FileType extension="unknown" variant="mono" /></div>; }',
   ].join("\n");
   examples["badge"] = "\"use client\";\nimport { Badge } from \"@/components/ui/badge\";\nexport default function Page() { return <Badge variant=\"strong\" status=\"danger\">Install verified</Badge>; }\n";
   examples["model-detail-02"] = "\"use client\";\nimport { ModelDetail02 } from \"@/components/blocks/model-detail-02\";\nexport default function Page() { return <ModelDetail02 />; }\n";
-  examples["file-manager-01"] = "\"use client\";\nimport { FileManager } from \"@/components/blocks/file-manager-01\";\nexport default function Page() { return <FileManager items={[]} error=\"Install verified\" />; }\n";
-  const unifiedSource = unificationConsumerExample(component, "next");
+  const unifiedSource = component !== "chart" || verifyUnification ? unificationConsumerExample(component, "next") : undefined;
   examples["model-selector"] = [
     '"use client";',
     'import { useState } from "react";',
@@ -705,13 +887,7 @@ async function verifyNextBuild({ consumer, component }) {
     "const artifact: ArtifactDocument = {id:\"welcome\",title:\"Welcome\",filename:\"welcome.html\",kind:\"html\",revisions:[{id:\"v1\",content:\"<h1>Welcome</h1>\"},{id:\"v2\",content:\"<h1>Welcome back</h1>\"}]};",
     "export default function Page() { return <><ArtifactContent artifact={artifact} revision={artifact.revisions[1]} previous={artifact.revisions[0]} view=\"changes\" /><div className=\"h-96\"><ArtifactPreviewPanel artifact={artifact} /></div></>; }",
   ].join("\n");
-  examples["fallback-chain-01"] = [
-    'import { FallbackChain } from "@/components/blocks/fallback-chain-01";',
-    `export default function Page() { return ${fallbackChainExample}; }`,
-    "",
-  ].join("\n");
-
-  let source = styles ? consumerStyleExample("next") : unifiedSource ?? examples[component];
+  let source = styles ? consumerStyleExample("next") : unifiedSource ?? iconConsumerExample(component, "next") ?? chartConsumerExample(component, "next") ?? compoundConsumerExample(component, "next") ?? examples[component];
   if (!source) return;
   if (verifyUnification && !unifiedSource && !styles) {
     source = source.replace("export default function Page", "function InstalledDemo")
@@ -999,6 +1175,26 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
       'createRoot(document.getElementById("root")!).render(<ListPagination total={11} page={0} pageSize={5} onPageChange={() => {}} onPageSizeChange={() => {}} />);',
     ].join("\n"),
   };
+  examples["agent-runs-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { AgentRuns, createAgentRunsDemoData, agentRunsZhLabels, type AgentRunsData } from "@/src/components/blocks/agent-runs-01";',
+    'import "./index.css";',
+    'const data: AgentRunsData = createAgentRunsDemoData();',
+    'createRoot(document.getElementById("root")!).render(<AgentRuns data={data} labels={agentRunsZhLabels} locale="zh-CN" timeZone="Asia/Shanghai" pageSize={6} defaultExpandedRunId="run-86" />);',
+  ].join("\n");
+  examples["agent-run-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { AgentRun } from "@/src/components/blocks/agent-run-01";',
+    'import "./index.css";',
+    agentRunExample,
+    'createRoot(document.getElementById("root")!).render(<AgentRun run={run} />);',
+  ].join("\n");
+  examples["agent-orchestration-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { AgentOrchestration, createAgentOrchestrationDemoData } from "@/src/components/blocks/agent-orchestration-01";',
+    'import "./index.css";',
+    'createRoot(document.getElementById("root")!).render(<AgentOrchestration data={createAgentOrchestrationDemoData()} currentTime={26.4} />);',
+  ].join("\n");
   examples["account-activity-01"] = [
     'import { createRoot } from "react-dom/client";',
     'import { AccountActivity, accountActivityDemoData } from "@/src/components/blocks/account-activity-01";',
@@ -1094,6 +1290,12 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     'import "./index.css";',
     `createRoot(document.getElementById("root")!).render(${agentQueueExample});`,
   ].join("\n");
+  examples["fallback-chain-01"] = [
+    'import { createRoot } from "react-dom/client";',
+    'import { FallbackChain } from "@/src/components/blocks/fallback-chain-01";',
+    'import "./index.css";',
+    `createRoot(document.getElementById("root")!).render(${fallbackChainExample});`,
+  ].join("\n");
   examples["appearance-settings-01"] = [
     'import { createRoot } from "react-dom/client";',
     'import { useState } from "react";',
@@ -1133,8 +1335,7 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
   ].join("\n");
   examples["badge"] = "import { Badge } from \"@/src/components/ui/badge\";\nexport default function App() { return <Badge variant=\"strong\" status=\"danger\">Install verified</Badge>; }\n";
   examples["model-detail-02"] = "import { ModelDetail02 } from \"@/src/components/blocks/model-detail-02\";\nexport default function App() { return <ModelDetail02 />; }\n";
-  examples["file-manager-01"] = "import { FileManager } from \"@/src/components/blocks/file-manager-01\";\nexport default function App() { return <FileManager items={[]} error=\"Install verified\" />; }\n";
-  const unifiedSource = unificationConsumerExample(component, "vite");
+  const unifiedSource = component !== "chart" || verifyUnification ? unificationConsumerExample(component, "vite") : undefined;
   examples["resource-cost-01"] = [
     'import { createRoot } from "react-dom/client";',
     'import { ResourceCost, resourceCostDemoItems } from "@/src/components/blocks/resource-cost-01";',
@@ -1205,28 +1406,7 @@ async function installViteComponent({ consumer, component, tarball, manager = "n
     "const artifact: ArtifactDocument = {id:\"welcome\",title:\"Welcome\",filename:\"welcome.html\",kind:\"html\",revisions:[{id:\"v1\",content:\"<h1>Welcome</h1>\"},{id:\"v2\",content:\"<h1>Welcome back</h1>\"}]};",
     "createRoot(document.getElementById(\"root\")!).render(<><ArtifactContent artifact={artifact} revision={artifact.revisions[1]} previous={artifact.revisions[0]} view=\"changes\" /><div className=\"h-96\"><ArtifactPreviewPanel artifact={artifact} /></div></>);",
   ].join("\n");
-  examples["agent-run-01"] = [
-    'import { createRoot } from "react-dom/client";',
-    'import { AgentRun } from "@/src/components/blocks/agent-run-01";',
-    'import "./index.css";',
-    agentRunExample,
-    'createRoot(document.getElementById("root")!).render(<AgentRun run={run} />);',
-  ].join("\n");
-  examples["agent-runs-01"] = [
-    'import { createRoot } from "react-dom/client";',
-    'import { AgentRuns, createAgentRunsDemoData, agentRunsZhLabels, type AgentRunsData } from "@/src/components/blocks/agent-runs-01";',
-    'import "./index.css";',
-    'const data: AgentRunsData = createAgentRunsDemoData();',
-    'createRoot(document.getElementById("root")!).render(<AgentRuns data={data} labels={agentRunsZhLabels} locale="zh-CN" timeZone="Asia/Shanghai" pageSize={6} defaultExpandedRunId="run-86" />);',
-  ].join("\n");
-  examples["fallback-chain-01"] = [
-    'import { createRoot } from "react-dom/client";',
-    'import { FallbackChain } from "@/src/components/blocks/fallback-chain-01";',
-    'import "./index.css";',
-    `createRoot(document.getElementById("root")!).render(${fallbackChainExample});`,
-  ].join("\n");
-
-  let source = styles ? consumerStyleExample("vite") : unifiedSource ?? examples[component];
+  let source = styles ? consumerStyleExample("vite") : unifiedSource ?? iconConsumerExample(component, "vite") ?? chartConsumerExample(component, "vite") ?? compoundConsumerExample(component, "vite") ?? examples[component];
   if (!source) throw new Error(`No Vite entry example is defined for ${component}`);
   if (verifyUnification && !unifiedSource && !styles) {
     source = source.replace(/\.render\(([\s\S]+)\);?\s*$/, `.render(<main data-consumer="${component}">$1</main>);\n`);
@@ -1255,6 +1435,8 @@ try {
       await mkdir(consumer, { recursive: true });
       await writeConsumer(consumer, manager, { starter: component === "button" });
       await installWithCli({ consumer, component, manager, tarball });
+      await assertFreeIconInstall(consumer, component);
+      await assertChartInstall(consumer, component, manager);
       if (verifyFeedback && ["badge", "alert", "inline-notice"].includes(component)) {
         await verifyFeedbackConsumer({ consumer, framework: "next", component, packageManager: manager, registrySnapshot });
       }
@@ -1264,18 +1446,42 @@ try {
     }
   }
   for (const manager of vitePackageManagers) for (const component of viteComponents) {
-    const consumer = join(work, `vite-${manager}-${component}`);
+    const workspace = join(work, `vite-${manager}-${component}`);
+    const catalog = manager === "pnpm" ? viteReactCatalog : undefined;
+    const consumer = catalog ? join(workspace, "app") : workspace;
     await mkdir(consumer, { recursive: true });
-    await writeViteConsumer(consumer, manager);
+    const reactSpec = catalog ? `catalog:${catalog === "default" ? "" : catalog}` : undefined;
+    if (catalog) {
+      await writeFile(join(workspace, "package.json"), '{"private":true}\n');
+      const versions = "react: 19.2.0\nreact-dom: 19.2.0";
+      const section = catalog === "default" ? "catalog:\n" : "catalogs:\n  modern:\n";
+      const indent = catalog === "default" ? "  " : "    ";
+      await writeFile(join(workspace, "pnpm-workspace.yaml"), `packages:\n  - app\n${section}${versions.split("\n").map(line => indent + line).join("\n")}\n`);
+    }
+    await writeViteConsumer(consumer, manager, reactSpec);
     await installViteComponent({ consumer, component, tarball, manager });
+    await assertFreeIconInstall(consumer, component);
+    await assertChartInstall(workspace, component, manager);
+    if (process.env.ZERON_CONSUMER_CHARTS === "1") await verifyMountedChart(consumer, component);
     if (verifyFeedback && ["badge", "alert", "inline-notice"].includes(component)) {
       await verifyFeedbackConsumer({ consumer, framework: "vite", component, packageManager: manager, registrySnapshot });
     }
     if (verifyUnification) await verifyUnificationConsumer({ consumer, framework: "vite", component, packageManager: manager, registrySnapshot });
-    console.log(`Consumer passed: ${manager === "npm" ? "vite" : "vite-pnpm"}/${component}`);
-    if (!keepConsumers) await rm(consumer, { recursive: true, force: true });
+    if (catalog) {
+      const { dependencies } = JSON.parse(await readFile(join(consumer, "package.json"), "utf8"));
+      assert.equal(dependencies.react, reactSpec);
+      assert.equal(dependencies["react-dom"], reactSpec);
+    }
+    console.log(`Consumer passed: ${manager === "npm" ? "vite" : "vite-pnpm"}/${component}${catalog ? ` (catalog: ${catalog})` : ""}`);
+    if (!keepConsumers) await rm(workspace, { recursive: true, force: true });
   }
-  if (!styles && vitePackageManagers.length > 0) {
+  if (legacyIconRegistry) {
+    await verifyIconUpgrade(join(work, "icon-upgrade"), tarball);
+  }
+  if (legacyChartRegistry) {
+    await verifyChartUpgrade(join(work, "chart-upgrade"), tarball);
+  }
+  if (!styles && viteComponents.length > 0 && vitePackageManagers.length > 0) {
     const rejectionConsumer = join(work, "vite-next-rejection");
     await mkdir(rejectionConsumer, { recursive: true });
     await writeViteConsumer(rejectionConsumer);
