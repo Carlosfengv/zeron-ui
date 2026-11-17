@@ -9,6 +9,12 @@ const keys = [...manifest.matchAll(/^  (entry|blockEntry|iconEntry)\(\{ slug: "(
   .map(([, type, slug]) => `${type === "blockEntry" ? "blocks" : type === "iconEntry" ? "icons" : "components"}/${slug}`);
 if (!keys.length || new Set(keys).size !== keys.length) throw new Error("Invalid document manifest");
 
+// Standalone routes can share a message bundle without being component entries.
+const messageSources = new Map([
+  ["docs/introduction", "components/introduction"],
+  ...keys.map((key) => [key, key]),
+]);
+
 // Retain established order and surrounding declarations, including the home
 // loader and message-loading functions, when registering new documents.
 function syncMap(source, start, entries, indent) {
@@ -44,8 +50,8 @@ for (const [file, collection, name] of [
 const messagesFile = "docs/i18n/content-loaders.generated.ts";
 let messages = await readFile(join(root, messagesFile), "utf8");
 for (const locale of ["en", "zh-CN"]) {
-  const entries = keys.map((key) => [key, `@docs/content/${locale}/${key}.json`]);
-  for (const [key] of entries) await access(join(root, `docs/content/${locale}/${key}.json`));
+  const entries = Array.from(messageSources, ([key, source]) => [key, `@docs/content/${locale}/${source}.json`]);
+  for (const source of messageSources.values()) await access(join(root, `docs/content/${locale}/${source}.json`));
   messages = syncMap(messages, locale === "en" ? "  en: {" : '  "zh-CN": {', entries, "    ");
 }
 outputs.push([messagesFile, messages]);

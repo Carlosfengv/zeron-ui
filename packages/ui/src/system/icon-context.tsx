@@ -473,20 +473,6 @@ function IconProvider({
     setVariant(enabledVariants[nextIndex]);
   }, [availableVariants, setVariant, variant]);
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "i" && event.key !== "I") return;
-      if (event.metaKey || event.ctrlKey || event.altKey) return;
-      const target = event.target as HTMLElement;
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
-      event.preventDefault();
-      cycleVariant();
-    };
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [cycleVariant]);
-
   const value = useMemo<IconContextValue>(() => ({
     icons: { ...baseIcons, ...overrides },
     variant,

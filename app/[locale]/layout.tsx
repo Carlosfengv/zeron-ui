@@ -58,7 +58,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       </head>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <AppProviders>{children}</AppProviders>
+          <AppProviders enableSiteShortcuts>{children}</AppProviders>
         </NextIntlClientProvider>
         <Analytics />
         <SpeedInsights />
