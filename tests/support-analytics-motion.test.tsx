@@ -4,7 +4,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { SupportTotal } from "../packages/blocks/src/application/support-analytics-01/support-analytics-motion";
 
 const { animate } = vi.hoisted(() => ({ animate: vi.fn() }));
-vi.mock("framer-motion", async (original) => ({ ...await original<typeof import("framer-motion")>(), animate }));
+vi.mock("motion/react", async (original) => ({ ...await original<typeof import("motion/react")>(), animate }));
 let reducedMotion = false;
 const listeners = new Set<() => void>();
 const animations: { from: number; to: number; onUpdate: (value: number) => void; onComplete: () => void; stop: ReturnType<typeof vi.fn> }[] = [];

@@ -816,7 +816,7 @@ export function updateRegistry(registry) {
 
   const tree = registry.items.find((entry) => entry.name === "tree");
   if (tree) {
-    tree.dependencies = [...new Set([...(tree.dependencies ?? []), "framer-motion"])];
+    tree.dependencies = [...new Set([...(tree.dependencies ?? []), "motion"])];
     tree.registryDependencies = [
       ...new Set([...(tree.registryDependencies ?? []), "springs"]),
     ];

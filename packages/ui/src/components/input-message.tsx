@@ -16,7 +16,7 @@ import {
   type Ref,
   type TextareaHTMLAttributes,
 } from "react";
-import { AnimatePresence, motion, Reorder, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, Reorder, useReducedMotion } from "motion/react";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 import { useIcon } from "#system/icon-context";

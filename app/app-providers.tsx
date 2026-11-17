@@ -1,4 +1,4 @@
-import { MotionConfig } from "framer-motion";
+import { MotionConfig } from "motion/react";
 import { BrandPlaygroundProvider } from "@docs/components/playground/brand-playground";
 import { SidebarLayout } from "@docs/components/shell/site/sidebar-layout";
 import { SiteShortcuts } from "@docs/components/shell/site/site-shortcuts";

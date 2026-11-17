@@ -6,8 +6,8 @@ import { expect, it, vi } from "vitest";
 import { RadioGroup, RadioItem } from "@zeron/ui/radio-group";
 
 const preference = vi.hoisted(() => ({ reduce: false }));
-vi.mock("framer-motion", async (importOriginal) => ({
-  ...await importOriginal<typeof import("framer-motion")>(),
+vi.mock("motion/react", async (importOriginal) => ({
+  ...await importOriginal<typeof import("motion/react")>(),
   useReducedMotion: () => preference.reduce,
 }));
 

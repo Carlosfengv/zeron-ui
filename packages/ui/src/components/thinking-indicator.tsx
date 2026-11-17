@@ -1,7 +1,7 @@
 "use client";
 
 import { forwardRef, useState, useEffect, type HTMLAttributes } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 const circleA =

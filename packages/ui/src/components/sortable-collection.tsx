@@ -15,7 +15,7 @@ import Cancel01Icon from "@hugeicons/core-free-icons/Cancel01Icon";
 import DragDropHorizontalIcon from "@hugeicons/core-free-icons/DragDropHorizontalIcon";
 import PencilEdit01Icon from "@hugeicons/core-free-icons/PencilEdit01Icon";
 import Search01Icon from "@hugeicons/core-free-icons/Search01Icon";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Button } from "#components/button";
 import { Input } from "#components/input";
 import { Popover, PopoverContent, PopoverTrigger } from "#components/popover";

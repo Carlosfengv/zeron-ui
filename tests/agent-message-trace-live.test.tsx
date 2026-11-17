@@ -19,8 +19,8 @@ type ScrollAnimation = {
 };
 const motionTest = vi.hoisted(() => ({ start: 0, end: Infinity, scroll: null as ScrollAnimation | null }));
 
-vi.mock("framer-motion", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("framer-motion")>()),
+vi.mock("motion/react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("motion/react")>()),
   // Control imperative scroll updates; component and timeline motion stay real.
   animate: (from: number, to: number, options: ScrollAnimation["options"]) => {
     motionTest.scroll = { from, to, options };

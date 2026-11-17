@@ -13,7 +13,7 @@ import {
   type HTMLAttributes,
   type ComponentProps,
 } from "react";
-import { motion, AnimatePresence, useReducedMotionConfig } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotionConfig } from "motion/react";
 import { Menu } from "@base-ui/react/menu";
 import type { MenuTriggerProps } from "@base-ui/react/menu";
 import {

@@ -12,7 +12,7 @@ import {
   type ReactNode,
   type HTMLAttributes,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { Collapsible } from "@base-ui/react/collapsible";
 
 // SSR-safe layout effect (client components still server-render in Next).

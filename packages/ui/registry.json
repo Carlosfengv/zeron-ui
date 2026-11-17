@@ -231,7 +231,7 @@
       "title": "Context Map",
       "description": "Interactive token treemap with per-block details, agent switching, and before/after compaction.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -1128,7 +1128,7 @@
       "title": "useMergeSplitBlocks",
       "description": "React hook + renderer for the selected-background merge/split animation. When one row bridges or splits two contiguous selected runs, their inner edges glide together (or apart) and swap to a single block, instead of one block spring-growing over the union.",
       "dependencies": [
-        "framer-motion"
+        "motion"
       ],
       "registryDependencies": [
         "springs",
@@ -1161,7 +1161,7 @@
       "title": "Accordion (Base UI)",
       "description": "Collapsible accordion with animated height transitions, spring-animated chevron, and proximity hover in grouped mode. Base UI flavor.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "@base-ui/react",
         "tw-animate-css"
       ],
@@ -1247,7 +1247,7 @@
       "title": "Ask User Questions",
       "description": "Stepped question flow with numbered options, keyboard shortcuts (1–9), single or multi-select, inline 'other' text input, optional skip, proximity-based hover, and multi-question navigation. Auto-advances on selection in single-select.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "@base-ui/react",
         "tw-animate-css"
       ],
@@ -1274,7 +1274,7 @@
       "title": "Decision Tree",
       "description": "A queue of agent decisions with branching options, flagged consequences, recommended paths, and custom instructions.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -1893,7 +1893,7 @@
       "title": "MenuItem",
       "description": "Accessible menu row primitive with icon, selection, and keyboard-menu integration.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -1918,7 +1918,7 @@
       "description": "Dropdown menu with proximity hover, animated selection indicator, inline panel or triggered popup with collision-aware positioning, typeahead, and close-on-select. Includes MenuItem. Base UI flavor.",
       "dependencies": [
         "@base-ui/react",
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -1953,7 +1953,7 @@
       "description": "Compact animated checkbox with checked, indeterminate, disabled, validation, and form states. Base UI flavor.",
       "dependencies": [
         "@base-ui/react",
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -1974,7 +1974,7 @@
       "title": "Checkbox Group (Base UI)",
       "description": "Animated checkbox group with proximity hover, contiguous selection merging, and spring-animated check marks. Base UI flavor.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2001,7 +2001,7 @@
       "description": "Accessible collision-aware popover with click or hover triggers, semantic floating surfaces, and an optional liquid anchor-to-panel transition.",
       "dependencies": [
         "@base-ui/react",
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2026,7 +2026,7 @@
       "title": "Radio Group (Base UI)",
       "description": "Composable radio group with an atomic RadioGroupItem, form support, and enhanced proximity-hover RadioItem rows. Base UI flavor.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "@base-ui/react",
         "tw-animate-css"
       ],
@@ -2050,7 +2050,7 @@
       "title": "Dialog (Base UI)",
       "description": "Animated modal dialog with spring-based scale and opacity transitions. Base UI flavor.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "@base-ui/react",
         "tw-animate-css"
       ],
@@ -2079,7 +2079,7 @@
       "description": "Slide-in navigation drawer with scrim, focus trap, and scroll lock. Base UI flavor.",
       "dependencies": [
         "@base-ui/react",
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2190,7 +2190,7 @@
       "title": "Input Copy",
       "description": "Read-only input with a copy-to-clipboard button and animated check feedback. Supports optional label and shape context.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2326,7 +2326,7 @@
       "title": "Input Message",
       "description": "Chat-style message composer with auto-resizing textarea, drag-and-drop file attachments (PNG / JPEG / PDF), flexible left/right action slots, and a built-in send button on a Surface-2 substrate.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2399,7 +2399,7 @@
       "title": "Chat Message",
       "description": "Composable chat messages with local and persisted attachments, accessible actions, clipboard feedback, asynchronous editing and controlled version selection.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2459,7 +2459,7 @@
       "description": "Compatibility adapter for Tabs' segment variant. New integrations should use Tabs with variant=\"segment\".",
       "dependencies": [
         "@base-ui/react",
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2484,7 +2484,7 @@
       "title": "Switch (Base UI)",
       "description": "Animated toggle switch with spring-based thumb animation. Base UI flavor.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "@base-ui/react",
         "tw-animate-css"
       ],
@@ -2507,7 +2507,7 @@
       "title": "Table",
       "description": "Animated semantic table primitives with proximity row hover and a composable Skeleton loading body.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2531,7 +2531,7 @@
       "title": "Card",
       "description": "shadcn's compositional card (Card, CardHeader, CardTitle, CardDescription, CardAction, CardContent, CardFooter) with the Zeron Design layer: transparent substrate, weight-animated title, media/logo/feature/image slots, and a CardGroup that owns stacked, inline, and grid layouts plus 2-D proximity-hover highlighting.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2555,7 +2555,7 @@
       "title": "Slider (Base UI)",
       "description": "Animated slider with classic and graduated tick tracks, capsule thumbs, portalled value content, range mode, and click-to-edit values. Base UI flavor.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "@base-ui/react",
         "tw-animate-css"
       ],
@@ -2581,7 +2581,7 @@
       "dependencies": [
         "@hugeicons/core-free-icons",
         "@hugeicons/react",
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2647,7 +2647,7 @@
       "title": "Tabs (Base UI)",
       "description": "Pill, segment, and underline tab navigation with animated selection indicators, proximity hover, and spring animations. Base UI flavor.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "@base-ui/react",
         "tw-animate-css"
       ],
@@ -2674,7 +2674,7 @@
       "title": "Thinking Indicator",
       "description": "Animated loading indicator with morphing SVG path (circle to infinity loop) and shimmer text rotation. Cycles through customizable status words.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2827,7 +2827,7 @@
       "description": "Animated select menu with collision-aware positioning, typeahead, proximity hover, spring-animated popover, and animated checkmark. Base UI flavor.",
       "dependencies": [
         "@base-ui/react",
-        "framer-motion",
+        "motion",
         "class-variance-authority",
         "tw-animate-css"
       ],
@@ -2858,7 +2858,7 @@
       "title": "Toast",
       "description": "Animated notification stack with semantic statuses, automatic dismissal, actions, drag-to-dismiss gestures, and an imperative toast API.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2885,7 +2885,7 @@
       "title": "Tooltip (Base UI)",
       "description": "Floating tooltip with spring-based animations, configurable placement, and rich content support. Base UI flavor.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "@base-ui/react",
         "tw-animate-css"
       ],
@@ -2900,6 +2900,11 @@
           "path": "packages/ui/src/components/tooltip.tsx",
           "target": "components/ui/tooltip.tsx",
           "type": "registry:ui"
+        },
+        {
+          "path": "packages/ui/src/components/tooltip-motion-popup.tsx",
+          "target": "components/ui/tooltip-motion-popup.tsx",
+          "type": "registry:ui"
         }
       ]
     },
@@ -2910,7 +2915,7 @@
       "description": "Collapsible AI reasoning steps with animated expand/collapse, per-step icons, sources, and nested details. Base UI flavor.",
       "dependencies": [
         "@base-ui/react",
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -2953,7 +2958,7 @@
       "description": "Color picker with HEX, RGB, HSL, and OKLCH formats, alpha channel, optional swatches, and a popover trigger. Built on Base UI's Popover, Menu, and NumberField primitives with native EyeDropper support.",
       "dependencies": [
         "@base-ui/react",
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -3090,7 +3095,7 @@
       "title": "Nav Menu",
       "description": "Router-agnostic navigation menu with active, hover, focus, and keyboard behavior.",
       "dependencies": [
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -3139,7 +3144,7 @@
       "description": "Responsive sidebar with desktop collapse modes, persistence, shortcut support, and mobile drawer behavior.",
       "dependencies": [
         "@base-ui/react",
-        "framer-motion",
+        "motion",
         "tw-animate-css"
       ],
       "registryDependencies": [
@@ -3264,7 +3269,7 @@
       "dependencies": [
         "@base-ui/react",
         "date-fns",
-        "framer-motion",
+        "motion",
         "react-day-picker",
         "tw-animate-css"
       ],
@@ -3336,7 +3341,7 @@
       "description": "Accessible hierarchical display with controlled expansion, single or multiple selection, cascade checkboxes, search filtering, and keyboard navigation.",
       "dependencies": [
         "tw-animate-css",
-        "framer-motion"
+        "motion"
       ],
       "registryDependencies": [
         "surfaces",

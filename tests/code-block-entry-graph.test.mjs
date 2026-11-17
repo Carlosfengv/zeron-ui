@@ -16,12 +16,13 @@ const buildOptions = {
     "react-dom",
     "@base-ui/*",
     "@hugeicons/*",
+    "motion",
     "framer-motion",
   ],
   tsconfig: "packages/ui/tsconfig.json",
 };
 
-async function getInitialInputs(name, entryPoint) {
+async function getInitialGraph(name, entryPoint) {
   const result = await esbuild.build({
     ...buildOptions,
     entryPoints: { [name]: entryPoint },
@@ -43,34 +44,37 @@ async function getInitialInputs(name, entryPoint) {
   };
   visit(entryOutput);
 
-  return new Set(
-    [...outputs].flatMap((file) =>
-      Object.keys(result.metafile.outputs[file]?.inputs ?? {})
-    )
-  );
+  const initialOutputs = [...outputs].map((file) => result.metafile.outputs[file]);
+  return {
+    inputs: initialOutputs.flatMap((output) => Object.keys(output.inputs)),
+    externalImports: initialOutputs.flatMap((output) =>
+      output.imports.filter((entry) => entry.external && entry.kind !== "dynamic-import").map((entry) => entry.path)
+    ),
+  };
 }
 
 describe("code-block entry dependency graph", () => {
   it("keeps editor runtime out of the read-only entry", async () => {
-    const inputs = await getInitialInputs(
+    const { inputs, externalImports } = await getInitialGraph(
       "readonly",
       "packages/ui/src/components/code-block/index.ts"
     );
 
-    expect([...inputs].filter((file) => file.includes("/editor/"))).toEqual([]);
+    expect(inputs.filter((file) => file.includes("/editor/"))).toEqual([]);
     expect(
-      [...inputs].filter((file) => file.includes("@shikijs/langs/dist/langs/"))
+      inputs.filter((file) => file.includes("@shikijs/langs/dist/langs/"))
     ).toEqual([]);
+    expect(externalImports.filter((path) => /^(motion|framer-motion)(\/|$)/.test(path))).toEqual([]);
   });
 
   it("loads the editor runtime through the edit entry", async () => {
-    const inputs = await getInitialInputs(
+    const { inputs } = await getInitialGraph(
       "edit",
       "packages/ui/src/components/code-block/edit.tsx"
     );
 
-    expect([...inputs].some((file) => file.endsWith("/editor/editor.ts"))).toBe(true);
-    expect([...inputs].some((file) => file.endsWith("/editor/pieceTable.ts"))).toBe(true);
-    expect([...inputs].some((file) => file.endsWith("/editor/searchPanel.ts"))).toBe(true);
+    expect(inputs.some((file) => file.endsWith("/editor/editor.ts"))).toBe(true);
+    expect(inputs.some((file) => file.endsWith("/editor/pieceTable.ts"))).toBe(true);
+    expect(inputs.some((file) => file.endsWith("/editor/searchPanel.ts"))).toBe(true);
   });
 });

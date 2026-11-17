@@ -77,9 +77,6 @@ importers:
       dialkit:
         specifier: ^1.1.0
         version: 1.1.0(motion@12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      framer-motion:
-        specifier: ^12.34.0
-        version: 12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       mcp-handler:
         specifier: 2.2.0
         version: 2.2.0(@modelcontextprotocol/server@2.3.0)(next@15.5.24(@babel/core@7.29.7)(@playwright/test@1.55.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
@@ -237,8 +234,8 @@ importers:
       '@zeron/ui':
         specifier: workspace:*
         version: link:../ui
-      framer-motion:
-        specifier: ^12.34.0
+      motion:
+        specifier: ^12.42.2
         version: 12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: ^19.0.0
@@ -421,9 +418,6 @@ importers:
       diff:
         specifier: 9.0.0
         version: 9.0.0
-      framer-motion:
-        specifier: ^12.34.0
-        version: 12.42.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       hast-util-to-html:
         specifier: 9.0.5
         version: 9.0.5

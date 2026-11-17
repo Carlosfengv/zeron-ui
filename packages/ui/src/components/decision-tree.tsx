@@ -4,7 +4,7 @@ import {
   forwardRef, useEffect, useId, useImperativeHandle, useLayoutEffect, useRef, useState,
   type ComponentPropsWithoutRef, type KeyboardEvent, type ReactNode,
 } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import { Alert, AlertDescription } from "#components/alert";
 import { Avatar, AvatarFallback } from "#components/avatar";
 import { Badge } from "#components/badge";

@@ -16,7 +16,7 @@ import {
   type ComponentProps,
   type ComponentPropsWithoutRef,
 } from "react";
-import { motion, AnimatePresence, useReducedMotionConfig } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotionConfig } from "motion/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 import type { IconComponent } from "#system/icon-context";

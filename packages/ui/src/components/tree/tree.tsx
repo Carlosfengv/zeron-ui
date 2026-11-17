@@ -13,7 +13,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from "react";
-import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "motion/react";
 import { Button } from "../button";
 import { cn } from "#system/utils";
 import { useIcon } from "#system/icon-context";

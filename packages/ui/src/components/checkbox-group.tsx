@@ -10,7 +10,7 @@ import {
   type ReactNode,
   type HTMLAttributes,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import type { IconComponent } from "#system/icon-context";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";

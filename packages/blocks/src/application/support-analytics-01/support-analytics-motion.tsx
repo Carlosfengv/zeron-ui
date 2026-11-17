@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useLayoutEffect, useRef, useSyncExternalStore, type FocusEvent } from "react";
-import { animate, motion, MotionConfig } from "framer-motion";
+import { animate, motion, MotionConfig } from "motion/react";
 import { Badge } from "@zeron/ui/badge";
 import { spring } from "@zeron/ui/system/springs";
 import { formatCount, validCount } from "./support-analytics-data";

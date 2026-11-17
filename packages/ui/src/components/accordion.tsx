@@ -13,7 +13,7 @@ import {
   type ReactNode,
   type HTMLAttributes,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 
 // SSR-safe layout effect (client components still server-render in Next).

@@ -6,7 +6,7 @@ import { TabItem, Tabs, TabsList } from "../packages/ui/src/components/tabs";
 
 // Inspect the animation destination without depending on animation timing or
 // jsdom layout measurements. Selection still runs through the real Tabs API.
-vi.mock("framer-motion", () => ({
+vi.mock("motion/react", () => ({
   motion: { div: ({ animate, initial: _initial, transition: _transition, exit: _exit, ...props }: HTMLAttributes<HTMLDivElement> & {
     animate?: { left?: number }; initial?: unknown; transition?: unknown; exit?: unknown;
   }) => <div {...props} data-animation-left={animate?.left} /> },

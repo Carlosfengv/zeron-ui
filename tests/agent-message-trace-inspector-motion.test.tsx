@@ -24,8 +24,8 @@ const motionTest = vi.hoisted(() => ({
   reduced: false,
   scroll: null as ScrollAnimation | null,
 }));
-vi.mock("framer-motion", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("framer-motion")>()),
+vi.mock("motion/react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("motion/react")>()),
   useReducedMotion: () => motionTest.reduced,
   animate: (from: number, to: number, options: ScrollAnimation["options"]) => {
     motionTest.scroll = { from, to, options };

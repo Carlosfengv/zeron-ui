@@ -16,7 +16,7 @@ import {
   type ReactNode,
 } from "react";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useIcon, type IconComponent } from "#system/icon-context";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";

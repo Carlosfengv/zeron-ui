@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
-import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
+import { animate, motion, useMotionValue, useReducedMotion } from "motion/react";
 import { spring } from "@zeron/ui/system/springs";
 import { clampFloatingPosition, nearestFloatingDock, positionForDock, type DockPosition, type Point, type Viewport } from "./floating-preview-position";
 

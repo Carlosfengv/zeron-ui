@@ -4,7 +4,7 @@ import {
   forwardRef, useEffect, useId, useMemo, useRef, useState,
   type CSSProperties,
 } from "react";
-import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "motion/react";
 import { Badge } from "#components/badge";
 import { Button } from "#components/button";
 import { DropdownContent, DropdownMenu, DropdownTrigger } from "#components/dropdown";

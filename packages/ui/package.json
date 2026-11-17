@@ -230,7 +230,6 @@
     "date-fns": "^4.4.0",
     "dialkit": "^1.1.0",
     "diff": "9.0.0",
-    "framer-motion": "^12.34.0",
     "hast-util-to-html": "9.0.5",
     "lru_map": "0.4.1",
     "motion": "^12.42.2",

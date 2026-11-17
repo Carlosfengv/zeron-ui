@@ -1,7 +1,7 @@
 "use client";
 
 import { forwardRef, type ReactNode } from "react";
-import { motion, useReducedMotion, type HTMLMotionProps } from "framer-motion";
+import { motion, useReducedMotion, type HTMLMotionProps } from "motion/react";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 import { useTouchPrimary } from "#hooks/use-touch-primary";

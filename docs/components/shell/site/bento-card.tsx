@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { type ReactNode, type CSSProperties } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { cn } from "@zeron/ui/system/utils";
 import { spring } from "@zeron/ui/system/springs";
 import { Badge } from "@zeron/ui/badge";
