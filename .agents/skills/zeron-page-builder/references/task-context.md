@@ -10,7 +10,9 @@
 | 接入接口、权限或业务状态 | [项目适配](project-adaptation.md)及组合的数据/回调接口 |
 | 主题或迁移 | 先确认改变宿主的授权范围，再读主题适配或 swap-to-zeronui 对应流程 |
 
-页面任务依次明确：已有宿主、任务结构、样式与业务修改边界、选中组件、业务状态、自查范围。保留简短工作记录，不为小改动额外创建计划文档。
+页面任务依次明确：已有宿主、任务结构、候选 Block（区分 `data-block` 受控接入与 `template` 业务模板改造，不因示例业务名词不同而弃用）、样式与业务修改边界、选中布局与组件（如 `PageLayout > PageHeader + PageContent > PageBody`）、业务状态、自查范围。保留简短工作记录，不为小改动额外创建计划文档。
+
+禁止手搓 `<div className="p-6 flex justify-between">` 替代 `PageLayout`/`PageHeader`，禁止在 `PageHeaderContent` 下直接并排放置 `PageTitle` 与 `PageDescription`（需包裹 `<div className="min-w-0">`），禁止在 `PageBody` 主表外再套 `Card`/`Container`，禁止在 `AppShell`/`PageLayout`/`PageColumns` 与其直接槽位子组件之间插入额外 DOM 包装节点。
 
 业务数据、菜单、路由、权限、接口和状态适配由项目拥有；组件的几何、surface、focus/disabled/loading 和交互反馈按公开 API 保留。主题通过已支持的统一入口设置。不要用内部 data-slot CSS、全局样式或修改受管理文件掩盖调用错误；合法业务排列与可视化可以自定义。
 

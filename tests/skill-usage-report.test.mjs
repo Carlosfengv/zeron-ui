@@ -123,6 +123,11 @@ describe("skill component and style reporting", () => {
     const alias = await generateUsageReport(options);
     expect(alias.inventory.status).toBe("unchecked");
     expect(alias.counts.unresolvedComponents).toBe(1);
+    await put("src/pages/Orders.tsx", 'import {DataTable} from "../ui/data-table"; export const OrdersPage = () => <div><DataTable/></div>;');
+    await put("src/ui/data-table.tsx", "export const DataTable = () => <table/>;");
+    const advisory = await generateUsageReport({ ...options, files: ["src/pages/Orders.tsx"] });
+    expect(advisory.architectureAdvisories).toHaveLength(1);
+    expect(renderUsageReport(advisory)).toContain("页面布局采用提醒");
     await put("src/Page.tsx", "export const Page = () => <div");
     const broken = await generateUsageReport(options);
     expect(broken.inventory.status).toBe("unchecked");

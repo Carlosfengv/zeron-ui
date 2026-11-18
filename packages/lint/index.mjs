@@ -1,5 +1,6 @@
 import { plugin } from "@shadcn/lint";
 import { buttonIconSlots } from "./button-icon-slots.mjs";
+import { pageLayoutContracts } from "./page-layout-contracts.mjs";
 import {
   borderWidthTokens,
   shadowTokens,
@@ -115,7 +116,15 @@ export function createZeronConfig({
     {
       name: "zeron/design-system",
       files,
-      plugins: { shadcn: plugin, zeron: { rules: { "button-icon-slots": buttonIconSlots } } },
+      plugins: {
+        shadcn: plugin,
+        zeron: {
+          rules: {
+            "button-icon-slots": buttonIconSlots,
+            "page-layout-contracts": pageLayoutContracts,
+          },
+        },
+      },
       settings: {
         shadcn: {
           componentImports,
@@ -124,6 +133,7 @@ export function createZeronConfig({
       },
       rules: {
         "zeron/button-icon-slots": "error",
+        "zeron/page-layout-contracts": "error",
         "shadcn/no-restyle": [
           "error",
           { allow: [...restyleCategories, ...generatedUtilityClasses], contracts },
@@ -145,6 +155,7 @@ export function createZeronConfig({
       files: componentFiles,
       rules: {
         "zeron/button-icon-slots": "off",
+        "zeron/page-layout-contracts": "off",
         "shadcn/no-restyle": "off",
         "shadcn/no-arbitrary-values": "off",
         "shadcn/no-inline-styles": "off",

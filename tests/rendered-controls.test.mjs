@@ -232,6 +232,34 @@ describe("portable current-state control observations (actual Chromium)", () => 
     const report = await measure(`<button data-slot="button" aria-label="  " aria-labelledby="missing-a missing-b"><span data-slot="button-icon">${svg}</span></button>`);
     expect(report.checks.find(check => check.check === "icon-accessible-name").status).toBe("failed");
   });
+  it("detects rendered Zeron layout contract violations in consumer DOM without @zeron/lint", async () => {
+    const broken = await measure(`
+      <div data-slot="app-shell" style="min-height:100px">
+        <div data-slot="app-shell" style="min-height:80px">
+          <div data-slot="page-layout" style="min-height:60px">
+            <div data-slot="page-header"><div data-slot="page-header-content"><h1 data-slot="page-title">Orders</h1><p data-slot="page-description">All orders</p></div></div>
+            <div class="bad-wrapper"><div data-slot="page-content" style="min-height:40px"><div data-slot="card"><div data-slot="data-table" style="height:20px">table</div></div></div></div>
+          </div>
+        </div>
+      </div>
+    `);
+    expect(broken.checks.find(c => c.check === "nested-app-shell")?.status).toBe("failed");
+    expect(broken.checks.find(c => c.check === "direct-layout-slot")?.status).toBe("failed");
+    expect(broken.checks.find(c => c.check === "header-text-group")?.status).toBe("failed");
+    expect(broken.checks.find(c => c.check === "datatable-surface-frame")?.status).toBe("failed");
+
+    const valid = await measure(`
+      <div data-slot="app-shell" style="min-height:100px">
+        <main data-slot="app-shell-main" style="min-height:80px">
+          <div data-slot="page-layout" style="min-height:60px">
+            <header data-slot="page-header"><div data-slot="page-header-content"><div><h1 data-slot="page-title">Orders</h1><p data-slot="page-description">All orders</p></div></div></header>
+            <div data-slot="page-content" style="min-height:40px"><div data-slot="page-body"><div data-slot="data-table" style="height:20px">table</div></div></div>
+          </div>
+        </main>
+      </div>
+    `);
+    expect(valid.checks.some(c => ["nested-app-shell", "direct-layout-slot", "header-text-group", "datatable-surface-frame"].includes(c.check))).toBe(false);
+  });
   it("validates required arguments without accepting non-page URLs or duplicate options", () => {
     expect(parseControlCheckArgs(["--url", "http://127.0.0.1:3000/orders", "--output", "output.json", "--viewport", "390x844"]).viewport).toEqual({ width: 390, height: 844 });
     for (const args of [["--url", "file:///etc/passwd", "--output", "out.json"], ["--url", "https://example.test", "--output", "out", "--viewport", "0x900"], ["--url", "https://example.test", "--url", "https://other.test", "--output", "out"]]) expect(() => parseControlCheckArgs(args)).toThrow();

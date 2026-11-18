@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 const portable = (value) => value.split(path.sep).join("/");
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 const codeFile = (file) => /\.[cm]?[jt]sx?$/.test(file) && !file.endsWith(".d.ts");
-const designRules = ["shadcn/no-restyle", "shadcn/no-raw-colors", "shadcn/no-arbitrary-values", "shadcn/no-unknown-classes", "shadcn/no-inline-styles", "shadcn/require-static-classes", "no-restricted-syntax"];
+const designRules = ["zeron/button-icon-slots", "zeron/page-layout-contracts", "shadcn/no-restyle", "shadcn/no-raw-colors", "shadcn/no-arbitrary-values", "shadcn/no-unknown-classes", "shadcn/no-inline-styles", "shadcn/require-static-classes", "no-restricted-syntax"];
 const enabled = (rule) => rule && ![0, "off"].includes(Array.isArray(rule) ? rule[0] : rule);
 const inside = (file, root) => file === root || file.startsWith(`${root}/`);
 
@@ -97,6 +97,29 @@ export async function generateUsageReport({ cwd, files, eslintConfig, baseline, 
     }
     report.inventory.components = [...components.values()].sort((a, b) => `${a.source}:${a.name}`.localeCompare(`${b.source}:${b.name}`));
     report.inventory.status = report.inventory.unknowns.length ? "unchecked" : "passed";
+    const routePattern = /(?:^|\/)(?:app\/.*\/page|src\/pages\/[^/]+|pages\/[^/]+|src\/routes\/[^/]+)\.[jt]sx$/;
+    const pageLevelTriggers = new Set(["DataTable", "DataGrid", "CardGroup", "Tabs"]);
+    const layoutOwners = new Set(["AppShell", "PageLayout", "ResourceDetailLayout", "ResourcePageLayout", "AuthLayout"]);
+    const hasBlock = report.inventory.components.some((item) => item.category === "block");
+    const hasLayoutOwner = report.inventory.components.some((item) => item.category === "ui" && layoutOwners.has(item.name));
+    if (!hasBlock && !hasLayoutOwner) {
+      const routeScopes = scope.filter((file) => routePattern.test(file));
+      for (const routeFile of routeScopes) {
+        const heavyUse = report.inventory.components.find(
+          (item) => item.category === "ui" && pageLevelTriggers.has(item.name) && item.uses.some((use) => use.file === routeFile),
+        );
+        if (heavyUse) {
+          const firstUse = heavyUse.uses.find((use) => use.file === routeFile);
+          report.architectureAdvisories = report.architectureAdvisories ?? [];
+          report.architectureAdvisories.push({
+            file: routeFile,
+            line: firstUse.line,
+            component: heavyUse.name,
+            message: `路由页面使用了 ${heavyUse.name}，但当前检查范围未识别到 PageLayout / ResourceDetailLayout / AuthLayout 或 Zeron Block；请确认宿主或补齐标准页面布局契约。`,
+          });
+        }
+      }
+    }
   }
   if (eslintConfig) {
     try {
@@ -163,11 +186,12 @@ export function renderUsageReport(report) {
   const table = (headers, rows) => [headers, headers.map(() => "---"), ...rows].map((row) => `| ${row.map(cell).join(" | ")} |`).join("\n");
   const status = { passed: "通过", failed: "未通过", unchecked: "未检查完整" };
   const categories = { block: "Block", ui: "UI", internal: "内部辅助", project: "业务组件", external: "第三方" };
-  const ruleLabels = { "shadcn/no-restyle": "组件样式覆盖", "shadcn/no-raw-colors": "原始颜色", "shadcn/no-arbitrary-values": "任意样式值", "shadcn/no-unknown-classes": "未知类名", "shadcn/no-inline-styles": "内联样式", "shadcn/require-static-classes": "动态类名", "no-restricted-syntax": "额外项目约束" };
+  const ruleLabels = { "zeron/button-icon-slots": "按钮图标插槽", "zeron/page-layout-contracts": "页面布局结构契约", "shadcn/no-restyle": "组件样式覆盖", "shadcn/no-raw-colors": "原始颜色", "shadcn/no-arbitrary-values": "任意样式值", "shadcn/no-unknown-classes": "未知类名", "shadcn/no-inline-styles": "内联样式", "shadcn/require-static-classes": "动态类名", "no-restricted-syntax": "额外项目约束" };
   const disabled = [...new Set(report.lint.coverage.flatMap((item) => Object.keys(item.rules).filter((id) => !enabled(item.rules[id]))))];
   const unchecked = report.lint.coverage.filter((item) => item.status === "unchecked");
   const issues = [
     ...report.lint.findings.map((item) => [`${item.file}:${item.line ?? "?"}`, `${ruleLabels[item.ruleId] ?? item.ruleId ?? "解析失败"}：${item.message}`, item.attribution === "new" ? "新增" : item.attribution === "existing" ? "原有" : "归属未确认"]),
+    ...(report.architectureAdvisories ?? []).map((item) => [`${item.file}:${item.line ?? "?"}`, `页面布局采用提醒：${item.message}`, "待人工/架构确认"]),
     ...report.inventory.unknowns.map((item) => [`${item.file ?? "项目"}:${item.line ?? "?"}`, item.name ? `组件 ${item.name} 的来源待确认` : item.reason, "未检查"]),
   ];
   return [

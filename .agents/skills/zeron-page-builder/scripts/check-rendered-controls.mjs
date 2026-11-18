@@ -63,6 +63,47 @@ export function inspectRenderedControls() {
   }
   const overflow = document.documentElement.scrollWidth - innerWidth;
   record("page-horizontal-overflow", null, overflow <= 1 ? "passed" : "failed", overflow, "<= 1px", "Reflow whole action groups; let the table own local horizontal scrolling.");
+  for (const shell of document.querySelectorAll('[data-slot="app-shell"]')) {
+    if (!visible(shell)) continue;
+    const nestedShell = shell.parentElement?.closest('[data-slot="app-shell"]');
+    if (nestedShell) {
+      record("nested-app-shell", shell, "failed", "nested app-shell", "single AppShell per application region", "Preserve the host shell or pass sidebar={false} / reuse content regions instead of nesting two AppShells.");
+    }
+  }
+  const directSlotPairs = [
+    ["app-shell", ["app-shell-sidebar", "app-shell-header", "app-shell-main"]],
+    ["page-layout", ["page-sidebar", "page-content"]],
+    ["page-content-header", ["page-subnav", "page-actions"]],
+    ["page-columns", ["page-primary", "page-aside"]],
+  ];
+  for (const [parentSlot, childSlots] of directSlotPairs) {
+    for (const childSlot of childSlots) {
+      for (const child of document.querySelectorAll(`[data-slot="${childSlot}"]`)) {
+        if (!visible(child)) continue;
+        const owner = child.parentElement?.closest(`[data-slot="${parentSlot}"]`);
+        if (owner && child.parentElement !== owner) {
+          record("direct-layout-slot", child, "failed", { parent: parentSlot, wrapper: child.parentElement?.tagName?.toLowerCase() ?? "unknown" }, `direct DOM child of [data-slot="${parentSlot}"]`, `Remove intermediate DOM wrapper around ${childSlot} so ${parentSlot} direct-child selectors work.`);
+        }
+      }
+    }
+  }
+  for (const headerContent of document.querySelectorAll('[data-slot="page-header-content"]')) {
+    if (!visible(headerContent)) continue;
+    const directChildren = [...headerContent.children];
+    const hasDirectTitle = directChildren.some(el => el.getAttribute("data-slot") === "page-title");
+    const hasDirectDesc = directChildren.some(el => el.getAttribute("data-slot") === "page-description");
+    if (hasDirectTitle && hasDirectDesc) {
+      record("header-text-group", headerContent, "failed", "sibling page-title and page-description", "vertical text group (<div className=\"min-w-0\">)", "Wrap PageTitle and PageDescription in a single div inside PageHeaderContent.");
+    }
+  }
+  for (const table of document.querySelectorAll('[data-slot="data-table"]')) {
+    if (!visible(table)) continue;
+    const parentSlot = table.parentElement?.getAttribute("data-slot");
+    const insidePageContent = Boolean(table.closest('[data-slot="page-content"], [data-slot="page-body"]'));
+    if (parentSlot && (["card", "card-content"].includes(parentSlot) || (insidePageContent && ["container", "container-body"].includes(parentSlot)))) {
+      record("datatable-surface-frame", table, "failed", parentSlot, "PageContent > PageBody without extra Card/Container wrapper", "Place DataTable directly in PageBody; DataTable already owns its border and surface.");
+    }
+  }
   return { schemaVersion: 1, scope: "current-visible-state-read-only", viewport: { width: innerWidth, height: innerHeight }, checks };
 }
 
