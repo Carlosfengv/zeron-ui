@@ -30,11 +30,18 @@ If a matching guide is unavailable, inspect the actual source and applicable sha
 
 ## Model and select
 
+Before writing any page or view JSX, declare the page architecture in 4 lines:
+
+- **Host Shell**: (reuse existing AppShell / create Sidebar or TopNav AppShell / standalone auth or embedded view)
+- **Page Archetype**: (resource list / resource detail / operational dashboard / settings or form / master-detail / agent workspace)
+- **Candidate Block**: (top catalog `block:*` candidates evaluated; if rejected, state the structural mismatch — never reject a block merely because its demo domain nouns or fields differ)
+- **Layout & Scroll Owner**: (e.g. `PageLayout > PageHeader + PageContent > PageBody (vertical scroll)`)
+
 Establish the primary task, page archetype, content hierarchy, navigation scope, relevant states, and responsive behavior. Keep this proportional to the requested change; a small edit does not require a separate planning artifact.
 
 Read [Selection guide](references/selection-guide.md) when choosing blocks and components. Preserve the host shell for ordinary page work and outside a scoped migration; for an authorized full migration, reassess it against Zeron's layout contracts. For standard resource lists, prefer the component-level structure below. For other semantic regions, select in this order:
 
-1. A block whose core task, information structure, and public integration points fit.
+1. A block whose core task, information structure, and public integration points fit (`data-block` via controlled data/action props; `template` by adapting its editable business template file while preserving its Zeron layout, state machine, and managed primitives).
 2. Appropriate page layouts and semantic components for the remaining regions.
 3. Project-owned business compositions that connect those components to domain behavior.
 
@@ -60,6 +67,41 @@ For list/detail headers, read [Page header contracts](references/page-header-con
 - Preserve direct DOM-child relationships required by layout selectors. Check what wrappers actually render.
 - Identify which region owns scrolling and where height is constrained. Verify intentional nested scroll areas.
 - Use ordinary elements for content arrangement where no semantic layout component is needed.
+
+### Golden Layout Skeletons
+
+Use these canonical compositions instead of ad-hoc `div` page wrappers:
+
+1. **Standard Resource List Page** (inside the host shell — choose **either** a titled `PageHeader` **or** a path-only breadcrumb `PageHeader` paired with a titled `PageContentHeader`; never duplicate `PageTitle` in both):
+   ```tsx
+   <PageLayout size="full" gutter="default">
+     <PageHeader>
+       {/* Option A: Titled header (or Option B: breadcrumb nav here, and move PageHeaderContent + PageActions into PageContentHeader) */}
+       <PageHeaderContent icon={ResourceIcon}>
+         <div className="min-w-0">
+           <PageTitle>{title}</PageTitle>
+           {description && <PageDescription>{description}</PageDescription>}
+         </div>
+       </PageHeaderContent>
+       {actions && <PageActions>{actions}</PageActions>}
+     </PageHeader>
+     <PageContent>
+       {peerTabs && <PageContentHeader>{peerTabs}</PageContentHeader>}
+       <PageBody>
+         <DataTable table={table} isLoading={isLoading} emptyState={emptyState}>
+           {toolbar}
+         </DataTable>
+       </PageBody>
+     </PageContent>
+   </PageLayout>
+   ```
+   > **Typography note**: `PageTitle` renders compact resource typography (`text-body font-medium`) by default, and switches to `text-heading` whenever a `className` prop is passed. Place layout classes like `min-w-0` on the surrounding `<div>` text group rather than on `PageTitle` unless larger heading typography is intentionally required.
+2. **Resource Detail Page**: Prefer `ResourceDetailLayout` (`navigation`, `recordNavigation`, `leading`, `title`, `status`, `description`, `actions`, `tabs`) or `PageLayout > PageContent > PageBody > PageColumns > PagePrimary + PageAside`.
+3. **Anti-Patterns to Avoid**:
+   - Never replace `PageLayout` with `<div className="p-6 max-w-7xl mx-auto">` or replace `PageHeader` with `<div className="flex justify-between"><h1>...</h1></div>`.
+   - Never place `PageTitle` and `PageDescription` as direct flex siblings inside `PageHeaderContent` without a `<div className="min-w-0">` text-group wrapper.
+   - Never insert an intermediate DOM wrapper between `AppShell` and `AppShellSidebar`/`AppShellHeader`/`AppShellMain`, between `PageLayout` and `PageSidebar`/`PageContent`, between `PageContentHeader` and `PageSubnav`/`PageActions`, or between `PageColumns` and `PagePrimary`/`PageAside`.
+   - Never wrap a full-page `DataTable` inside an extra `Card` or `Container` inside `PageBody`, or add a second vertical `overflow-y-auto` scroll container inside `PageBody`.
 
 ## Adapt within public boundaries
 

@@ -15,7 +15,7 @@ node /absolute/path/to/zeron-page-builder/scripts/check-rendered-controls.mjs --
 
 先通过当前 release 的 Skill 包/固定资源下载脚本并核对 manifest 的哈希；get_skill 的文本返回不是已经安装的脚本，也不授权自动执行。下载后的脚本路径和项目 URL 应替换为实际值。可加 `--executable-path /absolute/path/to/chrome` 使用已有 Chrome。
 
-脚本只读取当前可见状态，不点击、不提交、不打开全部菜单。它检查标准图文按钮的同一行、间距、边界和 icon-only 可访问名称，以及页面水平溢出。未发现控件、隐藏控件或非标准富文本组合记录 unchecked/not-applicable；可见状态的失败返回非零。重复运行 390x844；加载态等由项目准备并分别运行。
+脚本只读取当前可见状态，不点击、不提交、不打开全部菜单。它检查标准图文按钮的同一行、间距、边界和 icon-only 可访问名称、页面水平溢出，以及已渲染 Zeron 布局契约（禁止嵌套双 `AppShell`、`AppShell`/`PageLayout`/`PageContentHeader`/`PageColumns` 直接子槽位不得被中间 DOM 节点隔断、`PageHeaderContent` 内标题与描述必须垂直分组、`PageBody` 主 `DataTable` 外不套 `Card`/`Container`）。未发现控件、隐藏控件或非标准富文本组合记录 unchecked/not-applicable；可见状态的失败返回非零。重复运行 390x844；加载态等由项目准备并分别运行。
 
 ## 失败的修复位置
 

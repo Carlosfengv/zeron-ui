@@ -207,8 +207,24 @@ export function createCatalogQuery(snapshots: { currentVersion: string; versions
     return run(input, (runtime, meta) => {
       const item = resolveItem(runtime, input.id);
       const detail = runtime.details[item.id];
+      const relatedBlocks = [
+        ...new Set([
+          ...item.related.filter((id) => id.startsWith("block:") || id === "component:page-layout" || id === "component:resource-detail-layout"),
+          ...runtime.catalog.items
+            .filter((candidate) => candidate.kind === "block" && (candidate.related.includes(item.id) || (item.registryName ? (runtime.details[candidate.id]?.registryDependencies ?? []).some((dep) => dep === item.registryName || dep.endsWith(`/${item.registryName}.json`)) : false)))
+            .map((candidate) => candidate.id),
+        ]),
+      ].slice(0, 5);
+      const relatedSuffix = relatedBlocks.length
+        ? (input.locale === "en" ? ` Related blocks/layouts: ${relatedBlocks.join(", ")}.` : ` 关联 Block/布局：${relatedBlocks.join("、")}。`)
+        : "";
+      const layoutGuidance = item.kind === "component" && ["component:data-table", "component:data-grid", "component:table", "component:card", "component:tabs", "component:field", "component:metric-card", "component:chart"].includes(item.id)
+        ? (input.locale === "en"
+          ? `Page architecture note: When building or adapting a page view, compose this primitive inside \`PageLayout > PageHeader + PageContent > PageBody\` (or \`ResourceDetailLayout\`), and evaluate matching \`block:*\` items first rather than wrapping page regions in ad-hoc divs or extra Cards.${relatedSuffix}`
+          : `页面架构提醒：构建或改造完整页面时，请勿用裸 div 或额外 Card 拼凑页面外框；应在 \`PageLayout > PageHeader + PageContent > PageBody\`（或 \`ResourceDetailLayout\`）内组合本组件，并优先评估同领域的 \`block:*\`。${relatedSuffix}`)
+        : "";
       const content: Record<string, Chapter> = {
-        overview: { name: "overview", text: `${item.title.en}\n${item.summary[input.locale] ?? item.summary.en}\nCoverage: ${item.coverage}\n${taskContextHint(runtime.skills, runtime.catalog.catalogVersion, runtime.catalog.catalogUrl)}`, contentLocale: item.summary[input.locale] ? input.locale : "en" },
+        overview: { name: "overview", text: [item.title.en, item.summary[input.locale] ?? item.summary.en, `Coverage: ${item.coverage}`, layoutGuidance, taskContextHint(runtime.skills, runtime.catalog.catalogVersion, runtime.catalog.catalogUrl)].filter(Boolean).join("\n"), contentLocale: item.summary[input.locale] ? input.locale : "en" },
         usage: { name: "usage", text: [...item.useCases, ...item.whenNotToUse.map((value) => `Avoid: ${value}`), detail.guide ?? "No detailed guide is maintained. Check the installed public types before using this item."].join("\n\n"), contentLocale: detail.guideLocale },
         api: { name: "api", text: `Public exports: ${detail.exports.join(", ") || "Not recorded"}\n${detail.keyApi.join("\n")}\nThe installed source is authoritative. This is not a complete Props declaration.`, contentLocale: detail.keyApi.some(value => /\p{Script=Han}/u.test(value)) ? "zh-CN" : "en" },
         examples: { name: "examples", text: (detail.examples ? renderExampleLinks(detail.examples) : detail.guide ? "Examples, if maintained, are included in the usage guide. No separate runnable example has been verified for this catalog item." : "No maintained example is available for this item.") + (hasTaskContext(runtime.skills) ? renderHostSources(runtime.examples, runtime.catalog.catalogUrl) : ""), contentLocale: "en" },

@@ -25,6 +25,11 @@ describe("real stateless MCP HTTP adapter", () => {
     const detail = await rpc("tools/call", { name: "get_component", arguments: { id: "sidebar", catalogVersion: args.catalogVersion, sections: ["overview", "usage"] } });
     expect(detail.envelope.result.structuredContent.data.sections[0].text).toContain(JSON.stringify(args));
     expect(detail.envelope.result.content[0].text).toContain("NavMenu");
+    const tableDetail = await rpc("tools/call", { name: "get_component", arguments: { id: "data-table", catalogVersion: args.catalogVersion, sections: ["overview"] } });
+    expect(tableDetail.envelope.result.structuredContent.data.sections[0].text).toContain("PageLayout > PageHeader + PageContent > PageBody");
+    expect(tableDetail.envelope.result.structuredContent.data.sections[0].text).toContain("block:");
+    const mixedSearch = await rpc("tools/call", { name: "search_components", arguments: { query: "resource list", locale: "en", catalogVersion: args.catalogVersion } });
+    expect(mixedSearch.envelope.result.content[0].text).toContain("=== Recommended Blocks & Layouts (Evaluate First) ===");
     const old = structuredClone(snapshots.versions.find(runtime => runtime.catalog.catalogVersion === snapshots.currentVersion)!);
     delete old.skills["zeron-page-builder"]["references/task-context.md"];
     const legacy = createAgentMcpHandler({ currentVersion: old.catalog.catalogVersion, versions: [old] }, { allowedOrigins: [] });

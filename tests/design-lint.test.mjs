@@ -64,6 +64,55 @@ describe("Zeron design lint", () => {
     expect(await messages('import { Button } from "@zeron/ui/button"; import { Plus } from "lucide-react"; export function Local(Button: any) { return <Button><Plus />保存</Button>; }')).toEqual([]);
     expect(await messages('import { Button } from "other/button"; import { Plus } from "lucide-react"; export const Page = () => <Button><Plus />保存</Button>;')).toEqual([]);
   });
+
+  it("enforces PageHeaderContent text grouping, direct-child layout slots, and DataTable surface ownership", async () => {
+    const ungrouped = await messages(`
+      import { PageHeader, PageHeaderContent, PageTitle, PageDescription } from "@zeron/ui/page-layout";
+      export const Page = ({ desc }: { desc?: string }) => <PageHeader><PageHeaderContent><PageTitle>订单</PageTitle>{desc && <PageDescription>{desc}</PageDescription>}</PageHeaderContent></PageHeader>;
+    `);
+    expect(ungrouped.map(m => m.ruleId)).toEqual(["zeron/page-layout-contracts"]);
+    expect(ungrouped[0].message).toContain("min-w-0");
+
+    const namespaceUngrouped = await messages(`
+      import * as Layout from "@zeron/ui/page-layout";
+      export const Page = () => <Layout.PageHeader><Layout.PageHeaderContent><Layout.PageTitle>订单</Layout.PageTitle><Layout.PageDescription>说明</Layout.PageDescription></Layout.PageHeaderContent></Layout.PageHeader>;
+    `);
+    expect(namespaceUngrouped.map(m => m.ruleId)).toEqual(["zeron/page-layout-contracts"]);
+
+    const grouped = await messages(`
+      import { PageHeader, PageHeaderContent, PageTitle, PageDescription } from "@zeron/ui/page-layout";
+      export const Page = ({ desc }: { desc?: string }) => <PageHeader><PageHeaderContent><div className="min-w-0"><PageTitle>订单</PageTitle>{desc && <PageDescription>{desc}</PageDescription>}</div></PageHeaderContent></PageHeader>;
+    `);
+    expect(grouped).toEqual([]);
+
+    const cardWrapped = await messages(`
+      import { Card, CardContent } from "@zeron/ui/card";
+      import { DataTable } from "@zeron/ui/data-table";
+      export const Page = ({ table, ready }: { table: any; ready: boolean }) => <Card><CardContent>{ready && <DataTable table={table} />}</CardContent></Card>;
+    `);
+    expect(cardWrapped.map(m => m.ruleId)).toEqual(["zeron/page-layout-contracts"]);
+    expect(cardWrapped[0].message).toContain("PageContent > PageBody");
+
+    const wrappedSlot = await messages(`
+      import { PageLayout, PageContent, PageBody } from "@zeron/ui/page-layout";
+      export const Page = () => <PageLayout><div className="flex-1"><section><PageContent><PageBody /></PageContent></section></div></PageLayout>;
+    `);
+    expect(wrappedSlot.map(m => m.ruleId)).toEqual(["zeron/page-layout-contracts"]);
+    expect(wrappedSlot[0].message).toContain("direct DOM child of PageLayout");
+
+    const contentHeaderWrapped = await messages(`
+      import { PageContentHeader, PageSubnav, PageActions } from "@zeron/ui/page-layout";
+      export const Page = () => <PageContentHeader><div className="flex"><PageSubnav /></div><PageActions /></PageContentHeader>;
+    `);
+    expect(contentHeaderWrapped.map(m => m.ruleId)).toEqual(["zeron/page-layout-contracts"]);
+    expect(contentHeaderWrapped[0].message).toContain("direct DOM child of PageContentHeader");
+
+    const fragmentSlot = await messages(`
+      import { PageLayout, PageContent, PageBody } from "@zeron/ui/page-layout";
+      export const Page = () => <PageLayout><><PageContent><PageBody /></PageContent></></PageLayout>;
+    `);
+    expect(fragmentSlot).toEqual([]);
+  });
   it("accepts semantic tokens and public size/variant props", async () => {
     expect(await messages(`
       import { Button } from "@zeron/ui/button";

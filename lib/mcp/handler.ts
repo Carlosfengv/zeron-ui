@@ -26,7 +26,16 @@ function textSummary(name: ToolName, result: QueryResult, input: unknown, runtim
   }
   if ("items" in data) {
     lines.push(`${data.items.length} of ${data.total} matching catalog items.`);
-    for (const item of data.items) lines.push(`${item.id} — ${item.title}\nFramework: ${item.framework ?? "unknown"}; compatibility: ${item.compatibility}; installable: ${item.installable}; coverage: ${item.coverage}.\nMarkdown: ${item.markdown}`);
+    const formatItem = (item: (typeof data.items)[number]) =>
+      `${item.id} (${item.kind}) — ${item.title}\nFramework: ${item.framework ?? "unknown"}; compatibility: ${item.compatibility}; installable: ${item.installable}; coverage: ${item.coverage}.\nMarkdown: ${item.markdown}`;
+    const highLevel = data.items.filter((item) => ["block", "page", "layout", "flow"].includes(item.kind));
+    const primitives = data.items.filter((item) => !["block", "page", "layout", "flow"].includes(item.kind));
+    if (highLevel.length && primitives.length) {
+      lines.push("=== Recommended Blocks & Layouts (Evaluate First) ===", ...highLevel.map(formatItem));
+      lines.push("=== UI Components & References ===", ...primitives.map(formatItem));
+    } else {
+      for (const item of data.items) lines.push(formatItem(item));
+    }
   }
   if ("item" in data) lines.push(`${data.item.id} — ${data.item.title}\nFramework: ${data.item.framework ?? "unknown"}; coverage: ${data.item.coverage}; installable: ${data.item.installable}.\nMarkdown: ${data.item.markdown}`);
   if ("name" in data) lines.push(`Skill: ${data.name}; reference: ${data.reference}; version: ${data.skillVersion ?? "unavailable"}.\nFull installation guide: ${data.installationGuide}\nAllowed references: ${data.references.join(", ")}`);
