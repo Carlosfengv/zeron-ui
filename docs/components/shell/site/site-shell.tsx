@@ -184,7 +184,7 @@ function DocsPrimaryNavigation({
           keyboardNavigation="roving"
           orientation="horizontal"
           variant="underline"
-          className="flex w-max min-w-full max-sm:[&_[data-slot=nav-item-trigger]]:px-2"
+          className="flex w-full min-w-full sm:w-max max-sm:[&>[data-slot=nav-list]]:flex-wrap max-sm:[&>[data-slot=nav-list]]:gap-0 max-sm:[&_[data-slot=nav-item-trigger]]:px-2"
         >
           {items.map((item) => (
             <NavItem key={item.href} value={item.href} className="shrink-0">

@@ -67,8 +67,8 @@ test("collection galleries fit the mobile viewport and keep all navigation reach
     await page.goto(`/docs/${collection}`);
     await expect(page.locator("#artifact-gallery-title")).toBeVisible();
     const header = page.locator("[data-slot=app-shell-header]");
-    for (const name of ["组件", "区块", "页面", "更新日志"]) {
-      await expect(header.getByRole("link", { name, exact: true })).toBeInViewport();
+    for (const name of ["首页", "组件", "区块", "图标", "页面", "AI 接入", "更新日志"]) {
+      await expect(header.getByRole("link", { name, exact: true })).toBeInViewport({ ratio: 1 });
     }
     expect(await page.evaluate(() => ({
       horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth,
@@ -78,5 +78,14 @@ test("collection galleries fit the mobile viewport and keep all navigation reach
     const scrollContainer = sidebar.locator("..");
     await scrollContainer.evaluate((element) => { element.scrollTop = element.scrollHeight; });
     await expect(page.getByRole("link", { name: collection === "pages" ? "ZLR Protection Groups" : "TopNav App Shell", exact: true })).toBeInViewport();
+  }
+});
+
+test("English primary navigation stays fully visible on narrow phones", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 700 });
+  await page.goto("/en/docs/pages");
+  const header = page.locator("[data-slot=app-shell-header]");
+  for (const name of ["Home", "Components", "Blocks", "Icons", "Pages", "AI", "Updates"]) {
+    await expect(header.getByRole("link", { name, exact: true })).toBeInViewport({ ratio: 1 });
   }
 });
