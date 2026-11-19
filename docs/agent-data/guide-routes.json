@@ -1,12 +1,18 @@
 {
   "schemaVersion": 1,
   "routes": [
-    {"path": "blocks/account-activity-01.md", "itemId": "block:account-activity-01"},
+    {
+      "path": "blocks/account-activity-01.md",
+      "itemId": "block:account-activity-01"
+    },
     {
       "path": "blocks/agent-message-trace-01.md",
       "itemId": "block:agent-message-trace-01"
     },
-    {"path": "blocks/agent-queue-01.md", "itemId": "block:agent-queue-01"},
+    {
+      "path": "blocks/agent-queue-01.md",
+      "itemId": "block:agent-queue-01"
+    },
     {
       "path": "blocks/agent-run-01.md",
       "itemId": "block:agent-run-01"
@@ -15,7 +21,18 @@
       "path": "blocks/agent-runs-01.md",
       "itemId": "block:agent-runs-01"
     },
-    {"path": "blocks/agent-tasks-01.md", "itemId": "block:agent-tasks-01"},
+    {
+      "path": "blocks/agent-session-detail-01.md",
+      "itemId": "block:agent-session-detail-01"
+    },
+    {
+      "path": "blocks/agent-tasks-01.md",
+      "itemId": "block:agent-tasks-01"
+    },
+    {
+      "path": "blocks/agent-trace-01.md",
+      "itemId": "block:agent-trace-01"
+    },
     {
       "path": "blocks/ai-gateway-overview-01.md",
       "itemId": "block:ai-gateway-overview-01"
@@ -32,7 +49,10 @@
       "path": "blocks/artifact-01.md",
       "itemId": "block:artifact-01"
     },
-    {"path": "blocks/chat-markdown-01.md", "itemId": "block:chat-markdown-01"},
+    {
+      "path": "blocks/chat-markdown-01.md",
+      "itemId": "block:chat-markdown-01"
+    },
     {
       "path": "blocks/chat-thread-01.md",
       "itemId": "block:chat-thread-01"
@@ -77,7 +97,10 @@
       "path": "blocks/design-stack-01.md",
       "itemId": "block:design-stack-01"
     },
-    {"path": "blocks/fallback-chain-01.md", "itemId": "block:fallback-chain-01"},
+    {
+      "path": "blocks/fallback-chain-01.md",
+      "itemId": "block:fallback-chain-01"
+    },
     {
       "path": "blocks/file-upload-01.md",
       "itemId": "block:file-upload-01"
@@ -119,13 +142,24 @@
       "itemId": "block:local-models-01"
     },
     {
+      "path": "blocks/login-01.md",
+      "itemId": "block:login-01"
+    },
+    {
       "path": "blocks/model-router-01.md",
       "itemId": "block:model-router-01"
     },
-    {"path": "blocks/model-selector-01.md", "itemId": "block:model-selector-01"},
+    {
+      "path": "blocks/model-selector-01.md",
+      "itemId": "block:model-selector-01"
+    },
     {
       "path": "blocks/monitoring-alert-list-01.md",
       "itemId": "block:monitoring-alert-list-01"
+    },
+    {
+      "path": "blocks/personal-settings-01.md",
+      "itemId": "block:personal-settings-01"
     },
     {
       "path": "blocks/plan-usage-01.md",
@@ -134,6 +168,10 @@
     {
       "path": "blocks/project-monitor-01.md",
       "itemId": "block:project-monitor-01"
+    },
+    {
+      "path": "blocks/provider-create-form-01.md",
+      "itemId": "block:provider-create-form-01"
     },
     {
       "path": "blocks/resource-cost-01.md",
@@ -162,6 +200,10 @@
     {
       "path": "blocks/service-management-01.md",
       "itemId": "block:service-management-01"
+    },
+    {
+      "path": "blocks/signup-01.md",
+      "itemId": "block:signup-01"
     },
     {
       "path": "blocks/storage-usage-01.md",
@@ -228,6 +270,14 @@
       "itemId": "component:artifact-preview-panel"
     },
     {
+      "path": "components/ask-user-questions.md",
+      "itemId": "component:ask-user-questions"
+    },
+    {
+      "path": "components/auth-layout.md",
+      "itemId": "component:auth-layout"
+    },
+    {
       "path": "components/avatar.md",
       "itemId": "component:avatar"
     },
@@ -242,6 +292,10 @@
     {
       "path": "components/button.md",
       "itemId": "component:button"
+    },
+    {
+      "path": "components/card.md",
+      "itemId": "component:card"
     },
     {
       "path": "components/chart-brush.md",
@@ -280,6 +334,10 @@
       "itemId": "component:combobox"
     },
     {
+      "path": "components/container.md",
+      "itemId": "component:container"
+    },
+    {
       "path": "components/context-map.md",
       "itemId": "component:context-map"
     },
@@ -296,8 +354,20 @@
       "itemId": "component:decision-tree"
     },
     {
+      "path": "components/detail-list.md",
+      "itemId": "component:detail-list"
+    },
+    {
       "path": "components/dialog.md",
       "itemId": "component:dialog"
+    },
+    {
+      "path": "components/dropdown.md",
+      "itemId": "component:dropdown"
+    },
+    {
+      "path": "components/empty.md",
+      "itemId": "component:empty"
     },
     {
       "path": "components/field.md",
@@ -320,6 +390,10 @@
       "itemId": "component:inline-notice"
     },
     {
+      "path": "components/input-message.md",
+      "itemId": "component:input-message"
+    },
+    {
       "path": "components/input.md",
       "itemId": "component:input"
     },
@@ -335,7 +409,10 @@
       "path": "components/live-line-chart.md",
       "itemId": "component:live-line-chart"
     },
-    {"path": "components/markdown.md", "itemId": "component:markdown"},
+    {
+      "path": "components/markdown.md",
+      "itemId": "component:markdown"
+    },
     {
       "path": "components/message-navigation.md",
       "itemId": "component:message-navigation"
@@ -369,8 +446,16 @@
       "itemId": "component:pie-chart"
     },
     {
+      "path": "components/popover.md",
+      "itemId": "component:popover"
+    },
+    {
       "path": "components/radar-chart.md",
       "itemId": "component:radar-chart"
+    },
+    {
+      "path": "components/resizable.md",
+      "itemId": "component:resizable"
     },
     {
       "path": "components/resource-detail-layout.md",
@@ -397,8 +482,20 @@
       "itemId": "component:sidebar"
     },
     {
+      "path": "components/skeleton.md",
+      "itemId": "component:skeleton"
+    },
+    {
       "path": "components/table.md",
       "itemId": "component:table"
+    },
+    {
+      "path": "components/tabs.md",
+      "itemId": "component:tabs"
+    },
+    {
+      "path": "components/thinking-steps.md",
+      "itemId": "component:thinking-steps"
     },
     {
       "path": "components/time-range-histogram.md",
@@ -407,6 +504,10 @@
     {
       "path": "components/time-window-timeline.md",
       "itemId": "component:time-window-timeline"
+    },
+    {
+      "path": "components/top-nav.md",
+      "itemId": "component:top-nav"
     },
     {
       "path": "components/tree.md",

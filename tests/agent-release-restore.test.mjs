@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { frozenReleaseSchema, publishedInstallationVerificationSchema } from "../scripts/agent-release-record.mjs";
 import { activatePreparedOutput, readFrozenReleases, restoreAgentRelease } from "../scripts/restore-agent-release.mjs";
 import { loadAgentSchema } from "../scripts/load-agent-schema.mjs";
+import { ZERON_DESIGN_TASTE_RULES } from "../lib/agent-catalog/design-rules.mjs";
 import { assembleCatalogRelease, verifyCatalogReleaseFiles } from "../scripts/agent-catalog-release.mjs";
 import { siteBuildCommands } from "../scripts/build-site.mjs";
 import { serialize, sha256 } from "../scripts/agent-utils.mjs";
@@ -58,6 +59,10 @@ describe("frozen release contracts", () => {
 
   it("recomputes catalog identity and exact files rather than trusting version strings", async () => {
     await expect(verifyCatalogReleaseFiles(current.catalog.files, current.catalogStage.manifest, { schemas })).resolves.toMatchObject({ runtime: current.catalog.runtime });
+    for (const name of ["instructions.md", "llms-small.txt", "llms.txt", "llms-full.txt"]) {
+      const context = current.catalog.files.get(name).toString("utf8");
+      for (const rule of ZERON_DESIGN_TASTE_RULES.en) expect(context).toContain(rule);
+    }
     const files = new Map(current.catalog.files);
     files.set("items/component:button.md", Buffer.from("changed guide"));
     await expect(verifyCatalogReleaseFiles(files, current.catalogStage.manifest, { schemas })).rejects.toThrow("exact runtime");

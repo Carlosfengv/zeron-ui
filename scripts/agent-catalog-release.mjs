@@ -1,3 +1,4 @@
+import { ZERON_DESIGN_TASTE_RULES } from "../lib/agent-catalog/design-rules.mjs";
 import { artifactFileUrl, artifactOrigin } from "./agent-artifacts.mjs";
 import { serialize, sha256 } from "./agent-utils.mjs";
 import { buildFullContext, assertContextBudget, contextBudgets } from "./agent-context.mjs";
@@ -13,8 +14,9 @@ import { assembleCatalogExamples, readCatalogExamples } from "./agent-catalog-ex
 const placeholder = "__ZERON_CATALOG_BASE__";
 const guidePath = id => `guides/${id}.md`;
 
-function contexts(runtime, site) {
-  const intro = (hasTaskContext(runtime.skills) ? `# Task context\n\n[按任务读取 Zeron 规范](${placeholder}/skills/zeron-page-builder/references/task-context.md). New application: choose a standard shell; existing page: preserve the host; small control change: read only relevant contracts.\n\n` : "") + `# Zeron UI for agents\n\nRead this fixed catalog and the exact installed public types before choosing components.\n\n- [AI usage](${site}/docs/ai)\n- [Fixed catalog](${placeholder}/catalog.json)\n- [Fixed Skills installation](${new URL(runtime.catalog.catalogUrl).origin}/skills/releases/${runtime.catalog.skillVersion}/install.md)\n\n## Install\n\nUse the exact verified CLI and Registry from get_install_command. Confirm Next or Vite and npm or pnpm, then inspect add --dry-run and local conflicts before installing. React 19 and Tailwind 4 are required. Next-only blocks are not Vite installation candidates.\n\n## Design rules\n\nUse semantic tokens and public variants, sizes and icon slots. Preserve keyboard focus, loading and disabled states, host navigation and scroll ownership. Connect real data and callbacks. A static check does not prove business or visual behavior.\n`;
+function contexts(runtime, site, contextVersion) {
+  const intro = (hasTaskContext(runtime.skills) ? `# Task context\n\n[按任务读取 Zeron 规范](${placeholder}/skills/zeron-page-builder/references/task-context.md). New application: choose a standard shell; existing page: preserve the host; small control change: read only relevant contracts.\n\n` : "") + `# Zeron UI for agents\n\nRead this fixed catalog and the exact installed public types before choosing components.\n\n- [AI usage](${site}/docs/ai)\n- [Fixed catalog](${placeholder}/catalog.json)\n- [Fixed Skills installation](${new URL(runtime.catalog.catalogUrl).origin}/skills/releases/${runtime.catalog.skillVersion}/install.md)\n\n## Install\n\nUse the exact verified CLI and Registry from get_install_command. Confirm Next or Vite and npm or pnpm, then inspect add --dry-run and local conflicts before installing. React 19 and Tailwind 4 are required. Next-only blocks are not Vite installation candidates.\n\n## Design rules\n\nUse semantic tokens and public variants, sizes and icon slots. Preserve keyboard focus, loading and disabled states, host navigation and scroll ownership. Connect real data and callbacks. A static check does not prove business or visual behavior.\n`
+    + (contextVersion === 2 ? `\n${ZERON_DESIGN_TASTE_RULES.en.map(rule => `- ${rule}`).join("\n")}\n` : "");
   const list = runtime.catalog.items.filter(item => item.kind !== "support").map(item =>
     `- [${item.title.en}](${placeholder}/items/${encodeURIComponent(item.id)}.md): ${item.summary.en}${item.installable ? ` Registry: ${item.registryName}.` : " Not installable."}`).join("\n");
   const guides = Object.values(runtime.details).filter(detail => detail.guide !== null).map(detail => ({
@@ -47,10 +49,10 @@ function contexts(runtime, site) {
   return Object.fromEntries(result);
 }
 
-function identityOf(runtime, identities, verificationBytes, skillManifestSha256, templates, siteBaseUrl) {
+function identityOf(runtime, identities, verificationBytes, skillManifestSha256, templates, siteBaseUrl, contextVersion) {
   const normalize = item => ({ ...item, markdown: `${placeholder}/items/${encodeURIComponent(item.id)}.md`,
     detailUrl: `${placeholder}/items/${encodeURIComponent(item.id)}.json` });
-  return { schemaVersion: 1, artifactBaseUrl: new URL(runtime.catalog.catalogUrl).origin, siteBaseUrl,
+  return { schemaVersion: 1, ...(contextVersion === 2 ? { contextVersion } : {}), artifactBaseUrl: new URL(runtime.catalog.catalogUrl).origin, siteBaseUrl,
     registryReleaseId: runtime.catalog.registryReleaseId, skillVersion: runtime.catalog.skillVersion,
     registryManifestSha256: runtime.catalog.registryManifestSha256, skillManifestSha256,
     items: runtime.catalog.items.map(normalize),
@@ -151,9 +153,9 @@ export async function assembleCatalogRelease({ runtime: input, identities: input
       if (links.length) runtime.details[item.id].examples = links;
     }
   }
-  const templates = contexts(runtime, siteBaseUrl);
+  const templates = contexts(runtime, siteBaseUrl, 2);
   const verificationBytes = Buffer.from(serialize(verification));
-  const identity = identityOf(runtime, identities, verificationBytes, skillManifestSha256, templates, siteBaseUrl);
+  const identity = identityOf(runtime, identities, verificationBytes, skillManifestSha256, templates, siteBaseUrl, 2);
   const version = sha256(serialize(identity));
   const baseUrl = `${origin}/ai/releases/${version}`;
   runtime.catalog.catalogVersion = version;
@@ -184,8 +186,10 @@ export async function verifyCatalogReleaseFiles(files, manifest, { schemas = und
     || runtime.catalog.catalogVersion !== manifest.releaseId || runtime.catalog.catalogUrl !== `${manifest.baseUrl}/catalog.json`
     || runtime.catalog.sourceRevision !== manifest.provenance.sourceRevision || verification.sourceRevision !== runtime.catalog.sourceRevision
     || serialize(runtime.installation) !== serialize(runtimeInstallationSummary(verification))) throw new Error("Catalog stage differs from frozen source or installation verification");
-  const templates = contexts(runtime, identity.siteBaseUrl);
-  const expectedIdentity = identityOf(runtime, identities, files.get("installation-verification.json"), identity.skillManifestSha256, templates, identity.siteBaseUrl);
+  // Frozen catalogs created before the design rules used the original context bytes.
+  const contextVersion = identity.contextVersion ?? 1;
+  const templates = contexts(runtime, identity.siteBaseUrl, contextVersion);
+  const expectedIdentity = identityOf(runtime, identities, files.get("installation-verification.json"), identity.skillManifestSha256, templates, identity.siteBaseUrl, contextVersion);
   if (!/^[a-f0-9]{64}$/.test(identity.skillManifestSha256) || artifactOrigin(identity.siteBaseUrl) !== identity.siteBaseUrl
     || serialize(expectedIdentity) !== serialize(identity) || sha256(serialize(identity)) !== manifest.releaseId) throw new Error("Catalog content identity mismatch");
   const active = identities.items.filter(item => item.status === "active");

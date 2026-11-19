@@ -18,4 +18,10 @@ Use the verified Zeron CLI. Start with init when components.json is missing; ins
 
 Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard focus, loading and disabled states. Reuse the host shell, assign one scroll owner per region, and replace demo data with real callbacks. A clean static check is not runtime verification.
 
+- Task-matched canvas width: use centered narrow layouts (PageLayout size="md" or max-w-3xl) for forms, settings, billing, and wizards; use bounded full-width layouts (PageLayout size="full") for dense tables, dashboards, and split AI workspaces.
+- Zero box-in-box noise: never wrap a main table or list inside PageContent (already a floating surface) in an extra Card or Container; prefer 0.5px border-hairline dividers or whitespace.
+- 90-8-2 color restraint: 90% neutral 5-tier Surface hierarchy, 8% high-contrast text/icons, <=2% brand or status accents; at most 1 primary/neutral button per task region.
+- First-screen density caps: <=4 MetricCards per row and <=3 visible toolbar filters; collapse secondary actions into a Dropdown.
+- Control & motion alignment: adjacent Input, Select, and Button controls must share the same size; pass icons via useIcon to leadingIcon/trailingIcon slots instead of raw inline SVGs.
+
 For item-level context read the catalog and Markdown links.
