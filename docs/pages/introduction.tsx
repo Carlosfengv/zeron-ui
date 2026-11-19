@@ -89,6 +89,10 @@ export default function DocsIndex() {
 
       <hr className="border-border-subtle my-8" />
       <Button asChild variant="secondary"><Link href={locale === "en" ? "/en/docs/ai" : "/docs/ai"}>{locale === "en" ? "AI usage guide" : "AI 使用指南"}</Link></Button>
+        <Button asChild variant="ghost"><Link href={locale === "en" ? "/en/docs/components/surfaces" : "/docs/components/surfaces"}>{locale === "en" ? "Surfaces & Elevation" : "五层光影表面"}</Link></Button>
+        <Button asChild variant="ghost"><Link href={locale === "en" ? "/en/docs/components/semantic-tokens" : "/docs/components/semantic-tokens"}>{locale === "en" ? "Semantic Tokens" : "语义色彩令牌"}</Link></Button>
+        <Button asChild variant="ghost"><Link href={locale === "en" ? "/en/docs/components/motion" : "/docs/components/motion"}>{locale === "en" ? "Tactile Motion" : "物理弹簧动效"}</Link></Button>
+        <Button asChild variant="ghost"><Link href={locale === "en" ? "/en/docs/icons/catalog" : "/docs/icons/catalog"}>{locale === "en" ? "Icon Catalog" : "多风格图标库"}</Link></Button>
       <SkillInstall />
 
       <hr className="border-border-subtle my-8" />

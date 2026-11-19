@@ -57,6 +57,16 @@ const frameworkLabels = {
   zh: { next: "Next.js", react: "React" },
 } as const;
 
+const scenarioDefinitions = [
+  { id: "ai-chat", en: "AI Chat & Workspace", zh: "AI 对话与工作区", match: ["chat", "conversation", "artifact", "tool calls", "markdown"] },
+  { id: "agent-ops", en: "Agent Orchestration & Trace", zh: "Agent 编排与观测", match: ["ai agent", "observability", "sessions", "trace", "delegation"] },
+  { id: "ai-gateway", en: "AI Gateway & Models", zh: "AI 网关与模型", match: ["ai gateway", "gateway", "model", "model provider", "model service", "mcp", "marketplace", "gpu", "inference", "routing"] },
+  { id: "billing", en: "Billing & Quota", zh: "计费、额度与用量", match: ["billing", "usage", "quota", "cloud compute"] },
+  { id: "ops-infra", en: "Operations & Security", zh: "运维监控与安全", match: ["operations", "monitoring", "cluster", "security", "deployment", "inspection", "recovery", "service"] },
+  { id: "data-auth", en: "Tables, Files & Account", zh: "表格、文件与账户", match: ["resources", "resource", "resource management", "table", "data table", "files", "storage", "authentication", "account", "settings", "onboarding", "organization", "tools", "inventory", "filtering", "rules", "automation", "workflow"] },
+] as const;
+type ScenarioId = (typeof scenarioDefinitions)[number]["id"];
+
 const kindIcons: Record<ArtifactKind | "all", DocIconName | IconName> = {
   all: "square-library",
   block: "doc-card",
@@ -107,6 +117,8 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
   const searchParams = useSearchParams();
   const [kind, setKind] = useState<ArtifactKind | null>(() => initialKind(searchParams.get("kind"), collection));
   const [product, setProduct] = useState<ArtifactProduct | null>(() => initialProduct(searchParams.get("product")));
+  const activeScenario = scenarioDefinitions.find(item => item.id === searchParams.get("scenario"));
+  const scenario = activeScenario?.id ?? null;
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
   const Search = useIcon("search");
   const language = localePrefix === "/en" ? "en" : "zh";
@@ -114,9 +126,9 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
   const collectionArtifacts = useMemo(() => galleryArtifacts.filter((artifact) => artifact.collection === collection), [collection]);
   const availableKinds = useMemo(() => artifactKinds.filter((item) => collectionArtifacts.some((artifact) => artifact.kind === item)), [collectionArtifacts]);
   const normalizedQuery = query.trim().toLowerCase();
-  const updateUrl = (nextKind: ArtifactKind | null, nextProduct: ArtifactProduct | null, nextQuery: string) => {
+  const updateUrl = (nextKind: ArtifactKind | null, nextProduct: ArtifactProduct | null, nextQuery: string, nextScenario: ScenarioId | null = scenario) => {
     const url = new URL(window.location.href);
-    for (const [key, value] of [["kind", nextKind], ["product", nextProduct], ["q", nextQuery]] as const) {
+    for (const [key, value] of [["kind", nextKind], ["product", nextProduct], ["q", nextQuery], ["scenario", nextScenario]] as const) {
       if (value) url.searchParams.set(key, value);
       else url.searchParams.delete(key);
     }
@@ -132,10 +144,12 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
   }, [collection, searchParams]);
   const artifacts = useMemo(() => collectionArtifacts.filter((artifact) => {
     const searchable = [artifact.title, artifact.titleEn, artifact.description, artifact.kind, artifact.product, artifact.installation?.framework, artifact.installation?.kind, ...artifact.domains, ...artifact.patterns, ...artifact.searchTerms].join(" ").toLowerCase();
+    const matchesScenario = !activeScenario || activeScenario.match.some((term) => artifact.domains.includes(term) || artifact.patterns.includes(term));
     return (!kind || artifact.kind === kind)
       && (!product || artifact.product === product)
+      && matchesScenario
       && (!normalizedQuery || searchable.includes(normalizedQuery));
-  }), [collectionArtifacts, kind, normalizedQuery, product]);
+  }), [collectionArtifacts, kind, normalizedQuery, product, activeScenario]);
   const kindCounts = useMemo(
     () => new Map(availableKinds.map((item) => [item, collectionArtifacts.filter((artifact) => artifact.kind === item).length])),
     [availableKinds, collectionArtifacts]
@@ -145,6 +159,7 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
     [collectionArtifacts]
   );
   const activeFilterLabel = [
+    activeScenario?.[language],
     normalizedQuery ? `“${query.trim()}”` : null,
     kind ? kindLabels[language][kind] : null,
     product ? artifactProductLabels[language][product] : null,
@@ -181,6 +196,27 @@ export function BlocksGallery({ localePrefix = "", collection = "blocks" }: { lo
             <header className="border-b border-border pb-5">
               <h1 id="artifact-gallery-title" className="text-heading font-semibold text-fg-default">{text.galleryTitle}</h1>
               <p className="mt-2 max-w-3xl text-body text-fg-muted">{text.galleryDescription}</p>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  aria-pressed={scenario === null}
+                  onClick={() => updateUrl(kind, product, query, null)}
+                  className={`rounded-full border px-3 py-1 text-label transition-colors ${scenario === null ? "border-border bg-surface-raised font-medium text-fg-default" : "border-border-subtle text-fg-muted hover:bg-hover"}`}
+                >
+                  {language === "en" ? "All Scenarios" : "全部场景"}
+                </button>
+                {scenarioDefinitions.map((sc) => (
+                  <button
+                    key={sc.id}
+                    type="button"
+                    aria-pressed={scenario === sc.id}
+                    onClick={() => updateUrl(kind, product, query, scenario === sc.id ? null : sc.id)}
+                    className={`rounded-full border px-3 py-1 text-label transition-colors ${scenario === sc.id ? "border-border bg-surface-raised font-medium text-fg-default" : "border-border-subtle text-fg-muted hover:bg-hover"}`}
+                  >
+                    {language === "en" ? sc.en : sc.zh}
+                  </button>
+                ))}
+              </div>
             </header>
 
             <div aria-live="polite" aria-atomic="true" className="flex items-center justify-between gap-3 py-4">

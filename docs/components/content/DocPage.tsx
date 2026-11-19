@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { navigationDocEntries, type DocCollection } from "@docs/manifest";
 import { DocPager } from "@docs/components/navigation/DocPager";
 import { InstallCommand } from "@docs/components/content/InstallCommand";
+import { AiDesignActions, RelatedBlocksSection } from "@docs/components/content/AiDesignActions";
 
 const BASE_UI_BACKED_SLUGS = new Set([
   "avatar",
@@ -45,7 +46,8 @@ export function DocPage({
   const next = currentIndex >= 0 && currentIndex < collectionEntries.length - 1
     ? collectionEntries[currentIndex + 1]
     : null;
-  const registrySlug = installSlug ?? slug;
+  const installItems = installSlug ?? slug;
+  const registrySlug = installItems?.trim().split(/\s+/)[0];
 
   return (
     <div className="flex flex-col gap-8 px-6">
@@ -63,10 +65,21 @@ export function DocPage({
 
       {slug && registrySlug && showInstall && (
         <div className="flex flex-col gap-3">
-          <h2 className="text-title text-fg-default leading-none font-semibold">
-            {installationLabel ?? t("installation")}
-          </h2>
-          <InstallCommand value={`npx zeron-ui add ${registrySlug}`} />
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-title text-fg-default leading-none font-semibold">
+              {installationLabel ?? t("installation")}
+            </h2>
+            {collection === "components" && (
+              <AiDesignActions
+                kind="component"
+                installItems={installItems}
+                registryName={registrySlug}
+                title={title}
+                description={typeof description === "string" ? description : undefined}
+              />
+            )}
+          </div>
+          <InstallCommand value={`npx zeron-ui add ${installItems}`} />
           {BASE_UI_BACKED_SLUGS.has(registrySlug) && (
             <p className="text-label text-fg-muted">{t("builtOnBaseUi")}</p>
           )}
@@ -74,6 +87,10 @@ export function DocPage({
       )}
 
       {children}
+
+      {slug && registrySlug && collection === "components" && (
+        <RelatedBlocksSection componentSlug={registrySlug} />
+      )}
     </div>
   );
 }

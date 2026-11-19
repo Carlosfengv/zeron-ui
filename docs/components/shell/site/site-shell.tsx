@@ -18,6 +18,7 @@ import { rgbToHex, useBrandColor } from "@docs/components/playground/brand-playg
 import { DeferredDesktopRightPanel } from "@docs/components/shell/site/deferred-desktop-chrome";
 import { DocsSidebar } from "@docs/components/shell/site/sidebar";
 import { PrimaryNavigationLabel } from "@docs/components/shell/site/primary-navigation-label";
+import { SiteCommandPalette } from "@docs/components/shell/site/site-command-palette";
 import { RightRailProvider } from "@docs/components/shell/right-rail";
 import { docEntries, type DocCollection } from "@docs/manifest";
 import { internalPathname, localePrefixFromPathname, localizePathname } from "@docs/components/shell/site/locale-path";
@@ -143,6 +144,8 @@ function DocsPrimaryNavigation({
         ? localizePathname("/updates", localePrefix)
         : currentPathname === "/docs/ai"
           ? localizePathname("/docs/ai", localePrefix)
+        : currentPathname.startsWith("/docs/icons")
+          ? localizePathname("/docs/icons", localePrefix)
         : currentPathname === "/docs"
           ? localizePathname("/docs", localePrefix)
           : null;
@@ -150,6 +153,7 @@ function DocsPrimaryNavigation({
     { href: localizePathname("/", localePrefix), label: t("home") },
     { href: localizePathname("/docs/components", localePrefix), label: t("componentsEntry") },
     { href: localizePathname("/docs/blocks", localePrefix), label: t("blocks") },
+    { href: localizePathname("/docs/icons", localePrefix), label: isEnglish ? "Icons" : "图标" },
     { href: localizePathname("/docs/pages", localePrefix), label: t("pages") },
     { href: localizePathname("/docs/ai", localePrefix), label: localePrefix === "/en" ? "AI" : "AI 接入" },
     { href: localizePathname("/updates", localePrefix), label: localePrefix === "/en" ? "Updates" : "更新日志" },
@@ -193,6 +197,7 @@ function DocsPrimaryNavigation({
         </NavMenu>
       </TopNavNavigation>
       <TopNavActions className="gap-1 px-0 max-sm:col-start-2 max-sm:row-start-1">
+        <SiteCommandPalette localePrefix={localePrefix} />
         <Tooltip content={brandLabel} side="bottom">
           <ColorPickerPopover
             format="hex"

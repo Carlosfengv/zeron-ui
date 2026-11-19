@@ -13,6 +13,7 @@ import {
 } from "@zeron/ui/breadcrumb";
 import { ComponentPreview } from "@docs/components/content/ComponentPreview";
 import { InstallCommand } from "@docs/components/content/InstallCommand";
+import { AiDesignActions, BlockUsedComponentsBar } from "@docs/components/content/AiDesignActions";
 import { DocPager } from "@docs/components/navigation/DocPager";
 import { docEntries } from "@docs/manifest";
 import { artifactProductLabels, getArtifact } from "@docs/catalog/artifacts";
@@ -114,14 +115,23 @@ export function BlockDetailPageView({
           <section className="rounded-xl bg-surface-floating px-5 py-6 sm:px-6 lg:px-8 lg:py-8">
             <div className="mx-auto w-full max-w-[960px]">
               <div className="pb-6">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge color="blue">{kindLabel}</Badge>
-                  {artifact && <Badge variant="dot">{artifactProductLabels[isChinese ? "zh" : "en"][artifact.product]}</Badge>}
-                  <Badge variant="dot">{readinessLabel}</Badge>
-                  <Badge variant="dot">{dataModeLabel}</Badge>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge color="blue">{kindLabel}</Badge>
+                    {artifact && <Badge variant="dot">{artifactProductLabels[isChinese ? "zh" : "en"][artifact.product]}</Badge>}
+                    <Badge variant="dot">{readinessLabel}</Badge>
+                    <Badge variant="dot">{dataModeLabel}</Badge>
+                  </div>
+                  <AiDesignActions
+                    kind={collection === "pages" ? "page" : "block"}
+                    registryName={artifact?.registryName ?? registryName}
+                    title={title}
+                    description={typeof description === "string" ? description : artifact?.description}
+                  />
                 </div>
                 <h1 id="artifact-title" className="mt-5 text-heading font-bold text-fg-default">{title}</h1>
                 <p className="mt-2 max-w-3xl text-body text-fg-muted">{description}</p>
+                <BlockUsedComponentsBar registryName={artifact?.registryName ?? registryName} />
               </div>
 
               <section className="border-t border-border py-6">
