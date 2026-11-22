@@ -22,7 +22,7 @@ related:
 
 ## 版式母版与跨业务设计改写（Visual Archetype & Adaptation）
 
-- **所属页面母版**：**母版 4 · 主从对象详情工作台（Resource & Session Detail Archetype）**。
+- **所属页面母版**：**主从对象详情工作台（Resource & Session Detail Archetype）**。
 - **空间与信息层级**：
   1. **页头上下文区**：页头展示当前 Agent、会话名称与状态，用户可在侧栏按 Agent 分组选择其他会话。
   2. **多维详情视图区**：结合会话概览指标（Token、费用、耗时）与内嵌的完整执行调用链轨迹，避免用户为了看同一会话的消息与 Trace 而在两个不同路由间反复跳出。

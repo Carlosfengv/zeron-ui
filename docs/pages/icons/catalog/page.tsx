@@ -1,19 +1,59 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { DocPage } from "@docs/components/content/DocPage";
 import { iconCatalog } from "@zeron/icons/catalog";
 import { useIcon, useIconContext, type IconName } from "@zeron/icons/context";
+import { Textarea } from "@zeron/ui/textarea";
 import { Badge } from "@zeron/ui/badge";
 import { useTranslations } from "next-intl";
+
+type CopyResult =
+  | { key: string; status: "copied" }
+  | { key: string; status: "manual"; text: string };
+
+function useIconCopy() {
+  const [result, setResult] = useState<CopyResult | null>(null);
+  const request = useRef(0);
+
+  useEffect(() => {
+    if (result?.status !== "copied") return;
+    const timer = window.setTimeout(() => setResult(null), 1800);
+    return () => window.clearTimeout(timer);
+  }, [result]);
+
+  async function copy(key: string, text: string) {
+    const id = ++request.current;
+    try {
+      await navigator.clipboard.writeText(text);
+      if (id === request.current) setResult({ key, status: "copied" });
+    } catch {
+      if (id === request.current) setResult({ key, status: "manual", text });
+    }
+  }
+
+  return { result, copy };
+}
+
+function IconCopyFallback({ text }: { text: string }) {
+  const t = useTranslations();
+  return (
+    <label className="flex min-w-0 flex-col gap-1.5 p-2 text-label text-fg-muted">
+      <span role="status">{t("manualCopy")}</span>
+      <Textarea readOnly rows={2} value={text} onFocus={event => event.currentTarget.select()} />
+    </label>
+  );
+}
 
 function IconGridCard({
   name,
   copiedLabel,
+  manualText,
   onCopy,
 }: {
   name: IconName;
   copiedLabel?: string;
+  manualText?: string;
   onCopy: (name: IconName) => void;
 }) {
   const Icon = useIcon(name);
@@ -36,6 +76,7 @@ function IconGridCard({
           </Badge>
         )}
       </button>
+      {manualText && <IconCopyFallback text={manualText} />}
     </li>
   );
 }
@@ -43,22 +84,12 @@ function IconGridCard({
 export default function IconCatalogPage() {
   const t = useTranslations();
   const [query, setQuery] = useState("");
-  const [copiedName, setCopiedName] = useState<string | null>(null);
+  const { result, copy } = useIconCopy();
   const { variant } = useIconContext();
   const icons = useMemo(
     () => iconCatalog.filter((name) => name.toLowerCase().includes(query.trim().toLowerCase())),
     [query],
   );
-
-  async function handleCopy(name: IconName) {
-    try {
-      await navigator.clipboard.writeText(`const Icon = useIcon("${name}");`);
-      setCopiedName(name);
-      setTimeout(() => setCopiedName((prev) => (prev === name ? null : prev)), 1800);
-    } catch {
-      setCopiedName(null);
-    }
-  }
 
   return (
     <DocPage title={t("title")} slug="catalog" description={t("description")} collection="icons" showInstall={false}>
@@ -83,8 +114,9 @@ export default function IconCatalogPage() {
             <IconGridCard
               key={name}
               name={name as IconName}
-              copiedLabel={copiedName === name ? t("copied") : undefined}
-              onCopy={handleCopy}
+              copiedLabel={result?.key === name && result.status === "copied" ? t("copied") : undefined}
+              manualText={result?.key === name && result.status === "manual" ? result.text : undefined}
+              onCopy={name => copy(name, `const Icon = useIcon("${name}");`)}
             />
           ))}
         </ul>

@@ -13,7 +13,7 @@
 
 | 范围 | 文件与改动 |
 | --- | --- |
-| 规则与 Release（4） | `lib/agent-catalog/design-rules.mjs`、`scripts/build-agent-catalog.mjs`、`scripts/agent-catalog-release.mjs`、`tests/agent-release-restore.test.mjs`。开发目录与新 Release 使用同一组 5 条设计规则，历史 Release 仍按冻结时的模板校验。 |
+| 规则与 Release（4） | `lib/agent-catalog/design-rules.mjs`、`scripts/build-agent-catalog.mjs`、`scripts/agent-catalog-release.mjs`、`tests/agent-release-restore.test.mjs`。开发目录与新 Release 使用同一组 5 条设计规则，历史 Release 仍按冻结时的模板校验。六篇模板指南用布局名称标识母版。 |
 | 指南（20） | 下列 14 篇组件指南和 6 篇模板指南均带有纳入类型检查的 TSX 示例。 |
 | 路由（1） | `docs/agent-data/guide-routes.json` 仅增加上述 20 条记录。 |
 | 已跟踪的生成产物（4） | `docs/generated/agent-guide-loaders.generated.ts`、`public/llms.txt`、`public/llms-small.txt`、`public/llms-full.txt`，均在提交目标基线上重新生成。 |
@@ -54,7 +54,7 @@
 | 详情与推荐（4） | `docs/lib/ai-prompt-builder.ts`、`docs/lib/ai-design-assets.ts`、`docs/components/content/AiDesignActions.tsx`、`docs/components/content/DocPage.tsx`。按 Registry ID 生成契约地址、保留完整安装参数、按依赖双向推荐。剪贴板权限被拒时显示可手动复制的完整提示词。 |
 | 共享文件（3） | `docs/components/blocks/BlockDetailPageView.tsx` 只接入 AI 动作与组件链接。`docs/components/blocks/BlocksGallery.tsx` 只引入 6 组场景筛选及其 URL 和摘要。`docs/pages/introduction.tsx` 只增加 4 个设计语言入口。画廊沿用目标分支的图标类型、英文搜索字段和网格断点。 |
 | 图标目录（4） | `app/[locale]/docs/icons/page.tsx`、`docs/pages/icons/catalog/page.tsx`、`docs/content/en/icons/catalog.json`、`docs/content/zh-CN/icons/catalog.json`。语义图标预览、区分免费与授权风格、搜索框可访问名称、本地化计数与复制反馈。 |
-| 回归与交接（2） | `tests/docs-ia-design-actions.test.tsx` 和本计划。覆盖 11 个契约入口、剪贴板拒绝与重试、双语图标目录、依赖互链、中文键盘搜索与场景 URL。 |
+| 回归与交接（2） | `tests/docs-ia-design-actions.test.tsx` 和本计划。覆盖 11 个契约入口、剪贴板拒绝与重试、双语图标目录及复制失败后的手动复制、依赖互链、示例与全站搜索的快捷键归属、按中文图标页标题检索与场景 URL。 |
 
 ## 执行顺序
 

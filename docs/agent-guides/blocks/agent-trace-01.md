@@ -22,7 +22,7 @@ related:
 
 ## 版式母版与跨业务设计改写（Visual Archetype & Adaptation）
 
-- **所属页面母版**：**母版 4 · 主从分栏调试与检查工作台（Master-Detail Inspector Archetype）**。
+- **所属页面母版**：**主从分栏调试与检查工作台（Master-Detail Inspector Archetype）**。
 - **空间分区比例**：采用有界全屏布局（`PageLayout size="full"`），上方为会话/轨迹摘要与过滤工具栏，主体通过双栏或分栏呈现：**左侧为按对话轮次（Turns）与工具调用展开的层级树/时间线（默认 68%），右侧为选中节点的参数、耗时、Token 消耗与 原始记录检查器（默认 32%）**。
 - **如何改写为其他可观测场景**：
   - 可直接迁移用于 **Workflow 节点执行日志调试**、**RAG 检索召回分片检查台** 或 **Webhook 投递Payload排障页**——保留“左层级流 + 右结构化详情/代码检查”的黄金骨架，仅替换节点元数据字段。

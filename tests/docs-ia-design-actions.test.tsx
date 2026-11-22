@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
+import { FilterQueryInput } from "@zeron/ui/filter-query-input";
 import { IconProvider } from "@zeron/icons/context";
 import { readFileSync } from "node:fs";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
@@ -103,6 +104,26 @@ describe("documentation IA", () => {
     expect(writeText).toHaveBeenCalledWith('const Icon = useIcon("chevron-down");');
   });
 
+  it.each([
+    ["en", "Search icon names", "Copy the icon code manually", "Copied"],
+    ["zh-CN", "搜索图标名称", "请手动复制图标代码", "已复制"],
+  ] as const)("offers the exact icon snippet after a clipboard refusal in %s", async (locale, search, manual, copied) => {
+    const writeText = vi.fn().mockRejectedValueOnce(new Error("Denied")).mockResolvedValueOnce(undefined);
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+    render(<NextIntlClientProvider locale={locale} messages={messages[locale]} timeZone="UTC">
+      <IconProvider><IconCatalogPage /></IconProvider>
+    </NextIntlClientProvider>);
+    fireEvent.change(screen.getByRole("textbox", { name: search }), { target: { value: "chevron-down" } });
+    const action = screen.getByRole("button", { name: "chevron-down" });
+    fireEvent.click(action);
+    const field = await screen.findByRole<HTMLTextAreaElement>("textbox", { name: manual });
+    expect(field.readOnly).toBe(true);
+    expect(field.value).toBe('const Icon = useIcon("chevron-down");');
+    fireEvent.click(action);
+    expect(await screen.findByText(copied)).toBeTruthy();
+    expect(screen.queryByRole("textbox", { name: manual })).toBeNull();
+  });
+
   it("uses the registry dependencies in both directions", () => {
     const components = componentsForBlock("cost-estimate-01").map(item => item.slug);
     expect(components).toEqual(expect.arrayContaining(["container", "slider"]));
@@ -112,6 +133,37 @@ describe("documentation IA", () => {
     }
     expect(blocksForComponent("slider").length).toBeGreaterThan(0);
     expect(componentsForBlock("agent-queue-01").map(item => item.slug)).toEqual(expect.arrayContaining(["scrollbars", "motion"]));
+  });
+
+  it.each([{ ctrlKey: true }, { metaKey: true }])("routes the page shortcut to site search and preserves focused filter input (%j)", async modifiers => {
+    const onFilterOpen = vi.fn();
+    render(<>
+      <SiteCommandPalette localePrefix="" />
+      <FilterQueryInput fields={[{ id: "query", type: "text", label: "Search" }]} onOpenChange={onFilterOpen} />
+    </>);
+    const input = screen.getByRole("combobox");
+    fireEvent.keyDown(document.body, { key: "k", ...modifiers });
+    const search = await screen.findByPlaceholderText("搜索组件、页面或业务场景…");
+    expect(onFilterOpen).not.toHaveBeenCalled();
+    fireEvent.keyDown(search, { key: "k", ...modifiers });
+    await waitFor(() => expect(screen.queryByPlaceholderText("搜索组件、页面或业务场景…")).toBeNull());
+    fireEvent.focus(input);
+    fireEvent.keyDown(input, { key: "k", ...modifiers });
+    expect(onFilterOpen).toHaveBeenCalledWith(true);
+    expect(screen.queryByPlaceholderText("搜索组件、页面或业务场景…")).toBeNull();
+  });
+
+  it.each([
+    ["图标目录", "catalog"], ["Icon Catalog", "catalog"], ["图标概览", "overview"],
+    ["图标使用方式", "usage"], ["图标 Provider", "providers"],
+  ])("opens the icon document matching %s", async (query, slug) => {
+    render(<SiteCommandPalette localePrefix="" />);
+    fireEvent.keyDown(document.body, { key: "k", ctrlKey: true });
+    const input = await screen.findByRole("combobox");
+    fireEvent.change(input, { target: { value: query } });
+    await waitFor(() => expect(screen.getByRole("option").getAttribute("data-value")).toBe(`icons-${slug}`));
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(push).toHaveBeenCalledWith(`/docs/icons/${slug}`);
   });
 
   it("finds the Button component in Chinese and opens a keyboard-selected result", async () => {

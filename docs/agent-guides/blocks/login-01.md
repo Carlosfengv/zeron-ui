@@ -22,7 +22,7 @@ related:
 
 ## 版式母版与跨业务设计改写（Visual Archetype & Adaptation）
 
-- **所属页面母版**：**母版 6 · 轻量聚焦认证与门户（Focused Auth Archetype）**。
+- **所属页面母版**：**轻量聚焦认证与门户（Focused Auth Archetype）**。
 - **空间与视觉重心**：采用全屏无干扰的 `AuthLayout` 居中画布，核心卡片限宽紧凑，自上而下依次为：*品牌与标题区 → 第三方快捷登录（Apple / Google）→ `Separator` 细线分割 → 账号/密码 `Field` 表单与唯一高强调提交按钮 → 底部注册跳转引导*。
 - **如何改写为其他登录场景**：
   - **企业 SSO / 手机验证码登录**：保留外层 `AuthLayout` 与 `Card` 呼吸间距，将表单区切换或结合 `Tabs variant="segment"`（“密码登录 / 验证码登录”），保持整页只有 1 个高强调主提交按钮。

@@ -14,6 +14,14 @@ import { artifactCopy } from "@docs/lib/ai-design-assets";
 import { componentCardDescription } from "@docs/components/components/component-card-copy";
 import { artifactPathname } from "@docs/catalog/artifact-collections";
 import { localizePathname } from "@docs/components/shell/site/locale-path";
+import catalogZh from "@docs/content/zh-CN/icons/catalog.json";
+import overviewZh from "@docs/content/zh-CN/icons/overview.json";
+import providersZh from "@docs/content/zh-CN/icons/providers.json";
+import usageZh from "@docs/content/zh-CN/icons/usage.json";
+
+const chineseIconPages = new Map<string, { title: string; description: string }>([
+  ["catalog", catalogZh], ["overview", overviewZh], ["providers", providersZh], ["usage", usageZh],
+]);
 
 interface SearchItem {
   id: string;
@@ -34,16 +42,24 @@ export function SiteCommandPalette({ localePrefix }: { localePrefix: string }) {
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.defaultPrevented || event.isComposing || event.repeat) return;
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setOpen((prev) => !prev);
-        setQuery("");
-      }
+      if (event.defaultPrevented || event.isComposing || event.repeat || event.altKey || event.shiftKey) return;
+      if (event.metaKey === event.ctrlKey || event.key.toLowerCase() !== "k") return;
+
+      const target = event.target;
+      const shortcut = event.metaKey ? "Meta+K" : "Control+K";
+      if (!open && target instanceof Element &&
+        target.closest(`[aria-keyshortcuts~="${shortcut}" i], [contenteditable="true"], textarea`)) return;
+
+      // Document-level demo shortcuts also listen for this event.
+      event.preventDefault();
+      event.stopPropagation();
+      setOpen(previous => !previous);
+      setQuery("");
+      setSelection("");
     }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, [open]);
 
   const allItems = useMemo<SearchItem[]>(() => {
     const items: SearchItem[] = [
@@ -75,11 +91,13 @@ export function SiteCommandPalette({ localePrefix }: { localePrefix: string }) {
 
     for (const entry of navigationDocEntries) {
       if (entry.collection === "components" || entry.collection === "icons") {
+        const iconPage = entry.collection === "icons" ? chineseIconPages.get(entry.slug) : undefined;
+        const localizedPage = isEn ? undefined : iconPage;
         const isFoundation = entry.section === "foundations";
         items.push({
           id: `${entry.collection}-${entry.slug}`,
-          title: entry.name,
-          subtitle: componentCardDescription(entry.slug, isEn ? "en" : "zh", entry.description) ?? "",
+          title: localizedPage?.title ?? entry.name,
+          subtitle: localizedPage?.description ?? componentCardDescription(entry.slug, isEn ? "en" : "zh", entry.description) ?? "",
           category: entry.collection === "icons" ? (isEn ? "Icons" : "图标库") : isFoundation
             ? isEn
               ? "Design System"
@@ -92,7 +110,7 @@ export function SiteCommandPalette({ localePrefix }: { localePrefix: string }) {
                 ? "Component"
                 : "组件",
           href: localizePathname(pathnameOf(entry), localePrefix),
-          keywords: `${entry.name} ${entry.slug} ${entry.section} ${entry.description ?? ""}`.toLowerCase(),
+          keywords: `${entry.name} ${iconPage?.title ?? ""} ${entry.slug} ${entry.section} ${entry.description ?? ""}`.toLowerCase(),
         });
       }
     }

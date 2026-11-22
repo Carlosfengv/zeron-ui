@@ -3,6 +3,7 @@
   "description": "The available free icon names are generated directly from the provider exports.",
   "searchPlaceholder": "Search icon names",
   "resultCount": "{count, plural, one {# icon} other {# icons}}",
+  "manualCopy": "Copy the icon code manually",
   "copied": "Copied",
   "empty": "No icons match your search."
 }
