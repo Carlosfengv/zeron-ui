@@ -23,7 +23,7 @@ related:
 
 ## 版式母版与跨业务设计改写（Visual Archetype & Adaptation）
 
-- **所属页面母版**：**母版 5 · 分组导航设置中心（Categorized Settings Workspace Archetype）**。
+- **所属页面母版**：**分组导航设置中心（Categorized Settings Workspace Archetype）**。
 - **空间与呼吸感法则**：
   - **左局部导航 + 右居中限宽表单区**：当设置项跨越多个维度（个人资料、API Keys、模型服务商、安全凭证、账单用量）时，左侧提供清晰的分类导航栏，右侧内容区**必须限制在舒适阅读宽度（`max-w-3xl` / `PageLayout size="md"`）**，绝不让单行输入框橫跨整个宽屏显示器。
   - **卡片分组与就地保存**：每个设置小节按职责封装为语义清晰的 `Card` 或 `border-hairline` 分组，每个独立配置卡的更改操作就近放置在卡片底栏或右侧，危险操作（如吊销密钥、删除账号）单独置于页面最底部。
