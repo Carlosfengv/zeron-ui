@@ -3530,6 +3530,36 @@
       ]
     },
     {
+      "name": "mini-chart",
+      "type": "registry:ui",
+      "title": "Mini Chart",
+      "description": "Compact infrastructure sparklines, bars, radial gauges, meters, matrices, traces, funnels, sankey, treemaps, and rank plots.",
+      "dependencies": [
+        "recharts",
+        "tw-animate-css"
+      ],
+      "registryDependencies": [
+        "surfaces",
+        "utils",
+        "chart",
+        "chart-primitives",
+        "funnel-chart",
+        "radar-chart"
+      ],
+      "files": [
+        {
+          "path": "packages/ui/src/components/mini-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/mini-chart.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/charts/mini-advanced-chart.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/charts/mini-advanced-chart.tsx"
+        }
+      ]
+    },
+    {
       "name": "list-pagination",
       "type": "registry:ui",
       "title": "List Pagination",
