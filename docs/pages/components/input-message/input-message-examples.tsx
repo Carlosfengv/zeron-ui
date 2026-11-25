@@ -598,9 +598,9 @@ function AgentComposerDemo() {
                     variant="ghost"
                     size="sm"
                     className="rounded-xl bg-hover text-fg-default"
+                    leadingIcon={ClaudeCode}
                     trailingIcon={ChevronDownIcon}
                   >
-                    <ClaudeCode size={16} />
                     {agentModels[model]}
                   </Button>
                 }
