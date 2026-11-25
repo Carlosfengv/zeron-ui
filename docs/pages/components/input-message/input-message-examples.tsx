@@ -18,7 +18,7 @@ import { PropsTable, type PropDef } from "@docs/components/content/PropsTable";
 import { DocSection } from "@docs/components/content/DocPage";
 import { QueuedChatDemo } from "./queued-chat-demo";
 
-const basicCode = `import { useState } from "react";
+const composerCode = (voiceProp: string) => `import { useState } from "react";
 import { InputMessage } from "./components";
 
 const [value, setValue] = useState("");
@@ -26,8 +26,12 @@ const [value, setValue] = useState("");
 <InputMessage
   value={value}
   onValueChange={setValue}
+  ${voiceProp}
   onSend={(text) => console.log("send:", text)}
 />`;
+
+const basicCode = composerCode("voiceInput");
+const dotsCode = composerCode('voiceInput={{ animation: "dots" }}');
 
 const attachmentsCode = `import { useEffect, useRef, useState } from "react";
 import { InputMessage, ChatMessage } from "./components";
@@ -474,11 +478,12 @@ const [draft, setDraft] = useState("");
 
 <div className="w-full max-w-[768px]">
   <InputMessage
+    lang="zh-CN"
     value={draft}
     onValueChange={setDraft}
+    voiceInput
     placeholder="可以向 Zeron 询问任何事情。输入 @ 使用连接应用或者提及文件。输入 / 可以指定技能"
     leftSlot={<AgentActions />}
-    rightSlot={<Button variant="ghost" iconOnly size="sm"><MicIcon /></Button>}
     footer={<AgentContextControls />}
     disclaimer="内容由 AI 生成，请核实重要信息"
   />
@@ -494,9 +499,7 @@ function AgentComposerDemo() {
   const [model, setModel] = useState(0);
   const [workspace, setWorkspace] = useState(0);
   const [permission, setPermission] = useState(0);
-  const [recording, setRecording] = useState(false);
   const ImageIcon = useIcon("image");
-  const MicIcon = useIcon("mic");
   const FolderIcon = useIcon("folder");
   const ShieldIcon = useIcon("shield");
   const ChevronDownIcon = useIcon("chevron-down");
@@ -562,9 +565,11 @@ function AgentComposerDemo() {
   return (
     <div className="w-full max-w-[768px]">
       <InputMessage
+        lang="zh-CN"
         composerClassName="shadow-floating-drop"
         value={value}
         onValueChange={setValue}
+        voiceInput
         onSend={() => {
           setValue("");
           setFiles([]);
@@ -614,21 +619,6 @@ function AgentComposerDemo() {
             </DropdownMenu>
           </>
         )}
-        rightSlot={
-          <Button
-            type="button"
-            variant="ghost"
-            iconOnly
-            size="sm"
-            className="rounded-lg"
-            active={recording}
-            onClick={() => setRecording((current) => !current)}
-            aria-label={recording ? "停止语音输入" : "开始语音输入"}
-            aria-pressed={recording}
-          >
-            <MicIcon />
-          </Button>
-        }
         footer={contextControls}
         disclaimer="内容由 AI 生成，请核实重要信息"
       />
@@ -643,6 +633,7 @@ const inputMessageProps: PropDef[] = [
   { name: "placeholder", type: "string", default: '"Ask me anything…"', description: "Placeholder shown when the value is empty. While a file is being dragged over the component (and attachments are enabled), the placeholder swaps to “Drop files here to add to chat”." },
   { name: "leftSlot", type: "ReactNode | (ctx) => ReactNode", description: "Content rendered in the bottom-left action area. May be a render-fn that receives `{ openFilePicker, files }` — `openFilePicker(acceptOverride?)` opens the native file picker (optionally scoped to a subset of accept types, e.g. `\"image/*\"`)." },
   { name: "rightSlot", type: "ReactNode | (ctx) => ReactNode", description: "Content rendered in the bottom-right action area, before the built-in send button. Same render-fn shape as `leftSlot`." },
+  { name: "voiceInput", type: 'boolean | { language?: string; animation?: "ascii" | "dots" }', default: "false", description: "Adds a microphone to the left of Send on secure origins in browsers with speech recognition. While recording, one Stop recording button occupies the right action area. Stop to append the transcript to the draft or press Escape to cancel. The recording animation defaults to ASCII. Set animation to dots for round particles, or pass a language tag such as zh-CN to override the page language." },
   { name: "header", type: "ReactNode", description: "Context or review guidance displayed in the container header above the editor. Header actions are independent of editor focus and sending." },
   { name: "footer", type: "ReactNode", description: "Session-level controls rendered below the editor card, such as workspace and permission selectors." },
   { name: "disclaimer", type: "ReactNode", description: "Optional content rendered beneath the composer shell, typically an AI-output disclaimer." },
@@ -749,7 +740,8 @@ export function InputMessageExamples() {
         <VariantPlayground
           minHeightClass="min-h-[280px]"
           variants={[
-            { value: "basic", label: "Basic", code: basicCode, preview: <div className="w-full max-w-xl"><InputMessage value={basicValue} onValueChange={setBasicValue} onSend={() => setBasicValue("")} /></div> },
+            { value: "basic", label: "Basic", code: basicCode, preview: <div className="w-full max-w-xl"><InputMessage value={basicValue} onValueChange={setBasicValue} onSend={() => setBasicValue("")} voiceInput /></div> },
+            { value: "dots", label: "Dots", code: dotsCode, preview: <div className="w-full max-w-xl"><InputMessage value={basicValue} onValueChange={setBasicValue} onSend={() => setBasicValue("")} voiceInput={{ animation: "dots" }} /></div> },
             { value: "left-slot", label: "Left slot", code: leftOnlyCode, preview: <div className="w-full max-w-xl"><InputMessage value={leftValue} onValueChange={setLeftValue} onSend={() => setLeftValue("")} leftSlot={<Button iconOnly variant="ghost" size="sm" aria-label="Attach"><PlusIcon /></Button>} /></div> },
             { value: "disabled", label: "Disabled", code: disabledCode, preview: <div className="w-full max-w-xl"><InputMessage value="This composer is disabled" onValueChange={() => {}} disabled /></div> },
           ]}
@@ -772,6 +764,7 @@ export function InputMessageExamples() {
               value={basicValue}
               onValueChange={setBasicValue}
               onSend={() => setBasicValue("")}
+              voiceInput
             />
           </div>
         </ComponentPreview>

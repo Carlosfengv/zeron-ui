@@ -16,7 +16,7 @@ import {
   type Ref,
   type TextareaHTMLAttributes,
 } from "react";
-import { AnimatePresence, motion, Reorder, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, Reorder } from "motion/react";
 import { cn } from "#system/utils";
 import { spring } from "#system/springs";
 import { useIcon } from "#system/icon-context";
@@ -26,6 +26,8 @@ import { ChatMessageAttachment } from "#components/chat-message/attachments";
 import { Button } from "#components/button";
 import { Container, ContainerFooter, ContainerHeader } from "#components/container";
 import { Tooltip } from "#components/tooltip";
+import { appendVoiceText, InputMessageVoiceStatus, useComposerReducedMotion, useInputMessageVoice } from "./input-message/voice";
+import { InputMessageVoiceWave, type VoiceAnimation } from "./input-message/voice-effects";
 
 const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -93,6 +95,9 @@ interface InputMessageProps
   /** Content rendered in the bottom-right action area, before the built-in
    *  send button. Same render-fn shape as leftSlot. */
   rightSlot?: InputMessageSlot;
+  /** Adds browser dictation beside Send. Defaults to the page language.
+   *  Pass a BCP 47 language tag to override recognition or select a wave animation. */
+  voiceInput?: boolean | { language?: string; animation?: VoiceAnimation };
   /** Context or review guidance rendered in the container header above the editor. */
   header?: ReactNode;
   /** Session-level controls rendered below the editor in the agent footer.
@@ -332,6 +337,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
       placeholder = "Ask me anything…",
       leftSlot,
       rightSlot,
+      voiceInput,
       header,
       footer,
       disclaimer,
@@ -365,7 +371,9 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
     ref
   ) => {
     const ArrowUpIcon = useIcon("arrow-up");
-    const reduceMotion = useReducedMotion() ?? false;
+    const MicIcon = useIcon("mic");
+    const EllipsisIcon = useIcon("ellipsis");
+    const reduceMotion = useComposerReducedMotion();
     const isTouch = useIsTouch();
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -375,6 +383,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
       if (externalTextareaRef) externalTextareaRef.current = node;
     }, [externalTextareaRef]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const voiceButtonRef = useRef<HTMLButtonElement>(null);
     const [focusVisible, setFocusVisible] = useState(false);
     const [dragOver, setDragOver] = useState(false);
     const [hovered, setHovered] = useState(false);
@@ -408,6 +417,52 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
     const [historyIndex, setHistoryIndex] = useState<number | null>(null);
     const draftBeforeHistory = useRef("");
 
+    const restoreVoiceFocus = useCallback((moveCaret = false) => {
+      const el = textareaRef.current;
+      if (!el) return;
+      requestAnimationFrame(() => {
+        if (textareaRef.current !== el || el.disabled) return;
+        const activeElement = el.ownerDocument.activeElement;
+        if (activeElement !== el && activeElement !== el.ownerDocument.body
+          && activeElement !== voiceButtonRef.current) return;
+        el.focus({ preventScroll: true });
+        if (moveCaret) el.setSelectionRange(el.value.length, el.value.length);
+      });
+    }, []);
+
+    const voiceEnabled = Boolean(voiceInput) && !textareaProps?.readOnly;
+    const voiceOptions = typeof voiceInput === "object" ? voiceInput : undefined;
+    const committedVoiceDraft = useRef<string | null>(null);
+    const paintVoiceWave = useRef<(() => void) | null>(null);
+    const voice = useInputMessageVoice({
+      enabled: voiceEnabled,
+      disabled,
+      draft: value,
+      locale: props.lang,
+      language: voiceOptions?.language,
+      reduceMotion,
+      onFinish: (transcript) => {
+        if (transcript) {
+          setHistoryIndex(null);
+          const next = appendVoiceText(value, transcript, textareaProps?.maxLength);
+          committedVoiceDraft.current = next;
+          if (next !== value) onValueChange(next);
+        }
+        restoreVoiceFocus(Boolean(transcript));
+      },
+    });
+    const handleVoiceStart = () => {
+      committedVoiceDraft.current = null;
+      voice.start();
+    };
+    const cancelVoice = voice.cancel;
+    const handleVoiceCancel = () => {
+      if (!voice.active) return;
+      cancelVoice();
+      restoreVoiceFocus();
+    };
+    const displayedValue = appendVoiceText(value, voice.transcript, textareaProps?.maxLength);
+
     // Parsed line-height, cached per textarea element — getComputedStyle on
     // every keystroke is needless work when the value only changes with font
     // or zoom changes.
@@ -428,10 +483,12 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
       const next = Math.min(Math.max(el.scrollHeight, min), max);
       el.style.height = `${next}px`;
       el.style.overflowY = el.scrollHeight > max ? "auto" : "hidden";
-    }, [value, minRows, maxRows]);
+      if (voice.transcript) el.scrollTop = el.scrollHeight;
+      paintVoiceWave.current?.();
+    }, [displayedValue, minRows, maxRows, voice.phase, voice.transcript]);
 
     const trimmed = value.trim();
-    const canSend = !disabled && (trimmed.length > 0 || filesArr.length > 0);
+    const canSend = !disabled && !voice.active && (trimmed.length > 0 || filesArr.length > 0);
 
     // Edge = the box-shadow's 1px ring, recoloured in place per state so the
     // stroke gains contrast without ever appearing to thicken (no second
@@ -506,6 +563,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
     const editQueued = useCallback(
       (item: QueuedMessage) => {
         if (!supportsQueue) return;
+        cancelVoice();
         // Silent replace: pull the item out of the queue into the composer,
         // overwriting any current draft. Re-sending re-queues it to the end.
         setHistoryIndex(null);
@@ -524,6 +582,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
         });
       },
       [
+        cancelVoice,
         supportsQueue,
         supportsFiles,
         onValueChange,
@@ -568,6 +627,18 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
         : buttonMode === "queue"
           ? "Queue message"
           : sendLabel;
+    const recording = voice.phase === "listening";
+    const voiceBusy = voice.phase === "starting" || voice.phase === "finishing";
+    const voiceButtonLabel = voice.phase === "idle" ? voice.labels.start
+      : recording ? voice.labels.stop
+      : voice.labels[voice.phase];
+    const voiceTooltip = voice.error ? voice.labels[voice.error]
+      : recording ? `${voiceButtonLabel} · ${voice.labels.cancelHint}`
+      : voiceButtonLabel;
+    const editorPlaceholder = voice.error ? voice.labels[voice.error]
+      : voice.phase === "finishing" ? ""
+      : voice.phase !== "idle" ? voice.labels[voice.phase]
+      : dragOver && supportsFiles ? "Drop files here to add to chat" : placeholder;
 
     const setCaretEnd = useCallback(() => {
       requestAnimationFrame(() => {
@@ -579,6 +650,10 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
     const handleKeyDown = useCallback(
       (e: ReactKeyboardEvent<HTMLTextAreaElement>) => {
         if (e.nativeEvent.isComposing) return;
+        if (voice.active) {
+          if (e.key === "Enter") e.preventDefault();
+          return;
+        }
 
         // Readline-style history. Only plain ArrowUp/ArrowDown navigate (no
         // modifiers), and only when the caret is on the first/last line so
@@ -630,7 +705,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
           handleSend();
         }
       },
-      [history, value, historyIndex, onValueChange, setCaretEnd, handleSend]
+      [history, value, historyIndex, onValueChange, setCaretEnd, handleSend, voice.active]
     );
 
     const handleContainerMouseDown = useCallback(
@@ -782,6 +857,12 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
           {header && <ContainerHeader>{header}</ContainerHeader>}
           <div
             onMouseDown={handleContainerMouseDown}
+            onKeyDown={(e) => {
+              if (!voice.active || e.key !== "Escape" || e.nativeEvent.isComposing) return;
+              e.preventDefault();
+              e.stopPropagation();
+              handleVoiceCancel();
+            }}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -794,6 +875,7 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
               layout === "expanded" ? "min-h-[120px] gap-2 p-3" : "gap-1 p-2",
               surfaceClasses("floating", "raised"),
               "rounded-2xl",
+              voiceEnabled && "relative",
               clickToFocus && !disabled && "cursor-text",
               disabled && "opacity-50 pointer-events-none",
               composerClassName
@@ -893,55 +975,113 @@ const InputMessage = forwardRef<HTMLDivElement, InputMessageProps>(
             </AnimatePresence>
           )}
 
-          <textarea
-            ref={bindTextareaRef}
-            value={value}
-            onChange={(e) => {
-              // Real typing exits history mode (recall sets the value
-              // programmatically, which doesn't fire onChange).
-              setHistoryIndex(null);
-              onValueChange(e.target.value);
-            }}
-            onKeyDown={handleKeyDown}
-            // Compose the consumer's textareaProps handlers with the internal
-            // focus-visible tracking (the spread below would otherwise
-            // overwrite these).
-            onFocus={(e) => {
-              if (e.target.matches(":focus-visible")) setFocusVisible(true);
-              textareaProps?.onFocus?.(e);
-            }}
-            onBlur={(e) => {
-              setFocusVisible(false);
-              textareaProps?.onBlur?.(e);
-            }}
-            placeholder={
-              dragOver && supportsFiles
-                ? "Drop files here to add to chat"
-                : placeholder
-            }
-            disabled={disabled}
-            rows={minRows}
-            aria-label={textareaProps?.["aria-label"] ?? "Message"}
-            className={cn(
-              "w-full resize-none bg-transparent outline-none",
-              "text-body text-fg-default",
-              layout === "expanded"
-                ? "placeholder:text-fg-subtle/60"
-                : "placeholder:text-fg-muted",
-              layout === "expanded" ? "min-h-0 flex-1 p-0" : "px-2 py-2",
-              "font-normal"
+          <div className={voice.active
+            ? cn("relative min-w-0", layout === "expanded" && "flex min-h-0 flex-1 flex-col")
+            : "contents"}>
+            <textarea
+              ref={bindTextareaRef}
+              value={displayedValue}
+              onChange={(e) => {
+                // Typing exits history mode and clears the previous voice error.
+                setHistoryIndex(null);
+                voice.clearError();
+                onValueChange(e.target.value);
+              }}
+              onKeyDown={handleKeyDown}
+              onFocus={(e) => {
+                if (e.target.matches(":focus-visible")) setFocusVisible(true);
+                textareaProps?.onFocus?.(e);
+              }}
+              onBlur={(e) => {
+                setFocusVisible(false);
+                textareaProps?.onBlur?.(e);
+              }}
+              placeholder={editorPlaceholder}
+              disabled={disabled}
+              rows={minRows}
+              aria-label={textareaProps?.["aria-label"] ?? "Message"}
+              className={cn(
+                "w-full resize-none bg-transparent outline-none",
+                "text-body text-fg-default",
+                layout === "expanded" ? "placeholder:text-fg-subtle/60" : "placeholder:text-fg-muted",
+                layout === "expanded" ? "min-h-0 flex-1 p-0" : "px-2 py-2",
+                "font-normal",
+                voice.error && "placeholder:text-fg-danger"
+              )}
+              {...restTextareaProps}
+              style={voice.active ? {
+                ...restTextareaProps.style,
+                paddingInlineEnd: voice.phase === "finishing" ? "min(7.5rem, 52%)" : "3.75rem",
+              } : restTextareaProps.style}
+              readOnly={restTextareaProps.readOnly || voice.active}
+            />
+            {voice.supported && (
+              <InputMessageVoiceStatus voice={voice} reduceMotion={reduceMotion} compact={layout === "compact"} />
             )}
-            {...restTextareaProps}
-          />
-          <div className="flex items-center justify-between gap-2">
+          </div>
+          {voiceEnabled && !reduceMotion && (
+            <AnimatePresence initial={false}>
+              {voice.active && (
+                <InputMessageVoiceWave
+                  key="voice-wave"
+                  animation={voiceOptions?.animation ?? "ascii"}
+                  level={voice.level}
+                  listening={voice.phase === "listening"}
+                  editorRef={textareaRef}
+                  committedDraftRef={committedVoiceDraft}
+                  draft={value}
+                  paintRef={paintVoiceWave}
+                />
+              )}
+            </AnimatePresence>
+          )}
+          <div className={cn("flex items-center justify-between gap-2", voice.active && "relative")}>
             <div className="flex items-center gap-1.5 min-w-0">{leftContent}</div>
             <div className="flex items-center gap-1.5 shrink-0">
-              {rightContent}
+              {voiceEnabled ? (
+                <div hidden={voice.active} className={voice.active ? "hidden" : "contents"}>
+                  {rightContent}
+                </div>
+              ) : rightContent}
+              {voice.supported && (
+                <Tooltip content={voiceTooltip} side="top">
+                  <Button
+                    ref={voiceButtonRef}
+                    type="button"
+                    variant={voice.active ? "neutral" : "ghost"}
+                    iconOnly
+                    size="sm"
+                    onClick={voice.active ? voice.stop : handleVoiceStart}
+                    disabled={disabled}
+                    aria-disabled={voiceBusy || undefined}
+                    aria-label={voiceButtonLabel}
+                    aria-keyshortcuts={voice.active ? "Escape" : undefined}
+                  >
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.span
+                        key={voiceBusy ? "busy" : voice.phase}
+                        initial={{ opacity: 0, scale: reduceMotion ? 1 : 0.65 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: reduceMotion ? 1 : 0.65, transition: spring.fast.exit }}
+                        transition={spring.fast}
+                        className="flex items-center justify-center leading-none"
+                        aria-hidden="true"
+                      >
+                        {recording ? <span className="size-2.5 rounded-sm bg-current" />
+                          : voiceBusy ? <EllipsisIcon size={18} />
+                          : <MicIcon size={18} />}
+                      </motion.span>
+                    </AnimatePresence>
+                  </Button>
+                </Tooltip>
+              )}
               <Button
                 type="button"
                 variant={sendVariant}
                 iconOnly
                 size="sm"
+                hidden={voice.active}
+                className={voice.active ? "hidden" : undefined}
                 onClick={buttonMode === "stop" ? handleStop : handleSend}
                 disabled={buttonMode === "stop" ? disabled : !canSend}
                 aria-label={buttonLabel}

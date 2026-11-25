@@ -6,7 +6,7 @@ export default function InputMessageDoc() {
     <DocPage
       title="InputMessage"
       slug="input-message"
-      description="Agent-style message composer with a floating editor, flexible action slots, contextual footer controls, and an optional AI-output disclaimer."
+      description="Agent-style message composer with a floating editor, voice input, flexible action slots, contextual footer controls, and an optional AI-output disclaimer."
     >
       <InputMessageExamples />
     </DocPage>
