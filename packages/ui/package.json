@@ -133,6 +133,7 @@
     "./tokens/*": "./src/tokens/*",
     "./temporal-picker": "./src/components/temporal-picker/index.ts",
     "./chart-primitives": "./src/components/chart-primitives.tsx",
+    "./mini-chart": "./src/components/mini-chart.tsx",
     "./list-pagination": "./src/components/list-pagination.tsx",
     "./area-chart": "./src/components/area-chart.tsx",
     "./chart-core": "./src/components/chart-core.tsx",
