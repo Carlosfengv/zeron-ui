@@ -168,6 +168,7 @@ Use semantic tokens and public variants, sizes and icon slots. Preserve keyboard
 - [MenuItem](https://zeron-ui.vercel.app/ai/items/component%3Amenu-item.md): Accessible menu row primitive with icon, selection, and keyboard-menu integration. Registry: menu-item.
 - [Message Navigation](https://zeron-ui.vercel.app/ai/items/component%3Amessage-navigation.md): Compact turn markers with rich previews, current-position emphasis and keyboard navigation. Registry: message-navigation.
 - [Metric Card](https://zeron-ui.vercel.app/ai/items/component%3Ametric-card.md): Self-sizing single-metric card with optional breakdown, trend visualization, data states, and whole-card interaction. Registry: metric-card.
+- [Mini Chart](https://zeron-ui.vercel.app/ai/items/component%3Amini-chart.md): Compact infrastructure sparklines, bars, radial gauges, meters, matrices, traces, funnels, sankey, treemaps, and rank plots. Registry: mini-chart.
 - [Mobile Drawer](https://zeron-ui.vercel.app/ai/items/component%3Amobile-drawer.md): Slide-in navigation drawer with scrim, focus trap, and scroll lock. Base UI flavor. Registry: mobile-drawer.
 - [ModelSelector](https://zeron-ui.vercel.app/ai/items/component%3Amodel-selector.md): Controlled model selection, relative ratings and conversation settings. Registry: model-selector.
 - [Nav Item](https://zeron-ui.vercel.app/ai/items/component%3Anav-item.md): Composable navigation item that supports router links, labels, badges, actions, and sub-navigation. Registry: nav-item.

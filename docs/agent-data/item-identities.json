@@ -1184,6 +1184,16 @@
       "retirementReason": null
     },
     {
+      "id": "component:mini-chart",
+      "type": "registry",
+      "key": "mini-chart",
+      "aliases": [
+        "mini-chart"
+      ],
+      "status": "active",
+      "retirementReason": null
+    },
+    {
       "id": "component:mobile-drawer",
       "type": "registry",
       "key": "mobile-drawer",
