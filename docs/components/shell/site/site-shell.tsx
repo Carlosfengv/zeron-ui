@@ -144,8 +144,6 @@ function DocsPrimaryNavigation({
         ? localizePathname("/updates", localePrefix)
         : currentPathname === "/docs/ai"
           ? localizePathname("/docs/ai", localePrefix)
-        : currentPathname.startsWith("/docs/icons")
-          ? localizePathname("/docs/icons", localePrefix)
         : currentPathname === "/docs"
           ? localizePathname("/docs", localePrefix)
           : null;
@@ -153,7 +151,6 @@ function DocsPrimaryNavigation({
     { href: localizePathname("/", localePrefix), label: t("home") },
     { href: localizePathname("/docs/components", localePrefix), label: t("componentsEntry") },
     { href: localizePathname("/docs/blocks", localePrefix), label: t("blocks") },
-    { href: localizePathname("/docs/icons", localePrefix), label: isEnglish ? "Icons" : "图标" },
     { href: localizePathname("/docs/pages", localePrefix), label: t("pages") },
     { href: localizePathname("/docs/ai", localePrefix), label: localePrefix === "/en" ? "AI" : "AI 接入" },
     { href: localizePathname("/updates", localePrefix), label: localePrefix === "/en" ? "Updates" : "更新日志" },
