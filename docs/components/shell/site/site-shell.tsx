@@ -23,6 +23,8 @@ import { RightRailProvider } from "@docs/components/shell/right-rail";
 import { docEntries, type DocCollection } from "@docs/manifest";
 import { internalPathname, localePrefixFromPathname, localizePathname } from "@docs/components/shell/site/locale-path";
 
+const miniChartPath = "/docs/components/mini-chart";
+
 function pageOrderFor(pathname: string) {
   const collection = pathname.split("/")[2] as DocCollection | undefined;
   if (collection !== "components" && collection !== "blocks" && collection !== "pages" && collection !== "icons") return ["/docs"];
@@ -134,6 +136,8 @@ function DocsPrimaryNavigation({
     : nextTheme === "dark" ? "切换至深色模式" : "切换至浅色模式";
   const activePath = currentPathname === "/"
     ? localizePathname("/", localePrefix)
+    : currentPathname === miniChartPath
+      ? localizePathname(miniChartPath, localePrefix)
     : currentPathname.startsWith("/docs/pages")
     ? localizePathname("/docs/pages", localePrefix)
     : currentPathname.startsWith("/docs/blocks")
@@ -150,6 +154,7 @@ function DocsPrimaryNavigation({
   const items = [
     { href: localizePathname("/", localePrefix), label: t("home") },
     { href: localizePathname("/docs/components", localePrefix), label: t("componentsEntry") },
+    { href: localizePathname(miniChartPath, localePrefix), label: "Mini Chart" },
     { href: localizePathname("/docs/blocks", localePrefix), label: t("blocks") },
     { href: localizePathname("/docs/pages", localePrefix), label: t("pages") },
     { href: localizePathname("/docs/ai", localePrefix), label: localePrefix === "/en" ? "AI" : "AI 接入" },
@@ -268,7 +273,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
   const isLocalizedDocumentation = currentPathname === "/docs" || currentPathname.startsWith("/docs/");
   const isArtifactWorkspace = currentPathname === "/docs/blocks" || currentPathname.startsWith("/docs/blocks/")
     || currentPathname === "/docs/pages" || currentPathname.startsWith("/docs/pages/");
-  const isComponentsDetail = currentPathname.startsWith("/docs/components/");
+  const isComponentsDetail = currentPathname.startsWith("/docs/components/") && currentPathname !== miniChartPath;
   const isComponentsWorkspace = currentPathname === "/docs/components" || isComponentsDetail;
   const isUpdatesPage = currentPathname === "/updates";
   const isArtifactGallery = currentPathname === "/docs/blocks" || currentPathname === "/docs/pages";
@@ -315,7 +320,7 @@ function DocsShellContent({ children }: { children: ReactNode }) {
         <AppShellMain className={isBoundedWorkspace ? "flex min-h-0 overflow-hidden [&:has([data-docs-workspace=blocks])>aside]:hidden" : "flex min-h-0 [&:has([data-docs-workspace=blocks])>aside]:hidden"}>
           {hasDocumentationSidebar && <AppShellSidebar><DocsSidebar localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} /></AppShellSidebar>}
           <div className={isBoundedWorkspace ? "h-full min-h-0 min-w-0 flex-1" : "min-h-0 min-w-0 flex-1"}>{children}</div>
-          {!isHomePage && !isArtifactWorkspace && !isComponentsWorkspace && !isUpdatesPage && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
+          {!isHomePage && !isArtifactWorkspace && !isComponentsWorkspace && currentPathname !== miniChartPath && !isUpdatesPage && <DeferredDesktopRightPanel localePrefix={localePrefix} showLanguage={isLocalizedDocumentation} />}
         </AppShellMain>
       </AppShell>
     </RightRailProvider>
