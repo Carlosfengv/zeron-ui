@@ -434,6 +434,14 @@ function compoundConsumerExample(component, framework) {
       'function Options() { return <SelectGroup>{items.map(item => <SelectItem key={item.value} value={item.value} textValue="Install verified">{item.label}</SelectItem>)}</SelectGroup>; }',
       'function Page() { return <Select items={items} defaultValue="verified"><SelectTrigger aria-label="Pick one" /><SelectContent><Options /></SelectContent></Select>; }',
     ],
+    "input-message": [
+      'import { useState } from "react";',
+      `import { InputMessage } from "${prefix}components/ui/input-message";`,
+      'function Page() {',
+      '  const [value, setValue] = useState("");',
+      '  return <InputMessage value={value} onValueChange={setValue} onSend={() => setValue("")} voiceInput={{ animation: "dots" }} />;',
+      '}',
+    ],
   };
   if (!examples[component]) return undefined;
   return [

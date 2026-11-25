@@ -2324,7 +2324,7 @@
       "name": "input-message",
       "type": "registry:ui",
       "title": "Input Message",
-      "description": "Chat-style message composer with auto-resizing textarea, drag-and-drop file attachments (PNG / JPEG / PDF), flexible left/right action slots, and a built-in send button on a Surface-2 substrate.",
+      "description": "Chat-style message composer with an auto-resizing editor, optional voice dictation, drag-and-drop attachments, and configurable action slots.",
       "dependencies": [
         "motion",
         "tw-animate-css"
@@ -2346,6 +2346,16 @@
           "path": "packages/ui/src/components/input-message.tsx",
           "type": "registry:ui",
           "target": "components/ui/input-message.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/input-message/voice.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input-message/voice.tsx"
+        },
+        {
+          "path": "packages/ui/src/components/input-message/voice-effects.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/input-message/voice-effects.tsx"
         }
       ]
     },
